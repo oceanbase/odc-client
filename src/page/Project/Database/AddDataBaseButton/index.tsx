@@ -21,22 +21,28 @@ import ApplyDatabasePermissionButton from '@/component/Task/ApplyDatabasePermiss
 import TooltipAction from '@/component/TooltipAction';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Button, Col, Form, message, Modal, Row, Select, Space, Tooltip } from 'antd';
 import Icon from '@ant-design/icons';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import ProjectContext from '../../ProjectContext';
 import { ProjectRole } from '@/d.ts/project';
-import { DefaultOptionType } from 'antd/es/select';
-import { DB_OWNER_MAX_COUNT } from '@/page/Project/Database/const';
 import { DatabaseOwnerSelect } from '../components/DatabaseOwnerSelect.tsx';
 import { ModalStore } from '@/store/modal';
 interface IProps {
   projectId: number;
+  orderedDatabaseIds: number[][];
   modalStore?: ModalStore;
   onSuccess: () => void;
+  clearSelectedRowKeys: () => void;
 }
-const AddDataBaseButton: React.FC<IProps> = ({ projectId, modalStore, onSuccess }) => {
+const AddDataBaseButton: React.FC<IProps> = ({
+  projectId,
+  orderedDatabaseIds,
+  modalStore,
+  onSuccess,
+  clearSelectedRowKeys,
+}) => {
   const [open, setOpen] = useState<boolean>(false);
   const { project } = useContext(ProjectContext);
 
@@ -114,11 +120,15 @@ const AddDataBaseButton: React.FC<IProps> = ({ projectId, modalStore, onSuccess 
           </Button>
         </TooltipAction>
         <Button
-          onClick={() =>
+          onClick={() => {
             modalStore?.changeMultiDatabaseChangeModal(true, {
               projectId,
-            })
-          }
+              parameters: {
+                orderedDatabaseIds,
+              },
+            });
+            clearSelectedRowKeys?.();
+          }}
         >
           多库变更
         </Button>

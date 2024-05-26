@@ -40,10 +40,12 @@ import ResourceTreeContext from '../../context/ResourceTreeContext';
 import SyncMetadata from '@/component/Button/SyncMetadata';
 import { IManagerResourceType } from '@/d.ts';
 import { ModalStore } from '@/store/modal';
+import type { SettingStore } from '@/store/setting';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
   modalStore?: ModalStore;
+  settingStore?: SettingStore;
   databases: IDatabase[];
   reloadDatabase: () => void;
   title: React.ReactNode;
@@ -57,6 +59,7 @@ interface IProps {
 const ResourceTree: React.FC<IProps> = function ({
   sessionManagerStore,
   modalStore,
+  settingStore,
   databases,
   title,
   databaseFrom,
@@ -212,16 +215,19 @@ const ResourceTree: React.FC<IProps> = function ({
                 }}
               />
             ) : null}
-            <SyncMetadata
-              resourceType={
-                databaseFrom === 'project'
-                  ? IManagerResourceType.project
-                  : IManagerResourceType.resource
-              }
-              resourceId={Number(stateId?.split('-')?.[1])}
-              reloadDatabase={reloadDatabase}
-              databaseList={databases}
-            />
+            {settingStore.configurations['odc.database.default.enableGlobalObjectSearch'] ===
+            'true' ? (
+              <SyncMetadata
+                resourceType={
+                  databaseFrom === 'project'
+                    ? IManagerResourceType.project
+                    : IManagerResourceType.resource
+                }
+                resourceId={Number(stateId?.split('-')?.[1])}
+                reloadDatabase={reloadDatabase}
+                databaseList={databases}
+              />
+            ) : null}
             <Reload
               key="ResourceTreeReload"
               onClick={() => {
@@ -269,4 +275,4 @@ const ResourceTree: React.FC<IProps> = function ({
   );
 };
 
-export default inject('sessionManagerStore', 'modalStore')(observer(ResourceTree));
+export default inject('sessionManagerStore', 'modalStore', 'settingStore')(observer(ResourceTree));

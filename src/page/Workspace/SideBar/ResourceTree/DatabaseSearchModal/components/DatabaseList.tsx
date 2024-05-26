@@ -3,13 +3,14 @@ import styles from '../index.less';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import React, { useState, useContext } from 'react';
-import { IDatabase } from '@/d.ts/database';
+import { IDatabase, IDatabaseObject } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
 
 interface Iprops {
   database: IDatabase;
   setDatabase: React.Dispatch<React.SetStateAction<IDatabase>>;
   databaseList: IDatabase[];
+  objectlist: IDatabaseObject;
   setSelectDatabaseState: React.Dispatch<React.SetStateAction<boolean>>;
   searchKey: string;
   setSearchKey: React.Dispatch<React.SetStateAction<string>>;
@@ -28,13 +29,20 @@ const DatabaseList = ({
   isSelectAll,
   setSelectAllState,
   modalStore,
+  objectlist,
 }: Iprops) => {
   const { selectProjectId } = useContext(ResourceTreeContext);
-
   const [activeDatabase, setActiveDatabase] = useState<IDatabase>();
-  const options = [...databaseList].filter((i) =>
-    i?.name?.toLowerCase().includes(searchKey?.toLowerCase() || ''),
-  );
+
+  const getOptions = () => {
+    if (objectlist) {
+      return objectlist.databases;
+    }
+    return [...databaseList].filter((i) =>
+      i?.name?.toLowerCase().includes(searchKey?.toLowerCase() || ''),
+    );
+  };
+  const options = getOptions();
 
   const changeDatabase = (item) => {
     setDatabase(item);
@@ -111,7 +119,7 @@ const DatabaseList = ({
                     }}
                   >
                     <DataBaseStatusIcon item={db} />
-                    <div style={{ padding: '0 4px' }}>{db.name}</div>
+                    <div style={{ padding: '0 4px' }}>{db?.name}</div>
                     <div className={styles.subInfo}>
                       {selectProjectId ? db?.dataSource?.name : null}
                     </div>

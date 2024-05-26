@@ -276,6 +276,31 @@ const databaseSettings: IODCSetting[] = [
       );
     },
   },
+  {
+    label: '启用全局对象检索',
+    key: 'odc.database.default.enableGlobalObjectSearch',
+    group: databaseGroup,
+    secondGroup: databaseObjectGroup,
+    storeType: 'server',
+    render: (value, onChange) => {
+      return (
+        <RadioItem
+          options={[
+            {
+              label: formatMessage({ id: 'src.component.ODCSetting.config.DB70BE72' }), //'是'
+              value: 'true',
+            },
+            {
+              label: formatMessage({ id: 'src.component.ODCSetting.config.B0184654' }), //'否'
+              value: 'false',
+            },
+          ]}
+          value={value}
+          onChange={onChange}
+        />
+      );
+    },
+  },
 ];
 
 export default databaseSettings;
