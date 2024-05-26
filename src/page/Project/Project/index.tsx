@@ -56,6 +56,9 @@ const titleOptions: {
 const Project = () => {
   const domRef = useRef<HTMLDivElement>();
   const [currentPage, setCurrentPage] = useState(0);
+  const [selectedRows, setSelectedRows] = useState<Map<number, boolean>>(
+    new Map<number, boolean>(),
+  );
   const [dataSource, setDataSource] = useState<IProject[]>([]);
   const [projectSearchName, setProjectSearchName] = useState(null);
   const [projectType, setProjectType] = useState<'all' | 'deleted'>('all');

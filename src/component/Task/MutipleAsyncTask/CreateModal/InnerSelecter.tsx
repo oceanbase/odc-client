@@ -30,6 +30,7 @@ const InnerSelect: React.FC<{
 }> = ({ innerName, outerName, innerIndex, projectId, databaseOptions, innerRemove }) => {
   const ref = useRef(null);
   const form = Form.useFormInstance();
+  const [searchValue, setSearchValue] = useState<string>();
   const orderedDatabaseIds = useWatch<number[][]>(['parameters', 'orderedDatabaseIds'], form);
   const currentOrderedDatabaseIds = useWatch<number[]>(
     ['parameters', 'orderedDatabaseIds', outerName],
@@ -145,6 +146,62 @@ const InnerSelect: React.FC<{
       throw new Error('该数据库不属于当前项目');
     }
   };
+  const renderItem = (item: DatabaseOption) => {
+    const icon = getDataSourceStyleByConnectType(item?.dataSource?.type);
+    const databaseIds = flatArray(orderedDatabaseIds);
+    const isDisabled = databaseIds?.includes(item?.value);
+    return (
+      <div
+        title={item?.label}
+        key={item?.value}
+        data-key={item?.value}
+        onClick={() => {
+          if (isDisabled) {
+            return;
+          }
+          form.setFieldValue(
+            ['parameters', 'orderedDatabaseIds', outerName, innerName],
+            item?.value,
+          );
+          setPopoverOpen(false);
+        }}
+      >
+        <Tooltip title={isDisabled ? '该数据库已被选中' : null}>
+          <div
+            className={classNames(styles.option, {
+              [styles.optionDisabled]: isDisabled,
+            })}
+          >
+            <Space>
+              <Icon
+                component={icon?.icon?.component}
+                style={{
+                  color: isDisabled ? 'var(--icon-color-disable)' : icon?.icon?.color,
+                  fontSize: 16,
+                  marginRight: 4,
+                }}
+              />
+              <div
+                style={{
+                  color: isDisabled ? 'var(--mask-color)' : 'var(--text-color-primary)',
+                }}
+              >
+                {item?.label}
+              </div>
+              <div style={{ color: 'var(--mask-color)' }}>{item?.dataSource?.name}</div>
+            </Space>
+            <div
+              style={{
+                height: '6px',
+                width: '6px',
+                backgroundColor: item?.environment?.style,
+              }}
+            />
+          </div>
+        </Tooltip>
+      </div>
+    );
+  };
   useEffect(() => {
     return () => {
       ref.current = null;
@@ -181,7 +238,7 @@ const InnerSelect: React.FC<{
             noStyle
           >
             <Popover
-              trigger={['click']}
+              trigger="click"
               placement="bottom"
               showArrow={false}
               overlayStyle={{
@@ -195,68 +252,34 @@ const InnerSelect: React.FC<{
               }}
               overlayClassName={styles.selectOptions}
               content={
-                <div>
-                  {databaseOptions?.map((item) => {
-                    const icon = getDataSourceStyleByConnectType(item?.dataSource?.type);
-                    const databaseIds = flatArray(orderedDatabaseIds);
-                    const isDisabled = databaseIds?.includes(item?.value);
-                    return (
-                      <div
-                        title={item?.label}
-                        key={item?.value}
-                        onClick={() => {
-                          if (isDisabled) {
-                            return;
+                <div
+                  style={{
+                    maxHeight: '320px',
+                    overflowY: 'scroll',
+                  }}
+                >
+                  {searchValue?.trim()?.length
+                    ? databaseOptions
+                        ?.filter((item) => {
+                          if (
+                            item?.label
+                              ?.toString()
+                              ?.toLowerCase()
+                              ?.indexOf(searchValue?.toLowerCase()) > -1
+                          ) {
+                            return item;
                           }
-                          form.setFieldValue(
-                            ['parameters', 'orderedDatabaseIds', outerName, innerName],
-                            item?.value,
-                          );
-                          setPopoverOpen(false);
-                        }}
-                      >
-                        <Tooltip title={isDisabled ? '该数据库已被选中' : null}>
-                          <div
-                            className={classNames(styles.option, {
-                              [styles.optionDisabled]: isDisabled,
-                            })}
-                          >
-                            <Space>
-                              <Icon
-                                component={icon?.icon?.component}
-                                style={{
-                                  color: isDisabled
-                                    ? 'var(--icon-color-disable)'
-                                    : icon?.icon?.color,
-                                  fontSize: 16,
-                                  marginRight: 4,
-                                }}
-                              />
-                              <div
-                                style={{
-                                  color: isDisabled
-                                    ? 'var(--mask-color)'
-                                    : 'var(--text-color-primary)',
-                                }}
-                              >
-                                {item?.label}
-                              </div>
-                              <div style={{ color: 'var(--mask-color)' }}>
-                                {item?.dataSource?.name}
-                              </div>
-                            </Space>
-                            <div
-                              style={{
-                                height: '6px',
-                                width: '6px',
-                                backgroundColor: item?.environment?.style,
-                              }}
-                            />
-                          </div>
-                        </Tooltip>
-                      </div>
-                    );
-                  })}
+                          if (
+                            item?.dataSource?.name
+                              ?.toString()
+                              ?.toLowerCase()
+                              ?.indexOf(searchValue?.toLowerCase()) > -1
+                          ) {
+                            return item;
+                          }
+                        })
+                        ?.map((item) => renderItem(item))
+                    : databaseOptions?.map((item) => renderItem(item))}
                 </div>
               }
             >
@@ -264,6 +287,7 @@ const InnerSelect: React.FC<{
                 showSearch
                 optionFilterProp="title"
                 style={{ width: 390 }}
+                onSearch={(searchValue) => setSearchValue(searchValue)}
                 placeholder={getPlaceholder()}
                 disabled={!projectId}
                 allowClear

@@ -320,7 +320,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           taskExecutionDurationHours,
           syncTableStructure,
         } = values;
-        _tables.map((i) => {
+        _tables?.map((i) => {
           i.partitions = i?.partitions
             ?.replace(/[\r\n]+/g, '')
             ?.split(',')
@@ -396,7 +396,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       .validateFields()
       .then(async (values) => {
         const { variables, tables: _tables, archiveRange } = values;
-        _tables.map((i) => {
+        _tables?.map((i) => {
           i.partitions = i?.partitions
             ?.replace(/[\r\n]+/g, '')
             ?.split(',')
