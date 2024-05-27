@@ -2371,6 +2371,8 @@ export interface IDataArchiveJobParameters {
   tables: {
     conditionExpression: string;
     tableName: string;
+    partitions: [] | string;
+    targetTableName: string;
   }[];
   variables: {
     name: string;
@@ -2393,6 +2395,8 @@ export interface IDataClearJobParameters {
   tables: {
     conditionExpression: string;
     tableName: string;
+    partitions?: string | [];
+    targetTableName: string;
   }[];
   variables: {
     name: string;
