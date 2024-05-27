@@ -21,6 +21,7 @@ const hiddenChild = (allNodes, node, nodeHidden, isChild = false) => {
 
 // 树打开收起
 const changeTreeOpen: (...args) => void = (nodeId, nodeHidden, setNodes) => {
+  // todo 展开收起后重新布局树
   setNodes((nds) =>
     nds.map((node) => {
       if (node.id === nodeId) {
@@ -127,31 +128,28 @@ export function transformDataForReactFlow(
   vertexes.forEach((vertex) => {
     const node = { ...vertex, children: [], x: 0, y: 0 };
     idToNodeMap.set(vertex.graphId, node);
-    if (!vertex.hasOwnProperty('inEdges') || vertex.inEdges.length === 0) {
+    if (!vertex.hasOwnProperty('inEdges') || vertex.inEdges?.length === 0) {
       rootNodes.push(node);
     }
   });
-
   // 建立子节点和父节点关系
   vertexes.forEach((vertex) => {
-    vertex.outEdges.forEach((edge) => {
-      const parent = idToNodeMap.get(edge.from);
-      const child = idToNodeMap.get(edge.to);
+    vertex?.outEdges?.forEach((edge) => {
+      const parent = idToNodeMap.get(edge?.from);
+      const child = idToNodeMap.get(edge?.to);
       parent.children.push(child);
     });
   });
-
   function buildTree(data: any[]): Tree {
     const tree = new Tree();
     const nodesMap = new Map<string, Node>();
     if (!data.length) return;
     data?.forEach((nodeData) => {
       const node = new Node(nodeData, null, 0, 0, tree.rootX, tree.rootY);
-      nodesMap.set(nodeData.graphId, node);
+      nodesMap.set(nodeData?.graphId, node);
     });
-
     data?.forEach((nodeData) => {
-      const node = nodesMap.get(nodeData.graphId);
+      const node = nodesMap.get(nodeData?.graphId);
       if (node) {
         nodeData?.outEdges?.forEach((edge) => {
           const childNode = nodesMap.get(edge.to);
@@ -179,7 +177,6 @@ export function transformDataForReactFlow(
 
   const treeList = buildTree(vertexes);
   treeList.layout();
-
   function convertTreeToReactFlow(tree) {
     function traverseAndBuild(node, parentId = null) {
       const reactFlowNode = {
@@ -192,10 +189,10 @@ export function transformDataForReactFlow(
           isTreeOpen: true,
           changeTreeOpen: (...args: any[]) => changeTreeOpen(...args, setNodes),
           locateNode: (...args) => locateNode(...args, nodes, setSelectedNode, setViewport),
-          hasChild: node.data.outEdges.length,
-          outEdges: node?.data.outEdges || [],
+          hasChild: node?.data?.outEdges?.length,
+          outEdges: node?.data?.outEdges || [],
           setSelectedNode: setSelectedNode,
-          percentage: duration ? ((node.data.duration / duration) * 100).toFixed(2) : '',
+          percentage: duration ? ((node?.data.duration / duration) * 100).toFixed(2) : '',
           isSelected: false,
         },
         type: 'customNode',

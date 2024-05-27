@@ -237,7 +237,7 @@ export class SQLStore {
               id: generateUniqKey(),
             };
           });
-          const showRecordList = recordAll.map((i) => {
+          const showRecordList = recordAll?.map((i) => {
             // 运行中的
             if (currentExecuteInfo.sqlId === i.sqlId && !finished) {
               return { ...i, status: ISqlExecuteResultStatus.RUNNING };

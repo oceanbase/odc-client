@@ -117,33 +117,106 @@ export class Tree {
   /**
    * 回推函数
    */
+  // 布局重叠节点
   layoutOverlaps() {
-    // 外层循环，扫描hashtree，从最底层开始往上
+    console.log(this.hashTree);
     for (let i = this.hashTree.length - 1; i >= 0; i--) {
-      // 获取当前层
-      let curLayer = this.hashTree[i];
-
-      // 内层循环，遍历该层所有节点
-      for (let j = 0; j < curLayer.length - 1; j++) {
-        // 获取相邻的两个节点，保存为n1，n2
-        let n1 = curLayer[j],
-          n2 = curLayer[j + 1];
-
-        // 若n1，n2有重叠
+      let j = 0;
+      while (j < this.hashTree[i].length - 1) {
+        const n1 = this.hashTree[i][j];
+        const n2 = this.hashTree[i][j + 1];
         if (this.isOverlaps(n1, n2)) {
-          // 计算需要移动距离
-          let dx = n1.x + this.nodeInterval - n2.x,
-            // 找出与n1的某个祖先为兄弟节点的n2的祖先
-            node2Move = this.findCommonParentNode(n1, n2);
-
-          // 往右移动n2
-          this.translateTree(node2Move, node2Move.x + dx);
-          this.centerChild(node2Move.parent);
-
-          // 移动后下层节点有可能再次发生重叠，所以重新从底层扫描
-          i = this.hashTree.length;
+          const dx = n1.x + this.nodeInterval - n2.x;
+          const node2Move = this.findCommonParentNode(n1, n2);
+          if (dx !== 0) {
+            const node2MoveIndex = this.hashTree[i].indexOf(node2Move);
+            const nodesToMove = this.getNodesToMove(node2Move);
+            this.hashTree[i].splice(node2MoveIndex, nodesToMove.length);
+            this.translateTree(node2Move, node2Move.x + dx);
+            this.centerChild(node2Move.parent);
+            this.insertNodesToHashTree(nodesToMove, i);
+            j = this.hashTree[i].indexOf(node2Move) + 1;
+          }
+        } else {
+          j++;
         }
       }
+    }
+  }
+  // 调整子节点位置，确保子节点之间不重叠
+  adjustChildrenPositions(node) {
+    if (node.children && node.children.length > 0) {
+      let prevChild = null;
+      for (let i = 0; i < node.children.length; i++) {
+        const child = node.children[i];
+        if (prevChild) {
+          // 根据前一个兄弟节点和间距计算
+          child.x = prevChild.x + this.nodeInterval;
+          // 检查与前一个兄弟节点是否重叠
+          if (this.isOverlaps(child, prevChild)) {
+            child.x = prevChild.x + this.nodeInterval;
+          }
+        } else {
+          // 第一个子节点，根据父节点居中
+          child.x = node.x;
+        }
+        prevChild = child;
+
+        // 递归调整子节点的子节点
+        this.adjustChildrenPositions(child);
+      }
+    }
+  }
+  /**
+   * 获取需要移动的节点
+   * @param node
+   * @returns
+   */
+  getNodesToMove(node): Node[] {
+    const nodesToMove: Node[] = [];
+    const queue = [node];
+
+    while (queue.length > 0) {
+      const curNode = queue.shift()!;
+      nodesToMove.push(curNode);
+
+      if (curNode.children) {
+        queue.push(...curNode.children);
+      }
+    }
+    return nodesToMove;
+  }
+
+  /**
+   * 将节点插入到哈希树中
+   * @param nodes
+   * @param level
+   */
+  // insertNodesToHashTree(nodes: Node[], level: number) {
+  //   // todo 这里不能排序 需要按照原来的顺序
+  //   const curLayer = this.hashTree[level];
+  //   for (const node of nodes) {
+  //     let inserted = false;
+  //     for (let i = 0; i < curLayer.length; i++) {
+  //       if (node.x < curLayer[i].x) {
+  //         curLayer.splice(i, 0, node);
+  //         inserted = true;
+  //         break;
+  //       }
+  //     }
+  //     if (!inserted) {
+  //       curLayer.push(node);
+  //     }
+  //   }
+  // }
+  insertNodesToHashTree(nodes: Node[], level: number) {
+    // 如果 this.hashTree[level] 不存在，则初始化为空数组
+    if (!this.hashTree[level]) {
+      this.hashTree[level] = [];
+    }
+    // 将 nodes 中的节点依次添加到 this.hashTree[level] 中
+    for (const node of nodes) {
+      this.hashTree[level].push(node);
     }
   }
 
@@ -209,7 +282,7 @@ export class Tree {
    */
   isOverlaps(node1: Node, node2: Node): boolean {
     // 若左边节点的横坐标比右边节点大，或者两节点间的间距小于最小间距，均判断为重叠
-    return node1.x - node2.x > 0 || node2.x - node1.x < this.nodeInterval;
+    return Math.abs(node1.x - node2.x) < this.nodeInterval;
   }
 
   /**
