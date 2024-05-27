@@ -22,6 +22,11 @@ import {
   traceViewOptions,
   executeViewOptions,
 } from './constant';
+
+import CopyToClipboard from 'react-copy-to-clipboard';
+import copy from 'copy-to-clipboard';
+import { CopyOutlined } from '@ant-design/icons';
+
 interface IProps {
   modalStore?: ModalStore;
 }
@@ -70,6 +75,28 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
             marginBottom: 0,
           }}
         >
+          <CopyToClipboard
+            text={data?.originalText}
+            onCopy={(_, result: boolean) => {
+              if (data?.originalText?.length) {
+                if (result) {
+                  message.success(
+                    formatMessage({ id: 'odc.component.Log.CopiedSuccessfully' }), //复制成功
+                  );
+                } else {
+                  message.error(
+                    formatMessage({ id: 'odc.component.Log.ReplicationFailed' }), //复制失败
+                  );
+                }
+              }
+            }}
+          >
+            <div style={{ textAlign: 'end' }}>
+              <Tooltip title="复制">
+                <CopyOutlined style={{ cursor: 'pointer' }} />
+              </Tooltip>
+            </div>
+          </CopyToClipboard>
           {data?.originalText}
         </pre>
       ),
@@ -253,17 +280,20 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
           </div>
         ) : (
           <div className={styles.executeSqlDetailBox}>
-            <span
-              title={page?.sql}
-              style={{
-                overflowY: 'hidden',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis',
-                flexShrink: 0,
-              }}
-            >
-              SQL: {page?.sql}
-            </span>
+            <Tooltip title={page?.sql}>
+              <span
+                // title={page?.sql}
+                style={{
+                  overflowY: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  flexShrink: 0,
+                  maxWidth: 300,
+                }}
+              >
+                SQL: {page?.sql}
+              </span>
+            </Tooltip>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Radio.Group
                 value={tab}

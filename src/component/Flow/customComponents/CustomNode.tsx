@@ -22,7 +22,7 @@ function TextUpdaterNode({ data, id, isConnectable }) {
           border: data?.isSelected
             ? '1px solid rgba(24,144,255,0.20)'
             : '1px solid rgba(0,0,0,0.12)',
-          boxShadow: data?.isSelected ? '0 0 4px rgba(24,144,255,0.20)' : null,
+          boxShadow: data?.isSelected ? '0 0 1px 2px rgba(24,144,255,0.20)' : null,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
