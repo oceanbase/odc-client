@@ -251,10 +251,10 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
             : '-'}
         </Descriptions.Item>
         <Descriptions.Item label={'开启目标表结构同步'} span={1}>
-          {jobParameters.syncTableStructure ? '是' : '否'}
+          {jobParameters?.syncTableStructure?.length ? '是' : '否'}
         </Descriptions.Item>
         <Descriptions.Item label={'同步范围'} span={1}>
-          {jobParameters?.syncTableStructure
+          {jobParameters?.syncTableStructure && jobParameters?.syncTableStructure?.length
             ? jobParameters.syncTableStructure
                 ?.map((i) => {
                   return SyncTableStructureConfig[i].label;

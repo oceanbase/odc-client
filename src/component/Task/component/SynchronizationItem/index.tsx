@@ -1,10 +1,18 @@
-import { Form, Space, Checkbox } from 'antd';
-import React, { useState } from 'react';
+import { Form, Space, Checkbox, FormInstance } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { SyncTableStructureEnum, SyncTableStructureOptions } from '@/d.ts';
 
-interface IProps {}
-const SynchronizationItem: React.FC<IProps> = (props) => {
+interface IProps {
+  form: FormInstance<any>;
+}
+const SynchronizationItem: React.FC<IProps> = ({ form }) => {
+  const initValue = form.getFieldValue('syncTableStructure');
   const [syncTableStructure, setSyncTableStructure] = useState<boolean>(false);
+
+  useEffect(() => {
+    setSyncTableStructure(Boolean(initValue?.length));
+  }, [initValue]);
+
   return (
     <>
       <Form.Item
@@ -12,8 +20,16 @@ const SynchronizationItem: React.FC<IProps> = (props) => {
         style={{ marginBottom: 8 }}
       >
         <Checkbox
-          value={syncTableStructure}
-          onChange={(e) => setSyncTableStructure(e.target.checked)}
+          checked={syncTableStructure}
+          onChange={(e) => {
+            setSyncTableStructure(e.target.checked);
+            if (initValue && initValue.length === 0 && e.target.checked) {
+              form.setFieldValue('syncTableStructure', [
+                SyncTableStructureEnum.COLUMN,
+                SyncTableStructureEnum.CONSTRAINT,
+              ]);
+            }
+          }}
         >
           开启目标表结构同步
         </Checkbox>

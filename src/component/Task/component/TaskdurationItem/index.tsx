@@ -1,7 +1,14 @@
-import { Form, InputNumber, Space, Checkbox } from 'antd';
-import React, { useState } from 'react';
-interface IProps {}
-const TaskDurationItem: React.FC<IProps> = (props) => {
+import { Form, InputNumber, Space, Checkbox, FormInstance } from 'antd';
+import React, { useState, useEffect } from 'react';
+
+interface IProps {
+  form: FormInstance<any>;
+}
+const TaskDurationItem: React.FC<IProps> = ({ form }) => {
+  useEffect(() => {
+    setTaskDuration(Boolean(form.getFieldValue('taskExecutionDurationHours')));
+  }, [form]);
+
   const [hasTaskDuration, setTaskDuration] = useState<boolean>(false);
   return (
     <>
@@ -9,7 +16,7 @@ const TaskDurationItem: React.FC<IProps> = (props) => {
         extra={'任务启动指定时长后，若未完成则会暂停调度，等待下一次调度'}
         style={{ marginBottom: 8 }}
       >
-        <Checkbox value={hasTaskDuration} onChange={(e) => setTaskDuration(e.target.checked)}>
+        <Checkbox checked={hasTaskDuration} onChange={(e) => setTaskDuration(e.target.checked)}>
           指定任务时长
         </Checkbox>
       </Form.Item>
