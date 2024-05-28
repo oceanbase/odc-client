@@ -51,7 +51,7 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
   }, [selectDatasourceId, selectProjectId]);
 
   useEffect(() => {
-    if (databaseList.length) {
+    if (databaseList?.length) {
       setDatabases(databaseList?.filter((item) => !!item?.authorizedPermissionTypes?.length));
       const ids: Set<number> = new Set();
       databaseList.forEach((d) => {
