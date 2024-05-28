@@ -54,7 +54,7 @@ import notification from '@/util/notification';
 import { splitSql } from '@/util/sql';
 import { generateAndDownloadFile, getCurrentSQL } from '@/util/utils';
 import { message, Spin } from 'antd';
-import { debounce, isNil } from 'lodash';
+import { debounce, isNil, isString } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import { IDisposable, KeyMod, KeyCode } from 'monaco-editor/esm/vs/editor/editor.api';
 import { Component, forwardRef } from 'react';
@@ -68,6 +68,7 @@ import styles from './index.less';
 import setting, { SettingStore } from '@/store/setting';
 import { getKeyCodeValue } from '@/component/Input/Keymap/keycodemap';
 import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
+import { OBCompare, ODC_EXECUTE_TREE_SUPPORT_VERSION } from '@/util/versionUtils';
 
 interface ISQLPageState {
   resultHeight: number;
@@ -986,14 +987,23 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     if (!selectedSQL) {
       return;
     }
-    modalStore.changeExecuteSqlDetailModalVisible(
-      true,
-      null,
-      this?.state?.initialSQL,
-      this?.getSession(),
-      selectedSQL,
-      ProfileType.Plan,
-    );
+    // 区分版本
+    const obVersion = this?.getSession()?.params?.obVersion;
+    if (isString(obVersion) && OBCompare(obVersion, ODC_EXECUTE_TREE_SUPPORT_VERSION, '>=')) {
+      modalStore.changeExecuteSqlDetailModalVisible(
+        true,
+        null,
+        this?.state?.initialSQL,
+        this?.getSession(),
+        selectedSQL,
+        ProfileType.Plan,
+      );
+    } else {
+      this.setState({
+        selectedSQL,
+        showExplainDrawer: true,
+      });
+    }
   };
 
   public handleShowExecuteDetail = async (sql: string, traceId: string) => {

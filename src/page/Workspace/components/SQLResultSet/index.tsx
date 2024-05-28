@@ -335,10 +335,10 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     <DDLResultSet
                       key={set.uniqKey || i}
                       dbTotalDurationMicroseconds={executeSQLStage?.totalDurationMicroseconds}
-                      // showExplain={session?.supportFeature?.enableSQLExplain}
-                      showExecutePlan={session?.supportFeature?.enableSQLExplain}
+                      showExplain={session?.supportFeature?.enableSQLExplain}
+                      showExecutePlan={true}
                       showPagination={true}
-                      // showTrace={true}
+                      showTrace={true}
                       onOpenExecutingDetailModal={onOpenExecutingDetailModal}
                       columns={set.columns}
                       session={session}
