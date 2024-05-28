@@ -22,8 +22,9 @@ import classNames from 'classnames';
 import { IArchiveRange } from './index';
 import ArchiveRangeTip from '../../component/ArchiveRangeTip';
 import styles from './index.less';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PartitionTextArea } from '../../component/PartitionTextArea';
+import type { FormInstance } from 'antd/lib/form';
 
 const { TextArea } = Input;
 const { Text, Link } = Typography;
@@ -31,15 +32,22 @@ const { Text, Link } = Typography;
 interface IProps {
   tables: ITable[];
   needCheckBeforeDelete?: boolean;
+  form?: FormInstance<any>;
 }
 const ArchiveRange: React.FC<IProps> = (props) => {
-  const { tables, needCheckBeforeDelete = false } = props;
+  const { tables, needCheckBeforeDelete = false, form } = props;
   const [enablePartition, setEnablePartition] = useState<boolean>(false);
   const tablesOptions = tables?.map((item) => ({
     label: item.tableName,
     value: item.tableName,
   }));
+
   const hasAdvancedOptionCol = enablePartition || needCheckBeforeDelete;
+
+  useEffect(() => {
+    setEnablePartition(!!form?.getFieldsValue()?.tables?.find((i) => i?.partitions));
+  }, [form?.getFieldsValue()?.tables]);
+
   return (
     <>
       <Form.Item
@@ -79,6 +87,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                 <div>清理设置</div>
                 <div>
                   <Checkbox
+                    checked={enablePartition}
                     onChange={() => {
                       setEnablePartition(!enablePartition);
                     }}

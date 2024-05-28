@@ -22,21 +22,29 @@ import classNames from 'classnames';
 import { IArchiveRange } from './index';
 import ArchiveRangeTip from '../../component/ArchiveRangeTip';
 import styles from './index.less';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PartitionTextArea } from '../../component/PartitionTextArea';
 const { TextArea, Group } = Input;
 const { Text, Link } = Typography;
+import type { FormInstance } from 'antd/lib/form';
+
 interface IProps {
   tables: ITable[];
   enabledTargetTable?: boolean;
+  form?: FormInstance<any>;
 }
 const ArchiveRange: React.FC<IProps> = (props) => {
-  const { tables, enabledTargetTable = false } = props;
+  const { tables, enabledTargetTable = false, form } = props;
   const [enablePartition, setEnablePartition] = useState<boolean>(false);
   const tablesOptions = tables?.map((item) => ({
     label: item.tableName,
     value: item.tableName,
   }));
+
+  useEffect(() => {
+    setEnablePartition(!!form?.getFieldsValue()?.tables?.find((i) => i?.partitions));
+  }, [form?.getFieldsValue()?.tables]);
+
   return (
     <>
       <Form.Item
@@ -76,6 +84,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                 <div>归档设置</div>
                 <div>
                   <Checkbox
+                    checked={enablePartition}
                     onChange={() => {
                       setEnablePartition(!enablePartition);
                     }}
