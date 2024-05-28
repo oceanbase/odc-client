@@ -21,10 +21,11 @@ import {
   initConfig,
   traceViewOptions,
   executeViewOptions,
+  executeViewOptionsInPlan,
+  initTabViewConfig,
 } from './constant';
 
 import CopyToClipboard from 'react-copy-to-clipboard';
-import copy from 'copy-to-clipboard';
 import { CopyOutlined } from '@ant-design/icons';
 
 interface IProps {
@@ -43,6 +44,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
   const [searchValue, setSearchValue] = useState<string>(null);
 
   function viewContentConfig(type) {
+    console.log(type);
     const config = {
       [TypeMap.TREE]: <Flow dataSource={data?.graph} />,
       [TypeMap.LIST]: (
@@ -146,6 +148,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
   }
 
   function getExecuteProfile(isPlan: boolean = false) {
+    const option = isPlan ? executeViewOptionsInPlan : executeViewOptions;
     return (
       <>
         {!isPlan && getDownloadBtn()}
@@ -155,7 +158,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
           value={viewType}
           onChange={(e) => setViewType(e.target.value)}
         >
-          {executeViewOptions.map((i) => {
+          {option?.map((i) => {
             return (
               <Radio.Button value={i.value}>
                 <Tooltip title={i?.message}>{i?.icon}</Tooltip>
@@ -170,6 +173,12 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
     [EXECUTE_PAGE_TYPE.EXECUTE_DETAIL]: {
       label: '执行详情',
       key: EXECUTE_PAGE_TYPE.EXECUTE_DETAIL,
+      children: viewContentConfig(viewType),
+      toolBar: <></>,
+    },
+    [EXECUTE_PAGE_TYPE.EXECUTE_PLAN]: {
+      label: '执行计划',
+      key: EXECUTE_PAGE_TYPE.EXECUTE_PLAN,
       children: viewContentConfig(viewType),
       toolBar: getExecuteProfile(),
     },
@@ -229,6 +238,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
       pageConfig: EXECUTE_PAGE_CONFIG,
       radioOption: [
         { value: EXECUTE_PAGE_TYPE.EXECUTE_DETAIL, label: '执行详情' },
+        { value: EXECUTE_PAGE_TYPE.EXECUTE_PLAN, label: '执行计划' },
         { value: EXECUTE_PAGE_TYPE.FULL_TRACE, label: '全链路诊断' },
       ],
     },
@@ -299,9 +309,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
                 value={tab}
                 onChange={(e) => {
                   setTab(e?.target?.value);
-                  e?.target?.value === EXECUTE_PAGE_TYPE.EXECUTE_DETAIL
-                    ? setViewType(TypeMap.TREE)
-                    : setViewType(TypeMap.TRACE);
+                  setViewType(initTabViewConfig[e?.target?.value]);
                 }}
                 style={{ padding: '12px 0' }}
               >

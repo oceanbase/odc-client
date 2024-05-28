@@ -88,7 +88,11 @@ import useColumns, { isNumberType } from './hooks/useColumns';
 import ResultContext from './ResultContext';
 import StatusBar from './StatusBar';
 import { copyToSQL, getColumnNameByColumnKey } from './util';
-import { ODC_TRACE_SUPPORT_VERSION, OBCompare } from '@/util/versionUtils';
+import {
+  ODC_TRACE_SUPPORT_VERSION,
+  OBCompare,
+  ODC_EXECUTE_TREE_SUPPORT_VERSION,
+} from '@/util/versionUtils';
 import guideCache from '@/util/guideCache';
 
 // @ts-ignore
@@ -127,8 +131,8 @@ interface IProps {
   disableEdit?: boolean;
   shouldWrapDownload?: boolean;
   showMock?: boolean;
-  // showExplain?: boolean;
-  // showTrace?: boolean; // 是否展示trace功能
+  showExplain?: boolean;
+  showTrace?: boolean; // 是否展示trace功能
   showExecutePlan?: boolean;
   showPagination?: boolean;
   allowExport?: boolean; // 是否允许导出
@@ -174,8 +178,8 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     showPagination,
     sqlStore,
     settingStore,
-    // showExplain,
-    // showTrace = false,
+    showExplain,
+    showTrace = false,
     showExecutePlan = false,
     showMock,
     allowExport = true,
@@ -202,6 +206,10 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   const sessionId = session?.sessionId;
   const obVersion = session?.params?.obVersion;
   const update = useUpdate();
+  const isSupportExecuteProfile =
+    isString(obVersion) &&
+    OBCompare(obVersion, ODC_EXECUTE_TREE_SUPPORT_VERSION, '>=') &&
+    showExecutePlan;
   /**
    * 编辑中的rows
    */
@@ -667,6 +675,90 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     );
   };
 
+  const getExecuteIcon = () => {
+    return isSupportExecuteProfile ? (
+      <ToolbarButton
+        version={
+          isString(obVersion) && OBCompare(obVersion, ODC_EXECUTE_TREE_SUPPORT_VERSION, '>=')
+        }
+        text={'执行画像'}
+        icon={<Icon component={SqlProfile} />}
+        onClick={() => {
+          guideCache.setGuideCache(guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN, 1);
+          onOpenExecutingDetailModal?.(traceId, originSql);
+        }}
+        GuideTipKey={guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN}
+        GuideTipContent={executeGuideTipContent}
+      />
+    ) : (
+      <>
+        {showExplain &&
+          ([GeneralSQLType.DML, GeneralSQLType.DQL].includes(props?.generalSqlType) &&
+          props?.traceId ? (
+            <ToolbarButton
+              text={
+                formatMessage({
+                  id: 'odc.components.DDLResultSet.Plan',
+                }) // 计划
+              }
+              icon={<ExpainSvg status={IConStatus.INIT} />}
+              onClick={() => {
+                onShowExecuteDetail?.();
+              }}
+            />
+          ) : (
+            <Tooltip
+              title={
+                [GeneralSQLType.DDL, GeneralSQLType.OTHER].includes(props?.generalSqlType)
+                  ? formatMessage({
+                      id: 'odc.components.DDLResultSet.TheCurrentStatementTypeDoes',
+                    })
+                  : // 当前语句类型不支持查看执行详情
+                    formatMessage({
+                      id: 'odc.components.DDLResultSet.TheTraceIdIsEmpty',
+                    })
+                // TRACE ID 为空，请确保该语句运行时 enable_sql_audit 系统参数及 ob_enable_trace_log 变量值均为 ON
+              }
+            >
+              <ToolbarButton
+                icon={<ExpainSvg status={IConStatus.INIT} />}
+                onClick={() => {
+                  onShowExecuteDetail?.();
+                }}
+                disabled
+              />
+            </Tooltip>
+          ))}
+        {showTrace &&
+          (isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=') ? (
+            <ToolbarButton
+              text={
+                withFullLinkTrace
+                  ? formatMessage({
+                      id: 'odc.src.page.Workspace.components.DDLResultSet.FullLinkTrace',
+                    }) //'全链路 Trace'
+                  : traceEmptyReason
+              }
+              disabled={!withFullLinkTrace}
+              icon={<TraceSvg />}
+              onClick={() => {
+                onShowTrace?.();
+              }}
+            />
+          ) : (
+            <ToolbarButton
+              text={traceEmptyReason}
+              disabled={true}
+              icon={<TraceSvg />}
+              onClick={() => {
+                onShowTrace?.();
+              }}
+            />
+          ))}
+      </>
+    );
+  };
+
   return (
     <div
       style={{
@@ -903,81 +995,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 />
               </>
             ) : null}
-            {/* {showExplain &&
-              ([GeneralSQLType.DML, GeneralSQLType.DQL].includes(props?.generalSqlType) &&
-              props?.traceId ? (
-                <ToolbarButton
-                  text={
-                    formatMessage({
-                      id: 'odc.components.DDLResultSet.Plan',
-                    }) // 计划
-                  }
-                  icon={<ExpainSvg status={IConStatus.INIT} />}
-                  onClick={() => {
-                    onShowExecuteDetail?.();
-                  }}
-                />
-              ) : (
-                <Tooltip
-                  title={
-                    [GeneralSQLType.DDL, GeneralSQLType.OTHER].includes(props?.generalSqlType)
-                      ? formatMessage({
-                          id: 'odc.components.DDLResultSet.TheCurrentStatementTypeDoes',
-                        })
-                      : // 当前语句类型不支持查看执行详情
-                        formatMessage({
-                          id: 'odc.components.DDLResultSet.TheTraceIdIsEmpty',
-                        })
-                    // TRACE ID 为空，请确保该语句运行时 enable_sql_audit 系统参数及 ob_enable_trace_log 变量值均为 ON
-                  }
-                >
-                  <ToolbarButton
-                    icon={<ExpainSvg status={IConStatus.INIT} />}
-                    onClick={() => {
-                      onShowExecuteDetail?.();
-                    }}
-                    disabled
-                  />
-                </Tooltip>
-              ))} */}
-            {/* {showTrace &&
-              (isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=') ? (
-                <ToolbarButton
-                  text={
-                    withFullLinkTrace
-                      ? formatMessage({
-                          id: 'odc.src.page.Workspace.components.DDLResultSet.FullLinkTrace',
-                        }) //'全链路 Trace'
-                      : traceEmptyReason
-                  }
-                  disabled={!withFullLinkTrace}
-                  icon={<TraceSvg />}
-                  onClick={() => {
-                    onShowTrace?.();
-                  }}
-                />
-              ) : (
-                <ToolbarButton
-                  text={traceEmptyReason}
-                  disabled={true}
-                  icon={<TraceSvg />}
-                  onClick={() => {
-                    onShowTrace?.();
-                  }}
-                />
-              ))} */}
-            {showExecutePlan && (
-              <ToolbarButton
-                text={'执行画像'}
-                icon={<Icon component={SqlProfile} />}
-                onClick={() => {
-                  guideCache.setGuideCache(guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN, 1);
-                  onOpenExecutingDetailModal?.(traceId, originSql);
-                }}
-                GuideTipKey={guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN}
-                GuideTipContent={executeGuideTipContent}
-              />
-            )}
+            {getExecuteIcon()}
             {showPagination && rows.length ? (
               <>
                 <ToolbarDivider />

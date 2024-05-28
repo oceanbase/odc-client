@@ -19,6 +19,7 @@ export const TypeMap = {
 
 export const enum EXECUTE_PAGE_TYPE {
   EXECUTE_DETAIL = 'EXECUTE_DETAIL',
+  EXECUTE_PLAN = 'EXECUTE_PLAN',
   FULL_TRACE = 'FULL_TRACE',
 }
 
@@ -37,12 +38,23 @@ export const initConfig = {
   },
 };
 
+export const initTabViewConfig = {
+  [EXECUTE_PAGE_TYPE.EXECUTE_DETAIL]: TypeMap.TREE,
+  [EXECUTE_PAGE_TYPE.EXECUTE_PLAN]: TypeMap.LIST,
+  [EXECUTE_PAGE_TYPE.FULL_TRACE]: TypeMap.TRACE,
+};
+
 export const traceViewOptions = [
   { value: TypeMap.TRACE, icon: <Icon component={TraceSvg} />, message: 'Trace 视图' },
   { value: TypeMap.TRACE_LIST, icon: <Icon component={List} />, message: '列表视图' },
 ];
 
 export const executeViewOptions = [
+  { value: TypeMap.LIST, icon: <Icon component={List} />, message: '列表视图' },
+  { value: TypeMap.TEXT, icon: <Icon component={Text} />, message: '文本视图' },
+];
+
+export const executeViewOptionsInPlan = [
   { value: TypeMap.TREE, icon: <Icon component={Tree} />, message: '树视图' },
   { value: TypeMap.LIST, icon: <Icon component={List} />, message: '列表视图' },
   { value: TypeMap.TEXT, icon: <Icon component={Text} />, message: '文本视图' },
