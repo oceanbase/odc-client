@@ -151,20 +151,25 @@ const CreateModal: React.FC<IProps> = (props) => {
       deleteByUniqueKey,
       needCheckBeforeDelete,
       targetDatabaseId,
+      taskExecutionDurationHours,
     } = jobParameters;
     const formData = {
       databaseId,
       rowLimit: rateLimit?.rowLimit,
       dataSizeLimit: kbToMb(rateLimit?.dataSizeLimit),
-      tables,
+      tables: tables?.map((i) => {
+        i.partitions = (i?.partitions as [])?.join(',');
+        return i;
+      }),
       deleteByUniqueKey,
       variables: getVariableValue(variables),
       archiveRange: IArchiveRange.PORTION,
       triggerStrategy,
       startAt: undefined,
       description,
-      needCheckBeforeDelete: needCheckBeforeDelete,
-      targetDatabaseId: targetDatabaseId,
+      needCheckBeforeDelete,
+      targetDatabaseId,
+      taskExecutionDurationHours,
     };
 
     if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
@@ -278,10 +283,12 @@ const CreateModal: React.FC<IProps> = (props) => {
           targetDatabaseId,
         } = values;
         _tables?.map((i) => {
-          i.partitions = i?.partitions
-            ?.replace(/[\r\n]+/g, '')
-            ?.split(',')
-            .filter(Boolean);
+          i.partitions = i?.partitions?.length
+            ? i?.partitions
+                ?.replace(/[\r\n]+/g, '')
+                ?.split(',')
+                .filter(Boolean)
+            : [];
         });
         const parameters = {
           type: TaskJobType.DATA_DELETE,
@@ -510,7 +517,13 @@ const CreateModal: React.FC<IProps> = (props) => {
           <Form.Item noStyle shouldUpdate>
             {({ getFieldValue }) => {
               const needCheckBeforeDelete = getFieldValue('needCheckBeforeDelete');
-              return <ArchiveRange tables={tables} needCheckBeforeDelete={needCheckBeforeDelete} />;
+              return (
+                <ArchiveRange
+                  tables={tables}
+                  needCheckBeforeDelete={needCheckBeforeDelete}
+                  form={form}
+                />
+              );
             }}
           </Form.Item>
           <VariableConfig form={form} />
@@ -580,7 +593,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           }
           keepExpand
         >
-          <TaskdurationItem />
+          <TaskdurationItem form={form} />
           <ThrottleFormItem />
           <Form.Item
             label={

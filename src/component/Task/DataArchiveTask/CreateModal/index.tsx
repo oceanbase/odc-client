@@ -193,6 +193,8 @@ const CreateModal: React.FC<IProps> = (props) => {
       rateLimit,
       tables,
       variables,
+      taskExecutionDurationHours,
+      syncTableStructure,
     } = jobParameters;
 
     const formData = {
@@ -202,12 +204,17 @@ const CreateModal: React.FC<IProps> = (props) => {
       dataSizeLimit: kbToMb(rateLimit?.dataSizeLimit),
       deleteAfterMigration,
       migrationInsertAction,
-      tables,
+      tables: tables?.map((i) => {
+        i.partitions = (i?.partitions as [])?.join(',');
+        return i;
+      }),
       variables: getVariableValue(variables),
       archiveRange: IArchiveRange.PORTION,
       triggerStrategy,
       startAt: undefined,
       description,
+      taskExecutionDurationHours,
+      syncTableStructure,
     };
 
     if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
@@ -321,10 +328,12 @@ const CreateModal: React.FC<IProps> = (props) => {
           syncTableStructure,
         } = values;
         _tables?.map((i) => {
-          i.partitions = i?.partitions
-            ?.replace(/[\r\n]+/g, '')
-            ?.split(',')
-            ?.filter(Boolean);
+          i.partitions = i?.partitions?.length
+            ? i?.partitions
+                ?.replace(/[\r\n]+/g, '')
+                ?.split(',')
+                ?.filter(Boolean)
+            : [];
         });
         const parameters = {
           type: TaskType.MIGRATION,
@@ -541,7 +550,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           />
         </Space>
         <Space direction="vertical" size={24} style={{ width: '100%' }}>
-          <ArchiveRange enabledTargetTable tables={tables} />
+          <ArchiveRange enabledTargetTable tables={tables} form={form} />
           <VariableConfig form={form} />
         </Space>
         <Form.Item name="deleteAfterMigration" valuePropName="checked">
@@ -634,8 +643,8 @@ const CreateModal: React.FC<IProps> = (props) => {
           }
           keepExpand
         >
-          <TaskdurationItem />
-          <SynchronizationItem />
+          <TaskdurationItem form={form} />
+          <SynchronizationItem form={form} />
           <Form.Item
             label={
               formatMessage({

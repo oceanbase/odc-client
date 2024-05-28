@@ -35,6 +35,7 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
     datasourceList,
     databaseList,
     reloadDatabaseList,
+    setCurrentDatabaseId,
   } = useContext(ResourceTreeContext);
   const [databases, setDatabases] = useState<IDatabase[]>([]);
   const selectProject = projectList?.find((p) => p.id == selectProjectId);
@@ -61,6 +62,11 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
     }
   }, [databaseList]);
 
+  function onTitleClick() {
+    openSelectPanel();
+    setCurrentDatabaseId(null);
+  }
+
   function ProjectRender() {
     return (
       <ResourceTree
@@ -69,7 +75,7 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
         databaseFrom={'project'}
         title={<TreeTitle project={selectProject} />}
         databases={databases}
-        onTitleClick={() => openSelectPanel()}
+        onTitleClick={onTitleClick}
         enableFilter
         showTip
       />
@@ -83,7 +89,7 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
         databaseFrom={'datasource'}
         title={<TreeTitle datasource={selectDatasource} />}
         databases={databases}
-        onTitleClick={() => openSelectPanel()}
+        onTitleClick={onTitleClick}
       />
     );
   }
