@@ -245,6 +245,9 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ellipsis: true,
       hasDivider:
         setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'true',
+      isHide(_, node) {
+        return isClient();
+      },
       children: [
         {
           key: 'TASK_SQL_PLAN',
