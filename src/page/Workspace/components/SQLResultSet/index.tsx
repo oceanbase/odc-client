@@ -236,12 +236,13 @@ const SQLResultSet: React.FC<IProps> = function (props) {
   const stopRunning = () => {
     sqlStore.stopExec(ctx.props.pageKey, ctx?.getSession()?.sessionId);
   };
-  const onOpenExecutingDetailModal = (id: number, sql?: string) => {
+  const onOpenExecutingDetailModal = (id: number, sql?: string, sessionId?: string) => {
+    const session = sessionId ? { sessionId: sessionId } : ctx?.getSession();
     modalStore.changeExecuteSqlDetailModalVisible(
       true,
       id,
       sql,
-      ctx?.getSession(),
+      session,
       ctx?.editor.getSelectionContent(),
       ProfileType.Execute,
     );
@@ -466,6 +467,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                       resultSet={set}
                       stopRunning={stopRunning}
                       onOpenExecutingDetailModal={onOpenExecutingDetailModal}
+                      loading={sqlStore.logLoading}
                     />
                   ),
                 };

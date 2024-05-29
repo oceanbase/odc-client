@@ -103,6 +103,9 @@ export class SQLStore {
   @observable
   public uniqLogKey: string = null;
 
+  @observable
+  public logLoading: boolean = false;
+
   public debugLogs: ILogItem[] = [];
 
   @action
@@ -192,6 +195,7 @@ export class SQLStore {
     }
     let record: IExecuteTaskResult; // 需要忽略默认错误处理
     const session = sessionManager.sessionMap.get(sessionId);
+    this.logLoading = true;
     try {
       this.setSelectedTabState(false);
       this.runningPageKey.add(pageKey);
@@ -212,6 +216,7 @@ export class SQLStore {
         /**
          * 刷新一下delimiter
          */
+        this.logLoading = false;
         finished && session.initSessionStatus();
         // 判断结果集是否支持编辑
         // TODO: 目前后端判断是否支持接口非常慢，因此只能在用户点击 “开启编辑” 时发起查询，理想状态肯定是在结果集返回结构中直接表示是否支持
@@ -221,6 +226,7 @@ export class SQLStore {
           const recordWithoutRows = record.executeResult.map((result) => {
             return {
               ...result,
+              sessionId,
               // rows: [],
             };
           });
@@ -235,6 +241,7 @@ export class SQLStore {
               elapsedTime: null,
               executeSql: null,
               id: generateUniqKey(),
+              sessionId,
             };
           });
           const showRecordList = recordAll?.map((i) => {
