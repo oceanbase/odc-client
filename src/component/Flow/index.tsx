@@ -87,7 +87,8 @@ function Flow(props) {
           duration: dataSource.duration,
           overview: dataSource.overview,
           statistics: dataSource.statistics,
-          percent: dataSource?.duration ? (nodeDurationSum / dataSource?.duration) * 100 : 0,
+          // percent: dataSource?.duration ? (nodeDurationSum / dataSource?.duration) * 100 : 0,
+          percent: 100,
         }}
       />
       <ReactFlow
