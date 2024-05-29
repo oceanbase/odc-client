@@ -119,7 +119,7 @@ export class Tree {
    */
   // 布局重叠节点
   layoutOverlaps() {
-    console.log(this.hashTree);
+    // console.log(this.hashTree);
     for (let i = this.hashTree.length - 1; i >= 0; i--) {
       let j = 0;
       while (j < this.hashTree[i].length - 1) {

@@ -1,10 +1,14 @@
-import { Divider, Progress, Tooltip } from 'antd';
+import { Divider, Progress, Tooltip, Select, Radio } from 'antd';
 import styles from './index.less';
 import classnames from 'classnames';
+import { useEffect, useState } from 'react';
+import { formatTimeTemplate } from '@/util/utils';
+import BigNumber from 'bignumber.js';
+
+const { Option } = Select;
 
 export default (props) => {
   const { dataSource, topNodes, initialNodes, globalInfo } = props;
-
   const { duration = [] } = topNodes || {};
   const topNodesList = initialNodes
     ?.filter((i) => [...duration].includes(i?.id))
@@ -12,6 +16,93 @@ export default (props) => {
   const locateNode = (i) => {
     i?.data?.locateNode(i?.id);
   };
+
+  const subNodeSortType = {
+    BY_DURATION: 'duration',
+    BY_OUTPUT: 'output',
+    BY_MAX_MEMORY: 'maxMemory',
+  };
+  const subNodesSortMap = {
+    [subNodeSortType.BY_DURATION]: {
+      label: '按 DB 耗时排序',
+    },
+    [subNodeSortType.BY_OUTPUT]: {
+      label: '按内存排序',
+    },
+    [subNodeSortType.BY_MAX_MEMORY]: {
+      label: '按吐行排序',
+    },
+  };
+  const handleChangeSubNode = (node) => {
+    if (node === 'SUM') {
+      setSelectedSubNodes(null);
+      return;
+    }
+    setSelectedSubNodes(node);
+  };
+  const getDefaultSubNodes = (node) => {
+    return `${node?.name}的汇总`;
+  };
+  const getSubNodesOptions = (sortBy = 'duration') => {
+    if (!data) return [];
+    if (!data?.subNodes) return [];
+    const sum = {
+      value: 'SUM',
+      label: `${data?.name}的汇总`,
+      duration: data?.duration,
+      output: data?.statistics?.['Output rows'],
+      maxMemory: data?.statistics?.['Max memory'],
+    };
+    let list = Object.keys(data?.subNodes)?.map((i) => {
+      return {
+        value: i,
+        label: i,
+        duration: Number(data?.subNodes[i]?.duration) || 0,
+        output: Number(data?.subNodes[i]?.statistics?.['Output rows']) || 0,
+        maxMemory: Number(data?.subNodes[i]?.statistics?.['Max memory']) || 0,
+      };
+    });
+    if (sortBy) {
+      list = list.sort((a, b) => b?.[sortBy] - a?.[sortBy]);
+    }
+    setNodesOptions([sum, ...list]);
+  };
+
+  const handleSortChange = (e) => {
+    setSortType(e.target.value);
+    getSubNodesOptions(e.target.value);
+  };
+  useEffect(() => {
+    if (data?.subNodes) {
+      getSubNodesOptions();
+      setSortType(subNodeSortType.BY_DURATION);
+      setSelectedSubNodes(getDefaultSubNodes(dataSource?.data));
+    }
+  }, [JSON.stringify(dataSource?.data)]);
+
+  const [sortType, setSortType] = useState(subNodeSortType.BY_DURATION);
+  const [subNodesOptions, setNodesOptions] = useState(null);
+  const [selectedSubNodes, setSelectedSubNodes] = useState(getDefaultSubNodes(dataSource?.data));
+  const dropdownRender = (menu) => (
+    <div>
+      <Radio.Group
+        value={sortType}
+        onChange={handleSortChange}
+        style={{ width: '100%', padding: '0 7px 8px 7px' }}
+      >
+        <Radio.Button value={subNodeSortType.BY_DURATION}>
+          {subNodesSortMap[subNodeSortType.BY_DURATION].label}
+        </Radio.Button>
+        <Radio.Button value={subNodeSortType.BY_OUTPUT}>
+          {subNodesSortMap[subNodeSortType.BY_OUTPUT].label}
+        </Radio.Button>
+        <Radio.Button value={subNodeSortType.BY_MAX_MEMORY}>
+          {subNodesSortMap[subNodeSortType.BY_MAX_MEMORY].label}
+        </Radio.Button>
+      </Radio.Group>
+      {menu}
+    </div>
+  );
 
   const top5 = () => {
     if (!topNodesList.length) return;
@@ -30,7 +121,10 @@ export default (props) => {
                 {i?.data?.name}
                 <span style={{ color: 'rgba(0,0,0,0.45)', height: 28 }}>[{i?.id}]</span>
               </span>
-              <span>{i?.data?.overview?.['DB Time']}</span>
+              <span>
+                {' '}
+                {formatTimeTemplate(BigNumber(i?.data?.duration).div(1000000).toNumber())}{' '}
+              </span>
             </div>
           );
         })}
@@ -59,9 +153,8 @@ export default (props) => {
           <>
             {topNodesList.length ? <Divider /> : null}
             <div style={{ padding: '0px 8px' }}>
-              {globalInfo?.overview ? <h3>执行概览</h3> : null}
+              {globalInfo?.overview ? <h3>Node 执行概览</h3> : null}
               <Progress percent={globalInfo?.percent} showInfo={false} />
-
               {globalInfo?.overview
                 ? Object.entries(globalInfo?.overview)?.map(([key, value]) => {
                     return (
@@ -104,7 +197,14 @@ export default (props) => {
     );
   }
 
-  const { data } = dataSource;
+  const { data: nodeData } = dataSource;
+  const subNodeData = dataSource?.data?.subNodes?.[selectedSubNodes];
+  if (subNodeData) {
+    subNodeData.percentage = globalInfo?.duration
+      ? ((subNodeData?.duration / globalInfo?.duration) * 100).toFixed(2)
+      : '';
+  }
+  const data = subNodeData || nodeData;
   if (!data) return null;
   return (
     <div
@@ -125,7 +225,23 @@ export default (props) => {
         {top5()}
         {topNodesList.length ? <Divider /> : null}
         <div style={{ padding: '0px 8px' }}>
-          <h3>执行概览</h3>
+          <h3>Node 执行概览</h3>
+          {dataSource?.data?.subNodes ? (
+            <Select
+              style={{ width: '100%', paddingBottom: 8 }}
+              onChange={handleChangeSubNode}
+              dropdownRender={dropdownRender}
+              value={selectedSubNodes}
+            >
+              {subNodesOptions?.map((i) => {
+                return (
+                  <Option value={i.label} key={i.value}>
+                    {i.label}
+                  </Option>
+                );
+              })}
+            </Select>
+          ) : null}
           {data?.percentage === '' ? null : (
             <Progress percent={data?.percentage} showInfo={false} />
           )}

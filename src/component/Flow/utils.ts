@@ -178,7 +178,7 @@ export function transformDataForReactFlow(
   const treeList = buildTree(vertexes);
   treeList.layout();
   function convertTreeToReactFlow(tree) {
-    function traverseAndBuild(node, parentId = null) {
+    function traverseAndBuild(node, parentId = null, isParantOverlap = false) {
       const reactFlowNode = {
         id: node.data.graphId,
         position: { x: node.x, y: node.y },
@@ -208,13 +208,14 @@ export function transformDataForReactFlow(
           type: 'custom-edge',
           data: {
             weight: node?.data.inEdges?.[0]?.weight,
+            isOverlap: isParantOverlap,
           },
         };
         edges.push(reactFlowEdge);
       }
 
       for (let child of node.child) {
-        traverseAndBuild(child, node.data.graphId);
+        traverseAndBuild(child, node?.data?.graphId, !!node?.data?.subNodes);
       }
     }
 

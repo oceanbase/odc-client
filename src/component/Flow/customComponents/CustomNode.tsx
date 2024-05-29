@@ -2,37 +2,65 @@ import { useCallback, useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { Progress, Tooltip } from 'antd';
+import styles from './index.less';
+import classNames from 'classnames';
+import { formatTimeTemplate } from '@/util/utils';
+import BigNumber from 'bignumber.js';
 
 function TextUpdaterNode({ data, id, isConnectable }) {
   return (
-    <div className="text-updater-node">
+    <div className={styles.customNodes}>
       <Handle
         type="target"
         position={Position.Top}
         isConnectable={isConnectable}
         style={{ visibility: 'hidden' }}
       />
+      {data?.subNodes ? (
+        <>
+          <div
+            className={classNames(styles.node, {
+              [styles.active]: data?.isSelected,
+            })}
+            style={{
+              height: 82,
+              width: 260,
+              bottom: '-8px',
+              left: '8px',
+            }}
+          >
+            2
+          </div>
+          <div
+            className={classNames(styles.node, {
+              [styles.active]: data?.isSelected,
+            })}
+            style={{
+              height: 84,
+              width: 270,
+              bottom: '-4px',
+              left: '4px',
+            }}
+          >
+            3
+          </div>
+        </>
+      ) : null}
       <div
+        className={classNames(styles.node, {
+          [styles.active]: data?.isSelected,
+        })}
         style={{
+          bottom: '0px',
           height: 90,
           width: 280,
-          backgroundColor: '#FFFFFF',
-          borderRadius: 2,
-          padding: '12px 16px',
-          border: data?.isSelected
-            ? '1px solid rgba(24,144,255,0.20)'
-            : '1px solid rgba(0,0,0,0.12)',
-          boxShadow: data?.isSelected ? '0 0 1px 2px rgba(24,144,255,0.20)' : null,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
         }}
         onClick={() => {
           data?.setSelectedNode(data);
         }}
       >
         <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ display: 'inline-flex' }}>
+          <span style={{ display: 'inline-flex', maxWidth: '50%' }}>
             <Tooltip title={data.label}>
               <div
                 style={{
@@ -49,7 +77,7 @@ function TextUpdaterNode({ data, id, isConnectable }) {
             <div style={{ color: 'rgba(0,0,0,0.45)' }}>[{data?.id}]</div>
           </span>
           <span style={{ textWrap: 'nowrap' }}>
-            {data?.overview?.['DB Time']}{' '}
+            {formatTimeTemplate(BigNumber(data?.duration).div(1000000).toNumber())}{' '}
             {data && data.percentage === '' ? '' : `(${data?.percentage}%)`}
           </span>
         </div>
@@ -73,8 +101,8 @@ function TextUpdaterNode({ data, id, isConnectable }) {
           <div
             style={{
               position: 'absolute',
-              bottom: '-25px',
-              left: '130px',
+              bottom: data?.subNodes ? '-33px' : '-25px',
+              left: '129px',
               padding: 4,
             }}
             onClick={(e) => {
