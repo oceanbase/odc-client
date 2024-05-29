@@ -36,6 +36,7 @@ interface IProps {
   resultSet: IResultSet;
   stopRunning?: any;
   onOpenExecutingDetailModal?: (traceId: number, sql?: string) => void;
+  loading?: boolean;
 }
 
 function getSuccessLog(type: SqlType, total: number) {
@@ -126,7 +127,13 @@ const runningLogPage = (currentExecuteInfo, stopRunning, onOpenExecutingDetailMo
 };
 
 const SQLResultLog: React.FC<IProps> = function (props) {
-  const { resultSet, resultHeight, stopRunning, onOpenExecutingDetailModal } = props;
+  const { resultSet, resultHeight, stopRunning, onOpenExecutingDetailModal, loading } = props;
+  if (loading)
+    return (
+      <div className={styles.runningSql}>
+        <Spin />
+      </div>
+    );
   const { currentExecuteInfo } = resultSet;
   if (currentExecuteInfo?.finished) {
     const logs = resultSet.logTypeData

@@ -129,27 +129,14 @@ export default (props) => {
           {data?.percentage === '' ? null : (
             <Progress percent={data?.percentage} showInfo={false} />
           )}
-          {data?.overview?.['DB Time'] ? (
-            <>
-              <div className={styles.customDetailBoxItem}>
-                DB 耗时: <span>{data?.overview?.['DB Time']}</span>
+          {Object.entries(data?.overview)?.map(([key, value]) => {
+            return (
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0px' }}>
+                <span>{key}</span>
+                <span>{value}</span>
               </div>
-              <div className={styles.customDetailBoxItem}>
-                吐行耗时: <span>{data?.overview?.['Change Time']}</span>
-              </div>
-            </>
-          ) : (
-            Object.entries(data?.overview)?.map(([key, value]) => {
-              return (
-                <div
-                  style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0px' }}
-                >
-                  <span>{key}</span>
-                  <span>{value}</span>
-                </div>
-              );
-            })
-          )}
+            );
+          })}
         </div>
         <h3 className={styles.customDetailBoxTitle}>I/O 统计</h3>
         {data?.statistics
