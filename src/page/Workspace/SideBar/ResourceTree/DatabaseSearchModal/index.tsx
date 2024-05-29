@@ -39,7 +39,7 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
   }, [database]);
 
   const getType = () => {
-    if (isSelectDatabase) return 'SCHEMA';
+    if (isSelectDatabase && !database) return 'SCHEMA';
     if (activeKey === SEARCH_OBJECT_FROM_ALL_DATABASE) return null;
     return activeKey;
   };
