@@ -44,6 +44,7 @@ export default (props) => {
     return `${node?.name}的汇总`;
   };
   const getSubNodesOptions = (sortBy = 'duration') => {
+    const data = dataSource?.data;
     if (!data) return [];
     if (!data?.subNodes) return [];
     const sum = {
@@ -73,6 +74,8 @@ export default (props) => {
     getSubNodesOptions(e.target.value);
   };
   useEffect(() => {
+    setSelectedSubNodes(null);
+    setSortType(subNodeSortType.BY_DURATION);
     if (data?.subNodes) {
       getSubNodesOptions();
       setSortType(subNodeSortType.BY_DURATION);
@@ -232,11 +235,30 @@ export default (props) => {
               onChange={handleChangeSubNode}
               dropdownRender={dropdownRender}
               value={selectedSubNodes}
+              optionLabelProp="label"
             >
               {subNodesOptions?.map((i) => {
                 return (
                   <Option value={i.label} key={i.value}>
-                    {i.label}
+                    <div
+                      style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}
+                    >
+                      {i.value === 'SUM' ? (
+                        <span>
+                          {i.label}
+                          {''}
+                        </span>
+                      ) : (
+                        <>
+                          <span>{i.label}</span>
+                          {sortType === subNodeSortType.BY_DURATION ? (
+                            formatTimeTemplate(BigNumber(i?.[sortType]).div(1000000).toNumber())
+                          ) : (
+                            <span>{i?.[sortType] || '-'}</span>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </Option>
                 );
               })}
