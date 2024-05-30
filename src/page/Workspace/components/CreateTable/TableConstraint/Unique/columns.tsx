@@ -44,6 +44,7 @@ export function useColumns(
       }), //名称
       resizable: true,
       editable: true,
+      width: 200,
       editor: TextEditor,
     },
 

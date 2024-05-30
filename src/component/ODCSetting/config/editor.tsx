@@ -20,6 +20,7 @@ import { IODCSetting, ODCSettingGroup } from '../config';
 import InputItem from '../Item/InputItem';
 import KeymapInput from '@/component/Input/Keymap';
 import SelectItem from '../Item/SelectItem';
+import { validForEditorKeymap } from '@/component/Input/Keymap/helper';
 
 const editorGroup: ODCSettingGroup = {
   label: formatMessage({ id: 'src.component.ODCSetting.config.239D3F16' }), //'编辑器'
@@ -107,6 +108,13 @@ const editorSettings: IODCSetting[] = [
     group: editorGroup,
     secondGroup: editorKeymapGroup,
     storeType: 'server',
+    rules: [
+      {
+        validator(rule, value, callback) {
+          return validForEditorKeymap(value);
+        },
+      },
+    ],
     render: (value, onChange) => {
       return <KeymapInput value={value} onChange={onChange} />;
     },
@@ -116,6 +124,13 @@ const editorSettings: IODCSetting[] = [
     key: 'odc.editor.shortcut.executeCurrentStatement',
     group: editorGroup,
     secondGroup: editorKeymapGroup,
+    rules: [
+      {
+        validator(rule, value, callback) {
+          return validForEditorKeymap(value);
+        },
+      },
+    ],
     storeType: 'server',
     render: (value, onChange) => {
       return <KeymapInput value={value} onChange={onChange} />;

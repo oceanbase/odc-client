@@ -19,7 +19,7 @@ import { IDatabaseSession } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { sortNumber, sortString } from '@/util/utils';
 import { SyncOutlined } from '@ant-design/icons';
-import { Input, Layout, message, Space, Spin } from 'antd';
+import { Input, Layout, message, Space, Spin, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { useContext, useEffect, useState } from 'react';
 // @ts-ignore
@@ -188,16 +188,18 @@ function SessionManagementPage(props: IProps) {
       ellipsis: true,
       render(val) {
         return (
-          <div
-            title={val}
-            style={{
-              maxWidth: '165px',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            {val}
-          </div>
+          <Tooltip title={val}>
+            <div
+              title={val}
+              style={{
+                maxWidth: '165px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {val}
+            </div>
+          </Tooltip>
         );
       },
     },

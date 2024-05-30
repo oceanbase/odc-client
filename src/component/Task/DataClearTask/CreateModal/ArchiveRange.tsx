@@ -191,16 +191,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             className={styles.multiInputBox}
                           >
                             {needCheckBeforeDelete && (
-                              <Form.Item
-                                {...restField}
-                                name={[name, 'targetTableName']}
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: '请输入',
-                                  },
-                                ]}
-                              >
+                              <Form.Item {...restField} name={[name, 'targetTableName']}>
                                 <Input
                                   addonBefore={'目标表'}
                                   placeholder={

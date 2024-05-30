@@ -506,37 +506,39 @@ const DDLResultSet: React.FC<IProps> = function (props) {
           onClick: copy,
         },
         clipMenu,
-        isEditing && {
-          key: 'setnull',
-          text: formatMessage({
-            id: 'odc.components.DDLResultSet.SetToNull',
-          }),
-          // 设置为 Null
-          disabled: isNull(row[columnKey]) || column.readonly,
-          onClick: () => {
-            const targetRowIndex = rows.findIndex((newRow) => newRow._rowIndex === row._rowIndex);
-            gridRef?.current?.setCellsByRowIndex(targetRowIndex, {
-              [columnKey]: null,
-              [getBlobValueKey(columnKey)]: null,
-              [getNlsValueKey(columnKey)]: null,
-            });
+        isEditing &&
+          isSingleSelected && {
+            key: 'setnull',
+            text: formatMessage({
+              id: 'odc.components.DDLResultSet.SetToNull',
+            }),
+            // 设置为 Null
+            disabled: isNull(row[columnKey]) || column.readonly,
+            onClick: () => {
+              const targetRowIndex = rows.findIndex((newRow) => newRow._rowIndex === row._rowIndex);
+              gridRef?.current?.setCellsByRowIndex(targetRowIndex, {
+                [columnKey]: null,
+                [getBlobValueKey(columnKey)]: null,
+                [getNlsValueKey(columnKey)]: null,
+              });
+            },
           },
-        },
-        isEditing && {
-          key: 'setDefault',
-          text: formatMessage({
-            id: 'odc.components.DDLResultSet.DefaultValue',
-          }),
-          // 设置为默认值
-          disabled: isUndefined(row[columnKey]) || column.readonly,
-          onClick: () => {
-            const targetRowIndex = rows.findIndex((newRow) => newRow._rowIndex === row._rowIndex);
-            gridRef?.current?.setCellsByRowIndex(targetRowIndex, {
-              [columnKey]: undefined,
-              [getBlobValueKey(columnKey)]: null,
-            });
+        isEditing &&
+          isSingleSelected && {
+            key: 'setDefault',
+            text: formatMessage({
+              id: 'odc.components.DDLResultSet.DefaultValue',
+            }),
+            // 设置为默认值
+            disabled: isUndefined(row[columnKey]) || column.readonly,
+            onClick: () => {
+              const targetRowIndex = rows.findIndex((newRow) => newRow._rowIndex === row._rowIndex);
+              gridRef?.current?.setCellsByRowIndex(targetRowIndex, {
+                [columnKey]: undefined,
+                [getBlobValueKey(columnKey)]: null,
+              });
+            },
           },
-        },
         showDownload && {
           key: 'download',
           text: formatMessage({
