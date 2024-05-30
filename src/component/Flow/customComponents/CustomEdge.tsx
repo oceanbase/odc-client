@@ -26,9 +26,9 @@ const CustomEdge = ({
 
   const edgeEndPointY = targetY - 20;
   // 根据tartget与source的x位置计算xOffset
-  const xOffset = sourceX > targetX ? -16 : sourceX < targetX ? 16 : 0;
+  const xOffset = sourceX - targetX > 4 ? -16 : sourceX - targetX < -4 ? 16 : 0;
   // 根据tartget与source的x位置计算yOffset
-  let yOffset = sourceX === targetX ? 25 : 10;
+  let yOffset = Math.abs(sourceX - targetX) < 4 ? 25 : 10;
   yOffset = data.isOverlap ? yOffset + 8 : yOffset;
   // 折线path
   const pathData = `M ${sourceX + xOffset},${
