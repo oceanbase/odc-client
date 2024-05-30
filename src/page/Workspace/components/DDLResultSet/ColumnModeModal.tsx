@@ -103,6 +103,7 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
           id: 'odc.components.DDLResultSet.ColumnModeModal.Comment',
         }), //注释
         key: 'columnComment',
+        width: 200,
         formatter: TextFormatter,
       },
     ];
@@ -134,6 +135,7 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
   return (
     <Modal
       destroyOnClose
+      width={'90%'}
       bodyStyle={{
         paddingBottom: 0,
       }}
