@@ -44,7 +44,7 @@ export default function NewDataBaseButton({
   mode,
 }: IProps) {
   const [open, setOpen] = useState<boolean>(false);
-  const [projectInfo, setProjectInfo] = useState<IProject>();
+  const [projectInfo, setProjectInfo] = useState<IProject>(null);
   const [ownerSelectStatus, setOwnerSelectStatus] = useState<boolean>(false);
   const [form] = Form.useForm<
     Pick<IDatabase, 'name' | 'collationName' | 'charsetName'> & {
@@ -63,6 +63,7 @@ export default function NewDataBaseButton({
   function close() {
     setOpen(false);
     form.resetFields();
+    setProjectInfo(null);
   }
   useEffect(() => {
     if (open) {
@@ -123,6 +124,7 @@ export default function NewDataBaseButton({
       onSuccess();
       setOwnerSelectStatus(false);
       form.resetFields();
+      setProjectInfo(null);
     }
   }
   return (
@@ -153,7 +155,7 @@ export default function NewDataBaseButton({
                 const res = await getProject(changedValues.projectId);
                 res && setProjectInfo(res);
               } else {
-                setProjectInfo(undefined);
+                setProjectInfo(null);
               }
               form.setFieldValue('ownerIds', []);
             }

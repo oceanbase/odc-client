@@ -67,12 +67,22 @@ export const DatabaseOwnerSelect = ({
             <span>
               <span style={{ paddingRight: 4 }}>库管理员</span>
               <Tooltip
-                title="在原有项目角色的基础上，拥有该库的审批权限"
+                title="库管理员是数据库和表的负责人，可以在审批流程中引用"
                 overlayInnerStyle={{ width: 268 }}
               >
                 <QuestionCircleOutlined />
               </Tooltip>
             </span>
+          }
+          rules={
+            hasDefaultSet && !notSetAdmin
+              ? [
+                  {
+                    required: true,
+                    message: '请输入',
+                  },
+                ]
+              : null
           }
         >
           <Select
