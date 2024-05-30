@@ -33,9 +33,9 @@ const ObjectList = ({
 }: Iprops) => {
   const [activeDatabase, setActiveDatabase] = useState<IDatabase>();
   const ALL_TAB_MAX_LENGTH = 3;
+  const dbType = database?.dataSource?.dialectType || SEARCH_OBJECT_FROM_ALL_DATABASE;
   const getTyepBlock = () => {
-    const typeList =
-      objectTypeConfig[database?.dataSource?.dialectType || SEARCH_OBJECT_FROM_ALL_DATABASE];
+    const typeList = objectTypeConfig[dbType];
     const typeObjectTree = typeList?.map((i) => {
       if (i === DbObjectType.column) {
         return { key: i, data: objectlist?.dbColumns };
@@ -303,15 +303,13 @@ const ObjectList = ({
       children: renderAllTab(),
     },
   ].concat(
-    objectTypeConfig[database?.dataSource?.dialectType || SEARCH_OBJECT_FROM_ALL_DATABASE]?.map(
-      (i) => {
-        return {
-          key: i,
-          label: <span style={{ padding: '0 6px', margin: 0 }}>{DbObjectTypeMap?.[i]?.label}</span>,
-          children: renderObjectTypeTabs(i),
-        };
-      },
-    ),
+    objectTypeConfig[dbType]?.map((i) => {
+      return {
+        key: i,
+        label: <span style={{ padding: '0 6px', margin: 0 }}>{DbObjectTypeMap?.[i]?.label}</span>,
+        children: renderObjectTypeTabs(i),
+      };
+    }),
   );
 
   const handleChange = (key) => {
