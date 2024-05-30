@@ -97,7 +97,7 @@ const DatabaseList = ({
       >
         全部数据库
       </div>
-      {options.length
+      {options?.length
         ? options.map((db) => {
             return (
               <>
