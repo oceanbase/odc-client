@@ -58,20 +58,19 @@ const TaskLog: React.FC<{
           }),
           key: CommonTaskLogType.ALL,
           children: (
-            <Spin spinning={isLoading}>
-              <Log
-                enableHighLight
-                language="java"
-                value={log?.[CommonTaskLogType.ALL] ?? ''}
-                ignoreCase={true}
-                downloadUrl={downloadUrl}
-                enableDownload={enableDataExport}
-                enableCopy={enableDataExport}
-                defaultPosition="end"
-                searchTrigger="change"
-                style={{ height: '100%' }}
-              />
-            </Spin>
+            <Log
+              enableHighLight
+              language="java"
+              value={log?.[CommonTaskLogType.ALL] ?? ''}
+              ignoreCase={true}
+              downloadUrl={downloadUrl}
+              enableDownload={enableDataExport}
+              enableCopy={enableDataExport}
+              defaultPosition="end"
+              searchTrigger="change"
+              style={{ height: '100%' }}
+              loading={isLoading}
+            />
           ),
         },
         {
@@ -80,20 +79,19 @@ const TaskLog: React.FC<{
           }),
           key: CommonTaskLogType.WARN,
           children: (
-            <Spin spinning={isLoading}>
-              <Log
-                enableHighLight
-                language="java"
-                value={log?.[CommonTaskLogType.WARN] ?? ''}
-                ignoreCase={true}
-                downloadUrl={downloadUrl}
-                enableDownload={enableDataExport}
-                enableCopy={enableDataExport}
-                defaultPosition="end"
-                searchTrigger="change"
-                style={{ height: '100%' }}
-              />
-            </Spin>
+            <Log
+              enableHighLight
+              language="java"
+              value={log?.[CommonTaskLogType.WARN] ?? ''}
+              ignoreCase={true}
+              downloadUrl={downloadUrl}
+              enableDownload={enableDataExport}
+              enableCopy={enableDataExport}
+              defaultPosition="end"
+              searchTrigger="change"
+              style={{ height: '100%' }}
+              loading={isLoading}
+            />
           ),
         },
       ]}

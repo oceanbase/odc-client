@@ -213,23 +213,25 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
 
   const loadTaskData = async () => {
     clearTimeout(clockRef.current);
-    if (!task || isLoop) {
-      getTask();
-    }
-    if (detailType === TaskDetailType.LOG) {
-      getLog();
-    } else if (hasResult) {
-      getResult();
-    }
+    try {
+      if (!task || isLoop) {
+        getTask();
+      }
+      if (detailType === TaskDetailType.LOG) {
+        getLog();
+      } else if (hasResult) {
+        getResult();
+      }
 
-    if (detailType === TaskDetailType.EXECUTE_RECORD) {
-      getExecuteRecord();
-    }
-    if (isLoop) {
-      clockRef.current = setTimeout(() => {
-        loadTaskData();
-      }, 5000);
-    }
+      if (detailType === TaskDetailType.EXECUTE_RECORD) {
+        getExecuteRecord();
+      }
+      if (isLoop) {
+        clockRef.current = setTimeout(() => {
+          loadTaskData();
+        }, 5000);
+      }
+    } catch (err) {}
   };
 
   const loadCycleTaskData = async (args?: ITableLoadOptions) => {

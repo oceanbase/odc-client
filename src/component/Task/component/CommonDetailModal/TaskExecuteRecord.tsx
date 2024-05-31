@@ -25,6 +25,7 @@ import {
   TaskRecordParameters,
   TaskType,
   IResponseData,
+  SubTaskStatus,
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
@@ -82,7 +83,7 @@ const getConnectionColumns = (params: {
   showLog: boolean;
   onReloadList: () => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
-  onLogVisible: (recordId: number, visible: boolean) => void;
+  onLogVisible: (recordId: number, visible: boolean, status: SubTaskStatus) => void;
   onExcecuteDetailVisible: (recordId: number, visible: boolean) => void;
 }) => {
   const {
@@ -185,6 +186,7 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
   const [detailId, setDetailId] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
   const [logVisible, setLogVisible] = useState(false);
+  const [status, setStatus] = useState<SubTaskStatus>(null);
   const [excecuteDetailVisible, setExcecuteDetailVisible] = useState<boolean>(false);
   const tableRef = useRef();
   const taskId = task?.id;
@@ -198,9 +200,14 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
     setDetailVisible(visible);
   };
 
-  const handleLogVisible = (recordId: number, visible: boolean = false) => {
+  const handleLogVisible = (
+    recordId: number,
+    visible: boolean = false,
+    status: SubTaskStatus = null,
+  ) => {
     setLogVisible(visible);
     setDetailId(recordId);
+    setStatus(status);
   };
 
   const handleCloseLog = () => {
@@ -263,6 +270,7 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
         scheduleId={task?.id}
         recordId={detailId}
         onClose={handleCloseLog}
+        status={status}
       />
       <ExcecuteDetailModal
         visible={excecuteDetailVisible}

@@ -65,6 +65,12 @@ export default function NewDataBaseButton({
     form.resetFields();
     setProjectInfo(null);
   }
+
+  const getProjectDetails = async (projectId: number) => {
+    const res = await getProject(projectId);
+    res && setProjectInfo(res);
+  };
+
   useEffect(() => {
     if (open) {
       form.resetFields();
@@ -72,6 +78,7 @@ export default function NewDataBaseButton({
         form.setFieldsValue({
           projectId: projectId,
         });
+        getProjectDetails(projectId);
       }
     }
     switch (mode) {
@@ -152,8 +159,7 @@ export default function NewDataBaseButton({
           onValuesChange={async (changedValues, allValues) => {
             if (changedValues.hasOwnProperty('projectId')) {
               if (changedValues.projectId) {
-                const res = await getProject(changedValues.projectId);
-                res && setProjectInfo(res);
+                getProjectDetails(changedValues.projectId);
               } else {
                 setProjectInfo(null);
               }
