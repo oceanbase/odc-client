@@ -257,7 +257,7 @@ export class SQLStore {
             return i;
           });
           this.records = [
-            ...showRecordList.reverse().map((r, index) => {
+            ...showRecordList?.reverse().map((r, index) => {
               return { ...r };
             }),
             ...pastRecord,
@@ -538,7 +538,7 @@ export class SQLStore {
       } // 加入历史记录
 
       this.records = [
-        ...record?.executeResult.reverse().map((result) => {
+        ...record?.executeResult?.reverse().map((result) => {
           return {
             ...result,
           };
