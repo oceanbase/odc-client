@@ -245,15 +245,41 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         >
           {insertActionLabel || '-'}
         </Descriptions.Item>
-        <Descriptions.Item label={'指定任务时长'} span={1}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.DataArchiveTask.DetailContent.4443BB83',
+            defaultMessage: '指定任务时长',
+          })}
+          span={1}
+        >
           {jobParameters.taskExecutionDurationHours
             ? jobParameters.taskExecutionDurationHours + 'h'
             : '-'}
         </Descriptions.Item>
-        <Descriptions.Item label={'开启目标表结构同步'} span={1}>
-          {jobParameters?.syncTableStructure?.length ? '是' : '否'}
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.DataArchiveTask.DetailContent.5F68CAE7',
+            defaultMessage: '开启目标表结构同步',
+          })}
+          span={1}
+        >
+          {jobParameters?.syncTableStructure?.length
+            ? formatMessage({
+                id: 'src.component.Task.DataArchiveTask.DetailContent.FFC5907D',
+                defaultMessage: '是',
+              })
+            : formatMessage({
+                id: 'src.component.Task.DataArchiveTask.DetailContent.855EA40A',
+                defaultMessage: '否',
+              })}
         </Descriptions.Item>
-        <Descriptions.Item label={'同步范围'} span={1}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.DataArchiveTask.DetailContent.BC448D6A',
+            defaultMessage: '同步范围',
+          })}
+          span={1}
+        >
           {jobParameters?.syncTableStructure && jobParameters?.syncTableStructure?.length
             ? jobParameters.syncTableStructure
                 ?.map((i) => {

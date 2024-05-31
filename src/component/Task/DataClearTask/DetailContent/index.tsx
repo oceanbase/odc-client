@@ -121,6 +121,7 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             </Space>
           </Descriptions.Item>
         )}
+
         {jobParameters.needCheckBeforeDelete && (
           <Descriptions.Item
             span={2}
@@ -134,6 +135,7 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             </Space>
           </Descriptions.Item>
         )}
+
         {hasFlow && (
           <Descriptions.Item
             label={formatMessage({
@@ -199,6 +201,7 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             {getLocalFormatDateTime(triggerConfig?.startAt)}
           </Descriptions.Item>
         )}
+
         {isCycleTriggerStrategy(triggerConfig?.triggerStrategy) && (
           <Descriptions.Item>
             <Collapse
@@ -271,7 +274,13 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             ? formatMessage({ id: 'src.component.Task.DataClearTask.DetailContent.D2882643' })
             : formatMessage({ id: 'src.component.Task.DataClearTask.DetailContent.834E7D89' })}
         </Descriptions.Item>
-        <Descriptions.Item label={'指定任务时长'} span={1}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.DataClearTask.DetailContent.D4D1227C',
+            defaultMessage: '指定任务时长',
+          })}
+          span={1}
+        >
           {jobParameters.taskExecutionDurationHours
             ? jobParameters.taskExecutionDurationHours + 'h'
             : '-'}

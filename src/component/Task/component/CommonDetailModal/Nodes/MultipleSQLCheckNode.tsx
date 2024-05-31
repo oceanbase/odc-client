@@ -87,6 +87,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                           { issueCount: issueCount },
                         ) /*`存在${issueCount}个问题`*/
                       }
+
                       {issueCount > 0 && (
                         <a
                           style={{
@@ -153,6 +154,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                       { unauthorizedDatabasesLength: unauthorizedDatabases?.length },
                     ) /*`存在${unauthorizedDatabases?.length}个问题`*/
                   }
+
                   <a
                     style={{
                       marginLeft: 5,
@@ -181,7 +183,10 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
       </Descriptions>
       {/* <LintDrawer visible={visible} closePage={() => setVisible(false)} data={data} /> */}
       <Drawer
-        title="检查结果"
+        title={formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.Nodes.33818FF2',
+          defaultMessage: '检查结果',
+        })}
         width={720}
         open={visible}
         closable
@@ -190,7 +195,22 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
         }}
       >
         <Descriptions>
-          <Descriptions.Item label="SQL 检查结果">存在{issueCount}个问题</Descriptions.Item>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.Nodes.4A26F3E1',
+              defaultMessage: 'SQL 检查结果',
+            })}
+          >
+            {formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.Nodes.28D502A5',
+              defaultMessage: '存在',
+            })}
+            {issueCount}
+            {formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.Nodes.B38251E6',
+              defaultMessage: '个问题',
+            })}
+          </Descriptions.Item>
         </Descriptions>
         <MultipleLintResultTable
           pageSize={10}

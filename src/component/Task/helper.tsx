@@ -159,7 +159,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         },
         {
           value: TaskPageType.MULTIPLE_ASYNC,
-          label: '多库变更',
+          label: formatMessage({ id: 'src.component.Task.1EDC83CC', defaultMessage: '多库变更' }),
           enabled: true,
           // 数据库变更
         },

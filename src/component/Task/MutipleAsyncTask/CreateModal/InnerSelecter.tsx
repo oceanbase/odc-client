@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { IConnection } from '@/d.ts';
 import { Form, FormListFieldData, Popover, Select, Space, Tooltip } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
@@ -97,7 +98,10 @@ const InnerSelect: React.FC<{
 
   const getPlaceholder = () => {
     if (!currnetOrderedDatabaseId) {
-      return '请选择数据库';
+      return formatMessage({
+        id: 'src.component.Task.MutipleAsyncTask.CreateModal.91F6B921',
+        defaultMessage: '请选择数据库',
+      });
     }
     const item = databaseOptionMap?.[currnetOrderedDatabaseId];
     const icon = getDataSourceStyleByConnectType(item?.dataSource?.type);
@@ -120,6 +124,7 @@ const InnerSelect: React.FC<{
                 marginRight: 4,
               }}
             />
+
             <div style={{ color: 'var(--text-color-primary)' }}>{item?.label}</div>
             <div style={{ color: 'var(--mask-color)', marginLeft: '4px' }}>
               {item?.dataSource?.name}
@@ -143,7 +148,12 @@ const InnerSelect: React.FC<{
 
   const checkDatabaseExsisted = async (ruler, value) => {
     if (value && !databaseOptionMap?.[value]) {
-      throw new Error('该数据库不属于当前项目');
+      throw new Error(
+        formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.94128D2B',
+          defaultMessage: '该数据库不属于当前项目',
+        }),
+      );
     }
   };
   const renderItem = (item: DatabaseOption) => {
@@ -166,7 +176,16 @@ const InnerSelect: React.FC<{
           setPopoverOpen(false);
         }}
       >
-        <Tooltip title={isDisabled ? '该数据库已被选中' : null}>
+        <Tooltip
+          title={
+            isDisabled
+              ? formatMessage({
+                  id: 'src.component.Task.MutipleAsyncTask.CreateModal.BF1212E7',
+                  defaultMessage: '该数据库已被选中',
+                })
+              : null
+          }
+        >
           <div
             className={classNames(styles.option, {
               [styles.optionDisabled]: isDisabled,
@@ -181,6 +200,7 @@ const InnerSelect: React.FC<{
                   marginRight: 4,
                 }}
               />
+
               <div
                 style={{
                   color: isDisabled ? 'var(--mask-color)' : 'var(--text-color-primary)',
@@ -223,12 +243,16 @@ const InnerSelect: React.FC<{
             className={styles.dragIcon}
             style={{ cursor: 'move !important' }}
           />
+
           <Form.Item
             name={[innerName]}
             rules={[
               {
                 required: true,
-                message: '请选择数据库',
+                message: formatMessage({
+                  id: 'src.component.Task.MutipleAsyncTask.CreateModal.E7E1BCF3',
+                  defaultMessage: '请选择数据库',
+                }),
               },
               {
                 validateTrigger: 'onChange',

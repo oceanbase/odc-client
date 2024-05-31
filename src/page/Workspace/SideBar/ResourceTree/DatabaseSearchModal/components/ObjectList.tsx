@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import {
   objectTypeConfig,
   DbObjectTypeMap,
@@ -98,6 +99,7 @@ const ObjectList = ({
             </Tooltip>
           </>
         );
+
       default: {
         const { database } = item;
         const { name: databaseName, dataSource } = database;
@@ -154,6 +156,7 @@ const ObjectList = ({
                                     fontSize: 14,
                                   }}
                                 />
+
                                 <span style={{ paddingRight: 4 }}>{object?.name}</span>
                                 <span
                                   style={{
@@ -179,7 +182,10 @@ const ObjectList = ({
                         type="link"
                         onClick={() => setActiveKey(i.key)}
                       >
-                        查看更多
+                        {formatMessage({
+                          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.0D1BC60D',
+                          defaultMessage: '查看更多',
+                        })}
                       </Button>
                     ) : null}
                     <Divider
@@ -222,7 +228,10 @@ const ObjectList = ({
         style={{ padding: 0, height: 18, display: 'inline-block' }}
         onClick={(e) => applyPermission(e, object)}
       >
-        申请表权限
+        {formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.E2C1F722',
+          defaultMessage: '申请表权限',
+        })}
       </Button>
     );
   };
@@ -262,6 +271,7 @@ const ObjectList = ({
                       component={DbObjsIcon[type]}
                       style={{ color: 'var(--brand-blue6-color)', paddingRight: 4, fontSize: 14 }}
                     />
+
                     <span style={{ paddingRight: 4 }}>{object?.name}</span>
                     <span
                       style={{
@@ -282,7 +292,15 @@ const ObjectList = ({
             {currentObjectList?.data?.length === MAX_OBJECT_LENGTH && (
               <Divider plain>
                 <span style={{ color: 'var(--icon-color-disable)' }}>
-                  最多展示 {MAX_OBJECT_LENGTH} 条结果
+                  {formatMessage({
+                    id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.625700F8',
+                    defaultMessage: '最多展示',
+                  })}
+                  {MAX_OBJECT_LENGTH}
+                  {formatMessage({
+                    id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.D45537CC',
+                    defaultMessage: '条结果',
+                  })}
                 </span>
               </Divider>
             )}
@@ -300,6 +318,7 @@ const ObjectList = ({
           {DbObjectTypeMap.SEARCH_OBJECT_FROM_ALL_DATABASE?.label}
         </span>
       ),
+
       children: renderAllTab(),
     },
   ].concat(

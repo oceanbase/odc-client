@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { KeyCode } from 'monaco-editor';
 
 /**
@@ -14,5 +15,12 @@ export const validForEditorKeymap = (value: string) => {
       return Promise.resolve();
     }
   }
-  return Promise.reject(new Error('快捷键不能全部为辅助键'));
+  return Promise.reject(
+    new Error(
+      formatMessage({
+        id: 'src.component.Input.Keymap.A2ADE368',
+        defaultMessage: '快捷键不能全部为辅助键',
+      }),
+    ),
+  );
 };

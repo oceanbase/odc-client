@@ -37,7 +37,10 @@ const columns = (needCheckBeforeDelete: boolean) => [
   },
   {
     dataIndex: 'targetTableName',
-    title: '目标表名',
+    title: formatMessage({
+      id: 'src.component.Task.DataClearTask.DetailContent.A104F847',
+      defaultMessage: '目标表名',
+    }),
     ellipsis: true,
     width: 190,
     render: (value) => {
@@ -49,7 +52,10 @@ const columns = (needCheckBeforeDelete: boolean) => [
   },
   {
     dataIndex: 'partitions',
-    title: '指定分区',
+    title: formatMessage({
+      id: 'src.component.Task.DataClearTask.DetailContent.2470B293',
+      defaultMessage: '指定分区',
+    }),
     ellipsis: true,
     width: 190,
     render: (value) => {

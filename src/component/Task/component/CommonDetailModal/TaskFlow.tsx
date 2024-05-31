@@ -189,7 +189,13 @@ const TaskFlow: React.FC<IProps> = (props) => {
       const { deadlineTime, completeTime, operator, status, taskType } = node;
       let title =
         (node?.taskType as unknown) === TaskType.MULTIPLE_ASYNC
-          ? `执行节点${executeNodeCount}`
+          ? formatMessage(
+              {
+                id: 'src.component.Task.component.CommonDetailModal.C66A3B3E',
+                defaultMessage: '执行节点${executeNodeCount}',
+              },
+              { executeNodeCount: executeNodeCount },
+            )
           : formatMessage({
               id: 'odc.component.CommonTaskDetailModal.TaskFlow.Run',
             });
@@ -454,7 +460,10 @@ const TaskFlow: React.FC<IProps> = (props) => {
                         <Descriptions column={1} className={styles.block}>
                           {hasOperatorLabel && (
                             <Descriptions.Item
-                              label="数据库"
+                              label={formatMessage({
+                                id: 'src.component.Task.component.CommonDetailModal.6225C10E',
+                                defaultMessage: '数据库',
+                              })}
 
                               /*处理人*/
                             >

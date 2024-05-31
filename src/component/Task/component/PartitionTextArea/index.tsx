@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Button, Form, Select, Space, Input } from 'antd';
 import styles from './index.less';
 import classNames from 'classnames';
@@ -7,7 +8,12 @@ const { TextArea } = Input;
 export const PartitionTextArea = ({ name, fieldKey, value, ...restTextAreaProps }) => {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <div className={classNames([styles.inputLabel])}>分区</div>
+      <div className={classNames([styles.inputLabel])}>
+        {formatMessage({
+          id: 'src.component.Task.component.PartitionTextArea.506043A9',
+          defaultMessage: '分区',
+        })}
+      </div>
       <Form.Item
         name={name}
         fieldKey={fieldKey}
@@ -18,7 +24,10 @@ export const PartitionTextArea = ({ name, fieldKey, value, ...restTextAreaProps 
         <TextArea
           {...restTextAreaProps}
           autoSize={{ maxRows: 3 }}
-          placeholder={'请输入分区名称，多个分区间用英文逗号隔开'}
+          placeholder={formatMessage({
+            id: 'src.component.Task.component.PartitionTextArea.51B4FB10',
+            defaultMessage: '请输入分区名称，多个分区间用英文逗号隔开',
+          })}
         />
       </Form.Item>
     </div>

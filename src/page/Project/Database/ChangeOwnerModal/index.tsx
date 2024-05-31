@@ -49,7 +49,12 @@ export default function ChangeOwnerModal({ visible, database, close, onSuccess }
       value.ownerIds,
     );
     if (isSuccess) {
-      message.success('修改数据库管理员成功');
+      message.success(
+        formatMessage({
+          id: 'src.page.Project.Database.ChangeOwnerModal.22191CF9',
+          defaultMessage: '修改数据库管理员成功',
+        }),
+      );
       form.resetFields();
       close();
       onSuccess();
@@ -72,7 +77,10 @@ export default function ChangeOwnerModal({ visible, database, close, onSuccess }
   return (
     <Modal
       maskClosable={false}
-      title="设置库管理员"
+      title={formatMessage({
+        id: 'src.page.Project.Database.ChangeOwnerModal.2EFFDBF5',
+        defaultMessage: '设置库管理员',
+      })}
       open={visible}
       confirmLoading={saveOwnerLoading}
       onCancel={() => {
@@ -89,6 +97,7 @@ export default function ChangeOwnerModal({ visible, database, close, onSuccess }
               id: 'odc.Info.ChangeOwnerModal.DatabaseName',
             }) /*数据库名称*/
           }
+
           {database?.name}
         </Form.Item>
         <DatabaseOwnerSelect

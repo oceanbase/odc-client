@@ -484,7 +484,12 @@ const CreateModal: React.FC<IProps> = (props) => {
         onFieldsChange={handleFieldsChange}
       >
         <Form.Item name="needCheckBeforeDelete" valuePropName="checked">
-          <Checkbox>清理前是否需要校验</Checkbox>
+          <Checkbox>
+            {formatMessage({
+              id: 'src.component.Task.DataClearTask.CreateModal.70A4982D',
+              defaultMessage: '清理前是否需要校验',
+            })}
+          </Checkbox>
         </Form.Item>
         <Space align="start">
           <DatabaseSelect
@@ -495,6 +500,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             /*源端数据库*/ projectId={projectId}
             onChange={handleDBChange}
           />
+
           <Form.Item noStyle shouldUpdate>
             {({ getFieldValue }) => {
               const needCheckBeforeDelete = getFieldValue('needCheckBeforeDelete');

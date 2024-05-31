@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -37,7 +38,10 @@ export default function Reload({
     return <LoadingOutlined style={{ fontSize: size, cursor: 'pointer' }} />;
   }
   return (
-    <Tooltip placement="bottom" title="刷新">
+    <Tooltip
+      placement="bottom"
+      title={formatMessage({ id: 'src.component.Button.Reload.CC20653B', defaultMessage: '刷新' })}
+    >
       <ReloadOutlined onClick={_onClick} style={{ fontSize: size, cursor: 'pointer', ...style }} />
     </Tooltip>
   );

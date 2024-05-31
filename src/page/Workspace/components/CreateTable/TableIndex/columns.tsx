@@ -199,7 +199,10 @@ export function useColumns(
     },
     session?.supportFeature?.enableColumnStore && {
       key: 'columnGroups',
-      name: '存储模式',
+      name: formatMessage({
+        id: 'src.page.Workspace.components.CreateTable.TableIndex.D801DCFF',
+        defaultMessage: '存储模式',
+      }),
       //列组
       resizable: true,
       editable: true,

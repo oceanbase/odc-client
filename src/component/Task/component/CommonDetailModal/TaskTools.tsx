@@ -216,7 +216,10 @@ const ActionBar: React.FC<IProps> = inject(
       };
       const excuteDetailBtn = {
         key: 'excuteDetail',
-        text: '执行详情',
+        text: formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.11BB8886',
+          defaultMessage: '执行详情',
+        }),
         action: handleExcuteDetailVisible,
         type: 'button',
       };

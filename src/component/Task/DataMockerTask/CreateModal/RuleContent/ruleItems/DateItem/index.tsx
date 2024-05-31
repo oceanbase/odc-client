@@ -89,6 +89,7 @@ const DateItem: React.FC<IDateItemProps> = forwardRef<FormInstance, IDateItemPro
               formatMessage({ id: 'odc.ruleItems.DateItem.Date' }), // 日期
               value?.['lowValue'],
             ],
+
             [
               formatMessage({ id: 'odc.ruleItems.DateItem.StepSize' }), // 步长
               value?.['genParams']?.step + formatMessage({ id: 'odc.ruleItems.DateItem.Days' }), // 天
@@ -171,8 +172,11 @@ const DateItem: React.FC<IDateItemProps> = forwardRef<FormInstance, IDateItemPro
                     }
                     parser={(value) =>
                       value.replace(
-                        formatMessage({ id: 'odc.ruleItems.DateItem.Days' }), // 天
-                        '',
+                        formatMessage({ id: 'odc.ruleItems.DateItem.Days' }),
+                        formatMessage({
+                          id: 'src.component.Task.DataMockerTask.CreateModal.RuleContent.ruleItems.DateItem.F19E741F',
+                          defaultMessage: "/ 天\n'",
+                        }),
                       )
                     }
                   />

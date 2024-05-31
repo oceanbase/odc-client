@@ -248,7 +248,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             },
           },
           {
-            title: '管理员',
+            title: formatMessage({
+              id: 'src.page.Project.Database.A31E6BDF',
+              defaultMessage: '管理员',
+            }),
             //项目角色
             dataIndex: 'owners',
             ellipsis: true,
@@ -404,8 +407,8 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                           formatMessage({
                             id: 'odc.src.page.Project.Database.ModifyTheProject',
                           }) /* 
-                  修改所属项目
-                  */
+                      修改所属项目
+                      */
                         }
                       </Tooltip>
                     </Action.Link>
@@ -504,7 +507,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                     }}
                     disabled={!hasChangeOwnerAuth}
                   >
-                    设置库管理员
+                    {formatMessage({
+                      id: 'src.page.Project.Database.DEFC0E70',
+                      defaultMessage: '设置库管理员',
+                    })}
                   </Action.Link>
                   <Action.Link
                     key={'transfer'}
@@ -561,6 +567,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
         close={() => setVisible(false)}
         onSuccess={() => reload()}
       />
+
       <ChangeOwnerModal
         visible={changeOwnerModalVisible}
         database={database}

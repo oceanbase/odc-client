@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Form, Select, Checkbox, Row, Col, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useContext, useMemo } from 'react';
@@ -65,9 +66,17 @@ export const DatabaseOwnerSelect = ({
           name="ownerIds"
           label={
             <span>
-              <span style={{ paddingRight: 4 }}>库管理员</span>
+              <span style={{ paddingRight: 4 }}>
+                {formatMessage({
+                  id: 'src.page.Project.Database.components.DatabaseOwnerSelect.tsx.556A83EA',
+                  defaultMessage: '库管理员',
+                })}
+              </span>
               <Tooltip
-                title="库管理员是数据库和表的负责人，可以在审批流程中引用"
+                title={formatMessage({
+                  id: 'src.page.Project.Database.components.DatabaseOwnerSelect.tsx.34B8A74A',
+                  defaultMessage: '库管理员是数据库和表的负责人，可以在审批流程中引用',
+                })}
                 overlayInnerStyle={{ width: 268 }}
               >
                 <QuestionCircleOutlined />
@@ -79,7 +88,10 @@ export const DatabaseOwnerSelect = ({
               ? [
                   {
                     required: true,
-                    message: '请输入',
+                    message: formatMessage({
+                      id: 'src.page.Project.Database.components.DatabaseOwnerSelect.tsx.CBBD314E',
+                      defaultMessage: '请输入',
+                    }),
                   },
                 ]
               : null
@@ -88,7 +100,10 @@ export const DatabaseOwnerSelect = ({
           <Select
             allowClear
             mode="multiple"
-            placeholder="请选择"
+            placeholder={formatMessage({
+              id: 'src.page.Project.Database.components.DatabaseOwnerSelect.tsx.094820AF',
+              defaultMessage: '请选择',
+            })}
             style={{
               width: '100%',
             }}
@@ -124,7 +139,10 @@ export const DatabaseOwnerSelect = ({
             }}
             style={{ marginTop: 30 }}
           >
-            不设置管理员
+            {formatMessage({
+              id: 'src.page.Project.Database.components.DatabaseOwnerSelect.tsx.2882064F',
+              defaultMessage: '不设置管理员',
+            })}
           </Checkbox>
         </Col>
       )}
