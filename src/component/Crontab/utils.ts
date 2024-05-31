@@ -53,6 +53,9 @@ const cronLabelMap = {
 };
 
 enum CRON_SPEED {
+  perSecond = 'perSecond',
+  minutely = 'minutely',
+  hourly = 'hourly',
   daily = 'daily',
   weekly = 'weekly',
   monthly = 'monthly',
@@ -60,6 +63,9 @@ enum CRON_SPEED {
 }
 
 const cronSpeedLabelMap = {
+  [CRON_SPEED.perSecond]: '每秒',
+  [CRON_SPEED.minutely]: '每分',
+  [CRON_SPEED.hourly]: '每小时',
   [CRON_SPEED.daily]: formatMessage({
     id: 'odc.component.Crontab.utils.EveryDay',
   }),
@@ -78,7 +84,17 @@ const cronSpeedLabelMap = {
   //每年
 };
 
+const CronInputName2cronSpeedLabelMap = {
+  [CronInputName.second]: CRON_SPEED.perSecond,
+  [CronInputName.minute]: CRON_SPEED.minutely,
+  [CronInputName.hour]: CRON_SPEED.hourly,
+  [CronInputName.dayOfMonth]: CRON_SPEED.daily,
+  [CronInputName.dayOfWeek]: CRON_SPEED.weekly,
+  [CronInputName.month]: CRON_SPEED.monthly,
+};
+
 const reg = /[*?]/;
+const everyReg = /[*]/;
 const charsReg = /[#L]/;
 
 const CronFieldKeys = [
@@ -176,6 +192,10 @@ export const getCronPlan = (values: string) => {
 
 const getCronLabel = (name: CronInputName, value: number | string) => {
   const [label] = cronLabelMap[name];
+  // 处理 *
+  if (everyReg?.test(value.toString())) {
+    return cronSpeedLabelMap[CRON_SPEED[CronInputName2cronSpeedLabelMap[name]]];
+  }
   // 周
   if (name === CronInputName.dayOfWeek) {
     let weekLabel = weekOptions?.find((item) => item.value === Number(value))?.label;
@@ -432,6 +452,9 @@ class Translator {
         ?.map((node) => {
           let str = '';
           if (reg?.test(node.value)) {
+            if (everyReg?.test(node.value)) {
+              return (str = getCronLabel(name as CronInputName, node.value));
+            }
             return;
           }
           if (node.interval) {
