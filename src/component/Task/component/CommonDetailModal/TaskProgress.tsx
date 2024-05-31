@@ -106,8 +106,8 @@ const getColumns = (params: {
                   formatMessage({
                     id: 'odc.src.component.Task.component.CommonDetailModal.WatchNameSwitch',
                   }) /* 
-                表名切换
-               */
+            表名切换
+            */
                 }
               </Action.Link>
             )}
@@ -120,7 +120,10 @@ const getColumns = (params: {
 const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: number) => void }) => {
   return [
     {
-      title: '执行顺序',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.FC1C254D',
+        defaultMessage: '执行顺序',
+      }),
       dataIndex: 'nodeIndex',
       width: 100,
       render: (nodeIndex) => nodeIndex + 1,
@@ -131,7 +134,10 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
       },
     },
     {
-      title: '数据库',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.9A136568',
+        defaultMessage: '数据库',
+      }),
       dataIndex: 'database',
       width: 264,
       ellipsis: {
@@ -147,6 +153,7 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
                   content={record?.database?.environment?.name}
                   color={record?.database?.environment?.style}
                 />
+
                 <Space size={4}>
                   <Icon
                     component={icon?.icon?.component}
@@ -156,6 +163,7 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
                       marginRight: 4,
                     }}
                   />
+
                   <div>{record?.database?.name}</div>
                   <div style={{ color: 'var(--neutral-black45-color)' }}>
                     {record?.database?.dataSource?.name}
@@ -169,6 +177,7 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
                 content={record?.database?.environment?.name}
                 color={record?.database?.environment?.style}
               />
+
               <Space size={4}>
                 <Icon
                   component={icon?.icon?.component}
@@ -178,6 +187,7 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
                     marginRight: 4,
                   }}
                 />
+
                 <div>{record?.database?.name}</div>
                 <div style={{ color: 'var(--neutral-black45-color)' }}>
                   {record?.database?.dataSource?.name}
@@ -189,7 +199,10 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
       },
     },
     {
-      title: '开始时间',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.0DAC1A06',
+        defaultMessage: '开始时间',
+      }),
       dataIndex: 'createTime',
       width: 178,
       render: (_, record) => (
@@ -202,7 +215,10 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
     },
     {
       dataIndex: 'status',
-      title: '执行状态',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.B46A5216',
+        defaultMessage: '执行状态',
+      }),
       ellipsis: true,
       width: 140,
       render: (status, record) => {
@@ -216,7 +232,10 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
     },
     {
       dataIndex: 'action',
-      title: '操作',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.1DB56DDA',
+        defaultMessage: '操作',
+      }),
       ellipsis: true,
       width: 120,
       render: (_, record) => {
@@ -335,8 +354,19 @@ const TaskProgress: React.FC<IProps> = (props) => {
   return (
     <>
       {task?.type === TaskType.MULTIPLE_ASYNC && subTasks?.length > 0 && (
-        <div>以下 {subTasks?.length} 个数据库待执行</div>
+        <div>
+          {formatMessage({
+            id: 'src.component.Task.component.CommonDetailModal.D0202DBE',
+            defaultMessage: '以下',
+          })}
+          {subTasks?.length}
+          {formatMessage({
+            id: 'src.component.Task.component.CommonDetailModal.C884E6D8',
+            defaultMessage: '个数据库待执行',
+          })}
+        </div>
       )}
+
       <DisplayTable
         className={styles.subTaskTable}
         rowKey="id"

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -1184,8 +1185,8 @@ export enum ColumnShowType {
   YEAR = 'YEAR',
   MONTH = 'MONTH',
   ENUM = 'ENUM', // 枚举类型
-  SET = 'SET', // 集合类型
-}
+  SET = 'SET',
+} // 集合类型
 
 // 索引
 
@@ -2319,16 +2320,16 @@ export enum SyncTableStructureEnum {
 
 export const SyncTableStructureConfig = {
   [SyncTableStructureEnum.COLUMN]: {
-    label: '表结构',
+    label: formatMessage({ id: 'src.d.ts.6CBA506D', defaultMessage: '表结构' }),
   },
   [SyncTableStructureEnum.CONSTRAINT]: {
-    label: '唯一性约束',
+    label: formatMessage({ id: 'src.d.ts.90979FA9', defaultMessage: '唯一性约束' }),
   },
   [SyncTableStructureEnum.INDEX]: {
-    label: '索引',
+    label: formatMessage({ id: 'src.d.ts.071AA07B', defaultMessage: '索引' }),
   },
   [SyncTableStructureEnum.PARTITION]: {
-    label: '分区',
+    label: formatMessage({ id: 'src.d.ts.40DBAF05', defaultMessage: '分区' }),
   },
 };
 export const SyncTableStructureOptions = [
@@ -2467,22 +2468,22 @@ export enum SubTaskType {
 
 export const SubTaskTypeMap = {
   [SubTaskType.MIGRATE]: {
-    label: '归档',
+    label: formatMessage({ id: 'src.d.ts.CA81991C', defaultMessage: '归档' }),
   },
   [SubTaskType.CHECK]: {
-    label: '数据检查',
+    label: formatMessage({ id: 'src.d.ts.8977156C', defaultMessage: '数据检查' }),
   },
   [SubTaskType.DELETE]: {
-    label: '数据清理',
+    label: formatMessage({ id: 'src.d.ts.237F5711', defaultMessage: '数据清理' }),
   },
   [SubTaskType.QUICK_DELETE]: {
-    label: '数据清理',
+    label: formatMessage({ id: 'src.d.ts.CD43F08A', defaultMessage: '数据清理' }),
   },
   [SubTaskType.DEIRECT_DELETE]: {
-    label: '数据清理',
+    label: formatMessage({ id: 'src.d.ts.910D42B5', defaultMessage: '数据清理' }),
   },
   [SubTaskType.ROLLBACK]: {
-    label: '回滚',
+    label: formatMessage({ id: 'src.d.ts.DF449BBC', defaultMessage: '回滚' }),
   },
 };
 

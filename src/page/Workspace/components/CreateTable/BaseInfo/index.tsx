@@ -193,11 +193,15 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
             </Col>
           </>
         )}
+
         {session?.supportFeature?.enableColumnStore ? (
           <Col span={layout.pop()}>
             <Form.Item
               name="columnGroups"
-              label={'存储模式'}
+              label={formatMessage({
+                id: 'src.page.Workspace.components.CreateTable.BaseInfo.3907128F',
+                defaultMessage: '存储模式',
+              })}
               rules={[
                 {
                   required: true,

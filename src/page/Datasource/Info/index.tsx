@@ -162,7 +162,10 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             },
           },
           {
-            title: '管理员',
+            title: formatMessage({
+              id: 'src.page.Datasource.Info.D30F985C',
+              defaultMessage: '管理员',
+            }),
             dataIndex: 'owners',
             ellipsis: true,
             width: 160,

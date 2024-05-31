@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import {
   Button,
   Descriptions,
@@ -53,11 +54,21 @@ export const CreateTemplateModal: React.FC<{
       login.organizationId?.toString(),
     );
     if (response) {
-      message.success('模版保存成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.CC1E9A8B',
+          defaultMessage: '模版保存成功',
+        }),
+      );
       setCreateTemplateModalOpen(false);
       formRef.resetFields();
     } else {
-      message.error('模版保存失败');
+      message.error(
+        formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.61374578',
+          defaultMessage: '模版保存失败',
+        }),
+      );
     }
   };
 
@@ -74,12 +85,21 @@ export const CreateTemplateModal: React.FC<{
   return (
     <Modal
       open={createTemplateModalOpen}
-      title="保存模版"
+      title={formatMessage({
+        id: 'src.component.Task.MutipleAsyncTask.CreateModal.A6DA26F5',
+        defaultMessage: '保存模版',
+      })}
       width={480}
       destroyOnClose
       closable
-      okText="确定"
-      cancelText="取消"
+      okText={formatMessage({
+        id: 'src.component.Task.MutipleAsyncTask.CreateModal.8C55BD14',
+        defaultMessage: '确定',
+      })}
+      cancelText={formatMessage({
+        id: 'src.component.Task.MutipleAsyncTask.CreateModal.B597D5CA',
+        defaultMessage: '取消',
+      })}
       onCancel={() => {
         setCreateTemplateModalOpen(false);
       }}
@@ -87,27 +107,45 @@ export const CreateTemplateModal: React.FC<{
     >
       <div className={styles.createTemplate}>
         <div className={styles.tip}>
-          将当前数据库配置保存为模版，可用于当前项目内快速发起多库变更
+          {formatMessage({
+            id: 'src.component.Task.MutipleAsyncTask.CreateModal.B23385DC',
+            defaultMessage: '将当前数据库配置保存为模版，可用于当前项目内快速发起多库变更',
+          })}
         </div>
         <Form requiredMark="optional" layout="vertical" form={formRef}>
           <Form.Item
             required
-            label="模版名称"
+            label={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.CreateModal.880B8EA2',
+              defaultMessage: '模版名称',
+            })}
             name="name"
             validateTrigger="onBlur"
             rules={[
               {
                 required: true,
-                message: '请输入模版名称',
+                message: formatMessage({
+                  id: 'src.component.Task.MutipleAsyncTask.CreateModal.4F5988F4',
+                  defaultMessage: '请输入模版名称',
+                }),
               },
               {
-                message: '模版名称已存在',
+                message: formatMessage({
+                  id: 'src.component.Task.MutipleAsyncTask.CreateModal.CE04AE11',
+                  defaultMessage: '模版名称已存在',
+                }),
                 required: true,
                 validator: checkNameRepeat,
               },
             ]}
           >
-            <Input placeholder="请输入" style={{ width: '320px' }} />
+            <Input
+              placeholder={formatMessage({
+                id: 'src.component.Task.MutipleAsyncTask.CreateModal.06FBFDBB',
+                defaultMessage: '请输入',
+              })}
+              style={{ width: '320px' }}
+            />
           </Form.Item>
         </Form>
       </div>
@@ -180,6 +218,7 @@ export const SelectTemplate: React.FC<{
                   <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 </div>
               )}
+
               <div className={styles.options}>
                 {templateList?.map((template, index) => {
                   return (
@@ -224,12 +263,24 @@ export const SelectTemplate: React.FC<{
                   setManageTemplateModalOpen(true);
                 }}
               >
-                管理模版
+                {formatMessage({
+                  id: 'src.component.Task.MutipleAsyncTask.CreateModal.F3F3831A',
+                  defaultMessage: '管理模版',
+                })}
               </Button>
             </div>
           }
         >
-          <Tooltip title={!Boolean(projectId) ? '请先选择项目' : null}>
+          <Tooltip
+            title={
+              !Boolean(projectId)
+                ? formatMessage({
+                    id: 'src.component.Task.MutipleAsyncTask.CreateModal.47AE4AFD',
+                    defaultMessage: '请先选择项目',
+                  })
+                : null
+            }
+          >
             <Button
               disabled={!Boolean(projectId)}
               className={styles.linkBtn}
@@ -242,7 +293,11 @@ export const SelectTemplate: React.FC<{
                 setSelectTemplateModalOpen(!selectTemplateModalOpen);
               }}
             >
-              选择模版
+              {formatMessage({
+                id: 'src.component.Task.MutipleAsyncTask.CreateModal.0DC7EB0D',
+                defaultMessage: '选择模版',
+              })}
+
               <DownOutlined />
             </Button>
           </Tooltip>
@@ -295,7 +350,10 @@ export const ManageTemplateDrawer: React.FC<{
   return (
     <Drawer
       width={520}
-      title="模版管理"
+      title={formatMessage({
+        id: 'src.component.Task.MutipleAsyncTask.CreateModal.ADE907A2',
+        defaultMessage: '模版管理',
+      })}
       open={manageTemplateModalOpen}
       onClose={() => {
         setManageTemplateModalOpen(false);
@@ -305,7 +363,14 @@ export const ManageTemplateDrawer: React.FC<{
       footer={null}
     >
       <Descriptions column={2}>
-        <Descriptions.Item label="所属项目">{projectMap?.[projectId]}</Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.MutipleAsyncTask.CreateModal.0AA0939E',
+            defaultMessage: '所属项目',
+          })}
+        >
+          {projectMap?.[projectId]}
+        </Descriptions.Item>
       </Descriptions>
       <div
         style={{
@@ -325,7 +390,10 @@ export const ManageTemplateDrawer: React.FC<{
               {
                 key: 'name',
                 dataIndex: 'name',
-                title: '模板',
+                title: formatMessage({
+                  id: 'src.component.Task.MutipleAsyncTask.CreateModal.56D06ADE',
+                  defaultMessage: '模板',
+                }),
                 width: 408,
                 render: (name, record: Template) => {
                   return (
@@ -341,7 +409,10 @@ export const ManageTemplateDrawer: React.FC<{
               },
               {
                 key: 'action',
-                title: '操作',
+                title: formatMessage({
+                  id: 'src.component.Task.MutipleAsyncTask.CreateModal.5751B5FA',
+                  defaultMessage: '操作',
+                }),
                 render: (_, record: Template) => {
                   return (
                     <Space>
@@ -353,23 +424,48 @@ export const ManageTemplateDrawer: React.FC<{
                             login?.organizationId?.toString(),
                           );
                           if (response) {
-                            message.success('模板删除成功');
+                            message.success(
+                              formatMessage({
+                                id: 'src.component.Task.MutipleAsyncTask.CreateModal.BF8DAD72',
+                                defaultMessage: '模板删除成功',
+                              }),
+                            );
                             await tableRef?.current?.reload({ page: 1 });
                           } else {
-                            message.error('模版删除失败');
+                            message.error(
+                              formatMessage({
+                                id: 'src.component.Task.MutipleAsyncTask.CreateModal.281C1D7E',
+                                defaultMessage: '模版删除失败',
+                              }),
+                            );
                           }
                         }}
-                        okText="确认"
-                        cancelText="取消"
-                        title="删除模版不影响已发起的工单，是否确定删除？"
+                        okText={formatMessage({
+                          id: 'src.component.Task.MutipleAsyncTask.CreateModal.35AC14C6',
+                          defaultMessage: '确认',
+                        })}
+                        cancelText={formatMessage({
+                          id: 'src.component.Task.MutipleAsyncTask.CreateModal.566DB85B',
+                          defaultMessage: '取消',
+                        })}
+                        title={formatMessage({
+                          id: 'src.component.Task.MutipleAsyncTask.CreateModal.2D6C8761',
+                          defaultMessage: '删除模版不影响已发起的工单，是否确定删除？',
+                        })}
                       >
-                        <a>删除</a>
+                        <a>
+                          {formatMessage({
+                            id: 'src.component.Task.MutipleAsyncTask.CreateModal.DD30AE88',
+                            defaultMessage: '删除',
+                          })}
+                        </a>
                       </Popconfirm>
                     </Space>
                   );
                 },
               },
             ],
+
             dataSource: templateList,
             pagination: pagination,
             scroll: {
@@ -401,10 +497,20 @@ const ColumnForm: React.FC<{
       projectId,
     });
     if (response) {
-      message.success('模板更新成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.26E1F8F3',
+          defaultMessage: '模板更新成功',
+        }),
+      );
       await reload?.();
     } else {
-      message.error('模板更新失败');
+      message.error(
+        formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.710C6F50',
+          defaultMessage: '模板更新失败',
+        }),
+      );
     }
   };
   const checkNameRepeat = async (ruler, value) => {
@@ -414,7 +520,12 @@ const ColumnForm: React.FC<{
     }
     const isRepeat = await existsTemplateName(name, projectId, login.organizationId?.toString());
     if (isRepeat) {
-      throw new Error('模版名称已存在');
+      throw new Error(
+        formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.C5AA4E3A',
+          defaultMessage: '模版名称已存在',
+        }),
+      );
     }
   };
   useEffect(() => {
@@ -438,7 +549,10 @@ const ColumnForm: React.FC<{
           rules={[
             {
               required: true,
-              message: '请输入模版名称',
+              message: formatMessage({
+                id: 'src.component.Task.MutipleAsyncTask.CreateModal.42D5FE6B',
+                defaultMessage: '请输入模版名称',
+              }),
             },
             {
               validateTrigger: 'onChange',

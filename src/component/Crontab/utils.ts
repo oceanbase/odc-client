@@ -63,9 +63,18 @@ enum CRON_SPEED {
 }
 
 const cronSpeedLabelMap = {
-  [CRON_SPEED.perSecond]: '每秒',
-  [CRON_SPEED.minutely]: '每分',
-  [CRON_SPEED.hourly]: '每小时',
+  [CRON_SPEED.perSecond]: formatMessage({
+    id: 'src.component.Crontab.0130A0C7',
+    defaultMessage: '每秒',
+  }),
+  [CRON_SPEED.minutely]: formatMessage({
+    id: 'src.component.Crontab.1978F1C6',
+    defaultMessage: '每分',
+  }),
+  [CRON_SPEED.hourly]: formatMessage({
+    id: 'src.component.Crontab.5FE2E112',
+    defaultMessage: '每小时',
+  }),
   [CRON_SPEED.daily]: formatMessage({
     id: 'odc.component.Crontab.utils.EveryDay',
   }),

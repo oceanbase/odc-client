@@ -127,7 +127,10 @@ export const TaskTypeMap = {
   [TaskType.STRUCTURE_COMPARISON]: formatMessage({
     id: 'src.component.Task.component.TaskTable.80E1D16A',
   }), //'结构比对'
-  [TaskType.MULTIPLE_ASYNC]: '多库变更',
+  [TaskType.MULTIPLE_ASYNC]: formatMessage({
+    id: 'src.component.Task.component.TaskTable.A3CA13D5',
+    defaultMessage: '多库变更',
+  }),
 };
 export const getStatusFilters = (status: {
   [key: string]: {

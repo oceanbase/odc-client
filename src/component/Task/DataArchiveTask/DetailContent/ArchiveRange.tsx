@@ -42,7 +42,10 @@ const columns = [
   },
   {
     dataIndex: 'partitions',
-    title: '指定分区',
+    title: formatMessage({
+      id: 'src.component.Task.DataArchiveTask.DetailContent.5E7080E4',
+      defaultMessage: '指定分区',
+    }),
     ellipsis: true,
     width: 190,
     render: (value) => {
