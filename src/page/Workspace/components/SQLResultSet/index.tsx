@@ -236,7 +236,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
   const stopRunning = () => {
     sqlStore.stopExec(ctx.props.pageKey, ctx?.getSession()?.sessionId);
   };
-  const onOpenExecutingDetailModal = (id: number, sql?: string, sessionId?: string) => {
+  const onOpenExecutingDetailModal = (id: string, sql?: string, sessionId?: string) => {
     const session = sessionId ? { sessionId: sessionId } : ctx?.getSession();
     modalStore.changeExecuteSqlDetailModalVisible(
       true,

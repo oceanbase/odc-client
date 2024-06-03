@@ -3,31 +3,33 @@ import ReactFlow, {
   addEdge,
   useNodesState,
   useEdgesState,
-  Controls,
   useReactFlow,
   ReactFlowProvider,
 } from 'reactflow';
-import CustomEdge from './customComponents/CustomEdge';
-import CustomNode from './customComponents/CustomNode';
-import CustomControl from './customComponents/CustomControl';
-import CustomDetailBox from './customComponents/CustomDetailBox';
+import CustomEdge from './customComponents/Edge';
+import CustomNode from './customComponents/Node';
+import CustomControl from './customComponents/Control';
+import CustomDetailBox from './customComponents/DetailBox';
 import { transformDataForReactFlow, initCenter, handleSelectNode } from './utils';
 import { REACT_FLOW_ID } from './constant';
-
+import { IProfileGraph } from '@/d.ts';
+import styles from './index.less';
 import 'reactflow/dist/style.css';
 
-const edgeTypes = { 'custom-edge': CustomEdge };
-
+const edgeTypes = { CustomEdge: CustomEdge };
 const nodeTypes = { customNode: CustomNode };
 
-function Flow(props) {
+interface Iprops {
+  dataSource: IProfileGraph;
+}
+
+function Flow(props: Iprops) {
   const { dataSource } = props;
   if (!dataSource) return null;
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNode, setSelectedNode] = useState(null);
-
-  const { zoomIn, zoomOut, setCenter, setViewport } = useReactFlow();
+  const { setCenter, setViewport } = useReactFlow();
 
   const {
     nodes: initialNodes,
@@ -61,24 +63,14 @@ function Flow(props) {
 
   const onConnect = useCallback(
     (connection) => {
-      const edge = { ...connection, type: 'custom-edge' };
+      const edge = { ...connection, type: 'CustomEdge' };
       setEdges((eds) => addEdge(edge, eds));
     },
     [setEdges],
   );
 
   return (
-    <div
-      style={{
-        height: '100%',
-        overflowY: 'auto',
-        overflowX: 'auto',
-        backgroundColor: 'rgba(0,0,0,0.02)',
-        border: '1px solid #E0E0E0',
-        width: 'calc(100% - 320px)',
-        // minWidth: '960px',
-      }}
-    >
+    <div className={styles.profileFlow}>
       <CustomDetailBox
         dataSource={nodes.find((i) => i.id === selectedNode?.id)}
         topNodes={dataSource?.topNodes}
@@ -93,12 +85,12 @@ function Flow(props) {
       />
       <ReactFlow
         id={REACT_FLOW_ID}
-        {...props}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        // @ts-ignore
         edgeTypes={edgeTypes}
         nodeTypes={nodeTypes}
         ref={reactFlowInstance}
@@ -114,6 +106,7 @@ function Flow(props) {
 }
 
 function FlowWithProvider(props) {
+  // todo memo
   return (
     <ReactFlowProvider>
       <Flow {...props} />

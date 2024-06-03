@@ -15,7 +15,7 @@
  */
 
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
-import type { ISqlExecuteResult } from '@/d.ts';
+import type { ISqlExecuteResult, ICurrentExecuteInfo } from '@/d.ts';
 import { EStatus, ISqlExecuteResultStatus } from '@/d.ts';
 import { IUnauthorizedDatabase } from '@/d.ts/database';
 import { IRule } from '@/d.ts/rule';
@@ -65,8 +65,18 @@ export interface IExecuteTaskResult {
   status?: EStatus;
   unauthorizedDatabases?: IUnauthorizedDatabase[];
   unauthorizedSql?: string;
-  streamExecuteResult?: any;
-  currentExecuteInfo?: any;
+  streamExecuteResult?: ICurrentExecuteInfo;
+  currentExecuteInfo?: ICurrentExecuteInfo;
+}
+
+export interface IStreamExecuteResult {
+  addROWID: boolean;
+  continueExecutionOnError: boolean;
+  fullLinkTraceEnabled: boolean;
+  queryLimit: number;
+  showTableColumnInfo: boolean;
+  sid: string;
+  sql: string;
 }
 class Task {
   public result: ISqlExecuteResult[] = [];
@@ -89,7 +99,7 @@ class Task {
     }
     return res?.data;
   };
-  public getResult = async (): Promise<ISqlExecuteResult> => {
+  public getResult = async (): Promise<ICurrentExecuteInfo> => {
     return new Promise((resolve, reject) => {
       this._getResult(resolve);
     });
@@ -134,7 +144,7 @@ class TaskManager {
     });
     this.tasks = this.tasks.filter(Boolean);
   }
-  public async addAndWaitTask(requestId: string, sessionId: string): Promise<ISqlExecuteResult> {
+  public async addAndWaitTask(requestId: string, sessionId: string): Promise<ICurrentExecuteInfo> {
     const task = new Task(requestId, sessionId);
     this.tasks.push(task);
     try {
@@ -160,7 +170,7 @@ export default async function executeSQL(
   sessionId: string,
   dbName: string,
   needModal: boolean = true,
-  streamExecuteResult?: any,
+  streamExecuteResult?: IStreamExecuteResult,
 ): Promise<IExecuteTaskResult> {
   const sid = generateDatabaseSid(dbName, sessionId);
   const serverParams =

@@ -42,7 +42,7 @@ interface IProps {
   onShowExecuteDetail: (sql: string, tag: string) => void;
   resultHeight: number;
   sqlStore?: SQLStore;
-  onOpenExecutingDetailModal?: (traceId: number | string, sql?: string, sessionId?: string) => void;
+  onOpenExecutingDetailModal?: (traceId: string, sql?: string, sessionId?: string) => void;
 }
 
 function getResultText(rs: ISqlExecuteResult) {
@@ -85,10 +85,10 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
   const getIcon = (status) => {
     switch (status) {
       case ISqlExecuteResultStatus.SUCCESS: {
-        return <CheckCircleFilled style={{ color: '#52c41a' }} />;
+        return <CheckCircleFilled style={{ color: 'var(--function-green6-color)' }} />;
       }
       case ISqlExecuteResultStatus.FAILED: {
-        return <CloseCircleFilled style={{ color: '#F5222D' }} />;
+        return <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />;
       }
       case ISqlExecuteResultStatus.CANCELED: {
         return <StopFilled style={{ color: 'rgba(0,0,0,0.15)' }} />;
@@ -97,7 +97,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         return <ClockCircleFilled style={{ color: 'rgba(0,0,0,0.15)' }} />;
       }
       case ISqlExecuteResultStatus.RUNNING: {
-        return <LoadingOutlined style={{ color: '#1890FF' }} />;
+        return <LoadingOutlined style={{ color: 'var(--brand-blue6-color)' }} />;
       }
     }
   };

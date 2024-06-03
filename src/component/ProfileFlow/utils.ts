@@ -1,9 +1,8 @@
 import { REACT_FLOW_ID } from './constant';
 import { Tree, Node } from './treeLayout';
-const NODE_WIDTH = 280;
-const NODE_HEIGTH = 90;
-const KILO = 1000;
-const INIT_HEIGHT_GAP = 16;
+import { NODE_WIDTH, KILO, NODE_HEIGTH, INIT_HEIGHT_GAP } from './constant';
+import { IProfileVertexes } from '@/d.ts';
+import type { Node as FlowNode, SetViewport, SetCenter } from 'reactflow';
 
 const hiddenChild = (allNodes, node, nodeHidden, isChild = false) => {
   if (nodeHidden && isChild) {
@@ -20,8 +19,11 @@ const hiddenChild = (allNodes, node, nodeHidden, isChild = false) => {
 };
 
 // 树打开收起
-const changeTreeOpen: (...args) => void = (nodeId, nodeHidden, setNodes) => {
-  // todo 展开收起后重新布局树
+const changeTreeOpen: (...args) => void = (
+  nodeId: number | string,
+  nodeHidden: boolean,
+  setNodes: React.Dispatch<React.SetStateAction<FlowNode<any, string>[]>>,
+) => {
   setNodes((nds) =>
     nds.map((node) => {
       if (node.id === nodeId) {
@@ -46,7 +48,12 @@ const getXYPosition = () => {
   return { width, height };
 };
 
-const locateNode: (...args) => void = (nodeId, initialNodes, setSelectedNode, setViewport) => {
+export const locateNode: (...args) => void = (
+  nodeId,
+  initialNodes,
+  setSelectedNode,
+  setViewport,
+) => {
   // 1. 获取节点在画布上的坐标
   // 2. 计算画布应该移动的位移
   const node = initialNodes?.find((n) => n?.id === nodeId);
@@ -82,7 +89,7 @@ export const getEdgeWidth = (weight: number): number => {
   return 5;
 };
 
-export const getUnit = (num) => {
+export const getUnit = (num: number) => {
   const MILLION = KILO * KILO;
   const BILLION = KILO * KILO * KILO;
   if (num >= KILO && num < MILLION) {
@@ -94,14 +101,17 @@ export const getUnit = (num) => {
   return num;
 };
 
-export const initCenter = (setCenter) => {
+export const initCenter = (setCenter: SetCenter) => {
   const { height } = getXYPosition();
   const centerWidth = NODE_WIDTH / 2;
   const centerHeight = height / 2 - INIT_HEIGHT_GAP;
   setCenter(centerWidth, centerHeight, { zoom: 1 });
 };
 
-export const handleSelectNode = (setNodes, id) => {
+export const handleSelectNode = (
+  setNodes: React.Dispatch<React.SetStateAction<FlowNode<any, string>[]>>,
+  id: number | string,
+) => {
   setNodes((nds) =>
     nds.map((node) => {
       if (node.id === id) {
@@ -113,11 +123,11 @@ export const handleSelectNode = (setNodes, id) => {
 };
 
 export function transformDataForReactFlow(
-  vertexes,
-  duration,
-  setNodes,
-  setSelectedNode,
-  setViewport,
+  vertexes: IProfileVertexes[],
+  duration: number,
+  setNodes: React.Dispatch<React.SetStateAction<FlowNode<any, string>[]>>,
+  setSelectedNode: React.Dispatch<any>,
+  setViewport: SetViewport,
 ) {
   const nodes = [];
   const edges = [];
@@ -140,16 +150,16 @@ export function transformDataForReactFlow(
       parent.children.push(child);
     });
   });
-  function buildTree(data: any[]): Tree {
+  function buildTree(data: IProfileVertexes[]): Tree {
     const tree = new Tree();
     const nodesMap = new Map<string, Node>();
     if (!data.length) return;
     data?.forEach((nodeData) => {
       const node = new Node(nodeData, null, 0, 0, tree.rootX, tree.rootY);
-      nodesMap.set(nodeData?.graphId, node);
+      nodesMap.set(nodeData?.graphId?.toString(), node);
     });
     data?.forEach((nodeData) => {
-      const node = nodesMap.get(nodeData?.graphId);
+      const node = nodesMap.get(nodeData?.graphId?.toString());
       if (node) {
         nodeData?.outEdges?.forEach((edge) => {
           const childNode = nodesMap.get(edge.to);
@@ -205,7 +215,7 @@ export function transformDataForReactFlow(
           id: `e${parentId}-${node.data.graphId}`,
           source: parentId,
           target: node.data.graphId,
-          type: 'custom-edge',
+          type: 'CustomEdge',
           data: {
             weight: node?.data.inEdges?.[0]?.weight,
             isOverlap: isParantOverlap,

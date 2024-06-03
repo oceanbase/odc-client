@@ -1,4 +1,3 @@
-import { useCallback, useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { Progress, Tooltip } from 'antd';
@@ -19,77 +18,38 @@ function TextUpdaterNode({ data, id, isConnectable }) {
       {data?.subNodes ? (
         <>
           <div
-            className={classNames(styles.node, {
+            className={classNames(styles.node, styles.nodeOverlap1, {
               [styles.active]: data?.isSelected,
             })}
-            style={{
-              height: 82,
-              width: 260,
-              bottom: '-8px',
-              left: '8px',
-            }}
-          >
-            2
-          </div>
+          ></div>
           <div
-            className={classNames(styles.node, {
+            className={classNames(styles.node, styles.nodeOverlap2, {
               [styles.active]: data?.isSelected,
             })}
-            style={{
-              height: 84,
-              width: 270,
-              bottom: '-4px',
-              left: '4px',
-            }}
-          >
-            3
-          </div>
+          ></div>
         </>
       ) : null}
       <div
-        className={classNames(styles.node, {
+        className={classNames(styles.node, styles.nodeOverlap3, {
           [styles.active]: data?.isSelected,
         })}
-        style={{
-          bottom: '0px',
-          height: 90,
-          width: 280,
-        }}
         onClick={() => {
           data?.setSelectedNode(data);
         }}
       >
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ display: 'inline-flex', maxWidth: '50%' }}>
+        <div className={styles.nodeHeader}>
+          <span className={styles.titleBox}>
             <Tooltip title={data.label}>
-              <div
-                style={{
-                  fontWeight: 500,
-                  textWrap: 'nowrap',
-                  maxWidth: '120px',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}
-              >
-                {data.label}
-              </div>
+              <div className={styles.title}>{data.label}</div>
             </Tooltip>
-            <div style={{ color: 'rgba(0,0,0,0.45)' }}>[{data?.id}]</div>
+            <div className={styles.number}>[{data?.id}]</div>
           </span>
-          <span style={{ textWrap: 'nowrap' }}>
+          <span className={styles.params}>
             {formatTimeTemplate(BigNumber(data?.duration).div(1000000).toNumber())}{' '}
             {data && data.percentage === '' ? '' : `(${data?.percentage}%)`}
           </span>
         </div>
-        <div
-          style={{
-            color: 'rgba(0,0,0,0.45)',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            textWrap: 'nowrap',
-          }}
-          title={data?.title}
-        >
+        <div className={styles.subTitle} title={data?.title}>
           {data?.title || '-'}
         </div>
         {data.percentage === '' ? (
@@ -99,12 +59,8 @@ function TextUpdaterNode({ data, id, isConnectable }) {
         )}
         {data?.hasChild ? (
           <div
-            style={{
-              position: 'absolute',
-              bottom: data?.subNodes ? '-33px' : '-25px',
-              left: '129px',
-              padding: 4,
-            }}
+            className={styles.icon}
+            style={{ bottom: data?.subNodes ? '-33px' : '-25px' }}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();

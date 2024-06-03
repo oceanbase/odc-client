@@ -5,7 +5,7 @@ import styles from './index.less';
 import { ModalStore } from '@/store/modal';
 import { inject, observer } from 'mobx-react';
 import { getSQLExecuteProfile, getSQLExplain } from '@/common/network/sql';
-import Flow from '@/component/Flow';
+import Flow from '@/component/ProfileFlow';
 import DisplayTable from '@/component/DisplayTable';
 import { getSqlExplainColumns } from '@/page/Workspace/components/SQLExplain/column';
 import { formatMessage } from '@/util/intl';
@@ -23,6 +23,8 @@ import {
   executeViewOptions,
   executeViewOptionsInPlan,
   initTabViewConfig,
+  executeRadioOption,
+  planRadioOption,
 } from './constant';
 
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -44,7 +46,6 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
   const [searchValue, setSearchValue] = useState<string>(null);
 
   function viewContentConfig(type) {
-    console.log(type);
     const config = {
       [TypeMap.TREE]: <Flow dataSource={data?.graph} />,
       [TypeMap.LIST]: (
@@ -236,11 +237,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
       traceId: modalStore?.executeSqlDetailData?.traceId,
       getDetail: getExecuteDetail,
       pageConfig: EXECUTE_PAGE_CONFIG,
-      radioOption: [
-        { value: EXECUTE_PAGE_TYPE.EXECUTE_DETAIL, label: '执行详情' },
-        { value: EXECUTE_PAGE_TYPE.EXECUTE_PLAN, label: '执行计划' },
-        { value: EXECUTE_PAGE_TYPE.FULL_TRACE, label: '全链路诊断' },
-      ],
+      radioOption: executeRadioOption,
     },
     [ProfileType.Plan]: {
       title: '执行计划详情',
@@ -249,7 +246,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
       traceId: modalStore?.executeSqlDetailData?.traceId,
       getDetail: getPlanDetail,
       pageConfig: PLAN_PAGE_CONFIG,
-      radioOption: [{ value: PLAN_PAGE_TYPE.PLAN_DETAIL, label: '计划统计' }],
+      radioOption: planRadioOption,
     },
   };
 
@@ -278,33 +275,14 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
       >
         {pageLoading ? (
           <div className={styles.executeSqlDetailBox}>
-            <Spin
-              style={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            />
+            <Spin className={styles.spin} />
           </div>
         ) : (
           <div className={styles.executeSqlDetailBox}>
             <Tooltip title={page?.sql}>
-              <span
-                // title={page?.sql}
-                style={{
-                  overflowY: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis',
-                  flexShrink: 0,
-                  maxWidth: 300,
-                }}
-              >
-                SQL: {page?.sql}
-              </span>
+              <span className={styles.sql}>SQL: {page?.sql}</span>
             </Tooltip>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className={styles.flexBetween}>
               <Radio.Group
                 value={tab}
                 onChange={(e) => {

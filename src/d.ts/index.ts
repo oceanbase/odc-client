@@ -1044,7 +1044,7 @@ export interface IResultSet extends Partial<ISqlExecuteResult> {
   }[];
 
   schemaName?: string;
-  currentExecuteInfo?: any;
+  currentExecuteInfo?: ICurrentExecuteInfo;
 }
 
 export interface IColumnMetaData {
@@ -1613,6 +1613,16 @@ export interface ISqlExecuteResult {
   traceEmptyReason?: string;
 }
 
+export interface ICurrentExecuteInfo {
+  count: number;
+  finished: boolean;
+  sql: string;
+  sqlId: string;
+  total: number;
+  traceId?: string;
+  results: ISqlExecuteResult[];
+}
+
 export enum ISqlExecuteResultStatus {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
@@ -1688,8 +1698,51 @@ export interface ISQLExplain {
   outline: string;
   originalText: string;
   showFormatInfo?: boolean;
-  graph?: any;
-  // todo
+  graph?: IProfileGraph;
+  warning?: string;
+  expTree?: string;
+}
+
+export interface IProfileGraph {
+  duration: number;
+  overview: {
+    [overviewType: string]: string;
+  };
+  planId: string;
+  statistics: {
+    [statisticType: string]: string;
+  };
+  topNodes: {
+    duration: string[];
+  };
+  traceId: string;
+  vertexes: IProfileVertexes[];
+}
+
+export interface IProfileVertexes {
+  attributes: {
+    [attributeType: string]: string;
+  };
+  duration: number;
+  graphId: number;
+  inEdges: IInEdges[];
+  name: string;
+  outEdges: IInEdges[];
+  overview: {
+    [overviewType: string]: string;
+  };
+  statistics: {
+    [logType: string]: string;
+  };
+  status: string;
+  subNodes?: IProfileVertexes;
+  title: string;
+}
+
+export interface IInEdges {
+  from: string;
+  to: string;
+  weight: string;
 }
 
 export interface ISQLExecuteDetail {
