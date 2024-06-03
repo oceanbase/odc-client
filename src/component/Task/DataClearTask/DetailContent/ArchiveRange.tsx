@@ -24,13 +24,12 @@ const columns = (needCheckBeforeDelete: boolean) => [
     dataIndex: 'tableName',
     title: formatMessage({ id: 'odc.DataClearTask.DetailContent.ArchiveRange.TableName' }), //表名
     ellipsis: true,
-    width: 190,
+    width: 140,
   },
   {
     dataIndex: 'conditionExpression',
     title: formatMessage({ id: 'odc.DataClearTask.DetailContent.ArchiveRange.FilterConditions' }), //过滤条件
     ellipsis: true,
-    width: 150,
     render: (value) => {
       return <Tooltip title={value}>{value || '-'}</Tooltip>;
     },
@@ -42,7 +41,7 @@ const columns = (needCheckBeforeDelete: boolean) => [
       defaultMessage: '目标表名',
     }),
     ellipsis: true,
-    width: 190,
+    width: 140,
     render: (value) => {
       if (!needCheckBeforeDelete) {
         return '-';

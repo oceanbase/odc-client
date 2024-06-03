@@ -1,6 +1,7 @@
 import { formatMessage } from '@/util/intl';
 import { Form, InputNumber, Space, Checkbox, FormInstance } from 'antd';
 import React, { useState, useEffect } from 'react';
+import styles from './index.less';
 
 interface IProps {
   form: FormInstance<any>;
@@ -51,7 +52,7 @@ const TaskDurationItem: React.FC<IProps> = ({ form }) => {
             ]}
             initialValue={1}
           >
-            <InputNumber min={0} controls={true} />
+            <InputNumber min={0} controls={true} className={styles.durationInputNumber} />
           </Form.Item>
           <span>
             {formatMessage({

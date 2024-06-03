@@ -126,7 +126,7 @@ const getConnectionColumns = (params: {
         id: 'odc.component.CommonDetailModal.TaskExecuteRecord.CreationTime',
       }), //创建时间
       ellipsis: true,
-      width: 180,
+      width: 150,
       render: (createTime) => getFormatDateTime(createTime),
     },
 
@@ -134,7 +134,7 @@ const getConnectionColumns = (params: {
       dataIndex: 'status',
       title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskExecuteRecord.TaskStatus' }), //任务状态
       ellipsis: true,
-      width: 140,
+      width: 120,
       filters: statusFilters,
       filterIcon: <FilterOutlined />,
       onFilter: (value: string, record) => {

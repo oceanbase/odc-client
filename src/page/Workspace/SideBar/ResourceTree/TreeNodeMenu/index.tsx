@@ -195,7 +195,6 @@ const TreeNodeMenu = (props: IProps) => {
             menu={{
               style: {
                 minWidth: '160px',
-                maxWidth: '240px',
               },
               items: ellipsisItemsProp,
               onClick: (info) => {
