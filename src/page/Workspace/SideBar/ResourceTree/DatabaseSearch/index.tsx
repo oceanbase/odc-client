@@ -170,11 +170,7 @@ const DatabaseSearch: React.FC<IProps> = function ({ onChange, modalStore, setti
           </Space>
         }
         size="small"
-        placeholder={
-          formatMessage({
-            id: 'odc.src.page.Workspace.SideBar.ResourceTree.DatabaseSearch.SearchDatabaseObject',
-          }) /* 搜索数据库对象 */
-        }
+        placeholder={'搜索'}
       />
     </AutoComplete>
   );

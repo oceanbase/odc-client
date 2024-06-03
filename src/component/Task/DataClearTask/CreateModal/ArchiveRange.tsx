@@ -90,7 +90,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                     defaultMessage: '清理设置',
                   })}
                 </div>
-                <div>
+                <div style={{ paddingBottom: 4 }}>
                   <Checkbox
                     checked={enablePartition}
                     onChange={() => {

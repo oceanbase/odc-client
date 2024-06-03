@@ -117,6 +117,7 @@
       max-height: 366px;
       overflow: auto;
       min-height: 302px;
+      margin-top: 6px;
       .objectTypeBox {
         .objectTypeTitle {
           font-weight: 500;
@@ -152,6 +153,18 @@
       align-items: center;
       justify-content: center;
       min-height: 302px;
+      :global {
+        .ant-empty-image {
+          height: 48px;
+          .ant-empty-img-default {
+            width: 54px;
+            height: 48px;
+          }
+        }
+        .ant-empty-description {
+          color: var(--neutral-black45-color);
+        }
+      }
     }
   }
 }
