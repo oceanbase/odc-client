@@ -1,3 +1,5 @@
+import { NODE_WIDTH, NODE_X_INTERVAL, NODE_HEIGTH, NODE_Y_INTERVAL } from './constant';
+
 // 节点类
 export class Node {
   // 存放节点数据
@@ -14,7 +16,6 @@ export class Node {
   public x: number;
   // 纵坐标
   public y: number;
-
   // 初始横坐标
   public ox: number;
 
@@ -57,10 +58,10 @@ export class Tree {
 
   constructor() {
     this.count = 0;
-    this.nodeWidth = 280;
-    this.nodeHeight = 90;
-    this.nodeInterval = 80 + this.nodeWidth;
-    this.yInterval = 84 + this.nodeHeight;
+    this.nodeWidth = NODE_WIDTH;
+    this.nodeHeight = NODE_HEIGTH;
+    this.nodeInterval = NODE_X_INTERVAL + this.nodeWidth;
+    this.yInterval = NODE_Y_INTERVAL + this.nodeHeight;
     this.rootX = 0;
     this.rootY = 0;
     this.hashTree = [];
@@ -119,7 +120,6 @@ export class Tree {
    */
   // 布局重叠节点
   layoutOverlaps() {
-    // console.log(this.hashTree);
     for (let i = this.hashTree.length - 1; i >= 0; i--) {
       let j = 0;
       while (j < this.hashTree[i].length - 1) {
@@ -161,7 +161,6 @@ export class Tree {
           child.x = node.x;
         }
         prevChild = child;
-
         // 递归调整子节点的子节点
         this.adjustChildrenPositions(child);
       }
@@ -192,23 +191,6 @@ export class Tree {
    * @param nodes
    * @param level
    */
-  // insertNodesToHashTree(nodes: Node[], level: number) {
-  //   // todo 这里不能排序 需要按照原来的顺序
-  //   const curLayer = this.hashTree[level];
-  //   for (const node of nodes) {
-  //     let inserted = false;
-  //     for (let i = 0; i < curLayer.length; i++) {
-  //       if (node.x < curLayer[i].x) {
-  //         curLayer.splice(i, 0, node);
-  //         inserted = true;
-  //         break;
-  //       }
-  //     }
-  //     if (!inserted) {
-  //       curLayer.push(node);
-  //     }
-  //   }
-  // }
   insertNodesToHashTree(nodes: Node[], level: number) {
     // 如果 this.hashTree[level] 不存在，则初始化为空数组
     if (!this.hashTree[level]) {

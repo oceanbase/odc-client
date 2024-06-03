@@ -34,8 +34,8 @@ const { Link } = Typography;
 interface IProps {
   resultHeight: number;
   resultSet: IResultSet;
-  stopRunning?: any;
-  onOpenExecutingDetailModal?: (traceId: number, sql?: string) => void;
+  stopRunning?: () => void;
+  onOpenExecutingDetailModal?: (traceId: string, sql?: string) => void;
   loading?: boolean;
 }
 

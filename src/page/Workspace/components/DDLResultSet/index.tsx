@@ -146,7 +146,7 @@ interface IProps {
   resultHeight: number | string;
   pageKey?: string;
   generalSqlType?: GeneralSQLType;
-  traceId?: string | number;
+  traceId?: string;
   enableRowId?: boolean;
   autoCommit: boolean;
   withFullLinkTrace?: boolean; // SQL执行结果是否支持Trace功能
@@ -166,7 +166,7 @@ interface IProps {
   onShowExecuteDetail?: () => void;
   onShowTrace?: () => void;
   onUpdateEditing?: (editing: boolean) => void;
-  onOpenExecutingDetailModal?: (traceId: number | string, sql?: string) => void;
+  onOpenExecutingDetailModal?: (traceId: string, sql?: string) => void;
 }
 const DDLResultSet: React.FC<IProps> = function (props) {
   const {

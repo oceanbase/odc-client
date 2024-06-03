@@ -208,7 +208,6 @@ export class SQLStore {
       let streamExecuteResult = null;
       let pastRecord = JSON.parse(JSON.stringify(this.records));
       const handleResult = (finished = true, streamExecuteResult, currentExecuteInfo) => {
-        // todo 需要考虑同时执行
         // 兼容后端不按约定返回的情况
         if (!record || record.invalid) {
           return record;
@@ -223,14 +222,21 @@ export class SQLStore {
         // const isEditable = await this.isResultSetEditable(sql);
         runInAction(() => {
           /** Record去除rows,性能优化 */
-          const recordWithoutRows = record.executeResult.map((result) => {
+          // const recordWithoutRows = record.executeResult.map((result) => {
+          //   return {
+          //     ...result,
+          //     sessionId,
+          //     // rows: [],
+          //   };
+          // });
+          const recordWithSessionId = record.executeResult.map((result) => {
             return {
               ...result,
               sessionId,
-              // rows: [],
             };
           });
           const recordAll = streamExecuteResult?.data?.sqls.map((i) => {
+            // 初始化为等待状态
             return {
               ...i.sqlTuple,
               status: ISqlExecuteResultStatus.WAITING,
@@ -250,14 +256,14 @@ export class SQLStore {
               return { ...i, status: ISqlExecuteResultStatus.RUNNING };
             }
             // 已执行的
-            if (recordWithoutRows.find((j) => j.sqlId.includes(i.sqlId))) {
-              return { ...recordWithoutRows.find((j) => j.sqlId.includes(i.sqlId)) };
+            if (recordWithSessionId.find((j) => j.sqlId.includes(i.sqlId))) {
+              return { ...recordWithSessionId.find((j) => j.sqlId.includes(i.sqlId)) };
             }
             // 等待的
             return i;
           });
           this.records = [
-            ...showRecordList?.reverse().map((r, index) => {
+            ...showRecordList?.reverse()?.map((r, index) => {
               return { ...r };
             }),
             ...pastRecord,
@@ -267,14 +273,14 @@ export class SQLStore {
 
           if (resultSet) {
             const lockedResultSets = resultSet.filter((r) => r.locked); // @ts-ignore
-            resultSet.forEach((r) => {
-              if (!r.locked) {
-                /**
-                 * chrome会缓存卸载后的含有react组件的dom，导致数据无法释放，这边手动清空，防止内存爆满
-                 */
-                // r.rows.splice(0);
-              }
-            });
+            // resultSet.forEach((r) => {
+            //   if (!r.locked) {
+            //     /**
+            //      * chrome会缓存卸载后的含有react组件的dom，导致数据无法释放，这边手动清空，防止内存爆满
+            //   */
+            //     // r.rows.splice(0);
+            //   }
+            // });
             this.resultSets.set(pageKey, [
               ...lockedResultSets,
               this.getLogTab(record),
@@ -302,6 +308,9 @@ export class SQLStore {
           needModal,
           streamExecuteResult,
         );
+        if (!res?.streamExecuteResult) {
+          break;
+        }
         streamExecuteResult = res.streamExecuteResult;
         result.push(...res?.executeResult);
         record = {

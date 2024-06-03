@@ -1317,8 +1317,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     /**
      * 装填一下额外数据,详细的列名
      */
-    // sqlStore.resultSets.get(pageKey)?.find(i=> i.type == 'LOG')?.uniqKey || recordsTabKey,
-    //
     const firstResultKey = sqlStore.getFirstUnlockedResultKey(pageKey);
     this.setState({
       resultSetTabActiveKey: firstResultKey ? firstResultKey : recordsTabKey,

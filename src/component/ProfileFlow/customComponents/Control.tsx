@@ -1,9 +1,9 @@
-import ReactFlow, { Controls, ControlButton, useReactFlow } from 'reactflow';
+import { Controls, ControlButton, useReactFlow } from 'reactflow';
 import { OneToOneOutlined } from '@ant-design/icons';
-import { transformDataForReactFlow, initCenter, handleSelectNode } from '../utils';
+import { initCenter } from '../utils';
 
 export default function Flow() {
-  const { zoomIn, zoomOut, fitView, setCenter } = useReactFlow();
+  const { setCenter } = useReactFlow();
   return (
     <Controls>
       <ControlButton
