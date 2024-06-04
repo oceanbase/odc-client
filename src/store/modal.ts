@@ -57,6 +57,7 @@ interface AsyncData {
   objectId?: string;
   sql?: string;
   databaseId?: number;
+  parentFlowInstanceId?: number;
   /**
    * 违反的校验规则
    */

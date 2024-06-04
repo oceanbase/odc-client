@@ -414,7 +414,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         const data = {
           projectId,
           databaseId,
-          parentFlowInstanceId: asyncTaskData?.task ? asyncTaskData?.task?.id : undefined,
+          parentFlowInstanceId: asyncTaskData?.parentFlowInstanceId || undefined,
           taskType: TaskType.ASYNC,
           executionStrategy,
           executionTime,
