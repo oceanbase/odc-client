@@ -7,6 +7,7 @@ export type Template = {
   name: string;
   projectId: number;
   orders: number[][];
+  databaseSequenceList?: any[];
 };
 export type MultipleDatabase = {
   id: number;
@@ -66,8 +67,8 @@ export async function editTemplate(templateId: number, template: Template): Prom
 export async function detailTemplate(
   templateId: number,
   currentOrganizationId: string,
-): Promise<MultipleDatabase> {
-  const response: IResponse<MultipleDatabase> = await request.get(
+): Promise<Template> {
+  const response: IResponse<Template> = await request.get(
     `/api/v2/databasechange/changingorder/templates/${templateId}`,
     {
       params: {
