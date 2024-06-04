@@ -36,7 +36,7 @@ import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { mbToKb, kbToMb } from '@/util/utils';
+import { mbToKb, kbToMb, hourToMilliSeconds } from '@/util/utils';
 import { FieldTimeOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Drawer, Form, Modal, Radio, Space, Checkbox, InputNumber } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -151,7 +151,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       deleteByUniqueKey,
       needCheckBeforeDelete,
       targetDatabaseId,
-      taskExecutionDurationHours,
+      timeoutMillis,
     } = jobParameters;
     const formData = {
       databaseId,
@@ -169,7 +169,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       description,
       needCheckBeforeDelete,
       targetDatabaseId,
-      taskExecutionDurationHours,
+      timeoutMillis: hourToMilliSeconds(timeoutMillis),
     };
 
     if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
@@ -278,7 +278,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           rowLimit,
           dataSizeLimit,
           deleteByUniqueKey,
-          taskExecutionDurationHours,
+          timeoutMillis,
           needCheckBeforeDelete,
           targetDatabaseId,
         } = values;
@@ -308,7 +308,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                     };
                   })
                 : _tables,
-            taskExecutionDurationHours,
+            timeoutMillis: hourToMilliSeconds(timeoutMillis),
             rateLimit: {
               rowLimit,
               dataSizeLimit: mbToKb(dataSizeLimit),

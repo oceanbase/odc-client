@@ -1,7 +1,8 @@
 import { formatMessage } from '@/util/intl';
 import { Form, Space, Checkbox, FormInstance } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { SyncTableStructureEnum, SyncTableStructureOptions } from '@/d.ts';
+import { SyncTableStructureEnum } from '@/d.ts';
+import { SyncTableStructureOptions } from '../../const';
 
 interface IProps {
   form: FormInstance<any>;

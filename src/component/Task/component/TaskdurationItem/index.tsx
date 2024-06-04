@@ -8,7 +8,7 @@ interface IProps {
 }
 const TaskDurationItem: React.FC<IProps> = ({ form }) => {
   useEffect(() => {
-    setTaskDuration(Boolean(form.getFieldValue('taskExecutionDurationHours')));
+    setTaskDuration(Boolean(form.getFieldValue('timeoutMillis')));
   }, [form]);
 
   const [hasTaskDuration, setTaskDuration] = useState<boolean>(false);
@@ -34,7 +34,7 @@ const TaskDurationItem: React.FC<IProps> = ({ form }) => {
             style={{
               marginBottom: 0,
             }}
-            name="taskExecutionDurationHours"
+            name="timeoutMillis"
             rules={[
               {
                 validator: (_, value) =>

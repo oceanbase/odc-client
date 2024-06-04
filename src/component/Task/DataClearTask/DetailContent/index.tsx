@@ -23,7 +23,7 @@ import { updateLimiterConfig } from '@/common/network/task';
 import setting from '@/store/setting';
 import type { CycleTaskDetail, IDataClearJobParameters, TaskOperationType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
+import { getFormatDateTime, kbToMb, mbToKb, milliSecondsToHour } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Collapse, Descriptions, Divider, Space, message, Typography } from 'antd';
 import React from 'react';
@@ -281,8 +281,8 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
           })}
           span={1}
         >
-          {jobParameters.taskExecutionDurationHours
-            ? jobParameters.taskExecutionDurationHours + 'h'
+          {jobParameters.timeoutMillis
+            ? milliSecondsToHour(jobParameters.timeoutMillis) + 'h'
             : '-'}
         </Descriptions.Item>
         <Descriptions.Item

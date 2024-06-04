@@ -1,4 +1,3 @@
-import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -2318,42 +2317,6 @@ export enum SyncTableStructureEnum {
   PARTITION = 'PARTITION',
 }
 
-export const SyncTableStructureConfig = {
-  [SyncTableStructureEnum.COLUMN]: {
-    label: formatMessage({ id: 'src.d.ts.6CBA506D', defaultMessage: '表结构' }),
-  },
-  [SyncTableStructureEnum.CONSTRAINT]: {
-    label: formatMessage({ id: 'src.d.ts.90979FA9', defaultMessage: '唯一性约束' }),
-  },
-  [SyncTableStructureEnum.INDEX]: {
-    label: formatMessage({ id: 'src.d.ts.071AA07B', defaultMessage: '索引' }),
-  },
-  [SyncTableStructureEnum.PARTITION]: {
-    label: formatMessage({ id: 'src.d.ts.40DBAF05', defaultMessage: '分区' }),
-  },
-};
-export const SyncTableStructureOptions = [
-  {
-    value: SyncTableStructureEnum.COLUMN,
-    label: SyncTableStructureConfig[SyncTableStructureEnum.COLUMN].label,
-    disabled: true,
-  },
-  {
-    value: SyncTableStructureEnum.CONSTRAINT,
-    label: SyncTableStructureConfig[SyncTableStructureEnum.CONSTRAINT].label,
-
-    disabled: true,
-  },
-  {
-    value: SyncTableStructureEnum.PARTITION,
-    label: SyncTableStructureConfig[SyncTableStructureEnum.PARTITION].label,
-  },
-  {
-    value: SyncTableStructureEnum.INDEX,
-    label: SyncTableStructureConfig[SyncTableStructureEnum.INDEX].label,
-  },
-];
-
 export interface IDataArchiveJobParameters {
   deleteAfterMigration: boolean;
   name: string;
@@ -2379,7 +2342,7 @@ export interface IDataArchiveJobParameters {
     name: string;
     pattern: string;
   }[];
-  taskExecutionDurationHours: number;
+  timeoutMillis: number;
   syncTableStructure: SyncTableStructureEnum[];
 }
 
@@ -2403,7 +2366,7 @@ export interface IDataClearJobParameters {
     name: string;
     pattern: string;
   }[];
-  taskExecutionDurationHours: number;
+  timeoutMillis: number;
   needCheckBeforeDelete: boolean;
   targetDatabaseId?: number;
   targetDatabaseName?: string;
@@ -2465,27 +2428,6 @@ export enum SubTaskType {
   DEIRECT_DELETE = 'DEIRECT_DELETE',
   ROLLBACK = 'ROLLBACK',
 }
-
-export const SubTaskTypeMap = {
-  [SubTaskType.MIGRATE]: {
-    label: formatMessage({ id: 'src.d.ts.CA81991C', defaultMessage: '归档' }),
-  },
-  [SubTaskType.CHECK]: {
-    label: formatMessage({ id: 'src.d.ts.8977156C', defaultMessage: '数据检查' }),
-  },
-  [SubTaskType.DELETE]: {
-    label: formatMessage({ id: 'src.d.ts.237F5711', defaultMessage: '数据清理' }),
-  },
-  [SubTaskType.QUICK_DELETE]: {
-    label: formatMessage({ id: 'src.d.ts.CD43F08A', defaultMessage: '数据清理' }),
-  },
-  [SubTaskType.DEIRECT_DELETE]: {
-    label: formatMessage({ id: 'src.d.ts.910D42B5', defaultMessage: '数据清理' }),
-  },
-  [SubTaskType.ROLLBACK]: {
-    label: formatMessage({ id: 'src.d.ts.DF449BBC', defaultMessage: '回滚' }),
-  },
-};
 
 export interface ISubTaskTaskUnit {
   endTime: number;

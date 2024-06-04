@@ -22,9 +22,9 @@ import VariableConfigTable from '@/component/Task/component/VariableConfigTable'
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
 import setting from '@/store/setting';
 import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } from '@/d.ts';
-import { SyncTableStructureConfig, TaskExecStrategy } from '@/d.ts';
+import { TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
+import { getFormatDateTime, kbToMb, mbToKb, milliSecondsToHour } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Collapse, Descriptions, Divider, Space, Typography, message } from 'antd';
 import React from 'react';
@@ -33,6 +33,7 @@ import { InsertActionOptions } from '../CreateModal';
 import ArchiveRange from './ArchiveRange';
 import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 import { getLocalFormatDateTime } from '@/util/utils';
+import { SyncTableStructureConfig } from '../../const';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -252,8 +253,8 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           })}
           span={1}
         >
-          {jobParameters.taskExecutionDurationHours
-            ? jobParameters.taskExecutionDurationHours + 'h'
+          {jobParameters.timeoutMillis
+            ? milliSecondsToHour(jobParameters.timeoutMillis) + 'h'
             : '-'}
         </Descriptions.Item>
         <Descriptions.Item
