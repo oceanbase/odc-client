@@ -1,12 +1,14 @@
 import { SQLContent } from '@/component/SQLContent';
 import {
-  IMultipleAsyncPermisssionTaskParams,
+  IFlowTaskType,
+  IMultipleAsyncTaskParams,
   TaskDetail,
   TaskExecStrategy,
+  TaskNodeStatus,
   type ITaskResult,
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Descriptions, Divider, Drawer, Space, Timeline } from 'antd';
+import { Descriptions, Divider, Drawer, Space, Steps } from 'antd';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 import { useState } from 'react';
 import styles from './index.less';
@@ -19,6 +21,8 @@ import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
 import { getTaskExecStrategyMap } from '../..';
 import { ErrorStrategy } from '../../AsyncTask/DetailContent';
+import classNames from 'classnames';
+const { Step } = Steps;
 interface IStructureComparisonTaskContentProps {
   modalStore?: ModalStore;
   visible?: boolean;
@@ -279,20 +283,44 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
   }),
 );
 const DetailDrawer: React.FC<{
-  task: TaskDetail<IMultipleAsyncPermisssionTaskParams>;
+  task: TaskDetail<IMultipleAsyncTaskParams>;
   detailDrawerOpen: boolean;
   setDetailDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ task, detailDrawerOpen, setDetailDrawerOpen }) => {
-  const flatArray = (array: any[]) => {
-    return array?.reduce?.(
-      (pre, cur) => pre?.concat(Array.isArray(cur) ? flatArray(cur) : cur),
-      [],
-    );
-  };
+  const multipleAsyncNodes = task?.nodeList?.filter(
+    (item) => item.taskType === IFlowTaskType.MULTIPLE_ASYNC,
+  );
+
   const databaseIdsMap = task?.parameters?.databases?.reduce((pre, cur) => {
     pre[cur?.id] = cur;
     return pre;
   }, {});
+  const parseTaskStatus = (status: TaskNodeStatus) => {
+    switch (status) {
+      case TaskNodeStatus.FAILED:
+      case TaskNodeStatus.CANCELLED:
+      case TaskNodeStatus.EXPIRED:
+      case TaskNodeStatus.PRE_CHECK_FAILED: {
+        return 'error';
+      }
+      case TaskNodeStatus.EXECUTING: {
+        return 'process';
+      }
+      case TaskNodeStatus.WAIT_FOR_CONFIRM: {
+        return 'wait';
+      }
+      case TaskNodeStatus.COMPLETED: {
+        return 'finish';
+      }
+      case TaskNodeStatus.CREATED:
+      case TaskNodeStatus.PENDING: {
+        return null;
+      }
+      default: {
+        return null;
+      }
+    }
+  };
   return (
     <Drawer
       open={detailDrawerOpen}
@@ -307,60 +335,75 @@ const DetailDrawer: React.FC<{
         setDetailDrawerOpen(false);
       }}
     >
-      <Timeline mode="left">
+      <Steps progressDot direction="vertical" className={styles.TaskFlow}>
         {task?.parameters?.orderedDatabaseIds?.map((dbs, index) => {
+          const status = parseTaskStatus(multipleAsyncNodes?.[index]?.status);
           return (
-            <Timeline.Item className={styles.timelineItem} key={index}>
-              <div>
-                {formatMessage(
-                  {
-                    id: 'src.component.Task.MutipleAsyncTask.DetailContent.6F7DA268',
-                    defaultMessage: '执行节点${index + 1}',
-                  },
-                  { BinaryExpression0: index + 1 },
-                )}
-              </div>
-              <div
-                style={{
-                  backgroundColor: '#F7F9FB',
-                  padding: '12px 16px',
-                  marginTop: '8px',
-                }}
-              >
-                {dbs?.map((db, _index) => {
-                  const icon = getDataSourceStyleByConnectType(
-                    databaseIdsMap?.[db]?.dataSource?.type,
-                  );
-                  return (
-                    <Space key={_index} size={0}>
-                      <RiskLevelLabel
-                        content={databaseIdsMap?.[db]?.environment?.name}
-                        color={databaseIdsMap?.[db]?.environment?.style}
-                      />
-
-                      <Space size={4}>
-                        <Icon
-                          component={icon?.icon?.component}
-                          style={{
-                            color: icon?.icon?.color,
-                            fontSize: 16,
-                            marginRight: 4,
-                          }}
+            <Step
+              status={status}
+              key={index}
+              title={
+                <div>
+                  {formatMessage(
+                    {
+                      id: 'src.component.Task.MutipleAsyncTask.DetailContent.6F7DA268',
+                      defaultMessage: '执行节点${index + 1}',
+                    },
+                    { BinaryExpression0: index + 1 },
+                  )}
+                </div>
+              }
+              className={classNames({
+                // TODO: 执行状态影响
+                [styles.multipleErrorExecNode]:
+                  multipleAsyncNodes?.[index]?.status === TaskNodeStatus.FAILED,
+              })}
+              description={
+                <div
+                  style={{
+                    backgroundColor: '#F7F9FB',
+                    padding: '12px 16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                    marginTop: '8px',
+                  }}
+                >
+                  {dbs?.map((db, _index) => {
+                    const icon = getDataSourceStyleByConnectType(
+                      databaseIdsMap?.[db]?.dataSource?.type,
+                    );
+                    return (
+                      <Space key={_index} size={0}>
+                        <RiskLevelLabel
+                          content={databaseIdsMap?.[db]?.environment?.name}
+                          color={databaseIdsMap?.[db]?.environment?.style}
                         />
 
-                        <div>{databaseIdsMap?.[db]?.name}</div>
-                        <div style={{ color: 'var(--neutral-black45-color)' }}>
-                          {databaseIdsMap?.[db]?.dataSource?.name}
-                        </div>
+                        <Space size={4}>
+                          <Icon
+                            component={icon?.icon?.component}
+                            style={{
+                              color: icon?.icon?.color,
+                              fontSize: 16,
+                              marginRight: 4,
+                            }}
+                          />
+
+                          <div>{databaseIdsMap?.[db]?.name}</div>
+                          <div style={{ color: 'var(--neutral-black45-color)' }}>
+                            {databaseIdsMap?.[db]?.dataSource?.name}
+                          </div>
+                        </Space>
                       </Space>
-                    </Space>
-                  );
-                })}
-              </div>
-            </Timeline.Item>
+                    );
+                  })}
+                </div>
+              }
+            />
           );
         })}
-      </Timeline>
+      </Steps>
     </Drawer>
   );
 };

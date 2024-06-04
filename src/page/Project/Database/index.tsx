@@ -171,6 +171,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
         rowKey={'id'}
         rowSelection={{
           selectedRowKeys: selectedRowKeys,
+          preserveSelectedRowKeys: true,
           onChange: (selectedRowKeys: React.Key[], selectedRows: IDatabase[]) => {
             setSelectedRowKeys(selectedRowKeys);
           },
@@ -184,7 +185,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             const disabled =
               !hasChangeAuth && !hasQueryAuth && !record?.authorizedPermissionTypes?.length;
             return {
-              disabled: disabled,
+              disabled: disabled || !record.existed,
               name: record.name,
             };
           },

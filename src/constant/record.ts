@@ -149,6 +149,8 @@ export const AuditEventMetaMap = {
   [AuditEventType.SENSITIVE_COLUMN_MANAGEMENT]: formatMessage({
     id: 'src.page.Secure.Record.RecordPage.10FC55A9',
   }), //'敏感列管理'
+  [AuditEventType.MULTIPLE_ASYNC]: '多库变更',
+  [AuditEventType.DATABASE_CHANGE_CHANGING_ORDER_TEMPLATE_MANAGEMENT]: '数据库变更顺序模板管理',
 };
 export const AuditEventActionMap = {
   // 个人配置
@@ -673,9 +675,22 @@ export const AuditEventActionMap = {
   [AuditEventActionType.DISABLE_SENSITIVE_COLUMN]: formatMessage({
     id: 'src.page.Secure.Record.RecordPage.3174392D',
   }), //'禁用敏感列'
+
+  // #region ------ 多库变更 -----
+  [AuditEventActionType.CREATE_MULTIPLE_ASYNC_TASK]: '创建多库变更任务',
+  [AuditEventActionType.EXECUTE_MULTIPLE_ASYNC_TASK]: '执行多库变更任务',
+  [AuditEventActionType.STOP_MULTIPLE_ASYNC_TASK]: '停止多库变更任务',
+  [AuditEventActionType.APPROVE_MULTIPLE_ASYNC_TASK]: '同意多库变更任务',
+  [AuditEventActionType.REJECT_MULTIPLE_ASYNC_TASK]: '拒绝多库变更任务',
+  // #endregion
+
+  // #region ---- 多库变更模版管理 ----
+  [AuditEventActionType.CREATE_DATABASE_CHANGE_CHANGING_ORDER_TEMPLATE]: '创建数据库变更顺序模板	',
+  [AuditEventActionType.DELETE_DATABASE_CHANGE_CHANGING_ORDER_TEMPLATE]: '删除数据库变更顺序模板	',
+  [AuditEventActionType.UPDATE_DATABASE_CHANGE_CHANGING_ORDER_TEMPLATE]: '更新数据库变更顺序模板	',
+  // #endregion
 };
 export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
-  console.log(eventMeta);
   const metas =
     eventMeta?.reduce((meta, { type, action }) => {
       if (meta[type]) {
