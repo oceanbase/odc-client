@@ -38,12 +38,12 @@ export const DatabaseOwnerSelect = ({
   const projectUserOptions: DefaultOptionType[] = useMemo(() => {
     const userMap = new Map<number, DefaultOptionType>();
     project?.members?.forEach((mem) => {
-      const { id, name, role } = mem;
+      const { id, name, role, userEnabled } = mem;
       if (!userMap.has(id)) {
         userMap.set(id, {
           value: id,
           label: name,
-          disabled: !ownerIds?.includes(id),
+          disabled: !userEnabled,
           role: [role],
         });
       } else {
@@ -51,7 +51,7 @@ export const DatabaseOwnerSelect = ({
         userMap.set(id, {
           value: userMap.get(id)?.value,
           label: userMap.get(id)?.label,
-          disabled: userMap.get(id)?.disabled,
+          disabled: userMap.get(id)?.disabled || !userEnabled,
           role: [...userMap.get(id)?.role, role],
         });
       }
@@ -116,7 +116,12 @@ export const DatabaseOwnerSelect = ({
           >
             {projectUserOptions.map((item) => {
               return (
-                <Option key={item.value} value={item.value} label={item.label}>
+                <Option
+                  key={item.value}
+                  value={item.value}
+                  label={item.label}
+                  disabled={item.disabled}
+                >
                   {item.label}
                   <span
                     style={{ paddingLeft: 8, fontSize: 12, color: 'var(--neutral-black45-color)' }}

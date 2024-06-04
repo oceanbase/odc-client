@@ -137,6 +137,7 @@ const ActionBar: React.FC<IProps> = inject(
         task: task as TaskDetail<IAsyncTaskParams>,
         databaseId: task?.database?.id,
         objectId: result?.rollbackPlanResult?.resultFileDownloadUrl,
+        parentFlowInstanceId: task?.id,
       });
     };
 
