@@ -54,3 +54,13 @@ export function getFileTypeWithImportType(importType: IMPORT_TYPE | EXPORT_TYPE)
 
   return _m[importType];
 }
+
+export function getFileMIMETypeWithImportType(importType: IMPORT_TYPE | EXPORT_TYPE) {
+  const _m = {
+    [IMPORT_TYPE.ZIP]: ['application/zip'],
+    [IMPORT_TYPE.SQL]: ['application/sql'],
+    [IMPORT_TYPE.CSV]: ['text/csv', 'text/plain'],
+  };
+
+  return _m[importType];
+}

@@ -37,7 +37,7 @@ import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { mbToKb, kbToMb } from '@/util/utils';
+import { mbToKb, kbToMb, hourToMilliSeconds } from '@/util/utils';
 import { FieldTimeOutlined } from '@ant-design/icons';
 import { Button, Checkbox, DatePicker, Drawer, Form, Modal, Radio, Space, InputNumber } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -193,7 +193,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       rateLimit,
       tables,
       variables,
-      taskExecutionDurationHours,
+      timeoutMillis,
       syncTableStructure,
     } = jobParameters;
 
@@ -213,7 +213,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       triggerStrategy,
       startAt: undefined,
       description,
-      taskExecutionDurationHours,
+      timeoutMillis: hourToMilliSeconds(timeoutMillis),
       syncTableStructure,
     };
 
@@ -324,7 +324,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           description,
           rowLimit,
           dataSizeLimit,
-          taskExecutionDurationHours,
+          timeoutMillis,
           syncTableStructure,
         } = values;
         _tables?.map((i) => {
@@ -356,7 +356,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             deleteAfterMigration,
             migrationInsertAction,
             syncTableStructure,
-            taskExecutionDurationHours,
+            timeoutMillis: hourToMilliSeconds(timeoutMillis),
             rateLimit: {
               rowLimit,
               dataSizeLimit: mbToKb(dataSizeLimit),

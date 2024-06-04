@@ -25,7 +25,12 @@ import { Form, FormInstance, message, Select, Tree, Upload } from 'antd';
 import Cookies from 'js-cookie';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import CsvFormItem from '../formitem/CsvFormItem';
-import { checkImportFile, getFileTypeWithImportType, getSizeLimitTip } from '../helper';
+import {
+  checkImportFile,
+  getFileTypeWithImportType,
+  getFileMIMETypeWithImportType,
+  getSizeLimitTip,
+} from '../helper';
 
 import { DbObjectTypeTextMap } from '@/constant/label';
 import login from '@/store/login';
@@ -86,7 +91,12 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
     };
   });
 
-  function beforeUpload(file, fileList: any[], silence?: boolean) {
+  function beforeUpload(fileType, file, fileList: any[], silence?: boolean) {
+    const allowedFileMIMEType = getFileMIMETypeWithImportType(fileType);
+    if (!allowedFileMIMEType.includes(file.type)) {
+      message.warning('请上传指定文件格式的文件');
+      return Upload.LIST_IGNORE;
+    }
     if (fileList.length > 50) {
       if (messageRef.current) {
         return Upload.LIST_IGNORE;
@@ -218,7 +228,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
             >
               <ODCDragger
                 // @ts-ignore
-                beforeUpload={beforeUpload}
+                beforeUpload={(...args) => beforeUpload(fileType, ...args)}
                 clientMode={isClient()}
                 uploadFileOpenAPIName="UploadTransferFile"
                 accept={getFileTypeWithImportType(fileType)}
@@ -298,9 +308,9 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
       </FormItem>
       <FormItem noStyle shouldUpdate>
         {({ getFieldValue }) => {
-          const importObjects = (getFieldValue(
-            'importFileName',
-          ) as ImportFormData['importFileName'])?.[0]?.response?.data?.importObjects;
+          const importObjects = (
+            getFieldValue('importFileName') as ImportFormData['importFileName']
+          )?.[0]?.response?.data?.importObjects;
           if (importObjects) {
             const data = Object.entries(importObjects).map(([dataType, list]) => {
               const ObjIcon = DbObjsIcon[dataType];

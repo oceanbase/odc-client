@@ -5,9 +5,10 @@ import React, { useEffect, useState } from 'react';
 import type { ColumnsType } from 'antd/es/table';
 import StatusLabel from '@/component/Task/component/Status';
 import { getCycleSubTaskDetail } from '@/common/network/task';
-import { SubTaskStatus, ISubTaskTaskUnit, SubTaskTypeMap } from '@/d.ts';
+import { SubTaskStatus, ISubTaskTaskUnit } from '@/d.ts';
 import styles from './index.less';
 import { getLocalFormatDateTime } from '@/util/utils';
+import { SubTaskTypeMap } from '../../const';
 
 interface IProps {
   scheduleId: number;
