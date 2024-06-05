@@ -173,13 +173,13 @@ export const getSqlProfileColumns = () => {
       fixed: 'right',
     },
     {
-      dataIndex: 'realCost',
+      dataIndex: 'realRowCount',
       title: '实际行',
       width: 86,
       fixed: 'right',
     },
     {
-      dataIndex: 'realRowCount',
+      dataIndex: 'realCost',
       title: '实际代价',
       width: 86,
       fixed: 'right',
