@@ -59,10 +59,3 @@ export const executeViewOptionsInPlan = [
   { value: TypeMap.LIST, icon: <Icon component={List} />, message: '列表视图' },
   { value: TypeMap.TEXT, icon: <Icon component={Text} />, message: '文本视图' },
 ];
-
-export const executeRadioOption = [
-  { value: EXECUTE_PAGE_TYPE.EXECUTE_DETAIL, label: '执行详情' },
-  { value: EXECUTE_PAGE_TYPE.EXECUTE_PLAN, label: '执行计划' },
-  { value: EXECUTE_PAGE_TYPE.FULL_TRACE, label: '全链路诊断' },
-];
-export const planRadioOption = [{ value: PLAN_PAGE_TYPE.PLAN_DETAIL, label: '计划统计' }];

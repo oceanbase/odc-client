@@ -1,10 +1,21 @@
 import { Handle, Position } from 'reactflow';
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { Progress, Tooltip } from 'antd';
+import Icon, { LoadingOutlined } from '@ant-design/icons';
 import styles from './index.less';
 import classNames from 'classnames';
 import { formatTimeTemplate } from '@/util/utils';
 import BigNumber from 'bignumber.js';
+import { ReactComponent as WaitingSvg } from '@/svgr/Waiting.svg';
+import { IProfileNodeStatus } from '@/d.ts';
+
+const nodeStatusIconMap = {
+  [IProfileNodeStatus.RUNNING]: <LoadingOutlined style={{ color: '#1890ff' }} />,
+  [IProfileNodeStatus.PREPARING]: (
+    <Icon component={WaitingSvg} style={{ fontSize: 14, color: '#D9D9D9' }} />
+  ),
+  [IProfileNodeStatus.FINISHED]: null,
+};
 
 function TextUpdaterNode({ data, id, isConnectable }) {
   return (
@@ -44,18 +55,23 @@ function TextUpdaterNode({ data, id, isConnectable }) {
             </Tooltip>
             <div className={styles.number}>[{data?.id}]</div>
           </span>
-          <span className={styles.params}>
-            {formatTimeTemplate(BigNumber(data?.duration).div(1000000).toNumber())}{' '}
-            {data && data.percentage === '' ? '' : `(${data?.percentage}%)`}
-          </span>
+          {nodeStatusIconMap?.[data.status]}
         </div>
         <div className={styles.subTitle} title={data?.title}>
           {data?.title || '-'}
+          <span className={styles.params}>
+            {formatTimeTemplate(BigNumber(data?.duration).div(1000000).toNumber())}{' '}
+            {data && data.percentageInAll === '' ? '' : `(${data?.percentageInAll}%)`}
+          </span>
         </div>
-        {data.percentage === '' ? (
+        {data.percentageInAll === '' ? (
           <div></div>
         ) : (
-          <Progress percent={data?.percentage} showInfo={false}></Progress>
+          <Progress
+            percent={data?.percentageInAll}
+            showInfo={false}
+            className={styles.progress}
+          ></Progress>
         )}
         {data?.hasChild ? (
           <div

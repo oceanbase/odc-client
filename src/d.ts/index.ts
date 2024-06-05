@@ -1044,7 +1044,7 @@ export interface IResultSet extends Partial<ISqlExecuteResult> {
   }[];
 
   schemaName?: string;
-  currentExecuteInfo?: ICurrentExecuteInfo;
+  currentExecuteInfo?: IExecutingInfo;
 }
 
 export interface IColumnMetaData {
@@ -1613,14 +1613,14 @@ export interface ISqlExecuteResult {
   traceEmptyReason?: string;
 }
 
-export interface ICurrentExecuteInfo {
-  count: number;
-  finished: boolean;
-  sql: string;
-  sqlId: string;
-  total: number;
+export interface IExecutingInfo {
+  count?: number;
+  finished?: boolean;
+  sql?: string;
+  sqlId?: string;
+  total?: number;
   traceId?: string;
-  results: ISqlExecuteResult[];
+  results?: ISqlExecuteResult[];
 }
 
 export enum ISqlExecuteResultStatus {
@@ -1628,6 +1628,17 @@ export enum ISqlExecuteResultStatus {
   FAILED = 'FAILED',
   CANCELED = 'CANCELED',
   WAITING = 'WAITING',
+  RUNNING = 'RUNNING',
+}
+
+export enum IProfileNodeStatus {
+  FINISHED = 'FINISHED',
+  RUNNING = 'RUNNING',
+  PREPARING = 'PREPARING',
+}
+
+export enum IProfileStatus {
+  FINISHED = 'FINISHED',
   RUNNING = 'RUNNING',
 }
 
@@ -1706,11 +1717,11 @@ export interface ISQLExplain {
 export interface IProfileGraph {
   duration: number;
   overview: {
-    [overviewType: string]: string;
+    [overviewType: string]: string | number;
   };
   planId: string;
   statistics: {
-    [statisticType: string]: string;
+    [statisticType: string]: string | number;
   };
   topNodes: {
     duration: string[];
@@ -1721,7 +1732,7 @@ export interface IProfileGraph {
 
 export interface IProfileVertexes {
   attributes: {
-    [attributeType: string]: string;
+    [attributeType: string]: string | number;
   };
   duration: number;
   graphId: number;
@@ -1729,10 +1740,10 @@ export interface IProfileVertexes {
   name: string;
   outEdges: IInEdges[];
   overview: {
-    [overviewType: string]: string;
+    [overviewType: string]: string | number;
   };
   statistics: {
-    [logType: string]: string;
+    [logType: string]: string | number;
   };
   status: string;
   subNodes?: IProfileVertexes;

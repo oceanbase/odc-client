@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { formatTimeTemplate } from '@/util/utils';
 import BigNumber from 'bignumber.js';
 import type { Node } from 'reactflow';
-import { subNodeSortType, SUM, subNodesSortMap } from '../constant';
+import { subNodeSortType, SUM, subNodesSortMap, CPU_TIME, IO_WAIT_TIME } from '../constant';
 
 const { Option } = Select;
 
@@ -18,10 +18,10 @@ interface Iprops {
   globalInfo: {
     duration: number;
     overview: {
-      [overviewType: string]: string;
+      [overviewType: string]: string | number;
     };
     statistics: {
-      [statisticType: string]: string;
+      [statisticType: string]: string | number;
     };
     percent: number;
   };
@@ -34,6 +34,11 @@ interface INodeOptions {
   output: number;
   maxMemory: number;
 }
+
+const nodeOverviewColorMap = {
+  [CPU_TIME]: '#1890ff',
+  [IO_WAIT_TIME]: '#5ad8a6',
+};
 
 export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
   const { duration = [] } = topNodes || {};
@@ -66,9 +71,13 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
   const { data: nodeData } = dataSource;
   const subNodeData = dataSource?.data?.subNodes?.[selectedSubNodes];
   if (subNodeData) {
-    subNodeData.percentage = globalInfo?.duration
-      ? ((subNodeData?.duration / globalInfo?.duration) * 100).toFixed(2)
-      : '';
+    subNodeData.percentageInCompare = subNodeData?.overview
+      ? (
+          (subNodeData?.overview?.[CPU_TIME] /
+            (subNodeData?.overview?.[CPU_TIME] + subNodeData?.overview?.[IO_WAIT_TIME])) *
+          100
+        ).toFixed(2)
+      : 0;
   }
   const nodeInfo = subNodeData || nodeData;
 
@@ -117,13 +126,42 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
               </Select>
             ) : null}
             {data?.percentage === '' ? null : (
-              <Progress percent={data?.percentage} showInfo={false} />
+              <Progress
+                percent={data?.percentageInCompare}
+                showInfo={false}
+                className={styles.progressWithCompare}
+              />
             )}
             {Object.entries(data?.overview)?.map(([key, value]) => {
               return (
                 <div className={styles.keyValueBox}>
-                  <span>{key}</span>
-                  <span>{value}</span>
+                  {[IO_WAIT_TIME, CPU_TIME].includes(key) ? (
+                    <>
+                      <span>
+                        <span
+                          className={styles.circle}
+                          style={
+                            nodeOverviewColorMap[key]
+                              ? { backgroundColor: nodeOverviewColorMap[key] }
+                              : {}
+                          }
+                        ></span>
+                        {key}
+                      </span>
+                      <span>
+                        {formatTimeTemplate(
+                          BigNumber(value as any)
+                            .div(1000000)
+                            .toNumber(),
+                        )}{' '}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span>{key}</span>
+                      <span>{value}</span>
+                    </>
+                  )}
                 </div>
               );
             })}
@@ -276,14 +314,37 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
             {topNodesList.length ? <Divider /> : null}
             <div className={styles.infoBlockBox}>
               <h3 className={styles.customDetailBoxTitle} style={{ paddingTop: 0 }}>
-                Node 执行概览
+                SQL 执行概览
               </h3>
-              <Progress percent={globalInfo?.percent} showInfo={false} />
+              <Progress
+                percent={globalInfo?.percent}
+                showInfo={false}
+                className={styles.progressWithCompare}
+              />
               {Object.entries(globalInfo?.overview)?.map(([key, value]) => {
                 return (
                   <div className={styles.keyValueBox}>
-                    <span>{key}</span>
-                    <span>{value}</span>
+                    {[IO_WAIT_TIME, CPU_TIME].includes(key) ? (
+                      <>
+                        <span>
+                          <span
+                            className={styles.circle}
+                            style={
+                              nodeOverviewColorMap[key]
+                                ? { backgroundColor: nodeOverviewColorMap[key] }
+                                : {}
+                            }
+                          ></span>
+                          {key}
+                        </span>
+                        <span>{formatTimeTemplate(BigNumber(value).div(1000000).toNumber())} </span>
+                      </>
+                    ) : (
+                      <>
+                        <span>{key}</span>
+                        <span>{value}</span>
+                      </>
+                    )}
                   </div>
                 );
               })}

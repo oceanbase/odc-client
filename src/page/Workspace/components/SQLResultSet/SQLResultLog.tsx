@@ -22,6 +22,7 @@ import {
   CloseCircleFilled,
   ExclamationCircleFilled,
   FileTextFilled,
+  StopFilled,
 } from '@ant-design/icons';
 import { Button, Space, Spin, Typography } from 'antd';
 import React from 'react';
@@ -37,6 +38,7 @@ interface IProps {
   stopRunning?: () => void;
   onOpenExecutingDetailModal?: (traceId: string, sql?: string) => void;
   loading?: boolean;
+  isSupportProfile?: boolean;
 }
 
 function getSuccessLog(type: SqlType, total: number) {
@@ -95,7 +97,12 @@ function renderViolations(data: IResultSet['logTypeData'][0]) {
   );
 }
 
-const runningLogPage = (currentExecuteInfo, stopRunning, onOpenExecutingDetailModal) => {
+const runningLogPage = (
+  currentExecuteInfo,
+  stopRunning,
+  onOpenExecutingDetailModal,
+  isSupportProfile,
+) => {
   return (
     <div className={styles.runningSql}>
       <Spin style={{ marginBottom: 16 }} />
@@ -108,13 +115,15 @@ const runningLogPage = (currentExecuteInfo, stopRunning, onOpenExecutingDetailMo
           {currentExecuteInfo?.traceId && (
             <Space size="small">
               <span>当前 Trace ID: {currentExecuteInfo?.traceId}</span>
-              <Link
-                onClick={() =>
-                  onOpenExecutingDetailModal(currentExecuteInfo?.traceId, currentExecuteInfo?.sql)
-                }
-              >
-                查看执行画像
-              </Link>
+              {isSupportProfile ? (
+                <Link
+                  onClick={() =>
+                    onOpenExecutingDetailModal(currentExecuteInfo?.traceId, currentExecuteInfo?.sql)
+                  }
+                >
+                  查看执行画像
+                </Link>
+              ) : null}
             </Space>
           )}
         </div>
@@ -127,7 +136,14 @@ const runningLogPage = (currentExecuteInfo, stopRunning, onOpenExecutingDetailMo
 };
 
 const SQLResultLog: React.FC<IProps> = function (props) {
-  const { resultSet, resultHeight, stopRunning, onOpenExecutingDetailModal, loading } = props;
+  const {
+    resultSet,
+    resultHeight,
+    stopRunning,
+    onOpenExecutingDetailModal,
+    loading,
+    isSupportProfile = false,
+  } = props;
   if (loading)
     return (
       <div className={styles.runningSql}>
@@ -203,7 +219,11 @@ const SQLResultLog: React.FC<IProps> = function (props) {
         return (
           <>
             <Space>
-              <CloseCircleFilled style={{ color: '#F5222D' }} />
+              {isCanceled ? (
+                <StopFilled style={{ color: 'rgba(0,0,0,0.15)' }} />
+              ) : (
+                <CloseCircleFilled style={{ color: '#F5222D' }} />
+              )}
               {isCanceled
                 ? formatMessage({
                     id: 'odc.components.SQLResultSet.SQLResultLog.SqlExecutionCanceled',
@@ -237,7 +257,12 @@ const SQLResultLog: React.FC<IProps> = function (props) {
       </div>
     );
   } else {
-    return runningLogPage(currentExecuteInfo, stopRunning, onOpenExecutingDetailModal);
+    return runningLogPage(
+      currentExecuteInfo,
+      stopRunning,
+      onOpenExecutingDetailModal,
+      isSupportProfile,
+    );
   }
 };
 

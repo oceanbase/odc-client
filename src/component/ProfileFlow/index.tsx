@@ -11,7 +11,7 @@ import CustomNode from './customComponents/Node';
 import CustomControl from './customComponents/Control';
 import CustomDetailBox from './customComponents/DetailBox';
 import { transformDataForReactFlow, initCenter, handleSelectNode } from './utils';
-import { REACT_FLOW_ID } from './constant';
+import { REACT_FLOW_ID, CPU_TIME, IO_WAIT_TIME } from './constant';
 import { IProfileGraph } from '@/d.ts';
 import styles from './index.less';
 import 'reactflow/dist/style.css';
@@ -79,8 +79,12 @@ function Flow(props: Iprops) {
           duration: dataSource.duration,
           overview: dataSource.overview,
           statistics: dataSource.statistics,
-          // percent: dataSource?.duration ? (nodeDurationSum / dataSource?.duration) * 100 : 0,
-          percent: 100,
+          percent: dataSource?.overview
+            ? (Number(dataSource?.overview?.[CPU_TIME]) /
+                (Number(dataSource?.overview?.[CPU_TIME]) +
+                  Number(dataSource?.overview?.[IO_WAIT_TIME]))) *
+              100
+            : 100,
         }}
       />
       <ReactFlow
