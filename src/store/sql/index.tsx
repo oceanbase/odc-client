@@ -209,11 +209,10 @@ export class SQLStore {
       const statusCheckInterval = 1000;
       let result = [];
       let streamExecuteResult = null;
-      let pastRecord = JSON.parse(JSON.stringify(this.records));
       const obVersion = session?.params?.obVersion;
       const isSupportProfile =
         isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=');
-      const handleResult = (finished = true, streamExecuteResult, currentExecuteInfo) => {
+      const handleResult = (finished = true, currentExecuteInfo) => {
         // 兼容后端不按约定返回的情况
         if (!record || record.invalid) {
           return record;
@@ -227,37 +226,13 @@ export class SQLStore {
         // TODO: 目前后端判断是否支持接口非常慢，因此只能在用户点击 “开启编辑” 时发起查询，理想状态肯定是在结果集返回结构中直接表示是否支持
         // const isEditable = await this.isResultSetEditable(sql);
         runInAction(() => {
-          /** Record去除rows,性能优化 */
-          // const recordWithoutRows = record.executeResult.map((result) => {
-          //   return {
-          //     ...result,
-          //     sessionId,
-          //     // rows: [],
-          //   };
-          // });
           const recordWithSessionId = record.executeResult.map((result) => {
             return {
               ...result,
               sessionId,
             };
           });
-          const recordAll = streamExecuteResult?.data?.sqls.map((i) => {
-            // 初始化为等待状态
-            return {
-              ...i.sqlTuple,
-              status: ISqlExecuteResultStatus.WAITING,
-              timer: null,
-              track: null,
-              total: null,
-              traceId: null,
-              elapsedTime: null,
-              executeSql: null,
-              id: generateUniqKey(),
-              sessionId,
-              isSupportProfile: isSupportProfile,
-            };
-          });
-          const showRecordList = recordAll?.map((i) => {
+          this.records = this.records?.map((i) => {
             // 运行中的
             if (currentExecuteInfo.sqlId === i.sqlId && !finished) {
               return { ...i, status: ISqlExecuteResultStatus.RUNNING };
@@ -265,6 +240,7 @@ export class SQLStore {
             // 已执行的
             if (recordWithSessionId.find((j) => j.sqlId.includes(i.sqlId))) {
               return {
+                ...i,
                 ...recordWithSessionId.find((j) => j.sqlId.includes(i.sqlId)),
                 isSupportProfile: isSupportProfile,
               };
@@ -272,25 +248,9 @@ export class SQLStore {
             // 等待的
             return i;
           });
-          this.records = [
-            ...showRecordList?.reverse()?.map((r, index) => {
-              return { ...r };
-            }),
-            ...pastRecord,
-          ]; // 处理结果集，需要保留已锁定的结果集
-
           const resultSet = this.resultSets.get(pageKey);
-
           if (resultSet) {
             const lockedResultSets = resultSet.filter((r) => r.locked); // @ts-ignore
-            // resultSet.forEach((r) => {
-            //   if (!r.locked) {
-            //     /**
-            //      * chrome会缓存卸载后的含有react组件的dom，导致数据无法释放，这边手动清空，防止内存爆满
-            //   */
-            //     // r.rows.splice(0);
-            //   }
-            // });
             this.resultSets.set(pageKey, [
               ...lockedResultSets,
               this.getLogTab(record),
@@ -301,8 +261,33 @@ export class SQLStore {
         });
         return record;
       };
+      const handleFirstExecute = () => {
+        const recordAll = streamExecuteResult?.data?.sqls.map((i) => {
+          // 初始化为等待状态
+          return {
+            ...i.sqlTuple,
+            status: ISqlExecuteResultStatus.WAITING,
+            timer: null,
+            track: null,
+            total: null,
+            traceId: null,
+            elapsedTime: null,
+            executeSql: null,
+            id: generateUniqKey(),
+            sessionId,
+            isSupportProfile: isSupportProfile,
+          };
+        });
+        this.records = [
+          ...recordAll?.reverse()?.map((r, index) => {
+            return { ...r };
+          }),
+          ...this.records,
+        ];
+      };
 
       this.initLog(pageKey);
+      let isFirstTime = true;
       while (true) {
         const res = await executeSQL(
           {
@@ -331,7 +316,12 @@ export class SQLStore {
           currentExecuteInfo: res.currentExecuteInfo,
         };
         const finished = res?.currentExecuteInfo?.finished;
-        handleResult(finished, streamExecuteResult, res.currentExecuteInfo);
+        if (isFirstTime) {
+          isFirstTime = false;
+          handleFirstExecute();
+        } else {
+          handleResult(finished, res.currentExecuteInfo);
+        }
         if (finished) {
           break;
         } else {
