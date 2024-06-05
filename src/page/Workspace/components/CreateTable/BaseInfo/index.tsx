@@ -202,15 +202,11 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
                 id: 'src.page.Workspace.components.CreateTable.BaseInfo.3907128F',
                 defaultMessage: '存储模式',
               })}
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
             >
               <Select
                 mode="multiple"
                 showSearch
+                allowClear
                 options={[
                   {
                     value: ColumnStoreType.COLUMN,
