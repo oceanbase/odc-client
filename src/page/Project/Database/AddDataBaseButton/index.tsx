@@ -123,9 +123,7 @@ const AddDataBaseButton: React.FC<IProps> = ({
           onClick={() => {
             modalStore?.changeMultiDatabaseChangeModal(true, {
               projectId,
-              parameters: {
-                orderedDatabaseIds,
-              },
+              orderedDatabaseIds,
             });
             clearSelectedRowKeys?.();
           }}

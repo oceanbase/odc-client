@@ -44,21 +44,22 @@ import Cookies from 'js-cookie';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import styles from './index.less';
-import { useProjects } from '../../hooks/useProjects';
 import { DeleteOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { listDatabases } from '@/common/network/database';
 import { useRequest } from 'ahooks';
 import { IEnvironment } from '@/d.ts/environment';
-import _, { throttle } from 'lodash';
-import InnerSelecter from './InnerSelecter';
-import { CreateTemplateModal, SelectTemplate } from './template';
+import _, { merge, throttle } from 'lodash';
+import InnerSelecter, { DatabaseOption } from './InnerSelecter';
 import { runMultipleSQLLint } from '@/common/network/sql';
 import MultipleLintResultTable from '@/page/Workspace/components/SQLResultSet/MultipleAsyncSQLLintTable';
-import { IDatabase } from '@/d.ts/database';
+import { DBObjectSyncStatus, DatabasePermissionType, IDatabase } from '@/d.ts/database';
 import { MultipleAsyncContext } from './MultipleAsyncContext';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { SelectTemplate, CreateTemplate } from '../components/Template';
+import { listProjects } from '@/common/network/project';
+import { ProjectRole } from '@/d.ts/project';
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 interface IProps {
   sqlStore?: SQLStore;
@@ -71,13 +72,6 @@ enum ErrorStrategy {
   CONTINUE = 'CONTINUE',
   ABORT = 'ABORT',
 }
-type DatabaseOption = {
-  label: string;
-  value: number;
-  dataSource: IConnection;
-  environment: IEnvironment;
-  existed: boolean;
-};
 export const flatArray = (array: any[]): any[] => {
   return array?.reduce?.((pre, cur) => pre?.concat(Array.isArray(cur) ? flatArray(cur) : cur), []);
 };
@@ -119,7 +113,7 @@ const items = [
 ];
 
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId, theme } = props;
+  const { modalStore, theme } = props;
   const { multipleAsyncTaskData, multipleDatabaseChangeOpen } = modalStore;
   const [form] = Form.useForm();
   const editorRef = useRef<CommonIDE>();
@@ -130,13 +124,20 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [sqlContentType, setSqlContentType] = useState(SQLContentType.TEXT);
   const [rollbackContentType, setRollbackContentType] = useState(SQLContentType.TEXT);
   const [hasEdit, setHasEdit] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const { projectOptions, projectMap, loadProjects } = useProjects();
+  const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
+  const [projectOptions, setProjectOptions] = useState<
+    {
+      label: string;
+      value: number;
+    }[]
+  >([]);
+  const [projectMap, setProjectMap] = useState<Record<number, string>>({});
   const [databaseIdMap, setDatabaseIdMap] = useState<Map<number, boolean>>(new Map());
   const [defaultDatasource, setDefaultDatasource] = useState<IConnection>();
   const _projectId = Form.useWatch<number>('projectId', form);
   const sqlContent = Form.useWatch<string>(['parameters', 'sqlContent'], form);
   const executionStrategy = Form.useWatch<TaskExecStrategy>('executionStrategy', form);
+  const orderedDatabaseIds = Form.useWatch<number[][]>(['parameters', 'orderedDatabaseIds'], form);
   const [createTemplateModalOpen, setCreateTemplateModalOpen] = useState<boolean>(false);
   const [selectTemplateModalOpen, setSelectTemplateModalOpen] = useState<boolean>(false);
   const [manageTemplateModalOpen, setManageTemplateModalOpen] = useState<boolean>(false);
@@ -159,6 +160,15 @@ const CreateModal: React.FC<IProps> = (props) => {
   }>();
   const [executeOrPreCheckSql, setExecuteOrPreCheckSql] = useState<string>();
   const [sqlChanged, setSqlChanged] = useState<boolean>(false);
+
+  const isRollback = !!multipleAsyncTaskData?.task?.parameters?.parentJobType;
+  const initSqlContent = isRollback
+    ? multipleAsyncTaskData?.task?.parameters?.rollbackSqlContent
+    : multipleAsyncTaskData?.task?.parameters?.sqlContent;
+  const initRollbackContent = isRollback
+    ? ''
+    : multipleAsyncTaskData?.task?.parameters?.rollbackSqlContent;
+
   const {
     data,
     run,
@@ -179,7 +189,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
   // src/component/ODCSetting/index.tsx
   const listener = throttle(() => {
-    if (!scrollSwitcher.current) {
+    if (!scrollSwitcher.current || !formBoxRef.current) {
       return;
     }
     // 获取容器A的当前滚动位置和高度
@@ -331,6 +341,15 @@ const CreateModal: React.FC<IProps> = (props) => {
     }
   };
   const handleSubmit = () => {
+    const databaseIds = flatArray(orderedDatabaseIds);
+    if (databaseIds?.length < 2) {
+      return form.setFields([
+        {
+          name: ['parameters', 'orderedDatabaseIds'],
+          errors: ['至少共需要2个数据库'],
+        },
+      ]);
+    }
     form
       .validateFields()
       .then(async (values) => {
@@ -479,33 +498,85 @@ const CreateModal: React.FC<IProps> = (props) => {
       utils.removeHighlight(editor);
     });
   };
-  const initData = async () => {
-    let formData: any = {};
-    if (multipleDatabaseChangeOpen) {
-      await loadProjects();
-      const initData = { ...multipleAsyncTaskData };
-      formData = {
-        projectId: initData?.projectId ? initData?.projectId : undefined,
-        executionStrategy: TaskExecStrategy.MANUAL,
-        retryTimes: 0,
+  const getInitialValue = () => {
+    const defaultFormData = {
+      projectId: undefined,
+      executionStrategy: TaskExecStrategy.MANUAL,
+      retryTimes: 0,
+      parameters: {
+        orderedDatabaseIds: [[undefined]],
+      },
+    };
+    if (multipleAsyncTaskData?.task) {
+      console.log(multipleAsyncTaskData?.task);
+      const { parameters, description, executionStrategy, rollbackable } =
+        multipleAsyncTaskData?.task;
+      return merge(defaultFormData, {
+        projectId: parameters?.projectId,
+        executionStrategy,
+        retryTimes: parameters?.retryTimes,
         parameters: {
-          orderedDatabaseIds: initData?.parameters?.orderedDatabaseIds?.length
-            ? initData?.parameters?.orderedDatabaseIds
+          orderedDatabaseIds: parameters?.orderedDatabaseIds?.length
+            ? parameters?.orderedDatabaseIds
             : [[undefined]],
+          delimiter: parameters?.delimiter,
+          queryLimit: parameters?.queryLimit,
+          timeoutMillis: parameters?.timeoutMillis / 1000 / 60 / 60,
+          errorStrategy: parameters?.errorStrategy,
+          autoErrorStrategy: parameters?.autoErrorStrategy,
+          manualTimeoutMillis: parameters?.timeoutMillis / 1000 / 60 / 60,
+          generateRollbackPlan: parameters?.generateRollbackPlan,
         },
-      };
-      form.setFieldsValue(formData);
+        description,
+      });
+    }
+    if (multipleAsyncTaskData?.projectId) {
+      return merge(defaultFormData, {
+        projectId: multipleAsyncTaskData?.projectId,
+        parameters: {
+          orderedDatabaseIds: multipleAsyncTaskData?.orderedDatabaseIds,
+        },
+      });
+    }
+    return defaultFormData;
+  };
+  const initData = async () => {
+    if (multipleDatabaseChangeOpen) {
+      await loadProjectOptions();
+      form.setFieldsValue(getInitialValue());
     } else {
       form.resetFields();
     }
   };
-
+  const loadProjectOptions = async () => {
+    const response = await listProjects(undefined, undefined, Number.MAX_SAFE_INTEGER, undefined);
+    if (response?.contents?.length) {
+      const projectOptions = response?.contents?.map(({ name, id, currentUserResourceRoles }) => ({
+        label: name,
+        value: id,
+        disabled:
+          currentUserResourceRoles?.filter((role) =>
+            [ProjectRole.DBA, ProjectRole.OWNER]?.includes(role),
+          )?.length === 0,
+      }));
+      const rawProjectMap = response?.contents?.reduce((pre, cur) => {
+        pre[cur?.id] = cur?.name;
+        return pre;
+      }, {});
+      setProjectMap(rawProjectMap);
+      setProjectOptions(projectOptions);
+    }
+  };
   useLayoutEffect(() => {
-    initData();
+    if (multipleDatabaseChangeOpen) {
+      initData();
+    } else {
+      modalStore.changeMultiDatabaseChangeModal(false);
+    }
   }, [multipleAsyncTaskData, multipleDatabaseChangeOpen]);
   useEffect(() => {
     if (multipleDatabaseChangeOpen) {
-      loadProjects();
+      loadProjectOptions();
       form.setFieldsValue({
         executionStrategy: TaskExecStrategy.MANUAL,
         retryTimes: 0,
@@ -540,6 +611,8 @@ const CreateModal: React.FC<IProps> = (props) => {
         environment: item?.environment,
         dataSource: item?.dataSource,
         existed: item?.existed,
+        disabled: !item?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE),
+        expired: item?.objectSyncStatus === DBObjectSyncStatus.FAILED,
       })),
     );
     if (databaseList?.contents?.length) {
@@ -550,6 +623,11 @@ const CreateModal: React.FC<IProps> = (props) => {
     });
     setDatabaseIdMap(databaseIdMap);
   };
+  useEffect(() => {
+    if (initSqlContent) {
+      handleSqlChange('sqlContent', initSqlContent);
+    }
+  }, [initSqlContent]);
   useEffect(() => {
     if (multipleDatabaseChangeOpen && _projectId) {
       loadDatabaseList(_projectId);
@@ -610,7 +688,6 @@ const CreateModal: React.FC<IProps> = (props) => {
           >
             <Form
               name="basic"
-              // initialValues={}
               layout="vertical"
               requiredMark="optional"
               form={form}
@@ -698,13 +775,14 @@ const CreateModal: React.FC<IProps> = (props) => {
                         </Button>
                       </Tooltip>
                       <SelectTemplate
+                        key={'selectTemplate'}
                         manageTemplateModalOpen={manageTemplateModalOpen}
                         setManageTemplateModalOpen={setManageTemplateModalOpen}
                         selectTemplateModalOpen={selectTemplateModalOpen}
                         setSelectTemplateModalOpen={setSelectTemplateModalOpen}
                       />
                     </Space>
-                    <CreateTemplateModal
+                    <CreateTemplate
                       form={form}
                       createTemplateModalOpen={createTemplateModalOpen}
                       setCreateTemplateModalOpen={setCreateTemplateModalOpen}
@@ -712,147 +790,144 @@ const CreateModal: React.FC<IProps> = (props) => {
                   </div>
                   <div className={styles.orderedDatabaseIds}>
                     <Form.List name={['parameters', 'orderedDatabaseIds']}>
-                      {(fields, { add, remove }) => (
-                        <Timeline>
-                          {fields?.map(({ key, name, ...restField }, index) => (
-                            <Timeline.Item
-                              className={styles.timelineItem}
-                              key={['databaseIds', key, index]?.join(',')}
-                            >
-                              <Form.List name={[name]}>
-                                {(innerFields, { add: innerAdd, remove: innerRemove }) => (
-                                  <DndProvider backend={HTML5Backend}>
-                                    <div
-                                      key={[key, index, 'inner']?.join(',')}
-                                      style={{ display: 'flex', flexDirection: 'column' }}
-                                    >
+                      {(fields, { add, remove }, { errors }) => (
+                        <>
+                          <Timeline>
+                            {fields?.map(({ key, name, ...restField }, index) => (
+                              <Timeline.Item
+                                className={styles.timelineItem}
+                                key={['databaseIds', key, index]?.join(',')}
+                              >
+                                <Form.List name={[name]}>
+                                  {(innerFields, { add: innerAdd, remove: innerRemove }) => (
+                                    <DndProvider backend={HTML5Backend} key={index}>
                                       <div
-                                        style={{
-                                          display: 'flex',
-                                          width: '428px',
-                                          height: '20px',
-                                          lineHeight: '20px',
-                                          justifyContent: 'space-between',
-                                          alignItems: 'center',
-                                        }}
+                                        key={[key, index, 'inner']?.join(',')}
+                                        style={{ display: 'flex', flexDirection: 'column' }}
                                       >
-                                        <div
-                                          className={styles.title}
-                                          style={{ flexShrink: 0, alignSelf: 'center' }}
-                                        >
-                                          {formatMessage({
-                                            id: 'src.component.Task.MutipleAsyncTask.CreateModal.4230F3E6',
-                                            defaultMessage: '执行节点',
-                                          })}
-                                        </div>
-                                        <Divider
-                                          style={{
-                                            flex: 1,
-                                            padding: 0,
-                                            margin: 0,
-                                            alignSelf: 'center',
-                                            height: 1,
-                                            width: 284,
-                                            minWidth: 0,
-                                            maxWidth: 284,
-                                          }}
-                                        />
-
                                         <div
                                           style={{
                                             display: 'flex',
+                                            width: '444px',
+                                            height: '20px',
+                                            lineHeight: '20px',
                                             justifyContent: 'space-between',
-                                            columnGap: '8px',
+                                            alignItems: 'center',
                                           }}
                                         >
-                                          <PlusOutlined onClick={() => innerAdd(undefined)} />
-                                          <UpOutlined
+                                          <div
+                                            className={styles.title}
+                                            style={{ flexShrink: 0, alignSelf: 'center' }}
+                                          >
+                                            {`执行节点${index + 1}`}
+                                          </div>
+                                          <Divider
                                             style={{
-                                              color: index === 0 ? 'var(--mask-color)' : null,
-                                              cursor: index === 0 ? 'not-allowed' : null,
-                                            }}
-                                            onClick={async () => {
-                                              if (index === 0) {
-                                                return;
-                                              }
-                                              const data = await form.getFieldsValue();
-                                              const orderedDatabaseIds =
-                                                data?.parameters?.orderedDatabaseIds ?? [];
-                                              const [pre, next] = orderedDatabaseIds?.slice(
-                                                index - 1,
-                                                index + 1,
-                                              );
-                                              orderedDatabaseIds?.splice(index - 1, 2, next, pre);
-                                              form.setFieldValue(
-                                                ['parameters', 'orderedDatabaseIds'],
-                                                orderedDatabaseIds,
-                                              );
+                                              flex: 1,
+                                              padding: 0,
+                                              margin: 0,
+                                              alignSelf: 'center',
+                                              height: 1,
+                                              width: 284,
+                                              minWidth: 0,
+                                              maxWidth: 284,
                                             }}
                                           />
-
-                                          <DownOutlined
+                                          <div
                                             style={{
-                                              color:
-                                                index === fields?.length - 1
-                                                  ? 'var(--mask-color)'
-                                                  : null,
-                                              cursor:
-                                                index === fields?.length - 1 ? 'not-allowed' : null,
+                                              display: 'flex',
+                                              justifyContent: 'space-between',
+                                              columnGap: '8px',
                                             }}
-                                            onClick={async () => {
-                                              if (index === fields?.length - 1) {
-                                                return;
-                                              }
-                                              const data = await form.getFieldsValue();
-                                              const orderedDatabaseIds =
-                                                data?.parameters?.orderedDatabaseIds ?? [];
-                                              const [pre, next] = orderedDatabaseIds?.slice(
-                                                index,
-                                                index + 2,
-                                              );
-                                              orderedDatabaseIds?.splice(index, 2, next, pre);
-                                              form.setFieldValue(
-                                                ['parameters', 'orderedDatabaseIds'],
-                                                orderedDatabaseIds,
-                                              );
-                                            }}
-                                          />
-
-                                          <DeleteOutlined onClick={() => remove(name)} />
+                                          >
+                                            <PlusOutlined onClick={() => innerAdd(undefined)} />
+                                            <UpOutlined
+                                              style={{
+                                                color: index === 0 ? 'var(--mask-color)' : null,
+                                                cursor: index === 0 ? 'not-allowed' : null,
+                                              }}
+                                              onClick={async () => {
+                                                if (index === 0) {
+                                                  return;
+                                                }
+                                                const data = await form.getFieldsValue();
+                                                const orderedDatabaseIds =
+                                                  data?.parameters?.orderedDatabaseIds ?? [];
+                                                const [pre, next] = orderedDatabaseIds?.slice(
+                                                  index - 1,
+                                                  index + 1,
+                                                );
+                                                orderedDatabaseIds?.splice(index - 1, 2, next, pre);
+                                                form.setFieldValue(
+                                                  ['parameters', 'orderedDatabaseIds'],
+                                                  orderedDatabaseIds,
+                                                );
+                                              }}
+                                            />
+                                            <DownOutlined
+                                              style={{
+                                                color:
+                                                  index === fields?.length - 1
+                                                    ? 'var(--mask-color)'
+                                                    : null,
+                                                cursor:
+                                                  index === fields?.length - 1
+                                                    ? 'not-allowed'
+                                                    : null,
+                                              }}
+                                              onClick={async () => {
+                                                if (index === fields?.length - 1) {
+                                                  return;
+                                                }
+                                                const data = await form.getFieldsValue();
+                                                const orderedDatabaseIds =
+                                                  data?.parameters?.orderedDatabaseIds ?? [];
+                                                const [pre, next] = orderedDatabaseIds?.slice(
+                                                  index,
+                                                  index + 2,
+                                                );
+                                                orderedDatabaseIds?.splice(index, 2, next, pre);
+                                                form.setFieldValue(
+                                                  ['parameters', 'orderedDatabaseIds'],
+                                                  orderedDatabaseIds,
+                                                );
+                                              }}
+                                            />
+                                            <DeleteOutlined onClick={() => remove(name)} />
+                                          </div>
                                         </div>
+                                        <InnerSelecter
+                                          rootName={['parameters', 'orderedDatabaseIds']}
+                                          disabled={!_projectId}
+                                          outerName={name}
+                                          innerFields={innerFields}
+                                          innerRemove={innerRemove}
+                                          databaseOptions={databaseOptions}
+                                        />
                                       </div>
-                                      <InnerSelecter
-                                        projectId={_projectId}
-                                        outerName={name}
-                                        innerFields={innerFields}
-                                        innerRemove={innerRemove}
-                                        databaseOptions={databaseOptions}
-                                      />
-                                    </div>
-                                  </DndProvider>
-                                )}
-                              </Form.List>
+                                    </DndProvider>
+                                  )}
+                                </Form.List>
+                              </Timeline.Item>
+                            ))}
+                            <Timeline.Item className={styles.timelineItem}>
+                              <Button
+                                type="link"
+                                style={{
+                                  padding: 0,
+                                  margin: 0,
+                                  lineHeight: '20px',
+                                  height: '20px',
+                                }}
+                                onClick={() => add([undefined])}
+                                icon={<PlusOutlined />}
+                              >
+                                添加执行节点
+                              </Button>
                             </Timeline.Item>
-                          ))}
-                          <Timeline.Item className={styles.timelineItem}>
-                            <Button
-                              type="link"
-                              style={{
-                                padding: 0,
-                                margin: 0,
-                                lineHeight: '20px',
-                                height: '20px',
-                              }}
-                              onClick={() => add([undefined])}
-                              icon={<PlusOutlined />}
-                            >
-                              {formatMessage({
-                                id: 'src.component.Task.MutipleAsyncTask.CreateModal.F281ECC3',
-                                defaultMessage: '添加执行节点',
-                              })}
-                            </Button>
-                          </Timeline.Item>
-                        </Timeline>
+                          </Timeline>
+                          <Form.ErrorList errors={errors} />
+                        </>
                       )}
                     </Form.List>
                   </div>
@@ -922,6 +997,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 >
                   <CommonIDE
                     ref={editorRef}
+                    initialSQL={initSqlContent}
                     language={
                       getDataSourceModeConfig(defaultDatasource?.type || ConnectType.OB_MYSQL)?.sql
                         ?.language
@@ -1105,7 +1181,11 @@ const CreateModal: React.FC<IProps> = (props) => {
                   }}
                 >
                   <CommonIDE
-                    language={'sql'}
+                    initialSQL={initRollbackContent}
+                    language={
+                      getDataSourceModeConfig(defaultDatasource?.type || ConnectType.OB_MYSQL)?.sql
+                        ?.language
+                    }
                     editorProps={{
                       theme,
                     }}

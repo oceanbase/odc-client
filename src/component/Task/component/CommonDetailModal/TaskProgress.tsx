@@ -20,7 +20,7 @@ import DisplayTable from '@/component/DisplayTable';
 import { SQLContent } from '@/component/SQLContent';
 import StatusLabel from '@/component/Task/component/Status';
 import {
-  IMultipleAsyncPermisssionTaskParams,
+  IMultipleAsyncTaskParams,
   TaskDetail,
   TaskPageType,
   TaskRecordParameters,
@@ -268,6 +268,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
   const { handleDetailVisible: _handleDetailVisible, setState } = useContext(TaskDetailContext);
   const { task, theme, taskStore } = props;
   const [subTasks, setSubTasks] = useState([]);
+  const [databases, setDatabases] = useState([]);
   const [detailId, setDetailId] = useState(null);
   const [open, setOpen] = useState(false);
   const { run: loadData } = useRequest(
@@ -275,7 +276,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
       const res = await getSubTask(task.id);
       if (task?.type === TaskType.MULTIPLE_ASYNC) {
         const sortDb = flatArray(
-          (task as TaskDetail<IMultipleAsyncPermisssionTaskParams>)?.parameters?.orderedDatabaseIds,
+          (task as TaskDetail<IMultipleAsyncTaskParams>)?.parameters?.orderedDatabaseIds,
         );
         // @ts-ignore
         const dbMap = res?.contents?.[0]?.databaseChangingRecordList?.reduce((pre, cur) => {
@@ -284,22 +285,26 @@ const TaskProgress: React.FC<IProps> = (props) => {
         }, {});
         const rawData = [];
         let rawCount = 0;
-        (
-          task as TaskDetail<IMultipleAsyncPermisssionTaskParams>
-        )?.parameters?.orderedDatabaseIds?.map((item, index) => {
-          item?.forEach((_item_, _index_) => {
-            rawData.push({
-              id: rawCount,
-              nodeIndex: index,
-              rowSpan: item?.length,
-              needMerge: _index_ === 0,
-              ...dbMap[_item_],
+        (task as TaskDetail<IMultipleAsyncTaskParams>)?.parameters?.orderedDatabaseIds?.map(
+          (item, index) => {
+            item?.forEach((_item_, _index_) => {
+              rawData.push({
+                id: rawCount,
+                nodeIndex: index,
+                rowSpan: item?.length,
+                needMerge: _index_ === 0,
+                ...dbMap[_item_],
+              });
+              rawCount++;
             });
-            rawCount++;
-          });
-        });
+          },
+        );
         // @ts-ignore
         setSubTasks(rawData);
+        const databases = flatArray(
+          (task as TaskDetail<IMultipleAsyncTaskParams>)?.parameters?.orderedDatabaseIds,
+        )?.map((item) => dbMap?.[item]);
+        databases?.length && setDatabases(databases);
       } else {
         setSubTasks(res?.contents?.[0].tasks);
       }
@@ -351,19 +356,12 @@ const TaskProgress: React.FC<IProps> = (props) => {
           onOpenDetail: handleDetailVisible,
           onSwapTable: handleSwapTable,
         });
+  const pendingExectionDatabases = databases?.filter((item) => !item?.status)?.length;
   return (
     <>
       {task?.type === TaskType.MULTIPLE_ASYNC && subTasks?.length > 0 && (
         <div>
-          {formatMessage({
-            id: 'src.component.Task.component.CommonDetailModal.D0202DBE',
-            defaultMessage: '以下',
-          })}
-          {subTasks?.length}
-          {formatMessage({
-            id: 'src.component.Task.component.CommonDetailModal.C884E6D8',
-            defaultMessage: '个数据库待执行',
-          })}
+          共 {subTasks?.length} 个数据库， {pendingExectionDatabases} 个待执行
         </div>
       )}
 

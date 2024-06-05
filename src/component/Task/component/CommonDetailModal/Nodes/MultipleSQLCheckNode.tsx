@@ -9,6 +9,7 @@ import { formatMessage } from '@/util/intl';
 import styles from '../index.less';
 import MultipleLintResultTable from '@/page/Workspace/components/SQLResultSet/MultipleAsyncSQLLintTable';
 import { IDatabase } from '@/d.ts/database';
+import DBPermissionTableDrawer from '@/page/Workspace/components/SQLResultSet/DBPermissionTableDrawer';
 interface IProps {
   node: Partial<ITaskFlowNode>;
   flowId: number;
@@ -17,6 +18,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
   const { status, nodeType, issueCount, unauthorizedDatabases, id, preCheckOverLimit } = node;
   const [isLoading, setIsLoading] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [permissionResultVisible, setPermissionResultVisible] = useState<boolean>(false);
   const [data, setData] = useState<
     {
       checkResult: ISQLLintReuslt;
@@ -54,8 +56,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
   }
 
   function viewPermissionResult() {
-    // setPermissionResultVisible(true);
-    setVisible(true);
+    setPermissionResultVisible(true);
   }
   return (
     <>
@@ -221,6 +222,13 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
           baseOffset={0}
         />
       </Drawer>
+      <DBPermissionTableDrawer
+        visible={permissionResultVisible}
+        dataSource={unauthorizedDatabases}
+        onClose={() => {
+          setPermissionResultVisible(false);
+        }}
+      />
     </>
   );
 };

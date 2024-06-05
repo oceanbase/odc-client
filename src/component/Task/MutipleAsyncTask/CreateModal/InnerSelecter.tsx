@@ -13,34 +13,32 @@ import styles from './index.less';
 import { flatArray } from '.';
 import classNames from 'classnames';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import ConnectionPopover from '@/component/ConnectionPopover';
 
-type DatabaseOption = {
+export type DatabaseOption = {
   label: string;
   value: number;
   dataSource: IConnection;
   environment: IEnvironment;
   existed: boolean;
+  disabled: boolean;
+  expired: boolean;
 };
 const InnerSelect: React.FC<{
+  rootName: (number | string)[];
   innerName: number;
   outerName: number;
   innerIndex: number;
-  projectId: number;
+  disabled: boolean;
   databaseOptions: DatabaseOption[];
   innerRemove: (value: number) => void;
-}> = ({ innerName, outerName, innerIndex, projectId, databaseOptions, innerRemove }) => {
+}> = ({ rootName, innerName, outerName, innerIndex, disabled, databaseOptions, innerRemove }) => {
   const ref = useRef(null);
   const form = Form.useFormInstance();
   const [searchValue, setSearchValue] = useState<string>();
-  const orderedDatabaseIds = useWatch<number[][]>(['parameters', 'orderedDatabaseIds'], form);
-  const currentOrderedDatabaseIds = useWatch<number[]>(
-    ['parameters', 'orderedDatabaseIds', outerName],
-    form,
-  );
-  const currnetOrderedDatabaseId = useWatch<number>(
-    ['parameters', 'orderedDatabaseIds', outerName, innerName],
-    form,
-  );
+  const orderedDatabaseIds = useWatch<number[][]>(rootName, form);
+  const currentOrderedDatabaseIds = useWatch<number[]>([...rootName, outerName], form);
+  const currnetOrderedDatabaseId = useWatch<number>([...rootName, outerName, innerName], form);
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
   const databaseOptionMap = databaseOptions?.reduce((pre, cur) => {
@@ -51,7 +49,7 @@ const InnerSelect: React.FC<{
     const currentOrderedDatabaseId = currentOrderedDatabaseIds[originIndex];
     currentOrderedDatabaseIds.splice(originIndex, 1);
     currentOrderedDatabaseIds.splice(targetIndex, 0, currentOrderedDatabaseId);
-    form.setFieldValue(['parameters', 'orderedDatabaseIds', origin], currentOrderedDatabaseIds);
+    form.setFieldValue([...rootName, origin], currentOrderedDatabaseIds);
   };
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: 'box',
@@ -73,7 +71,7 @@ const InnerSelect: React.FC<{
         originOrderedDatabaseIds?.splice(item?.originInnerIndex, 1);
         orderedDatabaseIds?.splice(item?.originOuterName, 1, originOrderedDatabaseIds);
         const newOrderedDatabaseIds = orderedDatabaseIds?.filter((ids) => ids?.length);
-        form.setFieldValue(['parameters', 'orderedDatabaseIds'], newOrderedDatabaseIds);
+        form.setFieldValue(rootName, newOrderedDatabaseIds);
       }
     },
     collect: (monitor) => {
@@ -156,70 +154,81 @@ const InnerSelect: React.FC<{
       );
     }
   };
-  const renderItem = (item: DatabaseOption) => {
+  const renderItem = (
+    item: DatabaseOption,
+    setSearchValue: React.Dispatch<React.SetStateAction<string>>,
+  ) => {
     const icon = getDataSourceStyleByConnectType(item?.dataSource?.type);
     const databaseIds = flatArray(orderedDatabaseIds);
-    const isDisabled = databaseIds?.includes(item?.value);
+    const isSelected = databaseIds?.includes(item?.value);
     return (
-      <div
-        title={item?.label}
-        key={item?.value}
-        data-key={item?.value}
-        onClick={() => {
-          if (isDisabled) {
-            return;
-          }
-          form.setFieldValue(
-            ['parameters', 'orderedDatabaseIds', outerName, innerName],
-            item?.value,
-          );
-          setPopoverOpen(false);
-        }}
+      <Popover
+        showArrow={false}
+        placement={'right'}
+        content={<ConnectionPopover connection={item?.dataSource} />}
       >
-        <Tooltip
-          title={
-            isDisabled
-              ? formatMessage({
-                  id: 'src.component.Task.MutipleAsyncTask.CreateModal.BF1212E7',
-                  defaultMessage: '该数据库已被选中',
-                })
-              : null
-          }
+        <div
+          title={item?.label}
+          key={item?.value}
+          data-key={item?.value}
+          onClick={() => {
+            if (isSelected || item?.expired) {
+              return;
+            }
+            setSearchValue('');
+            form.setFieldValue([...rootName, outerName, innerName], item?.value);
+            setPopoverOpen(false);
+          }}
         >
-          <div
-            className={classNames(styles.option, {
-              [styles.optionDisabled]: isDisabled,
-            })}
+          <Tooltip
+            title={
+              isSelected
+                ? formatMessage({
+                    id: 'src.component.Task.MutipleAsyncTask.CreateModal.BF1212E7',
+                    defaultMessage: '该数据库已被选中',
+                  })
+                : null
+            }
           >
-            <Space>
-              <Icon
-                component={icon?.icon?.component}
-                style={{
-                  color: isDisabled ? 'var(--icon-color-disable)' : icon?.icon?.color,
-                  fontSize: 16,
-                  marginRight: 4,
-                }}
-              />
+            <div
+              className={classNames(styles.option, {
+                [styles.optionDisabled]: isSelected || item?.expired,
+              })}
+            >
+              <Space>
+                <Icon
+                  component={icon?.icon?.component}
+                  style={{
+                    color:
+                      isSelected || item?.expired ? 'var(--icon-color-disable)' : icon?.icon?.color,
+                    fontSize: 16,
+                    marginRight: 4,
+                  }}
+                />
 
+                <div
+                  style={{
+                    color:
+                      isSelected || item?.expired
+                        ? 'var(--mask-color)'
+                        : 'var(--text-color-primary)',
+                  }}
+                >
+                  {item?.label}
+                </div>
+                <div style={{ color: 'var(--mask-color)' }}>{item?.dataSource?.name}</div>
+              </Space>
               <div
                 style={{
-                  color: isDisabled ? 'var(--mask-color)' : 'var(--text-color-primary)',
+                  height: '6px',
+                  width: '6px',
+                  backgroundColor: item?.environment?.style,
                 }}
-              >
-                {item?.label}
-              </div>
-              <div style={{ color: 'var(--mask-color)' }}>{item?.dataSource?.name}</div>
-            </Space>
-            <div
-              style={{
-                height: '6px',
-                width: '6px',
-                backgroundColor: item?.environment?.style,
-              }}
-            />
-          </div>
-        </Tooltip>
-      </div>
+              />
+            </div>
+          </Tooltip>
+        </div>
+      </Popover>
     );
   };
   useEffect(() => {
@@ -230,10 +239,11 @@ const InnerSelect: React.FC<{
   return (
     <div
       ref={ref}
+      className={styles.dragIem}
       style={{
         borderTop: isOver ? '1px solid blue' : '1px solid transparent',
         opacity: isDragging ? 0 : 1,
-        width: '430px',
+        width: '444px',
       }}
     >
       <Form.Item>
@@ -302,8 +312,8 @@ const InnerSelect: React.FC<{
                             return item;
                           }
                         })
-                        ?.map((item) => renderItem(item))
-                    : databaseOptions?.map((item) => renderItem(item))}
+                        ?.map((item) => renderItem(item, setSearchValue))
+                    : databaseOptions?.map((item) => renderItem(item, setSearchValue))}
                 </div>
               }
             >
@@ -311,9 +321,10 @@ const InnerSelect: React.FC<{
                 showSearch
                 optionFilterProp="title"
                 style={{ width: 390 }}
+                searchValue={searchValue}
                 onSearch={(searchValue) => setSearchValue(searchValue)}
                 placeholder={getPlaceholder()}
-                disabled={!projectId}
+                disabled={disabled}
                 allowClear
                 open={false}
               />
@@ -326,19 +337,17 @@ const InnerSelect: React.FC<{
   );
 };
 const InnerSelecter: React.FC<{
+  rootName: (number | string)[];
   innerFields: FormListFieldData[];
   outerName: number;
-  projectId: number;
+  disabled: boolean;
   databaseOptions: DatabaseOption[];
   innerRemove: (index: number | number[]) => void;
-}> = ({ innerFields, outerName, projectId, databaseOptions, innerRemove }) => {
+}> = ({ rootName, innerFields, outerName, disabled, databaseOptions, innerRemove }) => {
   const ref = useRef(null);
   const form = Form.useFormInstance();
-  const orderedDatabaseIds = useWatch<number[][]>(['parameters', 'orderedDatabaseIds'], form);
-  const currentOrderedDatabaseIds = useWatch<number[]>(
-    ['parameters', 'orderedDatabaseIds', outerName],
-    form,
-  );
+  const orderedDatabaseIds = useWatch<number[][]>(rootName, form);
+  const currentOrderedDatabaseIds = useWatch<number[]>([...rootName, outerName], form);
 
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: 'box',
@@ -351,7 +360,7 @@ const InnerSelecter: React.FC<{
       orderedDatabaseIds[outerName] = currentOrderedDatabaseIds;
       orderedDatabaseIds?.[item?.originOuterName]?.splice(item?.originInnerIndex, 1);
       const newOrderedDatabaseIds = orderedDatabaseIds?.filter((ids) => ids?.length);
-      form.setFieldValue(['parameters', 'orderedDatabaseIds'], newOrderedDatabaseIds);
+      form.setFieldValue(rootName, newOrderedDatabaseIds);
     },
     collect: (monitor) => {
       return {
@@ -370,8 +379,9 @@ const InnerSelecter: React.FC<{
     <div>
       {innerFields?.map(({ key: innerKey, name: innerName, ...innerRestField }, innerIndex) => (
         <InnerSelect
+          rootName={rootName}
           key={innerIndex}
-          projectId={projectId}
+          disabled={disabled}
           databaseOptions={databaseOptions}
           innerIndex={innerIndex}
           outerName={outerName}
