@@ -36,6 +36,7 @@ import {
   TaskStatus,
   TaskType,
   SubTaskStatus,
+  IMultipleAsyncTaskParams,
 } from '@/d.ts';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
@@ -191,6 +192,13 @@ const ActionBar: React.FC<IProps> = inject(
         case TaskType.APPLY_DATABASE_PERMISSION: {
           modalStore.changeApplyDatabasePermissionModal(true, {
             task: task as TaskDetail<IApplyDatabasePermissionTaskParams>,
+          });
+          return;
+        }
+        case TaskType.MULTIPLE_ASYNC: {
+          modalStore.changeMultiDatabaseChangeModal(true, {
+            projectId: (task as TaskDetail<IMultipleAsyncTaskParams>)?.parameters?.projectId,
+            task: task as TaskDetail<IMultipleAsyncTaskParams>,
           });
           return;
         }
@@ -620,7 +628,10 @@ const ActionBar: React.FC<IProps> = inject(
                 tools.push(downloadBtn);
               } else if (task.type === TaskType.EXPORT_RESULT_SET) {
                 tools.push(downloadBtn);
-              } else if (task.type === TaskType.ASYNC && task?.rollbackable) {
+              } else if (
+                [TaskType.ASYNC, TaskType.MULTIPLE_ASYNC]?.includes(task.type) &&
+                task?.rollbackable
+              ) {
                 tools.push(rollbackBtn);
               } else if (task.type === TaskType.STRUCTURE_COMPARISON) {
                 tools.push(downloadSQLBtn, structrueComparisonBySQL);

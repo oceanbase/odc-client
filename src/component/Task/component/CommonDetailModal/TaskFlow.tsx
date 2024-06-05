@@ -22,7 +22,7 @@ import {
 import UserPopover from '@/component/UserPopover';
 import {
   IFlowTaskType,
-  IMultipleAsyncPermisssionTaskParams,
+  IMultipleAsyncTaskParams,
   ITaskFlowNode,
   ITaskResult,
   TaskDetail,
@@ -41,6 +41,7 @@ import { getStatusDisplayInfo } from './Nodes/helper';
 import RollbackNode from './Nodes/RollbackNode';
 import SQLCheckNode from './Nodes/SQLCheckNode';
 import MultipleSQLCheckNode from './Nodes/MultipleSQLCheckNode';
+import classNames from 'classnames';
 const { Step } = Steps;
 interface IProps {
   task: TaskDetail<TaskRecordParameters>;
@@ -435,8 +436,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
            */
           default: {
             if ((item?.taskType as unknown) === TaskType.MULTIPLE_ASYNC) {
-              const parameters = (task as TaskDetail<IMultipleAsyncPermisssionTaskParams>)
-                ?.parameters;
+              const parameters = (task as TaskDetail<IMultipleAsyncTaskParams>)?.parameters;
               const databaseMap = parameters?.databases?.reduce((pre, cur) => {
                 pre[cur?.id] = cur;
                 return pre;
@@ -453,7 +453,10 @@ const TaskFlow: React.FC<IProps> = (props) => {
                   key={i}
                   status={statusContent?.status as any}
                   title={title}
-                  className={styles.multipleErrorExecNode}
+                  className={classNames({
+                    // TODO: 执行状态影响
+                    [styles.multipleErrorExecNode]: item?.status === TaskNodeStatus.FAILED,
+                  })}
                   description={
                     hasDescription && (
                       <Space direction="vertical">
