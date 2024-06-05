@@ -91,7 +91,7 @@ import { copyToSQL, getColumnNameByColumnKey } from './util';
 import {
   ODC_TRACE_SUPPORT_VERSION,
   OBCompare,
-  ODC_EXECUTE_TREE_SUPPORT_VERSION,
+  ODC_PROFILE_SUPPORT_VERSION,
 } from '@/util/versionUtils';
 import guideCache from '@/util/guideCache';
 
@@ -208,7 +208,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   const update = useUpdate();
   const isSupportExecuteProfile =
     isString(obVersion) &&
-    OBCompare(obVersion, ODC_EXECUTE_TREE_SUPPORT_VERSION, '>=') &&
+    OBCompare(obVersion, ODC_PROFILE_SUPPORT_VERSION, '>=') &&
     showExecutePlan;
   /**
    * 编辑中的rows
@@ -680,9 +680,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   const getExecuteIcon = () => {
     return isSupportExecuteProfile ? (
       <ToolbarButton
-        version={
-          isString(obVersion) && OBCompare(obVersion, ODC_EXECUTE_TREE_SUPPORT_VERSION, '>=')
-        }
+        version={isString(obVersion) && OBCompare(obVersion, ODC_PROFILE_SUPPORT_VERSION, '>=')}
         text={'执行画像'}
         icon={<Icon component={SqlProfile} />}
         onClick={() => {

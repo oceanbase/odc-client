@@ -1,6 +1,6 @@
 import { REACT_FLOW_ID } from './constant';
 import { Tree, Node } from './treeLayout';
-import { NODE_WIDTH, KILO, NODE_HEIGTH, INIT_HEIGHT_GAP } from './constant';
+import { NODE_WIDTH, KILO, NODE_HEIGTH, INIT_HEIGHT_GAP, CPU_TIME, IO_WAIT_TIME } from './constant';
 import { IProfileVertexes } from '@/d.ts';
 import type { Node as FlowNode, SetViewport, SetCenter } from 'reactflow';
 
@@ -202,7 +202,12 @@ export function transformDataForReactFlow(
           hasChild: node?.data?.outEdges?.length,
           outEdges: node?.data?.outEdges || [],
           setSelectedNode: setSelectedNode,
-          percentage: duration ? ((node?.data.duration / duration) * 100).toFixed(2) : '',
+          percentageInCompare:
+            (
+              (node?.data?.overview?.[CPU_TIME] * 100) /
+              (node?.data?.overview?.[CPU_TIME] + node?.data?.overview?.[IO_WAIT_TIME])
+            ).toFixed(2) || '',
+          percentageInAll: duration ? ((node?.data.duration / duration) * 100).toFixed(2) : '',
           isSelected: false,
         },
         type: 'customNode',

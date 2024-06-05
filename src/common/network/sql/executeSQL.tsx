@@ -15,7 +15,7 @@
  */
 
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
-import type { ISqlExecuteResult, ICurrentExecuteInfo } from '@/d.ts';
+import type { ISqlExecuteResult, IExecutingInfo } from '@/d.ts';
 import { EStatus, ISqlExecuteResultStatus } from '@/d.ts';
 import { IUnauthorizedDatabase } from '@/d.ts/database';
 import { IRule } from '@/d.ts/rule';
@@ -65,8 +65,8 @@ export interface IExecuteTaskResult {
   status?: EStatus;
   unauthorizedDatabases?: IUnauthorizedDatabase[];
   unauthorizedSql?: string;
-  streamExecuteResult?: ICurrentExecuteInfo;
-  currentExecuteInfo?: ICurrentExecuteInfo;
+  streamExecuteResult?: IExecutingInfo;
+  currentExecuteInfo?: IExecutingInfo;
 }
 
 export interface IStreamExecuteResult {
@@ -99,7 +99,7 @@ class Task {
     }
     return res?.data;
   };
-  public getResult = async (): Promise<ICurrentExecuteInfo> => {
+  public getResult = async (): Promise<IExecutingInfo> => {
     return new Promise((resolve, reject) => {
       this._getResult(resolve);
     });
@@ -144,7 +144,7 @@ class TaskManager {
     });
     this.tasks = this.tasks.filter(Boolean);
   }
-  public async addAndWaitTask(requestId: string, sessionId: string): Promise<ICurrentExecuteInfo> {
+  public async addAndWaitTask(requestId: string, sessionId: string): Promise<IExecutingInfo> {
     const task = new Task(requestId, sessionId);
     this.tasks.push(task);
     try {

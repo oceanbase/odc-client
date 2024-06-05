@@ -39,6 +39,9 @@ import { action, observable, runInAction } from 'mobx';
 import { generateResultSetColumns } from '../helper';
 import sessionManager from '../sessionManager';
 import setting from '../setting';
+import { ODC_TRACE_SUPPORT_VERSION, OBCompare } from '@/util/versionUtils';
+import { isString } from 'lodash';
+
 export enum ExcecuteSQLMode {
   PL = 'PL',
   TABLE = 'TABLE',
@@ -207,6 +210,9 @@ export class SQLStore {
       let result = [];
       let streamExecuteResult = null;
       let pastRecord = JSON.parse(JSON.stringify(this.records));
+      const obVersion = session?.params?.obVersion;
+      const isSupportProfile =
+        isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=');
       const handleResult = (finished = true, streamExecuteResult, currentExecuteInfo) => {
         // 兼容后端不按约定返回的情况
         if (!record || record.invalid) {
@@ -248,6 +254,7 @@ export class SQLStore {
               executeSql: null,
               id: generateUniqKey(),
               sessionId,
+              isSupportProfile: isSupportProfile,
             };
           });
           const showRecordList = recordAll?.map((i) => {
@@ -257,7 +264,10 @@ export class SQLStore {
             }
             // 已执行的
             if (recordWithSessionId.find((j) => j.sqlId.includes(i.sqlId))) {
-              return { ...recordWithSessionId.find((j) => j.sqlId.includes(i.sqlId)) };
+              return {
+                ...recordWithSessionId.find((j) => j.sqlId.includes(i.sqlId)),
+                isSupportProfile: isSupportProfile,
+              };
             }
             // 等待的
             return i;
@@ -291,6 +301,8 @@ export class SQLStore {
         });
         return record;
       };
+
+      this.initLog(pageKey);
       while (true) {
         const res = await executeSQL(
           {
@@ -334,10 +346,31 @@ export class SQLStore {
     }
   }
 
-  public getLogTab(record: IExecuteTaskResult): IResultSet {
-    const { executeResult, currentExecuteInfo } = record;
+  private initLog(pageKey: string) {
+    const resultSet = this.resultSets.get(pageKey);
+    const lockedResultSets = resultSet.filter((r) => r.locked);
+    this.resultSets.set(pageKey, [...lockedResultSets, this.getLogTab()]);
+    this.activeTab = this.resultSets.get(pageKey)?.find((i) => i.type == 'LOG')?.uniqKey;
+  }
+
+  public getLogTab(record?: IExecuteTaskResult): IResultSet {
     const uniqKey = this.uniqLogKey || generateUniqKey();
     this.uniqLogKey = uniqKey;
+    if (!record) {
+      return {
+        type: 'LOG',
+        uniqKey: uniqKey,
+        columns: [],
+        rows: [],
+        initialSql: '',
+        locked: false,
+        editable: false,
+        isQueriedEditable: false,
+        logTypeData: [],
+        currentExecuteInfo: {},
+      };
+    }
+    const { executeResult, currentExecuteInfo } = record;
     return {
       type: 'LOG',
       uniqKey: uniqKey,

@@ -91,13 +91,13 @@
       width: 100%;
       display: flex;
       justify-content: space-between;
+      align-items: start;
       .titleBox {
         display: inline-flex;
-        max-width: 50%;
+        max-width: 90%;
         .title {
           font-weight: 500;
           text-wrap: nowrap;
-          max-width: 120px;
           overflow: hidden;
           text-overflow: ellipsis;
         }
@@ -114,6 +114,9 @@
       overflow: hidden;
       text-overflow: ellipsis;
       text-wrap: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     .icon {
       position: absolute;
@@ -121,4 +124,40 @@
       padding: 4px;
     }
   }
+}
+
+.progressWithCompare {
+  padding-bottom: 6px;
+  :global {
+    .ant-progress-inner {
+      background-color: #5ad8a6;
+    }
+    .ant-progress-success-bg,
+    .ant-progress-bg {
+      background-color: #1890ff;
+    }
+    .ant-progress-status-success .ant-progress-bg {
+      background-color: #1890ff;
+    }
+  }
+}
+
+.progress {
+  :global {
+    .ant-progress-success-bg,
+    .ant-progress-bg {
+      background-color: #1890ff;
+    }
+    .ant-progress-status-success .ant-progress-bg {
+      background-color: #1890ff;
+    }
+  }
+}
+
+.circle {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
 }

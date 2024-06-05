@@ -19,18 +19,22 @@ export const subNodeSortType = {
   BY_MAX_MEMORY: 'maxMemory',
 };
 
+// 子节点信息汇总
 export const SUM = 'SUM';
 
 export const subNodesSortMap = {
   [subNodeSortType.BY_DURATION]: {
     label: '按 DB 耗时排序',
   },
-  [subNodeSortType.BY_OUTPUT]: {
-    label: '按内存排序',
-    objectKey: 'Output rows',
-  },
   [subNodeSortType.BY_MAX_MEMORY]: {
-    label: '按吐行排序',
+    label: '按内存排序',
     objectKey: 'Max memory',
   },
+  [subNodeSortType.BY_OUTPUT]: {
+    label: '按吐行排序',
+    objectKey: 'Output rows',
+  },
 };
+
+export const CPU_TIME = 'CPU time';
+export const IO_WAIT_TIME = 'I/O wait time';

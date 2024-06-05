@@ -38,6 +38,8 @@ import LintResultTable from './LintResultTable';
 import SQLResultLog from './SQLResultLog';
 import DBPermissionTable from './DBPermissionTable';
 import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
+import { ODC_TRACE_SUPPORT_VERSION, OBCompare } from '@/util/versionUtils';
+import { isString } from 'lodash';
 
 export const recordsTabKey = 'records';
 export const sqlLintTabKey = 'sqlLint';
@@ -247,6 +249,10 @@ const SQLResultSet: React.FC<IProps> = function (props) {
       ProfileType.Execute,
     );
   };
+
+  const obVersion = session?.params?.obVersion;
+  const isSupportProfile =
+    isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=');
 
   return (
     <>
@@ -468,6 +474,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                       stopRunning={stopRunning}
                       onOpenExecutingDetailModal={onOpenExecutingDetailModal}
                       loading={sqlStore.logLoading}
+                      isSupportProfile={isSupportProfile}
                     />
                   ),
                 };

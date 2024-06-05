@@ -19,19 +19,18 @@ import { ISqlExecuteResult, ISqlExecuteResultStatus, SqlType } from '@/d.ts';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { formatTimeTemplate } from '@/util/utils';
-import {
+import Icon, {
   CheckCircleFilled,
   CloseCircleFilled,
   InfoCircleOutlined,
   LoadingOutlined,
   StopFilled,
-  ClockCircleFilled,
 } from '@ant-design/icons';
 import { Alert, message, Space, Table, Tooltip, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
-
+import { ReactComponent as WaitingSvg } from '@/svgr/Waiting.svg';
 import BigNumber from 'bignumber.js';
 import DBTimeline from './DBTimeline';
 import styles from './index.less';
@@ -94,7 +93,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         return <StopFilled style={{ color: 'rgba(0,0,0,0.15)' }} />;
       }
       case ISqlExecuteResultStatus.WAITING: {
-        return <ClockCircleFilled style={{ color: 'rgba(0,0,0,0.15)' }} />;
+        return <Icon component={WaitingSvg} style={{ fontSize: 14, color: 'rgba(0,0,0,0.15)' }} />;
       }
       case ISqlExecuteResultStatus.RUNNING: {
         return <LoadingOutlined style={{ color: 'var(--brand-blue6-color)' }} />;
@@ -193,12 +192,13 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         title: 'TRACE ID',
         ellipsis: true,
         render: (value: string, row: any) => {
-          return value ? (
+          if (!value) return '-';
+          return row?.isSupportProfile ? (
             <Link onClick={() => onOpenExecutingDetailModal(value, row?.originSql, row?.sessionId)}>
               {value}
             </Link>
           ) : (
-            '-'
+            value
           );
         },
       },

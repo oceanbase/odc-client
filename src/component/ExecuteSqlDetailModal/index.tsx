@@ -7,7 +7,7 @@ import { inject, observer } from 'mobx-react';
 import { getSQLExecuteProfile, getSQLExplain } from '@/common/network/sql';
 import Flow from '@/component/ProfileFlow';
 import DisplayTable from '@/component/DisplayTable';
-import { getSqlExplainColumns } from '@/page/Workspace/components/SQLExplain/column';
+import { getSqlProfileColumns } from '@/page/Workspace/components/SQLExplain/column';
 import { formatMessage } from '@/util/intl';
 import { getFullLinkTraceDownloadUrl } from '@/common/network/sql';
 import { downloadFile } from '@/util/utils';
@@ -23,12 +23,11 @@ import {
   executeViewOptions,
   executeViewOptionsInPlan,
   initTabViewConfig,
-  executeRadioOption,
-  planRadioOption,
 } from './constant';
 
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined } from '@ant-design/icons';
+import { IProfileStatus } from '@/d.ts';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -36,7 +35,6 @@ interface IProps {
 
 const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
   const profileType = modalStore?.executeSqlDetailData?.profileType;
-
   const [data, setData] = useState(null);
   const [tab, setTab] = useState<EXECUTE_PAGE_TYPE | PLAN_PAGE_TYPE>(null);
   const [viewType, setViewType] = useState(null);
@@ -44,6 +42,27 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
   const [downloadLoading, setDownloadLoading] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>(null);
+  const finished = data?.graph?.status === IProfileStatus.FINISHED;
+  const getExecuteRadioOption = () => {
+    return [
+      { value: EXECUTE_PAGE_TYPE.EXECUTE_DETAIL, label: '执行详情' },
+      { value: EXECUTE_PAGE_TYPE.EXECUTE_PLAN, label: '执行计划' },
+      {
+        value: EXECUTE_PAGE_TYPE.FULL_TRACE,
+        label: '全链路诊断',
+        disabled: !finished,
+      },
+    ];
+  };
+
+  const planRadioOption = [{ value: PLAN_PAGE_TYPE.PLAN_DETAIL, label: '计划统计' }];
+
+  const getDisabledTooltip = (val) => {
+    if (!finished) {
+      return '当前 SQL 正在执行中，执行完成后可查看';
+    }
+    return val;
+  };
 
   function viewContentConfig(type) {
     const config = {
@@ -60,9 +79,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
             x: 1400,
             y: '100%',
           }}
-          columns={getSqlExplainColumns({
-            handleShowOutputFilter: handleShowOutputFilter,
-          })}
+          columns={getSqlProfileColumns()}
           dataSource={data && data?.tree ? injectKey2TreeData(data?.tree) : []}
           disablePagination={true}
         />
@@ -237,7 +254,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
       traceId: modalStore?.executeSqlDetailData?.traceId,
       getDetail: getExecuteDetail,
       pageConfig: EXECUTE_PAGE_CONFIG,
-      radioOption: executeRadioOption,
+      radioOption: getExecuteRadioOption(),
     },
     [ProfileType.Plan]: {
       title: '执行计划详情',
@@ -292,7 +309,11 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
                 style={{ padding: '12px 0' }}
               >
                 {page?.radioOption.map((i) => {
-                  return <Radio.Button value={i.value}>{i.label}</Radio.Button>;
+                  return (
+                    <Radio.Button value={i.value} disabled={i.disabled}>
+                      <Tooltip title={getDisabledTooltip(i.label)}>{i.label}</Tooltip>
+                    </Radio.Button>
+                  );
                 })}
               </Radio.Group>
               <Space>{page?.pageConfig?.[tab]?.toolBar}</Space>
@@ -303,29 +324,6 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
       </Modal>
     </>
   );
-  function handleShowOutputFilter(filterContent: string) {
-    Modal.info({
-      width: 720,
-      title: formatMessage({
-        id: 'workspace.window.sql.explain.tab.summary.columns.output',
-      }),
-      zIndex: 2000,
-      content: (
-        <div
-          style={{
-            maxHeight: 'calc(100vh - 300px)',
-            overflowY: 'auto',
-          }}
-        >
-          {filterContent}
-        </div>
-      ),
-      maskClosable: true,
-      okText: formatMessage({
-        id: 'app.button.ok',
-      }),
-    });
-  }
 
   function injectKey2TreeData(root) {
     if (Array.isArray(root)) {
