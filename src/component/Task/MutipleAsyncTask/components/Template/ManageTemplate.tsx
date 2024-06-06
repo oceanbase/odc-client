@@ -2,7 +2,7 @@ import { Template, getTemplateList, deleteTemplate } from '@/common/network/data
 import CommonTable from '@/component/CommonTable';
 import { ITableLoadOptions } from '@/component/CommonTable/interface';
 import login from '@/store/login';
-import { message, Popover, Space, Drawer, Descriptions, Popconfirm } from 'antd';
+import { message, Popover, Space, Drawer, Descriptions, Popconfirm, Tooltip } from 'antd';
 import { useContext, useState, useRef } from 'react';
 import { MultipleAsyncContext } from '../../CreateModal/MultipleAsyncContext';
 import EditTemplate from './EditTemplate';
@@ -107,32 +107,31 @@ const ManageTemplate: React.FC<{
                     const orderedDatabaseIds = template?.databaseSequenceList?.map((dbs) => {
                       return dbs.map((db) => db.id);
                     });
-                    return (
+                    return template?.enabled ? (
                       <Popover
                         placement="left"
                         overlayInnerStyle={{
                           padding: '16px',
                         }}
                         content={
-                          template?.enabled ? (
-                            <ShowTemplate
-                              orderedDatabaseIds={orderedDatabaseIds}
-                              databaseIdsMap={databaseIdsMap}
-                            />
-                          ) : null
+                          <ShowTemplate
+                            orderedDatabaseIds={orderedDatabaseIds}
+                            databaseIdsMap={databaseIdsMap}
+                          />
                         }
                       >
                         <div
                           style={{
                             cursor: 'pointer',
                           }}
-                          className={classNames({
-                            [styles.disabled]: !template?.enabled,
-                          })}
                         >
                           {name}
                         </div>
                       </Popover>
+                    ) : (
+                      <Tooltip title="模版已失效" placement="left">
+                        <div className={styles.disabled}>{name}</div>
+                      </Tooltip>
                     );
                   },
                 },
@@ -143,20 +142,22 @@ const ManageTemplate: React.FC<{
                     return (
                       <Space>
                         <div>
-                          <a
-                            style={{ display: 'block' }}
-                            className={classNames({
-                              [styles.disabled]: !template?.enabled,
-                            })}
-                            onClick={() => {
-                              if (!template?.enabled) {
-                                return;
-                              }
-                              handleEditTemplate(true, template?.id);
-                            }}
-                          >
-                            编辑
-                          </a>
+                          <Tooltip title={!template?.enabled ? '模版已失效' : null}>
+                            <a
+                              style={{ display: 'block' }}
+                              className={classNames({
+                                [styles.disabled]: !template?.enabled,
+                              })}
+                              onClick={() => {
+                                if (!template?.enabled) {
+                                  return;
+                                }
+                                handleEditTemplate(true, template?.id);
+                              }}
+                            >
+                              编辑
+                            </a>
+                          </Tooltip>
                         </div>
                         <Popconfirm
                           onCancel={() => {}}
@@ -167,13 +168,7 @@ const ManageTemplate: React.FC<{
                           title="删除模版不影响已发起的工单，是否确定删除？"
                         >
                           <div>
-                            <a
-                              className={classNames({
-                                [styles.disabled]: !template?.enabled,
-                              })}
-                            >
-                              删除
-                            </a>
+                            <a>删除</a>
                           </div>
                         </Popconfirm>
                       </Space>

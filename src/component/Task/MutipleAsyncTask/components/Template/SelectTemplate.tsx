@@ -110,7 +110,7 @@ const SelectTemplate: React.FC<{
                   const orderedDatabaseIds = template?.databaseSequenceList?.map((dbs) => {
                     return dbs.map((db) => db.id);
                   });
-                  return (
+                  return template?.enabled ? (
                     <Popover
                       placement="left"
                       showArrow={false}
@@ -119,24 +119,29 @@ const SelectTemplate: React.FC<{
                         padding: '16px',
                       }}
                       content={
-                        template?.enabled ? (
-                          <ShowTemplate
-                            orderedDatabaseIds={orderedDatabaseIds}
-                            databaseIdsMap={databaseIdsMap}
-                          />
-                        ) : null
+                        <ShowTemplate
+                          orderedDatabaseIds={orderedDatabaseIds}
+                          databaseIdsMap={databaseIdsMap}
+                        />
                       }
                     >
                       <div
                         key={index}
-                        className={classNames(styles.templateItem, {
-                          [styles.templateItemDisabled]: !template?.enabled,
-                        })}
+                        className={styles.templateItem}
                         onClick={() => handleTemplateItemClick(template)}
                       >
                         {template?.name}
                       </div>
                     </Popover>
+                  ) : (
+                    <Tooltip key={index} title="模版已失效" placement="left">
+                      <div
+                        className={classNames(styles.templateItem, styles.templateItemDisabled)}
+                        onClick={() => handleTemplateItemClick(template)}
+                      >
+                        {template?.name}
+                      </div>
+                    </Tooltip>
                   );
                 })}
               </div>
