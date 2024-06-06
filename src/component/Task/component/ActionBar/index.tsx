@@ -36,6 +36,7 @@ import {
   TaskStatus,
   TaskType,
   SubTaskStatus,
+  IMultipleAsyncTaskParams,
 } from '@/d.ts';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
@@ -137,6 +138,7 @@ const ActionBar: React.FC<IProps> = inject(
         task: task as TaskDetail<IAsyncTaskParams>,
         databaseId: task?.database?.id,
         objectId: result?.rollbackPlanResult?.resultFileDownloadUrl,
+        parentFlowInstanceId: task?.id,
       });
     };
 
@@ -164,6 +166,7 @@ const ActionBar: React.FC<IProps> = inject(
 
           //执行成功
         );
+        closeTaskDetail();
       }
     };
 
@@ -189,6 +192,13 @@ const ActionBar: React.FC<IProps> = inject(
         case TaskType.APPLY_DATABASE_PERMISSION: {
           modalStore.changeApplyDatabasePermissionModal(true, {
             task: task as TaskDetail<IApplyDatabasePermissionTaskParams>,
+          });
+          return;
+        }
+        case TaskType.MULTIPLE_ASYNC: {
+          modalStore.changeMultiDatabaseChangeModal(true, {
+            projectId: (task as TaskDetail<IMultipleAsyncTaskParams>)?.parameters?.projectId,
+            task: task as TaskDetail<IMultipleAsyncTaskParams>,
           });
           return;
         }
@@ -618,7 +628,10 @@ const ActionBar: React.FC<IProps> = inject(
                 tools.push(downloadBtn);
               } else if (task.type === TaskType.EXPORT_RESULT_SET) {
                 tools.push(downloadBtn);
-              } else if (task.type === TaskType.ASYNC && task?.rollbackable) {
+              } else if (
+                [TaskType.ASYNC, TaskType.MULTIPLE_ASYNC]?.includes(task.type) &&
+                task?.rollbackable
+              ) {
                 tools.push(rollbackBtn);
               } else if (task.type === TaskType.STRUCTURE_COMPARISON) {
                 tools.push(downloadSQLBtn, structrueComparisonBySQL);
@@ -681,6 +694,23 @@ const ActionBar: React.FC<IProps> = inject(
         }
       } else {
         tools = [viewBtn];
+        if (status === TaskStatus.WAIT_FOR_EXECUTION && isOwner) {
+          const _executeBtn = { ...executeBtn };
+          if (task?.executionStrategy === TaskExecStrategy.TIMER) {
+            _executeBtn.disabled = true;
+            const executionTime = getLocalFormatDateTime(task?.executionTime);
+            _executeBtn.tooltip = formatMessage(
+              {
+                id: 'odc.TaskManagePage.component.TaskTools.ScheduledExecutionTimeExecutiontime',
+              },
+
+              { executionTime: executionTime },
+            );
+          }
+          task?.executionStrategy === TaskExecStrategy.AUTO
+            ? tools.push(stopBtn)
+            : tools.push(_executeBtn, stopBtn);
+        }
       }
       if (task?.executionStrategy === TaskExecStrategy.TIMER) {
         // 定时任务无再次发起

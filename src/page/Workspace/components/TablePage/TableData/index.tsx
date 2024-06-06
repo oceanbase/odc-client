@@ -132,6 +132,9 @@ class TableData extends React.Component<
         session.supportFeature.enableRowId,
         session?.sessionId,
       );
+      if (data?.status !== ISqlExecuteResultStatus.SUCCESS && data?.track) {
+        notification.error(data?.track);
+      }
       let resultSet = generateResultSetColumns([data], session?.connection?.dialectType)?.[0];
       if (resultSet) {
         this._resultSetKey = generateUniqKey();

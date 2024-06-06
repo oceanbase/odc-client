@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { LoadingOutlined } from '@ant-design/icons';
 import { syncObject } from '@/common/network/database';
 import { ReactComponent as SyncMetadataSvg } from '@/svgr/sync_metadata.svg';
@@ -24,11 +25,19 @@ export default function Reload({
 }) {
   const statusMap = {
     NOTSYNCED: {
-      message: (e) => '元数据同步',
+      message: (e) =>
+        formatMessage({
+          id: 'src.component.Button.SyncMetadata.9F1736BB',
+          defaultMessage: '元数据同步',
+        }),
       icon: <SyncMetadataSvg onClick={_onClick} style={{ fontSize: size, cursor: 'pointer' }} />,
     },
     SYNCING: {
-      message: (e) => '元数据同步中，请等待',
+      message: (e) =>
+        formatMessage({
+          id: 'src.component.Button.SyncMetadata.30BFD3E6',
+          defaultMessage: '元数据同步中，请等待',
+        }),
       icon: (
         <LoadingOutlined
           style={{ fontSize: size, cursor: 'pointer', color: 'var(--brand-blue6-color)' }}
@@ -36,7 +45,14 @@ export default function Reload({
       ),
     },
     SYNCED: {
-      message: (time) => `元数据同步（上一次同步时间：${time}）`,
+      message: (time) =>
+        formatMessage(
+          {
+            id: 'src.component.Button.SyncMetadata.FD352980',
+            defaultMessage: '元数据同步（上一次同步时间：${time}）',
+          },
+          { time: time },
+        ),
       icon: <SyncMetadataSvg onClick={_onClick} style={{ fontSize: size, cursor: 'pointer' }} />,
     },
   };

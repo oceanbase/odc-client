@@ -25,6 +25,7 @@ import {
   IMockDataParams,
   IApplyDatabasePermissionTaskParams,
   SubTaskStatus,
+  IMultipleAsyncTaskParams,
 } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import tracert from '@/util/tracert';
@@ -57,6 +58,7 @@ interface AsyncData {
   objectId?: string;
   sql?: string;
   databaseId?: number;
+  parentFlowInstanceId?: number;
   /**
    * 违反的校验规则
    */
@@ -66,9 +68,8 @@ interface AsyncData {
 
 export interface IMultipleAsyncTaskData {
   projectId?: number;
-  parameters: {
-    orderedDatabaseIds: number[][];
-  };
+  orderedDatabaseIds?: number[][];
+  task?: TaskDetail<IMultipleAsyncTaskParams>;
 }
 interface ResultSetExportData {
   sql?: string;
@@ -260,7 +261,7 @@ export class ModalStore {
   public asyncTaskData: AsyncData = null;
 
   @observable
-  public multipleAsyncTaskData: Partial<IMultipleAsyncTaskData> = null;
+  public multipleAsyncTaskData: IMultipleAsyncTaskData = null;
 
   @observable
   public resultSetExportData: ResultSetExportData = null;
@@ -505,10 +506,7 @@ export class ModalStore {
   }
 
   @action
-  public changeMultiDatabaseChangeModal(
-    isShow: boolean = true,
-    data?: Partial<IMultipleAsyncTaskData>,
-  ) {
+  public changeMultiDatabaseChangeModal(isShow: boolean = true, data?: IMultipleAsyncTaskData) {
     this.multipleDatabaseChangeOpen = isShow;
     this.multipleAsyncTaskData = isShow ? data : null;
   }

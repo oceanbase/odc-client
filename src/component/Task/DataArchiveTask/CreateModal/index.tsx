@@ -37,7 +37,7 @@ import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { mbToKb, kbToMb } from '@/util/utils';
+import { mbToKb, kbToMb, hourToMilliSeconds } from '@/util/utils';
 import { FieldTimeOutlined } from '@ant-design/icons';
 import { Button, Checkbox, DatePicker, Drawer, Form, Modal, Radio, Space, InputNumber } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -193,6 +193,8 @@ const CreateModal: React.FC<IProps> = (props) => {
       rateLimit,
       tables,
       variables,
+      timeoutMillis,
+      syncTableStructure,
     } = jobParameters;
 
     const formData = {
@@ -202,12 +204,17 @@ const CreateModal: React.FC<IProps> = (props) => {
       dataSizeLimit: kbToMb(rateLimit?.dataSizeLimit),
       deleteAfterMigration,
       migrationInsertAction,
-      tables,
+      tables: tables?.map((i) => {
+        i.partitions = (i?.partitions as [])?.join(',');
+        return i;
+      }),
       variables: getVariableValue(variables),
       archiveRange: IArchiveRange.PORTION,
       triggerStrategy,
       startAt: undefined,
       description,
+      timeoutMillis: hourToMilliSeconds(timeoutMillis),
+      syncTableStructure,
     };
 
     if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
@@ -317,14 +324,16 @@ const CreateModal: React.FC<IProps> = (props) => {
           description,
           rowLimit,
           dataSizeLimit,
-          taskExecutionDurationHours,
+          timeoutMillis,
           syncTableStructure,
         } = values;
-        _tables.map((i) => {
-          i.partitions = i?.partitions
-            ?.replace(/[\r\n]+/g, '')
-            ?.split(',')
-            ?.filter(Boolean);
+        _tables?.map((i) => {
+          i.partitions = i?.partitions?.length
+            ? i?.partitions
+                ?.replace(/[\r\n]+/g, '')
+                ?.split(',')
+                ?.filter(Boolean)
+            : [];
         });
         const parameters = {
           type: TaskType.MIGRATION,
@@ -347,7 +356,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             deleteAfterMigration,
             migrationInsertAction,
             syncTableStructure,
-            taskExecutionDurationHours,
+            timeoutMillis: hourToMilliSeconds(timeoutMillis),
             rateLimit: {
               rowLimit,
               dataSizeLimit: mbToKb(dataSizeLimit),
@@ -396,7 +405,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       .validateFields()
       .then(async (values) => {
         const { variables, tables: _tables, archiveRange } = values;
-        _tables.map((i) => {
+        _tables?.map((i) => {
           i.partitions = i?.partitions
             ?.replace(/[\r\n]+/g, '')
             ?.split(',')
@@ -541,7 +550,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           />
         </Space>
         <Space direction="vertical" size={24} style={{ width: '100%' }}>
-          <ArchiveRange enabledTargetTable tables={tables} />
+          <ArchiveRange enabledTargetTable tables={tables} form={form} />
           <VariableConfig form={form} />
         </Space>
         <Form.Item name="deleteAfterMigration" valuePropName="checked">
@@ -634,8 +643,8 @@ const CreateModal: React.FC<IProps> = (props) => {
           }
           keepExpand
         >
-          <TaskdurationItem />
-          <SynchronizationItem />
+          <TaskdurationItem form={form} />
+          <SynchronizationItem form={form} />
           <Form.Item
             label={
               formatMessage({

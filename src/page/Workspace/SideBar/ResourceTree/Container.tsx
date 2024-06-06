@@ -40,7 +40,7 @@ export default inject(
     const { tabKey, datasourceId } = useParams<{ tabKey: string; datasourceId: string }>();
     const [selectPanelOpen, setSelectPanelOpen] = useState<boolean>(!tabKey);
     const resourcetreeContext = useContext(ResourceTreeContext);
-    const { selectProjectId, selectDatasourceId } = resourcetreeContext;
+    const { selectProjectId, selectDatasourceId, currentDatabaseId } = resourcetreeContext;
 
     const cacheRef = useRef<ITreeStateCache>({});
 
@@ -70,6 +70,13 @@ export default inject(
         setSelectPanel(false);
       }
     }, [selectProjectId, selectDatasourceId]);
+
+    useEffect(() => {
+      if (currentDatabaseId) {
+        setSelectPanel(false);
+      }
+    }, [currentDatabaseId]);
+
     if (loading) {
       return (
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 20 }}>

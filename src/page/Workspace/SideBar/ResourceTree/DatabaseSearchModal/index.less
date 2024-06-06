@@ -5,7 +5,7 @@
         0 9px 28px 8px rgba(0, 0, 0, 0.05);
       border-radius: 6px;
       .ant-modal-header {
-        padding: 10px 12px;
+        padding: 8px 12px;
         border-radius: 8px 8px;
         .ant-modal-title {
           font-size: 12px;
@@ -36,9 +36,10 @@
       flex-grow: 1;
       display: flex;
       align-items: center;
-      .selecteDatabase {
-        color: var(--text-color-secondary);
+      .selectedDatabase {
+        color: var(--code-normal-color);
         flex-shrink: 0;
+        padding-top: 4px;
         &:hover {
           color: var(--brand-blue6-color);
           cursor: pointer;
@@ -60,6 +61,7 @@
       }
       .selectInput {
         flex-grow: 2;
+        padding-top: 4px;
         :global {
           .ant-input {
             border: none;
@@ -108,13 +110,14 @@
   .modalTabs {
     :global {
       .ant-tabs-tab {
-        margin: 0 12px;
+        margin: 0 6px;
       }
     }
     .objectlistBox {
       max-height: 366px;
       overflow: auto;
       min-height: 302px;
+      margin-top: 6px;
       .objectTypeBox {
         .objectTypeTitle {
           font-weight: 500;
@@ -150,6 +153,27 @@
       align-items: center;
       justify-content: center;
       min-height: 302px;
+      :global {
+        .ant-empty-image {
+          height: 48px;
+          .ant-empty-img-default {
+            width: 54px;
+            height: 48px;
+          }
+        }
+        .ant-empty-description {
+          color: var(--neutral-black45-color);
+        }
+      }
+    }
+  }
+}
+.objectSearchPopup {
+  :global {
+    .ant-tabs-dropdown-menu {
+      left: auto;
+      right: 0;
+      position: absolute;
     }
   }
 }

@@ -58,7 +58,7 @@ export const DbObjectTypeTextMap = {
     id: 'odc.src.d.ts.PackageBody',
   }),
 
-  [DbObjectType.column]: '列',
+  [DbObjectType.column]: formatMessage({ id: 'src.constant.8D87AF25', defaultMessage: '列' }),
 
   //程序包体
   [DbObjectType.trigger]: formatMessage({ id: 'odc.src.d.ts.Trigger' }), // 触发器
@@ -143,6 +143,6 @@ export const SQLSessionModeText = {
   }),
 };
 export const columnGroupsText = {
-  [ColumnStoreType.COLUMN]: '列存',
-  [ColumnStoreType.ROW]: '行存',
+  [ColumnStoreType.COLUMN]: formatMessage({ id: 'src.constant.CE5A59D0', defaultMessage: '列存' }),
+  [ColumnStoreType.ROW]: formatMessage({ id: 'src.constant.481BAC23', defaultMessage: '行存' }),
 };

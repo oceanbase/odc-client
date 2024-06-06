@@ -22,21 +22,29 @@ import classNames from 'classnames';
 import { IArchiveRange } from './index';
 import ArchiveRangeTip from '../../component/ArchiveRangeTip';
 import styles from './index.less';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PartitionTextArea } from '../../component/PartitionTextArea';
 const { TextArea, Group } = Input;
 const { Text, Link } = Typography;
+import type { FormInstance } from 'antd/lib/form';
+
 interface IProps {
   tables: ITable[];
   enabledTargetTable?: boolean;
+  form?: FormInstance<any>;
 }
 const ArchiveRange: React.FC<IProps> = (props) => {
-  const { tables, enabledTargetTable = false } = props;
+  const { tables, enabledTargetTable = false, form } = props;
   const [enablePartition, setEnablePartition] = useState<boolean>(false);
   const tablesOptions = tables?.map((item) => ({
     label: item.tableName,
     value: item.tableName,
   }));
+
+  useEffect(() => {
+    setEnablePartition(!!form?.getFieldsValue()?.tables?.find((i) => i?.partitions));
+  }, [form?.getFieldsValue()?.tables]);
+
   return (
     <>
       <Form.Item
@@ -73,14 +81,23 @@ const ArchiveRange: React.FC<IProps> = (props) => {
           return (
             <div className={styles.tableHeader}>
               <div className={styles.tableHeaderExtra}>
-                <div>归档设置</div>
                 <div>
+                  {formatMessage({
+                    id: 'src.component.Task.DataArchiveTask.CreateModal.877C68FB',
+                    defaultMessage: '归档设置',
+                  })}
+                </div>
+                <div style={{ paddingBottom: 4 }}>
                   <Checkbox
+                    checked={enablePartition}
                     onChange={() => {
                       setEnablePartition(!enablePartition);
                     }}
                   >
-                    指定分区
+                    {formatMessage({
+                      id: 'src.component.Task.DataArchiveTask.CreateModal.AEEF3B7C',
+                      defaultMessage: '指定分区',
+                    })}
                   </Checkbox>
                 </div>
               </div>
@@ -123,7 +140,11 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                 </div>
                 {enabledTargetTable && (
                   <div className={styles.tableTitle}>
-                    高级设置
+                    {formatMessage({
+                      id: 'src.component.Task.DataArchiveTask.CreateModal.CC365F6B',
+                      defaultMessage: '高级设置',
+                    })}
+
                     <Text type="secondary">
                       {
                         formatMessage({
@@ -181,7 +202,10 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                           >
                             <Form.Item {...restField} name={[name, 'targetTableName']}>
                               <Input
-                                addonBefore={'目标表'}
+                                addonBefore={formatMessage({
+                                  id: 'src.component.Task.DataArchiveTask.CreateModal.94BCB0E1',
+                                  defaultMessage: '目标表',
+                                })}
                                 placeholder={
                                   formatMessage({
                                     id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
@@ -197,7 +221,10 @@ const ArchiveRange: React.FC<IProps> = (props) => {
 
                         {fields?.length > 1 && (
                           <Link onClick={() => remove(name)} style={{ textAlign: 'center' }}>
-                            移除
+                            {formatMessage({
+                              id: 'src.component.Task.DataArchiveTask.CreateModal.890DB04E',
+                              defaultMessage: '移除',
+                            })}
                           </Link>
                         )}
                       </div>

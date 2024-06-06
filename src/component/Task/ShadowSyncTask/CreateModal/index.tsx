@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { isReadonlyPublicConnection } from '@/component/Acess';
 import { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
@@ -81,7 +80,6 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
   const sessionId = session?.sessionId;
   const connection = database?.dataSource;
   const connectionId = connection?.id;
-  const isReadonlyPublicConn = isReadonlyPublicConnection(connection);
   const connectionMode = connection?.dialectType;
 
   function setData(v) {
@@ -231,7 +229,6 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
         databaseId={data?.databaseId}
         schemaName={schemaName}
         connectionId={connectionId}
-        isReadonlyPublicConn={isReadonlyPublicConn}
         sessionId={sessionId}
         data={data}
         connectionMode={connectionMode}

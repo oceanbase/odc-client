@@ -1,12 +1,14 @@
 import { SQLContent } from '@/component/SQLContent';
 import {
-  IMultipleAsyncPermisssionTaskParams,
+  IFlowTaskType,
+  IMultipleAsyncTaskParams,
   TaskDetail,
   TaskExecStrategy,
+  TaskNodeStatus,
   type ITaskResult,
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Descriptions, Divider, Drawer, Space, Timeline } from 'antd';
+import { Descriptions, Divider, Drawer, Space, Steps } from 'antd';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 import { useState } from 'react';
 import styles from './index.less';
@@ -19,6 +21,8 @@ import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
 import { getTaskExecStrategyMap } from '../..';
 import { ErrorStrategy } from '../../AsyncTask/DetailContent';
+import classNames from 'classnames';
+const { Step } = Steps;
 interface IStructureComparisonTaskContentProps {
   modalStore?: ModalStore;
   visible?: boolean;
@@ -29,8 +33,14 @@ interface IStructureComparisonTaskContentProps {
 }
 
 export const AutoErrorStrategy = {
-  ABORT: '停止执行',
-  CONTINUE: '忽略错误继续执行',
+  ABORT: formatMessage({
+    id: 'src.component.Task.MutipleAsyncTask.DetailContent.CE76FD47',
+    defaultMessage: '停止执行',
+  }),
+  CONTINUE: formatMessage({
+    id: 'src.component.Task.MutipleAsyncTask.DetailContent.B29F6A70',
+    defaultMessage: '忽略错误继续执行',
+  }),
 };
 const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = inject(
   'modalStore',
@@ -63,7 +73,13 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
           >
             {TaskTypeMap?.[task?.type]}
           </Descriptions.Item>
-          <Descriptions.Item span={4} label="数据库">
+          <Descriptions.Item
+            span={4}
+            label={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.DetailContent.628C9DB4',
+              defaultMessage: '数据库',
+            })}
+          >
             {task?.parameters?.databases
               ?.map((item) => item?.name)
               ?.filter(Boolean)
@@ -78,14 +94,29 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
                 setDetailDrawerOpen(true);
               }}
             >
-              查看详情
+              {formatMessage({
+                id: 'src.component.Task.MutipleAsyncTask.DetailContent.69E1BA99',
+                defaultMessage: '查看详情',
+              })}
             </a>
           </Descriptions.Item>
 
-          <Descriptions.Item span={2} label="所属项目">
+          <Descriptions.Item
+            span={2}
+            label={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.DetailContent.B6FF5C81',
+              defaultMessage: '所属项目',
+            })}
+          >
             {task?.parameters?.databases?.[0]?.project?.name || '-'}
           </Descriptions.Item>
-          <Descriptions.Item span={2} label="风险等级">
+          <Descriptions.Item
+            span={2}
+            label={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.DetailContent.7A621BB2',
+              defaultMessage: '风险等级',
+            })}
+          >
             <ODCRiskLevelLabel
               iconMode
               level={task?.riskLevel?.level}
@@ -94,7 +125,10 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
           </Descriptions.Item>
         </Descriptions>
         <SimpleTextItem
-          label="SQL 内容"
+          label={formatMessage({
+            id: 'src.component.Task.MutipleAsyncTask.DetailContent.10038C15',
+            defaultMessage: 'SQL 内容',
+          })}
           content={
             <div>
               <SQLContent
@@ -110,8 +144,12 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
           }
           direction="column"
         />
+
         <SimpleTextItem
-          label="回滚内容"
+          label={formatMessage({
+            id: 'src.component.Task.MutipleAsyncTask.DetailContent.ACB391BE',
+            defaultMessage: '回滚内容',
+          })}
           content={
             <div>
               <SQLContent
@@ -129,40 +167,109 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
         />
 
         <Descriptions column={4}>
-          <Descriptions.Item span={2} label="分隔符">
+          <Descriptions.Item
+            span={2}
+            label={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.DetailContent.75C1D302',
+              defaultMessage: '分隔符',
+            })}
+          >
             {task?.parameters?.delimiter}
           </Descriptions.Item>
-          <Descriptions.Item span={2} label="查询结果限制">
+          <Descriptions.Item
+            span={2}
+            label={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.DetailContent.5FA1154F',
+              defaultMessage: '查询结果限制',
+            })}
+          >
             {task?.parameters?.queryLimit}
           </Descriptions.Item>
-          <Descriptions.Item span={2} label="执行超时时间">
-            {milliSecondsToHour(task?.parameters?.timeoutMillis)}小时
+          <Descriptions.Item
+            span={2}
+            label={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.DetailContent.439EBA2B',
+              defaultMessage: '执行超时时间',
+            })}
+          >
+            {milliSecondsToHour(task?.parameters?.timeoutMillis)}
+            {formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.DetailContent.CBD57C8D',
+              defaultMessage: '小时',
+            })}
           </Descriptions.Item>
-          <Descriptions.Item span={2} label="SQL 执行处理">
+          <Descriptions.Item
+            span={2}
+            label={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.DetailContent.DAFF4C62',
+              defaultMessage: 'SQL 执行处理',
+            })}
+          >
             {AutoErrorStrategy?.[task?.parameters?.errorStrategy]}
           </Descriptions.Item>
-          <Descriptions.Item span={2} label="执行方式">
+          <Descriptions.Item
+            span={2}
+            label={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.DetailContent.9E276D6A',
+              defaultMessage: '执行方式',
+            })}
+          >
             {taskExecStrategyMap?.[task?.executionStrategy]}
           </Descriptions.Item>
           {task?.executionStrategy === TaskExecStrategy.AUTO ? (
-            <Descriptions.Item span={2} label="任务错误处理">
+            <Descriptions.Item
+              span={2}
+              label={formatMessage({
+                id: 'src.component.Task.MutipleAsyncTask.DetailContent.3BD1E2AF',
+                defaultMessage: '任务错误处理',
+              })}
+            >
               {ErrorStrategy?.[task?.parameters?.autoErrorStrategy]}
             </Descriptions.Item>
           ) : (
-            <Descriptions.Item span={4} label="手动执行超时时间">
-              {milliSecondsToHour(task?.parameters?.manualTimeoutMillis)}小时
+            <Descriptions.Item
+              span={4}
+              label={formatMessage({
+                id: 'src.component.Task.MutipleAsyncTask.DetailContent.E2E22162',
+                defaultMessage: '手动执行超时时间',
+              })}
+            >
+              {milliSecondsToHour(task?.parameters?.manualTimeoutMillis)}
+              {formatMessage({
+                id: 'src.component.Task.MutipleAsyncTask.DetailContent.BB4C24CE',
+                defaultMessage: '小时',
+              })}
             </Descriptions.Item>
           )}
-          <Descriptions.Item span={4} label="描述">
+
+          <Descriptions.Item
+            span={4}
+            label={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.DetailContent.2ACDBED8',
+              defaultMessage: '描述',
+            })}
+          >
             {task?.description || '-'}
           </Descriptions.Item>
         </Descriptions>
         <Divider />
         <Descriptions column={4}>
-          <Descriptions.Item span={2} label="创建人">
+          <Descriptions.Item
+            span={2}
+            label={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.DetailContent.E2A7B335',
+              defaultMessage: '创建人',
+            })}
+          >
             {task?.creator?.name}
           </Descriptions.Item>
-          <Descriptions.Item span={2} label="创建时间">
+          <Descriptions.Item
+            span={2}
+            label={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.DetailContent.762C9629',
+              defaultMessage: '创建时间',
+            })}
+          >
             {getFormatDateTime(task?.createTime)}
           </Descriptions.Item>
         </Descriptions>
@@ -176,24 +283,51 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
   }),
 );
 const DetailDrawer: React.FC<{
-  task: TaskDetail<IMultipleAsyncPermisssionTaskParams>;
+  task: TaskDetail<IMultipleAsyncTaskParams>;
   detailDrawerOpen: boolean;
   setDetailDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ task, detailDrawerOpen, setDetailDrawerOpen }) => {
-  const flatArray = (array: any[]) => {
-    return array?.reduce?.(
-      (pre, cur) => pre?.concat(Array.isArray(cur) ? flatArray(cur) : cur),
-      [],
-    );
-  };
+  const multipleAsyncNodes = task?.nodeList?.filter(
+    (item) => item.taskType === IFlowTaskType.MULTIPLE_ASYNC,
+  );
+
   const databaseIdsMap = task?.parameters?.databases?.reduce((pre, cur) => {
     pre[cur?.id] = cur;
     return pre;
   }, {});
+  const parseTaskStatus = (status: TaskNodeStatus) => {
+    switch (status) {
+      case TaskNodeStatus.FAILED:
+      case TaskNodeStatus.CANCELLED:
+      case TaskNodeStatus.EXPIRED:
+      case TaskNodeStatus.PRE_CHECK_FAILED: {
+        return 'error';
+      }
+      case TaskNodeStatus.EXECUTING: {
+        return 'process';
+      }
+      case TaskNodeStatus.WAIT_FOR_CONFIRM: {
+        return 'wait';
+      }
+      case TaskNodeStatus.COMPLETED: {
+        return 'finish';
+      }
+      case TaskNodeStatus.CREATED:
+      case TaskNodeStatus.PENDING: {
+        return null;
+      }
+      default: {
+        return null;
+      }
+    }
+  };
   return (
     <Drawer
       open={detailDrawerOpen}
-      title="数据库详情"
+      title={formatMessage({
+        id: 'src.component.Task.MutipleAsyncTask.DetailContent.A6BC0EA9',
+        defaultMessage: '数据库详情',
+      })}
       width={520}
       closable
       destroyOnClose
@@ -201,50 +335,75 @@ const DetailDrawer: React.FC<{
         setDetailDrawerOpen(false);
       }}
     >
-      <Timeline mode="left">
+      <Steps progressDot direction="vertical" className={styles.TaskFlow}>
         {task?.parameters?.orderedDatabaseIds?.map((dbs, index) => {
+          const status = parseTaskStatus(multipleAsyncNodes?.[index]?.status);
           return (
-            <Timeline.Item className={styles.timelineItem} key={index}>
-              <div>{`执行节点${index + 1}`}</div>
-              <div
-                style={{
-                  backgroundColor: '#F7F9FB',
-                  padding: '12px 16px',
-                  marginTop: '8px',
-                }}
-              >
-                {dbs?.map((db, _index) => {
-                  const icon = getDataSourceStyleByConnectType(
-                    databaseIdsMap?.[db]?.dataSource?.type,
-                  );
-                  return (
-                    <Space key={_index} size={0}>
-                      <RiskLevelLabel
-                        content={databaseIdsMap?.[db]?.environment?.name}
-                        color={databaseIdsMap?.[db]?.environment?.style}
-                      />
-                      <Space size={4}>
-                        <Icon
-                          component={icon?.icon?.component}
-                          style={{
-                            color: icon?.icon?.color,
-                            fontSize: 16,
-                            marginRight: 4,
-                          }}
+            <Step
+              status={status}
+              key={index}
+              title={
+                <div>
+                  {formatMessage(
+                    {
+                      id: 'src.component.Task.MutipleAsyncTask.DetailContent.6F7DA268',
+                      defaultMessage: '执行节点${index + 1}',
+                    },
+                    { BinaryExpression0: index + 1 },
+                  )}
+                </div>
+              }
+              className={classNames({
+                // TODO: 执行状态影响
+                [styles.multipleErrorExecNode]:
+                  multipleAsyncNodes?.[index]?.status === TaskNodeStatus.FAILED,
+              })}
+              description={
+                <div
+                  style={{
+                    backgroundColor: '#F7F9FB',
+                    padding: '12px 16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                    marginTop: '8px',
+                  }}
+                >
+                  {dbs?.map((db, _index) => {
+                    const icon = getDataSourceStyleByConnectType(
+                      databaseIdsMap?.[db]?.dataSource?.type,
+                    );
+                    return (
+                      <Space key={_index} size={0}>
+                        <RiskLevelLabel
+                          content={databaseIdsMap?.[db]?.environment?.name}
+                          color={databaseIdsMap?.[db]?.environment?.style}
                         />
-                        <div>{databaseIdsMap?.[db]?.name}</div>
-                        <div style={{ color: 'var(--neutral-black45-color)' }}>
-                          {databaseIdsMap?.[db]?.dataSource?.name}
-                        </div>
+
+                        <Space size={4}>
+                          <Icon
+                            component={icon?.icon?.component}
+                            style={{
+                              color: icon?.icon?.color,
+                              fontSize: 16,
+                              marginRight: 4,
+                            }}
+                          />
+
+                          <div>{databaseIdsMap?.[db]?.name}</div>
+                          <div style={{ color: 'var(--neutral-black45-color)' }}>
+                            {databaseIdsMap?.[db]?.dataSource?.name}
+                          </div>
+                        </Space>
                       </Space>
-                    </Space>
-                  );
-                })}
-              </div>
-            </Timeline.Item>
+                    );
+                  })}
+                </div>
+              }
+            />
           );
         })}
-      </Timeline>
+      </Steps>
     </Drawer>
   );
 };
