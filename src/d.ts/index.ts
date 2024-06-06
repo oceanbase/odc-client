@@ -897,6 +897,7 @@ export enum IConnectionTestErrorType {
   UNKNOWN = 'Unknown',
   CONNECT_TYPE_NOT_MATCH = 'ConnectionDatabaseTypeMismatched',
   INIT_SCRIPT_FAILED = 'ConnectionInitScriptFailed',
+  OB_WEAK_READ_CONSISTENCY_REQUIRED = 'ObWeakReadConsistencyRequired',
 }
 
 export interface IConnectionProperty {

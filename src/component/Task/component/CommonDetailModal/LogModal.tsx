@@ -59,7 +59,9 @@ const LogModal: React.FC<IProps> = function (props) {
     setLogType(type);
   };
   useEffect(() => {
-    getLog(scheduleId, recordId, logType);
+    if (visible) {
+      getLog(scheduleId, recordId, logType);
+    }
   }, [scheduleId, recordId, visible, logType]);
   useEffect(() => {
     if (visible) {
