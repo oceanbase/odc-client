@@ -5,6 +5,7 @@ import ODCDragger from '@/component/OSSDragger2';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import {
+  ConnectType,
   IConnection,
   SQLContentType,
   TaskExecStrategy,
@@ -43,20 +44,22 @@ import Cookies from 'js-cookie';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import styles from './index.less';
-import { useProjects } from '../../hooks/useProjects';
 import { DeleteOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { listDatabases } from '@/common/network/database';
 import { useRequest } from 'ahooks';
 import { IEnvironment } from '@/d.ts/environment';
-import _ from 'lodash';
-import InnerSelecter from './InnerSelecter';
-import { CreateTemplateModal, SelectTemplate } from './template';
+import _, { merge, throttle } from 'lodash';
+import InnerSelecter, { DatabaseOption } from './InnerSelecter';
 import { runMultipleSQLLint } from '@/common/network/sql';
 import MultipleLintResultTable from '@/page/Workspace/components/SQLResultSet/MultipleAsyncSQLLintTable';
-import { IDatabase } from '@/d.ts/database';
+import { DBObjectSyncStatus, DatabasePermissionType, IDatabase } from '@/d.ts/database';
 import { MultipleAsyncContext } from './MultipleAsyncContext';
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { SelectTemplate, CreateTemplate } from '../components/Template';
+import { listProjects } from '@/common/network/project';
+import { ProjectRole } from '@/d.ts/project';
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 interface IProps {
   sqlStore?: SQLStore;
@@ -69,13 +72,6 @@ enum ErrorStrategy {
   CONTINUE = 'CONTINUE',
   ABORT = 'ABORT',
 }
-type DatabaseOption = {
-  label: string;
-  value: number;
-  dataSource: IConnection;
-  environment: IEnvironment;
-  existed: boolean;
-};
 export const flatArray = (array: any[]): any[] => {
   return array?.reduce?.((pre, cur) => pre?.concat(Array.isArray(cur) ? flatArray(cur) : cur), []);
 };
@@ -83,43 +79,65 @@ enum SiderTabKeys {
   SELECT_DATABASE = 'SELECT_DATABASE',
   SQL_CONTENT = 'SQL_CONTENT',
   ROLLBACK_CONTENT = 'ROLLBACK_CONTENT',
-  MORE_SETTINGs = 'MORE_SETTINGs',
+  MORE_SETTINGS = 'MORE_SETTINGS',
 }
 const items = [
   {
-    label: '数据库选择',
+    label: formatMessage({
+      id: 'src.component.Task.MutipleAsyncTask.CreateModal.C0D9B0C7',
+      defaultMessage: '数据库选择',
+    }),
     key: SiderTabKeys.SELECT_DATABASE,
   },
   {
-    label: 'SQL 内容',
+    label: formatMessage({
+      id: 'src.component.Task.MutipleAsyncTask.CreateModal.AC5189F0',
+      defaultMessage: 'SQL 内容',
+    }),
     key: SiderTabKeys.SQL_CONTENT,
   },
   {
-    label: '回滚内容',
+    label: formatMessage({
+      id: 'src.component.Task.MutipleAsyncTask.CreateModal.453929F9',
+      defaultMessage: '回滚内容',
+    }),
     key: SiderTabKeys.ROLLBACK_CONTENT,
   },
   {
-    label: '更多设置',
-    key: SiderTabKeys.MORE_SETTINGs,
+    label: formatMessage({
+      id: 'src.component.Task.MutipleAsyncTask.CreateModal.0D0BC691',
+      defaultMessage: '更多设置',
+    }),
+    key: SiderTabKeys.MORE_SETTINGS,
   },
 ];
+
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId, theme } = props;
+  const { modalStore, theme } = props;
   const { multipleAsyncTaskData, multipleDatabaseChangeOpen } = modalStore;
   const [form] = Form.useForm();
   const editorRef = useRef<CommonIDE>();
   const scrollSwitcher = useRef<Boolean>(true);
+  const formBoxRef = React.createRef<HTMLDivElement>();
   const [activeKey, setActiveKey] = useState<SiderTabKeys>(SiderTabKeys.SELECT_DATABASE);
 
   const [sqlContentType, setSqlContentType] = useState(SQLContentType.TEXT);
   const [rollbackContentType, setRollbackContentType] = useState(SQLContentType.TEXT);
   const [hasEdit, setHasEdit] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const { projectOptions, projectMap, loadProjects } = useProjects();
+  const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
+  const [projectOptions, setProjectOptions] = useState<
+    {
+      label: string;
+      value: number;
+    }[]
+  >([]);
+  const [projectMap, setProjectMap] = useState<Record<number, string>>({});
   const [databaseIdMap, setDatabaseIdMap] = useState<Map<number, boolean>>(new Map());
+  const [defaultDatasource, setDefaultDatasource] = useState<IConnection>();
   const _projectId = Form.useWatch<number>('projectId', form);
   const sqlContent = Form.useWatch<string>(['parameters', 'sqlContent'], form);
   const executionStrategy = Form.useWatch<TaskExecStrategy>('executionStrategy', form);
+  const orderedDatabaseIds = Form.useWatch<number[][]>(['parameters', 'orderedDatabaseIds'], form);
   const [createTemplateModalOpen, setCreateTemplateModalOpen] = useState<boolean>(false);
   const [selectTemplateModalOpen, setSelectTemplateModalOpen] = useState<boolean>(false);
   const [manageTemplateModalOpen, setManageTemplateModalOpen] = useState<boolean>(false);
@@ -142,6 +160,15 @@ const CreateModal: React.FC<IProps> = (props) => {
   }>();
   const [executeOrPreCheckSql, setExecuteOrPreCheckSql] = useState<string>();
   const [sqlChanged, setSqlChanged] = useState<boolean>(false);
+
+  const isRollback = !!multipleAsyncTaskData?.task?.parameters?.parentJobType;
+  const initSqlContent = isRollback
+    ? multipleAsyncTaskData?.task?.parameters?.rollbackSqlContent
+    : multipleAsyncTaskData?.task?.parameters?.sqlContent;
+  const initRollbackContent = isRollback
+    ? ''
+    : multipleAsyncTaskData?.task?.parameters?.rollbackSqlContent;
+
   const {
     data,
     run,
@@ -160,6 +187,36 @@ const CreateModal: React.FC<IProps> = (props) => {
       scrollSwitcher.current = true;
     });
   };
+  // src/component/ODCSetting/index.tsx
+  const listener = throttle(() => {
+    if (!scrollSwitcher.current || !formBoxRef.current) {
+      return;
+    }
+    // 获取容器A的当前滚动位置和高度
+    const scrollTop = formBoxRef.current?.scrollTop;
+    // 遍历所有子节点
+    const children = formBoxRef.current?.querySelectorAll<HTMLHeadingElement>('[data-name]'); // 假定子节点有共同的类名'child'
+    let min = Number.MAX_SAFE_INTEGER;
+    let key;
+    children.forEach((child) => {
+      // 获取子节点相对于容器A顶部的位置
+      const childOffsetTop = child.offsetTop;
+      let distance = childOffsetTop - scrollTop;
+      if (distance >= 0) {
+        distance = distance / 2;
+      }
+      const distanceAbs = Math.abs(distance);
+      if (distanceAbs < min) {
+        min = distanceAbs;
+        key = child.getAttribute('data-name');
+      }
+    });
+    if (!key) {
+      return;
+    }
+    setActiveKey(key);
+  }, 500);
+
   const getFileIdAndNames = (files: UploadFile[]) => {
     const ids = [];
     const names = [];
@@ -260,14 +317,23 @@ const CreateModal: React.FC<IProps> = (props) => {
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
-        title: '确认取消数据库变更吗？',
+        title: formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.E9F7FF9D',
+          defaultMessage: '确认取消数据库变更吗？',
+        }),
         centered: true,
         onOk: () => {
           modalStore.changeMultiDatabaseChangeModal(false);
           hadleReset();
         },
-        okText: '确认',
-        cancelText: '取消',
+        okText: formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.B13CF0A4',
+          defaultMessage: '确认',
+        }),
+        cancelText: formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.3FBE491C',
+          defaultMessage: '取消',
+        }),
       });
     } else {
       modalStore.changeMultiDatabaseChangeModal(false);
@@ -275,6 +341,15 @@ const CreateModal: React.FC<IProps> = (props) => {
     }
   };
   const handleSubmit = () => {
+    const databaseIds = flatArray(orderedDatabaseIds);
+    if (databaseIds?.length < 2) {
+      return form.setFields([
+        {
+          name: ['parameters', 'orderedDatabaseIds'],
+          errors: ['至少共需要2个数据库'],
+        },
+      ]);
+    }
     form
       .validateFields()
       .then(async (values) => {
@@ -373,6 +448,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         setConfirmLoading(false);
         if (res) {
           openTasksPage(TaskPageType.MULTIPLE_ASYNC, TaskPageScope.CREATED_BY_CURRENT_USER);
+          modalStore.changeMultiDatabaseChangeModal(false);
         }
       })
       .catch((errorInfo) => {
@@ -398,22 +474,23 @@ const CreateModal: React.FC<IProps> = (props) => {
         },
         login.organizationId?.toString(),
       );
-
-      setExecuteOrPreCheckSql(sqlContent);
-      setSqlChanged(false);
-      setHasPreCheck(true);
-      setPreLoading(false);
-      setLintResultSet(
-        result?.reduce((pre, cur) => {
-          cur?.checkResultList?.forEach((item) => {
-            pre.push({
-              checkResult: item,
-              database: cur?.database,
+      if (result) {
+        setExecuteOrPreCheckSql(sqlContent);
+        setSqlChanged(false);
+        setHasPreCheck(true);
+        setLintResultSet(
+          result?.reduce((pre, cur) => {
+            cur?.checkResultList?.forEach((item) => {
+              pre.push({
+                checkResult: item,
+                database: cur?.database,
+              });
             });
-          });
-          return pre;
-        }, []),
-      );
+            return pre;
+          }, []),
+        );
+      }
+      setPreLoading(false);
     }
   };
   const onEditorAfterCreatedCallback = (editor: IEditor) => {
@@ -421,33 +498,85 @@ const CreateModal: React.FC<IProps> = (props) => {
       utils.removeHighlight(editor);
     });
   };
-  const initData = async () => {
-    let formData: any = {};
-    if (multipleDatabaseChangeOpen) {
-      await loadProjects();
-      const initData = { ...multipleAsyncTaskData };
-      formData = {
-        projectId: initData?.projectId ? initData?.projectId : undefined,
-        executionStrategy: TaskExecStrategy.MANUAL,
-        retryTimes: 0,
+  const getInitialValue = () => {
+    const defaultFormData = {
+      projectId: undefined,
+      executionStrategy: TaskExecStrategy.MANUAL,
+      retryTimes: 0,
+      parameters: {
+        orderedDatabaseIds: [[undefined]],
+      },
+    };
+    if (multipleAsyncTaskData?.task) {
+      console.log(multipleAsyncTaskData?.task);
+      const { parameters, description, executionStrategy, rollbackable } =
+        multipleAsyncTaskData?.task;
+      return merge(defaultFormData, {
+        projectId: parameters?.projectId,
+        executionStrategy,
+        retryTimes: parameters?.retryTimes,
         parameters: {
-          orderedDatabaseIds: initData?.parameters?.orderedDatabaseIds?.length
-            ? initData?.parameters?.orderedDatabaseIds
+          orderedDatabaseIds: parameters?.orderedDatabaseIds?.length
+            ? parameters?.orderedDatabaseIds
             : [[undefined]],
+          delimiter: parameters?.delimiter,
+          queryLimit: parameters?.queryLimit,
+          timeoutMillis: parameters?.timeoutMillis / 1000 / 60 / 60,
+          errorStrategy: parameters?.errorStrategy,
+          autoErrorStrategy: parameters?.autoErrorStrategy,
+          manualTimeoutMillis: parameters?.timeoutMillis / 1000 / 60 / 60,
+          generateRollbackPlan: parameters?.generateRollbackPlan,
         },
-      };
-      form.setFieldsValue(formData);
+        description,
+      });
+    }
+    if (multipleAsyncTaskData?.projectId) {
+      return merge(defaultFormData, {
+        projectId: multipleAsyncTaskData?.projectId,
+        parameters: {
+          orderedDatabaseIds: multipleAsyncTaskData?.orderedDatabaseIds,
+        },
+      });
+    }
+    return defaultFormData;
+  };
+  const initData = async () => {
+    if (multipleDatabaseChangeOpen) {
+      await loadProjectOptions();
+      form.setFieldsValue(getInitialValue());
     } else {
       form.resetFields();
     }
   };
-
+  const loadProjectOptions = async () => {
+    const response = await listProjects(undefined, undefined, Number.MAX_SAFE_INTEGER, undefined);
+    if (response?.contents?.length) {
+      const projectOptions = response?.contents?.map(({ name, id, currentUserResourceRoles }) => ({
+        label: name,
+        value: id,
+        disabled:
+          currentUserResourceRoles?.filter((role) =>
+            [ProjectRole.DBA, ProjectRole.OWNER]?.includes(role),
+          )?.length === 0,
+      }));
+      const rawProjectMap = response?.contents?.reduce((pre, cur) => {
+        pre[cur?.id] = cur?.name;
+        return pre;
+      }, {});
+      setProjectMap(rawProjectMap);
+      setProjectOptions(projectOptions);
+    }
+  };
   useLayoutEffect(() => {
-    initData();
+    if (multipleDatabaseChangeOpen) {
+      initData();
+    } else {
+      modalStore.changeMultiDatabaseChangeModal(false);
+    }
   }, [multipleAsyncTaskData, multipleDatabaseChangeOpen]);
   useEffect(() => {
     if (multipleDatabaseChangeOpen) {
-      loadProjects();
+      loadProjectOptions();
       form.setFieldsValue({
         executionStrategy: TaskExecStrategy.MANUAL,
         retryTimes: 0,
@@ -482,13 +611,23 @@ const CreateModal: React.FC<IProps> = (props) => {
         environment: item?.environment,
         dataSource: item?.dataSource,
         existed: item?.existed,
+        disabled: !item?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE),
+        expired: item?.objectSyncStatus === DBObjectSyncStatus.FAILED,
       })),
     );
+    if (databaseList?.contents?.length) {
+      setDefaultDatasource(databaseList?.contents?.[0]?.dataSource);
+    }
     databaseList?.contents?.forEach((db) => {
       databaseIdMap.set(db.id, false);
     });
     setDatabaseIdMap(databaseIdMap);
   };
+  useEffect(() => {
+    if (initSqlContent) {
+      handleSqlChange('sqlContent', initSqlContent);
+    }
+  }, [initSqlContent]);
   useEffect(() => {
     if (multipleDatabaseChangeOpen && _projectId) {
       loadDatabaseList(_projectId);
@@ -505,7 +644,10 @@ const CreateModal: React.FC<IProps> = (props) => {
         destroyOnClose
         className={styles.asyncTask}
         width={905}
-        title="新建多库表更工单"
+        title={formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.493673D9',
+          defaultMessage: '新建多库变更工单',
+        })}
         footer={
           <Space>
             <Button
@@ -537,20 +679,15 @@ const CreateModal: React.FC<IProps> = (props) => {
           handleCancel(hasEdit);
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-          }}
-        >
+        <div className={styles.content} ref={formBoxRef} onScroll={listener}>
           <div
             style={{
               flexGrow: 1,
-              maxWidth: 'calc(100% - 120px)',
+              maxWidth: 'calc(100% - 136px)',
             }}
           >
             <Form
               name="basic"
-              // initialValues={}
               layout="vertical"
               requiredMark="optional"
               form={form}
@@ -592,13 +729,33 @@ const CreateModal: React.FC<IProps> = (props) => {
                     }
                   />
                 </Form.Item>
-                <Form.Item label="数据库" requiredMark shouldUpdate={true}>
+                <Form.Item
+                  label={formatMessage({
+                    id: 'src.component.Task.MutipleAsyncTask.CreateModal.A608B8E7',
+                    defaultMessage: '数据库',
+                  })}
+                  requiredMark
+                  shouldUpdate={true}
+                >
                   <div className={styles.header}>
                     <div className={styles.tip}>
-                      选择库并设置执行顺序；不同节点将依次执行变更，同一节点内的库将同时变更
+                      {formatMessage({
+                        id: 'src.component.Task.MutipleAsyncTask.CreateModal.50FF5C74',
+                        defaultMessage:
+                          '选择库并设置执行顺序；不同节点将依次执行变更，同一节点内的库将同时变更',
+                      })}
                     </div>
                     <Space split="|">
-                      <Tooltip title={!Boolean(_projectId) ? '请先选择项目' : null}>
+                      <Tooltip
+                        title={
+                          !Boolean(_projectId)
+                            ? formatMessage({
+                                id: 'src.component.Task.MutipleAsyncTask.CreateModal.C7B17105',
+                                defaultMessage: '请先选择项目',
+                              })
+                            : null
+                        }
+                      >
                         <Button
                           disabled={!Boolean(_projectId)}
                           className={styles.linkBtn}
@@ -611,17 +768,21 @@ const CreateModal: React.FC<IProps> = (props) => {
                             setCreateTemplateModalOpen(true);
                           }}
                         >
-                          保存模版
+                          {formatMessage({
+                            id: 'src.component.Task.MutipleAsyncTask.CreateModal.A95292C7',
+                            defaultMessage: '保存模版',
+                          })}
                         </Button>
                       </Tooltip>
                       <SelectTemplate
+                        key={'selectTemplate'}
                         manageTemplateModalOpen={manageTemplateModalOpen}
                         setManageTemplateModalOpen={setManageTemplateModalOpen}
                         selectTemplateModalOpen={selectTemplateModalOpen}
                         setSelectTemplateModalOpen={setSelectTemplateModalOpen}
                       />
                     </Space>
-                    <CreateTemplateModal
+                    <CreateTemplate
                       form={form}
                       createTemplateModalOpen={createTemplateModalOpen}
                       setCreateTemplateModalOpen={setCreateTemplateModalOpen}
@@ -629,138 +790,144 @@ const CreateModal: React.FC<IProps> = (props) => {
                   </div>
                   <div className={styles.orderedDatabaseIds}>
                     <Form.List name={['parameters', 'orderedDatabaseIds']}>
-                      {(fields, { add, remove }) => (
-                        <Timeline>
-                          {fields?.map(({ key, name, ...restField }, index) => (
-                            <Timeline.Item
-                              className={styles.timelineItem}
-                              key={['databaseIds', key, index]?.join(',')}
-                            >
-                              <Form.List name={[name]}>
-                                {(innerFields, { add: innerAdd, remove: innerRemove }) => (
-                                  <DndProvider backend={HTML5Backend}>
-                                    <div
-                                      key={[key, index, 'inner']?.join(',')}
-                                      style={{ display: 'flex', flexDirection: 'column' }}
-                                    >
+                      {(fields, { add, remove }, { errors }) => (
+                        <>
+                          <Timeline>
+                            {fields?.map(({ key, name, ...restField }, index) => (
+                              <Timeline.Item
+                                className={styles.timelineItem}
+                                key={['databaseIds', key, index]?.join(',')}
+                              >
+                                <Form.List name={[name]}>
+                                  {(innerFields, { add: innerAdd, remove: innerRemove }) => (
+                                    <DndProvider backend={HTML5Backend} key={index}>
                                       <div
-                                        style={{
-                                          display: 'flex',
-                                          width: '428px',
-                                          height: '20px',
-                                          lineHeight: '20px',
-                                          justifyContent: 'space-between',
-                                          alignItems: 'center',
-                                        }}
+                                        key={[key, index, 'inner']?.join(',')}
+                                        style={{ display: 'flex', flexDirection: 'column' }}
                                       >
-                                        <div
-                                          className={styles.title}
-                                          style={{ flexShrink: 0, alignSelf: 'center' }}
-                                        >
-                                          执行节点
-                                        </div>
-                                        <Divider
-                                          style={{
-                                            flex: 1,
-                                            padding: 0,
-                                            margin: 0,
-                                            alignSelf: 'center',
-                                            height: 1,
-                                            width: 284,
-                                            minWidth: 0,
-                                            maxWidth: 284,
-                                          }}
-                                        />
                                         <div
                                           style={{
                                             display: 'flex',
+                                            width: '444px',
+                                            height: '20px',
+                                            lineHeight: '20px',
                                             justifyContent: 'space-between',
-                                            columnGap: '8px',
+                                            alignItems: 'center',
                                           }}
                                         >
-                                          <PlusOutlined onClick={() => innerAdd(undefined)} />
-                                          <UpOutlined
+                                          <div
+                                            className={styles.title}
+                                            style={{ flexShrink: 0, alignSelf: 'center' }}
+                                          >
+                                            {`执行节点${index + 1}`}
+                                          </div>
+                                          <Divider
                                             style={{
-                                              color: index === 0 ? 'var(--mask-color)' : null,
-                                              cursor: index === 0 ? 'not-allowed' : null,
-                                            }}
-                                            onClick={async () => {
-                                              if (index === 0) {
-                                                return;
-                                              }
-                                              const data = await form.getFieldsValue();
-                                              const orderedDatabaseIds =
-                                                data?.parameters?.orderedDatabaseIds ?? [];
-                                              const [pre, next] = orderedDatabaseIds?.slice(
-                                                index - 1,
-                                                index + 1,
-                                              );
-                                              orderedDatabaseIds?.splice(index - 1, 2, next, pre);
-                                              form.setFieldValue(
-                                                ['parameters', 'orderedDatabaseIds'],
-                                                orderedDatabaseIds,
-                                              );
+                                              flex: 1,
+                                              padding: 0,
+                                              margin: 0,
+                                              alignSelf: 'center',
+                                              height: 1,
+                                              width: 284,
+                                              minWidth: 0,
+                                              maxWidth: 284,
                                             }}
                                           />
-                                          <DownOutlined
+                                          <div
                                             style={{
-                                              color:
-                                                index === fields?.length - 1
-                                                  ? 'var(--mask-color)'
-                                                  : null,
-                                              cursor:
-                                                index === fields?.length - 1 ? 'not-allowed' : null,
+                                              display: 'flex',
+                                              justifyContent: 'space-between',
+                                              columnGap: '8px',
                                             }}
-                                            onClick={async () => {
-                                              if (index === fields?.length - 1) {
-                                                return;
-                                              }
-                                              const data = await form.getFieldsValue();
-                                              const orderedDatabaseIds =
-                                                data?.parameters?.orderedDatabaseIds ?? [];
-                                              const [pre, next] = orderedDatabaseIds?.slice(
-                                                index,
-                                                index + 2,
-                                              );
-                                              orderedDatabaseIds?.splice(index, 2, next, pre);
-                                              form.setFieldValue(
-                                                ['parameters', 'orderedDatabaseIds'],
-                                                orderedDatabaseIds,
-                                              );
-                                            }}
-                                          />
-                                          <DeleteOutlined onClick={() => remove(name)} />
+                                          >
+                                            <PlusOutlined onClick={() => innerAdd(undefined)} />
+                                            <UpOutlined
+                                              style={{
+                                                color: index === 0 ? 'var(--mask-color)' : null,
+                                                cursor: index === 0 ? 'not-allowed' : null,
+                                              }}
+                                              onClick={async () => {
+                                                if (index === 0) {
+                                                  return;
+                                                }
+                                                const data = await form.getFieldsValue();
+                                                const orderedDatabaseIds =
+                                                  data?.parameters?.orderedDatabaseIds ?? [];
+                                                const [pre, next] = orderedDatabaseIds?.slice(
+                                                  index - 1,
+                                                  index + 1,
+                                                );
+                                                orderedDatabaseIds?.splice(index - 1, 2, next, pre);
+                                                form.setFieldValue(
+                                                  ['parameters', 'orderedDatabaseIds'],
+                                                  orderedDatabaseIds,
+                                                );
+                                              }}
+                                            />
+                                            <DownOutlined
+                                              style={{
+                                                color:
+                                                  index === fields?.length - 1
+                                                    ? 'var(--mask-color)'
+                                                    : null,
+                                                cursor:
+                                                  index === fields?.length - 1
+                                                    ? 'not-allowed'
+                                                    : null,
+                                              }}
+                                              onClick={async () => {
+                                                if (index === fields?.length - 1) {
+                                                  return;
+                                                }
+                                                const data = await form.getFieldsValue();
+                                                const orderedDatabaseIds =
+                                                  data?.parameters?.orderedDatabaseIds ?? [];
+                                                const [pre, next] = orderedDatabaseIds?.slice(
+                                                  index,
+                                                  index + 2,
+                                                );
+                                                orderedDatabaseIds?.splice(index, 2, next, pre);
+                                                form.setFieldValue(
+                                                  ['parameters', 'orderedDatabaseIds'],
+                                                  orderedDatabaseIds,
+                                                );
+                                              }}
+                                            />
+                                            <DeleteOutlined onClick={() => remove(name)} />
+                                          </div>
                                         </div>
+                                        <InnerSelecter
+                                          rootName={['parameters', 'orderedDatabaseIds']}
+                                          disabled={!_projectId}
+                                          outerName={name}
+                                          innerFields={innerFields}
+                                          innerRemove={innerRemove}
+                                          databaseOptions={databaseOptions}
+                                        />
                                       </div>
-                                      <InnerSelecter
-                                        projectId={_projectId}
-                                        outerName={name}
-                                        innerFields={innerFields}
-                                        innerRemove={innerRemove}
-                                        databaseOptions={databaseOptions}
-                                      />
-                                    </div>
-                                  </DndProvider>
-                                )}
-                              </Form.List>
+                                    </DndProvider>
+                                  )}
+                                </Form.List>
+                              </Timeline.Item>
+                            ))}
+                            <Timeline.Item className={styles.timelineItem}>
+                              <Button
+                                type="link"
+                                style={{
+                                  padding: 0,
+                                  margin: 0,
+                                  lineHeight: '20px',
+                                  height: '20px',
+                                }}
+                                onClick={() => add([undefined])}
+                                icon={<PlusOutlined />}
+                              >
+                                添加执行节点
+                              </Button>
                             </Timeline.Item>
-                          ))}
-                          <Timeline.Item className={styles.timelineItem}>
-                            <Button
-                              type="link"
-                              style={{
-                                padding: 0,
-                                margin: 0,
-                                lineHeight: '20px',
-                                height: '20px',
-                              }}
-                              onClick={() => add([undefined])}
-                              icon={<PlusOutlined />}
-                            >
-                              添加执行节点
-                            </Button>
-                          </Timeline.Item>
-                        </Timeline>
+                          </Timeline>
+                          <Form.ErrorList errors={errors} />
+                        </>
                       )}
                     </Form.List>
                   </div>
@@ -768,7 +935,10 @@ const CreateModal: React.FC<IProps> = (props) => {
               </div>
               <div data-name={SiderTabKeys.SQL_CONTENT}>
                 <Form.Item
-                  label="SQL 内容"
+                  label={formatMessage({
+                    id: 'src.component.Task.MutipleAsyncTask.CreateModal.1DFE930F',
+                    defaultMessage: 'SQL 内容',
+                  })}
                   name="sqlContentType"
                   initialValue={SQLContentType.TEXT}
                   rules={[
@@ -815,7 +985,10 @@ const CreateModal: React.FC<IProps> = (props) => {
                   rules={[
                     {
                       required: sqlContentType === SQLContentType.TEXT,
-                      message: '请填写 SQL 内容',
+                      message: formatMessage({
+                        id: 'src.component.Task.MutipleAsyncTask.CreateModal.20CA9283',
+                        defaultMessage: '请填写 SQL 内容',
+                      }),
                     },
                   ]}
                   style={{
@@ -824,8 +997,11 @@ const CreateModal: React.FC<IProps> = (props) => {
                 >
                   <CommonIDE
                     ref={editorRef}
-                    // initialSQL={initSqlContent}
-                    language={'sql'}
+                    initialSQL={initSqlContent}
+                    language={
+                      getDataSourceModeConfig(defaultDatasource?.type || ConnectType.OB_MYSQL)?.sql
+                        ?.language
+                    }
                     onEditorAfterCreatedCallback={onEditorAfterCreatedCallback}
                     onSQLChange={(sql) => {
                       handleSqlChange('sqlContent', sql);
@@ -884,7 +1060,10 @@ const CreateModal: React.FC<IProps> = (props) => {
                 <Tooltip
                   title={
                     sqlContentType === SQLContentType.FILE
-                      ? '请使用 SQL 录入，上传附件暂不支持 SQL 检查'
+                      ? formatMessage({
+                          id: 'src.component.Task.MutipleAsyncTask.CreateModal.F7476B91',
+                          defaultMessage: '请使用 SQL 录入，上传附件暂不支持 SQL 检查',
+                        })
                       : null
                   }
                 >
@@ -945,15 +1124,27 @@ const CreateModal: React.FC<IProps> = (props) => {
               </div>
               <Divider />
               <div data-name={SiderTabKeys.ROLLBACK_CONTENT}>
-                <Form.Item label="回滚方案">
+                <Form.Item
+                  label={formatMessage({
+                    id: 'src.component.Task.MutipleAsyncTask.CreateModal.D521A9F8',
+                    defaultMessage: '回滚方案',
+                  })}
+                >
                   <Form.Item
                     name={['parameters', 'generateRollbackPlan']}
                     valuePropName="checked"
-                    extra={
-                      '可针对 Update、Delete 语句自动生成回滚方案，并以附件形式提供下载，该方案仅供参考'
-                    }
+                    extra={formatMessage({
+                      id: 'src.component.Task.MutipleAsyncTask.CreateModal.DA9F492E',
+                      defaultMessage:
+                        '可针对 Update、Delete 语句自动生成回滚方案，并以附件形式提供下载，该方案仅供参考',
+                    })}
                   >
-                    <Checkbox>生成备份回滚方案</Checkbox>
+                    <Checkbox>
+                      {formatMessage({
+                        id: 'src.component.Task.MutipleAsyncTask.CreateModal.2549497E',
+                        defaultMessage: '生成备份回滚方案',
+                      })}
+                    </Checkbox>
                   </Form.Item>
                   <Form.Item
                     name={['parameters', 'rollbackContentType']}
@@ -965,8 +1156,18 @@ const CreateModal: React.FC<IProps> = (props) => {
                         handleChange('rollbackContentType', e.target.value);
                       }}
                     >
-                      <Radio.Button value={SQLContentType.TEXT}>SQL录入</Radio.Button>
-                      <Radio.Button value={SQLContentType.FILE}>上传附件</Radio.Button>
+                      <Radio.Button value={SQLContentType.TEXT}>
+                        {formatMessage({
+                          id: 'src.component.Task.MutipleAsyncTask.CreateModal.F79FDCAD',
+                          defaultMessage: 'SQL录入',
+                        })}
+                      </Radio.Button>
+                      <Radio.Button value={SQLContentType.FILE}>
+                        {formatMessage({
+                          id: 'src.component.Task.MutipleAsyncTask.CreateModal.447DDBF6',
+                          defaultMessage: '上传附件',
+                        })}
+                      </Radio.Button>
                     </Radio.Group>
                   </Form.Item>
                 </Form.Item>
@@ -980,7 +1181,11 @@ const CreateModal: React.FC<IProps> = (props) => {
                   }}
                 >
                   <CommonIDE
-                    language={'sql'}
+                    initialSQL={initRollbackContent}
+                    language={
+                      getDataSourceModeConfig(defaultDatasource?.type || ConnectType.OB_MYSQL)?.sql
+                        ?.language
+                    }
                     editorProps={{
                       theme,
                     }}
@@ -1012,23 +1217,45 @@ const CreateModal: React.FC<IProps> = (props) => {
                       handleFileChange(files, 'rollbackSqlFiles');
                     }}
                   >
-                    <p className={styles.tip}>点击或将多个文件拖拽到这里上传</p>
-                    <p className={styles.desc}>文件最多不超过 256MB ，支持扩展名 .sql</p>
+                    <p className={styles.tip}>
+                      {formatMessage({
+                        id: 'src.component.Task.MutipleAsyncTask.CreateModal.533E6CE4',
+                        defaultMessage: '点击或将多个文件拖拽到这里上传',
+                      })}
+                    </p>
+                    <p className={styles.desc}>
+                      {formatMessage({
+                        id: 'src.component.Task.MutipleAsyncTask.CreateModal.8BE86C8A',
+                        defaultMessage: '文件最多不超过 256MB ，支持扩展名 .sql',
+                      })}
+                    </p>
                   </ODCDragger>
                 </Form.Item>
               </div>
-              <div data-name={SiderTabKeys.MORE_SETTINGs}>
-                <FormItemPanel label="SQL 执行设置" keepExpand>
+              <div data-name={SiderTabKeys.MORE_SETTINGS}>
+                <FormItemPanel
+                  label={formatMessage({
+                    id: 'src.component.Task.MutipleAsyncTask.CreateModal.F33367CE',
+                    defaultMessage: 'SQL 执行设置',
+                  })}
+                  keepExpand
+                >
                   <Space size={24}>
                     <Form.Item
                       name={['parameters', 'delimiter']}
-                      label="分隔符"
+                      label={formatMessage({
+                        id: 'src.component.Task.MutipleAsyncTask.CreateModal.F77A633D',
+                        defaultMessage: '分隔符',
+                      })}
                       initialValue=";"
                       required
                       rules={[
                         {
                           required: true,
-                          message: '请输入分隔符',
+                          message: formatMessage({
+                            id: 'src.component.Task.MutipleAsyncTask.CreateModal.FF497D5B',
+                            defaultMessage: '请输入分隔符',
+                          }),
                         },
                       ]}
                     >
@@ -1045,31 +1272,52 @@ const CreateModal: React.FC<IProps> = (props) => {
                     </Form.Item>
                     <Form.Item
                       name={['parameters', 'queryLimit']}
-                      label="查询结果限制"
+                      label={formatMessage({
+                        id: 'src.component.Task.MutipleAsyncTask.CreateModal.34D62304',
+                        defaultMessage: '查询结果限制',
+                      })}
                       initialValue={1000}
                       required
                       rules={[
                         {
                           required: true,
-                          message: '请输入查询结果限制',
+                          message: formatMessage({
+                            id: 'src.component.Task.MutipleAsyncTask.CreateModal.631AD60F',
+                            defaultMessage: '请输入查询结果限制',
+                          }),
                         },
                       ]}
                     >
                       <InputNumber style={{ width: 128 }} min={1} max={10000 * 100} />
                     </Form.Item>
-                    <Form.Item label="执行超时时间" required>
+                    <Form.Item
+                      label={formatMessage({
+                        id: 'src.component.Task.MutipleAsyncTask.CreateModal.A1050715',
+                        defaultMessage: '执行超时时间',
+                      })}
+                      required
+                    >
                       <Form.Item
-                        label="小时"
+                        label={formatMessage({
+                          id: 'src.component.Task.MutipleAsyncTask.CreateModal.5B0DDC71',
+                          defaultMessage: '小时',
+                        })}
                         name={['parameters', 'timeoutMillis']}
                         rules={[
                           {
                             required: true,
-                            message: '请输入超时时间',
+                            message: formatMessage({
+                              id: 'src.component.Task.MutipleAsyncTask.CreateModal.57804D6A',
+                              defaultMessage: '请输入超时时间',
+                            }),
                           },
                           {
                             type: 'number',
                             max: 480,
-                            message: '最大不超过480小时',
+                            message: formatMessage({
+                              id: 'src.component.Task.MutipleAsyncTask.CreateModal.50D2F13E',
+                              defaultMessage: '最大不超过480小时',
+                            }),
                           },
                         ]}
                         initialValue={48}
@@ -1077,65 +1325,130 @@ const CreateModal: React.FC<IProps> = (props) => {
                       >
                         <InputNumber style={{ width: 128 }} min={0} precision={1} />
                       </Form.Item>
-                      <span className={styles.hour}>小时</span>
+                      <span className={styles.hour}>
+                        {formatMessage({
+                          id: 'src.component.Task.MutipleAsyncTask.CreateModal.450BFD6C',
+                          defaultMessage: '小时',
+                        })}
+                      </span>
                     </Form.Item>
                   </Space>
                   <Form.Item
-                    label="SQL 执行处理"
+                    label={formatMessage({
+                      id: 'src.component.Task.MutipleAsyncTask.CreateModal.D82AF71B',
+                      defaultMessage: 'SQL 执行处理',
+                    })}
                     name={['parameters', 'errorStrategy']}
                     initialValue={ErrorStrategy.ABORT}
                     rules={[
                       {
                         required: true,
-                        message: '请选择SQL 执行处理',
+                        message: formatMessage({
+                          id: 'src.component.Task.MutipleAsyncTask.CreateModal.C3F2CC4E',
+                          defaultMessage: '请选择SQL 执行处理',
+                        }),
                       },
                     ]}
                   >
                     <Radio.Group>
-                      <Radio value={ErrorStrategy.ABORT}>停止执行</Radio>
-                      <Radio value={ErrorStrategy.CONTINUE}>忽略错误继续执行</Radio>
+                      <Radio value={ErrorStrategy.ABORT}>
+                        {formatMessage({
+                          id: 'src.component.Task.MutipleAsyncTask.CreateModal.7026E054',
+                          defaultMessage: '停止执行',
+                        })}
+                      </Radio>
+                      <Radio value={ErrorStrategy.CONTINUE}>
+                        {formatMessage({
+                          id: 'src.component.Task.MutipleAsyncTask.CreateModal.6E9057B6',
+                          defaultMessage: '忽略错误继续执行',
+                        })}
+                      </Radio>
                     </Radio.Group>
                   </Form.Item>
                 </FormItemPanel>
-                <FormItemPanel label="任务设置" keepExpand>
+                <FormItemPanel
+                  label={formatMessage({
+                    id: 'src.component.Task.MutipleAsyncTask.CreateModal.024E1E8C',
+                    defaultMessage: '任务设置',
+                  })}
+                  keepExpand
+                >
                   <Form.Item
-                    label="执行方式"
+                    label={formatMessage({
+                      id: 'src.component.Task.MutipleAsyncTask.CreateModal.8B0566E4',
+                      defaultMessage: '执行方式',
+                    })}
                     name="executionStrategy"
                     initialValue={TaskExecStrategy.MANUAL}
                     rules={[
                       {
                         required: true,
-                        message: '请选择执行方式',
+                        message: formatMessage({
+                          id: 'src.component.Task.MutipleAsyncTask.CreateModal.B1EBE15F',
+                          defaultMessage: '请选择执行方式',
+                        }),
                       },
                     ]}
                   >
                     <Radio.Group>
-                      <Radio value={TaskExecStrategy.AUTO}>自动执行</Radio>
-                      <Radio value={TaskExecStrategy.MANUAL}>手动执行</Radio>
+                      <Radio value={TaskExecStrategy.AUTO}>
+                        {formatMessage({
+                          id: 'src.component.Task.MutipleAsyncTask.CreateModal.D0E2C00B',
+                          defaultMessage: '自动执行',
+                        })}
+                      </Radio>
+                      <Radio value={TaskExecStrategy.MANUAL}>
+                        {formatMessage({
+                          id: 'src.component.Task.MutipleAsyncTask.CreateModal.A8CB0B6F',
+                          defaultMessage: '手动执行',
+                        })}
+                      </Radio>
                     </Radio.Group>
                   </Form.Item>
                   {executionStrategy === TaskExecStrategy.AUTO ? (
                     <Form.Item
-                      label="任务错误处理"
+                      label={formatMessage({
+                        id: 'src.component.Task.MutipleAsyncTask.CreateModal.0BBF7055',
+                        defaultMessage: '任务错误处理',
+                      })}
                       name={['parameters', 'autoErrorStrategy']}
                       initialValue={ErrorStrategy.ABORT}
                       rules={[
                         {
                           required: true,
-                          message: '请选择任务错误处理',
+                          message: formatMessage({
+                            id: 'src.component.Task.MutipleAsyncTask.CreateModal.D2818FDA',
+                            defaultMessage: '请选择任务错误处理',
+                          }),
                         },
                       ]}
                     >
                       <Radio.Group>
-                        <Radio value={ErrorStrategy.ABORT}>终止任务</Radio>
-                        <Radio value={ErrorStrategy.CONTINUE}>忽略错误继续执行下一节点</Radio>
+                        <Radio value={ErrorStrategy.ABORT}>
+                          {formatMessage({
+                            id: 'src.component.Task.MutipleAsyncTask.CreateModal.9115412E',
+                            defaultMessage: '终止任务',
+                          })}
+                        </Radio>
+                        <Radio value={ErrorStrategy.CONTINUE}>
+                          {formatMessage({
+                            id: 'src.component.Task.MutipleAsyncTask.CreateModal.FBD39393',
+                            defaultMessage: '忽略错误继续执行下一节点',
+                          })}
+                        </Radio>
                       </Radio.Group>
                     </Form.Item>
                   ) : (
                     <Form.Item
                       required
-                      label="手动确认超时时间"
-                      tooltip="超时未确认执行后，任务将终止"
+                      label={formatMessage({
+                        id: 'src.component.Task.MutipleAsyncTask.CreateModal.364DA2E0',
+                        defaultMessage: '手动确认超时时间',
+                      })}
+                      tooltip={formatMessage({
+                        id: 'src.component.Task.MutipleAsyncTask.CreateModal.38358F62',
+                        defaultMessage: '超时未确认执行后，任务将终止',
+                      })}
                     >
                       <Space size={4}>
                         <Form.Item
@@ -1144,24 +1457,38 @@ const CreateModal: React.FC<IProps> = (props) => {
                           rules={[
                             {
                               required: true,
-                              message: '请输入手动确认超时时间',
+                              message: formatMessage({
+                                id: 'src.component.Task.MutipleAsyncTask.CreateModal.73A16360',
+                                defaultMessage: '请输入手动确认超时时间',
+                              }),
                             },
                             {
                               type: 'number',
                               max: 480,
-                              message: '最大不超过480小时',
+                              message: formatMessage({
+                                id: 'src.component.Task.MutipleAsyncTask.CreateModal.61541BB4',
+                                defaultMessage: '最大不超过480小时',
+                              }),
                             },
                           ]}
                           initialValue={48}
                         >
                           <InputNumber
-                            placeholder="请输入"
+                            placeholder={formatMessage({
+                              id: 'src.component.Task.MutipleAsyncTask.CreateModal.2A98246D',
+                              defaultMessage: '请输入',
+                            })}
                             style={{ width: 128 }}
                             min={0}
                             precision={1}
                           />
                         </Form.Item>
-                        <div>小时</div>
+                        <div>
+                          {formatMessage({
+                            id: 'src.component.Task.MutipleAsyncTask.CreateModal.40B65A3B',
+                            defaultMessage: '小时',
+                          })}
+                        </div>
                       </Space>
                     </Form.Item>
                   )}

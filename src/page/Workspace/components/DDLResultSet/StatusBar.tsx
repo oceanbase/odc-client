@@ -61,7 +61,10 @@ const StatusBar: React.FC<IProps> = function ({
                 id: 'odc.components.DDLResultSet.StatusBar.PrimaryKey',
               })
             : //主键
-              '',
+              formatMessage({
+                id: 'src.page.Workspace.components.DDLResultSet.3636E82C',
+                defaultMessage: "/主键\n'",
+              }),
           `${column.dataType}`,
           column.allowNull
             ? formatMessage({
@@ -77,7 +80,10 @@ const StatusBar: React.FC<IProps> = function ({
                 id: 'odc.components.DDLResultSet.StatusBar.AutoIncrement',
               })
             : //自增
-              '',
+              formatMessage({
+                id: 'src.page.Workspace.components.DDLResultSet.8056F345',
+                defaultMessage: "/自增\n'",
+              }),
           // 列注释: comment
           column.comment
             ? `${formatMessage({

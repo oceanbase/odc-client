@@ -24,14 +24,16 @@ import React, { useRef, useState } from 'react';
 import styles from './index.less';
 import { isMac } from '@/util/env';
 import { ModalStore } from '@/store/modal';
+import { SettingStore } from '@/store/setting';
 import { inject, observer } from 'mobx-react';
 
 interface IProps {
   onChange: (type: DbObjectType, value: string) => void;
   modalStore?: ModalStore;
+  settingStore?: SettingStore;
 }
 const splitKey = Symbol('dbSearch').toString();
-const DatabaseSearch: React.FC<IProps> = function ({ onChange, modalStore }) {
+const DatabaseSearch: React.FC<IProps> = function ({ onChange, modalStore, settingStore }) {
   const [inputValue, setInputValue] = useState<string>(null);
   const [tmpValue, setTmpValue] = useState<string>(null);
   const [isFocus, setIsFocus] = useState(false);
@@ -86,6 +88,8 @@ const DatabaseSearch: React.FC<IProps> = function ({ onChange, modalStore }) {
       })
     : [];
   const getShortcut = () => {
+    if (settingStore.configurations['odc.database.default.enableGlobalObjectSearch'] === 'false')
+      return;
     let str = '';
     if (isMac()) {
       str = '⌘ + J';
@@ -95,9 +99,9 @@ const DatabaseSearch: React.FC<IProps> = function ({ onChange, modalStore }) {
     return <span style={{ color: 'var(--text-color-placeholder)', paddingRight: 4 }}>{str}</span>;
   };
 
-  const onClickInput = () => {
-    modalStore.changeDatabaseSearchModalVisible(true);
-  };
+  // const onClickInput = () => {
+  //   modalStore.changeDatabaseSearchModalVisible(true);
+  // };
 
   return (
     <AutoComplete
@@ -138,7 +142,7 @@ const DatabaseSearch: React.FC<IProps> = function ({ onChange, modalStore }) {
           width: '100%',
           height: '28px',
         }}
-        onClick={onClickInput}
+        // onClick={onClickInput}
         suffix={
           <Space size={4}>
             {inputValue ? (
@@ -166,13 +170,9 @@ const DatabaseSearch: React.FC<IProps> = function ({ onChange, modalStore }) {
           </Space>
         }
         size="small"
-        placeholder={
-          formatMessage({
-            id: 'odc.src.page.Workspace.SideBar.ResourceTree.DatabaseSearch.SearchDatabaseObject',
-          }) /* 搜索数据库对象 */
-        }
+        placeholder={'搜索'}
       />
     </AutoComplete>
   );
 };
-export default inject('modalStore')(observer(DatabaseSearch));
+export default inject('modalStore', 'settingStore')(observer(DatabaseSearch));

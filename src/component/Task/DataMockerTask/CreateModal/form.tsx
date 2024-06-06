@@ -15,7 +15,6 @@
  */
 
 import { getTableColumnList, getTableListByDatabaseName } from '@/common/network/table';
-import { isReadonlyPublicConnection } from '@/component/Acess';
 import FormItemPanel from '@/component/FormItemPanel';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
@@ -62,7 +61,6 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
       const forceUpdate = useUpdate();
       const databaseName = database?.name;
       const dialectType = database?.dataSource?.dialectType;
-      const isReadonlyPublicConn = isReadonlyPublicConnection(database?.dataSource);
       const maxMockLimit = settingStore?.serverSystemInfo?.mockDataMaxRowCount || 1000000;
 
       useImperativeHandle(ref, () => form);
@@ -359,7 +357,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
             })}
             /*任务设置*/ keepExpand
           >
-            <TaskTimer isReadonlyPublicConn={isReadonlyPublicConn} />
+            <TaskTimer />
           </FormItemPanel>
           <DescriptionInput />
         </Form>

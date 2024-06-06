@@ -114,7 +114,20 @@ const DatabaseSelecter: React.FC<IProps> = function ({
         : false;
       return {
         title: (
-          <Tooltip placement="topLeft" title={disabled ? `最多支持选择 ${maxCount} 个数据库` : ''}>
+          <Tooltip
+            placement="topLeft"
+            title={
+              disabled
+                ? formatMessage(
+                    {
+                      id: 'src.component.Task.component.DatabaseSelecter.EC5561FD',
+                      defaultMessage: '最多支持选择 ${maxCount} 个数据库',
+                    },
+                    { maxCount: maxCount },
+                  )
+                : ''
+            }
+          >
             <div
               style={{ display: 'flex', width: 320 }}
               onClick={() => {
@@ -128,6 +141,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
             </div>
           </Tooltip>
         ),
+
         disabled,
         key: item?.id,
         icon: <Icon component={DatabaseSvg} />,

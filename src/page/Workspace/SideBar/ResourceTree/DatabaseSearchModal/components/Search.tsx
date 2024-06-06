@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Input, Tooltip } from 'antd';
 import React, { useContext, useEffect, useRef } from 'react';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
@@ -13,22 +14,22 @@ interface Iprops {
   visible: boolean;
   onChangeInput: (SearchTypeMap: SearchTypeMap, value: string) => void;
   isSelectDatabase: boolean;
-  setSelectDatabaseState: React.Dispatch<React.SetStateAction<boolean>>;
   searchKey: string;
   isSelectAll: boolean;
   setSelectAllState: React.Dispatch<React.SetStateAction<boolean>>;
   loading: boolean;
+  setDatabase: React.Dispatch<React.SetStateAction<IDatabase>>;
 }
 const Search = ({
   database,
   visible,
   onChangeInput,
   isSelectDatabase,
-  setSelectDatabaseState,
   searchKey,
   isSelectAll,
   setSelectAllState,
   loading,
+  setDatabase,
 }: Iprops) => {
   const { selectDatasourceId, selectProjectId, projectList, datasourceList } =
     useContext(ResourceTreeContext);
@@ -54,12 +55,13 @@ const Search = ({
           <span style={{ color: 'var(--icon-color-disable)', paddingRight: 4 }}>/</span>
         </>
       );
+
     if (database) {
       return (
         <span
-          className={styles.selecteDatabase}
+          className={styles.selectedDatabase}
           onClick={() => {
-            setSelectDatabaseState(true);
+            setDatabase(null);
             setSelectAllState(false);
             onChangeInput(SearchTypeMap.DATABASE, null);
           }}
@@ -75,14 +77,18 @@ const Search = ({
     if (isSelectAll) {
       return (
         <span
-          className={styles.selecteDatabase}
+          className={styles.selectedDatabase}
           onClick={() => {
-            setSelectDatabaseState(true);
+            setDatabase(null);
             setSelectAllState(false);
             onChangeInput(SearchTypeMap.DATABASE, null);
           }}
         >
-          全部数据库
+          {formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.9F4C3737',
+            defaultMessage: '全部数据库',
+          })}
+
           {divider()}
         </span>
       );
@@ -109,7 +115,10 @@ const Search = ({
         <Input
           size="small"
           ref={inputRef}
-          placeholder="搜索数据库"
+          placeholder={formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.03B6F86A',
+            defaultMessage: '搜索数据库',
+          })}
           onChange={handleChangeDatabaswSearch}
           value={searchKey}
         />
@@ -119,7 +128,10 @@ const Search = ({
       <Input
         size="small"
         ref={inputRef}
-        placeholder="搜索表、字段、视图等"
+        placeholder={formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.EF45DCA4',
+          defaultMessage: '搜索表、字段、视图等',
+        })}
         onChange={handleChangeObjectSearch}
         value={searchKey}
       />
@@ -127,18 +139,33 @@ const Search = ({
   };
 
   const getIcon = () => {
+    const props = {
+      style: { color: 'var(--code-normal-color)' },
+    };
     if (loading) {
-      return <LoadingOutlined />;
+      return <LoadingOutlined {...props} />;
     }
-    return <SearchOutlined />;
+    return <SearchOutlined {...props} />;
   };
 
   return (
     <div>
       <div className={styles.listTitle}>
         {selectProject
-          ? `当前项目: ${selectProject?.name}`
-          : `当前数据源: ${selectDatasource?.name}`}
+          ? formatMessage(
+              {
+                id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.6D5791AB',
+                defaultMessage: '当前项目: ${selectProject?.name}',
+              },
+              { selectProjectName: selectProject?.name },
+            )
+          : formatMessage(
+              {
+                id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.987D5B8A',
+                defaultMessage: '当前数据源: ${selectDatasource?.name}',
+              },
+              { selectDatasourceName: selectDatasource?.name },
+            )}
       </div>
       <span className={styles.title}>
         <span className={styles.selectInfo}>

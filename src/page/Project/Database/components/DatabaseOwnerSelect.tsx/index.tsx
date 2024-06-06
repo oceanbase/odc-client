@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Form, Select, Checkbox, Row, Col, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useContext, useMemo } from 'react';
@@ -37,12 +38,12 @@ export const DatabaseOwnerSelect = ({
   const projectUserOptions: DefaultOptionType[] = useMemo(() => {
     const userMap = new Map<number, DefaultOptionType>();
     project?.members?.forEach((mem) => {
-      const { id, name, role } = mem;
+      const { id, name, role, userEnabled } = mem;
       if (!userMap.has(id)) {
         userMap.set(id, {
           value: id,
           label: name,
-          disabled: !ownerIds?.includes(id),
+          disabled: !userEnabled,
           role: [role],
         });
       } else {
@@ -50,7 +51,7 @@ export const DatabaseOwnerSelect = ({
         userMap.set(id, {
           value: userMap.get(id)?.value,
           label: userMap.get(id)?.label,
-          disabled: userMap.get(id)?.disabled,
+          disabled: userMap.get(id)?.disabled || !userEnabled,
           role: [...userMap.get(id)?.role, role],
         });
       }
@@ -65,20 +66,44 @@ export const DatabaseOwnerSelect = ({
           name="ownerIds"
           label={
             <span>
-              <span style={{ paddingRight: 4 }}>库管理员</span>
+              <span style={{ paddingRight: 4 }}>
+                {formatMessage({
+                  id: 'src.page.Project.Database.components.DatabaseOwnerSelect.tsx.556A83EA',
+                  defaultMessage: '库管理员',
+                })}
+              </span>
               <Tooltip
-                title="在原有项目角色的基础上，拥有该库的审批权限"
+                title={formatMessage({
+                  id: 'src.page.Project.Database.components.DatabaseOwnerSelect.tsx.34B8A74A',
+                  defaultMessage: '库管理员是数据库和表的负责人，可以在审批流程中引用',
+                })}
                 overlayInnerStyle={{ width: 268 }}
               >
                 <QuestionCircleOutlined />
               </Tooltip>
             </span>
           }
+          rules={
+            hasDefaultSet && !notSetAdmin
+              ? [
+                  {
+                    required: true,
+                    message: formatMessage({
+                      id: 'src.page.Project.Database.components.DatabaseOwnerSelect.tsx.CBBD314E',
+                      defaultMessage: '请输入',
+                    }),
+                  },
+                ]
+              : null
+          }
         >
           <Select
             allowClear
             mode="multiple"
-            placeholder="请选择"
+            placeholder={formatMessage({
+              id: 'src.page.Project.Database.components.DatabaseOwnerSelect.tsx.094820AF',
+              defaultMessage: '请选择',
+            })}
             style={{
               width: '100%',
             }}
@@ -91,7 +116,12 @@ export const DatabaseOwnerSelect = ({
           >
             {projectUserOptions.map((item) => {
               return (
-                <Option key={item.value} value={item.value} label={item.label}>
+                <Option
+                  key={item.value}
+                  value={item.value}
+                  label={item.label}
+                  disabled={item.disabled}
+                >
                   {item.label}
                   <span
                     style={{ paddingLeft: 8, fontSize: 12, color: 'var(--neutral-black45-color)' }}
@@ -114,7 +144,10 @@ export const DatabaseOwnerSelect = ({
             }}
             style={{ marginTop: 30 }}
           >
-            不设置管理员
+            {formatMessage({
+              id: 'src.page.Project.Database.components.DatabaseOwnerSelect.tsx.2882064F',
+              defaultMessage: '不设置管理员',
+            })}
           </Checkbox>
         </Col>
       )}

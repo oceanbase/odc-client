@@ -275,6 +275,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                                     }
                                     name={set.key}
                                     key={set.key}
+                                    rules={set.rules}
                                   >
                                     {set.render(null, async () => {})}
                                   </Form.Item>

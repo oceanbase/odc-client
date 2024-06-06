@@ -36,7 +36,7 @@ import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { mbToKb, kbToMb } from '@/util/utils';
+import { mbToKb, kbToMb, hourToMilliSeconds } from '@/util/utils';
 import { FieldTimeOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Drawer, Form, Modal, Radio, Space, Checkbox, InputNumber } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -151,20 +151,25 @@ const CreateModal: React.FC<IProps> = (props) => {
       deleteByUniqueKey,
       needCheckBeforeDelete,
       targetDatabaseId,
+      timeoutMillis,
     } = jobParameters;
     const formData = {
       databaseId,
       rowLimit: rateLimit?.rowLimit,
       dataSizeLimit: kbToMb(rateLimit?.dataSizeLimit),
-      tables,
+      tables: tables?.map((i) => {
+        i.partitions = (i?.partitions as [])?.join(',');
+        return i;
+      }),
       deleteByUniqueKey,
       variables: getVariableValue(variables),
       archiveRange: IArchiveRange.PORTION,
       triggerStrategy,
       startAt: undefined,
       description,
-      needCheckBeforeDelete: needCheckBeforeDelete,
-      targetDatabaseId: targetDatabaseId,
+      needCheckBeforeDelete,
+      targetDatabaseId,
+      timeoutMillis: hourToMilliSeconds(timeoutMillis),
     };
 
     if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
@@ -273,15 +278,17 @@ const CreateModal: React.FC<IProps> = (props) => {
           rowLimit,
           dataSizeLimit,
           deleteByUniqueKey,
-          taskExecutionDurationHours,
+          timeoutMillis,
           needCheckBeforeDelete,
           targetDatabaseId,
         } = values;
-        _tables.map((i) => {
-          i.partitions = i?.partitions
-            ?.replace(/[\r\n]+/g, '')
-            ?.split(',')
-            .filter(Boolean);
+        _tables?.map((i) => {
+          i.partitions = i?.partitions?.length
+            ? i?.partitions
+                ?.replace(/[\r\n]+/g, '')
+                ?.split(',')
+                .filter(Boolean)
+            : [];
         });
         const parameters = {
           type: TaskJobType.DATA_DELETE,
@@ -301,7 +308,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                     };
                   })
                 : _tables,
-            taskExecutionDurationHours,
+            timeoutMillis: hourToMilliSeconds(timeoutMillis),
             rateLimit: {
               rowLimit,
               dataSizeLimit: mbToKb(dataSizeLimit),
@@ -353,7 +360,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       .validateFields()
       .then(async (values) => {
         const { variables, tables: _tables, archiveRange } = values;
-        _tables.map((i) => {
+        _tables?.map((i) => {
           i.partitions = i?.partitions
             ?.replace(/[\r\n]+/g, '')
             ?.split(',')
@@ -477,7 +484,12 @@ const CreateModal: React.FC<IProps> = (props) => {
         onFieldsChange={handleFieldsChange}
       >
         <Form.Item name="needCheckBeforeDelete" valuePropName="checked">
-          <Checkbox>清理前是否需要校验</Checkbox>
+          <Checkbox>
+            {formatMessage({
+              id: 'src.component.Task.DataClearTask.CreateModal.70A4982D',
+              defaultMessage: '清理前是否需要校验',
+            })}
+          </Checkbox>
         </Form.Item>
         <Space align="start">
           <DatabaseSelect
@@ -488,6 +500,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             /*源端数据库*/ projectId={projectId}
             onChange={handleDBChange}
           />
+
           <Form.Item noStyle shouldUpdate>
             {({ getFieldValue }) => {
               const needCheckBeforeDelete = getFieldValue('needCheckBeforeDelete');
@@ -510,7 +523,13 @@ const CreateModal: React.FC<IProps> = (props) => {
           <Form.Item noStyle shouldUpdate>
             {({ getFieldValue }) => {
               const needCheckBeforeDelete = getFieldValue('needCheckBeforeDelete');
-              return <ArchiveRange tables={tables} needCheckBeforeDelete={needCheckBeforeDelete} />;
+              return (
+                <ArchiveRange
+                  tables={tables}
+                  needCheckBeforeDelete={needCheckBeforeDelete}
+                  form={form}
+                />
+              );
             }}
           </Form.Item>
           <VariableConfig form={form} />
@@ -580,7 +599,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           }
           keepExpand
         >
-          <TaskdurationItem />
+          <TaskdurationItem form={form} />
           <ThrottleFormItem />
           <Form.Item
             label={

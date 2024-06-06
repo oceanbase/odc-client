@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import {
   objectTypeConfig,
   DbObjectTypeMap,
@@ -32,10 +33,10 @@ const ObjectList = ({
   loading,
 }: Iprops) => {
   const [activeDatabase, setActiveDatabase] = useState<IDatabase>();
-
+  const ALL_TAB_MAX_LENGTH = 3;
+  const dbType = database?.dataSource?.dialectType || SEARCH_OBJECT_FROM_ALL_DATABASE;
   const getTyepBlock = () => {
-    const typeList =
-      objectTypeConfig[database?.dataSource?.dialectType || SEARCH_OBJECT_FROM_ALL_DATABASE];
+    const typeList = objectTypeConfig[dbType];
     const typeObjectTree = typeList?.map((i) => {
       if (i === DbObjectType.column) {
         return { key: i, data: objectlist?.dbColumns };
@@ -75,7 +76,9 @@ const ObjectList = ({
       case DbObjectType.column:
         const { dbObject } = item;
         const { database, name: tableName, type } = dbObject;
+        if (!database) return;
         const { name: databaseName, dataSource } = database;
+        if (!dataSource) return;
         const { name: dataSourceName, dialectType } = dataSource;
         const dialectTypeIcon = getDataSourceStyleByConnectType(dialectType)?.icon;
         const dbIcon = getDataSourceStyleByConnectType(dialectType)?.dbIcon;
@@ -96,6 +99,7 @@ const ObjectList = ({
             </Tooltip>
           </>
         );
+
       default: {
         const { database } = item;
         const { name: databaseName, dataSource } = database;
@@ -135,7 +139,7 @@ const ObjectList = ({
                     <div className={styles.objectTypeTitle}>{DbObjectTypeMap[i.key].label}</div>
                     <div>
                       {i.data.map((object, index) => {
-                        if (index < 3) {
+                        if (index < ALL_TAB_MAX_LENGTH) {
                           return (
                             <div
                               className={styles.objectTypeItem}
@@ -152,6 +156,7 @@ const ObjectList = ({
                                     fontSize: 14,
                                   }}
                                 />
+
                                 <span style={{ paddingRight: 4 }}>{object?.name}</span>
                                 <span
                                   style={{
@@ -171,13 +176,18 @@ const ObjectList = ({
                         }
                       })}
                     </div>
-                    <Button
-                      className={styles.objectTypeItemMore}
-                      type="link"
-                      onClick={() => setActiveKey(i.key)}
-                    >
-                      查看更多
-                    </Button>
+                    {i.data.length > ALL_TAB_MAX_LENGTH ? (
+                      <Button
+                        className={styles.objectTypeItemMore}
+                        type="link"
+                        onClick={() => setActiveKey(i.key)}
+                      >
+                        {formatMessage({
+                          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.0D1BC60D',
+                          defaultMessage: '查看更多',
+                        })}
+                      </Button>
+                    ) : null}
                     <Divider
                       style={{
                         margin: '12px 0',
@@ -211,19 +221,23 @@ const ObjectList = ({
 
   const permissionBtn = (object) => {
     if (activeDatabase?.id !== object.id) return;
-    if (hasPermission) return;
+    if (hasPermission(object)) return;
     return (
       <Button
         type="link"
         style={{ padding: 0, height: 18, display: 'inline-block' }}
         onClick={(e) => applyPermission(e, object)}
       >
-        申请表权限
+        {formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.E2C1F722',
+          defaultMessage: '申请表权限',
+        })}
       </Button>
     );
   };
 
   const openTree = (e, object) => {
+    if (!hasPermission(object)) return;
     const type = object?.type || DbObjectType.column;
     e.stopPropagation();
     const databaseId = object?.dbObject?.database?.id || object?.database?.id;
@@ -231,6 +245,7 @@ const ObjectList = ({
       ...DbObjectTypeMap?.[type]?.getOpenTab(object, databaseId),
     );
     modalStore.changeDatabaseSearchModalVisible(false);
+    modalStore.databseSearchsSetExpandedKeysFunction(databaseId);
   };
 
   const renderObjectTypeTabs = (type) => {
@@ -256,6 +271,7 @@ const ObjectList = ({
                       component={DbObjsIcon[type]}
                       style={{ color: 'var(--brand-blue6-color)', paddingRight: 4, fontSize: 14 }}
                     />
+
                     <span style={{ paddingRight: 4 }}>{object?.name}</span>
                     <span
                       style={{
@@ -275,7 +291,17 @@ const ObjectList = ({
             })}
             {currentObjectList?.data?.length === MAX_OBJECT_LENGTH && (
               <Divider plain>
-                <span style={{ color: 'var(--icon-color-disable)' }}>最多展示 1000 条结果</span>
+                <span style={{ color: 'var(--icon-color-disable)' }}>
+                  {formatMessage({
+                    id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.625700F8',
+                    defaultMessage: '最多展示',
+                  })}
+                  {MAX_OBJECT_LENGTH}
+                  {formatMessage({
+                    id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.D45537CC',
+                    defaultMessage: '条结果',
+                  })}
+                </span>
               </Divider>
             )}
           </div>
@@ -292,18 +318,17 @@ const ObjectList = ({
           {DbObjectTypeMap.SEARCH_OBJECT_FROM_ALL_DATABASE?.label}
         </span>
       ),
+
       children: renderAllTab(),
     },
   ].concat(
-    objectTypeConfig[database?.dataSource?.dialectType || SEARCH_OBJECT_FROM_ALL_DATABASE]?.map(
-      (i) => {
-        return {
-          key: i,
-          label: <span style={{ padding: '0 6px', margin: 0 }}>{DbObjectTypeMap?.[i]?.label}</span>,
-          children: renderObjectTypeTabs(i),
-        };
-      },
-    ),
+    objectTypeConfig[dbType]?.map((i) => {
+      return {
+        key: i,
+        label: <span style={{ padding: '0 6px', margin: 0 }}>{DbObjectTypeMap?.[i]?.label}</span>,
+        children: renderObjectTypeTabs(i),
+      };
+    }),
   );
 
   const handleChange = (key) => {
@@ -316,6 +341,7 @@ const ObjectList = ({
       activeKey={activeKey}
       items={tabList}
       onChange={handleChange}
+      popupClassName={styles.objectSearchPopup}
     />
   );
 };

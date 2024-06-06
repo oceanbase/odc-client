@@ -19,6 +19,7 @@ import editorSettings from './config/editor';
 import perferenceSettings from './config/preference';
 import performanceSettings from './config/performance';
 import accountSettings from './config/account';
+import type { FormRule } from 'antd';
 
 export interface ODCSettingGroup {
   label: string;
@@ -35,6 +36,7 @@ export interface IODCSetting<T = any> {
    * 渲染宽度
    */
   span?: number;
+  rules?: FormRule[];
   storeType: 'server' | 'local';
   disabledInClient?: boolean;
   hidden?: boolean;

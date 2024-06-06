@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { DbObjectType, ConnectType, SynonymType } from '@/d.ts';
 import {
   openTableViewPage,
@@ -51,10 +52,15 @@ export enum SearchTypeMap {
 
 export const SEARCH_OBJECT_FROM_ALL_DATABASE = 'SEARCH_OBJECT_FROM_ALL_DATABASE';
 
-export const MAX_OBJECT_LENGTH = 1000;
+export const MAX_OBJECT_LENGTH = 200;
 
 export const DbObjectTypeMap = {
-  SEARCH_OBJECT_FROM_ALL_DATABASE: { label: '全部' },
+  SEARCH_OBJECT_FROM_ALL_DATABASE: {
+    label: formatMessage({
+      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.ED30EF41',
+      defaultMessage: '全部',
+    }),
+  },
   [DbObjectType.table]: {
     label: DbObjectTypeTextMap.TABLE,
     openPage: (object) => openTableViewPage,
@@ -64,7 +70,10 @@ export const DbObjectTypeMap = {
     },
   },
   [DbObjectType.column]: {
-    label: '列',
+    label: formatMessage({
+      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.35B21489',
+      defaultMessage: '列',
+    }),
     openPage: (object) => {
       const funcMap = {
         [DbObjectType.view]: openViewViewPage,

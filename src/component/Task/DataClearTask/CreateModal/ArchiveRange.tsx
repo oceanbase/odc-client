@@ -22,8 +22,9 @@ import classNames from 'classnames';
 import { IArchiveRange } from './index';
 import ArchiveRangeTip from '../../component/ArchiveRangeTip';
 import styles from './index.less';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PartitionTextArea } from '../../component/PartitionTextArea';
+import type { FormInstance } from 'antd/lib/form';
 
 const { TextArea } = Input;
 const { Text, Link } = Typography;
@@ -31,15 +32,22 @@ const { Text, Link } = Typography;
 interface IProps {
   tables: ITable[];
   needCheckBeforeDelete?: boolean;
+  form?: FormInstance<any>;
 }
 const ArchiveRange: React.FC<IProps> = (props) => {
-  const { tables, needCheckBeforeDelete = false } = props;
+  const { tables, needCheckBeforeDelete = false, form } = props;
   const [enablePartition, setEnablePartition] = useState<boolean>(false);
   const tablesOptions = tables?.map((item) => ({
     label: item.tableName,
     value: item.tableName,
   }));
+
   const hasAdvancedOptionCol = enablePartition || needCheckBeforeDelete;
+
+  useEffect(() => {
+    setEnablePartition(!!form?.getFieldsValue()?.tables?.find((i) => i?.partitions));
+  }, [form?.getFieldsValue()?.tables]);
+
   return (
     <>
       <Form.Item
@@ -76,14 +84,23 @@ const ArchiveRange: React.FC<IProps> = (props) => {
           return (
             <div className={styles.tableHeader}>
               <div className={styles.tableHeaderExtra}>
-                <div>清理设置</div>
                 <div>
+                  {formatMessage({
+                    id: 'src.component.Task.DataClearTask.CreateModal.00BCFBA3',
+                    defaultMessage: '清理设置',
+                  })}
+                </div>
+                <div style={{ paddingBottom: 4 }}>
                   <Checkbox
+                    checked={enablePartition}
                     onChange={() => {
                       setEnablePartition(!enablePartition);
                     }}
                   >
-                    指定分区
+                    {formatMessage({
+                      id: 'src.component.Task.DataClearTask.CreateModal.76AAE59E',
+                      defaultMessage: '指定分区',
+                    })}
                   </Checkbox>
                 </div>
               </div>
@@ -94,7 +111,10 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                 })}
               >
                 <div className={styles.tableTitle} style={{ width: 160, padding: '3px 8px' }}>
-                  清理表
+                  {formatMessage({
+                    id: 'src.component.Task.DataClearTask.CreateModal.CF6B368E',
+                    defaultMessage: '清理表',
+                  })}
                 </div>
                 <div className={styles.tableTitle}>
                   <div style={{ display: 'inline-flex', gap: 4, padding: '3px 8px' }}>
@@ -103,6 +123,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         id: 'odc.DataClearTask.CreateModal.ArchiveRange.CleaningConditions',
                       }) /*清理条件*/
                     }
+
                     <Text type="secondary">
                       {
                         formatMessage({
@@ -122,7 +143,12 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                 {hasAdvancedOptionCol && (
                   <div className={styles.tableTitle}>
                     <span style={{ padding: '3px 8px', display: 'inline-flex', gap: '4px' }}>
-                      <span>高级设置</span>
+                      <span>
+                        {formatMessage({
+                          id: 'src.component.Task.DataClearTask.CreateModal.85DFDA54',
+                          defaultMessage: '高级设置',
+                        })}
+                      </span>
                       <Text type="secondary">
                         {
                           formatMessage({
@@ -182,18 +208,12 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             className={styles.multiInputBox}
                           >
                             {needCheckBeforeDelete && (
-                              <Form.Item
-                                {...restField}
-                                name={[name, 'targetTableName']}
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: '请输入',
-                                  },
-                                ]}
-                              >
+                              <Form.Item {...restField} name={[name, 'targetTableName']}>
                                 <Input
-                                  addonBefore={'目标表'}
+                                  addonBefore={formatMessage({
+                                    id: 'src.component.Task.DataClearTask.CreateModal.7E1F34E7',
+                                    defaultMessage: '目标表',
+                                  })}
                                   placeholder={
                                     formatMessage({
                                       id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
@@ -202,6 +222,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                                 />
                               </Form.Item>
                             )}
+
                             {enablePartition && (
                               <PartitionTextArea {...restField} name={[name, 'partitions']} />
                             )}
@@ -210,7 +231,10 @@ const ArchiveRange: React.FC<IProps> = (props) => {
 
                         {fields?.length > 1 && (
                           <Link onClick={() => remove(name)} style={{ textAlign: 'center' }}>
-                            移除
+                            {formatMessage({
+                              id: 'src.component.Task.DataClearTask.CreateModal.F0991266',
+                              defaultMessage: '移除',
+                            })}
                           </Link>
                         )}
                       </div>

@@ -1,15 +1,17 @@
+import { formatMessage } from '@/util/intl';
 import { Button } from 'antd';
 import styles from '../index.less';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import React, { useState, useContext } from 'react';
-import { IDatabase } from '@/d.ts/database';
+import { IDatabase, IDatabaseObject } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
 
 interface Iprops {
   database: IDatabase;
   setDatabase: React.Dispatch<React.SetStateAction<IDatabase>>;
   databaseList: IDatabase[];
+  objectlist: IDatabaseObject;
   setSelectDatabaseState: React.Dispatch<React.SetStateAction<boolean>>;
   searchKey: string;
   setSearchKey: React.Dispatch<React.SetStateAction<string>>;
@@ -28,14 +30,20 @@ const DatabaseList = ({
   isSelectAll,
   setSelectAllState,
   modalStore,
+  objectlist,
 }: Iprops) => {
-  const { selectDatasourceId, datasourceList } = useContext(ResourceTreeContext);
-  const selectDatasource = datasourceList?.find((d) => d.id == selectDatasourceId);
-
+  const { selectProjectId } = useContext(ResourceTreeContext);
   const [activeDatabase, setActiveDatabase] = useState<IDatabase>();
-  const options = [...databaseList].filter((i) =>
-    i?.name?.toLowerCase().includes(searchKey?.toLowerCase() || ''),
-  );
+
+  const getOptions = () => {
+    if (objectlist) {
+      return objectlist.databases;
+    }
+    return [...databaseList].filter((i) =>
+      i?.name?.toLowerCase().includes(searchKey?.toLowerCase() || ''),
+    );
+  };
+  const options = getOptions();
 
   const changeDatabase = (item) => {
     setDatabase(item);
@@ -71,13 +79,19 @@ const DatabaseList = ({
     if (!!db?.authorizedPermissionTypes?.length) {
       return (
         <Button type="link" style={{ padding: 0 }} onClick={(e) => openSql(e, db)}>
-          打开 SQL 窗口
+          {formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.D7B63CB7',
+            defaultMessage: '打开 SQL 窗口',
+          })}
         </Button>
       );
     }
     return (
       <Button type="link" style={{ padding: 0 }} onClick={(e) => applyPermission(e, db)}>
-        权限库申请
+        {formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.DC41DDB8',
+          defaultMessage: '权限库申请',
+        })}
       </Button>
     );
   };
@@ -88,9 +102,12 @@ const DatabaseList = ({
         className={isSelectAll ? styles.databaseItemActive : styles.databaseItem}
         onClick={selectAll}
       >
-        全部数据库
+        {formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.69106FDA',
+          defaultMessage: '全部数据库',
+        })}
       </div>
-      {options.length
+      {options?.length
         ? options.map((db) => {
             return (
               <>
@@ -112,8 +129,10 @@ const DatabaseList = ({
                     }}
                   >
                     <DataBaseStatusIcon item={db} />
-                    <div style={{ padding: '0 4px' }}>{db.name}</div>
-                    <div className={styles.subInfo}>{selectDatasource?.name}</div>
+                    <div style={{ padding: '0 4px' }}>{db?.name}</div>
+                    <div className={styles.subInfo}>
+                      {selectProjectId ? db?.dataSource?.name : null}
+                    </div>
                   </div>
                   {getPositioninButton(db)}
                 </div>

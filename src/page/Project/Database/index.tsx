@@ -60,6 +60,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
   const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState('');
   const [data, setData] = useState<IDatabase[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [visible, setVisible] = useState(false);
   /**
    * 修改管理员弹窗显示与隐藏
@@ -128,10 +129,17 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
       </span>
     );
   };
+  const clearSelectedRowKeys = () => {
+    setSelectedRowKeys([]);
+  };
   return (
     <TableCard
       title={
         <AddDataBaseButton
+          orderedDatabaseIds={
+            selectedRowKeys?.length ? [selectedRowKeys as number[]] : [[undefined]]
+          }
+          clearSelectedRowKeys={clearSelectedRowKeys}
           modalStore={modalStore}
           onSuccess={() => reload()}
           projectId={parseInt(id)}
@@ -161,6 +169,27 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
     >
       <MiniTable<IDatabase>
         rowKey={'id'}
+        rowSelection={{
+          selectedRowKeys: selectedRowKeys,
+          preserveSelectedRowKeys: true,
+          onChange: (selectedRowKeys: React.Key[], selectedRows: IDatabase[]) => {
+            setSelectedRowKeys(selectedRowKeys);
+          },
+          getCheckboxProps: (record: IDatabase) => {
+            const hasChangeAuth = record.authorizedPermissionTypes?.includes(
+              DatabasePermissionType.CHANGE,
+            );
+            const hasQueryAuth = record.authorizedPermissionTypes?.includes(
+              DatabasePermissionType.QUERY,
+            );
+            const disabled =
+              !hasChangeAuth && !hasQueryAuth && !record?.authorizedPermissionTypes?.length;
+            return {
+              disabled: disabled || !record.existed,
+              name: record.name,
+            };
+          },
+        }}
         scroll={{
           x: 920,
         }}
@@ -220,7 +249,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             },
           },
           {
-            title: '管理员',
+            title: formatMessage({
+              id: 'src.page.Project.Database.A31E6BDF',
+              defaultMessage: '管理员',
+            }),
             //项目角色
             dataIndex: 'owners',
             ellipsis: true,
@@ -376,8 +408,8 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                           formatMessage({
                             id: 'odc.src.page.Project.Database.ModifyTheProject',
                           }) /* 
-                  修改所属项目
-                  */
+                      修改所属项目
+                      */
                         }
                       </Tooltip>
                     </Action.Link>
@@ -476,7 +508,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                     }}
                     disabled={!hasChangeOwnerAuth}
                   >
-                    设置库管理员
+                    {formatMessage({
+                      id: 'src.page.Project.Database.DEFC0E70',
+                      defaultMessage: '设置库管理员',
+                    })}
                   </Action.Link>
                   <Action.Link
                     key={'transfer'}
@@ -533,6 +568,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
         close={() => setVisible(false)}
         onSuccess={() => reload()}
       />
+
       <ChangeOwnerModal
         visible={changeOwnerModalVisible}
         database={database}
