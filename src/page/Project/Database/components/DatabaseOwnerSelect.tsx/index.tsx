@@ -1,6 +1,6 @@
 import { formatMessage } from '@/util/intl';
 import { Form, Select, Checkbox, Row, Col, Tooltip } from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useContext, useMemo } from 'react';
 import ProjectContext from '../../../ProjectContext';
 import { projectRoleTextMap } from '@/page/Project/User';
@@ -116,18 +116,26 @@ export const DatabaseOwnerSelect = ({
           >
             {projectUserOptions.map((item) => {
               return (
-                <Option
-                  key={item.value}
-                  value={item.value}
-                  label={item.label}
-                  disabled={item.disabled}
-                >
-                  {item.label}
-                  <span
-                    style={{ paddingLeft: 8, fontSize: 12, color: 'var(--neutral-black45-color)' }}
-                  >
-                    {item?.role?.map((i) => projectRoleTextMap[i]).join(',')}
-                  </span>
+                <Option key={item.value} value={item.value} label={item.label}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span>{item.label}</span>
+                    <span
+                      style={{
+                        padding: '0 8px',
+                        fontSize: 12,
+                        color: 'var(--neutral-black45-color)',
+                      }}
+                    >
+                      {item?.role?.map((i) => projectRoleTextMap[i]).join(',')}
+                    </span>
+                    {item.disabled ? (
+                      <Tooltip title={item?.disabled ? '用户已禁用' : ''}>
+                        <InfoCircleOutlined style={{ color: 'var(--text-color-secondary)' }} />
+                      </Tooltip>
+                    ) : (
+                      <></>
+                    )}
+                  </div>
                 </Option>
               );
             })}
