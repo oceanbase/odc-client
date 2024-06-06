@@ -37,7 +37,7 @@ import {
   getDataSourceStyleByConnectType,
 } from '@/common/datasource';
 import { getLocalFormatDateTime } from '@/util/utils';
-import { flatArray } from '../../MutipleAsyncTask/CreateModal';
+import { flatArray } from '../../MutipleAsyncTask/CreateModal/helper';
 import { TaskDetailContext } from '../../TaskDetailContext';
 import { TaskStore } from '@/store/task';
 import { inject, observer } from 'mobx-react';
@@ -360,9 +360,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
   return (
     <>
       {task?.type === TaskType.MULTIPLE_ASYNC && subTasks?.length > 0 && (
-        <div>
-          共 {subTasks?.length} 个数据库， {pendingExectionDatabases} 个待执行
-        </div>
+        <div>{`共 ${subTasks?.length} 个数据库， ${pendingExectionDatabases} 个待执行`}</div>
       )}
 
       <DisplayTable

@@ -119,20 +119,29 @@ const AddDataBaseButton: React.FC<IProps> = ({
             }
           </Button>
         </TooltipAction>
-        <Button
-          onClick={() => {
-            modalStore?.changeMultiDatabaseChangeModal(true, {
-              projectId,
-              orderedDatabaseIds,
-            });
-            clearSelectedRowKeys?.();
-          }}
+        <TooltipAction
+          title={
+            disabledAction
+              ? formatMessage({ id: 'src.page.Project.Database.AddDataBaseButton.5409D916' })
+              : ''
+          }
         >
-          {formatMessage({
-            id: 'src.page.Project.Database.AddDataBaseButton.693C4817',
-            defaultMessage: '多库变更',
-          })}
-        </Button>
+          <Button
+            disabled={disabledAction}
+            onClick={() => {
+              modalStore?.changeMultiDatabaseChangeModal(true, {
+                projectId,
+                orderedDatabaseIds,
+              });
+              clearSelectedRowKeys?.();
+            }}
+          >
+            {formatMessage({
+              id: 'src.page.Project.Database.AddDataBaseButton.693C4817',
+              defaultMessage: '多库变更',
+            })}
+          </Button>
+        </TooltipAction>
         <ApplyDatabasePermissionButton
           label={
             formatMessage({

@@ -13,7 +13,7 @@ import { Form, message, Input, Timeline, Space, Divider, Button, Drawer } from '
 import { useState, useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { flatArray } from '../../CreateModal';
+import { flatArray } from '../../CreateModal/helper';
 import InnerSelecter, { DatabaseOption } from '../../CreateModal/InnerSelecter';
 import styles from './index.less';
 
@@ -54,7 +54,7 @@ const EditTemplate: React.FC<{
         environment: item?.environment,
         dataSource: item?.dataSource,
         existed: item?.existed,
-        disabled: !item?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE),
+        unauthorized: !item?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE),
         expired: item?.objectSyncStatus === DBObjectSyncStatus.FAILED,
       })),
     );
@@ -160,7 +160,6 @@ const EditTemplate: React.FC<{
         <Form.Item
           label="模版名称"
           name="name"
-          // trigger='onBlur'
           rules={[
             {
               required: true,
