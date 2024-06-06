@@ -21,6 +21,7 @@ import { IExecuteTaskResult } from '@/common/network/sql/executeSQL';
 import { PLType } from '@/constant/plType';
 import {
   ConnectionMode,
+  IExecutingInfo,
   IFormatPLSchema,
   ILogItem,
   IPLCompileResult,
@@ -98,10 +99,7 @@ export class SQLStore {
 
   /** 当前激活的tab key */
   @observable
-  public activeTab: string = null;
-
-  @observable
-  public hasSelectedTab: boolean = false;
+  public activeTab: Record<string, string> = {};
 
   @observable
   public uniqLogKey: string = null;
@@ -119,13 +117,8 @@ export class SQLStore {
   }
 
   @action
-  public setActiveTab(key: string) {
-    this.activeTab = key;
-  }
-
-  @action
-  public setSelectedTabState(v: boolean) {
-    this.hasSelectedTab = v;
+  public setActiveTab(pageKey, key: string) {
+    this.activeTab[pageKey] = key;
   }
 
   @action
@@ -196,86 +189,97 @@ export class SQLStore {
     if (!this.resultSets.has(pageKey)) {
       this.resultSets.set(pageKey, []);
     }
-    let record: IExecuteTaskResult; // 需要忽略默认错误处理
     const session = sessionManager.sessionMap.get(sessionId);
     this.logLoading = true;
     try {
-      this.setSelectedTabState(false);
       this.runningPageKey.add(pageKey);
       !!isSection && this.isRunningSection.add(pageKey);
       const showTableColumnInfo = session?.params?.tableColumnInfoVisible;
       const fullLinkTraceEnabled = session?.params?.fullLinkTraceEnabled;
       const continueExecutionOnError = session?.params?.continueExecutionOnError;
-      const statusCheckInterval = 1000;
-      let result = [];
-      let streamExecuteResult = null;
       const obVersion = session?.params?.obVersion;
       const isSupportProfile =
         isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=');
-      const handleResult = (finished = true, currentExecuteInfo) => {
+      const handleResult = (info: IExecutingInfo) => {
         // 兼容后端不按约定返回的情况
-        if (!record || record.invalid) {
-          return record;
+        if (!info) {
+          return;
         }
         /**
          * 刷新一下delimiter
          */
         this.logLoading = false;
-        finished && session.initSessionStatus();
-        // 判断结果集是否支持编辑
-        // TODO: 目前后端判断是否支持接口非常慢，因此只能在用户点击 “开启编辑” 时发起查询，理想状态肯定是在结果集返回结构中直接表示是否支持
-        // const isEditable = await this.isResultSetEditable(sql);
+        if (info.finished) {
+          session.initSessionStatus();
+        }
         runInAction(() => {
-          const recordWithSessionId = record.executeResult.map((result) => {
-            return {
-              ...result,
-              sessionId,
-            };
-          });
+          const finishedSQLResult: Record<string, ISqlExecuteResult> = info.results?.reduce(
+            (prev, cur) => {
+              prev[cur.sqlId] = cur;
+              const otherSQLId = cur.sqlId?.split('-')[0];
+              otherSQLId && (prev[otherSQLId] = cur);
+              return prev;
+            },
+            {},
+          );
           this.records = this.records?.map((i) => {
-            // 运行中的
-            if (currentExecuteInfo.sqlId === i.sqlId && !finished) {
-              return { ...i, status: ISqlExecuteResultStatus.RUNNING };
-            }
-            // 已执行的
-            if (recordWithSessionId.find((j) => j.sqlId.includes(i.sqlId))) {
+            const result = finishedSQLResult[i.sqlId];
+            if (result) {
               return {
                 ...i,
-                ...recordWithSessionId.find((j) => j.sqlId.includes(i.sqlId)),
+                ...result,
                 isSupportProfile: isSupportProfile,
+                sessionId,
               };
+            } else {
+              return i;
             }
-            // 等待的
-            return i;
           });
           const resultSet = this.resultSets.get(pageKey);
           if (resultSet) {
             const lockedResultSets = resultSet.filter((r) => r.locked); // @ts-ignore
             this.resultSets.set(pageKey, [
               ...lockedResultSets,
-              this.getLogTab(record),
-              ...generateResultSetColumns(record.executeResult, session?.connection?.dialectType),
+              this.getLogTab(info),
+              ...generateResultSetColumns(info.results, session?.connection?.dialectType),
             ]);
-            this.activeTab = this.resultSets.get(pageKey)?.find((i) => i.type == 'LOG')?.uniqKey;
+            this.setActiveTab(
+              pageKey,
+              this.resultSets.get(pageKey)?.find((i) => i.type == 'LOG')?.uniqKey,
+            );
           }
         });
-        return record;
       };
-      const handleFirstExecute = () => {
-        const recordAll = streamExecuteResult?.data?.sqls.map((i) => {
+      const handleFirstExecute = (info: IExecutingInfo) => {
+        /**
+         * 设置record记录
+         */
+        const recordAll: ISqlExecuteResult[] = info?.task?.sqls.map((i) => {
           // 初始化为等待状态
           return {
-            ...i.sqlTuple,
+            originSql: i.sqlTuple.originalSql,
+            executeSql: i.sqlTuple.executedSql,
+            sqlId: i.sqlTuple.sqlId,
             status: ISqlExecuteResultStatus.WAITING,
             timer: null,
             track: null,
             total: null,
             traceId: null,
             elapsedTime: null,
-            executeSql: null,
             id: generateUniqKey(),
             sessionId,
             isSupportProfile: isSupportProfile,
+            allowExport: false,
+            columnLabels: [],
+            errorCode: null,
+            existSensitiveData: null,
+            existWarnings: false,
+            resultSetMetaData: null,
+            statementWarnings: null,
+            sqlType: null,
+            connectionReset: false,
+            checkViolations: [],
+            withFullLinkTrace: false,
           };
         });
         this.records = [
@@ -288,46 +292,31 @@ export class SQLStore {
 
       this.initLog(pageKey);
       let isFirstTime = true;
-      while (true) {
-        const res = await executeSQL(
-          {
-            sql,
-            queryLimit: session?.params.queryLimit || undefined,
-            showTableColumnInfo,
-            continueExecutionOnError,
-            fullLinkTraceEnabled,
-            addROWID:
-              setting.configurations?.['odc.sqlexecute.default.addInternalRowId'] === 'true' &&
-              session.supportFeature?.enableRowId,
-          },
-          sessionId,
-          dbName,
-          needModal,
-          streamExecuteResult,
-        );
-        if (!res?.streamExecuteResult) {
-          break;
-        }
-        streamExecuteResult = res.streamExecuteResult;
-        result.push(...res?.executeResult);
-        record = {
-          ...record,
-          executeResult: [...result],
-          currentExecuteInfo: res.currentExecuteInfo,
-        };
-        const finished = res?.currentExecuteInfo?.finished;
-        if (isFirstTime) {
-          isFirstTime = false;
-          handleFirstExecute();
-        } else {
-          handleResult(finished, res.currentExecuteInfo);
-        }
-        if (finished) {
-          break;
-        } else {
-          await new Promise((resolve) => setTimeout(resolve, statusCheckInterval));
-        }
-      }
+
+      const res = await executeSQL(
+        {
+          sql,
+          queryLimit: session?.params.queryLimit || undefined,
+          showTableColumnInfo,
+          continueExecutionOnError,
+          fullLinkTraceEnabled,
+          addROWID:
+            setting.configurations?.['odc.sqlexecute.default.addInternalRowId'] === 'true' &&
+            session.supportFeature?.enableRowId,
+        },
+        sessionId,
+        dbName,
+        needModal,
+        (info) => {
+          if (isFirstTime) {
+            isFirstTime = false;
+            handleFirstExecute(info);
+          } else {
+            handleResult(info);
+          }
+        },
+      );
+      return res;
     } catch (e) {
       throw e;
     } finally {
@@ -340,10 +329,10 @@ export class SQLStore {
     const resultSet = this.resultSets.get(pageKey);
     const lockedResultSets = resultSet.filter((r) => r.locked);
     this.resultSets.set(pageKey, [...lockedResultSets, this.getLogTab()]);
-    this.activeTab = this.resultSets.get(pageKey)?.find((i) => i.type == 'LOG')?.uniqKey;
+    this.setActiveTab(pageKey, this.resultSets.get(pageKey)?.find((i) => i.type == 'LOG')?.uniqKey);
   }
 
-  public getLogTab(record?: IExecuteTaskResult): IResultSet {
+  public getLogTab(record?: IExecutingInfo): IResultSet {
     const uniqKey = this.uniqLogKey || generateUniqKey();
     this.uniqLogKey = uniqKey;
     if (!record) {
@@ -357,10 +346,10 @@ export class SQLStore {
         editable: false,
         isQueriedEditable: false,
         logTypeData: [],
-        currentExecuteInfo: {},
+        currentExecuteInfo: record,
       };
     }
-    const { executeResult, currentExecuteInfo } = record;
+    const { results } = record;
     return {
       type: 'LOG',
       uniqKey: uniqKey,
@@ -371,7 +360,8 @@ export class SQLStore {
       // 是否支持编辑
       editable: false,
       isQueriedEditable: false,
-      logTypeData: executeResult?.map((item) => {
+      currentExecuteInfo: record,
+      logTypeData: results?.map((item) => {
         return {
           status: item.status,
           total: item.columns?.length ? 0 : item.total,
@@ -383,7 +373,6 @@ export class SQLStore {
           checkViolations: item.checkViolations,
         };
       }),
-      currentExecuteInfo: currentExecuteInfo,
     };
   }
 
@@ -646,6 +635,7 @@ export class SQLStore {
   @action
   public clear(pageKey: string) {
     this.resultSets.delete(pageKey);
+    delete this.activeTab[pageKey];
   } // 清空所有历史记录
 
   @action
