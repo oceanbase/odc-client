@@ -65,16 +65,6 @@ export interface IExecuteTaskResult {
   unauthorizedDatabases?: IUnauthorizedDatabase[];
   unauthorizedSql?: string;
 }
-
-export interface IStreamExecuteResult {
-  addROWID: boolean;
-  continueExecutionOnError: boolean;
-  fullLinkTraceEnabled: boolean;
-  queryLimit: number;
-  showTableColumnInfo: boolean;
-  sid: string;
-  sql: string;
-}
 class Task {
   public result: ISqlExecuteResult[] = [];
   public isFinish: boolean;
