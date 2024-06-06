@@ -23,6 +23,7 @@ import { EComparisonScope } from './task';
 import { EThemeConfigKey } from '@/store/setting';
 import { SpaceType } from './_index';
 import { DBDefaultStoreType } from './table';
+import { ISQLExecuteTask } from '@/common/network/sql/executeSQL';
 
 export interface IUser {
   email: string;
@@ -1614,13 +1615,11 @@ export interface ISqlExecuteResult {
 }
 
 export interface IExecutingInfo {
-  count?: number;
   finished?: boolean;
-  sql?: string;
-  sqlId?: string;
-  total?: number;
   traceId?: string;
+  executingSQL: string;
   results?: ISqlExecuteResult[];
+  task: ISQLExecuteTask;
 }
 
 export enum ISqlExecuteResultStatus {

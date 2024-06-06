@@ -15,7 +15,7 @@
  */
 
 import { TAB_HEADER_HEIGHT } from '@/constant';
-import { IResultSet, ISqlExecuteResultStatus, SqlType } from '@/d.ts';
+import { IExecutingInfo, IResultSet, ISqlExecuteResultStatus, SqlType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import {
   CheckCircleFilled,
@@ -98,18 +98,19 @@ function renderViolations(data: IResultSet['logTypeData'][0]) {
 }
 
 const runningLogPage = (
-  currentExecuteInfo,
+  currentExecuteInfo: IExecutingInfo,
   stopRunning,
   onOpenExecutingDetailModal,
   isSupportProfile,
 ) => {
+  const count = currentExecuteInfo?.task?.sqls?.length || 0;
+  const finishCount = currentExecuteInfo?.results?.length || 0;
   return (
     <div className={styles.runningSql}>
       <Spin style={{ marginBottom: 16 }} />
       <Space direction="vertical" size="small" align="center">
         <div>
-          共有 {currentExecuteInfo?.total} 个 SQL 执行，当前正在执行第 {currentExecuteInfo?.count}{' '}
-          个
+          共有 {count} 个 SQL 执行，当前正在执行第 {finishCount + 1} 个
         </div>
         <div>
           {currentExecuteInfo?.traceId && (
@@ -118,7 +119,10 @@ const runningLogPage = (
               {isSupportProfile ? (
                 <Link
                   onClick={() =>
-                    onOpenExecutingDetailModal(currentExecuteInfo?.traceId, currentExecuteInfo?.sql)
+                    onOpenExecutingDetailModal(
+                      currentExecuteInfo?.traceId,
+                      currentExecuteInfo?.executingSQL,
+                    )
                   }
                 >
                   查看执行画像
