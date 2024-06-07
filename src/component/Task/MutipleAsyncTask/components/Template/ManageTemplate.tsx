@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Template, getTemplateList, deleteTemplate } from '@/common/network/databaseChange';
 import CommonTable from '@/component/CommonTable';
 import { ITableLoadOptions } from '@/component/CommonTable/interface';
@@ -54,17 +55,30 @@ const ManageTemplate: React.FC<{
   const handleDeleteTemplate = async (id: number) => {
     const response = await deleteTemplate(id, login?.organizationId?.toString());
     if (response) {
-      message.success('模板删除成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.components.Template.A33F15D9',
+          defaultMessage: '模板删除成功',
+        }),
+      );
       await tableRef?.current?.reload({ page: 1 });
     } else {
-      message.error('模版删除失败');
+      message.error(
+        formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.components.Template.F5BFD8B1',
+          defaultMessage: '模版删除失败',
+        }),
+      );
     }
   };
   return (
     <>
       <Drawer
         width={520}
-        title="模版管理"
+        title={formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.components.Template.1A7C5740',
+          defaultMessage: '模版管理',
+        })}
         open={manageTemplateModalOpen}
         onClose={() => {
           setManageTemplateModalOpen(false);
@@ -74,7 +88,14 @@ const ManageTemplate: React.FC<{
         footer={null}
       >
         <Descriptions column={2}>
-          <Descriptions.Item label="所属项目">{projectMap?.[projectId]}</Descriptions.Item>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.components.Template.8C08DC21',
+              defaultMessage: '所属项目',
+            })}
+          >
+            {projectMap?.[projectId]}
+          </Descriptions.Item>
         </Descriptions>
         <div
           style={{
@@ -95,7 +116,10 @@ const ManageTemplate: React.FC<{
                 {
                   key: 'name',
                   dataIndex: 'name',
-                  title: '模板',
+                  title: formatMessage({
+                    id: 'src.component.Task.MutipleAsyncTask.components.Template.67470F74',
+                    defaultMessage: '模板',
+                  }),
                   width: 368,
                   render: (name, template: Template) => {
                     const databaseIdsMap = {};
@@ -129,7 +153,13 @@ const ManageTemplate: React.FC<{
                         </div>
                       </Popover>
                     ) : (
-                      <Tooltip title="模版已失效" placement="left">
+                      <Tooltip
+                        title={formatMessage({
+                          id: 'src.component.Task.MutipleAsyncTask.components.Template.81FA47D5',
+                          defaultMessage: '模版已失效',
+                        })}
+                        placement="left"
+                      >
                         <div className={styles.disabled}>{name}</div>
                       </Tooltip>
                     );
@@ -137,12 +167,24 @@ const ManageTemplate: React.FC<{
                 },
                 {
                   key: 'action',
-                  title: '操作',
+                  title: formatMessage({
+                    id: 'src.component.Task.MutipleAsyncTask.components.Template.0D800390',
+                    defaultMessage: '操作',
+                  }),
                   render: (_, template: Template) => {
                     return (
                       <Space>
                         <div>
-                          <Tooltip title={!template?.enabled ? '模版已失效' : null}>
+                          <Tooltip
+                            title={
+                              !template?.enabled
+                                ? formatMessage({
+                                    id: 'src.component.Task.MutipleAsyncTask.components.Template.72C9630F',
+                                    defaultMessage: '模版已失效',
+                                  })
+                                : null
+                            }
+                          >
                             <a
                               style={{ display: 'block' }}
                               className={classNames({
@@ -155,20 +197,37 @@ const ManageTemplate: React.FC<{
                                 handleEditTemplate(true, template?.id);
                               }}
                             >
-                              编辑
+                              {formatMessage({
+                                id: 'src.component.Task.MutipleAsyncTask.components.Template.E0648BE6',
+                                defaultMessage: '编辑',
+                              })}
                             </a>
                           </Tooltip>
                         </div>
                         <Popconfirm
                           onCancel={() => {}}
                           onConfirm={() => handleDeleteTemplate(template?.id)}
-                          okText="确认"
+                          okText={formatMessage({
+                            id: 'src.component.Task.MutipleAsyncTask.components.Template.869B1F0B',
+                            defaultMessage: '确认',
+                          })}
                           disabled={!template?.enabled}
-                          cancelText="取消"
-                          title="删除模版不影响已发起的工单，是否确定删除？"
+                          cancelText={formatMessage({
+                            id: 'src.component.Task.MutipleAsyncTask.components.Template.D8ACCBE8',
+                            defaultMessage: '取消',
+                          })}
+                          title={formatMessage({
+                            id: 'src.component.Task.MutipleAsyncTask.components.Template.7ADC635A',
+                            defaultMessage: '删除模版不影响已发起的工单，是否确定删除？',
+                          })}
                         >
                           <div>
-                            <a>删除</a>
+                            <a>
+                              {formatMessage({
+                                id: 'src.component.Task.MutipleAsyncTask.components.Template.9BF60D4F',
+                                defaultMessage: '删除',
+                              })}
+                            </a>
                           </div>
                         </Popconfirm>
                       </Space>
@@ -176,6 +235,7 @@ const ManageTemplate: React.FC<{
                   },
                 },
               ],
+
               dataSource: templateList,
               pagination: pagination,
               scroll: {

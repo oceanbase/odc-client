@@ -95,7 +95,12 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
     const type = file?.name?.split('.')?.pop();
     const allowedFileMIMEType = getFileMIMETypeWithImportType(fileType);
     if (!allowedFileMIMEType.includes(type)) {
-      message.warning('请上传指定文件格式的文件');
+      message.warning(
+        formatMessage({
+          id: 'src.component.Task.ImportTask.CreateModal.ImportForm.FileSelecterPanel.AC29DC3E',
+          defaultMessage: '请上传指定文件格式的文件',
+        }),
+      );
       return Upload.LIST_IGNORE;
     }
     if (fileList.length > 50) {

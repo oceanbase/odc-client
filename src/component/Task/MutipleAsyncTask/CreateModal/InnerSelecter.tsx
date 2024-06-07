@@ -165,10 +165,16 @@ const InnerSelect: React.FC<{
     const disabled = isSelected || item?.expired || item?.unauthorized;
     const getTooltipTitle = (expired: boolean, unauthorized: boolean, isSelected: boolean) => {
       if (expired) {
-        return '该数据库已失效';
+        return formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.797AEFEE',
+          defaultMessage: '该数据库已失效',
+        });
       }
       if (unauthorized) {
-        return '暂无权限，请先申请数据库权限';
+        return formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.24303BEB',
+          defaultMessage: '暂无权限，请先申请数据库权限',
+        });
       }
       if (isSelected) {
         return formatMessage({

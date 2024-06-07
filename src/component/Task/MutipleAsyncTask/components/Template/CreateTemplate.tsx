@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { createTemplate, existsTemplateName } from '@/common/network/databaseChange';
 import login from '@/store/login';
 import { FormInstance, Form, message, Modal, Input } from 'antd';
@@ -24,11 +25,21 @@ const CreateTemplate: React.FC<{
       login.organizationId?.toString(),
     );
     if (response) {
-      message.success('模版保存成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.components.Template.249655CE',
+          defaultMessage: '模版保存成功',
+        }),
+      );
       setCreateTemplateModalOpen(false);
       formRef.resetFields();
     } else {
-      message.error('模版保存失败');
+      message.error(
+        formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.components.Template.F76B71CA',
+          defaultMessage: '模版保存失败',
+        }),
+      );
     }
   };
 
@@ -45,12 +56,21 @@ const CreateTemplate: React.FC<{
   return (
     <Modal
       open={createTemplateModalOpen}
-      title="保存模版"
+      title={formatMessage({
+        id: 'src.component.Task.MutipleAsyncTask.components.Template.F9A7EDA3',
+        defaultMessage: '保存模版',
+      })}
       width={480}
       destroyOnClose
       closable
-      okText="确定"
-      cancelText="取消"
+      okText={formatMessage({
+        id: 'src.component.Task.MutipleAsyncTask.components.Template.AB6525D4',
+        defaultMessage: '确定',
+      })}
+      cancelText={formatMessage({
+        id: 'src.component.Task.MutipleAsyncTask.components.Template.278A9FE1',
+        defaultMessage: '取消',
+      })}
       onCancel={() => {
         setCreateTemplateModalOpen(false);
       }}
@@ -58,27 +78,45 @@ const CreateTemplate: React.FC<{
     >
       <div className={styles.createTemplate}>
         <div className={styles.tip}>
-          将当前数据库配置保存为模版，可用于当前项目内快速发起多库变更
+          {formatMessage({
+            id: 'src.component.Task.MutipleAsyncTask.components.Template.72F3787F',
+            defaultMessage: '将当前数据库配置保存为模版，可用于当前项目内快速发起多库变更',
+          })}
         </div>
         <Form requiredMark="optional" layout="vertical" form={formRef}>
           <Form.Item
             required
-            label="模版名称"
+            label={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.components.Template.D826855F',
+              defaultMessage: '模版名称',
+            })}
             name="name"
             validateTrigger="onBlur"
             rules={[
               {
                 required: true,
-                message: '请输入模版名称',
+                message: formatMessage({
+                  id: 'src.component.Task.MutipleAsyncTask.components.Template.4B3E6B15',
+                  defaultMessage: '请输入模版名称',
+                }),
               },
               {
-                message: '模版名称已存在',
+                message: formatMessage({
+                  id: 'src.component.Task.MutipleAsyncTask.components.Template.1797C71B',
+                  defaultMessage: '模版名称已存在',
+                }),
                 required: true,
                 validator: checkNameRepeat,
               },
             ]}
           >
-            <Input placeholder="请输入" style={{ width: '320px' }} />
+            <Input
+              placeholder={formatMessage({
+                id: 'src.component.Task.MutipleAsyncTask.components.Template.69303AA2',
+                defaultMessage: '请输入',
+              })}
+              style={{ width: '320px' }}
+            />
           </Form.Item>
         </Form>
       </div>

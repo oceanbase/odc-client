@@ -129,7 +129,16 @@ export const DatabaseOwnerSelect = ({
                       {item?.role?.map((i) => projectRoleTextMap[i]).join(',')}
                     </span>
                     {item.disabled ? (
-                      <Tooltip title={item?.disabled ? '用户已禁用' : ''}>
+                      <Tooltip
+                        title={
+                          item?.disabled
+                            ? formatMessage({
+                                id: 'src.page.Project.Database.components.DatabaseOwnerSelect.tsx.A9AFE6EF',
+                                defaultMessage: '用户已禁用',
+                              })
+                            : ''
+                        }
+                      >
                         <InfoCircleOutlined style={{ color: 'var(--text-color-secondary)' }} />
                       </Tooltip>
                     ) : (

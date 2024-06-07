@@ -202,7 +202,13 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
               defaultMessage: 'SQL 检查结果',
             })}
           >
-            {`存在 ${issueCount} 个问题`}
+            {formatMessage(
+              {
+                id: 'src.component.Task.component.CommonDetailModal.Nodes.A3187B85',
+                defaultMessage: '存在 ${issueCount} 个问题',
+              },
+              { issueCount: issueCount },
+            )}
           </Descriptions.Item>
         </Descriptions>
         <MultipleLintResultTable
