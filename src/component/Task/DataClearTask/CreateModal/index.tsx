@@ -36,7 +36,7 @@ import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { mbToKb, kbToMb, hourToMilliSeconds } from '@/util/utils';
+import { mbToKb, kbToMb, hourToMilliSeconds, milliSecondsToHour } from '@/util/utils';
 import { FieldTimeOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Drawer, Form, Modal, Radio, Space, Checkbox, InputNumber } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -169,7 +169,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       description,
       needCheckBeforeDelete,
       targetDatabaseId,
-      timeoutMillis: hourToMilliSeconds(timeoutMillis),
+      timeoutMillis: milliSecondsToHour(timeoutMillis),
     };
 
     if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
@@ -361,10 +361,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       .then(async (values) => {
         const { variables, tables: _tables, archiveRange } = values;
         _tables?.map((i) => {
-          i.partitions = i?.partitions
-            ?.replace(/[\r\n]+/g, '')
-            ?.split(',')
-            ?.filter(Boolean);
+          i.partitions = i?.partitions?.length
+            ? i?.partitions
+                ?.replace(/[\r\n]+/g, '')
+                ?.split(',')
+                ?.filter(Boolean)
+            : [];
         });
         const parameters = {
           variables: getVariables(variables),
@@ -475,153 +477,157 @@ const CreateModal: React.FC<IProps> = (props) => {
         handleCancel(hasEdit);
       }}
     >
-      <Form
-        form={form}
-        name="basic"
-        layout="vertical"
-        requiredMark="optional"
-        initialValues={defaultValue}
-        onFieldsChange={handleFieldsChange}
-      >
-        <Form.Item name="needCheckBeforeDelete" valuePropName="checked">
-          <Checkbox>
-            {formatMessage({
-              id: 'src.component.Task.DataClearTask.CreateModal.70A4982D',
-              defaultMessage: '清理前是否需要校验',
-            })}
-          </Checkbox>
-        </Form.Item>
-        <Space align="start">
-          <DatabaseSelect
-            type={TaskType.DATA_DELETE}
-            label={formatMessage({
-              id: 'odc.DataClearTask.CreateModal.SourceDatabase',
-            })}
-            /*源端数据库*/ projectId={projectId}
-            onChange={handleDBChange}
-          />
-
-          <Form.Item noStyle shouldUpdate>
-            {({ getFieldValue }) => {
-              const needCheckBeforeDelete = getFieldValue('needCheckBeforeDelete');
-              return (
-                needCheckBeforeDelete && (
-                  <DatabaseSelect
-                    type={TaskType.DATA_DELETE}
-                    label={formatMessage({
-                      id: 'odc.DataArchiveTask.CreateModal.TargetDatabase',
-                    })} /*目标数据库*/
-                    name="targetDatabaseId"
-                    projectId={projectId}
-                  />
-                )
-              );
-            }}
-          </Form.Item>
-        </Space>
-        <Space direction="vertical" size={24} style={{ width: '100%' }}>
-          <Form.Item noStyle shouldUpdate>
-            {({ getFieldValue }) => {
-              const needCheckBeforeDelete = getFieldValue('needCheckBeforeDelete');
-              return (
-                <ArchiveRange
-                  tables={tables}
-                  needCheckBeforeDelete={needCheckBeforeDelete}
-                  form={form}
-                />
-              );
-            }}
-          </Form.Item>
-          <VariableConfig form={form} />
-        </Space>
-        <Form.Item
-          label={formatMessage({
-            id: 'odc.DataClearTask.CreateModal.ExecutionMethod',
-          })}
-          /*执行方式*/ name="triggerStrategy"
-          required
+      {dataClearVisible ? (
+        <Form
+          form={form}
+          name="basic"
+          layout="vertical"
+          requiredMark="optional"
+          initialValues={defaultValue}
+          onFieldsChange={handleFieldsChange}
         >
-          <Radio.Group>
-            <Radio.Button value={TaskExecStrategy.START_NOW}>
-              {
-                formatMessage({
-                  id: 'odc.DataClearTask.CreateModal.ExecuteNow',
-                }) /*立即执行*/
-              }
-            </Radio.Button>
-            {!isClient() ? (
-              <Radio.Button value={TaskExecStrategy.START_AT}>
+          <Form.Item name="needCheckBeforeDelete" valuePropName="checked">
+            <Checkbox>
+              {formatMessage({
+                id: 'src.component.Task.DataClearTask.CreateModal.70A4982D',
+                defaultMessage: '清理前是否需要校验',
+              })}
+            </Checkbox>
+          </Form.Item>
+          <Space align="start">
+            <DatabaseSelect
+              type={TaskType.DATA_DELETE}
+              label={formatMessage({
+                id: 'odc.DataClearTask.CreateModal.SourceDatabase',
+              })}
+              /*源端数据库*/ projectId={projectId}
+              onChange={handleDBChange}
+            />
+
+            <Form.Item noStyle shouldUpdate>
+              {({ getFieldValue }) => {
+                const needCheckBeforeDelete = getFieldValue('needCheckBeforeDelete');
+                return (
+                  needCheckBeforeDelete && (
+                    <DatabaseSelect
+                      type={TaskType.DATA_DELETE}
+                      label={formatMessage({
+                        id: 'odc.DataArchiveTask.CreateModal.TargetDatabase',
+                      })} /*目标数据库*/
+                      name="targetDatabaseId"
+                      projectId={projectId}
+                    />
+                  )
+                );
+              }}
+            </Form.Item>
+          </Space>
+          <Space direction="vertical" size={24} style={{ width: '100%' }}>
+            <Form.Item noStyle shouldUpdate>
+              {({ getFieldValue }) => {
+                const needCheckBeforeDelete = getFieldValue('needCheckBeforeDelete');
+                return (
+                  <ArchiveRange
+                    tables={tables}
+                    needCheckBeforeDelete={needCheckBeforeDelete}
+                    form={form}
+                  />
+                );
+              }}
+            </Form.Item>
+            <VariableConfig form={form} />
+          </Space>
+          <Form.Item
+            label={formatMessage({
+              id: 'odc.DataClearTask.CreateModal.ExecutionMethod',
+            })}
+            /*执行方式*/ name="triggerStrategy"
+            required
+          >
+            <Radio.Group>
+              <Radio.Button value={TaskExecStrategy.START_NOW}>
                 {
                   formatMessage({
-                    id: 'odc.DataClearTask.CreateModal.ScheduledExecution',
-                  }) /*定时执行*/
+                    id: 'odc.DataClearTask.CreateModal.ExecuteNow',
+                  }) /*立即执行*/
                 }
               </Radio.Button>
-            ) : null}
-            <Radio.Button value={TaskExecStrategy.TIMER}>
-              {
-                formatMessage({
-                  id: 'odc.DataClearTask.CreateModal.PeriodicExecution',
-                }) /*周期执行*/
+              {!isClient() ? (
+                <Radio.Button value={TaskExecStrategy.START_AT}>
+                  {
+                    formatMessage({
+                      id: 'odc.DataClearTask.CreateModal.ScheduledExecution',
+                    }) /*定时执行*/
+                  }
+                </Radio.Button>
+              ) : null}
+              <Radio.Button value={TaskExecStrategy.TIMER}>
+                {
+                  formatMessage({
+                    id: 'odc.DataClearTask.CreateModal.PeriodicExecution',
+                  }) /*周期执行*/
+                }
+              </Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item shouldUpdate noStyle>
+            {({ getFieldValue }) => {
+              const triggerStrategy = getFieldValue('triggerStrategy') || [];
+              if (triggerStrategy === TaskExecStrategy.START_AT) {
+                return (
+                  <Form.Item name="startAt">
+                    <DatePicker showTime suffixIcon={<FieldTimeOutlined />} />
+                  </Form.Item>
+                );
               }
-            </Radio.Button>
-          </Radio.Group>
-        </Form.Item>
-        <Form.Item shouldUpdate noStyle>
-          {({ getFieldValue }) => {
-            const triggerStrategy = getFieldValue('triggerStrategy') || [];
-            if (triggerStrategy === TaskExecStrategy.START_AT) {
-              return (
-                <Form.Item name="startAt">
-                  <DatePicker showTime suffixIcon={<FieldTimeOutlined />} />
-                </Form.Item>
-              );
-            }
-            if (triggerStrategy === TaskExecStrategy.TIMER) {
-              return (
-                <Form.Item>
-                  <Crontab
-                    ref={crontabRef}
-                    initialValue={crontab}
-                    onValueChange={handleCrontabChange}
-                  />
-                </Form.Item>
-              );
-            }
-            return null;
-          }}
-        </Form.Item>
-        <FormItemPanel
-          label={
-            formatMessage({
-              id: 'odc.src.component.Task.DataClearTask.CreateModal.TaskSetting',
-            }) /* 任务设置 */
-          }
-          keepExpand
-        >
-          <TaskdurationItem form={form} />
-          <ThrottleFormItem />
-          <Form.Item
+              if (triggerStrategy === TaskExecStrategy.TIMER) {
+                return (
+                  <Form.Item>
+                    <Crontab
+                      ref={crontabRef}
+                      initialValue={crontab}
+                      onValueChange={handleCrontabChange}
+                    />
+                  </Form.Item>
+                );
+              }
+              return null;
+            }}
+          </Form.Item>
+          <FormItemPanel
             label={
               formatMessage({
-                id: 'src.component.Task.DataClearTask.CreateModal.99D8FCD6',
-              }) /*"使用主键清理"*/
+                id: 'odc.src.component.Task.DataClearTask.CreateModal.TaskSetting',
+              }) /* 任务设置 */
             }
-            name="deleteByUniqueKey"
-            rules={[
-              {
-                required: true,
-                message: formatMessage({
-                  id: 'src.component.Task.DataClearTask.CreateModal.23542D89',
-                }), //'请选择'
-              },
-            ]}
+            keepExpand
           >
-            <Radio.Group options={deleteByUniqueKeyOptions} />
-          </Form.Item>
-        </FormItemPanel>
-        <DescriptionInput />
-      </Form>
+            <TaskdurationItem form={form} />
+            <ThrottleFormItem />
+            <Form.Item
+              label={
+                formatMessage({
+                  id: 'src.component.Task.DataClearTask.CreateModal.99D8FCD6',
+                }) /*"使用主键清理"*/
+              }
+              name="deleteByUniqueKey"
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage({
+                    id: 'src.component.Task.DataClearTask.CreateModal.23542D89',
+                  }), //'请选择'
+                },
+              ]}
+            >
+              <Radio.Group options={deleteByUniqueKeyOptions} />
+            </Form.Item>
+          </FormItemPanel>
+          <DescriptionInput />
+        </Form>
+      ) : (
+        <></>
+      )}
       <SQLPreviewModal
         sql={previewSql}
         visible={previewModalVisible}
