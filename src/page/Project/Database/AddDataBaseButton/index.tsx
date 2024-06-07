@@ -80,6 +80,10 @@ const AddDataBaseButton: React.FC<IProps> = ({
     project?.currentUserResourceRoles?.filter((roles) =>
       [ProjectRole.DBA, ProjectRole.OWNER]?.includes(roles),
     )?.length === 0;
+  const disabledDeveloperAction =
+    project?.currentUserResourceRoles?.filter((roles) =>
+      [ProjectRole.DBA, ProjectRole.OWNER, ProjectRole.DEVELOPER]?.includes(roles),
+    )?.length === 0;
   function close() {
     setOpen(false);
     form.resetFields();
@@ -127,7 +131,7 @@ const AddDataBaseButton: React.FC<IProps> = ({
           }
         >
           <Button
-            disabled={disabledAction}
+            disabled={disabledDeveloperAction}
             onClick={() => {
               modalStore?.changeMultiDatabaseChangeModal(true, {
                 projectId,
