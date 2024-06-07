@@ -4827,10 +4827,7 @@
   "src.d.ts.8977156C": "Data Validation",
   "src.page.Workspace.components.TablePage.ShowTableBaseInfoForm.FC24F422": "Storage Mode",
   "src.page.Secure.RiskLevel.components.9742C706": "Project",
-  "src.component.Task.DataMockerTask.CreateModal.RuleContent.ruleItems.DateItem.F19E741F": "/Day",
   "src.component.Task.component.PartitionTextArea.51B4FB10": "Please enter the partition names, separated by commas (,).",
-  "src.page.Workspace.components.DDLResultSet.3636E82C": "/Primary Key",
-  "src.component.Task.DataMockerTask.CreateModal.RuleContent.ruleItems.CharItem.F6DA4959": "/Day",
   "src.d.ts.90979FA9": "Unique Constraints",
   "src.page.Workspace.components.SQLResultSet.27AA04C0": "Locate",
   "src.component.Crontab.5FE2E112": "Per Hour",
@@ -4839,6 +4836,5 @@
   "src.d.ts.40DBAF05": "Partitions",
   "src.constant.CE5A59D0": "Column Store",
   "src.page.Workspace.components.CreateTable.BaseInfo.3907128F": "Storage Mode",
-  "src.d.ts.910D42B5": "Data Cleanup",
-  "src.page.Workspace.components.DDLResultSet.8056F345": "/Auto-Increment"
+  "src.d.ts.910D42B5": "Data Cleanup"
 }
