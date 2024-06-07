@@ -27,7 +27,7 @@ const ShowTemplate: React.FC<{
               display: 'flex',
               flexDirection: 'column',
               gap: '8px',
-              backgroundColor: '#F7F9FB',
+              backgroundColor: 'var(--background-tertraiy-color)',
               padding: '12px 16px',
               marginTop: '8px',
             }}
@@ -50,7 +50,7 @@ const ShowTemplate: React.FC<{
                       }}
                     />
                     <div>{databaseIdsMap?.[db]?.name}</div>
-                    <div style={{ color: 'var(--neutral-black45-color)' }}>
+                    <div style={{ color: 'var(--text-color-hint)' }}>
                       {databaseIdsMap?.[db]?.dataSource?.name}
                     </div>
                   </Space>
