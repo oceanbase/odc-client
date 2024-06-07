@@ -52,6 +52,7 @@ import React, { useEffect, useState } from 'react';
 import { isCycleTask } from '../../helper';
 import RollBackModal from '../RollbackModal';
 import { TaskTypeMap } from '@/component/Task/component/TaskTable';
+import type { ICycleTaskRecord } from '@/d.ts';
 
 interface IProps {
   userStore?: UserStore;
@@ -817,6 +818,13 @@ const ActionBar: React.FC<IProps> = inject(
         case TaskStatus.ENABLED: {
           if (isOwner) {
             tools = [viewBtn, editBtn, disableBtn];
+            if (
+              [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type) &&
+              (task as ICycleTaskRecord<TaskRecordParameters>)?.triggerConfig?.triggerStrategy ===
+                TaskExecStrategy.START_NOW
+            ) {
+              tools = [viewBtn];
+            }
           } else {
             tools = [viewBtn];
           }
