@@ -68,6 +68,7 @@ interface IProps {
   onApprovalVisible?: (status: boolean, visible: boolean) => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onClose?: () => void;
+  isTaskProjectOwner?: boolean;
 }
 
 const ActionBar: React.FC<IProps> = inject(
@@ -86,6 +87,7 @@ const ActionBar: React.FC<IProps> = inject(
       task,
       disabledSubmit = false,
       result,
+      isTaskProjectOwner,
     } = props;
     const isOwner = user?.id === task?.creator?.id;
     const isApprover = task?.approvable;
@@ -376,6 +378,13 @@ const ActionBar: React.FC<IProps> = inject(
       props?.onReload?.();
     };
 
+    const setProjectOwnerStopBtn = (tools, stopBtn) => {
+      if (isTaskProjectOwner) {
+        return Array.from(new Map([...tools, stopBtn].map((obj) => [obj.key, obj])).values());
+      }
+      return tools;
+    };
+
     const getTaskTools = (_task) => {
       let tools = [];
 
@@ -620,6 +629,7 @@ const ActionBar: React.FC<IProps> = inject(
             if (isApprover) {
               tools = [];
             }
+            tools = setProjectOwnerStopBtn(tools, stopBtn);
             break;
           }
           case TaskStatus.EXECUTION_SUCCEEDED: {
@@ -662,6 +672,7 @@ const ActionBar: React.FC<IProps> = inject(
                 tools = [rejectBtn, approvalBtn];
               }
             }
+            tools = setProjectOwnerStopBtn(tools, stopBtn);
             break;
           }
           case TaskStatus.WAIT_FOR_EXECUTION: {
@@ -689,6 +700,7 @@ const ActionBar: React.FC<IProps> = inject(
             if (isApprover) {
               tools = [];
             }
+            tools = setProjectOwnerStopBtn(tools, stopBtn);
             break;
           }
           default:
@@ -701,22 +713,25 @@ const ActionBar: React.FC<IProps> = inject(
         }
       } else {
         tools = [viewBtn];
-        if (status === TaskStatus.WAIT_FOR_EXECUTION && isOwner) {
-          const _executeBtn = { ...executeBtn };
-          if (task?.executionStrategy === TaskExecStrategy.TIMER) {
-            _executeBtn.disabled = true;
-            const executionTime = getLocalFormatDateTime(task?.executionTime);
-            _executeBtn.tooltip = formatMessage(
-              {
-                id: 'odc.TaskManagePage.component.TaskTools.ScheduledExecutionTimeExecutiontime',
-              },
+        if (status === TaskStatus.WAIT_FOR_EXECUTION) {
+          if (isOwner) {
+            const _executeBtn = { ...executeBtn };
+            if (task?.executionStrategy === TaskExecStrategy.TIMER) {
+              _executeBtn.disabled = true;
+              const executionTime = getLocalFormatDateTime(task?.executionTime);
+              _executeBtn.tooltip = formatMessage(
+                {
+                  id: 'odc.TaskManagePage.component.TaskTools.ScheduledExecutionTimeExecutiontime',
+                },
 
-              { executionTime: executionTime },
-            );
+                { executionTime: executionTime },
+              );
+            }
+            task?.executionStrategy === TaskExecStrategy.AUTO
+              ? tools.push(stopBtn)
+              : tools.push(_executeBtn, stopBtn);
           }
-          task?.executionStrategy === TaskExecStrategy.AUTO
-            ? tools.push(stopBtn)
-            : tools.push(_executeBtn, stopBtn);
+          tools = setProjectOwnerStopBtn(tools, stopBtn);
         }
       }
       if (task?.executionStrategy === TaskExecStrategy.TIMER) {
@@ -823,6 +838,7 @@ const ActionBar: React.FC<IProps> = inject(
               tools = [viewBtn];
             }
           }
+          tools = setProjectOwnerStopBtn(tools, stopBtn);
           break;
         }
         case TaskStatus.REJECTED: {

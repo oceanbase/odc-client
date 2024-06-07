@@ -2409,7 +2409,7 @@ export interface ISqlPlayJobParameters {
 export interface ICycleTaskRecord<T> {
   id: number;
   type: TaskType;
-
+  projectId?: number;
   creator: {
     id: number;
     name: string;

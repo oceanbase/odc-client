@@ -24,7 +24,7 @@ export interface IMenuItemConfig {
   // 每一个菜单子项command的唯一标识符，最终用来触发对应的action
   key: string;
   // 主要用于文案“国际化”
-  text: React.ReactNode;
+  text: React.ReactNode | ((node: TreeDataNode) => React.ReactNode);
   // 菜单中额外信息的展示
   subText?: (node: TreeDataNode) => React.ReactNode;
   // 当前菜单项后面是否需要显示分割线
@@ -41,7 +41,7 @@ export interface IMenuItemConfig {
     session: SessionStore,
     node: TreeDataNode,
     databaseFrom: 'datasource' | 'project',
-    reloadDatabase?: () => void,
+    pollingDatabase?: () => void,
   ) => void;
 }
 
@@ -52,7 +52,7 @@ export interface IProps {
   node: TreeDataNode;
   databaseFrom: 'datasource' | 'project';
   showTip?: boolean;
-  reloadDatabase?: () => void;
+  pollingDatabase?: () => void;
 }
 
 export interface IOptions {
