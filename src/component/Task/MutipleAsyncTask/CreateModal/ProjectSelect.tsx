@@ -34,7 +34,17 @@ const ProjectSelect = ({ projectMap, projectOptions }) => {
           setPopoverOpen(false);
         }}
       >
-        <Tooltip title={item?.disabled ? '暂无权限，请先申请数据库权限' : null} placement="left">
+        <Tooltip
+          title={
+            item?.disabled
+              ? formatMessage({
+                  id: 'src.component.Task.MutipleAsyncTask.CreateModal.D657B69E',
+                  defaultMessage: '暂无权限，请先申请数据库权限',
+                })
+              : null
+          }
+          placement="left"
+        >
           <div
             className={classNames(styles.option, {
               [styles.optionDisabled]: item?.disabled,
@@ -62,7 +72,10 @@ const ProjectSelect = ({ projectMap, projectOptions }) => {
 
   const getPlaceholder = () => {
     if (!projectId) {
-      return '请选择项目';
+      return formatMessage({
+        id: 'src.component.Task.MutipleAsyncTask.CreateModal.EDCF6A4F',
+        defaultMessage: '请选择项目',
+      });
     }
     return (
       <div

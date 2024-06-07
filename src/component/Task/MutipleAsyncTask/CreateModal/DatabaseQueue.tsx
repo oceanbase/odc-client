@@ -117,7 +117,13 @@ export const DatabaseQueueSelect: React.FC<{
                               className={styles.title}
                               style={{ flexShrink: 0, alignSelf: 'center' }}
                             >
-                              {`执行节点${index + 1}`}
+                              {formatMessage(
+                                {
+                                  id: 'src.component.Task.MutipleAsyncTask.CreateModal.6E409607',
+                                  defaultMessage: '执行节点${index + 1}',
+                                },
+                                { BinaryExpression0: index + 1 },
+                              )}
                             </div>
                             <Divider
                               style={{
@@ -131,6 +137,7 @@ export const DatabaseQueueSelect: React.FC<{
                                 maxWidth: 284,
                               }}
                             />
+
                             <div
                               style={{
                                 display: 'flex',
@@ -159,6 +166,7 @@ export const DatabaseQueueSelect: React.FC<{
                                   form.setFieldValue(rootName, orderedDatabaseIds);
                                 }}
                               />
+
                               <DownOutlined
                                 style={{
                                   color: index === fields?.length - 1 ? 'var(--mask-color)' : null,
@@ -176,6 +184,7 @@ export const DatabaseQueueSelect: React.FC<{
                                   form.setFieldValue(rootName, orderedDatabaseIds);
                                 }}
                               />
+
                               <DeleteOutlined onClick={() => remove(name)} />
                             </div>
                           </div>
@@ -205,7 +214,10 @@ export const DatabaseQueueSelect: React.FC<{
                   onClick={() => add([undefined])}
                   icon={<PlusOutlined />}
                 >
-                  添加执行节点
+                  {formatMessage({
+                    id: 'src.component.Task.MutipleAsyncTask.CreateModal.0CDA8962',
+                    defaultMessage: '添加执行节点',
+                  })}
                 </Button>
               </Timeline.Item>
             </Timeline>

@@ -262,10 +262,24 @@ const ActionBar: React.FC<IProps> = inject(
         id,
       } = task;
       Modal.confirm({
-        title: `确认要禁用此${TaskTypeMap[task.type]}?`,
+        title: formatMessage(
+          {
+            id: 'src.component.Task.component.ActionBar.5495D4C7',
+            defaultMessage: '确认要禁用此${TaskTypeMap[task.type]}?',
+          },
+          { TaskTypeMapTaskType: TaskTypeMap[task.type] },
+        ),
         content: (
           <>
-            <div>{`禁用${TaskTypeMap[task.type]}`}</div>
+            <div>
+              {formatMessage(
+                {
+                  id: 'src.component.Task.component.ActionBar.EC0C09D6',
+                  defaultMessage: '禁用${TaskTypeMap[task.type]}',
+                },
+                { TaskTypeMapTaskType: TaskTypeMap[task.type] },
+              )}
+            </div>
             <div>
               {
                 formatMessage({

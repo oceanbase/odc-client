@@ -360,7 +360,19 @@ const TaskProgress: React.FC<IProps> = (props) => {
   return (
     <>
       {task?.type === TaskType.MULTIPLE_ASYNC && subTasks?.length > 0 && (
-        <div>{`共 ${subTasks?.length} 个数据库， ${pendingExectionDatabases} 个待执行`}</div>
+        <div>
+          {formatMessage(
+            {
+              id: 'src.component.Task.component.CommonDetailModal.E75BF608',
+              defaultMessage:
+                '共 ${subTasks?.length} 个数据库， ${pendingExectionDatabases} 个待执行',
+            },
+            {
+              subTasksLength: subTasks?.length,
+              pendingExectionDatabases: pendingExectionDatabases,
+            },
+          )}
+        </div>
       )}
 
       <DisplayTable

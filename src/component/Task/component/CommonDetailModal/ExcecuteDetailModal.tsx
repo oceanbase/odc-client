@@ -153,7 +153,11 @@ const ExcecuteDetailModal: React.FC<IProps> = function (props) {
             })}
             span={2}
           >
-            {record?.readRowsPerSecond} 行/每秒
+            {record?.readRowsPerSecond}
+            {formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.BC466037',
+              defaultMessage: '行/每秒',
+            })}
           </Descriptions.Item>
           <Descriptions.Item
             label={formatMessage({
@@ -162,7 +166,11 @@ const ExcecuteDetailModal: React.FC<IProps> = function (props) {
             })}
             span={2}
           >
-            {record?.processedRowsPerSecond} 行/每秒
+            {record?.processedRowsPerSecond}
+            {formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.892DAF55',
+              defaultMessage: '行/每秒',
+            })}
           </Descriptions.Item>
           <Descriptions.Item
             label={formatMessage({

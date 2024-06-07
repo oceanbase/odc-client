@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { listDatabases } from '@/common/network/database';
 import {
   existsTemplateName,
@@ -90,7 +91,12 @@ const EditTemplate: React.FC<{
       return form.setFields([
         {
           name: ['orders'],
-          errors: ['至少共需要2个数据库'],
+          errors: [
+            formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.components.Template.BA8536D1',
+              defaultMessage: '至少共需要2个数据库',
+            }),
+          ],
         },
       ]);
     } else {
@@ -107,10 +113,20 @@ const EditTemplate: React.FC<{
       projectId,
     });
     if (response) {
-      message.success('模板更新成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.components.Template.DC7A4698',
+          defaultMessage: '模板更新成功',
+        }),
+      );
       await onSuccess?.();
     } else {
-      message.error('模板更新失败');
+      message.error(
+        formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.components.Template.6BC97AE1',
+          defaultMessage: '模板更新失败',
+        }),
+      );
     }
   };
   const checkNameRepeat = async (ruler, value) => {
@@ -120,7 +136,12 @@ const EditTemplate: React.FC<{
     }
     const isRepeat = await existsTemplateName(name, projectId, login.organizationId?.toString());
     if (isRepeat && name !== currentTemplate?.name) {
-      throw new Error('模版名称已存在');
+      throw new Error(
+        formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.components.Template.A6EB2822',
+          defaultMessage: '模版名称已存在',
+        }),
+      );
     }
   };
   useEffect(() => {
@@ -136,7 +157,10 @@ const EditTemplate: React.FC<{
     <Drawer
       width={600}
       open={open}
-      title="编辑模版"
+      title={formatMessage({
+        id: 'src.component.Task.MutipleAsyncTask.components.Template.7F26EEEC',
+        defaultMessage: '编辑模版',
+      })}
       closable
       destroyOnClose
       onClose={() => setOpen(false)}
@@ -148,9 +172,17 @@ const EditTemplate: React.FC<{
           }}
         >
           <Space size={8}>
-            <Button onClick={() => setOpen(false)}>取消</Button>
+            <Button onClick={() => setOpen(false)}>
+              {formatMessage({
+                id: 'src.component.Task.MutipleAsyncTask.components.Template.8817713A',
+                defaultMessage: '取消',
+              })}
+            </Button>
             <Button type="primary" onClick={changeTemplateName}>
-              提交
+              {formatMessage({
+                id: 'src.component.Task.MutipleAsyncTask.components.Template.0058B243',
+                defaultMessage: '提交',
+              })}
             </Button>
           </Space>
         </div>
@@ -158,25 +190,47 @@ const EditTemplate: React.FC<{
     >
       <Form layout="vertical" requiredMark="optional" form={form}>
         <Form.Item
-          label="模版名称"
+          label={formatMessage({
+            id: 'src.component.Task.MutipleAsyncTask.components.Template.70133595',
+            defaultMessage: '模版名称',
+          })}
           name="name"
           rules={[
             {
               required: true,
-              message: '请输入',
+              message: formatMessage({
+                id: 'src.component.Task.MutipleAsyncTask.components.Template.F3DD7E9F',
+                defaultMessage: '请输入',
+              }),
             },
             {
               validator: checkNameRepeat,
             },
           ]}
         >
-          <Input placeholder="请输入" />
+          <Input
+            placeholder={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.components.Template.6AAE51DF',
+              defaultMessage: '请输入',
+            })}
+          />
         </Form.Item>
 
-        <Form.Item label="数据库" requiredMark shouldUpdate={true}>
+        <Form.Item
+          label={formatMessage({
+            id: 'src.component.Task.MutipleAsyncTask.components.Template.EC8FF04A',
+            defaultMessage: '数据库',
+          })}
+          requiredMark
+          shouldUpdate={true}
+        >
           <div className={styles.header}>
             <div className={styles.tip}>
-              选择库并设置执行顺序；不同节点将依次执行变更，同一节点内的库将同时变更
+              {formatMessage({
+                id: 'src.component.Task.MutipleAsyncTask.components.Template.21EB3930',
+                defaultMessage:
+                  '选择库并设置执行顺序；不同节点将依次执行变更，同一节点内的库将同时变更',
+              })}
             </div>
           </div>
           <div className={styles.orderedDatabaseIds}>
@@ -210,7 +264,13 @@ const EditTemplate: React.FC<{
                                     className={styles.title}
                                     style={{ flexShrink: 0, alignSelf: 'center' }}
                                   >
-                                    {`执行节点${index + 1}`}
+                                    {formatMessage(
+                                      {
+                                        id: 'src.component.Task.MutipleAsyncTask.components.Template.0A55C56F',
+                                        defaultMessage: '执行节点${index + 1}',
+                                      },
+                                      { BinaryExpression0: index + 1 },
+                                    )}
                                   </div>
                                   <Divider
                                     style={{
@@ -224,6 +284,7 @@ const EditTemplate: React.FC<{
                                       maxWidth: 284,
                                     }}
                                   />
+
                                   <div
                                     style={{
                                       display: 'flex',
@@ -252,6 +313,7 @@ const EditTemplate: React.FC<{
                                         form.setFieldValue(['orders'], orderedDatabaseIds);
                                       }}
                                     />
+
                                     <DownOutlined
                                       style={{
                                         color:
@@ -273,6 +335,7 @@ const EditTemplate: React.FC<{
                                         form.setFieldValue(['orders'], orderedDatabaseIds);
                                       }}
                                     />
+
                                     <DeleteOutlined onClick={() => remove(name)} />
                                   </div>
                                 </div>
@@ -303,7 +366,10 @@ const EditTemplate: React.FC<{
                         onClick={() => add([undefined])}
                         icon={<PlusOutlined />}
                       >
-                        添加执行节点
+                        {formatMessage({
+                          id: 'src.component.Task.MutipleAsyncTask.components.Template.60FB68A1',
+                          defaultMessage: '添加执行节点',
+                        })}
                       </Button>
                     </Timeline.Item>
                   </Timeline>

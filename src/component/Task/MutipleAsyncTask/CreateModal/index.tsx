@@ -242,7 +242,10 @@ const CreateModal: React.FC<IProps> = (props) => {
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
-        title: '确认取消多库变更吗？',
+        title: formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.C3F6AD52',
+          defaultMessage: '确认取消多库变更吗？',
+        }),
         centered: true,
         onOk: () => {
           modalStore.changeMultiDatabaseChangeModal(false);
@@ -268,7 +271,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       return form.setFields([
         {
           name: ['parameters', 'orderedDatabaseIds'],
-          errors: ['至少共需要2个数据库'],
+          errors: [
+            formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.CreateModal.51536A7D',
+              defaultMessage: '至少共需要2个数据库',
+            }),
+          ],
         },
       ]);
     }
