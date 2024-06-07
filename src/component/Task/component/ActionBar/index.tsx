@@ -51,7 +51,8 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { isCycleTask } from '../../helper';
 import RollBackModal from '../RollbackModal';
-import { cloneDeep } from 'lodash';
+import { TaskTypeMap } from '@/component/Task/component/TaskTable';
+import type { ICycleTaskRecord } from '@/d.ts';
 
 interface IProps {
   userStore?: UserStore;
@@ -261,18 +262,10 @@ const ActionBar: React.FC<IProps> = inject(
         id,
       } = task;
       Modal.confirm({
-        title: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.AreYouSureYouWant.1',
-        }), //确认要禁用此 SQL 计划吗？
+        title: `确认要禁用此${TaskTypeMap[task.type]}?`,
         content: (
           <>
-            <div>
-              {
-                formatMessage({
-                  id: 'odc.TaskManagePage.component.TaskTools.DisableSqlScheduling',
-                }) /*禁用 SQL 计划*/
-              }
-            </div>
+            <div>{`禁用${TaskTypeMap[task.type]}`}</div>
             <div>
               {
                 formatMessage({
@@ -825,6 +818,13 @@ const ActionBar: React.FC<IProps> = inject(
         case TaskStatus.ENABLED: {
           if (isOwner) {
             tools = [viewBtn, editBtn, disableBtn];
+            if (
+              [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type) &&
+              (task as ICycleTaskRecord<TaskRecordParameters>)?.triggerConfig?.triggerStrategy ===
+                TaskExecStrategy.START_NOW
+            ) {
+              tools = [viewBtn];
+            }
           } else {
             tools = [viewBtn];
           }

@@ -92,8 +92,9 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
   });
 
   function beforeUpload(fileType, file, fileList: any[], silence?: boolean) {
+    const type = file?.name?.split('.')?.pop();
     const allowedFileMIMEType = getFileMIMETypeWithImportType(fileType);
-    if (!allowedFileMIMEType.includes(file.type)) {
+    if (!allowedFileMIMEType.includes(type)) {
       message.warning('请上传指定文件格式的文件');
       return Upload.LIST_IGNORE;
     }

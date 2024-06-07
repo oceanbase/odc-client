@@ -114,7 +114,9 @@ export default function SelectTransfer(props: IProps) {
             checkable
             selectable={false}
             checkedKeys={checkedKeys}
-            onCheck={(v) => setCheckedKeys(v as string[])}
+            onCheck={(v) => {
+              setCheckedKeys([...(checkedKeys || []), ...(v as string[])]);
+            }}
             height={274}
             treeData={sourceDisplayTreeData}
           />
@@ -155,7 +157,7 @@ export default function SelectTransfer(props: IProps) {
                       overflow: 'hidden',
                       whiteSpace: 'nowrap',
                       textOverflow: 'ellipsis',
-                      wordBreak: "break-all"
+                      wordBreak: 'break-all',
                     }}
                     title={node.title}
                   >
