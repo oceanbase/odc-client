@@ -143,6 +143,7 @@ const ManageTemplate: React.FC<{
                             databaseIdsMap={databaseIdsMap}
                           />
                         }
+                        showArrow={false}
                       >
                         <div
                           style={{
@@ -211,7 +212,7 @@ const ManageTemplate: React.FC<{
                             id: 'src.component.Task.MutipleAsyncTask.components.Template.869B1F0B',
                             defaultMessage: '确认',
                           })}
-                          disabled={!template?.enabled}
+                          // disabled={!template?.enabled}
                           cancelText={formatMessage({
                             id: 'src.component.Task.MutipleAsyncTask.components.Template.D8ACCBE8',
                             defaultMessage: '取消',
@@ -220,6 +221,7 @@ const ManageTemplate: React.FC<{
                             id: 'src.component.Task.MutipleAsyncTask.components.Template.7ADC635A',
                             defaultMessage: '删除模版不影响已发起的工单，是否确定删除？',
                           })}
+                          placement="right"
                         >
                           <div>
                             <a>

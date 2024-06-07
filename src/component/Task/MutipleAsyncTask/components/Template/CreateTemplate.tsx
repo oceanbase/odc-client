@@ -14,7 +14,7 @@ const CreateTemplate: React.FC<{
   const { projectId } = useContext(MultipleAsyncContext);
   const [formRef] = Form.useForm();
   const handleSubmit = async () => {
-    const orders = await form.getFieldValue(['orders']);
+    const orders = await form.getFieldValue(['parameters', 'orderedDatabaseIds']);
     const { name } = await formRef.validateFields().catch();
     const response = await createTemplate(
       {
