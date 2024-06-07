@@ -29,8 +29,9 @@ import { getDataSourceModeConfig } from '@/common/datasource';
 import { syncObject } from '@/common/network/database';
 import { IManagerResourceType } from '@/d.ts';
 import { getLocalFormatDateTime } from '@/util/utils';
-
+import { DBObjectSyncStatus } from '@/d.ts/database';
 import { message } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 
 export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.Database]: [
@@ -340,10 +341,26 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     },
     {
       key: 'SYNC_METADATA',
-      text: formatMessage({
-        id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.8485C0D3',
-        defaultMessage: '元数据同步',
-      }),
+      text: (node) => {
+        const database: IDatabase = node.data;
+        if (database.objectSyncStatus === DBObjectSyncStatus.SYNCING) {
+          return (
+            <>
+              <LoadingOutlined style={{ color: 'var(--odc-color1-color)' }} />
+              <span style={{ paddingLeft: 4 }}>
+                {formatMessage({
+                  id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.A32BC9F9',
+                  defaultMessage: '元数据同步中，请等待…',
+                })}
+              </span>
+            </>
+          );
+        }
+        return formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.8485C0D3',
+          defaultMessage: '元数据同步',
+        });
+      },
       subText: (node) => {
         const database: IDatabase = node.data;
         if (!database.objectLastSyncTime) return;
@@ -361,7 +378,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       isHide(_, node) {
         return setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'false';
       },
-      run(session, node, databaseFrom, reloadDatabase) {
+      run(session, node, databaseFrom, pollingDatabase) {
         const database: IDatabase = node.data;
         message.loading({
           content: formatMessage({
@@ -372,7 +389,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         });
         syncObject(IManagerResourceType.database, database?.id).then((res) => {
           if (res) {
-            reloadDatabase();
+            pollingDatabase();
           }
         });
       },
