@@ -56,6 +56,7 @@ interface IProps {
 }
 
 const Database: React.FC<IProps> = ({ id, modalStore }) => {
+  const statusMap = datasourceStatus.statusMap;
   const { project } = useContext(ProjectContext);
   const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState('');
@@ -184,8 +185,6 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             );
             const disabled =
               !hasChangeAuth && !hasQueryAuth && !record?.authorizedPermissionTypes?.length;
-
-            const statusMap = datasourceStatus.statusMap;
             const status = statusMap.get(record?.dataSource?.id) || record?.dataSource?.status;
 
             return {
