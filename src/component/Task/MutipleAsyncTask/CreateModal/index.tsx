@@ -482,10 +482,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       const projectOptions = response?.contents?.map(({ name, id, currentUserResourceRoles }) => ({
         label: name,
         value: id,
-        disabled:
-          currentUserResourceRoles?.filter((role) =>
-            [ProjectRole.DBA, ProjectRole.OWNER, ProjectRole.DEVELOPER]?.includes(role),
-          )?.length === 0,
       }));
       const rawProjectMap = response?.contents?.reduce((pre, cur) => {
         pre[cur?.id] = cur?.name;
