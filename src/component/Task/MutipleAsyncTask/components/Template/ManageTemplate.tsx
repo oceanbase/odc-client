@@ -212,7 +212,6 @@ const ManageTemplate: React.FC<{
                             id: 'src.component.Task.MutipleAsyncTask.components.Template.869B1F0B',
                             defaultMessage: '确认',
                           })}
-                          // disabled={!template?.enabled}
                           cancelText={formatMessage({
                             id: 'src.component.Task.MutipleAsyncTask.components.Template.D8ACCBE8',
                             defaultMessage: '取消',
