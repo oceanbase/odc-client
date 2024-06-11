@@ -67,7 +67,6 @@ const CreateModal: React.FC<IProps> = (props) => {
     {
       label: string;
       value: number;
-      disabled: boolean;
     }[]
   >([]);
   const [projectMap, setProjectMap] = useState<Record<number, string>>({});
@@ -571,7 +570,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               onFieldsChange={handleFieldsChange}
             >
               <div data-name={SiderTabKeys.SELECT_DATABASE}>
-                <ProjectSelect projectMap={projectMap} projectOptions={projectOptions} />
+                <ProjectSelect projectOptions={projectOptions} />
                 <DatabaseQueue
                   multipleDatabaseChangeOpen={multipleDatabaseChangeOpen}
                   setDefaultDatasource={setDefaultDatasource}

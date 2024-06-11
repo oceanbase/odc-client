@@ -26,10 +26,10 @@ import TableCard from '@/component/Table/TableCard';
 import AsyncTaskCreateModal from '@/component/Task/AsyncTask';
 import ExportTaskCreateModal from '@/component/Task/ExportTask';
 import ImportTaskCreateModal from '@/component/Task/ImportTask';
-import { TaskPageType, TaskType } from '@/d.ts';
+import { IConnectionStatus, TaskPageType, TaskType } from '@/d.ts';
 import { IDatabase, DatabasePermissionType } from '@/d.ts/database';
 import ChangeProjectModal from '@/page/Datasource/Info/ChangeProjectModal';
-import modalStore, { ModalStore } from '@/store/modal';
+import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
 import { getLocalFormatDateTime } from '@/util/utils';
@@ -184,8 +184,15 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             );
             const disabled =
               !hasChangeAuth && !hasQueryAuth && !record?.authorizedPermissionTypes?.length;
+
+            const statusMap = datasourceStatus.statusMap;
+            const status = statusMap.get(record?.dataSource?.id) || record?.dataSource?.status;
+
             return {
-              disabled: disabled || !record.existed,
+              disabled:
+                disabled ||
+                !record.existed ||
+                ![IConnectionStatus.ACTIVE, IConnectionStatus.TESTING]?.includes(status?.status),
               name: record.name,
             };
           },

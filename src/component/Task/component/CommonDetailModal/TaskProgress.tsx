@@ -139,7 +139,7 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
         defaultMessage: '数据库',
       }),
       dataIndex: 'database',
-      width: 264,
+      width: 200,
       ellipsis: {
         showTitle: true,
       },
@@ -220,7 +220,7 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
         defaultMessage: '执行状态',
       }),
       ellipsis: true,
-      width: 140,
+      width: 120,
       render: (status, record) => {
         return (
           <StatusLabel
@@ -237,7 +237,7 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
         defaultMessage: '操作',
       }),
       ellipsis: true,
-      width: 120,
+      width: 90,
       render: (_, record) => {
         return (
           <>

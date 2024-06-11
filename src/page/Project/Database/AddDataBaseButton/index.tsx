@@ -80,10 +80,6 @@ const AddDataBaseButton: React.FC<IProps> = ({
     project?.currentUserResourceRoles?.filter((roles) =>
       [ProjectRole.DBA, ProjectRole.OWNER]?.includes(roles),
     )?.length === 0;
-  const disabledDeveloperAction =
-    project?.currentUserResourceRoles?.filter((roles) =>
-      [ProjectRole.DBA, ProjectRole.OWNER, ProjectRole.DEVELOPER]?.includes(roles),
-    )?.length === 0;
   function close() {
     setOpen(false);
     form.resetFields();
@@ -123,29 +119,20 @@ const AddDataBaseButton: React.FC<IProps> = ({
             }
           </Button>
         </TooltipAction>
-        <TooltipAction
-          title={
-            disabledAction
-              ? formatMessage({ id: 'src.page.Project.Database.AddDataBaseButton.5409D916' })
-              : ''
-          }
+        <Button
+          onClick={() => {
+            modalStore?.changeMultiDatabaseChangeModal(true, {
+              projectId,
+              orderedDatabaseIds,
+            });
+            clearSelectedRowKeys?.();
+          }}
         >
-          <Button
-            disabled={disabledDeveloperAction}
-            onClick={() => {
-              modalStore?.changeMultiDatabaseChangeModal(true, {
-                projectId,
-                orderedDatabaseIds,
-              });
-              clearSelectedRowKeys?.();
-            }}
-          >
-            {formatMessage({
-              id: 'src.page.Project.Database.AddDataBaseButton.693C4817',
-              defaultMessage: '多库变更',
-            })}
-          </Button>
-        </TooltipAction>
+          {formatMessage({
+            id: 'src.page.Project.Database.AddDataBaseButton.693C4817',
+            defaultMessage: '多库变更',
+          })}
+        </Button>
         <ApplyDatabasePermissionButton
           label={
             formatMessage({
