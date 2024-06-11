@@ -244,8 +244,8 @@ const ObjectList = ({
     DbObjectTypeMap?.[type]?.openPage(object)(
       ...DbObjectTypeMap?.[type]?.getOpenTab(object, databaseId),
     );
-    modalStore.changeDatabaseSearchModalVisible(false);
-    modalStore.databseSearchsSetExpandedKeysFunction(databaseId);
+    modalStore?.changeDatabaseSearchModalVisible(false);
+    modalStore?.databaseSearchsSetExpandedKeysFunction?.(databaseId);
   };
 
   const renderObjectTypeTabs = (type) => {

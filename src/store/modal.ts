@@ -146,7 +146,7 @@ export class ModalStore {
   public canDatabaseSearchModalOpen: boolean = false;
 
   @observable
-  public databseSearchsSetExpandedKeysFunction: (id: string | number) => void = null;
+  public databaseSearchsSetExpandedKeysFunction: (id: string | number) => void = null;
 
   @observable
   public selectDatabaseVisible: boolean = false;
@@ -592,7 +592,8 @@ export class ModalStore {
     setExpandedKeys?: (id: string | number) => void,
   ) {
     this.canDatabaseSearchModalOpen = data;
-    this.databseSearchsSetExpandedKeysFunction = setExpandedKeys;
+    this.databaseSearchsSetExpandedKeysFunction =
+      setExpandedKeys || this.databaseSearchsSetExpandedKeysFunction;
   }
 
   @action clear() {

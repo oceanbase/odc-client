@@ -68,6 +68,7 @@ import { MutipleAsyncTaskContent } from './MutipleAsyncTask';
 import { getProject } from '@/common/network/project';
 import { ProjectRole } from '@/d.ts/project';
 import userStore from '@/store/login';
+import { isNumber } from 'lodash';
 
 interface IProps {
   taskOpenRef?: React.RefObject<boolean>;
@@ -138,13 +139,15 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
 
   const getTaskProjectOwner = async () => {
     const projectId = task?.projectId;
-    if (!projectId) {
+    if (!isNumber(projectId) || projectId <= 0) {
       setIsTaskProjectOwner(false);
       return;
     }
     const res = await getProject(projectId);
-    const userRole = res?.members?.find((i) => i.id === userStore?.user?.id)?.role;
-    setIsTaskProjectOwner(ProjectRole.OWNER === userRole);
+    const userRoleList = res?.members
+      ?.filter((i) => i.id === userStore?.user?.id)
+      ?.map((j) => j.role);
+    setIsTaskProjectOwner(userRoleList.includes(ProjectRole.OWNER));
   };
 
   const getTask = async function () {
