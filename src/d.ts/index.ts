@@ -1045,6 +1045,7 @@ export interface IResultSet extends Partial<ISqlExecuteResult> {
     table?: ITable;
     editable: boolean;
   };
+  timer?: ISqlExecuteResultTimer;
 
   isQueriedEditable?: boolean;
   logTypeData?: {
@@ -1631,6 +1632,12 @@ export interface ISqlExecuteResult {
   }[];
   withFullLinkTrace: boolean;
   traceEmptyReason?: string;
+}
+export interface ISqlExecuteResultTimer {
+  name: string;
+  stages: IResultTimerStage[];
+  startTimeMillis: number; // 开始时间
+  totalDurationMicroseconds: number; // 总耗时
 }
 
 export enum ISqlExecuteResultStatus {
