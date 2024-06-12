@@ -171,13 +171,7 @@ const DateItem: React.FC<IDateItemProps> = forwardRef<FormInstance, IDateItemPro
                         })}` // 天
                     }
                     parser={(value) =>
-                      value.replace(
-                        formatMessage({ id: 'odc.ruleItems.DateItem.Days' }),
-                        formatMessage({
-                          id: 'src.component.Task.DataMockerTask.CreateModal.RuleContent.ruleItems.DateItem.F19E741F',
-                          defaultMessage: "/ 天\n'",
-                        }),
-                      )
+                      value.replace(formatMessage({ id: 'odc.ruleItems.DateItem.Days' }), '')
                     }
                   />
                 </WrapItemWithTitle>

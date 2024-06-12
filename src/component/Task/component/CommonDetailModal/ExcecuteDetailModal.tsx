@@ -9,6 +9,7 @@ import { SubTaskStatus, ISubTaskTaskUnit } from '@/d.ts';
 import styles from './index.less';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { SubTaskTypeMap } from '../../const';
+import CommonTable from '@/component/CommonTable';
 
 interface IProps {
   scheduleId: number;
@@ -22,7 +23,7 @@ const ExcecuteDetailModal: React.FC<IProps> = function (props) {
   const [loading, setLoading] = useState<boolean>(false);
   const [list, setList] = useState(null);
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>(null);
-  const { run: getLog, cancel } = useRequest(
+  const { run: getDetail, cancel } = useRequest(
     async (scheduleId, recordId) => {
       if (scheduleId && recordId) {
         const res = await getCycleSubTaskDetail(scheduleId, recordId);
@@ -58,7 +59,9 @@ const ExcecuteDetailModal: React.FC<IProps> = function (props) {
   );
 
   useEffect(() => {
-    getLog(scheduleId, recordId);
+    if (visible) {
+      getDetail(scheduleId, recordId);
+    }
   }, [scheduleId, recordId, visible]);
 
   useEffect(() => {
@@ -151,6 +154,10 @@ const ExcecuteDetailModal: React.FC<IProps> = function (props) {
             span={2}
           >
             {record?.readRowsPerSecond}
+            {formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.BC466037',
+              defaultMessage: '行/每秒',
+            })}
           </Descriptions.Item>
           <Descriptions.Item
             label={formatMessage({
@@ -160,6 +167,10 @@ const ExcecuteDetailModal: React.FC<IProps> = function (props) {
             span={2}
           >
             {record?.processedRowsPerSecond}
+            {formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.892DAF55',
+              defaultMessage: '行/每秒',
+            })}
           </Descriptions.Item>
           <Descriptions.Item
             label={formatMessage({
@@ -190,17 +201,25 @@ const ExcecuteDetailModal: React.FC<IProps> = function (props) {
       footer={null}
     >
       <Spin spinning={loading}>
-        <Table
-          className={styles.executeDetailTable}
-          columns={columns}
-          expandable={{
-            expandedRowRender: (record) => expandedRowRender(record),
-            expandedRowKeys: expandedRowKeys,
-            defaultExpandedRowKeys: expandedRowKeys,
-            onExpandedRowsChange: onExpandedRowsChange,
+        <CommonTable
+          showToolbar={false}
+          enabledReload={false}
+          onLoad={async () => {}}
+          titleContent={null}
+          tableProps={{
+            columns: columns,
+            expandable: {
+              expandedRowRender: (record) => expandedRowRender(record),
+              expandedRowKeys: expandedRowKeys,
+              defaultExpandedRowKeys: expandedRowKeys,
+              onExpandedRowsChange: onExpandedRowsChange,
+            },
+            dataSource: list,
+            pagination: false,
+            scroll: {
+              y: 650,
+            },
           }}
-          dataSource={list}
-          pagination={false}
         />
       </Spin>
     </Drawer>

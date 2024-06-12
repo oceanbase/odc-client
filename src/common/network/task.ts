@@ -107,7 +107,7 @@ export async function previewSqlStatements(data: {
   const res = await request.post('api/v2/dlm/previewSqlStatements', {
     data,
   });
-  return res?.data?.contents || [];
+  return res?.data?.contents;
 }
 
 /**

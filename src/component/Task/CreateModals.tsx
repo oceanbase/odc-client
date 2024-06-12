@@ -54,7 +54,7 @@ const CreateModals: React.FC<IProps> = (props) => {
       <ResultSetExportTask projectId={projectId} theme={theme} />
       <ApplyDatabasePermissionCreateModal projectId={projectId} />
       <StructureComparisonTask projectId={projectId} />
-      <MutipleAsyncTask projectId={projectId} />
+      <MutipleAsyncTask projectId={projectId} theme={theme} />
     </>
   );
 };

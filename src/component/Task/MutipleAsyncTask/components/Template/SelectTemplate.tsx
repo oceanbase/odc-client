@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Template, getTemplateList, detailTemplate } from '@/common/network/databaseChange';
 import { IDatabase } from '@/d.ts/database';
 import login from '@/store/login';
@@ -99,6 +100,7 @@ const SelectTemplate: React.FC<{
                   <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 </div>
               )}
+
               <div className={styles.options}>
                 {templateList?.map((template, index) => {
                   const databaseIdsMap = {};
@@ -110,7 +112,7 @@ const SelectTemplate: React.FC<{
                   const orderedDatabaseIds = template?.databaseSequenceList?.map((dbs) => {
                     return dbs.map((db) => db.id);
                   });
-                  return (
+                  return template?.enabled ? (
                     <Popover
                       placement="left"
                       showArrow={false}
@@ -119,24 +121,36 @@ const SelectTemplate: React.FC<{
                         padding: '16px',
                       }}
                       content={
-                        template?.enabled ? (
-                          <ShowTemplate
-                            orderedDatabaseIds={orderedDatabaseIds}
-                            databaseIdsMap={databaseIdsMap}
-                          />
-                        ) : null
+                        <ShowTemplate
+                          orderedDatabaseIds={orderedDatabaseIds}
+                          databaseIdsMap={databaseIdsMap}
+                        />
                       }
                     >
                       <div
                         key={index}
-                        className={classNames(styles.templateItem, {
-                          [styles.templateItemDisabled]: !template?.enabled,
-                        })}
+                        className={styles.templateItem}
                         onClick={() => handleTemplateItemClick(template)}
                       >
                         {template?.name}
                       </div>
                     </Popover>
+                  ) : (
+                    <Tooltip
+                      key={index}
+                      title={formatMessage({
+                        id: 'src.component.Task.MutipleAsyncTask.components.Template.4ACCCD33',
+                        defaultMessage: '模版已失效',
+                      })}
+                      placement="left"
+                    >
+                      <div
+                        className={classNames(styles.templateItem, styles.templateItemDisabled)}
+                        onClick={() => handleTemplateItemClick(template)}
+                      >
+                        {template?.name}
+                      </div>
+                    </Tooltip>
                   );
                 })}
               </div>
@@ -154,12 +168,24 @@ const SelectTemplate: React.FC<{
                   setManageTemplateModalOpen(true);
                 }}
               >
-                管理模版
+                {formatMessage({
+                  id: 'src.component.Task.MutipleAsyncTask.components.Template.03C19F79',
+                  defaultMessage: '管理模版',
+                })}
               </Button>
             </div>
           }
         >
-          <Tooltip title={!Boolean(projectId) ? '请先选择项目' : null}>
+          <Tooltip
+            title={
+              !Boolean(projectId)
+                ? formatMessage({
+                    id: 'src.component.Task.MutipleAsyncTask.components.Template.FD8E488F',
+                    defaultMessage: '请先选择项目',
+                  })
+                : null
+            }
+          >
             <Button
               disabled={!Boolean(projectId)}
               className={styles.linkBtn}
@@ -172,7 +198,11 @@ const SelectTemplate: React.FC<{
                 setSelectTemplateModalOpen(!selectTemplateModalOpen);
               }}
             >
-              选择模版
+              {formatMessage({
+                id: 'src.component.Task.MutipleAsyncTask.components.Template.155DA3E4',
+                defaultMessage: '选择模版',
+              })}
+
               <DownOutlined />
             </Button>
           </Tooltip>

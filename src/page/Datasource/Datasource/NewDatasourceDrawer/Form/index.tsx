@@ -144,6 +144,15 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
           ]);
           break;
         }
+        case IConnectionTestErrorType.OB_WEAK_READ_CONSISTENCY_REQUIRED: {
+          setTestResult({
+            errorCode: IConnectionTestErrorType.OB_WEAK_READ_CONSISTENCY_REQUIRED,
+            errorMessage: res?.data?.errorMessage,
+            active: false,
+            type: null,
+          });
+          break;
+        }
       }
     }
     setTestResult(res?.data);

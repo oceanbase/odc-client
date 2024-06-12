@@ -10,6 +10,7 @@ import { SearchTypeMap, SEARCH_OBJECT_FROM_ALL_DATABASE } from './constant';
 import ObjectList from './components/ObjectList';
 import DatabaseList from './components/DatabaseList';
 import { IDatabase, IDatabaseObject } from '@/d.ts/database';
+import classNames from 'classnames';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -127,7 +128,9 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
       onCancel={handleCancel}
       maskClosable={true}
       closable={false}
-      className={styles.databaseSearchModal}
+      className={classNames(styles.databaseSearchModal, {
+        [styles.withPanel]: !isSelectAll || searchKey,
+      })}
       destroyOnClose={true}
       footer={null}
     >
