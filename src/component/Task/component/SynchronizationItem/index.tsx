@@ -8,20 +8,26 @@ interface IProps {
   form: FormInstance<any>;
 }
 const SynchronizationItem: React.FC<IProps> = ({ form }) => {
-  const initValue = form.getFieldValue('syncTableStructure');
+  const [initValue, setInitValue] = useState(null);
   const [syncTableStructure, setSyncTableStructure] = useState<boolean>(false);
 
   useEffect(() => {
-    setSyncTableStructure(Boolean(initValue?.length));
-  }, [initValue]);
+    setSyncTableStructure(Boolean(form.getFieldValue('syncTableStructure')?.length));
+    setInitValue(form.getFieldValue('syncTableStructure'));
+  }, [form.getFieldValue('syncTableStructure')]);
 
   return (
     <>
       <Form.Item
-        extra={formatMessage({
-          id: 'src.component.Task.component.SynchronizationItem.809B14B8',
-          defaultMessage: '任务调度前进行一次表结构比对，若源端和目标端表结构不一致，将跳过该表',
-        })}
+        extra={
+          !syncTableStructure
+            ? formatMessage({
+                id: 'src.component.Task.component.SynchronizationItem.809B14B8',
+                defaultMessage:
+                  '任务调度前进行一次表结构比对，若源端和目标端表结构不一致，将跳过该表',
+              })
+            : ''
+        }
         style={{ marginBottom: 8 }}
       >
         <Checkbox

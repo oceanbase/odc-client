@@ -92,9 +92,15 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
   });
 
   function beforeUpload(fileType, file, fileList: any[], silence?: boolean) {
+    const type = file?.name?.split('.')?.pop();
     const allowedFileMIMEType = getFileMIMETypeWithImportType(fileType);
-    if (!allowedFileMIMEType.includes(file.type)) {
-      message.warning('请上传指定文件格式的文件');
+    if (!allowedFileMIMEType.includes(type)) {
+      message.warning(
+        formatMessage({
+          id: 'src.component.Task.ImportTask.CreateModal.ImportForm.FileSelecterPanel.AC29DC3E',
+          defaultMessage: '请上传指定文件格式的文件',
+        }),
+      );
       return Upload.LIST_IGNORE;
     }
     if (fileList.length > 50) {

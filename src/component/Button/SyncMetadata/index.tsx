@@ -111,7 +111,10 @@ export default function Reload({
     // @ts-ignore
     const compareDates = (a, b) => new Date(a.date) - new Date(b.date);
     const findEarliest = (data) =>
-      data.reduce((earliest, item) => (compareDates(earliest, item) < 0 ? earliest : item));
+      data.reduce(
+        (earliest, item) => (compareDates(earliest, item) < 0 ? earliest : item),
+        Infinity,
+      );
     return findEarliest(data);
   };
 

@@ -48,6 +48,7 @@ interface IProps {
   settingStore?: SettingStore;
   databases: IDatabase[];
   reloadDatabase: () => void;
+  pollingDatabase: () => void;
   title: React.ReactNode;
   databaseFrom: 'datasource' | 'project';
   showTip?: boolean;
@@ -65,6 +66,7 @@ const ResourceTree: React.FC<IProps> = function ({
   databaseFrom,
   onTitleClick,
   reloadDatabase,
+  pollingDatabase,
   showTip = false,
   enableFilter,
   stateId,
@@ -176,7 +178,7 @@ const ResourceTree: React.FC<IProps> = function ({
           dbSession={dbSession}
           type={type}
           databaseFrom={databaseFrom}
-          reloadDatabase={reloadDatabase}
+          pollingDatabase={pollingDatabase}
         />
       );
     },

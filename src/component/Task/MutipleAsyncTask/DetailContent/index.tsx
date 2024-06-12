@@ -361,7 +361,7 @@ const DetailDrawer: React.FC<{
               description={
                 <div
                   style={{
-                    backgroundColor: '#F7F9FB',
+                    backgroundColor: 'var(--background-tertraiy-color)',
                     padding: '12px 16px',
                     display: 'flex',
                     flexDirection: 'column',
@@ -391,7 +391,7 @@ const DetailDrawer: React.FC<{
                           />
 
                           <div>{databaseIdsMap?.[db]?.name}</div>
-                          <div style={{ color: 'var(--neutral-black45-color)' }}>
+                          <div style={{ color: 'var(--text-color-hint)' }}>
                             {databaseIdsMap?.[db]?.dataSource?.name}
                           </div>
                         </Space>

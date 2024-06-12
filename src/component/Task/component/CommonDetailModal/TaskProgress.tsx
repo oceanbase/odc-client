@@ -37,7 +37,7 @@ import {
   getDataSourceStyleByConnectType,
 } from '@/common/datasource';
 import { getLocalFormatDateTime } from '@/util/utils';
-import { flatArray } from '../../MutipleAsyncTask/CreateModal';
+import { flatArray } from '../../MutipleAsyncTask/CreateModal/helper';
 import { TaskDetailContext } from '../../TaskDetailContext';
 import { TaskStore } from '@/store/task';
 import { inject, observer } from 'mobx-react';
@@ -139,7 +139,7 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
         defaultMessage: '数据库',
       }),
       dataIndex: 'database',
-      width: 264,
+      width: 200,
       ellipsis: {
         showTitle: true,
       },
@@ -220,7 +220,7 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
         defaultMessage: '执行状态',
       }),
       ellipsis: true,
-      width: 140,
+      width: 120,
       render: (status, record) => {
         return (
           <StatusLabel
@@ -237,7 +237,7 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
         defaultMessage: '操作',
       }),
       ellipsis: true,
-      width: 120,
+      width: 90,
       render: (_, record) => {
         return (
           <>
@@ -361,7 +361,17 @@ const TaskProgress: React.FC<IProps> = (props) => {
     <>
       {task?.type === TaskType.MULTIPLE_ASYNC && subTasks?.length > 0 && (
         <div>
-          共 {subTasks?.length} 个数据库， {pendingExectionDatabases} 个待执行
+          {formatMessage(
+            {
+              id: 'src.component.Task.component.CommonDetailModal.E75BF608',
+              defaultMessage:
+                '共 ${subTasks?.length} 个数据库， ${pendingExectionDatabases} 个待执行',
+            },
+            {
+              subTasksLength: subTasks?.length,
+              pendingExectionDatabases: pendingExectionDatabases,
+            },
+          )}
         </div>
       )}
 

@@ -1,6 +1,6 @@
 import { formatMessage } from '@/util/intl';
 import { IConnection } from '@/d.ts';
-import { Form, FormListFieldData, Popover, Select, Space, Tooltip } from 'antd';
+import { Empty, Form, FormListFieldData, Popover, Select, Space, Tooltip } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { useDrag, useDrop } from 'react-dnd';
@@ -10,7 +10,7 @@ import _ from 'lodash';
 import { ReactComponent as DragSvg } from '@/svgr/drag.svg';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import styles from './index.less';
-import { flatArray } from '.';
+import { flatArray } from './helper';
 import classNames from 'classnames';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import ConnectionPopover from '@/component/ConnectionPopover';
@@ -21,7 +21,7 @@ export type DatabaseOption = {
   dataSource: IConnection;
   environment: IEnvironment;
   existed: boolean;
-  disabled: boolean;
+  unauthorized: boolean;
   expired: boolean;
 };
 const InnerSelect: React.FC<{
@@ -160,7 +160,32 @@ const InnerSelect: React.FC<{
   ) => {
     const icon = getDataSourceStyleByConnectType(item?.dataSource?.type);
     const databaseIds = flatArray(orderedDatabaseIds);
-    const isSelected = databaseIds?.includes(item?.value);
+    const isSelected =
+      databaseIds?.includes(item?.value) && item.value !== currnetOrderedDatabaseId;
+    const disabled = isSelected || item?.expired || item?.unauthorized;
+    const getTooltipTitle = (expired: boolean, unauthorized: boolean, isSelected: boolean) => {
+      if (expired) {
+        return formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.797AEFEE',
+          defaultMessage: '该数据库已失效',
+        });
+      }
+      if (unauthorized) {
+        return formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.24303BEB',
+          defaultMessage: '暂无权限，请先申请数据库权限',
+        });
+      }
+      if (isSelected) {
+        return formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.BF1212E7',
+          defaultMessage: '该数据库已被选中',
+        });
+      }
+      return null;
+    };
+    const tooltipTitle = getTooltipTitle(item?.expired, item?.unauthorized, isSelected);
+    const isCurrentItem = item?.value === currnetOrderedDatabaseId;
     return (
       <Popover
         showArrow={false}
@@ -172,7 +197,7 @@ const InnerSelect: React.FC<{
           key={item?.value}
           data-key={item?.value}
           onClick={() => {
-            if (isSelected || item?.expired) {
+            if (disabled) {
               return;
             }
             setSearchValue('');
@@ -180,27 +205,20 @@ const InnerSelect: React.FC<{
             setPopoverOpen(false);
           }}
         >
-          <Tooltip
-            title={
-              isSelected
-                ? formatMessage({
-                    id: 'src.component.Task.MutipleAsyncTask.CreateModal.BF1212E7',
-                    defaultMessage: '该数据库已被选中',
-                  })
-                : null
-            }
-          >
+          <Tooltip title={disabled ? tooltipTitle : null} placement="left">
             <div
               className={classNames(styles.option, {
-                [styles.optionDisabled]: isSelected || item?.expired,
+                [styles.optionDisabled]: disabled,
               })}
+              style={{
+                backgroundColor: isCurrentItem ? '#e6f4ff' : null,
+              }}
             >
               <Space>
                 <Icon
                   component={icon?.icon?.component}
                   style={{
-                    color:
-                      isSelected || item?.expired ? 'var(--icon-color-disable)' : icon?.icon?.color,
+                    color: disabled ? 'var(--icon-color-disable)' : icon?.icon?.color,
                     fontSize: 16,
                     marginRight: 4,
                   }}
@@ -208,15 +226,18 @@ const InnerSelect: React.FC<{
 
                 <div
                   style={{
-                    color:
-                      isSelected || item?.expired
-                        ? 'var(--mask-color)'
-                        : 'var(--text-color-primary)',
+                    color: disabled
+                      ? 'var(--mask-color)'
+                      : isCurrentItem
+                      ? 'black'
+                      : 'var(--text-color-primary)',
                   }}
                 >
                   {item?.label}
                 </div>
-                <div style={{ color: 'var(--mask-color)' }}>{item?.dataSource?.name}</div>
+                <div style={{ color: isCurrentItem ? 'black' : 'var(--icon-color-disable)' }}>
+                  {item?.dataSource?.name}
+                </div>
               </Space>
               <div
                 style={{
@@ -236,6 +257,19 @@ const InnerSelect: React.FC<{
       ref.current = null;
     };
   }, []);
+  const renderOptions = searchValue?.trim()?.length
+    ? databaseOptions?.filter((item) => {
+        if (item?.label?.toString()?.toLowerCase()?.indexOf(searchValue?.toLowerCase()) > -1) {
+          return item;
+        }
+        if (
+          item?.dataSource?.name?.toString()?.toLowerCase()?.indexOf(searchValue?.toLowerCase()) >
+          -1
+        ) {
+          return item;
+        }
+      })
+    : databaseOptions;
   return (
     <div
       ref={ref}
@@ -286,35 +320,28 @@ const InnerSelect: React.FC<{
               }}
               overlayClassName={styles.selectOptions}
               content={
-                <div
-                  style={{
-                    maxHeight: '320px',
-                    overflowY: 'scroll',
-                  }}
-                >
-                  {searchValue?.trim()?.length
-                    ? databaseOptions
-                        ?.filter((item) => {
-                          if (
-                            item?.label
-                              ?.toString()
-                              ?.toLowerCase()
-                              ?.indexOf(searchValue?.toLowerCase()) > -1
-                          ) {
-                            return item;
-                          }
-                          if (
-                            item?.dataSource?.name
-                              ?.toString()
-                              ?.toLowerCase()
-                              ?.indexOf(searchValue?.toLowerCase()) > -1
-                          ) {
-                            return item;
-                          }
-                        })
-                        ?.map((item) => renderItem(item, setSearchValue))
-                    : databaseOptions?.map((item) => renderItem(item, setSearchValue))}
-                </div>
+                renderOptions?.length ? (
+                  <div
+                    style={{
+                      maxHeight: '320px',
+                      overflowY: 'scroll',
+                      scrollbarWidth: 'none',
+                    }}
+                  >
+                    {renderOptions?.map((item) => renderItem(item, setSearchValue))}
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      width: '390px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                  </div>
+                )
               }
             >
               <Select

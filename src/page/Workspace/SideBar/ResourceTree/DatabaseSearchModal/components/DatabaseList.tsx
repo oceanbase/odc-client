@@ -6,6 +6,7 @@ import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import React, { useState, useContext } from 'react';
 import { IDatabase, IDatabaseObject } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
+import { openNewSQLPage } from '@/store/helper/page';
 
 interface Iprops {
   database: IDatabase;
@@ -61,8 +62,9 @@ const DatabaseList = ({
 
   const openSql = (e, db) => {
     e.stopPropagation();
-    modalStore.databseSearchsSetExpandedKeysFunction(db.id);
-    modalStore.changeDatabaseSearchModalVisible(false);
+    modalStore?.databaseSearchsSetExpandedKeysFunction?.(db.id);
+    modalStore?.changeDatabaseSearchModalVisible(false);
+    db.id && openNewSQLPage(db.id, selectProjectId ? 'project' : 'datasource');
   };
 
   const applyPermission = (e, db: IDatabase) => {

@@ -9,7 +9,7 @@ interface IProps {
 const TaskDurationItem: React.FC<IProps> = ({ form }) => {
   useEffect(() => {
     setTaskDuration(Boolean(form.getFieldValue('timeoutMillis')));
-  }, [form]);
+  }, [form.getFieldValue('timeoutMillis')]);
 
   const [hasTaskDuration, setTaskDuration] = useState<boolean>(false);
   return (
@@ -52,7 +52,12 @@ const TaskDurationItem: React.FC<IProps> = ({ form }) => {
             ]}
             initialValue={1}
           >
-            <InputNumber min={0} controls={true} className={styles.durationInputNumber} />
+            <InputNumber
+              min={0}
+              controls={true}
+              precision={1}
+              className={styles.durationInputNumber}
+            />
           </Form.Item>
           <span>
             {formatMessage({
