@@ -343,6 +343,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             dataIndex: 'collationName',
             width: 120,
             ellipsis: true,
+            render: (collationName) => collationName || '-',
           },
           {
             title: formatMessage({
