@@ -40,8 +40,6 @@ import { action, observable, runInAction } from 'mobx';
 import { generateResultSetColumns } from '../helper';
 import sessionManager from '../sessionManager';
 import setting from '../setting';
-import { ODC_TRACE_SUPPORT_VERSION, OBCompare } from '@/util/versionUtils';
-import { isString } from 'lodash';
 
 export enum ExcecuteSQLMode {
   PL = 'PL',
@@ -197,9 +195,7 @@ export class SQLStore {
       const showTableColumnInfo = session?.params?.tableColumnInfoVisible;
       const fullLinkTraceEnabled = session?.params?.fullLinkTraceEnabled;
       const continueExecutionOnError = session?.params?.continueExecutionOnError;
-      const obVersion = session?.params?.obVersion;
-      const isSupportProfile =
-        isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=');
+      const isSupportProfile = session?.supportFeature.enableProfile;
       const handleResult = (info: IExecutingInfo) => {
         // 兼容后端不按约定返回的情况
         if (!info) {

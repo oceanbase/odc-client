@@ -82,4 +82,8 @@ export interface ISupportFeature {
    * 列存
    */
   enableColumnStore: boolean;
+  /**
+   * 实时剖析
+   */
+  enableProfile: boolean;
 }

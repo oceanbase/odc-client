@@ -29,6 +29,7 @@ import {
 } from '@/d.ts';
 import modal from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
+import type { GuideCacheStore } from '@/store/guideCache';
 import type { SQLStore } from '@/store/sql';
 import { ReactComponent as SubmitSvg } from '@/svgr/Submit.svg';
 import { ReactComponent as TraceSvg } from '@/svgr/Trace.svg';
@@ -88,12 +89,6 @@ import useColumns, { isNumberType } from './hooks/useColumns';
 import ResultContext from './ResultContext';
 import StatusBar from './StatusBar';
 import { copyToSQL, getColumnNameByColumnKey } from './util';
-import {
-  ODC_TRACE_SUPPORT_VERSION,
-  OBCompare,
-  ODC_PROFILE_SUPPORT_VERSION,
-} from '@/util/versionUtils';
-import guideCache from '@/util/guideCache';
 
 // @ts-ignore
 const ToolbarButton = Toolbar.Button;
@@ -110,6 +105,7 @@ export enum ColumnOrder {
 interface IProps {
   sqlStore?: SQLStore;
   settingStore?: SettingStore;
+  guideCacheStore?: GuideCacheStore;
   table?: Partial<ITable>;
   session: SessionStore;
   /**
@@ -177,6 +173,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     columns,
     showPagination,
     sqlStore,
+    guideCacheStore,
     settingStore,
     showExplain,
     showTrace = false,
@@ -206,10 +203,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   const sessionId = session?.sessionId;
   const obVersion = session?.params?.obVersion;
   const update = useUpdate();
-  const isSupportExecuteProfile =
-    isString(obVersion) &&
-    OBCompare(obVersion, ODC_PROFILE_SUPPORT_VERSION, '>=') &&
-    showExecutePlan;
+
   /**
    * 编辑中的rows
    */
@@ -667,27 +661,29 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   );
   const isInTransaction = session?.transState?.transState === TransState.IDLE;
 
+  const updateExecutePlanGuideCache = () => {
+    guideCacheStore.setDataByKey(guideCacheStore.cacheEnum.executePlan);
+  };
   const executeGuideTipContent = () => {
     return (
       <div>
         <div>SQL 执行画像</div>
         <div>支持 SQL 执行实时剖析，物理执行计划、全链路诊断也一段描述一段描述一段描述</div>
-        <Link>我知道了</Link>
+        <Link onClick={updateExecutePlanGuideCache}>我知道了</Link>
       </div>
     );
   };
 
   const getExecuteIcon = () => {
-    return isSupportExecuteProfile ? (
+    return showExecutePlan ? (
       <ToolbarButton
-        version={isString(obVersion) && OBCompare(obVersion, ODC_PROFILE_SUPPORT_VERSION, '>=')}
         text={'执行画像'}
         icon={<Icon component={SqlProfile} />}
         onClick={() => {
-          guideCache.setGuideCache(guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN, 1);
+          updateExecutePlanGuideCache();
           onOpenExecutingDetailModal?.(traceId, originSql);
         }}
-        GuideTipKey={guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN}
+        GuideTipKey={guideCacheStore.cacheEnum.executePlan}
         GuideTipContent={executeGuideTipContent}
       />
     ) : (
@@ -729,32 +725,31 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               />
             </Tooltip>
           ))}
-        {showTrace &&
-          (isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=') ? (
-            <ToolbarButton
-              text={
-                withFullLinkTrace
-                  ? formatMessage({
-                      id: 'odc.src.page.Workspace.components.DDLResultSet.FullLinkTrace',
-                    }) //'全链路 Trace'
-                  : traceEmptyReason
-              }
-              disabled={!withFullLinkTrace}
-              icon={<TraceSvg />}
-              onClick={() => {
-                onShowTrace?.();
-              }}
-            />
-          ) : (
-            <ToolbarButton
-              text={traceEmptyReason}
-              disabled={true}
-              icon={<TraceSvg />}
-              onClick={() => {
-                onShowTrace?.();
-              }}
-            />
-          ))}
+        {showTrace ? (
+          <ToolbarButton
+            text={
+              withFullLinkTrace
+                ? formatMessage({
+                    id: 'odc.src.page.Workspace.components.DDLResultSet.FullLinkTrace',
+                  }) //'全链路 Trace'
+                : traceEmptyReason
+            }
+            disabled={!withFullLinkTrace}
+            icon={<TraceSvg />}
+            onClick={() => {
+              onShowTrace?.();
+            }}
+          />
+        ) : (
+          <ToolbarButton
+            text={traceEmptyReason}
+            disabled={true}
+            icon={<TraceSvg />}
+            onClick={() => {
+              onShowTrace?.();
+            }}
+          />
+        )}
       </>
     );
   };
@@ -1243,4 +1238,4 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     </div>
   );
 };
-export default inject('sqlStore', 'settingStore')(observer(DDLResultSet));
+export default inject('sqlStore', 'settingStore', 'guideCacheStore')(observer(DDLResultSet));

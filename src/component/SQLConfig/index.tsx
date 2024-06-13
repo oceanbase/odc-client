@@ -181,25 +181,6 @@ const SQLConfig: React.FC<IProps> = function (props) {
             />
           </Row>
         </div>
-        {/* <Row
-          style={{
-            lineHeight: '28px',
-            marginTop: 12,
-          }}
-        >
-          {
-            formatMessage({
-              id: 'src.component.SQLConfig.C03B2372'
-            })
-          }
-        </Row>
-        <Row style={{ width: '100%' }}>
-          <Switch
-            size="small"
-            checked={fullLinkTraceEnabled}
-            onChange={session?.changeFullTraceDiagnosisEnabled}
-          />
-        </Row> */}
         <Row
           style={{
             marginTop: 18,
