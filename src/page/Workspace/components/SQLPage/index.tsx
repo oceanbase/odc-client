@@ -68,7 +68,6 @@ import styles from './index.less';
 import setting, { SettingStore } from '@/store/setting';
 import { getKeyCodeValue } from '@/component/Input/Keymap/keycodemap';
 import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
-import { OBCompare, ODC_PROFILE_SUPPORT_VERSION } from '@/util/versionUtils';
 
 interface ISQLPageState {
   resultHeight: number;
@@ -970,8 +969,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       return;
     }
     // 区分版本
-    const obVersion = this?.getSession()?.params?.obVersion;
-    if (isString(obVersion) && OBCompare(obVersion, ODC_PROFILE_SUPPORT_VERSION, '>=')) {
+    const session = this?.getSession();
+    if (session?.supportFeature?.enableProfile) {
       modalStore.changeExecuteSqlDetailModalVisible(
         true,
         null,

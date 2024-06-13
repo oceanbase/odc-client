@@ -30,11 +30,9 @@ import {
 import { PopconfirmProps } from 'antd/lib/popconfirm';
 import classNames from 'classnames'; // @ts-ignore
 import { ComponentType, useState } from 'react';
-
+import { inject, observer } from 'mobx-react';
 import styles from './index.less';
 import statefulIcon, { IConStatus } from './statefulIcon';
-
-import guideCache from '@/util/guideCache';
 
 const noop = () => {
   // TODO
@@ -52,6 +50,7 @@ function TButton({
   confirmConfig,
   GuideTipKey,
   GuideTipContent,
+  guideCacheStore,
   ...rest
 }: {
   [key: string]: any;
@@ -68,8 +67,6 @@ function TButton({
   const isRunning = status === IConStatus.RUNNING;
   disabled = disabled || status === IConStatus.DISABLE;
   const isActive = status === IConStatus.ACTIVE;
-  const [key, setKey] = useState(0);
-  const forceUpdate = () => setKey((prevKey) => prevKey + 1);
   if (typeof icon === 'function' || icon?.render) {
     icon = <Icon component={icon} />;
   } else if (typeof icon === 'string') {
@@ -149,30 +146,18 @@ function TButton({
             !disabled && !confirmConfig && !isRunning
               ? () => {
                   onClick();
-                  forceUpdate();
                 }
               : null
           }
         >
-          <Badge
-            dot={
-              !!GuideTipKey
-                ? !guideCache.getGuideCacheByKey(guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN)
-                : false
-            }
-            color="blue"
-          >
+          <Badge dot={!!GuideTipKey ? !guideCacheStore?.[GuideTipKey] : false} color="blue">
             {icon} {isShowText && <span className={styles.buttonText}>{text}</span>}
           </Badge>
         </span>
       );
       break;
   }
-  if (
-    GuideTipKey &&
-    GuideTipContent &&
-    !guideCache.getGuideCacheByKey(guideCache.GUIDE_CACHE_MAP.EXECUTE_PLAN)
-  ) {
+  if (GuideTipKey && GuideTipContent && !guideCacheStore?.[GuideTipKey]) {
     return (
       <Tooltip placement={'topLeft'} title={GuideTipContent}>
         {content}
@@ -233,7 +218,7 @@ export default function Toolbar({ style = {}, children, compact = false }) {
   );
 }
 
-Toolbar.Button = TButton;
+Toolbar.Button = inject('guideCacheStore')(observer(TButton));
 Toolbar.Divider = TDivider;
 Toolbar.ButtonMenu = ButtonMenu;
 Toolbar.ButtonPopover = ButtonPopover;

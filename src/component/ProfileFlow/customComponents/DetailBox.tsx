@@ -140,11 +140,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
                       <span>
                         <span
                           className={styles.circle}
-                          style={
-                            nodeOverviewColorMap[key]
-                              ? { backgroundColor: nodeOverviewColorMap[key] }
-                              : {}
-                          }
+                          style={{ backgroundColor: nodeOverviewColorMap[key] }}
                         ></span>
                         {key}
                       </span>
@@ -207,7 +203,6 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
       setSelectedSubNodes(null);
       return;
     }
-    console.log('setSelectedSubNodes', node);
     setSelectedSubNodes(node);
   }
 
@@ -329,11 +324,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
                         <span>
                           <span
                             className={styles.circle}
-                            style={
-                              nodeOverviewColorMap[key]
-                                ? { backgroundColor: nodeOverviewColorMap[key] }
-                                : {}
-                            }
+                            style={{ backgroundColor: nodeOverviewColorMap[key] }}
                           ></span>
                           {key}
                         </span>
