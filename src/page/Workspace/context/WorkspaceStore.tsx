@@ -30,6 +30,7 @@ import { toInteger } from 'lodash';
 import datasourceStatus from '@/store/datasourceStatus';
 import { listDatabases } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
+import { DBObjectSyncStatus } from '@/d.ts/database';
 
 export default function WorkspaceStore({ children }) {
   const [activityBarKey, setActivityBarKey] = useState(ActivityBarItemType.Database);
@@ -101,8 +102,26 @@ export default function WorkspaceStore({ children }) {
         true,
       );
       setDatabaseList(data?.contents);
+      return data?.contents;
     }
   }, [selectProjectId, selectDatasourceId]);
+
+  const { run: pollingDatabase, cancel } = useRequest(
+    async () => {
+      const databaseList = await reloadDatabaseList();
+      if (
+        !databaseList?.find((item) =>
+          [DBObjectSyncStatus.SYNCED, DBObjectSyncStatus.PENDING].includes(item.objectSyncStatus),
+        )
+      ) {
+        cancel();
+      }
+    },
+    {
+      pollingInterval: 3000,
+      pollingWhenHidden: false,
+    },
+  );
 
   return (
     <ResourceTreeContext.Provider
@@ -121,6 +140,7 @@ export default function WorkspaceStore({ children }) {
         setCurrentDatabaseId,
         databaseList,
         reloadDatabaseList,
+        pollingDatabase,
       }}
     >
       <ActivityBarContext.Provider

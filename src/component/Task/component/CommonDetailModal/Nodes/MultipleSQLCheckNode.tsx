@@ -9,6 +9,7 @@ import { formatMessage } from '@/util/intl';
 import styles from '../index.less';
 import MultipleLintResultTable from '@/page/Workspace/components/SQLResultSet/MultipleAsyncSQLLintTable';
 import { IDatabase } from '@/d.ts/database';
+import DBPermissionTableDrawer from '@/page/Workspace/components/SQLResultSet/DBPermissionTableDrawer';
 interface IProps {
   node: Partial<ITaskFlowNode>;
   flowId: number;
@@ -17,6 +18,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
   const { status, nodeType, issueCount, unauthorizedDatabases, id, preCheckOverLimit } = node;
   const [isLoading, setIsLoading] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [permissionResultVisible, setPermissionResultVisible] = useState<boolean>(false);
   const [data, setData] = useState<
     {
       checkResult: ISQLLintReuslt;
@@ -54,8 +56,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
   }
 
   function viewPermissionResult() {
-    // setPermissionResultVisible(true);
-    setVisible(true);
+    setPermissionResultVisible(true);
   }
   return (
     <>
@@ -87,6 +88,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                           { issueCount: issueCount },
                         ) /*`存在${issueCount}个问题`*/
                       }
+
                       {issueCount > 0 && (
                         <a
                           style={{
@@ -153,6 +155,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                       { unauthorizedDatabasesLength: unauthorizedDatabases?.length },
                     ) /*`存在${unauthorizedDatabases?.length}个问题`*/
                   }
+
                   <a
                     style={{
                       marginLeft: 5,
@@ -181,7 +184,10 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
       </Descriptions>
       {/* <LintDrawer visible={visible} closePage={() => setVisible(false)} data={data} /> */}
       <Drawer
-        title="检查结果"
+        title={formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.Nodes.33818FF2',
+          defaultMessage: '检查结果',
+        })}
         width={720}
         open={visible}
         closable
@@ -190,7 +196,20 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
         }}
       >
         <Descriptions>
-          <Descriptions.Item label="SQL 检查结果">存在{issueCount}个问题</Descriptions.Item>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.Nodes.4A26F3E1',
+              defaultMessage: 'SQL 检查结果',
+            })}
+          >
+            {formatMessage(
+              {
+                id: 'src.component.Task.component.CommonDetailModal.Nodes.A3187B85',
+                defaultMessage: '存在 ${issueCount} 个问题',
+              },
+              { issueCount: issueCount },
+            )}
+          </Descriptions.Item>
         </Descriptions>
         <MultipleLintResultTable
           pageSize={10}
@@ -201,6 +220,13 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
           baseOffset={0}
         />
       </Drawer>
+      <DBPermissionTableDrawer
+        visible={permissionResultVisible}
+        dataSource={unauthorizedDatabases}
+        onClose={() => {
+          setPermissionResultVisible(false);
+        }}
+      />
     </>
   );
 };

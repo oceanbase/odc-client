@@ -26,10 +26,10 @@ import TableCard from '@/component/Table/TableCard';
 import AsyncTaskCreateModal from '@/component/Task/AsyncTask';
 import ExportTaskCreateModal from '@/component/Task/ExportTask';
 import ImportTaskCreateModal from '@/component/Task/ImportTask';
-import { TaskPageType, TaskType } from '@/d.ts';
+import { IConnectionStatus, TaskPageType, TaskType } from '@/d.ts';
 import { IDatabase, DatabasePermissionType } from '@/d.ts/database';
 import ChangeProjectModal from '@/page/Datasource/Info/ChangeProjectModal';
-import modalStore, { ModalStore } from '@/store/modal';
+import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
 import { getLocalFormatDateTime } from '@/util/utils';
@@ -56,6 +56,7 @@ interface IProps {
 }
 
 const Database: React.FC<IProps> = ({ id, modalStore }) => {
+  const statusMap = datasourceStatus.statusMap;
   const { project } = useContext(ProjectContext);
   const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState('');
@@ -171,6 +172,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
         rowKey={'id'}
         rowSelection={{
           selectedRowKeys: selectedRowKeys,
+          preserveSelectedRowKeys: true,
           onChange: (selectedRowKeys: React.Key[], selectedRows: IDatabase[]) => {
             setSelectedRowKeys(selectedRowKeys);
           },
@@ -183,8 +185,13 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             );
             const disabled =
               !hasChangeAuth && !hasQueryAuth && !record?.authorizedPermissionTypes?.length;
+            const status = statusMap.get(record?.dataSource?.id) || record?.dataSource?.status;
+
             return {
-              disabled: disabled,
+              disabled:
+                disabled ||
+                !record.existed ||
+                ![IConnectionStatus.ACTIVE, IConnectionStatus.TESTING]?.includes(status?.status),
               name: record.name,
             };
           },
@@ -248,7 +255,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             },
           },
           {
-            title: '管理员',
+            title: formatMessage({
+              id: 'src.page.Project.Database.A31E6BDF',
+              defaultMessage: '管理员',
+            }),
             //项目角色
             dataIndex: 'owners',
             ellipsis: true,
@@ -333,6 +343,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             dataIndex: 'collationName',
             width: 120,
             ellipsis: true,
+            render: (collationName) => collationName || '-',
           },
           {
             title: formatMessage({
@@ -404,8 +415,8 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                           formatMessage({
                             id: 'odc.src.page.Project.Database.ModifyTheProject',
                           }) /* 
-                  修改所属项目
-                  */
+                      修改所属项目
+                      */
                         }
                       </Tooltip>
                     </Action.Link>
@@ -504,7 +515,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                     }}
                     disabled={!hasChangeOwnerAuth}
                   >
-                    设置库管理员
+                    {formatMessage({
+                      id: 'src.page.Project.Database.DEFC0E70',
+                      defaultMessage: '设置库管理员',
+                    })}
                   </Action.Link>
                   <Action.Link
                     key={'transfer'}
@@ -561,6 +575,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
         close={() => setVisible(false)}
         onSuccess={() => reload()}
       />
+
       <ChangeOwnerModal
         visible={changeOwnerModalVisible}
         database={database}

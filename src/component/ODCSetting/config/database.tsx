@@ -277,7 +277,10 @@ const databaseSettings: IODCSetting[] = [
     },
   },
   {
-    label: '启用全局对象检索',
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.BD183B7D',
+      defaultMessage: '启用全局对象检索',
+    }),
     key: 'odc.database.default.enableGlobalObjectSearch',
     group: databaseGroup,
     secondGroup: databaseObjectGroup,

@@ -1,5 +1,6 @@
+import { formatMessage } from '@/util/intl';
 import { IConnection } from '@/d.ts';
-import { Form, FormListFieldData, Popover, Select, Space, Tooltip } from 'antd';
+import { Empty, Form, FormListFieldData, Popover, Select, Space, Tooltip } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { useDrag, useDrop } from 'react-dnd';
@@ -9,37 +10,35 @@ import _ from 'lodash';
 import { ReactComponent as DragSvg } from '@/svgr/drag.svg';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import styles from './index.less';
-import { flatArray } from '.';
+import { flatArray } from './helper';
 import classNames from 'classnames';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import ConnectionPopover from '@/component/ConnectionPopover';
 
-type DatabaseOption = {
+export type DatabaseOption = {
   label: string;
   value: number;
   dataSource: IConnection;
   environment: IEnvironment;
   existed: boolean;
+  unauthorized: boolean;
+  expired: boolean;
 };
 const InnerSelect: React.FC<{
+  rootName: (number | string)[];
   innerName: number;
   outerName: number;
   innerIndex: number;
-  projectId: number;
+  disabled: boolean;
   databaseOptions: DatabaseOption[];
   innerRemove: (value: number) => void;
-}> = ({ innerName, outerName, innerIndex, projectId, databaseOptions, innerRemove }) => {
+}> = ({ rootName, innerName, outerName, innerIndex, disabled, databaseOptions, innerRemove }) => {
   const ref = useRef(null);
   const form = Form.useFormInstance();
   const [searchValue, setSearchValue] = useState<string>();
-  const orderedDatabaseIds = useWatch<number[][]>(['parameters', 'orderedDatabaseIds'], form);
-  const currentOrderedDatabaseIds = useWatch<number[]>(
-    ['parameters', 'orderedDatabaseIds', outerName],
-    form,
-  );
-  const currnetOrderedDatabaseId = useWatch<number>(
-    ['parameters', 'orderedDatabaseIds', outerName, innerName],
-    form,
-  );
+  const orderedDatabaseIds = useWatch<number[][]>(rootName, form);
+  const currentOrderedDatabaseIds = useWatch<number[]>([...rootName, outerName], form);
+  const currnetOrderedDatabaseId = useWatch<number>([...rootName, outerName, innerName], form);
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
   const databaseOptionMap = databaseOptions?.reduce((pre, cur) => {
@@ -50,7 +49,7 @@ const InnerSelect: React.FC<{
     const currentOrderedDatabaseId = currentOrderedDatabaseIds[originIndex];
     currentOrderedDatabaseIds.splice(originIndex, 1);
     currentOrderedDatabaseIds.splice(targetIndex, 0, currentOrderedDatabaseId);
-    form.setFieldValue(['parameters', 'orderedDatabaseIds', origin], currentOrderedDatabaseIds);
+    form.setFieldValue([...rootName, origin], currentOrderedDatabaseIds);
   };
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: 'box',
@@ -72,7 +71,7 @@ const InnerSelect: React.FC<{
         originOrderedDatabaseIds?.splice(item?.originInnerIndex, 1);
         orderedDatabaseIds?.splice(item?.originOuterName, 1, originOrderedDatabaseIds);
         const newOrderedDatabaseIds = orderedDatabaseIds?.filter((ids) => ids?.length);
-        form.setFieldValue(['parameters', 'orderedDatabaseIds'], newOrderedDatabaseIds);
+        form.setFieldValue(rootName, newOrderedDatabaseIds);
       }
     },
     collect: (monitor) => {
@@ -97,7 +96,10 @@ const InnerSelect: React.FC<{
 
   const getPlaceholder = () => {
     if (!currnetOrderedDatabaseId) {
-      return '请选择数据库';
+      return formatMessage({
+        id: 'src.component.Task.MutipleAsyncTask.CreateModal.91F6B921',
+        defaultMessage: '请选择数据库',
+      });
     }
     const item = databaseOptionMap?.[currnetOrderedDatabaseId];
     const icon = getDataSourceStyleByConnectType(item?.dataSource?.type);
@@ -120,6 +122,7 @@ const InnerSelect: React.FC<{
                 marginRight: 4,
               }}
             />
+
             <div style={{ color: 'var(--text-color-primary)' }}>{item?.label}</div>
             <div style={{ color: 'var(--mask-color)', marginLeft: '4px' }}>
               {item?.dataSource?.name}
@@ -143,63 +146,110 @@ const InnerSelect: React.FC<{
 
   const checkDatabaseExsisted = async (ruler, value) => {
     if (value && !databaseOptionMap?.[value]) {
-      throw new Error('该数据库不属于当前项目');
+      throw new Error(
+        formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.94128D2B',
+          defaultMessage: '该数据库不属于当前项目',
+        }),
+      );
     }
   };
-  const renderItem = (item: DatabaseOption) => {
+  const renderItem = (
+    item: DatabaseOption,
+    setSearchValue: React.Dispatch<React.SetStateAction<string>>,
+  ) => {
     const icon = getDataSourceStyleByConnectType(item?.dataSource?.type);
     const databaseIds = flatArray(orderedDatabaseIds);
-    const isDisabled = databaseIds?.includes(item?.value);
+    const isSelected =
+      databaseIds?.includes(item?.value) && item.value !== currnetOrderedDatabaseId;
+    const disabled = isSelected || item?.expired || item?.unauthorized;
+    const getTooltipTitle = (expired: boolean, unauthorized: boolean, isSelected: boolean) => {
+      if (expired) {
+        return formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.797AEFEE',
+          defaultMessage: '该数据库已失效',
+        });
+      }
+      if (unauthorized) {
+        return formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.24303BEB',
+          defaultMessage: '暂无权限，请先申请数据库权限',
+        });
+      }
+      if (isSelected) {
+        return formatMessage({
+          id: 'src.component.Task.MutipleAsyncTask.CreateModal.BF1212E7',
+          defaultMessage: '该数据库已被选中',
+        });
+      }
+      return null;
+    };
+    const tooltipTitle = getTooltipTitle(item?.expired, item?.unauthorized, isSelected);
+    const isCurrentItem = item?.value === currnetOrderedDatabaseId;
     return (
-      <div
-        title={item?.label}
-        key={item?.value}
-        data-key={item?.value}
-        onClick={() => {
-          if (isDisabled) {
-            return;
-          }
-          form.setFieldValue(
-            ['parameters', 'orderedDatabaseIds', outerName, innerName],
-            item?.value,
-          );
-          setPopoverOpen(false);
-        }}
+      <Popover
+        showArrow={false}
+        placement={'right'}
+        content={<ConnectionPopover connection={item?.dataSource} />}
       >
-        <Tooltip title={isDisabled ? '该数据库已被选中' : null}>
-          <div
-            className={classNames(styles.option, {
-              [styles.optionDisabled]: isDisabled,
-            })}
-          >
-            <Space>
-              <Icon
-                component={icon?.icon?.component}
-                style={{
-                  color: isDisabled ? 'var(--icon-color-disable)' : icon?.icon?.color,
-                  fontSize: 16,
-                  marginRight: 4,
-                }}
-              />
+        <div
+          title={item?.label}
+          key={item?.value}
+          data-key={item?.value}
+          onClick={() => {
+            if (disabled) {
+              return;
+            }
+            setSearchValue('');
+            form.setFieldValue([...rootName, outerName, innerName], item?.value);
+            setPopoverOpen(false);
+          }}
+        >
+          <Tooltip title={disabled ? tooltipTitle : null} placement="left">
+            <div
+              className={classNames(styles.option, {
+                [styles.optionDisabled]: disabled,
+              })}
+              style={{
+                backgroundColor: isCurrentItem ? '#e6f4ff' : null,
+              }}
+            >
+              <Space>
+                <Icon
+                  component={icon?.icon?.component}
+                  style={{
+                    color: disabled ? 'var(--icon-color-disable)' : icon?.icon?.color,
+                    fontSize: 16,
+                    marginRight: 4,
+                  }}
+                />
+
+                <div
+                  style={{
+                    color: disabled
+                      ? 'var(--mask-color)'
+                      : isCurrentItem
+                      ? 'black'
+                      : 'var(--text-color-primary)',
+                  }}
+                >
+                  {item?.label}
+                </div>
+                <div style={{ color: isCurrentItem ? 'black' : 'var(--icon-color-disable)' }}>
+                  {item?.dataSource?.name}
+                </div>
+              </Space>
               <div
                 style={{
-                  color: isDisabled ? 'var(--mask-color)' : 'var(--text-color-primary)',
+                  height: '6px',
+                  width: '6px',
+                  backgroundColor: item?.environment?.style,
                 }}
-              >
-                {item?.label}
-              </div>
-              <div style={{ color: 'var(--mask-color)' }}>{item?.dataSource?.name}</div>
-            </Space>
-            <div
-              style={{
-                height: '6px',
-                width: '6px',
-                backgroundColor: item?.environment?.style,
-              }}
-            />
-          </div>
-        </Tooltip>
-      </div>
+              />
+            </div>
+          </Tooltip>
+        </div>
+      </Popover>
     );
   };
   useEffect(() => {
@@ -207,13 +257,27 @@ const InnerSelect: React.FC<{
       ref.current = null;
     };
   }, []);
+  const renderOptions = searchValue?.trim()?.length
+    ? databaseOptions?.filter((item) => {
+        if (item?.label?.toString()?.toLowerCase()?.indexOf(searchValue?.toLowerCase()) > -1) {
+          return item;
+        }
+        if (
+          item?.dataSource?.name?.toString()?.toLowerCase()?.indexOf(searchValue?.toLowerCase()) >
+          -1
+        ) {
+          return item;
+        }
+      })
+    : databaseOptions;
   return (
     <div
       ref={ref}
+      className={styles.dragIem}
       style={{
         borderTop: isOver ? '1px solid blue' : '1px solid transparent',
         opacity: isDragging ? 0 : 1,
-        width: '430px',
+        width: '444px',
       }}
     >
       <Form.Item>
@@ -223,12 +287,16 @@ const InnerSelect: React.FC<{
             className={styles.dragIcon}
             style={{ cursor: 'move !important' }}
           />
+
           <Form.Item
             name={[innerName]}
             rules={[
               {
                 required: true,
-                message: '请选择数据库',
+                message: formatMessage({
+                  id: 'src.component.Task.MutipleAsyncTask.CreateModal.E7E1BCF3',
+                  defaultMessage: '请选择数据库',
+                }),
               },
               {
                 validateTrigger: 'onChange',
@@ -252,44 +320,38 @@ const InnerSelect: React.FC<{
               }}
               overlayClassName={styles.selectOptions}
               content={
-                <div
-                  style={{
-                    maxHeight: '320px',
-                    overflowY: 'scroll',
-                  }}
-                >
-                  {searchValue?.trim()?.length
-                    ? databaseOptions
-                        ?.filter((item) => {
-                          if (
-                            item?.label
-                              ?.toString()
-                              ?.toLowerCase()
-                              ?.indexOf(searchValue?.toLowerCase()) > -1
-                          ) {
-                            return item;
-                          }
-                          if (
-                            item?.dataSource?.name
-                              ?.toString()
-                              ?.toLowerCase()
-                              ?.indexOf(searchValue?.toLowerCase()) > -1
-                          ) {
-                            return item;
-                          }
-                        })
-                        ?.map((item) => renderItem(item))
-                    : databaseOptions?.map((item) => renderItem(item))}
-                </div>
+                renderOptions?.length ? (
+                  <div
+                    style={{
+                      maxHeight: '320px',
+                      overflowY: 'scroll',
+                      scrollbarWidth: 'none',
+                    }}
+                  >
+                    {renderOptions?.map((item) => renderItem(item, setSearchValue))}
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      width: '390px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                  </div>
+                )
               }
             >
               <Select
                 showSearch
                 optionFilterProp="title"
                 style={{ width: 390 }}
+                searchValue={searchValue}
                 onSearch={(searchValue) => setSearchValue(searchValue)}
                 placeholder={getPlaceholder()}
-                disabled={!projectId}
+                disabled={disabled}
                 allowClear
                 open={false}
               />
@@ -302,19 +364,17 @@ const InnerSelect: React.FC<{
   );
 };
 const InnerSelecter: React.FC<{
+  rootName: (number | string)[];
   innerFields: FormListFieldData[];
   outerName: number;
-  projectId: number;
+  disabled: boolean;
   databaseOptions: DatabaseOption[];
   innerRemove: (index: number | number[]) => void;
-}> = ({ innerFields, outerName, projectId, databaseOptions, innerRemove }) => {
+}> = ({ rootName, innerFields, outerName, disabled, databaseOptions, innerRemove }) => {
   const ref = useRef(null);
   const form = Form.useFormInstance();
-  const orderedDatabaseIds = useWatch<number[][]>(['parameters', 'orderedDatabaseIds'], form);
-  const currentOrderedDatabaseIds = useWatch<number[]>(
-    ['parameters', 'orderedDatabaseIds', outerName],
-    form,
-  );
+  const orderedDatabaseIds = useWatch<number[][]>(rootName, form);
+  const currentOrderedDatabaseIds = useWatch<number[]>([...rootName, outerName], form);
 
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: 'box',
@@ -327,7 +387,7 @@ const InnerSelecter: React.FC<{
       orderedDatabaseIds[outerName] = currentOrderedDatabaseIds;
       orderedDatabaseIds?.[item?.originOuterName]?.splice(item?.originInnerIndex, 1);
       const newOrderedDatabaseIds = orderedDatabaseIds?.filter((ids) => ids?.length);
-      form.setFieldValue(['parameters', 'orderedDatabaseIds'], newOrderedDatabaseIds);
+      form.setFieldValue(rootName, newOrderedDatabaseIds);
     },
     collect: (monitor) => {
       return {
@@ -346,8 +406,9 @@ const InnerSelecter: React.FC<{
     <div>
       {innerFields?.map(({ key: innerKey, name: innerName, ...innerRestField }, innerIndex) => (
         <InnerSelect
+          rootName={rootName}
           key={innerIndex}
-          projectId={projectId}
+          disabled={disabled}
           databaseOptions={databaseOptions}
           innerIndex={innerIndex}
           outerName={outerName}

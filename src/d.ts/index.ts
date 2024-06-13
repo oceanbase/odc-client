@@ -24,6 +24,9 @@ import { EThemeConfigKey } from '@/store/setting';
 import { SpaceType } from './_index';
 import { DBDefaultStoreType } from './table';
 import { ISQLExecuteTask } from '@/common/network/sql/executeSQL';
+import { IEnvironment } from './environment';
+import { IProject } from './project';
+import { ErrorStrategy } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
 
 export interface IUser {
   email: string;
@@ -457,6 +460,10 @@ export enum AuditEventType {
   NOTIFICATION_MANAGEMENT = 'NOTIFICATION_MANAGEMENT',
   // 敏感列管理
   SENSITIVE_COLUMN_MANAGEMENT = 'SENSITIVE_COLUMN_MANAGEMENT',
+  // 多库变更
+  MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
+  // 多库变更模版
+  DATABASE_CHANGE_CHANGING_ORDER_TEMPLATE_MANAGEMENT = 'DATABASE_CHANGE_CHANGING_ORDER_TEMPLATE_MANAGEMENT',
 }
 
 export enum AuditEventActionType {
@@ -633,6 +640,20 @@ export enum AuditEventActionType {
   BATCH_DELETE_SENSITIVE_COLUMNS = 'BATCH_DELETE_SENSITIVE_COLUMNS',
   ENABLE_SENSITIVE_COLUMN = 'ENABLE_SENSITIVE_COLUMN',
   DISABLE_SENSITIVE_COLUMN = 'DISABLE_SENSITIVE_COLUMN',
+
+  // #region 多库变更
+  CREATE_MULTIPLE_ASYNC_TASK = 'CREATE_MULTIPLE_ASYNC_TASK',
+  EXECUTE_MULTIPLE_ASYNC_TASK = 'EXECUTE_MULTIPLE_ASYNC_TASK',
+  STOP_MULTIPLE_ASYNC_TASK = 'STOP_MULTIPLE_ASYNC_TASK',
+  REJECT_MULTIPLE_ASYNC_TASK = 'REJECT_MULTIPLE_ASYNC_TASK',
+  APPROVE_MULTIPLE_ASYNC_TASK = 'APPROVE_MULTIPLE_ASYNC_TASK',
+  // #endregion
+
+  // #region 多库变更模版管理
+  CREATE_DATABASE_CHANGE_CHANGING_ORDER_TEMPLATE = 'CREATE_DATABASE_CHANGE_CHANGING_ORDER_TEMPLATE',
+  DELETE_DATABASE_CHANGE_CHANGING_ORDER_TEMPLATE = 'DELETE_DATABASE_CHANGE_CHANGING_ORDER_TEMPLATE',
+  UPDATE_DATABASE_CHANGE_CHANGING_ORDER_TEMPLATE = 'UPDATE_DATABASE_CHANGE_CHANGING_ORDER_TEMPLATE',
+  // #endregion
 }
 
 export enum AuditEventDialectType {
@@ -877,6 +898,7 @@ export enum IConnectionTestErrorType {
   UNKNOWN = 'Unknown',
   CONNECT_TYPE_NOT_MATCH = 'ConnectionDatabaseTypeMismatched',
   INIT_SCRIPT_FAILED = 'ConnectionInitScriptFailed',
+  OB_WEAK_READ_CONSISTENCY_REQUIRED = 'ObWeakReadConsistencyRequired',
 }
 
 export interface IConnectionProperty {
@@ -1024,6 +1046,7 @@ export interface IResultSet extends Partial<ISqlExecuteResult> {
     table?: ITable;
     editable: boolean;
   };
+  timer?: ISqlExecuteResultTimer;
 
   isQueriedEditable?: boolean;
   logTypeData?: {
@@ -1186,8 +1209,8 @@ export enum ColumnShowType {
   YEAR = 'YEAR',
   MONTH = 'MONTH',
   ENUM = 'ENUM', // 枚举类型
-  SET = 'SET', // 集合类型
-}
+  SET = 'SET',
+} // 集合类型
 
 // 索引
 
@@ -1612,6 +1635,12 @@ export interface ISqlExecuteResult {
   }[];
   withFullLinkTrace: boolean;
   traceEmptyReason?: string;
+}
+export interface ISqlExecuteResultTimer {
+  name: string;
+  stages: IResultTimerStage[];
+  startTimeMillis: number; // 开始时间
+  totalDurationMicroseconds: number; // 总耗时
 }
 
 export interface IExecutingInfo {
@@ -2349,7 +2378,7 @@ export type TaskRecordParameters =
   | IResultSetExportTaskParams
   | IApplyPermissionTaskParams
   | IApplyDatabasePermissionTaskParams
-  | IMultipleAsyncPermisssionTaskParams;
+  | IMultipleAsyncTaskParams;
 
 export interface ITaskResult {
   autoModifyTimeout?: boolean;
@@ -2386,42 +2415,6 @@ export enum SyncTableStructureEnum {
   PARTITION = 'PARTITION',
 }
 
-export const SyncTableStructureConfig = {
-  [SyncTableStructureEnum.COLUMN]: {
-    label: '表结构',
-  },
-  [SyncTableStructureEnum.CONSTRAINT]: {
-    label: '唯一性约束',
-  },
-  [SyncTableStructureEnum.INDEX]: {
-    label: '索引',
-  },
-  [SyncTableStructureEnum.PARTITION]: {
-    label: '分区',
-  },
-};
-export const SyncTableStructureOptions = [
-  {
-    value: SyncTableStructureEnum.COLUMN,
-    label: SyncTableStructureConfig[SyncTableStructureEnum.COLUMN].label,
-    disabled: true,
-  },
-  {
-    value: SyncTableStructureEnum.CONSTRAINT,
-    label: SyncTableStructureConfig[SyncTableStructureEnum.CONSTRAINT].label,
-
-    disabled: true,
-  },
-  {
-    value: SyncTableStructureEnum.PARTITION,
-    label: SyncTableStructureConfig[SyncTableStructureEnum.PARTITION].label,
-  },
-  {
-    value: SyncTableStructureEnum.INDEX,
-    label: SyncTableStructureConfig[SyncTableStructureEnum.INDEX].label,
-  },
-];
-
 export interface IDataArchiveJobParameters {
   deleteAfterMigration: boolean;
   name: string;
@@ -2447,7 +2440,7 @@ export interface IDataArchiveJobParameters {
     name: string;
     pattern: string;
   }[];
-  taskExecutionDurationHours: number;
+  timeoutMillis: number;
   syncTableStructure: SyncTableStructureEnum[];
 }
 
@@ -2471,7 +2464,7 @@ export interface IDataClearJobParameters {
     name: string;
     pattern: string;
   }[];
-  taskExecutionDurationHours: number;
+  timeoutMillis: number;
   needCheckBeforeDelete: boolean;
   targetDatabaseId?: number;
   targetDatabaseName?: string;
@@ -2492,7 +2485,7 @@ export interface ISqlPlayJobParameters {
 export interface ICycleTaskRecord<T> {
   id: number;
   type: TaskType;
-
+  projectId?: number;
   creator: {
     id: number;
     name: string;
@@ -2533,27 +2526,6 @@ export enum SubTaskType {
   DEIRECT_DELETE = 'DEIRECT_DELETE',
   ROLLBACK = 'ROLLBACK',
 }
-
-export const SubTaskTypeMap = {
-  [SubTaskType.MIGRATE]: {
-    label: '归档',
-  },
-  [SubTaskType.CHECK]: {
-    label: '数据检查',
-  },
-  [SubTaskType.DELETE]: {
-    label: '数据清理',
-  },
-  [SubTaskType.QUICK_DELETE]: {
-    label: '数据清理',
-  },
-  [SubTaskType.DEIRECT_DELETE]: {
-    label: '数据清理',
-  },
-  [SubTaskType.ROLLBACK]: {
-    label: '回滚',
-  },
-};
 
 export interface ISubTaskTaskUnit {
   endTime: number;
@@ -2710,9 +2682,42 @@ export interface IApplyDatabasePermissionTaskParams {
   expireTime: number;
   applyReason: string;
 }
-export interface IMultipleAsyncPermisssionTaskParams {
-  databases?: IDatabase[];
-  orderedDatabaseIds?: number[][];
+
+export interface IMultipleAsyncTaskParams {
+  autoErrorStrategy: boolean;
+  batchId: number;
+  databases: {
+    id?: number;
+    name: string;
+    existed: boolean;
+    databaseId: string;
+    project: IProject;
+    dataSource: IConnection;
+    environment: IEnvironment;
+  }[];
+  delimiter: string;
+  errorStrategy: ErrorStrategy;
+  generateRollbackPlan?: any;
+  manualTimeoutMillis: number;
+  modifyTimeoutIfTimeConsumingSqlExists: boolean;
+  orderedDatabaseIds: number[][];
+  parentJobType: TaskType;
+  project?: {
+    id: number;
+    name: string;
+  };
+  projectId?: number;
+  queryLimit?: number;
+  retryIntervalMillis?: number;
+  retryTimes?: number;
+  riskLevelIndex: number;
+  rollbackSqlContent?: string;
+  rollbackSqlObjectIds?: any[];
+  rollbackSqlObjectNames?: string[];
+  sqlContent?: string;
+  sqlObjectIds: any[];
+  sqlObjectNames?: string;
+  timeoutMillis: number;
 }
 
 export interface IResultSetExportTaskParams {
@@ -2860,6 +2865,7 @@ export enum TaskOperationType {
 
 export enum IFlowTaskType {
   PRE_CHECK = 'PRE_CHECK',
+  MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
   GENERATE_ROLLBACK = 'GENERATE_ROLLBACK',
 }
 

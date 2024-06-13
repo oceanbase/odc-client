@@ -29,8 +29,9 @@ import { getDataSourceModeConfig } from '@/common/datasource';
 import { syncObject } from '@/common/network/database';
 import { IManagerResourceType } from '@/d.ts';
 import { getLocalFormatDateTime } from '@/util/utils';
-
+import { DBObjectSyncStatus } from '@/d.ts/database';
 import { message } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 
 export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.Database]: [
@@ -82,6 +83,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.503FF376',
         }) /*'数据导出'*/,
       ],
+
       ellipsis: true,
       children: [
         {
@@ -91,6 +93,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.0A419755',
             }) /*'导出'*/,
           ],
+
           ellipsis: true,
           isHide(_, node) {
             return !setting.enableDBExport;
@@ -109,6 +112,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.42C44540',
             }) /*'导出结果集'*/,
           ],
+
           ellipsis: true,
           isHide(_, node) {
             return !setting.enableDBExport;
@@ -129,6 +133,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.9552E3A1',
         }) /*'数据研发'*/,
       ],
+
       ellipsis: true,
       children: [
         {
@@ -138,6 +143,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.2CFE4C42',
             }) /*'导入'*/,
           ],
+
           ellipsis: true,
           isHide(_, node) {
             return !setting.enableDBImport;
@@ -156,6 +162,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.59BFC33A',
             }) /*'模拟数据'*/,
           ],
+
           ellipsis: true,
           isHide(_, node) {
             return !setting.enableMockdata;
@@ -174,6 +181,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.E6CFD4DD',
             }) /*'数据库变更'*/,
           ],
+
           ellipsis: true,
           isHide(_, node) {
             return !setting.enableAsyncTask;
@@ -192,6 +200,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.6844939F',
             }) /*'无锁结构变更'*/,
           ],
+
           ellipsis: true,
           isHide(_, node) {
             return !setting.enableOSC;
@@ -210,6 +219,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.1ACCD0B1',
             }) /*'影子表同步'*/,
           ],
+
           ellipsis: true,
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -225,6 +235,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.3DDBBFA6',
             }) /*'结构比对'*/,
           ],
+
           ellipsis: true,
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -242,6 +253,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.36AA3D8E',
         }) /*'定时任务'*/,
       ],
+
       ellipsis: true,
       hasDivider:
         setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'true',
@@ -256,6 +268,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.82D835BA',
             }) /*'SQL 计划'*/,
           ],
+
           ellipsis: true,
           isHide(_, node) {
             return isClient();
@@ -274,6 +287,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.481C5DF5',
             }) /*'分区计划'*/,
           ],
+
           ellipsis: true,
           isHide(_, node) {
             return isClient();
@@ -292,6 +306,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.983B20EC',
             }) /*'数据归档'*/,
           ],
+
           ellipsis: true,
           isHide(_, node) {
             return isClient();
@@ -310,6 +325,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.51FA0E16',
             }) /*'数据清理'*/,
           ],
+
           ellipsis: true,
           isHide(_, node) {
             return isClient();
@@ -325,13 +341,36 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     },
     {
       key: 'SYNC_METADATA',
-      text: '元数据同步',
+      text: (node) => {
+        const database: IDatabase = node.data;
+        if (database.objectSyncStatus === DBObjectSyncStatus.SYNCING) {
+          return (
+            <>
+              <LoadingOutlined style={{ color: 'var(--odc-color1-color)' }} />
+              <span style={{ paddingLeft: 4 }}>
+                {formatMessage({
+                  id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.A32BC9F9',
+                  defaultMessage: '元数据同步中，请等待…',
+                })}
+              </span>
+            </>
+          );
+        }
+        return formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.8485C0D3',
+          defaultMessage: '元数据同步',
+        });
+      },
       subText: (node) => {
         const database: IDatabase = node.data;
         if (!database.objectLastSyncTime) return;
         return (
           <div style={{ fontSize: 12, color: 'var(--text-color-hint)' }}>
-            上次同步时间: {getLocalFormatDateTime(database?.objectLastSyncTime)}
+            {formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.1599957C',
+              defaultMessage: '上次同步时间:',
+            })}
+            {getLocalFormatDateTime(database?.objectLastSyncTime)}
           </div>
         );
       },
@@ -339,12 +378,18 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       isHide(_, node) {
         return setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'false';
       },
-      run(session, node, databaseFrom, reloadDatabase) {
+      run(session, node, databaseFrom, pollingDatabase) {
         const database: IDatabase = node.data;
-        message.loading({ content: '元数据同步中，请等待…', duration: 1 });
+        message.loading({
+          content: formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.A32BC9F9',
+            defaultMessage: '元数据同步中，请等待…',
+          }),
+          duration: 1,
+        });
         syncObject(IManagerResourceType.database, database?.id).then((res) => {
           if (res) {
-            reloadDatabase();
+            pollingDatabase();
           }
         });
       },

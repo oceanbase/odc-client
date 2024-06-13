@@ -23,7 +23,7 @@ import { updateLimiterConfig } from '@/common/network/task';
 import setting from '@/store/setting';
 import type { CycleTaskDetail, IDataClearJobParameters, TaskOperationType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
+import { getFormatDateTime, kbToMb, mbToKb, milliSecondsToHour } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Collapse, Descriptions, Divider, Space, message, Typography } from 'antd';
 import React from 'react';
@@ -121,6 +121,7 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             </Space>
           </Descriptions.Item>
         )}
+
         {jobParameters.needCheckBeforeDelete && (
           <Descriptions.Item
             span={2}
@@ -134,6 +135,7 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             </Space>
           </Descriptions.Item>
         )}
+
         {hasFlow && (
           <Descriptions.Item
             label={formatMessage({
@@ -199,6 +201,7 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             {getLocalFormatDateTime(triggerConfig?.startAt)}
           </Descriptions.Item>
         )}
+
         {isCycleTriggerStrategy(triggerConfig?.triggerStrategy) && (
           <Descriptions.Item>
             <Collapse
@@ -271,9 +274,15 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             ? formatMessage({ id: 'src.component.Task.DataClearTask.DetailContent.D2882643' })
             : formatMessage({ id: 'src.component.Task.DataClearTask.DetailContent.834E7D89' })}
         </Descriptions.Item>
-        <Descriptions.Item label={'指定任务时长'} span={1}>
-          {jobParameters.taskExecutionDurationHours
-            ? jobParameters.taskExecutionDurationHours + 'h'
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.DataClearTask.DetailContent.D4D1227C',
+            defaultMessage: '指定任务时长',
+          })}
+          span={1}
+        >
+          {jobParameters.timeoutMillis
+            ? milliSecondsToHour(jobParameters.timeoutMillis) + 'h'
             : '-'}
         </Descriptions.Item>
         <Descriptions.Item

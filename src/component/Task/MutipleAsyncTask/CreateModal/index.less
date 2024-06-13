@@ -68,7 +68,7 @@
 // orderedDatabaseIds
 .orderedDatabaseIds {
   padding: 18px 16px;
-  background-color: #f7f9fb;
+  background-color: var(--neutral-grey1-color);
 
   .title {
     font-weight: 500;
@@ -102,73 +102,16 @@
   }
 }
 
-// template
-.template {
-  width: 280px;
+.dragIcon {
+  cursor: pointer;
 }
-
-.options {
-  max-height: 140px;
-  overflow: auto;
-
-  .templateItem {
-    height: 28px;
-    width: 280px;
-    padding: 0px 8px;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    user-select: none;
-
-    &:hover {
-      background-color: var(--hover-color);
-    }
-  }
-}
-
-.templateItemDisabled {
-  background: var(--hover-color);
-  color: var(--mask-color);
-
-  &:hover {
-    cursor: not-allowed;
-  }
-}
-
-.templatePopover {
-  :global {
-    .ant-popover-inner-content {
-      padding: 0px;
-      margin-top: -4px;
-    }
-  }
-
-  padding: 0px;
-}
-
-.createTemplate {
-  margin-bottom: 16px;
-
-  .tip {
-    color: var(--text-color-hint);
-    margin-bottom: 22px;
-  }
-}
-
-.nodeItem {
-  height: 32px;
-  display: flex;
-  align-items: center;
-
+.dragIem {
+  padding-left: 8px;
+  padding-right: 6px;
   &:hover {
     background-color: var(--hover-color);
   }
 }
-
-.dragIcon {
-  cursor: pointer;
-}
-
 .timelineItem {
   :global {
     .ant-timeline-item-head {
@@ -260,5 +203,5 @@
   display: flex;
   position: relative;
   overflow-y: scroll;
-  max-height: calc(100vh - 98px);
+  max-height: 100%;
 }

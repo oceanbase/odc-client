@@ -134,7 +134,7 @@ export const KEY_CODE_MAP: Record<number, KeyCode> = {
 };
 
 const convertMap = {
-  [KeyCode.Ctrl]: KeyMod.WinCtrl,
+  [KeyCode.Ctrl]: KeyMod.CtrlCmd,
   [KeyCode.Meta]: KeyMod.CtrlCmd,
   [KeyCode.Shift]: KeyMod.Shift,
   [KeyCode.Alt]: KeyMod.Alt,

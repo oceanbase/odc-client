@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Button } from 'antd';
 import styles from '../index.less';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
@@ -5,6 +6,7 @@ import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import React, { useState, useContext } from 'react';
 import { IDatabase, IDatabaseObject } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
+import { openNewSQLPage } from '@/store/helper/page';
 
 interface Iprops {
   database: IDatabase;
@@ -60,8 +62,9 @@ const DatabaseList = ({
 
   const openSql = (e, db) => {
     e.stopPropagation();
-    modalStore.databseSearchsSetExpandedKeysFunction(db.id);
-    modalStore.changeDatabaseSearchModalVisible(false);
+    modalStore?.databaseSearchsSetExpandedKeysFunction?.(db.id);
+    modalStore?.changeDatabaseSearchModalVisible(false);
+    db.id && openNewSQLPage(db.id, selectProjectId ? 'project' : 'datasource');
   };
 
   const applyPermission = (e, db: IDatabase) => {
@@ -78,13 +81,19 @@ const DatabaseList = ({
     if (!!db?.authorizedPermissionTypes?.length) {
       return (
         <Button type="link" style={{ padding: 0 }} onClick={(e) => openSql(e, db)}>
-          打开 SQL 窗口
+          {formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.D7B63CB7',
+            defaultMessage: '打开 SQL 窗口',
+          })}
         </Button>
       );
     }
     return (
       <Button type="link" style={{ padding: 0 }} onClick={(e) => applyPermission(e, db)}>
-        权限库申请
+        {formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.DC41DDB8',
+          defaultMessage: '权限库申请',
+        })}
       </Button>
     );
   };
@@ -95,7 +104,10 @@ const DatabaseList = ({
         className={isSelectAll ? styles.databaseItemActive : styles.databaseItem}
         onClick={selectAll}
       >
-        全部数据库
+        {formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.69106FDA',
+          defaultMessage: '全部数据库',
+        })}
       </div>
       {options?.length
         ? options.map((db) => {

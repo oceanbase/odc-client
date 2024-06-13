@@ -65,6 +65,10 @@ import { ApplyPermissionTaskContent } from './ApplyPermission';
 import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
 import { StructureComparisonTaskContent } from './StructureComparisonTask';
 import { MutipleAsyncTaskContent } from './MutipleAsyncTask';
+import { getProject } from '@/common/network/project';
+import { ProjectRole } from '@/d.ts/project';
+import userStore from '@/store/login';
+import { isNumber } from 'lodash';
 
 interface IProps {
   taskOpenRef?: React.RefObject<boolean>;
@@ -111,6 +115,8 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   const [disabledSubmit, setDisabledSubmit] = useState(true);
   const [approvalVisible, setApprovalVisible] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState(false);
+  const [isTaskProjectOwner, setIsTaskProjectOwner] = useState(false);
+
   const hasFlow = !!task?.nodeList?.find(
     (node) =>
       node.nodeType === TaskFlowNodeType.APPROVAL_TASK || node.taskType === IFlowTaskType.PRE_CHECK,
@@ -130,6 +136,20 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   const clockRef = useRef(null);
   let taskContent = null;
   let getItems = null;
+
+  const getTaskProjectOwner = async () => {
+    const projectId = task?.projectId;
+    if (!isNumber(projectId) || projectId <= 0) {
+      setIsTaskProjectOwner(false);
+      return;
+    }
+    const res = await getProject(projectId);
+    const userRoleList = res?.members
+      ?.filter((i) => i.id === userStore?.user?.id)
+      ?.map((j) => j.role);
+    setIsTaskProjectOwner(userRoleList.includes(ProjectRole.OWNER));
+  };
+
   const getTask = async function () {
     const data = await getTaskDetail(detailId);
     setLoading(false);
@@ -213,23 +233,25 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
 
   const loadTaskData = async () => {
     clearTimeout(clockRef.current);
-    if (!task || isLoop) {
-      getTask();
-    }
-    if (detailType === TaskDetailType.LOG) {
-      getLog();
-    } else if (hasResult) {
-      getResult();
-    }
+    try {
+      if (!task || isLoop) {
+        getTask();
+      }
+      if (detailType === TaskDetailType.LOG) {
+        getLog();
+      } else if (hasResult) {
+        getResult();
+      }
 
-    if (detailType === TaskDetailType.EXECUTE_RECORD) {
-      getExecuteRecord();
-    }
-    if (isLoop) {
-      clockRef.current = setTimeout(() => {
-        loadTaskData();
-      }, 5000);
-    }
+      if (detailType === TaskDetailType.EXECUTE_RECORD) {
+        getExecuteRecord();
+      }
+      if (isLoop) {
+        clockRef.current = setTimeout(() => {
+          loadTaskData();
+        }, 5000);
+      }
+    } catch (err) {}
   };
 
   const loadCycleTaskData = async (args?: ITableLoadOptions) => {
@@ -291,6 +313,9 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   useEffect(() => {
     if (visible && detailId && !task) {
       setLoading(true);
+    }
+    if (task) {
+      getTaskProjectOwner();
     }
   }, [task, visible, detailId]);
 
@@ -397,7 +422,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       break;
     }
     default: {
-      getItems = taskContentMap[task?.type]?.getItems;
+      getItems = (...args) => taskContentMap[task?.type]?.getItems(...args, handleReloadData);
       break;
     }
   }
@@ -424,6 +449,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
         onApprovalVisible={handleApprovalVisible}
         onDetailVisible={props.onDetailVisible}
         onClose={onClose}
+        isTaskProjectOwner={isTaskProjectOwner}
       />
     ) : null,
   };

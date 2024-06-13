@@ -49,17 +49,11 @@ interface IImportFormProps {
 const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
   observer(
     forwardRef(function (props, ref) {
-      const {
-        modalStore,
-        formData,
-        formType,
-        projectId,
-        onFormValueChange,
-        onSessionChange,
-      } = props;
+      const { modalStore, formData, formType, projectId, onFormValueChange, onSessionChange } =
+        props;
       const [form] = useForm();
       const formConfigContext = useContext(FormConfigContext);
-      const isSingleImport = !!modalStore.importModalData;
+      const isSingleImport = !!modalStore.importModalData?.table;
 
       async function valid(callback: (haveError, values) => void) {
         const values = await form.validateFields();

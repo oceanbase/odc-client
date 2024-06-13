@@ -73,6 +73,7 @@ const getColumns = (
           value: RiskLevelEnum.DEFAULT,
         },
       ],
+
       filterMultiple: true,
       onFilter: (value, record) => {
         return record?.rules.hasOwnProperty(value);
@@ -138,7 +139,10 @@ const getColumns = (
                                     );
                                   }}
                                 >
-                                  定位
+                                  {formatMessage({
+                                    id: 'src.page.Workspace.components.SQLResultSet.27AA04C0',
+                                    defaultMessage: '定位',
+                                  })}
                                 </Button>
                               </Tooltip>
                             )}
@@ -190,7 +194,10 @@ export const getMultipleAsyncColumns = (
       ),
     },
     {
-      title: '执行数据库',
+      title: formatMessage({
+        id: 'src.page.Workspace.components.SQLResultSet.4F0CD429',
+        defaultMessage: '执行数据库',
+      }),
       dataIndex: 'databaseIds',
       key: 'databaseIds',
       width: 264,
@@ -207,6 +214,7 @@ export const getMultipleAsyncColumns = (
                   content={record?.database?.environment?.name}
                   color={record?.database?.environment?.style}
                 />
+
                 <Space size={4}>
                   <Icon
                     component={icon?.icon?.component}
@@ -216,6 +224,7 @@ export const getMultipleAsyncColumns = (
                       marginRight: 4,
                     }}
                   />
+
                   <div>{record?.database?.name}</div>
                   <div style={{ color: 'var(--neutral-black45-color)' }}>
                     {record?.database?.dataSource?.name}
@@ -229,6 +238,7 @@ export const getMultipleAsyncColumns = (
                 content={record?.database?.environment?.name}
                 color={record?.database?.environment?.style}
               />
+
               <Space size={4}>
                 <Icon
                   component={icon?.icon?.component}
@@ -238,6 +248,7 @@ export const getMultipleAsyncColumns = (
                     marginRight: 4,
                   }}
                 />
+
                 <div>{record?.database?.name}</div>
                 <div style={{ color: 'var(--neutral-black45-color)' }}>
                   {record?.database?.dataSource?.name}
@@ -249,7 +260,10 @@ export const getMultipleAsyncColumns = (
       },
     },
     {
-      title: '检查结果',
+      title: formatMessage({
+        id: 'src.page.Workspace.components.SQLResultSet.CB2CF731',
+        defaultMessage: '检查结果',
+      }),
       dataIndex: 'rules',
       key: 'rules',
       filters: [
@@ -266,6 +280,7 @@ export const getMultipleAsyncColumns = (
           value: RiskLevelEnum.DEFAULT,
         },
       ],
+
       filterMultiple: true,
       onFilter: (value, record) => {
         return record?.rules.hasOwnProperty(value);
@@ -331,7 +346,10 @@ export const getMultipleAsyncColumns = (
                                     );
                                   }}
                                 >
-                                  定位
+                                  {formatMessage({
+                                    id: 'src.page.Workspace.components.SQLResultSet.3753C098',
+                                    defaultMessage: '定位',
+                                  })}
                                 </Button>
                               </Tooltip>
                             )}

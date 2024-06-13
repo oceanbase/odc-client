@@ -37,7 +37,7 @@ import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { mbToKb, kbToMb } from '@/util/utils';
+import { mbToKb, kbToMb, hourToMilliSeconds, milliSecondsToHour } from '@/util/utils';
 import { FieldTimeOutlined } from '@ant-design/icons';
 import { Button, Checkbox, DatePicker, Drawer, Form, Modal, Radio, Space, InputNumber } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -193,7 +193,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       rateLimit,
       tables,
       variables,
-      taskExecutionDurationHours,
+      timeoutMillis,
       syncTableStructure,
     } = jobParameters;
 
@@ -213,7 +213,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       triggerStrategy,
       startAt: undefined,
       description,
-      taskExecutionDurationHours,
+      timeoutMillis: milliSecondsToHour(timeoutMillis),
       syncTableStructure,
     };
 
@@ -324,7 +324,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           description,
           rowLimit,
           dataSizeLimit,
-          taskExecutionDurationHours,
+          timeoutMillis,
           syncTableStructure,
         } = values;
         _tables?.map((i) => {
@@ -356,7 +356,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             deleteAfterMigration,
             migrationInsertAction,
             syncTableStructure,
-            taskExecutionDurationHours,
+            timeoutMillis: hourToMilliSeconds(timeoutMillis),
             rateLimit: {
               rowLimit,
               dataSizeLimit: mbToKb(dataSizeLimit),
@@ -406,10 +406,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       .then(async (values) => {
         const { variables, tables: _tables, archiveRange } = values;
         _tables?.map((i) => {
-          i.partitions = i?.partitions
-            ?.replace(/[\r\n]+/g, '')
-            ?.split(',')
-            ?.filter(Boolean);
+          i.partitions = i?.partitions?.length
+            ? i?.partitions
+                ?.replace(/[\r\n]+/g, '')
+                ?.split(',')
+                ?.filter(Boolean)
+            : [];
         });
         const parameters = {
           variables: getVariables(variables),
@@ -521,152 +523,156 @@ const CreateModal: React.FC<IProps> = (props) => {
         handleCancel(hasEdit);
       }}
     >
-      <Form
-        form={form}
-        name="basic"
-        layout="vertical"
-        requiredMark="optional"
-        initialValues={defaultValue}
-        onFieldsChange={handleFieldsChange}
-      >
-        <Space align="start">
-          <DatabaseSelect
-            type={TaskType.DATA_ARCHIVE}
-            disabled={isEdit}
-            label={formatMessage({
-              id: 'odc.DataArchiveTask.CreateModal.SourceDatabase',
-            })}
-            /*源端数据库*/ projectId={projectId}
-            onChange={handleDBChange}
-          />
-
-          <DatabaseSelect
-            type={TaskType.DATA_ARCHIVE}
-            label={formatMessage({
-              id: 'odc.DataArchiveTask.CreateModal.TargetDatabase',
-            })}
-            /*目标数据库*/ name="targetDataBaseId"
-            projectId={projectId}
-          />
-        </Space>
-        <Space direction="vertical" size={24} style={{ width: '100%' }}>
-          <ArchiveRange enabledTargetTable tables={tables} form={form} />
-          <VariableConfig form={form} />
-        </Space>
-        <Form.Item name="deleteAfterMigration" valuePropName="checked">
-          <Checkbox>
-            <Space>
-              {
-                formatMessage({
-                  id: 'odc.DataArchiveTask.CreateModal.CleanUpArchivedDataFrom',
-                }) /*清理源端已归档数据*/
-              }
-
-              <span className={styles.desc}>
-                {
-                  formatMessage({
-                    id: 'odc.DataArchiveTask.CreateModal.IfYouCleanUpThe',
-                  }) /*若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚*/
-                }
-              </span>
-            </Space>
-          </Checkbox>
-        </Form.Item>
-        <Form.Item
-          label={formatMessage({
-            id: 'odc.DataArchiveTask.CreateModal.ExecutionMethod',
-          })}
-          /*执行方式*/ name="triggerStrategy"
-          required
+      {dataArchiveVisible ? (
+        <Form
+          form={form}
+          name="basic"
+          layout="vertical"
+          requiredMark="optional"
+          initialValues={defaultValue}
+          onFieldsChange={handleFieldsChange}
         >
-          <Radio.Group>
-            <Radio.Button value={TaskExecStrategy.START_NOW}>
-              {
-                formatMessage({
-                  id: 'odc.DataArchiveTask.CreateModal.ExecuteNow',
-                }) /*立即执行*/
-              }
-            </Radio.Button>
-            {!isClient() ? (
-              <Radio.Button value={TaskExecStrategy.START_AT}>
+          <Space align="start">
+            <DatabaseSelect
+              type={TaskType.DATA_ARCHIVE}
+              disabled={isEdit}
+              label={formatMessage({
+                id: 'odc.DataArchiveTask.CreateModal.SourceDatabase',
+              })}
+              /*源端数据库*/ projectId={projectId}
+              onChange={handleDBChange}
+            />
+
+            <DatabaseSelect
+              type={TaskType.DATA_ARCHIVE}
+              label={formatMessage({
+                id: 'odc.DataArchiveTask.CreateModal.TargetDatabase',
+              })}
+              /*目标数据库*/ name="targetDataBaseId"
+              projectId={projectId}
+            />
+          </Space>
+          <Space direction="vertical" size={24} style={{ width: '100%' }}>
+            <ArchiveRange enabledTargetTable tables={tables} form={form} />
+            <VariableConfig form={form} />
+          </Space>
+          <Form.Item name="deleteAfterMigration" valuePropName="checked">
+            <Checkbox>
+              <Space>
                 {
                   formatMessage({
-                    id: 'odc.DataArchiveTask.CreateModal.ScheduledExecution',
-                  }) /*定时执行*/
+                    id: 'odc.DataArchiveTask.CreateModal.CleanUpArchivedDataFrom',
+                  }) /*清理源端已归档数据*/
+                }
+
+                <span className={styles.desc}>
+                  {
+                    formatMessage({
+                      id: 'odc.DataArchiveTask.CreateModal.IfYouCleanUpThe',
+                    }) /*若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚*/
+                  }
+                </span>
+              </Space>
+            </Checkbox>
+          </Form.Item>
+          <Form.Item
+            label={formatMessage({
+              id: 'odc.DataArchiveTask.CreateModal.ExecutionMethod',
+            })}
+            /*执行方式*/ name="triggerStrategy"
+            required
+          >
+            <Radio.Group>
+              <Radio.Button value={TaskExecStrategy.START_NOW}>
+                {
+                  formatMessage({
+                    id: 'odc.DataArchiveTask.CreateModal.ExecuteNow',
+                  }) /*立即执行*/
                 }
               </Radio.Button>
-            ) : null}
-            <Radio.Button value={TaskExecStrategy.TIMER}>
-              {
-                formatMessage({
-                  id: 'odc.DataArchiveTask.CreateModal.PeriodicExecution',
-                }) /*周期执行*/
+              {!isClient() ? (
+                <Radio.Button value={TaskExecStrategy.START_AT}>
+                  {
+                    formatMessage({
+                      id: 'odc.DataArchiveTask.CreateModal.ScheduledExecution',
+                    }) /*定时执行*/
+                  }
+                </Radio.Button>
+              ) : null}
+              <Radio.Button value={TaskExecStrategy.TIMER}>
+                {
+                  formatMessage({
+                    id: 'odc.DataArchiveTask.CreateModal.PeriodicExecution',
+                  }) /*周期执行*/
+                }
+              </Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item shouldUpdate noStyle>
+            {({ getFieldValue }) => {
+              const triggerStrategy = getFieldValue('triggerStrategy') || [];
+              if (triggerStrategy === TaskExecStrategy.START_AT) {
+                return (
+                  <Form.Item
+                    name="startAt"
+                    label={formatMessage({
+                      id: 'odc.DataArchiveTask.CreateModal.ExecutionTime',
+                    })}
+                    /*执行时间*/ required
+                  >
+                    <DatePicker showTime suffixIcon={<FieldTimeOutlined />} />
+                  </Form.Item>
+                );
               }
-            </Radio.Button>
-          </Radio.Group>
-        </Form.Item>
-        <Form.Item shouldUpdate noStyle>
-          {({ getFieldValue }) => {
-            const triggerStrategy = getFieldValue('triggerStrategy') || [];
-            if (triggerStrategy === TaskExecStrategy.START_AT) {
-              return (
-                <Form.Item
-                  name="startAt"
-                  label={formatMessage({
-                    id: 'odc.DataArchiveTask.CreateModal.ExecutionTime',
-                  })}
-                  /*执行时间*/ required
-                >
-                  <DatePicker showTime suffixIcon={<FieldTimeOutlined />} />
-                </Form.Item>
-              );
-            }
-            if (triggerStrategy === TaskExecStrategy.TIMER) {
-              return (
-                <Form.Item>
-                  <Crontab
-                    ref={crontabRef}
-                    initialValue={crontab}
-                    onValueChange={handleCrontabChange}
-                  />
-                </Form.Item>
-              );
-            }
-            return null;
-          }}
-        </Form.Item>
-        <FormItemPanel
-          label={
-            formatMessage({
-              id: 'odc.src.component.Task.DataArchiveTask.CreateModal.TaskSetting',
-            }) /* 任务设置 */
-          }
-          keepExpand
-        >
-          <TaskdurationItem form={form} />
-          <SynchronizationItem form={form} />
-          <Form.Item
+              if (triggerStrategy === TaskExecStrategy.TIMER) {
+                return (
+                  <Form.Item>
+                    <Crontab
+                      ref={crontabRef}
+                      initialValue={crontab}
+                      onValueChange={handleCrontabChange}
+                    />
+                  </Form.Item>
+                );
+              }
+              return null;
+            }}
+          </Form.Item>
+          <FormItemPanel
             label={
               formatMessage({
-                id: 'odc.src.component.Task.DataArchiveTask.CreateModal.InsertionStrategy',
-              }) /* 插入策略 */
+                id: 'odc.src.component.Task.DataArchiveTask.CreateModal.TaskSetting',
+              }) /* 任务设置 */
             }
-            name="migrationInsertAction"
-            rules={[
-              {
-                required: true,
-                message: formatMessage({
-                  id: 'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseSelectInsertionStrategy',
-                }), //'请选择插入策略'
-              },
-            ]}
+            keepExpand
           >
-            <Radio.Group options={InsertActionOptions} />
-          </Form.Item>
-          <ThrottleFormItem />
-        </FormItemPanel>
-        <DescriptionInput />
-      </Form>
+            <TaskdurationItem form={form} />
+            <SynchronizationItem form={form} />
+            <Form.Item
+              label={
+                formatMessage({
+                  id: 'odc.src.component.Task.DataArchiveTask.CreateModal.InsertionStrategy',
+                }) /* 插入策略 */
+              }
+              name="migrationInsertAction"
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage({
+                    id: 'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseSelectInsertionStrategy',
+                  }), //'请选择插入策略'
+                },
+              ]}
+            >
+              <Radio.Group options={InsertActionOptions} />
+            </Form.Item>
+            <ThrottleFormItem />
+          </FormItemPanel>
+          <DescriptionInput />
+        </Form>
+      ) : (
+        <></>
+      )}
       <SQLPreviewModal
         sql={previewSql}
         visible={previewModalVisible}

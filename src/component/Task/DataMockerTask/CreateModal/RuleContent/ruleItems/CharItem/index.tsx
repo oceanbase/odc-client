@@ -139,6 +139,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
               formatMessage({ id: 'odc.ruleItems.CharItem.LengthRange' }), // 长度区间
               value?.['range'],
             ],
+
             [
               formatMessage({ id: 'odc.ruleItems.CharItem.Case' }), // 大小写
               value?.['genParams']?.caseOption === 'ALL_LOWER_CASE'
@@ -196,6 +197,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
               formatMessage({ id: 'odc.ruleItems.CharItem.Date' }), // 日期
               value?.['lowValue'],
             ],
+
             [
               formatMessage({ id: 'odc.ruleItems.CharItem.StepSize' }), // 步长
               step + formatMessage({ id: 'odc.ruleItems.CharItem.Days' }), // 天
@@ -216,10 +218,12 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
               formatMessage({ id: 'odc.ruleItems.CharItem.StartValue' }), // 起始值
               value?.['lowValue'],
             ],
+
             [
               formatMessage({ id: 'odc.ruleItems.CharItem.StepSize' }), // 步长
               step,
             ],
+
             [
               formatMessage({ id: 'odc.ruleItems.CharItem.Sort' }), // 排序
               value?.['order'] === 'asc'
@@ -408,10 +412,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                         })}` // 天
                     }
                     parser={(value) =>
-                      value.replace(
-                        formatMessage({ id: 'odc.ruleItems.CharItem.Days' }), // 天
-                        '',
-                      )
+                      value.replace(formatMessage({ id: 'odc.ruleItems.CharItem.Days' }), '')
                     }
                   />
                 </WrapItemWithTitle>

@@ -1,0 +1,150 @@
+// #region ------------------------- CreateTemplate -------------------------
+.createTemplate {
+  margin-bottom: 16px;
+
+  .tip {
+    color: var(--text-color-hint);
+    margin-bottom: 22px;
+  }
+}
+
+// #endregion
+
+// #region ------------------------- EditTemplate -------------------------
+
+.header {
+  display: flex;
+  justify-content: space-between;
+
+  .tip {
+    color: var(--text-color-hint);
+  }
+}
+
+// orderedDatabaseIds
+.orderedDatabaseIds {
+  padding: 18px 16px;
+  background-color: var(--background-tertraiy-color);
+
+  .title {
+    font-weight: 500;
+    color: var(--text-color-primary);
+  }
+
+  :global {
+    .ant-form-item {
+      padding-top: 4px;
+      padding-bottom: 4px;
+      margin-bottom: 0px;
+    }
+
+    .ant-timeline-item {
+      padding-bottom: 0 !important;
+      margin-bottom: 0px;
+      line-height: 1;
+    }
+
+    .ant-timeline-item-last {
+      .ant-timeline-item-content {
+        height: 20px;
+        line-height: 20px;
+      }
+    }
+
+    .ant-timeline-item-content {
+      margin-bottom: 0px;
+      min-height: auto;
+    }
+  }
+}
+
+// #endregion
+
+// #region ------------------------- SelectTemplate -------------------------
+
+.selectTemplatePopover {
+  :global {
+    .ant-popover-inner-content {
+      padding: 0px;
+      margin-top: -4px;
+    }
+  }
+
+  padding: 0px;
+}
+
+.template {
+  width: 280px;
+
+  .options {
+    max-height: 140px;
+    overflow: auto;
+
+    .templateItem {
+      height: 28px;
+      width: 280px;
+      padding: 0px 8px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+
+      &:hover {
+        background-color: var(--hover-color);
+      }
+    }
+
+    .templateItemDisabled {
+      background: var(--hover-color);
+      color: var(--mask-color);
+
+      &:hover {
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .blockLinkBtn {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+}
+
+.linkBtn {
+  margin: 0px;
+  padding: 0px;
+}
+
+// #endregion
+
+// #region ------------------------- Common -------------------------
+
+.timelineItem {
+  :global {
+    .ant-timeline-item-head {
+      background-color: var(--text-color-placeholder);
+      border-color: transparent;
+    }
+
+    .ant-timeline-item-head-blue {
+      background-color: var(--text-color-placeholder);
+      border-color: transparent !important;
+    }
+
+    .ant-timeline-item-head {
+      background-color: var(--text-color-placeholder);
+      border-color: transparent !important;
+    }
+  }
+}
+.disabled {
+  color: var(--mask-color);
+
+  &:hover {
+    cursor: not-allowed;
+    color: var(--mask-color) !important;
+  }
+}
+
+// #endregion

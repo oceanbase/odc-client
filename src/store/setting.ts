@@ -112,6 +112,9 @@ export class SettingStore {
   public enableOSC: boolean = false;
 
   @observable
+  public enableOSCLimiting: boolean = false;
+
+  @observable
   public enableAll: boolean = false;
 
   @observable
@@ -270,6 +273,7 @@ export class SettingStore {
     if (login.isPrivateSpace()) {
       this.enableOSC = res?.['odc.features.task.osc.individual.space.enabled'] === 'true';
     }
+    this.enableOSCLimiting = res?.['odc.osc.rate-limit.enabled'] === 'true';
     this.isUploadCloudStore = res?.['odc.file.interaction-mode'] === 'CLOUD_STORAGE';
     this.maxSingleTaskRowLimit =
       parseInt(res?.['odc.task.dlm.max-single-task-row-limit']) || Number.MAX_SAFE_INTEGER;

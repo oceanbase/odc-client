@@ -27,6 +27,7 @@ import {
   TaskRecord,
   TaskRecordParameters,
   SubTaskType,
+  ICycleSubTaskDetailRecord,
 } from '@/d.ts';
 import type { ModalStore } from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
@@ -43,13 +44,16 @@ interface IProps {
   isDetailModal?: boolean;
   showRollback?: boolean;
   taskId: number;
-  record: TaskRecord<TaskRecordParameters> | TaskDetail<TaskRecordParameters>;
+  record:
+    | TaskRecord<TaskRecordParameters>
+    | TaskDetail<TaskRecordParameters>
+    | ICycleSubTaskDetailRecord;
   disabledSubmit?: boolean;
   result?: ITaskResult;
   showLog?: boolean;
   onReloadList: () => void;
   onDetailVisible: (record: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
-  onLogVisible: (recordId: number, visible: boolean) => void;
+  onLogVisible: (recordId: number, visible: boolean, status: SubTaskStatus) => void;
   onExcecuteDetailVisible: (recordId: number, visible: boolean) => void;
   onClose?: () => void;
 }
@@ -150,7 +154,7 @@ const ActionBar: React.FC<IProps> = inject(
       }
     };
     const handleLogVisible = async () => {
-      onLogVisible(record.id, true);
+      onLogVisible(record.id, true, record?.status as SubTaskStatus);
     };
     const handleExcuteDetailVisible = () => {
       onExcecuteDetailVisible(record.id, true);
@@ -212,7 +216,10 @@ const ActionBar: React.FC<IProps> = inject(
       };
       const excuteDetailBtn = {
         key: 'excuteDetail',
-        text: '执行详情',
+        text: formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.11BB8886',
+          defaultMessage: '执行详情',
+        }),
         action: handleExcuteDetailVisible,
         type: 'button',
       };

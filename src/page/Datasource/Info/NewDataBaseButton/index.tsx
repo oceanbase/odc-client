@@ -44,7 +44,7 @@ export default function NewDataBaseButton({
   mode,
 }: IProps) {
   const [open, setOpen] = useState<boolean>(false);
-  const [projectInfo, setProjectInfo] = useState<IProject>();
+  const [projectInfo, setProjectInfo] = useState<IProject>(null);
   const [ownerSelectStatus, setOwnerSelectStatus] = useState<boolean>(false);
   const [form] = Form.useForm<
     Pick<IDatabase, 'name' | 'collationName' | 'charsetName'> & {
@@ -63,7 +63,14 @@ export default function NewDataBaseButton({
   function close() {
     setOpen(false);
     form.resetFields();
+    setProjectInfo(null);
   }
+
+  const getProjectDetails = async (projectId: number) => {
+    const res = await getProject(projectId);
+    res && setProjectInfo(res);
+  };
+
   useEffect(() => {
     if (open) {
       form.resetFields();
@@ -71,6 +78,7 @@ export default function NewDataBaseButton({
         form.setFieldsValue({
           projectId: projectId,
         });
+        getProjectDetails(projectId);
       }
     }
     switch (mode) {
@@ -123,6 +131,7 @@ export default function NewDataBaseButton({
       onSuccess();
       setOwnerSelectStatus(false);
       form.resetFields();
+      setProjectInfo(null);
     }
   }
   return (
@@ -150,10 +159,9 @@ export default function NewDataBaseButton({
           onValuesChange={async (changedValues, allValues) => {
             if (changedValues.hasOwnProperty('projectId')) {
               if (changedValues.projectId) {
-                const res = await getProject(changedValues.projectId);
-                res && setProjectInfo(res);
+                getProjectDetails(changedValues.projectId);
               } else {
-                setProjectInfo(undefined);
+                setProjectInfo(null);
               }
               form.setFieldValue('ownerIds', []);
             }

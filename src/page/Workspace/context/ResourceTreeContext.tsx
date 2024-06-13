@@ -38,6 +38,7 @@ interface IResourceTreeContext {
   setCurrentDatabaseId?: (v: number) => void;
   databaseList: IDatabase[];
   reloadDatabaseList?: () => void;
+  pollingDatabase?: () => void;
 }
 
 const ResourceTreeContext = React.createContext<IResourceTreeContext>({

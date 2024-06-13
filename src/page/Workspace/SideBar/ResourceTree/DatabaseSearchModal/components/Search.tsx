@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Input, Tooltip } from 'antd';
 import React, { useContext, useEffect, useRef } from 'react';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
@@ -54,6 +55,7 @@ const Search = ({
           <span style={{ color: 'var(--icon-color-disable)', paddingRight: 4 }}>/</span>
         </>
       );
+
     if (database) {
       return (
         <span
@@ -82,7 +84,11 @@ const Search = ({
             onChangeInput(SearchTypeMap.DATABASE, null);
           }}
         >
-          全部数据库
+          {formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.9F4C3737',
+            defaultMessage: '全部数据库',
+          })}
+
           {divider()}
         </span>
       );
@@ -109,7 +115,10 @@ const Search = ({
         <Input
           size="small"
           ref={inputRef}
-          placeholder="搜索数据库"
+          placeholder={formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.03B6F86A',
+            defaultMessage: '搜索数据库',
+          })}
           onChange={handleChangeDatabaswSearch}
           value={searchKey}
         />
@@ -119,7 +128,10 @@ const Search = ({
       <Input
         size="small"
         ref={inputRef}
-        placeholder="搜索表、字段、视图等"
+        placeholder={formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.EF45DCA4',
+          defaultMessage: '搜索表、字段、视图等',
+        })}
         onChange={handleChangeObjectSearch}
         value={searchKey}
       />
@@ -140,8 +152,20 @@ const Search = ({
     <div>
       <div className={styles.listTitle}>
         {selectProject
-          ? `当前项目: ${selectProject?.name}`
-          : `当前数据源: ${selectDatasource?.name}`}
+          ? formatMessage(
+              {
+                id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.6D5791AB',
+                defaultMessage: '当前项目: ${selectProject?.name}',
+              },
+              { selectProjectName: selectProject?.name },
+            )
+          : formatMessage(
+              {
+                id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.987D5B8A',
+                defaultMessage: '当前数据源: ${selectDatasource?.name}',
+              },
+              { selectDatasourceName: selectDatasource?.name },
+            )}
       </div>
       <span className={styles.title}>
         <span className={styles.selectInfo}>

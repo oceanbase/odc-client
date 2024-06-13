@@ -1,12 +1,15 @@
+import { formatMessage } from '@/util/intl';
 import { Drawer, Table, Descriptions, Spin } from 'antd';
 import { useRequest } from 'ahooks';
 import React, { useEffect, useState } from 'react';
 import type { ColumnsType } from 'antd/es/table';
 import StatusLabel from '@/component/Task/component/Status';
 import { getCycleSubTaskDetail } from '@/common/network/task';
-import { SubTaskStatus, ISubTaskTaskUnit, SubTaskTypeMap } from '@/d.ts';
+import { SubTaskStatus, ISubTaskTaskUnit } from '@/d.ts';
 import styles from './index.less';
 import { getLocalFormatDateTime } from '@/util/utils';
+import { SubTaskTypeMap } from '../../const';
+import CommonTable from '@/component/CommonTable';
 
 interface IProps {
   scheduleId: number;
@@ -20,7 +23,7 @@ const ExcecuteDetailModal: React.FC<IProps> = function (props) {
   const [loading, setLoading] = useState<boolean>(false);
   const [list, setList] = useState(null);
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>(null);
-  const { run: getLog, cancel } = useRequest(
+  const { run: getDetail, cancel } = useRequest(
     async (scheduleId, recordId) => {
       if (scheduleId && recordId) {
         const res = await getCycleSubTaskDetail(scheduleId, recordId);
@@ -56,7 +59,9 @@ const ExcecuteDetailModal: React.FC<IProps> = function (props) {
   );
 
   useEffect(() => {
-    getLog(scheduleId, recordId);
+    if (visible) {
+      getDetail(scheduleId, recordId);
+    }
   }, [scheduleId, recordId, visible]);
 
   useEffect(() => {
@@ -71,19 +76,46 @@ const ExcecuteDetailModal: React.FC<IProps> = function (props) {
   }, [visible]);
 
   const columns: ColumnsType<ISubTaskTaskUnit> = [
-    { title: '表名', dataIndex: 'tableName', key: 'tableName' },
     {
-      title: '任务类型',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.99A2CD95',
+        defaultMessage: '表名',
+      }),
+      dataIndex: 'tableName',
+      key: 'tableName',
+    },
+    {
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.6DD48CF2',
+        defaultMessage: '任务类型',
+      }),
       dataIndex: 'type',
       key: 'type',
       render: (type) => {
         return SubTaskTypeMap[type]?.label;
       },
     },
-    { title: '实际处理行数', dataIndex: 'processedRowCount', key: 'processedRowCount' },
-    { title: '扫描行数', dataIndex: 'readRowCount', key: 'readRowCount' },
     {
-      title: '执行状态',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.6E7EBEA3',
+        defaultMessage: '实际处理行数',
+      }),
+      dataIndex: 'processedRowCount',
+      key: 'processedRowCount',
+    },
+    {
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.129F651F',
+        defaultMessage: '扫描行数',
+      }),
+      dataIndex: 'readRowCount',
+      key: 'readRowCount',
+    },
+    {
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.CA18955A',
+        defaultMessage: '执行状态',
+      }),
       dataIndex: 'status',
       key: 'status',
       render: (_, record) => {
@@ -96,19 +128,57 @@ const ExcecuteDetailModal: React.FC<IProps> = function (props) {
     return (
       <div style={{ padding: '0 24px' }} key={record}>
         <Descriptions>
-          <Descriptions.Item label="开始时间" span={2}>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.E5B0F02A',
+              defaultMessage: '开始时间',
+            })}
+            span={2}
+          >
             {record?.startTime || '-'}
           </Descriptions.Item>
-          <Descriptions.Item label="结束时间" span={2}>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.403574A6',
+              defaultMessage: '结束时间',
+            })}
+            span={2}
+          >
             {record?.endTime || '-'}
           </Descriptions.Item>
-          <Descriptions.Item label="当前读性能" span={2}>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.62A63BEC',
+              defaultMessage: '当前读性能',
+            })}
+            span={2}
+          >
             {record?.readRowsPerSecond}
+            {formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.BC466037',
+              defaultMessage: '行/每秒',
+            })}
           </Descriptions.Item>
-          <Descriptions.Item label="当前写性能" span={2}>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.F516F4E4',
+              defaultMessage: '当前写性能',
+            })}
+            span={2}
+          >
             {record?.processedRowsPerSecond}
+            {formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.892DAF55',
+              defaultMessage: '行/每秒',
+            })}
           </Descriptions.Item>
-          <Descriptions.Item label="处理条件" span={2}>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.D9ACA50C',
+              defaultMessage: '处理条件',
+            })}
+            span={2}
+          >
             {record?.userCondition || '-'}
           </Descriptions.Item>
         </Descriptions>
@@ -123,22 +193,33 @@ const ExcecuteDetailModal: React.FC<IProps> = function (props) {
       open={visible}
       width={740}
       onClose={onClose}
-      title={'执行记录详情'}
+      title={formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.5AE38327',
+        defaultMessage: '执行记录详情',
+      })}
       destroyOnClose
       footer={null}
     >
       <Spin spinning={loading}>
-        <Table
-          className={styles.executeDetailTable}
-          columns={columns}
-          expandable={{
-            expandedRowRender: (record) => expandedRowRender(record),
-            expandedRowKeys: expandedRowKeys,
-            defaultExpandedRowKeys: expandedRowKeys,
-            onExpandedRowsChange: onExpandedRowsChange,
+        <CommonTable
+          showToolbar={false}
+          enabledReload={false}
+          onLoad={async () => {}}
+          titleContent={null}
+          tableProps={{
+            columns: columns,
+            expandable: {
+              expandedRowRender: (record) => expandedRowRender(record),
+              expandedRowKeys: expandedRowKeys,
+              defaultExpandedRowKeys: expandedRowKeys,
+              onExpandedRowsChange: onExpandedRowsChange,
+            },
+            dataSource: list,
+            pagination: false,
+            scroll: {
+              y: 650,
+            },
           }}
-          dataSource={list}
-          pagination={false}
         />
       </Spin>
     </Drawer>
