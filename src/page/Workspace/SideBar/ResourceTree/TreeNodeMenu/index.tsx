@@ -22,12 +22,13 @@ import Icon, { InfoCircleFilled, MoreOutlined } from '@ant-design/icons';
 import { Badge, Dropdown, Tooltip } from 'antd';
 import { ItemType } from 'antd/es/menu/hooks/useItems';
 import treeStyles from '../index.less';
-import { ResourceNodeType } from '../type';
+import { ResourceNodeType, TreeDataNode } from '../type';
 import MenuConfig from './config';
 import styles from './index.less';
 import { IMenuItemConfig, IProps } from './type';
 import { EnvColorMap } from '@/constant';
 import classNames from 'classnames';
+import { ReactNode } from 'react';
 
 export const hasExportPermission = (dbSession: SessionStore) => {
   return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
@@ -37,7 +38,7 @@ export const hasChangePermission = (dbSession: SessionStore) => {
 };
 
 const TreeNodeMenu = (props: IProps) => {
-  const { type = '', dbSession, databaseFrom, node, showTip, reloadDatabase } = props;
+  const { type = '', dbSession, databaseFrom, node, showTip, pollingDatabase } = props;
   // menuKey 用来定制menu
   const menuKey = node?.menuKey;
   const menuItems: IMenuItemConfig[] = MenuConfig[menuKey || type];
@@ -103,7 +104,7 @@ const TreeNodeMenu = (props: IProps) => {
       return;
     }
     const { run } = item;
-    run?.(dbSession, node, databaseFrom, reloadDatabase);
+    run?.(dbSession, node, databaseFrom, pollingDatabase);
   }
 
   let clickMap = {};
@@ -144,7 +145,9 @@ const TreeNodeMenu = (props: IProps) => {
         menuItem = {
           key: item.key || index,
           className: styles.ellipsis,
-          label: item.subText ? [item.text, item.subText(node)] : item.text,
+          label: item.subText
+            ? [(item.text as (node: TreeDataNode) => ReactNode)(node), item.subText(node)]
+            : item.text,
           disabled: disabledItem,
         };
       }
@@ -195,7 +198,6 @@ const TreeNodeMenu = (props: IProps) => {
             menu={{
               style: {
                 minWidth: '160px',
-                maxWidth: '240px',
               },
               items: ellipsisItemsProp,
               onClick: (info) => {

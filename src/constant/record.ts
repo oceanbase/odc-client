@@ -149,6 +149,14 @@ export const AuditEventMetaMap = {
   [AuditEventType.SENSITIVE_COLUMN_MANAGEMENT]: formatMessage({
     id: 'src.page.Secure.Record.RecordPage.10FC55A9',
   }), //'敏感列管理'
+  [AuditEventType.MULTIPLE_ASYNC]: formatMessage({
+    id: 'src.constant.B8039A65',
+    defaultMessage: '多库变更',
+  }),
+  [AuditEventType.DATABASE_CHANGE_CHANGING_ORDER_TEMPLATE_MANAGEMENT]: formatMessage({
+    id: 'src.constant.6161DC9D',
+    defaultMessage: '数据库变更顺序模板管理',
+  }),
 };
 export const AuditEventActionMap = {
   // 个人配置
@@ -673,9 +681,46 @@ export const AuditEventActionMap = {
   [AuditEventActionType.DISABLE_SENSITIVE_COLUMN]: formatMessage({
     id: 'src.page.Secure.Record.RecordPage.3174392D',
   }), //'禁用敏感列'
+
+  // #region ------ 多库变更 -----
+  [AuditEventActionType.CREATE_MULTIPLE_ASYNC_TASK]: formatMessage({
+    id: 'src.constant.0C73ED6E',
+    defaultMessage: '创建多库变更任务',
+  }),
+  [AuditEventActionType.EXECUTE_MULTIPLE_ASYNC_TASK]: formatMessage({
+    id: 'src.constant.FA53705B',
+    defaultMessage: '执行多库变更任务',
+  }),
+  [AuditEventActionType.STOP_MULTIPLE_ASYNC_TASK]: formatMessage({
+    id: 'src.constant.A44EAEF4',
+    defaultMessage: '停止多库变更任务',
+  }),
+  [AuditEventActionType.APPROVE_MULTIPLE_ASYNC_TASK]: formatMessage({
+    id: 'src.constant.AFC1802A',
+    defaultMessage: '同意多库变更任务',
+  }),
+  [AuditEventActionType.REJECT_MULTIPLE_ASYNC_TASK]: formatMessage({
+    id: 'src.constant.F65868B0',
+    defaultMessage: '拒绝多库变更任务',
+  }),
+  // #endregion
+
+  // #region ---- 多库变更模版管理 ----
+  [AuditEventActionType.CREATE_DATABASE_CHANGE_CHANGING_ORDER_TEMPLATE]: formatMessage({
+    id: 'src.constant.394E7917',
+    defaultMessage: '创建数据库变更顺序模板\t',
+  }),
+  [AuditEventActionType.DELETE_DATABASE_CHANGE_CHANGING_ORDER_TEMPLATE]: formatMessage({
+    id: 'src.constant.311737C9',
+    defaultMessage: '删除数据库变更顺序模板\t',
+  }),
+  [AuditEventActionType.UPDATE_DATABASE_CHANGE_CHANGING_ORDER_TEMPLATE]: formatMessage({
+    id: 'src.constant.4E522234',
+    defaultMessage: '更新数据库变更顺序模板\t',
+  }),
+  // #endregion
 };
 export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
-  console.log(eventMeta);
   const metas =
     eventMeta?.reduce((meta, { type, action }) => {
       if (meta[type]) {

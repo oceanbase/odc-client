@@ -344,6 +344,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                       showTrace={session?.supportFeature?.enableSQLTrace}
                       onOpenExecutingDetailModal={onOpenExecutingDetailModal}
                       columns={set.columns}
+                      timer={set.timer}
                       session={session}
                       sqlId={set.sqlId}
                       autoCommit={session?.params?.autoCommit}

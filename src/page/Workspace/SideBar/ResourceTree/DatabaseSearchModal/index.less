@@ -110,13 +110,14 @@
   .modalTabs {
     :global {
       .ant-tabs-tab {
-        margin: 0 12px;
+        margin: 0 6px;
       }
     }
     .objectlistBox {
       max-height: 366px;
       overflow: auto;
       min-height: 302px;
+      margin-top: 6px;
       .objectTypeBox {
         .objectTypeTitle {
           font-weight: 500;
@@ -152,6 +153,18 @@
       align-items: center;
       justify-content: center;
       min-height: 302px;
+      :global {
+        .ant-empty-image {
+          height: 48px;
+          .ant-empty-img-default {
+            width: 54px;
+            height: 48px;
+          }
+        }
+        .ant-empty-description {
+          color: var(--neutral-black45-color);
+        }
+      }
     }
   }
 }
@@ -161,6 +174,17 @@
       left: auto;
       right: 0;
       position: absolute;
+    }
+  }
+}
+
+.withPanel {
+  :global {
+    .ant-modal-content {
+      .ant-modal-header {
+        padding: 8px 12px;
+        border-radius: 8px 8px 0 0;
+      }
     }
   }
 }

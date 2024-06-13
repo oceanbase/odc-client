@@ -24,22 +24,24 @@ const columns = (needCheckBeforeDelete: boolean) => [
     dataIndex: 'tableName',
     title: formatMessage({ id: 'odc.DataClearTask.DetailContent.ArchiveRange.TableName' }), //表名
     ellipsis: true,
-    width: 190,
+    width: 140,
   },
   {
     dataIndex: 'conditionExpression',
     title: formatMessage({ id: 'odc.DataClearTask.DetailContent.ArchiveRange.FilterConditions' }), //过滤条件
     ellipsis: true,
-    width: 150,
     render: (value) => {
       return <Tooltip title={value}>{value || '-'}</Tooltip>;
     },
   },
   {
     dataIndex: 'targetTableName',
-    title: '目标表名',
+    title: formatMessage({
+      id: 'src.component.Task.DataClearTask.DetailContent.A104F847',
+      defaultMessage: '目标表名',
+    }),
     ellipsis: true,
-    width: 190,
+    width: 140,
     render: (value) => {
       if (!needCheckBeforeDelete) {
         return '-';
@@ -49,7 +51,10 @@ const columns = (needCheckBeforeDelete: boolean) => [
   },
   {
     dataIndex: 'partitions',
-    title: '指定分区',
+    title: formatMessage({
+      id: 'src.component.Task.DataClearTask.DetailContent.2470B293',
+      defaultMessage: '指定分区',
+    }),
     ellipsis: true,
     width: 190,
     render: (value) => {

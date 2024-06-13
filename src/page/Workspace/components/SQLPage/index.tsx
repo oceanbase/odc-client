@@ -815,6 +815,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       this.setState({
         showDataExecuteSQLModal: true,
         updateDataDML: sql,
+        lintResultSet: [],
         tipToShow,
         resultSetIndex,
       });

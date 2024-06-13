@@ -358,9 +358,14 @@ const CreateModal: React.FC<IProps> = (props) => {
                   id: 'src.component.Task.ApplyDatabasePermission.CreateModal.164A211E',
                 }) /*"数据库"*/
               }
+
               {showSelectTip && (
                 <Alert
-                  message="多个数据库的权限申请将被拆分为多个工单进行审批，最多仅支持选择 10 个数据库"
+                  message={formatMessage({
+                    id: 'src.component.Task.ApplyDatabasePermission.CreateModal.2137546E',
+                    defaultMessage:
+                      '多个数据库的权限申请将被拆分为多个工单进行审批，最多仅支持选择 10 个数据库',
+                  })}
                   type="info"
                   showIcon
                   style={{ margin: '4px 0px' }}

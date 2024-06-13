@@ -30,7 +30,10 @@ interface ICreateApprovalProps {
  * 数据库类型的Role文本映射
  */
 const databaseRoleTextMap = {
-  OWNER: '管理员',
+  OWNER: formatMessage({
+    id: 'src.page.Secure.RiskLevel.components.74C5AF56',
+    defaultMessage: '管理员',
+  }),
 };
 const CreateApproval: React.FC<ICreateApprovalProps> = ({
   editId,
@@ -48,7 +51,16 @@ const CreateApproval: React.FC<ICreateApprovalProps> = ({
     const roles = res?.contents.map(({ roleName, id, resourceType }) => {
       const textMap =
         resourceType === IManagerResourceType.database ? databaseRoleTextMap : projectRoleTextMap;
-      const prefix = resourceType == IManagerResourceType.database ? '库-' : '项目-';
+      const prefix =
+        resourceType == IManagerResourceType.database
+          ? formatMessage({
+              id: 'src.page.Secure.RiskLevel.components.8AA090C0',
+              defaultMessage: '库-',
+            })
+          : formatMessage({
+              id: 'src.page.Secure.RiskLevel.components.9742C706',
+              defaultMessage: '项目-',
+            });
       return {
         name: prefix + textMap?.[roleName],
         id,

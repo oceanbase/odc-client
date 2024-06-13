@@ -93,3 +93,73 @@
     }
   }
 }
+
+.TaskFlow:global(.ant-steps) {
+  .description {
+    color: var(--text-color-hint);
+  }
+
+  .block {
+    padding: 12px;
+    background: var(--background-primary-color);
+  }
+
+  .userList {
+    .split {
+      padding: 0 5px;
+      color: #cbcbcb;
+    }
+
+    .approverWrapper {
+      :global {
+        .ant-btn.ant-btn-link {
+          background: var(--background-primary-color);
+        }
+      }
+
+      &::after {
+        background: linear-gradient(to right, transparent, var(--background-primary-color) 50%);
+      }
+    }
+
+    :global {
+      .ant-descriptions-item-container .ant-descriptions-item-content {
+        flex-wrap: wrap;
+      }
+    }
+  }
+
+  :global {
+    .ant-descriptions-row > td {
+      padding-bottom: 6px;
+    }
+
+    .ant-steps-item-title {
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .ant-steps-item-process {
+      .ant-steps-item-icon {
+        width: 8px;
+        height: 8px;
+      }
+    }
+  }
+
+  &:global(.ant-steps-vertical.ant-steps-dot) {
+    :global {
+      .ant-steps-item-process .ant-steps-item-container .ant-steps-item-icon .ant-steps-icon-dot {
+        left: 0;
+      }
+    }
+  }
+}
+
+.multipleErrorExecNode {
+  :global {
+    .ant-steps-item-tail::after {
+      background-color: #1890ff !important;
+    }
+  }
+}

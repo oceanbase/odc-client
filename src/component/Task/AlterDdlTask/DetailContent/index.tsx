@@ -22,10 +22,14 @@ import { TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import React from 'react';
-import { Typography } from 'antd';
+import { Typography, message } from 'antd';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 import { ClearStrategy, SwapTableType } from '../CreateModal';
+import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
+import { updateThrottleConfig } from '@/common/network/task';
+import setting from '@/store/setting';
+
 const { Text } = Typography;
 interface IDDLAlterParamters {
   errorStrategy: TaskExecStrategy;
@@ -42,6 +46,10 @@ interface IDDLAlterParamters {
   swapTableNameRetryTimes: number;
   originTableCleanStrategy: ClearStrategy;
   swapTableType: SwapTableType;
+  rateLimitConfig?: {
+    rowLimit?: number;
+    dataSizeLimit?: number;
+  };
 }
 const ErrorStrategyText = {
   ABORT: formatMessage({
@@ -108,12 +116,13 @@ export function getItems(
   result: ITaskResult,
   hasFlow: boolean,
   theme?: string,
+  handleReloadData?: () => void,
 ): {
   sectionName?: string;
   textItems: [React.ReactNode, React.ReactNode, number?][];
   sectionRender?: (task: TaskDetail<IDDLAlterParamters>) => void;
 }[] {
-  const { parameters } = task;
+  const { parameters, id } = task;
   if (!task) {
     return [];
   }
@@ -135,6 +144,37 @@ export function getItems(
     getFormatDateTime(task?.executionTime),
   ];
   const lockUsers = parameters?.lockUsers?.join(', ');
+
+  const handleDataSizeLimit = async (dataSizeLimit, handleClose) => {
+    const res = await updateThrottleConfig(id, {
+      dataSizeLimit: dataSizeLimit,
+      rowLimit: parameters?.rateLimitConfig?.rowLimit,
+    });
+    if (res) {
+      message.success(
+        formatMessage({
+          id: 'odc.src.component.Task.DataClearTask.DetailContent.SuccessfullyModified.1',
+        }), //'修改成功！'
+      );
+      handleClose();
+      handleReloadData();
+    }
+  };
+  const handleRowLimit = async (rowLimit, handleClose) => {
+    const res = await updateThrottleConfig(id, {
+      rowLimit,
+      dataSizeLimit: parameters?.rateLimitConfig?.dataSizeLimit,
+    });
+    if (res) {
+      message.success(
+        formatMessage({
+          id: 'odc.src.component.Task.DataClearTask.DetailContent.SuccessfullyModified.1',
+        }), //'修改成功！'
+      );
+      handleClose();
+      handleReloadData();
+    }
+  };
   return [
     {
       // @ts-ignore
@@ -238,6 +278,32 @@ export function getItems(
           ErrorStrategyText[parameters.errorStrategy],
           2,
         ],
+        setting.enableOSCLimiting
+          ? [
+              '行限流',
+              <ThrottleEditableCell
+                suffix="Rows/s"
+                min={0}
+                max={setting.maxSingleTaskRowLimit}
+                defaultValue={parameters?.rateLimitConfig?.rowLimit}
+                onOk={handleRowLimit}
+              />,
+              1,
+            ]
+          : null,
+        setting.enableOSCLimiting
+          ? [
+              '数据大小限流',
+              <ThrottleEditableCell
+                suffix="MB/s"
+                min={0}
+                max={setting.maxSingleTaskDataSizeLimit}
+                defaultValue={parameters?.rateLimitConfig?.dataSizeLimit}
+                onOk={handleDataSizeLimit}
+              />,
+              1,
+            ]
+          : null,
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.Description',

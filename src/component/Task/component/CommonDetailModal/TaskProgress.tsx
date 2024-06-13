@@ -20,7 +20,7 @@ import DisplayTable from '@/component/DisplayTable';
 import { SQLContent } from '@/component/SQLContent';
 import StatusLabel from '@/component/Task/component/Status';
 import {
-  IMultipleAsyncPermisssionTaskParams,
+  IMultipleAsyncTaskParams,
   TaskDetail,
   TaskPageType,
   TaskRecordParameters,
@@ -37,7 +37,7 @@ import {
   getDataSourceStyleByConnectType,
 } from '@/common/datasource';
 import { getLocalFormatDateTime } from '@/util/utils';
-import { flatArray } from '../../MutipleAsyncTask/CreateModal';
+import { flatArray } from '../../MutipleAsyncTask/CreateModal/helper';
 import { TaskDetailContext } from '../../TaskDetailContext';
 import { TaskStore } from '@/store/task';
 import { inject, observer } from 'mobx-react';
@@ -106,8 +106,8 @@ const getColumns = (params: {
                   formatMessage({
                     id: 'odc.src.component.Task.component.CommonDetailModal.WatchNameSwitch',
                   }) /* 
-                表名切换
-               */
+            表名切换
+            */
                 }
               </Action.Link>
             )}
@@ -120,7 +120,10 @@ const getColumns = (params: {
 const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: number) => void }) => {
   return [
     {
-      title: '执行顺序',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.FC1C254D',
+        defaultMessage: '执行顺序',
+      }),
       dataIndex: 'nodeIndex',
       width: 100,
       render: (nodeIndex) => nodeIndex + 1,
@@ -131,9 +134,12 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
       },
     },
     {
-      title: '数据库',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.9A136568',
+        defaultMessage: '数据库',
+      }),
       dataIndex: 'database',
-      width: 264,
+      width: 200,
       ellipsis: {
         showTitle: true,
       },
@@ -147,6 +153,7 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
                   content={record?.database?.environment?.name}
                   color={record?.database?.environment?.style}
                 />
+
                 <Space size={4}>
                   <Icon
                     component={icon?.icon?.component}
@@ -156,6 +163,7 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
                       marginRight: 4,
                     }}
                   />
+
                   <div>{record?.database?.name}</div>
                   <div style={{ color: 'var(--neutral-black45-color)' }}>
                     {record?.database?.dataSource?.name}
@@ -169,6 +177,7 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
                 content={record?.database?.environment?.name}
                 color={record?.database?.environment?.style}
               />
+
               <Space size={4}>
                 <Icon
                   component={icon?.icon?.component}
@@ -178,6 +187,7 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
                     marginRight: 4,
                   }}
                 />
+
                 <div>{record?.database?.name}</div>
                 <div style={{ color: 'var(--neutral-black45-color)' }}>
                   {record?.database?.dataSource?.name}
@@ -189,7 +199,10 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
       },
     },
     {
-      title: '开始时间',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.0DAC1A06',
+        defaultMessage: '开始时间',
+      }),
       dataIndex: 'createTime',
       width: 178,
       render: (_, record) => (
@@ -202,9 +215,12 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
     },
     {
       dataIndex: 'status',
-      title: '执行状态',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.B46A5216',
+        defaultMessage: '执行状态',
+      }),
       ellipsis: true,
-      width: 140,
+      width: 120,
       render: (status, record) => {
         return (
           <StatusLabel
@@ -216,9 +232,12 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
     },
     {
       dataIndex: 'action',
-      title: '操作',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.1DB56DDA',
+        defaultMessage: '操作',
+      }),
       ellipsis: true,
-      width: 120,
+      width: 90,
       render: (_, record) => {
         return (
           <>
@@ -249,6 +268,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
   const { handleDetailVisible: _handleDetailVisible, setState } = useContext(TaskDetailContext);
   const { task, theme, taskStore } = props;
   const [subTasks, setSubTasks] = useState([]);
+  const [databases, setDatabases] = useState([]);
   const [detailId, setDetailId] = useState(null);
   const [open, setOpen] = useState(false);
   const { run: loadData } = useRequest(
@@ -256,7 +276,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
       const res = await getSubTask(task.id);
       if (task?.type === TaskType.MULTIPLE_ASYNC) {
         const sortDb = flatArray(
-          (task as TaskDetail<IMultipleAsyncPermisssionTaskParams>)?.parameters?.orderedDatabaseIds,
+          (task as TaskDetail<IMultipleAsyncTaskParams>)?.parameters?.orderedDatabaseIds,
         );
         // @ts-ignore
         const dbMap = res?.contents?.[0]?.databaseChangingRecordList?.reduce((pre, cur) => {
@@ -265,22 +285,26 @@ const TaskProgress: React.FC<IProps> = (props) => {
         }, {});
         const rawData = [];
         let rawCount = 0;
-        (
-          task as TaskDetail<IMultipleAsyncPermisssionTaskParams>
-        )?.parameters?.orderedDatabaseIds?.map((item, index) => {
-          item?.forEach((_item_, _index_) => {
-            rawData.push({
-              id: rawCount,
-              nodeIndex: index,
-              rowSpan: item?.length,
-              needMerge: _index_ === 0,
-              ...dbMap[_item_],
+        (task as TaskDetail<IMultipleAsyncTaskParams>)?.parameters?.orderedDatabaseIds?.map(
+          (item, index) => {
+            item?.forEach((_item_, _index_) => {
+              rawData.push({
+                id: rawCount,
+                nodeIndex: index,
+                rowSpan: item?.length,
+                needMerge: _index_ === 0,
+                ...dbMap[_item_],
+              });
+              rawCount++;
             });
-            rawCount++;
-          });
-        });
+          },
+        );
         // @ts-ignore
         setSubTasks(rawData);
+        const databases = flatArray(
+          (task as TaskDetail<IMultipleAsyncTaskParams>)?.parameters?.orderedDatabaseIds,
+        )?.map((item) => dbMap?.[item]);
+        databases?.length && setDatabases(databases);
       } else {
         setSubTasks(res?.contents?.[0].tasks);
       }
@@ -332,11 +356,25 @@ const TaskProgress: React.FC<IProps> = (props) => {
           onOpenDetail: handleDetailVisible,
           onSwapTable: handleSwapTable,
         });
+  const pendingExectionDatabases = databases?.filter((item) => !item?.status)?.length;
   return (
     <>
       {task?.type === TaskType.MULTIPLE_ASYNC && subTasks?.length > 0 && (
-        <div>以下 {subTasks?.length} 个数据库待执行</div>
+        <div>
+          {formatMessage(
+            {
+              id: 'src.component.Task.component.CommonDetailModal.E75BF608',
+              defaultMessage:
+                '共 ${subTasks?.length} 个数据库， ${pendingExectionDatabases} 个待执行',
+            },
+            {
+              subTasksLength: subTasks?.length,
+              pendingExectionDatabases: pendingExectionDatabases,
+            },
+          )}
+        </div>
       )}
+
       <DisplayTable
         className={styles.subTaskTable}
         rowKey="id"

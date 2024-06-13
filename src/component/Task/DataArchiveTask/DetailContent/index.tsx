@@ -22,9 +22,9 @@ import VariableConfigTable from '@/component/Task/component/VariableConfigTable'
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
 import setting from '@/store/setting';
 import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } from '@/d.ts';
-import { SyncTableStructureConfig, TaskExecStrategy } from '@/d.ts';
+import { TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
+import { getFormatDateTime, kbToMb, mbToKb, milliSecondsToHour } from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Collapse, Descriptions, Divider, Space, Typography, message } from 'antd';
 import React from 'react';
@@ -33,6 +33,7 @@ import { InsertActionOptions } from '../CreateModal';
 import ArchiveRange from './ArchiveRange';
 import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 import { getLocalFormatDateTime } from '@/util/utils';
+import { SyncTableStructureConfig } from '../../const';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -245,15 +246,41 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         >
           {insertActionLabel || '-'}
         </Descriptions.Item>
-        <Descriptions.Item label={'指定任务时长'} span={1}>
-          {jobParameters.taskExecutionDurationHours
-            ? jobParameters.taskExecutionDurationHours + 'h'
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.DataArchiveTask.DetailContent.4443BB83',
+            defaultMessage: '指定任务时长',
+          })}
+          span={1}
+        >
+          {jobParameters.timeoutMillis
+            ? milliSecondsToHour(jobParameters.timeoutMillis) + 'h'
             : '-'}
         </Descriptions.Item>
-        <Descriptions.Item label={'开启目标表结构同步'} span={1}>
-          {jobParameters?.syncTableStructure?.length ? '是' : '否'}
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.DataArchiveTask.DetailContent.5F68CAE7',
+            defaultMessage: '开启目标表结构同步',
+          })}
+          span={1}
+        >
+          {jobParameters?.syncTableStructure?.length
+            ? formatMessage({
+                id: 'src.component.Task.DataArchiveTask.DetailContent.FFC5907D',
+                defaultMessage: '是',
+              })
+            : formatMessage({
+                id: 'src.component.Task.DataArchiveTask.DetailContent.855EA40A',
+                defaultMessage: '否',
+              })}
         </Descriptions.Item>
-        <Descriptions.Item label={'同步范围'} span={1}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.DataArchiveTask.DetailContent.BC448D6A',
+            defaultMessage: '同步范围',
+          })}
+          span={1}
+        >
           {jobParameters?.syncTableStructure && jobParameters?.syncTableStructure?.length
             ? jobParameters.syncTableStructure
                 ?.map((i) => {

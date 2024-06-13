@@ -54,3 +54,14 @@ export function getFileTypeWithImportType(importType: IMPORT_TYPE | EXPORT_TYPE)
 
   return _m[importType];
 }
+
+export function getFileMIMETypeWithImportType(importType: IMPORT_TYPE | EXPORT_TYPE) {
+  const _m = {
+    // 使用MIME判断时, 不同浏览器的支持不一样, 如sql文件就无法被识别成application/sql, 因此采用文件名后缀的形式判断
+    [IMPORT_TYPE.ZIP]: ['zip'],
+    [IMPORT_TYPE.SQL]: ['sql'],
+    [IMPORT_TYPE.CSV]: ['csv', 'txt'],
+  };
+
+  return _m[importType];
+}

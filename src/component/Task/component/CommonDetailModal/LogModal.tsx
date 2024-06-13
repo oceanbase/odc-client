@@ -17,7 +17,7 @@ import { formatMessage } from '@/util/intl';
 
 import { getCycleTaskLog } from '@/common/network/task';
 import TaskLog from '@/component/Task/component/Log';
-import { CommonTaskLogType } from '@/d.ts';
+import { CommonTaskLogType, SubTaskStatus } from '@/d.ts';
 import type { ILog } from '@/component/Task/component/Log';
 import { Drawer } from 'antd';
 import { useRequest } from 'ahooks';
@@ -27,9 +27,10 @@ interface IProps {
   recordId: number;
   visible: boolean;
   onClose: () => void;
+  status?: SubTaskStatus;
 }
 const LogModal: React.FC<IProps> = function (props) {
-  const { visible, scheduleId, recordId, onClose } = props;
+  const { visible, scheduleId, recordId, onClose, status } = props;
   const [logType, setLogType] = useState<CommonTaskLogType>(CommonTaskLogType.ALL);
   const [loading, setLoading] = useState(false);
   const [log, setLog] = useState<ILog>(null);
@@ -42,6 +43,12 @@ const LogModal: React.FC<IProps> = function (props) {
           [logType]: res,
         });
         setLoading(false);
+        if (
+          status &&
+          [SubTaskStatus.CANCELED, SubTaskStatus.FAILED, SubTaskStatus.DONE].includes(status)
+        ) {
+          cancel();
+        }
       }
     },
     {
@@ -52,7 +59,9 @@ const LogModal: React.FC<IProps> = function (props) {
     setLogType(type);
   };
   useEffect(() => {
-    getLog(scheduleId, recordId, logType);
+    if (visible) {
+      getLog(scheduleId, recordId, logType);
+    }
   }, [scheduleId, recordId, visible, logType]);
   useEffect(() => {
     if (visible) {

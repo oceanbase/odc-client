@@ -24,7 +24,7 @@ const columns = [
     dataIndex: 'tableName',
     title: formatMessage({ id: 'odc.DataArchiveTask.DetailContent.ArchiveRange.TableName' }), //表名
     ellipsis: true,
-    width: 190,
+    width: 140,
   },
   {
     dataIndex: 'conditionExpression',
@@ -38,11 +38,14 @@ const columns = [
     dataIndex: 'targetTableName',
     title: formatMessage({ id: 'src.component.Task.DataArchiveTask.DetailContent.8D9A2CED' }), //'目标表名'
     ellipsis: true,
-    width: 190,
+    width: 140,
   },
   {
     dataIndex: 'partitions',
-    title: '指定分区',
+    title: formatMessage({
+      id: 'src.component.Task.DataArchiveTask.DetailContent.5E7080E4',
+      defaultMessage: '指定分区',
+    }),
     ellipsis: true,
     width: 190,
     render: (value) => {
