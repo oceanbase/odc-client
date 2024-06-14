@@ -10,9 +10,14 @@ import { ReactComponent as WaitingSvg } from '@/svgr/Waiting.svg';
 import { IProfileNodeStatus } from '@/d.ts';
 
 const nodeStatusIconMap = {
-  [IProfileNodeStatus.RUNNING]: <LoadingOutlined style={{ color: '#1890ff' }} />,
+  [IProfileNodeStatus.RUNNING]: (
+    <LoadingOutlined style={{ color: 'var(--profile-progress-primary-color)' }} />
+  ),
   [IProfileNodeStatus.PREPARING]: (
-    <Icon component={WaitingSvg} style={{ fontSize: 14, color: '#D9D9D9' }} />
+    <Icon
+      component={WaitingSvg}
+      style={{ fontSize: 14, color: 'var(--profile-icon-unready-color)' }}
+    />
   ),
   [IProfileNodeStatus.FINISHED]: null,
 };

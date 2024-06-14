@@ -125,15 +125,13 @@ class Task {
       data?.results?.map((result) => {
         result && this.result.push(result);
       });
-      if (data?.results?.length) {
-        this.onUpdate?.({
-          results: this.result,
-          finished: data.finished,
-          task: this.taskInfo,
-          traceId: data.traceId,
-          executingSQL: data.sql,
-        });
-      }
+      this.onUpdate?.({
+        results: this.result || [],
+        finished: data.finished,
+        task: this.taskInfo,
+        traceId: data.traceId,
+        executingSQL: data.sql,
+      });
       if (data?.finished) {
         callback(this.result);
         return;

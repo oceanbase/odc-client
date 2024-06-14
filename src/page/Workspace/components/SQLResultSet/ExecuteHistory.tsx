@@ -90,10 +90,15 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         return <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />;
       }
       case ISqlExecuteResultStatus.CANCELED: {
-        return <StopFilled style={{ color: 'rgba(0,0,0,0.15)' }} />;
+        return <StopFilled style={{ color: 'var(--profile-icon-unready-color)' }} />;
       }
       case ISqlExecuteResultStatus.WAITING: {
-        return <Icon component={WaitingSvg} style={{ fontSize: 14, color: 'rgba(0,0,0,0.15)' }} />;
+        return (
+          <Icon
+            component={WaitingSvg}
+            style={{ fontSize: 14, color: 'var(--profile-icon-unready-color)' }}
+          />
+        );
       }
       case ISqlExecuteResultStatus.RUNNING: {
         return <LoadingOutlined style={{ color: 'var(--brand-blue6-color)' }} />;

@@ -37,7 +37,7 @@ const CustomEdge = ({ id, sourceX, sourceY, targetX, targetY, style = {}, data }
               markerUnits="userSpaceOnUse"
             >
               {/* 绘制箭头形状 */}
-              <path d="M 10 0 L 0 3.5 L 10 7 L 10 0" fill="#e0e0e0" />
+              <path d="M 10 0 L 0 3.5 L 10 7 L 10 0" fill="var(--profile-line-color)" />
             </marker>
           </defs>
         </svg>
@@ -49,7 +49,11 @@ const CustomEdge = ({ id, sourceX, sourceY, targetX, targetY, style = {}, data }
           strokeWidth="2"
           fill="none"
           markerStart={`url(#${ARROW_SVG_ID})`} // 在路径的源端添加箭头, id保持一致
-          style={{ stroke: '#e0e0e0', strokeWidth: getEdgeWidth(data.weight), ...style }}
+          style={{
+            stroke: 'var(--profile-line-color)',
+            strokeWidth: getEdgeWidth(data.weight),
+            ...style,
+          }}
           id={id}
         />
       </>
@@ -66,8 +70,8 @@ const CustomEdge = ({ id, sourceX, sourceY, targetX, targetY, style = {}, data }
               targetY - TURNNG_LINE_GAP
             }px)`,
             pointerEvents: 'all',
-            backgroundColor: '#FFFFFF',
-            border: '1px solid rgba(0,0,0,0.12)',
+            backgroundColor: 'var(--profile-secondry-background-color)',
+            border: '1px solid var(--profile-border-color)',
             borderRadius: 2,
             padding: 2,
           }}

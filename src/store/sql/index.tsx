@@ -239,10 +239,6 @@ export class SQLStore {
               this.getLogTab(info),
               ...generateResultSetColumns(info.results, session?.connection?.dialectType),
             ]);
-            this.setActiveTab(
-              pageKey,
-              this.resultSets.get(pageKey)?.find((i) => i.type == 'LOG')?.uniqKey,
-            );
           }
         });
       };
