@@ -28,6 +28,7 @@ import {
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined } from '@ant-design/icons';
 import { IProfileStatus } from '@/d.ts';
+import { randomUUID } from '@/page/Workspace/components/Trace';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -267,7 +268,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
     },
   };
 
-  const page = executeInfo[profileType];
+  const page = executeInfo?.[profileType];
 
   useEffect(() => {
     if (modalStore.executeSqlDetailModalVisible) {
@@ -276,6 +277,15 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
       setViewType(initConfig?.[profileType]?.viewType);
     }
   }, [modalStore.executeSqlDetailModalVisible]);
+
+  const formatTitle = (text) => {
+    return text?.split('\n').map((item, index) => (
+      <span key={index}>
+        {item}
+        {index < text?.split('\n')?.length - 1 ? <br /> : null}
+      </span>
+    ));
+  };
 
   return (
     <>
@@ -296,7 +306,15 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
           </div>
         ) : (
           <div className={styles.executeSqlDetailBox}>
-            <Tooltip title={page?.sql}>
+            <Tooltip
+              overlayInnerStyle={{
+                whiteSpace: 'pre-wrap',
+                maxHeight: '500px',
+                overflowY: 'auto',
+              }}
+              title={formatTitle(page?.sql)}
+              placement="bottom"
+            >
               <span className={styles.sql}>SQL: {page?.sql}</span>
             </Tooltip>
             <div className={styles.flexBetween}>
@@ -331,16 +349,16 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
         if (node?.children) {
           if (Array.isArray(node?.children)) {
             injectKey2TreeData(node?.children);
-            node.key = Math.random();
+            node.key = randomUUID();
           } else {
-            node.key = Math.random();
+            node.key = randomUUID();
           }
         } else {
-          node.key = Math.random();
+          node.key = randomUUID();
         }
       });
     } else {
-      root.key = Math.random();
+      root.key = randomUUID();
     }
     return root;
   }
@@ -381,7 +399,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
   async function getPlanDetail() {
     setPageLoading(true);
     const explain = await getSQLExplain(
-      modalStore?.executeSqlDetailData?.sql,
+      modalStore?.executeSqlDetailData?.selectedSQL,
       modalStore?.executeSqlDetailData?.session?.sessionId,
       modalStore?.executeSqlDetailData?.session?.database?.dbName,
     );

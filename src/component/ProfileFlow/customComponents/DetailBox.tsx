@@ -285,10 +285,12 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
               })}
               onClick={() => i?.data?.locateNode(i?.id)}
             >
-              <span>
-                {i?.data?.name}
-                <span style={{ color: 'rgba(0,0,0,0.45)', height: 28 }}>[{i?.id}]</span>
-              </span>
+              <div className={styles.top5Name}>
+                <div style={{ maxWidth: '180px' }} className={styles.ellipsis}>
+                  {i?.data?.name}
+                </div>
+                <div style={{ color: 'var(--profile-text-color)' }}>[{i?.id}]</div>
+              </div>
               <span>
                 {' '}
                 {formatTimeTemplate(BigNumber(i?.data?.duration).div(1000000).toNumber())}{' '}

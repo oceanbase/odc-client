@@ -110,7 +110,6 @@ function Flow(props: Iprops) {
 }
 
 function FlowWithProvider(props) {
-  // todo memo
   return (
     <ReactFlowProvider>
       <Flow {...props} />

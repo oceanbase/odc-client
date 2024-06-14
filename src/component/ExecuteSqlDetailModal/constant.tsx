@@ -9,13 +9,13 @@ export const enum ProfileType {
   Execute = 'Execute',
 }
 
-export const TypeMap = {
-  TREE: 'TREE',
-  LIST: 'LIST',
-  TEXT: 'TEXT',
-  TRACE: 'TRACE',
-  TRACE_LIST: 'TRACE_LIST',
-};
+export const enum TypeMap {
+  TREE = 'TREE',
+  LIST = 'LIST',
+  TEXT = 'TEXT',
+  TRACE = 'TRACE',
+  TRACE_LIST = 'TRACE_LIST',
+}
 
 export const enum EXECUTE_PAGE_TYPE {
   EXECUTE_DETAIL = 'EXECUTE_DETAIL',
