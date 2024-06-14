@@ -1,3 +1,4 @@
+import { safeParseJson } from '@/util/utils';
 import { action, observable } from 'mobx';
 
 const GUIDE_CACHE_KEY = 'GUIDE_CACHE_KEY';
@@ -8,16 +9,19 @@ export const guideCacheMap = {
 
 export class GuideCacheStore {
   public cacheEnum = guideCacheMap;
+  constructor() {
+    this.executePlan = this.getDataByKey(guideCacheMap.executePlan);
+  }
 
   @observable
-  public executePlan = this.getDataByKey(guideCacheMap.executePlan);
+  public executePlan;
 
   public serialization(data: Record<any, any>) {
     return JSON.stringify(data);
   }
 
   public deserialize(data: string) {
-    return JSON.parse(data);
+    return safeParseJson(data);
   }
 
   public getData() {
