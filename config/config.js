@@ -90,7 +90,12 @@ const config = {
   },
 
   outputPath: './dist/renderer',
-
+  copy: [
+    {
+      from: path.join(process.cwd(), "node_modules/@oceanbase-odc/monaco-plugin-ob/worker-dist"),
+      to: "dist/renderer/workers/"+define.MONACO_VERSION
+    }
+  ],
   define,
   routes: routes,
 };
