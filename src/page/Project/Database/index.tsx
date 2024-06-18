@@ -197,7 +197,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           },
         }}
         scroll={{
-          x: 920,
+          x: 1150,
         }}
         columns={[
           {
@@ -361,7 +361,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             }),
             //操作
             dataIndex: 'actions',
-            width: 236,
+            width: 210,
             render(_, record) {
               const config = getDataSourceModeConfig(record?.dataSource?.type);
               const disableTransfer =
