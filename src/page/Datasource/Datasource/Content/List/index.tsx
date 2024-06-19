@@ -122,7 +122,7 @@ const List: React.FC<IProps> = forwardRef(function (
       const targetSize = pageSize + offset;
       let fetchSize: number = pageSize;
       if (isRefresh) {
-        fetchSize = offset + 1;
+        fetchSize = Math.max(offset + 1, pageSize + 1);
       } else if (offset < pageSize) {
         fetchSize = targetSize;
       } else {
