@@ -228,10 +228,8 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     );
   }
   let resultTabCount = 0;
-  if(unauthorizedDatabases?.length){
-    return (
-      <DBPermissionTable sql={unauthorizedSql} dataSource={unauthorizedDatabases} />
-    )
+  if (unauthorizedDatabases?.length) {
+    return <DBPermissionTable sql={unauthorizedSql} dataSource={unauthorizedDatabases} />;
   }
 
   return (
@@ -325,6 +323,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                       showPagination={true}
                       showTrace={true}
                       columns={set.columns}
+                      timer={set.timer}
                       session={session}
                       sqlId={set.sqlId}
                       autoCommit={session?.params?.autoCommit}
@@ -444,12 +443,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     </Tooltip>
                   ),
                   key: set.uniqKey,
-                  children: (
-                    <SQLResultLog 
-                      resultHeight={resultHeight}
-                      resultSet={set}
-                    />
-                  ),
+                  children: <SQLResultLog resultHeight={resultHeight} resultSet={set} />,
                 };
               }
             }),
