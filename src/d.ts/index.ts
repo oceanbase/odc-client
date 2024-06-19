@@ -23,6 +23,7 @@ import { EComparisonScope } from './task';
 import { EThemeConfigKey } from '@/store/setting';
 import { SpaceType } from './_index';
 import { DBDefaultStoreType } from './table';
+import { ISQLExecuteTask } from '@/common/network/sql/executeSQL';
 import { IEnvironment } from './environment';
 import { IProject } from './project';
 import { ErrorStrategy } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
@@ -1067,6 +1068,7 @@ export interface IResultSet extends Partial<ISqlExecuteResult> {
   }[];
 
   schemaName?: string;
+  currentExecuteInfo?: IExecutingInfo;
 }
 
 export interface IColumnMetaData {
@@ -1574,6 +1576,7 @@ export interface IResultTimerStage {
 }
 
 export interface ISqlExecuteResult {
+  results?: any[];
   allowExport: boolean;
   columnLabels: string[];
   columns?: string[];
@@ -1640,10 +1643,31 @@ export interface ISqlExecuteResultTimer {
   totalDurationMicroseconds: number; // 总耗时
 }
 
+export interface IExecutingInfo {
+  finished?: boolean;
+  traceId?: string;
+  executingSQL: string;
+  results?: ISqlExecuteResult[];
+  task: ISQLExecuteTask;
+}
+
 export enum ISqlExecuteResultStatus {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
   CANCELED = 'CANCELED',
+  WAITING = 'WAITING',
+  RUNNING = 'RUNNING',
+}
+
+export enum IProfileNodeStatus {
+  FINISHED = 'FINISHED',
+  RUNNING = 'RUNNING',
+  PREPARING = 'PREPARING',
+}
+
+export enum IProfileStatus {
+  FINISHED = 'FINISHED',
+  RUNNING = 'RUNNING',
 }
 
 export interface ISqlExecuteResultWidthData {
@@ -1713,6 +1737,51 @@ export interface ISQLExplain {
   outline: string;
   originalText: string;
   showFormatInfo?: boolean;
+  graph?: IProfileGraph;
+  warning?: string;
+  expTree?: string;
+}
+
+export interface IProfileGraph {
+  duration: number;
+  overview: {
+    [overviewType: string]: string | number;
+  };
+  planId: string;
+  statistics: {
+    [statisticType: string]: string | number;
+  };
+  topNodes: {
+    duration: string[];
+  };
+  traceId: string;
+  vertexes: IProfileVertexes[];
+}
+
+export interface IProfileVertexes {
+  attributes: {
+    [attributeType: string]: string | number;
+  };
+  duration: number;
+  graphId: number;
+  inEdges: IInEdges[];
+  name: string;
+  outEdges: IInEdges[];
+  overview: {
+    [overviewType: string]: string | number;
+  };
+  statistics: {
+    [logType: string]: string | number;
+  };
+  status: string;
+  subNodes?: IProfileVertexes;
+  title: string;
+}
+
+export interface IInEdges {
+  from: string;
+  to: string;
+  weight: string;
 }
 
 export interface ISQLExecuteDetail {

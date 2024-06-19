@@ -16,11 +16,20 @@
 
 import { formatMessage } from '@/util/intl';
 import Icon, { CaretDownOutlined } from '@ant-design/icons';
-import { Button, Divider, Dropdown, MenuProps, message, Popconfirm, Popover, Tooltip } from 'antd';
+import {
+  Button,
+  Divider,
+  Dropdown,
+  MenuProps,
+  message,
+  Popconfirm,
+  Popover,
+  Tooltip,
+  Badge,
+} from 'antd';
 import { PopconfirmProps } from 'antd/lib/popconfirm';
 import classNames from 'classnames'; // @ts-ignore
-import { ComponentType } from 'react';
-
+import { ComponentType, useState } from 'react';
 import styles from './index.less';
 import statefulIcon, { IConStatus } from './statefulIcon';
 
@@ -38,6 +47,7 @@ function TButton({
   isMenuIcon,
   isShowText = false,
   confirmConfig,
+  tip = null,
   ...rest
 }: {
   [key: string]: any;
@@ -136,6 +146,17 @@ function TButton({
       );
       break;
   }
+
+  if (tip) {
+    return (
+      <Tooltip placement={'topLeft'} title={tip}>
+        <Badge dot={true} color="blue" style={{ top: 12, right: 6 }}>
+          {content}
+        </Badge>
+      </Tooltip>
+    );
+  }
+
   if (confirmConfig && !disabled && !isRunning) {
     content = (
       <Popconfirm disabled={disabled} {...confirmConfig}>

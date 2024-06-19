@@ -15,23 +15,30 @@
  */
 
 import { TAB_HEADER_HEIGHT } from '@/constant';
-import { IResultSet, ISqlExecuteResultStatus, SqlType } from '@/d.ts';
+import { IExecutingInfo, IResultSet, ISqlExecuteResultStatus, SqlType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import {
   CheckCircleFilled,
   CloseCircleFilled,
   ExclamationCircleFilled,
   FileTextFilled,
+  StopFilled,
 } from '@ant-design/icons';
-import { Space } from 'antd';
+import { Button, Space, Spin, Typography } from 'antd';
 import React from 'react';
 import MultiLineOverflowText from '@/component/MultiLineOverflowText';
 import { RenderLevel } from '@/page/Secure/Env/components/InnerEnvironment';
 import styles from './index.less';
 
+const { Link } = Typography;
+
 interface IProps {
   resultHeight: number;
   resultSet: IResultSet;
+  stopRunning?: () => void;
+  onOpenExecutingDetailModal?: (traceId: string, sql?: string) => void;
+  loading?: boolean;
+  isSupportProfile?: boolean;
 }
 
 function getSuccessLog(type: SqlType, total: number) {
@@ -71,8 +78,7 @@ function renderViolations(data: IResultSet['logTypeData'][0]) {
           {
             formatMessage(
               {
-                id:
-                  'odc.components.SQLResultSet.SQLResultLog.CheckviolationslengthSpecificationSuggestionsExist',
+                id: 'odc.components.SQLResultSet.SQLResultLog.CheckviolationslengthSpecificationSuggestionsExist',
               },
               { checkViolationsLength: checkViolations.length },
             ) /*存在 {checkViolationsLength} 个规范建议*/
@@ -91,108 +97,177 @@ function renderViolations(data: IResultSet['logTypeData'][0]) {
   );
 }
 
-const SQLResultLog: React.FC<IProps> = function (props) {
-  const { resultSet, resultHeight } = props;
-  const logs = resultSet.logTypeData
-    ?.map?.((logData) => {
-      if (logData.status === ISqlExecuteResultStatus.SUCCESS) {
-        return (
-          <>
-            {logData?.statementWarnings ? (
-              <>
-                <Space>
-                  <ExclamationCircleFilled style={{ color: '#faad14' }} />
-                  <span>
-                    {
-                      formatMessage({
-                        id: 'odc.components.SQLResultSet.SQLResultLog.TheExecutionIsSuccessfulWith',
-                      })
-                      /* 执行成功，存在告警信息 */
-                    }
-                  </span>
-                </Space>
-                <div className={styles.sqlLabel}>
-                  {
-                    formatMessage({
-                      id: 'odc.components.SQLResultSet.SQLResultLog.AlertDetails',
-                    })
-                    /* 告警详情: */
-                  }
-                </div>
-                <div className={styles.track}>{logData.track}</div>
-              </>
-            ) : (
-              <>
-                <Space>
-                  <CheckCircleFilled style={{ color: '#52c41a' }} />
-                  <span>{getSuccessLog(logData.sqlType, logData.total)}</span>
-                </Space>
-                <MultiLineOverflowText
-                  className={styles.executedSQL}
-                  content={logData.executeSql}
-                />
-              </>
-            )}
-
-            {renderViolations(logData)}
-
-            {logData.dbmsOutput && (
-              <div>
-                <Space>
-                  <FileTextFilled style={{ color: '#1890ff' }} />
-                  <span>
-                    {
-                      formatMessage({
-                        id: 'odc.components.SQLResultSet.SQLResultLog.DbmsOutput',
-                      })
-
-                      /* DBMS输出 */
-                    }
-                  </span>
-                </Space>
-                <div className={styles.dbms}>{logData.dbmsOutput}</div>
-              </div>
-            )}
-          </>
-        );
-      }
-      const isCanceled = logData.status === ISqlExecuteResultStatus.CANCELED;
-      return (
-        <>
-          <Space>
-            <CloseCircleFilled style={{ color: '#F5222D' }} />
-            {isCanceled
-              ? formatMessage({
-                  id: 'odc.components.SQLResultSet.SQLResultLog.SqlExecutionCanceled',
-                })
-              : // SQL 执行被取消
-                formatMessage({ id: 'workspace.window.sql.result.failure' })}
-          </Space>
-          <MultiLineOverflowText className={styles.executedSQL} content={logData.executeSql} />
-          <div className={styles.failReason}>
-            {isCanceled
-              ? formatMessage({
-                  id: 'odc.components.SQLResultSet.SQLResultLog.ReasonForCancellation',
-                })
-              : // 取消原因
-                formatMessage({ id: 'workspace.window.sql.result.failureReason' })}
-          </div>
-          <div className={styles.track}>{logData.track}</div>
-        </>
-      );
-    })
-    .filter(Boolean);
+const runningLogPage = (
+  currentExecuteInfo: IExecutingInfo,
+  stopRunning,
+  onOpenExecutingDetailModal,
+  isSupportProfile,
+) => {
+  const count = currentExecuteInfo?.task?.sqls?.length || 0;
+  const finishCount = currentExecuteInfo?.results?.length || 0;
   return (
-    <div
-      className={styles.result}
-      style={{
-        maxHeight: `${resultHeight - TAB_HEADER_HEIGHT}px`,
-        overflowY: 'auto',
-      }}
-    >
-      {logs}
+    <div className={styles.runningSql}>
+      <Spin style={{ marginBottom: 16 }} />
+      <Space direction="vertical" size="small" align="center">
+        <div>
+          共有 {count} 个 SQL 执行，当前正在执行第 {finishCount + 1} 个
+        </div>
+        <div>
+          {currentExecuteInfo?.traceId && (
+            <Space size="small">
+              <span>当前 Trace ID: {currentExecuteInfo?.traceId}</span>
+              {isSupportProfile ? (
+                <Link
+                  onClick={() =>
+                    onOpenExecutingDetailModal(
+                      currentExecuteInfo?.traceId,
+                      currentExecuteInfo?.executingSQL,
+                    )
+                  }
+                >
+                  查看执行画像
+                </Link>
+              ) : null}
+            </Space>
+          )}
+        </div>
+      </Space>
+      <Button onClick={stopRunning} style={{ marginTop: 16 }}>
+        终 止
+      </Button>
     </div>
   );
+};
+
+const SQLResultLog: React.FC<IProps> = function (props) {
+  const {
+    resultSet,
+    resultHeight,
+    stopRunning,
+    onOpenExecutingDetailModal,
+    loading,
+    isSupportProfile = false,
+  } = props;
+  if (loading)
+    return (
+      <div className={styles.runningSql}>
+        <Spin />
+      </div>
+    );
+  const { currentExecuteInfo } = resultSet;
+  if (currentExecuteInfo?.finished) {
+    const logs = resultSet.logTypeData
+      ?.map?.((logData) => {
+        if (logData.status === ISqlExecuteResultStatus.SUCCESS) {
+          return (
+            <>
+              {logData?.statementWarnings ? (
+                <>
+                  <Space>
+                    <ExclamationCircleFilled style={{ color: '#faad14' }} />
+                    <span>
+                      {
+                        formatMessage({
+                          id: 'odc.components.SQLResultSet.SQLResultLog.TheExecutionIsSuccessfulWith',
+                        })
+                        /* 执行成功，存在告警信息 */
+                      }
+                    </span>
+                  </Space>
+                  <div className={styles.sqlLabel}>
+                    {
+                      formatMessage({
+                        id: 'odc.components.SQLResultSet.SQLResultLog.AlertDetails',
+                      })
+                      /* 告警详情: */
+                    }
+                  </div>
+                  <div className={styles.track}>{logData.track}</div>
+                </>
+              ) : (
+                <>
+                  <Space>
+                    <CheckCircleFilled style={{ color: '#52c41a' }} />
+                    <span>{getSuccessLog(logData.sqlType, logData.total)}</span>
+                  </Space>
+                  <MultiLineOverflowText
+                    className={styles.executedSQL}
+                    content={logData.executeSql}
+                  />
+                </>
+              )}
+
+              {renderViolations(logData)}
+
+              {logData.dbmsOutput && (
+                <div>
+                  <Space>
+                    <FileTextFilled style={{ color: '#1890ff' }} />
+                    <span>
+                      {
+                        formatMessage({
+                          id: 'odc.components.SQLResultSet.SQLResultLog.DbmsOutput',
+                        })
+
+                        /* DBMS输出 */
+                      }
+                    </span>
+                  </Space>
+                  <div className={styles.dbms}>{logData.dbmsOutput}</div>
+                </div>
+              )}
+            </>
+          );
+        }
+        const isCanceled = logData.status === ISqlExecuteResultStatus.CANCELED;
+        return (
+          <>
+            <Space>
+              {isCanceled ? (
+                <StopFilled style={{ color: 'rgba(0,0,0,0.15)' }} />
+              ) : (
+                <CloseCircleFilled style={{ color: '#F5222D' }} />
+              )}
+              {isCanceled
+                ? formatMessage({
+                    id: 'odc.components.SQLResultSet.SQLResultLog.SqlExecutionCanceled',
+                  })
+                : // SQL 执行被取消
+                  formatMessage({ id: 'workspace.window.sql.result.failure' })}
+            </Space>
+            <MultiLineOverflowText className={styles.executedSQL} content={logData.executeSql} />
+            <div className={styles.failReason}>
+              {isCanceled
+                ? formatMessage({
+                    id: 'odc.components.SQLResultSet.SQLResultLog.ReasonForCancellation',
+                  })
+                : // 取消原因
+                  formatMessage({ id: 'workspace.window.sql.result.failureReason' })}
+            </div>
+            <div className={styles.track}>{logData.track}</div>
+          </>
+        );
+      })
+      .filter(Boolean);
+    return (
+      <div
+        className={styles.result}
+        style={{
+          maxHeight: `${resultHeight - TAB_HEADER_HEIGHT}px`,
+          overflowY: 'auto',
+        }}
+      >
+        {logs}
+      </div>
+    );
+  } else {
+    return runningLogPage(
+      currentExecuteInfo,
+      stopRunning,
+      onOpenExecutingDetailModal,
+      isSupportProfile,
+    );
+  }
 };
 
 export default SQLResultLog;

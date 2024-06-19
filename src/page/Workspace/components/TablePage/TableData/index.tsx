@@ -388,7 +388,6 @@ class TableData extends React.Component<
           <DDLResultSet
             key={this._resultSetKey}
             autoCommit={session?.params.autoCommit}
-            showExplain={false}
             showPagination={true}
             showMock={settingStore.enableMockdata}
             isEditing={isEditing}
