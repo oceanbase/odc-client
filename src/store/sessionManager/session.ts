@@ -37,6 +37,12 @@ import setting from '../setting';
 import { getBuiltinSnippets } from '@/common/network/snippet';
 import { ISnippet } from '../snippet';
 import { DBDefaultStoreType } from '@/d.ts/table';
+import { isString } from 'lodash';
+import {
+  OBCompare,
+  ODC_PROFILE_SUPPORT_VERSION,
+  ODC_TRACE_SUPPORT_VERSION,
+} from '@/util/versionUtils';
 
 const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';
@@ -251,6 +257,7 @@ class SessionStore {
     if (!data) {
       throw new Error('getSupportFeature error');
     }
+    await this.initSessionStatus();
     const keyValueMap = {
       support_show_foreign_key: 'enableShowForeignKey',
       support_partition_modify: 'enableCreatePartition',
@@ -317,6 +324,13 @@ class SessionStore {
       } else if (typeof value === 'string') {
         this.supportFeature[value] = support;
       }
+      const obVersion = this?.params?.obVersion;
+      this.supportFeature.enableProfile =
+        isString(obVersion) && OBCompare(obVersion, ODC_PROFILE_SUPPORT_VERSION, '>=');
+      this.supportFeature.enableSQLTrace =
+        this.supportFeature.enableSQLTrace &&
+        isString(obVersion) &&
+        OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=');
     });
   }
 

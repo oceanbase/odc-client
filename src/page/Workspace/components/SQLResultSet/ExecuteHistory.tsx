@@ -19,23 +19,33 @@ import { ISqlExecuteResult, ISqlExecuteResultStatus, SqlType } from '@/d.ts';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { formatTimeTemplate } from '@/util/utils';
-import { CheckCircleFilled, CloseCircleFilled, InfoCircleOutlined } from '@ant-design/icons';
+import Icon, {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  InfoCircleOutlined,
+  LoadingOutlined,
+  StopFilled,
+} from '@ant-design/icons';
 import { Alert, message, Space, Table, Tooltip, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
-
+import { ReactComponent as WaitingSvg } from '@/svgr/Waiting.svg';
 import BigNumber from 'bignumber.js';
 import DBTimeline from './DBTimeline';
 import styles from './index.less';
+
+const { Link } = Typography;
 
 interface IProps {
   onShowExecuteDetail: (sql: string, tag: string) => void;
   resultHeight: number;
   sqlStore?: SQLStore;
+  onOpenExecutingDetailModal?: (traceId: string, sql?: string, sessionId?: string) => void;
 }
 
 function getResultText(rs: ISqlExecuteResult) {
+  if (!rs.total) return '-';
   if ([SqlType.show, SqlType.select].includes(rs.sqlType)) {
     return `${rs.total} row(s) returned`;
   } else {
@@ -44,7 +54,7 @@ function getResultText(rs: ISqlExecuteResult) {
 }
 
 const ExecuteHistory: React.FC<IProps> = function (props) {
-  const { onShowExecuteDetail, resultHeight, sqlStore } = props;
+  const { onShowExecuteDetail, resultHeight, sqlStore, onOpenExecutingDetailModal } = props;
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const tableRef = useRef<HTMLDivElement>();
   const [width, setWidth] = useState(0);
@@ -71,6 +81,30 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
     };
   }, []);
 
+  const getIcon = (status) => {
+    switch (status) {
+      case ISqlExecuteResultStatus.SUCCESS: {
+        return <CheckCircleFilled style={{ color: 'var(--function-green6-color)' }} />;
+      }
+      case ISqlExecuteResultStatus.FAILED: {
+        return <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />;
+      }
+      case ISqlExecuteResultStatus.CANCELED: {
+        return <StopFilled style={{ color: 'var(--profile-icon-unready-color)' }} />;
+      }
+      case ISqlExecuteResultStatus.WAITING: {
+        return (
+          <Icon
+            component={WaitingSvg}
+            style={{ fontSize: 14, color: 'var(--profile-icon-unready-color)' }}
+          />
+        );
+      }
+      case ISqlExecuteResultStatus.RUNNING: {
+        return <LoadingOutlined style={{ color: 'var(--brand-blue6-color)' }} />;
+      }
+    }
+  };
   /**
    * 执行记录
    */
@@ -84,12 +118,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         }),
 
         width: 50,
-        render: (value: ISqlExecuteResultStatus) =>
-          value === ISqlExecuteResultStatus.SUCCESS ? (
-            <CheckCircleFilled style={{ color: '#52c41a' }} />
-          ) : (
-            <CloseCircleFilled style={{ color: '#F5222D' }} />
-          ),
+        render: (value: ISqlExecuteResultStatus) => getIcon(value),
       },
 
       {
@@ -100,9 +129,11 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
 
         width: isSmallMode ? 80 : 100,
         render: (_, record: ISqlExecuteResult) => {
-          return moment(
-            record.timer?.stages?.find((item) => item.stageName === 'Execute')?.startTimeMillis,
-          ).format('HH:mm:ss');
+          return record.timer
+            ? moment(
+                record.timer?.stages?.find((item) => item.stageName === 'Execute')?.startTimeMillis,
+              ).format('HH:mm:ss')
+            : '-';
         },
       },
 
@@ -124,11 +155,11 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
                   overflowY: 'auto',
                 }}
               >
-                {value}
+                {value || '-'}
               </div>
             }
           >
-            {value}
+            {value || '-'}
           </Tooltip>
         ),
       },
@@ -152,11 +183,11 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
                     overflowY: 'auto',
                   }}
                 >
-                  {value}
+                  {value || '-'}
                 </div>
               }
             >
-              {value}
+              {value || '-'}
             </Tooltip>
           ),
       },
@@ -165,6 +196,16 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         dataIndex: 'traceId',
         title: 'TRACE ID',
         ellipsis: true,
+        render: (value: string, row: any) => {
+          if (!value) return '-';
+          return row?.isSupportProfile ? (
+            <Link onClick={() => onOpenExecutingDetailModal(value, row?.originSql, row?.sessionId)}>
+              {value}
+            </Link>
+          ) : (
+            value
+          );
+        },
       },
 
       {

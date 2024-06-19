@@ -68,7 +68,7 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       height: 24px;
-      width: 576px;
+      flex-grow: 1;
       line-height: 24px;
       border: 1px solid var(--odc-border-color);
       border-left: none;
@@ -108,7 +108,6 @@
 
 .traceTable {
   flex-grow: 1;
-  width: 576px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -118,7 +117,7 @@
     justify-content: space-between;
     align-items: center;
     height: 24px;
-    width: 576px;
+    flex-grow: 1;
     line-height: 24px;
     border: 1px solid var(--odc-border-color);
     border-top: none;
@@ -137,7 +136,7 @@
 
     .progressBar {
       position: relative;
-      width: 575px;
+      flex-grow: 1;
       height: 24px;
       display: flex;
       text-align: right;

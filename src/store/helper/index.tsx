@@ -84,7 +84,7 @@ export function generateResultSetColumns(
             { _rowIndex: i },
           );
         }),
-        uniqKey: oldKey || generateUniqKey('resultset'),
+        uniqKey: oldKey || r.sqlId || generateUniqKey('resultset'),
         initialSql: r.executeSql,
       };
     })
