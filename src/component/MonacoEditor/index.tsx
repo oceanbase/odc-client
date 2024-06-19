@@ -141,7 +141,7 @@ const MonacoEditor: React.FC<IProps> = function (props) {
     if (!editorRef.current?.getModel?.()) {
       return;
     }
-    const plugin = module.register();
+    const plugin = module.register(language);
 
     groovy.registerGroovyLanguageForMonaco();
     plugin.setModelOptions(
@@ -149,7 +149,9 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       getModelService(
         {
           modelId: editorRef.current.getModel().id,
-          delimiter: sessionRef.current?.params?.delimiter,
+          delimiter() {
+            return sessionRef.current?.params?.delimiter;
+          },
         },
         () => sessionRef.current,
       ),
@@ -228,6 +230,7 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       language !== editorRef.current?.getModel().getLanguageId()
     ) {
       monaco.editor.setModelLanguage(editorRef.current?.getModel(), language);
+      import('./plugins/ob-language/index').then((module) => module.register(language));
     }
   }, [language]);
 

@@ -17,12 +17,43 @@
 import Plugin from '@oceanbase-odc/monaco-plugin-ob';
 
 let plugin = null;
+const languages = [];
 
-export function register(): Plugin {
+export function register(language: string): Plugin {
+  //@ts-ignore
+  window.obMonaco = {
+    getWorkerUrl(type) {
+      type = type === 'oracle' ? 'oboracle' : type;
+      const url = new URL(window.publicPath || '/', location.origin);
+      if (process.env.NODE_ENV === 'development') {
+        const url = new URL(window.publicPath || '/', location.origin);
+        const objectURL = URL.createObjectURL(
+          new Blob(
+            [
+              `importScripts(${JSON.stringify(
+                `${url.href}workers/${MONACO_VERSION}/${type}.js`.toString(),
+              )});`,
+            ],
+            {
+              type: 'application/javascript',
+            },
+          ),
+        );
+        return objectURL;
+      }
+      return `${url}workers/${MONACO_VERSION}/${type}.js`;
+    },
+  };
+  language = language || 'obmysql';
   if (plugin) {
+    if (language && !languages.includes(language)) {
+      languages.push(language);
+      plugin.setup([language]);
+    }
     return plugin;
   }
   plugin = new Plugin();
-  plugin.setup();
+  plugin.setup([language]);
+  languages.push(language);
   return plugin;
 }

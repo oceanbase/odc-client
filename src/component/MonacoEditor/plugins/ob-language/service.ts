@@ -31,7 +31,9 @@ export function getModelService(
   sessionFunc: () => SessionStore,
 ): IModelOptions {
   return {
-    delimiter,
+    get delimiter() {
+      return delimiter();
+    },
     async getTableList(schemaName: string) {
       const dbName = schemaName || sessionFunc()?.database?.dbName;
       if (!hasConnect(sessionFunc())) {
