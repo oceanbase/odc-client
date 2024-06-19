@@ -101,7 +101,8 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
   const handleFormat = () => {
     setIsFormatting(true);
     setTimeout(() => {
-      // editorRef.current.doFormat();
+      //@ts-ignore
+      editorRef.current.doFormat();
       setTimeout(() => {
         setIsFormatting(false);
       }, 100);
