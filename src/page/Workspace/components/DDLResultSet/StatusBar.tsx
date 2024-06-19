@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { ITableColumn, ResultSetColumn } from '@/d.ts';
+import { ISqlExecuteResultTimer, ITableColumn, ResultSetColumn } from '@/d.ts';
+import { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
 import { formatTimeTemplate } from '@/util/utils';
 import { Divider, Space, Typography } from 'antd';
 import BigNumber from 'bignumber.js';
+import { inject, observer } from 'mobx-react';
 import React, { useMemo } from 'react';
 
 interface IProps {
@@ -27,15 +29,25 @@ interface IProps {
   columns: Partial<ITableColumn>[];
   fields: ResultSetColumn[];
   selectedColumnKeys: React.Key[];
+  sqlStore?: SQLStore;
+  timer?: ISqlExecuteResultTimer;
 }
 
 const StatusBar: React.FC<IProps> = function ({
   recordCount,
   dbTotalDurationMicroseconds,
   columns,
+  timer,
   fields,
   selectedColumnKeys,
 }) {
+  const executeStage = timer?.stages?.find((stage) => stage.stageName === 'Execute');
+  const executeSQLStage = executeStage?.subStages?.find(
+    (stage) => stage.stageName === 'DB Server Execute SQL',
+  );
+  const DBCostTime = formatTimeTemplate(
+    BigNumber(executeSQLStage?.totalDurationMicroseconds).div(1000000).toNumber(),
+  );
   const selectColumns = useMemo(() => {
     if (!columns?.length || !selectedColumnKeys?.length || !fields?.length) {
       return [];
@@ -117,22 +129,26 @@ const StatusBar: React.FC<IProps> = function ({
             {formatTimeTemplate(BigNumber(dbTotalDurationMicroseconds).div(1000000).toNumber())}
           </span>
         ) : null}
-        <span>
-          {
-            formatMessage(
-              {
-                id: 'odc.components.DDLResultSet.StatusBar.TotalNumberOfEntriesRecordcount',
-              },
+        <Space size={'small'}>
+          <span>{`总耗时：${DBCostTime}`}</span>
+          <span>
+            {
+              formatMessage(
+                {
+                  id: 'odc.components.DDLResultSet.StatusBar.TotalNumberOfEntriesRecordcount',
+                },
 
-              { recordCount: recordCount },
-            )
-            /*总条数：{recordCount} 条*/
-          }
-        </span>
+                { recordCount: recordCount },
+              )
+              /*总条数：{recordCount} 条*/
+            }
+          </span>
+        </Space>
+
         {columnInfo}
       </Space>
     </div>
   );
 };
 
-export default StatusBar;
+export default inject('sqlStore')(observer(StatusBar));

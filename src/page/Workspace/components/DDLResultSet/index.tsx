@@ -19,6 +19,7 @@ import Toolbar from '@/component/Toolbar';
 import icon, { IConStatus } from '@/component/Toolbar/statefulIcon/index';
 import {
   GeneralSQLType,
+  ISqlExecuteResultTimer,
   ITable,
   ITableColumn,
   LobExt,
@@ -125,6 +126,7 @@ interface IProps {
   resultHeight: number | string;
   pageKey?: string;
   generalSqlType?: GeneralSQLType;
+  timer?: ISqlExecuteResultTimer;
   traceId?: string;
   enableRowId?: boolean;
   autoCommit: boolean;
@@ -155,6 +157,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     columns,
     showPagination,
     sqlStore,
+    timer,
     settingStore,
     showExplain,
     showTrace = false,
@@ -1178,6 +1181,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
         selectedColumnKeys={selectedCellColumnsKey}
         columns={table?.columns}
         dbTotalDurationMicroseconds={dbTotalDurationMicroseconds}
+        timer={timer}
       />
     </div>
   );
