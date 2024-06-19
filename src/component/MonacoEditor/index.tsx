@@ -149,7 +149,9 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       getModelService(
         {
           modelId: editorRef.current.getModel().id,
-          delimiter: sessionRef.current?.params?.delimiter,
+          delimiter() {
+            return sessionRef.current?.params?.delimiter;
+          },
         },
         () => sessionRef.current,
       ),
