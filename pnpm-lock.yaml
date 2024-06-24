@@ -42,7 +42,7 @@ devDependencies:
     version: 4.8.1(react-dom@17.0.2)(react@17.0.2)
   '@oceanbase-odc/monaco-plugin-ob':
     specifier: ^1.2.6
-    version: 1.2.6(monaco-editor@0.45.0)
+    version: 1.2.6(monaco-editor@0.36.1)
   '@oceanbase-odc/ob-intl-cli':
     specifier: ^2.0.10
     version: 2.0.10(prettier@2.8.8)(typescript@4.9.5)
@@ -218,11 +218,11 @@ devDependencies:
     specifier: ^2.29.0
     version: 2.30.1
   monaco-editor:
-    specifier: ~0.45.0
-    version: 0.45.0
+    specifier: ~0.36.0
+    version: 0.36.1
   monaco-editor-webpack-plugin:
     specifier: ^7.0.1
-    version: 7.1.0(monaco-editor@0.45.0)(webpack@4.47.0)
+    version: 7.1.0(monaco-editor@0.36.1)(webpack@4.47.0)
   npm-run-all:
     specifier: ^4.1.5
     version: 4.1.5
@@ -3999,7 +3999,7 @@ packages:
       fastq: 1.16.0
     dev: true
 
-  /@oceanbase-odc/monaco-plugin-ob@1.2.6(monaco-editor@0.45.0):
+  /@oceanbase-odc/monaco-plugin-ob@1.2.6(monaco-editor@0.36.1):
     resolution: {integrity: sha512-/MjXQVzu1ZeLRV1tKZ00kHHejuUoVda+HHL1GY9hp0g3lqnbIDgibbqhr479vO3hkV5HjF3B7fZei+ExuwcNQA==}
     peerDependencies:
       monaco-editor: ^0.34.1
@@ -4007,7 +4007,7 @@ packages:
       '@oceanbase-odc/ob-parser-js': 3.0.4
       antlr4: 4.8.0
       comlink: 4.4.1
-      monaco-editor: 0.45.0
+      monaco-editor: 0.36.1
     dev: true
 
   /@oceanbase-odc/ob-intl-cli@2.0.10(prettier@2.8.8)(typescript@4.9.5):
@@ -13021,19 +13021,19 @@ packages:
     resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
     dev: true
 
-  /monaco-editor-webpack-plugin@7.1.0(monaco-editor@0.45.0)(webpack@4.47.0):
+  /monaco-editor-webpack-plugin@7.1.0(monaco-editor@0.36.1)(webpack@4.47.0):
     resolution: {integrity: sha512-ZjnGINHN963JQkFqjjcBtn1XBtUATDZBMgNQhDQwd78w2ukRhFXAPNgWuacaQiDZsUr4h1rWv5Mv6eriKuOSzA==}
     peerDependencies:
       monaco-editor: '>= 0.31.0'
       webpack: ^4.5.0 || 5.x
     dependencies:
       loader-utils: 2.0.4
-      monaco-editor: 0.45.0
+      monaco-editor: 0.36.1
       webpack: 4.47.0(webpack-cli@3.3.12)
     dev: true
 
-  /monaco-editor@0.45.0:
-    resolution: {integrity: sha512-mjv1G1ZzfEE3k9HZN0dQ2olMdwIfaeAAjFiwNprLfYNRSz7ctv9XuCT7gPtBGrMUeV1/iZzYKj17Khu1hxoHOA==}
+  /monaco-editor@0.36.1:
+    resolution: {integrity: sha512-/CaclMHKQ3A6rnzBzOADfwdSJ25BFoFT0Emxsc4zYVyav5SkK9iA6lEtIeuN/oRYbwPgviJT+t3l+sjFa28jYg==}
     dev: true
 
   /moo-color@1.0.3:
