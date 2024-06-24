@@ -495,7 +495,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
           open={detailModalOpen}
           destroyOnClose
           closable
-          width={844}
+          width={900}
           footer={null}
           onCancel={() => {
             setDetailModalOpen(false);
