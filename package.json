@@ -131,7 +131,7 @@
     "mobx": "^5.9.4",
     "mobx-react": "^6.3.1",
     "moment": "^2.29.0",
-    "monaco-editor": "^0.49.0",
+    "monaco-editor": "~0.45.0",
     "monaco-editor-webpack-plugin": "^7.0.1",
     "npm-run-all": "^4.1.5",
     "path-to-regexp": "^2.1.0",
