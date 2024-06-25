@@ -33,7 +33,7 @@ import { InsertActionOptions } from '../CreateModal';
 import ArchiveRange from './ArchiveRange';
 import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 import { getLocalFormatDateTime } from '@/util/utils';
-import { SyncTableStructureConfig } from '../../const';
+import { SyncTableStructureConfig, DropPartiotionOptions } from '../../const';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -318,6 +318,10 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
             defaultValue={kbToMb(jobParameters?.rateLimit?.dataSizeLimit)}
             onOk={handleDataSizeLimit}
           />
+        </Descriptions.Item>
+        <Descriptions.Item label="清理策略">
+          {DropPartiotionOptions?.find((i) => i.value === jobParameters?.dropPartition)?.label ||
+            '-'}
         </Descriptions.Item>
         <Descriptions.Item
           label={formatMessage({

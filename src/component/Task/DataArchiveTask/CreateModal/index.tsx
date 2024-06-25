@@ -49,6 +49,7 @@ import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig from './VariableConfig';
 import ThrottleFormItem from '../../component/ThrottleFormItem';
+import DropPartiotion from '../../component/DropPartiotion';
 import { timeUnitOptions } from './VariableConfig';
 import TaskdurationItem from '../../component/TaskdurationItem';
 import SynchronizationItem from '../../component/SynchronizationItem';
@@ -195,6 +196,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       variables,
       timeoutMillis,
       syncTableStructure,
+      dropPartition,
     } = jobParameters;
 
     const formData = {
@@ -215,6 +217,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       description,
       timeoutMillis: milliSecondsToHour(timeoutMillis),
       syncTableStructure,
+      dropPartition,
     };
 
     if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
@@ -326,6 +329,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           dataSizeLimit,
           timeoutMillis,
           syncTableStructure,
+          dropPartition,
         } = values;
         _tables?.map((i) => {
           i.partitions = i?.partitions?.length
@@ -356,6 +360,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             deleteAfterMigration,
             migrationInsertAction,
             syncTableStructure,
+            dropPartition,
             timeoutMillis: hourToMilliSeconds(timeoutMillis),
             rateLimit: {
               rowLimit,
@@ -667,6 +672,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               <Radio.Group options={InsertActionOptions} />
             </Form.Item>
             <ThrottleFormItem />
+            <DropPartiotion />
           </FormItemPanel>
           <DescriptionInput />
         </Form>
