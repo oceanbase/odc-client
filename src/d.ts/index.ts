@@ -2366,6 +2366,7 @@ export interface IDataArchiveJobParameters {
   }[];
   timeoutMillis: number;
   syncTableStructure: SyncTableStructureEnum[];
+  dropPartition: boolean;
 }
 
 export interface IDataClearJobParameters {
@@ -2429,6 +2430,7 @@ export interface ICycleTaskRecord<T> {
   database: IDatabase;
   riskLevel?: IRiskLevel;
   description?: string;
+  dropPartition?: boolean;
 }
 
 export interface ICycleSubTaskDetailRecord {

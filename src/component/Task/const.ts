@@ -87,3 +87,27 @@ export const SubTaskTypeMap = {
     label: formatMessage({ id: 'src.d.ts.DF449BBC', defaultMessage: '回滚' }),
   },
 };
+
+export enum DropPartiotionEnum {
+  CLEAN = 'CLEAN',
+  DROPPARTITION = 'DROPPARTITION',
+}
+
+export const DropPartiotionMap = {
+  [DropPartiotionEnum.CLEAN]: {
+    value: false,
+    label: `清理数据`,
+  },
+  [DropPartiotionEnum.DROPPARTITION]: {
+    value: true,
+    label: `删除分区`,
+  },
+};
+export const DropPartiotionOptions = Object.keys(DropPartiotionMap).map(
+  (key: DropPartiotionEnum) => {
+    return {
+      value: DropPartiotionMap[key].value,
+      label: DropPartiotionMap[key].label,
+    };
+  },
+);
