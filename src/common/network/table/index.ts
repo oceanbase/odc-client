@@ -308,7 +308,7 @@ export async function getDataObjectDownloadUrl(
   dbName: string,
 ) {
   if (setting.isUploadCloudStore) {
-    const res = await request.post(`/api/v2/aliyun/specific/DownloadObjectData`, {
+    const res = await request.post(`/api/v2/cloud/specific/DownloadObjectData`, {
       data: {
         sqlId,
         row: rowIndex,
