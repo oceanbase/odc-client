@@ -337,7 +337,7 @@ export async function getTaskMetaInfo(): Promise<{
  */
 export async function downloadTaskFlow(id: number, fileName?: string) {
   if (setting.isUploadCloudStore) {
-    const res = await request.post('/api/v2/aliyun/specific/Download', {
+    const res = await request.post('/api/v2/cloud/specific/Download', {
       data: {
         flowInstanceId: id,
         fileName: fileName,
