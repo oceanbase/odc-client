@@ -101,7 +101,7 @@ export default function WorkspaceStore({ children }) {
         true,
         true,
       );
-      setDatabaseList(data?.contents);
+      setDatabaseList(data?.contents || []);
       return data?.contents;
     }
   }, [selectProjectId, selectDatasourceId]);
