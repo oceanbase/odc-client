@@ -96,7 +96,7 @@ export async function uploadFileToOSS(
     return filePath;
   }
   // 3. 报告记录
-  const resUpload = await request.post('/api/v2/aliyun/specific/asyncUpload', {
+  const resUpload = await request.post('/api/v2/cloud/specific/asyncUpload', {
     data: {
       bucketName,
       objectName: filePath,
@@ -110,7 +110,7 @@ export async function uploadFileToOSS(
     return null;
   }
   async function getResult() {
-    const result = await request.get('/api/v2/aliyun/specific/getUploadResult/' + uploadId);
+    const result = await request.get('/api/v2/cloud/specific/getUploadResult/' + uploadId);
     if (result?.isError) {
       pullTime = Date.now();
       logger.info(
@@ -143,7 +143,7 @@ export async function uploadFileToOSS(
 // 下载传输任务文件
 export async function downloadTransferTaskFile(taskId) {
   // 获取下载文件坐标
-  const fileInfo = await request.post('/api/v2/aliyun/specific/DownloadTransferFile', {
+  const fileInfo = await request.post('/api/v2/cloud/specific/DownloadTransferFile', {
     data: {
       taskId: taskId,
       sid: generateDatabaseSid(),
@@ -157,7 +157,7 @@ export async function downloadTransferTaskFile(taskId) {
 // 下载异步任务文件
 export async function downloadAsyncTaskFile(fileName) {
   // 获取下载文件坐标
-  const fileInfo = await request.post('/api/v2/aliyun/specific/DownloadFile', {
+  const fileInfo = await request.post('/api/v2/cloud/specific/DownloadFile', {
     data: {
       fileName,
       sid: generateDatabaseSid(),
