@@ -159,6 +159,17 @@ export async function getTableListByDatabaseName(
   return ret?.data || [];
 }
 
+/**
+ * 不依赖session直接从元数据获取库下面的表列表
+ * @param databaseId 数据库ID
+ * @returns 数据库的表列表
+ */
+export async function getTableListWithoutSession(databaseId: number): Promise<ITable[]> {
+  const params = { databaseId: databaseId };
+  const ret = await request.get(`/api/v2/databaseSchema/tables`, { params });
+  return ret?.data?.contents || [];
+}
+
 export async function batchGetDataModifySQL(
   schemaName: string,
   tableName: string,

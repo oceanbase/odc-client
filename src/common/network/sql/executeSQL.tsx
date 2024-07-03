@@ -17,7 +17,7 @@
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import type { ISqlExecuteResult, IExecutingInfo } from '@/d.ts';
 import { EStatus, ISqlExecuteResultStatus } from '@/d.ts';
-import { IUnauthorizedDatabase } from '@/d.ts/database';
+import { IUnauthorizedDBResources } from '@/d.ts/table';
 import { IRule } from '@/d.ts/rule';
 import request from '@/util/request';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
@@ -48,7 +48,7 @@ export interface ISQLExecuteTask {
   requestId: string;
   sqls: ISQLExecuteTaskSQL[];
   violatedRules: IRule[];
-  unauthorizedDatabases: IUnauthorizedDatabase[];
+  unauthorizedDBResources: IUnauthorizedDBResources[];
 }
 
 /**
@@ -62,7 +62,7 @@ export interface IExecuteTaskResult {
   executeResult: ISqlExecuteResult[];
   lintResultSet?: ISQLLintReuslt[];
   status?: EStatus;
-  unauthorizedDatabases?: IUnauthorizedDatabase[];
+  unauthorizedDBResources?: IUnauthorizedDBResources[];
   unauthorizedSql?: string;
 }
 class Task {
@@ -215,6 +215,33 @@ export default async function executeSQL(
     data: serverParams,
   });
   const taskInfo: ISQLExecuteTask = res?.data;
+  const rootViolatedRules = taskInfo?.violatedRules?.reduce((pre, cur) => {
+    if (cur?.violation) {
+      return pre.concat({
+        sqlTuple: {
+          executedSql: cur?.violation?.text,
+          offset: cur?.violation?.offset,
+          originalSql: cur?.violation?.text,
+        },
+        violatedRules: [cur],
+      });
+    }
+    return pre;
+  }, []);
+  const unauthorizedResource = taskInfo?.unauthorizedDBResources;
+  const violatedRules = rootViolatedRules?.concat(taskInfo?.sqls);
+  if (unauthorizedResource?.length) {
+    // 无权限库
+    return {
+      invalid: true,
+      executeSuccess: false,
+      executeResult: [],
+      violatedRules: [],
+      unauthorizedDBResources: unauthorizedResource,
+      unauthorizedSql: (params as IExecuteSQLParams)?.sql || (params as string),
+    };
+  }
+
   const {
     pass,
     data: preHandleData,

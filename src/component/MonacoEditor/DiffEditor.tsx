@@ -79,6 +79,7 @@ const DiffEditor = inject('settingStore')(
           minimap: { enabled: false },
           renderOverviewRuler: false,
           automaticLayout: true,
+          // @ts-ignore
           useInlineViewWhenSpaceIsLimited: false,
           unicodeHighlight: {
             invisibleCharacters: false,

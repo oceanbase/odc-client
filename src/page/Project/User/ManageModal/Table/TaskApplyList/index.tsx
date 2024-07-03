@@ -1,4 +1,3 @@
-import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -16,49 +15,42 @@ import { formatMessage } from '@/util/intl';
  */
 
 import Action from '@/component/Action';
+import CommonTable from '@/component/CommonTable';
 import {
   CommonTableMode,
-  ITableLoadOptions,
   ITableInstance,
+  ITableLoadOptions,
 } from '@/component/CommonTable/interface';
+import SearchFilter from '@/component/SearchFilter';
 import { getExpireTimeLabel } from '@/component/Task/ApplyDatabasePermission';
-import { DatabasePermissionStatus, IDatabasePermission } from '@/d.ts/project';
+import TaskDetailModal from '@/component/Task/DetailModal';
 import type { IResponseData } from '@/d.ts';
 import { TaskType } from '@/d.ts';
-import TaskDetailModal from '@/component/Task/DetailModal';
+import { ITablePermission, TablePermissionStatus } from '@/d.ts/project';
+import { SearchOutlined } from '@ant-design/icons';
+import { ColumnType } from 'antd/es/table';
+import React, { useState } from 'react';
 import {
-  databasePermissionTypeFilters,
-  databasePermissionTypeMap,
-  databasePermissionStatusFilters,
+  tablePermissionStatusFilters,
+  tablePermissionTypeFilters,
+  tablePermissionTypeMap,
 } from '../';
 import StatusLabel from '../Status';
-import SearchFilter from '@/component/SearchFilter';
-import CommonTable from '@/component/CommonTable';
-import { SearchOutlined } from '@ant-design/icons';
-import React, { useState } from 'react';
 
 const getColumns = (params: {
   paramOptions: ITableLoadOptions;
   onOpenDetail: (task: { id: number }, visible: boolean) => void;
   onReclaim: (id: number[]) => void;
-}) => {
-  const { filters, sorter } = params.paramOptions ?? {};
+}): ColumnType<ITablePermission>[] => {
+  const { filters } = params.paramOptions ?? {};
   return [
     {
       dataIndex: 'databaseName',
-      title: formatMessage({ id: 'src.page.Project.User.ManageModal.TaskApplyList.D0AC4874' }), //'数据库'
+      title: '数据库',
       ellipsis: true,
       filterDropdown: (props) => {
         return (
-          <SearchFilter
-            {...props}
-            selectedKeys={filters?.databaseName}
-            placeholder={
-              formatMessage({
-                id: 'src.page.Project.User.ManageModal.TaskApplyList.312C3184',
-              }) /*"请输入"*/
-            }
-          />
+          <SearchFilter {...props} selectedKeys={filters?.databaseName} placeholder="请输入" />
         );
       },
       filterIcon: (filtered) => (
@@ -73,21 +65,31 @@ const getColumns = (params: {
       filters: [],
     },
     {
+      dataIndex: 'tableName',
+      title: '表',
+      ellipsis: true,
+      filterDropdown: (props) => {
+        return <SearchFilter {...props} selectedKeys={filters?.tableName} placeholder="请输入" />;
+      },
+      filterIcon: (filtered) => (
+        <SearchOutlined
+          style={{
+            color: filtered ? 'var(--icon-color-focus)' : undefined,
+          }}
+        />
+      ),
+
+      filteredValue: filters?.tableName || null,
+      filters: [],
+    },
+    {
       dataIndex: 'dataSourceName',
-      title: formatMessage({ id: 'src.page.Project.User.ManageModal.TaskApplyList.E54735F1' }), //'所属数据源'
+      title: '所属数据源',
       ellipsis: true,
       width: 188,
       filterDropdown: (props) => {
         return (
-          <SearchFilter
-            {...props}
-            selectedKeys={filters?.dataSourceName}
-            placeholder={
-              formatMessage({
-                id: 'src.page.Project.User.ManageModal.TaskApplyList.2AF1BB1C',
-              }) /*"请输入"*/
-            }
-          />
+          <SearchFilter {...props} selectedKeys={filters?.dataSourceName} placeholder="请输入" />
         );
       },
       filterIcon: (filtered) => (
@@ -103,20 +105,10 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'ticketId',
-      title: formatMessage({ id: 'src.page.Project.User.ManageModal.TaskApplyList.6B680E1D' }), //'工单编号'
+      title: '工单编号',
       width: 128,
       filterDropdown: (props) => {
-        return (
-          <SearchFilter
-            {...props}
-            selectedKeys={filters?.ticketId}
-            placeholder={
-              formatMessage({
-                id: 'src.page.Project.User.ManageModal.TaskApplyList.CC93DC98',
-              }) /*"请输入"*/
-            }
-          />
-        );
+        return <SearchFilter {...props} selectedKeys={filters?.ticketId} placeholder="请输入" />;
       },
       filterIcon: (filtered) => (
         <SearchOutlined
@@ -142,45 +134,45 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'type',
-      title: formatMessage({ id: 'src.page.Project.User.ManageModal.TaskApplyList.DC1F11F6' }), //'权限类型'
+      title: '权限类型',
       width: 120,
-      filters: databasePermissionTypeFilters,
+      filters: tablePermissionTypeFilters,
       filteredValue: filters?.type || null,
-      render: (type) => databasePermissionTypeMap[type].text,
+      render: (type) => tablePermissionTypeMap[type].text,
     },
     {
       dataIndex: 'expireTime',
-      title: formatMessage({ id: 'src.page.Project.User.ManageModal.TaskApplyList.B805DCE9' }), //'过期时间'
+      title: '过期时间',
       width: 138,
       sorter: true,
       render: getExpireTimeLabel,
     },
     {
       dataIndex: 'status',
-      title: formatMessage({ id: 'src.page.Project.User.ManageModal.TaskApplyList.1DA4FB8D' }), //'状态'
+      title: '状态',
       width: 104,
-      filters: databasePermissionStatusFilters,
+      filters: tablePermissionStatusFilters,
       filteredValue: filters?.status || null,
       render: (status) => <StatusLabel status={status} />,
     },
     {
       dataIndex: 'action',
-      title: formatMessage({ id: 'src.page.Project.User.ManageModal.TaskApplyList.DCC37870' }), //'操作'
+      title: '操作',
       ellipsis: true,
       width: 65,
+      fixed: 'right',
       render: (_, record) => {
         return (
           <Action.Link
-            disabled={record?.status === DatabasePermissionStatus.EXPIRED}
+            disabled={record?.status === TablePermissionStatus.EXPIRED}
             onClick={() => {
               params?.onReclaim([record.id]);
             }}
-          >
-            {
-              formatMessage({
-                id: 'src.page.Project.User.ManageModal.TaskApplyList.75F749A1' /*回收*/,
-              }) /* 回收 */
+            tooltip={
+              record?.status === TablePermissionStatus.EXPIRED ? '过期超三个月后此权限将被清除' : ''
             }
+          >
+            回收
           </Action.Link>
         );
       },
@@ -190,7 +182,7 @@ const getColumns = (params: {
 
 interface IProps {
   projectId: number;
-  dataSource: IResponseData<IDatabasePermission>;
+  dataSource: IResponseData<ITablePermission>;
   params: ITableLoadOptions;
   isOwner: boolean;
   tableRef: React.RefObject<ITableInstance>;
@@ -219,19 +211,20 @@ const TaskApplyList: React.FC<IProps> = (props) => {
   return (
     <>
       <CommonTable
-        mode={CommonTableMode.SMALL}
-        ref={tableRef}
         enabledReload={false}
         showToolbar={false}
+        mode={CommonTableMode.SMALL}
+        ref={tableRef}
+        filterContent={{
+          enabledSearch: false,
+        }}
         titleContent={null}
         rowSelecter={
           isOwner
             ? {
                 options: [
                   {
-                    okText: formatMessage({
-                      id: 'src.page.Project.User.ManageModal.TaskApplyList.461215D6',
-                    }), //'批量回收'
+                    okText: '批量回收',
                     onOk: onReclaim,
                   },
                 ],
@@ -243,12 +236,20 @@ const TaskApplyList: React.FC<IProps> = (props) => {
         tableProps={{
           columns: columns?.filter((item) => (isOwner ? true : item?.dataIndex !== 'action')),
           dataSource: dataSource?.contents ?? [],
+          rowSelection: {
+            getCheckboxProps: (record: ITablePermission) => {
+              return {
+                disabled: record?.status === TablePermissionStatus.EXPIRED,
+              };
+            },
+          },
           rowKey: 'id',
           scroll: {
-            x: 650,
+            x: 950,
           },
           pagination: {
             current: dataSource?.page?.number,
+            pageSize: 10,
             total: dataSource?.page?.totalElements,
           },
         }}

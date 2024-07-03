@@ -17,6 +17,7 @@
 import { getFunctionByFuncName, getProcedureByProName } from '@/common/network';
 import {
   generateDatabaseSid,
+  generateDatabaseSidByDataBaseId,
   generatePackageSid,
   generateViewSid,
 } from '@/common/network/pathUtil';
@@ -35,7 +36,7 @@ import {
   IView,
   SynonymType,
 } from '@/d.ts';
-import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
+import { ITableModel, TableInfo } from '@/page/Workspace/components/CreateTable/interface';
 import { formatMessage } from '@/util/intl';
 import request from '@/util/request';
 import { action, observable, runInAction } from 'mobx';
@@ -106,13 +107,15 @@ class DatabaseStore {
 
   @action
   public async getTableList() {
-    const sid = generateDatabaseSid(this.dbName, this.sessionId);
-    const data = await request.get(`/api/v1/table/list/${sid}`);
+    const sid = generateDatabaseSidByDataBaseId(this.databaseId, this.sessionId);
+    const data = await request.get(`/api/v2/databaseSchema/tables`, {
+      params: { databaseId: this.databaseId, includePermittedAction: true },
+    });
     runInAction(() => {
       this.tables =
-        data?.data?.map((table: ITable) => ({
+        data?.data?.contents?.map((table: ITable) => ({
           info: {
-            tableName: table.tableName,
+            tableName: table.name,
             character: table.character,
             collation: table.collation,
             comment: table.comment,
@@ -120,6 +123,7 @@ class DatabaseStore {
             updateTime: table.gmtModified,
             createTime: table.gmtCreated,
             tableSize: table.tableSize,
+            authorizedPermissionTypes: table.authorizedPermissionTypes || [],
           },
         })) || [];
       this.tableVersion = Date.now();
@@ -127,10 +131,15 @@ class DatabaseStore {
   }
 
   @action
-  public async loadTable(tableName: string) {
+  public async loadTable(tableInfo: TableInfo) {
+    const { tableName, authorizedPermissionTypes } = tableInfo;
     const table = await getTableInfo(tableName, this.dbName, this.sessionId);
     if (!table) {
       return;
+    }
+    // 保持权限字段不被覆盖
+    if (table.info) {
+      table.info.authorizedPermissionTypes = authorizedPermissionTypes;
     }
     const idx = this.tables.findIndex((t) => t.info.tableName === tableName);
     if (idx > -1) {

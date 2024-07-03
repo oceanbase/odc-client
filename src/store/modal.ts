@@ -24,10 +24,12 @@ import {
   TaskDetail,
   IMockDataParams,
   IApplyDatabasePermissionTaskParams,
+  IApplyTablePermissionTaskParams,
   SubTaskStatus,
   IMultipleAsyncTaskParams,
 } from '@/d.ts';
-import { IDatabase } from '@/d.ts/database';
+import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
+import { TablePermissionType } from '@/d.ts/table';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
 import { IDataSourceModeConfig } from '@/common/datasource/interface';
@@ -83,7 +85,17 @@ interface ApplyPermissionData {}
 interface ApplyDatabasePermissionData {
   projectId?: number;
   databaseId?: number;
+  types?: DatabasePermissionType[];
   task?: Partial<TaskDetail<IApplyDatabasePermissionTaskParams>>;
+}
+
+interface ApplyTablePermissionData {
+  projectId?: number;
+  databaseId?: number;
+  tableName?: string;
+  tableId?: number;
+  types?: TablePermissionType[];
+  task?: Partial<TaskDetail<IApplyTablePermissionTaskParams>>;
 }
 
 interface IExportModalData {
@@ -202,6 +214,9 @@ export class ModalStore {
   public applyDatabasePermissionVisible: boolean = false;
 
   @observable
+  public applyTablePermissionVisible: boolean = false;
+
+  @observable
   public partitionVisible: boolean = false;
 
   @observable
@@ -257,6 +272,9 @@ export class ModalStore {
 
   @observable
   public applyDatabasePermissionData: ApplyDatabasePermissionData = null;
+
+  @observable
+  public applyTablePermissionData: ApplyTablePermissionData = null;
 
   @observable
   public asyncTaskData: AsyncData = null;
@@ -517,6 +535,12 @@ export class ModalStore {
   }
 
   @action
+  public changeApplyTablePermissionModal(isShow: boolean = true, data?: any) {
+    this.applyTablePermissionVisible = isShow;
+    this.applyTablePermissionData = isShow ? data : null;
+  }
+
+  @action
   public changePartitionModal(isShow: boolean = true, data?: IPartitionTaskData) {
     this.partitionVisible = isShow;
     this.partitionData = isShow ? data : null;
@@ -642,6 +666,7 @@ export class ModalStore {
 
     this.applyPermissionVisible = false;
     this.applyDatabasePermissionVisible = false;
+    this.applyTablePermissionVisible = false;
     this.partitionVisible = false;
     this.dataArchiveVisible = false;
     this.dataClearVisible = false;
