@@ -25,7 +25,7 @@ import type { UserStore } from '@/store/login';
 import { IProject, ProjectRole } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';
 import { inject, observer } from 'mobx-react';
-import { Button, message, Popconfirm, Space, Tag } from 'antd';
+import { Button, message, Popconfirm, Space, Tag, Tooltip } from 'antd';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ProjectContext from '../ProjectContext';
 import AddUserModal from './AddUserModal';
@@ -53,6 +53,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
   const context = useContext(ProjectContext);
   const { project } = context;
   const isOwner = project?.currentUserResourceRoles?.some((item) => item === ProjectRole.OWNER);
+  const isDBA = project?.currentUserResourceRoles?.some((item) => item === ProjectRole.DBA);
   const [addUserModalVisiable, setAddUserModalVisiable] = useState(false);
   const [manageModalVisiable, setManageModalVisiable] = useState(false);
   const [editUserId, setEditUserId] = useState<number>(null);
@@ -117,7 +118,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
     <TableCard
       title={
         <TooltipAction
-          title={!isOwner ? formatMessage({ id: 'src.page.Project.User.0C0586E8' }) : ''}
+          title={isOwner || isDBA ? '' : formatMessage({ id: 'src.page.Project.User.0C0586E8' })}
         >
           <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={!isOwner}>
             {
@@ -184,11 +185,12 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
             dataIndex: 'name',
             width: 135,
             render(_, record) {
-              const disabled = !isOwner;
+              const disabled = !isOwner && !isDBA;
               const isMe = userStore?.user?.id === record.id;
               return (
                 <Action.Group size={3}>
                   <Action.Link
+                    key="managePermission"
                     disabled={disabled && !isMe}
                     tooltip={
                       disabled && !isMe
@@ -199,11 +201,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                       showManageModal(record.id);
                     }}
                   >
-                    {
-                      formatMessage({
-                        id: 'src.page.Project.User.26C36450' /*管理库权限*/,
-                      }) /* 管理库权限 */
-                    }
+                    管理权限
                   </Action.Link>
                   <Action.Link
                     onClick={() => updateUser(record.id)}
@@ -213,11 +211,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                       disabled ? formatMessage({ id: 'src.page.Project.User.AC258D23' }) : ''
                     }
                   >
-                    {
-                      formatMessage({
-                        id: 'odc.Project.User.Edit',
-                      }) /*编辑*/
-                    }
+                    编辑角色
                   </Action.Link>
                   <Popconfirm
                     key="import"

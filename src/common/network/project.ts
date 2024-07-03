@@ -15,7 +15,13 @@
  */
 
 import { IResponseData, IUserSummary } from '@/d.ts';
-import { IProject, ProjectRole, PermissionSourceType, IDatabasePermission } from '@/d.ts/project';
+import {
+  IProject,
+  ProjectRole,
+  PermissionSourceType,
+  IDatabasePermission,
+  ITablePermission,
+} from '@/d.ts/project';
 import { DatabasePermissionType } from '@/d.ts/database';
 import request from '@/util/request';
 
@@ -170,10 +176,55 @@ export async function getDatabasePermissions(params: {
   return res?.data;
 }
 
-// 回收权限
-export async function reclaimPermission(projectId: number, ids: number[]): Promise<boolean> {
+/**
+ * 查询表权限列表
+ */
+export async function getTablePermissions(params: {
+  projectId?: number;
+  userId?: number;
+  fuzzyDatabaseName?: string;
+  fuzzyDatasourceName?: string;
+  environmentIds?: number[];
+  permissionTypes?: DatabasePermissionType;
+  authorizationType?: PermissionSourceType;
+  expiredList?: boolean[];
+  expireSoon?: boolean;
+  endTime?: number;
+  createdByCurrentUser?: boolean;
+  approveByCurrentUser?: boolean;
+  parentInstanceId?: number;
+  connectionId?: string;
+  schema?: string;
+  creator?: string;
+  sort?: string;
+  page?: number;
+  size?: number;
+}): Promise<IResponseData<ITablePermission>> {
+  const { projectId } = params;
+  const res = await request.get(`api/v2/collaboration/projects/${projectId}/tablePermissions`, {
+    params,
+  });
+  return res?.data;
+}
+
+// 回收库权限
+export async function reclaimDatabasePermission(
+  projectId: number,
+  ids: number[],
+): Promise<boolean> {
   const res = await request.delete(
     `api/v2/collaboration/projects/${projectId}/databasePermissions/batchRevoke`,
+    {
+      data: ids,
+    },
+  );
+  return !!res?.data;
+}
+
+// 回收表权限
+export async function reclaimTablePermission(projectId: number, ids: number[]): Promise<boolean> {
+  const res = await request.post(
+    `api/v2/collaboration/projects/${projectId}/tablePermissions/batchRevoke`,
     {
       data: ids,
     },
@@ -190,6 +241,22 @@ export async function addDatabasePermissions(params: {
 }): Promise<boolean> {
   const res = await request.post(
     `/api/v2/collaboration/projects/${params?.projectId}/databasePermissions/batchCreate`,
+    {
+      data: params,
+    },
+  );
+  return !!res?.data;
+}
+
+export async function addTablePermissions(params: {
+  projectId: number;
+  tableIds: number[];
+  types: DatabasePermissionType[];
+  expireTime: number;
+  userId: number;
+}): Promise<boolean> {
+  const res = await request.post(
+    `/api/v2/collaboration/projects/${params?.projectId}/tablePermissions/batchCreate`,
     {
       data: params,
     },

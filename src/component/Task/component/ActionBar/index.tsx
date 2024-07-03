@@ -36,6 +36,7 @@ import {
   TaskStatus,
   TaskType,
   SubTaskStatus,
+  IApplyTablePermissionTaskParams,
   IMultipleAsyncTaskParams,
 } from '@/d.ts';
 import type { UserStore } from '@/store/login';
@@ -195,6 +196,12 @@ const ActionBar: React.FC<IProps> = inject(
         case TaskType.APPLY_DATABASE_PERMISSION: {
           modalStore.changeApplyDatabasePermissionModal(true, {
             task: task as TaskDetail<IApplyDatabasePermissionTaskParams>,
+          });
+          return;
+        }
+        case TaskType.APPLY_TABLE_PERMISSION: {
+          modalStore.changeApplyTablePermissionModal(true, {
+            task: task as TaskDetail<IApplyTablePermissionTaskParams>,
           });
           return;
         }

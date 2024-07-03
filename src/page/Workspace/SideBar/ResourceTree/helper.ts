@@ -35,12 +35,12 @@ export async function loadNode(
       break;
     }
     case ResourceNodeType.Table: {
-      const tableName = (data as ITableModel).info.tableName;
+      const tableInfo = (data as ITableModel).info;
       const dbSession = sessionManagerStore.sessionMap.get(sessionId);
       if (!dbSession) {
         break;
       }
-      await dbSession.database.loadTable(tableName);
+      await dbSession.database.loadTable(tableInfo);
       break;
     }
     case ResourceNodeType.ViewRoot: {

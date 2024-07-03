@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { DatabasePermissionType } from '@/d.ts/database';
+
 export interface IServerTable {
   name: string;
   columnGroups: IColumnStoreServerType[];
@@ -199,6 +201,26 @@ export enum TableForeignConstraintOnUpdateType {
   RESTRICT = 'RESTRICT',
 }
 
+/**
+ * 表操作的相关权限: 目前与库权限保持一致
+ */
+export enum TablePermissionType {
+  QUERY = 'QUERY',
+  CHANGE = 'CHANGE',
+  EXPORT = 'EXPORT',
+}
+
+export interface IUnauthorizedDBResources {
+  unauthorizedPermissionTypes: (DatabasePermissionType & TablePermissionType)[];
+  dataSourceId: number;
+  projectId: number;
+  projectName: string;
+  databaseId: number;
+  databaseName: string;
+  tableName: string;
+  tableId: number;
+  applicable: boolean;
+}
 export interface IColumnStoreServerType {
   allColumns?: boolean;
   eachColumn?: boolean;
