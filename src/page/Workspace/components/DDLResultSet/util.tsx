@@ -53,5 +53,7 @@ export function copyToSQL(
   if (!selectData) {
     return;
   }
-  copy(exportToSQL(selectData, columns, tableName, dbMode));
+  const { rowIdx, endRowIdx } = gridRef.selectedRange;
+  const newRows = gridRef?.rows.slice(rowIdx, endRowIdx + 1);
+  copy(exportToSQL(selectData, columns, tableName, dbMode, newRows));
 }
