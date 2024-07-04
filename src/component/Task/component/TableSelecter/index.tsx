@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -146,6 +147,7 @@ const getTreeData = (validTableList: IDataBaseWithTable[]) => {
           <Text>{tableItem.name}</Text>
         </Space>
       ),
+
       key: generateKeyByDataBaseIdAndTableName({
         databaseId: id,
         tableName: tableItem.name,
@@ -167,6 +169,7 @@ const getTreeData = (validTableList: IDataBaseWithTable[]) => {
           </Text>
         </Space>
       ),
+
       key: id,
       icon: <Icon component={getDataSourceStyleByConnectType(dataSource.type).dbIcon.component} />,
       checkable: true,
@@ -460,7 +463,13 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
                   checked={checkAll}
                   style={{ marginRight: '8px' }}
                 />
-                <span>选择表</span>
+
+                <span>
+                  {formatMessage({
+                    id: 'src.component.Task.component.TableSelecter.E836E630',
+                    defaultMessage: '选择表',
+                  })}
+                </span>
                 <Text type="secondary">
                   ({selectedTreeDataCount}/{allTreeDataCount})
                 </Text>
@@ -488,7 +497,13 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
       </div>
       <div className={classnames(styles.content, styles.hasIconTree)}>
         <ExportCard
-          title={`已选 ${selectedTreeDataCount} 项`}
+          title={formatMessage(
+            {
+              id: 'src.component.Task.component.TableSelecter.9995622C',
+              defaultMessage: '已选 ${selectedTreeDataCount} 项',
+            },
+            { selectedTreeDataCount: selectedTreeDataCount },
+          )}
           onSearch={(v) => setTargetSearchValue(v)}
           extra={
             <Popconfirm
@@ -496,9 +511,17 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
                 onChange([]);
               }}
               placement="left"
-              title="确定要清空已选对象吗？"
+              title={formatMessage({
+                id: 'src.component.Task.component.TableSelecter.A56A8B2D',
+                defaultMessage: '确定要清空已选对象吗？',
+              })}
             >
-              <a>清空</a>
+              <a>
+                {formatMessage({
+                  id: 'src.component.Task.component.TableSelecter.C6AF0504',
+                  defaultMessage: '清空',
+                })}
+              </a>
             </Popconfirm>
           }
           disabled

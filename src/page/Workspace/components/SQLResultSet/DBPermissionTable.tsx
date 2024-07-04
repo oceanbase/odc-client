@@ -51,7 +51,10 @@ const getColumns = (
     },
     {
       dataIndex: 'tableName',
-      title: '表',
+      title: formatMessage({
+        id: 'src.page.Workspace.components.SQLResultSet.73CA790E',
+        defaultMessage: '表',
+      }),
       ellipsis: true,
     },
     {
@@ -84,8 +87,14 @@ const getColumns = (
                 id: 'src.page.Workspace.components.SQLResultSet.E87F786C',
               }); /* 无法申请数据库权限：数据库没有归属项目 */
           tableTooltip = _.projectId
-            ? '无法申请表权限：没有加入数据库所属项目'
-            : '无法申请表权限：表所属数据库没有归属项目';
+            ? formatMessage({
+                id: 'src.page.Workspace.components.SQLResultSet.455E73CE',
+                defaultMessage: '无法申请表权限：没有加入数据库所属项目',
+              })
+            : formatMessage({
+                id: 'src.page.Workspace.components.SQLResultSet.3BA312DB',
+                defaultMessage: '无法申请表权限：表所属数据库没有归属项目',
+              });
         }
         return (
           <Action.Group size={2}>
@@ -97,7 +106,10 @@ const getColumns = (
                 applyDataBaseTask?.(_?.projectId, _?.databaseId, _?.unauthorizedPermissionTypes);
               }}
             >
-              申请库权限
+              {formatMessage({
+                id: 'src.page.Workspace.components.SQLResultSet.6CF6ACD1',
+                defaultMessage: '申请库权限',
+              })}
             </Action.Link>
             {
               <Action.Link
@@ -114,7 +126,10 @@ const getColumns = (
                   );
                 }}
               >
-                申请表权限
+                {formatMessage({
+                  id: 'src.page.Workspace.components.SQLResultSet.44FA6D77',
+                  defaultMessage: '申请表权限',
+                })}
               </Action.Link>
             }
           </Action.Group>
@@ -122,6 +137,7 @@ const getColumns = (
       },
     },
   ];
+
   return columns;
 };
 
@@ -223,7 +239,12 @@ const DBPermissionTable: React.FC<IProps> = (props) => {
                     }) /* 失败原因： */
                   }
                 </span>
-                <Text type="secondary">缺少以下数据库表对应权限，请先申请权限</Text>
+                <Text type="secondary">
+                  {formatMessage({
+                    id: 'src.page.Workspace.components.SQLResultSet.DDB9284D',
+                    defaultMessage: '缺少以下数据库表对应权限，请先申请权限',
+                  })}
+                </Text>
               </Space>
               <div className={styles.track}>
                 <DBPermissionTableContent

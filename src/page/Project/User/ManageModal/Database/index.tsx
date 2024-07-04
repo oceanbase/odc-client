@@ -119,6 +119,7 @@ const ManageModal: React.FC<IProps> = (props) => {
           }
         </Text>
       ),
+
       cancelText: formatMessage({ id: 'src.page.Project.User.ManageModal.2FE8276F' }), //'取消'
       okText: formatMessage({ id: 'src.page.Project.User.ManageModal.1C087F21' }), //'确定'
       centered: true,
@@ -154,7 +155,12 @@ const ManageModal: React.FC<IProps> = (props) => {
       <div className={styles.header}>
         <div>
           <Radio.Group onChange={handleChangeKey} value={authorizationType}>
-            <Radio.Button value={PermissionSourceType.TICKET_APPLICATION}>工单授权</Radio.Button>
+            <Radio.Button value={PermissionSourceType.TICKET_APPLICATION}>
+              {formatMessage({
+                id: 'src.page.Project.User.ManageModal.Database.1007E283',
+                defaultMessage: '工单授权',
+              })}
+            </Radio.Button>
             <Radio.Button value={PermissionSourceType.USER_AUTHORIZATION}>
               {
                 formatMessage({

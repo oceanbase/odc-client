@@ -62,7 +62,9 @@ const SQLConfig: React.FC<IProps> = function (props) {
   function renderContent() {
     return (
       <Row>
-        <h4>SQL 执行</h4>
+        <h4>
+          {formatMessage({ id: 'src.component.SQLConfig.1A5CCA98', defaultMessage: 'SQL 执行' })}
+        </h4>
         <div className={styles.sqlconfigGroup}>
           <Row
             style={{
@@ -134,7 +136,9 @@ const SQLConfig: React.FC<IProps> = function (props) {
             )}
           </Row>
         </div>
-        <h4>SQL 执行</h4>
+        <h4>
+          {formatMessage({ id: 'src.component.SQLConfig.A614A99E', defaultMessage: 'SQL 执行' })}
+        </h4>
         <div className={styles.sqlconfigGroup}>
           <Row
             style={{

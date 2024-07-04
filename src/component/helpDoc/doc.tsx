@@ -642,7 +642,11 @@ export default {
 
   ApplyDatabasePermissionChangeTip: (
     <p>
-      {`新建数据库变更类工单（包括导入、模拟数据、数据库变更、影子表同步、SQL 计划、分区计划、数据归档和数据清理）的权限和 SQL窗口执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束）`}
+      {formatMessage({
+        id: 'src.component.helpDoc.2207D608',
+        defaultMessage:
+          '新建数据库变更类工单（包括导入、模拟数据、数据库变更、影子表同步、SQL 计划、分区计划、数据归档和数据清理）的权限和 SQL窗口执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束）',
+      })}
     </p>
   ),
 
@@ -666,13 +670,31 @@ export default {
     </p>
   ),
 
-  ApplyTablePermissionQueryTip: <p>SQL窗口内执行查询语句的权限</p>,
+  ApplyTablePermissionQueryTip: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.5D9071C2',
+        defaultMessage: 'SQL窗口内执行查询语句的权限',
+      })}
+    </p>
+  ),
 
-  ApplyTablePermissionExportTip: <p>新建导出和导出结果集工单的权限</p>,
+  ApplyTablePermissionExportTip: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.A0958282',
+        defaultMessage: '新建导出和导出结果集工单的权限',
+      })}
+    </p>
+  ),
 
   ApplyTablePermissionChangeTip: (
     <p>
-      新建数据库变更类工单（包括导入、模拟数据、数据库变更、影子表同步、SQL计划、分区计划、数据归档和数据清理）的权限和SQL窗口执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束）
+      {formatMessage({
+        id: 'src.component.helpDoc.618FF120',
+        defaultMessage:
+          '新建数据库变更类工单（包括导入、模拟数据、数据库变更、影子表同步、SQL计划、分区计划、数据归档和数据清理）的权限和SQL窗口执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束）',
+      })}
     </p>
   ),
 

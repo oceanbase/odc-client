@@ -201,7 +201,10 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                       showManageModal(record.id);
                     }}
                   >
-                    管理权限
+                    {formatMessage({
+                      id: 'src.page.Project.User.3AE67EC2',
+                      defaultMessage: '管理权限',
+                    })}
                   </Action.Link>
                   <Action.Link
                     onClick={() => updateUser(record.id)}
@@ -211,7 +214,10 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                       disabled ? formatMessage({ id: 'src.page.Project.User.AC258D23' }) : ''
                     }
                   >
-                    编辑角色
+                    {formatMessage({
+                      id: 'src.page.Project.User.D1A92D2A',
+                      defaultMessage: '编辑角色',
+                    })}
                   </Action.Link>
                   <Popconfirm
                     key="import"

@@ -671,9 +671,25 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     if (guideCacheStore?.[guideCacheStore.cacheEnum.executePlan]) return null;
     return (
       <div>
-        <div>SQL 执行画像</div>
-        <div>支持 SQL 执行实时剖析，物理执行计划、全链路诊断也一段描述一段描述一段描述</div>
-        <Link onClick={updateExecutePlanGuideCache}>我知道了</Link>
+        <div>
+          {formatMessage({
+            id: 'src.page.Workspace.components.DDLResultSet.E32AB474',
+            defaultMessage: 'SQL 执行画像',
+          })}
+        </div>
+        <div>
+          {formatMessage({
+            id: 'src.page.Workspace.components.DDLResultSet.DBFC3F33',
+            defaultMessage:
+              '支持 SQL 执行实时剖析，物理执行计划、全链路诊断也一段描述一段描述一段描述',
+          })}
+        </div>
+        <Link onClick={updateExecutePlanGuideCache}>
+          {formatMessage({
+            id: 'src.page.Workspace.components.DDLResultSet.D7F6AF75',
+            defaultMessage: '我知道了',
+          })}
+        </Link>
       </div>
     );
   };
@@ -681,7 +697,10 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   const getExecuteIcon = () => {
     return showExecutePlan ? (
       <ToolbarButton
-        text={'执行画像'}
+        text={formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.22F863D6',
+          defaultMessage: '执行画像',
+        })}
         icon={<Icon component={SqlProfile} />}
         onClick={() => {
           updateExecutePlanGuideCache();
@@ -728,6 +747,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               />
             </Tooltip>
           ))}
+
         {showTrace ? (
           <ToolbarButton
             text={
@@ -1062,10 +1082,10 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             ) : null}
 
             {/* <ToolbarButton
-                  text={formatMessage({ id: "workspace.window.session.button.refresh" })}
-                  icon={<Icon type="sync" />}
-                  onClick={onRefresh.bind(this, this.state.limit || 1000)}
-                  /> */}
+                   text={formatMessage({ id: "workspace.window.session.button.refresh" })}
+                   icon={<Icon type="sync" />}
+                   onClick={onRefresh.bind(this, this.state.limit || 1000)}
+                   /> */}
           </div>
           <div className={styles.toolsRight}>
             <span className={styles.limit}>
@@ -1217,6 +1237,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             enableFrozenRow={true}
             pasteFormatter={pasteFormatter}
           />
+
           <ColumnModeModal
             visible={showColumnMode}
             onClose={() => {

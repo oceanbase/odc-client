@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -37,11 +38,17 @@ const contentMap = {
 
 const items: MenuItem[] = [
   {
-    label: '库权限',
+    label: formatMessage({
+      id: 'src.page.Project.User.ManageModal.946C38DA',
+      defaultMessage: '库权限',
+    }),
     key: EManagePermissionType.DATABASE,
   },
   {
-    label: '表权限',
+    label: formatMessage({
+      id: 'src.page.Project.User.ManageModal.81C0C3D0',
+      defaultMessage: '表权限',
+    }),
     key: EManagePermissionType.TABLE,
   },
 ];
@@ -67,7 +74,10 @@ const ManageModal: React.FC<IProps> = (props) => {
     <Drawer
       open={visible}
       width={925}
-      title="管理权限"
+      title={formatMessage({
+        id: 'src.page.Project.User.ManageModal.A4F73E8C',
+        defaultMessage: '管理权限',
+      })}
       destroyOnClose
       className={styles.detailDrawer}
       footer={null}
