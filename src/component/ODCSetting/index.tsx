@@ -165,13 +165,6 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
 
   async function save() {
     const values = await formRef.validateFields();
-    if (
-      (values['odc.editor.shortcut.executeStatement'] =
-        values['odc.editor.shortcut.executeCurrentStatement'])
-    ) {
-      message.warning('快捷键冲突, 请重新输入。');
-      return;
-    }
     const serverData: Record<string, string> = {},
       localData = {};
     Object.keys(values).forEach((key) => {
@@ -187,6 +180,13 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
         }
       }
     });
+    if (
+      serverData['odc.editor.shortcut.executeStatement'] ===
+      serverData['odc.editor.shortcut.executeCurrentStatement']
+    ) {
+      message.warning('快捷键冲突, 请重新输入。');
+      return;
+    }
     /**
      * submit serverData
      */
