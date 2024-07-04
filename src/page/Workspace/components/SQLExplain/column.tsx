@@ -168,19 +168,28 @@ export const getSqlProfileColumns = () => {
     },
     {
       dataIndex: 'cost',
-      title: '预估代价',
+      title: formatMessage({
+        id: 'src.page.Workspace.components.SQLExplain.F472322D',
+        defaultMessage: '预估代价',
+      }),
       width: 86,
       fixed: 'right',
     },
     {
       dataIndex: 'realRowCount',
-      title: '实际行',
+      title: formatMessage({
+        id: 'src.page.Workspace.components.SQLExplain.E0965DAC',
+        defaultMessage: '实际行',
+      }),
       width: 86,
       fixed: 'right',
     },
     {
       dataIndex: 'realCost',
-      title: '实际代价',
+      title: formatMessage({
+        id: 'src.page.Workspace.components.SQLExplain.E0AB0E4C',
+        defaultMessage: '实际代价',
+      }),
       width: 86,
       fixed: 'right',
     },

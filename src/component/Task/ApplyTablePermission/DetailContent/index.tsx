@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -27,7 +28,10 @@ const getConnectionColumns = () => {
   return [
     {
       dataIndex: 'databaseName',
-      title: '数据库',
+      title: formatMessage({
+        id: 'src.component.Task.ApplyTablePermission.DetailContent.9E007486',
+        defaultMessage: '数据库',
+      }),
       ellipsis: true,
       width: 240,
       render(databaseName: string, { dataSourceType }) {
@@ -44,13 +48,19 @@ const getConnectionColumns = () => {
     },
     {
       dataIndex: 'tableName',
-      title: '表',
+      title: formatMessage({
+        id: 'src.component.Task.ApplyTablePermission.DetailContent.658E0B9E',
+        defaultMessage: '表',
+      }),
       ellipsis: true,
       width: 240,
     },
     {
       dataIndex: 'dataSourceName',
-      title: '所属数据源',
+      title: formatMessage({
+        id: 'src.component.Task.ApplyTablePermission.DetailContent.04825B86',
+        defaultMessage: '所属数据源',
+      }),
       ellipsis: true,
     },
   ];
@@ -82,19 +92,47 @@ const TaskContent: React.FC<IProps> = (props) => {
   return (
     <>
       <Descriptions column={1}>
-        <Descriptions.Item label="任务编号">{task?.id}</Descriptions.Item>
-        <Descriptions.Item label="任务类型">申请表权限</Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.ApplyTablePermission.DetailContent.8CEA0610',
+            defaultMessage: '任务编号',
+          })}
+        >
+          {task?.id}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.ApplyTablePermission.DetailContent.4B4A4E81',
+            defaultMessage: '任务类型',
+          })}
+        >
+          {formatMessage({
+            id: 'src.component.Task.ApplyTablePermission.DetailContent.6C1A740A',
+            defaultMessage: '申请表权限',
+          })}
+        </Descriptions.Item>
       </Descriptions>
       <Divider
         style={{
           marginTop: 4,
         }}
       />
+
       <Descriptions column={1}>
-        <Descriptions.Item label="项目">{parameters?.project?.name}</Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.ApplyTablePermission.DetailContent.32776504',
+            defaultMessage: '项目',
+          })}
+        >
+          {parameters?.project?.name}
+        </Descriptions.Item>
       </Descriptions>
       <SimpleTextItem
-        label="表"
+        label={formatMessage({
+          id: 'src.component.Task.ApplyTablePermission.DetailContent.3FE43B61',
+          defaultMessage: '表',
+        })}
         content={
           <DisplayTable
             rowKey="tableName"
@@ -116,22 +154,52 @@ const TaskContent: React.FC<IProps> = (props) => {
       />
 
       <Descriptions column={1}>
-        <Descriptions.Item label="权限类型">
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.ApplyTablePermission.DetailContent.64239A78',
+            defaultMessage: '权限类型',
+          })}
+        >
           {parameters?.types?.map((key) => permissionOptionsMap[key].text)?.join(', ')}
         </Descriptions.Item>
-        <Descriptions.Item label="权限有效期">
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.ApplyTablePermission.DetailContent.FB4B30E0',
+            defaultMessage: '权限有效期',
+          })}
+        >
           {getExpireTimeLabel(parameters?.expireTime)}
         </Descriptions.Item>
-        <Descriptions.Item label="申请原因">{parameters?.applyReason}</Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.ApplyTablePermission.DetailContent.55EE2A17',
+            defaultMessage: '申请原因',
+          })}
+        >
+          {parameters?.applyReason}
+        </Descriptions.Item>
       </Descriptions>
       <Divider
         style={{
           marginTop: 4,
         }}
       />
+
       <Descriptions column={1}>
-        <Descriptions.Item label="创建人">{task?.creator?.name || '-'}</Descriptions.Item>
-        <Descriptions.Item label="创建时间">
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.ApplyTablePermission.DetailContent.2740E99B',
+            defaultMessage: '创建人',
+          })}
+        >
+          {task?.creator?.name || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.ApplyTablePermission.DetailContent.7EEDDF7A',
+            defaultMessage: '创建时间',
+          })}
+        >
           {getFormatDateTime(task?.createTime)}
         </Descriptions.Item>
       </Descriptions>

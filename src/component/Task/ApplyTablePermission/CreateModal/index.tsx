@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -66,7 +67,12 @@ export const getExpireTime = (expireTime, customExpireTime, isCustomExpireTime) 
 
 export const getExpireTimeLabel = (expireTime) => {
   const label = moment(expireTime).format('YYYY-MM-DD');
-  return label === MAX_DATE_LABEL ? '永不过期' : label;
+  return label === MAX_DATE_LABEL
+    ? formatMessage({
+        id: 'src.component.Task.ApplyTablePermission.CreateModal.BC4488C7',
+        defaultMessage: '永不过期',
+      })
+    : label;
 };
 
 const Label: React.FC<{
@@ -80,17 +86,26 @@ const Label: React.FC<{
 
 export const permissionOptionsMap = {
   [TablePermissionType.QUERY]: {
-    text: '查询',
+    text: formatMessage({
+      id: 'src.component.Task.ApplyTablePermission.CreateModal.82C8FE0E',
+      defaultMessage: '查询',
+    }),
     docKey: 'ApplyTablePermissionQueryTip',
     value: TablePermissionType.QUERY,
   },
   [TablePermissionType.EXPORT]: {
-    text: '导出',
+    text: formatMessage({
+      id: 'src.component.Task.ApplyTablePermission.CreateModal.E26609A0',
+      defaultMessage: '导出',
+    }),
     docKey: 'ApplyTablePermissionExportTip',
     value: TablePermissionType.EXPORT,
   },
   [TablePermissionType.CHANGE]: {
-    text: '变更',
+    text: formatMessage({
+      id: 'src.component.Task.ApplyTablePermission.CreateModal.D802CFB3',
+      defaultMessage: '变更',
+    }),
     docKey: 'ApplyTablePermissionChangeTip',
     value: TablePermissionType.CHANGE,
   },
@@ -105,35 +120,59 @@ export const permissionOptions = Object.values(permissionOptionsMap)?.map(
 
 export const expireTimeOptions = [
   {
-    label: '7 天',
+    label: formatMessage({
+      id: 'src.component.Task.ApplyTablePermission.CreateModal.F357A49C',
+      defaultMessage: '7 天',
+    }),
     value: '7,days',
   },
   {
-    label: '30 天',
+    label: formatMessage({
+      id: 'src.component.Task.ApplyTablePermission.CreateModal.DFADB0AB',
+      defaultMessage: '30 天',
+    }),
     value: '30,days',
   },
   {
-    label: '90 天',
+    label: formatMessage({
+      id: 'src.component.Task.ApplyTablePermission.CreateModal.E06F8910',
+      defaultMessage: '90 天',
+    }),
     value: '90,days',
   },
   {
-    label: '半 年',
+    label: formatMessage({
+      id: 'src.component.Task.ApplyTablePermission.CreateModal.76C327CA',
+      defaultMessage: '半 年',
+    }),
     value: '0.5,years',
   },
   {
-    label: '1 年',
+    label: formatMessage({
+      id: 'src.component.Task.ApplyTablePermission.CreateModal.D6E6AE6E',
+      defaultMessage: '1 年',
+    }),
     value: '1,years',
   },
   {
-    label: '3年',
+    label: formatMessage({
+      id: 'src.component.Task.ApplyTablePermission.CreateModal.A004AEF5',
+      defaultMessage: '3年',
+    }),
     value: '3,years',
   },
   {
-    label: '永不过期',
+    label: formatMessage({
+      id: 'src.component.Task.ApplyTablePermission.CreateModal.705AE4C3',
+      defaultMessage: '永不过期',
+    }),
     value: 'never',
   },
   {
-    label: '自定义',
+    label: formatMessage({
+      id: 'src.component.Task.ApplyTablePermission.CreateModal.F4D36D95',
+      defaultMessage: '自定义',
+    }),
     value: 'custom',
   },
 ];
@@ -177,7 +216,10 @@ const CreateModal: React.FC<IProps> = (props) => {
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
-        title: '确认取消申请表权限吗？',
+        title: formatMessage({
+          id: 'src.component.Task.ApplyTablePermission.CreateModal.11B637AA',
+          defaultMessage: '确认取消申请表权限吗？',
+        }),
         centered: true,
         onOk: () => {
           modalStore.changeApplyTablePermissionModal(false);
@@ -213,7 +255,12 @@ const CreateModal: React.FC<IProps> = (props) => {
         handleCancel(false);
         setConfirmLoading(false);
         if (res) {
-          message.success('工单创建成功');
+          message.success(
+            formatMessage({
+              id: 'src.component.Task.ApplyTablePermission.CreateModal.0D449988',
+              defaultMessage: '工单创建成功',
+            }),
+          );
           openTasksPage(TaskPageType.APPLY_TABLE_PERMISSION, TaskPageScope.CREATED_BY_CURRENT_USER);
         }
       })
@@ -300,10 +347,18 @@ const CreateModal: React.FC<IProps> = (props) => {
             height: 72,
           }}
         />
+
         <span>
-          暂无项目，请先
+          {formatMessage({
+            id: 'src.component.Task.ApplyTablePermission.CreateModal.8955ACFE',
+            defaultMessage: '暂无项目，请先',
+          })}
+
           <Button type="link" onClick={applyProjectPermission}>
-            加入项目
+            {formatMessage({
+              id: 'src.component.Task.ApplyTablePermission.CreateModal.DEF52B23',
+              defaultMessage: '加入项目',
+            })}
           </Button>
         </span>
       </div>
@@ -314,7 +369,10 @@ const CreateModal: React.FC<IProps> = (props) => {
       destroyOnClose
       className={styles.createModal}
       width={816}
-      title="申请表权限"
+      title={formatMessage({
+        id: 'src.component.Task.ApplyTablePermission.CreateModal.7DDD3557',
+        defaultMessage: '申请表权限',
+      })}
       footer={
         <Space>
           <Button
@@ -322,10 +380,16 @@ const CreateModal: React.FC<IProps> = (props) => {
               handleCancel(hasEdit);
             }}
           >
-            取消
+            {formatMessage({
+              id: 'src.component.Task.ApplyTablePermission.CreateModal.95EB40E7',
+              defaultMessage: '取消',
+            })}
           </Button>
           <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
-            新建
+            {formatMessage({
+              id: 'src.component.Task.ApplyTablePermission.CreateModal.AB5C56FA',
+              defaultMessage: '新建',
+            })}
           </Button>
         </Space>
       }
@@ -343,12 +407,18 @@ const CreateModal: React.FC<IProps> = (props) => {
         onFieldsChange={handleFieldsChange}
       >
         <Form.Item
-          label="项目"
+          label={formatMessage({
+            id: 'src.component.Task.ApplyTablePermission.CreateModal.524AEC5C',
+            defaultMessage: '项目',
+          })}
           name="projectId"
           rules={[
             {
               required: true,
-              message: '请选择项目',
+              message: formatMessage({
+                id: 'src.component.Task.ApplyTablePermission.CreateModal.77D8F632',
+                defaultMessage: '请选择项目',
+              }),
             },
           ]}
         >
@@ -356,7 +426,10 @@ const CreateModal: React.FC<IProps> = (props) => {
             showSearch
             style={{ width: 336 }}
             options={projectOptions}
-            placeholder="请选择"
+            placeholder={formatMessage({
+              id: 'src.component.Task.ApplyTablePermission.CreateModal.DC9A3E27',
+              defaultMessage: '请选择',
+            })}
             filterOption={(input, option) =>
               (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
             }
@@ -366,12 +439,18 @@ const CreateModal: React.FC<IProps> = (props) => {
         </Form.Item>
         <Form.Item
           name="tables"
-          label="表"
+          label={formatMessage({
+            id: 'src.component.Task.ApplyTablePermission.CreateModal.8A62AFC4',
+            defaultMessage: '表',
+          })}
           required
           rules={[
             {
               required: true,
-              message: '请选择',
+              message: formatMessage({
+                id: 'src.component.Task.ApplyTablePermission.CreateModal.78B63403',
+                defaultMessage: '请选择',
+              }),
             },
           ]}
         >
@@ -379,11 +458,17 @@ const CreateModal: React.FC<IProps> = (props) => {
         </Form.Item>
         <Form.Item
           name="types"
-          label="权限类型"
+          label={formatMessage({
+            id: 'src.component.Task.ApplyTablePermission.CreateModal.3BCFDC84',
+            defaultMessage: '权限类型',
+          })}
           rules={[
             {
               required: true,
-              message: '请选择',
+              message: formatMessage({
+                id: 'src.component.Task.ApplyTablePermission.CreateModal.72AFD173',
+                defaultMessage: '请选择',
+              }),
             },
           ]}
         >
@@ -391,19 +476,28 @@ const CreateModal: React.FC<IProps> = (props) => {
         </Form.Item>
         <Space style={{ width: '100%' }} size={60}>
           <Form.Item
-            label="权限有效期"
+            label={formatMessage({
+              id: 'src.component.Task.ApplyTablePermission.CreateModal.472B1735',
+              defaultMessage: '权限有效期',
+            })}
             name="expireTime"
             rules={[
               {
                 required: true,
-                message: '请选择',
+                message: formatMessage({
+                  id: 'src.component.Task.ApplyTablePermission.CreateModal.BC9BE9CE',
+                  defaultMessage: '请选择',
+                }),
               },
             ]}
           >
             <Select
               style={{ width: '327px' }}
               showSearch
-              placeholder="请选择"
+              placeholder={formatMessage({
+                id: 'src.component.Task.ApplyTablePermission.CreateModal.A206D2B4',
+                defaultMessage: '请选择',
+              })}
               options={expireTimeOptions}
             />
           </Form.Item>
@@ -413,12 +507,18 @@ const CreateModal: React.FC<IProps> = (props) => {
               return (
                 isCustomExpireTime && (
                   <Form.Item
-                    label="结束日期"
+                    label={formatMessage({
+                      id: 'src.component.Task.ApplyTablePermission.CreateModal.06672C99',
+                      defaultMessage: '结束日期',
+                    })}
                     name="customExpireTime"
                     rules={[
                       {
                         required: true,
-                        message: '请选择',
+                        message: formatMessage({
+                          id: 'src.component.Task.ApplyTablePermission.CreateModal.55D2BC4D',
+                          defaultMessage: '请选择',
+                        }),
                       },
                     ]}
                   >
@@ -430,20 +530,35 @@ const CreateModal: React.FC<IProps> = (props) => {
           </Form.Item>
         </Space>
         <Form.Item
-          label="申请原因"
+          label={formatMessage({
+            id: 'src.component.Task.ApplyTablePermission.CreateModal.B2D5729B',
+            defaultMessage: '申请原因',
+          })}
           name="applyReason"
           rules={[
             {
               required: true,
-              message: '请输入原因描述',
+              message: formatMessage({
+                id: 'src.component.Task.ApplyTablePermission.CreateModal.A92A0F62',
+                defaultMessage: '请输入原因描述',
+              }),
             },
             {
               max: 200,
-              message: '申请原因不超过 200 个字符',
+              message: formatMessage({
+                id: 'src.component.Task.ApplyTablePermission.CreateModal.319F7B70',
+                defaultMessage: '申请原因不超过 200 个字符',
+              }),
             },
           ]}
         >
-          <Input.TextArea rows={6} placeholder="请输出原因描述" />
+          <Input.TextArea
+            rows={6}
+            placeholder={formatMessage({
+              id: 'src.component.Task.ApplyTablePermission.CreateModal.8B90F708',
+              defaultMessage: '请输出原因描述',
+            })}
+          />
         </Form.Item>
       </Form>
     </Drawer>

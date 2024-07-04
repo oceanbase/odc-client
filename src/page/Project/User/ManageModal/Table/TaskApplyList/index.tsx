@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -46,11 +47,21 @@ const getColumns = (params: {
   return [
     {
       dataIndex: 'databaseName',
-      title: '数据库',
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.F9701758',
+        defaultMessage: '数据库',
+      }),
       ellipsis: true,
       filterDropdown: (props) => {
         return (
-          <SearchFilter {...props} selectedKeys={filters?.databaseName} placeholder="请输入" />
+          <SearchFilter
+            {...props}
+            selectedKeys={filters?.databaseName}
+            placeholder={formatMessage({
+              id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.88257A65',
+              defaultMessage: '请输入',
+            })}
+          />
         );
       },
       filterIcon: (filtered) => (
@@ -66,10 +77,22 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'tableName',
-      title: '表',
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.8F13E12E',
+        defaultMessage: '表',
+      }),
       ellipsis: true,
       filterDropdown: (props) => {
-        return <SearchFilter {...props} selectedKeys={filters?.tableName} placeholder="请输入" />;
+        return (
+          <SearchFilter
+            {...props}
+            selectedKeys={filters?.tableName}
+            placeholder={formatMessage({
+              id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.F38F822F',
+              defaultMessage: '请输入',
+            })}
+          />
+        );
       },
       filterIcon: (filtered) => (
         <SearchOutlined
@@ -84,12 +107,22 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'dataSourceName',
-      title: '所属数据源',
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.E80C6744',
+        defaultMessage: '所属数据源',
+      }),
       ellipsis: true,
       width: 188,
       filterDropdown: (props) => {
         return (
-          <SearchFilter {...props} selectedKeys={filters?.dataSourceName} placeholder="请输入" />
+          <SearchFilter
+            {...props}
+            selectedKeys={filters?.dataSourceName}
+            placeholder={formatMessage({
+              id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.C0ABE640',
+              defaultMessage: '请输入',
+            })}
+          />
         );
       },
       filterIcon: (filtered) => (
@@ -105,10 +138,22 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'ticketId',
-      title: '工单编号',
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.C0E75C97',
+        defaultMessage: '工单编号',
+      }),
       width: 128,
       filterDropdown: (props) => {
-        return <SearchFilter {...props} selectedKeys={filters?.ticketId} placeholder="请输入" />;
+        return (
+          <SearchFilter
+            {...props}
+            selectedKeys={filters?.ticketId}
+            placeholder={formatMessage({
+              id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.3B1CD3B1',
+              defaultMessage: '请输入',
+            })}
+          />
+        );
       },
       filterIcon: (filtered) => (
         <SearchOutlined
@@ -134,7 +179,10 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'type',
-      title: '权限类型',
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.9C75241F',
+        defaultMessage: '权限类型',
+      }),
       width: 120,
       filters: tablePermissionTypeFilters,
       filteredValue: filters?.type || null,
@@ -142,14 +190,20 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'expireTime',
-      title: '过期时间',
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.EC52BFBC',
+        defaultMessage: '过期时间',
+      }),
       width: 138,
       sorter: true,
       render: getExpireTimeLabel,
     },
     {
       dataIndex: 'status',
-      title: '状态',
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.D8B38717',
+        defaultMessage: '状态',
+      }),
       width: 104,
       filters: tablePermissionStatusFilters,
       filteredValue: filters?.status || null,
@@ -157,7 +211,10 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'action',
-      title: '操作',
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.BC1F3BBD',
+        defaultMessage: '操作',
+      }),
       ellipsis: true,
       width: 65,
       fixed: 'right',
@@ -169,10 +226,18 @@ const getColumns = (params: {
               params?.onReclaim([record.id]);
             }}
             tooltip={
-              record?.status === TablePermissionStatus.EXPIRED ? '过期超三个月后此权限将被清除' : ''
+              record?.status === TablePermissionStatus.EXPIRED
+                ? formatMessage({
+                    id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.8BA76A12',
+                    defaultMessage: '过期超三个月后此权限将被清除',
+                  })
+                : ''
             }
           >
-            回收
+            {formatMessage({
+              id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.9CDE663F',
+              defaultMessage: '回收',
+            })}
           </Action.Link>
         );
       },
@@ -224,7 +289,10 @@ const TaskApplyList: React.FC<IProps> = (props) => {
             ? {
                 options: [
                   {
-                    okText: '批量回收',
+                    okText: formatMessage({
+                      id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.AEDC316B',
+                      defaultMessage: '批量回收',
+                    }),
                     onOk: onReclaim,
                   },
                 ],

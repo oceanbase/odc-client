@@ -33,15 +33,24 @@ const { Text } = Typography;
 
 export const tablePermissionTypeMap = {
   [TablePermissionType.QUERY]: {
-    text: '查询',
+    text: formatMessage({
+      id: 'src.page.Project.User.ManageModal.Table.A3D05C57',
+      defaultMessage: '查询',
+    }),
     value: TablePermissionType.QUERY,
   },
   [TablePermissionType.EXPORT]: {
-    text: '导出',
+    text: formatMessage({
+      id: 'src.page.Project.User.ManageModal.Table.D53578CD',
+      defaultMessage: '导出',
+    }),
     value: TablePermissionType.EXPORT,
   },
   [TablePermissionType.CHANGE]: {
-    text: '变更',
+    text: formatMessage({
+      id: 'src.page.Project.User.ManageModal.Table.070B09D0',
+      defaultMessage: '变更',
+    }),
     value: TablePermissionType.CHANGE,
   },
 };
@@ -114,14 +123,32 @@ const ManageModal: React.FC<IProps> = (props) => {
       : formatMessage({ id: 'src.page.Project.User.ManageModal.8B929D18' });
     Modal.confirm({
       title,
-      content: <Text type="secondary">回收后不可撤回</Text>,
-      cancelText: '取消',
-      okText: '确定',
+      content: (
+        <Text type="secondary">
+          {formatMessage({
+            id: 'src.page.Project.User.ManageModal.Table.7E23C899',
+            defaultMessage: '回收后不可撤回',
+          })}
+        </Text>
+      ),
+      cancelText: formatMessage({
+        id: 'src.page.Project.User.ManageModal.Table.C5AD844C',
+        defaultMessage: '取消',
+      }),
+      okText: formatMessage({
+        id: 'src.page.Project.User.ManageModal.Table.E297BA02',
+        defaultMessage: '确定',
+      }),
       centered: true,
       onOk: async () => {
         const res = await reclaimTablePermission(projectId, ids);
         if (res) {
-          message.success('操作成功');
+          message.success(
+            formatMessage({
+              id: 'src.page.Project.User.ManageModal.Table.2E8F3BF1',
+              defaultMessage: '操作成功',
+            }),
+          );
           tableRef.current?.resetSelectedRows();
           handleReload();
         }
@@ -148,8 +175,18 @@ const ManageModal: React.FC<IProps> = (props) => {
       <div className={styles.header}>
         <div>
           <Radio.Group onChange={handleChangeKey} value={authorizationType}>
-            <Radio.Button value={PermissionSourceType.TICKET_APPLICATION}>工单授权</Radio.Button>
-            <Radio.Button value={PermissionSourceType.USER_AUTHORIZATION}>用户授权</Radio.Button>
+            <Radio.Button value={PermissionSourceType.TICKET_APPLICATION}>
+              {formatMessage({
+                id: 'src.page.Project.User.ManageModal.Table.CED524BB',
+                defaultMessage: '工单授权',
+              })}
+            </Radio.Button>
+            <Radio.Button value={PermissionSourceType.USER_AUTHORIZATION}>
+              {formatMessage({
+                id: 'src.page.Project.User.ManageModal.Table.92D4CD12',
+                defaultMessage: '用户授权',
+              })}
+            </Radio.Button>
           </Radio.Group>
           <HelpDoc isTip leftText doc="userManageTip" />
         </div>

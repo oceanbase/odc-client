@@ -110,12 +110,31 @@ const runningLogPage = (
       <Spin style={{ marginBottom: 16 }} />
       <Space direction="vertical" size="small" align="center">
         <div>
-          共有 {count} 个 SQL 执行，当前正在执行第 {finishCount + 1} 个
+          {formatMessage({
+            id: 'src.page.Workspace.components.SQLResultSet.A9F2E27A',
+            defaultMessage: '共有',
+          })}
+          {count}
+          {formatMessage({
+            id: 'src.page.Workspace.components.SQLResultSet.097EAD0C',
+            defaultMessage: '个 SQL 执行，当前正在执行第',
+          })}
+          {finishCount + 1}
+          {formatMessage({
+            id: 'src.page.Workspace.components.SQLResultSet.0B5B598B',
+            defaultMessage: '个',
+          })}
         </div>
         <div>
           {currentExecuteInfo?.traceId && (
             <Space size="small">
-              <span>当前 Trace ID: {currentExecuteInfo?.traceId}</span>
+              <span>
+                {formatMessage({
+                  id: 'src.page.Workspace.components.SQLResultSet.9BDFC99E',
+                  defaultMessage: '当前 Trace ID:',
+                })}
+                {currentExecuteInfo?.traceId}
+              </span>
               {isSupportProfile ? (
                 <Link
                   onClick={() =>
@@ -125,7 +144,10 @@ const runningLogPage = (
                     )
                   }
                 >
-                  查看执行画像
+                  {formatMessage({
+                    id: 'src.page.Workspace.components.SQLResultSet.4035B347',
+                    defaultMessage: '查看执行画像',
+                  })}
                 </Link>
               ) : null}
             </Space>
@@ -133,7 +155,10 @@ const runningLogPage = (
         </div>
       </Space>
       <Button onClick={stopRunning} style={{ marginTop: 16 }}>
-        终 止
+        {formatMessage({
+          id: 'src.page.Workspace.components.SQLResultSet.D3F95049',
+          defaultMessage: '终 止',
+        })}
       </Button>
     </div>
   );
@@ -154,6 +179,7 @@ const SQLResultLog: React.FC<IProps> = function (props) {
         <Spin />
       </div>
     );
+
   const { currentExecuteInfo } = resultSet;
   if (currentExecuteInfo?.finished) {
     const logs = resultSet.logTypeData
@@ -228,6 +254,7 @@ const SQLResultLog: React.FC<IProps> = function (props) {
               ) : (
                 <CloseCircleFilled style={{ color: '#F5222D' }} />
               )}
+
               {isCanceled
                 ? formatMessage({
                     id: 'odc.components.SQLResultSet.SQLResultLog.SqlExecutionCanceled',

@@ -140,8 +140,14 @@ export const AuditEventMetaMap = {
   [AuditEventActionType.DATABASE_PERMISSION_MANAGEMENT]: formatMessage({
     id: 'src.page.Secure.Record.RecordPage.5B4CDCAF',
   }), //'库权限管理'
-  [AuditEventActionType.APPLY_TABLE_PERMISSION]: '申请表权限',
-  [AuditEventActionType.TABLE_PERMISSION_MANAGEMENT]: '表权限管理',
+  [AuditEventActionType.APPLY_TABLE_PERMISSION]: formatMessage({
+    id: 'src.constant.A016D539',
+    defaultMessage: '申请表权限',
+  }),
+  [AuditEventActionType.TABLE_PERMISSION_MANAGEMENT]: formatMessage({
+    id: 'src.constant.16E15B2D',
+    defaultMessage: '表权限管理',
+  }),
   [AuditEventType.AUTOMATION_RULE_MANAGEMENT]: formatMessage({
     id: 'src.page.Secure.Record.RecordPage.B7B36187',
   }), //'自动授权规则管理'
@@ -638,14 +644,38 @@ export const AuditEventActionMap = {
   [AuditEventActionType.REVOKE_DATABASE_PERMISSION]: formatMessage({
     id: 'src.page.Secure.Record.RecordPage.BBF6BE0C',
   }), //'回收库权限管理'
-  [AuditEventActionType.APPLY_TABLE_PERMISSION]: '申请表权限',
-  [AuditEventActionType.CREATE_APPLY_TABLE_PERMISSION_TASK]: '创建申请表权限',
-  [AuditEventActionType.APPROVE_APPLY_TABLE_PERMISSION_TASK]: '同意申请表权限',
-  [AuditEventActionType.REJECT_APPLY_TABLE_PERMISSION_TASK]: '拒绝申请表权限',
-  [AuditEventActionType.STOP_APPLY_TABLE_PERMISSION_TASK]: '停止申请表权限',
-  [AuditEventActionType.TABLE_PERMISSION_MANAGEMENT]: '表权限管理',
-  [AuditEventActionType.GRANT_TABLE_PERMISSION]: '新增表权限管理',
-  [AuditEventActionType.REVOKE_TABLE_PERMISSION]: '回收表权限管理',
+  [AuditEventActionType.APPLY_TABLE_PERMISSION]: formatMessage({
+    id: 'src.constant.6F5D437C',
+    defaultMessage: '申请表权限',
+  }),
+  [AuditEventActionType.CREATE_APPLY_TABLE_PERMISSION_TASK]: formatMessage({
+    id: 'src.constant.7CFF0BF7',
+    defaultMessage: '创建申请表权限',
+  }),
+  [AuditEventActionType.APPROVE_APPLY_TABLE_PERMISSION_TASK]: formatMessage({
+    id: 'src.constant.EB58961E',
+    defaultMessage: '同意申请表权限',
+  }),
+  [AuditEventActionType.REJECT_APPLY_TABLE_PERMISSION_TASK]: formatMessage({
+    id: 'src.constant.77379A9D',
+    defaultMessage: '拒绝申请表权限',
+  }),
+  [AuditEventActionType.STOP_APPLY_TABLE_PERMISSION_TASK]: formatMessage({
+    id: 'src.constant.6AF8D624',
+    defaultMessage: '停止申请表权限',
+  }),
+  [AuditEventActionType.TABLE_PERMISSION_MANAGEMENT]: formatMessage({
+    id: 'src.constant.B59F26E3',
+    defaultMessage: '表权限管理',
+  }),
+  [AuditEventActionType.GRANT_TABLE_PERMISSION]: formatMessage({
+    id: 'src.constant.E15D0656',
+    defaultMessage: '新增表权限管理',
+  }),
+  [AuditEventActionType.REVOKE_TABLE_PERMISSION]: formatMessage({
+    id: 'src.constant.7DC84DC5',
+    defaultMessage: '回收表权限管理',
+  }),
   // 自动授权规则
   [AuditEventActionType.CREATE_AUTOMATION_RULE]: formatMessage({
     id: 'src.page.Secure.Record.RecordPage.61D99657',

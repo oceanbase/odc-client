@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -22,7 +23,10 @@ import React from 'react';
 
 export const tablePermissionStatusMap = {
   [DatabasePermissionStatus.EXPIRED]: {
-    text: '已过期',
+    text: formatMessage({
+      id: 'src.page.Project.User.ManageModal.Table.Status.F4074114',
+      defaultMessage: '已过期',
+    }),
     value: DatabasePermissionStatus.EXPIRED,
     icon: (
       <StopFilled
@@ -33,7 +37,10 @@ export const tablePermissionStatusMap = {
     ),
   },
   [DatabasePermissionStatus.EXPIRING]: {
-    text: '即将过期',
+    text: formatMessage({
+      id: 'src.page.Project.User.ManageModal.Table.Status.3F56D2D7',
+      defaultMessage: '即将过期',
+    }),
     value: DatabasePermissionStatus.EXPIRING,
     icon: (
       <ExclamationCircleFilled
@@ -44,7 +51,10 @@ export const tablePermissionStatusMap = {
     ),
   },
   [DatabasePermissionStatus.NOT_EXPIRED]: {
-    text: '生效中',
+    text: formatMessage({
+      id: 'src.page.Project.User.ManageModal.Table.Status.FBAD95E6',
+      defaultMessage: '生效中',
+    }),
     value: DatabasePermissionStatus.NOT_EXPIRED,
     icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
   },

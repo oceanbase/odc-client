@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Divider, Progress, Tooltip, Select, Radio } from 'antd';
 import styles from './index.less';
 import classnames from 'classnames';
@@ -92,7 +93,12 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
           {top5Render()}
           {topNodesList.length ? <Divider /> : null}
           <div className={styles.infoBlockBox}>
-            <h3>Node 执行概览</h3>
+            <h3>
+              {formatMessage({
+                id: 'src.component.ProfileFlow.customComponents.2AB1AD68',
+                defaultMessage: 'Node 执行概览',
+              })}
+            </h3>
             {dataSource?.data?.subNodes ? (
               <Select
                 style={{ width: '100%', paddingBottom: 8 }}
@@ -132,6 +138,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
                 className={styles.progressWithCompare}
               />
             )}
+
             {Object.entries(data?.overview)?.map(([key, value]) => {
               return (
                 <div className={styles.keyValueBox}>
@@ -164,7 +171,12 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
           </div>
           {data?.statistics ? (
             <div className={styles.infoBlockBox}>
-              <h3 className={styles.customDetailBoxTitle}>I/O 统计</h3>
+              <h3 className={styles.customDetailBoxTitle}>
+                {formatMessage({
+                  id: 'src.component.ProfileFlow.customComponents.0E9A817E',
+                  defaultMessage: 'I/O 统计',
+                })}
+              </h3>
               {Object.entries(data?.statistics)?.map(([key, value]) => {
                 return (
                   <div className={styles.keyValueBox}>
@@ -177,7 +189,12 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
           ) : null}
           {data?.attributes ? (
             <div className={styles.infoBlockBox}>
-              <h3 className={styles.customDetailBoxTitle}>节点属性</h3>
+              <h3 className={styles.customDetailBoxTitle}>
+                {formatMessage({
+                  id: 'src.component.ProfileFlow.customComponents.422173C9',
+                  defaultMessage: '节点属性',
+                })}
+              </h3>
               {Object.entries(data?.attributes)?.map(([key, value]) => {
                 return (
                   <div>
@@ -207,7 +224,13 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
   }
 
   function getDefaultSubNodes(node) {
-    return `${node?.name}的汇总`;
+    return formatMessage(
+      {
+        id: 'src.component.ProfileFlow.customComponents.7812E9AE',
+        defaultMessage: '${node?.name}的汇总',
+      },
+      { nodeName: node?.name },
+    );
   }
 
   function getSubNodesOptions(sortBy = subNodeSortType.BY_DURATION) {
@@ -216,7 +239,13 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
     if (!data?.subNodes) return [];
     const sum = {
       value: SUM,
-      label: `${data?.name}的汇总`,
+      label: formatMessage(
+        {
+          id: 'src.component.ProfileFlow.customComponents.C22AD2CB',
+          defaultMessage: '${data?.name}的汇总',
+        },
+        { dataName: data?.name },
+      ),
       duration: data?.duration,
       output: data?.statistics?.[subNodesSortMap[subNodeSortType.BY_OUTPUT].objectKey],
       maxMemory: data?.statistics?.[subNodesSortMap[subNodeSortType.BY_MAX_MEMORY].objectKey],
@@ -276,7 +305,12 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
     if (!topNodesList.length) return;
     return (
       <div>
-        <h3 style={{ padding: '0px 8px' }}>耗时 Top5</h3>
+        <h3 style={{ padding: '0px 8px' }}>
+          {formatMessage({
+            id: 'src.component.ProfileFlow.customComponents.66C75D66',
+            defaultMessage: '耗时 Top5',
+          })}
+        </h3>
         {topNodesList?.map((i) => {
           return (
             <div
@@ -311,13 +345,17 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
             {topNodesList.length ? <Divider /> : null}
             <div className={styles.infoBlockBox}>
               <h3 className={styles.customDetailBoxTitle} style={{ paddingTop: 0 }}>
-                SQL 执行概览
+                {formatMessage({
+                  id: 'src.component.ProfileFlow.customComponents.5FAB7852',
+                  defaultMessage: 'SQL 执行概览',
+                })}
               </h3>
               <Progress
                 percent={globalInfo?.percent}
                 showInfo={false}
                 className={styles.progressWithCompare}
               />
+
               {Object.entries(globalInfo?.overview)?.map(([key, value]) => {
                 return (
                   <div className={styles.keyValueBox}>
@@ -344,7 +382,12 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
             </div>
             {globalInfo?.statistics ? (
               <div className={styles.infoBlockBox}>
-                <h3 className={styles.customDetailBoxTitle}>I/O 统计</h3>
+                <h3 className={styles.customDetailBoxTitle}>
+                  {formatMessage({
+                    id: 'src.component.ProfileFlow.customComponents.E406DF5A',
+                    defaultMessage: 'I/O 统计',
+                  })}
+                </h3>
                 {Object.entries(globalInfo?.statistics)?.map(([key, value]) => {
                   return (
                     <div className={styles.keyValueBox}>

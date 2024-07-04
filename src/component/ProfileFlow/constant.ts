@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 // reactFlow id
 export const REACT_FLOW_ID = 'PROFILE_FLOW_BOX';
 // 节点宽度
@@ -24,14 +25,23 @@ export const SUM = 'SUM';
 
 export const subNodesSortMap = {
   [subNodeSortType.BY_DURATION]: {
-    label: '按 DB 耗时排序',
+    label: formatMessage({
+      id: 'src.component.ProfileFlow.C966E64A',
+      defaultMessage: '按 DB 耗时排序',
+    }),
   },
   [subNodeSortType.BY_MAX_MEMORY]: {
-    label: '按内存排序',
+    label: formatMessage({
+      id: 'src.component.ProfileFlow.C4791007',
+      defaultMessage: '按内存排序',
+    }),
     objectKey: 'Max memory',
   },
   [subNodeSortType.BY_OUTPUT]: {
-    label: '按吐行排序',
+    label: formatMessage({
+      id: 'src.component.ProfileFlow.6B28FD92',
+      defaultMessage: '按吐行排序',
+    }),
     objectKey: 'Output rows',
   },
 };

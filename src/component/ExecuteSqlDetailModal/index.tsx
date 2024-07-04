@@ -46,21 +46,47 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
   const finished = data?.graph?.status === IProfileStatus.FINISHED;
   const getExecuteRadioOption = () => {
     return [
-      { value: EXECUTE_PAGE_TYPE.EXECUTE_DETAIL, label: '执行详情' },
-      { value: EXECUTE_PAGE_TYPE.EXECUTE_PLAN, label: '执行计划' },
+      {
+        value: EXECUTE_PAGE_TYPE.EXECUTE_DETAIL,
+        label: formatMessage({
+          id: 'src.component.ExecuteSqlDetailModal.38BDF819',
+          defaultMessage: '执行详情',
+        }),
+      },
+      {
+        value: EXECUTE_PAGE_TYPE.EXECUTE_PLAN,
+        label: formatMessage({
+          id: 'src.component.ExecuteSqlDetailModal.8A207B02',
+          defaultMessage: '执行计划',
+        }),
+      },
       {
         value: EXECUTE_PAGE_TYPE.FULL_TRACE,
-        label: '全链路诊断',
+        label: formatMessage({
+          id: 'src.component.ExecuteSqlDetailModal.0B221F0A',
+          defaultMessage: '全链路诊断',
+        }),
         disabled: !finished,
       },
     ];
   };
 
-  const planRadioOption = [{ value: PLAN_PAGE_TYPE.PLAN_DETAIL, label: '计划统计' }];
+  const planRadioOption = [
+    {
+      value: PLAN_PAGE_TYPE.PLAN_DETAIL,
+      label: formatMessage({
+        id: 'src.component.ExecuteSqlDetailModal.14585364',
+        defaultMessage: '计划统计',
+      }),
+    },
+  ];
 
   const getDisabledTooltip = (val) => {
     if (!finished) {
-      return '当前 SQL 正在执行中，执行完成后可查看';
+      return formatMessage({
+        id: 'src.component.ExecuteSqlDetailModal.D6886430',
+        defaultMessage: '当前 SQL 正在执行中，执行完成后可查看',
+      });
     }
     return val;
   };
@@ -85,6 +111,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
           disablePagination={true}
         />
       ),
+
       [TypeMap.TEXT]: (
         <pre
           style={{
@@ -113,7 +140,12 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
             }}
           >
             <div style={{ textAlign: 'end' }}>
-              <Tooltip title="复制">
+              <Tooltip
+                title={formatMessage({
+                  id: 'src.component.ExecuteSqlDetailModal.68BF8995',
+                  defaultMessage: '复制',
+                })}
+              >
                 <CopyOutlined style={{ cursor: 'pointer' }} />
               </Tooltip>
             </div>
@@ -121,6 +153,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
           {data?.originalText}
         </pre>
       ),
+
       [TypeMap.TRACE]: (
         <TraceComp
           tabName={TraceTabsType.Trace}
@@ -130,6 +163,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
           searchValue={searchValue}
         />
       ),
+
       [TypeMap.TRACE_LIST]: (
         <TraceComp
           tabName={TraceTabsType.List}
@@ -158,8 +192,8 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
             formatMessage({
               id: 'odc.src.page.Workspace.components.Trace.ExportJson',
             }) /* 
-            导出 Json
-           */
+          导出 Json
+          */
           }
         </Button>
       </Tooltip>
@@ -190,19 +224,28 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
   }
   const EXECUTE_PAGE_CONFIG = {
     [EXECUTE_PAGE_TYPE.EXECUTE_DETAIL]: {
-      label: '执行详情',
+      label: formatMessage({
+        id: 'src.component.ExecuteSqlDetailModal.69A79B8E',
+        defaultMessage: '执行详情',
+      }),
       key: EXECUTE_PAGE_TYPE.EXECUTE_DETAIL,
       children: viewContentConfig(viewType),
       toolBar: <></>,
     },
     [EXECUTE_PAGE_TYPE.EXECUTE_PLAN]: {
-      label: '执行计划',
+      label: formatMessage({
+        id: 'src.component.ExecuteSqlDetailModal.BF467954',
+        defaultMessage: '执行计划',
+      }),
       key: EXECUTE_PAGE_TYPE.EXECUTE_PLAN,
       children: viewContentConfig(viewType),
       toolBar: getExecuteProfile(),
     },
     [EXECUTE_PAGE_TYPE.FULL_TRACE]: {
-      label: '全链路诊断',
+      label: formatMessage({
+        id: 'src.component.ExecuteSqlDetailModal.D47F3410',
+        defaultMessage: '全链路诊断',
+      }),
       key: EXECUTE_PAGE_TYPE.FULL_TRACE,
       children: viewContentConfig(viewType),
       toolBar: (
@@ -218,6 +261,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
             }
             onSearch={(e) => setSearchValue(e)}
           />
+
           {getDownloadBtn()}
           <Radio.Group
             defaultValue={TypeMap.TREE}
@@ -240,7 +284,10 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
 
   const PLAN_PAGE_CONFIG = {
     [PLAN_PAGE_TYPE.PLAN_DETAIL]: {
-      label: '计划统计',
+      label: formatMessage({
+        id: 'src.component.ExecuteSqlDetailModal.D11F8620',
+        defaultMessage: '计划统计',
+      }),
       key: PLAN_PAGE_TYPE.PLAN_DETAIL,
       children: viewContentConfig(viewType),
       toolBar: getExecuteProfile(true),
@@ -249,7 +296,13 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
 
   const executeInfo = {
     [ProfileType.Execute]: {
-      title: `Trace ID 为 "${modalStore?.executeSqlDetailData?.traceId}" 的执行画像`,
+      title: formatMessage(
+        {
+          id: 'src.component.ExecuteSqlDetailModal.5B8FA08A',
+          defaultMessage: 'Trace ID 为 "${modalStore?.executeSqlDetailData?.traceId}" 的执行画像',
+        },
+        { modalStoreExecuteSqlDetailDataTraceId: modalStore?.executeSqlDetailData?.traceId },
+      ),
       sql: modalStore?.executeSqlDetailData?.sql,
       session: modalStore?.executeSqlDetailData?.session,
       traceId: modalStore?.executeSqlDetailData?.traceId,
@@ -258,7 +311,10 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
       radioOption: getExecuteRadioOption(),
     },
     [ProfileType.Plan]: {
-      title: '执行计划详情',
+      title: formatMessage({
+        id: 'src.component.ExecuteSqlDetailModal.A944EAD1',
+        defaultMessage: '执行计划详情',
+      }),
       sql: modalStore?.executeSqlDetailData?.sql,
       session: modalStore?.executeSqlDetailData?.session,
       traceId: modalStore?.executeSqlDetailData?.traceId,

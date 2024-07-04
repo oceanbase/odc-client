@@ -184,7 +184,12 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       serverData['odc.editor.shortcut.executeStatement'] ===
       serverData['odc.editor.shortcut.executeCurrentStatement']
     ) {
-      message.warning('快捷键冲突, 请重新输入。');
+      message.warning(
+        formatMessage({
+          id: 'src.component.ODCSetting.CFC0C3E8',
+          defaultMessage: '快捷键冲突, 请重新输入。',
+        }),
+      );
       return;
     }
     /**

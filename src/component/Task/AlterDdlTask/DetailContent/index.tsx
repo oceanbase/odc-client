@@ -136,6 +136,7 @@ export function getItems(
     //风险等级
     <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />,
   ];
+
   const timerExecutionItem: [string, string] = [
     formatMessage({
       id: 'odc.AlterDdlTask.DetailContent.ExecutionTime',
@@ -143,6 +144,7 @@ export function getItems(
     //执行时间
     getFormatDateTime(task?.executionTime),
   ];
+
   const lockUsers = parameters?.lockUsers?.join(', ');
 
   const handleDataSizeLimit = async (dataSizeLimit, handleClose) => {
@@ -186,6 +188,7 @@ export function getItems(
           //任务编号
           task.id,
         ],
+
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.TaskType',
@@ -202,6 +205,7 @@ export function getItems(
           //所属库
           task?.database?.name || '-',
         ],
+
         [
           formatMessage({
             id: 'odc.src.component.Task.AlterDdlTask.DetailContent.DataSource',
@@ -209,6 +213,7 @@ export function getItems(
           //'所属数据源'
           task?.database.dataSource?.name || '-',
         ],
+
         hasFlow ? riskItem : null,
         lockUsers
           ? [
@@ -234,6 +239,7 @@ export function getItems(
           taskExecStrategyMap[task?.executionStrategy],
           hasFlow ? 2 : 1,
         ],
+
         [null, <SQLContentSection task={task} key={task.id} theme={theme} />, 2],
         [
           formatMessage({
@@ -242,6 +248,7 @@ export function getItems(
           //锁表超时时间
           `${parameters?.lockTableTimeOutSeconds}s`,
         ],
+
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.NumberOfFailedRetries',
@@ -249,6 +256,7 @@ export function getItems(
           //失败重试次数
           parameters?.swapTableNameRetryTimes,
         ],
+
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.SourceTableCleanupPolicyAfter',
@@ -256,6 +264,7 @@ export function getItems(
           //完成后源表清理策略
           ClearStrategyMap[parameters?.originTableCleanStrategy],
         ],
+
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.ExecutionMethod',
@@ -263,12 +272,14 @@ export function getItems(
           //执行方式
           taskExecStrategyMap[task?.executionStrategy],
         ],
+
         [
           formatMessage({
             id: 'odc.src.component.Task.AlterDdlTask.DetailContent.TableNameSwitchingMethod',
           }), //'表名切换方式'
           SwapTableTypeMap[task?.parameters?.swapTableType] ?? '-',
         ],
+
         isTimerExecution ? timerExecutionItem : null,
         [
           formatMessage({
@@ -278,9 +289,14 @@ export function getItems(
           ErrorStrategyText[parameters.errorStrategy],
           2,
         ],
+
         setting.enableOSCLimiting
           ? [
-              '行限流',
+              formatMessage({
+                id: 'src.component.Task.AlterDdlTask.DetailContent.FE4166B2',
+                defaultMessage: '行限流',
+              }),
+
               <ThrottleEditableCell
                 suffix="Rows/s"
                 min={0}
@@ -288,12 +304,17 @@ export function getItems(
                 defaultValue={parameters?.rateLimitConfig?.rowLimit}
                 onOk={handleRowLimit}
               />,
+
               1,
             ]
           : null,
         setting.enableOSCLimiting
           ? [
-              '数据大小限流',
+              formatMessage({
+                id: 'src.component.Task.AlterDdlTask.DetailContent.45E8ACBB',
+                defaultMessage: '数据大小限流',
+              }),
+
               <ThrottleEditableCell
                 suffix="MB/s"
                 min={0}
@@ -301,6 +322,7 @@ export function getItems(
                 defaultValue={parameters?.rateLimitConfig?.dataSizeLimit}
                 onOk={handleDataSizeLimit}
               />,
+
               1,
             ]
           : null,
@@ -324,6 +346,7 @@ export function getItems(
           task?.creator?.name || '-',
           2,
         ],
+
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.CreationTime',
