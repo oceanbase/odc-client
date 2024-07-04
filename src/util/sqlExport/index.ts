@@ -19,12 +19,14 @@ import { generateAndDownloadFile, getQuoteTableName } from '../utils';
 import mysqlConvertValueToSQLString from './dataTypes/mysql';
 import oracleConvertValueToSQLString from './dataTypes/oracle';
 import { isConnectionModeBeMySQLType } from '../connection';
+import { getNlsValueKey } from '../column';
 
 export default function exportToSQL(
   selectData: any[][],
   columns: ResultSetColumn[],
   tableName: string = 'tmp_table',
   dbMode: ConnectionMode,
+  rows?: any,
 ) {
   const headerColumnNames = selectData[0];
   if (!headerColumnNames) {
@@ -42,7 +44,7 @@ export default function exportToSQL(
     .join(',');
   return selectData
     .slice(1)
-    .map((rowData) => {
+    .map((rowData, columnIndex) => {
       const rowsText = rowData
         .map((item, i: number) => {
           const columnName = headerColumnNames[i];
@@ -51,9 +53,11 @@ export default function exportToSQL(
           if (isMasked) {
             return item || 'NULL';
           }
+          const nlsValueKey = getNlsValueKey(column.key);
+          const timestamp = rows[columnIndex]?.[nlsValueKey]?.timestamp;
           return isMySQL
             ? mysqlConvertValueToSQLString(item, column.columnType)
-            : oracleConvertValueToSQLString(item, column.columnType);
+            : oracleConvertValueToSQLString(item, column.columnType, timestamp);
         })
         .join(',');
       return `insert into ${getQuoteTableName(
