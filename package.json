@@ -1,6 +1,6 @@
 {
   "name": "odc",
-  "version": "4.3.0",
+  "version": "4.3.1",
   "private": true,
   "description": "企业级数据开发平台",
   "homepage": "https://www.oceanbase.com/",
@@ -72,7 +72,7 @@
   },
   "devDependencies": {
     "@ant-design/icons": "^4.0.0",
-    "@oceanbase-odc/monaco-plugin-ob": "^1.2.6",
+    "@oceanbase-odc/monaco-plugin-ob": "^1.2.7",
     "@oceanbase-odc/ob-intl-cli": "^2.0.10",
     "@oceanbase-odc/ob-parser-js": "^3.0.4",
     "@oceanbase-odc/ob-react-data-grid": "^3.0.10",
