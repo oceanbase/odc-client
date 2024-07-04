@@ -91,7 +91,7 @@ class Task {
     }
     return res?.data;
   };
-  public getResult = async (): Promise<IExecutingInfo> => {
+  public getResult = async (): Promise<ISqlExecuteResult[]> => {
     return new Promise((resolve, reject) => {
       this.onUpdate({
         finished: false,
@@ -172,7 +172,7 @@ class TaskManager {
     sessionId: string,
     taskInfo: ISQLExecuteTask,
     onUpdate: (info: IExecutingInfo) => void,
-  ): Promise<IExecutingInfo> {
+  ): Promise<ISqlExecuteResult[]> {
     const task = new Task(requestId, sessionId, taskInfo, onUpdate);
     this.tasks.push(task);
     try {
@@ -258,7 +258,7 @@ export default async function executeSQL(
     taskInfo,
     onUpdate,
   );
-  let { results } = executeRes;
+  let results = executeRes;
   results = results?.map((result) => {
     if (!result.requestId) {
       result.requestId = requestId;
