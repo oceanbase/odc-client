@@ -49,4 +49,5 @@ export enum IDataSourceType {
   MySQL = 'mysql',
   Doris = 'doris',
   Oracle = 'oracle',
+  PG = 'postgresql',
 }
