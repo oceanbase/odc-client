@@ -44,8 +44,8 @@ devDependencies:
     specifier: ^4.0.0
     version: 4.8.1(react-dom@17.0.2)(react@17.0.2)
   '@oceanbase-odc/monaco-plugin-ob':
-    specifier: ^1.2.7
-    version: 1.2.7(monaco-editor@0.36.1)
+    specifier: ^1.2.8
+    version: 1.2.8(monaco-editor@0.36.1)
   '@oceanbase-odc/ob-intl-cli':
     specifier: ^2.0.10
     version: 2.0.10(prettier@2.8.8)(typescript@4.9.5)
@@ -4002,8 +4002,8 @@ packages:
       fastq: 1.16.0
     dev: true
 
-  /@oceanbase-odc/monaco-plugin-ob@1.2.7(monaco-editor@0.36.1):
-    resolution: {integrity: sha512-Togt4RjGeSbVqwZElVtVmPUZfaL64NZEg5wVq91ct+LSHSkqAhjB3N5gXO1P+wIbAfRU6VOAT2YgPTWBRkoV1w==}
+  /@oceanbase-odc/monaco-plugin-ob@1.2.8(monaco-editor@0.36.1):
+    resolution: {integrity: sha512-MWD0KO1z9E5dXOc+uWTvNk8YZxEFSdSuOubRN5KpS983HeBDYRq6LJqBCi5Y+vdJWF3UANUvYyJrnY0gn4xxbg==}
     peerDependencies:
       monaco-editor: ^0.34.1
     dependencies:
