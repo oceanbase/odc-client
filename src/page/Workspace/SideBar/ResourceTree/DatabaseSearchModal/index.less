@@ -6,7 +6,7 @@
       border-radius: 6px;
       .ant-modal-header {
         padding: 8px 12px;
-        border-radius: 8px 8px;
+        border-radius: 8px 8px 0 0;
         .ant-modal-title {
           font-size: 12px;
           line-height: 20px;
@@ -17,14 +17,11 @@
       }
     }
   }
-  .listTitle {
+  .searchInfo {
     color: var(--text-color-secondary);
-    height: 18px;
-    font-weight: 400;
-    font-size: 20px;
-    line-height: 18px;
-    transform: scale(0.5);
-    transform-origin: left;
+    font-size: 12px;
+    line-height: 20px;
+    padding: 4px 12px;
   }
   .title {
     color: rgba(0, 0, 0, 0.65);
@@ -47,10 +44,12 @@
       }
       .selectTitle {
         padding-left: 4px;
-        max-width: 280px;
+        max-width: 180px;
         text-overflow: ellipsis;
         text-wrap: nowrap;
         overflow: hidden;
+        display: inline-block;
+        vertical-align: top;
       }
       .selectIcon {
         font-size: 8px;
@@ -121,10 +120,11 @@
       .objectTypeBox {
         .objectTypeTitle {
           font-weight: 500;
-          padding: 6px 12px;
+          padding: 0px 12px 8px 12px;
+          line-height: 20px;
         }
         .objectTypeItem {
-          padding: 6px 12px;
+          padding: 4px 12px;
           display: flex;
           justify-content: space-between;
           flex-wrap: nowrap;
@@ -135,7 +135,8 @@
           }
         }
         .objectTypeItemMore {
-          padding: 6px 12px;
+          padding: 0px 12px;
+          height: 20px;
         }
       }
       .objectItem {
