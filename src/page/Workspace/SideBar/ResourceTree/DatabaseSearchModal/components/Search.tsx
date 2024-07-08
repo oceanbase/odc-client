@@ -3,7 +3,7 @@ import { Input, Tooltip } from 'antd';
 import React, { useContext, useEffect, useRef } from 'react';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import styles from '../index.less';
-import { DownOutlined, SearchOutlined, LoadingOutlined } from '@ant-design/icons';
+import { SearchOutlined, LoadingOutlined, CloseCircleFilled } from '@ant-design/icons';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { IDatabase } from '@/d.ts/database';
 import { SearchTypeMap } from '../constant';
@@ -13,23 +13,19 @@ interface Iprops {
   database: IDatabase;
   visible: boolean;
   onChangeInput: (SearchTypeMap: SearchTypeMap, value: string) => void;
-  isSelectDatabase: boolean;
   searchKey: string;
-  isSelectAll: boolean;
-  setSelectAllState: React.Dispatch<React.SetStateAction<boolean>>;
   loading: boolean;
   setDatabase: React.Dispatch<React.SetStateAction<IDatabase>>;
+  setSearchKey: React.Dispatch<React.SetStateAction<string>>;
 }
 const Search = ({
   database,
   visible,
   onChangeInput,
-  isSelectDatabase,
   searchKey,
-  isSelectAll,
-  setSelectAllState,
   loading,
   setDatabase,
+  setSearchKey,
 }: Iprops) => {
   const { selectDatasourceId, selectProjectId, projectList, datasourceList } =
     useContext(ResourceTreeContext);
@@ -47,11 +43,9 @@ const Search = ({
 
   const getDataBase = () => {
     const divider = () =>
-      (isSelectAll || database) && (
+      database && (
         <>
-          <span className={styles.selectDivider}>
-            <DownOutlined className={styles.selectIcon} />
-          </span>
+          <span className={styles.selectDivider}></span>
           <span style={{ color: 'var(--icon-color-disable)', paddingRight: 4 }}>/</span>
         </>
       );
@@ -62,64 +56,39 @@ const Search = ({
           className={styles.selectedDatabase}
           onClick={() => {
             setDatabase(null);
-            setSelectAllState(false);
             onChangeInput(SearchTypeMap.DATABASE, null);
           }}
         >
           <DataBaseStatusIcon item={database} />
-          <Tooltip title={database?.name} placement="top" overlayStyle={{ maxWidth: 280 }}>
+          <Tooltip
+            title={`${database?.name}(${database?.dataSource?.name})`}
+            placement="top"
+            overlayStyle={{ maxWidth: 280 }}
+          >
             <span className={styles.selectTitle}>{database?.name}</span>
             {divider()}
           </Tooltip>
         </span>
       );
     }
-    if (isSelectAll) {
-      return (
-        <span
-          className={styles.selectedDatabase}
-          onClick={() => {
-            setDatabase(null);
-            setSelectAllState(false);
-            onChangeInput(SearchTypeMap.DATABASE, null);
-          }}
-        >
-          {formatMessage({
-            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.9F4C3737',
-            defaultMessage: '全部数据库',
-          })}
-
-          {divider()}
-        </span>
-      );
-    }
     return null;
   };
 
-  const handleChangeDatabaswSearch = (e) => {
+  const handleChangeDatabaseSearch = (e) => {
     onChangeInput(SearchTypeMap.DATABASE, e.target.value);
   };
   const handleChangeObjectSearch = (e) => {
-    if (isSelectAll) {
-      onChangeInput(SearchTypeMap.OBJECT, e.target.value);
-    } else if (e.target.value === '') {
-      onChangeInput(SearchTypeMap.DATABASE, '');
-    } else {
-      onChangeInput(SearchTypeMap.OBJECT, e.target.value);
-    }
+    onChangeInput(SearchTypeMap.OBJECT, e.target.value);
   };
 
   const getObjectInput = () => {
-    if (isSelectDatabase && !database) {
+    if (!database) {
       return (
         <Input
           size="small"
           ref={inputRef}
-          placeholder={formatMessage({
-            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.03B6F86A',
-            defaultMessage: '搜索数据库',
-          })}
-          onChange={handleChangeDatabaswSearch}
+          placeholder={`搜索数据库、表、字段、视图等`}
+          onChange={handleChangeDatabaseSearch}
           value={searchKey}
         />
       );
@@ -140,33 +109,28 @@ const Search = ({
 
   const getIcon = () => {
     const props = {
-      style: { color: 'var(--code-normal-color)' },
+      style: { color: 'var(--icon-color-normal-2)' },
     };
     if (loading) {
       return <LoadingOutlined {...props} />;
+    }
+    if (searchKey || database) {
+      return (
+        <CloseCircleFilled
+          {...props}
+          onClick={() => {
+            setSearchKey('');
+            onChangeInput(SearchTypeMap.DATABASE, '');
+            setDatabase(null);
+          }}
+        />
+      );
     }
     return <SearchOutlined {...props} />;
   };
 
   return (
     <div>
-      <div className={styles.listTitle}>
-        {selectProject
-          ? formatMessage(
-              {
-                id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.6D5791AB',
-                defaultMessage: '当前项目: ${selectProject?.name}',
-              },
-              { selectProjectName: selectProject?.name },
-            )
-          : formatMessage(
-              {
-                id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.987D5B8A',
-                defaultMessage: '当前数据源: ${selectDatasource?.name}',
-              },
-              { selectDatasourceName: selectDatasource?.name },
-            )}
-      </div>
       <span className={styles.title}>
         <span className={styles.selectInfo}>
           {getDataBase()}
