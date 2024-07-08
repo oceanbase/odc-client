@@ -43,6 +43,7 @@ import {
   ODC_PROFILE_SUPPORT_VERSION,
   ODC_TRACE_SUPPORT_VERSION,
 } from '@/util/versionUtils';
+import { ConnectionMode } from '@/d.ts';
 
 const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';
@@ -326,7 +327,11 @@ class SessionStore {
       }
       const obVersion = this?.params?.obVersion;
       this.supportFeature.enableProfile =
-        isString(obVersion) && OBCompare(obVersion, ODC_PROFILE_SUPPORT_VERSION, '>=');
+        [ConnectionMode.OB_MYSQL, ConnectionMode.OB_ORACLE].includes(
+          this.connection?.dialectType,
+        ) &&
+        isString(obVersion) &&
+        OBCompare(obVersion, ODC_PROFILE_SUPPORT_VERSION, '>=');
       this.supportFeature.enableSQLTrace =
         this.supportFeature.enableSQLTrace &&
         isString(obVersion) &&

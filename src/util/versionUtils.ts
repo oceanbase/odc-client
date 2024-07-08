@@ -16,8 +16,8 @@
 
 import compareVersions, { compare } from 'compare-versions';
 
-export const ODC_TRACE_SUPPORT_VERSION = '4.1.0';
-export const ODC_PROFILE_SUPPORT_VERSION = '4.2.0';
+export const ODC_TRACE_SUPPORT_VERSION = '4.2.0';
+export const ODC_PROFILE_SUPPORT_VERSION = '4.2.4';
 export const ODC_VERSION_SEP = '.';
 
 /**

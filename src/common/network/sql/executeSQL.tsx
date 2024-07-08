@@ -99,6 +99,7 @@ class Task {
         task: this.taskInfo,
         traceId: null,
         executingSQL: null,
+        executingSQLId: null,
       });
       this._getResult(resolve);
     });
@@ -114,6 +115,7 @@ class Task {
         traceId: string;
         results: ISqlExecuteResult[];
         sql: string;
+        sqlId: string;
       } = await this.fetchData();
       if (this.isStop) {
         callback(null);
@@ -131,6 +133,7 @@ class Task {
         task: this.taskInfo,
         traceId: data.traceId,
         executingSQL: data.sql,
+        executingSQLId: data.sqlId,
       });
       if (data?.finished) {
         callback(this.result);

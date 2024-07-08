@@ -48,6 +48,7 @@ function TButton({
   isShowText = false,
   confirmConfig,
   tip = null,
+  tipStyle = { width: 296 },
   ...rest
 }: {
   [key: string]: any;
@@ -149,7 +150,7 @@ function TButton({
 
   if (tip) {
     return (
-      <Tooltip placement={'topLeft'} title={tip}>
+      <Tooltip placement={'topLeft'} title={tip} overlayInnerStyle={tipStyle}>
         <Badge dot={true} color="blue" style={{ top: 12, right: 6 }}>
           {content}
         </Badge>

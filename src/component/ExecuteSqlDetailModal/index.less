@@ -1,7 +1,11 @@
 .executeSqlModal {
   height: calc(100% - 80px);
+  width: calc(100% - 80px);
   top: 40px;
   padding-bottom: 0;
+  min-width: 880px;
+  overflow-x: scroll;
+  margin: 0 40px;
   :global {
     .ant-modal-content {
       height: 100%;
@@ -52,5 +56,11 @@
       justify-content: space-between;
       align-items: center;
     }
+  }
+  .tabTitle {
+    padding: 15px 0;
+    font-size: 14px;
+    line-height: 22px;
+    font-weight: 600;
   }
 }

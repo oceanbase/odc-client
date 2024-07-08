@@ -7,7 +7,11 @@ import { inject, observer } from 'mobx-react';
 import { getSQLExecuteProfile, getSQLExplain } from '@/common/network/sql';
 import Flow from '@/component/ProfileFlow';
 import DisplayTable from '@/component/DisplayTable';
-import { getSqlProfileColumns } from '@/page/Workspace/components/SQLExplain/column';
+import {
+  getSqlProfileColumns,
+  getSqlExplainColumns,
+} from '@/page/Workspace/components/SQLExplain/column';
+import { handleShowOutputFilter } from '@/page/Workspace/components/SQLExplain';
 import { formatMessage } from '@/util/intl';
 import { getFullLinkTraceDownloadUrl } from '@/common/network/sql';
 import { downloadFile } from '@/util/utils';
@@ -23,6 +27,7 @@ import {
   executeViewOptions,
   executeViewOptionsInPlan,
   initTabViewConfig,
+  planTabLabel,
 } from './constant';
 
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -43,7 +48,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
   const [downloadLoading, setDownloadLoading] = useState<boolean>(false);
   const [pageLoading, setPageLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>(null);
-  const finished = data?.graph?.status === IProfileStatus.FINISHED;
+  const finished = !!data?.graph?.status && data?.graph?.status === IProfileStatus.FINISHED;
   const getExecuteRadioOption = () => {
     return [
       {
@@ -82,16 +87,16 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
   ];
 
   const getDisabledTooltip = (val) => {
-    if (!finished) {
-      return formatMessage({
-        id: 'src.component.ExecuteSqlDetailModal.D6886430',
-        defaultMessage: '当前 SQL 正在执行中，执行完成后可查看',
-      });
+    if (finished || !data?.graph?.status) {
+      return val;
     }
-    return val;
+    return formatMessage({
+      id: 'src.component.ExecuteSqlDetailModal.D6886430',
+      defaultMessage: val,
+    });
   };
 
-  function viewContentConfig(type) {
+  function viewContentConfig(type: TypeMap, isPlan?: boolean) {
     const config = {
       [TypeMap.TREE]: <Flow dataSource={data?.graph} />,
       [TypeMap.LIST]: (
@@ -106,7 +111,13 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
             x: 1400,
             y: '100%',
           }}
-          columns={getSqlProfileColumns()}
+          columns={
+            isPlan
+              ? getSqlExplainColumns({
+                  handleShowOutputFilter: handleShowOutputFilter,
+                })
+              : getSqlProfileColumns()
+          }
           dataSource={data && data?.tree ? injectKey2TreeData(data?.tree) : []}
           disablePagination={true}
         />
@@ -204,7 +215,6 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
     const option = isPlan ? executeViewOptionsInPlan : executeViewOptions;
     return (
       <>
-        {!isPlan && getDownloadBtn()}
         <Radio.Group
           defaultValue={TypeMap.TREE}
           size="small"
@@ -289,7 +299,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
         defaultMessage: '计划统计',
       }),
       key: PLAN_PAGE_TYPE.PLAN_DETAIL,
-      children: viewContentConfig(viewType),
+      children: viewContentConfig(viewType, true),
       toolBar: getExecuteProfile(true),
     },
   };
@@ -320,7 +330,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
       traceId: modalStore?.executeSqlDetailData?.traceId,
       getDetail: getPlanDetail,
       pageConfig: PLAN_PAGE_CONFIG,
-      radioOption: planRadioOption,
+      radioOption: null,
     },
   };
 
@@ -374,22 +384,26 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
               <span className={styles.sql}>SQL: {page?.sql}</span>
             </Tooltip>
             <div className={styles.flexBetween}>
-              <Radio.Group
-                value={tab}
-                onChange={(e) => {
-                  setTab(e?.target?.value);
-                  setViewType(initTabViewConfig[e?.target?.value]);
-                }}
-                style={{ padding: '12px 0' }}
-              >
-                {page?.radioOption.map((i) => {
-                  return (
-                    <Radio.Button value={i.value} disabled={i.disabled}>
-                      <Tooltip title={getDisabledTooltip(i.label)}>{i.label}</Tooltip>
-                    </Radio.Button>
-                  );
-                })}
-              </Radio.Group>
+              {page?.radioOption ? (
+                <Radio.Group
+                  value={tab}
+                  onChange={(e) => {
+                    setTab(e?.target?.value);
+                    setViewType(initTabViewConfig[e?.target?.value]);
+                  }}
+                  style={{ padding: '12px 0' }}
+                >
+                  {page?.radioOption.map((i) => {
+                    return (
+                      <Radio.Button value={i.value} disabled={i.disabled}>
+                        <Tooltip title={getDisabledTooltip(i.label)}>{i.label}</Tooltip>
+                      </Radio.Button>
+                    );
+                  })}
+                </Radio.Group>
+              ) : (
+                <div className={styles.tabTitle}>{planTabLabel}</div>
+              )}
               <Space>{page?.pageConfig?.[tab]?.toolBar}</Space>
             </div>
             {page?.pageConfig?.[tab]?.children}

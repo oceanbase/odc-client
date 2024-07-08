@@ -1665,6 +1665,7 @@ export interface IExecutingInfo {
   finished?: boolean;
   traceId?: string;
   executingSQL: string;
+  executingSQLId?: string;
   results?: ISqlExecuteResult[];
   task: ISQLExecuteTask;
 }
