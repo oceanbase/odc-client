@@ -462,9 +462,15 @@ const DDLResultSet: React.FC<IProps> = function (props) {
       }
       function clipSQL() {
         if (!tableColumns || (!columnName && !isSelectedRow)) {
-          copyToSQL(gridRef.current, columns, undefined, session?.connection?.dialectType);
+          copyToSQL(gridRef.current, columns, undefined, session?.connection?.dialectType, rows);
         } else {
-          copyToSQL(gridRef.current, columns, table?.tableName, session?.connection?.dialectType);
+          copyToSQL(
+            gridRef.current,
+            columns,
+            table?.tableName,
+            session?.connection?.dialectType,
+            rows,
+          );
         }
       }
       function clipCsv() {
