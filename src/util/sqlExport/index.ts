@@ -36,35 +36,40 @@ export default function exportToSQL(
   const columnMap: {
     [key: string]: ResultSetColumn;
   } = {};
+
   columns.forEach((column: ResultSetColumn, index: number) => {
     columnMap[column.name] = column;
   });
+
   const columnsText = headerColumnNames
     .map((columnName) => getQuoteTableName(columnName, dbMode))
     .join(',');
+
+  const handleRowsText = (rowData, columnIndex) => {
+    const rowsText = rowData
+      .map((item, i: number) => {
+        const columnName = headerColumnNames[i];
+        const column = columnMap[columnName];
+        const isMasked = column.masked;
+        if (isMasked) {
+          return item || 'NULL';
+        }
+        const nlsValueKey = getNlsValueKey(column.key);
+        const timestamp = rows[columnIndex]?.[nlsValueKey]?.timestamp;
+        return isMySQL
+          ? mysqlConvertValueToSQLString(item, column.columnType)
+          : oracleConvertValueToSQLString(item, column.columnType, timestamp);
+      })
+      .join(',');
+    return `insert into ${getQuoteTableName(
+      tableName,
+      dbMode,
+    )}(${columnsText}) values(${rowsText})`;
+  };
+
   return selectData
     .slice(1)
-    .map((rowData, columnIndex) => {
-      const rowsText = rowData
-        .map((item, i: number) => {
-          const columnName = headerColumnNames[i];
-          const column = columnMap[columnName];
-          const isMasked = column.masked;
-          if (isMasked) {
-            return item || 'NULL';
-          }
-          const nlsValueKey = getNlsValueKey(column.key);
-          const timestamp = rows[columnIndex]?.[nlsValueKey]?.timestamp;
-          return isMySQL
-            ? mysqlConvertValueToSQLString(item, column.columnType)
-            : oracleConvertValueToSQLString(item, column.columnType, timestamp);
-        })
-        .join(',');
-      return `insert into ${getQuoteTableName(
-        tableName,
-        dbMode,
-      )}(${columnsText}) values(${rowsText})`;
-    })
+    .map((rowData, columnIndex) => handleRowsText(rowData, columnIndex))
     .join(';\n');
 }
 
