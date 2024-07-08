@@ -22,7 +22,7 @@ export default function Flow() {
               defaultMessage: '缩小',
             })}
           >
-            <ZoomInOutlined />
+            <ZoomOutOutlined size={12} />
           </Tooltip>
         </ControlButton>
         <ControlButton onClick={() => zoomIn()}>
@@ -32,7 +32,7 @@ export default function Flow() {
               defaultMessage: '放大',
             })}
           >
-            <ZoomOutOutlined />
+            <ZoomInOutlined size={12} />
           </Tooltip>
         </ControlButton>
         <ControlButton
@@ -46,7 +46,7 @@ export default function Flow() {
               defaultMessage: '实际尺寸',
             })}
           >
-            <OneToOneOutlined />
+            <OneToOneOutlined size={12} />
           </Tooltip>
         </ControlButton>
         <ControlButton onClick={() => fitView()}>
@@ -57,7 +57,7 @@ export default function Flow() {
             })}
           >
             {' '}
-            <CompressOutlined />
+            <CompressOutlined size={12} />
           </Tooltip>
         </ControlButton>
       </div>

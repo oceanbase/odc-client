@@ -109,3 +109,7 @@ export const executeViewOptionsInPlan = [
     }),
   },
 ];
+
+export const planTabLabel = '计划统计';
+
+export const planTabOption = [{ value: PLAN_PAGE_TYPE.PLAN_DETAIL, label: planTabLabel }];

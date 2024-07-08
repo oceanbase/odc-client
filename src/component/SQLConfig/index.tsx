@@ -72,7 +72,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
               width: '100%',
             }}
           >
-            Delimiter
+            Delimiter 设置
           </Row>
           <Row style={{ width: '100%' }}>
             <DelimiterSelect />
@@ -81,6 +81,27 @@ const SQLConfig: React.FC<IProps> = function (props) {
             style={{
               lineHeight: '28px',
               marginTop: 12,
+            }}
+          >
+            {
+              formatMessage({
+                id: 'src.component.SQLConfig.2F1AC452' /*报错继续执行*/,
+              }) /* 报错继续执行 */
+            }
+          </Row>
+          <Row style={{ width: '100%' }}>
+            <Switch
+              size="small"
+              checked={continueExecutionOnError}
+              onChange={session?.changeContinueExecutionOnError}
+            />
+          </Row>
+        </div>
+        <h4>查询结果</h4>
+        <div className={styles.sqlconfigGroup}>
+          <Row
+            style={{
+              lineHeight: '28px',
             }}
           >
             {
@@ -135,11 +156,6 @@ const SQLConfig: React.FC<IProps> = function (props) {
               </div>
             )}
           </Row>
-        </div>
-        <h4>
-          {formatMessage({ id: 'src.component.SQLConfig.A614A99E', defaultMessage: 'SQL 执行' })}
-        </h4>
-        <div className={styles.sqlconfigGroup}>
           <Row
             style={{
               lineHeight: '28px',
@@ -165,29 +181,9 @@ const SQLConfig: React.FC<IProps> = function (props) {
               />
             </Tooltip>
           </Row>
-          <Row
-            style={{
-              lineHeight: '28px',
-              marginTop: 12,
-            }}
-          >
-            {
-              formatMessage({
-                id: 'src.component.SQLConfig.2F1AC452' /*报错继续执行*/,
-              }) /* 报错继续执行 */
-            }
-          </Row>
-          <Row style={{ width: '100%' }}>
-            <Switch
-              size="small"
-              checked={continueExecutionOnError}
-              onChange={session?.changeContinueExecutionOnError}
-            />
-          </Row>
         </div>
         <Row
           style={{
-            marginTop: 18,
             width: '100%',
           }}
         >

@@ -93,10 +93,10 @@ export const getUnit = (num: number) => {
   const MILLION = KILO * KILO;
   const BILLION = KILO * KILO * KILO;
   if (num >= KILO && num < MILLION) {
-    return (num / KILO).toFixed(2) + 'K';
+    return (num / KILO).toFixed(1) + 'K';
   }
   if (num >= MILLION && num < BILLION) {
-    return (num / MILLION).toFixed(2) + 'M';
+    return (num / MILLION).toFixed(1) + 'M';
   }
   return num;
 };

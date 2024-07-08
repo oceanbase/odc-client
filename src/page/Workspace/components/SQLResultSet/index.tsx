@@ -387,6 +387,10 @@ const SQLResultSet: React.FC<IProps> = function (props) {
               }
               if (isLogTab) {
                 let count = {
+                  [ISqlExecuteResultStatus.WAITING]: {
+                    lable: '待执行',
+                    count: set?.total,
+                  },
                   [ISqlExecuteResultStatus.SUCCESS]: {
                     lable: formatMessage({
                       id: 'odc.components.SQLResultSet.SuccessfulExecution',
@@ -414,6 +418,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
 
                 set?.logTypeData?.forEach((item) => {
                   count[item.status].count += 1;
+                  count[ISqlExecuteResultStatus.WAITING].count -= 1;
                 });
                 const hasError =
                   count[ISqlExecuteResultStatus.SUCCESS].count !== set?.logTypeData?.length;

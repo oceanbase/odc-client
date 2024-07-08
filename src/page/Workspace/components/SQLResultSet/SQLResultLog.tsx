@@ -104,27 +104,15 @@ const runningLogPage = (
   isSupportProfile,
 ) => {
   const count = currentExecuteInfo?.task?.sqls?.length || 0;
-  const finishCount = currentExecuteInfo?.results?.length || 0;
+  const executeSqlList = currentExecuteInfo?.task?.sqls;
+  const currentSQLIndex = executeSqlList.findIndex(
+    (item) => item.sqlTuple?.sqlId === currentExecuteInfo?.executingSQLId,
+  );
   return (
     <div className={styles.runningSql}>
       <Spin style={{ marginBottom: 16 }} />
       <Space direction="vertical" size="small" align="center">
-        <div>
-          {formatMessage({
-            id: 'src.page.Workspace.components.SQLResultSet.A9F2E27A',
-            defaultMessage: '共有',
-          })}
-          {count}
-          {formatMessage({
-            id: 'src.page.Workspace.components.SQLResultSet.097EAD0C',
-            defaultMessage: '个 SQL 执行，当前正在执行第',
-          })}
-          {finishCount + 1}
-          {formatMessage({
-            id: 'src.page.Workspace.components.SQLResultSet.0B5B598B',
-            defaultMessage: '个',
-          })}
-        </div>
+        <div>{`共有 ${count} 个 SQL 执行，当前正在执行第 ${currentSQLIndex + 1} 个`}</div>
         <div>
           {currentExecuteInfo?.traceId && (
             <Space size="small">

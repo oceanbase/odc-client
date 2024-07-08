@@ -88,16 +88,17 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
 
   function getProfileNodeDetail(data) {
     return (
-      <div style={{ width: '320px' }} className={styles.customDetailBox}>
+      <div style={{ width: '332px' }} className={styles.customDetailBox}>
         <div>
           {top5Render()}
           {topNodesList.length ? <Divider /> : null}
           <div className={styles.infoBlockBox}>
             <h3>
-              {formatMessage({
-                id: 'src.component.ProfileFlow.customComponents.2AB1AD68',
-                defaultMessage: 'Node 执行概览',
-              })}
+              {dataSource?.data?.name ||
+                formatMessage({
+                  id: 'src.component.ProfileFlow.customComponents.2AB1AD68',
+                  defaultMessage: 'Node 执行概览',
+                })}
             </h3>
             {dataSource?.data?.subNodes ? (
               <Select
@@ -169,7 +170,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
               );
             })}
           </div>
-          {data?.statistics ? (
+          {data?.statistics && Object.keys(data?.statistics)?.length ? (
             <div className={styles.infoBlockBox}>
               <h3 className={styles.customDetailBoxTitle}>
                 {formatMessage({
@@ -250,23 +251,25 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
       output: data?.statistics?.[subNodesSortMap[subNodeSortType.BY_OUTPUT].objectKey],
       maxMemory: data?.statistics?.[subNodesSortMap[subNodeSortType.BY_MAX_MEMORY].objectKey],
     };
-    let list = Object.keys(data?.subNodes)?.map((i) => {
-      return {
-        value: i,
-        label: i,
-        duration: Number(data?.subNodes[i]?.duration) || 0,
-        output:
-          Number(
-            data?.subNodes[i]?.statistics?.[subNodesSortMap[subNodeSortType.BY_OUTPUT].objectKey],
-          ) || 0,
-        maxMemory:
-          Number(
-            data?.subNodes[i]?.statistics?.[
-              subNodesSortMap[subNodeSortType.BY_MAX_MEMORY].objectKey
-            ],
-          ) || 0,
-      };
-    });
+    let list =
+      data?.subNodes &&
+      Object.keys(data?.subNodes)?.map((i) => {
+        return {
+          value: i,
+          label: i,
+          duration: Number(data?.subNodes[i]?.duration) || 0,
+          output:
+            Number(
+              data?.subNodes[i]?.statistics?.[subNodesSortMap[subNodeSortType.BY_OUTPUT].objectKey],
+            ) || 0,
+          maxMemory:
+            Number(
+              data?.subNodes[i]?.statistics?.[
+                subNodesSortMap[subNodeSortType.BY_MAX_MEMORY].objectKey
+              ],
+            ) || 0,
+        };
+      });
     if (sortBy) {
       list = list.sort((a, b) => b?.[sortBy] - a?.[sortBy]);
     }
@@ -284,7 +287,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
         <Radio.Group
           value={sortType}
           onChange={handleSortChange}
-          style={{ width: '100%', padding: '0 7px 8px 7px' }}
+          style={{ width: '100%', padding: '0 6px 8px 6px' }}
         >
           <Radio.Button value={subNodeSortType.BY_DURATION}>
             {subNodesSortMap[subNodeSortType.BY_DURATION].label}
@@ -340,7 +343,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
     return (
       <div className={styles.customDetailBox}>
         {top5Render()}
-        {!!globalInfo?.overview && (
+        {globalInfo?.overview && Object.keys(globalInfo?.overview)?.length ? (
           <>
             {topNodesList.length ? <Divider /> : null}
             <div className={styles.infoBlockBox}>
@@ -380,7 +383,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
                 );
               })}
             </div>
-            {globalInfo?.statistics ? (
+            {globalInfo?.statistics && Object.keys(globalInfo?.statistics)?.length ? (
               <div className={styles.infoBlockBox}>
                 <h3 className={styles.customDetailBoxTitle}>
                   {formatMessage({
@@ -399,7 +402,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
               </div>
             ) : null}
           </>
-        )}
+        ) : null}
       </div>
     );
   }
