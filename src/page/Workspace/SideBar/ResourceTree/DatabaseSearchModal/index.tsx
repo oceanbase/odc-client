@@ -11,6 +11,7 @@ import ObjectList from './components/ObjectList';
 import DatabaseList from './components/DatabaseList';
 import { IDatabase, IDatabaseObject } from '@/d.ts/database';
 import classNames from 'classnames';
+import { DbObjectType } from '@/d.ts';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -19,12 +20,9 @@ interface IProps {
 const DatabaseSearchModal = ({ modalStore }: IProps) => {
   const [database, setDatabase] = useState<IDatabase>();
   const [searchKey, setSearchKey] = useState<string>('');
-  const [isSelectDatabase, setSelectDatabaseState] = useState(false);
-  const [isSelectAll, setSelectAllState] = useState(true);
   const [objectlist, setObjectlist] = useState<IDatabaseObject>();
   const [activeKey, setActiveKey] = useState(SEARCH_OBJECT_FROM_ALL_DATABASE);
   const [loading, setLoading] = useState<boolean>(false);
-
   const { selectDatasourceId, selectProjectId, databaseList } = useContext(ResourceTreeContext);
 
   const handleCancel = () => {
@@ -40,13 +38,13 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
   }, [database]);
 
   const getType = () => {
-    if (isSelectDatabase && !database) return 'SCHEMA';
+    if (activeKey === DbObjectType.database) return 'SCHEMA';
     if (activeKey === SEARCH_OBJECT_FROM_ALL_DATABASE) return null;
     return activeKey;
   };
 
   const getObjectListData = async (value) => {
-    const databaseIds = isSelectAll ? null : database?.id;
+    const databaseIds = database?.id;
     const type = getType();
     setLoading(true);
     const res = await getDatabaseObject(
@@ -65,30 +63,24 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
     getObjectListData(value);
     switch (type) {
       case SearchTypeMap.OBJECT: {
-        setSelectDatabaseState(false);
+        // setSelectDatabaseState(false);
         break;
       }
       case SearchTypeMap.DATABASE: {
-        setSelectDatabaseState(true);
+        // setSelectDatabaseState(true);
       }
     }
   };
 
   const contentRender = () => {
-    if (isSelectAll && !searchKey) {
-      return null;
-    }
-    if (isSelectDatabase) {
+    if (!searchKey) {
       return (
         <DatabaseList
           database={database}
           setDatabase={setDatabase}
           databaseList={databaseList}
-          setSelectDatabaseState={setSelectDatabaseState}
           searchKey={searchKey}
           setSearchKey={setSearchKey}
-          isSelectAll={isSelectAll}
-          setSelectAllState={setSelectAllState}
           modalStore={modalStore}
           objectlist={objectlist}
         />
@@ -97,9 +89,11 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
     return (
       <ObjectList
         database={database}
+        setDatabase={setDatabase}
         objectlist={objectlist}
         activeKey={activeKey}
         setActiveKey={setActiveKey}
+        setSearchKey={setSearchKey}
         modalStore={modalStore}
         loading={loading}
       />
@@ -115,12 +109,10 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
           database={database}
           visible={modalStore.databaseSearchModalVisible && modalStore.canDatabaseSearchModalOpen}
           onChangeInput={onChangeInput}
-          isSelectDatabase={isSelectDatabase}
           searchKey={searchKey}
-          isSelectAll={isSelectAll}
-          setSelectAllState={setSelectAllState}
           loading={loading}
           setDatabase={setDatabase}
+          setSearchKey={setSearchKey}
         />
       }
       open={modalStore.databaseSearchModalVisible && modalStore.canDatabaseSearchModalOpen}
@@ -129,7 +121,7 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
       maskClosable={true}
       closable={false}
       className={classNames(styles.databaseSearchModal, {
-        [styles.withPanel]: !isSelectAll || searchKey,
+        [styles.withPanel]: searchKey,
       })}
       destroyOnClose={true}
       footer={null}

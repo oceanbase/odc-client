@@ -38,11 +38,7 @@ import { getBuiltinSnippets } from '@/common/network/snippet';
 import { ISnippet } from '../snippet';
 import { DBDefaultStoreType } from '@/d.ts/table';
 import { isString } from 'lodash';
-import {
-  OBCompare,
-  ODC_PROFILE_SUPPORT_VERSION,
-  ODC_TRACE_SUPPORT_VERSION,
-} from '@/util/versionUtils';
+import { OBCompare, ODC_PROFILE_SUPPORT_VERSION } from '@/util/versionUtils';
 import { ConnectionMode } from '@/d.ts';
 
 const DEFAULT_QUERY_LIMIT = 1000;
@@ -332,10 +328,6 @@ class SessionStore {
         ) &&
         isString(obVersion) &&
         OBCompare(obVersion, ODC_PROFILE_SUPPORT_VERSION, '>=');
-      this.supportFeature.enableSQLTrace =
-        this.supportFeature.enableSQLTrace &&
-        isString(obVersion) &&
-        OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=');
     });
   }
 
