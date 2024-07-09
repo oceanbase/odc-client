@@ -16,7 +16,7 @@
 
 import ODCDragger from '@/component/OSSDragger';
 import login from '@/store/login';
-import { formatMessage, getLocalTemplate } from '@/util/intl';
+import { formatMessage } from '@/util/intl';
 import { downloadFile } from '@/util/utils';
 import { InfoCircleFilled } from '@ant-design/icons';
 import { Alert, Button, Drawer, Form, Space } from 'antd';
@@ -109,10 +109,6 @@ const BatchImportModal: React.FC<IProps> = (props) => {
     });
   };
 
-  const handleDownload = () => {
-    downloadFile(getLocalTemplate(templateName));
-  };
-
   useEffect(() => {
     if (!visible) {
       handleReset();
@@ -153,7 +149,7 @@ const BatchImportModal: React.FC<IProps> = (props) => {
         description={
           <div style={{ lineHeight: '14px' }}>
             {description}
-            <Button type="link" onClick={handleDownload}>
+            <Button type="link" href={(window.ODCApiHost || '') + templateName} download={true}>
               {
                 formatMessage({
                   id: 'odc.component.BatchImportButton.modal.DownloadTemplate',
