@@ -440,7 +440,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
                           description={formatMessage({
                             id: 'odc.components.UserPage.TheFileMustContainInformation',
                           })} /*文件需包含用户账号、姓名、密码等信息，建议使用用户配置模版*/
-                          templateName="/api/v2/iam/users/template"
+                          templatePath="/api/v2/iam/users/template"
                           previewContent={(data: IManagerBatchUser[]) => {
                             if (!data?.length) {
                               return (
