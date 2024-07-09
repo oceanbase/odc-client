@@ -29,6 +29,7 @@ export enum DatabasePermissionType {
   QUERY = 'QUERY',
   CHANGE = 'CHANGE',
   EXPORT = 'EXPORT',
+  ACCESS = 'ACCESS',
 }
 
 export interface IDatabaseObject {

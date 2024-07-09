@@ -200,28 +200,27 @@ const ExcecuteDetailModal: React.FC<IProps> = function (props) {
       destroyOnClose
       footer={null}
     >
-      <Spin spinning={loading}>
-        <CommonTable
-          showToolbar={false}
-          enabledReload={false}
-          onLoad={async () => {}}
-          titleContent={null}
-          tableProps={{
-            columns: columns,
-            expandable: {
-              expandedRowRender: (record) => expandedRowRender(record),
-              expandedRowKeys: expandedRowKeys,
-              defaultExpandedRowKeys: expandedRowKeys,
-              onExpandedRowsChange: onExpandedRowsChange,
-            },
-            dataSource: list,
-            pagination: false,
-            scroll: {
-              y: 650,
-            },
-          }}
-        />
-      </Spin>
+      <CommonTable
+        showToolbar={false}
+        enabledReload={false}
+        onLoad={async () => {}}
+        titleContent={null}
+        tableProps={{
+          columns: columns,
+          loading,
+          expandable: {
+            expandedRowRender: (record) => expandedRowRender(record),
+            expandedRowKeys: expandedRowKeys,
+            defaultExpandedRowKeys: expandedRowKeys,
+            onExpandedRowsChange: onExpandedRowsChange,
+          },
+          dataSource: list,
+          pagination: false,
+          scroll: {
+            y: 650,
+          },
+        }}
+      />
     </Drawer>
   );
 };

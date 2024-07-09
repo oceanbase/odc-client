@@ -43,15 +43,60 @@ export function wrapRow(row, columns: ResultSetColumn[]) {
   return newRow;
 }
 
+const getSelectedColumnsData = (selectedColumns, rows, columns) => {
+  const data = [];
+  const selectedColumnsDataHead = [];
+  for (let i = 0; i < columns?.length; i++) {
+    if (selectedColumns.has(columns[i].key)) {
+      selectedColumnsDataHead.push(columns[i].name);
+    }
+  }
+  data.push(selectedColumnsDataHead);
+  for (let i = 0; i < rows?.length; i++) {
+    const selectedRow = [];
+    for (const item of selectedColumns) {
+      selectedRow.push(rows?.[i]?.[item]);
+    }
+    data.push(selectedRow);
+  }
+  return data;
+};
+
 export function copyToSQL(
   gridRef: DataGridRef,
   columns: ResultSetColumn[],
   tableName: string = 'tmp_table',
   dbMode: ConnectionMode,
+  allRows?: any,
 ) {
-  const selectData = getSelectedRangeData(gridRef);
-  if (!selectData) {
+  let newRows = [];
+  const { selectedRows, selectedColumns, rows } = gridRef;
+
+  // export SQL by selected columns
+  if (selectedColumns?.size > 0) {
+    const selectedColumnsData = getSelectedColumnsData(selectedColumns, rows, columns);
+    newRows = rows;
+    copy(exportToSQL(selectedColumnsData, columns, tableName, dbMode, newRows));
     return;
   }
-  copy(exportToSQL(selectData, columns, tableName, dbMode));
+
+  const selectData = getSelectedRangeData(gridRef);
+  if (!selectData) return;
+
+  // export SQL by selected rows
+  if (selectedRows?.size > 0) {
+    for (let item of selectedRows) {
+      newRows.push(allRows?.[item]);
+    }
+    copy(exportToSQL(selectData, columns, tableName, dbMode, newRows));
+    return;
+  }
+
+  // export SQL by selected cells
+  const { rowIdx, endRowIdx } = gridRef.selectedRange;
+  if (rowIdx > -1 && endRowIdx > -1) {
+    newRows = gridRef?.rows?.slice(rowIdx, endRowIdx + 1);
+    copy(exportToSQL(selectData, columns, tableName, dbMode, newRows));
+    return;
+  }
 }

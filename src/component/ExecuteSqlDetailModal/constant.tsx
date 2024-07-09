@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { ReactComponent as List } from '@/svgr/List.svg';
 import { ReactComponent as Tree } from '@/svgr/Tree.svg';
 import { ReactComponent as Text } from '@/svgr/Text.svg';
@@ -45,17 +46,70 @@ export const initTabViewConfig = {
 };
 
 export const traceViewOptions = [
-  { value: TypeMap.TRACE, icon: <Icon component={TraceSvg} />, message: 'Trace 视图' },
-  { value: TypeMap.TRACE_LIST, icon: <Icon component={List} />, message: '列表视图' },
+  {
+    value: TypeMap.TRACE,
+    icon: <Icon component={TraceSvg} />,
+    message: formatMessage({
+      id: 'src.component.ExecuteSqlDetailModal.3AAA9DF9',
+      defaultMessage: 'Trace 视图',
+    }),
+  },
+  {
+    value: TypeMap.TRACE_LIST,
+    icon: <Icon component={List} />,
+    message: formatMessage({
+      id: 'src.component.ExecuteSqlDetailModal.D1E28701',
+      defaultMessage: '列表视图',
+    }),
+  },
 ];
 
 export const executeViewOptions = [
-  { value: TypeMap.LIST, icon: <Icon component={List} />, message: '列表视图' },
-  { value: TypeMap.TEXT, icon: <Icon component={Text} />, message: '文本视图' },
+  {
+    value: TypeMap.LIST,
+    icon: <Icon component={List} />,
+    message: formatMessage({
+      id: 'src.component.ExecuteSqlDetailModal.FB8B6D0B',
+      defaultMessage: '列表视图',
+    }),
+  },
+  {
+    value: TypeMap.TEXT,
+    icon: <Icon component={Text} />,
+    message: formatMessage({
+      id: 'src.component.ExecuteSqlDetailModal.052B3894',
+      defaultMessage: '文本视图',
+    }),
+  },
 ];
 
 export const executeViewOptionsInPlan = [
-  { value: TypeMap.TREE, icon: <Icon component={Tree} />, message: '树视图' },
-  { value: TypeMap.LIST, icon: <Icon component={List} />, message: '列表视图' },
-  { value: TypeMap.TEXT, icon: <Icon component={Text} />, message: '文本视图' },
+  {
+    value: TypeMap.TREE,
+    icon: <Icon component={Tree} />,
+    message: formatMessage({
+      id: 'src.component.ExecuteSqlDetailModal.0DAD5E44',
+      defaultMessage: '树视图',
+    }),
+  },
+  {
+    value: TypeMap.LIST,
+    icon: <Icon component={List} />,
+    message: formatMessage({
+      id: 'src.component.ExecuteSqlDetailModal.2129C7A3',
+      defaultMessage: '列表视图',
+    }),
+  },
+  {
+    value: TypeMap.TEXT,
+    icon: <Icon component={Text} />,
+    message: formatMessage({
+      id: 'src.component.ExecuteSqlDetailModal.97782AAE',
+      defaultMessage: '文本视图',
+    }),
+  },
 ];
+
+export const planTabLabel = '计划统计';
+
+export const planTabOption = [{ value: PLAN_PAGE_TYPE.PLAN_DETAIL, label: planTabLabel }];

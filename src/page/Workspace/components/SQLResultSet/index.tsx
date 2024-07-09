@@ -25,7 +25,6 @@ import { LockResultSetHint } from '@/component/LockResultSetHint';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { LOCK_RESULT_SET_COOKIE_KEY, TAB_HEADER_HEIGHT } from '@/constant';
 import { IResultSet, ISqlExecuteResultStatus, ITableColumn } from '@/d.ts';
-import { IUnauthorizedDatabase } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
 import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
@@ -37,6 +36,7 @@ import styles from './index.less';
 import LintResultTable from './LintResultTable';
 import SQLResultLog from './SQLResultLog';
 import DBPermissionTable from './DBPermissionTable';
+import { IUnauthorizedDBResources } from '@/d.ts/table';
 import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 
 export const recordsTabKey = 'records';
@@ -56,7 +56,7 @@ interface IProps {
   editingMap: Record<string, boolean>;
   session: SessionStore;
   lintResultSet: ISQLLintReuslt[];
-  unauthorizedDatabases?: IUnauthorizedDatabase[];
+  unauthorizedResource?: IUnauthorizedDBResources[];
   unauthorizedSql?: string;
   sqlChanged?: boolean;
   baseOffset: number;
@@ -91,7 +91,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     editingMap,
     session,
     lintResultSet,
-    unauthorizedDatabases,
+    unauthorizedResource,
     unauthorizedSql,
     sqlChanged,
     baseOffset,
@@ -230,8 +230,8 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     );
   }
   let resultTabCount = 0;
-  if (unauthorizedDatabases?.length) {
-    return <DBPermissionTable sql={unauthorizedSql} dataSource={unauthorizedDatabases} />;
+  if (unauthorizedResource?.length) {
+    return <DBPermissionTable sql={unauthorizedSql} dataSource={unauthorizedResource} />;
   }
   const stopRunning = () => {
     sqlStore.stopExec(ctx.props.pageKey, ctx?.getSession()?.sessionId);
@@ -338,7 +338,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     <DDLResultSet
                       key={set.uniqKey || i}
                       dbTotalDurationMicroseconds={executeSQLStage?.totalDurationMicroseconds}
-                      showExplain={session?.supportFeature?.enableSQLExplain}
+                      showExplain={true}
                       showExecutePlan={session?.supportFeature.enableProfile}
                       showPagination={true}
                       showTrace={session?.supportFeature?.enableSQLTrace}
@@ -387,6 +387,10 @@ const SQLResultSet: React.FC<IProps> = function (props) {
               }
               if (isLogTab) {
                 let count = {
+                  [ISqlExecuteResultStatus.WAITING]: {
+                    lable: '待执行',
+                    count: set?.total,
+                  },
                   [ISqlExecuteResultStatus.SUCCESS]: {
                     lable: formatMessage({
                       id: 'odc.components.SQLResultSet.SuccessfulExecution',
@@ -414,6 +418,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
 
                 set?.logTypeData?.forEach((item) => {
                   count[item.status].count += 1;
+                  count[ISqlExecuteResultStatus.WAITING].count -= 1;
                 });
                 const hasError =
                   count[ISqlExecuteResultStatus.SUCCESS].count !== set?.logTypeData?.length;

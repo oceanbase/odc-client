@@ -257,13 +257,14 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    const { projectId, databaseId } = applyDatabasePermissionData ?? {};
+    const { projectId, databaseId, types } = applyDatabasePermissionData ?? {};
     if (applyDatabasePermissionData?.task) {
       loadEditData();
     } else {
       form.setFieldsValue({
         projectId: projectId || props?.projectId,
         databases: databaseId ? [databaseId] : [],
+        types,
       });
     }
   }, [applyDatabasePermissionData]);

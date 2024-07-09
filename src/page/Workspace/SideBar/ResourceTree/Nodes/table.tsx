@@ -55,6 +55,8 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
     let visited = new Set();
 
     treeData.children = tables
+      // 无权限的表过滤掉， 就像无权限的库一样
+      .filter((table) => table?.info?.authorizedPermissionTypes?.length > 0)
       .map((table) => {
         if (visited.has(table.info?.tableName)) {
           logger.error('table name is duplicated', table.info?.tableName);

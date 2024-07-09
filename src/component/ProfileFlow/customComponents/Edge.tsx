@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { EdgeLabelRenderer } from 'reactflow';
 import { Tooltip } from 'antd';
 import { getEdgeWidth, getUnit } from '../utils';
@@ -76,7 +77,16 @@ const CustomEdge = ({ id, sourceX, sourceY, targetX, targetY, style = {}, data }
             padding: 2,
           }}
         >
-          <Tooltip title={'数据量:' + data?.weight}>{getUnit(data?.weight)}</Tooltip>
+          <Tooltip
+            title={
+              formatMessage({
+                id: 'src.component.ProfileFlow.customComponents.F4F9EB2A',
+                defaultMessage: '数据量:',
+              }) + data?.weight
+            }
+          >
+            {getUnit(data?.weight)}
+          </Tooltip>
         </div>
       </EdgeLabelRenderer>
     </>

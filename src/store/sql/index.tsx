@@ -220,14 +220,23 @@ export class SQLStore {
           );
           this.records = this.records?.map((i) => {
             const result = finishedSQLResult[i.sqlId];
+            const isExecutingSQLId = i?.sqlId === info?.executingSQLId;
             if (result) {
+              /* 已返回的结果 */
               return {
                 ...i,
                 ...result,
                 isSupportProfile: isSupportProfile,
                 sessionId,
               };
+            } else if (isExecutingSQLId) {
+              /* 执行中 */
+              return {
+                ...i,
+                status: ISqlExecuteResultStatus.RUNNING,
+              };
             } else {
+              /* 未执行 */
               return i;
             }
           });
@@ -280,9 +289,9 @@ export class SQLStore {
           }),
           ...this.records,
         ];
+        this.initLog(pageKey, info);
       };
 
-      this.initLog(pageKey);
       let isFirstTime = true;
 
       const res = await executeSQL(
@@ -317,31 +326,17 @@ export class SQLStore {
     }
   }
 
-  private initLog(pageKey: string) {
+  private initLog(pageKey: string, info: IExecutingInfo) {
     const resultSet = this.resultSets.get(pageKey);
     const lockedResultSets = resultSet.filter((r) => r.locked);
-    this.resultSets.set(pageKey, [...lockedResultSets, this.getLogTab()]);
+    this.resultSets.set(pageKey, [...lockedResultSets, this.getLogTab(info)]);
     this.setActiveTab(pageKey, this.resultSets.get(pageKey)?.find((i) => i.type == 'LOG')?.uniqKey);
   }
 
   public getLogTab(record?: IExecutingInfo): IResultSet {
     const uniqKey = this.uniqLogKey || generateUniqKey();
     this.uniqLogKey = uniqKey;
-    if (!record) {
-      return {
-        type: 'LOG',
-        uniqKey: uniqKey,
-        columns: [],
-        rows: [],
-        initialSql: '',
-        locked: false,
-        editable: false,
-        isQueriedEditable: false,
-        logTypeData: [],
-        currentExecuteInfo: record,
-      };
-    }
-    const { results } = record;
+    const { results, task } = record;
     return {
       type: 'LOG',
       uniqKey: uniqKey,
@@ -365,6 +360,7 @@ export class SQLStore {
           checkViolations: item.checkViolations,
         };
       }),
+      total: task?.sqls?.length || 0,
     };
   }
 

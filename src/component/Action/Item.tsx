@@ -101,6 +101,7 @@ export class ActionLink extends React.PureComponent<BaseProps> {
       tooltip,
       loading,
       replaceLoading,
+      placement = 'top',
     } = this.props;
     return (
       <Typography.Link
@@ -121,7 +122,7 @@ export class ActionLink extends React.PureComponent<BaseProps> {
           }
         }}
       >
-        <Tooltip placement="top" title={tooltip}>
+        <Tooltip placement={placement} title={tooltip}>
           {loading || this.state.disabled ? <LoadingOutlined /> : ''}{' '}
           {replaceLoading && (loading || this.state.disabled) ? null : children}
         </Tooltip>

@@ -130,7 +130,15 @@ const StatusBar: React.FC<IProps> = function ({
           </span>
         ) : null}
         <Space size={'small'}>
-          <span>{`总耗时：${DBCostTime}`}</span>
+          <span>
+            {formatMessage(
+              {
+                id: 'src.page.Workspace.components.DDLResultSet.0B7666A0',
+                defaultMessage: '总耗时：${DBCostTime}',
+              },
+              { DBCostTime: DBCostTime },
+            )}
+          </span>
           <span>
             {
               formatMessage(

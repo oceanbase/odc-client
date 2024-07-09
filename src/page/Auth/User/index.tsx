@@ -388,15 +388,8 @@ class UserPage extends React.PureComponent<IProps, IState> {
   }
 
   render() {
-    const {
-      formModalVisible,
-      detailModalVisible,
-      editId,
-      detailId,
-      users,
-      roles,
-      user,
-    } = this.state;
+    const { formModalVisible, detailModalVisible, editId, detailId, users, roles, user } =
+      this.state;
     const disabledOp = this.isAdminOrMe(user);
     const canAcessCreate = canAcess({
       resourceIdentifier: IManagerResourceType.user,
@@ -447,7 +440,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
                           description={formatMessage({
                             id: 'odc.components.UserPage.TheFileMustContainInformation',
                           })} /*文件需包含用户账号、姓名、密码等信息，建议使用用户配置模版*/
-                          templateName="user_template.xlsx"
+                          templatePath="/api/v2/iam/users/template"
                           previewContent={(data: IManagerBatchUser[]) => {
                             if (!data?.length) {
                               return (
@@ -494,8 +487,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
                                                 {
                                                   formatMessage(
                                                     {
-                                                      id:
-                                                        'odc.components.UserPage.AccountItemaccountname',
+                                                      id: 'odc.components.UserPage.AccountItemaccountname',
                                                     },
                                                     { itemAccountName: item.accountName },
                                                   ) /*账号：{itemAccountName}*/

@@ -45,28 +45,6 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
       });
     }
   }
-  public handleShowOutputFilter = (filterContent: string) => {
-    Modal.info({
-      width: 720,
-      title: formatMessage({
-        id: 'workspace.window.sql.explain.tab.summary.columns.output',
-      }),
-      content: (
-        <div
-          style={{
-            maxHeight: 'calc(100vh - 300px)',
-            overflowY: 'auto',
-          }}
-        >
-          {filterContent}
-        </div>
-      ),
-      maskClosable: true,
-      okText: formatMessage({
-        id: 'app.button.ok',
-      }),
-    });
-  };
   public render() {
     const { explain, sql, haveText, traceId, session } = this.props;
     function injectKey2TreeData(root) {
@@ -90,7 +68,7 @@ export default class SQLExplain extends Component<SQLExplainProps, SQLExplainSta
     }
     const { onlyText, tableHeight, showExplainText } = this.state;
     const columns = getSqlExplainColumns({
-      handleShowOutputFilter: this.handleShowOutputFilter,
+      handleShowOutputFilter: handleShowOutputFilter,
     });
     return (
       <>
@@ -237,4 +215,28 @@ const ViewFormattingInformation: React.FC<{
       }
     </a>
   );
+};
+
+export const handleShowOutputFilter = (filterContent: string) => {
+  Modal.info({
+    width: 720,
+    zIndex: 2000,
+    title: formatMessage({
+      id: 'workspace.window.sql.explain.tab.summary.columns.output',
+    }),
+    content: (
+      <div
+        style={{
+          maxHeight: 'calc(100vh - 300px)',
+          overflowY: 'auto',
+        }}
+      >
+        {filterContent}
+      </div>
+    ),
+    maskClosable: true,
+    okText: formatMessage({
+      id: 'app.button.ok',
+    }),
+  });
 };
