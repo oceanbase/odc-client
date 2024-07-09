@@ -25,7 +25,7 @@ interface IProps {
   type?: 'button' | 'string';
   action: string;
   description: string;
-  templateName: string;
+  templatePath: string;
   data?: any;
   noButton?: boolean;
   getResultByFiles: (files: UploadFile[]) => any[];

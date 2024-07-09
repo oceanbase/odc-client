@@ -17,7 +17,7 @@
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import type { ISqlExecuteResult, IExecutingInfo } from '@/d.ts';
 import { EStatus, ISqlExecuteResultStatus } from '@/d.ts';
-import { IUnauthorizedDatabase } from '@/d.ts/database';
+import { IUnauthorizedDBResources } from '@/d.ts/table';
 import { IRule } from '@/d.ts/rule';
 import request from '@/util/request';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
@@ -48,7 +48,7 @@ export interface ISQLExecuteTask {
   requestId: string;
   sqls: ISQLExecuteTaskSQL[];
   violatedRules: IRule[];
-  unauthorizedDatabases: IUnauthorizedDatabase[];
+  unauthorizedDBResources: IUnauthorizedDBResources[];
 }
 
 /**
@@ -62,7 +62,7 @@ export interface IExecuteTaskResult {
   executeResult: ISqlExecuteResult[];
   lintResultSet?: ISQLLintReuslt[];
   status?: EStatus;
-  unauthorizedDatabases?: IUnauthorizedDatabase[];
+  unauthorizedDBResources?: IUnauthorizedDBResources[];
   unauthorizedSql?: string;
 }
 class Task {
@@ -91,7 +91,7 @@ class Task {
     }
     return res?.data;
   };
-  public getResult = async (): Promise<IExecutingInfo> => {
+  public getResult = async (): Promise<ISqlExecuteResult[]> => {
     return new Promise((resolve, reject) => {
       this.onUpdate({
         finished: false,
@@ -99,6 +99,7 @@ class Task {
         task: this.taskInfo,
         traceId: null,
         executingSQL: null,
+        executingSQLId: null,
       });
       this._getResult(resolve);
     });
@@ -114,6 +115,7 @@ class Task {
         traceId: string;
         results: ISqlExecuteResult[];
         sql: string;
+        sqlId: string;
       } = await this.fetchData();
       if (this.isStop) {
         callback(null);
@@ -131,6 +133,7 @@ class Task {
         task: this.taskInfo,
         traceId: data.traceId,
         executingSQL: data.sql,
+        executingSQLId: data.sqlId,
       });
       if (data?.finished) {
         callback(this.result);
@@ -172,7 +175,7 @@ class TaskManager {
     sessionId: string,
     taskInfo: ISQLExecuteTask,
     onUpdate: (info: IExecutingInfo) => void,
-  ): Promise<IExecutingInfo> {
+  ): Promise<ISqlExecuteResult[]> {
     const task = new Task(requestId, sessionId, taskInfo, onUpdate);
     this.tasks.push(task);
     try {
@@ -215,6 +218,33 @@ export default async function executeSQL(
     data: serverParams,
   });
   const taskInfo: ISQLExecuteTask = res?.data;
+  const rootViolatedRules = taskInfo?.violatedRules?.reduce((pre, cur) => {
+    if (cur?.violation) {
+      return pre.concat({
+        sqlTuple: {
+          executedSql: cur?.violation?.text,
+          offset: cur?.violation?.offset,
+          originalSql: cur?.violation?.text,
+        },
+        violatedRules: [cur],
+      });
+    }
+    return pre;
+  }, []);
+  const unauthorizedResource = taskInfo?.unauthorizedDBResources;
+  const violatedRules = rootViolatedRules?.concat(taskInfo?.sqls);
+  if (unauthorizedResource?.length) {
+    // 无权限库
+    return {
+      invalid: true,
+      executeSuccess: false,
+      executeResult: [],
+      violatedRules: [],
+      unauthorizedDBResources: unauthorizedResource,
+      unauthorizedSql: (params as IExecuteSQLParams)?.sql || (params as string),
+    };
+  }
+
   const {
     pass,
     data: preHandleData,
@@ -231,7 +261,7 @@ export default async function executeSQL(
     taskInfo,
     onUpdate,
   );
-  let { results } = executeRes;
+  let results = executeRes;
   results = results?.map((result) => {
     if (!result.requestId) {
       result.requestId = requestId;

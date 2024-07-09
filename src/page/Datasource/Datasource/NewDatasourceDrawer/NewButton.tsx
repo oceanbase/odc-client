@@ -239,7 +239,7 @@ const NewDatasourceButton: React.FC<{
             id: 'odc.src.page.Datasource.Datasource.Content.TitleButton.TheFileNeedsToInclude',
           }) /* 文件需包含类型、主机端口、租户名、数据库账号等相关数据源信息，建议使用数据源配置模版 */
         }
-        templateName="datasource_template.xlsx"
+        templatePath="/api/v2/datasource/datasources/template"
         data={{
           visibleScope: IConnectionType.PRIVATE,
         }}

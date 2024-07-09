@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Controls, ControlButton, useReactFlow } from 'reactflow';
 import {
   ZoomInOutlined,
@@ -15,13 +16,23 @@ export default function Flow() {
     <Controls>
       <div className={styles.controls}>
         <ControlButton onClick={() => zoomOut()}>
-          <Tooltip title="缩小">
-            <ZoomInOutlined />
+          <Tooltip
+            title={formatMessage({
+              id: 'src.component.ProfileFlow.customComponents.12BFFE42',
+              defaultMessage: '缩小',
+            })}
+          >
+            <ZoomOutOutlined size={12} />
           </Tooltip>
         </ControlButton>
         <ControlButton onClick={() => zoomIn()}>
-          <Tooltip title="放大">
-            <ZoomOutOutlined />
+          <Tooltip
+            title={formatMessage({
+              id: 'src.component.ProfileFlow.customComponents.3057F753',
+              defaultMessage: '放大',
+            })}
+          >
+            <ZoomInOutlined size={12} />
           </Tooltip>
         </ControlButton>
         <ControlButton
@@ -29,14 +40,24 @@ export default function Flow() {
             initCenter(setCenter);
           }}
         >
-          <Tooltip title="实际尺寸">
-            <OneToOneOutlined />
+          <Tooltip
+            title={formatMessage({
+              id: 'src.component.ProfileFlow.customComponents.89BEEE9E',
+              defaultMessage: '实际尺寸',
+            })}
+          >
+            <OneToOneOutlined size={12} />
           </Tooltip>
         </ControlButton>
         <ControlButton onClick={() => fitView()}>
-          <Tooltip title="适应宽度">
+          <Tooltip
+            title={formatMessage({
+              id: 'src.component.ProfileFlow.customComponents.B32C7D03',
+              defaultMessage: '适应宽度',
+            })}
+          >
             {' '}
-            <CompressOutlined />
+            <CompressOutlined size={12} />
           </Tooltip>
         </ControlButton>
       </div>

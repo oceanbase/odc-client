@@ -1,5 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import { Button } from 'antd';
+import { Button, Space } from 'antd';
 import styles from '../index.less';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
@@ -7,17 +7,16 @@ import React, { useState, useContext } from 'react';
 import { IDatabase, IDatabaseObject } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
 import { openNewSQLPage } from '@/store/helper/page';
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import Icon from '@ant-design/icons';
 
 interface Iprops {
   database: IDatabase;
   setDatabase: React.Dispatch<React.SetStateAction<IDatabase>>;
   databaseList: IDatabase[];
   objectlist: IDatabaseObject;
-  setSelectDatabaseState: React.Dispatch<React.SetStateAction<boolean>>;
   searchKey: string;
   setSearchKey: React.Dispatch<React.SetStateAction<string>>;
-  isSelectAll: boolean;
-  setSelectAllState: React.Dispatch<React.SetStateAction<boolean>>;
   modalStore: ModalStore;
 }
 
@@ -25,16 +24,17 @@ const DatabaseList = ({
   database,
   setDatabase,
   databaseList,
-  setSelectDatabaseState,
   searchKey,
   setSearchKey,
-  isSelectAll,
-  setSelectAllState,
   modalStore,
   objectlist,
 }: Iprops) => {
-  const { selectProjectId } = useContext(ResourceTreeContext);
+  const { selectDatasourceId, selectProjectId, projectList, datasourceList } =
+    useContext(ResourceTreeContext);
   const [activeDatabase, setActiveDatabase] = useState<IDatabase>();
+
+  const selectProject = projectList?.find((p) => p.id == selectProjectId);
+  const selectDatasource = datasourceList?.find((d) => d.id == selectDatasourceId);
 
   const getOptions = () => {
     if (objectlist) {
@@ -46,18 +46,11 @@ const DatabaseList = ({
   };
   const options = getOptions();
 
-  const changeDatabase = (item) => {
+  const changeDatabase = (e, item) => {
+    if (!item?.authorizedPermissionTypes?.length) return;
     setDatabase(item);
-    setSelectDatabaseState(true);
     setSearchKey('');
-    setSelectAllState(false);
-  };
-
-  const selectAll = () => {
-    setDatabase(null);
-    setSelectDatabaseState(false);
-    setSearchKey('');
-    setSelectAllState(true);
+    openSql(e, item);
   };
 
   const openSql = (e, db) => {
@@ -76,38 +69,63 @@ const DatabaseList = ({
     modalStore.changeDatabaseSearchModalVisible(false);
   };
 
+  const getDataSourceIcon = (type) => {
+    const DBIcon = getDataSourceStyleByConnectType(type)?.icon;
+    return (
+      <Icon
+        style={{
+          color: 'var(--icon-color-disable)',
+          filter: 'grayscale(1) opacity(0.6)',
+          fontSize: 14,
+        }}
+        component={DBIcon.component}
+      />
+    );
+  };
+
   const getPositioninButton = (db: IDatabase) => {
     if (activeDatabase?.id !== db.id) return null;
-    if (!!db?.authorizedPermissionTypes?.length) {
+    if (!db?.authorizedPermissionTypes?.length) {
       return (
-        <Button type="link" style={{ padding: 0 }} onClick={(e) => openSql(e, db)}>
+        <Button type="link" style={{ padding: 0 }} onClick={(e) => applyPermission(e, db)}>
           {formatMessage({
-            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.D7B63CB7',
-            defaultMessage: '打开 SQL 窗口',
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.DC41DDB8',
+            defaultMessage: '权限库申请',
           })}
         </Button>
       );
     }
-    return (
-      <Button type="link" style={{ padding: 0 }} onClick={(e) => applyPermission(e, db)}>
-        {formatMessage({
-          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.DC41DDB8',
-          defaultMessage: '权限库申请',
-        })}
-      </Button>
-    );
   };
 
+  if (database && !searchKey) {
+    return (
+      <Button
+        type="link"
+        style={{ padding: '4px 12px', height: 28, display: 'inline-block' }}
+        onClick={(e) => openSql(e, database)}
+      >
+        定位到当前数据库
+      </Button>
+    );
+  }
   return (
     <div className={styles.content}>
-      <div
-        className={isSelectAll ? styles.databaseItemActive : styles.databaseItem}
-        onClick={selectAll}
-      >
-        {formatMessage({
-          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.69106FDA',
-          defaultMessage: '全部数据库',
-        })}
+      <div className={styles.searchInfo}>
+        {selectProject
+          ? formatMessage(
+              {
+                id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.6D5791AB',
+                defaultMessage: '当前项目: ${selectProject?.name}',
+              },
+              { selectProjectName: selectProject?.name },
+            )
+          : formatMessage(
+              {
+                id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.987D5B8A',
+                defaultMessage: '当前数据源: ${selectDatasource?.name}',
+              },
+              { selectDatasourceName: selectDatasource?.name },
+            )}
       </div>
       {options?.length
         ? options.map((db) => {
@@ -115,7 +133,7 @@ const DatabaseList = ({
               <>
                 <div
                   key={db.id}
-                  onClick={() => changeDatabase(db)}
+                  onClick={(e) => changeDatabase(e, db)}
                   className={
                     database?.id === db?.id ? styles.databaseItemActive : styles.databaseItem
                   }
@@ -133,7 +151,12 @@ const DatabaseList = ({
                     <DataBaseStatusIcon item={db} />
                     <div style={{ padding: '0 4px' }}>{db?.name}</div>
                     <div className={styles.subInfo}>
-                      {selectProjectId ? db?.dataSource?.name : null}
+                      {selectProjectId ? (
+                        <Space align="center">
+                          {getDataSourceIcon(db?.dataSource?.dialectType)}
+                          {db?.dataSource?.name}
+                        </Space>
+                      ) : null}
                     </div>
                   </div>
                   {getPositioninButton(db)}

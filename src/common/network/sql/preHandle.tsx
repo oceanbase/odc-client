@@ -28,7 +28,7 @@ export function executeSQLPreHandle(
     }
     return pre;
   }, []);
-  const unauthorizedDatabases = taskInfo?.unauthorizedDatabases;
+  const unauthorizedDatabases = taskInfo?.unauthorizedDBResources;
   const violatedRules = rootViolatedRules?.concat(taskInfo?.sqls);
   if (unauthorizedDatabases?.length) {
     // 无权限库

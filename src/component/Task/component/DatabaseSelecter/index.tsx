@@ -17,11 +17,12 @@ import { formatMessage } from '@/util/intl';
 
 import { listDatabases } from '@/common/network/database';
 import ExportCard from '@/component/ExportCard';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
+import React, { useCallback, useEffect, useState } from 'react';
+import { DataNode, TreeProps } from 'antd/lib/tree';
 import { ReactComponent as DatabaseSvg } from '@/svgr/database.svg';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { Empty, Popconfirm, Space, Spin, Tree, Typography, Checkbox, Tooltip } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { DataNode } from 'antd/lib/tree';
 import classnames from 'classnames';
 import styles from './index.less';
 
@@ -144,7 +145,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
 
         disabled,
         key: item?.id,
-        icon: <Icon component={DatabaseSvg} />,
+        icon: <DataBaseStatusIcon item={item} />,
       };
     });
     return allTreeData;
@@ -174,6 +175,19 @@ const DatabaseSelecter: React.FC<IProps> = function ({
   const handleSearch = (value) => {
     setSourceSearchValue(value);
   };
+  /**
+   * 选中一个库后
+   */
+  const handleChosenDataBase: TreeProps['onCheck'] = useCallback(
+    (_checkedKeys, { checked, node: { key: curNodeKey } }) => {
+      if (checked) {
+        onChange([...checkedKeys, curNodeKey]);
+      } else {
+        onChange(checkedKeys.filter((key) => key !== curNodeKey));
+      }
+    },
+    [checkedKeys, onChange],
+  );
 
   const allTreeDataKeys = getAllTreeDataKeys();
   const maxTreeDataKeys = getAllTreeDataKeys(maxCount);
@@ -217,9 +231,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
               className={styles.allTree}
               treeData={allTreeData}
               checkedKeys={checkedKeys}
-              onCheck={(_checkedKeys) => {
-                onChange(_checkedKeys as string[]);
-              }}
+              onCheck={handleChosenDataBase}
             />
           </ExportCard>
         </Spin>

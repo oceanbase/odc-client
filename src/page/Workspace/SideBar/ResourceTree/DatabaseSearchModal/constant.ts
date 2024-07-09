@@ -16,6 +16,7 @@ import { TopTab as PackageTopTab } from '@/page/Workspace/components/PackagePage
 import { DbObjectTypeTextMap } from '@/constant/label';
 
 const mysqlObjectType = [
+  DbObjectType.database,
   DbObjectType.table,
   DbObjectType.column,
   DbObjectType.function,
@@ -24,6 +25,7 @@ const mysqlObjectType = [
 ];
 
 const oracleObjectType = [
+  DbObjectType.database,
   DbObjectType.table,
   DbObjectType.column,
   DbObjectType.function,
@@ -60,6 +62,9 @@ export const DbObjectTypeMap = {
       id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.ED30EF41',
       defaultMessage: '全部',
     }),
+  },
+  [DbObjectType.database]: {
+    label: DbObjectTypeTextMap.DATABASE,
   },
   [DbObjectType.table]: {
     label: DbObjectTypeTextMap.TABLE,

@@ -111,7 +111,7 @@ export default function WorkspaceStore({ children }) {
       const databaseList = await reloadDatabaseList();
       if (
         !databaseList?.find((item) =>
-          [DBObjectSyncStatus.SYNCED, DBObjectSyncStatus.PENDING].includes(item.objectSyncStatus),
+          [DBObjectSyncStatus.SYNCING, DBObjectSyncStatus.PENDING].includes(item.objectSyncStatus),
         )
       ) {
         cancel();
