@@ -338,7 +338,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     <DDLResultSet
                       key={set.uniqKey || i}
                       dbTotalDurationMicroseconds={executeSQLStage?.totalDurationMicroseconds}
-                      showExplain={session?.supportFeature?.enableSQLExplain}
+                      showExplain={true}
                       showExecutePlan={session?.supportFeature.enableProfile}
                       showPagination={true}
                       showTrace={session?.supportFeature?.enableSQLTrace}

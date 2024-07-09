@@ -211,7 +211,7 @@ const ObjectList = ({
                               </div>
                               {i.key === DbObjectType.database
                                 ? selectDbBtn(object)
-                                : permissionBtn(object)}
+                                : permissionBtn(object, i.key)}
                             </div>
                           );
                         }
@@ -232,14 +232,16 @@ const ObjectList = ({
     );
   };
 
-  const applyTablePermission = (e, object) => {
+  const applyTablePermission = (e, object, type) => {
     e.stopPropagation();
+    const dbObj = type === DbObjectType.table ? object : object?.dbObject;
     const params = {
-      projectId: object?.database?.project?.id,
-      databaseId: object?.database?.id,
-      tableName: object?.name,
-      tableId: object?.id,
+      projectId: dbObj?.database?.project?.id,
+      databaseId: dbObj?.database?.id,
+      tableName: dbObj?.name,
+      tableId: dbObj?.id,
     };
+    // debugger
     modalStore.changeApplyTablePermissionModal(true, {
       ...params,
     });
@@ -253,28 +255,42 @@ const ObjectList = ({
     );
   };
 
-  const permissionBtn = (object) => {
+  const permissionBtn = (object, type: DbObjectType) => {
     if (activeDatabase?.id !== object.id) return;
     if (hasPermission(object)) return;
+    const isTableColumn =
+      object?.dbObject?.type === DbObjectType.table || object?.type === DbObjectType.table;
+    if ([DbObjectType.column, DbObjectType.table].includes(type) && isTableColumn) {
+      return (
+        <Button
+          type="link"
+          style={{ padding: 0, height: 18, display: 'inline-block' }}
+          onClick={(e) => applyTablePermission(e, object, type)}
+        >
+          {formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.E2C1F722',
+            defaultMessage: '申请表权限',
+          })}
+        </Button>
+      );
+    }
     return (
       <Button
         type="link"
-        style={{ padding: 0, height: 18, display: 'inline-block' }}
-        onClick={(e) => applyTablePermission(e, object)}
+        style={{ padding: 0, height: 18 }}
+        onClick={(e) => applyDbPermission(e, object)}
       >
-        {formatMessage({
-          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.E2C1F722',
-          defaultMessage: '申请表权限',
-        })}
+        申请库权限
       </Button>
     );
   };
 
-  const applyDbPermission = (e, db: IDatabase) => {
+  const applyDbPermission = (e, db) => {
     e.stopPropagation();
+    const dbObj = db?.dbObject?.database || db?.database || db;
     modalStore.changeApplyDatabasePermissionModal(true, {
-      projectId: db?.project?.id,
-      databaseId: db?.id,
+      projectId: dbObj?.project?.id,
+      databaseId: dbObj?.id,
     });
     modalStore.changeDatabaseSearchModalVisible(false);
   };
@@ -375,7 +391,9 @@ const ObjectList = ({
                       {getSubTitle(object, type)}
                     </span>
                   </div>
-                  {isDatabasetab ? selectDbBtn(object) : permissionBtn(object)}
+                  {isDatabasetab
+                    ? selectDbBtn(object)
+                    : permissionBtn(object, currentObjectList.key)}
                 </div>
               );
             })}

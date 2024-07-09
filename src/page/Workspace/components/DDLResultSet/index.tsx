@@ -90,6 +90,7 @@ import useColumns, { isNumberType } from './hooks/useColumns';
 import ResultContext from './ResultContext';
 import StatusBar from './StatusBar';
 import { copyToSQL, getColumnNameByColumnKey } from './util';
+import { OBCompare, ODC_TRACE_SUPPORT_VERSION } from '@/util/versionUtils';
 
 // @ts-ignore
 const ToolbarButton = Toolbar.Button;
@@ -676,7 +677,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   const executeGuideTipContent = () => {
     if (guideCacheStore?.[guideCacheStore.cacheEnum.executePlan]) return null;
     return (
-      <div>
+      <div style={{ color: 'var(--text-color-secondary)' }}>
         <div>
           {formatMessage({
             id: 'src.page.Workspace.components.DDLResultSet.E32AB474',
@@ -749,32 +750,32 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               />
             </Tooltip>
           ))}
-
-        {showTrace ? (
-          <ToolbarButton
-            text={
-              withFullLinkTrace
-                ? formatMessage({
-                    id: 'odc.src.page.Workspace.components.DDLResultSet.FullLinkTrace',
-                  }) //'全链路 Trace'
-                : traceEmptyReason
-            }
-            disabled={!withFullLinkTrace}
-            icon={<TraceSvg />}
-            onClick={() => {
-              onShowTrace?.();
-            }}
-          />
-        ) : (
-          <ToolbarButton
-            text={traceEmptyReason}
-            disabled={true}
-            icon={<TraceSvg />}
-            onClick={() => {
-              onShowTrace?.();
-            }}
-          />
-        )}
+        {showTrace &&
+          (isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=') ? (
+            <ToolbarButton
+              text={
+                withFullLinkTrace
+                  ? formatMessage({
+                      id: 'odc.src.page.Workspace.components.DDLResultSet.FullLinkTrace',
+                    }) //'全链路 Trace'
+                  : traceEmptyReason
+              }
+              disabled={!withFullLinkTrace}
+              icon={<TraceSvg />}
+              onClick={() => {
+                onShowTrace?.();
+              }}
+            />
+          ) : (
+            <ToolbarButton
+              text={traceEmptyReason}
+              disabled={true}
+              icon={<TraceSvg />}
+              onClick={() => {
+                onShowTrace?.();
+              }}
+            />
+          ))}
       </>
     );
   };
