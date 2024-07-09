@@ -33,7 +33,7 @@ interface IProps {
   visible: boolean;
   action: string;
   description: string;
-  templateName: string;
+  templatePath: string;
   data?: any;
   getResultByFiles: (files: UploadFile[]) => any[];
   previewContent: (content: any[]) => React.ReactNode;
@@ -47,7 +47,7 @@ const BatchImportModal: React.FC<IProps> = (props) => {
     visible,
     action,
     description,
-    templateName,
+    templatePath,
     data = null,
     getResultByFiles,
     previewContent,
@@ -149,7 +149,11 @@ const BatchImportModal: React.FC<IProps> = (props) => {
         description={
           <div style={{ lineHeight: '14px' }}>
             {description}
-            <Button type="link" href={(window.ODCApiHost || '') + templateName} download={true}>
+            <Button
+              type="link"
+              href={(window.ODCApiHost || '') + templatePath + '?lang=' + getLocale()}
+              download={true}
+            >
               {
                 formatMessage({
                   id: 'odc.component.BatchImportButton.modal.DownloadTemplate',
