@@ -36,6 +36,13 @@ export const hasExportPermission = (dbSession: SessionStore) => {
 export const hasChangePermission = (dbSession: SessionStore) => {
   return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
 };
+export const hasTableExportPermission = (dbSession: SessionStore, node: TreeDataNode) => {
+  return node?.data?.info?.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
+};
+
+export const hasTableChangePermission = (dbSession: SessionStore, node: TreeDataNode) => {
+  return node?.data?.info?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
+};
 
 const TreeNodeMenu = (props: IProps) => {
   const { type = '', dbSession, databaseFrom, node, showTip, pollingDatabase } = props;
@@ -164,6 +171,13 @@ const TreeNodeMenu = (props: IProps) => {
   let allItemsProp: ItemType[] = getMenuItems(menuItems);
 
   function actionsRender() {
+    /* 只有表权限, 则隐藏 */
+    if (
+      node?.data?.authorizedPermissionTypes?.length === 1 &&
+      node?.data?.authorizedPermissionTypes?.includes(DatabasePermissionType.ACCESS)
+    ) {
+      return;
+    }
     let ellipsisItems = menuItems.filter((item) => {
       return item.ellipsis;
     });
