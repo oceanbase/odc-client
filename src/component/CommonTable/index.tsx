@@ -276,12 +276,11 @@ const CommonTable: <RecordType extends object = any>(
   }
 
   function handleRowKeyChange(selected: boolean, changeKeys: number[]) {
-    const keys = [...selectedRowKeys];
+    let keys = [...selectedRowKeys];
     if (selected) {
       keys.push(...changeKeys);
     } else {
-      const firstKeyIndex = keys.indexOf(changeKeys[0]);
-      keys.splice(firstKeyIndex, changeKeys.length);
+      keys = keys.filter((item) => !changeKeys.includes(item));
     }
     setSelectedRowKeys(keys);
   }
@@ -461,12 +460,17 @@ const CommonTable: <RecordType extends object = any>(
             }
             onChange={handleChange}
             rowSelection={
-              rowSelecter && {
-                ...rowSelecter,
-                selectedRowKeys,
-                onSelect: handleRowKeySelect,
-                onSelectAll: handleSelectAll,
-              }
+              rowSelecter
+                ? {
+                    ...tableProps?.rowSelection,
+                    ...rowSelecter,
+                    selectedRowKeys,
+                    onSelect: handleRowKeySelect,
+                    onSelectAll: handleSelectAll,
+                  }
+                : {
+                    ...tableProps?.rowSelection,
+                  }
             }
             pagination={{
               ...tableProps?.pagination,
