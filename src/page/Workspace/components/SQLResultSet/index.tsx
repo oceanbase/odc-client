@@ -381,6 +381,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                       isEditing={editingMap[set.uniqKey]}
                       withFullLinkTrace={set?.withFullLinkTrace}
                       traceEmptyReason={set?.traceEmptyReason}
+                      withQueryProfile={set?.withQueryProfile}
                     />
                   ),
                 };

@@ -46,41 +46,12 @@ const getColumns = (params: {
   const { filters } = params.paramOptions ?? {};
   return [
     {
-      dataIndex: 'databaseName',
-      title: formatMessage({
-        id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.F9701758',
-        defaultMessage: '数据库',
-      }),
-      ellipsis: true,
-      filterDropdown: (props) => {
-        return (
-          <SearchFilter
-            {...props}
-            selectedKeys={filters?.databaseName}
-            placeholder={formatMessage({
-              id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.88257A65',
-              defaultMessage: '请输入',
-            })}
-          />
-        );
-      },
-      filterIcon: (filtered) => (
-        <SearchOutlined
-          style={{
-            color: filtered ? 'var(--icon-color-focus)' : undefined,
-          }}
-        />
-      ),
-
-      filteredValue: filters?.databaseName || null,
-      filters: [],
-    },
-    {
       dataIndex: 'tableName',
       title: formatMessage({
         id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.8F13E12E',
         defaultMessage: '表',
       }),
+      width: 140,
       ellipsis: true,
       filterDropdown: (props) => {
         return (
@@ -103,6 +74,34 @@ const getColumns = (params: {
       ),
 
       filteredValue: filters?.tableName || null,
+      filters: [],
+    },
+    {
+      dataIndex: 'databaseName',
+      title: '所属数据库',
+      ellipsis: true,
+      width: 208,
+      filterDropdown: (props) => {
+        return (
+          <SearchFilter
+            {...props}
+            selectedKeys={filters?.databaseName}
+            placeholder={formatMessage({
+              id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.88257A65',
+              defaultMessage: '请输入',
+            })}
+          />
+        );
+      },
+      filterIcon: (filtered) => (
+        <SearchOutlined
+          style={{
+            color: filtered ? 'var(--icon-color-focus)' : undefined,
+          }}
+        />
+      ),
+
+      filteredValue: filters?.databaseName || null,
       filters: [],
     },
     {

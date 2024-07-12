@@ -325,7 +325,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
         id: 'src.component.ExecuteSqlDetailModal.A944EAD1',
         defaultMessage: '执行计划详情',
       }),
-      sql: modalStore?.executeSqlDetailData?.sql,
+      sql: modalStore?.executeSqlDetailData?.selectedSQL,
       session: modalStore?.executeSqlDetailData?.session,
       traceId: modalStore?.executeSqlDetailData?.traceId,
       getDetail: getPlanDetail,
