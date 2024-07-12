@@ -28,6 +28,7 @@ import TableSelecter, {
 import { Button, Checkbox, DatePicker, Drawer, Form, Modal, Select, Space, message } from 'antd';
 import React, { useState } from 'react';
 import styles from './index.less';
+import moment from 'moment';
 
 const CheckboxGroup = Checkbox.Group;
 
@@ -73,6 +74,10 @@ const CreateModal: React.FC<IProps> = (props) => {
       handleModalVisizble(false);
       hadleReset();
     }
+  };
+
+  const disabledDate = (current) => {
+    return current && current < moment().subtract(1, 'days').endOf('day');
   };
 
   const handleSubmit = () => {
@@ -237,7 +242,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                         },
                       ]}
                     >
-                      <DatePicker style={{ width: '327px' }} />
+                      <DatePicker style={{ width: '327px' }} disabledDate={disabledDate} />
                     </Form.Item>
                   )
                 );
