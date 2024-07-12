@@ -268,39 +268,41 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
    * 已选择的所有库表(按搜索条件过滤)
    */
   const selectedTreeData = useMemo(() => {
-    const filtedDataSource = [];
-    for (const datasource of databaseWithTableList) {
-      let { tableList, id: databaseId, name: tableName } = datasource;
-      const checkedTableNames = tableList.filter((item) =>
-        checkedKeys?.includes(
-          generateKeyByDataBaseIdAndTableName({
-            databaseId,
-            tableName: item.name,
-            tableId: item.id,
-          }),
-        ),
-      );
-      if (!checkedKeys.includes(String(databaseId)) && checkedTableNames.length < 1) {
-        continue;
-      }
-      if (tableName.includes(targetSearchValue) || !targetSearchValue) {
-        filtedDataSource.push({
-          ...datasource,
-          tableList: checkedTableNames,
-        });
-      } else {
-        const searchedTableList = checkedTableNames.filter((item) =>
-          item?.name.includes(targetSearchValue),
+    try {
+      const filtedDataSource = [];
+      for (const datasource of databaseWithTableList) {
+        let { tableList, id: databaseId, name: tableName } = datasource;
+        const checkedTableNames = tableList.filter((item) =>
+          checkedKeys?.includes(
+            generateKeyByDataBaseIdAndTableName({
+              databaseId,
+              tableName: item.name,
+              tableId: item.id,
+            }),
+          ),
         );
-        if (searchedTableList.length > 0) {
+        if (!checkedKeys.includes(String(databaseId)) && checkedTableNames.length < 1) {
+          continue;
+        }
+        if (tableName.includes(targetSearchValue) || !targetSearchValue) {
           filtedDataSource.push({
             ...datasource,
-            tableList: searchedTableList,
+            tableList: checkedTableNames,
           });
+        } else {
+          const searchedTableList = checkedTableNames.filter((item) =>
+            item?.name.includes(targetSearchValue),
+          );
+          if (searchedTableList.length > 0) {
+            filtedDataSource.push({
+              ...datasource,
+              tableList: searchedTableList,
+            });
+          }
         }
       }
-    }
-    return getTreeData(filtedDataSource);
+      return getTreeData(filtedDataSource);
+    } catch (err) {}
   }, [databaseWithTableList, checkedKeys, targetSearchValue]);
   /**
    * 点击删除已选中的选项
