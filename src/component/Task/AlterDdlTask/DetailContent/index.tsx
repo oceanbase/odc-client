@@ -211,7 +211,7 @@ export function getItems(
             id: 'odc.src.component.Task.AlterDdlTask.DetailContent.DataSource',
           }),
           //'所属数据源'
-          task?.database.dataSource?.name || '-',
+          task?.database?.dataSource?.name || '-',
         ],
 
         hasFlow ? riskItem : null,
