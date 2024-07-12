@@ -81,7 +81,7 @@ const ManageModal: React.FC<IProps> = (props) => {
   const loadData = useCallback(
     async (args?: ITableLoadOptions) => {
       const { filters, sorter, pagination, pageSize } = args ?? {};
-      const { tableName, dataSourceName, ticketId, type, status } = filters ?? {};
+      const { tableName, dataSourceName, ticketId, type, status, databaseName } = filters ?? {};
       const { column, order } = sorter ?? {};
       const { current = 1 } = pagination ?? {};
       const params = {
@@ -90,6 +90,7 @@ const ManageModal: React.FC<IProps> = (props) => {
         userId,
         tableName,
         dataSourceName,
+        databaseName,
         ticketId,
         type,
         status,
@@ -113,7 +114,9 @@ const ManageModal: React.FC<IProps> = (props) => {
   };
 
   const handleReload = () => {
-    tableRef.current?.reload();
+    const param = { ...params, pagination: { ...params?.pagination, current: 1 } };
+    setParams(param);
+    loadData(param);
   };
 
   const handleReclaim = async (ids: number[]) => {

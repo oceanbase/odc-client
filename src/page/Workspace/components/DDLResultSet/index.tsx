@@ -150,6 +150,7 @@ interface IProps {
   autoCommit: boolean;
   withFullLinkTrace?: boolean; // SQL执行结果是否支持Trace功能
   traceEmptyReason?: string; // 若不支持时要展示的Tooltip文本
+  withQueryProfile?: boolean; // SQL执行结果是否支持执行剖析
   /**
    * db 查询耗时
    */
@@ -192,6 +193,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     autoCommit,
     dbTotalDurationMicroseconds,
     withFullLinkTrace = false,
+    withQueryProfile = false,
     traceEmptyReason = '',
     onUpdateEditing,
     onRefresh,
@@ -697,7 +699,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   };
 
   const getExecuteIcon = () => {
-    return showExecutePlan ? (
+    return showExecutePlan && withQueryProfile ? (
       <ToolbarButton
         text={formatMessage({
           id: 'src.page.Workspace.components.DDLResultSet.22F863D6',

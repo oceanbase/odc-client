@@ -120,7 +120,11 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
         <TooltipAction
           title={isOwner || isDBA ? '' : formatMessage({ id: 'src.page.Project.User.0C0586E8' })}
         >
-          <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={!isOwner}>
+          <Button
+            type="primary"
+            onClick={() => setAddUserModalVisiable(true)}
+            disabled={!isOwner && !isDBA}
+          >
             {
               formatMessage({
                 id: 'odc.Project.User.AddMembers',

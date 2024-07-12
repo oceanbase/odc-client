@@ -226,7 +226,7 @@ export class SQLStore {
               return {
                 ...i,
                 ...result,
-                isSupportProfile: isSupportProfile,
+                isSupportProfile: isSupportProfile && result?.withQueryProfile,
                 sessionId,
               };
             } else if (isExecutingSQLId) {
@@ -281,6 +281,7 @@ export class SQLStore {
             connectionReset: false,
             checkViolations: [],
             withFullLinkTrace: false,
+            withQueryProfile: false,
           };
         });
         this.records = [
