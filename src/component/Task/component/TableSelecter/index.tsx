@@ -23,7 +23,7 @@ import { IDatabase } from '@/d.ts/database';
 import { TablePermissionType } from '@/d.ts/table';
 import { ReactComponent as TableSvg } from '@/svgr/menuTable.svg';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
-import { Checkbox, Empty, Popconfirm, Space, Spin, Tree, Typography } from 'antd';
+import { Badge, Empty, Popconfirm, Space, Spin, Tree, Typography } from 'antd';
 import { DataNode, EventDataNode, TreeProps } from 'antd/lib/tree';
 import classnames from 'classnames';
 import React, {
@@ -36,6 +36,7 @@ import React, {
 } from 'react';
 import { isNumber } from 'lodash';
 import styles from './index.less';
+import { EnvColorMap } from '@/constant';
 
 export type TableItem = { databaseId: number; tableName: string; tableId?: number };
 
@@ -133,14 +134,27 @@ export const flatTableByGroupedParams = (
   });
   return result;
 };
+
+function envRender(environment) {
+  if (!environment) {
+    return null;
+  }
+  return (
+    <Badge
+      className={styles.env}
+      color={EnvColorMap[environment?.style?.toUpperCase()]?.tipColor}
+    />
+  );
+}
+
 /**
  * 将原始的IDataBaseWithTable数据转成TreeData格式
  * @param validTableList
  * @returns
  */
-const getTreeData = (validTableList: IDataBaseWithTable[]) => {
+const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false) => {
   const allTreeData = validTableList?.map((database) => {
-    const { id, name, tableList, dataSource, hasGetTableList } = database;
+    const { id, name, tableList, dataSource, hasGetTableList, environment } = database;
     const children = tableList.map((tableItem) => ({
       title: (
         <Space>
@@ -165,8 +179,9 @@ const getTreeData = (validTableList: IDataBaseWithTable[]) => {
             {dataSource?.name}
           </Text>
           <Text type="secondary" ellipsis>
-            {hasGetTableList ? `(${tableList.length})` : ''}
+            {hasGetTableList && isSourceTree ? `(${tableList.length})` : ''}
           </Text>
+          {isSourceTree ? envRender(environment) : null}
         </Space>
       ),
 
@@ -229,7 +244,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
    */
   const allTreeData = useMemo(() => {
     if (!sourceSearchValue?.length) {
-      return getTreeData(databaseWithTableList);
+      return getTreeData(databaseWithTableList, true);
     }
     const filtedDataSource = [];
     for (const datasource of databaseWithTableList) {
@@ -246,7 +261,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
         }
       }
     }
-    return getTreeData(filtedDataSource);
+    return getTreeData(filtedDataSource, true);
   }, [sourceSearchValue, databaseWithTableList]);
 
   /**
@@ -458,21 +473,12 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
           <ExportCard
             title={
               <Space size={4}>
-                <Checkbox
-                  indeterminate={indeterminate}
-                  checked={checkAll}
-                  style={{ marginRight: '8px' }}
-                />
-
                 <span>
                   {formatMessage({
                     id: 'src.component.Task.component.TableSelecter.E836E630',
                     defaultMessage: '选择表',
                   })}
                 </span>
-                <Text type="secondary">
-                  ({selectedTreeDataCount}/{allTreeDataCount})
-                </Text>
               </Space>
             }
             onSearch={setSourceSearchValue}
