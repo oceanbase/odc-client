@@ -7,14 +7,14 @@ import {
 } from '../constant';
 import { Tabs, Divider, Button, Empty, Tooltip, Spin } from 'antd';
 import styles from '../index.less';
-import { DbObjectType } from '@/d.ts';
+import { DbObjectType, ConnectionMode } from '@/d.ts';
 import { DbObjsIcon } from '@/constant';
 import Icon from '@ant-design/icons';
 import { useState } from 'react';
 import { IDatabase, IDatabaseObject } from '@/d.ts/database';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { ModalStore } from '@/store/modal';
-
+import { openNewSQLPage } from '@/store/helper/page';
 interface Iprops {
   database: IDatabase;
   objectlist: IDatabaseObject;
@@ -24,6 +24,8 @@ interface Iprops {
   setActiveKey: React.Dispatch<React.SetStateAction<string>>;
   modalStore: ModalStore;
   loading: boolean;
+  selectProjectId: number;
+  currentDataSourceType: ConnectionMode;
 }
 
 const ObjectList = ({
@@ -35,10 +37,13 @@ const ObjectList = ({
   setSearchKey,
   modalStore,
   loading,
+  selectProjectId,
+  currentDataSourceType,
 }: Iprops) => {
   const [activeDatabase, setActiveDatabase] = useState<IDatabase>();
   const ALL_TAB_MAX_LENGTH = 3;
-  const dbType = database?.dataSource?.dialectType || SEARCH_OBJECT_FROM_ALL_DATABASE;
+  const dbType =
+    currentDataSourceType || database?.dataSource?.dialectType || SEARCH_OBJECT_FROM_ALL_DATABASE;
   const getTyepBlock = () => {
     const typeList = objectTypeConfig[dbType];
     const typeObjectTree = typeList?.map((i) => {
@@ -145,6 +150,7 @@ const ObjectList = ({
         ) : (
           <div className={styles.objectlistBox}>
             {typeObjectTree?.map((i) => {
+              const isDatabase = i.key === DbObjectType.database;
               if (i?.data?.length) {
                 return (
                   <div className={styles.objectTypeBox}>
@@ -172,12 +178,14 @@ const ObjectList = ({
                           return (
                             <div
                               className={styles.objectTypeItem}
-                              onClick={(e) => openTree(e, object)}
+                              onClick={(e) =>
+                                isDatabase ? openSql(e, object) : openTree(e, object)
+                              }
                               onMouseEnter={() => setActiveDatabase(object)}
                               onMouseLeave={() => setActiveDatabase(null)}
                             >
                               <div style={{ overflow: 'hidden', display: 'flex', width: '100%' }}>
-                                {i.key === DbObjectType.database ? (
+                                {isDatabase ? (
                                   <Icon
                                     component={
                                       getDataSourceStyleByConnectType(
@@ -209,9 +217,7 @@ const ObjectList = ({
                                   {getSubTitle(object, i?.key)}
                                 </span>
                               </div>
-                              {i.key === DbObjectType.database
-                                ? selectDbBtn(object)
-                                : permissionBtn(object, i.key)}
+                              {isDatabase ? selectDbBtn(object) : permissionBtn(object, i.key)}
                             </div>
                           );
                         }
@@ -241,7 +247,6 @@ const ObjectList = ({
       tableName: dbObj?.name,
       tableId: dbObj?.id,
     };
-    // debugger
     modalStore.changeApplyTablePermissionModal(true, {
       ...params,
     });
@@ -335,6 +340,13 @@ const ObjectList = ({
     modalStore?.databaseSearchsSetExpandedKeysFunction?.(databaseId);
   };
 
+  const openSql = (e, db) => {
+    e.stopPropagation();
+    modalStore?.databaseSearchsSetExpandedKeysFunction?.(db.id);
+    modalStore?.changeDatabaseSearchModalVisible(false);
+    db.id && openNewSQLPage(db.id, selectProjectId ? 'project' : 'datasource');
+  };
+
   const renderObjectTypeTabs = (type) => {
     const currentObjectList = typeObjectTree?.find((i) => i.key === type);
     const isDatabasetab = currentObjectList.key === DbObjectType.database;
@@ -357,7 +369,7 @@ const ObjectList = ({
                 <div
                   className={styles.objectItem}
                   onClick={(e) => {
-                    !isDatabasetab ? openTree(e, object) : null;
+                    isDatabasetab ? openSql(e, object) : openTree(e, object);
                   }}
                   onMouseEnter={() => setActiveDatabase(object)}
                   onMouseLeave={() => setActiveDatabase(null)}
