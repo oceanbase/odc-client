@@ -25,6 +25,7 @@ import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
+import { mbToKb } from '@/util/utils';
 import {
   Alert,
   Button,
@@ -142,7 +143,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             rowLimit || dataSizeLimit
               ? {
                   rowLimit,
-                  dataSizeLimit,
+                  dataSizeLimit: mbToKb(dataSizeLimit),
                 }
               : null,
         };
@@ -583,7 +584,9 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
               </Radio>
             </Radio.Group>
           </Form.Item>
-          {settingStore.enableOSCLimiting && <ThrottleFormItem initialValue={initialValue} />}
+          {settingStore.enableOSCLimiting && (
+            <ThrottleFormItem initialValue={initialValue} maxRow={10000} />
+          )}
         </FormItemPanel>
         <DescriptionInput />
       </Form>
