@@ -87,3 +87,6 @@ export const SubTaskTypeMap = {
     label: formatMessage({ id: 'src.d.ts.DF449BBC', defaultMessage: '回滚' }),
   },
 };
+
+export const OscMaxRowLimit = 10000;
+export const OscMaxDataSizeLimit = 1000;

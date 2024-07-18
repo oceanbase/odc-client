@@ -30,6 +30,7 @@ import { updateThrottleConfig } from '@/common/network/task';
 import setting from '@/store/setting';
 import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
 import { TaskStatus } from '@/d.ts';
+import { OscMaxRowLimit, OscMaxDataSizeLimit } from '../../const';
 
 const { Text } = Typography;
 interface IDDLAlterParamters {
@@ -306,7 +307,7 @@ export function getItems(
               <ThrottleEditableCell
                 suffix="Rows/s"
                 min={0}
-                max={10000}
+                max={OscMaxRowLimit}
                 defaultValue={parameters?.rateLimitConfig?.rowLimit}
                 onOk={handleRowLimit}
                 readlOnly={cantBeModified}
@@ -324,7 +325,7 @@ export function getItems(
               <ThrottleEditableCell
                 suffix="MB/s"
                 min={0}
-                max={setting.maxSingleTaskDataSizeLimit}
+                max={OscMaxDataSizeLimit}
                 defaultValue={kbToMb(parameters?.rateLimitConfig?.dataSizeLimit)}
                 onOk={handleDataSizeLimit}
                 readlOnly={cantBeModified}
