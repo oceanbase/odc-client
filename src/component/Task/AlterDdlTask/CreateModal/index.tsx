@@ -46,6 +46,8 @@ import styles from './index.less';
 import ThrottleFormItem from '../../component/ThrottleFormItem';
 import { SettingStore } from '@/store/setting';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { OscMaxRowLimit, OscMaxDataSizeLimit } from '../../const';
+
 interface IProps {
   modalStore?: ModalStore;
   settingStore?: SettingStore;
@@ -585,7 +587,11 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             </Radio.Group>
           </Form.Item>
           {settingStore.enableOSCLimiting && (
-            <ThrottleFormItem initialValue={initialValue} maxRow={10000} />
+            <ThrottleFormItem
+              initialValue={initialValue}
+              maxRowLimit={OscMaxRowLimit}
+              maxDataSizeLimit={OscMaxDataSizeLimit}
+            />
           )}
         </FormItemPanel>
         <DescriptionInput />
