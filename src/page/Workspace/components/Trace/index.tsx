@@ -27,7 +27,7 @@ import { getFullLinkTrace, getFullLinkTraceDownloadUrl } from '@/common/network/
 import { downloadFile, formatTimeTemplatMicroSeconds } from '@/util/utils';
 import { TraceSpan } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
-import TraceComp from './TraceComp';
+import TraceComp from './TraceComponent';
 export const InfoRender = ({ infos }) => {
   return (
     <Descriptions column={1}>

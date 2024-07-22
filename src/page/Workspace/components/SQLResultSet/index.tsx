@@ -38,6 +38,7 @@ import SQLResultLog from './SQLResultLog';
 import DBPermissionTable from './DBPermissionTable';
 import { IUnauthorizedDBResources } from '@/d.ts/table';
 import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
+import sessionManager from '@/store/sessionManager';
 
 export const recordsTabKey = 'records';
 export const sqlLintTabKey = 'sqlLint';
@@ -236,8 +237,13 @@ const SQLResultSet: React.FC<IProps> = function (props) {
   const stopRunning = () => {
     sqlStore.stopExec(ctx.props.pageKey, ctx?.getSession()?.sessionId);
   };
-  const onOpenExecutingDetailModal = (id: string, sql?: string, sessionId?: string) => {
-    const session = sessionId ? { sessionId: sessionId } : ctx?.getSession();
+  const onOpenExecutingDetailModal = (
+    id: string,
+    sql?: string,
+    sessionId?: string,
+    traceEmptyReason?: string,
+  ) => {
+    const session = sessionId ? sessionManager.sessionMap.get(sessionId) : ctx?.getSession();
     modalStore.changeExecuteSqlDetailModalVisible(
       true,
       id,
@@ -245,6 +251,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
       session,
       ctx?.editor.getSelectionContent(),
       ProfileType.Execute,
+      traceEmptyReason,
     );
   };
 
@@ -477,7 +484,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                       stopRunning={stopRunning}
                       onOpenExecutingDetailModal={onOpenExecutingDetailModal}
                       loading={sqlStore.logLoading}
-                      isSupportProfile={isSupportProfile}
+                      isSupportProfile={isSupportProfile && set?.withQueryProfile}
                     />
                   ),
                 };

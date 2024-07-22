@@ -12,6 +12,16 @@ const ProjectSelect: React.FC<{
   }[];
 }> = ({ projectOptions }) => {
   const form = Form.useFormInstance();
+
+  const callback = async () => {
+    await form.setFields([
+      {
+        name: ['parameters', 'orderedDatabaseIds'],
+        value: [[undefined]],
+        errors: [],
+      },
+    ]);
+  };
   return (
     <Form.Item
       label={
@@ -34,6 +44,7 @@ const ProjectSelect: React.FC<{
         optionFilterProp="title"
         style={{ width: 390 }}
         allowClear
+        onChange={callback}
         filterOption={(input, option) =>
           (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
         }
