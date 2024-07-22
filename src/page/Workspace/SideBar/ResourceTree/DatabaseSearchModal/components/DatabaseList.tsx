@@ -99,13 +99,11 @@ const DatabaseList = ({
 
   if (database && !searchKey) {
     return (
-      <Button
-        type="link"
-        style={{ padding: '4px 12px', height: 28, display: 'inline-block' }}
-        onClick={(e) => openSql(e, database)}
-      >
-        定位到当前数据库
-      </Button>
+      <div className={styles.content}>
+        <div className={styles.databaseItem} onClick={(e) => openSql(e, database)}>
+          {`定位到数据库 "${database?.name}"`}
+        </div>
+      </div>
     );
   }
   return (

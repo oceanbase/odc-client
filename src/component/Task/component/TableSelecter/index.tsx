@@ -191,6 +191,7 @@ const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false)
       disabled: hasGetTableList && tableList.length === 0,
       expandable: true,
       children,
+      isLeaf: false,
     };
   });
   return allTreeData;
