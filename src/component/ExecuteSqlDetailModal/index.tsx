@@ -15,7 +15,7 @@ import { handleShowOutputFilter } from '@/page/Workspace/components/SQLExplain';
 import { formatMessage } from '@/util/intl';
 import { getFullLinkTraceDownloadUrl } from '@/common/network/sql';
 import { downloadFile } from '@/util/utils';
-import TraceComp from '@/page/Workspace/components/Trace/TraceComp';
+import TraceComp from '@/page/Workspace/components/Trace/TraceComponent';
 import { TraceTabsType } from '@/page/Workspace/components/Trace';
 import {
   ProfileType,
@@ -49,6 +49,8 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
   const [pageLoading, setPageLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>(null);
   const finished = !!data?.graph?.status && data?.graph?.status === IProfileStatus.FINISHED;
+  const enableTrace =
+    finished && modalStore?.executeSqlDetailData?.session?.params?.fullLinkTraceEnabled;
   const getExecuteRadioOption = () => {
     return [
       {
@@ -71,7 +73,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
           id: 'src.component.ExecuteSqlDetailModal.0B221F0A',
           defaultMessage: '全链路诊断',
         }),
-        disabled: !finished,
+        disabled: !enableTrace,
       },
     ];
   };
@@ -87,6 +89,9 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
   ];
 
   const getDisabledTooltip = (val) => {
+    if (modalStore?.executeSqlDetailData?.traceEmptyReason) {
+      return modalStore?.executeSqlDetailData?.traceEmptyReason;
+    }
     if (finished || !data?.graph?.status) {
       return val;
     }

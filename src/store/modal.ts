@@ -431,6 +431,7 @@ export class ModalStore {
     session?: any;
     selectedSQL?: any;
     profileType?: ProfileType;
+    traceEmptyReason?: string;
   } = null;
 
   @action
@@ -441,6 +442,7 @@ export class ModalStore {
     session?: any,
     selectedSQL?: any,
     profileType?: ProfileType,
+    traceEmptyReason?: string,
   ) {
     this.executeSqlDetailModalVisible = v;
     this.executeSqlDetailData = {
@@ -449,6 +451,7 @@ export class ModalStore {
       session,
       selectedSQL: selectedSQL,
       profileType: profileType,
+      traceEmptyReason: traceEmptyReason,
     };
   }
 
