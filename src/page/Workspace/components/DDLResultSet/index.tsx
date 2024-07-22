@@ -166,7 +166,12 @@ interface IProps {
   onShowExecuteDetail?: () => void;
   onShowTrace?: () => void;
   onUpdateEditing?: (editing: boolean) => void;
-  onOpenExecutingDetailModal?: (traceId: string, sql?: string) => void;
+  onOpenExecutingDetailModal?: (
+    traceId: string,
+    sql?: string,
+    sessionId?: string,
+    traceEmptyReason?: string,
+  ) => void;
 }
 const DDLResultSet: React.FC<IProps> = function (props) {
   const {
@@ -708,7 +713,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
         icon={<Icon component={SqlProfile} />}
         onClick={() => {
           updateExecutePlanGuideCache();
-          onOpenExecutingDetailModal?.(traceId, originSql);
+          onOpenExecutingDetailModal?.(traceId, originSql, null, traceEmptyReason);
         }}
         tip={executeGuideTipContent()}
         overlayInnerStyle={{ width: 300 }}
