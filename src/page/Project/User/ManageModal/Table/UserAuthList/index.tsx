@@ -242,6 +242,11 @@ const UserAuthList: React.FC<IProps> = (props) => {
                     onOk: onReclaim,
                   },
                 ],
+                getCheckboxProps: (record: ITablePermission) => {
+                  return {
+                    disabled: record?.status === TablePermissionStatus.EXPIRED,
+                  };
+                },
               }
             : null
         }
@@ -251,13 +256,6 @@ const UserAuthList: React.FC<IProps> = (props) => {
           columns: columns?.filter((item) => (isOwner ? true : item?.dataIndex !== 'action')),
           dataSource: dataSource?.contents ?? [],
           rowKey: 'id',
-          rowSelection: {
-            getCheckboxProps: (record: ITablePermission) => {
-              return {
-                disabled: record?.status === TablePermissionStatus.EXPIRED,
-              };
-            },
-          },
           scroll: {
             x: 950,
             y: 800,
