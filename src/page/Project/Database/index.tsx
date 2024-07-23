@@ -132,14 +132,6 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
     );
   };
 
-  const getAuthString = (authList: DatabasePermissionType[]) => {
-    if (authList?.length === 0) return '无权限';
-    return authList
-      ?.map((i) => databasePermissionTypeMap[i]?.text || '')
-      ?.filter(Boolean)
-      ?.join(',');
-  };
-
   const clearSelectedRowKeys = () => {
     setSelectedRowKeys([]);
   };
@@ -356,14 +348,6 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             render: (collationName) => collationName || '-',
           },
           {
-            title: '权限',
-            dataIndex: 'authorizedPermissionTypes',
-            width: 130,
-            render(v) {
-              return getAuthString(v);
-            },
-          },
-          {
             title: formatMessage({
               id: 'odc.Project.Database.LastSynchronizationTime',
             }),
@@ -396,7 +380,6 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
               const hasQueryAuth = record.authorizedPermissionTypes?.includes(
                 DatabasePermissionType.QUERY,
               );
-              const hasNoDBAuth = record.authorizedPermissionTypes?.length === 0;
 
               const curRoles = project?.currentUserResourceRoles || [];
               const hasChangeOwnerAuth = curRoles.some((role) =>
@@ -445,18 +428,6 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
               }
               return (
                 <Action.Group size={3}>
-                  {hasNoDBAuth ? (
-                    <Action.Link
-                      key={'applyDBAuth'}
-                      onClick={() => {
-                        modalStore.changeApplyDatabasePermissionModal(true, {
-                          databaseId: record?.id,
-                        });
-                      }}
-                    >
-                      库权限申请
-                    </Action.Link>
-                  ) : null}
                   {config?.features?.task?.includes(TaskType.EXPORT) && setting.enableDBExport && (
                     <Action.Link
                       key={'export'}

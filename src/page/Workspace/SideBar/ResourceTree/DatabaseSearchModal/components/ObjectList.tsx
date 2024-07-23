@@ -151,6 +151,8 @@ const ObjectList = ({
           <div className={styles.objectlistBox}>
             {typeObjectTree?.map((i) => {
               const isDatabase = i.key === DbObjectType.database;
+              /* 在选择了库之后检索, 会检索到数据库本身(若数据库名包含searchkey), 需要前端屏蔽掉 */
+              if (isDatabase && database) return;
               if (i?.data?.length) {
                 return (
                   <div className={styles.objectTypeBox}>
