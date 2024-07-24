@@ -140,7 +140,7 @@ class MainServer {
   private async checkServerIsReady(logError: boolean = false) {
     try {
       await new Promise((resolve, reject) => {
-        const res = get(`http://localhost:${this.port}/api/v1/info`, (resp) => {
+        const res = get(`http://127.0.0.1:${this.port}/api/v1/info`, (resp) => {
           log.info('check server api status: ', resp.statusCode);
           let data = '';
           // A chunk of data has been recieved.
