@@ -295,6 +295,11 @@ const TaskApplyList: React.FC<IProps> = (props) => {
                     onOk: onReclaim,
                   },
                 ],
+                getCheckboxProps: (record: ITablePermission) => {
+                  return {
+                    disabled: record?.status === TablePermissionStatus.EXPIRED,
+                  };
+                },
               }
             : null
         }
@@ -303,13 +308,6 @@ const TaskApplyList: React.FC<IProps> = (props) => {
         tableProps={{
           columns: columns?.filter((item) => (isOwner ? true : item?.dataIndex !== 'action')),
           dataSource: dataSource?.contents ?? [],
-          rowSelection: {
-            getCheckboxProps: (record: ITablePermission) => {
-              return {
-                disabled: record?.status === TablePermissionStatus.EXPIRED,
-              };
-            },
-          },
           rowKey: 'id',
           scroll: {
             x: 950,

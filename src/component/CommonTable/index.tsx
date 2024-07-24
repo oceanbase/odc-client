@@ -73,7 +73,7 @@ interface IProps<RecordType> {
   operationContent?: IOperationContent;
   // 是否展示 操作连 筛选区&自定义操作区 分割标记
   isSplit?: boolean;
-  // 行选择 相关配置
+  // 行选择 相关配置 (初使用时容易与antd的rowSelection混淆重复导致bug)
   rowSelecter?: IRowSelecter<RecordType>;
   // 行选择状态回调
   rowSelectedCallback?: (selectedRowKeys: any[]) => void;
@@ -460,17 +460,12 @@ const CommonTable: <RecordType extends object = any>(
             }
             onChange={handleChange}
             rowSelection={
-              rowSelecter
-                ? {
-                    ...tableProps?.rowSelection,
-                    ...rowSelecter,
-                    selectedRowKeys,
-                    onSelect: handleRowKeySelect,
-                    onSelectAll: handleSelectAll,
-                  }
-                : {
-                    ...tableProps?.rowSelection,
-                  }
+              rowSelecter && {
+                ...rowSelecter,
+                selectedRowKeys,
+                onSelect: handleRowKeySelect,
+                onSelectAll: handleSelectAll,
+              }
             }
             pagination={{
               ...tableProps?.pagination,
