@@ -287,7 +287,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
         <Radio.Group
           value={sortType}
           onChange={handleSortChange}
-          style={{ width: '100%', padding: '0 6px 8px 6px' }}
+          style={{ width: '100%', padding: '4px 6px 8px 6px', textAlign: 'center' }}
         >
           <Radio.Button value={subNodeSortType.BY_DURATION}>
             {subNodesSortMap[subNodeSortType.BY_DURATION].label}
