@@ -150,7 +150,12 @@ function TButton({
 
   if (tip) {
     return (
-      <Tooltip placement={'topLeft'} title={tip} overlayInnerStyle={tipStyle} color="white">
+      <Tooltip
+        placement={'topLeft'}
+        title={tip}
+        overlayInnerStyle={tipStyle}
+        color="var(--background-primary-color)"
+      >
         <Badge dot={true} color="blue" style={{ top: 12, right: 6 }}>
           {content}
         </Badge>

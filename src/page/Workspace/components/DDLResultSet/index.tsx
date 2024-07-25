@@ -685,7 +685,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     if (guideCacheStore?.[guideCacheStore.cacheEnum.executePlan]) return null;
     return (
       <div style={{ color: 'var(--text-color-secondary)' }}>
-        <div>
+        <div style={{ fontSize: 14, color: 'var(--text-color-primary)', fontWeight: 500 }}>
           {formatMessage({
             id: 'src.page.Workspace.components.DDLResultSet.E32AB474',
             defaultMessage: 'SQL 执行画像',
@@ -712,8 +712,10 @@ const DDLResultSet: React.FC<IProps> = function (props) {
         })}
         icon={<Icon component={SqlProfile} />}
         onClick={() => {
-          updateExecutePlanGuideCache();
           onOpenExecutingDetailModal?.(traceId, originSql, null, traceEmptyReason);
+          setTimeout(() => {
+            updateExecutePlanGuideCache();
+          }, 1000);
         }}
         tip={executeGuideTipContent()}
         overlayInnerStyle={{ width: 300 }}
