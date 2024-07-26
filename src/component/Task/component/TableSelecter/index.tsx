@@ -250,7 +250,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
     const filtedDataSource = [];
     for (const datasource of databaseWithTableList) {
       let { tableList, name } = datasource;
-      if (name.includes(sourceSearchValue)) {
+      if (name?.toLowerCase().includes(sourceSearchValue?.toLowerCase())) {
         filtedDataSource.push(datasource);
       } else {
         const targetTableList = tableList.filter((item) => item?.name?.includes(sourceSearchValue));

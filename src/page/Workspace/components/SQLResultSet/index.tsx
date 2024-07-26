@@ -484,7 +484,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                       stopRunning={stopRunning}
                       onOpenExecutingDetailModal={onOpenExecutingDetailModal}
                       loading={sqlStore.logLoading}
-                      isSupportProfile={isSupportProfile && set?.withQueryProfile}
+                      isSupportProfile={isSupportProfile}
                     />
                   ),
                 };
