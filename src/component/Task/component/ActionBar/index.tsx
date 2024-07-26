@@ -238,15 +238,26 @@ const ActionBar: React.FC<IProps> = inject(
 
     const editCycleTask = async () => {
       props?.onClose?.();
-      if (task?.type === TaskType.DATA_ARCHIVE) {
-        props.modalStore.changeDataArchiveModal(true, {
-          id: task?.id,
-          type: 'EDIT',
-        });
-      } else {
-        props.modalStore.changeCreateSQLPlanTaskModal(true, {
-          id: task?.id,
-        });
+      switch (task?.type) {
+        case TaskType.DATA_ARCHIVE: {
+          props.modalStore.changeDataArchiveModal(true, {
+            id: task?.id,
+            type: 'EDIT',
+          });
+          break;
+        }
+        case TaskType.DATA_DELETE: {
+          props.modalStore.changeDataClearModal(true, {
+            id: task?.id,
+            type: 'EDIT',
+          });
+          break;
+        }
+        default: {
+          props.modalStore.changeCreateSQLPlanTaskModal(true, {
+            id: task?.id,
+          });
+        }
       }
     };
 
@@ -904,7 +915,7 @@ const ActionBar: React.FC<IProps> = inject(
         tools = [viewBtn];
       }
       // 仅 sql 计划 & 数据归档支持编辑
-      if (![TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE].includes(task?.type)) {
+      if (![TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)) {
         tools = tools.filter((item) => item.key !== 'edit');
       }
       return tools;

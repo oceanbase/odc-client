@@ -120,6 +120,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [crontab, setCrontab] = useState<ICrontab>(null);
   const [tables, setTables] = useState<ITable[]>();
+  const [enablePartition, setEnablePartition] = useState<boolean>(false);
   const [form] = Form.useForm();
   const databaseId = Form.useWatch('databaseId', form);
   const { session, database } = useDBSession(databaseId);
@@ -153,6 +154,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       targetDatabaseId,
       timeoutMillis,
     } = jobParameters;
+    setEnablePartition(isEdit && !!tables?.find((i) => i?.partitions));
     const formData = {
       databaseId,
       rowLimit: rateLimit?.rowLimit,
@@ -530,7 +532,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                   <ArchiveRange
                     tables={tables}
                     needCheckBeforeDelete={needCheckBeforeDelete}
-                    form={form}
+                    checkPartition={enablePartition}
                   />
                 );
               }}
