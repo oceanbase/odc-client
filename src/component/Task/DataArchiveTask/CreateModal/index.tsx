@@ -162,6 +162,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [crontab, setCrontab] = useState<ICrontab>(null);
   const [tables, setTables] = useState<ITable[]>();
+  const [enablePartition, setEnablePartition] = useState<boolean>(false);
   const [form] = Form.useForm();
   const databaseId = Form.useWatch('databaseId', form);
   const { session: sourceDBSession, database: sourceDB } = useDBSession(databaseId);
@@ -196,7 +197,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       timeoutMillis,
       syncTableStructure,
     } = jobParameters;
-
+    setEnablePartition(isEdit && !!tables?.find((i) => i?.partitions));
     const formData = {
       databaseId: sourceDatabaseId,
       targetDataBaseId: targetDataBaseId,
@@ -553,7 +554,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             />
           </Space>
           <Space direction="vertical" size={24} style={{ width: '100%' }}>
-            <ArchiveRange enabledTargetTable tables={tables} form={form} />
+            <ArchiveRange enabledTargetTable tables={tables} checkPartition={enablePartition} />
             <VariableConfig form={form} />
           </Space>
           <Form.Item name="deleteAfterMigration" valuePropName="checked">
