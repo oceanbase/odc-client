@@ -3,13 +3,16 @@
 .customDetailBox {
   position: absolute;
   right: 16px;
-  width: 332px;
+  width: 336px;
   background-color: var(--profile-secondry-background-color);
   border: 1px solid var(--profile-border-color);
   border-left: none;
   height: calc(100% - 151px);
   overflow-y: auto;
   padding: 12px 8px;
+  .value {
+    color: var(--profile-text-color);
+  }
   .customDetailBoxItem {
     display: flex;
     justify-content: space-between;
@@ -133,7 +136,9 @@
     }
     .icon {
       position: absolute;
-      left: 129px;
+      left: 50%;
+      top: 100%;
+      transform: translateX(-50%);
       padding: 4px;
       color: var(--profile-icon-color);
     }

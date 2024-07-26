@@ -11,10 +11,10 @@ const CustomEdge = ({ id, sourceX, sourceY, targetX, targetY, style = {}, data }
 
   const edgeEndPointY = targetY - TURNNG_LINE_GAP;
 
-  // 根据tartget与source的x位置计算xOffset, 1.左边 2.右边 和 3.中间的区别
-  const xOffset = sourceX - targetX > 4 ? -16 : sourceX - targetX < -4 ? 16 : 0;
-  // 根据tartget与source的x位置计算yOffset, 1.左边/右边 2.中间的区别
-  let yOffset = Math.abs(sourceX - targetX) < 4 ? 25 : 10;
+  // 根据是否有一个以上子节点tartget与source的x位置计算xOffset
+  const xOffset = data?.isSingleChild ? 0 : sourceX - targetX > 4 ? -16 : 16;
+  // 根据tartget与source的x位置计算yOffset
+  let yOffset = data?.isSingleChild ? 25 : 10;
   // 有子节点的再单独计算
   yOffset = data.isOverlap ? yOffset + 8 : yOffset;
 

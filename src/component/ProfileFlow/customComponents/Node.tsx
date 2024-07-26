@@ -81,7 +81,7 @@ function TextUpdaterNode({ data, id, isConnectable }) {
         {data?.hasChild ? (
           <div
             className={styles.icon}
-            style={{ bottom: data?.subNodes ? '-33px' : '-25px' }}
+            style={{ top: data?.subNodes ? 'calc(100% + 8px)' : '100%' }}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();

@@ -224,6 +224,7 @@ export function transformDataForReactFlow(
           data: {
             weight: node?.data.inEdges?.[0]?.weight,
             isOverlap: isParantOverlap,
+            isSingleChild: node?.parent?.data?.outEdges?.length === 1,
           },
         };
         edges.push(reactFlowEdge);
