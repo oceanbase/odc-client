@@ -301,7 +301,7 @@ const EditTemplate: React.FC<{
                                     <PlusOutlined onClick={() => innerAdd(undefined)} />
                                     <UpOutlined
                                       style={{
-                                        color: index === 0 ? 'var(--mask-color)' : null,
+                                        color: index === 0 ? 'var(--icon-color-disable)' : null,
                                         cursor: index === 0 ? 'not-allowed' : null,
                                       }}
                                       onClick={async () => {
@@ -323,7 +323,9 @@ const EditTemplate: React.FC<{
                                     <DownOutlined
                                       style={{
                                         color:
-                                          index === fields?.length - 1 ? 'var(--mask-color)' : null,
+                                          index === fields?.length - 1
+                                            ? 'var(--icon-color-disable)'
+                                            : null,
                                         cursor: index === fields?.length - 1 ? 'not-allowed' : null,
                                       }}
                                       onClick={async () => {
