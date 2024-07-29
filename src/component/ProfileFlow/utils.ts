@@ -53,11 +53,26 @@ export const locateNode: (...args) => void = (
   initialNodes,
   setSelectedNode,
   setViewport,
+  setNodes,
 ) => {
   // 1. 获取节点在画布上的坐标
-  // 2. 计算画布应该移动的位移
   const node = initialNodes?.find((n) => n?.id === nodeId);
+  // 2. 设置当前选中节点
   setSelectedNode(node);
+  // 3. 展开节点
+  setNodes((nds) =>
+    nds.map((node) => {
+      hiddenChild(nds, node, false);
+      return {
+        ...node,
+        data: {
+          ...node.data,
+          isTreeOpen: true,
+        },
+      };
+    }),
+  );
+  // 4. 计算画布应该移动的位移
   const { width, height } = getXYPosition();
   if (node) {
     const x = -node?.position.x + width / 2 - NODE_WIDTH / 2;
@@ -198,7 +213,8 @@ export function transformDataForReactFlow(
           id: node.data.graphId,
           isTreeOpen: true,
           changeTreeOpen: (...args: any[]) => changeTreeOpen(...args, setNodes),
-          locateNode: (...args) => locateNode(...args, nodes, setSelectedNode, setViewport),
+          locateNode: (...args) =>
+            locateNode(...args, nodes, setSelectedNode, setViewport, setNodes),
           hasChild: node?.data?.outEdges?.length,
           outEdges: node?.data?.outEdges || [],
           setSelectedNode: setSelectedNode,

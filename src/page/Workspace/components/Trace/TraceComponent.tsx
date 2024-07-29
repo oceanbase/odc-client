@@ -5,7 +5,15 @@ import { useState, useEffect } from 'react';
 import { getFullLinkTrace, getFullLinkTraceDownloadUrl } from '@/common/network/sql';
 
 export default (props) => {
-  const { tabName, traceId, sql, session, searchValue } = props;
+  const {
+    tabName,
+    traceId,
+    sql,
+    session,
+    searchValue,
+    updateTotalElapseMicroSeconds,
+    updateOriginStartTimestamp,
+  } = props;
   const [treeData, setTreeData] = useState<ExpandTraceSpan[]>([]);
   const [innerTreeData, setInnerTreeData] = useState([]);
   const [totalElapseMicroSeconds, setTotalElapseMicroSeconds] = useState<number>();
@@ -118,6 +126,8 @@ export default (props) => {
       setInnerTreeData(d);
       setOriginStartTimestamp(rawData?.data?.startTimestamp);
       setTotalElapseMicroSeconds(rawData?.data?.elapseMicroSeconds);
+      updateOriginStartTimestamp?.(rawData?.data?.startTimestamp);
+      updateTotalElapseMicroSeconds?.(rawData?.data?.elapseMicroSeconds);
       setTotalStartTimestamp(resData.startTimestamp);
       setTotalEndTimestamp(resData.endTimestamp);
     }
