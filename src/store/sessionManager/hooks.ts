@@ -26,9 +26,7 @@ import SessionStore from './session';
  * @param databaseId datbaseid
  * @returns [session对象，odc数据库对象，是否正在创建, 重新创建session]
  */
-export function useDBSession(
-  databaseId: number,
-): {
+export function useDBSession(databaseId: number): {
   session: SessionStore;
   database: IDatabase;
   loading: boolean;
@@ -98,9 +96,7 @@ export function useDBSession(
  * @param datasourceId
  * @returns
  */
-export function useDatasourceSession(
-  datasourceId: number,
-): {
+export function useDatasourceSession(datasourceId: number): {
   session: SessionStore;
   datasource: IDatasource;
   loading: boolean;

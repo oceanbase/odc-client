@@ -38,15 +38,21 @@ const Pages = {
 
 const tabs = [
   {
-    tab: formatMessage({ id: 'odc.page.ExternalIntegration.ApprovalIntegration' }), //审批集成
+    tab: formatMessage({
+      id: 'odc.page.ExternalIntegration.ApprovalIntegration',
+      defaultMessage: '审批集成',
+    }), //审批集成
     key: IPageType.ExternalIntegration_Approval,
   },
   {
-    tab: formatMessage({ id: 'odc.page.ExternalIntegration.SqlAuditIntegration' }), //SQL 审核集成
+    tab: formatMessage({
+      id: 'odc.page.ExternalIntegration.SqlAuditIntegration',
+      defaultMessage: 'SQL 审核集成',
+    }), //SQL 审核集成
     key: IPageType.ExternalIntegration_Sql,
   },
   {
-    tab: formatMessage({ id: 'src.page.ExternalIntegration.B29CC4F4' }), //'登录集成'
+    tab: formatMessage({ id: 'src.page.ExternalIntegration.B29CC4F4', defaultMessage: '登录集成' }), //'登录集成'
     key: IPageType.ExternalIntegration_SSO,
   },
 ];
@@ -64,7 +70,10 @@ const Index: React.FC<IProps> = function () {
     <PageContainer
       titleProps={{
         type: TitleType.TEXT,
-        title: formatMessage({ id: 'odc.page.ExternalIntegration.ExternalIntegration' }), //外部集成
+        title: formatMessage({
+          id: 'odc.page.ExternalIntegration.ExternalIntegration',
+          defaultMessage: '外部集成',
+        }), //外部集成
       }}
       tabList={tabs}
       tabActiveKey={page}

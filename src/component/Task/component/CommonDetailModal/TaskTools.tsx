@@ -83,6 +83,7 @@ const ActionBar: React.FC<IProps> = inject(
         message.success(
           formatMessage({
             id: 'odc.component.CommonDetailModal.TaskTools.CanceledSuccessfully',
+            defaultMessage: '取消成功',
           }), //取消成功
         );
 
@@ -97,6 +98,7 @@ const ActionBar: React.FC<IProps> = inject(
         message.success(
           formatMessage({
             id: 'odc.component.CommonDetailModal.TaskTools.RollbackSucceeded',
+            defaultMessage: '回滚成功',
           }), //回滚成功
         );
       }
@@ -111,19 +113,23 @@ const ActionBar: React.FC<IProps> = inject(
       Modal.confirm({
         title: formatMessage({
           id: 'odc.component.CommonDetailModal.TaskTools.AreYouSureYouWant',
+          defaultMessage: '是否确定回滚任务？',
         }),
         //确定回滚任务吗？
         icon: <ExclamationCircleOutlined />,
         content: formatMessage({
           id: 'odc.component.CommonDetailModal.TaskTools.TasksThatHaveBeenExecuted',
+          defaultMessage: '任务回滚后已执行的任务将重置',
         }),
         //任务回滚后已执行的任务将重置
         okText: formatMessage({
           id: 'odc.component.CommonDetailModal.TaskTools.Confirm',
+          defaultMessage: '确认',
         }),
         //确认
         cancelText: formatMessage({
           id: 'odc.component.CommonDetailModal.TaskTools.Cancel',
+          defaultMessage: '取消',
         }),
         //取消
         onOk: confirmRollback,
@@ -135,6 +141,7 @@ const ActionBar: React.FC<IProps> = inject(
         message.success(
           formatMessage({
             id: 'odc.component.CommonDetailModal.TaskTools.SuccessfulExecution',
+            defaultMessage: '执行成功',
           }), //执行成功
         );
 
@@ -147,6 +154,7 @@ const ActionBar: React.FC<IProps> = inject(
         message.success(
           formatMessage({
             id: 'odc.component.CommonDetailModal.TaskTools.RetrySucceeded',
+            defaultMessage: '重试成功',
           }), //重试成功
         );
 
@@ -170,6 +178,7 @@ const ActionBar: React.FC<IProps> = inject(
         key: 'rollback',
         text: formatMessage({
           id: 'odc.component.CommonDetailModal.TaskTools.Rollback',
+          defaultMessage: '回滚',
         }),
         //回滚
         action: handleRollback,
@@ -179,6 +188,7 @@ const ActionBar: React.FC<IProps> = inject(
         key: 'stop',
         text: formatMessage({
           id: 'odc.component.CommonDetailModal.TaskTools.Termination',
+          defaultMessage: '终止',
         }),
         //终止
         action: _stopTask,
@@ -188,6 +198,7 @@ const ActionBar: React.FC<IProps> = inject(
         key: 'execute',
         text: formatMessage({
           id: 'odc.component.CommonDetailModal.TaskTools.Execute',
+          defaultMessage: '执行',
         }),
         //执行
         type: 'button',
@@ -201,6 +212,7 @@ const ActionBar: React.FC<IProps> = inject(
         key: 'reTry',
         text: formatMessage({
           id: 'odc.component.CommonDetailModal.TaskTools.Retry',
+          defaultMessage: '重试',
         }),
         //重试
         type: 'button',
@@ -210,6 +222,7 @@ const ActionBar: React.FC<IProps> = inject(
         key: 'log',
         text: formatMessage({
           id: 'odc.src.component.Task.component.CommonDetailModal.ViewLog',
+          defaultMessage: '查看日志',
         }), //'查看日志'
         action: handleLogVisible,
         type: 'button',

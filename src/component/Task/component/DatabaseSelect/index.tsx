@@ -37,6 +37,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     type,
     label = formatMessage({
       id: 'odc.component.DatabaseSelect.Database',
+      defaultMessage: '数据库',
     }),
     //数据库
     name = 'databaseId',
@@ -58,6 +59,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
           required: true,
           message: formatMessage({
             id: 'odc.component.DatabaseSelect.SelectADatabase',
+            defaultMessage: '请选择数据库',
           }), //请选择数据库
         },
       ]}

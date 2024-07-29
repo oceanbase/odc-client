@@ -74,6 +74,7 @@ const NewVersion: React.FC<IProps> = () => {
                 {
                   formatMessage({
                     id: 'odc.component.VersionModal.NewVersion.Previous',
+                    defaultMessage: '上一个',
                   })
 
                   /* 上一个 */
@@ -91,6 +92,7 @@ const NewVersion: React.FC<IProps> = () => {
                 {
                   formatMessage({
                     id: 'odc.component.VersionModal.NewVersion.GotIt',
+                    defaultMessage: '知道了',
                   })
 
                   /* 知道了 */
@@ -106,6 +108,7 @@ const NewVersion: React.FC<IProps> = () => {
                 {
                   formatMessage({
                     id: 'odc.component.VersionModal.NewVersion.Next',
+                    defaultMessage: '下一个',
                   })
 
                   /* 下一个 */
@@ -125,6 +128,7 @@ const NewVersion: React.FC<IProps> = () => {
         {
           formatMessage({
             id: 'odc.component.VersionModal.NewVersion.OdcOptimizationUpdate',
+            defaultMessage: '新版本 ODC 优化更新',
           })
 
           /* 新版本 ODC 优化更新 */
@@ -134,6 +138,7 @@ const NewVersion: React.FC<IProps> = () => {
         {
           formatMessage({
             id: 'odc.component.VersionModal.NewVersion.TheNewDarkThemeHas',
+            defaultMessage: '全新暗色主题已上线',
           }) /*全新暗色主题已上线*/
         }
       </div>
@@ -144,6 +149,7 @@ const NewVersion: React.FC<IProps> = () => {
             {
               formatMessage({
                 id: 'odc.component.VersionModal.NewVersion.MoreProductTrends',
+                defaultMessage: '更多产品动态',
               })
 
               /* 更多产品动态 */
@@ -159,6 +165,7 @@ const NewVersion: React.FC<IProps> = () => {
           {
             formatMessage({
               id: 'odc.component.VersionModal.NewVersion.DarkTheme',
+              defaultMessage: '暗色主题',
             }) /*暗色主题*/
           }
         </Button>
@@ -171,6 +178,7 @@ const NewVersion: React.FC<IProps> = () => {
           {
             formatMessage({
               id: 'odc.component.VersionModal.NewVersion.LearnMore',
+              defaultMessage: '了解详情',
             })
 
             /* 了解详情 */

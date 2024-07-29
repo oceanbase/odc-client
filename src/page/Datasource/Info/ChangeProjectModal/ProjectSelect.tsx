@@ -94,6 +94,7 @@ export default function ProjectSelect({
           {
             formatMessage({
               id: 'odc.Info.ChangeProjectModal.ProjectSelect.DoNotAssignProjects',
+              defaultMessage: '不分配项目',
             }) /*不分配项目*/
           }
         </Checkbox>

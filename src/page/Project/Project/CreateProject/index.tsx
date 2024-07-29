@@ -78,11 +78,13 @@ export default React.forwardRef<{
         name={'name'}
         label={formatMessage({
           id: 'odc.Project.CreateProject.ProjectName',
+          defaultMessage: '项目名称',
         })} /*项目名称*/
       >
         <Input
           placeholder={formatMessage({
             id: 'odc.Project.CreateProject.PleaseEnterLessThanCharacters',
+            defaultMessage: '请输入，32 个字符以内',
           })}
           /*请输入，32 个字符以内*/ style={{
             width: 400,
@@ -102,6 +104,7 @@ export default React.forwardRef<{
             {
               formatMessage({
                 id: 'odc.Project.CreateProject.Administrator',
+                defaultMessage: '管理员',
               }) /*管理员*/
             }
           </HelpDoc>
@@ -117,6 +120,7 @@ export default React.forwardRef<{
           options={userOptions}
           placeholder={formatMessage({
             id: 'odc.Project.CreateProject.PleaseSelect',
+            defaultMessage: '请选择',
           })} /*请选择*/
         />
       </Form.Item>
@@ -144,6 +148,7 @@ export default React.forwardRef<{
           options={userOptions}
           placeholder={formatMessage({
             id: 'odc.Project.CreateProject.PleaseSelect',
+            defaultMessage: '请选择',
           })} /*请选择*/
         />
       </Form.Item>
@@ -154,6 +159,7 @@ export default React.forwardRef<{
             {
               formatMessage({
                 id: 'src.page.Project.Project.CreateProject.AD525382' /*开发者*/,
+                defaultMessage: '开发者',
               }) /* 开发者 */
             }
           </HelpDoc>
@@ -169,6 +175,7 @@ export default React.forwardRef<{
           options={userOptions}
           placeholder={formatMessage({
             id: 'odc.Project.CreateProject.PleaseSelect',
+            defaultMessage: '请选择',
           })} /*请选择*/
         />
       </Form.Item>
@@ -179,6 +186,7 @@ export default React.forwardRef<{
             {
               formatMessage({
                 id: 'odc.src.page.Project.Project.CreateProject.SecurityAdministrator',
+                defaultMessage: '安全管理员',
               }) /* 
           安全管理员
           */
@@ -196,6 +204,7 @@ export default React.forwardRef<{
           options={userOptions}
           placeholder={formatMessage({
             id: 'odc.Project.CreateProject.PleaseSelect',
+            defaultMessage: '请选择',
           })} /*请选择*/
         />
       </Form.Item>
@@ -206,6 +215,7 @@ export default React.forwardRef<{
             {
               formatMessage({
                 id: 'odc.src.page.Project.Project.CreateProject.Participant',
+                defaultMessage: '参与者',
               }) /* 
           参与者
           */
@@ -223,6 +233,7 @@ export default React.forwardRef<{
           options={userOptions}
           placeholder={formatMessage({
             id: 'odc.Project.CreateProject.PleaseSelect',
+            defaultMessage: '请选择',
           })} /*请选择*/
         />
       </Form.Item>
@@ -235,11 +246,13 @@ export default React.forwardRef<{
         name={'description'}
         label={formatMessage({
           id: 'odc.Project.CreateProject.Description',
+          defaultMessage: '描述',
         })} /*描述*/
       >
         <Input.TextArea
           placeholder={formatMessage({
             id: 'odc.Project.CreateProject.PleaseEnter',
+            defaultMessage: '请输入',
           })}
           /*请输入*/ style={{
             width: 400,

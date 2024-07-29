@@ -83,6 +83,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         {
           label: formatMessage({
             id: 'odc.src.component.Task.AllWorkOrders',
+            defaultMessage: '所有工单',
           }), //'所有工单'
           value: TaskPageType.ALL,
           enabled: !isClient(),
@@ -90,6 +91,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         {
           label: formatMessage({
             id: 'odc.component.TaskPopover.IInitiated',
+            defaultMessage: '我发起的',
           }),
           value: TaskPageType.CREATED_BY_CURRENT_USER,
           enabled: !isClient(),
@@ -97,6 +99,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         {
           label: formatMessage({
             id: 'odc.component.TaskPopover.PendingMyApproval',
+            defaultMessage: '待我审批',
           }),
           value: TaskPageType.APPROVE_BY_CURRENT_USER,
           enabled: !isClient() && !isPersonal,
@@ -106,6 +109,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
     {
       groupName: formatMessage({
         id: 'odc.component.Task.helper.DataExport',
+        defaultMessage: '数据导出',
       }),
       //数据导出
       group: [
@@ -113,6 +117,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           value: TaskPageType.EXPORT,
           label: formatMessage({
             id: 'odc.components.TaskManagePage.Export',
+            defaultMessage: '导出',
           }),
           // 导出
           enabled: settingStore.enableDBExport,
@@ -121,6 +126,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           value: TaskPageType.EXPORT_RESULT_SET,
           label: formatMessage({
             id: 'odc.src.component.Task.ExportResultSet',
+            defaultMessage: '导出结果集',
           }),
           //'导出结果集'
           enabled: settingStore.enableDBExport,
@@ -130,6 +136,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
     {
       groupName: formatMessage({
         id: 'odc.component.Task.helper.DataChanges',
+        defaultMessage: '数据变更',
       }),
       //数据变更
       group: [
@@ -137,6 +144,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           value: TaskPageType.IMPORT,
           label: formatMessage({
             id: 'odc.components.TaskManagePage.Import',
+            defaultMessage: '导入',
           }),
           // 导入
           enabled: settingStore.enableDBImport,
@@ -145,6 +153,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           value: TaskPageType.DATAMOCK,
           label: formatMessage({
             id: 'odc.components.TaskManagePage.AnalogData',
+            defaultMessage: '模拟数据',
           }),
           // 模拟数据
           enabled: settingStore.enableMockdata,
@@ -153,6 +162,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           value: TaskPageType.ASYNC,
           label: formatMessage({
             id: 'odc.components.TaskManagePage.DatabaseChanges',
+            defaultMessage: '数据库变更',
           }),
           enabled: settingStore.enableAsyncTask,
           // 数据库变更
@@ -167,13 +177,14 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           value: TaskPageType.SHADOW,
           label: formatMessage({
             id: 'odc.TaskManagePage.component.TaskTable.ShadowTableSynchronization',
+            defaultMessage: '影子表同步',
           }),
           //影子表同步
           enabled: true,
         },
         {
           value: TaskPageType.STRUCTURE_COMPARISON,
-          label: formatMessage({ id: 'src.component.Task.223677D8' }), //'结构比对'
+          label: formatMessage({ id: 'src.component.Task.223677D8', defaultMessage: '结构比对' }), //'结构比对'
 
           enabled: true,
         },
@@ -181,6 +192,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           value: TaskPageType.ONLINE_SCHEMA_CHANGE,
           label: formatMessage({
             id: 'odc.component.Task.helper.LockFreeStructureChange',
+            defaultMessage: '无锁结构变更',
           }),
           //无锁结构变更
           enabled: settingStore.enableOSC,
@@ -190,6 +202,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
     {
       groupName: formatMessage({
         id: 'odc.component.Task.helper.ScheduledTasks',
+        defaultMessage: '定时任务',
       }),
       //定时任务
       group: [
@@ -197,6 +210,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           value: TaskPageType.SQL_PLAN,
           label: formatMessage({
             id: 'odc.TaskManagePage.component.helper.SqlPlan',
+            defaultMessage: 'SQL 计划',
           }),
           //SQL 计划
           enabled: !isClient(),
@@ -205,6 +219,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           value: TaskPageType.PARTITION_PLAN,
           label: formatMessage({
             id: 'odc.TaskManagePage.component.TaskTable.PartitionPlan',
+            defaultMessage: '分区计划',
           }),
           enabled: !isClient(),
         },
@@ -212,6 +227,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           value: TaskPageType.DATA_ARCHIVE,
           label: formatMessage({
             id: 'odc.component.Task.helper.DataArchiving',
+            defaultMessage: '数据归档',
           }),
           //数据归档
           enabled: !isClient(),
@@ -220,6 +236,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           value: TaskPageType.DATA_DELETE,
           label: formatMessage({
             id: 'odc.component.Task.helper.DataCleansing',
+            defaultMessage: '数据清理',
           }),
           //数据清理
           enabled: !isClient(),
@@ -229,17 +246,19 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
     {
       groupName: formatMessage({
         id: 'odc.src.component.Task.AccessRequest',
+        defaultMessage: '权限申请',
       }), //'权限申请'
       group: [
         {
           value: TaskPageType.APPLY_DATABASE_PERMISSION,
-          label: formatMessage({ id: 'src.component.Task.F2EE6904' }), //'申请库权限'
+          label: formatMessage({ id: 'src.component.Task.F2EE6904', defaultMessage: '申请库权限' }), //'申请库权限'
           enabled: !isClient() && !isPersonal,
         },
         {
           value: TaskPageType.APPLY_PROJECT_PERMISSION,
           label: formatMessage({
             id: 'odc.src.component.Task.ApplicationProjectPermissions',
+            defaultMessage: '申请项目权限',
           }), //'申请项目权限'
           enabled: !isClient() && !isPersonal,
         },

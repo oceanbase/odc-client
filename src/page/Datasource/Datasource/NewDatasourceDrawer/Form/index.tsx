@@ -195,6 +195,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             ]}
             label={formatMessage({
               id: 'odc.NewDatasourceDrawer.Form.DataSourceName',
+              defaultMessage: '数据源名称',
             })}
             /*数据源名称*/ name={'name'}
           >
@@ -213,6 +214,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                   {
                     formatMessage({
                       id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.DataSourceType',
+                      defaultMessage: '数据源类型:',
                     }) /* 数据源类型: */
                   }
                 </span>
@@ -223,11 +225,13 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                     fontSize: 14,
                   }}
                 />
+
                 {ConnectTypeText[type] || ''}
               </Space>
             </Typography.Paragraph>
           </Typography>
         )}
+
         {/* <DBTypeItem /> */}
         <Form.Item
           rules={[
@@ -237,6 +241,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
           ]}
           label={formatMessage({
             id: 'odc.NewDatasourceDrawer.Form.Type',
+            defaultMessage: '类型',
           })}
           /*类型*/ name={'type'}
           noStyle
@@ -246,6 +251,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             placeholder={
               formatMessage({
                 id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.PleaseChooseTheType.1',
+                defaultMessage: '请选择类型',
               }) /* 请选择类型 */
             }
             style={{
@@ -276,12 +282,14 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                     autoType={!isEdit}
                   />
                 )}
+
                 <AddressItems />
                 {dsc?.defaultSchema ? (
                   <Form.Item
                     label={
                       formatMessage({
                         id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.DefaultDatabase',
+                        defaultMessage: '默认数据库',
                       }) /* 默认数据库 */
                     }
                     rules={[
@@ -307,6 +315,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                   ]}
                   label={formatMessage({
                     id: 'odc.NewDatasourceDrawer.Form.Environment',
+                    defaultMessage: '环境',
                   })}
                   /*环境*/ name={'environmentId'}
                 >

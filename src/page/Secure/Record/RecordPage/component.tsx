@@ -37,6 +37,7 @@ export const Status: React.FC<{
             {
               formatMessage({
                 id: 'odc.components.RecordPage.component.Successful',
+                defaultMessage: '成功',
               }) /*成功*/
             }
           </span>
@@ -48,6 +49,7 @@ export const Status: React.FC<{
             {
               formatMessage({
                 id: 'odc.components.RecordPage.component.Failed',
+                defaultMessage: '失败',
               }) /*失败*/
             }
           </span>
@@ -97,6 +99,7 @@ export const RecordContent: React.FC<{
       <Descriptions.Item
         label={formatMessage({
           id: 'odc.components.RecordPage.component.EventType',
+          defaultMessage: '事件类型',
         })} /*事件类型*/
       >
         {AuditEventMetaMap[type]}
@@ -104,6 +107,7 @@ export const RecordContent: React.FC<{
       <Descriptions.Item
         label={formatMessage({
           id: 'odc.components.RecordPage.component.EventAction',
+          defaultMessage: '事件操作',
         })} /*事件操作*/
       >
         {AuditEventActionMap[action]}
@@ -115,23 +119,31 @@ export const RecordContent: React.FC<{
               {
                 formatMessage({
                   id: 'src.page.Secure.Record.RecordPage.19BC82CE' /*所属数据源*/,
+                  defaultMessage: '所属数据源',
                 }) /* 所属数据源 */
               }
             </div>
             <Descriptions column={1}>
               <Descriptions.Item
-                label={formatMessage({ id: 'src.page.Secure.Record.RecordPage.14735BCB' })}
+                label={formatMessage({
+                  id: 'src.page.Secure.Record.RecordPage.14735BCB',
+                  defaultMessage: '数据源名称',
+                })}
               >
                 {connectionName || '-'}
               </Descriptions.Item>
               <Descriptions.Item
-                label={formatMessage({ id: 'src.page.Secure.Record.RecordPage.A75C9FD5' })}
+                label={formatMessage({
+                  id: 'src.page.Secure.Record.RecordPage.A75C9FD5',
+                  defaultMessage: '数据源类型',
+                })}
               >
                 {connectionDialectType || '-'}
               </Descriptions.Item>
               <Descriptions.Item
                 label={formatMessage({
                   id: 'odc.components.RecordPage.component.HostnamePort',
+                  defaultMessage: '主机名/端口',
                 })} /*主机名/端口*/
               >
                 {`${connectionHost || '-'}/${connectionPort || '-'}`}
@@ -139,6 +151,7 @@ export const RecordContent: React.FC<{
               <Descriptions.Item
                 label={formatMessage({
                   id: 'odc.components.RecordPage.component.ClusterTenant',
+                  defaultMessage: '集群/租户',
                 })} /*集群/租户*/
               >
                 {`${connectionClusterName || '-'}/${connectionTenantName || '-'}`}
@@ -146,6 +159,7 @@ export const RecordContent: React.FC<{
               <Descriptions.Item
                 label={formatMessage({
                   id: 'odc.components.RecordPage.component.DatabaseUsername',
+                  defaultMessage: '数据库用户名',
                 })} /*数据库用户名*/
               >
                 {connectionUsername || '-'}
@@ -158,6 +172,7 @@ export const RecordContent: React.FC<{
       <Descriptions.Item
         label={formatMessage({
           id: 'odc.components.RecordPage.component.IpSource',
+          defaultMessage: 'IP 来源',
         })} /*IP来源*/
       >
         {clientIpAddress || '-'}
@@ -168,6 +183,7 @@ export const RecordContent: React.FC<{
             {
               formatMessage({
                 id: 'odc.components.RecordPage.component.DetailedRules',
+                defaultMessage: '执行细则',
               }) /*执行细则*/
             }
           </div>
@@ -178,6 +194,7 @@ export const RecordContent: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.RecordPage.component.Executor',
+            defaultMessage: '执行人',
           })} /*执行人*/
         >
           <UserPopover name={name ?? '-'} accountName={accountName ?? '-'} roles={roleNames} />
@@ -187,6 +204,7 @@ export const RecordContent: React.FC<{
       <Descriptions.Item
         label={formatMessage({
           id: 'odc.components.RecordPage.component.ExecutionTime',
+          defaultMessage: '执行时间',
         })} /*执行时间*/
       >
         {getFormatDateTime(startTime)}
@@ -194,6 +212,7 @@ export const RecordContent: React.FC<{
       <Descriptions.Item
         label={formatMessage({
           id: 'odc.components.RecordPage.component.ExecutionResult',
+          defaultMessage: '执行结果',
         })} /*执行结果*/
       >
         <Status result={result} />

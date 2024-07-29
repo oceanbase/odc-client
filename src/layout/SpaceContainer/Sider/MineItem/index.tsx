@@ -64,6 +64,7 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
       message.success(
         formatMessage({
           id: 'password.change.success',
+          defaultMessage: '修改密码成功',
         }),
       );
     }
@@ -73,7 +74,7 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
   const handleLogout = async () => {
     try {
       await userStore.logout();
-      message.success(formatMessage({ id: 'login.logout.success' }));
+      message.success(formatMessage({ id: 'login.logout.success', defaultMessage: '登出成功' }));
       // 专有云 - 重新获取登录定向地址
       userStore.gotoLogoutPage();
     } catch (e) {}
@@ -98,6 +99,7 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
               <span className={styles.userRoles}>
                 {formatMessage({
                   id: 'src.layout.SpaceContainer.Sider.MineItem.642BE38F' /*角色：*/,
+                  defaultMessage: '角色：',
                 })}
                 {RoleNames}
               </span>
@@ -114,6 +116,7 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
         key: 'change-password',
         label: formatMessage({
           id: 'odc.component.GlobalHeader.ChangePassword',
+          defaultMessage: '修改密码',
         }),
         onClick: () => {
           setChangePasswordModalVisible(true);
@@ -126,6 +129,7 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
         key: 'change-lock-password',
         label: formatMessage({
           id: 'odc.component.LoginMenus.ApplicationPassword',
+          defaultMessage: '应用密码',
         }),
         onClick: () => {
           setChangeLockPwdModalVisible(true);
@@ -141,6 +145,7 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
         key: 'record',
         label: formatMessage({
           id: 'odc.Sider.MineItem.OperationRecord',
+          defaultMessage: '操作记录',
         }),
         onClick: () => {
           tracert.click('a3112.b46782.c330850.d367366');
@@ -157,6 +162,7 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
         key: 'exit',
         label: formatMessage({
           id: 'odc.Sider.MineItem.Exit',
+          defaultMessage: '退出',
         }),
         onClick: handleLogout,
       });

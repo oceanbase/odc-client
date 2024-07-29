@@ -92,7 +92,9 @@ class ChangePasswordModal extends Component<IProps> {
         centered
         width={560}
         destroyOnClose
-        title={title || formatMessage({ id: 'login.button.changePassword' })}
+        title={
+          title || formatMessage({ id: 'login.button.changePassword', defaultMessage: '修改密码' })
+        }
         open={visible}
         onOk={this.handleSubmit}
         onCancel={onCancel}
@@ -102,19 +104,23 @@ class ChangePasswordModal extends Component<IProps> {
           {!isExternal && (
             <Form.Item
               name="originPassword"
-              label={formatMessage({ id: 'password.label.origin' })}
+              label={formatMessage({ id: 'password.label.origin', defaultMessage: '原密码' })}
               rules={[
                 {
                   required: true,
                   message: formatMessage({
                     id: 'login.password.validation.required',
+                    defaultMessage: '请输入密码',
                   }),
                 },
               ]}
             >
               <Input.Password
                 autoFocus
-                placeholder={formatMessage({ id: 'login.common.placeholder' })}
+                placeholder={formatMessage({
+                  id: 'login.common.placeholder',
+                  defaultMessage: '请输入',
+                })}
                 autoComplete="new-password"
               />
             </Form.Item>
@@ -124,7 +130,7 @@ class ChangePasswordModal extends Component<IProps> {
             {() => {
               return (
                 <Form.Item
-                  label={formatMessage({ id: 'password.label.new' })}
+                  label={formatMessage({ id: 'password.label.new', defaultMessage: '新密码' })}
                   name="newPassword"
                   validateTrigger="onBlur"
                   rules={[
@@ -132,18 +138,24 @@ class ChangePasswordModal extends Component<IProps> {
                       required: true,
                       message: formatMessage({
                         id: 'login.password.validation.required',
+                        defaultMessage: '请输入密码',
                       }),
                     },
 
                     {
                       pattern: PASSWORD_REGEX,
-                      message: formatMessage({ id: 'login.password.valid' }),
+                      message: formatMessage({
+                        id: 'login.password.valid',
+                        defaultMessage:
+                          '至少包含 2 个数字、2 个大写字母、2 个小写字母和 2 个特殊字符（._+@#$%），长度为 8~32 个字符',
+                      }),
                     },
 
                     {
                       pattern: SPACE_REGEX,
                       message: formatMessage({
                         id: 'odc.component.ChangePasswordModal.ThePasswordCannotContainSpaces',
+                        defaultMessage: '密码不能包含空格',
                       }), //密码不能包含空格
                     },
                   ]}
@@ -151,6 +163,7 @@ class ChangePasswordModal extends Component<IProps> {
                   <Input.Password
                     placeholder={formatMessage({
                       id: 'login.common.placeholder',
+                      defaultMessage: '请输入',
                     })}
                     onChange={() => {
                       this.clearValidateMessage('newPassword');
@@ -161,7 +174,7 @@ class ChangePasswordModal extends Component<IProps> {
             }}
           </Form.Item>
           <Form.Item
-            label={formatMessage({ id: 'password.label.confirm1' })}
+            label={formatMessage({ id: 'password.label.confirm1', defaultMessage: '确认密码' })}
             name="confirmPassword"
             validateTrigger="onBlur"
             rules={[
@@ -169,6 +182,7 @@ class ChangePasswordModal extends Component<IProps> {
                 required: true,
                 message: formatMessage({
                   id: 'login.password.validation.required',
+                  defaultMessage: '请输入密码',
                 }),
               },
 
@@ -176,6 +190,7 @@ class ChangePasswordModal extends Component<IProps> {
                 pattern: PASSWORD_REGEX,
                 message: formatMessage({
                   id: 'login.password.validation.strength',
+                  defaultMessage: '密码强度不符合要求',
                 }),
               },
 
@@ -183,12 +198,16 @@ class ChangePasswordModal extends Component<IProps> {
                 validator: this.handleValidateConfirmPassword,
                 message: formatMessage({
                   id: 'password.label.confirm.validation',
+                  defaultMessage: '确认密码不一致',
                 }),
               },
             ]}
           >
             <Input.Password
-              placeholder={formatMessage({ id: 'login.common.placeholder' })}
+              placeholder={formatMessage({
+                id: 'login.common.placeholder',
+                defaultMessage: '请输入',
+              })}
               onChange={() => {
                 this.clearValidateMessage('confirmPassword');
               }}

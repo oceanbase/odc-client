@@ -62,16 +62,28 @@ export const FormEnvironmentModal: React.FC<{
     if (result?.successful) {
       message.success(
         currentEnvironment
-          ? formatMessage({ id: 'src.page.Secure.Env.components.6BD18E5A' })
-          : formatMessage({ id: 'src.page.Secure.Env.components.CEAD4978' }),
+          ? formatMessage({
+              id: 'src.page.Secure.Env.components.6BD18E5A',
+              defaultMessage: '保存成功',
+            })
+          : formatMessage({
+              id: 'src.page.Secure.Env.components.CEAD4978',
+              defaultMessage: '新建成功',
+            }),
       );
       currentEnvironment && (await callback?.(result?.data?.id));
       return;
     }
     message.error(
       currentEnvironment
-        ? formatMessage({ id: 'src.page.Secure.Env.components.D02D681D' })
-        : formatMessage({ id: 'src.page.Secure.Env.components.053B9E17' }),
+        ? formatMessage({
+            id: 'src.page.Secure.Env.components.D02D681D',
+            defaultMessage: '保存失败',
+          })
+        : formatMessage({
+            id: 'src.page.Secure.Env.components.053B9E17',
+            defaultMessage: '新建失败',
+          }),
     );
   };
 
@@ -108,8 +120,14 @@ export const FormEnvironmentModal: React.FC<{
       destroyOnClose
       title={
         isEdit
-          ? formatMessage({ id: 'src.page.Secure.Env.components.ABDA4206' })
-          : formatMessage({ id: 'src.page.Secure.Env.components.C9BFC3C7' })
+          ? formatMessage({
+              id: 'src.page.Secure.Env.components.ABDA4206',
+              defaultMessage: '编辑环境',
+            })
+          : formatMessage({
+              id: 'src.page.Secure.Env.components.C9BFC3C7',
+              defaultMessage: '新建环境',
+            })
       }
       width={580}
       open={formEnvironmentModalOpen}
@@ -117,19 +135,35 @@ export const FormEnvironmentModal: React.FC<{
       footer={
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button onClick={handleCancelFormModal}>
-            {formatMessage({ id: 'src.page.Secure.Env.components.EECB6084' /*取消*/ }) /* 取消 */}
+            {
+              formatMessage({
+                id: 'src.page.Secure.Env.components.EECB6084' /*取消*/,
+                defaultMessage: '取消',
+              }) /* 取消 */
+            }
           </Button>
           <Button type="primary" loading={loading} disabled={loading} onClick={handleSubmit}>
             {isEdit
-              ? formatMessage({ id: 'src.page.Secure.Env.components.7496F3B7' })
-              : formatMessage({ id: 'src.page.Secure.Env.components.B742B1F8' })}
+              ? formatMessage({
+                  id: 'src.page.Secure.Env.components.7496F3B7',
+                  defaultMessage: '保存',
+                })
+              : formatMessage({
+                  id: 'src.page.Secure.Env.components.B742B1F8',
+                  defaultMessage: '新建',
+                })}
           </Button>
         </div>
       }
     >
       <Form form={formRef} layout="vertical" requiredMark="optional">
         <Form.Item
-          label={formatMessage({ id: 'src.page.Secure.Env.components.E2B289C4' }) /*"环境名称"*/}
+          label={
+            formatMessage({
+              id: 'src.page.Secure.Env.components.E2B289C4',
+              defaultMessage: '环境名称',
+            }) /*"环境名称"*/
+          }
           required
         >
           <Form.Item
@@ -140,14 +174,23 @@ export const FormEnvironmentModal: React.FC<{
             rules={[
               {
                 required: true,
-                message: formatMessage({ id: 'src.page.Secure.Env.components.E20FE25C' }), //'请输入环境名称'
+                message: formatMessage({
+                  id: 'src.page.Secure.Env.components.E20FE25C',
+                  defaultMessage: '请输入环境名称',
+                }), //'请输入环境名称'
               },
               {
                 max: 8,
-                message: formatMessage({ id: 'src.page.Secure.Env.components.1C970EDD' }), //'已超过 8 个字符'
+                message: formatMessage({
+                  id: 'src.page.Secure.Env.components.1C970EDD',
+                  defaultMessage: '已超过 8 个字符',
+                }), //'已超过 8 个字符'
               },
               {
-                message: formatMessage({ id: 'src.page.Secure.Env.components.3C766EC6' }), //'名称首位存在空格'
+                message: formatMessage({
+                  id: 'src.page.Secure.Env.components.3C766EC6',
+                  defaultMessage: '名称首位存在空格',
+                }), //'名称首位存在空格'
                 validator: async (ruler, value) => {
                   if (value?.startsWith(' ')) {
                     throw new Error();
@@ -162,24 +205,36 @@ export const FormEnvironmentModal: React.FC<{
             <Input
               disabled={isEdit}
               style={{ width: '240px' }}
-              placeholder={formatMessage({ id: 'src.page.Secure.Env.components.228DEEEE' })}
+              placeholder={formatMessage({
+                id: 'src.page.Secure.Env.components.228DEEEE',
+                defaultMessage: '请输入，8个字符以内',
+              })}
             />
           </Form.Item>
           <div className={styles.envNameTip}>
             {
               formatMessage({
                 id: 'src.page.Secure.Env.components.D11CF27F' /*新建之后无法修改*/,
+                defaultMessage: '新建之后无法修改',
               }) /* 新建之后无法修改 */
             }
           </div>
         </Form.Item>
         <Form.Item
-          label={formatMessage({ id: 'src.page.Secure.Env.components.4AE714EA' }) /*"标签样式"*/}
+          label={
+            formatMessage({
+              id: 'src.page.Secure.Env.components.4AE714EA',
+              defaultMessage: '标签样式',
+            }) /*"标签样式"*/
+          }
           name="style"
           rules={[
             {
               required: true,
-              message: formatMessage({ id: 'src.page.Secure.Env.components.B98439D0' }), //'请选择标签样式'
+              message: formatMessage({
+                id: 'src.page.Secure.Env.components.B98439D0',
+                defaultMessage: '请选择标签样式',
+              }), //'请选择标签样式'
             },
           ]}
         >
@@ -193,6 +248,7 @@ export const FormEnvironmentModal: React.FC<{
                 {
                   formatMessage({
                     id: 'src.page.Secure.Env.components.977B9386' /*引用环境*/,
+                    defaultMessage: '引用环境',
                   }) /* 引用环境 */
                 }
               </HelpDoc>
@@ -201,7 +257,10 @@ export const FormEnvironmentModal: React.FC<{
             rules={[
               {
                 required: true,
-                message: formatMessage({ id: 'src.page.Secure.Env.components.351C7EB6' }), //'请选择引用环境'
+                message: formatMessage({
+                  id: 'src.page.Secure.Env.components.351C7EB6',
+                  defaultMessage: '请选择引用环境',
+                }), //'请选择引用环境'
               },
             ]}
           >
@@ -210,18 +269,29 @@ export const FormEnvironmentModal: React.FC<{
         )}
 
         <Form.Item
-          label={formatMessage({ id: 'src.page.Secure.Env.components.B264828F' }) /*"描述"*/}
+          label={
+            formatMessage({
+              id: 'src.page.Secure.Env.components.B264828F',
+              defaultMessage: '描述',
+            }) /*"描述"*/
+          }
           name="description"
           rules={[
             {
               max: 200,
-              message: formatMessage({ id: 'src.page.Secure.Env.components.63B256F5' }), //'最大长度为200'
+              message: formatMessage({
+                id: 'src.page.Secure.Env.components.63B256F5',
+                defaultMessage: '描述内容最大长度为200个字符',
+              }), //'最大长度为200'
             },
           ]}
         >
           <Input.TextArea
             placeholder={
-              formatMessage({ id: 'src.page.Secure.Env.components.279CC9E7' }) /*"请输入描述"*/
+              formatMessage({
+                id: 'src.page.Secure.Env.components.279CC9E7',
+                defaultMessage: '请输入描述',
+              }) /*"请输入描述"*/
             }
             maxLength={200}
             rows={5}

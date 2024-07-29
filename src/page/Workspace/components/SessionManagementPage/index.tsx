@@ -98,6 +98,7 @@ function SessionManagementPage(props: IProps) {
     {
       title: formatMessage({
         id: 'workspace.window.session.management.column.sessionId',
+        defaultMessage: '会话 ID',
       }),
 
       dataIndex: 'sessionId',
@@ -109,6 +110,7 @@ function SessionManagementPage(props: IProps) {
     {
       title: formatMessage({
         id: 'workspace.window.session.management.column.dbUser',
+        defaultMessage: '用户',
       }),
 
       dataIndex: 'dbUser',
@@ -121,6 +123,7 @@ function SessionManagementPage(props: IProps) {
     {
       title: formatMessage({
         id: 'workspace.window.session.management.column.srcIp',
+        defaultMessage: '来源',
       }),
 
       dataIndex: 'srcIp',
@@ -133,6 +136,7 @@ function SessionManagementPage(props: IProps) {
     {
       title: formatMessage({
         id: 'workspace.window.session.management.column.database',
+        defaultMessage: '数据库名',
       }),
 
       dataIndex: 'database',
@@ -144,6 +148,7 @@ function SessionManagementPage(props: IProps) {
     {
       title: formatMessage({
         id: 'workspace.window.session.management.column.status',
+        defaultMessage: '状态',
       }),
 
       dataIndex: 'status',
@@ -157,6 +162,7 @@ function SessionManagementPage(props: IProps) {
     {
       title: formatMessage({
         id: 'workspace.window.session.management.column.command',
+        defaultMessage: '命令',
       }),
 
       dataIndex: 'command',
@@ -168,6 +174,7 @@ function SessionManagementPage(props: IProps) {
     {
       title: formatMessage({
         id: 'workspace.window.session.management.column.executeTime',
+        defaultMessage: '执行时间(s)',
       }),
 
       dataIndex: 'executeTime',
@@ -180,6 +187,7 @@ function SessionManagementPage(props: IProps) {
     {
       title: formatMessage({
         id: 'workspace.window.session.management.column.sql',
+        defaultMessage: 'SQL',
       }),
 
       dataIndex: 'sql',
@@ -204,10 +212,12 @@ function SessionManagementPage(props: IProps) {
       },
     },
   ];
+
   if (config?.features?.supportOBProxy) {
     columns.push({
       title: formatMessage({
         id: 'workspace.window.session.management.column.obproxyIp',
+        defaultMessage: 'OB Proxy',
       }),
 
       dataIndex: 'obproxyIp',
@@ -229,7 +239,10 @@ function SessionManagementPage(props: IProps) {
     if (data && !data?.find((item) => !item.killed)) {
       await fetchDatabaseSessionList();
       message.success(
-        formatMessage({ id: 'odc.components.SessionManagementPage.ClosedSuccessfully' }), //关闭成功
+        formatMessage({
+          id: 'odc.components.SessionManagementPage.ClosedSuccessfully',
+          defaultMessage: '关闭成功',
+        }), //关闭成功
       );
       setSelectedRows([]);
     } else {
@@ -263,10 +276,14 @@ function SessionManagementPage(props: IProps) {
                   <ToolbarButton
                     type="BUTTON"
                     disabled={!selectedRows.length}
-                    text={formatMessage({ id: 'workspace.window.session.button.closeSession' })}
+                    text={formatMessage({
+                      id: 'workspace.window.session.button.closeSession',
+                      defaultMessage: '关闭会话',
+                    })}
                     confirmConfig={{
                       title: formatMessage({
                         id: 'odc.components.SessionManagementPage.ConfirmToCloseTheSession',
+                        defaultMessage: '确认关闭会话',
                       }), //确认关闭会话
                       onConfirm() {
                         kill('session');
@@ -282,11 +299,13 @@ function SessionManagementPage(props: IProps) {
                     text={
                       formatMessage({
                         id: 'odc.components.SessionManagementPage.CloseQuery',
+                        defaultMessage: '关闭查询',
                       }) //关闭查询
                     }
                     confirmConfig={{
                       title: formatMessage({
                         id: 'odc.components.SessionManagementPage.ConfirmToCloseTheQuery',
+                        defaultMessage: '确认关闭查询',
                       }), //确认关闭查询
                       onConfirm() {
                         kill('query');
@@ -301,6 +320,7 @@ function SessionManagementPage(props: IProps) {
                 allowClear={true}
                 placeholder={formatMessage({
                   id: 'workspace.window.session.button.search',
+                  defaultMessage: '搜索',
                 })}
                 onSearch={handleSearch}
                 // onChange={(e) => handleSearch(e.target.value)}
@@ -309,7 +329,10 @@ function SessionManagementPage(props: IProps) {
               />
 
               <ToolbarButton
-                text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
+                text={formatMessage({
+                  id: 'workspace.window.session.button.refresh',
+                  defaultMessage: '刷新',
+                })}
                 icon={<SyncOutlined />}
                 onClick={handleRefresh}
               />

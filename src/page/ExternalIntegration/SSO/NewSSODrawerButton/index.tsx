@@ -67,7 +67,7 @@ export default function NewSSODrawerButton({ onSuccess }: IProps) {
     });
     if (isSuccess) {
       message.success(
-        formatMessage({ id: 'odc.SSO.NewSSODrawerButton.New' }), //新建成功
+        formatMessage({ id: 'odc.SSO.NewSSODrawerButton.New', defaultMessage: '新建成功' }), //新建成功
       );
       onSuccess();
       setOpen(false);
@@ -87,6 +87,7 @@ export default function NewSSODrawerButton({ onSuccess }: IProps) {
         {
           formatMessage({
             id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.5B2934AC' /*新建登录集成*/,
+            defaultMessage: '新建登录集成',
           }) /* 新建登录集成 */
         }
       </Button>
@@ -94,6 +95,7 @@ export default function NewSSODrawerButton({ onSuccess }: IProps) {
         width={520}
         title={formatMessage({
           id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.506C2E48',
+          defaultMessage: '新建登录集成',
         })}
         open={open}
         onClose={() => {
@@ -107,20 +109,36 @@ export default function NewSSODrawerButton({ onSuccess }: IProps) {
                 setOpen(false);
               }}
             >
-              {formatMessage({ id: 'odc.SSO.NewSSODrawerButton.Cancel' }) /*取消*/}
+              {
+                formatMessage({
+                  id: 'odc.SSO.NewSSODrawerButton.Cancel',
+                  defaultMessage: '取消',
+                }) /*取消*/
+              }
             </Button>
             {formRef.current?.testInfo ? (
               <Button type="primary" onClick={submit}>
-                {formatMessage({ id: 'odc.SSO.NewSSODrawerButton.Save' }) /*保存*/}
+                {
+                  formatMessage({
+                    id: 'odc.SSO.NewSSODrawerButton.Save',
+                    defaultMessage: '保存',
+                  }) /*保存*/
+                }
               </Button>
             ) : (
               <Tooltip
                 title={formatMessage({
                   id: 'odc.SSO.NewSSODrawerButton.PleaseTestTheConnectionFirst',
+                  defaultMessage: '请先进行测试连接',
                 })} /*请先进行测试连接*/
               >
                 <Button type="primary" disabled>
-                  {formatMessage({ id: 'odc.SSO.NewSSODrawerButton.Save' }) /*保存*/}
+                  {
+                    formatMessage({
+                      id: 'odc.SSO.NewSSODrawerButton.Save',
+                      defaultMessage: '保存',
+                    }) /*保存*/
+                  }
                 </Button>
               </Tooltip>
             )}

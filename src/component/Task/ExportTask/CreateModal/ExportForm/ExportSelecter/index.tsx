@@ -109,6 +109,7 @@ const ExportSelecter: React.FC<IProps> = function ({
           DbObjectType.public_synonym,
           DbObjectType.type,
         ];
+
     if (!onlyTable && dialectType !== ConnectionMode.MYSQL) {
       typeList.push(DbObjectType.sequence);
     }
@@ -238,8 +239,9 @@ const ExportSelecter: React.FC<IProps> = function ({
   const allTreeDataCount = Object.entries(allTreeData).reduce((prev, current) => {
     return prev + current?.[1]?.children.length;
   }, 0);
-  const selectedTreeDataCount = checkedKeys.filter((key) => !getObjTypeList().includes(key))
-    ?.length;
+  const selectedTreeDataCount = checkedKeys.filter(
+    (key) => !getObjTypeList().includes(key),
+  )?.length;
   return (
     <div className={styles.selecter}>
       <div className={styles.content}>
@@ -249,6 +251,7 @@ const ExportSelecter: React.FC<IProps> = function ({
             title={
               formatMessage({
                 id: 'odc.ExportForm.ExportSelecter.SelectObject',
+                defaultMessage: '选择对象',
               }) + //选择对象
               `(${allTreeDataCount})`
             }
@@ -287,8 +290,9 @@ const ExportSelecter: React.FC<IProps> = function ({
             formatMessage(
               {
                 id: 'odc.ExportForm.ExportSelecter.SelectedtreedatacountItemsSelected',
+                defaultMessage: '已选 {selectedTreeDataCount} 项',
               },
-              { selectedTreeDataCount: selectedTreeDataCount },
+              { selectedTreeDataCount },
             ) //`已选 ${selectedTreeDataCount} 项`
           }
           onSearch={(v) => setTargetSearchValue(v)}
@@ -300,12 +304,14 @@ const ExportSelecter: React.FC<IProps> = function ({
               placement="left"
               title={formatMessage({
                 id: 'odc.ExportForm.ExportSelecter.AreYouSureYouWant',
+                defaultMessage: '是否确定清空已选对象？',
               })} /*确定要清空已选对象吗？*/
             >
               <a>
                 {
                   formatMessage({
                     id: 'odc.ExportForm.ExportSelecter.Clear',
+                    defaultMessage: '清空',
                   }) /*清空*/
                 }
               </a>
@@ -333,8 +339,9 @@ const ExportSelecter: React.FC<IProps> = function ({
                           /**
                            * 说明这里删除的是根节点
                            */
-                          const typeList = selectedTreeData.find((d) => d.key === nodeKey)
-                            ?.children;
+                          const typeList = selectedTreeData.find(
+                            (d) => d.key === nodeKey,
+                          )?.children;
                           const filterAllkeys = typeList?.map((item) => item.key);
                           setCheckedKeys(
                             checkedKeys.filter((key) => !filterAllkeys?.includes(key)),

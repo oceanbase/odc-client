@@ -259,7 +259,7 @@ const List: React.FC<IProps> = forwardRef(function (
               color={connection?.environmentStyle}
               content={
                 connection?.environmentName ||
-                formatMessage({ id: 'odc.Content.List.NoEnvironment' }) //无环境
+                formatMessage({ id: 'odc.Content.List.NoEnvironment', defaultMessage: '无环境' }) //无环境
               }
             />
           }
@@ -296,12 +296,14 @@ const List: React.FC<IProps> = forwardRef(function (
             status={'success'}
             title={formatMessage({
               id: 'odc.Content.List.NoDatabaseConnection',
+              defaultMessage: '暂无数据库连接',
             })} /*暂无数据库连接*/
             subTitle={
               <span>
                 {
                   formatMessage({
                     id: 'odc.Content.List.YouCanConnectToOceanbase',
+                    defaultMessage: '支持连接 OceanBase 数据库；',
                   }) /*支持连接 OceanBase 数据库；*/
                 }
               </span>

@@ -57,6 +57,7 @@ const FlowModal: React.FC<IProps> = function (props) {
       onClose={onClose}
       title={formatMessage({
         id: 'odc.component.CommonTaskDetailModal.FlowModal.ApprovalRecord',
+        defaultMessage: '审批记录',
       })}
       /*审批记录*/ destroyOnClose
       className={styles.flowDrawer}
@@ -72,9 +73,10 @@ const FlowModal: React.FC<IProps> = function (props) {
               {
                 formatMessage({
                   id: 'odc.src.component.Task.component.CommonDetailModal.Pass',
+                  defaultMessage: '通过',
                 }) /* 
-              通过
-             */
+          通过
+          */
               }
             </Button>
             <Button
@@ -85,9 +87,10 @@ const FlowModal: React.FC<IProps> = function (props) {
               {
                 formatMessage({
                   id: 'odc.src.component.Task.component.CommonDetailModal.Reject',
+                  defaultMessage: '拒绝',
                 }) /* 
-              拒绝
-             */
+          拒绝
+          */
               }
             </Button>
           </Space>
@@ -99,6 +102,7 @@ const FlowModal: React.FC<IProps> = function (props) {
           {
             formatMessage({
               id: 'odc.component.CommonTaskDetailModal.FlowModal.ActionEvents',
+              defaultMessage: '操作事件：',
             }) /*操作事件：*/
           }
         </span>

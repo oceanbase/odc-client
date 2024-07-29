@@ -40,7 +40,8 @@ const errorHandler = (error: ResponseError) => {
   if (name === 'RequestError') {
     // TODO：处理超时错误
     // @see aone/issue/22417174
-    msg = msg || formatMessage({ id: 'request.execute.ddl.timeout' });
+    msg =
+      msg || formatMessage({ id: 'request.execute.ddl.timeout', defaultMessage: '执行 DDL 超时' });
   }
   if (!(request?.options?.params as any)?.ignoreError && name !== 'ResponseError') {
     notification.error({
@@ -121,6 +122,7 @@ request.interceptors.response.use(async (response, req) => {
       errCode: 'FORMAT_ERROR',
       errMsg: formatMessage({
         id: 'odc.util.request.private.AnErrorOccurredWhileParsing',
+        defaultMessage: '解析结果出错，请检查部署配置',
       }), // 解析结果出错，请检查部署配置
       data: null,
       requestId,

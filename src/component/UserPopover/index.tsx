@@ -35,6 +35,7 @@ const UserPopover: React.FC<{
             {
               formatMessage({
                 id: 'odc.component.UserPopover.Name',
+                defaultMessage: '姓名：',
               }) /*姓名：*/
             }{' '}
             {name}
@@ -43,6 +44,7 @@ const UserPopover: React.FC<{
             {
               formatMessage({
                 id: 'odc.component.UserPopover.Account',
+                defaultMessage: '账号：',
               }) /*账号：*/
             }{' '}
             {accountName}
@@ -52,6 +54,7 @@ const UserPopover: React.FC<{
               {
                 formatMessage({
                   id: 'odc.component.UserPopover.Role',
+                  defaultMessage: '角色：',
                 }) /*角色：*/
               }{' '}
               {roleNames}

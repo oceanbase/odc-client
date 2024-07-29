@@ -33,6 +33,7 @@ const getResourceColumns = () => {
       dataIndex: 'project',
       title: formatMessage({
         id: 'odc.src.page.Auth.Autoauth.component.DetailContent.Project',
+        defaultMessage: '项目',
       }), //'项目'
       ellipsis: true,
       width: 160,
@@ -41,6 +42,7 @@ const getResourceColumns = () => {
       dataIndex: 'roles',
       title: formatMessage({
         id: 'odc.src.page.Auth.Autoauth.component.DetailContent.Role',
+        defaultMessage: '角色',
       }), //'角色'
       ellipsis: true,
       width: 108,
@@ -92,6 +94,7 @@ const DetailContent: React.FC<{
             {
               formatMessage({
                 id: 'odc.components.AutoAuthPage.component.RuleName',
+                defaultMessage: '规则名称:',
               }) /*规则名称:*/
             }
           </span>
@@ -103,6 +106,7 @@ const DetailContent: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.AutoAuthPage.component.TriggerEvent',
+            defaultMessage: '触发事件',
           })} /*触发事件*/
         >
           {eventName}
@@ -110,12 +114,14 @@ const DetailContent: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.AutoAuthPage.component.MatchingCondition',
+            defaultMessage: '匹配条件',
           })} /*匹配条件*/
         >
           <Space direction="vertical" size={4}>
             {conditions?.map(({ object, expression, operation, value }) => {
-              const operationLabel = operationOptions?.find((item) => item.value === operation)
-                ?.label;
+              const operationLabel = operationOptions?.find(
+                (item) => item.value === operation,
+              )?.label;
               return <div>{`${object}, ${expression}, ${operationLabel}, ${value}`}</div>;
             }) || '-'}
           </Space>
@@ -123,6 +129,7 @@ const DetailContent: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.AutoAuthPage.component.PerformAnAction',
+            defaultMessage: '执行动作',
           })} /*执行动作*/
         >
           {actionsLabel?.join(', ') || '-'}
@@ -130,6 +137,7 @@ const DetailContent: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.AutoAuthPage.component.Role',
+            defaultMessage: '角色',
           })} /*角色*/
         >
           {roles?.map((item) => item?.name)?.join(', ') || '-'}
@@ -146,9 +154,10 @@ const DetailContent: React.FC<{
             {
               formatMessage({
                 id: 'odc.src.page.Auth.Autoauth.component.DetailContent.AwardedProjectRole',
+                defaultMessage: '授予项目角色',
               }) /* 
-            授予项目角色
-           */
+          授予项目角色
+          */
             }
           </Descriptions.Item>
           <Descriptions.Item span={2}>
@@ -162,6 +171,7 @@ const DetailContent: React.FC<{
           </Descriptions.Item>
         </Descriptions>
       )}
+
       <Descriptions column={1}>
         <Descriptions.Item
           style={{
@@ -169,6 +179,7 @@ const DetailContent: React.FC<{
           }}
           label={formatMessage({
             id: 'odc.components.AutoAuthPage.component.Remarks',
+            defaultMessage: '备注',
           })} /*备注*/
         >
           {description || '-'}
@@ -179,10 +190,12 @@ const DetailContent: React.FC<{
           margin: '12px 0',
         }}
       />
+
       <Descriptions column={1}>
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.AutoAuthPage.component.Founder',
+            defaultMessage: '创建人',
           })} /*创建人*/
         >
           {creatorName}
@@ -190,6 +203,7 @@ const DetailContent: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.AutoAuthPage.component.CreationTime',
+            defaultMessage: '创建时间',
           })} /*创建时间*/
         >
           {getFormatDateTime(createTime)}
@@ -197,6 +211,7 @@ const DetailContent: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.AutoAuthPage.component.UpdateTime',
+            defaultMessage: '更新时间',
           })} /*更新时间*/
         >
           {getFormatDateTime(updateTime)}

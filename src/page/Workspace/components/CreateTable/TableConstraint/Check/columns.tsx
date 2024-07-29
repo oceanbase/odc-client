@@ -31,6 +31,7 @@ export function useColumns(
       key: 'name',
       name: formatMessage({
         id: 'odc.CreateTable.Columns.columns.Name',
+        defaultMessage: '名称',
       }), //名称
       resizable: true,
       editable: true,
@@ -41,6 +42,7 @@ export function useColumns(
       key: 'check',
       name: formatMessage({
         id: 'odc.TableConstraint.Check.columns.CheckConditions',
+        defaultMessage: '检查条件',
       }), //检查条件
       resizable: true,
       filterable: false,

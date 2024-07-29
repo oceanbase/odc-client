@@ -60,8 +60,9 @@ const DatabasesTitle: React.FC<IDatabasesTitleProps> = (props) => {
             formatMessage(
               {
                 id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DC4CF38C',
+                defaultMessage: '暂无{task}权限，请先申请库权限',
               },
-              { task: task },
+              { task },
             ) /*`暂无${task}权限，请先申请库权限`*/
           }
         >
@@ -462,12 +463,14 @@ const SessionDropdown: React.FC<IProps> = function ({
                     {
                       label: formatMessage({
                         id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.Project',
+                        defaultMessage: '按项目',
                       }), //'按项目'
                       value: 'project',
                     },
                     {
                       label: formatMessage({
                         id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DataSource',
+                        defaultMessage: '按数据源',
                       }), //'按数据源'
                       value: 'datasource',
                     },
@@ -482,6 +485,7 @@ const SessionDropdown: React.FC<IProps> = function ({
                 placeholder={
                   formatMessage({
                     id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.SearchForTheKeyword',
+                    defaultMessage: '搜索关键字',
                   }) /* 搜索关键字 */
                 }
                 onChange={(v) => setSearchValue(v.target.value)}

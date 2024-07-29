@@ -81,6 +81,7 @@ function EditPLParamasModal({
       {
         title: formatMessage({
           id: 'odc.component.EditPLParamsModal.Parameter',
+          defaultMessage: '参数名',
         }),
         width: 160,
         dataIndex: 'paramName',
@@ -90,6 +91,7 @@ function EditPLParamasModal({
       {
         title: formatMessage({
           id: 'odc.component.EditPLParamsModal.DataType',
+          defaultMessage: '数据类型',
         }),
         width: 136,
         dataIndex: 'dataType',
@@ -97,7 +99,7 @@ function EditPLParamasModal({
       },
 
       {
-        title: formatMessage({ id: 'odc.component.EditPLParamsModal.Value' }),
+        title: formatMessage({ id: 'odc.component.EditPLParamsModal.Value', defaultMessage: '值' }),
         dataIndex: 'defaultValue',
         key: 'defaultValue',
         render(value: any, record: any) {
@@ -139,7 +141,10 @@ function EditPLParamasModal({
       if (isOracle) {
         if (!anonymousBlockDdl) {
           message.warning(
-            formatMessage({ id: 'odc.component.EditPLParamsModal.StatementCannotBeEmpty' }), //语句不能为空
+            formatMessage({
+              id: 'odc.component.EditPLParamsModal.StatementCannotBeEmpty',
+              defaultMessage: '语句不能为空',
+            }), //语句不能为空
           );
           return;
         }
@@ -181,6 +186,7 @@ function EditPLParamasModal({
       destroyOnClose
       title={formatMessage({
         id: 'odc.component.EditPLParamsModal.SetParameters',
+        defaultMessage: '设置参数',
       })}
       open={visible}
       onOk={handleSubmit}

@@ -165,6 +165,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       Modal.confirm({
         title: formatMessage({
           id: 'odc.components.CreateSQLPlanTaskModal.AreYouSureYouWant',
+          defaultMessage: '是否确认取消此 SQL 计划？',
         }),
         //确认取消此 SQL 计划吗？
         centered: true,
@@ -208,6 +209,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       message.warning(
         formatMessage({
           id: 'odc.components.CreateSQLPlanTaskModal.UpToMbOfFiles',
+          defaultMessage: '文件最多不超过 256 MB',
         }),
         //文件最多不超过 256MB
       );
@@ -229,6 +231,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     Modal.confirm({
       title: formatMessage({
         id: 'odc.components.CreateSQLPlanTaskModal.AreYouSureYouWant.1',
+        defaultMessage: '是否确认修改此 SQL 计划？',
       }),
       //确认要修改此 SQL 计划吗？
       content: (
@@ -237,6 +240,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.components.CreateSQLPlanTaskModal.EditSqlPlan',
+                defaultMessage: '编辑 SQL 计划',
               })
               /*编辑 SQL 计划*/
             }
@@ -245,6 +249,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.components.CreateSQLPlanTaskModal.TheTaskNeedsToBe',
+                defaultMessage: '任务需要重新审批，审批通过后此任务将重新执行',
               })
               /*任务需要重新审批，审批通过后此任务将重新执行*/
             }
@@ -254,9 +259,13 @@ const CreateModal: React.FC<IProps> = (props) => {
 
       cancelText: formatMessage({
         id: 'odc.components.CreateSQLPlanTaskModal.Cancel',
+        defaultMessage: '取消',
       }),
       //取消
-      okText: formatMessage({ id: 'odc.components.CreateSQLPlanTaskModal.Ok' }), //确定
+      okText: formatMessage({
+        id: 'odc.components.CreateSQLPlanTaskModal.Ok',
+        defaultMessage: '确定',
+      }), //确定
       centered: true,
       onOk: () => {
         handleCreate(data);
@@ -318,6 +327,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               'sqlFiles',
               formatMessage({
                 id: 'odc.components.CreateSQLPlanTaskModal.UpToMbOfFiles',
+                defaultMessage: '文件最多不超过 256 MB',
               }),
               //文件最多不超过 256MB
             );
@@ -329,6 +339,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               'sqlFiles',
               formatMessage({
                 id: 'odc.components.CreateSQLPlanTaskModal.PleaseUploadTheSqlFile',
+                defaultMessage: '请上传 SQL 文件',
               }),
               //请上传 SQL 文件
             );
@@ -386,6 +397,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           'sqlFiles',
           formatMessage({
             id: 'odc.components.CreateSQLPlanTaskModal.UpToMbOfFiles',
+            defaultMessage: '文件最多不超过 256 MB',
           }),
           //文件最多不超过 256MB
         );
@@ -404,6 +416,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         'sqlFiles',
         formatMessage({
           id: 'odc.components.CreateSQLPlanTaskModal.UpToMbOfFiles',
+          defaultMessage: '文件最多不超过 256 MB',
         }),
         //文件最多不超过 256MB
       );
@@ -419,6 +432,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     multiple: true,
     tip: formatMessage({
       id: 'odc.components.CreateSQLPlanTaskModal.YouCanDragAndDrop',
+      defaultMessage: '支持拖拽文件上传，任务将按文件排列的先后顺序执行',
     }),
     //支持拖拽文件上传，任务将按文件排列的先后顺序执行
     maxCount: 500,
@@ -464,10 +478,12 @@ const CreateModal: React.FC<IProps> = (props) => {
         isEdit
           ? formatMessage({
               id: 'odc.components.CreateSQLPlanTaskModal.EditSqlPlan',
+              defaultMessage: '编辑 SQL 计划',
             })
           : //编辑 SQL 计划
             formatMessage({
               id: 'odc.components.CreateSQLPlanTaskModal.CreateAnSqlPlan',
+              defaultMessage: '新建 SQL 计划',
             })
         //新建 SQL 计划
       }
@@ -481,6 +497,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.components.CreateSQLPlanTaskModal.Cancel',
+                defaultMessage: '取消',
               })
               /*取消*/
             }
@@ -490,10 +507,12 @@ const CreateModal: React.FC<IProps> = (props) => {
               isEdit
                 ? formatMessage({
                     id: 'odc.components.CreateSQLPlanTaskModal.Save',
+                    defaultMessage: '保存',
                   })
                 : //保存
                   formatMessage({
                     id: 'odc.components.CreateSQLPlanTaskModal.Create',
+                    defaultMessage: '新建',
                   })
               //新建
             }
@@ -517,6 +536,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         <Form.Item
           label={formatMessage({
             id: 'odc.components.CreateSQLPlanTaskModal.SqlContent',
+            defaultMessage: 'SQL 内容',
           })}
           /*SQL 内容*/
           name="sqlContentType"
@@ -525,6 +545,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               required: true,
               message: formatMessage({
                 id: 'odc.components.CreateSQLPlanTaskModal.SelectSqlContent',
+                defaultMessage: '请选择 SQL 内容',
               }),
               //请选择 SQL 内容
             },
@@ -535,6 +556,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.components.CreateSQLPlanTaskModal.SqlEntry',
+                  defaultMessage: 'SQL 录入',
                 })
                 /*SQL录入*/
               }
@@ -543,6 +565,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.components.CreateSQLPlanTaskModal.UploadAnAttachment',
+                  defaultMessage: '上传附件',
                 })
                 /*上传附件*/
               }
@@ -559,6 +582,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               required: sqlContentType === SQLContentType.TEXT,
               message: formatMessage({
                 id: 'odc.components.CreateSQLPlanTaskModal.EnterTheSqlContent',
+                defaultMessage: '请填写 SQL 内容',
               }),
               //请填写 SQL 内容
             },
@@ -586,6 +610,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.components.CreateSQLPlanTaskModal.ClickOrDragMultipleFiles',
+                    defaultMessage: '点击或将多个文件拖拽到这里上传',
                   })
                   /*点击或将多个文件拖拽到这里上传*/
                 }
@@ -594,6 +619,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.components.CreateSQLPlanTaskModal.TheFileCanBeUp',
+                    defaultMessage: '文件最多不超过 256 MB ，支持扩展名 .sql',
                   })
                   /*文件最多不超过 256MB ，支持扩展名 .sql*/
                 }
@@ -606,6 +632,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             name="delimiter"
             label={formatMessage({
               id: 'odc.components.CreateSQLPlanTaskModal.Separator',
+              defaultMessage: '分隔符',
             })}
             /*分隔符*/
             required
@@ -614,6 +641,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 required: true,
                 message: formatMessage({
                   id: 'odc.components.CreateSQLPlanTaskModal.EnterADelimiter',
+                  defaultMessage: '请输入分隔符',
                 }),
                 //请输入分隔符
               },
@@ -632,6 +660,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             name="queryLimit"
             label={formatMessage({
               id: 'odc.components.CreateSQLPlanTaskModal.QueryResultLimits',
+              defaultMessage: '查询结果限制',
             })}
             /*查询结果限制*/
             required
@@ -640,6 +669,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 required: true,
                 message: formatMessage({
                   id: 'odc.components.CreateSQLPlanTaskModal.PleaseEnterTheQueryResult',
+                  defaultMessage: '请输入查询结果限制',
                 }),
                 //请输入查询结果限制
               },
@@ -650,12 +680,14 @@ const CreateModal: React.FC<IProps> = (props) => {
           <Form.Item
             label={formatMessage({
               id: 'odc.components.CreateSQLPlanTaskModal.ExecutionTimeout',
+              defaultMessage: '执行超时时间',
             })}
             /*执行超时时间*/ required
           >
             <Form.Item
               label={formatMessage({
                 id: 'odc.components.CreateSQLPlanTaskModal.Hours',
+                defaultMessage: '小时',
               })}
               /*小时*/
               name="timeoutMillis"
@@ -664,6 +696,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                   required: true,
                   message: formatMessage({
                     id: 'odc.components.CreateSQLPlanTaskModal.EnterATimeoutPeriod',
+                    defaultMessage: '请输入超时时间',
                   }),
                   //请输入超时时间
                 },
@@ -672,6 +705,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                   max: 480,
                   message: formatMessage({
                     id: 'odc.components.CreateSQLPlanTaskModal.UpToHours',
+                    defaultMessage: '最大不超过 480 小时',
                   }),
                   //最大不超过480小时
                 },
@@ -684,6 +718,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.components.CreateSQLPlanTaskModal.Hours',
+                  defaultMessage: '小时',
                 })
                 /*小时*/
               }
@@ -696,12 +731,14 @@ const CreateModal: React.FC<IProps> = (props) => {
         <FormItemPanel
           label={formatMessage({
             id: 'odc.components.CreateSQLPlanTaskModal.TaskSettings',
+            defaultMessage: '任务设置',
           })}
           /*任务设置*/ keepExpand
         >
           <Form.Item
             label={formatMessage({
               id: 'odc.components.CreateSQLPlanTaskModal.TaskErrorHandling',
+              defaultMessage: '任务错误处理',
             })}
             /*任务错误处理*/
             name="errorStrategy"
@@ -710,6 +747,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 required: true,
                 message: formatMessage({
                   id: 'odc.components.CreateSQLPlanTaskModal.SelectTaskErrorHandling',
+                  defaultMessage: '请选择任务错误处理',
                 }),
                 //请选择任务错误处理
               },
@@ -720,6 +758,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.components.CreateSQLPlanTaskModal.StopATask',
+                    defaultMessage: '停止任务',
                   })
                   /*停止任务*/
                 }
@@ -728,6 +767,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.components.CreateSQLPlanTaskModal.IgnoreErrorsToContinueThe',
+                    defaultMessage: '忽略错误继续任务',
                   })
                   /*忽略错误继续任务*/
                 }
@@ -737,6 +777,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           <Form.Item
             label={formatMessage({
               id: 'odc.components.CreateSQLPlanTaskModal.TaskExecutionDurationHypercycleProcessing',
+              defaultMessage: '任务执行时长超周期处理',
             })} /*任务执行时长超周期处理*/
             name="allowConcurrent"
             rules={[
@@ -744,6 +785,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 required: true,
                 message: formatMessage({
                   id: 'odc.components.CreateSQLPlanTaskModal.PleaseSelectTaskExecutionDuration',
+                  defaultMessage: '请选择任务执行时长超周期处理',
                 }), //请选择任务执行时长超周期处理
               },
             ]}
@@ -753,6 +795,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.components.CreateSQLPlanTaskModal.AfterTheCurrentTaskIs',
+                    defaultMessage: '待当前任务执行完毕在新周期发起任务',
                   }) /*待当前任务执行完毕在新周期发起任务*/
                 }
               </Radio>
@@ -760,6 +803,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.components.CreateSQLPlanTaskModal.IgnoreTheCurrentTaskStatus',
+                    defaultMessage: '忽略当前任务状态，定期发起新任务',
                   }) /*忽略当前任务状态，定期发起新任务*/
                 }
               </Radio>

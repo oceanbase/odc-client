@@ -52,12 +52,14 @@ class SnippetFormDrawer extends PureComponent<IProps> {
     const data = await this.formRef?.current?.getFieldsValue();
     // 用户有输入，加二次确认
     if (data.description || data.body || data.prefix) {
-      const actionName = SNIPPET_ACTIONS.find((snippetAction) => snippetAction.key === action)
-        ?.name;
+      const actionName = SNIPPET_ACTIONS.find(
+        (snippetAction) => snippetAction.key === action,
+      )?.name;
       this.modal = Modal.confirm({
         title: formatMessage(
           {
             id: 'odc.component.SnippetForm.ExitTheActionnameCodeSnippet',
+            defaultMessage: '退出{actionName}代码片段',
           },
           {
             actionName,
@@ -67,6 +69,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
         content: formatMessage(
           {
             id: 'odc.component.SnippetForm.IfTheContentIsNot',
+            defaultMessage: '存在未保存内容，退出{actionName}代码片段',
           },
           {
             actionName,
@@ -98,6 +101,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
                 formatMessage(
                   {
                     id: 'odc.component.SnippetForm.SyntaxFragmentValuesprefixIsCreated',
+                    defaultMessage: '代码片段 {valuesPrefix} 创建成功！',
                   },
                   {
                     valuesPrefix: values.prefix,
@@ -119,6 +123,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
                 formatMessage(
                   {
                     id: 'odc.component.SnippetForm.TheSyntaxSnippetSnippetprefixHas',
+                    defaultMessage: '代码片段 {snippetPrefix} 更新成功！',
                   },
                   {
                     snippetPrefix: snippet.prefix,
@@ -160,6 +165,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
           formatMessage(
             {
               id: 'odc.component.SnippetForm.ActionitemnameSyntaxFragment',
+              defaultMessage: '{actionItemName}代码片段',
             },
             {
               actionItemName: actionItem.name,
@@ -182,12 +188,14 @@ class SnippetFormDrawer extends PureComponent<IProps> {
               name="prefix"
               label={formatMessage({
                 id: 'odc.component.SnippetForm.Syntax',
+                defaultMessage: '代码片段名称',
               })}
               /* 语法名称 */ rules={[
                 {
                   required: true,
                   message: formatMessage({
                     id: 'odc.component.SnippetForm.EnterASyntaxName',
+                    defaultMessage: '请填写代码片段名称',
                   }),
                   // 请填写语法名称
                 },
@@ -195,6 +203,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
                   max: 60,
                   message: formatMessage({
                     id: 'odc.component.SnippetForm.TheSyntaxNameCannotExceed',
+                    defaultMessage: '代码片段名称不能超过 60 个字符',
                   }),
 
                   // 语法名称不能超过 60 个字符
@@ -203,6 +212,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
                   pattern: /^[a-zA-Z0-9_]+$/,
                   message: formatMessage({
                     id: 'odc.component.SnippetForm.TheSyntaxNameMustContain',
+                    defaultMessage: '代码片段名称为英文字母、数字、下划线组成',
                   }),
 
                   // 语法名称为英文字母、数字、下划线组成
@@ -213,6 +223,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
                 placeholder={
                   formatMessage({
                     id: 'odc.component.SnippetForm.EnterASyntaxName',
+                    defaultMessage: '请填写代码片段名称',
                   })
                   // 请填写语法名称
                 }
@@ -222,12 +233,14 @@ class SnippetFormDrawer extends PureComponent<IProps> {
               name="snippetType"
               label={formatMessage({
                 id: 'odc.component.SnippetForm.SyntaxType',
+                defaultMessage: '代码片段类型',
               })}
               /* 语法类型 */ rules={[
                 {
                   required: true,
                   message: formatMessage({
                     id: 'odc.component.SnippetForm.SelectASyntaxType',
+                    defaultMessage: '请选择代码片段类型',
                   }),
                   // 请选择语法类型
                 },
@@ -236,6 +249,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
               <Select
                 placeholder={formatMessage({
                   id: 'odc.component.SnippetForm.SelectASyntaxType',
+                  defaultMessage: '请选择代码片段类型',
                 })}
                 /* 请选择语法类型 */ style={{
                   width: '196px',
@@ -253,6 +267,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
             <Form.Item
               label={formatMessage({
                 id: 'odc.component.SnippetForm.Syntax.1',
+                defaultMessage: '代码片段',
               })}
               /* 代码片段 */
             >
@@ -268,6 +283,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
                   ctx={this}
                   actionGroupKey="SNIPPET_CREATE_ACTION_GROUP"
                 />
+
                 <div
                   style={{
                     height: 300,
@@ -284,6 +300,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
                         required: true,
                         message: formatMessage({
                           id: 'odc.component.SnippetForm.EnterASyntax',
+                          defaultMessage: '请输入代码片段',
                         }),
                         // 请输入语法
                       },
@@ -291,12 +308,10 @@ class SnippetFormDrawer extends PureComponent<IProps> {
                         max: MAX_SNIPPRT_SIZE,
                         message: formatMessage(
                           {
-                            id:
-                              'odc.src.component.GrammerHelpSider.component.SnippetForm.TheGrammarLengthCannotExceed',
+                            id: 'odc.src.component.GrammerHelpSider.component.SnippetForm.TheGrammarLengthCannotExceed',
+                            defaultMessage: '语法长度不能超过 {MAX_SNIPPRT_SIZE} 个字符',
                           },
-                          {
-                            MAX_SNIPPRT_SIZE: MAX_SNIPPRT_SIZE,
-                          },
+                          { MAX_SNIPPRT_SIZE },
                         ), //`语法长度不能超过 ${MAX_SNIPPRT_SIZE} 个字符`
                       },
                     ]}
@@ -316,12 +331,14 @@ class SnippetFormDrawer extends PureComponent<IProps> {
               name="description"
               label={formatMessage({
                 id: 'odc.component.SnippetForm.SyntaxDescription',
+                defaultMessage: '代码片段描述',
               })}
               /* 语法描述 */ rules={[
                 {
                   required: false,
                   message: formatMessage({
                     id: 'odc.component.SnippetForm.EnterASyntaxDescription',
+                    defaultMessage: '请输入代码片段描述',
                   }),
 
                   // 请输入语法描述
@@ -330,6 +347,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
                   max: 200,
                   message: formatMessage({
                     id: 'odc.component.SnippetForm.TheSyntaxDescriptionCannotExceed',
+                    defaultMessage: '代码片段描述长度不超过 200 个字符',
                   }),
 
                   // 语法描述长度不能超过 200 个字符
@@ -339,6 +357,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
               <TextArea
                 placeholder={formatMessage({
                   id: 'odc.component.SnippetForm.EnterASyntaxDescription',
+                  defaultMessage: '请输入代码片段描述',
                 })}
                 /* 请输入语法描述 */ style={{
                   height: '120px',
@@ -366,6 +385,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
                 {
                   formatMessage({
                     id: 'odc.component.SnippetForm.Cancel',
+                    defaultMessage: '取消',
                   })
                   /* 取消 */
                 }
@@ -374,6 +394,7 @@ class SnippetFormDrawer extends PureComponent<IProps> {
                 {
                   formatMessage({
                     id: 'odc.component.SnippetForm.Determine',
+                    defaultMessage: '确定',
                   })
                   /* 确定 */
                 }

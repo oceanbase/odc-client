@@ -27,11 +27,14 @@ const getFromCurrentTimeLabel = (fromCurrentTime: boolean, baseTimestampMillis: 
     fromCurrentTime
       ? formatMessage({
           id: 'src.component.Task.component.PartitionPolicyTable.02D5A436',
+          defaultMessage: '当前时间',
         })
       : formatMessage({
           id: 'src.component.Task.component.PartitionPolicyTable.C5755BD5',
+          defaultMessage: '指定时间',
         }),
   ];
+
   if (baseTimestampMillis) {
     labels.push(getFormatDateTime(baseTimestampMillis));
   }
@@ -41,7 +44,10 @@ const getFromCurrentTimeLabel = (fromCurrentTime: boolean, baseTimestampMillis: 
 const columns = [
   {
     dataIndex: 'partitionKey',
-    title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.8086D142' }), //'分区键'
+    title: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyTable.8086D142',
+      defaultMessage: '分区键',
+    }), //'分区键'
     ellipsis: true,
     width: 100,
     render: (partitionKey) => {
@@ -50,7 +56,10 @@ const columns = [
   },
   {
     dataIndex: 'partitionOption',
-    title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.B25F63D5' }), //'创建细则'
+    title: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyTable.B25F63D5',
+      defaultMessage: '创建细则',
+    }), //'创建细则'
     ellipsis: true,
     render: (_, record) => {
       const intervalGenerateExpr =
@@ -64,12 +73,19 @@ const columns = [
             label={
               formatMessage({
                 id: 'src.component.Task.component.PartitionPolicyTable.D94AE82A',
+                defaultMessage: '创建方式',
               }) /*"创建方式"*/
             }
           >
             {record?.partitionKeyInvoker === PARTITION_KEY_INVOKER.CUSTOM_GENERATOR
-              ? formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.C9467B5B' })
-              : formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.F057FAAF' })}
+              ? formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyTable.C9467B5B',
+                  defaultMessage: '自定义',
+                })
+              : formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyTable.F057FAAF',
+                  defaultMessage: '顺序递增',
+                })}
           </Descriptions.Item>
           {[
             PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
@@ -79,6 +95,7 @@ const columns = [
               label={
                 formatMessage({
                   id: 'src.component.Task.component.PartitionPolicyTable.FD28073C',
+                  defaultMessage: '起始',
                 }) /*"起始"*/
               }
             >
@@ -92,6 +109,7 @@ const columns = [
               label={
                 formatMessage({
                   id: 'src.component.Task.component.PartitionPolicyTable.2C76F5F5',
+                  defaultMessage: '表达式',
                 }) /*"表达式"*/
               }
             >
@@ -108,17 +126,20 @@ const columns = [
               label={
                 formatMessage({
                   id: 'src.component.Task.component.PartitionPolicyTable.D509725F',
+                  defaultMessage: '间隔',
                 }) /*"间隔"*/
               }
             >
               {intervalGenerateExpr}
             </Descriptions.Item>
           )}
+
           {!!interval && (
             <Descriptions.Item
               label={
                 formatMessage({
                   id: 'src.component.Task.component.PartitionPolicyTable.D509725F',
+                  defaultMessage: '间隔',
                 }) /*"间隔"*/
               }
             >

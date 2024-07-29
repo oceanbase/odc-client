@@ -50,6 +50,7 @@ export const getItems = (
           csvFormat.push(
             formatMessage({
               id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Contain',
+              defaultMessage: '包含列头',
             }), //'包含列头'
           );
         }
@@ -58,6 +59,7 @@ export const getItems = (
           csvFormat.push(
             formatMessage({
               id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.EmptyStringTurnsToEmpty',
+              defaultMessage: '空字符串转为空值',
             }), //'空字符串转为空值'
           );
         }
@@ -68,43 +70,53 @@ export const getItems = (
               label={
                 formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.TaskNumber',
+                  defaultMessage: '任务编号',
                 }) /* 任务编号 */
               }
               content={task?.id}
             />
+
             <SimpleTextItem
               label={
                 formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Database',
+                  defaultMessage: '所属数据库',
                 }) /* 所属数据库 */
               }
               content={<DatabaseLabel database={task?.database} />}
             />
+
             <SimpleTextItem
               label={
                 formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.DataSource',
+                  defaultMessage: '所属数据源',
                 }) /* 所属数据源 */
               }
               content={task?.database?.dataSource?.name || '-'}
             />
+
             <SimpleTextItem
               label={
                 formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Type',
+                  defaultMessage: '任务类型',
                 }) /* 任务类型 */
               }
               content={
                 formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.ExportResultSet',
+                  defaultMessage: '导出结果集',
                 }) /* 导出结果集 */
               }
             />
+
             {hasFlow && (
               <SimpleTextItem
                 label={
                   formatMessage({
                     id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.RiskLevel',
+                    defaultMessage: '风险等级',
                   }) /* 风险等级 */
                 }
                 content={<RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />}
@@ -115,6 +127,7 @@ export const getItems = (
               label={
                 formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.SQLContent',
+                  defaultMessage: 'SQL 内容',
                 }) /* SQL 内容 */
               }
               content={
@@ -144,120 +157,147 @@ export const getItems = (
               label={
                 formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.QueryResultsLimit',
+                  defaultMessage: '查询结果限制',
                 }) /* 查询结果限制 */
               }
               content={parameters?.maxRows}
             />
+
             <SimpleTextItem
               label={
                 formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.FileName',
+                  defaultMessage: '文件名',
                 }) /* 文件名 */
               }
               content={parameters?.fileName}
             />
+
             <SimpleTextItem
               label={
                 formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.FileFormat',
+                  defaultMessage: '文件格式',
                 }) /* 文件格式 */
               }
               content={parameters?.fileFormat}
             />
+
             {parameters?.fileFormat === IExportResultSetFileType.CSV && (
               <>
                 <SimpleTextItem
                   label={
                     formatMessage({
                       id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.CSVFileSettings',
+                      defaultMessage: 'CSV 文件设置',
                     }) /* CSV 文件设置 */
                   }
                   content={csvFormat?.join('、')}
                 />
+
                 <SimpleTextItem
                   label={
                     formatMessage({
                       id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.FieldSeparator',
+                      defaultMessage: '字段分隔符',
                     }) /* 字段分隔符 */
                   }
                   content={parameters?.csvFormat?.columnSeparator}
                 />
+
                 <SimpleTextItem
                   label={
                     formatMessage({
                       id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.TextRecognitionSymbol',
+                      defaultMessage: '文本识别符',
                     }) /* 文本识别符 */
                   }
                   content={parameters?.csvFormat?.columnDelimiter}
                 />
+
                 <SimpleTextItem
                   label={
                     formatMessage({
                       id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.ReplacementSymbol',
+                      defaultMessage: '换行符号',
                     }) /* 换行符号 */
                   }
                   content={parameters?.csvFormat?.lineSeparator}
                 />
               </>
             )}
+
             {parameters?.fileFormat === IExportResultSetFileType.SQL && (
               <SimpleTextItem
                 label={
                   formatMessage({
                     id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.SpecifiedTableName',
+                    defaultMessage: '指定表名',
                   }) /* 指定表名 */
                 }
                 content={parameters?.tableName ?? '-'}
               />
             )}
+
             {parameters?.fileFormat === IExportResultSetFileType.EXCEL && (
               <>
                 <SimpleTextItem
                   label={
                     formatMessage({
                       id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Contain.1',
+                      defaultMessage: '包含列头',
                     }) /* 包含列头 */
                   }
                   content={
                     parameters?.csvFormat?.isContainColumnHeader
                       ? formatMessage({
                           id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Yes',
+                          defaultMessage: '是',
                         }) //'是'
                       : formatMessage({
                           id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.No',
+                          defaultMessage: '否',
                         }) //'否'
                   }
                 />
+
                 <SimpleTextItem
                   label={
                     formatMessage({
                       id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.ExportSQLToAnotherSheet',
+                      defaultMessage: '导出 SQL 到另一个 Sheet',
                     }) /* 导出 SQL 到另一个 Sheet */
                   }
                   content={
                     parameters?.saveSql
                       ? formatMessage({
                           id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Yes.1',
+                          defaultMessage: '是',
                         }) //'是'
                       : formatMessage({
                           id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.No.1',
+                          defaultMessage: '否',
                         }) //'否'
                   }
                 />
               </>
             )}
+
             <SimpleTextItem
               label={
                 formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.FileEncoding',
+                  defaultMessage: '文件编码',
                 }) /* 文件编码 */
               }
               content={parameters?.fileEncoding}
             />
+
             <SimpleTextItem
               label={
                 formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.ImplementationModalities',
+                  defaultMessage: '执行方式',
                 }) /* 执行方式 */
               }
               content={taskExecStrategyMap[task?.executionStrategy]}
@@ -268,6 +308,7 @@ export const getItems = (
                 label={
                   formatMessage({
                     id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.ExecutionTime',
+                    defaultMessage: '执行时间',
                   }) /* 执行时间 */
                 }
                 content={getFormatDateTime(task?.executionTime)}
@@ -278,6 +319,7 @@ export const getItems = (
               label={
                 formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.MissionDetails',
+                  defaultMessage: '任务描述',
                 }) /* 任务描述 */
               }
               content={task?.description}
@@ -289,10 +331,12 @@ export const getItems = (
                 marginTop: 4,
               }}
             />
+
             <SimpleTextItem
               label={
                 formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.Founder',
+                  defaultMessage: '创建人',
                 }) /* 创建人 */
               }
               content={task?.creator?.name || '-'}
@@ -302,6 +346,7 @@ export const getItems = (
               label={
                 formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.CreationTime',
+                  defaultMessage: '创建时间',
                 }) /* 创建时间 */
               }
               content={getFormatDateTime(task?.createTime)}

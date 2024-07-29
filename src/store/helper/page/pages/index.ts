@@ -95,6 +95,7 @@ export class SQLPage extends Page {
     }
     return `${formatMessage({
       id: 'workspace.header.create.sql',
+      defaultMessage: 'SQL 窗口',
     })}`;
   }
   public findCurrentNum() {
@@ -170,6 +171,7 @@ export class TaskPage extends Page {
     this.pageType = PageType.TASKS;
     this.pageTitle = formatMessage({
       id: 'odc.src.store.helper.page.pages.WorkOrder',
+      defaultMessage: '工单',
     }); //'工单'
     this.pageParams = {
       type,
@@ -186,6 +188,7 @@ export class SessionManagePage extends Page {
     this.pageType = PageType.SESSION_MANAGEMENT;
     this.pageTitle = formatMessage({
       id: 'workspace.header.session.management',
+      defaultMessage: '会话管理',
     });
     this.pageParams = {
       cid,
@@ -216,6 +219,7 @@ export class RecycleBinPage extends Page {
     this.pageType = PageType.RECYCLE_BIN;
     this.pageTitle = formatMessage({
       id: 'workspace.header.recycle',
+      defaultMessage: '回收站',
     });
     this.pageParams = {
       cid,
@@ -422,6 +426,7 @@ export class BatchCompilePage extends Page {
     return `${formatMessage(
       {
         id: 'odc.helper.page.openPage.BatchCompilationLabel',
+        defaultMessage: '批量编译{label}',
       },
       {
         label: PLPageMap?.[params?.type]?.label ?? '',
@@ -467,6 +472,7 @@ export class OBClientPage extends Page {
     return (
       formatMessage({
         id: 'odc.helper.page.openPage.CommandLineWindow',
+        defaultMessage: '命令行窗口_',
       }) + params?.index
     );
   }

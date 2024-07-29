@@ -31,31 +31,52 @@ export const projectRoleMap = {
   [ProjectRole.OWNER]: {
     label: formatMessage({
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.Administrator',
+      defaultMessage: '管理员',
     }),
     //'管理员'
-    description: formatMessage({ id: 'src.component.Task.ApplyPermission.CreateModal.92D261DD' }), //'拥有项目内的所有权限'
+    description: formatMessage({
+      id: 'src.component.Task.ApplyPermission.CreateModal.92D261DD',
+      defaultMessage: '拥有项目内的所有权限',
+    }), //'拥有项目内的所有权限'
   },
   [ProjectRole.DEVELOPER]: {
-    label: formatMessage({ id: 'src.component.Task.ApplyPermission.CreateModal.AF13A500' }), //'开发者'
-    description: formatMessage({ id: 'src.component.Task.ApplyPermission.CreateModal.012F2C58' }), //'允许登录所有数据库、执行 SQL、提交工单，通常是开发人员'
+    label: formatMessage({
+      id: 'src.component.Task.ApplyPermission.CreateModal.AF13A500',
+      defaultMessage: '开发者',
+    }), //'开发者'
+    description: formatMessage({
+      id: 'src.component.Task.ApplyPermission.CreateModal.012F2C58',
+      defaultMessage: '允许登录所有数据库、执行 SQL、提交工单，通常是开发人员',
+    }), //'允许登录所有数据库、执行 SQL、提交工单，通常是开发人员'
   },
   [ProjectRole.DBA]: {
     label: 'DBA',
-    description: formatMessage({ id: 'src.component.Task.ApplyPermission.CreateModal.211C9AC8' }), //'在开发者的基础上，还可以管理敏感列、添加/转移数据库等'
+    description: formatMessage({
+      id: 'src.component.Task.ApplyPermission.CreateModal.211C9AC8',
+      defaultMessage: '在开发者的基础上，还可以管理敏感列、添加/转移数据库等',
+    }), //'在开发者的基础上，还可以管理敏感列、添加/转移数据库等'
   },
   [ProjectRole.SECURITY_ADMINISTRATOR]: {
     label: formatMessage({
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.SecurityAdministrator',
+      defaultMessage: '安全管理员',
     }),
     //'安全管理员'
-    description: formatMessage({ id: 'src.component.Task.ApplyPermission.CreateModal.B35D50C9' }), //'在参与者的基础上还可以管理敏感列'
+    description: formatMessage({
+      id: 'src.component.Task.ApplyPermission.CreateModal.B35D50C9',
+      defaultMessage: '在参与者的基础上，同时可以管理敏感列',
+    }), //'在参与者的基础上还可以管理敏感列'
   },
   [ProjectRole.PARTICIPANT]: {
     label: formatMessage({
       id: 'odc.src.component.Task.ApplyPermission.CreateModal.Participant',
+      defaultMessage: '参与者',
     }),
     //'参与者'
-    description: formatMessage({ id: 'src.component.Task.ApplyPermission.CreateModal.ED069A06' }), //'允许查看项目基本信息，并自助申请库权限和提交工单'
+    description: formatMessage({
+      id: 'src.component.Task.ApplyPermission.CreateModal.ED069A06',
+      defaultMessage: '允许查看项目基本信息，并自助申请库权限和提交工单',
+    }), //'允许查看项目基本信息，并自助申请库权限和提交工单'
   },
 };
 interface IProps {
@@ -106,6 +127,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       Modal.confirm({
         title: formatMessage({
           id: 'odc.src.component.Task.ApplyPermission.CreateModal.DoYouConfirmTheCancellation',
+          defaultMessage: '是否确认取消申请项目权限？',
         }), //'确认取消申请项目权限吗？'
         centered: true,
         onOk: () => {
@@ -151,6 +173,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           message.success(
             formatMessage({
               id: 'src.component.Task.ApplyPermission.CreateModal.1F08D7C5' /*'工单创建成功'*/,
+              defaultMessage: '工单创建成功',
             }),
           );
           openTasksPage(
@@ -171,6 +194,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       title={
         formatMessage({
           id: 'odc.src.component.Task.ApplyPermission.CreateModal.ApplicationProjectPermissions',
+          defaultMessage: '申请项目权限',
         }) /* 申请项目权限 */
       }
       footer={
@@ -183,6 +207,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.src.component.Task.ApplyPermission.CreateModal.Cancel',
+                defaultMessage: '\n            取消\n          ',
               }) /* 
           取消
           */
@@ -192,6 +217,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.src.component.Task.ApplyPermission.CreateModal.NewlyBuilt',
+                defaultMessage: '\n            新建\n          ',
               }) /* 
           新建
           */
@@ -219,6 +245,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.ApplyPermission.CreateModal.Project',
+              defaultMessage: '项目',
             }) /* 项目 */
           }
           name="projectId"
@@ -227,6 +254,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               required: true,
               message: formatMessage({
                 id: 'odc.src.component.Task.ApplyPermission.CreateModal.PleaseSelectTheProject',
+                defaultMessage: '请选择项目',
               }), //'请选择项目'
             },
           ]}
@@ -239,6 +267,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             placeholder={
               formatMessage({
                 id: 'odc.src.component.Task.ApplyPermission.CreateModal.PleaseChoose.1',
+                defaultMessage: '请选择',
               }) /* 请选择 */
             }
             showSearch
@@ -251,6 +280,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.ApplyPermission.CreateModal.ProjectRole',
+              defaultMessage: '项目角色',
             }) /* 项目角色 */
           }
           name="resourceRoleIds"
@@ -259,6 +289,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               required: true,
               message: formatMessage({
                 id: 'odc.src.component.Task.ApplyPermission.CreateModal.PleaseSelectTheProjectRole',
+                defaultMessage: '请选择项目角色',
               }), //'请选择项目角色'
             },
           ]}
@@ -274,6 +305,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             placeholder={
               formatMessage({
                 id: 'odc.src.component.Task.ApplyPermission.CreateModal.PleaseChoose.1',
+                defaultMessage: '请选择',
               }) /* 请选择 */
             }
             tagRender={(props) => {
@@ -291,6 +323,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.ApplyPermission.CreateModal.Cause',
+              defaultMessage: '申请原因',
             }) /* 申请原因 */
           }
           name="applyReason"
@@ -299,12 +332,14 @@ const CreateModal: React.FC<IProps> = (props) => {
               required: true,
               message: formatMessage({
                 id: 'odc.src.component.Task.ApplyPermission.CreateModal.PleaseEnterTheReasonDescription',
+                defaultMessage: '请输入原因描述',
               }), //'请输入原因描述'
             },
             {
               max: 200,
               message: formatMessage({
                 id: 'odc.src.component.Task.ApplyPermission.CreateModal.TheReasonForTheApplication',
+                defaultMessage: '申请原因不超过 200 个字符',
               }), //'申请原因不超过 200 个字符'
             },
           ]}
@@ -314,6 +349,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             placeholder={
               formatMessage({
                 id: 'odc.src.component.Task.ApplyPermission.CreateModal.PleaseEnterTheReasonDescription.1',
+                defaultMessage: '请输入原因描述',
               }) /* 请输入原因描述 */
             }
           />

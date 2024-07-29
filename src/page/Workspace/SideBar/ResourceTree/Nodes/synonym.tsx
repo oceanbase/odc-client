@@ -32,8 +32,11 @@ export function SynonymTreeData(
   const synonyms = isPublic ? dbSession?.database?.publicSynonyms : dbSession?.database?.synonyms;
   const treeData: TreeDataNode = {
     title: isPublic
-      ? formatMessage({ id: 'odc.ResourceTree.Nodes.synonym.CommonSynonyms' }) //公共同义词
-      : formatMessage({ id: 'odc.ResourceTree.Nodes.synonym.Synonym' }), //同义词
+      ? formatMessage({
+          id: 'odc.ResourceTree.Nodes.synonym.CommonSynonyms',
+          defaultMessage: '公共同义词',
+        }) //公共同义词
+      : formatMessage({ id: 'odc.ResourceTree.Nodes.synonym.Synonym', defaultMessage: '同义词' }), //同义词
     key: `${database.id}-${dbName}-synonym-${isPublic}`,
     type: isPublic ? ResourceNodeType.PublicSynonymRoot : ResourceNodeType.SynonymRoot,
     data: database,
@@ -59,6 +62,7 @@ export function SynonymTreeData(
             }}
           />
         ),
+
         doubleClick(session, node, databaseFrom) {
           openSynonymViewPage(
             synonym.synonymName,

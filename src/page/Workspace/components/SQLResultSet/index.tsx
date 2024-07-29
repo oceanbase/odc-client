@@ -171,11 +171,17 @@ const SQLResultSet: React.FC<IProps> = function (props) {
       items: [
         {
           key: MenuKey.LOCK,
-          label: formatMessage({ id: 'workspace.window.sql.record.column.lock' }),
+          label: formatMessage({
+            id: 'workspace.window.sql.record.column.lock',
+            defaultMessage: '固定',
+          }),
         },
         {
           key: MenuKey.UNLOCK,
-          label: formatMessage({ id: 'workspace.window.sql.record.column.unlock' }),
+          label: formatMessage({
+            id: 'workspace.window.sql.record.column.unlock',
+            defaultMessage: '解除固定',
+          }),
         },
       ],
     };
@@ -260,7 +266,10 @@ const SQLResultSet: React.FC<IProps> = function (props) {
         animated={false}
         items={[
           {
-            label: formatMessage({ id: 'workspace.window.sql.record.title' }),
+            label: formatMessage({
+              id: 'workspace.window.sql.record.title',
+              defaultMessage: '执行记录',
+            }),
             key: recordsTabKey,
             children: (
               <ExecuteHistory
@@ -277,6 +286,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     {
                       formatMessage({
                         id: 'odc.components.SQLResultSet.Problem',
+                        defaultMessage: '问题',
                       }) /*问题*/
                     }
 
@@ -292,6 +302,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     </span>
                   </span>
                 ),
+
                 key: sqlLintTabKey,
                 children: (
                   <LintResultTable
@@ -330,6 +341,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     set.executeSql,
                     `${formatMessage({
                       id: 'workspace.window.sql.result',
+                      defaultMessage: '结果',
                     })}${resultTabCount}`,
                     set.locked,
                     set.uniqKey,
@@ -394,6 +406,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                   [ISqlExecuteResultStatus.SUCCESS]: {
                     lable: formatMessage({
                       id: 'odc.components.SQLResultSet.SuccessfulExecution',
+                      defaultMessage: '执行成功',
                     }),
                     //执行成功
                     count: 0,
@@ -402,6 +415,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                   [ISqlExecuteResultStatus.FAILED]: {
                     lable: formatMessage({
                       id: 'odc.components.SQLResultSet.ExecutionFailed',
+                      defaultMessage: '执行失败',
                     }),
                     //执行失败
                     count: 0,
@@ -410,6 +424,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                   [ISqlExecuteResultStatus.CANCELED]: {
                     lable: formatMessage({
                       id: 'odc.components.SQLResultSet.CancelExecution',
+                      defaultMessage: '执行取消',
                     }),
                     //执行取消
                     count: 0,
@@ -432,6 +447,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                               return formatMessage(
                                 {
                                   id: 'odc.components.SQLResultSet.ItemcountSqlItemlabel',
+                                  defaultMessage: '{itemCount} 条 SQL {itemLabel}',
                                 },
 
                                 { itemCount: item.count, itemLabel: item.lable },
@@ -447,6 +463,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                         {
                           formatMessage({
                             id: 'odc.components.SQLResultSet.Log',
+                            defaultMessage: '日志',
                           })
 
                           /* 日志 */
@@ -468,6 +485,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                       </span>
                     </Tooltip>
                   ),
+
                   key: set.uniqKey,
                   children: (
                     <SQLResultLog

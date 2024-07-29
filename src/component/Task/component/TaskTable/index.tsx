@@ -69,60 +69,74 @@ export const getCronCycle = (triggerConfig: ICycleTaskTriggerConfig) => {
 export const TaskTypeMap = {
   [TaskType.IMPORT]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.Import',
+    defaultMessage: '导入',
   }),
   //导入
   [TaskType.EXPORT]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.Export',
+    defaultMessage: '导出',
   }),
   //导出
   [TaskType.DATAMOCK]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.AnalogData',
+    defaultMessage: '模拟数据',
   }),
   //模拟数据
   [TaskType.ASYNC]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.DatabaseChanges',
+    defaultMessage: '数据库变更',
   }),
   // 数据库变更
 
   [TaskType.PARTITION_PLAN]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.PartitionPlan',
+    defaultMessage: '分区计划',
   }),
   //分区计划
 
   [TaskType.SHADOW]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.ShadowTableSynchronization',
+    defaultMessage: '影子表同步',
   }),
   //影子表同步
 
   [TaskType.ALTER_SCHEDULE]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.PlannedChange',
+    defaultMessage: '计划变更',
   }),
   //计划变更
   [TaskType.EXPORT_RESULT_SET]: formatMessage({
     id: 'odc.src.component.Task.component.TaskTable.ExportResultSet',
+    defaultMessage: '导出结果集',
   }),
   //'导出结果集'
   [TaskType.SQL_PLAN]: formatMessage({
     id: 'odc.component.TaskTable.SqlPlan',
+    defaultMessage: 'SQL 计划',
   }),
   //SQL 计划
   [TaskType.DATA_ARCHIVE]: formatMessage({
     id: 'odc.component.TaskTable.DataArchiving',
+    defaultMessage: '数据归档',
   }),
   //数据归档
   [TaskType.ONLINE_SCHEMA_CHANGE]: formatMessage({
     id: 'odc.component.TaskTable.LockFreeStructureChange',
+    defaultMessage: '无锁结构变更',
   }),
   //无锁结构变更
   [TaskType.DATA_DELETE]: formatMessage({
     id: 'odc.component.TaskTable.DataCleansing',
+    defaultMessage: '数据清理',
   }),
   //数据清理
   [TaskType.APPLY_PROJECT_PERMISSION]: formatMessage({
     id: 'odc.src.component.Task.component.TaskTable.ApplicationProjectPermissions',
+    defaultMessage: '申请项目权限',
   }), //'申请项目权限'
   [TaskType.APPLY_DATABASE_PERMISSION]: formatMessage({
     id: 'src.component.Task.component.TaskTable.E1E161BA',
+    defaultMessage: '申请库权限',
   }), //'申请库权限'
   [TaskType.APPLY_TABLE_PERMISSION]: formatMessage({
     id: 'src.component.Task.component.TaskTable.3236150E',
@@ -130,6 +144,7 @@ export const TaskTypeMap = {
   }),
   [TaskType.STRUCTURE_COMPARISON]: formatMessage({
     id: 'src.component.Task.component.TaskTable.80E1D16A',
+    defaultMessage: '结构比对',
   }), //'结构比对'
   [TaskType.MULTIPLE_ASYNC]: formatMessage({
     id: 'src.component.Task.component.TaskTable.A3CA13D5',
@@ -245,6 +260,7 @@ const TaskTable: React.FC<IProps> = inject(
           dataIndex: 'id',
           title: formatMessage({
             id: 'odc.component.TaskTable.No',
+            defaultMessage: '编号',
           }),
           //编号
           filterDropdown: (props) => {
@@ -254,6 +270,7 @@ const TaskTable: React.FC<IProps> = inject(
                 selectedKeys={filters?.id}
                 placeholder={formatMessage({
                   id: 'odc.TaskManagePage.component.TaskTable.PleaseEnterTheNumber',
+                  defaultMessage: '请输入编号',
                 })}
 
                 /*请输入编号*/
@@ -279,6 +296,7 @@ const TaskTable: React.FC<IProps> = inject(
           dataIndex: 'type',
           title: formatMessage({
             id: 'odc.component.TaskTable.Type',
+            defaultMessage: '类型',
           }),
           //类型
           ellipsis: true,
@@ -291,6 +309,7 @@ const TaskTable: React.FC<IProps> = inject(
           dataIndex: 'description',
           title: formatMessage({
             id: 'odc.component.TaskTable.TicketDescription',
+            defaultMessage: '工单描述',
           }),
           //工单描述
           ellipsis: true,
@@ -300,6 +319,7 @@ const TaskTable: React.FC<IProps> = inject(
           dataIndex: 'candidateApprovers',
           title: formatMessage({
             id: 'odc.component.TaskTable.CurrentHandler',
+            defaultMessage: '当前处理人',
           }),
           //当前处理人
           ellipsis: true,
@@ -311,6 +331,7 @@ const TaskTable: React.FC<IProps> = inject(
                 selectedKeys={filters?.candidateApprovers}
                 placeholder={formatMessage({
                   id: 'odc.component.TaskTable.CurrentHandler',
+                  defaultMessage: '当前处理人',
                 })} /*当前处理人*/
               />
             );
@@ -333,6 +354,7 @@ const TaskTable: React.FC<IProps> = inject(
           dataIndex: 'creator',
           title: formatMessage({
             id: 'odc.TaskManagePage.component.TaskTable.Created',
+            defaultMessage: '创建人',
           }),
           //创建人
           width: 80,
@@ -346,6 +368,7 @@ const TaskTable: React.FC<IProps> = inject(
                 selectedKeys={filters?.creator}
                 placeholder={formatMessage({
                   id: 'odc.TaskManagePage.component.TaskTable.EnterTheCreator',
+                  defaultMessage: '请输入创建人',
                 })}
 
                 /*请输入创建人*/
@@ -378,6 +401,7 @@ const TaskTable: React.FC<IProps> = inject(
           key: 'createTime',
           title: formatMessage({
             id: 'odc.components.TaskManagePage.CreationTime',
+            defaultMessage: '创建时间',
           }),
           render: (time: number) => getLocalFormatDateTime(time),
           sorter: true,
@@ -388,6 +412,7 @@ const TaskTable: React.FC<IProps> = inject(
           dataIndex: 'status',
           title: formatMessage({
             id: 'odc.component.TaskTable.Status',
+            defaultMessage: '状态',
           }),
           //状态
           width: 120,
@@ -405,6 +430,7 @@ const TaskTable: React.FC<IProps> = inject(
           dataIndex: 'deal',
           title: formatMessage({
             id: 'odc.components.TaskManagePage.Operation',
+            defaultMessage: '操作',
           }),
           width: 145,
           render: (_, record) => (
@@ -447,6 +473,7 @@ const TaskTable: React.FC<IProps> = inject(
                       {
                         formatMessage({
                           id: 'odc.component.TaskTable.NewWorkOrder',
+                          defaultMessage: '新建工单',
                         }) /*新建工单*/
                       }
 
@@ -492,10 +519,9 @@ const TaskTable: React.FC<IProps> = inject(
                     : formatMessage(
                         {
                           id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
+                          defaultMessage: '新建{activeTaskLabel}',
                         },
-                        {
-                          activeTaskLabel: activeTaskLabel,
-                        },
+                        { activeTaskLabel },
                       ),
                   //`新建${activeTaskLabel}`
                   isPrimary: true,

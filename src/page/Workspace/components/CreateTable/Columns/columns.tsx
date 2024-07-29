@@ -178,7 +178,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
     return [
       {
         key: 'name',
-        name: formatMessage({ id: 'odc.CreateTable.Columns.columns.Name' }), //名称
+        name: formatMessage({ id: 'odc.CreateTable.Columns.columns.Name', defaultMessage: '名称' }), //名称
         resizable: true,
         editable: true,
         editor: ColumnNameEditor,
@@ -186,7 +186,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
 
       {
         key: 'type',
-        name: formatMessage({ id: 'odc.CreateTable.Columns.columns.Type' }), //类型
+        name: formatMessage({ id: 'odc.CreateTable.Columns.columns.Type', defaultMessage: '类型' }), //类型
         resizable: true,
         editable: (row) => !pageContext?.editMode || isNil(row.ordinalPosition),
         editor: DataTypeSelect,
@@ -195,7 +195,10 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
 
       {
         key: 'width',
-        name: formatMessage({ id: 'odc.CreateTable.Columns.columns.Length' }), //长度
+        name: formatMessage({
+          id: 'odc.CreateTable.Columns.columns.Length',
+          defaultMessage: '长度',
+        }), //长度
         resizable: true,
         filterable: false,
         editor: TextEditor,
@@ -208,6 +211,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
         key: 'scale',
         name: formatMessage({
           id: 'odc.CreateTable.Columns.columns.DecimalPoint',
+          defaultMessage: '小数点',
         }), //小数点
         resizable: true,
         filterable: false,
@@ -221,6 +225,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
         key: 'notNull',
         name: formatMessage({
           id: 'workspace.window.createTable.column.allowNull',
+          defaultMessage: '非空',
         }),
 
         resizable: true,
@@ -234,6 +239,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
         key: 'autoIncrement',
         name: formatMessage({
           id: 'workspace.window.createTable.column.increment',
+          defaultMessage: '自增',
         }),
 
         resizable: true,
@@ -247,6 +253,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
         key: 'generated',
         name: formatMessage({
           id: 'odc.CreateTable.Columns.columns.VirtualColumn',
+          defaultMessage: '虚拟列',
         }), //虚拟列
         resizable: true,
         filterable: false,
@@ -257,7 +264,10 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
 
       {
         key: 'comment',
-        name: formatMessage({ id: 'odc.CreateTable.Columns.columns.Comment' }), //注释
+        name: formatMessage({
+          id: 'odc.CreateTable.Columns.columns.Comment',
+          defaultMessage: '注释',
+        }), //注释
         filterable: false,
         resizable: true,
         editor: TextEditor,

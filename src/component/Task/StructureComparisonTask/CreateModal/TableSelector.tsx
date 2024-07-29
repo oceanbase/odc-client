@@ -124,7 +124,10 @@ const TableSelector: React.FC<{
         <ExportCard
           title={
             formatMessage(
-              { id: 'src.component.Task.StructureComparisonTask.CreateModal.8C047E8D' },
+              {
+                id: 'src.component.Task.StructureComparisonTask.CreateModal.8C047E8D',
+                defaultMessage: '源表（{checkedKeysLength}/{treeDataLength}）',
+              },
               { checkedKeysLength: checkedKeys?.length, treeDataLength: treeData?.length },
             ) /*`选择源表 (${checkedKeys?.length}/${treeData?.length})`*/
           }
@@ -156,7 +159,10 @@ const TableSelector: React.FC<{
         <ExportCard
           title={
             formatMessage(
-              { id: 'src.component.Task.StructureComparisonTask.CreateModal.199215C7' },
+              {
+                id: 'src.component.Task.StructureComparisonTask.CreateModal.199215C7',
+                defaultMessage: '已选表（{checkedKeysLength}）',
+              },
               { checkedKeysLength: checkedKeys?.length },
             ) /*`已选表(${checkedKeys?.length})`*/
           }
@@ -170,6 +176,7 @@ const TableSelector: React.FC<{
               title={
                 formatMessage({
                   id: 'src.component.Task.StructureComparisonTask.CreateModal.C8820D9E',
+                  defaultMessage: '确定要清空已选对象吗？',
                 }) /*"确定要清空已选对象吗？"*/
               }
             >
@@ -177,6 +184,7 @@ const TableSelector: React.FC<{
                 {
                   formatMessage({
                     id: 'src.component.Task.StructureComparisonTask.CreateModal.4CA31C77' /*清空*/,
+                    defaultMessage: '清空',
                   }) /* 清空 */
                 }
               </a>

@@ -93,6 +93,7 @@ class CreateModal extends React.Component<IProps, IState> {
     {
       label: formatMessage({
         id: 'odc.components.ExportDrawer.SelectObject',
+        defaultMessage: '选择对象',
       }),
       //选择对象
       key: FormType.ObjSelecter,
@@ -100,6 +101,7 @@ class CreateModal extends React.Component<IProps, IState> {
     {
       label: formatMessage({
         id: 'odc.components.ExportDrawer.ExportSettings',
+        defaultMessage: '导出设置',
       }),
       //导出设置
       key: FormType.Config,
@@ -118,6 +120,7 @@ class CreateModal extends React.Component<IProps, IState> {
     Modal.confirm({
       title: formatMessage({
         id: 'odc.components.ExportDrawer.AreYouSureYouWant',
+        defaultMessage: '是否确定取消导出？',
       }),
       centered: true,
       onOk: () => {
@@ -159,6 +162,7 @@ class CreateModal extends React.Component<IProps, IState> {
                   exportFileMaxSize ===
                   formatMessage({
                     id: 'odc.components.ExportDrawer.Unlimited',
+                    defaultMessage: '无限制',
                   }) //无限制
                     ? -1
                     : parseInt(exportFileMaxSize as string);
@@ -173,6 +177,7 @@ class CreateModal extends React.Component<IProps, IState> {
                   exportFileMaxSize ===
                   formatMessage({
                     id: 'odc.components.ExportDrawer.Unlimited',
+                    defaultMessage: '无限制',
                   }) //无限制
                     ? -1
                     : parseInt(exportFileMaxSize as string);
@@ -198,6 +203,7 @@ class CreateModal extends React.Component<IProps, IState> {
             message.success(
               formatMessage({
                 id: 'src.component.Task.ExportTask.CreateModal.133432E8' /*'工单创建成功'*/,
+                defaultMessage: '工单创建成功',
               }),
             );
             if (this.state.isSaveDefaultConfig) {
@@ -258,6 +264,7 @@ class CreateModal extends React.Component<IProps, IState> {
         this.defaultConfig?.exportFileMaxSize ??
         formatMessage({
           id: 'odc.components.ExportDrawer.Unlimited',
+          defaultMessage: '无限制',
         }),
       //无限制
       columnDelimiter: this.defaultConfig?.columnDelimiter ?? '"',
@@ -314,6 +321,7 @@ class CreateModal extends React.Component<IProps, IState> {
     const nextTip = isNextStepDisabled
       ? formatMessage({
           id: 'odc.components.ExportDrawer.SelectAtLeastOneExport',
+          defaultMessage: '至少选择一个导出对象',
         })
       : //至少选择一个导出对象
         null;
@@ -322,6 +330,7 @@ class CreateModal extends React.Component<IProps, IState> {
         title={
           formatMessage({
             id: 'odc.components.ExportDrawer.Export',
+            defaultMessage: '导出',
           }) //导出
         }
         open={modalStore.exportModalVisible}
@@ -341,6 +350,8 @@ class CreateModal extends React.Component<IProps, IState> {
                 <>
                   {formatMessage({
                     id: 'odc.components.ExportDrawer.TheMaximumDataSizeCannot',
+                    defaultMessage:
+                      '数据最大不能超过 2GB，如需导出大量数据，请使用导数工具 OBDUMPER',
                   })}
                   <a
                     style={{ marginLeft: 4 }}
@@ -350,6 +361,7 @@ class CreateModal extends React.Component<IProps, IState> {
                     {
                       formatMessage({
                         id: 'src.component.Task.ExportTask.CreateModal.5DF92911' /*详情*/,
+                        defaultMessage: '详情',
                       }) /* 详情 */
                     }
                   </a>
@@ -394,6 +406,7 @@ class CreateModal extends React.Component<IProps, IState> {
             {
               formatMessage({
                 id: 'odc.components.ExportDrawer.RetainTheCurrentConfiguration',
+                defaultMessage: '保留当前配置',
               }) /*保留当前配置*/
             }
 
@@ -408,6 +421,7 @@ class CreateModal extends React.Component<IProps, IState> {
             >
               {formatMessage({
                 id: 'app.button.cancel',
+                defaultMessage: '取消',
               })}
             </Button>
             {prevStep ? (
@@ -421,6 +435,7 @@ class CreateModal extends React.Component<IProps, IState> {
                 {
                   formatMessage({
                     id: 'odc.components.ExportDrawer.PreviousStep',
+                    defaultMessage: '上一步：',
                   })
 
                   /*上一步:*/
@@ -435,6 +450,7 @@ class CreateModal extends React.Component<IProps, IState> {
                   {
                     formatMessage({
                       id: 'odc.components.ExportDrawer.NextStep',
+                      defaultMessage: '下一步:',
                     })
 
                     /*下一步:*/
@@ -448,6 +464,7 @@ class CreateModal extends React.Component<IProps, IState> {
               <Button loading={submitting} onClick={this.submit} type="primary">
                 {formatMessage({
                   id: 'workspace.header.tools.export',
+                  defaultMessage: '导出',
                 })}
               </Button>
             ) : null}

@@ -112,6 +112,7 @@ class CreateTablePartitionRuleForm extends Component<
         sameNamePartitions.forEach((item) => {
           item.error.name = formatMessage({
             id: 'odc.components.CreateTablePartitionRuleForm.ThePartitionNameMustBeUnique',
+            defaultMessage: '分区名称不能重复',
           });
         });
       }
@@ -146,6 +147,7 @@ class CreateTablePartitionRuleForm extends Component<
       <Form.Item
         label={formatMessage({
           id: 'odc.TableConstraint.Primary.columns.Column',
+          defaultMessage: '列',
         })}
         name={'columnName'}
         rules={[
@@ -153,6 +155,7 @@ class CreateTablePartitionRuleForm extends Component<
             required: true,
             message: formatMessage({
               id: 'workspace.window.createTable.column.name.validation',
+              defaultMessage: '请填写字段名称',
             }),
           },
         ]}
@@ -171,6 +174,7 @@ class CreateTablePartitionRuleForm extends Component<
       <Form.Item
         label={formatMessage({
           id: 'workspace.window.createTable.partition.expression',
+          defaultMessage: '表达式',
         })}
         name={'expression'}
       >
@@ -182,6 +186,7 @@ class CreateTablePartitionRuleForm extends Component<
       <Form.Item
         label={formatMessage({
           id: 'odc.TableConstraint.Primary.columns.Column',
+          defaultMessage: '列',
         })}
         name={'columns'}
       >
@@ -204,6 +209,7 @@ class CreateTablePartitionRuleForm extends Component<
               label={
                 formatMessage({
                   id: 'odc.Partition.CreateTablePartitionRuleForm.PartitionSettings',
+                  defaultMessage: '分区设置',
                 }) //分区设置
               }
               name={'partitions'}
@@ -225,6 +231,7 @@ class CreateTablePartitionRuleForm extends Component<
       <Form.Item
         label={formatMessage({
           id: 'workspace.window.createTable.partition.partNumber',
+          defaultMessage: '分区数量',
         })}
         name="partNumber"
       >
@@ -305,6 +312,7 @@ class CreateTablePartitionRuleForm extends Component<
             <Form.Item
               label={formatMessage({
                 id: 'workspace.window.createTable.partition.type',
+                defaultMessage: '分区方法',
               })}
               name={'partType'}
               rules={[
@@ -312,6 +320,7 @@ class CreateTablePartitionRuleForm extends Component<
                   required: true,
                   message: formatMessage({
                     id: 'workspace.window.createTable.partition.type.validation',
+                    defaultMessage: '请选择分区方法',
                   }),
                 },
               ]}

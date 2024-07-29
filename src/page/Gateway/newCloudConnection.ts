@@ -99,6 +99,7 @@ export const action = async (config: INewCloudConnection) => {
       message.error(
         formatMessage({
           id: 'odc.page.Gateway.customConnect.EncryptOrDataParameterError',
+          defaultMessage: 'encrypt 或 data 参数错误',
         }), //encrypt 或 data 参数错误
       );
       return;
@@ -110,6 +111,7 @@ export const action = async (config: INewCloudConnection) => {
       message.error(
         formatMessage({
           id: 'odc.page.Gateway.customConnect.DecryptionFailed',
+          defaultMessage: '解密失败！',
         }), //解密失败！
       );
       return;
@@ -120,6 +122,7 @@ export const action = async (config: INewCloudConnection) => {
     } catch (e) {
       const msg = formatMessage({
         id: 'odc.page.Gateway.customConnect.JsonParsingFailedCheckWhether',
+        defaultMessage: 'JSON 解析失败，请确认参数是否正确',
       }); //JSON 解析失败，请确认参数是否正确
       console.error(msg);
       message.error(msg, 0);
@@ -132,7 +135,10 @@ export const action = async (config: INewCloudConnection) => {
   }
   const personalOrganization = login.organizations?.find((item) => item.type === SpaceType.PRIVATE);
   if (!personalOrganization) {
-    return formatMessage({ id: 'odc.page.Gateway.newCloudConnection.PersonalSpaceDoesNotExist' }); //个人空间不存在！
+    return formatMessage({
+      id: 'odc.page.Gateway.newCloudConnection.PersonalSpaceDoesNotExist',
+      defaultMessage: '个人空间不存在！',
+    }); //个人空间不存在！
   }
   const isSuccess = await login.switchCurrentOrganization(personalOrganization?.id);
   if (!isSuccess) {

@@ -87,7 +87,10 @@ export default function EditSSODrawer({ visible, id, close, onSave }: IProps) {
     });
     if (isSuccess) {
       message.success(
-        formatMessage({ id: 'odc.SSO.NewSSODrawerButton.Edit.ModifiedSuccessfully' }), //修改成功
+        formatMessage({
+          id: 'odc.SSO.NewSSODrawerButton.Edit.ModifiedSuccessfully',
+          defaultMessage: '修改成功',
+        }), //修改成功
       );
       onSave();
       close();
@@ -104,17 +107,26 @@ export default function EditSSODrawer({ visible, id, close, onSave }: IProps) {
     <Drawer
       width={520}
       open={visible}
-      title={formatMessage({ id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.3FA0382E' })}
+      title={formatMessage({
+        id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.3FA0382E',
+        defaultMessage: '编辑登录集成配置',
+      })}
       onClose={close}
       footer={
         <Space style={{ float: 'right' }}>
           <Button onClick={() => close()}>
-            {formatMessage({ id: 'odc.SSO.NewSSODrawerButton.Edit.Cancel' }) /*取消*/}
+            {
+              formatMessage({
+                id: 'odc.SSO.NewSSODrawerButton.Edit.Cancel',
+                defaultMessage: '取消',
+              }) /*取消*/
+            }
           </Button>
           <Button onClick={() => save()} type="primary">
             {
               formatMessage({
                 id: 'odc.SSO.NewSSODrawerButton.Edit.ConfirmModification',
+                defaultMessage: '确认修改',
               }) /*确认修改*/
             }
           </Button>

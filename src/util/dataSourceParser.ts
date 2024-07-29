@@ -51,6 +51,7 @@ class Parser {
       error?.push(
         formatMessage({
           id: 'odc.src.util.TheOptionCannotBeEmpty',
+          defaultMessage: '选项不能为空',
         }), //'选项不能为空'
       );
     }
@@ -62,10 +63,9 @@ class Parser {
           formatMessage(
             {
               id: 'odc.src.util.TheOptionNameMustStart',
+              defaultMessage: '选项名称必须要以 - 开头: {name}',
             },
-            {
-              name: name,
-            },
+            { name },
           ), //`选项名称必须要以 - 开头: ${name}`
         );
       }
@@ -74,10 +74,9 @@ class Parser {
           formatMessage(
             {
               id: 'odc.src.util.TheOptionKeyMustContain',
+              defaultMessage: '选项键必须包含一个名称，不允许使用单独的 -: {name}',
             },
-            {
-              name: name,
-            },
+            { name },
           ), //`选项键必须包含一个名称，不允许使用单独的 -: ${name}`
         );
       }
@@ -86,10 +85,9 @@ class Parser {
           formatMessage(
             {
               id: 'odc.src.util.TheOptionTypeIsLacking',
+              defaultMessage: '选项类型缺少或不是函数: {name}',
             },
-            {
-              name: name,
-            },
+            { name },
           ), //`选项类型缺少或不是函数: ${name}`
         );
       }
@@ -98,10 +96,9 @@ class Parser {
           formatMessage(
             {
               id: 'odc.src.util.TheShortOptionNameMust',
+              defaultMessage: '短选项名称必须只有一个字符: {name}',
             },
-            {
-              name: name,
-            },
+            { name },
           ), //`短选项名称必须只有一个字符: ${name}`
         );
       }

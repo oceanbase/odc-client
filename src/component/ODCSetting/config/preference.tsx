@@ -21,7 +21,7 @@ import { EThemeConfigKey } from '@/store/setting';
 import { localeList } from '@/constant';
 
 const preferenceGroup: ODCSettingGroup = {
-  label: formatMessage({ id: 'src.component.ODCSetting.config.774332B4' }), //'外观'
+  label: formatMessage({ id: 'src.component.ODCSetting.config.774332B4', defaultMessage: '外观' }), //'外观'
   key: 'preference',
 };
 const preferenceDefaultGroup: ODCSettingGroup = {
@@ -31,7 +31,10 @@ const preferenceDefaultGroup: ODCSettingGroup = {
 
 const perferenceSettings: IODCSetting[] = [
   {
-    label: formatMessage({ id: 'src.component.ODCSetting.config.8D0B9878' }), //'主题'
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.8D0B9878',
+      defaultMessage: '主题',
+    }), //'主题'
     key: 'odc.appearance.scheme',
     group: preferenceGroup,
     secondGroup: preferenceDefaultGroup,
@@ -69,7 +72,10 @@ const perferenceSettings: IODCSetting[] = [
     },
   },
   {
-    label: formatMessage({ id: 'src.component.ODCSetting.config.7E2B58B7' }), //'语言'
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.7E2B58B7',
+      defaultMessage: '语言',
+    }), //'语言'
     key: 'odc.appearance.language',
     group: preferenceGroup,
     secondGroup: preferenceDefaultGroup,
@@ -81,7 +87,10 @@ const perferenceSettings: IODCSetting[] = [
         <RadioItem
           options={[
             {
-              label: formatMessage({ id: 'src.component.ODCSetting.config.549CFCC5' }), //'当前系统语言'
+              label: formatMessage({
+                id: 'src.component.ODCSetting.config.549CFCC5',
+                defaultMessage: '当前系统语言',
+              }), //'当前系统语言'
               value: 'FollowSystem',
             },
           ].concat(localeList)}

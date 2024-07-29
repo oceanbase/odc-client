@@ -51,19 +51,23 @@ const TableDDL: React.FC<IProps> = function ({}) {
             formated
               ? formatMessage({
                   id: 'odc.components.TablePage.Unformat',
+                  defaultMessage: '取消格式化',
                 }) // 取消格式化
               : formatMessage({
                   id: 'odc.components.TablePage.Formatting',
+                  defaultMessage: '格式化',
                 }) // 格式化
           }
           icon={<AlignLeftOutlined />}
           onClick={handleFormat}
           status={formated ? IConStatus.ACTIVE : IConStatus.INIT}
         />
+
         <ToolbarButton
           text={
             formatMessage({
               id: 'odc.components.ViewPage.Download',
+              defaultMessage: '下载',
             }) //下载
           }
           icon={<CloudDownloadOutlined />}
@@ -76,10 +80,12 @@ const TableDDL: React.FC<IProps> = function ({}) {
             );
           }}
         />
+
         <Toolbar.Button
           icon={<SyncOutlined />}
           text={formatMessage({
             id: 'odc.components.ShowTableBaseInfoForm.Refresh',
+            defaultMessage: '刷新',
           })}
           /* 刷新 */ onClick={onRefresh}
         />

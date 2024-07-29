@@ -97,13 +97,16 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
     const res = await createIntegration(values);
     if (res) {
       message.success(
-        formatMessage({ id: 'odc.component.FormModal.CreatedSuccessfully' }), //创建成功
+        formatMessage({
+          id: 'odc.component.FormModal.CreatedSuccessfully',
+          defaultMessage: '创建成功',
+        }), //创建成功
       );
       props.reloadData?.();
       handleClose();
     } else {
       message.error(
-        formatMessage({ id: 'odc.component.FormModal.FailedToCreate' }), //创建失败
+        formatMessage({ id: 'odc.component.FormModal.FailedToCreate', defaultMessage: '创建失败' }), //创建失败
       );
     }
   };
@@ -116,13 +119,16 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
 
     if (res) {
       message.success(
-        formatMessage({ id: 'odc.component.FormModal.SavedSuccessfully' }), //保存成功
+        formatMessage({
+          id: 'odc.component.FormModal.SavedSuccessfully',
+          defaultMessage: '保存成功',
+        }), //保存成功
       );
       props.reloadData?.();
       handleClose();
     } else {
       message.error(
-        formatMessage({ id: 'odc.component.FormModal.SaveFailed' }), //保存失败
+        formatMessage({ id: 'odc.component.FormModal.SaveFailed', defaultMessage: '保存失败' }), //保存失败
       );
     }
   };
@@ -165,10 +171,16 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
     if (hasChange) {
       Modal.confirm({
         title: isEdit
-          ? formatMessage({ id: 'odc.component.FormModal.AreYouSureYouWant' }) //确定要取消编辑吗？取消保存后，所编辑的内容将不生效
-          : formatMessage({ id: 'odc.component.FormModal.AreYouSureYouWant.1' }), //确定要取消新建吗?
-        cancelText: formatMessage({ id: 'odc.component.FormModal.Cancel' }), //取消
-        okText: formatMessage({ id: 'odc.component.FormModal.Ok' }), //确定
+          ? formatMessage({
+              id: 'odc.component.FormModal.AreYouSureYouWant',
+              defaultMessage: '是否确定取消编辑？取消保存后，所编辑的内容将不生效',
+            }) //确定要取消编辑吗？取消保存后，所编辑的内容将不生效
+          : formatMessage({
+              id: 'odc.component.FormModal.AreYouSureYouWant.1',
+              defaultMessage: '确定要取消新建吗?',
+            }), //确定要取消新建吗?
+        cancelText: formatMessage({ id: 'odc.component.FormModal.Cancel', defaultMessage: '取消' }), //取消
+        okText: formatMessage({ id: 'odc.component.FormModal.Ok', defaultMessage: '确定' }), //确定
         centered: true,
         onOk: () => {
           setHasChange(false);
@@ -217,21 +229,26 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
         width={564}
         title={
           (isEdit
-            ? formatMessage({ id: 'odc.component.FormModal.Edit' }) //编辑
-            : formatMessage({ id: 'odc.component.FormModal.Create' })) + //新建
+            ? formatMessage({ id: 'odc.component.FormModal.Edit', defaultMessage: '编辑' }) //编辑
+            : formatMessage({ id: 'odc.component.FormModal.Create', defaultMessage: '新建' })) + //新建
           `${title}`
         }
         className={styles.interceptor}
         footer={
           <Space>
             <Button onClick={handleCancel}>
-              {formatMessage({ id: 'odc.component.FormModal.Cancel' }) /*取消*/}
+              {
+                formatMessage({
+                  id: 'odc.component.FormModal.Cancel',
+                  defaultMessage: '取消',
+                }) /*取消*/
+              }
             </Button>
             <Button type="primary" onClick={handleSubmit}>
               {
                 isEdit
-                  ? formatMessage({ id: 'odc.component.FormModal.Save' }) //保存
-                  : formatMessage({ id: 'odc.component.FormModal.Create' }) //新建
+                  ? formatMessage({ id: 'odc.component.FormModal.Save', defaultMessage: '保存' }) //保存
+                  : formatMessage({ id: 'odc.component.FormModal.Create', defaultMessage: '新建' }) //新建
               }
             </Button>
           </Space>
@@ -261,8 +278,9 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
               formatMessage(
                 {
                   id: 'odc.component.FormModal.TitleName',
+                  defaultMessage: '{title}名称',
                 },
-                { title: title },
+                { title },
               ) //`${title}名称`
             }
             name="name"
@@ -273,23 +291,31 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
                 message: formatMessage(
                   {
                     id: 'odc.component.FormModal.EnterATitleName',
+                    defaultMessage: '请输入 {title}名称',
                   },
-                  { title: title },
+                  { title },
                 ), //`请输入 ${title}名称`
               },
               {
                 max: 64,
                 message: formatMessage({
                   id: 'odc.component.FormModal.TheNameCannotExceedCharacters',
+                  defaultMessage: '名称不超过 64 个字符',
                 }), //名称不超过 64个字符
               },
               {
                 validator: validTrimEmptyWithWarn(
-                  formatMessage({ id: 'odc.component.FormModal.TheNameContainsSpacesAt' }), //名称首尾包含空格
+                  formatMessage({
+                    id: 'odc.component.FormModal.TheNameContainsSpacesAt',
+                    defaultMessage: '名称首尾包含空格',
+                  }), //名称首尾包含空格
                 ),
               },
               {
-                message: formatMessage({ id: 'odc.component.FormModal.TheNameAlreadyExists' }), //名称已存在
+                message: formatMessage({
+                  id: 'odc.component.FormModal.TheNameAlreadyExists',
+                  defaultMessage: '名称已存在',
+                }), //名称已存在
                 validator: checkNameRepeat,
               },
             ]}
@@ -297,6 +323,7 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
             <Input
               placeholder={formatMessage({
                 id: 'odc.component.FormModal.EnterAName',
+                defaultMessage: '请输入名称',
               })} /*请输入名称*/
             />
           </Form.Item>
@@ -305,24 +332,38 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
               formatMessage(
                 {
                   id: 'odc.component.FormModal.TitleStatus',
+                  defaultMessage: '{title}状态',
                 },
-                { title: title },
+                { title },
               ) //`${title}状态`
             }
             name="enabled"
             rules={[
               {
                 required: true,
-                message: formatMessage({ id: 'odc.component.FormModal.SelectAStatus' }), //请选择状态
+                message: formatMessage({
+                  id: 'odc.component.FormModal.SelectAStatus',
+                  defaultMessage: '请选择状态',
+                }), //请选择状态
               },
             ]}
           >
             <Radio.Group onChange={handleStatusChange}>
               <Radio value={true}>
-                {formatMessage({ id: 'odc.component.FormModal.Enable' }) /*启用*/}
+                {
+                  formatMessage({
+                    id: 'odc.component.FormModal.Enable',
+                    defaultMessage: '启用',
+                  }) /*启用*/
+                }
               </Radio>
               <Radio value={false}>
-                {formatMessage({ id: 'odc.component.FormModal.Disable' }) /*停用*/}
+                {
+                  formatMessage({
+                    id: 'odc.component.FormModal.Disable',
+                    defaultMessage: '停用',
+                  }) /*停用*/
+                }
               </Radio>
             </Radio.Group>
           </Form.Item>
@@ -332,8 +373,9 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
               formatMessage(
                 {
                   id: 'odc.component.FormModal.TitleConfiguration',
+                  defaultMessage: '{title}配置',
                 },
-                { title: title },
+                { title },
               ) //`${title}配置`
             }
             name="configuration"
@@ -342,6 +384,7 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
                 required: true,
                 message: formatMessage({
                   id: 'odc.component.FormModal.PleaseEnterTheConfiguration',
+                  defaultMessage: '请输入配置',
                 }), //请输入配置
               },
             ]}
@@ -354,7 +397,10 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
             rules={[
               {
                 required: true,
-                message: formatMessage({ id: 'odc.component.FormModal.SelectAStatus' }), //请选择状态
+                message: formatMessage({
+                  id: 'odc.component.FormModal.SelectAStatus',
+                  defaultMessage: '请选择状态',
+                }), //请选择状态
               },
             ]}
           >
@@ -362,6 +408,7 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.component.FormModal.WhetherToEnableEncryption',
+                  defaultMessage: '是否启用加密',
                 }) /*是否启用加密*/
               }
             </Checkbox>
@@ -378,12 +425,16 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
                     <Form.Item
                       label={formatMessage({
                         id: 'odc.component.FormModal.EncryptionAlgorithm',
+                        defaultMessage: '加密算法',
                       })} /*加密算法*/
                       name={['encryption', 'algorithm']}
                       rules={[
                         {
                           required: true,
-                          message: formatMessage({ id: 'odc.component.FormModal.SelectAStatus' }), //请选择状态
+                          message: formatMessage({
+                            id: 'odc.component.FormModal.SelectAStatus',
+                            defaultMessage: '请选择状态',
+                          }), //请选择状态
                         },
                       ]}
                     >
@@ -405,23 +456,33 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
                       <Form.Item
                         label={formatMessage({
                           id: 'odc.component.FormModal.EncryptionKey',
+                          defaultMessage: '加密密钥',
                         })} /*加密密钥*/
                         name={['encryption', 'secret']}
                         rules={[
                           {
                             required: true,
-                            message: formatMessage({ id: 'odc.component.FormModal.EnterAKey' }), //请输入密钥
+                            message: formatMessage({
+                              id: 'odc.component.FormModal.EnterAKey',
+                              defaultMessage: '请输入密钥',
+                            }), //请输入密钥
                           },
                         ]}
                       >
                         <Input.Password
-                          placeholder={formatMessage({ id: 'odc.component.FormModal.PleaseEnter' })}
+                          placeholder={formatMessage({
+                            id: 'odc.component.FormModal.PleaseEnter',
+                            defaultMessage: '请输入',
+                          })}
                           /*请输入*/ style={{ width: '232px' }}
                         />
                       </Form.Item>
                     ) : (
                       <Form.Item
-                        label={formatMessage({ id: 'odc.component.FormModal.EncryptionKey' })}
+                        label={formatMessage({
+                          id: 'odc.component.FormModal.EncryptionKey',
+                          defaultMessage: '加密密钥',
+                        })}
                         /*加密密钥*/ required
                       >
                         <Input.Password style={{ width: '232px' }} value="******" disabled={true} />
@@ -432,8 +493,14 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
                     <Button type="link" onClick={handleCancelSecretEdit}>
                       {
                         enableSecretEdit
-                          ? formatMessage({ id: 'odc.component.FormModal.CancelModification' }) //取消修改
-                          : formatMessage({ id: 'odc.component.FormModal.ChangePassword' }) //修改密码
+                          ? formatMessage({
+                              id: 'odc.component.FormModal.CancelModification',
+                              defaultMessage: '取消修改',
+                            }) //取消修改
+                          : formatMessage({
+                              id: 'odc.component.FormModal.ChangePassword',
+                              defaultMessage: '修改密码',
+                            }) //修改密码
                       }
                     </Button>
                   )}
@@ -442,13 +509,17 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
             }}
           </Form.Item>
           <Form.Item
-            label={formatMessage({ id: 'odc.component.FormModal.Remarks' })} /*备注*/
+            label={formatMessage({
+              id: 'odc.component.FormModal.Remarks',
+              defaultMessage: '备注',
+            })} /*备注*/
             name="description"
             rules={[
               {
                 max: 140,
                 message: formatMessage({
                   id: 'odc.component.FormModal.TheDescriptionCannotExceedCharacters',
+                  defaultMessage: '备注不超过 140 个字符',
                 }), //备注不超过 140 个字符
               },
             ]}

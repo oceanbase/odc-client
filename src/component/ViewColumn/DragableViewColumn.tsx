@@ -60,7 +60,8 @@ const DragableViewColumn = ({ props }: { props: IDragableViewParamProps }) => {
           <span style={{ marginRight: 8 }}>
             <Icon component={DragSvg} className={styles.dragHandler} />
           </span>
-          {formatMessage({ id: 'workspace.window.createView.columnName' })}：
+          {formatMessage({ id: 'workspace.window.createView.columnName', defaultMessage: '名称' })}
+          ：
           <Input
             value={rule.paramName}
             style={{ flex: 1 }}

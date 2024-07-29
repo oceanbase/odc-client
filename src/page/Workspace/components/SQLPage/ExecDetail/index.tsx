@@ -56,7 +56,10 @@ const ExecDetail: React.FC<IProps> = function (props) {
     async function () {
       if (!traceId) {
         message.error(
-          formatMessage({ id: 'odc.components.SQLPage.TheTraceIdIsEmpty' }), // TRACE ID 为空，请确保该语句运行时 ob_enable_trace_log 变量已设置为 ON
+          formatMessage({
+            id: 'odc.components.SQLPage.TheTraceIdIsEmpty',
+            defaultMessage: 'TRACE ID 为空，请确保该语句运行时 ob_enable_trace_log 变量已设置为 ON',
+          }), // TRACE ID 为空，请确保该语句运行时 ob_enable_trace_log 变量已设置为 ON
         );
         return;
       }
@@ -83,7 +86,11 @@ const ExecDetail: React.FC<IProps> = function (props) {
         setSqlExecuteDetailToShow(detail);
         setSqlExecuteExplainToShow(explain);
 
-        const { queueTime = 0, execTime = 0, totalTime = 0 } = detail || {
+        const {
+          queueTime = 0,
+          execTime = 0,
+          totalTime = 0,
+        } = detail || {
           queueTime: 0,
           waitTime: 0,
           execTime: 0,
@@ -93,14 +100,17 @@ const ExecDetail: React.FC<IProps> = function (props) {
 
         const queueTimeLabel = formatMessage({
           id: 'workspace.window.sql.explain.tab.detail.card.time.label.queueTime',
+          defaultMessage: '排队时间',
         });
 
         const execTimeLabel = formatMessage({
           id: 'workspace.window.sql.explain.tab.detail.card.time.label.execTime',
+          defaultMessage: '执行耗时',
         });
 
         const otherTimeLabel = formatMessage({
           id: 'workspace.window.sql.explain.tab.detail.card.time.label.otherTime',
+          defaultMessage: '其他',
         });
 
         const values = [execTime, queueTime, totalTime - queueTime - execTime];
@@ -165,6 +175,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
             data: [
               formatMessage({
                 id: 'odc.components.SQLPage.TimeConsumptionStatisticsUs',
+                defaultMessage: '耗时统计（us）',
               }),
             ],
           },
@@ -175,6 +186,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
         message.error(
           formatMessage({
             id: 'workspace.window.sql.explain.detail.failed',
+            defaultMessage: '查看 SQL 执行详情失败',
           }),
         );
       }
@@ -210,6 +222,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
     <Drawer
       title={formatMessage({
         id: 'workspace.window.sql.explain.tab.detail.title',
+        defaultMessage: '执行详情',
       })}
       placement="right"
       closable

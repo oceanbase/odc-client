@@ -81,6 +81,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       Modal.confirm({
         title: formatMessage({
           id: 'odc.component.DataMockerDrawer.AreYouSureYouWant',
+          defaultMessage: '是否确定取消模拟数据？',
         }),
         // 确认取消模拟数据吗？
         centered: true,
@@ -107,13 +108,17 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         destroyOnClose
         width={960}
         className="o-adaptive-drawer"
-        title={formatMessage({ id: 'src.component.Task.DataMockerTask.CreateModal.2C3DF5A5' })}
+        title={formatMessage({
+          id: 'src.component.Task.DataMockerTask.CreateModal.2C3DF5A5',
+          defaultMessage: '新建模拟数据',
+        })}
         footer={
           <Space style={{ float: 'right' }}>
             <Button onClick={closeWithConfirm}>
               {
                 formatMessage({
                   id: 'odc.component.DataMockerDrawer.Cancel',
+                  defaultMessage: '取消',
                 })
                 /* 取消 */
               }
@@ -132,6 +137,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                       formatMessage(
                         {
                           id: 'odc.component.DataMockerDrawer.TheFieldEditingcolumncolumnnameIsBeing',
+                          defaultMessage: '字段{editingColumnColumnName}正在编辑中',
                         },
 
                         { editingColumnColumnName: editingColumn.columnName },
@@ -171,6 +177,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     message.success(
                       formatMessage({
                         id: 'src.component.Task.DataMockerTask.CreateModal.753EA4C0' /*'工单创建成功'*/,
+                        defaultMessage: '工单创建成功',
                       }),
                     );
                     onClose();
@@ -184,6 +191,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               {
                 formatMessage({
                   id: 'odc.component.DataMockerDrawer.Submitted',
+                  defaultMessage: '提交',
                 })
                 /* 提交 */
               }

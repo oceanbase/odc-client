@@ -67,7 +67,7 @@ class SaveSQLModal extends Component<IProps> {
       <Modal
         destroyOnClose
         title={
-          formatMessage({ id: 'odc.component.SaveSQLModal.SaveScript' }) //保存脚本
+          formatMessage({ id: 'odc.component.SaveSQLModal.SaveScript', defaultMessage: '保存脚本' }) //保存脚本
         }
         open={visible}
         confirmLoading={this.state.saving}
@@ -80,19 +80,24 @@ class SaveSQLModal extends Component<IProps> {
             required
             name="objectName"
             label={
-              formatMessage({ id: 'odc.component.SaveSQLModal.ScriptName' }) //脚本名称
+              formatMessage({
+                id: 'odc.component.SaveSQLModal.ScriptName',
+                defaultMessage: '脚本名称',
+              }) //脚本名称
             }
             rules={[
               {
                 required: true,
                 message: formatMessage({
                   id: 'odc.component.SaveSQLModal.TheScriptNameMustBe',
+                  defaultMessage: '脚本名称不能为空',
                 }), //脚本名称不能为空
               },
               {
                 pattern: /^[\S]*$/,
                 message: formatMessage({
                   id: 'odc.component.SaveSQLModal.CannotContainBlankCharacters',
+                  defaultMessage: '不能含有空白字符',
                 }),
               },
             ]}
@@ -101,6 +106,7 @@ class SaveSQLModal extends Component<IProps> {
               placeholder={
                 formatMessage({
                   id: 'odc.component.SaveSQLModal.EnterAScriptName',
+                  defaultMessage: '请输入脚本名称',
                 })
                 //请输入脚本名称
               }

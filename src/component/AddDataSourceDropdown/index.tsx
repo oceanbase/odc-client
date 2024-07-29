@@ -52,6 +52,7 @@ export default function AddDataSourceDropdown(props: IProps) {
     result.push({
       label: formatMessage({
         id: 'odc.src.component.AddDataSourceDropdown.BatchImport',
+        defaultMessage: '批量导入',
       }), //'批量导入'
       key: 'batchImport',
     });

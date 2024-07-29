@@ -60,7 +60,11 @@ const FormItemPanel: React.FC<IProps> = function (props) {
               className={styles.expandBtn}
             >
               {
-                expandText || formatMessage({ id: 'odc.component.FormItemPanel.Superior' }) // 高级
+                expandText ||
+                  formatMessage({
+                    id: 'odc.component.FormItemPanel.Superior',
+                    defaultMessage: '高级',
+                  }) // 高级
               }
               {expand ? <UpOutlined style={iconStyle} /> : <DownOutlined style={iconStyle} />}
             </a>

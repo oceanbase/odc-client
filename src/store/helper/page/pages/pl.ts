@@ -117,7 +117,9 @@ export class AnonymousPage extends PLPage {
     pageIndex: number;
   };
   static getTitleByParams(params: AnonymousPage['pageParams']) {
-    return `${formatMessage({ id: 'workspace.header.create.pl' })}_${params?.pageIndex}`;
+    return `${formatMessage({ id: 'workspace.header.create.pl', defaultMessage: '匿名块窗口' })}_${
+      params?.pageIndex
+    }`;
   }
   public findCurrentNum() {
     const indexList = page.pages

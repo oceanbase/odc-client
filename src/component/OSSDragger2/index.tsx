@@ -247,6 +247,7 @@ const ODCDragger: React.FC<IProps> = React.memo(
                       prefix={<SearchOutlined />}
                       placeholder={formatMessage({
                         id: 'odc.component.OSSDragger2.SearchForFileName',
+                        defaultMessage: '搜索文件名称',
                       })}
                       /*搜索文件名称*/
                       onSearch={(value, e) => {
@@ -265,6 +266,7 @@ const ODCDragger: React.FC<IProps> = React.memo(
                       {
                         formatMessage({
                           id: 'odc.component.OSSDragger2.Cancel',
+                          defaultMessage: '取消',
                         })
                         /*取消*/
                       }
@@ -278,6 +280,7 @@ const ODCDragger: React.FC<IProps> = React.memo(
                           ? tip
                           : formatMessage({
                               id: 'odc.component.OSSDragger2.SupportsDragAndDropFile',
+                              defaultMessage: '支持拖拽文件上传',
                             }) //支持拖拽文件上传
                       }
                     </div>
@@ -286,6 +289,7 @@ const ODCDragger: React.FC<IProps> = React.memo(
                         <Tooltip
                           title={formatMessage({
                             id: 'odc.component.OSSDragger2.Search',
+                            defaultMessage: '搜索',
                           })}
                           /*搜索*/
                         >
@@ -296,9 +300,11 @@ const ODCDragger: React.FC<IProps> = React.memo(
                           />
                         </Tooltip>
                       )}
+
                       <Tooltip
                         title={formatMessage({
                           id: 'odc.component.OSSDragger2.Add',
+                          defaultMessage: '添加',
                         })}
                         /*添加*/
                       >

@@ -114,7 +114,7 @@ const MoreSetting = () => {
         <Form.Item
           label={formatMessage({
             id: 'src.component.Task.MutipleAsyncTask.CreateModal.D82AF71B',
-            defaultMessage: 'SQL 执行处理',
+            defaultMessage: 'SQL 执行错误处理',
           })}
           name={['parameters', 'errorStrategy']}
           initialValue={ErrorStrategy.ABORT}

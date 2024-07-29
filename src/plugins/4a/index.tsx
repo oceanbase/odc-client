@@ -33,7 +33,12 @@ export function apply(ODC: ODC) {
          * 不允许执行
          */
         notification.error({
-          track: errMsg || formatMessage({ id: 'odc.plugins.4a.CurrentSqlExecutionIsNot' }), //不允许执行当前 SQL
+          track:
+            errMsg ||
+            formatMessage({
+              id: 'odc.plugins.4a.CurrentSqlExecutionIsNot',
+              defaultMessage: '不允许执行当前 SQL',
+            }), //不允许执行当前 SQL
           requestId: requestId,
         });
         return true;
@@ -43,7 +48,11 @@ export function apply(ODC: ODC) {
          * 需要审批，sql默认从data.sql取，目前只有tableModify和execute
          */
         message.warning(
-          errMsg || formatMessage({ id: 'odc.plugins.4a.TheCurrentSqlCannotBe' }), //当前 SQL 无法直接执行，请提交审批
+          errMsg ||
+            formatMessage({
+              id: 'odc.plugins.4a.TheCurrentSqlCannotBe',
+              defaultMessage: '当前 SQL 无法直接执行，请提交审批',
+            }), //当前 SQL 无法直接执行，请提交审批
         );
         return true;
       }
@@ -56,6 +65,7 @@ export function apply(ODC: ODC) {
             errMsg ||
             formatMessage({
               id: 'odc.plugins.4a.ApprovalSystemFailurePleaseTry',
+              defaultMessage: '审批系统故障，请稍后再试',
             }), //审批系统故障，请稍后再试
           requestId: requestId,
         });

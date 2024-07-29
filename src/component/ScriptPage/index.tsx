@@ -176,6 +176,7 @@ export default class ScriptPage extends PureComponent<IProps> {
                   message.warn(
                     formatMessage({
                       id: 'src.component.ScriptPage.D0B6C37B' /*'该对象不属于当前数据库'*/,
+                      defaultMessage: '该对象不属于当前数据库',
                     }),
                   );
                   return;

@@ -19,18 +19,21 @@ import { formatMessage } from '@/util/intl';
 
 export const PLPageMap = {
   [PageType.BATCH_COMPILE_FUNCTION]: {
-    label: formatMessage({ id: 'odc.components.ResourceTree.Function' }), //函数
+    label: formatMessage({ id: 'odc.components.ResourceTree.Function', defaultMessage: '函数' }), //函数
   },
   [PageType.BATCH_COMPILE_PROCEDURE]: {
-    label: formatMessage({ id: 'odc.components.ResourceTree.StoredProcedure' }), //存储过程
+    label: formatMessage({
+      id: 'odc.components.ResourceTree.StoredProcedure',
+      defaultMessage: '存储过程',
+    }), //存储过程
   },
   [PageType.BATCH_COMPILE_PACKAGE]: {
-    label: formatMessage({ id: 'odc.components.ResourceTree.Bag' }), //包
+    label: formatMessage({ id: 'odc.components.ResourceTree.Bag', defaultMessage: '包' }), //包
   },
   [PageType.BATCH_COMPILE_TRIGGER]: {
-    label: formatMessage({ id: 'odc.components.ResourceTree.Trigger' }), //触发器
+    label: formatMessage({ id: 'odc.components.ResourceTree.Trigger', defaultMessage: '触发器' }), //触发器
   },
   [PageType.BATCH_COMPILE_TYPE]: {
-    label: formatMessage({ id: 'odc.components.ResourceTree.Type' }), //类型
+    label: formatMessage({ id: 'odc.components.ResourceTree.Type', defaultMessage: '类型' }), //类型
   },
 };

@@ -25,7 +25,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
 
 export const EmptyLabel: React.FC<{ label?: string }> = ({
-  label = formatMessage({ id: 'odc.component.CommonFilter.Null' }), // (空)
+  label = formatMessage({ id: 'odc.component.CommonFilter.Null', defaultMessage: '(空)' }), // (空)
 }) => {
   return <span style={{ color: 'var(--text-color-primary)' }}>{label}</span>;
 };
@@ -104,6 +104,7 @@ const CommonFilter: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.component.CommonFilter.SelectAll',
+                  defaultMessage: '全选',
                 }) /* 全选 */
               }
             </a>
@@ -111,6 +112,7 @@ const CommonFilter: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.component.CommonFilter.CancelAll',
+                  defaultMessage: '取消全选',
                 }) /* 取消全选 */
               }
             </a>
@@ -120,6 +122,7 @@ const CommonFilter: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.component.CommonFilter.Cancel',
+                  defaultMessage: '取消',
                 }) /* 取消 */
               }
             </Button>
@@ -127,6 +130,7 @@ const CommonFilter: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.component.CommonFilter.Determine',
+                  defaultMessage: '确定',
                 }) /* 确定 */
               }
             </Button>

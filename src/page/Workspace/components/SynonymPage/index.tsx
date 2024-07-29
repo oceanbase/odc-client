@@ -126,7 +126,10 @@ class SynonymPage extends Component<
       });
     } else {
       message.error(
-        formatMessage({ id: 'odc.components.SynonymPage.FailedToLoadSynonyms' }), // 加载同义词失败
+        formatMessage({
+          id: 'odc.components.SynonymPage.FailedToLoadSynonyms',
+          defaultMessage: '加载同义词失败',
+        }), // 加载同义词失败
       );
     }
   };
@@ -159,6 +162,7 @@ class SynonymPage extends Component<
                   key: SynonymPropsTab.BASE_INFO,
                   label: formatMessage({
                     id: 'odc.components.SynonymPage.BasicInformation',
+                    defaultMessage: '基本信息',
                   }),
                   children: (
                     <ToolPageTextFromWrapper>
@@ -167,6 +171,7 @@ class SynonymPage extends Component<
                           {
                             formatMessage({
                               id: 'odc.components.SynonymPage.Name',
+                              defaultMessage: '名称：',
                             })
 
                             /* 名称: */
@@ -179,6 +184,7 @@ class SynonymPage extends Component<
                           {
                             formatMessage({
                               id: 'odc.components.SynonymPage.ObjectOwner',
+                              defaultMessage: '对象所有者:',
                             })
 
                             /* 对象所有者: */
@@ -191,6 +197,7 @@ class SynonymPage extends Component<
                           {
                             formatMessage({
                               id: 'odc.components.SynonymPage.ObjectName',
+                              defaultMessage: '对象名称：',
                             })
 
                             /* 对象名称: */
@@ -203,6 +210,7 @@ class SynonymPage extends Component<
                           {
                             formatMessage({
                               id: 'odc.components.SynonymPage.Created',
+                              defaultMessage: '创建时间:',
                             })
 
                             /* 创建时间: */
@@ -217,6 +225,7 @@ class SynonymPage extends Component<
                           {
                             formatMessage({
                               id: 'odc.components.SynonymPage.ModificationTime',
+                              defaultMessage: '修改时间:',
                             })
 
                             /* 修改时间: */
@@ -239,6 +248,7 @@ class SynonymPage extends Component<
                           text={
                             formatMessage({
                               id: 'odc.components.SynonymPage.Download',
+                              defaultMessage: '下载',
                             }) //下载
                           }
                           icon={<CloudDownloadOutlined />}
@@ -257,10 +267,12 @@ class SynonymPage extends Component<
                             formated
                               ? formatMessage({
                                   id: 'odc.components.SynonymPage.Unformat',
+                                  defaultMessage: '取消格式化',
                                 })
                               : // 取消格式化
                                 formatMessage({
                                   id: 'odc.components.SynonymPage.Formatting',
+                                  defaultMessage: '格式化',
                                 })
                             // 格式化
                           }

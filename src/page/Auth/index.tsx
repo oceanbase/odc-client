@@ -63,15 +63,15 @@ const Pages = {
 
 const tabs = [
   {
-    tab: formatMessage({ id: 'odc.page.Auth.User' }), //用户
+    tab: formatMessage({ id: 'odc.page.Auth.User', defaultMessage: '用户' }), //用户
     key: IPageType.Auth_User,
   },
   {
-    tab: formatMessage({ id: 'odc.page.Auth.Role' }), //角色
+    tab: formatMessage({ id: 'odc.page.Auth.Role', defaultMessage: '角色' }), //角色
     key: IPageType.Auth_Role,
   },
   {
-    tab: formatMessage({ id: 'odc.page.Auth.AutomaticAuthorization' }), //自动授权
+    tab: formatMessage({ id: 'odc.page.Auth.AutomaticAuthorization', defaultMessage: '自动授权' }), //自动授权
     key: IPageType.Auth_Autoauth,
     permission: createPermission(IManagerResourceType.auto_auth, actionTypes.read),
   },
@@ -127,7 +127,7 @@ const Index: React.FC<IProps> = function () {
     <PageContainer
       titleProps={{
         type: TitleType.TEXT,
-        title: formatMessage({ id: 'odc.page.Auth.UserPermissions' }), //用户权限
+        title: formatMessage({ id: 'odc.page.Auth.UserPermissions', defaultMessage: '用户权限' }), //用户权限
       }}
       tabList={displayTabs}
       tabActiveKey={page}

@@ -19,6 +19,7 @@ export const ChineseAndEnglishAndNumberAndUnderline = {
   pattern: /^[\w\u4e00-\u9fa5]*$/,
   message: formatMessage({
     id: 'odc.src.util.validRule.OnlyAllowInputChinese',
+    defaultMessage: '只允许输入中文，字母，数字与下划线',
   }), //'只允许输入中文，字母，数字与下划线'
 };
 export const Required = {

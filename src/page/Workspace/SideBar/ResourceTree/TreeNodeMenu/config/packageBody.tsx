@@ -42,8 +42,10 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.See',
+          defaultMessage: '查看',
         }),
       ],
+
       run(session, node) {
         const pkgInfo: IPackage = node.data;
         openPackageViewPage(pkgInfo?.packageName, TopTab.BODY, true, session?.odcDatabase?.id);
@@ -54,7 +56,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       key: 'EDIT',
       ellipsis: true,
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Editing' }), //编辑
+        formatMessage({ id: 'odc.ResourceTree.actions.Editing', defaultMessage: '编辑' }), //编辑
       ],
       actionType: actionTypes.update,
       hasDivider: true,
@@ -69,7 +71,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       key: 'COMPILE',
       ellipsis: true,
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Compile' }), //编译
+        formatMessage({ id: 'odc.ResourceTree.actions.Compile', defaultMessage: '编译' }), //编译
       ],
       isHide(session, node) {
         return !getDataSourceModeConfig(session?.connection?.type)?.features?.compile;
@@ -88,7 +90,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       key: 'DOWNLOAD',
       ellipsis: true,
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Download' }), //下载
+        formatMessage({ id: 'odc.ResourceTree.actions.Download', defaultMessage: '下载' }), //下载
       ],
       hasDivider: true,
       async run(session, node) {
@@ -106,7 +108,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       key: 'DELETE',
       ellipsis: true,
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Delete' }), //删除
+        formatMessage({ id: 'odc.ResourceTree.actions.Delete', defaultMessage: '删除' }), //删除
       ],
       actionType: actionTypes.delete,
       disabled: (session) => {
@@ -119,6 +121,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
           title: formatMessage(
             {
               id: 'workspace.window.PackageBody.modal.delete',
+              defaultMessage: '是否确定删除程序包 {name} 的包体？',
             },
 
             {
@@ -128,10 +131,12 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
 
           okText: formatMessage({
             id: 'app.button.ok',
+            defaultMessage: '确定',
           }),
 
           cancelText: formatMessage({
             id: 'app.button.cancel',
+            defaultMessage: '取消',
           }),
 
           centered: true,
@@ -143,6 +148,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
             message.success(
               formatMessage({
                 id: 'workspace.window.PackageBody.modal.delete.success',
+                defaultMessage: '删除程序包体成功',
               }),
             );
             await session.database?.getPackageList();
@@ -161,7 +167,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       key: 'REFRESH',
       ellipsis: true,
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
+        formatMessage({ id: 'odc.ResourceTree.actions.Refresh', defaultMessage: '刷新' }), //刷新
       ],
       actionType: actionTypes.create,
       async run(session, node) {
@@ -171,6 +177,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       },
     },
   ],
+
   [ResourceNodeType.PackageBodyFunction]: [
     {
       key: 'OVERVIEW',
@@ -178,8 +185,10 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.See',
+          defaultMessage: '查看',
         }),
       ],
+
       run(session, node) {
         openPackageViewPage(node.pkg?.packageName, TopTab.BODY, true, session?.odcDatabase?.id);
       },
@@ -188,7 +197,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       key: 'EDIT',
       ellipsis: true,
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Editing' }), //编辑
+        formatMessage({ id: 'odc.ResourceTree.actions.Editing', defaultMessage: '编辑' }), //编辑
       ],
       actionType: actionTypes.update,
       hasDivider: true,
@@ -206,8 +215,10 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.Debugging',
+          defaultMessage: '调试',
         }),
       ],
+
       isHide(session, node) {
         return !session?.supportFeature?.enablePLDebug;
       },
@@ -243,8 +254,10 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.Run',
+          defaultMessage: '运行',
         }),
       ],
+
       isHide(session, node) {
         return !getDataSourceModeConfig(session?.connection?.type)?.features?.plRun;
       },
@@ -275,6 +288,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       },
     },
   ],
+
   [ResourceNodeType.PackageBodyProcedure]: [
     {
       key: 'OVERVIEW',
@@ -282,8 +296,10 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.See',
+          defaultMessage: '查看',
         }),
       ],
+
       run(session, node) {
         openPackageViewPage(node.pkg?.packageName, TopTab.BODY, true, session?.odcDatabase?.id);
       },
@@ -292,7 +308,7 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       key: 'EDIT',
       ellipsis: true,
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Editing' }), //编辑
+        formatMessage({ id: 'odc.ResourceTree.actions.Editing', defaultMessage: '编辑' }), //编辑
       ],
       actionType: actionTypes.update,
       hasDivider: true,
@@ -310,8 +326,10 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.Debugging',
+          defaultMessage: '调试',
         }),
       ],
+
       isHide(session, node) {
         return !session?.supportFeature?.enablePLDebug;
       },
@@ -346,8 +364,10 @@ export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemC
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.Run',
+          defaultMessage: '运行',
         }),
       ],
+
       actionType: actionTypes.update,
       async run(session, node) {
         const pkgInfo = node.pkg;

@@ -194,8 +194,9 @@ export default class EditorToolBar extends Component<IProps, IState> {
         throw new Error(
           formatMessage({
             id: 'odc.component.EditorToolBar.TheToolbarIsIncorrectlyConfigured',
-          }), //toolbar 配置错误！请检查 actions 中的配置符合 TS 定义
-        );
+            defaultMessage: 'toolbar 配置错误！请检查 actions 中的配置符合 TS 定义',
+          }),
+        ); //toolbar 配置错误！请检查 actions 中的配置符合 TS 定义
       }
     }
 

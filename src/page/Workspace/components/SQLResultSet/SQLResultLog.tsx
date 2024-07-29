@@ -50,9 +50,12 @@ function getSuccessLog(type: SqlType, total: number) {
     case SqlType.replace: {
       return (
         <>
-          {formatMessage({ id: 'workspace.window.sql.result.success' })}
+          {formatMessage({
+            id: 'workspace.window.sql.result.success',
+            defaultMessage: '执行以下 SQL 成功',
+          })}
           {formatMessage(
-            { id: 'workspace.window.sql.result.affected' },
+            { id: 'workspace.window.sql.result.affected', defaultMessage: '，影响 {num} 条数据' },
             {
               num: total,
             },
@@ -61,7 +64,10 @@ function getSuccessLog(type: SqlType, total: number) {
       );
     }
     default: {
-      return formatMessage({ id: 'workspace.window.sql.result.success' });
+      return formatMessage({
+        id: 'workspace.window.sql.result.success',
+        defaultMessage: '执行以下 SQL 成功',
+      });
     }
   }
 }
@@ -79,6 +85,7 @@ function renderViolations(data: IResultSet['logTypeData'][0]) {
             formatMessage(
               {
                 id: 'odc.components.SQLResultSet.SQLResultLog.CheckviolationslengthSpecificationSuggestionsExist',
+                defaultMessage: '存在 {checkViolationsLength} 个规范建议',
               },
               { checkViolationsLength: checkViolations.length },
             ) /*存在 {checkViolationsLength} 个规范建议*/
@@ -183,6 +190,7 @@ const SQLResultLog: React.FC<IProps> = function (props) {
                       {
                         formatMessage({
                           id: 'odc.components.SQLResultSet.SQLResultLog.TheExecutionIsSuccessfulWith',
+                          defaultMessage: '执行成功，存在告警信息',
                         })
                         /* 执行成功，存在告警信息 */
                       }
@@ -192,6 +200,7 @@ const SQLResultLog: React.FC<IProps> = function (props) {
                     {
                       formatMessage({
                         id: 'odc.components.SQLResultSet.SQLResultLog.AlertDetails',
+                        defaultMessage: '告警详情:',
                       })
                       /* 告警详情: */
                     }
@@ -221,6 +230,7 @@ const SQLResultLog: React.FC<IProps> = function (props) {
                       {
                         formatMessage({
                           id: 'odc.components.SQLResultSet.SQLResultLog.DbmsOutput',
+                          defaultMessage: 'DBMS 输出',
                         })
 
                         /* DBMS输出 */
@@ -246,18 +256,26 @@ const SQLResultLog: React.FC<IProps> = function (props) {
               {isCanceled
                 ? formatMessage({
                     id: 'odc.components.SQLResultSet.SQLResultLog.SqlExecutionCanceled',
+                    defaultMessage: 'SQL 执行被取消',
                   })
                 : // SQL 执行被取消
-                  formatMessage({ id: 'workspace.window.sql.result.failure' })}
+                  formatMessage({
+                    id: 'workspace.window.sql.result.failure',
+                    defaultMessage: '执行以下 SQL 失败',
+                  })}
             </Space>
             <MultiLineOverflowText className={styles.executedSQL} content={logData.executeSql} />
             <div className={styles.failReason}>
               {isCanceled
                 ? formatMessage({
                     id: 'odc.components.SQLResultSet.SQLResultLog.ReasonForCancellation',
+                    defaultMessage: '取消原因',
                   })
                 : // 取消原因
-                  formatMessage({ id: 'workspace.window.sql.result.failureReason' })}
+                  formatMessage({
+                    id: 'workspace.window.sql.result.failureReason',
+                    defaultMessage: '失败原因：',
+                  })}
             </div>
             <div className={styles.track}>{logData.track}</div>
           </>

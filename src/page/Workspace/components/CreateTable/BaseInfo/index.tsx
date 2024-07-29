@@ -104,12 +104,14 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
             name="tableName"
             label={formatMessage({
               id: 'workspace.window.createTable.baseInfo.tableName',
+              defaultMessage: '表名称',
             })}
             rules={[
               {
                 required: true,
                 message: formatMessage({
                   id: 'workspace.window.createTable.baseInfo.tableName.validation',
+                  defaultMessage: '请填写表名称',
                 }),
               },
             ]}
@@ -120,6 +122,7 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
               autoFocus
               placeholder={formatMessage({
                 id: 'workspace.window.createTable.baseInfo.tableName.placeholder',
+                defaultMessage: '请填写表名称',
               })}
             />
           </Form.Item>
@@ -131,6 +134,7 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
                 name="character"
                 label={formatMessage({
                   id: 'workspace.window.createTable.baseInfo.character',
+                  defaultMessage: '默认字符集',
                 })}
                 rules={[
                   {
@@ -163,12 +167,14 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
                       name="collation"
                       label={formatMessage({
                         id: 'workspace.window.createTable.baseInfo.collation',
+                        defaultMessage: '默认排序规则',
                       })}
                       rules={[
                         {
                           required: true,
                           message: formatMessage({
                             id: 'workspace.window.createTable.baseInfo.tableName.validation',
+                            defaultMessage: '请填写表名称',
                           }),
                         },
                       ]}
@@ -224,6 +230,7 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
           name="comment"
           label={formatMessage({
             id: 'workspace.window.createTable.baseInfo.comment',
+            defaultMessage: '描述',
           })}
           style={{ width: '100%' }}
           requiredMark={'optional'}
@@ -233,6 +240,7 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
             autoSize={{ maxRows: 3, minRows: 3 }}
             placeholder={formatMessage({
               id: 'workspace.window.createTable.baseInfo.comment.placeholder',
+              defaultMessage: '请填写描述',
             })}
           />
         </Form.Item>

@@ -58,6 +58,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.152888BE',
+                defaultMessage: '任务编号',
               }) /*"任务编号"*/
             }
           >
@@ -68,6 +69,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.5E3A8702',
+                defaultMessage: '任务类型',
               }) /*"任务类型"*/
             }
           >
@@ -202,7 +204,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
             span={2}
             label={formatMessage({
               id: 'src.component.Task.MutipleAsyncTask.DetailContent.DAFF4C62',
-              defaultMessage: 'SQL 执行处理',
+              defaultMessage: 'SQL 执行错误处理',
             })}
           >
             {AutoErrorStrategy?.[task?.parameters?.errorStrategy]}
@@ -231,7 +233,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
               span={4}
               label={formatMessage({
                 id: 'src.component.Task.MutipleAsyncTask.DetailContent.E2E22162',
-                defaultMessage: '手动执行超时时间',
+                defaultMessage: '手动确认超时时间',
               })}
             >
               {milliSecondsToHour(task?.parameters?.manualTimeoutMillis)}
@@ -347,7 +349,7 @@ const DetailDrawer: React.FC<{
                   {formatMessage(
                     {
                       id: 'src.component.Task.MutipleAsyncTask.DetailContent.6F7DA268',
-                      defaultMessage: '执行节点${index + 1}',
+                      defaultMessage: '执行节点{ BinaryExpression0 }',
                     },
                     { BinaryExpression0: index + 1 },
                   )}

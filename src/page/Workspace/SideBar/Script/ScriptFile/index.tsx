@@ -55,7 +55,10 @@ export default inject('userStore')(
         <div className={styles.search}>
           <Input.Search
             onSearch={(v) => setSearchVaue(v)}
-            placeholder={formatMessage({ id: 'odc.Script.ScriptFile.SearchScript' })}
+            placeholder={formatMessage({
+              id: 'odc.Script.ScriptFile.SearchScript',
+              defaultMessage: '搜索脚本',
+            })}
             /*搜索脚本*/ size="small"
           />
         </div>
@@ -75,6 +78,7 @@ export default inject('userStore')(
                       file?.response?.errMsg ||
                       formatMessage({
                         id: 'odc.component.OSSDragger2.FileListItem.UploadFailed',
+                        defaultMessage: '上传失败',
                       })
                     }
                     removeUploadFile={() => {

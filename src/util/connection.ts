@@ -22,9 +22,7 @@ const encryptKeys = ['password', 'sysTenantPassword', 'readonlyPassword', 'sysUs
 /**
  * 提供租户的连接帐户，格式有两种：“用户名@租户名#集群名”或者“集群名:租户名:用户名”
  */
-export function resolveUnionDbUser(
-  unionDbUser: string,
-): {
+export function resolveUnionDbUser(unionDbUser: string): {
   dbUser: string;
   tenant: string;
   cluster: string;

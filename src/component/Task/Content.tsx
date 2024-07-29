@@ -250,6 +250,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
         message.error(
           formatMessage({
             id: 'odc.src.component.Task.NoCurrentWorkOrderView',
+            defaultMessage: '无当前工单查看权限',
           }), //'无当前工单查看权限'
         );
         return;

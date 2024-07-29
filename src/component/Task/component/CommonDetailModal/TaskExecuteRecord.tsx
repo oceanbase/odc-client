@@ -40,22 +40,27 @@ const TaskLabelMap = {
   [TaskType.DATA_ARCHIVE]: {
     [SubTaskType.DATA_ARCHIVE]: formatMessage({
       id: 'odc.component.CommonDetailModal.TaskExecuteRecord.DataArchiving',
+      defaultMessage: '数据归档',
     }), //数据归档
     [SubTaskType.DATA_ARCHIVE_ROLLBACK]: formatMessage({
       id: 'odc.component.CommonDetailModal.TaskExecuteRecord.Rollback',
+      defaultMessage: '回滚',
     }), //回滚
     [SubTaskType.DATA_ARCHIVE_DELETE]: formatMessage({
       id: 'odc.component.CommonDetailModal.TaskExecuteRecord.SourceTableCleanup',
+      defaultMessage: '源表清理',
     }), //源表清理
   },
   [TaskType.DATA_DELETE]: {
     [SubTaskType.DATA_DELETE]: formatMessage({
       id: 'odc.component.CommonDetailModal.TaskExecuteRecord.DataCleansing',
+      defaultMessage: '数据清理',
     }), //数据清理
   },
   [TaskType.SQL_PLAN]: {
     [SubTaskType.ASYNC]: formatMessage({
       id: 'odc.component.CommonDetailModal.TaskExecuteRecord.DatabaseChanges',
+      defaultMessage: '数据库变更',
     }), //数据库变更
   },
 };
@@ -101,14 +106,20 @@ const getConnectionColumns = (params: {
   return [
     {
       dataIndex: 'id',
-      title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskExecuteRecord.TaskNumber' }), //任务编号
+      title: formatMessage({
+        id: 'odc.component.CommonDetailModal.TaskExecuteRecord.TaskNumber',
+        defaultMessage: '任务编号',
+      }), //任务编号
       ellipsis: true,
       width: 80,
     },
 
     {
       dataIndex: 'jobGroup',
-      title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskExecuteRecord.TaskType' }), //任务类型
+      title: formatMessage({
+        id: 'odc.component.CommonDetailModal.TaskExecuteRecord.TaskType',
+        defaultMessage: '任务类型',
+      }), //任务类型
       ellipsis: true,
       filterIcon: <FilterOutlined />,
       filters: jobFilter,
@@ -124,6 +135,7 @@ const getConnectionColumns = (params: {
       dataIndex: 'createTime',
       title: formatMessage({
         id: 'odc.component.CommonDetailModal.TaskExecuteRecord.CreationTime',
+        defaultMessage: '创建时间',
       }), //创建时间
       ellipsis: true,
       width: 150,
@@ -132,7 +144,10 @@ const getConnectionColumns = (params: {
 
     {
       dataIndex: 'status',
-      title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskExecuteRecord.TaskStatus' }), //任务状态
+      title: formatMessage({
+        id: 'odc.component.CommonDetailModal.TaskExecuteRecord.TaskStatus',
+        defaultMessage: '任务状态',
+      }), //任务状态
       ellipsis: true,
       width: 120,
       filters: statusFilters,
@@ -154,7 +169,10 @@ const getConnectionColumns = (params: {
 
     {
       dataIndex: 'action',
-      title: formatMessage({ id: 'odc.component.CommonDetailModal.TaskExecuteRecord.Operation' }), //操作
+      title: formatMessage({
+        id: 'odc.component.CommonDetailModal.TaskExecuteRecord.Operation',
+        defaultMessage: '操作',
+      }), //操作
       ellipsis: true,
       width: 210,
       render: (_, record) => {
@@ -265,6 +283,7 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
         onDetailVisible={handleDetailVisible}
         onReloadList={onReload}
       />
+
       <LogModal
         visible={logVisible}
         scheduleId={task?.id}
@@ -272,6 +291,7 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
         onClose={handleCloseLog}
         status={status}
       />
+
       <ExcecuteDetailModal
         visible={excecuteDetailVisible}
         scheduleId={task?.id}

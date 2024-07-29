@@ -57,9 +57,9 @@ const Filter: React.FC<IProps> = function ({}) {
         {selectedNames.slice(0, 3)?.join(';')}
         {selectedNames?.length > 3 ? '...' : ''}
         <span style={{ marginLeft: 3 }}>
-          {formatMessage({ id: 'odc.Header.Filter.Total' }) /*共*/}
+          {formatMessage({ id: 'odc.Header.Filter.Total', defaultMessage: '共' }) /*共*/}
           {selectedNames?.length}
-          {formatMessage({ id: 'odc.Header.Filter.Item' }) /*项*/}
+          {formatMessage({ id: 'odc.Header.Filter.Item', defaultMessage: '项' }) /*项*/}
         </span>
         <CloseOutlined onClick={clear} style={{ cursor: 'pointer', marginLeft: 15 }} />
       </div>
@@ -79,9 +79,16 @@ const Filter: React.FC<IProps> = function ({}) {
           }}
         >
           <Typography.Text strong>
-            {formatMessage({ id: 'odc.Header.Filter.FilterDataSources' }) /*筛选数据源*/}
+            {
+              formatMessage({
+                id: 'odc.Header.Filter.FilterDataSources',
+                defaultMessage: '筛选数据源',
+              }) /*筛选数据源*/
+            }
           </Typography.Text>
-          <a onClick={clear}>{formatMessage({ id: 'odc.Header.Filter.Clear' }) /*清空*/}</a>
+          <a onClick={clear}>
+            {formatMessage({ id: 'odc.Header.Filter.Clear', defaultMessage: '清空' }) /*清空*/}
+          </a>
         </div>
       }
       content={
@@ -89,7 +96,7 @@ const Filter: React.FC<IProps> = function ({}) {
           <Space direction="vertical" size={16}>
             <Space direction="vertical" size={5}>
               <Typography.Text type="secondary">
-                {formatMessage({ id: 'odc.Header.Filter.Type' }) /*类型*/}
+                {formatMessage({ id: 'odc.Header.Filter.Type', defaultMessage: '类型' }) /*类型*/}
               </Typography.Text>
               <CheckboxTag
                 value={context?.connectType}

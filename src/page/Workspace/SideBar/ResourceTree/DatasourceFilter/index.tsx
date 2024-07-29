@@ -65,6 +65,7 @@ const DatasourceFilter: React.FC<IProps> = function ({
             {
               formatMessage({
                 id: 'odc.Header.Filter.FilterDataSources',
+                defaultMessage: '筛选数据源',
               }) /*筛选数据源*/
             }
           </Typography.Text>
@@ -72,6 +73,7 @@ const DatasourceFilter: React.FC<IProps> = function ({
             {
               formatMessage({
                 id: 'odc.Header.Filter.Clear',
+                defaultMessage: '清空',
               }) /*清空*/
             }
           </a>
@@ -85,6 +87,7 @@ const DatasourceFilter: React.FC<IProps> = function ({
                 {
                   formatMessage({
                     id: 'odc.Header.Filter.Type',
+                    defaultMessage: '类型',
                   }) /*类型*/
                 }
               </Typography.Text>
@@ -104,6 +107,7 @@ const DatasourceFilter: React.FC<IProps> = function ({
                 {
                   formatMessage({
                     id: 'odc.src.page.Workspace.SideBar.ResourceTree.DatasourceFilter.Environment',
+                    defaultMessage: '环境',
                   }) /* 环境 */
                 }
               </Typography.Text>

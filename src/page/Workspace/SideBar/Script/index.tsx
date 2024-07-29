@@ -46,6 +46,7 @@ const Script: React.FC<{}> = function () {
     message.error(
       formatMessage({
         id: 'odc.components.OBClientPage.ScriptManageModal.TheSizeOfTheUploaded',
+        defaultMessage: '上传文件大小不能超出限制',
       }),
 
       // 上传文件大小不能超出限制
@@ -88,11 +89,14 @@ const Script: React.FC<{}> = function () {
         key="Script"
         tabs={[
           {
-            title: formatMessage({ id: 'odc.SideBar.Script.Script' }), //脚本
+            title: formatMessage({ id: 'odc.SideBar.Script.Script', defaultMessage: '脚本' }), //脚本
             key: 'script',
             actions: [
               {
-                title: formatMessage({ id: 'odc.SideBar.Script.UploadScript' }), //上传脚本
+                title: formatMessage({
+                  id: 'odc.SideBar.Script.UploadScript',
+                  defaultMessage: '上传脚本',
+                }), //上传脚本
                 key: 'upload',
                 onClick() {
                   tracert.click('a3112.b41896.c330989.d367625');
@@ -101,7 +105,7 @@ const Script: React.FC<{}> = function () {
                 icon: UploadOutlined,
               },
               {
-                title: formatMessage({ id: 'odc.SideBar.Script.Refresh' }), //刷新
+                title: formatMessage({ id: 'odc.SideBar.Script.Refresh', defaultMessage: '刷新' }), //刷新
                 key: 'reload',
                 onClick() {
                   return login.scriptStore.getScriptList();
@@ -115,11 +119,17 @@ const Script: React.FC<{}> = function () {
             },
           },
           {
-            title: formatMessage({ id: 'odc.SideBar.Script.CodeSnippet' }), //代码片段
+            title: formatMessage({
+              id: 'odc.SideBar.Script.CodeSnippet',
+              defaultMessage: '代码片段',
+            }), //代码片段
             key: 'snippet',
             actions: [
               {
-                title: formatMessage({ id: 'odc.SideBar.Script.CreateACodeSnippet' }), //新建代码片段
+                title: formatMessage({
+                  id: 'odc.SideBar.Script.CreateACodeSnippet',
+                  defaultMessage: '新建代码片段',
+                }), //新建代码片段
                 key: 'add',
                 onClick() {
                   tracert.click('a3112.b41896.c330989.d367626');
@@ -128,7 +138,7 @@ const Script: React.FC<{}> = function () {
                 icon: PlusOutlined,
               },
               {
-                title: formatMessage({ id: 'odc.SideBar.Script.Refresh' }), //刷新
+                title: formatMessage({ id: 'odc.SideBar.Script.Refresh', defaultMessage: '刷新' }), //刷新
                 key: 'reload',
                 onClick() {
                   snippetRef.current?.reload();

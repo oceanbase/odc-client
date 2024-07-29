@@ -183,6 +183,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     onSetUnsavedModalTitle(
       formatMessage({
         id: 'workspace.window.sql.modal.close.title',
+        defaultMessage: '是否保存脚本？',
       }),
     );
 
@@ -190,6 +191,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       formatMessage(
         {
           id: 'workspace.window.sql.modal.close.content',
+          defaultMessage: '“{name}” 已经被修改，如不保存，修改将丢失',
         },
 
         {
@@ -317,6 +319,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         run: () => this.handleExecuteSelectedSQL(),
       }),
     ];
+
     this.config = setting.configurations;
   };
 
@@ -545,6 +548,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         formatMessage(
           {
             id: 'workspace.window.sql.modal.close.content',
+            defaultMessage: '“{name}” 已经被修改，如不保存，修改将丢失',
           },
 
           {
@@ -612,7 +616,10 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
          * 无规则
          */
         message.success(
-          formatMessage({ id: 'odc.components.SQLPage.SqlCheckPassed' }), //SQL 检查通过
+          formatMessage({
+            id: 'odc.components.SQLPage.SqlCheckPassed',
+            defaultMessage: 'SQL 检查通过',
+          }), //SQL 检查通过
         );
         this.setState({
           baseOffset: 0,
@@ -747,6 +754,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
             message.warning(
               formatMessage({
                 id: 'odc.TablePage.TableData.DoNotSubmitBlankLines',
+                defaultMessage: '请不要提交空行',
               }),
 
               // 请不要提交空行
@@ -777,7 +785,10 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         .filter(Boolean);
       if (!editRows?.length) {
         message.warning(
-          formatMessage({ id: 'odc.TablePage.TableData.NoContentToSubmit' }), // 无内容可提交
+          formatMessage({
+            id: 'odc.TablePage.TableData.NoContentToSubmit',
+            defaultMessage: '无内容可提交',
+          }), // 无内容可提交
         );
         return;
       }
@@ -803,7 +814,10 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
       if (!sql) {
         message.warning(
-          formatMessage({ id: 'odc.TablePage.TableData.NoContentToSubmit' }), // 无内容可提交
+          formatMessage({
+            id: 'odc.TablePage.TableData.NoContentToSubmit',
+            defaultMessage: '无内容可提交',
+          }), // 无内容可提交
         );
         return;
       }
@@ -888,18 +902,21 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         if (this.getSession()?.params?.autoCommit) {
           msg = formatMessage({
             id: 'odc.components.SQLPage.SubmittedSuccessfully',
+            defaultMessage: '提交成功',
           });
 
           // 提交成功
         } else if (!/commit;$/.test(this.state.updateDataDML)) {
           msg = formatMessage({
             id: 'odc.components.SQLPage.TheModificationIsSuccessfulAnd',
+            defaultMessage: '修改成功，手动提交后生效',
           });
 
           // 修改成功，手动提交后生效
         } else {
           msg = formatMessage({
             id: 'odc.components.SQLPage.SubmittedSuccessfully',
+            defaultMessage: '提交成功',
           });
 
           // 提交成功
@@ -1018,7 +1035,10 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     } else if (value?.length > MAX_LIMIT) {
       !this.outOfLimitTipHaveShow &&
         message.warning(
-          formatMessage({ id: 'odc.components.SQLPage.BecauseTheSqlIsToo' }), //由于 SQL 过长，编辑器将只支持预览
+          formatMessage({
+            id: 'odc.components.SQLPage.BecauseTheSqlIsToo',
+            defaultMessage: '由于 SQL 过长，编辑器将只支持预览',
+          }), //由于 SQL 过长，编辑器将只支持预览
         );
       this.outOfLimitTipHaveShow = true;
       console.log('MAX_LIMIT: ', MAX_LIMIT, 'size:', value.length);
@@ -1234,6 +1254,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
               }
               onChange={(sql) => this.setState({ updateDataDML: sql })}
             />,
+
             <Trace
               key={'trace' + this.getSession()?.sessionId}
               open={showTrace}

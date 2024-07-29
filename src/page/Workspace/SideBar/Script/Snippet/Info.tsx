@@ -40,6 +40,7 @@ const SnippetInfoToolTip: React.FC<{
               {
                 formatMessage({
                   id: 'odc.component.SnippetCard.Syntax',
+                  defaultMessage: '代码',
                 }) /*代码片段*/
               }
             </dt>
@@ -50,6 +51,7 @@ const SnippetInfoToolTip: React.FC<{
               {
                 formatMessage({
                   id: 'odc.component.SnippetCard.Description',
+                  defaultMessage: '描述',
                 }) /*描述*/
               }
             </dt>

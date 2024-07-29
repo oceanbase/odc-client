@@ -46,6 +46,7 @@ const RuleConfigTable: React.FC<IRuleConfigTableProps> = (props) => {
       {
         title: formatMessage({
           id: 'odc.component.DataMockerDrawer.RuleConfigTable.FieldName',
+          defaultMessage: '字段名称',
         }), // 字段名称
         dataIndex: 'columnName',
         width: 200,
@@ -55,6 +56,7 @@ const RuleConfigTable: React.FC<IRuleConfigTableProps> = (props) => {
       {
         title: formatMessage({
           id: 'odc.component.DataMockerDrawer.RuleConfigTable.FieldType',
+          defaultMessage: '字段类型',
         }), // 字段类型
         dataIndex: 'columnType',
         width: 120,
@@ -85,6 +87,7 @@ const RuleConfigTable: React.FC<IRuleConfigTableProps> = (props) => {
       {
         title: formatMessage({
           id: 'odc.component.DataMockerDrawer.RuleConfigTable.Rules',
+          defaultMessage: '规则',
         }), // 规则
         dataIndex: 'rule',
         width: 120,
@@ -100,6 +103,7 @@ const RuleConfigTable: React.FC<IRuleConfigTableProps> = (props) => {
                   required: true,
                   message: formatMessage({
                     id: 'odc.component.DataMockerDrawer.RuleConfigTable.SelectARule',
+                    defaultMessage: '请选择规则',
                   }), // 请选择规则
                 },
               ]}
@@ -130,6 +134,7 @@ const RuleConfigTable: React.FC<IRuleConfigTableProps> = (props) => {
       {
         title: formatMessage({
           id: 'odc.component.DataMockerDrawer.RuleConfigTable.Rules.1',
+          defaultMessage: '细则',
         }), // 细则
         dataIndex: 'typeConfig',
         render(_, t, index) {

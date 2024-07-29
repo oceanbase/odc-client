@@ -49,6 +49,7 @@ const CycleDescriptionItem: React.FC<IProps> = (props) => {
               label={
                 formatMessage({
                   id: 'src.component.Task.PartitionTask.DetailContent.9E174828',
+                  defaultMessage: '下一次执行时间',
                 }) /*"下一次执行时间"*/
               }
               content={

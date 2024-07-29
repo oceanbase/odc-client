@@ -40,7 +40,10 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
   const config = getDataSourceModeConfig(connection?.type);
   const exportFileMaxSizeOpt = [
     {
-      value: formatMessage({ id: 'odc.ExportForm.ConfigPanel.Unlimited' }), //无限制
+      value: formatMessage({
+        id: 'odc.ExportForm.ConfigPanel.Unlimited',
+        defaultMessage: '无限制',
+      }), //无限制
     },
     {
       value: 64,
@@ -58,7 +61,8 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
 
   const validator = (_, value) => {
     if (
-      value === formatMessage({ id: 'odc.ExportForm.ConfigPanel.Unlimited' }) //无限制
+      value ===
+      formatMessage({ id: 'odc.ExportForm.ConfigPanel.Unlimited', defaultMessage: '无限制' }) //无限制
     ) {
       return Promise.resolve();
     } else {
@@ -68,8 +72,11 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
       if (Number.isNaN(size) || size.toString().length !== value.toString().length) {
         return Promise.reject(
           new Error(
-            formatMessage({ id: 'odc.ExportForm.ConfigPanel.SelectUnlimitedOrEnterA' }), //请选择"无限制"或者输入0 < size <= 2048范围内的正整数
-          ),
+            formatMessage({
+              id: 'odc.ExportForm.ConfigPanel.SelectUnlimitedOrEnterA',
+              defaultMessage: '请选择"无限制"或者输入 0 < size <= 2048 范围内的正整数',
+            }),
+          ), //请选择"无限制"或者输入0 < size <= 2048范围内的正整数
         );
       }
       if (size > 0 && size <= 2048) {
@@ -77,8 +84,11 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
       } else {
         return Promise.reject(
           new Error(
-            formatMessage({ id: 'odc.ExportForm.ConfigPanel.SetTheUpperLimitOf' }), //请将单个文件上限设定为0 < size <= 2048范围内的正整数
-          ),
+            formatMessage({
+              id: 'odc.ExportForm.ConfigPanel.SetTheUpperLimitOf',
+              defaultMessage: '请将单个文件上限设定为 0 < size <= 2048 范围内的正整数',
+            }),
+          ), //请将单个文件上限设定为0 < size <= 2048范围内的正整数
         );
       }
     }
@@ -104,6 +114,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                       {
                         formatMessage({
                           id: 'odc.ExportForm.ConfigPanel.DataFileSettings',
+                          defaultMessage: '数据文件设置',
                         })
 
                         /*数据文件设置*/
@@ -118,6 +129,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                         label={
                           formatMessage({
                             id: 'odc.ExportDrawer.ExportForm.DataFormat',
+                            defaultMessage: '数据格式',
                           })
 
                           // 数据格式
@@ -127,6 +139,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                             required: true,
                             message: formatMessage({
                               id: 'odc.ExportDrawer.ExportForm.SelectExportFormat',
+                              defaultMessage: '请选择导出格式',
                             }),
                           },
                         ]}
@@ -136,6 +149,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                             {
                               formatMessage({
                                 id: 'odc.ExportDrawer.ExportForm.CsvFormat',
+                                defaultMessage: 'CSV 格式',
                               })
 
                               /* CSV 格式 */
@@ -144,6 +158,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                           <Option key={EXPORT_TYPE.SQL} value={EXPORT_TYPE.SQL}>
                             {formatMessage({
                               id: 'odc.ExportDrawer.ExportForm.SqlFormat',
+                              defaultMessage: 'SQL 格式',
                             })}
                           </Option>
                         </Select>
@@ -154,12 +169,14 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                         name="encoding"
                         label={formatMessage({
                           id: 'odc.ImportDrawer.ImportForm.FileEncoding',
+                          defaultMessage: '文件编码',
                         })}
                         rules={[
                           {
                             required: true,
                             message: formatMessage({
                               id: 'odc.ImportDrawer.ImportForm.SelectAFileEncoding',
+                              defaultMessage: '请选择文件编码',
                             }),
                           },
                         ]}
@@ -176,9 +193,9 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                       </FormItem>
                     </Col>
                     {/* {!isClient() && (
-                      <Col span={6}>
-                        <MaskPolicySelecter required />
-                      </Col>
+                     <Col span={6}>
+                       <MaskPolicySelecter required />
+                     </Col>
                     )} */}
                     {config?.features?.export?.fileLimit && (
                       <Col span={8}>
@@ -189,6 +206,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                               {
                                 formatMessage({
                                   id: 'odc.ExportForm.ConfigPanel.MaximumSizeOfASingle',
+                                  defaultMessage: '单个文件上限（MB）',
                                 }) /*单个文件上限(MB)*/
                               }
 
@@ -207,6 +225,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                               required: true,
                               message: formatMessage({
                                 id: 'odc.ExportForm.ConfigPanel.PleaseFillInOrSelect',
+                                defaultMessage: '请填写或者选择单个文件上限（MB）',
                               }), //请填写或者选择单个文件上限(MB)
                             },
                             () => ({
@@ -223,6 +242,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                     <FormItem
                       label={formatMessage({
                         id: 'odc.ExportForm.ConfigPanel.SqlFileSettings',
+                        defaultMessage: 'SQL 文件设置',
                       })}
 
                       /*SQL 文件设置*/
@@ -249,6 +269,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                           <HelpDoc leftText isTip doc="batchCommit">
                             {formatMessage({
                               id: 'odc.ExportDrawer.ExportForm.BatchSubmissionQuantity',
+                              defaultMessage: '批量提交数量',
                             })}
                           </HelpDoc>
                         </Checkbox>
@@ -264,6 +285,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                                   required: !!form.getFieldValue('batchCommit'),
                                   message: formatMessage({
                                     id: 'odc.ExportDrawer.ExportForm.EnterTheNumberOfBatch',
+                                    defaultMessage: '请填写批量提交数量',
                                   }),
                                 },
                               ]}
@@ -287,6 +309,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                       style={{ marginBottom: 0 }}
                       label={formatMessage({
                         id: 'odc.ExportForm.ConfigPanel.CsvSettings',
+                        defaultMessage: 'CSV 设置',
                       })}
                       /*CSV 设置*/ shouldUpdate
                     >
@@ -302,6 +325,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                           <Checkbox>
                             {formatMessage({
                               id: 'odc.ImportDrawer.ImportForm.ContainsColumnHeaders',
+                              defaultMessage: '包含列头',
                             })}
                           </Checkbox>
                         </FormItem>
@@ -317,6 +341,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                           <Checkbox>
                             {formatMessage({
                               id: 'odc.ImportDrawer.ImportForm.ConvertAnEmptyStringTo',
+                              defaultMessage: '空字符串转为空值',
                             })}
                           </Checkbox>
                         </FormItem>
@@ -329,6 +354,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                               <span>
                                 {formatMessage({
                                   id: 'odc.ImportDrawer.ImportForm.FieldSeparator',
+                                  defaultMessage: '字段分隔符',
                                 })}
                               </span>
                             }
@@ -338,6 +364,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                                 required: true,
                                 message: formatMessage({
                                   id: 'odc.ImportDrawer.ImportForm.EnterAFieldDelimiter',
+                                  defaultMessage: '请填写字段分隔符',
                                 }),
                               },
 
@@ -345,6 +372,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                                 max: 1,
                                 message: formatMessage({
                                   id: 'odc.ExportDrawer.ExportForm.YouCanEnterOnlyOne',
+                                  defaultMessage: '只能输入一个字符',
                                 }),
 
                                 // 只能输入一个字符
@@ -365,6 +393,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                               <span>
                                 {formatMessage({
                                   id: 'odc.ImportDrawer.ImportForm.TextRecognizer',
+                                  defaultMessage: '文本识别符',
                                 })}
                               </span>
                             }
@@ -374,6 +403,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                                 required: true,
                                 message: formatMessage({
                                   id: 'odc.ImportDrawer.ImportForm.EnterATextIdentifier',
+                                  defaultMessage: '请填写文本识别符',
                                 }),
                               },
                             ]}
@@ -395,6 +425,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                               <span>
                                 {formatMessage({
                                   id: 'odc.ImportDrawer.ImportForm.LineBreakSymbol',
+                                  defaultMessage: '换行符号',
                                 })}
                               </span>
                             }
@@ -404,6 +435,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                                 required: true,
                                 message: formatMessage({
                                   id: 'odc.ImportDrawer.ImportForm.EnterALineBreakSymbol',
+                                  defaultMessage: '请填写换行符号',
                                 }),
                               },
                             ]}
@@ -435,6 +467,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                         <HelpDoc leftText isTip doc="globalSnapshot">
                           {formatMessage({
                             id: 'odc.ExportDrawer.ExportForm.UseGlobalSnapshots',
+                            defaultMessage: '使用全局快照',
                           })}
                         </HelpDoc>
                       </Checkbox>
@@ -451,6 +484,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                       {
                         formatMessage({
                           id: 'odc.ExportForm.ConfigPanel.StructureFileSettings',
+                          defaultMessage: '结构文件设置',
                         })
 
                         /*结构文件设置*/
@@ -464,11 +498,13 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                         {
                           formatMessage({
                             id: 'odc.ExportForm.ConfigPanel.MergeTheExportResultsInto',
+                            defaultMessage: '导出结果合并为一个 SQL 文件',
                           }) /*导出结果合并为一个SQL文件*/
                         }
                       </Checkbox>
                     </FormItem>
                   )}
+
                   <FormItem
                     name="withDropDDL"
                     rules={[
@@ -476,6 +512,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                         required: false,
                         message: formatMessage({
                           id: 'odc.ExportDrawer.ExportForm.SelectExportContent',
+                          defaultMessage: '请选择导出内容',
                         }),
                       },
                     ]}
@@ -485,6 +522,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                       {
                         formatMessage({
                           id: 'odc.ExportForm.ConfigPanel.AddADropStatementBefore',
+                          defaultMessage: 'Create 语句前添加 Drop 语句',
                         })
 
                         /*Create 语句前添加 Drop 语句*/
@@ -500,7 +538,10 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
         }}
       </FormItem>
       <FormItemPanel
-        label={formatMessage({ id: 'odc.ExportForm.ConfigPanel.TaskSettings' })}
+        label={formatMessage({
+          id: 'odc.ExportForm.ConfigPanel.TaskSettings',
+          defaultMessage: '任务设置',
+        })}
         /*任务设置*/ keepExpand
       >
         <TaskTimer />
@@ -518,16 +559,20 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                     if (!useSys) {
                       return formatMessage({
                         id: 'odc.ExportForm.ConfigPanel.IfYouDoNotUse.1',
+                        defaultMessage: '若不使用 sys 租户账号，导出可能缺少索引',
                       }); //若不使用 sys 租户账号，导出可能缺少索引
                     } else if (existSys) {
                       return formatMessage({
                         id: 'odc.ExportForm.ConfigPanel.TheAccountConfiguredForThe',
+                        defaultMessage:
+                          '默认使用连接设置的账号，若连接失败，建议修改密码用于此次导出',
                       });
 
                       //默认使用连接设置的账号，若连接失败，建议修改密码用于此次导出
                     } else {
                       return formatMessage({
                         id: 'odc.ExportForm.ConfigPanel.PleaseConfigureTheSysTenant',
+                        defaultMessage: '请配置 sys 租户账号，该账号信息仅用于此次导出',
                       });
 
                       //请配置 sys 租户账号，该账号信息仅用于此次导出
@@ -542,6 +587,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
             }}
           </FormItem>
         )}
+
       <DescriptionInput />
     </>
   );

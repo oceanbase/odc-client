@@ -107,6 +107,7 @@ export default function SessionSelect({
         )}
       </Popover>
     );
+
     const aimItem = <AimOutlined className={styles.aim} onClick={focusDataBase} />;
     const datasourceAndProjectItem = !fromDataSource ? (
       <Space
@@ -118,6 +119,7 @@ export default function SessionSelect({
           <span>
             {formatMessage({
               id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.38EA55F4' /*项目：*/,
+              defaultMessage: '项目：',
             })}
             {context?.session?.odcDatabase?.project?.name}
           </span>
@@ -126,6 +128,7 @@ export default function SessionSelect({
         <span>
           {formatMessage({
             id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.CD007EC1' /*数据源：*/,
+            defaultMessage: '数据源：',
           })}
           {context?.session?.odcDatabase?.dataSource?.name}
         </span>
@@ -170,6 +173,7 @@ export default function SessionSelect({
               {
                 formatMessage({
                   id: 'odc.SessionContextWrap.SessionSelect.SelectADatabase',
+                  defaultMessage: '请选择数据库',
                 }) /*请选择数据库*/
               }
             </a>

@@ -44,6 +44,7 @@ const steps = [
     key: StepKeys.SELECT,
     name: formatMessage({
       id: 'odc.components.CreateShadowSyncModal.SelectObject',
+      defaultMessage: '选择对象',
     }), //选择对象
     Component: SelectPanel,
   },
@@ -52,6 +53,7 @@ const steps = [
     key: StepKeys.CONFIG,
     name: formatMessage({
       id: 'odc.components.CreateShadowSyncModal.StructuralAnalysis',
+      defaultMessage: '结构分析',
     }), //结构分析
     Component: StructConfigPanel,
   },
@@ -112,6 +114,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
       Modal.confirm({
         title: formatMessage({
           id: 'odc.components.CreateShadowSyncModal.AreYouSureYouWant',
+          defaultMessage: '确认取消影子表同步吗？',
         }), //确认取消影子表同步吗？
         centered: true,
         onOk: () => {
@@ -162,6 +165,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
       width={720}
       title={formatMessage({
         id: 'odc.components.CreateShadowSyncModal.CreateAShadowTableSynchronization',
+        defaultMessage: '新建影子表同步',
       })} /*新建影子表同步*/
       footer={
         <Space>
@@ -179,11 +183,13 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
                 ? formatMessage(
                     {
                       id: 'odc.components.CreateShadowSyncModal.PreviousStepPrevstepname',
+                      defaultMessage: '上一步: {prevStepName}',
                     },
-                    { prevStepName: prevStepName },
+                    { prevStepName },
                   ) //`上一步: ${prevStepName}`
                 : formatMessage({
                     id: 'odc.components.CreateShadowSyncModal.Cancel',
+                    defaultMessage: '取消',
                   }) //取消
             }
           </Button>
@@ -214,11 +220,13 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
                 ? formatMessage(
                     {
                       id: 'odc.components.CreateShadowSyncModal.NextStepNextstepname',
+                      defaultMessage: '下一步: {nextStepName}',
                     },
-                    { nextStepName: nextStepName },
+                    { nextStepName },
                   ) //`下一步: ${nextStepName}`
                 : formatMessage({
                     id: 'odc.components.CreateShadowSyncModal.Submit',
+                    defaultMessage: '提交',
                   }) //提交
             }
           </Button>

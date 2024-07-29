@@ -363,37 +363,37 @@ export function transformOBConfigTimeStringToText(timeString: string) {
       switch (unit.toLowerCase()) {
         case 'us': {
           return (
-            num + formatMessage({ id: 'odc.src.util.utils.Microseconds' }) //微秒
+            num + formatMessage({ id: 'odc.src.util.utils.Microseconds', defaultMessage: '微秒' }) //微秒
           );
         }
 
         case 'ms': {
           return (
-            num + formatMessage({ id: 'odc.src.util.utils.Milliseconds' }) //毫秒
+            num + formatMessage({ id: 'odc.src.util.utils.Milliseconds', defaultMessage: '毫秒' }) //毫秒
           );
         }
 
         case 's': {
           return (
-            num + formatMessage({ id: 'odc.src.util.utils.Seconds' }) //秒
+            num + formatMessage({ id: 'odc.src.util.utils.Seconds', defaultMessage: '秒' }) //秒
           );
         }
 
         case 'm': {
           return (
-            num + formatMessage({ id: 'odc.src.util.utils.Minutes' }) //分钟
+            num + formatMessage({ id: 'odc.src.util.utils.Minutes', defaultMessage: '分钟' }) //分钟
           );
         }
 
         case 'h': {
           return (
-            num + formatMessage({ id: 'odc.src.util.utils.Hours' }) //小时
+            num + formatMessage({ id: 'odc.src.util.utils.Hours', defaultMessage: '小时' }) //小时
           );
         }
 
         case 'd': {
           return (
-            num + formatMessage({ id: 'odc.src.util.utils.Days' }) //天
+            num + formatMessage({ id: 'odc.src.util.utils.Days', defaultMessage: '天' }) //天
           );
         }
       }

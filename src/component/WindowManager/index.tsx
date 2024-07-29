@@ -149,18 +149,21 @@ const WindowManager: React.FC<IProps> = function (props) {
               key: 'closePage',
               label: formatMessage({
                 id: 'odc.component.WindowManager.CloseThisWindow',
+                defaultMessage: '关闭该窗口',
               }),
             },
             {
               key: 'closeOtherPage',
               label: formatMessage({
                 id: 'odc.component.WindowManager.CloseOtherWindows',
+                defaultMessage: '关闭其它窗口',
               }),
             },
             !isDocked && {
               key: 'closeAllPage',
               label: formatMessage({
                 id: 'odc.component.WindowManager.CloseAllWindows',
+                defaultMessage: '关闭所有窗口',
               }),
             },
             {
@@ -170,12 +173,14 @@ const WindowManager: React.FC<IProps> = function (props) {
               key: 'copyPage',
               label: formatMessage({
                 id: 'odc.src.component.WindowManager.CopyTheSQLWindow',
+                defaultMessage: '复制 SQL 窗口',
               }),
             },
             {
               key: 'openNewPage',
               label: formatMessage({
                 id: 'odc.component.WindowManager.OpenANewSqlWindow',
+                defaultMessage: '打开新的 SQL 窗口',
               }),
             },
           ].filter(Boolean) as MenuProps['items'],
@@ -193,6 +198,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                     status={'default'}
                     text={formatMessage({
                       id: 'odc.component.WindowManager.NotSaved',
+                      defaultMessage: '未保存',
                     })} /*未保存*/
                   />
                 </div>
@@ -203,6 +209,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                     status={'processing'}
                     text={formatMessage({
                       id: 'odc.component.WindowManager.Running',
+                      defaultMessage: '运行中',
                     })} /*运行中*/
                   />
                 </div>
@@ -322,6 +329,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                   {
                     label: formatMessage({
                       id: 'odc.src.component.WindowManager.NewSQLWindow',
+                      defaultMessage: '新建 SQL 窗口',
                     }), //'新建 SQL 窗口'
                     key: 'newSQL',
                     onClick: (e) => {
@@ -332,6 +340,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                   {
                     label: formatMessage({
                       id: 'odc.src.component.WindowManager.CreateAnonymousBlockWindow',
+                      defaultMessage: '新建匿名块窗口',
                     }), //'新建匿名块窗口'
                     key: 'newPL',
                     onClick(e) {
@@ -396,6 +405,7 @@ const WindowManager: React.FC<IProps> = function (props) {
           })
           .filter(Boolean)}
       />
+
       {(!activeKey || !pages?.length) && <DefaultPage />}
     </>
   );

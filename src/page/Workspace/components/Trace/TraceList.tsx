@@ -96,6 +96,7 @@ const TraceList: React.FC<{
                       {
                         title: formatMessage({
                           id: 'odc.src.page.Workspace.components.Trace.Node',
+                          defaultMessage: '节点',
                         }), //'节点'
                         render: () => (
                           <div className={styles.nodeTitle}>
@@ -126,6 +127,7 @@ const TraceList: React.FC<{
                                 message.success(
                                   formatMessage({
                                     id: 'odc.src.page.Workspace.components.Trace.Replication.1',
+                                    defaultMessage: '复制成功',
                                   }), //'复制成功'
                                 );
                               }}
@@ -138,23 +140,27 @@ const TraceList: React.FC<{
                       {
                         title: formatMessage({
                           id: 'odc.src.page.Workspace.components.Trace.StartingTime.1',
+                          defaultMessage: '开始时间',
                         }), //'开始时间'
                         render: () => record?.originStartTimestamp,
                       },
                       {
                         title: formatMessage({
                           id: 'odc.src.page.Workspace.components.Trace.EndTime',
+                          defaultMessage: '结束时间',
                         }), //'结束时间'
                         render: () => record?.originEndTimestamp,
                       },
                       {
                         title: formatMessage({
                           id: 'odc.src.page.Workspace.components.Trace.TimeConsuming',
+                          defaultMessage: '耗时',
                         }), //'耗时'
                         render: () => formatTimeTemplatMicroSeconds(record?.elapseMicroSeconds),
                       },
                     ]}
                   />
+
                   {record?.tags && (
                     <>
                       <div
@@ -204,6 +210,7 @@ const TraceList: React.FC<{
       {
         title: formatMessage({
           id: 'odc.src.page.Workspace.components.Trace.Node.1',
+          defaultMessage: '节点',
         }), //'节点'
         dataIndex: 'node',
         key: 'node',
@@ -228,6 +235,7 @@ const TraceList: React.FC<{
       {
         title: formatMessage({
           id: 'odc.src.page.Workspace.components.Trace.StartingTime.2',
+          defaultMessage: '开始时间',
         }), //'开始时间'
         dataIndex: 'originStartTimestamp',
         key: 'originStartTimestamp',
@@ -239,6 +247,7 @@ const TraceList: React.FC<{
       {
         title: formatMessage({
           id: 'odc.src.page.Workspace.components.Trace.TimeConsuming.1',
+          defaultMessage: '耗时',
         }), //'耗时'
         dataIndex: 'elapseMicroSeconds',
         key: 'elapseMicroSeconds',

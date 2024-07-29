@@ -124,7 +124,12 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
   const renderDisabledDBWithTip = (name: React.ReactNode) => {
     return (
       <span className={styles.disable}>
-        <Tooltip title={formatMessage({ id: 'src.page.Project.Database.B4A5A6AC' })}>
+        <Tooltip
+          title={formatMessage({
+            id: 'src.page.Project.Database.B4A5A6AC',
+            defaultMessage: '当前账号的项目成员角色没有该库的操作权限，请先申请库权限',
+          })}
+        >
           {name}
         </Tooltip>
       </span>
@@ -156,6 +161,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             }}
             placeholder={formatMessage({
               id: 'odc.Project.Database.SearchDatabase',
+              defaultMessage: '搜索数据库',
             })}
             /*搜索数据库*/ style={{
               width: 200,
@@ -203,6 +209,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           {
             title: formatMessage({
               id: 'odc.Project.Database.DatabaseName',
+              defaultMessage: '数据库名称',
             }),
             //数据库名称
             dataIndex: 'name',
@@ -225,6 +232,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                     isTip={false}
                     title={formatMessage({
                       id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
+                      defaultMessage: '当前数据库不存在',
                     })} /*当前数据库不存在*/
                   >
                     {renderDisabledDBWithTip(name)}
@@ -235,6 +243,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                     isTip={false}
                     title={formatMessage({
                       id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
+                      defaultMessage: '当前数据库不存在',
                     })} /*当前数据库不存在*/
                   >
                     {name}
@@ -270,6 +279,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                 <span style={{ color: 'var(--text-color-hint)' }}>
                   {formatMessage({
                     id: 'odc.Project.Database.OwnerEmptyText',
+                    defaultMessage: '未设置',
                   })}
                 </span>
               );
@@ -278,6 +288,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           {
             title: formatMessage({
               id: 'odc.Project.Database.DataSource',
+              defaultMessage: '所属数据源',
             }),
             //所属数据源
             dataIndex: ['dataSource', 'name'],
@@ -307,6 +318,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           {
             title: formatMessage({
               id: 'odc.Project.Database.Environment',
+              defaultMessage: '环境',
             }),
             //环境
             dataIndex: 'environmentId',
@@ -330,6 +342,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           {
             title: formatMessage({
               id: 'odc.Project.Database.CharacterEncoding',
+              defaultMessage: '字符编码',
             }),
             //字符编码
             dataIndex: 'charsetName',
@@ -338,6 +351,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           {
             title: formatMessage({
               id: 'odc.Project.Database.SortingRules',
+              defaultMessage: '排序规则',
             }),
             //排序规则
             dataIndex: 'collationName',
@@ -348,6 +362,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           {
             title: formatMessage({
               id: 'odc.Project.Database.LastSynchronizationTime',
+              defaultMessage: '上一次同步时间',
             }),
             //上一次同步时间
             dataIndex: 'lastSyncTime',
@@ -359,6 +374,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           {
             title: formatMessage({
               id: 'odc.Project.Database.Operation',
+              defaultMessage: '操作',
             }),
             //操作
             dataIndex: 'actions',
@@ -398,7 +414,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       disabled={!hasChangeAuth || disableTransfer}
                       tooltip={
                         !hasChangeAuth || disableTransfer
-                          ? formatMessage({ id: 'src.page.Project.Database.8FB9732D' })
+                          ? formatMessage({
+                              id: 'src.page.Project.Database.8FB9732D',
+                              defaultMessage: '暂无权限',
+                            })
                           : ''
                       }
                     >
@@ -407,6 +426,8 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                           disableTransfer
                             ? formatMessage({
                                 id: 'odc.src.page.Project.Database.TheDataSourceHasBeen',
+                                defaultMessage:
+                                  '所属的数据源已关联当前项目，无法修改。可通过编辑数据源修改所属项目',
                               }) //`所属的数据源已关联当前项目，无法修改。可通过编辑数据源修改所属项目`
                             : null
                         }
@@ -414,6 +435,8 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                         {
                           formatMessage({
                             id: 'odc.src.page.Project.Database.ModifyTheProject',
+                            defaultMessage:
+                              '\n                      修改所属项目\n                    ',
                           }) /* 
                       修改所属项目
                       */
@@ -435,13 +458,17 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       disabled={!hasExportAuth}
                       tooltip={
                         !hasExportAuth
-                          ? formatMessage({ id: 'src.page.Project.Database.A74B21AE' })
+                          ? formatMessage({
+                              id: 'src.page.Project.Database.A74B21AE',
+                              defaultMessage: '暂无导出权限，请先申请数据库权限',
+                            })
                           : ''
                       }
                     >
                       {
                         formatMessage({
                           id: 'odc.Project.Database.Export',
+                          defaultMessage: '导出',
                         }) /*导出*/
                       }
                     </Action.Link>
@@ -457,13 +484,17 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       disabled={!hasChangeAuth}
                       tooltip={
                         !hasChangeAuth
-                          ? formatMessage({ id: 'src.page.Project.Database.EA72923D' })
+                          ? formatMessage({
+                              id: 'src.page.Project.Database.EA72923D',
+                              defaultMessage: '暂无变更权限，请先申请数据库权限',
+                            })
                           : ''
                       }
                     >
                       {
                         formatMessage({
                           id: 'odc.Project.Database.Import',
+                          defaultMessage: '导入',
                         }) /*导入*/
                       }
                     </Action.Link>
@@ -478,13 +509,17 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                     disabled={!hasChangeAuth}
                     tooltip={
                       !hasChangeAuth
-                        ? formatMessage({ id: 'src.page.Project.Database.8AFF2CDE' })
+                        ? formatMessage({
+                            id: 'src.page.Project.Database.8AFF2CDE',
+                            defaultMessage: '暂无变更权限，请先申请数据库权限',
+                          })
                         : ''
                     }
                   >
                     {
                       formatMessage({
                         id: 'odc.Project.Database.DatabaseChanges',
+                        defaultMessage: '数据库变更',
                       }) /*数据库变更*/
                     }
                   </Action.Link>
@@ -497,13 +532,17 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                     disabled={!hasLoginAuth}
                     tooltip={
                       !hasLoginAuth
-                        ? formatMessage({ id: 'src.page.Project.Database.6EC9F229' })
+                        ? formatMessage({
+                            id: 'src.page.Project.Database.6EC9F229',
+                            defaultMessage: '暂无权限',
+                          })
                         : ''
                     }
                   >
                     {
                       formatMessage({
                         id: 'odc.Project.Database.LogOnToTheDatabase',
+                        defaultMessage: '登录数据库',
                       }) /*登录数据库*/
                     }
                   </Action.Link>
@@ -530,7 +569,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                     disabled={!hasChangeAuth || disableTransfer}
                     tooltip={
                       !hasChangeAuth || disableTransfer
-                        ? formatMessage({ id: 'src.page.Project.Database.8FB9732D' })
+                        ? formatMessage({
+                            id: 'src.page.Project.Database.8FB9732D',
+                            defaultMessage: '暂无权限',
+                          })
                         : ''
                     }
                   >
@@ -539,6 +581,8 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                         disableTransfer
                           ? formatMessage({
                               id: 'odc.src.page.Project.Database.TheDataSourceHasBeen',
+                              defaultMessage:
+                                '所属的数据源已关联当前项目，无法修改。可通过编辑数据源修改所属项目',
                             }) //`所属的数据源已关联当前项目，无法修改。可通过编辑数据源修改所属项目`
                           : null
                       }
@@ -546,6 +590,8 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       {
                         formatMessage({
                           id: 'odc.src.page.Project.Database.ModifyTheProject',
+                          defaultMessage:
+                            '\n                      修改所属项目\n                    ',
                         }) /* 
                     修改所属项目
                     */

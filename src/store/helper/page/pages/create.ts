@@ -29,9 +29,11 @@ export class CreateTablePage extends Page {
     this.pageTitle =
       formatMessage({
         id: 'workspace.header.create',
+        defaultMessage: '新建',
       }) +
       formatMessage({
         id: 'workspace.header.create.table',
+        defaultMessage: '表',
       });
     this.pageType = PageType.CREATE_TABLE;
     this.pageParams = {
@@ -47,7 +49,10 @@ export class CreateViewPage extends Page {
   constructor(databaseId: number) {
     super();
     this.pageKey = `createViewPage-${generateUniqKey()}`;
-    this.pageTitle = formatMessage({ id: 'workspace.window.createView.modal.title' });
+    this.pageTitle = formatMessage({
+      id: 'workspace.window.createView.modal.title',
+      defaultMessage: '新建视图',
+    });
     this.pageType = PageType.CREATE_VIEW;
     this.pageParams = {
       databaseId,
@@ -69,10 +74,12 @@ export class SQLConfirmPage extends Page {
     if (params?.isPackageBody) {
       return formatMessage({
         id: 'workspace.window.createPackageBody.modal.title',
+        defaultMessage: '新建程序包体',
       });
     }
     return formatMessage({
       id: 'workspace.window.createPackage.modal.title',
+      defaultMessage: '新建程序包',
     });
   }
   constructor(
@@ -108,7 +115,10 @@ export class CreateTriggerPage extends Page {
 
   constructor(databaseId: number, preData: ITriggerFormData) {
     super();
-    (this.pageTitle = formatMessage({ id: 'odc.helper.page.openPage.CreateATrigger' })), // 新建触发器
+    (this.pageTitle = formatMessage({
+      id: 'odc.helper.page.openPage.CreateATrigger',
+      defaultMessage: '新建触发器',
+    })), // 新建触发器
       (this.pageKey = `createTrigger-${generateUniqKey()}`);
     this.pageType = PageType.CREATE_TRIGGER;
     this.pageParams = {

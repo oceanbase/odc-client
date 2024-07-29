@@ -99,8 +99,14 @@ const Environment = () => {
   };
   const handleDeleteEnvironment = async () => {
     return Modal.confirm({
-      title: formatMessage({ id: 'src.page.Secure.Env.65EAAB75' }), //'确认删除该环境么？'
-      content: formatMessage({ id: 'src.page.Secure.Env.CFE6811F' }), //'删除后不可撤回'
+      title: formatMessage({
+        id: 'src.page.Secure.Env.65EAAB75',
+        defaultMessage: '确认删除该环境么？',
+      }), //'确认删除该环境么？'
+      content: formatMessage({
+        id: 'src.page.Secure.Env.CFE6811F',
+        defaultMessage: '删除后不可撤回',
+      }), //'删除后不可撤回'
       centered: true,
       onCancel: () => {},
       onOk: async () => {
@@ -110,11 +116,21 @@ const Environment = () => {
         const successful = await deleteEnvironment(currentEnvironment?.id);
         if (successful) {
           await initEnvironment();
-          message.success(formatMessage({ id: 'src.page.Secure.Env.9D97D589' /*'删除成功'*/ }));
+          message.success(
+            formatMessage({
+              id: 'src.page.Secure.Env.9D97D589' /*'删除成功'*/,
+              defaultMessage: '删除成功',
+            }),
+          );
           setIsEdit(null);
           return;
         }
-        message.error(formatMessage({ id: 'src.page.Secure.Env.F0BFC158' /*'删除失败'*/ }));
+        message.error(
+          formatMessage({
+            id: 'src.page.Secure.Env.F0BFC158' /*'删除失败'*/,
+            defaultMessage: '删除失败',
+          }),
+        );
       },
     });
   };
@@ -148,7 +164,12 @@ const Environment = () => {
           extra={
             <div className={styles.extra}>
               <div className={styles.groupTitle}>
-                {formatMessage({ id: 'src.page.Secure.Env.48529F6E' /*全部环境*/ }) /* 全部环境 */}
+                {
+                  formatMessage({
+                    id: 'src.page.Secure.Env.48529F6E' /*全部环境*/,
+                    defaultMessage: '全部环境',
+                  }) /* 全部环境 */
+                }
               </div>
               <Acess
                 fallback={null}

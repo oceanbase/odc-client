@@ -194,6 +194,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                       key: ITabType.LOG as string,
                       label: formatMessage({
                         id: 'odc.component.CommonIDE.Result',
+                        defaultMessage: '运行结果',
                       }),
                       children: log,
                     },
@@ -206,6 +207,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                             set.executeSql,
                             `${formatMessage({
                               id: 'workspace.window.sql.result',
+                              defaultMessage: '结果',
                             })}${i + 1}`,
                           ),
                           children:

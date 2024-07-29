@@ -47,7 +47,10 @@ const Log: React.FC<LogProps> = ({
   loading = false,
   searchTrigger = 'click',
   style = {},
-  emptyDescription = formatMessage({ id: 'odc.component.Log.NoDataAvailable' }), //暂无数据
+  emptyDescription = formatMessage({
+    id: 'odc.component.Log.NoDataAvailable',
+    defaultMessage: '暂无数据',
+  }), //暂无数据
   onReload,
   defaultPosition = 'start',
   ignoreCase = false,
@@ -84,7 +87,7 @@ const Log: React.FC<LogProps> = ({
     {
       key: 'find',
       icon: <FileSearchOutlined />,
-      text: formatMessage({ id: 'odc.component.Log.Find' }), //查找
+      text: formatMessage({ id: 'odc.component.Log.Find', defaultMessage: '查找' }), //查找
       onClick: () => {
         setSearchInputVisible(!searchInputVisible);
       },
@@ -93,7 +96,7 @@ const Log: React.FC<LogProps> = ({
     {
       key: 'download',
       icon: <DownloadOutlined />,
-      text: formatMessage({ id: 'odc.component.Log.Download' }), //下载
+      text: formatMessage({ id: 'odc.component.Log.Download', defaultMessage: '下载' }), //下载
       visible: enableDownload,
       onClick: () => {
         if (logData.data.length) {
@@ -112,17 +115,25 @@ const Log: React.FC<LogProps> = ({
             if (logData.data.length) {
               if (result) {
                 message.success(
-                  formatMessage({ id: 'odc.component.Log.CopiedSuccessfully' }), //复制成功
+                  formatMessage({
+                    id: 'odc.component.Log.CopiedSuccessfully',
+                    defaultMessage: '复制成功',
+                  }), //复制成功
                 );
               } else {
                 message.error(
-                  formatMessage({ id: 'odc.component.Log.ReplicationFailed' }), //复制失败
+                  formatMessage({
+                    id: 'odc.component.Log.ReplicationFailed',
+                    defaultMessage: '复制失败',
+                  }), //复制失败
                 );
               }
             }
           }}
         >
-          <span>{formatMessage({ id: 'odc.component.Log.Copy' }) /*复制*/}</span>
+          <span>
+            {formatMessage({ id: 'odc.component.Log.Copy', defaultMessage: '复制' }) /*复制*/}
+          </span>
         </CopyToClipboard>
       ),
 
@@ -134,7 +145,7 @@ const Log: React.FC<LogProps> = ({
     actionList.push({
       key: 'refresh',
       icon: <RedoOutlined />,
-      text: formatMessage({ id: 'odc.component.Log.Refresh' }), //刷新
+      text: formatMessage({ id: 'odc.component.Log.Refresh', defaultMessage: '刷新' }), //刷新
       onClick: onReload,
     });
   }

@@ -172,6 +172,7 @@ const Gateway: React.FC<GatewayProps> = (props: GatewayProps) => {
             size="large"
             tip={formatMessage({
               id: 'odc.page.Gateway.Jumping',
+              defaultMessage: '跳转中...',
             })}
           />
         );
@@ -188,6 +189,7 @@ const Gateway: React.FC<GatewayProps> = (props: GatewayProps) => {
             <Tag color="red">
               {formatMessage({
                 id: 'odc.page.Gateway.SorryTheActionDoesNot',
+                defaultMessage: '抱歉，系统中不存在该 Action',
               })}
             </Tag>
           </div>
@@ -205,6 +207,7 @@ const Gateway: React.FC<GatewayProps> = (props: GatewayProps) => {
             <Tag color="magenta">
               {formatMessage({
                 id: 'odc.page.Gateway.ConfirmTheFormatOfThe',
+                defaultMessage: '请确认传入的参数格式',
               })}
             </Tag>
           </div>

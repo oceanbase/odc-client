@@ -104,7 +104,10 @@ const Sider: React.FC<IProps> = function (props) {
               selected={selected === IPageType.Project}
               icon={AppstoreOutlined}
               collapsed={collapsed}
-              label={formatMessage({ id: 'odc.SpaceContainer.Sider.Project' })} /*项目*/
+              label={formatMessage({
+                id: 'odc.SpaceContainer.Sider.Project',
+                defaultMessage: '项目',
+              })} /*项目*/
             />
           </Link>
           <Link to={`/${IPageType.Task}`}>
@@ -116,11 +119,19 @@ const Sider: React.FC<IProps> = function (props) {
               showDot={!!count}
               label={
                 collapsed ? (
-                  formatMessage({ id: 'odc.SpaceContainer.Sider.Ticket' }) /*工单*/
+                  formatMessage({
+                    id: 'odc.SpaceContainer.Sider.Ticket',
+                    defaultMessage: '工单',
+                  }) /*工单*/
                 ) : (
                   <Badge showZero={false} count={count} overflowCount={100} offset={[-8, 5]}>
                     <div style={{ width: '100px' }}>
-                      {formatMessage({ id: 'odc.SpaceContainer.Sider.Ticket' }) /*工单*/}
+                      {
+                        formatMessage({
+                          id: 'odc.SpaceContainer.Sider.Ticket',
+                          defaultMessage: '工单',
+                        }) /*工单*/
+                      }
                     </div>
                   </Badge>
                 )
@@ -140,7 +151,10 @@ const Sider: React.FC<IProps> = function (props) {
                 selected={selected === IPageType.Datasource}
                 icon={LinkOutlined}
                 collapsed={collapsed}
-                label={formatMessage({ id: 'odc.SpaceContainer.Sider.DataSource' })} /*数据源*/
+                label={formatMessage({
+                  id: 'odc.SpaceContainer.Sider.DataSource',
+                  defaultMessage: '数据源',
+                })} /*数据源*/
               />
             </Link>
           </AccessResourceTypePermission>
@@ -161,6 +175,7 @@ const Sider: React.FC<IProps> = function (props) {
                 collapsed={collapsed}
                 label={formatMessage({
                   id: 'odc.SpaceContainer.Sider.UserPermissions',
+                  defaultMessage: '用户权限',
                 })} /*用户权限*/
               />
             </Link>
@@ -173,6 +188,7 @@ const Sider: React.FC<IProps> = function (props) {
               collapsed={collapsed}
               label={formatMessage({
                 id: 'odc.SpaceContainer.Sider.SafetySpecifications',
+                defaultMessage: '安全规范',
               })} /*安全规范*/
             />
           </Link>
@@ -188,6 +204,7 @@ const Sider: React.FC<IProps> = function (props) {
                   collapsed={collapsed}
                   label={formatMessage({
                     id: 'odc.SpaceContainer.Sider.ExternalIntegration',
+                    defaultMessage: '外部集成',
                   })} /*外部集成*/
                 />
               </Link>
@@ -202,7 +219,7 @@ const Sider: React.FC<IProps> = function (props) {
             disableTip={true}
             icon={BulbOutlined}
             collapsed={collapsed}
-            label={formatMessage({ id: 'odc.Index.Sider.Help' })} /*帮助*/
+            label={formatMessage({ id: 'odc.Index.Sider.Help', defaultMessage: '帮助' })} /*帮助*/
           />
         </HelpItem>
         <MineItem>
@@ -210,7 +227,7 @@ const Sider: React.FC<IProps> = function (props) {
             disableTip={true}
             icon={UserOutlined}
             collapsed={collapsed}
-            label={formatMessage({ id: 'odc.Index.Sider.Mine' })} /*我的*/
+            label={formatMessage({ id: 'odc.Index.Sider.Mine', defaultMessage: '我的' })} /*我的*/
           />
         </MineItem>
       </Space>

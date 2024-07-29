@@ -77,6 +77,7 @@ const NewDatasourceButton: React.FC<{
       message.success(
         formatMessage({
           id: 'odc.Content.TitleButton.BatchImportSucceeded',
+          defaultMessage: '批量导入成功',
         }), //批量导入成功
       );
 
@@ -170,6 +171,7 @@ const NewDatasourceButton: React.FC<{
       results = results.concat({
         label: formatMessage({
           id: 'odc.component.BatchImportButton.BatchImport',
+          defaultMessage: '批量导入',
         }) /*批量导入*/,
         key: 'batchImport',
       });
@@ -223,8 +225,10 @@ const NewDatasourceButton: React.FC<{
             {
               formatMessage({
                 id: 'odc.Datasource.NewDatasourceDrawer.NewButton.CreateADataSource',
+                defaultMessage: '新建数据源',
               }) /*新建数据源*/
             }
+
             <DownOutlined />
           </Button>
         )}
@@ -237,6 +241,8 @@ const NewDatasourceButton: React.FC<{
         description={
           formatMessage({
             id: 'odc.src.page.Datasource.Datasource.Content.TitleButton.TheFileNeedsToInclude',
+            defaultMessage:
+              '文件需包含类型、主机端口、租户名、数据库账号等相关数据源信息，建议使用数据源配置模版',
           }) /* 文件需包含类型、主机端口、租户名、数据库账号等相关数据源信息，建议使用数据源配置模版 */
         }
         templatePath="/api/v2/datasource/datasources/template"
@@ -250,6 +256,7 @@ const NewDatasourceButton: React.FC<{
                 description={
                   formatMessage({
                     id: 'odc.src.page.Datasource.Datasource.Content.TitleButton.NoValidDataSourceInformation',
+                    defaultMessage: '暂无有效数据源信息',
                   }) /* 暂无有效数据源信息 */
                 }
               />
@@ -266,6 +273,7 @@ const NewDatasourceButton: React.FC<{
                         marginRight: '4px',
                       }}
                     />
+
                     {hasError ? (
                       <Tooltip title={item.errorMessage}>
                         <Space size={4}>
@@ -296,6 +304,7 @@ const NewDatasourceButton: React.FC<{
         onChange={handleFileChange}
         onSubmit={handleBatchImportSubmit}
       />
+
       <NewDatasourceDrawer
         disableTheme={props.disableTheme}
         type={type}

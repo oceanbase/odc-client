@@ -440,6 +440,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
         key: 'clip',
         text: formatMessage({
           id: 'odc.components.DDLResultSet.OutputToShearPlate',
+          defaultMessage: '输出到剪切板',
         }),
         isShowRowSelected: true,
         // 输出到剪切板
@@ -486,6 +487,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             key: 'copy',
             text: formatMessage({
               id: 'odc.components.ConnectionCardList.Copy',
+              defaultMessage: '复制',
             }),
             onClick: copy,
           },
@@ -506,6 +508,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
           key: 'copy',
           text: formatMessage({
             id: 'odc.components.ConnectionCardList.Copy',
+            defaultMessage: '复制',
           }),
           onClick: copy,
         },
@@ -515,6 +518,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             key: 'setnull',
             text: formatMessage({
               id: 'odc.components.DDLResultSet.SetToNull',
+              defaultMessage: '设置为 Null',
             }),
             // 设置为 Null
             disabled: isNull(row[columnKey]) || column.readonly,
@@ -532,6 +536,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             key: 'setDefault',
             text: formatMessage({
               id: 'odc.components.DDLResultSet.DefaultValue',
+              defaultMessage: '设置为默认值',
             }),
             // 设置为默认值
             disabled: isUndefined(row[columnKey]) || column.readonly,
@@ -547,6 +552,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
           key: 'download',
           text: formatMessage({
             id: 'odc.components.DDLResultSet.DownloadAndView',
+            defaultMessage: '下载查看',
           }),
           // 下载查看
           disabled:
@@ -561,6 +567,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
           key: 'upload',
           text: formatMessage({
             id: 'odc.components.DDLResultSet.UploadAndModify',
+            defaultMessage: '上传修改',
           }),
           onClick: () => {
             const upload = document.createElement('input');
@@ -582,12 +589,14 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   message.success(
                     `${file.name} ${formatMessage({
                       id: 'workspace.window.table.object.upload.success',
+                      defaultMessage: '上传成功',
                     })}`,
                   );
                 } else {
                   message.error(
                     `${file.name} ${formatMessage({
                       id: 'workspace.window.table.object.upload.failure',
+                      defaultMessage: '上传失败',
                     })}`,
                   );
                 }
@@ -691,6 +700,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
           style={{ width: 280, display: 'block', paddingBottom: 8 }}
           src={window.publicPath + `img/profile.jpeg`}
         />
+
         <Link onClick={updateExecutePlanGuideCache}>我知道了</Link>
       </div>
     );
@@ -720,6 +730,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               text={
                 formatMessage({
                   id: 'odc.components.DDLResultSet.Plan',
+                  defaultMessage: '计划',
                 }) // 计划
               }
               icon={<ExpainSvg status={IConStatus.INIT} />}
@@ -733,10 +744,13 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 [GeneralSQLType.DDL, GeneralSQLType.OTHER].includes(props?.generalSqlType)
                   ? formatMessage({
                       id: 'odc.components.DDLResultSet.TheCurrentStatementTypeDoes',
+                      defaultMessage: '当前语句类型不支持查看执行详情',
                     })
                   : // 当前语句类型不支持查看执行详情
                     formatMessage({
                       id: 'odc.components.DDLResultSet.TheTraceIdIsEmpty',
+                      defaultMessage:
+                        'TRACE ID 为空，请确保该语句运行时 enable_sql_audit 系统参数及 ob_enable_trace_log 变量值均为 ON',
                     })
                 // TRACE ID 为空，请确保该语句运行时 enable_sql_audit 系统参数及 ob_enable_trace_log 变量值均为 ON
               }
@@ -750,6 +764,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               />
             </Tooltip>
           ))}
+
         {showTrace &&
           (isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=') ? (
             <ToolbarButton
@@ -757,6 +772,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 withFullLinkTrace
                   ? formatMessage({
                       id: 'odc.src.page.Workspace.components.DDLResultSet.FullLinkTrace',
+                      defaultMessage: '全链路 Trace',
                     }) //'全链路 Trace'
                   : traceEmptyReason
               }
@@ -802,6 +818,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                     <ToolbarButton
                       text={formatMessage({
                         id: 'odc.components.DDLResultSet.ModifyAndSubmit',
+                        defaultMessage: '修改并提交',
                       })}
                       icon={<CloudUploadOutlined />}
                       status={isSubmitting ? IConStatus.RUNNING : IConStatus.INIT}
@@ -812,6 +829,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 <ToolbarButton
                   text={formatMessage({
                     id: 'odc.components.DDLResultSet.ConfirmModification',
+                    defaultMessage: '确认修改',
                   })}
                   icon={<CheckOutlined />}
                   isShowText
@@ -829,6 +847,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 <ToolbarButton
                   text={formatMessage({
                     id: 'odc.components.DDLResultSet.Cancel',
+                    defaultMessage: '取消',
                   })}
                   icon={<CloseOutlined />}
                   isShowText
@@ -845,6 +864,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   <ToolbarButton
                     text={formatMessage({
                       id: 'workspace.window.sql.button.add',
+                      defaultMessage: '添加行',
                     })}
                     icon={<PlusOutlined />}
                     onClick={handleAddRow}
@@ -853,6 +873,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   <ToolbarButton
                     text={formatMessage({
                       id: 'workspace.window.sql.button.delete',
+                      defaultMessage: '删除行',
                     })}
                     icon={<MinusOutlined />}
                     onClick={handleDeleteRows}
@@ -862,6 +883,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                     disabled={!rows[selectedRowIdx]}
                     text={formatMessage({
                       id: 'workspace.window.sql.button.copy',
+                      defaultMessage: '复制当前行',
                     })}
                     icon={<CopyOutlined />}
                     onClick={handleCopyRow}
@@ -874,6 +896,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   <ToolbarButton
                     text={formatMessage({
                       id: 'workspace.window.sql.button.edit.enable',
+                      defaultMessage: '开启编辑',
                     })}
                     icon={<EditOutlined />}
                     onClick={() => {
@@ -898,6 +921,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                           text={
                             formatMessage({
                               id: 'odc.components.DDLResultSet.Submitted',
+                              defaultMessage: '提交',
                             })
 
                             // 提交
@@ -921,6 +945,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                           text={
                             formatMessage({
                               id: 'odc.components.DDLResultSet.Rollback',
+                              defaultMessage: '回滚',
                             })
 
                             // 回滚
@@ -940,6 +965,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                     disabled={!isEditing}
                     text={formatMessage({
                       id: 'workspace.window.sql.button.edit.add',
+                      defaultMessage: '添加一行',
                     })}
                     icon={<PlusOutlined />}
                     onClick={handleAddRow}
@@ -949,6 +975,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                     disabled={!isEditing}
                     text={formatMessage({
                       id: 'workspace.window.sql.button.edit.delete',
+                      defaultMessage: '删除',
                     })}
                     icon={<MinusOutlined />}
                     onClick={handleDeleteRows}
@@ -958,6 +985,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                     disabled={!isEditing || !rows[selectedRowIdx]}
                     text={formatMessage({
                       id: 'workspace.window.sql.button.copy',
+                      defaultMessage: '复制当前行',
                     })}
                     icon={<CopyOutlined />}
                     onClick={handleCopyRow}
@@ -969,6 +997,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 <ToolbarButton
                   text={formatMessage({
                     id: 'workspace.window.sql.button.edit.enable',
+                    defaultMessage: '开启编辑',
                   })}
                   icon={<EditOutlined />}
                   onClick={handleToggleEditable}
@@ -986,6 +1015,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 text={
                   formatMessage({
                     id: 'odc.components.DDLResultSet.DownloadData',
+                    defaultMessage: '下载数据',
                   }) //下载数据
                 }
                 icon={<ExportOutlined />}
@@ -1002,6 +1032,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   text={
                     formatMessage({
                       id: 'odc.components.DDLResultSet.AnalogData',
+                      defaultMessage: '模拟数据',
                     })
 
                     // 模拟数据
@@ -1024,6 +1055,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   text={
                     formatMessage({
                       id: 'odc.components.DDLResultSet.BackToStart',
+                      defaultMessage: '回到开始',
                     })
 
                     // 回到开始
@@ -1042,6 +1074,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   text={
                     formatMessage({
                       id: 'odc.components.DDLResultSet.PreviousPage',
+                      defaultMessage: '上一页',
                     })
 
                     // 上一页
@@ -1056,6 +1089,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   text={
                     formatMessage({
                       id: 'odc.components.DDLResultSet.NextPage',
+                      defaultMessage: '下一页',
                     })
 
                     // 下一页
@@ -1068,6 +1102,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   text={
                     formatMessage({
                       id: 'odc.components.DDLResultSet.JumpToTheBottom',
+                      defaultMessage: '跳至底部',
                     })
 
                     // 跳至底部
@@ -1085,10 +1120,10 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             ) : null}
 
             {/* <ToolbarButton
-                   text={formatMessage({ id: "workspace.window.session.button.refresh" })}
-                   icon={<Icon type="sync" />}
-                   onClick={onRefresh.bind(this, this.state.limit || 1000)}
-                   /> */}
+                    text={formatMessage({ id: "workspace.window.session.button.refresh" })}
+                    icon={<Icon type="sync" />}
+                    onClick={onRefresh.bind(this, this.state.limit || 1000)}
+                    /> */}
           </div>
           <div className={styles.toolsRight}>
             <span className={styles.limit}>
@@ -1096,6 +1131,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 <>
                   {formatMessage({
                     id: 'workspace.window.sql.limit',
+                    defaultMessage: '展示数据量',
                   })}
                   <InputNumber
                     onInput={(limit) => {
@@ -1108,6 +1144,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                     precision={0}
                     placeholder={formatMessage({
                       id: 'workspace.window.sql.limit.placeholder',
+                      defaultMessage: '1000',
                     })}
                     style={{
                       width: 70,
@@ -1127,6 +1164,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 placeholder={
                   formatMessage({
                     id: 'odc.components.DDLResultSet.EnterAKeyword',
+                    defaultMessage: '请输入关键字',
                   })
 
                   // 请输入关键字
@@ -1173,11 +1211,13 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               }
               title={formatMessage({
                 id: 'workspace.window.sql.button.columnFilter.title',
+                defaultMessage: '请选择要展示的列',
               })}
             >
               <ToolbarButton
                 text={formatMessage({
                   id: 'workspace.window.sql.button.columnFilter',
+                  defaultMessage: '列管理',
                 })}
                 icon={<FilterOutlined />}
               />
@@ -1186,6 +1226,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               disabled={!rows[selectedRowIdx]}
               text={formatMessage({
                 id: 'workspace.window.sql.button.columnMode',
+                defaultMessage: '列模式',
               })}
               icon={<BarsOutlined />}
               onClick={() => {
@@ -1200,6 +1241,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               <ToolbarButton
                 text={formatMessage({
                   id: 'workspace.window.session.button.refresh',
+                  defaultMessage: '刷新',
                 })}
                 icon={<SyncOutlined />}
                 onClick={onRefresh.bind(this, limit || 1000)}

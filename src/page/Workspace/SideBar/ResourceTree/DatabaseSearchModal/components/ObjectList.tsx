@@ -103,6 +103,7 @@ const ObjectList = ({
             </Tooltip>
           </>
         );
+
       case DbObjectType.database: {
         const { dataSource } = item;
         const { name: dataSourceName, dialectType } = dataSource;
@@ -196,6 +197,7 @@ const ObjectList = ({
                                     }}
                                   />
                                 )}
+
                                 <span style={{ paddingRight: 4 }}>{object?.name}</span>
                                 <span
                                   style={{

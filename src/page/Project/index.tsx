@@ -55,7 +55,13 @@ const ExtraContent = ({ projectId }) => {
 
   return (
     <Space size={12}>
-      <TooltipAction title={disabled ? formatMessage({ id: 'src.page.Project.653AB743' }) : ''}>
+      <TooltipAction
+        title={
+          disabled
+            ? formatMessage({ id: 'src.page.Project.653AB743', defaultMessage: '暂无权限' })
+            : ''
+        }
+      >
         <Button
           onClick={() => {
             tracert.click('a3112.b64002.c330858.d367386');
@@ -67,6 +73,7 @@ const ExtraContent = ({ projectId }) => {
           {
             formatMessage({
               id: 'odc.page.Project.LogOnToTheDatabase',
+              defaultMessage: '登录数据库',
             }) /*登录数据库*/
           }
         </Button>
@@ -99,6 +106,7 @@ const tabs = [
   {
     tab: formatMessage({
       id: 'odc.page.Project.Database',
+      defaultMessage: '数据库',
     }),
     //数据库
     key: IPageType.Project_Database,
@@ -106,6 +114,7 @@ const tabs = [
   {
     tab: formatMessage({
       id: 'odc.page.Project.Ticket',
+      defaultMessage: '工单',
     }),
     //工单
     key: IPageType.Project_Task,
@@ -113,6 +122,7 @@ const tabs = [
   {
     tab: formatMessage({
       id: 'odc.page.Project.Member',
+      defaultMessage: '成员',
     }),
     //成员
     key: IPageType.Project_User,
@@ -120,16 +130,18 @@ const tabs = [
   {
     tab: formatMessage({
       id: 'odc.src.page.Project.Sensitive',
+      defaultMessage: '敏感列',
     }), //'敏感列'
     key: IPageType.Project_Sensitive,
   },
   {
-    tab: formatMessage({ id: 'src.page.Project.B4D9BC23' }), //'消息'
+    tab: formatMessage({ id: 'src.page.Project.B4D9BC23', defaultMessage: '消息' }), //'消息'
     key: IPageType.Project_Notification,
   },
   {
     tab: formatMessage({
       id: 'odc.page.Project.Settings',
+      defaultMessage: '设置',
     }),
     //设置
     key: IPageType.Project_Setting,
@@ -271,6 +283,7 @@ const Index: React.FC<IProps> = function () {
           {
             formatMessage({
               id: 'odc.page.Project.ViewAllProjects',
+              defaultMessage: '查看所有项目',
             }) /*查看所有项目*/
           }
         </Link>

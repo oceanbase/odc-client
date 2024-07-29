@@ -71,6 +71,7 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
           {
             formatMessage({
               id: 'odc.component.TemplateInsertModal.TheGenerationIsSuccessfulAnd',
+              defaultMessage: '生成成功，且下次拖放将不再提示，可前往',
             }) /*生成成功，且下次拖放将不再提示，可前往*/
           }
 
@@ -84,12 +85,14 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
             {
               formatMessage({
                 id: 'odc.component.TemplateInsertModal.PersonalSettings',
+                defaultMessage: '个人设置',
               }) /*个人设置*/
             }
           </Button>
           {
             formatMessage({
               id: 'odc.component.TemplateInsertModal.ModifyTheGeneratedStatementType',
+              defaultMessage: '修改生成语句类型',
             }) /*修改生成语句类型*/
           }
         </>,
@@ -108,6 +111,7 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
       title={
         formatMessage({
           id: 'odc.component.TemplateInsertModal.FastGeneration',
+          defaultMessage: '快速生成',
         }) + //快速生成
         `(${name})`
       }
@@ -120,6 +124,7 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
             {
               formatMessage({
                 id: 'odc.component.TemplateInsertModal.NoMorePromptInThe',
+                defaultMessage: '以后不再提示',
               }) /*以后不再提示*/
             }
           </Checkbox>
@@ -128,6 +133,7 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
               {
                 formatMessage({
                   id: 'odc.component.TemplateInsertModal.Cancel',
+                  defaultMessage: '取消',
                 }) /*取消*/
               }
             </Button>
@@ -135,6 +141,7 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
               {
                 formatMessage({
                   id: 'odc.component.TemplateInsertModal.Ok',
+                  defaultMessage: '确定',
                 }) /*确定*/
               }
             </Button>
@@ -146,6 +153,7 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
         {
           formatMessage({
             id: 'odc.component.TemplateInsertModal.WhenYouDragAndDrop',
+            defaultMessage: '选择对象进行拖放时，可在 SQL 窗口快速生成：',
           }) /*选择对象进行拖放时，可在 SQL 窗口快速生成：*/
         }
 
@@ -267,6 +275,7 @@ export async function copyObj(
   message.success(
     formatMessage({
       id: 'odc.component.TemplateInsertModal.CopiedSuccessfully',
+      defaultMessage: '复制成功',
     }), //复制成功
   );
 }

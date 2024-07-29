@@ -47,6 +47,7 @@ const TableConstraint: React.FC<IProps> = function ({ modified }) {
           key: ConstraintType.Primary,
           label: formatMessage({
             id: 'odc.CreateTable.TableConstraint.PrimaryKeyConstraint',
+            defaultMessage: '主键约束',
           }),
           children: <PrimaryConstaint modified={modified} />,
         },
@@ -54,6 +55,7 @@ const TableConstraint: React.FC<IProps> = function ({ modified }) {
           key: ConstraintType.Unique,
           label: formatMessage({
             id: 'odc.CreateTable.TableConstraint.UniqueConstraint',
+            defaultMessage: '唯一约束',
           }),
           children: <UniqueConstraints modified={modified} />,
         },
@@ -61,6 +63,7 @@ const TableConstraint: React.FC<IProps> = function ({ modified }) {
           key: ConstraintType.Foreign,
           label: formatMessage({
             id: 'odc.CreateTable.TableConstraint.ForeignKeyConstraint',
+            defaultMessage: '外键约束',
           }),
           children: <Foreign modified={modified} />,
         },
@@ -68,6 +71,7 @@ const TableConstraint: React.FC<IProps> = function ({ modified }) {
           key: ConstraintType.Check,
           label: formatMessage({
             id: 'odc.CreateTable.TableConstraint.CheckConstraints',
+            defaultMessage: '检查约束',
           }),
           children: <CheckConstraint modified={modified} />,
         },

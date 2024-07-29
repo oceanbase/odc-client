@@ -42,7 +42,9 @@ const renderTime = (time) => {
   return (
     <Space size={4}>
       <span>{secondsToHour(time)}</span>
-      <span>{formatMessage({ id: 'odc.Secure.Approval.Hours' }) /*小时*/}</span>
+      <span>
+        {formatMessage({ id: 'odc.Secure.Approval.Hours', defaultMessage: '小时' }) /*小时*/}
+      </span>
     </Space>
   );
 };
@@ -51,7 +53,10 @@ const renderNodes = (nodes: ITaskFlowNode[]) => {
   return nodes
     ?.map((item) => {
       if (item.autoApproval) {
-        return formatMessage({ id: 'odc.Secure.Approval.AutomaticApproval' }); //自动审批
+        return formatMessage({
+          id: 'odc.Secure.Approval.AutomaticApproval',
+          defaultMessage: '自动审批',
+        }); //自动审批
       }
       return item.resourceRoleName || item.externalApprovalName;
     })
@@ -89,7 +94,7 @@ class Approval extends React.PureComponent<IProps, IState> {
   private getPageColumns = () => {
     return [
       {
-        title: formatMessage({ id: 'odc.Secure.Approval.ProcessName' }), //流程名称
+        title: formatMessage({ id: 'odc.Secure.Approval.ProcessName', defaultMessage: '流程名称' }), //流程名称
         width: 200,
         dataIndex: 'name',
         ellipsis: true,
@@ -97,14 +102,20 @@ class Approval extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: formatMessage({ id: 'odc.Secure.Approval.ApprovalProcess' }), //审批流程
+        title: formatMessage({
+          id: 'odc.Secure.Approval.ApprovalProcess',
+          defaultMessage: '审批流程',
+        }), //审批流程
         dataIndex: 'nodes',
         className: styles.title,
         ellipsis: true,
         render: renderNodes,
       },
       {
-        title: formatMessage({ id: 'odc.Secure.Approval.ValidityPeriodOfApproval' }), //审批有效期
+        title: formatMessage({
+          id: 'odc.Secure.Approval.ValidityPeriodOfApproval',
+          defaultMessage: '审批有效期',
+        }), //审批有效期
         width: 132,
         dataIndex: 'approvalExpirationIntervalSeconds',
         className: styles.title,
@@ -112,7 +123,10 @@ class Approval extends React.PureComponent<IProps, IState> {
         render: renderTime,
       },
       {
-        title: formatMessage({ id: 'odc.Secure.Approval.ExecutionWaitingPeriod' }), //执行等待有效期
+        title: formatMessage({
+          id: 'odc.Secure.Approval.ExecutionWaitingPeriod',
+          defaultMessage: '执行等待有效期',
+        }), //执行等待有效期
         width: 132,
         dataIndex: 'waitExecutionExpirationIntervalSeconds',
         className: styles.title,
@@ -120,7 +134,10 @@ class Approval extends React.PureComponent<IProps, IState> {
         render: renderTime,
       },
       {
-        title: formatMessage({ id: 'odc.Secure.Approval.ExecutionValidityPeriod' }), //执行有效期
+        title: formatMessage({
+          id: 'odc.Secure.Approval.ExecutionValidityPeriod',
+          defaultMessage: '执行有效期',
+        }), //执行有效期
         width: 132,
         dataIndex: 'executionExpirationIntervalSeconds',
         className: styles.title,
@@ -128,7 +145,10 @@ class Approval extends React.PureComponent<IProps, IState> {
         render: renderTime,
       },
       {
-        title: formatMessage({ id: 'odc.Secure.Approval.UsageQuantity' }), //使用数量
+        title: formatMessage({
+          id: 'odc.Secure.Approval.UsageQuantity',
+          defaultMessage: '使用数量',
+        }), //使用数量
         width: 180,
         dataIndex: 'referencedCount',
         className: styles.title,
@@ -136,7 +156,7 @@ class Approval extends React.PureComponent<IProps, IState> {
         ellipsis: true,
       },
       {
-        title: formatMessage({ id: 'odc.Secure.Approval.Operation' }), //操作
+        title: formatMessage({ id: 'odc.Secure.Approval.Operation', defaultMessage: '操作' }), //操作
         width: 200,
         key: 'action',
         fixed: 'right' as FixedType,
@@ -149,7 +169,7 @@ class Approval extends React.PureComponent<IProps, IState> {
                   this.openFormModal(record.id);
                 }}
               >
-                {formatMessage({ id: 'odc.Secure.Approval.Edit' }) /*编辑*/}
+                {formatMessage({ id: 'odc.Secure.Approval.Edit', defaultMessage: '编辑' }) /*编辑*/}
               </Action.Link>
             </Acess>
             <Acess {...createPermission(IManagerResourceType.approval_flow, actionTypes.delete)}>
@@ -159,7 +179,12 @@ class Approval extends React.PureComponent<IProps, IState> {
                   this.handleDelete(record.id);
                 }}
               >
-                {formatMessage({ id: 'odc.Secure.Approval.Delete' }) /*删除*/}
+                {
+                  formatMessage({
+                    id: 'odc.Secure.Approval.Delete',
+                    defaultMessage: '删除',
+                  }) /*删除*/
+                }
               </Action.Link>
             </Acess>
           </Action.Group>
@@ -177,10 +202,13 @@ class Approval extends React.PureComponent<IProps, IState> {
 
   private handleDelete = (param: React.Key | React.Key[]) => {
     Modal.confirm({
-      title: formatMessage({ id: 'odc.Secure.Approval.AreYouSureYouWant' }), //确认要删除审批流程吗？
+      title: formatMessage({
+        id: 'odc.Secure.Approval.AreYouSureYouWant',
+        defaultMessage: '是否确认删除审批流程？',
+      }), //确认要删除审批流程吗？
       icon: <ExclamationCircleFilled style={{ color: 'var(--icon-orange-color)' }} />,
-      cancelText: formatMessage({ id: 'odc.Secure.Approval.Cancel' }), //取消
-      okText: formatMessage({ id: 'odc.Secure.Approval.Ok' }), //确定
+      cancelText: formatMessage({ id: 'odc.Secure.Approval.Cancel', defaultMessage: '取消' }), //取消
+      okText: formatMessage({ id: 'odc.Secure.Approval.Ok', defaultMessage: '确定' }), //确定
       centered: true,
       onOk: () => {
         this.handleConfirmDelete(param as number);
@@ -192,7 +220,10 @@ class Approval extends React.PureComponent<IProps, IState> {
     const res = await deleteTaskFlow(id);
     if (res) {
       message.success(
-        formatMessage({ id: 'odc.Secure.Approval.DeletedSuccessfully' }), //删除成功
+        formatMessage({
+          id: 'odc.Secure.Approval.DeletedSuccessfully',
+          defaultMessage: '删除成功',
+        }), //删除成功
       );
       this.reloadData();
     }
@@ -263,7 +294,10 @@ class Approval extends React.PureComponent<IProps, IState> {
           ref={this.tableRef}
           titleContent={null}
           filterContent={{
-            searchPlaceholder: formatMessage({ id: 'odc.Secure.Approval.EnterAProcessName' }), //请输入流程名称
+            searchPlaceholder: formatMessage({
+              id: 'odc.Secure.Approval.EnterAProcessName',
+              defaultMessage: '请输入流程名称',
+            }), //请输入流程名称
           }}
           operationContent={
             canAcessCreate
@@ -271,7 +305,10 @@ class Approval extends React.PureComponent<IProps, IState> {
                   options: [
                     {
                       type: IOperationOptionType.button,
-                      content: formatMessage({ id: 'odc.Secure.Approval.CreateAnApprovalProcess' }), //新建审批流程
+                      content: formatMessage({
+                        id: 'odc.Secure.Approval.CreateAnApprovalProcess',
+                        defaultMessage: '新建审批流程',
+                      }), //新建审批流程
                       isPrimary: true,
                       onClick: this.handleCreate,
                     },

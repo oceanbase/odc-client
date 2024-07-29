@@ -42,15 +42,24 @@ const Notification: React.FC<{
 }> = ({ id }) => {
   const items: MenuItem[] = [
     {
-      label: formatMessage({ id: 'src.page.Project.Notification.3538B93C' }), //'推送记录'
+      label: formatMessage({
+        id: 'src.page.Project.Notification.3538B93C',
+        defaultMessage: '推送记录',
+      }), //'推送记录'
       key: 'message',
     },
     {
-      label: formatMessage({ id: 'src.page.Project.Notification.25A341FB' }), //'推送规则'
+      label: formatMessage({
+        id: 'src.page.Project.Notification.25A341FB',
+        defaultMessage: '推送规则',
+      }), //'推送规则'
       key: 'policy',
     },
     {
-      label: formatMessage({ id: 'src.page.Project.Notification.87BBE655' }), //'推送通道'
+      label: formatMessage({
+        id: 'src.page.Project.Notification.87BBE655',
+        defaultMessage: '推送通道',
+      }), //'推送通道'
       key: 'channel',
     },
   ];

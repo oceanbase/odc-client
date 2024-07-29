@@ -38,7 +38,10 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     {
       key: 'NEW_SQL',
       text: [
-        formatMessage({ id: 'odc.TreeNodeMenu.config.database.OpenTheSqlWindow' }), //打开 SQL 窗口
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.database.OpenTheSqlWindow',
+          defaultMessage: '打开 SQL 窗口',
+        }), //打开 SQL 窗口
       ],
       ellipsis: true,
       run(session, node, databaseFrom) {
@@ -50,7 +53,10 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     {
       key: 'NEW_PL',
       text: [
-        formatMessage({ id: 'odc.TreeNodeMenu.config.database.OpenTheAnonymousBlockWindow' }), //打开匿名块窗口
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.database.OpenTheAnonymousBlockWindow',
+          defaultMessage: '打开匿名块窗口',
+        }), //打开匿名块窗口
       ],
       isHide(_, node) {
         const database: IDatabase = node.data;
@@ -65,7 +71,10 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     {
       key: 'NEW_OBCLIENT',
       text: [
-        formatMessage({ id: 'odc.TreeNodeMenu.config.database.OpenTheCommandLineWindow' }), //打开命令行窗口
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.database.OpenTheCommandLineWindow',
+          defaultMessage: '打开命令行窗口',
+        }), //打开命令行窗口
       ],
       isHide(_, node) {
         return !login.isPrivateSpace() || !setting.enableOBClient;
@@ -81,6 +90,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       text: [
         formatMessage({
           id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.503FF376',
+          defaultMessage: '数据导出',
         }) /*'数据导出'*/,
       ],
 
@@ -91,6 +101,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           text: [
             formatMessage({
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.0A419755',
+              defaultMessage: '导出',
             }) /*'导出'*/,
           ],
 
@@ -110,6 +121,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           text: [
             formatMessage({
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.42C44540',
+              defaultMessage: '导出结果集',
             }) /*'导出结果集'*/,
           ],
 
@@ -131,6 +143,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       text: [
         formatMessage({
           id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.9552E3A1',
+          defaultMessage: '数据研发',
         }) /*'数据研发'*/,
       ],
 
@@ -141,6 +154,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           text: [
             formatMessage({
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.2CFE4C42',
+              defaultMessage: '导入',
             }) /*'导入'*/,
           ],
 
@@ -160,6 +174,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           text: [
             formatMessage({
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.59BFC33A',
+              defaultMessage: '模拟数据',
             }) /*'模拟数据'*/,
           ],
 
@@ -179,6 +194,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           text: [
             formatMessage({
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.E6CFD4DD',
+              defaultMessage: '数据库变更',
             }) /*'数据库变更'*/,
           ],
 
@@ -198,6 +214,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           text: [
             formatMessage({
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.6844939F',
+              defaultMessage: '无锁结构变更',
             }) /*'无锁结构变更'*/,
           ],
 
@@ -217,6 +234,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           text: [
             formatMessage({
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.1ACCD0B1',
+              defaultMessage: '影子表同步',
             }) /*'影子表同步'*/,
           ],
 
@@ -233,6 +251,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           text: [
             formatMessage({
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.3DDBBFA6',
+              defaultMessage: '结构比对',
             }) /*'结构比对'*/,
           ],
 
@@ -251,6 +270,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       text: [
         formatMessage({
           id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.36AA3D8E',
+          defaultMessage: '定时任务',
         }) /*'定时任务'*/,
       ],
 
@@ -266,6 +286,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           text: [
             formatMessage({
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.82D835BA',
+              defaultMessage: 'SQL 计划',
             }) /*'SQL 计划'*/,
           ],
 
@@ -285,6 +306,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           text: [
             formatMessage({
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.481C5DF5',
+              defaultMessage: '分区计划',
             }) /*'分区计划'*/,
           ],
 
@@ -304,6 +326,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           text: [
             formatMessage({
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.983B20EC',
+              defaultMessage: '数据归档',
             }) /*'数据归档'*/,
           ],
 
@@ -323,6 +346,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           text: [
             formatMessage({
               id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.51FA0E16',
+              defaultMessage: '数据清理',
             }) /*'数据清理'*/,
           ],
 

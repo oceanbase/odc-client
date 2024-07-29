@@ -99,6 +99,7 @@ export function CaseTextEditor<T>({
           zIndex={1031}
           okText={formatMessage({
             id: 'odc.EditableTable.Editors.TextEditor.Submitted',
+            defaultMessage: '提交',
           })} /* 提交 */
           onCancel={() => {
             setIsShowTextModal(false);

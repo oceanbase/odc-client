@@ -57,6 +57,7 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
         title: formatMessage(
           {
             id: 'odc.Sider.SpaceSelect.AreYouSureYouWant',
+            defaultMessage: '确认要切换为{oriDisplayName}吗',
           },
           { oriDisplayName: ori.displayName },
         ), //`确认要切换为${ori.displayName}吗`
@@ -70,13 +71,18 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
                 localStorage.setItem(ORGANIZATION_TIP_VSIBLE_KEY, value);
               }}
             >
-              {formatMessage({ id: 'odc.Sider.SpaceSelect.NoMorePrompt' }) /*不再提示*/}
+              {
+                formatMessage({
+                  id: 'odc.Sider.SpaceSelect.NoMorePrompt',
+                  defaultMessage: '不再提示',
+                }) /*不再提示*/
+              }
             </Checkbox>
           </>
         ),
 
-        okText: formatMessage({ id: 'odc.Sider.SpaceSelect.Ok' }), //确定
-        cancelText: formatMessage({ id: 'odc.Sider.SpaceSelect.Cancel' }), //取消
+        okText: formatMessage({ id: 'odc.Sider.SpaceSelect.Ok', defaultMessage: '确定' }), //确定
+        cancelText: formatMessage({ id: 'odc.Sider.SpaceSelect.Cancel', defaultMessage: '取消' }), //取消
         onOk: () => {
           handleOk(ori);
         },

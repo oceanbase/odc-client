@@ -90,7 +90,7 @@ const DatabaseList = ({
         <Button type="link" style={{ padding: 0 }} onClick={(e) => applyPermission(e, db)}>
           {formatMessage({
             id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.DC41DDB8',
-            defaultMessage: '权限库申请',
+            defaultMessage: '申请库权限',
           })}
         </Button>
       );
@@ -115,14 +115,14 @@ const DatabaseList = ({
           ? formatMessage(
               {
                 id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.6D5791AB',
-                defaultMessage: '当前项目: ${selectProject?.name}',
+                defaultMessage: '当前项目：{selectProjectName}',
               },
               { selectProjectName: selectProject?.name },
             )
           : formatMessage(
               {
                 id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.987D5B8A',
-                defaultMessage: '当前数据源: ${selectDatasource?.name}',
+                defaultMessage: '当前数据源: {selectDatasourceName}',
               },
               { selectDatasourceName: selectDatasource?.name },
             )}

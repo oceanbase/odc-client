@@ -124,7 +124,12 @@ class RecycleBin extends Component<
     this.setState({
       selectedObjectNames: new Set<string>(), // 清除掉当前选择的对象
     });
-    message.success(formatMessage({ id: 'workspace.window.recyclebin.success' }));
+    message.success(
+      formatMessage({
+        id: 'workspace.window.recyclebin.success',
+        defaultMessage: '操作数据库对象成功',
+      }),
+    );
   };
 
   /**
@@ -135,17 +140,20 @@ class RecycleBin extends Component<
       icon: <ExclamationCircleFilled />,
       title: formatMessage({
         id: 'workspace.window.recyclebin.modal.purgeAll.title',
+        defaultMessage: '是否确定清空回收站？',
       }),
 
       content: formatMessage({
         id: 'workspace.window.recyclebin.modal.purgeAll.content',
+        defaultMessage: '清空后数据库对象将无法恢复！',
       }),
 
       okText: formatMessage({
         id: 'workspace.window.recyclebin.button.purgeAll',
+        defaultMessage: '清空',
       }),
 
-      cancelText: formatMessage({ id: 'app.button.cancel' }),
+      cancelText: formatMessage({ id: 'app.button.cancel', defaultMessage: '取消' }),
       okButtonProps: {
         danger: true,
         ghost: true,
@@ -281,6 +289,7 @@ class RecycleBin extends Component<
         dataIndex: 'id',
         title: formatMessage({
           id: 'workspace.window.recyclebin.column.originName',
+          defaultMessage: '原名称',
         }),
 
         sorter: (a: IRecycleObject, b: IRecycleObject) => sortString(a.id, b.id),
@@ -291,6 +300,7 @@ class RecycleBin extends Component<
         dataIndex: 'objName',
         title: formatMessage({
           id: 'workspace.window.recyclebin.column.objName',
+          defaultMessage: '对象名称',
         }),
       },
 
@@ -298,6 +308,7 @@ class RecycleBin extends Component<
         dataIndex: 'objType',
         title: formatMessage({
           id: 'workspace.window.recyclebin.column.objType',
+          defaultMessage: '对象类型',
         }),
       },
 
@@ -305,6 +316,7 @@ class RecycleBin extends Component<
         dataIndex: 'createTime',
         title: formatMessage({
           id: 'workspace.window.recyclebin.column.createTime',
+          defaultMessage: '进入回收站时间',
         }),
       },
     ];
@@ -314,6 +326,7 @@ class RecycleBin extends Component<
         key: 'id',
         name: formatMessage({
           id: 'workspace.window.recyclebin.column.originName',
+          defaultMessage: '原名称',
         }),
 
         editable: false,
@@ -326,6 +339,7 @@ class RecycleBin extends Component<
         key: 'id',
         name: formatMessage({
           id: 'workspace.window.recyclebin.column.originName',
+          defaultMessage: '原名称',
         }),
 
         editable: false,
@@ -336,6 +350,7 @@ class RecycleBin extends Component<
         key: 'objType',
         name: formatMessage({
           id: 'workspace.window.recyclebin.column.objType',
+          defaultMessage: '对象类型',
         }),
 
         editable: false,
@@ -346,6 +361,7 @@ class RecycleBin extends Component<
         key: 'newName',
         name: formatMessage({
           id: 'workspace.window.recyclebin.column.newName',
+          defaultMessage: '重命名（可选）',
         }),
 
         editor: TextEditor,
@@ -374,6 +390,7 @@ class RecycleBin extends Component<
                     text={
                       formatMessage({
                         id: 'odc.components.RecycleBinPage.Delete',
+                        defaultMessage: '删除',
                       }) //删除
                     }
                     onClick={() => this.setState({ showDeleteDrawer: true })}
@@ -382,7 +399,10 @@ class RecycleBin extends Component<
                   <ToolbarButton
                     type="BUTTON"
                     disabled={!selectedObjectNames.size}
-                    text={formatMessage({ id: 'workspace.window.recyclebin.button.restore' })}
+                    text={formatMessage({
+                      id: 'workspace.window.recyclebin.button.restore',
+                      defaultMessage: '还原',
+                    })}
                     onClick={() => this.setState({ showRestoreDrawer: true })}
                   />
 
@@ -391,6 +411,7 @@ class RecycleBin extends Component<
                     text={
                       formatMessage({
                         id: 'odc.components.RecycleBinPage.Clear',
+                        defaultMessage: '清空',
                       }) //清空
                     }
                     onClick={this.handleOpenPurgeAllModal}
@@ -402,6 +423,7 @@ class RecycleBin extends Component<
                   allowClear
                   placeholder={formatMessage({
                     id: 'workspace.window.session.button.search',
+                    defaultMessage: '搜索',
                   })}
                   onSearch={this.handleSearch}
                   // onChange={(e) => this.handleSearch(e.target.value)}
@@ -423,6 +445,7 @@ class RecycleBin extends Component<
                       text={
                         formatMessage({
                           id: 'odc.components.RecycleBinPage.Settings',
+                          defaultMessage: '设置',
                         })
                         //设置
                       }
@@ -431,7 +454,10 @@ class RecycleBin extends Component<
                   </RecycleConfig>
                 </RecyleConfigContext.Provider>
                 <ToolbarButton
-                  text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
+                  text={formatMessage({
+                    id: 'workspace.window.session.button.refresh',
+                    defaultMessage: '刷新',
+                  })}
                   icon={<SyncOutlined />}
                   onClick={this.handleRefresh}
                 />
@@ -460,6 +486,7 @@ class RecycleBin extends Component<
                     key: 'all-data',
                     text: formatMessage({
                       id: 'odc.components.RecycleBinPage.SelectAllObjects',
+                      defaultMessage: '选择所有对象',
                     }),
                     //选择所有对象
                     onSelect: () => {
@@ -471,6 +498,7 @@ class RecycleBin extends Component<
                     key: 'cancel-all-data',
                     text: formatMessage({
                       id: 'odc.components.RecycleBinPage.CancelAllObjects',
+                      defaultMessage: '取消所有对象',
                     }),
                     //取消所有对象
                     onSelect: () => {
@@ -485,6 +513,7 @@ class RecycleBin extends Component<
         <Drawer
           title={formatMessage({
             id: 'workspace.window.recyclebin.drawer.delete.title',
+            defaultMessage: '清除数据库对象',
           })}
           placement="right"
           closable
@@ -507,16 +536,20 @@ class RecycleBin extends Component<
               onClick={() => this.setState({ showDeleteDrawer: false })}
               style={{ marginRight: 8 }}
             >
-              {formatMessage({ id: 'app.button.cancel' })}
+              {formatMessage({ id: 'app.button.cancel', defaultMessage: '取消' })}
             </Button>
             <Button onClick={this.handleDelete} danger ghost>
-              {formatMessage({ id: 'workspace.window.recyclebin.button.clean' })}
+              {formatMessage({
+                id: 'workspace.window.recyclebin.button.clean',
+                defaultMessage: '清除',
+              })}
             </Button>
           </div>
         </Drawer>
         <Drawer
           title={formatMessage({
             id: 'workspace.window.recyclebin.drawer.restore.title',
+            defaultMessage: '还原数据库对象',
           })}
           placement="right"
           closable
@@ -536,10 +569,13 @@ class RecycleBin extends Component<
 
           <div className={styles.drawerFooter}>
             <Button onClick={this.handleCancelRestore} style={{ marginRight: 8 }}>
-              {formatMessage({ id: 'app.button.cancel' })}
+              {formatMessage({ id: 'app.button.cancel', defaultMessage: '取消' })}
             </Button>
             <Button onClick={this.handleRestore} type="primary">
-              {formatMessage({ id: 'workspace.window.recyclebin.button.restore' })}
+              {formatMessage({
+                id: 'workspace.window.recyclebin.button.restore',
+                defaultMessage: '还原',
+              })}
             </Button>
           </div>
         </Drawer>

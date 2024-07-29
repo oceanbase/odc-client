@@ -144,7 +144,10 @@ export async function generateUpdateTableDDL(
 
   if (!res?.data?.sql) {
     notification.error({
-      track: formatMessage({ id: 'odc.network.table.CurrentlyNoSqlCanBe' }), //当前无 SQL 可提交
+      track: formatMessage({
+        id: 'odc.network.table.CurrentlyNoSqlCanBe',
+        defaultMessage: '当前无 SQL 可提交',
+      }), //当前无 SQL 可提交
     });
   }
   return res?.data || { sql: '', tip: '' };

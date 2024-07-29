@@ -50,11 +50,17 @@ export const getStrategyLabelByConfig = (config: Partial<IPartitionTableConfig>)
 
 const configStatusFilters = [
   {
-    text: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.AB027BA5' }), //'已启用'
+    text: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyTable.AB027BA5',
+      defaultMessage: '已启用',
+    }), //'已启用'
     value: true,
   },
   {
-    text: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.53F091D2' }), //'已终止'
+    text: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyTable.53F091D2',
+      defaultMessage: '已终止',
+    }), //'已终止'
     value: false,
   },
 ];
@@ -72,6 +78,7 @@ const ConfigStatusRender: React.FC<IConfigStatusRender> = (enabled) => {
             {
               formatMessage({
                 id: 'src.component.Task.component.PartitionPolicyTable.274DB973' /*已启用*/,
+                defaultMessage: '已启用',
               }) /* 已启用 */
             }
           </span>
@@ -83,6 +90,7 @@ const ConfigStatusRender: React.FC<IConfigStatusRender> = (enabled) => {
             {
               formatMessage({
                 id: 'src.component.Task.component.PartitionPolicyTable.C7EDE8D6' /*已终止*/,
+                defaultMessage: '已终止',
               }) /* 已终止 */
             }
           </span>
@@ -124,7 +132,10 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
 
   const columns = [
     {
-      title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.43CFD7CB' }), //'分区表'
+      title: formatMessage({
+        id: 'src.component.Task.component.PartitionPolicyTable.43CFD7CB',
+        defaultMessage: '分区表',
+      }), //'分区表'
       key: 'tableName',
       dataIndex: 'tableName',
       width: 114,
@@ -135,6 +146,7 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
             {...props}
             placeholder={formatMessage({
               id: 'odc.components.PartitionPolicyTable.EnterATableName',
+              defaultMessage: '请输入表名',
             })} /*请输入表名*/
           />
         );
@@ -147,13 +159,19 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
     },
     {
       dataIndex: 'type',
-      title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.5C3A7795' }), //'类型'
+      title: formatMessage({
+        id: 'src.component.Task.component.PartitionPolicyTable.5C3A7795',
+        defaultMessage: '类型',
+      }), //'类型'
       ellipsis: true,
       width: 80,
       render: () => <span>Range</span>,
     },
     {
-      title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.CE0CCA9F' }), //'分区策略'
+      title: formatMessage({
+        id: 'src.component.Task.component.PartitionPolicyTable.CE0CCA9F',
+        defaultMessage: '分区策略',
+      }), //'分区策略'
       key: 'containsStrategy',
       dataIndex: 'containsStrategy',
       ellipsis: true,
@@ -163,6 +181,7 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
           <span>
             {formatMessage({
               id: 'src.component.Task.component.PartitionPolicyTable.84B9C347' /*已设置*/,
+              defaultMessage: '已设置',
             })}
             {label}
           </span>
@@ -170,7 +189,10 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
       },
     },
     {
-      title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.1CFAC78A' }), //'状态'
+      title: formatMessage({
+        id: 'src.component.Task.component.PartitionPolicyTable.1CFAC78A',
+        defaultMessage: '状态',
+      }), //'状态'
       key: 'enabled',
       dataIndex: 'enabled',
       width: 80,
@@ -179,7 +201,10 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
       render: ConfigStatusRender,
     },
     {
-      title: formatMessage({ id: 'src.component.Task.component.PartitionPolicyTable.768A8D6A' }), //'操作'
+      title: formatMessage({
+        id: 'src.component.Task.component.PartitionPolicyTable.768A8D6A',
+        defaultMessage: '操作',
+      }), //'操作'
       key: 'action',
       width: 80,
       render: (enabled, record) => {
@@ -193,6 +218,7 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'src.component.Task.component.PartitionPolicyTable.BF0C419E' /*查看*/,
+                  defaultMessage: '查看',
                 }) /* 查看 */
               }
             </Action.Link>
@@ -227,6 +253,7 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
         titleContent={{
           title: formatMessage({
             id: 'odc.components.PartitionPolicyTable.PartitionPolicy',
+            defaultMessage: '分区策略',
           }), //分区策略
         }}
         filterContent={{

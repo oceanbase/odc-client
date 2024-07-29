@@ -52,6 +52,7 @@ const getColumns = (params: {
       dataIndex: 'resultJson',
       title: formatMessage({
         id: 'odc.component.CommonDetailModal.TaskProgress.SourceTable',
+        defaultMessage: '源表',
       }),
       //源表
       ellipsis: true,
@@ -63,6 +64,7 @@ const getColumns = (params: {
       dataIndex: 'status',
       title: formatMessage({
         id: 'odc.component.CommonDetailModal.TaskProgress.ExecutionStatus',
+        defaultMessage: '执行状态',
       }),
       //执行状态
       ellipsis: true,
@@ -77,6 +79,7 @@ const getColumns = (params: {
       dataIndex: 'action',
       title: formatMessage({
         id: 'odc.component.CommonDetailModal.TaskProgress.Operation',
+        defaultMessage: '操作',
       }),
       //操作
       ellipsis: true,
@@ -93,6 +96,7 @@ const getColumns = (params: {
               {
                 formatMessage({
                   id: 'odc.component.CommonDetailModal.TaskProgress.View',
+                  defaultMessage: '查看',
                 }) /*查看*/
               }
             </Action.Link>
@@ -105,6 +109,7 @@ const getColumns = (params: {
                 {
                   formatMessage({
                     id: 'odc.src.component.Task.component.CommonDetailModal.WatchNameSwitch',
+                    defaultMessage: '\n                表名切换\n              ',
                   }) /* 
             表名切换
             */
@@ -250,6 +255,7 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
               {
                 formatMessage({
                   id: 'odc.component.CommonDetailModal.TaskProgress.View',
+                  defaultMessage: '查看',
                 }) /*查看*/
               }
             </Action.Link>
@@ -321,6 +327,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
       message.success(
         formatMessage({
           id: 'odc.src.component.Task.component.CommonDetailModal.StartTheNameSwitching',
+          defaultMessage: '开始表名切换',
         }), //'开始表名切换'
       );
       loadData();
@@ -364,12 +371,11 @@ const TaskProgress: React.FC<IProps> = (props) => {
           {formatMessage(
             {
               id: 'src.component.Task.component.CommonDetailModal.E75BF608',
-              defaultMessage:
-                '共 ${subTasks?.length} 个数据库， ${pendingExectionDatabases} 个待执行',
+              defaultMessage: '共 {subTasksLength} 个数据库， {pendingExectionDatabases} 个待执行',
             },
             {
               subTasksLength: subTasks?.length,
-              pendingExectionDatabases: pendingExectionDatabases,
+              pendingExectionDatabases,
             },
           )}
         </div>
@@ -400,6 +406,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
           <SimpleTextItem
             label={formatMessage({
               id: 'odc.component.CommonDetailModal.TaskProgress.NewTableDdl',
+              defaultMessage: '新表 DDL',
             })}
             /*新表 DDL*/ content={
               <div
@@ -425,6 +432,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
           <SimpleTextItem
             label={formatMessage({
               id: 'odc.component.CommonDetailModal.TaskProgress.SourceTableDdl',
+              defaultMessage: '源表 DDL',
             })}
             /*源表 DDL*/ content={
               <div

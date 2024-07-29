@@ -12,12 +12,15 @@ import { IDatabase } from '@/d.ts/database';
 const LintResultTip = {
   default: formatMessage({
     id: 'odc.src.page.Workspace.components.SQLResultSet.CurrentSQLCanBeExecuted',
+    defaultMessage: '当前 SQL 可直接执行',
   }), //'当前 SQL 可直接执行'
   suggest: formatMessage({
     id: 'odc.src.page.Workspace.components.SQLResultSet.TheCurrentSQLNeedsApproval',
+    defaultMessage: '当前 SQL 存在需要审批项，请发起审批或修改后再执行',
   }), //'当前 SQL 存在需要审批项，请发起审批或修改后再执行'
   must: formatMessage({
     id: 'odc.src.page.Workspace.components.SQLResultSet.TheCurrentSQLExistenceMust',
+    defaultMessage: '当前 SQL 存在必须改进项，请修改后再执行',
   }), //'当前 SQL 存在必须改进项，请修改后再执行'
 };
 export interface ILintResultTableProps {

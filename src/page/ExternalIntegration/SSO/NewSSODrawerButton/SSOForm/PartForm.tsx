@@ -36,6 +36,7 @@ export const OAUTH2PartForm: React.FC<{
         {
           formatMessage({
             id: 'odc.NewSSODrawerButton.SSOForm.OauthInformation',
+            defaultMessage: 'OAUTH 信息',
           }) /*OAUTH 信息*/
         }
       </Typography.Title>
@@ -53,6 +54,7 @@ export const OAUTH2PartForm: React.FC<{
           }}
           placeholder={formatMessage({
             id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+            defaultMessage: '请输入',
           })} /*请输入*/
         />
       </Form.Item>
@@ -73,6 +75,7 @@ export const OAUTH2PartForm: React.FC<{
           }}
           placeholder={formatMessage({
             id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+            defaultMessage: '请输入',
           })} /*请输入*/
         />
       </Form.Item>
@@ -84,6 +87,7 @@ export const OAUTH2PartForm: React.FC<{
             leftText
             title={formatMessage({
               id: 'odc.NewSSODrawerButton.SSOForm.ObtainTheGrantCodeAddress',
+              defaultMessage: '授权服务器提供的获取 grant-code 地址',
             })} /*授权服务器提供的获取 grant-code 地址*/
           >
             Auth URL
@@ -99,6 +103,7 @@ export const OAUTH2PartForm: React.FC<{
           }}
           placeholder={formatMessage({
             id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+            defaultMessage: '请输入',
           })} /*请输入*/
         />
       </Form.Item>
@@ -110,6 +115,7 @@ export const OAUTH2PartForm: React.FC<{
             leftText
             title={formatMessage({
               id: 'odc.NewSSODrawerButton.SSOForm.ObtainTheUserInfoAddress',
+              defaultMessage: '授权服务器提供的获取 user-info 地址',
             })} /*授权服务器提供的获取 user-info 地址*/
           >
             User Info URL
@@ -125,6 +131,7 @@ export const OAUTH2PartForm: React.FC<{
           }}
           placeholder={formatMessage({
             id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+            defaultMessage: '请输入',
           })} /*请输入*/
         />
       </Form.Item>
@@ -136,6 +143,7 @@ export const OAUTH2PartForm: React.FC<{
             leftText
             title={formatMessage({
               id: 'odc.NewSSODrawerButton.SSOForm.ObtainTheAccessTokenAddress',
+              defaultMessage: '授权服务器提供的获取 access-token 地址',
             })} /*授权服务器提供的获取 access-token 地址*/
           >
             Token URL
@@ -151,6 +159,7 @@ export const OAUTH2PartForm: React.FC<{
           }}
           placeholder={formatMessage({
             id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+            defaultMessage: '请输入',
           })} /*请输入*/
         />
       </Form.Item>
@@ -162,6 +171,7 @@ export const OAUTH2PartForm: React.FC<{
             leftText
             title={formatMessage({
               id: 'odc.NewSSODrawerButton.SSOForm.AuthorizeTheServerToCall',
+              defaultMessage: '授权服务器回调 ODC 服务的地址，如果 SSO 有回调白名单，需要进行加白',
             })} /*授权服务器回调 ODC 服务的地址，如果 SSO 有回调白名单，需要进行加白*/
           >
             Redirect URL
@@ -182,6 +192,7 @@ export const OAUTH2PartForm: React.FC<{
           }}
           placeholder={formatMessage({
             id: 'odc.NewSSODrawerButton.SSOForm.AutomaticGeneration',
+            defaultMessage: '自动生成',
           })} /*自动生成*/
         />
       </Form.Item>
@@ -193,6 +204,7 @@ export const OAUTH2PartForm: React.FC<{
             leftText
             title={formatMessage({
               id: 'odc.NewSSODrawerButton.SSOForm.TheScopeOfApplicationAuthorization',
+              defaultMessage: '应用授权作用域，多个空格隔开，建议为 profile',
             })} /*应用授权作用域，多个空格隔开，建议为 profile*/
           >
             Scope
@@ -209,6 +221,7 @@ export const OAUTH2PartForm: React.FC<{
           }}
           placeholder={formatMessage({
             id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+            defaultMessage: '请输入',
           })} /*请输入*/
         />
       </Form.Item>
@@ -226,6 +239,7 @@ export const OAUTH2PartForm: React.FC<{
           {
             formatMessage({
               id: 'odc.NewSSODrawerButton.SSOForm.AdvancedOptions',
+              defaultMessage: '高级选项',
             }) /*高级选项*/
           }
         </span>
@@ -243,6 +257,7 @@ export const OAUTH2PartForm: React.FC<{
               leftText
               title={formatMessage({
                 id: 'odc.NewSSODrawerButton.SSOForm.ThePublicKeyAddressProvided',
+                defaultMessage: '授权服务器提供的公钥地址，使用公钥进行鉴权',
               })} /*授权服务器提供的公钥地址，使用公钥进行鉴权*/
             >
               jwkSet URL
@@ -255,6 +270,7 @@ export const OAUTH2PartForm: React.FC<{
             }}
             placeholder={formatMessage({
               id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+              defaultMessage: '请输入',
             })} /*请输入*/
           />
         </Form.Item>
@@ -265,6 +281,7 @@ export const OAUTH2PartForm: React.FC<{
               leftText
               title={formatMessage({
                 id: 'odc.NewSSODrawerButton.SSOForm.UserNameField',
+                defaultMessage: '用户名称字段',
               })} /*用户名称字段*/
             >
               userNameAttribute
@@ -277,6 +294,7 @@ export const OAUTH2PartForm: React.FC<{
             }}
             placeholder={formatMessage({
               id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+              defaultMessage: '请输入',
             })} /*请输入*/
           />
         </Form.Item>
@@ -288,6 +306,7 @@ export const OAUTH2PartForm: React.FC<{
               leftText
               title={formatMessage({
                 id: 'odc.NewSSODrawerButton.SSOForm.TheAuthenticationMethodUsedTo',
+                defaultMessage: '使用授权服务器对客户端进行身份验证时使用的身份验证方法',
               })} /*使用授权服务器对客户端进行身份验证时使用的身份验证方法*/
             >
               Client Authentication Method
@@ -314,6 +333,7 @@ export const OAUTH2PartForm: React.FC<{
               leftText
               title={formatMessage({
                 id: 'odc.NewSSODrawerButton.SSOForm.AuthorizationMethodOfOauth',
+                defaultMessage: 'OAUTH2 的授权方式',
               })} /*OAUTH2 的授权方式*/
             >
               Authorization Grant Type
@@ -340,6 +360,7 @@ export const OAUTH2PartForm: React.FC<{
               leftText
               title={formatMessage({
                 id: 'odc.NewSSODrawerButton.SSOForm.AuthenticationMethodUsedWhenSending',
+                defaultMessage: '在向资源服务器发送资源请求中的承载访问令牌时使用的身份验证方法',
               })} /*在向资源服务器发送资源请求中的承载访问令牌时使用的身份验证方法*/
             >
               User Info Authentication Method
@@ -371,6 +392,7 @@ export const LDAPPartForm: React.FC<{
         {
           formatMessage({
             id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.452BC9D2' /*LDAP 信息*/,
+            defaultMessage: 'LDAP 信息',
           }) /* LDAP 信息 */
         }
       </Typography.Title>
@@ -382,6 +404,7 @@ export const LDAPPartForm: React.FC<{
             title={
               formatMessage({
                 id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.C9C6091D',
+                defaultMessage: 'LDAP 服务器访问地址',
               }) /*"LDAP 服务器访问地址"*/
             }
           >
@@ -392,6 +415,7 @@ export const LDAPPartForm: React.FC<{
           {
             message: formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.DBB95C01',
+              defaultMessage: '请输入server',
             }), //'请输入server'
             ...requiredRule,
           },
@@ -401,6 +425,7 @@ export const LDAPPartForm: React.FC<{
           placeholder={
             formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.D0229F31',
+              defaultMessage: '请输入，如：ldap://odc.example.org/dc=example,dc=com',
             }) /*"请输入，如：ldap://11.124.9.78/dc=example,dc=com"*/
           }
         />
@@ -414,11 +439,13 @@ export const LDAPPartForm: React.FC<{
             title={
               formatMessage({
                 id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.14B65EC7',
+                defaultMessage: '用于访问 LDAP 的用户 DN',
               }) /*"用于访问 LDAP 的用户 DN"*/
             }
           >
             {formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.88A5F823' /*用户 DN*/,
+              defaultMessage: '用户 DN',
             })}
           </HelpDoc>
         }
@@ -426,6 +453,7 @@ export const LDAPPartForm: React.FC<{
           {
             message: formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.9DBF4E00',
+              defaultMessage: '请输入managerDn',
             }), //'请输入managerDn'
             ...requiredRule,
           },
@@ -435,6 +463,7 @@ export const LDAPPartForm: React.FC<{
           placeholder={
             formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.B2735BBD',
+              defaultMessage: '请输入，如：cn=admin,dc=example,dc=com',
             }) /*"请输入，如：cn=admin,dc=example,dc=com"*/
           }
         />
@@ -448,12 +477,14 @@ export const LDAPPartForm: React.FC<{
               title={
                 formatMessage({
                   id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.8C506EE9',
+                  defaultMessage: '用于访问 LDAP 服务器的密码',
                 }) /*"用于访问 LDAP 服务器的密码"*/
               }
             >
               {
                 formatMessage({
                   id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.DC978DE4' /*访问密码*/,
+                  defaultMessage: '访问密码',
                 }) /* 访问密码 */
               }
             </HelpDoc>
@@ -462,6 +493,7 @@ export const LDAPPartForm: React.FC<{
             {
               message: formatMessage({
                 id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.4DF22947',
+                defaultMessage: '请输入访问密码',
               }), //'请输入访问密码'
               ...requiredRule,
             },
@@ -471,6 +503,7 @@ export const LDAPPartForm: React.FC<{
             placeholder={
               formatMessage({
                 id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.93F4243B',
+                defaultMessage: '请输入',
               }) /*"请输入"*/
             }
           />
@@ -482,6 +515,7 @@ export const LDAPPartForm: React.FC<{
           {
             message: formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.A12483CB',
+              defaultMessage: '请输入userSearchFilter',
             }), //'请输入userSearchFilter'
             ...requiredRule,
           },
@@ -492,8 +526,10 @@ export const LDAPPartForm: React.FC<{
             title={
               formatMessage({
                 id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.80683796',
+                defaultMessage:
+                  '用户查询的过滤条件，可以基于用户的属性（如用户名、邮箱、部门等）来过滤搜索结果',
               }) /*"用户查询的过滤条件，可以基于用户的属性（如用户
-                  名、邮箱、部门等）来过滤搜索结果"*/
+           名、邮箱、部门等）来过滤搜索结果"*/
             }
           >
             userSearchFilter
@@ -504,6 +540,7 @@ export const LDAPPartForm: React.FC<{
           placeholder={
             formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.67DB56FF',
+              defaultMessage: '请输入，如：uid={$username$}',
             }) /*"请输入，如：uid={$username$}"*/
           }
         />
@@ -514,6 +551,7 @@ export const LDAPPartForm: React.FC<{
           {
             message: formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.573C0B46',
+              defaultMessage: '请输入userSearchBase',
             }), //'请输入userSearchBase'
             ...requiredRule,
           },
@@ -524,8 +562,10 @@ export const LDAPPartForm: React.FC<{
             title={
               formatMessage({
                 id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.4250536F',
+                defaultMessage:
+                  '指定在搜索用户（user）时使用的起始点或基准点，用于限定在哪个部分或组织单位下搜索用户对象',
               }) /*"指定在搜索用户（user）时使用的起始点或基准点，
-                  用于限定在哪个部分或组织单位下搜索用户对象"*/
+           用于限定在哪个部分或组织单位下搜索用户对象"*/
             }
           >
             userSearchBase
@@ -536,6 +576,7 @@ export const LDAPPartForm: React.FC<{
           placeholder={
             formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.03CD0A4A',
+              defaultMessage: '请输入，如：ou=people',
             }) /*"请输入，如：ou=people"*/
           }
         />
@@ -548,6 +589,7 @@ export const LDAPPartForm: React.FC<{
             title={
               formatMessage({
                 id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.2E3212A5',
+                defaultMessage: '搜索群组查询时使用的起始点或基准点',
               }) /*"搜索群组查询时使用的起始点或基准点"*/
             }
           >
@@ -559,6 +601,7 @@ export const LDAPPartForm: React.FC<{
           placeholder={
             formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.487EBC10',
+              defaultMessage: '请输入',
             }) /*"请输入"*/
           }
         />
@@ -571,6 +614,7 @@ export const LDAPPartForm: React.FC<{
             title={
               formatMessage({
                 id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.C793F4C6',
+                defaultMessage: '搜索群组查询的过滤条件',
               }) /*"搜索群组查询的过滤条件"*/
             }
           >
@@ -582,6 +626,7 @@ export const LDAPPartForm: React.FC<{
           placeholder={
             formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.405C3356',
+              defaultMessage: '请输入',
             }) /*"请输入"*/
           }
         />
@@ -594,6 +639,7 @@ export const LDAPPartForm: React.FC<{
             title={
               formatMessage({
                 id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.80A8006E',
+                defaultMessage: '指定是否在搜索群组时包括子树的参数',
               }) /*"指定是否在搜索群组时包括子树的参数"*/
             }
           >
@@ -607,6 +653,7 @@ export const LDAPPartForm: React.FC<{
           placeholder={
             formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.65316D1D',
+              defaultMessage: '请输入',
             }) /*"请输入"*/
           }
           options={[
@@ -638,6 +685,7 @@ const SomeFetureInODC430: React.FC<{
             title={
               formatMessage({
                 id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.F360A8FE',
+                defaultMessage: '设置为0表示不设置最大连续登录失败次数',
               }) /*"设置为0表示不设置最大连续登录失败次数"*/
             }
           >
@@ -649,6 +697,7 @@ const SomeFetureInODC430: React.FC<{
             ...requiredRule,
             message: formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.591F82D8',
+              defaultMessage: '请输入最大连续登录失败次数',
             }), //'请输入最大连续登录失败次数'
           },
         ]}
@@ -659,10 +708,12 @@ const SomeFetureInODC430: React.FC<{
           min={0}
           placeholder={formatMessage({
             id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.E8087E7D',
+            defaultMessage: '最大连续登录失败次数',
           })}
           addonAfter={
             formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.5E8157A1',
+              defaultMessage: '次',
             }) /*"次"*/
           }
         />
@@ -675,6 +726,7 @@ const SomeFetureInODC430: React.FC<{
             title={
               formatMessage({
                 id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.7AC603F1',
+                defaultMessage: '多少秒后重置登录次数',
               }) /*"多少秒后重置登录次数"*/
             }
           >
@@ -686,6 +738,7 @@ const SomeFetureInODC430: React.FC<{
             ...requiredRule,
             message: formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.E1E62ABD',
+              defaultMessage: '请输入登录次数重置时间',
             }), //'请输入登录次数重置时间'
           },
         ]}
@@ -696,10 +749,12 @@ const SomeFetureInODC430: React.FC<{
           min={0}
           placeholder={formatMessage({
             id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.19909602',
+            defaultMessage: '登录次数重置时间',
           })}
           addonAfter={
             formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.5FCE84A1',
+              defaultMessage: '秒',
             }) /*"秒"*/
           }
         />
@@ -716,6 +771,7 @@ export const OIDCPartForm: React.FC<{
         {
           formatMessage({
             id: 'odc.NewSSODrawerButton.SSOForm.OauthInformation',
+            defaultMessage: 'OAUTH 信息',
           }) /*OAUTH 信息*/
         }
       </Typography.Title>
@@ -726,6 +782,7 @@ export const OIDCPartForm: React.FC<{
           }}
           placeholder={formatMessage({
             id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+            defaultMessage: '请输入',
           })} /*请输入*/
         />
       </Form.Item>
@@ -743,6 +800,7 @@ export const OIDCPartForm: React.FC<{
           }}
           placeholder={formatMessage({
             id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+            defaultMessage: '请输入',
           })} /*请输入*/
         />
       </Form.Item>
@@ -754,6 +812,7 @@ export const OIDCPartForm: React.FC<{
             leftText
             title={formatMessage({
               id: 'odc.NewSSODrawerButton.SSOForm.TheScopeOfApplicationAuthorization',
+              defaultMessage: '应用授权作用域，多个空格隔开，建议为 profile',
             })} /*应用授权作用域，多个空格隔开，建议为 profile*/
           >
             Scope
@@ -767,6 +826,7 @@ export const OIDCPartForm: React.FC<{
           }}
           placeholder={formatMessage({
             id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+            defaultMessage: '请输入',
           })} /*请输入*/
         />
       </Form.Item>
@@ -777,6 +837,7 @@ export const OIDCPartForm: React.FC<{
           }}
           placeholder={formatMessage({
             id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+            defaultMessage: '请输入',
           })} /*请输入*/
         />
       </Form.Item>
@@ -788,6 +849,7 @@ export const OIDCPartForm: React.FC<{
             leftText
             title={formatMessage({
               id: 'odc.NewSSODrawerButton.SSOForm.AuthorizeTheServerToCall',
+              defaultMessage: '授权服务器回调 ODC 服务的地址，如果 SSO 有回调白名单，需要进行加白',
             })} /*授权服务器回调 ODC 服务的地址，如果 SSO 有回调白名单，需要进行加白*/
           >
             Redirect URL
@@ -805,6 +867,7 @@ export const OIDCPartForm: React.FC<{
           }}
           placeholder={formatMessage({
             id: 'odc.NewSSODrawerButton.SSOForm.AutomaticGeneration',
+            defaultMessage: '自动生成',
           })} /*自动生成*/
         />
       </Form.Item>

@@ -26,6 +26,7 @@ export const timeUnitOptions = [
   {
     label: formatMessage({
       id: 'odc.src.component.Task.DataArchiveTask.CreateModal.Second',
+      defaultMessage: '秒',
     }),
     //'秒'
     value: 's',
@@ -33,6 +34,7 @@ export const timeUnitOptions = [
   {
     label: formatMessage({
       id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Points',
+      defaultMessage: '分',
     }),
     //分
     value: 'm',
@@ -40,6 +42,7 @@ export const timeUnitOptions = [
   {
     label: formatMessage({
       id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Hours',
+      defaultMessage: '小时',
     }),
     //小时
     value: 'h',
@@ -47,6 +50,7 @@ export const timeUnitOptions = [
   {
     label: formatMessage({
       id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Day',
+      defaultMessage: '日',
     }),
     //日
     value: 'd',
@@ -54,6 +58,7 @@ export const timeUnitOptions = [
   {
     label: formatMessage({
       id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Zhou',
+      defaultMessage: '周',
     }),
     //周
     value: 'w',
@@ -61,6 +66,7 @@ export const timeUnitOptions = [
   {
     label: formatMessage({
       id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Month',
+      defaultMessage: '月',
     }),
     //月
     value: 'M',
@@ -68,11 +74,13 @@ export const timeUnitOptions = [
   {
     label: formatMessage({
       id: 'odc.DataArchiveTask.CreateModal.VariableConfig.Year',
+      defaultMessage: '年',
     }),
     //年
     value: 'y',
   },
 ];
+
 const ENABLE_PATTERN_OPERATOR = false;
 const timeFormatOptions = ['yyyy-MM-dd', 'yyyyMMdd'].map((item) => ({
   label: item,
@@ -98,15 +106,18 @@ const VariableConfig: React.FC<IProps> = (props) => {
         {
           formatMessage({
             id: 'odc.src.component.Task.DataArchiveTask.CreateModal.CustomVariable',
+            defaultMessage: '\n        自定义变量\n        ',
           }) /* 
-         自定义变量
-         */
+        自定义变量
+        */
         }
+
         <span className={styles.desc}>
           <HelpDoc leftText isTip doc="dataArchiveVariablesDoc">
             {
               formatMessage({
                 id: 'odc.DataArchiveTask.CreateModal.VariableConfig.VariablesCanBeReferencedIn.1',
+                defaultMessage: '变量可在归档配置的过滤条件中引用 (可选)',
               }) /*变量可在归档配置的过滤条件中引用 (可选)*/
             }
           </HelpDoc>
@@ -126,6 +137,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.DataArchiveTask.CreateModal.VariableConfig.VariableName',
+                defaultMessage: '变量名',
               }) /*变量名*/
             }
           </div>
@@ -137,6 +149,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.DataArchiveTask.CreateModal.VariableConfig.TimeFormat',
+                defaultMessage: '时间格式',
               }) /*时间格式*/
             }
           </div>
@@ -149,14 +162,16 @@ const VariableConfig: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.src.component.Task.DataArchiveTask.CreateModal.Shift',
+                  defaultMessage: '\n              时间偏移\n            ',
                 }) /* 
-             时间偏移
-             */
+            时间偏移
+            */
               }
             </HelpDoc>
           </div>
         </Space>
       )}
+
       <Form.List name="variables">
         {(fields, { add, remove }) => (
           <div className={styles.infoBlock}>
@@ -171,6 +186,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                   <Input
                     placeholder={formatMessage({
                       id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseEnter',
+                      defaultMessage: '请输入',
                     })} /*请输入*/
                   />
                 </Form.Item>
@@ -178,6 +194,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                   <Select
                     placeholder={formatMessage({
                       id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
+                      defaultMessage: '请选择',
                     })}
                     /*请选择*/ options={timeFormatOptions}
                   />
@@ -185,8 +202,9 @@ const VariableConfig: React.FC<IProps> = (props) => {
                 <Form.List name={[name, 'pattern']}>
                   {(subFields, { add: _add, remove: _remove }) => {
                     const disabledAdd = subFields.length >= 3;
-                    const required = !!Object.values(variables?.[index].pattern?.[0] ?? {})?.join('')
-                      ?.length;
+                    const required = !!Object.values(variables?.[index].pattern?.[0] ?? {})?.join(
+                      '',
+                    )?.length;
                     return (
                       <div className={styles.infoBlock}>
                         {subFields.map(({ key, name, ...restField }) => (
@@ -198,8 +216,8 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 {
                                   required,
                                   message: formatMessage({
-                                    id:
-                                      'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseChoose',
+                                    id: 'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseChoose',
+                                    defaultMessage: '请选择',
                                   }), //'请选择'
                                 },
                               ]}
@@ -207,6 +225,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                               <Select
                                 placeholder={formatMessage({
                                   id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
+                                  defaultMessage: '请选择',
                                 })}
                                 /*请选择*/ options={operatorOptions}
                               />
@@ -218,8 +237,8 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 {
                                   required,
                                   message: formatMessage({
-                                    id:
-                                      'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseEnter',
+                                    id: 'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseEnter',
+                                    defaultMessage: '请输入',
                                   }), //'请输入'
                                 },
                               ]}
@@ -227,6 +246,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                               <InputNumber
                                 placeholder={formatMessage({
                                   id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseEnter',
+                                  defaultMessage: '请输入',
                                 })}
                                 /*请输入*/ min={1}
                               />
@@ -238,8 +258,8 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 {
                                   required,
                                   message: formatMessage({
-                                    id:
-                                      'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseChoose.1',
+                                    id: 'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseChoose.1',
+                                    defaultMessage: '请选择',
                                   }), //'请选择'
                                 },
                               ]}
@@ -247,6 +267,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                               <Select
                                 placeholder={formatMessage({
                                   id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
+                                  defaultMessage: '请选择',
                                 })}
                                 /*请选择*/ options={timeUnitOptions}
                               />
@@ -256,8 +277,8 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 <Tooltip
                                   title={
                                     formatMessage({
-                                      id:
-                                        'odc.src.component.Task.DataArchiveTask.CreateModal.AddTimeOffset',
+                                      id: 'odc.src.component.Task.DataArchiveTask.CreateModal.AddTimeOffset',
+                                      defaultMessage: '添加时间偏移',
                                     }) /* 添加时间偏移 */
                                   }
                                 >
@@ -268,8 +289,8 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                 <Tooltip
                                   title={
                                     formatMessage({
-                                      id:
-                                        'odc.src.component.Task.DataArchiveTask.CreateModal.DeleteTimeOffset',
+                                      id: 'odc.src.component.Task.DataArchiveTask.CreateModal.DeleteTimeOffset',
+                                      defaultMessage: '删除时间偏移',
                                     }) /* 删除时间偏移 */
                                   }
                                 >
@@ -292,6 +313,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                 <Tooltip
                   title={formatMessage({
                     id: 'odc.DataArchiveTask.CreateModal.VariableConfig.DeleteAVariable',
+                    defaultMessage: '删除变量',
                   })} /*删除变量*/
                 >
                   <DeleteOutlined onClick={() => remove(name)} />
@@ -307,6 +329,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.DataArchiveTask.CreateModal.VariableConfig.AddVariables',
+                    defaultMessage: '添加变量',
                   }) /*添加变量*/
                 }
               </Button>

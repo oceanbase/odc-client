@@ -337,6 +337,7 @@ export class SettingStore {
       message.error(
         formatMessage({
           id: 'odc.src.store.setting.SystemInitializationFailedRefreshAnd',
+          defaultMessage: '系统初始化失败，请刷新重试！',
         }), // 系统初始化失败，请刷新重试！
       );
     }
@@ -349,8 +350,9 @@ export class SettingStore {
       throw new Error(
         formatMessage({
           id: 'odc.src.store.setting.SystemConfigurationQueryFailed',
-        }), // 系统配置查询失败
-      );
+          defaultMessage: '系统配置查询失败',
+        }),
+      ); // 系统配置查询失败
     }
     try {
       console.log('server buildTime:', new Date(info.buildTime));

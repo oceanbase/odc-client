@@ -32,6 +32,8 @@ function SQLPreviewModal(props: {
         <span style={{ fontWeight: 400 }}>
           {formatMessage({
             id: 'src.component.Task.component.SQLPreviewModal.9967DB7D' /*归档 SQL 预览（变量以当前时间代入，具体执行按实际配置替换），点击"确认"按钮继续提交申请*/,
+            defaultMessage:
+              '归档 SQL 预览（变量以当前时间代入，具体执行按实际配置替换），点击"确认"按钮继续提交申请',
           })}
         </span>
       }

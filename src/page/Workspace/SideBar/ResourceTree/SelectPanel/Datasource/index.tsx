@@ -159,10 +159,9 @@ export default inject('dataSourceStatusStore')(
           title: formatMessage(
             {
               id: 'odc.ResourceTree.Datasource.AreYouSureYouWant',
+              defaultMessage: '确认删除数据源 {name}?',
             },
-            {
-              name: name,
-            },
+            { name },
           ),
           //`确认删除数据源 ${name}?`
           async onOk() {
@@ -171,6 +170,7 @@ export default inject('dataSourceStatusStore')(
               message.success(
                 formatMessage({
                   id: 'odc.ResourceTree.Datasource.DeletedSuccessfully',
+                  defaultMessage: '删除成功',
                 }), //删除成功
               );
 
@@ -194,6 +194,7 @@ export default inject('dataSourceStatusStore')(
                   allowClear
                   placeholder={formatMessage({
                     id: 'odc.ResourceTree.Datasource.SearchForDataSources',
+                    defaultMessage: '搜索数据源',
                   })}
                   /*搜索数据源*/ style={{
                     width: '100%',
@@ -202,6 +203,7 @@ export default inject('dataSourceStatusStore')(
                   }}
                   size="small"
                 />
+
                 {login.isPrivateSpace() ? (
                   <NewDatasourceButton onSuccess={() => context?.reloadDatasourceList()}>
                     <Button
@@ -251,8 +253,8 @@ export default inject('dataSourceStatusStore')(
                                   items: [
                                     {
                                       label: formatMessage({
-                                        id:
-                                          'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone',
+                                        id: 'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone',
+                                        defaultMessage: '克隆',
                                       }), //'克隆'
                                       key: 'clone',
                                       onClick: (e) => {
@@ -263,6 +265,7 @@ export default inject('dataSourceStatusStore')(
                                     {
                                       label: formatMessage({
                                         id: 'odc.ResourceTree.Datasource.Edit',
+                                        defaultMessage: '编辑',
                                       }),
                                       //编辑
                                       key: 'edit',
@@ -275,6 +278,7 @@ export default inject('dataSourceStatusStore')(
                                     {
                                       label: formatMessage({
                                         id: 'odc.ResourceTree.Datasource.Delete',
+                                        defaultMessage: '删除',
                                       }),
                                       //删除
                                       key: 'delete',
@@ -312,11 +316,12 @@ export default inject('dataSourceStatusStore')(
                                     >
                                       {
                                         formatMessage({
-                                          id:
-                                            'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone.1',
+                                          id: 'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone.1',
+                                          defaultMessage:
+                                            '\n                                  克隆\n                                ',
                                         }) /* 
-                                    克隆
-                                   */
+                                克隆
+                                */
                                       }
                                     </Action.Link>
                                     <Action.Link
@@ -328,6 +333,7 @@ export default inject('dataSourceStatusStore')(
                                     >
                                       {formatMessage({
                                         id: 'odc.ResourceTree.Datasource.Edit',
+                                        defaultMessage: '编辑',
                                       })}
                                     </Action.Link>
                                     <Action.Link
@@ -338,6 +344,7 @@ export default inject('dataSourceStatusStore')(
                                     >
                                       {formatMessage({
                                         id: 'odc.ResourceTree.Datasource.Delete',
+                                        defaultMessage: '删除',
                                       })}
                                     </Action.Link>
                                   </Action.Group>
@@ -387,6 +394,7 @@ export default inject('dataSourceStatusStore')(
                   context?.reloadDatasourceList();
                 }}
               />
+
               <NewDatasourceDrawer
                 isEdit={false}
                 isCopy={true}

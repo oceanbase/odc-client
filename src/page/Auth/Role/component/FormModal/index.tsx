@@ -92,12 +92,14 @@ const defaultData = {
       actions: SystemAction.action_update_read,
     },
   ],
+
   createAbleResource: [
     IManagerResourceType.resource,
     IManagerResourceType.project,
     IManagerResourceType.role,
     IManagerResourceType.user,
   ],
+
   permissionType: [
     IManagerRolePermissionType.resourceManagementPermissions,
     IManagerRolePermissionType.systemOperationPermissions,
@@ -153,6 +155,7 @@ const FormModal: React.FC<IProps> = (props) => {
         ? formatMessage(
             {
               id: 'odc.components.FormRoleModal.NameCopy',
+              defaultMessage: '{name}_复制',
             },
             { name },
           ) // `${name}_复制`
@@ -222,7 +225,10 @@ const FormModal: React.FC<IProps> = (props) => {
     const res = await createRole(values);
     if (res) {
       message.success(
-        formatMessage({ id: 'odc.components.FormRoleModal.RoleCreated' }), // 角色创建成功
+        formatMessage({
+          id: 'odc.components.FormRoleModal.RoleCreated',
+          defaultMessage: '角色创建成功',
+        }), // 角色创建成功
       );
       loadRoles();
       handleCloseModal();
@@ -230,6 +236,7 @@ const FormModal: React.FC<IProps> = (props) => {
       message.error(
         formatMessage({
           id: 'odc.components.FormRoleModal.UnableToCreateTheRole',
+          defaultMessage: '角色创建失败',
         }),
         // 角色创建失败
       );
@@ -240,7 +247,10 @@ const FormModal: React.FC<IProps> = (props) => {
     const res = await updateRole(values);
     if (res) {
       message.success(
-        formatMessage({ id: 'odc.components.FormRoleModal.RoleSaved' }), // 角色保存成功
+        formatMessage({
+          id: 'odc.components.FormRoleModal.RoleSaved',
+          defaultMessage: '角色保存成功',
+        }), // 角色保存成功
       );
       loadRoles();
       handleCloseModal();
@@ -248,6 +258,7 @@ const FormModal: React.FC<IProps> = (props) => {
       message.error(
         formatMessage({
           id: 'odc.components.FormRoleModal.UnableToSaveTheRole',
+          defaultMessage: '角色保存失败',
         }),
         // 角色保存失败
       );
@@ -315,6 +326,7 @@ const FormModal: React.FC<IProps> = (props) => {
               errors: [
                 formatMessage({
                   id: 'odc.components.FormRoleModal.SelectAPermissionType',
+                  defaultMessage: '请选择权限类型',
                 }), // 请选择权限类型
               ],
             },
@@ -356,6 +368,7 @@ const FormModal: React.FC<IProps> = (props) => {
               errors: [
                 formatMessage({
                   id: 'odc.components.FormRoleModal.SelectANewObject',
+                  defaultMessage: '请选择可新建的对象',
                 }), //请选择可新建的对象
               ],
             },
@@ -395,17 +408,23 @@ const FormModal: React.FC<IProps> = (props) => {
         title: isEdit
           ? formatMessage({
               id: 'odc.components.FormRoleModal.AreYouSureYouWant',
+              defaultMessage: '是否确定取消编辑？取消后，编辑的内容将不生效',
             })
           : // 确定要取消编辑吗？取消保存后，所编辑的内容将不生效
             formatMessage({
               id: 'odc.components.FormRoleModal.AreYouSureYouWant.1',
+              defaultMessage: '是否确定取消新建?',
             }),
         // 确定要取消新建吗?
         cancelText: formatMessage({
           id: 'odc.components.FormRoleModal.Cancel',
+          defaultMessage: '取消',
         }),
         // 取消
-        okText: formatMessage({ id: 'odc.components.FormRoleModal.Determine' }), // 确定
+        okText: formatMessage({
+          id: 'odc.components.FormRoleModal.Determine',
+          defaultMessage: '确定',
+        }), // 确定
         centered: true,
         onOk: () => {
           setHasChange(false);
@@ -451,8 +470,14 @@ const FormModal: React.FC<IProps> = (props) => {
       width={720}
       title={
         isEdit
-          ? formatMessage({ id: 'odc.components.FormRoleModal.EditARole' }) // 编辑角色
-          : formatMessage({ id: 'odc.components.FormRoleModal.CreateARole' }) // 新建角色
+          ? formatMessage({
+              id: 'odc.components.FormRoleModal.EditARole',
+              defaultMessage: '编辑角色',
+            }) // 编辑角色
+          : formatMessage({
+              id: 'odc.components.FormRoleModal.CreateARole',
+              defaultMessage: '新建角色',
+            }) // 新建角色
       }
       className={styles.userModal}
       footer={
@@ -461,6 +486,7 @@ const FormModal: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.components.FormRoleModal.Cancel',
+                defaultMessage: '取消',
               })
               /* 取消 */
             }
@@ -468,8 +494,8 @@ const FormModal: React.FC<IProps> = (props) => {
           <Button type="primary" onClick={handleSubmit}>
             {
               isEdit
-                ? formatMessage({ id: 'odc.components.FormRoleModal.Save' }) // 保存
-                : formatMessage({ id: 'odc.components.FormRoleModal.New' }) // 新建
+                ? formatMessage({ id: 'odc.components.FormRoleModal.Save', defaultMessage: '保存' }) // 保存
+                : formatMessage({ id: 'odc.components.FormRoleModal.New', defaultMessage: '新建' }) // 新建
             }
           </Button>
         </Space>
@@ -484,6 +510,7 @@ const FormModal: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.components.FormRoleModal.RoleDetails',
+                defaultMessage: '角色详情',
               })
               /* 角色详情 */
             }
@@ -492,6 +519,7 @@ const FormModal: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.components.FormRoleModal.RelatedUsers',
+                defaultMessage: '相关用户',
               })
               /* 相关用户 */
             }

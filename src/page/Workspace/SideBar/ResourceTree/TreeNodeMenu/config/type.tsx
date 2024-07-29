@@ -37,8 +37,10 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       text: [
         formatMessage({
           id: 'odc.ResourceTree.actions.NewType',
+          defaultMessage: '新建类型',
         }),
       ],
+
       actionType: actionTypes.create,
       icon: PlusOutlined,
       run(session, node) {
@@ -54,6 +56,7 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       text: [
         formatMessage({
           id: 'odc.ResourceTree.actions.Refresh',
+          defaultMessage: '刷新',
         }), //刷新
       ],
 
@@ -64,6 +67,7 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       },
     },
   ],
+
   [ResourceNodeType.Type]: [
     {
       key: 'OVERVIEW',
@@ -71,8 +75,10 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       text: [
         formatMessage({
           id: 'odc.ResourceTree.actions.ViewType',
+          defaultMessage: '查看类型',
         }),
       ],
+
       run(session, node) {
         const type: IType = node.data;
         openTypeViewPage(
@@ -87,6 +93,7 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       key: 'EXPORT',
       text: formatMessage({
         id: 'odc.src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.Export',
+        defaultMessage: '导出',
       }), //'导出'
       ellipsis: true,
       disabled: (session) => {
@@ -110,6 +117,7 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       text: [
         formatMessage({
           id: 'odc.ResourceTree.actions.Download',
+          defaultMessage: '下载',
         }), //下载
       ],
 
@@ -134,6 +142,7 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       text: [
         formatMessage({
           id: 'odc.ResourceTree.actions.Delete',
+          defaultMessage: '删除',
         }), //删除
       ],
 
@@ -147,6 +156,7 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
           title: formatMessage(
             {
               id: 'odc.components.ResourceTree.TypeTree.AreYouSureYouWant',
+              defaultMessage: '是否确定删除类型{title}？',
             },
             {
               title: type?.typeName,
@@ -155,9 +165,11 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
           // `确定要删除类型${title}吗？`
           okText: formatMessage({
             id: 'app.button.ok',
+            defaultMessage: '确定',
           }),
           cancelText: formatMessage({
             id: 'app.button.cancel',
+            defaultMessage: '取消',
           }),
           centered: true,
           icon: <QuestionCircleFilled />,
@@ -174,6 +186,7 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
             message.success(
               formatMessage({
                 id: 'odc.components.ResourceTree.TypeTree.DeletedSuccessfully',
+                defaultMessage: '删除成功',
               }),
               // 删除成功
             );
@@ -197,6 +210,7 @@ export const typeMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       text: [
         formatMessage({
           id: 'odc.ResourceTree.actions.Refresh',
+          defaultMessage: '刷新',
         }), //刷新
       ],
 

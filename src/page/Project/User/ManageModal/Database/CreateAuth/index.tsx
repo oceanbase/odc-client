@@ -50,7 +50,10 @@ const CreateModal: React.FC<IProps> = (props) => {
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
-        title: formatMessage({ id: 'src.page.Project.User.ManageModal.CreateAuth.8BBA1BE1' }), //'确认取消新增授权吗？'
+        title: formatMessage({
+          id: 'src.page.Project.User.ManageModal.CreateAuth.8BBA1BE1',
+          defaultMessage: '确认取消新增授权吗？',
+        }), //'确认取消新增授权吗？'
         centered: true,
         onOk: () => {
           handleModalVisizble(false);
@@ -84,6 +87,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           message.success(
             formatMessage({
               id: 'src.page.Project.User.ManageModal.CreateAuth.6770E480' /*'新增授权成功！'*/,
+              defaultMessage: '新增授权成功！',
             }),
           );
           onSwitchUserTab();
@@ -109,6 +113,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         {
           formatMessage({
             id: 'src.page.Project.User.ManageModal.CreateAuth.ED0CF3A6' /*新增库授权*/,
+            defaultMessage: '新增库授权',
           }) /* 新增库授权 */
         }
       </Button>
@@ -119,6 +124,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         title={
           formatMessage({
             id: 'src.page.Project.User.ManageModal.CreateAuth.210EFCC0',
+            defaultMessage: '新增库授权',
           }) /*"新增库授权"*/
         }
         footer={
@@ -131,6 +137,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'src.page.Project.User.ManageModal.CreateAuth.779234F2' /*取消*/,
+                  defaultMessage: '取消',
                 }) /* 取消 */
               }
             </Button>
@@ -138,6 +145,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'src.page.Project.User.ManageModal.CreateAuth.2829F833' /*新建*/,
+                  defaultMessage: '新建',
                 }) /* 新建 */
               }
             </Button>
@@ -161,6 +169,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             label={
               formatMessage({
                 id: 'src.page.Project.User.ManageModal.CreateAuth.9D4B0281',
+                defaultMessage: '数据库',
               }) /*"数据库"*/
             }
             required
@@ -172,6 +181,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             label={
               formatMessage({
                 id: 'src.page.Project.User.ManageModal.CreateAuth.A7E6BF77',
+                defaultMessage: '权限类型',
               }) /*"权限类型"*/
             }
             rules={[
@@ -179,6 +189,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 required: true,
                 message: formatMessage({
                   id: 'src.page.Project.User.ManageModal.CreateAuth.C8194E4D',
+                  defaultMessage: '请选择',
                 }), //'请选择'
               },
             ]}
@@ -190,6 +201,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               label={
                 formatMessage({
                   id: 'src.page.Project.User.ManageModal.CreateAuth.71FFF9CD',
+                  defaultMessage: '权限有效期',
                 }) /*"权限有效期"*/
               }
               name="expireTime"
@@ -198,6 +210,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                   required: true,
                   message: formatMessage({
                     id: 'src.page.Project.User.ManageModal.CreateAuth.926CCBB2',
+                    defaultMessage: '请选择',
                   }), //'请选择'
                 },
               ]}
@@ -208,6 +221,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 placeholder={
                   formatMessage({
                     id: 'src.page.Project.User.ManageModal.CreateAuth.DBAB617B',
+                    defaultMessage: '请选择',
                   }) /*"请选择"*/
                 }
                 options={expireTimeOptions}
@@ -222,6 +236,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                       label={
                         formatMessage({
                           id: 'src.page.Project.User.ManageModal.CreateAuth.52A18A2F',
+                          defaultMessage: '结束日期',
                         }) /*"结束日期"*/
                       }
                       name="customExpireTime"
@@ -230,6 +245,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                           required: true,
                           message: formatMessage({
                             id: 'src.page.Project.User.ManageModal.CreateAuth.02B42ECB',
+                            defaultMessage: '请选择',
                           }), //'请选择'
                         },
                       ]}

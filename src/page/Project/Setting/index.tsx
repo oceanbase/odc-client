@@ -54,7 +54,10 @@ const Setting: React.FC<IProps> = (props) => {
           items={[
             {
               key: MenuKey.INFO,
-              label: formatMessage({ id: 'odc.Project.Setting.ProjectInformation' }),
+              label: formatMessage({
+                id: 'odc.Project.Setting.ProjectInformation',
+                defaultMessage: '项目信息',
+              }),
             },
           ]}
         />

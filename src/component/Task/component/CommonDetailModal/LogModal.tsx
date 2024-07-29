@@ -80,7 +80,10 @@ const LogModal: React.FC<IProps> = function (props) {
       width={520}
       onClose={onClose}
       title={
-        formatMessage({ id: 'odc.src.component.Task.component.CommonDetailModal.Log' }) /* 日志 */
+        formatMessage({
+          id: 'odc.src.component.Task.component.CommonDetailModal.Log',
+          defaultMessage: '日志',
+        }) /* 日志 */
       }
       destroyOnClose
       footer={null}

@@ -32,6 +32,7 @@ const SSLItem: React.FC<IProps> = function () {
             {
               formatMessage({
                 id: 'odc.AddConnectionForm.SSLItem.EnableSsl',
+                defaultMessage: '启用 SSL',
               }) /*启用 SSL*/
             }
 
@@ -48,6 +49,7 @@ const SSLItem: React.FC<IProps> = function () {
               {
                 formatMessage({
                   id: 'odc.AddConnectionForm.SSLItem.HowToObtain',
+                  defaultMessage: '如何获取？',
                 }) /*如何获取？*/
               }
             </a>
@@ -63,6 +65,7 @@ const SSLItem: React.FC<IProps> = function () {
                 <Form.Item
                   label={formatMessage({
                     id: 'odc.AddConnectionForm.SSLItem.ClientKey',
+                    defaultMessage: '客户端密钥',
                   })}
                   /*客户端密钥*/ name={['sslConfig', 'clientKeyObjectId']}
                 >
@@ -71,6 +74,7 @@ const SSLItem: React.FC<IProps> = function () {
                 <Form.Item
                   label={formatMessage({
                     id: 'odc.AddConnectionForm.SSLItem.ClientCertificate',
+                    defaultMessage: '客户端证书',
                   })}
                   /*客户端证书*/ name={['sslConfig', 'clientCertObjectId']}
                 >
@@ -79,6 +83,7 @@ const SSLItem: React.FC<IProps> = function () {
                 <Form.Item
                   label={formatMessage({
                     id: 'odc.AddConnectionForm.SSLItem.CaCertificate',
+                    defaultMessage: 'CA 证书',
                   })}
                   /*CA 证书*/ name={['sslConfig', 'CACertObjectId']}
                 >

@@ -39,14 +39,20 @@ const getColumns = (
   const columns: ColumnType<IUnauthorizedDBResources>[] = [
     {
       dataIndex: 'index',
-      title: formatMessage({ id: 'src.page.Workspace.components.SQLResultSet.AE76C8AD' }), //'序号'
+      title: formatMessage({
+        id: 'src.page.Workspace.components.SQLResultSet.AE76C8AD',
+        defaultMessage: '序号',
+      }), //'序号'
       width: '60px',
       ellipsis: true,
       render: (action, _, i) => i + 1,
     },
     {
       dataIndex: 'databaseName',
-      title: formatMessage({ id: 'src.page.Workspace.components.SQLResultSet.5008F988' }), //'数据库名称'
+      title: formatMessage({
+        id: 'src.page.Workspace.components.SQLResultSet.5008F988',
+        defaultMessage: '数据库名称',
+      }), //'数据库名称'
       ellipsis: true,
     },
     {
@@ -59,19 +65,28 @@ const getColumns = (
     },
     {
       dataIndex: 'dataSourceName',
-      title: formatMessage({ id: 'src.page.Workspace.components.SQLResultSet.47AAE96F' }), //'所属数据源'
+      title: formatMessage({
+        id: 'src.page.Workspace.components.SQLResultSet.47AAE96F',
+        defaultMessage: '所属数据源',
+      }), //'所属数据源'
       ellipsis: true,
     },
     {
       dataIndex: 'unauthorizedPermissionTypes',
-      title: formatMessage({ id: 'src.page.Workspace.components.SQLResultSet.ADFA9F27' }), //'缺少权限'
+      title: formatMessage({
+        id: 'src.page.Workspace.components.SQLResultSet.ADFA9F27',
+        defaultMessage: '缺少权限',
+      }), //'缺少权限'
       width: '200px',
       ellipsis: true,
       render: (types) => types?.map((item) => permissionOptionsMap[item]?.text)?.join(', '),
     },
     {
       dataIndex: 'action',
-      title: formatMessage({ id: 'src.page.Workspace.components.SQLResultSet.F84FA469' }), //'操作'
+      title: formatMessage({
+        id: 'src.page.Workspace.components.SQLResultSet.F84FA469',
+        defaultMessage: '操作',
+      }), //'操作'
       width: '164px',
       ellipsis: true,
       render: (action, _) => {
@@ -82,9 +97,11 @@ const getColumns = (
           dbTooltip = _.projectId
             ? formatMessage({
                 id: 'src.page.Workspace.components.SQLResultSet.C9A2993D',
+                defaultMessage: '无法申请数据库权限：没有加入数据库所属项目',
               }) /* 无法申请数据库权限：没有加入数据库所属项目 */
             : formatMessage({
                 id: 'src.page.Workspace.components.SQLResultSet.E87F786C',
+                defaultMessage: '无法申请数据库权限：数据库没有归属项目',
               }); /* 无法申请数据库权限：数据库没有归属项目 */
           tableTooltip = _.projectId
             ? formatMessage({
@@ -220,7 +237,10 @@ const DBPermissionTable: React.FC<IProps> = (props) => {
       animated={false}
       items={[
         {
-          label: formatMessage({ id: 'src.page.Workspace.components.SQLResultSet.D12A3FE9' }), //'日志'
+          label: formatMessage({
+            id: 'src.page.Workspace.components.SQLResultSet.D12A3FE9',
+            defaultMessage: '日志',
+          }), //'日志'
           key: PERMISSION_TAB_KEY,
           children: (
             <div className={styles.result}>
@@ -228,6 +248,7 @@ const DBPermissionTable: React.FC<IProps> = (props) => {
                 <CloseCircleFilled style={{ color: '#F5222D' }} />
                 {formatMessage({
                   id: 'src.page.Workspace.components.SQLResultSet.7A8EC0AB' /*执行以下 SQL 失败*/,
+                  defaultMessage: '执行以下 SQL 失败',
                 })}
               </Space>
               <MultiLineOverflowText className={styles.executedSQL} content={sql} />
@@ -236,6 +257,7 @@ const DBPermissionTable: React.FC<IProps> = (props) => {
                   {
                     formatMessage({
                       id: 'src.page.Workspace.components.SQLResultSet.BDAE252A' /*失败原因：*/,
+                      defaultMessage: '失败原因：',
                     }) /* 失败原因： */
                   }
                 </span>

@@ -74,6 +74,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
       title={
         formatMessage({
           id: 'odc.src.page.Datasource.Info.ChangeProjectModal.ModifyTheProject',
+          defaultMessage: '修改所属项目',
         }) //'修改所属项目'
       }
       open={visible}
@@ -85,6 +86,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
           message.success(
             formatMessage({
               id: 'odc.Info.ChangeProjectModal.OperationSucceeded',
+              defaultMessage: '操作成功',
             }), //操作成功
           );
           onClose();
@@ -111,8 +113,10 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
           {
             formatMessage({
               id: 'odc.Info.ChangeProjectModal.DatabaseName',
+              defaultMessage: '数据库名称：',
             }) /*数据库名称：*/
           }
+
           {database?.name}
         </Form.Item>
         <Form.Item
@@ -124,6 +128,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
                   callback(
                     formatMessage({
                       id: 'odc.Info.ChangeProjectModal.PleaseSelectAProject',
+                      defaultMessage: '请选择项目',
                     }), //请选择项目
                   );
 
@@ -136,6 +141,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
           label={
             formatMessage({
               id: 'odc.src.page.Datasource.Info.ChangeProjectModal.Project',
+              defaultMessage: '项目',
             }) //'项目'
           }
           name={'project'}

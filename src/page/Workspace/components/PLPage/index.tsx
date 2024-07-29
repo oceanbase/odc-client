@@ -191,6 +191,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     onSetUnsavedModalTitle(
       formatMessage({
         id: 'workspace.window.sql.modal.close.title',
+        defaultMessage: '是否保存脚本？',
       }),
     );
     switch (params?.plPageType) {
@@ -199,12 +200,14 @@ export class PLPage extends Component<IProps, ISQLPageState> {
           formatMessage(
             {
               id: 'workspace.window.sql.modal.close.content',
+              defaultMessage: '“{name}” 已经被修改，如不保存，修改将丢失',
             },
             {
               name:
                 params.scriptName ||
                 formatMessage({
                   id: 'odc.src.page.Workspace.components.PLPage.PLWindow',
+                  defaultMessage: 'PL 窗口_',
                 }) + //'PL 窗口_'
                   pageKey.replace('pl-new-', ''),
             },
@@ -217,6 +220,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
           formatMessage(
             {
               id: 'workspace.window.sql.modal.close.content',
+              defaultMessage: '“{name}” 已经被修改，如不保存，修改将丢失',
             },
             {
               name: params.plName,
@@ -231,6 +235,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
           formatMessage(
             {
               id: 'workspace.window.sql.modal.close.content',
+              defaultMessage: '“{name}” 已经被修改，如不保存，修改将丢失',
             },
             {
               name: params.packageName,
@@ -514,6 +519,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
       Modal.confirm({
         title: formatMessage({
           id: 'odc.components.PLPage.TheCurrentDatabaseVersionIs',
+          defaultMessage: '当前数据库版本较低，是否继续调试？',
         }),
         //当前数据库版本较低，是否继续调试？
         icon: <ExclamationCircleOutlined />,
@@ -523,6 +529,8 @@ export class PLPage extends Component<IProps, ISQLPageState> {
               {
                 formatMessage({
                   id: 'odc.components.PLPage.WeRecommendThatYouUpgrade',
+                  defaultMessage:
+                    '建议将 OceanBase 数据库升级至 3.2.4 及以上版本，获取更优的调试能力和稳定性',
                 }) /*建议将 OceanBase 数据库升级至 3.2.4 及以上版本，获取更优的调试能力和稳定性*/
               }
             </Typography.Paragraph>
@@ -535,17 +543,21 @@ export class PLPage extends Component<IProps, ISQLPageState> {
               {
                 formatMessage({
                   id: 'odc.components.PLPage.NoMorePrompt',
+                  defaultMessage: '不再提示',
                 }) /*不再提示*/
               }
             </Checkbox>
           </>
         ),
+
         okText: formatMessage({
           id: 'odc.components.PLPage.Continue',
+          defaultMessage: '继续',
         }),
         //继续
         cancelText: formatMessage({
           id: 'odc.components.PLPage.Cancel',
+          defaultMessage: '取消',
         }),
         //取消
         onOk: () => {
@@ -886,6 +898,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
           formatMessage(
             {
               id: 'odc.components.PLPage.TheObjectNameCannotBe',
+              defaultMessage: '不能修改对象名称(原名称：{plChanged0}, 现名称：{plChanged1})',
             },
             {
               plChanged0: plChanged[0],
@@ -973,6 +986,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
         message.success(
           formatMessage({
             id: 'odc.components.PLPage.SavedSuccessfully',
+            defaultMessage: '保存成功',
           }),
         );
       }
@@ -997,6 +1011,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
           message.success(
             formatMessage({
               id: 'workspace.window.sql.modal.savePL.success',
+              defaultMessage: '保存 PL 成功',
             }),
           );
           await userStore.scriptStore.getScriptList();
@@ -1020,14 +1035,8 @@ export class PLPage extends Component<IProps, ISQLPageState> {
 
   // 保存 SQL
   public handleSaveNewScript = async (script: ISQLScript) => {
-    const {
-      userStore,
-      pageStore,
-      pageKey,
-      onSetUnsavedModalContent,
-      onChangeSaved,
-      params,
-    } = this.props;
+    const { userStore, pageStore, pageKey, onSetUnsavedModalContent, onChangeSaved, params } =
+      this.props;
     const files = await newScript(
       [new File([params.scriptText], script.objectName)],
       'UploadScript',
@@ -1059,6 +1068,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
         formatMessage(
           {
             id: 'workspace.window.sql.modal.close.content',
+            defaultMessage: '“{name}” 已经被修改，如不保存，修改将丢失',
           },
           {
             name: script.objectName,
@@ -1069,6 +1079,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
       message.success(
         formatMessage({
           id: 'workspace.window.sql.modal.savePL.success',
+          defaultMessage: '保存 PL 成功',
         }),
       );
       this.setState({
@@ -1234,6 +1245,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
             }}
             onSave={this.handleSaveNewScript}
           />,
+
           <EditPLParamsModal
             key="plpageEditPLParamsModal"
             plAction={plAction}

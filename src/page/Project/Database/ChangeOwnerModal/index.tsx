@@ -95,6 +95,7 @@ export default function ChangeOwnerModal({ visible, database, close, onSuccess }
           {
             formatMessage({
               id: 'odc.Info.ChangeOwnerModal.DatabaseName',
+              defaultMessage: '数据库名称：',
             }) /*数据库名称*/
           }
 

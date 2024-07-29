@@ -130,6 +130,7 @@ class TriggerPage extends Component<
       Modal.confirm({
         title: formatMessage({
           id: 'odc.components.TriggerPage.AreYouSureYouWant',
+          defaultMessage: '是否确认保存当前编辑的内容？',
         }),
 
         // 确认保存当前编辑的内容吗？
@@ -198,6 +199,7 @@ class TriggerPage extends Component<
       message.error(
         formatMessage({
           id: 'odc.components.TriggerPage.FailedToLoadTheTrigger',
+          defaultMessage: '加载触发器失败',
         }),
 
         // 加载触发器失败
@@ -278,6 +280,7 @@ class TriggerPage extends Component<
                   key: PropsTab.BASE_INFO,
                   label: formatMessage({
                     id: 'odc.components.TriggerPage.BasicInformation',
+                    defaultMessage: '基本信息',
                   }),
                   children: (
                     <>
@@ -289,6 +292,7 @@ class TriggerPage extends Component<
                                 {
                                   formatMessage({
                                     id: 'odc.components.TriggerPage.Editing',
+                                    defaultMessage: '编辑',
                                   })
 
                                   /* 编辑 */
@@ -299,6 +303,7 @@ class TriggerPage extends Component<
                                   {
                                     formatMessage({
                                       id: 'odc.components.TriggerPage.Cancel',
+                                      defaultMessage: '取消',
                                     })
 
                                     /* 取消 */
@@ -315,6 +320,7 @@ class TriggerPage extends Component<
                                   {
                                     formatMessage({
                                       id: 'odc.components.TriggerPage.Determine',
+                                      defaultMessage: '确定',
                                     })
 
                                     /* 确定 */
@@ -327,6 +333,7 @@ class TriggerPage extends Component<
                               <ToolbarButton
                                 text={formatMessage({
                                   id: 'workspace.window.session.button.edit',
+                                  defaultMessage: '编辑',
                                 })}
                                 icon={<EditOutlined />}
                                 onClick={this.handleEditBaseInfo}
@@ -335,6 +342,7 @@ class TriggerPage extends Component<
                               <ToolbarButton
                                 text={formatMessage({
                                   id: 'workspace.window.session.button.refresh',
+                                  defaultMessage: '刷新',
                                 })}
                                 icon={<SyncOutlined />}
                                 onClick={this.reloadTrigger}
@@ -351,6 +359,7 @@ class TriggerPage extends Component<
                               {
                                 formatMessage({
                                   id: 'odc.components.TriggerPage.Name.2',
+                                  defaultMessage: '名称:',
                                 })
 
                                 /* 名称: */
@@ -363,6 +372,7 @@ class TriggerPage extends Component<
                               {
                                 formatMessage({
                                   id: 'odc.components.TriggerPage.Owner.2',
+                                  defaultMessage: '所有者:',
                                 })
 
                                 /* 所有者: */
@@ -379,6 +389,7 @@ class TriggerPage extends Component<
                                 {
                                   formatMessage({
                                     id: 'odc.components.TriggerPage.Enable',
+                                    defaultMessage: '启用',
                                   })
 
                                   /* 启用 */
@@ -388,6 +399,7 @@ class TriggerPage extends Component<
                                 {
                                   formatMessage({
                                     id: 'odc.components.TriggerPage.Disable',
+                                    defaultMessage: '禁用',
                                   })
 
                                   /* 禁用 */
@@ -400,6 +412,7 @@ class TriggerPage extends Component<
                                 {
                                   formatMessage({
                                     id: 'odc.components.TriggerPage.WhetherToEnable',
+                                    defaultMessage: '是否启用:',
                                   })
 
                                   /* 是否启用: */
@@ -410,10 +423,12 @@ class TriggerPage extends Component<
                                   trigger.enableState === TriggerState.enabled
                                     ? formatMessage({
                                         id: 'odc.components.TriggerPage.Enable',
+                                        defaultMessage: '启用',
                                       })
                                     : // 启用
                                       formatMessage({
                                         id: 'odc.components.TriggerPage.Disable',
+                                        defaultMessage: '禁用',
                                       })
 
                                   // 禁用
@@ -430,6 +445,7 @@ class TriggerPage extends Component<
                   key: PropsTab.BASE_OBJECT,
                   label: formatMessage({
                     id: 'odc.components.TriggerPage.ReferenceObject',
+                    defaultMessage: '基准对象',
                   }),
                   children: (
                     <>
@@ -437,6 +453,7 @@ class TriggerPage extends Component<
                         <ToolbarButton
                           text={formatMessage({
                             id: 'workspace.window.session.button.refresh',
+                            defaultMessage: '刷新',
                           })}
                           icon={<SyncOutlined />}
                           onClick={this.reloadTrigger}
@@ -449,6 +466,7 @@ class TriggerPage extends Component<
                               {
                                 formatMessage({
                                   id: 'odc.components.TriggerPage.Name.2',
+                                  defaultMessage: '名称:',
                                 })
 
                                 /* 名称: */
@@ -461,6 +479,7 @@ class TriggerPage extends Component<
                               {
                                 formatMessage({
                                   id: 'odc.components.TriggerPage.Owner.2',
+                                  defaultMessage: '所有者:',
                                 })
 
                                 /* 所有者: */
@@ -473,6 +492,7 @@ class TriggerPage extends Component<
                               {
                                 formatMessage({
                                   id: 'odc.components.TriggerPage.Type.1',
+                                  defaultMessage: '类型:',
                                 })
 
                                 /* 类型: */
@@ -488,6 +508,7 @@ class TriggerPage extends Component<
                                 {
                                   formatMessage({
                                     id: 'odc.components.TriggerPage.Status',
+                                    defaultMessage: '状态:',
                                   })
 
                                   /* 状态: */
@@ -510,6 +531,7 @@ class TriggerPage extends Component<
                         <ToolbarButton
                           text={formatMessage({
                             id: 'workspace.window.session.button.edit',
+                            defaultMessage: '编辑',
                           })}
                           icon={<EditOutlined />}
                           onClick={this.editTrigger}
@@ -519,6 +541,7 @@ class TriggerPage extends Component<
                           text={
                             formatMessage({
                               id: 'odc.components.TriggerPage.Download',
+                              defaultMessage: '下载',
                             }) //下载
                           }
                           icon={<CloudDownloadOutlined />}
@@ -535,6 +558,7 @@ class TriggerPage extends Component<
                         <ToolbarButton
                           text={formatMessage({
                             id: 'workspace.window.sql.button.search',
+                            defaultMessage: '查找',
                           })}
                           icon={<FileSearchOutlined />}
                           onClick={this.showSearchWidget}
@@ -543,6 +567,7 @@ class TriggerPage extends Component<
                         <ToolbarButton
                           text={formatMessage({
                             id: 'workspace.window.session.button.refresh',
+                            defaultMessage: '刷新',
                           })}
                           icon={<SyncOutlined />}
                           onClick={this.reloadTrigger}
@@ -553,10 +578,12 @@ class TriggerPage extends Component<
                             formated
                               ? formatMessage({
                                   id: 'odc.components.TriggerPage.Unformat',
+                                  defaultMessage: '取消格式化',
                                 })
                               : // 取消格式化
                                 formatMessage({
                                   id: 'odc.components.TriggerPage.Formatting',
+                                  defaultMessage: '格式化',
                                 })
                             // 格式化
                           }

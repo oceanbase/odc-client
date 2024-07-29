@@ -76,6 +76,7 @@ export class SQLContent extends React.PureComponent<{
                     {
                       formatMessage({
                         id: 'odc.AsyncTask.components.Download',
+                        defaultMessage: '下载',
                       }) /* 下载 */
                     }
                   </Button>

@@ -127,7 +127,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
         case CharRuleType.NORMAL_TEXT: {
           items = getTextItem([
             [
-              formatMessage({ id: 'odc.ruleItems.CharItem.Value' }), // 值
+              formatMessage({ id: 'odc.ruleItems.CharItem.Value', defaultMessage: '值' }), // 值
               value?.['genParams']?.fixText,
             ],
           ]);
@@ -136,15 +136,24 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
         case CharRuleType.RANDOM_TEXT: {
           items = getTextItem([
             [
-              formatMessage({ id: 'odc.ruleItems.CharItem.LengthRange' }), // 长度区间
+              formatMessage({
+                id: 'odc.ruleItems.CharItem.LengthRange',
+                defaultMessage: '长度区间',
+              }), // 长度区间
               value?.['range'],
             ],
 
             [
-              formatMessage({ id: 'odc.ruleItems.CharItem.Case' }), // 大小写
+              formatMessage({ id: 'odc.ruleItems.CharItem.Case', defaultMessage: '大小写' }), // 大小写
               value?.['genParams']?.caseOption === 'ALL_LOWER_CASE'
-                ? formatMessage({ id: 'odc.ruleItems.CharItem.AllLowercase' }) // 全部小写
-                : formatMessage({ id: 'odc.ruleItems.CharItem.AllUppercase' }), // 全部大写
+                ? formatMessage({
+                    id: 'odc.ruleItems.CharItem.AllLowercase',
+                    defaultMessage: '全部小写',
+                  }) // 全部小写
+                : formatMessage({
+                    id: 'odc.ruleItems.CharItem.AllUppercase',
+                    defaultMessage: '全部大写',
+                  }), // 全部大写
             ],
           ]);
           break;
@@ -152,7 +161,10 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
         case CharRuleType.REGEXP_TEXT: {
           items = getTextItem([
             [
-              formatMessage({ id: 'odc.ruleItems.CharItem.RegularExpression' }), // 正则表达式
+              formatMessage({
+                id: 'odc.ruleItems.CharItem.RegularExpression',
+                defaultMessage: '正则表达式',
+              }), // 正则表达式
               value?.['genParams']?.regText,
             ],
           ]);
@@ -165,7 +177,10 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
         case CharRuleType.NORMAL_BOOL: {
           items = getTextItem([
             [
-              formatMessage({ id: 'odc.ruleItems.CharItem.BooleanValue' }), // 布尔值
+              formatMessage({
+                id: 'odc.ruleItems.CharItem.BooleanValue',
+                defaultMessage: '布尔值',
+              }), // 布尔值
               value?.['genParams']?.fixText,
             ],
           ]);
@@ -174,7 +189,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
         case CharRuleType.NORMAL_DATE: {
           items = getTextItem([
             [
-              formatMessage({ id: 'odc.ruleItems.CharItem.Date' }), // 日期
+              formatMessage({ id: 'odc.ruleItems.CharItem.Date', defaultMessage: '日期' }), // 日期
               value?.['genParams']?.timestamp,
             ],
           ]);
@@ -184,7 +199,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
         case CharRuleType.RANDOM_NUMBER: {
           items = getTextItem([
             [
-              formatMessage({ id: 'odc.ruleItems.CharItem.Interval' }), // 区间
+              formatMessage({ id: 'odc.ruleItems.CharItem.Interval', defaultMessage: '区间' }), // 区间
               value?.['range'],
             ],
           ]);
@@ -194,19 +209,22 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
           const step = value?.['genParams']?.step;
           items = getTextItem([
             [
-              formatMessage({ id: 'odc.ruleItems.CharItem.Date' }), // 日期
+              formatMessage({ id: 'odc.ruleItems.CharItem.Date', defaultMessage: '日期' }), // 日期
               value?.['lowValue'],
             ],
 
             [
-              formatMessage({ id: 'odc.ruleItems.CharItem.StepSize' }), // 步长
-              step + formatMessage({ id: 'odc.ruleItems.CharItem.Days' }), // 天
+              formatMessage({ id: 'odc.ruleItems.CharItem.StepSize', defaultMessage: '步长' }), // 步长
+              step + formatMessage({ id: 'odc.ruleItems.CharItem.Days', defaultMessage: '天' }), // 天
             ],
             [
-              formatMessage({ id: 'odc.ruleItems.CharItem.Sort' }), // 排序
+              formatMessage({ id: 'odc.ruleItems.CharItem.Sort', defaultMessage: '排序' }), // 排序
               value?.['order'] === 'asc'
-                ? formatMessage({ id: 'odc.ruleItems.CharItem.PositiveSequence' }) // 正序
-                : formatMessage({ id: 'odc.ruleItems.CharItem.Reverse' }), // 倒序
+                ? formatMessage({
+                    id: 'odc.ruleItems.CharItem.PositiveSequence',
+                    defaultMessage: '正序',
+                  }) // 正序
+                : formatMessage({ id: 'odc.ruleItems.CharItem.Reverse', defaultMessage: '倒序' }), // 倒序
             ],
           ]);
           break;
@@ -215,20 +233,23 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
           const step = value?.['genParams']?.step;
           items = getTextItem([
             [
-              formatMessage({ id: 'odc.ruleItems.CharItem.StartValue' }), // 起始值
+              formatMessage({ id: 'odc.ruleItems.CharItem.StartValue', defaultMessage: '起始值' }), // 起始值
               value?.['lowValue'],
             ],
 
             [
-              formatMessage({ id: 'odc.ruleItems.CharItem.StepSize' }), // 步长
+              formatMessage({ id: 'odc.ruleItems.CharItem.StepSize', defaultMessage: '步长' }), // 步长
               step,
             ],
 
             [
-              formatMessage({ id: 'odc.ruleItems.CharItem.Sort' }), // 排序
+              formatMessage({ id: 'odc.ruleItems.CharItem.Sort', defaultMessage: '排序' }), // 排序
               value?.['order'] === 'asc'
-                ? formatMessage({ id: 'odc.ruleItems.CharItem.PositiveSequence' }) // 正序
-                : formatMessage({ id: 'odc.ruleItems.CharItem.Reverse' }), // 倒序
+                ? formatMessage({
+                    id: 'odc.ruleItems.CharItem.PositiveSequence',
+                    defaultMessage: '正序',
+                  }) // 正序
+                : formatMessage({ id: 'odc.ruleItems.CharItem.Reverse', defaultMessage: '倒序' }), // 倒序
             ],
           ]);
           break;
@@ -236,7 +257,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
         case CharRuleType.NORMAL_NUMBER: {
           items = getTextItem([
             [
-              formatMessage({ id: 'odc.ruleItems.CharItem.Value' }), // 值
+              formatMessage({ id: 'odc.ruleItems.CharItem.Value', defaultMessage: '值' }), // 值
               value?.['genParams']?.fixNum,
             ],
           ]);
@@ -262,6 +283,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                   maxLength={maxLength}
                   addonBefore={formatMessage({
                     id: 'odc.ruleItems.CharItem.Value',
+                    defaultMessage: '值',
                   })} /* 值 */
                 />
               </Form.Item>
@@ -279,6 +301,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                   min={`${1}`}
                   addonBefore={formatMessage({
                     id: 'odc.ruleItems.CharItem.LengthRange',
+                    defaultMessage: '长度区间',
                   })} /* 长度区间 */
                 />
               </Form.Item>
@@ -286,6 +309,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                 <WrapItemWithTitle
                   addonBefore={formatMessage({
                     id: 'odc.ruleItems.CharItem.Case',
+                    defaultMessage: '大小写',
                   })} /* 大小写 */
                 >
                   <Select>
@@ -293,6 +317,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                       {
                         formatMessage({
                           id: 'odc.ruleItems.CharItem.AllLowercase',
+                          defaultMessage: '全部小写',
                         }) /* 全部小写 */
                       }
                     </Option>
@@ -300,6 +325,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                       {
                         formatMessage({
                           id: 'odc.ruleItems.CharItem.AllUppercase',
+                          defaultMessage: '全部大写',
                         }) /* 全部大写 */
                       }
                     </Option>
@@ -317,6 +343,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
               <Input
                 addonBefore={formatMessage({
                   id: 'odc.ruleItems.CharItem.RegularExpression',
+                  defaultMessage: '正则表达式',
                 })} /* 正则表达式 */
               />
             </Form.Item>
@@ -330,6 +357,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
               <WrapItemWithTitle
                 addonBefore={formatMessage({
                   id: 'odc.ruleItems.CharItem.Value',
+                  defaultMessage: '值',
                 })} /* 值 */
               >
                 <Select>
@@ -356,6 +384,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
               <WrapItemWithTitle
                 addonBefore={formatMessage({
                   id: 'odc.ruleItems.CharItem.Date',
+                  defaultMessage: '日期',
                 })} /* 日期 */
               >
                 <DatePicker disabledDate={disabledDateOfMock} />
@@ -371,6 +400,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
               <WrapItemWithTitle
                 addonBefore={formatMessage({
                   id: 'odc.ruleItems.CharItem.DateRange',
+                  defaultMessage: '日期范围',
                 })} /* 日期范围 */
               >
                 <DatePicker.RangePicker disabledDate={disabledDateOfMock} />
@@ -387,6 +417,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                 <WrapItemWithTitle
                   addonBefore={formatMessage({
                     id: 'odc.ruleItems.CharItem.Date',
+                    defaultMessage: '日期',
                   })} /* 日期 */
                 >
                   <DatePicker disabledDate={disabledDateOfMock} />
@@ -400,6 +431,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                 <WrapItemWithTitle
                   addonBefore={formatMessage({
                     id: 'odc.ruleItems.CharItem.StepSize',
+                    defaultMessage: '步长',
                   })} /* 步长 */
                 >
                   <InputNumber<number | string>
@@ -409,10 +441,14 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                       (value) =>
                         `${value}${formatMessage({
                           id: 'odc.ruleItems.CharItem.Days',
+                          defaultMessage: '天',
                         })}` // 天
                     }
                     parser={(value) =>
-                      value.replace(formatMessage({ id: 'odc.ruleItems.CharItem.Days' }), '')
+                      value.replace(
+                        formatMessage({ id: 'odc.ruleItems.CharItem.Days', defaultMessage: '天' }),
+                        '',
+                      )
                     }
                   />
                 </WrapItemWithTitle>
@@ -421,6 +457,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                 <WrapItemWithTitle
                   addonBefore={formatMessage({
                     id: 'odc.ruleItems.CharItem.Sort',
+                    defaultMessage: '排序',
                   })} /* 排序 */
                 >
                   <Select>
@@ -428,6 +465,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                       {
                         formatMessage({
                           id: 'odc.ruleItems.CharItem.PositiveSequence',
+                          defaultMessage: '正序',
                         }) /* 正序 */
                       }
                     </Option>
@@ -435,6 +473,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                       {
                         formatMessage({
                           id: 'odc.ruleItems.CharItem.Reverse',
+                          defaultMessage: '倒序',
                         }) /* 倒序 */
                       }
                     </Option>
@@ -458,6 +497,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                 max={getColumnMaxValue(maxLength, 0, '9223372036854775807')}
                 addonBefore={formatMessage({
                   id: 'odc.ruleItems.CharItem.Value',
+                  defaultMessage: '值',
                 })} /* 值 */
               />
             </Form.Item>
@@ -474,6 +514,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                   max={getColumnMaxValue(maxLength, 0, '9223372036854775807')}
                   addonBefore={formatMessage({
                     id: 'odc.ruleItems.CharItem.StartValue',
+                    defaultMessage: '起始值',
                   })} /* 起始值 */
                 />
               </Form.Item>
@@ -486,6 +527,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                   min="0"
                   addonBefore={formatMessage({
                     id: 'odc.ruleItems.CharItem.StepSize',
+                    defaultMessage: '步长',
                   })} /* 步长 */
                 />
               </Form.Item>
@@ -493,6 +535,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                 <WrapItemWithTitle
                   addonBefore={formatMessage({
                     id: 'odc.ruleItems.CharItem.Sort',
+                    defaultMessage: '排序',
                   })} /* 排序 */
                 >
                   <Select>
@@ -500,6 +543,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                       {
                         formatMessage({
                           id: 'odc.ruleItems.CharItem.PositiveSequence',
+                          defaultMessage: '正序',
                         }) /* 正序 */
                       }
                     </Option>
@@ -507,6 +551,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                       {
                         formatMessage({
                           id: 'odc.ruleItems.CharItem.Reverse',
+                          defaultMessage: '倒序',
                         }) /* 倒序 */
                       }
                     </Option>
@@ -526,6 +571,7 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                 max={getColumnMaxValue(maxLength, 0, '9223372036854775807')}
                 addonBefore={formatMessage({
                   id: 'odc.ruleItems.CharItem.Interval',
+                  defaultMessage: '区间',
                 })} /* 区间 */
               />
             </Form.Item>

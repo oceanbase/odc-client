@@ -97,14 +97,15 @@ export const localeList = [
     value: 'en-US',
   },
   {
-    label: formatMessage({ id: 'odc.src.constant.SimplifiedChinese' }), //简体中文
+    label: formatMessage({ id: 'odc.src.constant.SimplifiedChinese', defaultMessage: '简体中文' }), //简体中文
     value: 'zh-CN',
   },
   {
-    label: formatMessage({ id: 'odc.src.constant.TraditionalChinese' }), //繁体中文
+    label: formatMessage({ id: 'odc.src.constant.TraditionalChinese', defaultMessage: '繁体中文' }), //繁体中文
     value: 'zh-TW',
   },
-]; // 连接目前支持的颜色集
+];
+// 连接目前支持的颜色集
 
 // 管控台-角色管理-系统权限入口
 export const EnableRoleSystemPermission = true;

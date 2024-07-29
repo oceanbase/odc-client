@@ -44,6 +44,7 @@ function NameFormatter({ row }) {
           title={
             formatMessage({
               id: 'odc.src.page.Workspace.components.CreateTable.TableIndex.IndexIsNotAvailable',
+              defaultMessage: '索引不可用',
             }) /* 索引不可用 */
           }
         >
@@ -68,6 +69,7 @@ export function useColumns(
   const methodOptions = {
     [TableIndexMehod.NONE]: formatMessage({
       id: 'odc.CreateTable.TableIndex.columns.Empty',
+      defaultMessage: '空',
     }),
     //空
     [TableIndexMehod.HASH]: 'HASH',
@@ -127,6 +129,7 @@ export function useColumns(
       key: 'name',
       name: formatMessage({
         id: 'odc.CreateTable.Columns.columns.Name',
+        defaultMessage: '名称',
       }),
       //名称
       resizable: true,
@@ -138,6 +141,7 @@ export function useColumns(
       key: 'scope',
       name: formatMessage({
         id: 'odc.CreateTable.TableIndex.columns.Scope',
+        defaultMessage: '范围',
       }),
       //范围
       resizable: true,
@@ -149,6 +153,7 @@ export function useColumns(
       key: 'method',
       name: formatMessage({
         id: 'odc.CreateTable.TableIndex.columns.Method',
+        defaultMessage: '方法',
       }),
       //方法
       resizable: true,
@@ -162,6 +167,7 @@ export function useColumns(
       key: 'type',
       name: formatMessage({
         id: 'odc.CreateTable.TableIndex.columns.Type',
+        defaultMessage: '类型',
       }),
       //类型
       resizable: true,
@@ -174,6 +180,7 @@ export function useColumns(
       key: 'columns',
       name: formatMessage({
         id: 'odc.CreateTable.TableIndex.columns.Column',
+        defaultMessage: '列',
       }),
       //列
       resizable: true,
@@ -188,6 +195,7 @@ export function useColumns(
       key: 'visible',
       name: formatMessage({
         id: 'odc.CreateTable.TableIndex.columns.Invisible',
+        defaultMessage: '不可见',
       }),
       //不可见
       resizable: true,

@@ -45,7 +45,10 @@ const ViewRiskLevelDrawer: React.FC<{
       destroyOnClose={true}
       onClose={handleDrawerClose}
       title={
-        formatMessage({ id: 'odc.RiskLevel.components.ViewRiskLevelDrawer.ViewRiskLevels' }) //查看风险等级
+        formatMessage({
+          id: 'odc.RiskLevel.components.ViewRiskLevelDrawer.ViewRiskLevels',
+          defaultMessage: '查看风险等级',
+        }) //查看风险等级
       }
       className={styles.riskLevelDrawer}
     >
@@ -53,7 +56,10 @@ const ViewRiskLevelDrawer: React.FC<{
         <Descriptions.Item
           contentStyle={{ whiteSpace: 'pre' }}
           label={
-            formatMessage({ id: 'odc.RiskLevel.components.ViewRiskLevelDrawer.RiskLevel' }) //风险等级
+            formatMessage({
+              id: 'odc.RiskLevel.components.ViewRiskLevelDrawer.RiskLevel',
+              defaultMessage: '风险等级',
+            }) //风险等级
           }
         >
           <RiskLevelLabel level={record?.level} color={record?.style} />
@@ -62,6 +68,7 @@ const ViewRiskLevelDrawer: React.FC<{
           {
             formatMessage({
               id: 'odc.RiskLevel.components.ViewRiskLevelDrawer.ApprovalProcess',
+              defaultMessage: '审批流程',
             }) /*审批流程*/
           }
         </div>
@@ -78,6 +85,7 @@ const ViewRiskLevelDrawer: React.FC<{
                       <Descriptions
                         title={formatMessage({
                           id: 'odc.RiskLevel.components.ViewRiskLevelDrawer.ExternalApproval',
+                          defaultMessage: '外部审批',
                         })}
                         /*外部审批*/ column={1}
                       >
@@ -89,8 +97,10 @@ const ViewRiskLevelDrawer: React.FC<{
                           {
                             formatMessage({
                               id: 'odc.RiskLevel.components.ViewRiskLevelDrawer.ApprovalRole',
+                              defaultMessage: '审批角色',
                             }) /*审批角色*/
                           }
+
                           {index + 1}
                         </div>
                         <Descriptions.Item
@@ -98,14 +108,15 @@ const ViewRiskLevelDrawer: React.FC<{
                           label={
                             formatMessage({
                               id: 'odc.RiskLevel.components.ViewRiskLevelDrawer.ApprovalRole',
+                              defaultMessage: '审批角色',
                             }) //审批角色
                           }
                         >
                           <div className={styles.nodeContent}>
                             {autoApproval
                               ? formatMessage({
-                                  id:
-                                    'odc.RiskLevel.components.ViewRiskLevelDrawer.AutomaticApproval',
+                                  id: 'odc.RiskLevel.components.ViewRiskLevelDrawer.AutomaticApproval',
+                                  defaultMessage: '自动审批',
                                 }) //自动审批
                               : resourceRoleName}
                           </div>
@@ -123,6 +134,7 @@ const ViewRiskLevelDrawer: React.FC<{
           label={
             formatMessage({
               id: 'odc.RiskLevel.components.ViewRiskLevelDrawer.ValidityPeriodOfApproval',
+              defaultMessage: '审批有效期',
             }) //审批有效期
           }
         >
@@ -135,6 +147,7 @@ const ViewRiskLevelDrawer: React.FC<{
           label={
             formatMessage({
               id: 'odc.RiskLevel.components.ViewRiskLevelDrawer.ExecutionWaitingPeriod',
+              defaultMessage: '执行等待有效期',
             }) //执行等待有效期
           }
         >
@@ -147,6 +160,7 @@ const ViewRiskLevelDrawer: React.FC<{
           label={
             formatMessage({
               id: 'odc.RiskLevel.components.ViewRiskLevelDrawer.ExecutionValidityPeriod',
+              defaultMessage: '执行有效期',
             }) //执行有效期
           }
         >
@@ -157,7 +171,10 @@ const ViewRiskLevelDrawer: React.FC<{
         <Descriptions.Item
           contentStyle={{ whiteSpace: 'pre' }}
           label={
-            formatMessage({ id: 'odc.RiskLevel.components.ViewRiskLevelDrawer.Description' }) //描述
+            formatMessage({
+              id: 'odc.RiskLevel.components.ViewRiskLevelDrawer.Description',
+              defaultMessage: '描述',
+            }) //描述
           }
         >
           <div className={styles.nodeContent}>{record?.description}</div>

@@ -47,6 +47,7 @@ export default ({ snippet, handleSnippetMenuClick }, {}) => {
                 {
                   formatMessage({
                     id: 'odc.component.SnippetCard.Syntax',
+                    defaultMessage: '代码',
                   }) /*代码片段*/
                 }
               </dt>
@@ -57,6 +58,7 @@ export default ({ snippet, handleSnippetMenuClick }, {}) => {
                 {
                   formatMessage({
                     id: 'odc.component.SnippetCard.Description',
+                    defaultMessage: '描述',
                   }) /*描述*/
                 }
               </dt>
@@ -149,6 +151,7 @@ export default ({ snippet, handleSnippetMenuClick }, {}) => {
                 formatMessage(
                   {
                     id: 'odc.component.SnippetCard.SnippetprefixSyntaxHelpsCopySuccessfully',
+                    defaultMessage: '{snippetPrefix} 代码片段复制成功！',
                   },
                   { snippetPrefix: snippet.prefix },
                 ), //`${snippet.prefix} 代码片段复制成功！`

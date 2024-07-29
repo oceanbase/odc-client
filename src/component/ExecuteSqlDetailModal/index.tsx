@@ -140,11 +140,17 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
               if (data?.originalText?.length) {
                 if (result) {
                   message.success(
-                    formatMessage({ id: 'odc.component.Log.CopiedSuccessfully' }), //复制成功
+                    formatMessage({
+                      id: 'odc.component.Log.CopiedSuccessfully',
+                      defaultMessage: '复制成功',
+                    }), //复制成功
                   );
                 } else {
                   message.error(
-                    formatMessage({ id: 'odc.component.Log.ReplicationFailed' }), //复制失败
+                    formatMessage({
+                      id: 'odc.component.Log.ReplicationFailed',
+                      defaultMessage: '复制失败',
+                    }), //复制失败
                   );
                 }
               }
@@ -195,6 +201,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
         title={
           formatMessage({
             id: 'odc.src.page.Workspace.components.Trace.ExportTheJSONFileThat',
+            defaultMessage: '导出符合 OpenTracing 规范的 Json 文件，可导入 Jaeger 查看',
           }) //'导出符合 OpenTracing 规范的 Json 文件，可导入 Jaeger 查看'
         }
       >
@@ -202,6 +209,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
           {
             formatMessage({
               id: 'odc.src.page.Workspace.components.Trace.ExportJson',
+              defaultMessage: '\n            导出 Json\n          ',
             }) /* 
           导出 Json
           */
@@ -267,6 +275,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
             placeholder={
               formatMessage({
                 id: 'odc.src.page.Workspace.components.Trace.SearchForTheKeyword',
+                defaultMessage: '搜索关键字',
               }) /* 搜索关键字 */
             }
             onSearch={(e) => setSearchValue(e)}
@@ -309,7 +318,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
       title: formatMessage(
         {
           id: 'src.component.ExecuteSqlDetailModal.5B8FA08A',
-          defaultMessage: 'Trace ID 为 "${modalStore?.executeSqlDetailData?.traceId}" 的执行画像',
+          defaultMessage: 'Trace ID 为 "{modalStoreExecuteSqlDetailDataTraceId}" 的执行画像',
         },
         { modalStoreExecuteSqlDetailDataTraceId: modalStore?.executeSqlDetailData?.traceId },
       ),
@@ -404,6 +413,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
               ) : (
                 <div className={styles.tabTitle}>{planTabLabel}</div>
               )}
+
               <Space>{page?.pageConfig?.[tab]?.toolBar}</Space>
             </div>
             {page?.pageConfig?.[tab]?.children}

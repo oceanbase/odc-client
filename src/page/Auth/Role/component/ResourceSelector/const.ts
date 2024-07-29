@@ -23,6 +23,7 @@ export const connectionAccessTypeOptions = [
   {
     label: formatMessage({
       id: 'odc.component.ResourceSelector.const.DataSource',
+      defaultMessage: '数据源',
     }),
     //数据源
     value: IManagerResourceType.project,
@@ -30,11 +31,13 @@ export const connectionAccessTypeOptions = [
   {
     label: formatMessage({
       id: 'odc.component.ResourceSelector.const.Project',
+      defaultMessage: '项目',
     }),
     //项目
     value: IManagerResourceType.project,
   },
 ];
+
 export enum ConnectionAccessAction {
   readonlyconnect = 'readonlyconnect',
   connect = 'connect',
@@ -46,6 +49,7 @@ export const resourceManagementTypeOptions = [
   {
     label: formatMessage({
       id: 'odc.component.ResourceSelector.const.DataSource',
+      defaultMessage: '数据源',
     }),
     //数据源
     value: IManagerResourceType.resource,
@@ -53,6 +57,7 @@ export const resourceManagementTypeOptions = [
   {
     label: formatMessage({
       id: 'odc.component.ResourceSelector.const.Project',
+      defaultMessage: '项目',
     }),
     //项目
     value: IManagerResourceType.project,
@@ -60,6 +65,7 @@ export const resourceManagementTypeOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.Role',
+      defaultMessage: '角色',
     }),
     //角色
     value: IManagerResourceType.role,
@@ -67,15 +73,18 @@ export const resourceManagementTypeOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.User',
+      defaultMessage: '用户',
     }),
     //用户
     value: IManagerResourceType.user,
   },
 ];
+
 export const resourceManagementActionOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.Manageable',
+      defaultMessage: '可管理',
     }),
     //可管理
     value: ResourceManagementAction.can_manage,
@@ -88,6 +97,7 @@ export const resourceManagementActionOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.Editable',
+      defaultMessage: '可编辑',
     }),
     //可编辑
     value: ResourceManagementAction.can_update,
@@ -100,6 +110,7 @@ export const resourceManagementActionOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.ViewOnly',
+      defaultMessage: '仅查看',
     }),
     //仅查看
     value: ResourceManagementAction.can_read,
@@ -120,6 +131,7 @@ export const systemTypeOptions: {
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.OperationRecord',
+      defaultMessage: '操作记录',
     }),
     //操作记录
     value: IManagerResourceType.odc_audit_event,
@@ -127,6 +139,7 @@ export const systemTypeOptions: {
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.AutomaticAuthorization',
+      defaultMessage: '自动授权',
     }),
     //自动授权
     value: IManagerResourceType.auto_auth,
@@ -135,6 +148,7 @@ export const systemTypeOptions: {
   {
     label: formatMessage({
       id: 'odc.component.ResourceSelector.const.ApprovalProcess',
+      defaultMessage: '审批流程',
     }),
     //审批流程
     value: IManagerResourceType.approval_flow,
@@ -142,6 +156,7 @@ export const systemTypeOptions: {
   {
     label: formatMessage({
       id: 'odc.component.ResourceSelector.const.RiskLevel',
+      defaultMessage: '风险等级',
     }),
     //风险等级
     value: IManagerResourceType.risk_level,
@@ -149,6 +164,7 @@ export const systemTypeOptions: {
   {
     label: formatMessage({
       id: 'odc.component.ResourceSelector.const.RiskIdentificationRules',
+      defaultMessage: '风险识别规则',
     }),
     //风险识别规则
     value: IManagerResourceType.risk_detect,
@@ -156,6 +172,7 @@ export const systemTypeOptions: {
   {
     label: formatMessage({
       id: 'odc.component.ResourceSelector.const.DevelopmentSpecifications',
+      defaultMessage: '开发规范',
     }),
     //开发规范
     value: IManagerResourceType.ruleset,
@@ -163,6 +180,7 @@ export const systemTypeOptions: {
   {
     label: formatMessage({
       id: 'odc.component.ResourceSelector.const.SystemIntegration',
+      defaultMessage: '系统集成',
     }),
     //系统集成
     value: IManagerResourceType.integration,
@@ -170,10 +188,12 @@ export const systemTypeOptions: {
   {
     label: formatMessage({
       id: 'odc.src.page.Auth.Role.component.ResourceSelector.PersonalSpace',
+      defaultMessage: '个人空间',
     }), //'个人空间'
     value: IManagerResourceType.individual_organization,
   },
 ];
+
 export enum SystemAction {
   action_read = 'action_read',
   action_update = 'action_update',
@@ -192,6 +212,7 @@ export const systemActionOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.Operational',
+      defaultMessage: '可操作',
     }),
     //可操作
     value: SystemAction.action_update_read,
@@ -200,6 +221,7 @@ export const systemActionOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.Operational',
+      defaultMessage: '可操作',
     }),
     //可操作
     value: SystemAction.action_create_delete_update,
@@ -208,6 +230,7 @@ export const systemActionOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.Operational',
+      defaultMessage: '可操作',
     }),
     //可操作
     value: SystemAction.action_update,
@@ -216,6 +239,7 @@ export const systemActionOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.Operational',
+      defaultMessage: '可操作',
     }),
     //可操作
     value: SystemAction.action_create_delete_update_read,
@@ -224,6 +248,7 @@ export const systemActionOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.ViewOnly',
+      defaultMessage: '仅查看',
     }),
     //仅查看
     value: SystemAction.action_read,
@@ -234,6 +259,7 @@ export const systemActionOptions = [
     ],
   },
 ];
+
 export const permissionMap = {
   [IManagerRolePermissionType.resourceManagementPermissions]: {
     typeOptions: resourceManagementTypeOptions,
@@ -250,6 +276,7 @@ export const createAbleResourceOptions = [
   {
     label: formatMessage({
       id: 'odc.component.ResourceSelector.const.DataSource',
+      defaultMessage: '数据源',
     }),
     //数据源
     value: IManagerResourceType.resource,
@@ -257,6 +284,7 @@ export const createAbleResourceOptions = [
   {
     label: formatMessage({
       id: 'odc.component.ResourceSelector.const.Project',
+      defaultMessage: '项目',
     }),
     //项目
     value: IManagerResourceType.project,
@@ -264,6 +292,7 @@ export const createAbleResourceOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.Role',
+      defaultMessage: '角色',
     }),
     //角色
     value: IManagerResourceType.role,
@@ -271,6 +300,7 @@ export const createAbleResourceOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormResourceSelector.const.User',
+      defaultMessage: '用户',
     }),
     //用户
     value: IManagerResourceType.user,

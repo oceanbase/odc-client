@@ -60,11 +60,11 @@ export enum EnumSnippetAction {
 }
 export const SNIPPET_TYPES = [
   {
-    name: formatMessage({ id: 'odc.src.store.snippet.AllTypes' }), //全部类型
+    name: formatMessage({ id: 'odc.src.store.snippet.AllTypes', defaultMessage: '全部类型' }), //全部类型
     key: EnumSnippetType.ALL,
   },
   {
-    name: formatMessage({ id: 'odc.src.store.snippet.Regular' }), //常规
+    name: formatMessage({ id: 'odc.src.store.snippet.Regular', defaultMessage: '常规' }), //常规
     key: EnumSnippetType.NORMAL,
   },
   {
@@ -76,24 +76,29 @@ export const SNIPPET_TYPES = [
     key: EnumSnippetType.DDL,
   },
   {
-    name: formatMessage({ id: 'odc.src.store.snippet.ProcessControlStatement' }), //流程控制语句
+    name: formatMessage({
+      id: 'odc.src.store.snippet.ProcessControlStatement',
+      defaultMessage: '流程控制语句',
+    }), //流程控制语句
     key: EnumSnippetType.FLOW,
   },
 ];
+
 export const SNIPPET_ACTIONS = [
   {
-    name: formatMessage({ id: 'odc.src.store.snippet.New' }), //新建
+    name: formatMessage({ id: 'odc.src.store.snippet.New', defaultMessage: '新建' }), //新建
     key: EnumSnippetAction.CREATE,
   },
   {
-    name: formatMessage({ id: 'odc.src.store.snippet.Editing' }), //编辑
+    name: formatMessage({ id: 'odc.src.store.snippet.Editing', defaultMessage: '编辑' }), //编辑
     key: EnumSnippetAction.EDIT,
   },
   {
-    name: formatMessage({ id: 'odc.src.store.snippet.Delete' }), //删除
+    name: formatMessage({ id: 'odc.src.store.snippet.Delete', defaultMessage: '删除' }), //删除
     key: EnumSnippetAction.DELETE,
   },
 ];
+
 export const SNIPPET_BODY_TAG = {
   BEGIN: '<com.oceanbase.odc.snippet>',
   END: '</com.oceanbase.odc.snippet>',

@@ -39,10 +39,12 @@ interface IShadowSyncParamters {
 const ErrorStrategyText = {
   ABORT: formatMessage({
     id: 'odc.TaskManagePage.AsyncTask.StopATask',
+    defaultMessage: '停止任务',
   }),
   // 停止任务
   CONTINUE: formatMessage({
     id: 'odc.TaskManagePage.AsyncTask.IgnoreErrorsContinueTasks',
+    defaultMessage: '忽略错误继续任务',
   }),
 
   // 忽略错误继续任务
@@ -102,18 +104,22 @@ export function getItems(
   const riskItem = [
     formatMessage({
       id: 'odc.component.DetailModal.dataMocker.RiskLevel',
+      defaultMessage: '风险等级',
     }),
     //风险等级
     <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />,
   ];
+
   const isTimerExecution = task?.executionStrategy === TaskExecStrategy.TIMER;
   const timerExecutionItem: [string, string] = [
     formatMessage({
       id: 'odc.component.DetailModal.dataMocker.ExecutionTime',
+      defaultMessage: '执行时间',
     }),
     //执行时间
     getFormatDateTime(task?.executionTime),
   ];
+
   return [
     {
       //@ts-ignore
@@ -121,48 +127,61 @@ export function getItems(
         [
           formatMessage({
             id: 'odc.component.DetailModal.permission.TaskNumber',
+            defaultMessage: '任务编号',
           }),
           task.id,
         ],
+
         [
           formatMessage({
             id: 'odc.component.DetailModal.permission.TaskType',
+            defaultMessage: '任务类型',
           }),
           formatMessage({
             id: 'odc.component.DetailModal.shadowSync.ShadowTableSynchronization',
+            defaultMessage: '影子表同步',
           }), //影子表同步
         ],
         [
           formatMessage({
             id: 'odc.component.DetailModal.dataMocker.Database',
+            defaultMessage: '所属数据库',
           }),
           //所属数据库
           <DatabaseLabel database={task?.database} />,
         ],
+
         [
           formatMessage({
             id: 'odc.src.component.Task.ShadowSyncTask.DetailContent.DataSource',
+            defaultMessage: '所属数据源',
           }), //'所属数据源'
           task?.database?.dataSource?.name || '-',
         ],
+
         hasFlow ? riskItem : null,
         [
           formatMessage({
             id: 'odc.component.DetailModal.dataMocker.ExecutionMethod',
+            defaultMessage: '执行方式',
           }),
           //执行方式
           taskExecStrategyMap[task?.executionStrategy],
         ],
+
         isTimerExecution ? timerExecutionItem : null,
         [
           formatMessage({
             id: 'odc.TaskManagePage.AsyncTask.TaskErrorHandling',
+            defaultMessage: '任务错误处理',
           }),
           ErrorStrategyText[parameters.errorStrategy],
         ],
+
         [
           formatMessage({
             id: 'odc.ShadowSyncTask.DetailContent.Description',
+            defaultMessage: '描述',
           }),
           //描述
           task?.description,
@@ -173,6 +192,7 @@ export function getItems(
     {
       sectionName: formatMessage({
         id: 'odc.component.DetailModal.shadowSync.StructuralAnalysis',
+        defaultMessage: '结构分析',
       }),
       //结构分析
       sectionRender: (task) => {
@@ -191,13 +211,16 @@ export function getItems(
         [
           formatMessage({
             id: 'odc.component.DetailModal.dataMocker.Created',
+            defaultMessage: '创建人',
           }),
           //创建人
           task?.creator?.name || '-',
         ],
+
         [
           formatMessage({
             id: 'odc.TaskManagePage.DataMocker.CreationTime',
+            defaultMessage: '创建时间',
           }),
           // 创建时间
           getFormatDateTime(task.createTime),
