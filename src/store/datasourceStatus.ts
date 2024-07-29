@@ -68,13 +68,13 @@ export class DataSourceStatusStore {
     }
   }
 
-  public asyncUpdateStatus(ids: IDatasource['id'][]) {
+  public async asyncUpdateStatus(ids: IDatasource['id'][]) {
     ids?.forEach((id) => {
       this.queue.add(id);
     });
     if (this.status === 'stop') {
       this.status = 'running';
-      this.fetchStatus();
+      await this.fetchStatus();
     }
   }
 

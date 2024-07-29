@@ -94,7 +94,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
       true,
     );
     if (res) {
-      datasourceStatus.asyncUpdateStatus(res?.contents?.map((item) => item?.dataSource?.id));
+      await datasourceStatus.asyncUpdateStatus(res?.contents?.map((item) => item?.dataSource?.id));
       setData(res?.contents);
       setTotal(res?.page?.totalElements);
     }
