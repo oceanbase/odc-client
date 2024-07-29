@@ -50,7 +50,6 @@ const DatabaseList = ({
     if (!item?.authorizedPermissionTypes?.length) return;
     setDatabase(item);
     setSearchKey('');
-    openSql(e, item);
   };
 
   const openSql = (e, db) => {
@@ -84,7 +83,7 @@ const DatabaseList = ({
   };
 
   const getPositioninButton = (db: IDatabase) => {
-    if (activeDatabase?.id !== db.id) return null;
+    if (activeDatabase?.id !== db.id) return;
     if (!db?.authorizedPermissionTypes?.length) {
       return (
         <Button type="link" style={{ padding: 0 }} onClick={(e) => applyPermission(e, db)}>
@@ -95,17 +94,16 @@ const DatabaseList = ({
         </Button>
       );
     }
+    return <span style={{ color: 'var(--text-color-hint)' }}>库内搜索</span>;
   };
 
   if (database && !searchKey) {
     return (
-      <Button
-        type="link"
-        style={{ padding: '4px 12px', height: 28, display: 'inline-block' }}
-        onClick={(e) => openSql(e, database)}
-      >
-        定位到当前数据库
-      </Button>
+      <div className={styles.content}>
+        <div className={styles.databaseItem} onClick={(e) => openSql(e, database)}>
+          {`定位到数据库 "${database?.name}"`}
+        </div>
+      </div>
     );
   }
   return (

@@ -124,7 +124,7 @@ const InnerSelect: React.FC<{
             />
 
             <div style={{ color: 'var(--text-color-primary)' }}>{item?.label}</div>
-            <div style={{ color: 'var(--mask-color)', marginLeft: '4px' }}>
+            <div style={{ color: 'var(--text-color-hint)', marginLeft: '4px' }}>
               {item?.dataSource?.name}
             </div>
           </Space>
@@ -211,7 +211,7 @@ const InnerSelect: React.FC<{
                 [styles.optionDisabled]: disabled,
               })}
               style={{
-                backgroundColor: isCurrentItem ? '#e6f4ff' : null,
+                backgroundColor: isCurrentItem ? 'val(--hover-color)' : null,
               }}
             >
               <Space>
@@ -227,15 +227,21 @@ const InnerSelect: React.FC<{
                 <div
                   style={{
                     color: disabled
-                      ? 'var(--mask-color)'
+                      ? 'var(--text-color-placeholder)'
                       : isCurrentItem
-                      ? 'black'
+                      ? 'var(--text-color-link)'
                       : 'var(--text-color-primary)',
                   }}
                 >
                   {item?.label}
                 </div>
-                <div style={{ color: isCurrentItem ? 'black' : 'var(--icon-color-disable)' }}>
+                <div
+                  style={{
+                    color: isCurrentItem
+                      ? 'var(--text-color-link)'
+                      : 'var(--text-color-placeholder)',
+                  }}
+                >
                   {item?.dataSource?.name}
                 </div>
               </Space>

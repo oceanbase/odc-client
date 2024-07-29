@@ -41,7 +41,12 @@ interface IProps {
   onShowExecuteDetail: (sql: string, tag: string) => void;
   resultHeight: number;
   sqlStore?: SQLStore;
-  onOpenExecutingDetailModal?: (traceId: string, sql?: string, sessionId?: string) => void;
+  onOpenExecutingDetailModal?: (
+    traceId: string,
+    sql?: string,
+    sessionId?: string,
+    traceEmptyReason?: string,
+  ) => void;
 }
 
 function getResultText(rs: ISqlExecuteResult) {
@@ -203,7 +208,16 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         render: (value: string, row: any) => {
           if (!value) return '-';
           return row?.isSupportProfile ? (
-            <Link onClick={() => onOpenExecutingDetailModal(value, row?.originSql, row?.sessionId)}>
+            <Link
+              onClick={() =>
+                onOpenExecutingDetailModal(
+                  value,
+                  row?.originSql,
+                  row?.sessionId,
+                  row?.traceEmptyReason,
+                )
+              }
+            >
               {value}
             </Link>
           ) : (

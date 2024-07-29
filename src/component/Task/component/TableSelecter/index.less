@@ -66,8 +66,21 @@
 .allTree,
 .selectedTree {
   :global {
-    .ant-tree-indent-unit {
-      width: 32px;
+    .ant-tree-treenode {
+      overflow: hidden;
+    }
+  }
+}
+
+.env {
+  position: absolute;
+  top: 0px;
+  right: 8px;
+  bottom: 0px;
+  align-items: center;
+  :global {
+    .ant-badge-status-dot {
+      border-radius: 0px;
     }
   }
 }

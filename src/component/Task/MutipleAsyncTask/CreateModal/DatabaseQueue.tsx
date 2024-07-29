@@ -15,6 +15,21 @@ import { SelectTemplate, CreateTemplate } from '../components/Template';
 import datasourceStatus from '@/store/datasourceStatus';
 import styles from './index.less';
 
+export const checkDbExpiredByDataSourceStatus = (status: IConnectionStatus) => {
+  switch (status) {
+    case IConnectionStatus.ACTIVE: {
+      return false;
+    }
+    case IConnectionStatus.TESTING:
+    case IConnectionStatus.NOPASSWORD:
+    case IConnectionStatus.DISABLED:
+    case IConnectionStatus.INACTIVE:
+    default: {
+      return true;
+    }
+  }
+};
+
 export const DatabaseQueueSelect: React.FC<{
   rootName: (number | string)[];
   multipleDatabaseChangeOpen: boolean;
@@ -43,20 +58,6 @@ export const DatabaseQueueSelect: React.FC<{
       true,
       true,
     );
-    const checkDbExpiredByDataSourceStatus = (status: IConnectionStatus) => {
-      switch (status) {
-        case IConnectionStatus.ACTIVE: {
-          return false;
-        }
-        case IConnectionStatus.TESTING:
-        case IConnectionStatus.NOPASSWORD:
-        case IConnectionStatus.DISABLED:
-        case IConnectionStatus.INACTIVE:
-        default: {
-          return true;
-        }
-      }
-    };
     setDatabaseOptions(
       databaseList?.contents?.map((item) => {
         const statusInfo = datasourceStatus.statusMap.get(item?.dataSource?.id);
@@ -148,7 +149,7 @@ export const DatabaseQueueSelect: React.FC<{
                               <PlusOutlined onClick={() => innerAdd(undefined)} />
                               <UpOutlined
                                 style={{
-                                  color: index === 0 ? 'var(--mask-color)' : null,
+                                  color: index === 0 ? 'var(--icon-color-disable)' : null,
                                   cursor: index === 0 ? 'not-allowed' : null,
                                 }}
                                 onClick={async () => {
@@ -169,7 +170,10 @@ export const DatabaseQueueSelect: React.FC<{
 
                               <DownOutlined
                                 style={{
-                                  color: index === fields?.length - 1 ? 'var(--mask-color)' : null,
+                                  color:
+                                    index === fields?.length - 1
+                                      ? 'var(--icon-color-disable)'
+                                      : null,
                                   cursor: index === fields?.length - 1 ? 'not-allowed' : null,
                                 }}
                                 onClick={async () => {

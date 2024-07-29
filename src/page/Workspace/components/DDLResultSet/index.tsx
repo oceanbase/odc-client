@@ -150,6 +150,7 @@ interface IProps {
   autoCommit: boolean;
   withFullLinkTrace?: boolean; // SQL执行结果是否支持Trace功能
   traceEmptyReason?: string; // 若不支持时要展示的Tooltip文本
+  withQueryProfile?: boolean; // SQL执行结果是否支持执行剖析
   /**
    * db 查询耗时
    */
@@ -165,7 +166,12 @@ interface IProps {
   onShowExecuteDetail?: () => void;
   onShowTrace?: () => void;
   onUpdateEditing?: (editing: boolean) => void;
-  onOpenExecutingDetailModal?: (traceId: string, sql?: string) => void;
+  onOpenExecutingDetailModal?: (
+    traceId: string,
+    sql?: string,
+    sessionId?: string,
+    traceEmptyReason?: string,
+  ) => void;
 }
 const DDLResultSet: React.FC<IProps> = function (props) {
   const {
@@ -192,6 +198,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     autoCommit,
     dbTotalDurationMicroseconds,
     withFullLinkTrace = false,
+    withQueryProfile = false,
     traceEmptyReason = '',
     onUpdateEditing,
     onRefresh,
@@ -687,7 +694,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     if (guideCacheStore?.[guideCacheStore.cacheEnum.executePlan]) return null;
     return (
       <div style={{ color: 'var(--text-color-secondary)' }}>
-        <div>
+        <div style={{ fontSize: 14, color: 'var(--text-color-primary)', fontWeight: 500 }}>
           {formatMessage({
             id: 'src.page.Workspace.components.DDLResultSet.E32AB474',
             defaultMessage: 'SQL 执行画像',
@@ -707,7 +714,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   };
 
   const getExecuteIcon = () => {
-    return showExecutePlan ? (
+    return showExecutePlan && withQueryProfile ? (
       <ToolbarButton
         text={formatMessage({
           id: 'src.page.Workspace.components.DDLResultSet.22F863D6',
@@ -715,8 +722,10 @@ const DDLResultSet: React.FC<IProps> = function (props) {
         })}
         icon={<Icon component={SqlProfile} />}
         onClick={() => {
-          updateExecutePlanGuideCache();
-          onOpenExecutingDetailModal?.(traceId, originSql);
+          onOpenExecutingDetailModal?.(traceId, originSql, null, traceEmptyReason);
+          setTimeout(() => {
+            updateExecutePlanGuideCache();
+          }, 1000);
         }}
         tip={executeGuideTipContent()}
         overlayInnerStyle={{ width: 300 }}

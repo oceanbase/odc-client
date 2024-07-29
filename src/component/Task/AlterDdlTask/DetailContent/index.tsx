@@ -227,7 +227,7 @@ export function getItems(
             defaultMessage: '所属数据源',
           }),
           //'所属数据源'
-          task?.database.dataSource?.name || '-',
+          task?.database?.dataSource?.name || '-',
         ],
 
         hasFlow ? riskItem : null,

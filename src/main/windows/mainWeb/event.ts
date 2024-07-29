@@ -65,7 +65,7 @@ export function newWindowEvent(mainWindow: BrowserWindow) {
   mainWindow.on('close', (e) => {
     log.warn(`webcontent close, url: ${mainWindow.webContents.getURL()}`);
     const url = mainWindow.webContents?.getURL();
-    if (url.includes('localhost') && !url.includes('help-doc')) {
+    if (url.includes('127.0.0.1') && !url.includes('help-doc')) {
       /**
        * odc workspace confirm
        */

@@ -23,8 +23,11 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
   const [objectlist, setObjectlist] = useState<IDatabaseObject>();
   const [activeKey, setActiveKey] = useState(SEARCH_OBJECT_FROM_ALL_DATABASE);
   const [loading, setLoading] = useState<boolean>(false);
-  const { selectDatasourceId, selectProjectId, databaseList } = useContext(ResourceTreeContext);
-
+  const { selectDatasourceId, selectProjectId, databaseList, datasourceList } =
+    useContext(ResourceTreeContext);
+  const currentDataSourceType = datasourceList?.find(
+    (item) => item.id === selectDatasourceId,
+  )?.dialectType;
   const handleCancel = () => {
     modalStore.changeDatabaseSearchModalVisible(false);
   };
@@ -96,6 +99,8 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
         setSearchKey={setSearchKey}
         modalStore={modalStore}
         loading={loading}
+        selectProjectId={selectProjectId}
+        currentDataSourceType={currentDataSourceType}
       />
     );
   };
