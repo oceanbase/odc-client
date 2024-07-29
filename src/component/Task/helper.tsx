@@ -27,14 +27,18 @@ export { TaskTypeMap } from '@/component/Task/component/TaskTable';
 export const ENABLED_SYS_FROM_ITEM = false;
 
 export const hasPermission = (taskType: TaskType, permissions: DatabasePermissionType[]) => {
+  /* 如果有ACCESS(没有库权限, 只有库下的某个表权限), 则先全部粗颗粒放开 */
+  if (permissions.includes(DatabasePermissionType.ACCESS)) {
+    return permissions?.length > 0; // 考虑有表没有库权限的情况
+  }
   let _permissions = [];
   switch (taskType) {
     case TaskType.EXPORT:
-      return permissions?.length > 0; // 考虑有表没有库权限的情况
+      _permissions = [DatabasePermissionType.EXPORT];
+      break;
     case TaskType.EXPORT_RESULT_SET:
-      return permissions?.length > 0; // 考虑有表没有库权限的情况
-    case TaskType.ASYNC:
-      return permissions?.length > 0; // 考虑有表没有库权限的情况
+      _permissions = [DatabasePermissionType.EXPORT, DatabasePermissionType.QUERY];
+      break;
     default:
       _permissions = [DatabasePermissionType.CHANGE];
   }
