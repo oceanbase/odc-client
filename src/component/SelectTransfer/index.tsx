@@ -117,8 +117,13 @@ export default function SelectTransfer(props: IProps) {
             checkable
             selectable={false}
             checkedKeys={checkedKeys}
-            onCheck={(v) => {
-              setCheckedKeys([...(checkedKeys || []), ...(v as string[])]);
+            onCheck={(v, e) => {
+              const { checked, checkedNodes, node, event, halfCheckedKeys } = e;
+              if (checked === false) {
+                setCheckedKeys([...checkedKeys.filter((i) => i !== node?.key)]);
+              } else {
+                setCheckedKeys([...(checkedKeys || []), ...(v as string[])]);
+              }
             }}
             height={274}
             treeData={sourceDisplayTreeData}

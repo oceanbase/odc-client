@@ -88,7 +88,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
 
   function getProfileNodeDetail(data) {
     return (
-      <div style={{ width: '332px' }} className={styles.customDetailBox}>
+      <div style={{ width: '336px' }} className={styles.customDetailBox}>
         <div>
           {top5Render()}
           {topNodesList.length ? <Divider /> : null}
@@ -152,7 +152,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
                         ></span>
                         {key}
                       </span>
-                      <span>
+                      <span className={styles.value}>
                         {formatTimeTemplate(
                           BigNumber(value as any)
                             .div(1000000)
@@ -163,7 +163,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
                   ) : (
                     <>
                       <span>{key}</span>
-                      <span>{value}</span>
+                      <span className={styles.value}>{value}</span>
                     </>
                   )}
                 </div>
@@ -182,7 +182,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
                 return (
                   <div className={styles.keyValueBox}>
                     <span>{key}</span>
-                    <span>{value}</span>
+                    <span className={styles.value}>{value}</span>
                   </div>
                 );
               })}
@@ -287,7 +287,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
         <Radio.Group
           value={sortType}
           onChange={handleSortChange}
-          style={{ width: '100%', padding: '0 6px 8px 6px' }}
+          style={{ width: '100%', padding: '4px 6px 8px 6px', textAlign: 'center' }}
         >
           <Radio.Button value={subNodeSortType.BY_DURATION}>
             {subNodesSortMap[subNodeSortType.BY_DURATION].label}
@@ -328,7 +328,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
                 </div>
                 <div style={{ color: 'var(--profile-text-color)' }}>[{i?.id}]</div>
               </div>
-              <span>
+              <span className={styles.value}>
                 {' '}
                 {formatTimeTemplate(BigNumber(i?.data?.duration).div(1000000).toNumber())}{' '}
               </span>
@@ -371,12 +371,14 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
                           ></span>
                           {key}
                         </span>
-                        <span>{formatTimeTemplate(BigNumber(value).div(1000000).toNumber())} </span>
+                        <span className={styles.value}>
+                          {formatTimeTemplate(BigNumber(value).div(1000000).toNumber())}{' '}
+                        </span>
                       </>
                     ) : (
                       <>
                         <span>{key}</span>
-                        <span>{value}</span>
+                        <span className={styles.value}>{value}</span>
                       </>
                     )}
                   </div>
@@ -395,7 +397,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
                   return (
                     <div className={styles.keyValueBox}>
                       <span>{key}</span>
-                      <span>{value}</span>
+                      <span className={styles.value}>{value}</span>
                     </div>
                   );
                 })}

@@ -50,6 +50,7 @@ import StatusName from './StatusName';
 import ChangeOwnerModal from '@/page/Project/Database/ChangeOwnerModal';
 import { ProjectRole } from '@/d.ts/project';
 import MutipleAsyncTask from '@/component/Task/MutipleAsyncTask';
+import { databasePermissionTypeMap } from '@/page/Project/User/ManageModal/Database';
 interface IProps {
   id: string;
   modalStore?: ModalStore;
@@ -135,6 +136,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
       </span>
     );
   };
+
   const clearSelectedRowKeys = () => {
     setSelectedRowKeys([]);
   };
@@ -394,6 +396,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
               const hasQueryAuth = record.authorizedPermissionTypes?.includes(
                 DatabasePermissionType.QUERY,
               );
+
               const curRoles = project?.currentUserResourceRoles || [];
               const hasChangeOwnerAuth = curRoles.some((role) =>
                 [ProjectRole.OWNER, ProjectRole.DBA].includes(role),

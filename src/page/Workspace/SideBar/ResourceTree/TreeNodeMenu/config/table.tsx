@@ -29,7 +29,7 @@ import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
-import { hasExportPermission, hasChangePermission } from '../index';
+import { hasTableExportPermission, hasTableChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { getDataSourceModeConfig } from '@/common/datasource';
@@ -131,8 +131,8 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       }) /*导入*/,
       actionType: actionTypes.update,
       ellipsis: true,
-      disabled: (session) => {
-        return !hasChangePermission(session);
+      disabled: (session, node) => {
+        return !hasTableChangePermission(session, node);
       },
       isHide: (session) => {
         return (
@@ -158,8 +158,8 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       ],
 
       ellipsis: true,
-      disabled: (session) => {
-        return !hasExportPermission(session);
+      disabled: (session, node) => {
+        return !hasTableExportPermission(session, node);
       },
       isHide: (session) => {
         return !isSupportExport(session);
@@ -199,8 +199,8 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       ],
 
       ellipsis: true,
-      disabled: (session) => {
-        return !hasChangePermission(session);
+      disabled: (session, node) => {
+        return !hasTableChangePermission(session, node);
       },
       isHide: (session) => {
         return (
@@ -363,8 +363,8 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
 
       actionType: actionTypes.delete,
       ellipsis: true,
-      disabled: (session) => {
-        return !hasChangePermission(session);
+      disabled: (session, node) => {
+        return !hasTableChangePermission(session, node);
       },
       run(session, node) {
         const table = node.data as ITableModel;

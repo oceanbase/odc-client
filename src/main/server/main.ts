@@ -137,10 +137,10 @@ class MainServer {
   /**
    * 确认服务是否可用
    */
-  private async checkServerIsReady() {
+  private async checkServerIsReady(logError: boolean = false) {
     try {
       await new Promise((resolve, reject) => {
-        const res = get(`http://localhost:${this.port}/api/v1/info`, (resp) => {
+        const res = get(`http://127.0.0.1:${this.port}/api/v1/info`, (resp) => {
           log.info('check server api status: ', resp.statusCode);
           let data = '';
           // A chunk of data has been recieved.
@@ -159,6 +159,7 @@ class MainServer {
           });
         }).on('error', (err) => {
           log.info('check server with resp err');
+          logError && log.info(err);
           reject(err);
         });
         res.setTimeout(2000);
@@ -179,7 +180,7 @@ class MainServer {
     const getStatus = async (fn, reject) => {
       count++;
       log.info(`fetch server status count(${count})`);
-      const isReady = await this.checkServerIsReady();
+      const isReady = await this.checkServerIsReady(count > 70);
       if (isReady) {
         log.info(`Server startup time:`, (Date.now() - now) / 1000);
         fn(true);

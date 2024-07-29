@@ -43,11 +43,40 @@ const getColumns = (params: {
   const { filters } = params.paramOptions ?? {};
   return [
     {
-      dataIndex: 'databaseName',
+      dataIndex: 'tableName',
       title: formatMessage({
-        id: 'src.page.Project.User.ManageModal.Table.UserAuthList.9186B355',
-        defaultMessage: '数据库',
+        id: 'src.page.Project.User.ManageModal.Table.UserAuthList.012DC13E',
+        defaultMessage: '表',
       }),
+      ellipsis: true,
+      width: 140,
+      filterDropdown: (props) => {
+        return (
+          <SearchFilter
+            {...props}
+            selectedKeys={filters?.tableName}
+            placeholder={formatMessage({
+              id: 'src.page.Project.User.ManageModal.Table.UserAuthList.E7BFBCC8',
+              defaultMessage: '请输入',
+            })}
+          />
+        );
+      },
+      filterIcon: (filtered) => (
+        <SearchOutlined
+          style={{
+            color: filtered ? 'var(--icon-color-focus)' : undefined,
+          }}
+        />
+      ),
+
+      filteredValue: filters?.tableName || null,
+      filters: [],
+    },
+    {
+      dataIndex: 'databaseName',
+      title: '所属数据库',
+      width: 208,
       ellipsis: true,
       filterDropdown: (props) => {
         return (
@@ -70,36 +99,6 @@ const getColumns = (params: {
       ),
 
       filteredValue: filters?.databaseName || null,
-      filters: [],
-    },
-    {
-      dataIndex: 'tableName',
-      title: formatMessage({
-        id: 'src.page.Project.User.ManageModal.Table.UserAuthList.012DC13E',
-        defaultMessage: '表',
-      }),
-      ellipsis: true,
-      filterDropdown: (props) => {
-        return (
-          <SearchFilter
-            {...props}
-            selectedKeys={filters?.tableName}
-            placeholder={formatMessage({
-              id: 'src.page.Project.User.ManageModal.Table.UserAuthList.E7BFBCC8',
-              defaultMessage: '请输入',
-            })}
-          />
-        );
-      },
-      filterIcon: (filtered) => (
-        <SearchOutlined
-          style={{
-            color: filtered ? 'var(--icon-color-focus)' : undefined,
-          }}
-        />
-      ),
-
-      filteredValue: filters?.tableName || null,
       filters: [],
     },
     {
@@ -243,6 +242,11 @@ const UserAuthList: React.FC<IProps> = (props) => {
                     onOk: onReclaim,
                   },
                 ],
+                getCheckboxProps: (record: ITablePermission) => {
+                  return {
+                    disabled: record?.status === TablePermissionStatus.EXPIRED,
+                  };
+                },
               }
             : null
         }
@@ -252,13 +256,6 @@ const UserAuthList: React.FC<IProps> = (props) => {
           columns: columns?.filter((item) => (isOwner ? true : item?.dataIndex !== 'action')),
           dataSource: dataSource?.contents ?? [],
           rowKey: 'id',
-          rowSelection: {
-            getCheckboxProps: (record: ITablePermission) => {
-              return {
-                disabled: record?.status === TablePermissionStatus.EXPIRED,
-              };
-            },
-          },
           scroll: {
             x: 950,
             y: 800,

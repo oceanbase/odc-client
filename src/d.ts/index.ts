@@ -1652,6 +1652,7 @@ export interface ISqlExecuteResult {
     type: string;
   }[];
   withFullLinkTrace: boolean;
+  withQueryProfile: boolean;
   traceEmptyReason?: string;
 }
 export interface ISqlExecuteResultTimer {

@@ -198,7 +198,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const projectId = Form.useWatch('projectId', form);
 
   const disabledDate = (current) => {
-    return current && current < moment().endOf('day');
+    return current && current < moment().subtract(1, 'days').endOf('day');
   };
 
   useEffect(() => {

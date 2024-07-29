@@ -52,6 +52,10 @@ export const databasePermissionTypeMap = {
     }), //'变更'
     value: DatabasePermissionType.CHANGE,
   },
+  [DatabasePermissionType.ACCESS]: {
+    text: '访问',
+    value: DatabasePermissionType.ACCESS,
+  },
 };
 
 export const databasePermissionTypeFilters = Object.values(databasePermissionTypeMap);
@@ -109,7 +113,9 @@ const ManageModal: React.FC<IProps> = (props) => {
   };
 
   const handleReload = () => {
-    tableRef.current?.reload();
+    const param = { ...params, pagination: { ...params?.pagination, current: 1 } };
+    setParams(param);
+    loadData(param);
   };
 
   const handleReclaim = async (ids: number[]) => {

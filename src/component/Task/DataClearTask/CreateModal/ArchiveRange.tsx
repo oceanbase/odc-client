@@ -32,11 +32,11 @@ const { Text, Link } = Typography;
 interface IProps {
   tables: ITable[];
   needCheckBeforeDelete?: boolean;
-  form?: FormInstance<any>;
+  checkPartition?: boolean;
 }
 const ArchiveRange: React.FC<IProps> = (props) => {
-  const { tables, needCheckBeforeDelete = false, form } = props;
-  const [enablePartition, setEnablePartition] = useState<boolean>(false);
+  const { tables, needCheckBeforeDelete = false, checkPartition } = props;
+  const [enablePartition, setEnablePartition] = useState<boolean>(checkPartition);
   const tablesOptions = tables?.map((item) => ({
     label: item.tableName,
     value: item.tableName,
@@ -45,8 +45,8 @@ const ArchiveRange: React.FC<IProps> = (props) => {
   const hasAdvancedOptionCol = enablePartition || needCheckBeforeDelete;
 
   useEffect(() => {
-    setEnablePartition(!!form?.getFieldsValue()?.tables?.find((i) => i?.partitions));
-  }, [form?.getFieldsValue()?.tables]);
+    setEnablePartition(checkPartition);
+  }, [checkPartition]);
 
   return (
     <>
