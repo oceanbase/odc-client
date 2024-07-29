@@ -68,7 +68,7 @@ export class DataSourceStatusStore {
     }
   }
 
-  public async asyncUpdateStatus(ids: IDatasource['id'][]) {
+  public asyncUpdateStatus(ids: IDatasource['id'][]) {
     ids?.forEach((id) => {
       this.queue.add(id);
     });
