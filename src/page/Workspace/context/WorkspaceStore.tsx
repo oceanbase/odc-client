@@ -80,7 +80,7 @@ export default function WorkspaceStore({ children }) {
   const reloadDatasourceList = useCallback(async () => {
     const data = await fetchDatasource();
     setDatasourceList(data?.contents || []);
-    await datasourceStatus.asyncUpdateStatus(data?.contents?.map((a) => a.id));
+    datasourceStatus.asyncUpdateStatus(data?.contents?.map((a) => a.id));
   }, []);
 
   const reloadProjectList = useCallback(async () => {

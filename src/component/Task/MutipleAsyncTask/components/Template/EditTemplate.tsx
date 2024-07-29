@@ -11,7 +11,7 @@ import login from '@/store/login';
 import { DownOutlined, PlusOutlined, UpOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Form, message, Input, Timeline, Space, Divider, Button, Drawer } from 'antd';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { flatArray } from '../../CreateModal/helper';
@@ -19,6 +19,7 @@ import InnerSelecter, { DatabaseOption } from '../../CreateModal/InnerSelecter';
 import styles from './index.less';
 import datasourceStatus from '@/store/datasourceStatus';
 import { checkDbExpiredByDataSourceStatus } from '../../CreateModal/DatabaseQueue';
+import { observer } from 'mobx-react';
 
 const EditTemplate: React.FC<{
   open: boolean;
@@ -26,11 +27,12 @@ const EditTemplate: React.FC<{
   templateId: number;
   onSuccess?: () => Promise<void>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ open, projectId, templateId, setOpen, onSuccess }) => {
+}> = observer(({ open, projectId, templateId, setOpen, onSuccess }) => {
   const [form] = Form.useForm();
+  const statusMap = datasourceStatus.statusMap;
   const orderedDatabaseIds = Form.useWatch<number[][]>(['orders'], form);
   const [currentTemplate, setCurrentTemplate] = useState<Template>();
-  const [databaseOptions, setDatabaseOptions] = useState<DatabaseOption[]>([]);
+  const [_databaseOptions, setDatabaseOptions] = useState<DatabaseOption[]>([]);
   const {
     data,
     run,
@@ -51,7 +53,7 @@ const EditTemplate: React.FC<{
       true,
     );
     if (databaseList?.contents?.length) {
-      await datasourceStatus.asyncUpdateStatus([
+      datasourceStatus.asyncUpdateStatus([
         ...new Set(databaseList?.contents?.map((item) => item?.dataSource?.id)),
       ]);
       setDatabaseOptions(
@@ -70,6 +72,16 @@ const EditTemplate: React.FC<{
       );
     }
   };
+
+  const databaseOptions = useMemo(() => {
+    return _databaseOptions?.map((item) => {
+      return {
+        ...item,
+        expired: checkDbExpiredByDataSourceStatus(statusMap.get(item?.dataSource?.id)?.status),
+      };
+    });
+  }, [statusMap, _databaseOptions]);
+
   const initTemplate = async (templateId: number) => {
     const response = await detailTemplate(templateId, login?.organizationId?.toString());
     setCurrentTemplate(response);
@@ -394,5 +406,5 @@ const EditTemplate: React.FC<{
       </Form>
     </Drawer>
   );
-};
+});
 export default EditTemplate;

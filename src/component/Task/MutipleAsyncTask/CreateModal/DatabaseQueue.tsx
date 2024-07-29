@@ -2,7 +2,7 @@ import { IConnection, IConnectionStatus } from '@/d.ts';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { Button, Divider, Form, Space, Timeline, Tooltip } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { DeleteOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -14,6 +14,7 @@ import { DatabasePermissionType } from '@/d.ts/database';
 import { SelectTemplate, CreateTemplate } from '../components/Template';
 import datasourceStatus from '@/store/datasourceStatus';
 import styles from './index.less';
+import { observer } from 'mobx-react';
 
 export const checkDbExpiredByDataSourceStatus = (status: IConnectionStatus) => {
   switch (status) {
@@ -34,11 +35,12 @@ export const DatabaseQueueSelect: React.FC<{
   rootName: (number | string)[];
   multipleDatabaseChangeOpen: boolean;
   setDefaultDatasource: React.Dispatch<React.SetStateAction<IConnection>>;
-}> = ({ rootName, multipleDatabaseChangeOpen, setDefaultDatasource }) => {
+}> = observer(({ rootName, multipleDatabaseChangeOpen, setDefaultDatasource }) => {
   const form = Form.useFormInstance();
+  const statusMap = datasourceStatus.statusMap;
   const projectId = Form.useWatch('projectId', form);
   const [databaseIdMap, setDatabaseIdMap] = useState<Map<number, boolean>>(new Map());
-  const [databaseOptions, setDatabaseOptions] = useState<DatabaseOption[]>([]);
+  const [_databaseOptions, setDatabaseOptions] = useState<DatabaseOption[]>([]);
   const {
     data,
     run,
@@ -60,7 +62,7 @@ export const DatabaseQueueSelect: React.FC<{
     );
     if (databaseList?.contents?.length) {
       setDefaultDatasource(databaseList?.contents?.[0]?.dataSource);
-      await datasourceStatus.asyncUpdateStatus([
+      datasourceStatus.asyncUpdateStatus([
         ...new Set(databaseList?.contents?.map((item) => item.dataSource?.id)),
       ]);
       setDatabaseOptions(
@@ -83,6 +85,15 @@ export const DatabaseQueueSelect: React.FC<{
     });
     setDatabaseIdMap(databaseIdMap);
   };
+
+  const databaseOptions = useMemo(() => {
+    return _databaseOptions?.map((item) => {
+      return {
+        ...item,
+        expired: checkDbExpiredByDataSourceStatus(statusMap.get(item?.dataSource?.id)?.status),
+      };
+    });
+  }, [statusMap, _databaseOptions]);
 
   useEffect(() => {
     if (multipleDatabaseChangeOpen && projectId) {
@@ -234,7 +245,7 @@ export const DatabaseQueueSelect: React.FC<{
       </Form.List>
     </div>
   );
-};
+});
 
 const DatabaseQueue: React.FC<{
   multipleDatabaseChangeOpen: boolean;
