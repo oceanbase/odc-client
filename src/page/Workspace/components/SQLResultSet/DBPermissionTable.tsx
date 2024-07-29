@@ -20,7 +20,11 @@ import { CloseCircleFilled } from '@ant-design/icons';
 import { ModalStore } from '@/store/modal';
 import DisplayTable from '@/component/DisplayTable';
 import { DatabasePermissionType } from '@/d.ts/database';
-import { IUnauthorizedDBResources, TablePermissionType } from '@/d.ts/table';
+import {
+  IUnauthorizedDBResources,
+  TablePermissionType,
+  UnauthorizedPermissionTypeInSQLExecute,
+} from '@/d.ts/table';
 import Action from '@/component/Action';
 import { permissionOptionsMap } from '@/component/Task/ApplyDatabasePermission';
 import MultiLineOverflowText from '@/component/MultiLineOverflowText';
@@ -76,6 +80,9 @@ const getColumns = (
       ellipsis: true,
       render: (action, _) => {
         const dbDisabled = !_.applicable;
+        const isTablePermissionError = _.type === UnauthorizedPermissionTypeInSQLExecute.ODC_TABLE;
+        const isDatabasePermissionError =
+          _.type === UnauthorizedPermissionTypeInSQLExecute.ODC_DATABASE;
         let dbTooltip = null,
           tableTooltip = null;
         if (dbDisabled) {
@@ -99,7 +106,7 @@ const getColumns = (
         return (
           <Action.Group size={2}>
             <Action.Link
-              disabled={dbDisabled}
+              disabled={dbDisabled || !isDatabasePermissionError}
               tooltip={dbTooltip}
               key="applyDatabase"
               onClick={async () => {
@@ -114,7 +121,7 @@ const getColumns = (
             {
               <Action.Link
                 key="applyTable"
-                disabled={dbDisabled || !_?.tableName}
+                disabled={dbDisabled || !isTablePermissionError}
                 tooltip={tableTooltip}
                 onClick={async () => {
                   applyTableTask?.(
