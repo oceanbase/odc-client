@@ -32,15 +32,24 @@ const { Text } = Typography;
 
 export const databasePermissionTypeMap = {
   [DatabasePermissionType.QUERY]: {
-    text: formatMessage({ id: 'src.page.Project.User.ManageModal.CDB8A0AA' }), //'查询'
+    text: formatMessage({
+      id: 'src.page.Project.User.ManageModal.CDB8A0AA',
+      defaultMessage: '查询',
+    }), //'查询'
     value: DatabasePermissionType.QUERY,
   },
   [DatabasePermissionType.EXPORT]: {
-    text: formatMessage({ id: 'src.page.Project.User.ManageModal.6CDF0607' }), //'导出'
+    text: formatMessage({
+      id: 'src.page.Project.User.ManageModal.6CDF0607',
+      defaultMessage: '导出',
+    }), //'导出'
     value: DatabasePermissionType.EXPORT,
   },
   [DatabasePermissionType.CHANGE]: {
-    text: formatMessage({ id: 'src.page.Project.User.ManageModal.2DDCB471' }), //'变更'
+    text: formatMessage({
+      id: 'src.page.Project.User.ManageModal.2DDCB471',
+      defaultMessage: '变更',
+    }), //'变更'
     value: DatabasePermissionType.CHANGE,
   },
 };
@@ -106,8 +115,14 @@ const ManageModal: React.FC<IProps> = (props) => {
   const handleReclaim = async (ids: number[]) => {
     const isBatch = ids?.length > 1;
     const title = isBatch
-      ? formatMessage({ id: 'src.page.Project.User.ManageModal.A23DCE27' })
-      : formatMessage({ id: 'src.page.Project.User.ManageModal.8B929D18' });
+      ? formatMessage({
+          id: 'src.page.Project.User.ManageModal.A23DCE27',
+          defaultMessage: '确认要批量回收权限吗？',
+        })
+      : formatMessage({
+          id: 'src.page.Project.User.ManageModal.8B929D18',
+          defaultMessage: '确认要回收权限吗？',
+        });
     Modal.confirm({
       title,
       content: (
@@ -115,19 +130,29 @@ const ManageModal: React.FC<IProps> = (props) => {
           {
             formatMessage({
               id: 'src.page.Project.User.ManageModal.B7377F46' /*回收后不可撤回*/,
+              defaultMessage: '回收后不可撤回',
             }) /* 回收后不可撤回 */
           }
         </Text>
       ),
 
-      cancelText: formatMessage({ id: 'src.page.Project.User.ManageModal.2FE8276F' }), //'取消'
-      okText: formatMessage({ id: 'src.page.Project.User.ManageModal.1C087F21' }), //'确定'
+      cancelText: formatMessage({
+        id: 'src.page.Project.User.ManageModal.2FE8276F',
+        defaultMessage: '取消',
+      }), //'取消'
+      okText: formatMessage({
+        id: 'src.page.Project.User.ManageModal.1C087F21',
+        defaultMessage: '确定',
+      }), //'确定'
       centered: true,
       onOk: async () => {
         const res = await reclaimDatabasePermission(projectId, ids);
         if (res) {
           message.success(
-            formatMessage({ id: 'src.page.Project.User.ManageModal.B3D76C33' /*'操作成功'*/ }),
+            formatMessage({
+              id: 'src.page.Project.User.ManageModal.B3D76C33' /*'操作成功'*/,
+              defaultMessage: '操作成功',
+            }),
           );
           tableRef.current?.resetSelectedRows();
           handleReload();
@@ -165,6 +190,7 @@ const ManageModal: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'src.page.Project.User.ManageModal.28BC85BF' /*用户授权*/,
+                  defaultMessage: '用户授权',
                 }) /* 用户授权 */
               }
             </Radio.Button>

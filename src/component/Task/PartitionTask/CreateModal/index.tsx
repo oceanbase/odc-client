@@ -278,6 +278,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       Modal.confirm({
         title: formatMessage({
           id: 'odc.components.PartitionDrawer.AreYouSureYouWant',
+          defaultMessage: '确认取消新建分区计划吗？',
         }),
         //确认取消新建分区计划吗？
         centered: true,
@@ -503,6 +504,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         width={720}
         title={formatMessage({
           id: 'odc.components.PartitionDrawer.CreateAPartitionPlan',
+          defaultMessage: '新建分区计划',
         })}
         /*新建分区计划*/ footer={
           <Space
@@ -514,6 +516,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               {
                 formatMessage({
                   id: 'odc.components.PartitionDrawer.Cancel',
+                  defaultMessage: '取消',
                 }) /*取消*/
               }
             </Button>
@@ -522,6 +525,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                 disabledSubmit
                   ? formatMessage({
                       id: 'odc.components.PartitionDrawer.SetPartitionPoliciesForAll',
+                      defaultMessage: '请设置所有 Range 分区表的分区策略',
                     }) //请设置所有 Range 分区表的分区策略
                   : null
               }
@@ -535,6 +539,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                 {
                   formatMessage({
                     id: 'odc.components.PartitionDrawer.Submit',
+                    defaultMessage: '提交',
                   }) /*提交*/
                 }
               </Button>
@@ -557,6 +562,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               message={
                 formatMessage({
                   id: 'src.component.Task.PartitionTask.CreateModal.518BD6F7',
+                  defaultMessage: '当前数据库已存在一个分区计划，审批通过后覆盖原有分区计划',
                 }) /*"当前数据库已存在一个分区计划，审批通过后覆盖原有分区计划"*/
               }
               type="warning"
@@ -569,6 +575,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             label={
               formatMessage({
                 id: 'src.component.Task.PartitionTask.CreateModal.3383DFA3',
+                defaultMessage: '分区策略',
               }) /*"分区策略"*/
             }
             required
@@ -591,6 +598,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               title={
                 formatMessage({
                   id: 'src.component.Task.PartitionTask.CreateModal.FE8DED05',
+                  defaultMessage: '创建策略执行周期',
                 }) /*"创建策略执行周期"*/
               }
               initialValue={crontab}
@@ -605,6 +613,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                 {
                   formatMessage({
                     id: 'src.component.Task.PartitionTask.CreateModal.BE341FCE' /*自定义删除策略执行周期*/,
+                    defaultMessage: '自定义删除策略执行周期',
                   }) /* 自定义删除策略执行周期 */
                 }
               </span>
@@ -614,6 +623,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     {
                       formatMessage({
                         id: 'src.component.Task.PartitionTask.CreateModal.5DEF5FCE' /*未勾选时，删除策略执行周期将与创建一致*/,
+                        defaultMessage: '未勾选时，删除策略执行周期将与创建一致',
                       }) /* 未勾选时，删除策略执行周期将与创建一致 */
                     }
                   </Text>
@@ -628,6 +638,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                 title={
                   formatMessage({
                     id: 'src.component.Task.PartitionTask.CreateModal.4E5BCFE8',
+                    defaultMessage: '删除策略执行周期',
                   }) /*"删除策略执行周期"*/
                 }
                 initialValue={crontab}
@@ -642,6 +653,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             label={
               formatMessage({
                 id: 'src.component.Task.PartitionTask.CreateModal.5E1CE4EC',
+                defaultMessage: '任务设置',
               }) /*"任务设置"*/
             }
             keepExpand
@@ -650,6 +662,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               label={
                 formatMessage({
                   id: 'src.component.Task.PartitionTask.CreateModal.0B2DB017',
+                  defaultMessage: '任务错误处理',
                 }) /*"任务错误处理"*/
               }
               name="errorStrategy"
@@ -658,6 +671,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                   required: true,
                   message: formatMessage({
                     id: 'src.component.Task.PartitionTask.CreateModal.6C651A64',
+                    defaultMessage: '请选择任务错误处理',
                   }), //'请选择任务错误处理'
                 },
               ]}
@@ -667,6 +681,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                   {
                     formatMessage({
                       id: 'src.component.Task.PartitionTask.CreateModal.A8B04845' /*停止任务*/,
+                      defaultMessage: '停止任务',
                     }) /* 停止任务 */
                   }
                 </Radio>
@@ -674,6 +689,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                   {
                     formatMessage({
                       id: 'src.component.Task.PartitionTask.CreateModal.E454F701' /*忽略错误继续任务*/,
+                      defaultMessage: '忽略错误继续任务',
                     }) /* 忽略错误继续任务 */
                   }
                 </Radio>
@@ -684,6 +700,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             label={
               formatMessage({
                 id: 'src.component.Task.PartitionTask.CreateModal.59540029',
+                defaultMessage: '执行超时时间',
               }) /*"执行超时时间"*/
             }
             required
@@ -692,6 +709,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               label={
                 formatMessage({
                   id: 'src.component.Task.PartitionTask.CreateModal.0A49F493',
+                  defaultMessage: '小时',
                 }) /*"小时"*/
               }
               name="timeoutMillis"
@@ -700,6 +718,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                   required: true,
                   message: formatMessage({
                     id: 'src.component.Task.PartitionTask.CreateModal.05B817DF',
+                    defaultMessage: '请输入超时时间',
                   }), //'请输入超时时间'
                 },
                 {
@@ -707,6 +726,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                   max: 480,
                   message: formatMessage({
                     id: 'src.component.Task.PartitionTask.CreateModal.25D1BD6D',
+                    defaultMessage: '最大不超过480小时',
                   }), //'最大不超过480小时'
                 },
               ]}
@@ -718,6 +738,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               {
                 formatMessage({
                   id: 'src.component.Task.PartitionTask.CreateModal.53678847' /*小时*/,
+                  defaultMessage: '小时',
                 }) /* 小时 */
               }
             </span>
@@ -726,6 +747,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             name="description"
             label={formatMessage({
               id: 'odc.components.PartitionDrawer.Remarks',
+              defaultMessage: '备注',
             })} /*备注*/
           >
             <Input.TextArea
@@ -733,6 +755,8 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               placeholder={
                 formatMessage({
                   id: 'src.component.Task.PartitionTask.CreateModal.026392ED',
+                  defaultMessage:
+                    '请输入描述，不超过200个字符；未输入时，系统会根据对象和工单类型自动生成描述信息',
                 }) /*"请输入描述，200字以内；未输入时，系统会根据对象和工单类型自动生成描述信息"*/
               }
             />

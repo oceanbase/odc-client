@@ -110,6 +110,7 @@ export default class TableIndexSelector extends Component<{
         <Column
           title={formatMessage({
             id: 'workspace.window.table.modal.index.columnNames1',
+            defaultMessage: '可选列',
           })}
           render={() =>
             columns && columns.length ? (
@@ -125,6 +126,7 @@ export default class TableIndexSelector extends Component<{
                         dataShowType={convertDataTypeToDataShowType(c.dataType, dataTypes)}
                       />
                     )}
+
                     {c.columnName}
                   </Col>
                 </Row>
@@ -134,9 +136,11 @@ export default class TableIndexSelector extends Component<{
             )
           }
         />
+
         <Column
           title={formatMessage({
             id: 'workspace.window.table.modal.index.priority',
+            defaultMessage: '已选列（优先级从上到下）',
           })}
           render={() =>
             value && value.length ? (

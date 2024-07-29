@@ -271,30 +271,42 @@
     color: rgba(255, 255, 255, 0.75);
   }
 
-  .ant-select-status-error.ant-select:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer)
+  .ant-select-status-error.ant-select:not(.ant-select-disabled):not(
+      .ant-select-customize-input
+    ):not(.ant-pagination-size-changer)
     .ant-select-selector {
     background-color: transparent;
     border-color: #a61d24 !important;
   }
 
-  .ant-select-status-error.ant-select:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer).ant-select-open
+  .ant-select-status-error.ant-select:not(.ant-select-disabled):not(
+      .ant-select-customize-input
+    ):not(.ant-pagination-size-changer).ant-select-open
     .ant-select-selector,
-  .ant-select-status-error.ant-select:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer).ant-select-focused
+  .ant-select-status-error.ant-select:not(.ant-select-disabled):not(
+      .ant-select-customize-input
+    ):not(.ant-pagination-size-changer).ant-select-focused
     .ant-select-selector {
     border-color: #a61d24;
     box-shadow: 0 0 0 2px rgba(166, 29, 36, 0.2);
     border-right-width: 1px;
   }
 
-  .ant-select-status-warning.ant-select:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer)
+  .ant-select-status-warning.ant-select:not(.ant-select-disabled):not(
+      .ant-select-customize-input
+    ):not(.ant-pagination-size-changer)
     .ant-select-selector {
     background-color: transparent;
     border-color: #d89614 !important;
   }
 
-  .ant-select-status-warning.ant-select:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer).ant-select-open
+  .ant-select-status-warning.ant-select:not(.ant-select-disabled):not(
+      .ant-select-customize-input
+    ):not(.ant-pagination-size-changer).ant-select-open
     .ant-select-selector,
-  .ant-select-status-warning.ant-select:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer).ant-select-focused
+  .ant-select-status-warning.ant-select:not(.ant-select-disabled):not(
+      .ant-select-customize-input
+    ):not(.ant-pagination-size-changer).ant-select-focused
     .ant-select-selector {
     border-color: #d89614;
     box-shadow: 0 0 0 2px rgba(216, 150, 20, 0.2);
@@ -3067,7 +3079,9 @@
   }
 
   .ant-picker-cell:hover:not(.ant-picker-cell-in-view) .ant-picker-cell-inner,
-  .ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end):not(.ant-picker-cell-range-hover-start):not(.ant-picker-cell-range-hover-end)
+  .ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-range-start):not(
+      .ant-picker-cell-range-end
+    ):not(.ant-picker-cell-range-hover-start):not(.ant-picker-cell-range-hover-end)
     .ant-picker-cell-inner {
     background: rgba(255, 255, 255, 0.08);
   }
@@ -3088,13 +3102,21 @@
     background: #177ddc;
   }
 
-  .ant-picker-cell-in-view.ant-picker-cell-range-start:not(.ant-picker-cell-range-start-single)::before,
-  .ant-picker-cell-in-view.ant-picker-cell-range-end:not(.ant-picker-cell-range-end-single)::before {
+  .ant-picker-cell-in-view.ant-picker-cell-range-start:not(
+      .ant-picker-cell-range-start-single
+    )::before,
+  .ant-picker-cell-in-view.ant-picker-cell-range-end:not(
+      .ant-picker-cell-range-end-single
+    )::before {
     background: #111b26;
   }
 
-  .ant-picker-cell-in-view.ant-picker-cell-range-hover-start:not(.ant-picker-cell-in-range):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end)::after,
-  .ant-picker-cell-in-view.ant-picker-cell-range-hover-end:not(.ant-picker-cell-in-range):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end)::after,
+  .ant-picker-cell-in-view.ant-picker-cell-range-hover-start:not(.ant-picker-cell-in-range):not(
+      .ant-picker-cell-range-start
+    ):not(.ant-picker-cell-range-end)::after,
+  .ant-picker-cell-in-view.ant-picker-cell-range-hover-end:not(.ant-picker-cell-in-range):not(
+      .ant-picker-cell-range-start
+    ):not(.ant-picker-cell-range-end)::after,
   .ant-picker-cell-in-view.ant-picker-cell-range-hover-start.ant-picker-cell-range-start-single::after,
   .ant-picker-cell-in-view.ant-picker-cell-range-hover-start.ant-picker-cell-range-start.ant-picker-cell-range-end.ant-picker-cell-range-end-near-hover::after,
   .ant-picker-cell-in-view.ant-picker-cell-range-hover-end.ant-picker-cell-range-start.ant-picker-cell-range-end.ant-picker-cell-range-start-near-hover::after,
@@ -3107,8 +3129,12 @@
   .ant-picker-cell-in-view.ant-picker-cell-in-range.ant-picker-cell-range-hover::before,
   .ant-picker-cell-in-view.ant-picker-cell-range-start.ant-picker-cell-range-hover::before,
   .ant-picker-cell-in-view.ant-picker-cell-range-end.ant-picker-cell-range-hover::before,
-  .ant-picker-cell-in-view.ant-picker-cell-range-start:not(.ant-picker-cell-range-start-single).ant-picker-cell-range-hover-start::before,
-  .ant-picker-cell-in-view.ant-picker-cell-range-end:not(.ant-picker-cell-range-end-single).ant-picker-cell-range-hover-end::before,
+  .ant-picker-cell-in-view.ant-picker-cell-range-start:not(
+      .ant-picker-cell-range-start-single
+    ).ant-picker-cell-range-hover-start::before,
+  .ant-picker-cell-in-view.ant-picker-cell-range-end:not(
+      .ant-picker-cell-range-end-single
+    ).ant-picker-cell-range-hover-end::before,
   .ant-picker-panel
     > :not(.ant-picker-date-panel)
     .ant-picker-cell-in-view.ant-picker-cell-in-range.ant-picker-cell-range-hover-start::before,
@@ -3130,7 +3156,9 @@
   tr > .ant-picker-cell-in-view.ant-picker-cell-range-hover:first-child::after,
   tr > .ant-picker-cell-in-view.ant-picker-cell-range-hover-end:first-child::after,
   .ant-picker-cell-in-view.ant-picker-cell-start.ant-picker-cell-range-hover-edge-start.ant-picker-cell-range-hover-edge-start-near-range::after,
-  .ant-picker-cell-in-view.ant-picker-cell-range-hover-edge-start:not(.ant-picker-cell-range-hover-edge-start-near-range)::after,
+  .ant-picker-cell-in-view.ant-picker-cell-range-hover-edge-start:not(
+      .ant-picker-cell-range-hover-edge-start-near-range
+    )::after,
   .ant-picker-cell-in-view.ant-picker-cell-range-hover-start::after {
     border-left: 1px dashed #0e4980;
     border-top-left-radius: 2px;
@@ -3140,7 +3168,9 @@
   tr > .ant-picker-cell-in-view.ant-picker-cell-range-hover:last-child::after,
   tr > .ant-picker-cell-in-view.ant-picker-cell-range-hover-start:last-child::after,
   .ant-picker-cell-in-view.ant-picker-cell-end.ant-picker-cell-range-hover-edge-end.ant-picker-cell-range-hover-edge-end-near-range::after,
-  .ant-picker-cell-in-view.ant-picker-cell-range-hover-edge-end:not(.ant-picker-cell-range-hover-edge-end-near-range)::after,
+  .ant-picker-cell-in-view.ant-picker-cell-range-hover-edge-end:not(
+      .ant-picker-cell-range-hover-edge-end-near-range
+    )::after,
   .ant-picker-cell-in-view.ant-picker-cell-range-hover-end::after {
     border-right: 1px dashed #0e4980;
     border-top-right-radius: 2px;
@@ -3298,11 +3328,15 @@
 
   .ant-picker-panel-rtl
     tr
-    > .ant-picker-cell-in-view.ant-picker-cell-range-hover:not(.ant-picker-cell-selected):first-child::after,
+    > .ant-picker-cell-in-view.ant-picker-cell-range-hover:not(
+      .ant-picker-cell-selected
+    ):first-child::after,
   .ant-picker-panel-rtl
     .ant-picker-cell-in-view.ant-picker-cell-start.ant-picker-cell-range-hover-edge-start.ant-picker-cell-range-hover-edge-start-near-range::after,
   .ant-picker-panel-rtl
-    .ant-picker-cell-in-view.ant-picker-cell-range-hover-edge-start:not(.ant-picker-cell-range-hover-edge-start-near-range)::after,
+    .ant-picker-cell-in-view.ant-picker-cell-range-hover-edge-start:not(
+      .ant-picker-cell-range-hover-edge-start-near-range
+    )::after,
   .ant-picker-panel-rtl .ant-picker-cell-in-view.ant-picker-cell-range-hover-start::after {
     border-right: 1px dashed #0e4980;
     border-left: none;
@@ -3311,11 +3345,15 @@
 
   .ant-picker-panel-rtl
     tr
-    > .ant-picker-cell-in-view.ant-picker-cell-range-hover:not(.ant-picker-cell-selected):last-child::after,
+    > .ant-picker-cell-in-view.ant-picker-cell-range-hover:not(
+      .ant-picker-cell-selected
+    ):last-child::after,
   .ant-picker-panel-rtl
     .ant-picker-cell-in-view.ant-picker-cell-end.ant-picker-cell-range-hover-edge-end.ant-picker-cell-range-hover-edge-end-near-range::after,
   .ant-picker-panel-rtl
-    .ant-picker-cell-in-view.ant-picker-cell-range-hover-edge-end:not(.ant-picker-cell-range-hover-edge-end-near-range)::after,
+    .ant-picker-cell-in-view.ant-picker-cell-range-hover-edge-end:not(
+      .ant-picker-cell-range-hover-edge-end-near-range
+    )::after,
   .ant-picker-panel-rtl .ant-picker-cell-in-view.ant-picker-cell-range-hover-end::after {
     border-right: none;
     border-left: 1px dashed #0e4980;
@@ -3329,11 +3367,17 @@
     tr
     > .ant-picker-cell-in-view.ant-picker-cell-range-hover-end:first-child::after,
   .ant-picker-panel-rtl
-    .ant-picker-cell-in-view.ant-picker-cell-start.ant-picker-cell-range-hover-edge-start:not(.ant-picker-cell-range-hover)::after,
+    .ant-picker-cell-in-view.ant-picker-cell-start.ant-picker-cell-range-hover-edge-start:not(
+      .ant-picker-cell-range-hover
+    )::after,
   .ant-picker-panel-rtl
-    .ant-picker-cell-in-view.ant-picker-cell-start.ant-picker-cell-range-hover-end.ant-picker-cell-range-hover-edge-start:not(.ant-picker-cell-range-hover)::after,
+    .ant-picker-cell-in-view.ant-picker-cell-start.ant-picker-cell-range-hover-end.ant-picker-cell-range-hover-edge-start:not(
+      .ant-picker-cell-range-hover
+    )::after,
   .ant-picker-panel-rtl
-    .ant-picker-cell-in-view.ant-picker-cell-end.ant-picker-cell-range-hover-start.ant-picker-cell-range-hover-edge-end:not(.ant-picker-cell-range-hover)::after,
+    .ant-picker-cell-in-view.ant-picker-cell-end.ant-picker-cell-range-hover-start.ant-picker-cell-range-hover-edge-end:not(
+      .ant-picker-cell-range-hover
+    )::after,
   .ant-picker-panel-rtl
     tr
     > .ant-picker-cell-in-view.ant-picker-cell-start.ant-picker-cell-range-hover.ant-picker-cell-range-hover-edge-start:last-child::after,
@@ -3773,7 +3817,9 @@
     border-radius: 0 2px 2px 0;
   }
 
-  .ant-radio-button-wrapper-checked:not([class*=' ant-radio-button-wrapper-disabled']).ant-radio-button-wrapper:first-child {
+  .ant-radio-button-wrapper-checked:not(
+      [class*=' ant-radio-button-wrapper-disabled']
+    ).ant-radio-button-wrapper:first-child {
     border-right-color: #165996;
   }
 
@@ -9824,14 +9870,22 @@
     background: transparent;
   }
 
-  .ant-input-number-status-error:not(.ant-input-number-disabled):not(.ant-input-number-borderless).ant-input-number,
-  .ant-input-number-status-error:not(.ant-input-number-disabled):not(.ant-input-number-borderless).ant-input-number:hover {
+  .ant-input-number-status-error:not(.ant-input-number-disabled):not(
+      .ant-input-number-borderless
+    ).ant-input-number,
+  .ant-input-number-status-error:not(.ant-input-number-disabled):not(
+      .ant-input-number-borderless
+    ).ant-input-number:hover {
     background: transparent;
     border-color: #a61d24;
   }
 
-  .ant-input-number-status-error:not(.ant-input-number-disabled):not(.ant-input-number-borderless).ant-input-number:focus,
-  .ant-input-number-status-error:not(.ant-input-number-disabled):not(.ant-input-number-borderless).ant-input-number-focused {
+  .ant-input-number-status-error:not(.ant-input-number-disabled):not(
+      .ant-input-number-borderless
+    ).ant-input-number:focus,
+  .ant-input-number-status-error:not(.ant-input-number-disabled):not(
+      .ant-input-number-borderless
+    ).ant-input-number-focused {
     border-color: #a61d24;
     box-shadow: 0 0 0 2px rgba(166, 29, 36, 0.2);
     border-right-width: 1px;
@@ -9841,14 +9895,22 @@
     color: #a61d24;
   }
 
-  .ant-input-number-status-warning:not(.ant-input-number-disabled):not(.ant-input-number-borderless).ant-input-number,
-  .ant-input-number-status-warning:not(.ant-input-number-disabled):not(.ant-input-number-borderless).ant-input-number:hover {
+  .ant-input-number-status-warning:not(.ant-input-number-disabled):not(
+      .ant-input-number-borderless
+    ).ant-input-number,
+  .ant-input-number-status-warning:not(.ant-input-number-disabled):not(
+      .ant-input-number-borderless
+    ).ant-input-number:hover {
     background: transparent;
     border-color: #d89614;
   }
 
-  .ant-input-number-status-warning:not(.ant-input-number-disabled):not(.ant-input-number-borderless).ant-input-number:focus,
-  .ant-input-number-status-warning:not(.ant-input-number-disabled):not(.ant-input-number-borderless).ant-input-number-focused {
+  .ant-input-number-status-warning:not(.ant-input-number-disabled):not(
+      .ant-input-number-borderless
+    ).ant-input-number:focus,
+  .ant-input-number-status-warning:not(.ant-input-number-disabled):not(
+      .ant-input-number-borderless
+    ).ant-input-number-focused {
     border-color: #d89614;
     box-shadow: 0 0 0 2px rgba(216, 150, 20, 0.2);
     border-right-width: 1px;
@@ -9858,14 +9920,22 @@
     color: #d89614;
   }
 
-  .ant-input-number-affix-wrapper-status-error:not(.ant-input-number-affix-wrapper-disabled):not(.ant-input-number-affix-wrapper-borderless).ant-input-number-affix-wrapper,
-  .ant-input-number-affix-wrapper-status-error:not(.ant-input-number-affix-wrapper-disabled):not(.ant-input-number-affix-wrapper-borderless).ant-input-number-affix-wrapper:hover {
+  .ant-input-number-affix-wrapper-status-error:not(.ant-input-number-affix-wrapper-disabled):not(
+      .ant-input-number-affix-wrapper-borderless
+    ).ant-input-number-affix-wrapper,
+  .ant-input-number-affix-wrapper-status-error:not(.ant-input-number-affix-wrapper-disabled):not(
+      .ant-input-number-affix-wrapper-borderless
+    ).ant-input-number-affix-wrapper:hover {
     background: transparent;
     border-color: #a61d24;
   }
 
-  .ant-input-number-affix-wrapper-status-error:not(.ant-input-number-affix-wrapper-disabled):not(.ant-input-number-affix-wrapper-borderless).ant-input-number-affix-wrapper:focus,
-  .ant-input-number-affix-wrapper-status-error:not(.ant-input-number-affix-wrapper-disabled):not(.ant-input-number-affix-wrapper-borderless).ant-input-number-affix-wrapper-focused {
+  .ant-input-number-affix-wrapper-status-error:not(.ant-input-number-affix-wrapper-disabled):not(
+      .ant-input-number-affix-wrapper-borderless
+    ).ant-input-number-affix-wrapper:focus,
+  .ant-input-number-affix-wrapper-status-error:not(.ant-input-number-affix-wrapper-disabled):not(
+      .ant-input-number-affix-wrapper-borderless
+    ).ant-input-number-affix-wrapper-focused {
     border-color: #a61d24;
     box-shadow: 0 0 0 2px rgba(166, 29, 36, 0.2);
     border-right-width: 1px;
@@ -9875,14 +9945,22 @@
     color: #a61d24;
   }
 
-  .ant-input-number-affix-wrapper-status-warning:not(.ant-input-number-affix-wrapper-disabled):not(.ant-input-number-affix-wrapper-borderless).ant-input-number-affix-wrapper,
-  .ant-input-number-affix-wrapper-status-warning:not(.ant-input-number-affix-wrapper-disabled):not(.ant-input-number-affix-wrapper-borderless).ant-input-number-affix-wrapper:hover {
+  .ant-input-number-affix-wrapper-status-warning:not(.ant-input-number-affix-wrapper-disabled):not(
+      .ant-input-number-affix-wrapper-borderless
+    ).ant-input-number-affix-wrapper,
+  .ant-input-number-affix-wrapper-status-warning:not(.ant-input-number-affix-wrapper-disabled):not(
+      .ant-input-number-affix-wrapper-borderless
+    ).ant-input-number-affix-wrapper:hover {
     background: transparent;
     border-color: #d89614;
   }
 
-  .ant-input-number-affix-wrapper-status-warning:not(.ant-input-number-affix-wrapper-disabled):not(.ant-input-number-affix-wrapper-borderless).ant-input-number-affix-wrapper:focus,
-  .ant-input-number-affix-wrapper-status-warning:not(.ant-input-number-affix-wrapper-disabled):not(.ant-input-number-affix-wrapper-borderless).ant-input-number-affix-wrapper-focused {
+  .ant-input-number-affix-wrapper-status-warning:not(.ant-input-number-affix-wrapper-disabled):not(
+      .ant-input-number-affix-wrapper-borderless
+    ).ant-input-number-affix-wrapper:focus,
+  .ant-input-number-affix-wrapper-status-warning:not(.ant-input-number-affix-wrapper-disabled):not(
+      .ant-input-number-affix-wrapper-borderless
+    ).ant-input-number-affix-wrapper-focused {
     border-color: #d89614;
     box-shadow: 0 0 0 2px rgba(216, 150, 20, 0.2);
     border-right-width: 1px;
@@ -10226,14 +10304,22 @@
     color: #d89614;
   }
 
-  .ant-input-affix-wrapper-status-error:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper,
-  .ant-input-affix-wrapper-status-error:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper:hover {
+  .ant-input-affix-wrapper-status-error:not(.ant-input-affix-wrapper-disabled):not(
+      .ant-input-affix-wrapper-borderless
+    ).ant-input-affix-wrapper,
+  .ant-input-affix-wrapper-status-error:not(.ant-input-affix-wrapper-disabled):not(
+      .ant-input-affix-wrapper-borderless
+    ).ant-input-affix-wrapper:hover {
     background: transparent;
     border-color: #a61d24;
   }
 
-  .ant-input-affix-wrapper-status-error:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper:focus,
-  .ant-input-affix-wrapper-status-error:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper-focused {
+  .ant-input-affix-wrapper-status-error:not(.ant-input-affix-wrapper-disabled):not(
+      .ant-input-affix-wrapper-borderless
+    ).ant-input-affix-wrapper:focus,
+  .ant-input-affix-wrapper-status-error:not(.ant-input-affix-wrapper-disabled):not(
+      .ant-input-affix-wrapper-borderless
+    ).ant-input-affix-wrapper-focused {
     border-color: #a61d24;
     box-shadow: 0 0 0 2px rgba(166, 29, 36, 0.2);
     border-right-width: 1px;
@@ -10243,14 +10329,22 @@
     color: #a61d24;
   }
 
-  .ant-input-affix-wrapper-status-warning:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper,
-  .ant-input-affix-wrapper-status-warning:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper:hover {
+  .ant-input-affix-wrapper-status-warning:not(.ant-input-affix-wrapper-disabled):not(
+      .ant-input-affix-wrapper-borderless
+    ).ant-input-affix-wrapper,
+  .ant-input-affix-wrapper-status-warning:not(.ant-input-affix-wrapper-disabled):not(
+      .ant-input-affix-wrapper-borderless
+    ).ant-input-affix-wrapper:hover {
     background: transparent;
     border-color: #d89614;
   }
 
-  .ant-input-affix-wrapper-status-warning:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper:focus,
-  .ant-input-affix-wrapper-status-warning:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper-focused {
+  .ant-input-affix-wrapper-status-warning:not(.ant-input-affix-wrapper-disabled):not(
+      .ant-input-affix-wrapper-borderless
+    ).ant-input-affix-wrapper:focus,
+  .ant-input-affix-wrapper-status-warning:not(.ant-input-affix-wrapper-disabled):not(
+      .ant-input-affix-wrapper-borderless
+    ).ant-input-affix-wrapper-focused {
     border-color: #d89614;
     box-shadow: 0 0 0 2px rgba(216, 150, 20, 0.2);
     border-right-width: 1px;
@@ -10981,13 +11075,19 @@
   }
 
   .ant-mentions-status-error:not(.ant-mentions-disabled):not(.ant-mentions-borderless).ant-mentions,
-  .ant-mentions-status-error:not(.ant-mentions-disabled):not(.ant-mentions-borderless).ant-mentions:hover {
+  .ant-mentions-status-error:not(.ant-mentions-disabled):not(
+      .ant-mentions-borderless
+    ).ant-mentions:hover {
     background: transparent;
     border-color: #a61d24;
   }
 
-  .ant-mentions-status-error:not(.ant-mentions-disabled):not(.ant-mentions-borderless).ant-mentions:focus,
-  .ant-mentions-status-error:not(.ant-mentions-disabled):not(.ant-mentions-borderless).ant-mentions-focused {
+  .ant-mentions-status-error:not(.ant-mentions-disabled):not(
+      .ant-mentions-borderless
+    ).ant-mentions:focus,
+  .ant-mentions-status-error:not(.ant-mentions-disabled):not(
+      .ant-mentions-borderless
+    ).ant-mentions-focused {
     border-color: #a61d24;
     box-shadow: 0 0 0 2px rgba(166, 29, 36, 0.2);
     border-right-width: 1px;
@@ -10997,14 +11097,22 @@
     color: #a61d24;
   }
 
-  .ant-mentions-status-warning:not(.ant-mentions-disabled):not(.ant-mentions-borderless).ant-mentions,
-  .ant-mentions-status-warning:not(.ant-mentions-disabled):not(.ant-mentions-borderless).ant-mentions:hover {
+  .ant-mentions-status-warning:not(.ant-mentions-disabled):not(
+      .ant-mentions-borderless
+    ).ant-mentions,
+  .ant-mentions-status-warning:not(.ant-mentions-disabled):not(
+      .ant-mentions-borderless
+    ).ant-mentions:hover {
     background: transparent;
     border-color: #d89614;
   }
 
-  .ant-mentions-status-warning:not(.ant-mentions-disabled):not(.ant-mentions-borderless).ant-mentions:focus,
-  .ant-mentions-status-warning:not(.ant-mentions-disabled):not(.ant-mentions-borderless).ant-mentions-focused {
+  .ant-mentions-status-warning:not(.ant-mentions-disabled):not(
+      .ant-mentions-borderless
+    ).ant-mentions:focus,
+  .ant-mentions-status-warning:not(.ant-mentions-disabled):not(
+      .ant-mentions-borderless
+    ).ant-mentions-focused {
     border-color: #d89614;
     box-shadow: 0 0 0 2px rgba(216, 150, 20, 0.2);
     border-right-width: 1px;
@@ -12465,7 +12573,9 @@
 
   .ant-table-thead
     > tr
-    > th:not(:last-child):not(.ant-table-selection-column):not(.ant-table-row-expand-icon-cell):not([colspan])::before {
+    > th:not(:last-child):not(.ant-table-selection-column):not(.ant-table-row-expand-icon-cell):not(
+      [colspan]
+    )::before {
     background-color: rgba(255, 255, 255, 0.08);
   }
 
@@ -13064,7 +13174,9 @@
     background-color: #262626;
   }
 
-  .ant-transfer-list-content-item:not(.ant-transfer-list-content-item-disabled).ant-transfer-list-content-item-checked:hover {
+  .ant-transfer-list-content-item:not(
+      .ant-transfer-list-content-item-disabled
+    ).ant-transfer-list-content-item-checked:hover {
     background-color: #0e161f;
   }
 

@@ -57,15 +57,20 @@ export const CommonDeleteModal: React.FC<{
         formatMessage(
           {
             id: 'odc.components.CommonDeleteModal.DeleteType',
+            defaultMessage: '删除{type}',
           },
 
           { type },
         )
         // `删除${type}`
       }
-      okText={formatMessage({ id: 'odc.components.CommonDeleteModal.Delete' })}
+      okText={formatMessage({
+        id: 'odc.components.CommonDeleteModal.Delete',
+        defaultMessage: '删除',
+      })}
       /* 删除 */ cancelText={formatMessage({
         id: 'odc.components.CommonDeleteModal.Cancel',
+        defaultMessage: '取消',
       })}
       /* 取消 */ okButtonProps={{
         danger: true,
@@ -88,6 +93,7 @@ export const CommonDeleteModal: React.FC<{
               formatMessage(
                 {
                   id: 'odc.components.CommonDeleteModal.TypeName',
+                  defaultMessage: '{type}名称:',
                 },
 
                 { type },
@@ -101,6 +107,7 @@ export const CommonDeleteModal: React.FC<{
           {
             formatMessage({
               id: 'odc.components.CommonDeleteModal.Enter',
+              defaultMessage: '请输入',
             })
             /* 请输入 */
           }
@@ -109,6 +116,7 @@ export const CommonDeleteModal: React.FC<{
           {
             formatMessage({
               id: 'odc.components.CommonDeleteModal.ConfirmTheOperation',
+              defaultMessage: '以确认操作',
             })
             /* 以确认操作 */
           }
@@ -120,16 +128,19 @@ export const CommonDeleteModal: React.FC<{
             formatMessage(
               {
                 id: 'odc.components.CommonDeleteModal.EnterName',
+                defaultMessage: '请输入{name}',
               },
               { name },
             ) // `请输入${name}`
           }
         />
+
         {error && (
           <span className={styles.errors}>
             {
               formatMessage({
                 id: 'odc.components.CommonDeleteModal.IncorrectInputInformation',
+                defaultMessage: '输入信息有误',
               }) /* 输入信息有误 */
             }
           </span>

@@ -36,7 +36,6 @@ import statefulIcon, { IConStatus } from './statefulIcon';
 const noop = () => {
   // TODO
 };
-
 function TButton({
   text,
   onClick = noop,
@@ -57,9 +56,7 @@ function TButton({
   type?: string;
   /**
    * 是否为下拉菜单主icon
-   */
-
-  isMenuIcon?: boolean;
+   */ isMenuIcon?: boolean;
 }) {
   const isInit = status === IConStatus.INIT;
   const isRunning = status === IConStatus.RUNNING;
@@ -101,7 +98,10 @@ function TButton({
       onClick={() => {
         if (isRunning) {
           message.success(
-            formatMessage({ id: 'odc.component.Toolbar.DoNotClickAgainWhile' }), //执行中请勿重复点击
+            formatMessage({
+              id: 'odc.component.Toolbar.DoNotClickAgainWhile',
+              defaultMessage: '执行中请勿重复点击',
+            }), //执行中请勿重复点击
           );
         } else if (disabled || confirmConfig) {
           return;
@@ -121,6 +121,7 @@ function TButton({
           {text}
         </Button>
       );
+
       break;
     case 'BUTTON_PRIMARY':
       content = (
@@ -134,6 +135,7 @@ function TButton({
           {text}
         </Button>
       );
+
       break;
     default:
       content = (
@@ -145,6 +147,7 @@ function TButton({
           {icon} {isShowText && <span className={styles.buttonText}>{text}</span>}
         </span>
       );
+
       break;
   }
 

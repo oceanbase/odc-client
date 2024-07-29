@@ -86,6 +86,7 @@ export class PageStore {
               (pageType == PageType.PL ? 'PL' : 'SQL') +
                 formatMessage({
                   id: 'odc.src.store.page.TheNumberOfWindowsCannot',
+                  defaultMessage: '窗口不能超过 32 个',
                 }),
             );
             return;

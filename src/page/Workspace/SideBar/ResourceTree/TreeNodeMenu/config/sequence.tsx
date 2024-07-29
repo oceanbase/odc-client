@@ -37,8 +37,10 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.sequence.CreateASequence',
+          defaultMessage: '新建序列',
         }),
       ],
+
       icon: PlusOutlined,
       actionType: actionTypes.create,
       run(session, node) {
@@ -51,7 +53,7 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     {
       key: 'REFRESH',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
+        formatMessage({ id: 'odc.ResourceTree.actions.Refresh', defaultMessage: '刷新' }), //刷新
       ],
       icon: ReloadOutlined,
       actionType: actionTypes.read,
@@ -60,11 +62,17 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       },
     },
   ],
+
   [ResourceNodeType.Sequence]: [
     {
       ellipsis: true,
       key: ResourceTreeNodeMenuKeys.BROWSER_SCHEMA,
-      text: [formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.ViewSequence' })],
+      text: [
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.sequence.ViewSequence',
+          defaultMessage: '查看序列',
+        }),
+      ],
       run(session, node) {
         const sequence: ISequence = node.data;
         openSequenceViewPage(
@@ -79,7 +87,9 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     {
       key: ResourceTreeNodeMenuKeys.UPDATE_SEQUENCE,
       ellipsis: true,
-      text: [formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.Modify' })],
+      text: [
+        formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.Modify', defaultMessage: '修改' }),
+      ],
       actionType: actionTypes.update,
       async run(session, node) {
         const sequenceInfo: ISequence = node.data;
@@ -102,7 +112,9 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     {
       key: ResourceTreeNodeMenuKeys.DELETE_SEQUENCE,
       ellipsis: true,
-      text: [formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.Delete' })],
+      text: [
+        formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.Delete', defaultMessage: '删除' }),
+      ],
       actionType: actionTypes.delete,
       hasDivider: true,
       disabled: (session) => {
@@ -112,11 +124,14 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         const sequenceInfo: ISequence = node.data;
         Modal.confirm({
           title: formatMessage(
-            { id: 'workspace.window.createSequence.modal.delete' },
+            {
+              id: 'workspace.window.createSequence.modal.delete',
+              defaultMessage: '是否确定删除序列 {name}？',
+            },
             { name: sequenceInfo?.name },
           ),
-          okText: formatMessage({ id: 'app.button.ok' }),
-          cancelText: formatMessage({ id: 'app.button.cancel' }),
+          okText: formatMessage({ id: 'app.button.ok', defaultMessage: '确定' }),
+          cancelText: formatMessage({ id: 'app.button.cancel', defaultMessage: '取消' }),
           centered: true,
           icon: <QuestionCircleFilled />,
           onOk: async () => {
@@ -132,6 +147,7 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
             message.success(
               formatMessage({
                 id: 'workspace.window.createSequence.delete.success',
+                defaultMessage: '删除序列成功',
               }),
             );
 
@@ -150,7 +166,10 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     {
       key: ResourceTreeNodeMenuKeys.EXPORT_TABLE,
       ellipsis: true,
-      text: formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.Export' }), //导出
+      text: formatMessage({
+        id: 'odc.TreeNodeMenu.config.sequence.Export',
+        defaultMessage: '导出',
+      }), //导出
       disabled: (session) => {
         return !hasExportPermission(session);
       },
@@ -169,7 +188,10 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     {
       key: ResourceTreeNodeMenuKeys.DOWNLOAD,
       ellipsis: true,
-      text: formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.Download' }), //下载
+      text: formatMessage({
+        id: 'odc.TreeNodeMenu.config.sequence.Download',
+        defaultMessage: '下载',
+      }), //下载
       hasDivider: true,
       async run(session, node) {
         const sequenceInfo: ISequence = node.data;
@@ -187,7 +209,9 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     {
       key: ResourceTreeNodeMenuKeys.REFRESH_SEQUENCE,
       ellipsis: true,
-      text: [formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.Refresh' })],
+      text: [
+        formatMessage({ id: 'odc.TreeNodeMenu.config.sequence.Refresh', defaultMessage: '刷新' }),
+      ],
       async run(session, node) {
         await session.database.getSequenceList();
       },

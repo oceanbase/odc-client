@@ -15,6 +15,7 @@
     "start": "max dev",
     "oic:extract": "oic --configPath ./scripts/must.js --extract all",
     "oic:clear": "oic --configPath ./scripts/must.js --clear",
+    "oic:migrate": "oic --configPath ./scripts/must.js --migrate",
     "dev:client": "concurrently \"UMI_ENV=client npm run dev\" \"npm run build-main-dev\"",
     "start-electron": "electron --inspect=5858 -w ./dist/main/main.js",
     "analyze": "ANALYZE=1 cross-env NODE_OPTIONS=--max_old_space_size=8192 max build",
@@ -73,7 +74,7 @@
   "devDependencies": {
     "@ant-design/icons": "^4.0.0",
     "@oceanbase-odc/monaco-plugin-ob": "^1.2.8",
-    "@oceanbase-odc/ob-intl-cli": "^2.0.10",
+    "@oceanbase-odc/ob-intl-cli": "^2.1.0",
     "@oceanbase-odc/ob-parser-js": "^3.0.4",
     "@oceanbase-odc/ob-react-data-grid": "^3.1.1",
     "@sentry/react": "^7.88.0",

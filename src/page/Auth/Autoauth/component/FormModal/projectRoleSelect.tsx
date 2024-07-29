@@ -75,6 +75,7 @@ const ProjectRoleSelect: React.FC<IProps> = (props) => {
                       required: isRequired,
                       message: formatMessage({
                         id: 'odc.src.page.Auth.Autoauth.component.FormModal.PleaseChoose',
+                        defaultMessage: '请选择',
                       }), //'请选择'
                     },
                   ]}
@@ -83,6 +84,7 @@ const ProjectRoleSelect: React.FC<IProps> = (props) => {
                     placeholder={
                       formatMessage({
                         id: 'odc.src.page.Auth.Autoauth.component.FormModal.PleaseSelectTheProject',
+                        defaultMessage: '请选择项目',
                       }) /* 请选择项目 */
                     }
                     options={projectOptions}
@@ -98,6 +100,7 @@ const ProjectRoleSelect: React.FC<IProps> = (props) => {
                       required: isRequired,
                       message: formatMessage({
                         id: 'odc.src.page.Auth.Autoauth.component.FormModal.PleaseChoose.1',
+                        defaultMessage: '请选择',
                       }), //'请选择'
                     },
                   ]}
@@ -106,6 +109,7 @@ const ProjectRoleSelect: React.FC<IProps> = (props) => {
                     placeholder={
                       formatMessage({
                         id: 'odc.src.page.Auth.Autoauth.component.FormModal.PleaseSelectTheRole',
+                        defaultMessage: '请选择角色',
                       }) /* 请选择角色 */
                     }
                     mode="multiple"
@@ -140,9 +144,10 @@ const ProjectRoleSelect: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.src.page.Auth.Autoauth.component.FormModal.AddTo',
+                    defaultMessage: '添加',
                   }) /* 
                 添加
-               */
+                */
                 }
               </Button>
             </Form.Item>

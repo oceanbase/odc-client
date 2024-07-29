@@ -34,7 +34,7 @@ const HelpItem: React.FC<IProps> = function ({ children }) {
 
   const HELP_MENUS = [
     !isClient() && {
-      title: formatMessage({ id: 'odc.Sider.HelpItem.Features' }), //功能介绍
+      title: formatMessage({ id: 'odc.Sider.HelpItem.Features', defaultMessage: '功能介绍' }), //功能介绍
       key: 'versionInfo',
       action() {
         tracert.click('a3112.b46782.c330849.d367361');
@@ -43,7 +43,7 @@ const HelpItem: React.FC<IProps> = function ({ children }) {
     },
 
     {
-      title: formatMessage({ id: 'odc.Sider.HelpItem.HelpDocument' }), //帮助文档
+      title: formatMessage({ id: 'odc.Sider.HelpItem.HelpDocument', defaultMessage: '帮助文档' }), //帮助文档
       key: 'pdf',
       action() {
         tracert.click('a3112.b46782.c330849.d367362');
@@ -54,6 +54,7 @@ const HelpItem: React.FC<IProps> = function ({ children }) {
     {
       title: formatMessage({
         id: 'odc.component.GlobalHeader.AboutDeveloperCenter',
+        defaultMessage: '关于开发者中心',
       }),
 
       key: 'about',
@@ -64,7 +65,10 @@ const HelpItem: React.FC<IProps> = function ({ children }) {
     },
 
     {
-      title: formatMessage({ id: 'odc.component.GlobalHeader.Feedback' }),
+      title: formatMessage({
+        id: 'odc.component.GlobalHeader.Feedback',
+        defaultMessage: '意见反馈',
+      }),
       key: 'feedback',
       action() {
         tracert.click('a3112.b46782.c330849.d367364');

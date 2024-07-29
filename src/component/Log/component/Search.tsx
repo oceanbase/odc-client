@@ -108,6 +108,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
             {
               formatMessage({
                 id: 'odc.Log.component.Search.FindClips',
+                defaultMessage: '查找片段',
               }) /*查找片段*/
             }
           </Button>

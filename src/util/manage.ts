@@ -21,19 +21,19 @@ import { formatMessage } from './intl';
 export const sourceAuthMap = {
   [actionTypes.writeAndReadConnect]: {
     hasSourceAuth: hasSourceWriteAuth,
-    title: formatMessage({ id: 'odc.page.Manage.ReadWrite' }), //读写
+    title: formatMessage({ id: 'odc.page.Manage.ReadWrite', defaultMessage: '读写' }), //读写
     value: actionTypes.writeAndReadConnect,
   },
 
   [actionTypes.readonlyconnect]: {
     hasSourceAuth: hasSourceReadAuth,
-    title: formatMessage({ id: 'odc.page.Manage.ReadOnly' }), //只读
+    title: formatMessage({ id: 'odc.page.Manage.ReadOnly', defaultMessage: '只读' }), //只读
     value: actionTypes.readonlyconnect,
   },
 
   [actionTypes.apply]: {
     hasSourceAuth: hasSourceApplyAuth,
-    title: formatMessage({ id: 'odc.page.Manage.CanApply' }), //可申请
+    title: formatMessage({ id: 'odc.page.Manage.CanApply', defaultMessage: '可申请' }), //可申请
     value: actionTypes.apply,
   },
 };

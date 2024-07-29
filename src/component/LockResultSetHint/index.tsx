@@ -37,11 +37,17 @@ export class LockResultSetHint extends Component<{
     return (
       <div className={styles.wrapper}>
         <header className={styles.header}>
-          {formatMessage({ id: 'workspace.window.sql.record.notify.title' })}
+          {formatMessage({
+            id: 'workspace.window.sql.record.notify.title',
+            defaultMessage: '新功能提醒',
+          })}
           <CloseOutlined onClick={onClose} />
         </header>
         <div className={styles.desc}>
-          {formatMessage({ id: 'workspace.window.sql.record.notify.desc' })}
+          {formatMessage({
+            id: 'workspace.window.sql.record.notify.desc',
+            defaultMessage: '点击鼠标右键可固定结果集。',
+          })}
         </div>
       </div>
     );

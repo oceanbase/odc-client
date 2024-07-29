@@ -19,11 +19,14 @@ import { formatMessage } from '../intl';
 export default {
   500: formatMessage({
     id: 'request.500',
+    defaultMessage: '服务器通讯异常',
   }),
   404: formatMessage({
     id: 'odc.src.util.request.RequestException',
+    defaultMessage: '请求异常',
   }),
   405: formatMessage({
     id: 'odc.src.util.request.RequestException',
+    defaultMessage: '请求异常',
   }),
 };

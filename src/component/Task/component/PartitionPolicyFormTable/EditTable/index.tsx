@@ -29,24 +29,28 @@ const columns = [
   {
     title: formatMessage({
       id: 'src.component.Task.component.PartitionPolicyFormTable.EditTable.6B748774',
+      defaultMessage: '分区键',
     }), //'分区键'
     width: '80px',
   },
   {
     title: formatMessage({
       id: 'src.component.Task.component.PartitionPolicyFormTable.EditTable.F56607BB',
+      defaultMessage: '字段类型',
     }), //'字段类型'
     width: '80px',
   },
   {
     title: formatMessage({
       id: 'src.component.Task.component.PartitionPolicyFormTable.EditTable.1E12C404',
+      defaultMessage: '创建方式',
     }), //'创建方式'
     width: '108px',
   },
   {
     title: formatMessage({
       id: 'src.component.Task.component.PartitionPolicyFormTable.EditTable.3ADF7B62',
+      defaultMessage: '细则',
     }), //'细则'
     width: '380px',
   },
@@ -56,12 +60,14 @@ const TypeOptions = [
   {
     label: formatMessage({
       id: 'src.component.Task.component.PartitionPolicyFormTable.EditTable.397A9C98',
+      defaultMessage: '顺序递增',
     }), //'顺序递增'
     value: PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
   },
   {
     label: formatMessage({
       id: 'src.component.Task.component.PartitionPolicyFormTable.EditTable.1ED9B737',
+      defaultMessage: '自定义',
     }), //'自定义'
     value: PARTITION_KEY_INVOKER.CUSTOM_GENERATOR,
   },

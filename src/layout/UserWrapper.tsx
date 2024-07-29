@@ -67,6 +67,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
         message.error(
           formatMessage({
             id: 'odc.src.layout.UserWrapper.GetcurrentuserInitializationInformationFailed',
+            defaultMessage: '[getCurrentUser]初始化信息失败',
           }), //[getCurrentUser]初始化信息失败
         );
 
@@ -100,6 +101,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
         pageContext?.setTask({
           tip: formatMessage({
             id: 'odc.src.layout.GetUserInformation',
+            defaultMessage: '正在获取用户信息',
           }), //'正在获取用户信息'
           showError: false,
         });
@@ -116,6 +118,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
         pageContext?.setTask({
           tip: formatMessage({
             id: 'odc.src.layout.UserStatusIsBeingChecked',
+            defaultMessage: '正在检查用户状态',
           }), //'正在检查用户状态'
           showError: false,
         });

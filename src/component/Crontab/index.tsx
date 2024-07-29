@@ -57,7 +57,7 @@ interface IProps {
 const Crontab = (props, ref) => {
   const {
     initialValue = null,
-    title = formatMessage({ id: 'src.component.Crontab.D7390DC8' }),
+    title = formatMessage({ id: 'src.component.Crontab.D7390DC8', defaultMessage: '定时周期' }),
     onValueChange,
   } = props;
   const [value, setValue] = useState(() => {
@@ -156,7 +156,12 @@ const Crontab = (props, ref) => {
                 handleQuickDate('Hourly');
               }}
             >
-              {formatMessage({ id: 'odc.component.Crontab.Hourly' }) /*每小时*/}
+              {
+                formatMessage({
+                  id: 'odc.component.Crontab.Hourly',
+                  defaultMessage: '每小时',
+                }) /*每小时*/
+              }
             </Button>
             <Button
               type="link"
@@ -167,6 +172,7 @@ const Crontab = (props, ref) => {
               {
                 formatMessage({
                   id: 'odc.component.Crontab.EveryNight',
+                  defaultMessage: '每天晚上',
                 }) /*每天晚上*/
               }
             </Button>
@@ -179,6 +185,7 @@ const Crontab = (props, ref) => {
               {
                 formatMessage({
                   id: 'odc.component.Crontab.EveryFriday',
+                  defaultMessage: '每周五',
                 }) /*每周五*/
               }
             </Button>
@@ -284,6 +291,7 @@ const Crontab = (props, ref) => {
                   {
                     formatMessage({
                       id: 'odc.component.Crontab.NextExecutionTime',
+                      defaultMessage: '下一次执行时间：',
                     }) /*下一次执行时间：*/
                   }
                 </span>

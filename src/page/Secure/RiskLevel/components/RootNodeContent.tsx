@@ -107,7 +107,10 @@ const RootNodeContent = ({
       {empty ? (
         <Empty
           description={
-            formatMessage({ id: 'odc.src.page.Secure.RiskLevel.components.NoRule' }) /* 暂无规则 */
+            formatMessage({
+              id: 'odc.src.page.Secure.RiskLevel.components.NoRule',
+              defaultMessage: '暂无规则',
+            }) /* 暂无规则 */
           }
           image={Empty.PRESENTED_IMAGE_SIMPLE}
           style={{

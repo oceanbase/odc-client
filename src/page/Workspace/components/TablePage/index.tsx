@@ -181,10 +181,10 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
         <div className={styles.header}>
           <Radio.Group onChange={handleTopTabChanged} value={topTab} className={styles.topbar}>
             <Radio.Button value={TopTab.PROPS}>
-              {formatMessage({ id: 'workspace.window.table.toptab.props' })}
+              {formatMessage({ id: 'workspace.window.table.toptab.props', defaultMessage: '属性' })}
             </Radio.Button>
             <Radio.Button value={TopTab.DATA}>
-              {formatMessage({ id: 'workspace.window.table.toptab.data' })}
+              {formatMessage({ id: 'workspace.window.table.toptab.data', defaultMessage: '数据' })}
             </Radio.Button>
           </Radio.Group>
           <Space>
@@ -194,7 +194,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
             ) ? (
               <Toolbar.Button
                 text={
-                  formatMessage({ id: 'odc.components.TablePage.Export' }) //导出
+                  formatMessage({ id: 'odc.components.TablePage.Export', defaultMessage: '导出' }) //导出
                 }
                 icon={ExportOutlined}
                 isShowText
@@ -241,6 +241,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                       {
                         label: formatMessage({
                           id: 'workspace.window.table.propstab.info',
+                          defaultMessage: '基本信息',
                         }),
                         key: PropsTab.INFO,
                         children: <ShowTableBaseInfoForm pageKey={pageKey} />,
@@ -248,6 +249,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                       {
                         label: formatMessage({
                           id: 'workspace.window.table.propstab.column',
+                          defaultMessage: '列',
                         }),
                         key: PropsTab.COLUMN,
                         children: (
@@ -260,6 +262,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                         key: PropsTab.INDEX,
                         label: formatMessage({
                           id: 'workspace.window.table.propstab.index',
+                          defaultMessage: '索引',
                         }),
                         children: (
                           <Spin spinning={false}>
@@ -273,9 +276,11 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                             <TableConstraints />
                           </Spin>
                         ),
+
                         key: PropsTab.CONSTRAINT,
                         label: formatMessage({
                           id: 'workspace.window.table.propstab.constraint',
+                          defaultMessage: '约束',
                         }),
                       },
                       showPartition
@@ -283,6 +288,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                             key: PropsTab.PARTITION,
                             label: formatMessage({
                               id: 'workspace.window.table.propstab.partition',
+                              defaultMessage: '分区',
                             }),
                             children: (
                               <Spin spinning={false}>
@@ -295,6 +301,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                         key: PropsTab.DDL,
                         label: formatMessage({
                           id: 'workspace.window.table.propstab.ddl',
+                          defaultMessage: 'DDL',
                         }),
                         children: <TableDDL key={version.current} />,
                       },

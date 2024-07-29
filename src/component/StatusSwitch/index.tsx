@@ -30,7 +30,10 @@ const StatusSwitch: React.FC<{
 }> = (props) => {
   const {
     disabled = false,
-    title = formatMessage({ id: 'odc.component.StatusSwitch.AreYouSureYouWant' }), //确定要关闭吗？
+    title = formatMessage({
+      id: 'odc.component.StatusSwitch.AreYouSureYouWant',
+      defaultMessage: '是否确定关闭？',
+    }), //确定要关闭吗？
     overlayStyle,
     onConfirm,
     onCancel,
@@ -77,8 +80,14 @@ const StatusSwitch: React.FC<{
         ...overlayStyle,
       }}
       title={title}
-      okText={formatMessage({ id: 'odc.component.StatusSwitch.Ok' })} /*确定*/
-      cancelText={formatMessage({ id: 'odc.component.StatusSwitch.Cancel' })} /*取消*/
+      okText={formatMessage({
+        id: 'odc.component.StatusSwitch.Ok',
+        defaultMessage: '确定',
+      })} /*确定*/
+      cancelText={formatMessage({
+        id: 'odc.component.StatusSwitch.Cancel',
+        defaultMessage: '取消',
+      })} /*取消*/
       okButtonProps={{ loading }}
       onConfirm={handleConfirm}
       onCancel={handleCancel}

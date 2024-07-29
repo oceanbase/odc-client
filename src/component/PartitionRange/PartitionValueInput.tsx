@@ -116,6 +116,7 @@ class ToolTipInput extends React.PureComponent<ToolTipInputProos> {
           this.props.value ||
           formatMessage({
             id: 'odc.component.PartitionRange.PartitionValueInput.PleaseFillIn',
+            defaultMessage: '请填写',
           })
         }
         placement="topLeft"
@@ -180,6 +181,7 @@ class PartitionValueInput extends React.PureComponent<PartitionValueInputProps> 
         <span className="empty-tip">
           {formatMessage({
             id: 'odc.component.PartitionRange.PartitionValueInput.SelectAFieldFirst',
+            defaultMessage: '请先选择字段',
           })}
         </span>
       );
@@ -201,6 +203,7 @@ class PartitionValueInput extends React.PureComponent<PartitionValueInputProps> 
                 addonBefore={columnName}
                 placeholder={formatMessage({
                   id: 'odc.component.PartitionRange.PartitionValueInput.PleaseFillIn',
+                  defaultMessage: '请填写',
                 })}
               />
             </Form.Item>
@@ -219,6 +222,7 @@ class PartitionValueInput extends React.PureComponent<PartitionValueInputProps> 
         <span className="empty-tip">
           {formatMessage({
             id: 'odc.component.PartitionRange.PartitionValueInput.SelectAFieldFirst',
+            defaultMessage: '请先选择字段',
           })}
         </span>
       );

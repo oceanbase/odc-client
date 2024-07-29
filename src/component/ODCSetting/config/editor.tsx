@@ -23,21 +23,30 @@ import SelectItem from '../Item/SelectItem';
 import { validForEditorKeymap } from '@/component/Input/Keymap/helper';
 
 const editorGroup: ODCSettingGroup = {
-  label: formatMessage({ id: 'src.component.ODCSetting.config.239D3F16' }), //'编辑器'
+  label: formatMessage({
+    id: 'src.component.ODCSetting.config.239D3F16',
+    defaultMessage: '编辑器',
+  }), //'编辑器'
   key: 'editor',
 };
 const editorPreferenceGroup: ODCSettingGroup = {
-  label: formatMessage({ id: 'src.component.ODCSetting.config.FCD07871' }), //'样式'
+  label: formatMessage({ id: 'src.component.ODCSetting.config.FCD07871', defaultMessage: '样式' }), //'样式'
   key: 'editorPreference',
 };
 const editorKeymapGroup: ODCSettingGroup = {
-  label: formatMessage({ id: 'src.component.ODCSetting.config.0D4063E6' }), //'快捷键'
+  label: formatMessage({
+    id: 'src.component.ODCSetting.config.0D4063E6',
+    defaultMessage: '快捷键',
+  }), //'快捷键'
   key: 'editorKeymap',
 };
 
 const editorSettings: IODCSetting[] = [
   {
-    label: formatMessage({ id: 'src.component.ODCSetting.config.DD62F7C6' }), //'主题'
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.DD62F7C6',
+      defaultMessage: '主题',
+    }), //'主题'
     key: 'odc.editor.style.theme',
     group: editorGroup,
     secondGroup: editorPreferenceGroup,
@@ -74,7 +83,10 @@ const editorSettings: IODCSetting[] = [
     },
   },
   {
-    label: formatMessage({ id: 'src.component.ODCSetting.config.D9835833' }), //'字体'
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.D9835833',
+      defaultMessage: '字体',
+    }), //'字体'
     key: 'odc.editor.style.fontSize',
     group: editorGroup,
     secondGroup: editorPreferenceGroup,
@@ -84,15 +96,24 @@ const editorSettings: IODCSetting[] = [
         <RadioItem
           options={[
             {
-              label: formatMessage({ id: 'src.component.ODCSetting.config.D6D77D8C' }), //'小'
+              label: formatMessage({
+                id: 'src.component.ODCSetting.config.D6D77D8C',
+                defaultMessage: '小',
+              }), //'小'
               value: 'Small',
             },
             {
-              label: formatMessage({ id: 'src.component.ODCSetting.config.80241964' }), //'正常'
+              label: formatMessage({
+                id: 'src.component.ODCSetting.config.80241964',
+                defaultMessage: '正常',
+              }), //'正常'
               value: 'Normal',
             },
             {
-              label: formatMessage({ id: 'src.component.ODCSetting.config.6D389EE6' }), //'大'
+              label: formatMessage({
+                id: 'src.component.ODCSetting.config.6D389EE6',
+                defaultMessage: '大',
+              }), //'大'
               value: 'Large',
             },
           ]}
@@ -103,7 +124,10 @@ const editorSettings: IODCSetting[] = [
     },
   },
   {
-    label: formatMessage({ id: 'src.component.ODCSetting.config.88E11A59' }), //'运行 SQL'
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.88E11A59',
+      defaultMessage: '运行 SQL',
+    }), //'运行 SQL'
     key: 'odc.editor.shortcut.executeStatement',
     group: editorGroup,
     secondGroup: editorKeymapGroup,
@@ -115,12 +139,16 @@ const editorSettings: IODCSetting[] = [
         },
       },
     ],
+
     render: (value, onChange) => {
       return <KeymapInput value={value} onChange={onChange} />;
     },
   },
   {
-    label: formatMessage({ id: 'src.component.ODCSetting.config.663436E6' }), //'运行所选 SQL'
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.663436E6',
+      defaultMessage: '运行所选 SQL',
+    }), //'运行所选 SQL'
     key: 'odc.editor.shortcut.executeCurrentStatement',
     group: editorGroup,
     secondGroup: editorKeymapGroup,
@@ -131,6 +159,7 @@ const editorSettings: IODCSetting[] = [
         },
       },
     ],
+
     storeType: 'server',
     render: (value, onChange) => {
       return <KeymapInput value={value} onChange={onChange} />;

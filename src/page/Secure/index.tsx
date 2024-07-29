@@ -61,11 +61,11 @@ const Pages = {
 
 const tabs = [
   {
-    tab: formatMessage({ id: 'odc.page.Secure.Environment' }), //环境
+    tab: formatMessage({ id: 'odc.page.Secure.Environment', defaultMessage: '环境' }), //环境
     key: IPageType.Secure_Env,
   },
   {
-    tab: formatMessage({ id: 'odc.page.Secure.RiskLevel' }), //风险等级
+    tab: formatMessage({ id: 'odc.page.Secure.RiskLevel', defaultMessage: '风险等级' }), //风险等级
     key: IPageType.RiskLevel,
   },
   // {
@@ -73,11 +73,14 @@ const tabs = [
   //   key: IPageType.Secure_Approval,
   // },
   {
-    tab: formatMessage({ id: 'odc.page.Secure.DesensitizationAlgorithm' }), //脱敏算法
+    tab: formatMessage({
+      id: 'odc.page.Secure.DesensitizationAlgorithm',
+      defaultMessage: '脱敏算法',
+    }), //脱敏算法
     key: IPageType.MaskingAlgorithm,
   },
   {
-    tab: formatMessage({ id: 'odc.page.Secure.OperationRecord' }), //操作记录
+    tab: formatMessage({ id: 'odc.page.Secure.OperationRecord', defaultMessage: '操作记录' }), //操作记录
     key: IPageType.Secure_Record,
     permission: createPermission(IManagerResourceType.odc_audit_event, actionTypes.read),
   },
@@ -106,7 +109,10 @@ const Index: React.FC<IProps> = function ({ userStore }) {
     <PageContainer
       titleProps={{
         type: TitleType.TEXT,
-        title: formatMessage({ id: 'odc.page.Secure.SafetySpecifications' }), //安全规范
+        title: formatMessage({
+          id: 'odc.page.Secure.SafetySpecifications',
+          defaultMessage: '安全规范',
+        }), //安全规范
       }}
       containerWrapStyle={
         [IPageType.Secure_Env, IPageType.RiskLevel].includes(page)

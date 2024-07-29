@@ -500,9 +500,9 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
           title={formatMessage(
             {
               id: 'src.component.Task.component.TableSelecter.9995622C',
-              defaultMessage: '已选 ${selectedTreeDataCount} 项',
+              defaultMessage: '已选 {selectedTreeDataCount} 项',
             },
-            { selectedTreeDataCount: selectedTreeDataCount },
+            { selectedTreeDataCount },
           )}
           onSearch={(v) => setTargetSearchValue(v)}
           extra={

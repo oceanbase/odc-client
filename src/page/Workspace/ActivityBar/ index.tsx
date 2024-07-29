@@ -73,6 +73,7 @@ const ActivityBar: React.FC<IProps> = function () {
       isVisible: true,
     },
   ];
+
   return (
     <div className={styles.bar}>
       <div className={styles.top}>
@@ -120,7 +121,7 @@ const ActivityBar: React.FC<IProps> = function () {
               disableTip={true}
               icon={BulbOutlined}
               collapsed={true}
-              label={formatMessage({ id: 'odc.Index.Sider.Help' })} /*帮助*/
+              label={formatMessage({ id: 'odc.Index.Sider.Help', defaultMessage: '帮助' })} /*帮助*/
             />
           </HelpItem>
           <MineItem>
@@ -128,7 +129,7 @@ const ActivityBar: React.FC<IProps> = function () {
               disableTip={true}
               icon={UserOutlined}
               collapsed={true}
-              label={formatMessage({ id: 'odc.Index.Sider.Mine' })} /*我的*/
+              label={formatMessage({ id: 'odc.Index.Sider.Mine', defaultMessage: '我的' })} /*我的*/
             />
           </MineItem>
         </Space>

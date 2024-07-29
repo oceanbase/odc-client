@@ -131,6 +131,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
             {
               formatMessage({
                 id: 'odc.components.CreateTable.BasicInformationAsRequiredOptional',
+                defaultMessage: '基本信息，列为必填项，其他选填',
               })
               /*基本信息，列为必填项，其他选填*/
             }
@@ -145,6 +146,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
                 ? null
                 : formatMessage({
                     id: 'odc.components.CreateTable.PleaseFillInTheBasic',
+                    defaultMessage: '请填写基本信息和列',
                   }) //请填写基本信息和列
             }
           >
@@ -152,6 +154,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
               {
                 formatMessage({
                   id: 'odc.components.CreateTable.SubmitAndConfirmSql',
+                  defaultMessage: '提交并确认 SQL',
                 })
                 /*提交并确认 SQL*/
               }
@@ -189,33 +192,45 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
               key: TableTabType.INFO,
               label: formatMessage({
                 id: 'odc.components.CreateTable.BasicInformation',
+                defaultMessage: '基本信息',
               }),
               children: <BaseInfo />,
             },
             {
               key: TableTabType.COLUMN,
-              label: formatMessage({ id: 'odc.components.CreateTable.Column' }),
+              label: formatMessage({
+                id: 'odc.components.CreateTable.Column',
+                defaultMessage: '列',
+              }),
               children: <Columns />,
             },
             {
               key: TableTabType.INDEX,
-              label: formatMessage({ id: 'odc.components.CreateTable.Index' }),
+              label: formatMessage({
+                id: 'odc.components.CreateTable.Index',
+                defaultMessage: '索引',
+              }),
               children: <TableIndex />,
             },
             {
               key: TableTabType.CONSTRAINT,
               label: formatMessage({
                 id: 'odc.components.CreateTable.Constraints',
+                defaultMessage: '约束',
               }),
               children: <TableConstraint />,
             },
             {
               key: TableTabType.PARTITION,
-              label: formatMessage({ id: 'odc.components.CreateTable.Partition' }),
+              label: formatMessage({
+                id: 'odc.components.CreateTable.Partition',
+                defaultMessage: '分区',
+              }),
               children: <Partition />,
             },
           ]}
         />
+
         <ExecuteSQLModal
           sessionStore={session}
           sql={DDL}
@@ -300,7 +315,12 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
               page.close(pageKey);
               // 刷新左侧资源树
               await session.database.getTableList();
-              message.success(formatMessage({ id: 'portal.connection.form.save.success' }));
+              message.success(
+                formatMessage({
+                  id: 'portal.connection.form.save.success',
+                  defaultMessage: '保存成功',
+                }),
+              );
             } else {
               notification.error(result);
             }

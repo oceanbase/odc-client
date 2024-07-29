@@ -74,6 +74,7 @@ export default inject('snippetStore')(
               onSearch={(v) => setSearchValue(v)}
               placeholder={formatMessage({
                 id: 'odc.Script.Snippet.SearchForCodeSnippets',
+                defaultMessage: '搜索代码片段',
               })} /*搜索代码片段*/
               size="small"
             />
@@ -107,7 +108,10 @@ export default inject('snippetStore')(
                         actions={[
                           {
                             icon: CopyOutlined,
-                            title: formatMessage({ id: 'odc.Script.Snippet.Copy' }), //复制
+                            title: formatMessage({
+                              id: 'odc.Script.Snippet.Copy',
+                              defaultMessage: '复制',
+                            }), //复制
                             onClick() {
                               copyToCB(
                                 `<meta name='_!isODCSnippet_' content='yes' />${getWrapedSnippetBody(
@@ -120,8 +124,8 @@ export default inject('snippetStore')(
                               message.success(
                                 formatMessage(
                                   {
-                                    id:
-                                      'odc.component.SnippetCard.SnippetprefixSyntaxHelpsCopySuccessfully',
+                                    id: 'odc.component.SnippetCard.SnippetprefixSyntaxHelpsCopySuccessfully',
+                                    defaultMessage: '{snippetPrefix} 代码片段复制成功！',
                                   },
                                   { snippetPrefix: snippet.prefix },
                                 ), //`${snippet.prefix} 代码片段复制成功！`
@@ -130,7 +134,10 @@ export default inject('snippetStore')(
                           },
                           {
                             icon: EditOutlined,
-                            title: formatMessage({ id: 'odc.Script.Snippet.Edit' }), //编辑
+                            title: formatMessage({
+                              id: 'odc.Script.Snippet.Edit',
+                              defaultMessage: '编辑',
+                            }), //编辑
                             onClick() {
                               setSnipptVisible(true);
                               setSnippet(snippet);
@@ -138,12 +145,16 @@ export default inject('snippetStore')(
                           },
                           {
                             icon: DeleteOutlined,
-                            title: formatMessage({ id: 'odc.Script.Snippet.Delete' }), //删除
+                            title: formatMessage({
+                              id: 'odc.Script.Snippet.Delete',
+                              defaultMessage: '删除',
+                            }), //删除
                             onClick() {
                               Modal.confirm({
                                 title: formatMessage(
                                   {
                                     id: 'odc.component.GrammerHelpSider.AreYouSureYouWant',
+                                    defaultMessage: '是否确认删除代码片段 {snippetPrefix}？',
                                   },
                                   { snippetPrefix: snippet.prefix },
                                 ), //`确认删除代码片段：${snippet.prefix}?`
@@ -156,8 +167,8 @@ export default inject('snippetStore')(
                                     message.success(
                                       formatMessage(
                                         {
-                                          id:
-                                            'odc.component.GrammerHelpSider.TheSyntaxSnippetSnippetprefixHas',
+                                          id: 'odc.component.GrammerHelpSider.TheSyntaxSnippetSnippetprefixHas',
+                                          defaultMessage: '代码片段 {snippetPrefix} 删除成功！',
                                         },
                                         { snippetPrefix: snippet.prefix },
                                       ), //`代码片段 ${snippet.prefix} 删除成功！`

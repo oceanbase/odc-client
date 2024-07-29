@@ -51,6 +51,7 @@ const RoleList: React.FC<{
                 <span
                   title={formatMessage({
                     id: 'odc.components.UserPage.component.RoleDisabled',
+                    defaultMessage: '角色已停用',
                   })}
                   /* 角色已停用 */
                 >

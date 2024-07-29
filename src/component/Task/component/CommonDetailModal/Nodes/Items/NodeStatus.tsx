@@ -37,6 +37,7 @@ const NodeStatus: React.FC<IProps> = function ({ node }) {
           {
             formatMessage({
               id: 'odc.component.CommonTaskDetailModal.TaskFlow.ViewApprovalDetails',
+              defaultMessage: '查看审批详情',
             }) /*查看审批详情*/
           }
         </a>

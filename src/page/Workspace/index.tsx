@@ -130,9 +130,13 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
 
     if (runningPageKey.has(targetPageKey)) {
       Modal.confirm({
-        title: formatMessage({ id: 'odc.page.Workspace.ConfirmCloseWindow' }), // 确认关闭窗口？
+        title: formatMessage({
+          id: 'odc.page.Workspace.ConfirmCloseWindow',
+          defaultMessage: '是否确认关闭窗口？',
+        }), // 确认关闭窗口？
         content: formatMessage({
           id: 'odc.page.Workspace.WhenTheOperationIsRunning',
+          defaultMessage: '操作执行中，关闭窗口将终止窗口操作，是否确认关闭？',
         }),
 
         // 操作执行中，关闭窗口将终止窗口操作，确认关闭吗？
@@ -161,6 +165,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
         formatMessage(
           {
             id: 'odc.page.Workspace.DockedpagetitleIsBeingDebuggedAnd',
+            defaultMessage: '{dockedPageTitle}正在调试，无法关闭',
           },
 
           { dockedPageTitle: dockedPage.title },
@@ -174,14 +179,17 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       Modal.confirm({
         title: formatMessage({
           id: 'odc.page.Workspace.TheTaskIsNotSaved',
+          defaultMessage: '任务未保存',
         }),
 
         content: formatMessage({
           id: 'odc.page.Workspace.UnsavedContentWillDisappearAfter',
+          defaultMessage: '关闭之后未保存内容将会消失',
         }),
 
         okText: formatMessage({
           id: 'odc.page.Workspace.Closed',
+          defaultMessage: '关闭',
         }),
 
         okType: 'danger',
@@ -333,12 +341,14 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
           ) : null
         }
       />
+
       {isReady && (
         <>
           {!!serverSystemInfo?.tutorialEnabled && <WorkspaceSideTip />}
           <GlobalModals />
         </>
       )}
+
       <WrapWorkSpaceExecuteSQLModal modalStore={modalStore} />
     </>
   );

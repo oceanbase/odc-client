@@ -228,7 +228,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
     return formatMessage(
       {
         id: 'src.component.ProfileFlow.customComponents.7812E9AE',
-        defaultMessage: '${node?.name}的汇总',
+        defaultMessage: '{nodeName}的汇总',
       },
       { nodeName: node?.name },
     );
@@ -243,7 +243,7 @@ export default ({ dataSource, topNodes, initialNodes, globalInfo }: Iprops) => {
       label: formatMessage(
         {
           id: 'src.component.ProfileFlow.customComponents.C22AD2CB',
-          defaultMessage: '${data?.name}的汇总',
+          defaultMessage: '{dataName}的汇总',
         },
         { dataName: data?.name },
       ),

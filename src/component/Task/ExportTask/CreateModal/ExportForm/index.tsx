@@ -74,6 +74,7 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
           message.warning(
             formatMessage({
               id: 'odc.ExportDrawer.ExportForm.SelectExportObjects',
+              defaultMessage: '请选择导出对象',
             }),
           );
 

@@ -122,9 +122,9 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                 ? formatMessage(
                     {
                       id: 'src.component.Task.component.DatabaseSelecter.EC5561FD',
-                      defaultMessage: '最多支持选择 ${maxCount} 个数据库',
+                      defaultMessage: '最多支持选择 {maxCount} 个数据库',
                     },
-                    { maxCount: maxCount },
+                    { maxCount },
                   )
                 : ''
             }
@@ -216,6 +216,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                   {
                     formatMessage({
                       id: 'src.component.Task.component.DatabaseSelecter.D17AE43F' /*选择数据库*/,
+                      defaultMessage: '选择数据库',
                     }) /* 选择数据库 */
                   }
                 </span>
@@ -240,8 +241,11 @@ const DatabaseSelecter: React.FC<IProps> = function ({
         <ExportCard
           title={
             formatMessage(
-              { id: 'src.component.Task.component.DatabaseSelecter.D06DB16B' },
-              { selectedTreeDataCount: selectedTreeDataCount },
+              {
+                id: 'src.component.Task.component.DatabaseSelecter.D06DB16B',
+                defaultMessage: '已选 {selectedTreeDataCount} 项',
+              },
+              { selectedTreeDataCount },
             ) /*`已选 ${selectedTreeDataCount} 项`*/
           }
           onSearch={(v) => setTargetSearchValue(v)}
@@ -254,6 +258,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
               title={
                 formatMessage({
                   id: 'src.component.Task.component.DatabaseSelecter.2FB288CA',
+                  defaultMessage: '确定要清空已选对象吗？',
                 }) /*"确定要清空已选对象吗？"*/
               }
             >
@@ -261,6 +266,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                 {
                   formatMessage({
                     id: 'src.component.Task.component.DatabaseSelecter.302B4FB5' /*清空*/,
+                    defaultMessage: '清空',
                   }) /* 清空 */
                 }
               </a>

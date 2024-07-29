@@ -60,10 +60,15 @@ const SearchFilter: React.FC<ISearchFilterProps> = (props) => {
 
       <Space size={12} className={styles.footer}>
         <Button type="primary" onClick={handleSearch} block>
-          {formatMessage({ id: 'odc.component.SearchFilter.Ok' }) /*确定*/}
+          {formatMessage({ id: 'odc.component.SearchFilter.Ok', defaultMessage: '确定' }) /*确定*/}
         </Button>
         <Button onClick={handleReset} block>
-          {formatMessage({ id: 'odc.component.SearchFilter.Reset' }) /*重置*/}
+          {
+            formatMessage({
+              id: 'odc.component.SearchFilter.Reset',
+              defaultMessage: '重置',
+            }) /*重置*/
+          }
         </Button>
       </Space>
     </Space>

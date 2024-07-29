@@ -35,6 +35,7 @@ const formItemProps = {
   name: 'value',
   label: formatMessage({
     id: 'workspace.window.session.form.value',
+    defaultMessage: '值',
   }),
   style: {
     marginBottom: 0,
@@ -44,6 +45,7 @@ const formItemProps = {
       required: true,
       message: formatMessage({
         id: 'workspace.window.session.form.value.validation',
+        defaultMessage: '请填写变量值',
       }),
     },
   ],
@@ -88,6 +90,7 @@ class PropertyModal extends Component<IProps> {
         destroyOnClose={true}
         title={formatMessage({
           id: 'workspace.window.session.modal.title',
+          defaultMessage: '编辑变量',
         })}
         open={visible}
         onOk={this.save}
@@ -99,6 +102,7 @@ class PropertyModal extends Component<IProps> {
             showIcon
             message={formatMessage({
               id: 'odc.component.PropertyModal.RiskTips',
+              defaultMessage: '风险提示',
             })}
             /*风险提示*/
             style={{
@@ -110,6 +114,7 @@ class PropertyModal extends Component<IProps> {
                   {
                     formatMessage({
                       id: 'odc.component.PropertyModal.TheSharedSessionModeIs',
+                      defaultMessage: '当前为共享 Session 模式，因此：',
                     }) /*当前使用的是共享 Session 模式，因此：*/
                   }
                 </div>
@@ -117,16 +122,19 @@ class PropertyModal extends Component<IProps> {
                   {
                     formatMessage({
                       id: 'odc.component.PropertyModal.WhenTheValueIsOff',
+                      defaultMessage:
+                        '1、当该值为 OFF\n                  时：主动触发提交/回滚操作；或通过产品功能创建、修改、删除数据库对象，执行 DDL\n                  语句被动触发提交操作，会在所有窗口生效。',
                     })
                     /*1、当该值为 OFF
-            时：主动触发提交/回滚操作；或通过产品功能创建、修改、删除数据库对象，执行 DDL
-            语句被动触发提交操作，会在所有窗口生效。*/
+              时：主动触发提交/回滚操作；或通过产品功能创建、修改、删除数据库对象，执行 DDL
+              语句被动触发提交操作，会在所有窗口生效。*/
                   }
                 </div>
                 <div>
                   {
                     formatMessage({
                       id: 'odc.component.PropertyModal.WhenTheValueIsOn',
+                      defaultMessage: '2、当该值为 ON 时：如存在未提交的内容，会默认自动提交。',
                     })
                     /*2、当该值为 ON 时：如果存在未提交的内容，会默认自动提交。*/
                   }
@@ -140,6 +148,7 @@ class PropertyModal extends Component<IProps> {
           <Form.Item
             label={formatMessage({
               id: 'workspace.window.session.form.key',
+              defaultMessage: '变量名',
             })}
           >
             <span className="ant-form-text">{model.key}</span>
@@ -150,6 +159,7 @@ class PropertyModal extends Component<IProps> {
               <Input
                 placeholder={formatMessage({
                   id: 'workspace.window.session.form.value.placeholder',
+                  defaultMessage: '请填写变量值',
                 })}
               />
             </Form.Item>

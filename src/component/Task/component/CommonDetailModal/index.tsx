@@ -64,6 +64,7 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
           isSplit={isSplit}
         />
       );
+
       break;
     case TaskDetailType.LOG:
       content = (
@@ -75,6 +76,7 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
           onLogTypeChange={onLogTypeChange}
         />
       );
+
       break;
     case TaskDetailType.RESULT:
       content = <TaskResult result={result} />;
@@ -172,6 +174,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     message.success(
       formatMessage({
         id: 'odc.src.component.Task.component.CommonDetailModal.Replication',
+        defaultMessage: '复制成功',
       }), //'复制成功'
     );
   }
@@ -184,6 +187,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
         <div className={styles.title}>
           {formatMessage({
             id: 'odc.component.CommonTaskDetailModal.TaskDetails',
+            defaultMessage: '任务详情',
           })}
           {login.isPrivateSpace() ? (
             <div></div>
@@ -192,9 +196,11 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               {
                 formatMessage({
                   id: 'odc.src.component.Task.component.CommonDetailModal.Share',
+                  defaultMessage: '分享',
                 }) /*
-            分享  */
+          分享  */
               }
+
               <ShareAltOutlined />
             </a>
           )}
@@ -215,6 +221,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               {
                 formatMessage({
                   id: 'odc.component.CommonTaskDetailModal.TaskInformation',
+                  defaultMessage: '任务信息',
                 })
 
                 /* 任务信息 */
@@ -227,6 +234,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               {
                 formatMessage({
                   id: 'odc.component.CommonTaskDetailModal.TaskFlow',
+                  defaultMessage: '任务流程',
                 })
 
                 /*任务流程*/
@@ -239,6 +247,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               {
                 formatMessage({
                   id: 'odc.component.CommonTaskDetailModal.AssociatedRecords',
+                  defaultMessage: '关联记录',
                 })
                 /*关联记录*/
               }
@@ -254,6 +263,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
                 {
                   formatMessage({
                     id: 'odc.component.CommonTaskDetailModal.ExecutionRecord',
+                    defaultMessage: '执行记录',
                   }) /*执行记录*/
                 }
               </Radio.Button>
@@ -264,16 +274,19 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
                 {
                   formatMessage({
                     id: 'odc.component.CommonTaskDetailModal.OperationRecord',
+                    defaultMessage: '操作记录',
                   }) /*操作记录*/
                 }
               </Radio.Button>
             </>
           )}
+
           {[TaskType.ONLINE_SCHEMA_CHANGE, TaskType.MULTIPLE_ASYNC]?.includes(task?.type) && (
             <Radio.Button value={TaskDetailType.PROGRESS} key={TaskDetailType.PROGRESS}>
               {
                 formatMessage({
                   id: 'odc.component.CommonTaskDetailModal.ExecutionRecord',
+                  defaultMessage: '执行记录',
                 }) /*执行记录*/
               }
             </Radio.Button>
@@ -284,6 +297,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               {
                 formatMessage({
                   id: 'odc.component.CommonTaskDetailModal.ExecutionResult',
+                  defaultMessage: '执行结果',
                 })
 
                 /*执行结果*/
@@ -296,6 +310,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               {
                 formatMessage({
                   id: 'odc.component.CommonDetailModal.RollbackTicket',
+                  defaultMessage: '回滚工单',
                 }) /*回滚工单*/
               }
             </Radio.Button>
@@ -306,6 +321,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               {
                 formatMessage({
                   id: 'odc.component.CommonTaskDetailModal.TaskLog',
+                  defaultMessage: '任务日志',
                 })
 
                 /* 任务日志 */

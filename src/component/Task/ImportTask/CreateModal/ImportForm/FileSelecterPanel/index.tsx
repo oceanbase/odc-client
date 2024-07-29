@@ -52,12 +52,14 @@ function getTipByFileType(fileType) {
     case IMPORT_TYPE.ZIP: {
       return formatMessage({
         id: 'odc.ImportForm.FileSelecterPanel.OnlyCompressedFilesExportedBy',
+        defaultMessage: '仅支持上传由 ODC 导出的压缩文件，可批量导入数据或结构',
       });
       //仅支持上传由 ODC 导出的压缩文件，可批量导入数据或结构
     }
     case IMPORT_TYPE.CSV: {
       return formatMessage({
         id: 'odc.ImportForm.FileSelecterPanel.YouCanImportDataFrom',
+        defaultMessage: '支持导入单表数据，可自定义映射字段',
       });
       //支持导入单表数据，可自定义映射字段
     }
@@ -66,6 +68,7 @@ function getTipByFileType(fileType) {
         getSizeLimitTip(),
         formatMessage({
           id: 'odc.ImportForm.FileSelecterPanel.TheFilesAreExecutedIn',
+          defaultMessage: '文件将按磁盘顺序执行',
         }),
         //文件将按磁盘顺序执行
       ]
@@ -110,6 +113,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
       message.warning({
         content: formatMessage({
           id: 'odc.ImportDrawer.ImportForm.TooManyFilesAreUploaded',
+          defaultMessage: '同时上传文件过多，单次最多选择 50 个文件',
         }),
 
         // 同时上传文件过多，单次最多选择 50 个文件
@@ -126,6 +130,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
       notification.warn(
         formatMessage({
           id: 'odc.ImportDrawer.ImportForm.UpToObjectsCanBe',
+          defaultMessage: '最多上传 500 个文件',
         }),
 
         // 最多上传 500 个文件
@@ -140,6 +145,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
       <FormItem
         label={formatMessage({
           id: 'odc.ImportDrawer.ImportForm.ImportFormat',
+          defaultMessage: '导入文件格式',
         })}
         name="fileType"
         rules={[
@@ -147,6 +153,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
             required: true,
             message: formatMessage({
               id: 'odc.ImportDrawer.ImportForm.SelectAnImportFormat',
+              defaultMessage: '请选择导入格式',
             }),
           },
         ]}
@@ -156,6 +163,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
             {
               formatMessage({
                 id: 'odc.ImportDrawer.ImportForm.ZipCompressedFiles',
+                defaultMessage: 'ZIP 压缩文件',
               })
 
               /* ZIP 压缩文件 */
@@ -165,6 +173,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
             {
               formatMessage({
                 id: 'odc.ImportDrawer.ImportForm.CsvFile',
+                defaultMessage: 'CSV 文件',
               })
 
               /* CSV 文件 */
@@ -175,6 +184,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
               {
                 formatMessage({
                   id: 'odc.ImportDrawer.ImportForm.SqlFile.1',
+                  defaultMessage: 'SQL 文件',
                 })
 
                 /* SQL 文件 */
@@ -186,6 +196,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
       <FormItem
         label={formatMessage({
           id: 'odc.ImportDrawer.ImportForm.ImportFiles',
+          defaultMessage: '导入文件',
         })}
         shouldUpdate
       >
@@ -197,6 +208,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
               noStyle
               label={formatMessage({
                 id: 'odc.ImportDrawer.ImportForm.ImportFiles',
+                defaultMessage: '导入文件',
               })}
               name="importFileName"
               rules={[
@@ -204,6 +216,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
                   required: true,
                   message: formatMessage({
                     id: 'odc.ImportDrawer.ImportForm.PleaseUploadTheImportedFile',
+                    defaultMessage: '请上传导入文件',
                   }),
                 },
               ]}
@@ -221,6 +234,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
                     } else if (!response?.data?.containsData && !response?.data?.containsSchema) {
                       item.response = formatMessage({
                         id: 'odc.ImportForm.FileSelecterPanel.TheFileHasNoContent',
+                        defaultMessage: '该文件无内容',
                       }); //该文件无内容
                       item.status = 'error';
                     }
@@ -281,6 +295,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
                 >
                   {formatMessage({
                     id: 'odc.ImportDrawer.ImportForm.ClickOrDragTheFile',
+                    defaultMessage: '点击或将文件拖拽到这里上传',
                   })}
                 </p>
                 <p
@@ -303,6 +318,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
                 >
                   {formatMessage({
                     id: 'odc.ImportDrawer.ImportForm.SupportedExtensions',
+                    defaultMessage: '支持扩展名：',
                   })}
 
                   {getFileTypeWithImportType(fileType)}
@@ -345,6 +361,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
                 requiredMark={false}
                 label={formatMessage({
                   id: 'odc.ImportForm.FileSelecterPanel.ImportObjectPreview',
+                  defaultMessage: '导入对象预览',
                 })}
                 /*导入对象预览*/ shouldUpdate
               >
@@ -366,6 +383,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
       <FormItem
         label={formatMessage({
           id: 'odc.ImportDrawer.ImportForm.FileEncoding',
+          defaultMessage: '文件编码',
         })}
         name="encoding"
         rules={[
@@ -373,6 +391,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
             required: true,
             message: formatMessage({
               id: 'odc.ImportDrawer.ImportForm.SelectAFileEncoding',
+              defaultMessage: '请选择文件编码',
             }),
           },
         ]}

@@ -104,6 +104,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
             message.warning(
               formatMessage({
                 id: 'odc.CreateShadowSyncModal.SelectPanel.SelectASynchronizationObject',
+                defaultMessage: '请选择同步对象',
               }),
 
               //请选择同步对象
@@ -233,10 +234,12 @@ const SelectPanel = forwardRef<any, IProps>(function (
       <Form.Item
         extra={formatMessage({
           id: 'odc.CreateShadowSyncModal.SelectPanel.OnlyTheStructureOfThe',
+          defaultMessage: '仅同步源表的结构，不同步数据',
         })}
         /*仅同步源表的结构，不同步数据*/ name="syncAll"
         label={formatMessage({
           id: 'odc.CreateShadowSyncModal.SelectPanel.SynchronizationRange',
+          defaultMessage: '同步范围',
         })}
 
         /*同步范围*/
@@ -253,6 +256,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
             {
               formatMessage({
                 id: 'odc.CreateShadowSyncModal.SelectPanel.PartialTable',
+                defaultMessage: '部分表',
               })
 
               /*部分表*/
@@ -262,6 +266,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
             {
               formatMessage({
                 id: 'odc.CreateShadowSyncModal.SelectPanel.AllTables',
+                defaultMessage: '全部表',
               })
 
               /*全部表*/
@@ -276,6 +281,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
             {
               formatMessage({
                 id: 'odc.CreateShadowSyncModal.SelectPanel.ShadowTableName',
+                defaultMessage: '影子表名',
               })
 
               /*影子表名*/
@@ -290,6 +296,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                 {
                   formatMessage({
                     id: 'odc.CreateShadowSyncModal.SelectPanel.AddSuffix',
+                    defaultMessage: '添加后缀',
                   })
 
                   /*添加后缀*/
@@ -299,6 +306,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                 {
                   formatMessage({
                     id: 'odc.CreateShadowSyncModal.SelectPanel.AddPrefix',
+                    defaultMessage: '添加前缀',
                   })
 
                   /*添加前缀*/
@@ -314,6 +322,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                 required: true,
                 message: formatMessage({
                   id: 'odc.CreateShadowSyncModal.SelectPanel.EnterAShadowTableName',
+                  defaultMessage: '请输入影子表名',
                 }),
 
                 //请输入影子表名
@@ -322,6 +331,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                 pattern: /^[\w]*$/,
                 message: formatMessage({
                   id: 'odc.CreateShadowSyncModal.SelectPanel.OnlyEnglishNumbersAndUnderscores',
+                  defaultMessage: '仅支持英文/数字/下划线',
                 }),
 
                 //仅支持英文/数字/下划线
@@ -330,6 +340,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                 max: 32,
                 message: formatMessage({
                   id: 'odc.CreateShadowSyncModal.SelectPanel.NoMoreThanCharacters',
+                  defaultMessage: '不超过 32 个字符',
                 }),
 
                 //不超过 32 个字符
@@ -350,6 +361,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
               shouldUpdate
               label={formatMessage({
                 id: 'odc.CreateShadowSyncModal.SelectPanel.SynchronizeObjects',
+                defaultMessage: '同步对象',
               })}
 
               /*同步对象*/
@@ -365,6 +377,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                     title={
                       formatMessage({
                         id: 'odc.CreateShadowSyncModal.SelectPanel.SelectSourceTable',
+                        defaultMessage: '选择源表',
                       }) +
                       //`选择源表`
                       `(${sourceSelectCount}/${sourceCount})`
@@ -401,6 +414,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                     title={
                       formatMessage({
                         id: 'odc.CreateShadowSyncModal.SelectPanel.ShadowTable',
+                        defaultMessage: '影子表',
                       }) +
                       //`影子表`
                       `(${targetDisplayTables?.length ?? 0})`
@@ -419,6 +433,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                         {
                           formatMessage({
                             id: 'odc.CreateShadowSyncModal.SelectPanel.Clear',
+                            defaultMessage: '清空',
                           }) /*清空*/
                         }
                       </a>

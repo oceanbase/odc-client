@@ -55,6 +55,7 @@ const TaskLog: React.FC<{
         {
           label: formatMessage({
             id: 'odc.component.CommonTaskDetailModal.TaskLog.AllLogs',
+            defaultMessage: '全部日志',
           }),
           key: CommonTaskLogType.ALL,
           children: (
@@ -76,6 +77,7 @@ const TaskLog: React.FC<{
         {
           label: formatMessage({
             id: 'odc.component.CommonTaskDetailModal.TaskLog.AlertLogs',
+            defaultMessage: '告警日志',
           }),
           key: CommonTaskLogType.WARN,
           children: (

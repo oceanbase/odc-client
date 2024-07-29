@@ -151,6 +151,7 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
         `${
           formatMessage({
             id: 'odc.components.OBClientPage.NetworkException',
+            defaultMessage: '网络异常:',
           }) + // 网络异常:
           e.type
         }` + '\r\n',
@@ -161,6 +162,7 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
     this.xtermInstance.write(
       `${formatMessage({
         id: 'odc.components.OBClientPage.EstablishingConnection',
+        defaultMessage: '建立连接中....',
       })}\r\n`, // 建立连接中....
     );
     this.ws.onclose = (e) => {
@@ -168,6 +170,7 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
       this.xtermInstance.write(
         `${formatMessage({
           id: 'odc.components.OBClientPage.ConnectionFailed',
+          defaultMessage: '***连接失败***',
         })}\r\n`, //* **连接失败***
       );
     };
@@ -175,15 +178,19 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
       this.xtermInstance.write(
         `${formatMessage({
           id: 'odc.components.OBClientPage.ConnectionEstablished',
+          defaultMessage: '建立连接成功....',
         })}\r\n`, // 建立连接成功....
       );
       console.log('ws opened!');
       const warnMsg = [
         formatMessage({
           id: 'odc.components.OBClientPage.ToAvoidGarbledCodesKeep',
+          defaultMessage: '为避免乱码问题，请保持数据库客户端编码和操作系统编码一致。',
         }), // 为避免乱码问题，请保持数据库客户端编码和操作系统编码一致。
         formatMessage({
           id: 'odc.components.OBClientPage.GenerallyTheLinuxOperatingSystem',
+          defaultMessage:
+            '（一般情况下 Linux 操作系统默认字符编码为 UTF8，Windows 操作系统默认字符编码为 GBK，具体以实际情况为准）',
         }), // （一般情况linux操作系统为UTF8，windows操作系统为GBK，具体以实际情况为准）
       ];
 
@@ -199,6 +206,7 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
         this.xtermInstance.write(
           `${formatMessage({
             id: 'odc.components.OBClientPage.TheConnectionHasBeenDisconnected',
+            defaultMessage: '***连接已断开***',
           })}\r\n`, //* **连接已断开***
         );
         clearTimeout(this._pingClock);
@@ -263,6 +271,7 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
         {
           formatMessage({
             id: 'odc.components.OBClientPage.NoteToReferenceAScript',
+            defaultMessage: '提示：如需引用脚本，可在脚本管理中上传脚本后引用',
           })
           /* 提示：如需引用脚本，可在脚本管理中上传脚本后引用 */
         }
@@ -275,7 +284,12 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
     if (this.props.simpleHeader) {
       return (
         <Button onClick={this.reconnect} disabled={!isClosed}>
-          {formatMessage({ id: 'odc.components.OBClientPage.Reconnect' }) /*重新连接*/}
+          {
+            formatMessage({
+              id: 'odc.components.OBClientPage.Reconnect',
+              defaultMessage: '重新连接',
+            }) /*重新连接*/
+          }
         </Button>
       );
     }
@@ -291,6 +305,7 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
             {
               formatMessage({
                 id: 'odc.components.OBClientPage.Reconnect',
+                defaultMessage: '重新连接',
               })
               /* 重新连接 */
             }

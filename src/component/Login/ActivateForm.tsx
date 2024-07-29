@@ -58,7 +58,10 @@ const Activate: React.FC<IActivateFormProps> = ({
       const pwd = formRef.getFieldValue('password');
       if (toString(value) !== toString(pwd)) {
         callback(
-          formatMessage({ id: 'odc.component.Login.ActivateForm.ConfirmPasswordInconsistency' }), //确认密码不一致
+          formatMessage({
+            id: 'odc.component.Login.ActivateForm.ConfirmPasswordInconsistency',
+            defaultMessage: '确认密码不一致',
+          }), //确认密码不一致
         );
         return;
       }
@@ -71,6 +74,8 @@ const Activate: React.FC<IActivateFormProps> = ({
     pattern: PASSWORD_REGEX,
     message: formatMessage({
       id: 'odc.component.Login.ActivateForm.ContainsAtLeastDigitsUppercase',
+      defaultMessage:
+        '至少包含 2 个数字、2 个大写字母、2 个小写字母和 2 个特殊字符 (._+@#$%)，长度为 8~32 个字符',
     }), //至少包含 2 位数字、2 位大写字母、2 位小写字母和 2 位特殊字符 (._+@#$%)，长度 8~32 位字符
   };
 
@@ -84,7 +89,10 @@ const Activate: React.FC<IActivateFormProps> = ({
     >
       <Form.Item
         name="password"
-        label={formatMessage({ id: 'odc.component.Login.ActivateForm.Password' })} /*密码*/
+        label={formatMessage({
+          id: 'odc.component.Login.ActivateForm.Password',
+          defaultMessage: '密码',
+        })} /*密码*/
         dependencies={['confirmPassword']}
         help={passwordRegexpRule.message}
         validateFirst
@@ -93,6 +101,7 @@ const Activate: React.FC<IActivateFormProps> = ({
             required: true,
             message: formatMessage({
               id: 'odc.component.Login.ActivateForm.ThePasswordCannotBeEmpty',
+              defaultMessage: '密码不能为空',
             }), //密码不能为空
           },
           passwordRegexpRule,
@@ -104,6 +113,7 @@ const Activate: React.FC<IActivateFormProps> = ({
         name="confirmPassword"
         label={formatMessage({
           id: 'odc.component.Login.ActivateForm.ConfirmPassword',
+          defaultMessage: '确认密码',
         })} /*确认密码*/
         dependencies={['password']}
         validateFirst
@@ -112,6 +122,7 @@ const Activate: React.FC<IActivateFormProps> = ({
             required: true,
             message: formatMessage({
               id: 'odc.component.Login.ActivateForm.PleaseEnterThePasswordAgain',
+              defaultMessage: '请再次输入密码',
             }), //请再次输入密码
           },
           {
@@ -129,13 +140,19 @@ const Activate: React.FC<IActivateFormProps> = ({
         block={true}
         className={`${prefix}-submit-btn`}
       >
-        {formatMessage({ id: 'odc.component.Login.ActivateForm.Activate' }) /*激活*/}
+        {
+          formatMessage({
+            id: 'odc.component.Login.ActivateForm.Activate',
+            defaultMessage: '激活',
+          }) /*激活*/
+        }
       </Button>
       <div className={`${prefix}-switch-btn`}>
         <Button type="link" onClick={goBack}>
           {
             formatMessage({
               id: 'odc.component.Login.ActivateForm.ReturnToThePreviousStep',
+              defaultMessage: '返回上一步',
             }) /*返回上一步*/
           }
         </Button>

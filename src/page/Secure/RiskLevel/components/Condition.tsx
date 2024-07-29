@@ -183,6 +183,7 @@ const Condition = ({
             required: true,
             message: formatMessage({
               id: 'odc.src.page.Secure.RiskLevel.components.TheExpressionCannotBeEmpty',
+              defaultMessage: '表达式不能为空',
             }), //'表达式不能为空'
           },
         ]}
@@ -194,6 +195,7 @@ const Condition = ({
           placeholder={
             formatMessage({
               id: 'odc.src.page.Secure.RiskLevel.components.PleaseChoose',
+              defaultMessage: '请选择',
             }) //'请选择'
           }
           options={[
@@ -255,6 +257,7 @@ const Condition = ({
             required: true,
             message: formatMessage({
               id: 'odc.src.page.Secure.RiskLevel.components.TheOperatingSymbolCannotBe',
+              defaultMessage: '操作符不能为空',
             }), //'操作符不能为空'
           },
         ]}
@@ -266,6 +269,7 @@ const Condition = ({
           placeholder={
             formatMessage({
               id: 'odc.src.page.Secure.RiskLevel.components.PleaseChoose.1',
+              defaultMessage: '请选择',
             }) //'请选择'
           }
           options={[
@@ -306,12 +310,14 @@ const Condition = ({
             required: true,
             message: formatMessage({
               id: 'odc.src.page.Secure.RiskLevel.components.TheValueCannotBeEmpty',
+              defaultMessage: '值不能为空',
             }), //'值不能为空'
           },
           {
             pattern: /^[^\s]*$/,
             message: formatMessage({
               id: 'odc.src.page.Secure.RiskLevel.components.ForbiddenInputSpace',
+              defaultMessage: '禁止输入空格',
             }), //'禁止输入空格'
           },
         ]}
@@ -325,6 +331,7 @@ const Condition = ({
             placeholder={
               formatMessage({
                 id: 'odc.src.page.Secure.RiskLevel.components.PleaseEnter',
+                defaultMessage: '请输入',
               }) //'请输入'
             }
           />
@@ -348,6 +355,7 @@ const Condition = ({
             placeholder={
               formatMessage({
                 id: 'odc.src.page.Secure.RiskLevel.components.PleaseChoose.2',
+                defaultMessage: '请选择',
               }) //'请选择'
             }
             options={valueOptions}

@@ -46,6 +46,7 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
             placement="top"
             title={formatMessage({
               id: 'odc.components.ConnectionCardList.StatusSynchronizationInProgress',
+              defaultMessage: '状态同步中',
             })}
           >
             <Loading3QuartersOutlined
@@ -63,6 +64,7 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
             placement="top"
             title={formatMessage({
               id: 'odc.components.ConnectionCardList.ValidConnection',
+              defaultMessage: '有效连接',
             })}
           >
             <Icon
@@ -80,6 +82,7 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
             title={
               formatMessage({
                 id: 'odc.components.ConnectionCardList.TheConnectionPasswordIsNot',
+                defaultMessage: '连接密码未保存，无法获取状态',
               })
 
               // 连接密码未保存，无法获取状态
@@ -95,6 +98,7 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
             placement="top"
             title={formatMessage({
               id: 'odc.page.ConnectionList.columns.TheConnectionIsDisabled',
+              defaultMessage: '连接已停用',
             })}
 
             /* 连接已停用 */

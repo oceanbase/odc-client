@@ -124,17 +124,19 @@ export default class DisplayTable extends React.Component<
     });
   }
 
-  public handleResize = (index: number) => (e: any, { size }: { size: { width: number } }) => {
-    this.setState(({ columns }) => {
-      const nextColumns = [...columns];
-      nextColumns[index] = {
-        ...nextColumns[index],
-        width: size.width,
-      };
+  public handleResize =
+    (index: number) =>
+    (e: any, { size }: { size: { width: number } }) => {
+      this.setState(({ columns }) => {
+        const nextColumns = [...columns];
+        nextColumns[index] = {
+          ...nextColumns[index],
+          width: size.width,
+        };
 
-      return { columns: nextColumns };
-    });
-  };
+        return { columns: nextColumns };
+      });
+    };
 
   public render() {
     const {
@@ -179,6 +181,7 @@ export default class DisplayTable extends React.Component<
                     return formatMessage(
                       {
                         id: 'odc.component.DisplayTable.TotalTotal',
+                        defaultMessage: '共 {total} 条',
                       },
                       { total },
                     ); // `共 ${total} 条`

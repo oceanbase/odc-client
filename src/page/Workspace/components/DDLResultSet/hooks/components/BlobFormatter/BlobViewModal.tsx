@@ -247,12 +247,14 @@ const BlobViewModal: React.FC<IProps> = (props) => {
                     formatMessage(
                       {
                         id: 'odc.components.BlobFormatter.BlobViewModal.TheSizeOfTheEditable',
+                        defaultMessage: '可编辑的内容大小不能超过 {maxSizeText}',
                       },
-                      { maxSizeText: maxSizeText },
+                      { maxSizeText },
                     ) //`可编辑的内容大小不能超过 ${maxSizeText}`
                   }
                 />
               )}
+
               {mode === DISPLAY_MODE.HEXTEXT ? (
                 <HexEditor
                   disabled={disabled}
@@ -337,6 +339,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
           >
             {formatMessage({
               id: 'odc.ImportDrawer.ImportForm.ClickOrDragTheFile',
+              defaultMessage: '点击或将文件拖拽到这里上传',
             })}
           </ODCDragger>
         );
@@ -354,6 +357,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
           {
             formatMessage({
               id: 'odc.components.BlobFormatter.BlobViewModal.Cancel',
+              defaultMessage: '取消',
             })
             /*取消*/
           }
@@ -396,6 +400,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
           {
             formatMessage({
               id: 'odc.components.BlobFormatter.BlobViewModal.Ok',
+              defaultMessage: '确认',
             })
             /*确认*/
           }
@@ -427,6 +432,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.components.BlobFormatter.BlobViewModal.Text',
+                  defaultMessage: '文本',
                 })
 
                 /* 文本 */
@@ -436,6 +442,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.components.BlobFormatter.BlobViewModal.JinZhi',
+                  defaultMessage: '十六进制',
                 })
 
                 /* 16 进制 */
@@ -445,6 +452,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.components.BlobFormatter.BlobViewModal.Image',
+                  defaultMessage: '图片',
                 })
                 /*图片*/
               }
@@ -454,6 +462,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.components.BlobFormatter.BlobViewModal.ImportFiles',
+                    defaultMessage: '导入文件',
                   })
                   /*导入文件*/
                 }
@@ -469,6 +478,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.components.BlobFormatter.BlobViewModal.DownloadObjects',
+                  defaultMessage: '下载文件',
                 })
 
                 /* 下载文件 */

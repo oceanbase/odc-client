@@ -37,6 +37,7 @@ const AddressItems: React.FC<IProps> = function (props) {
                 name="clusterName"
                 label={formatMessage({
                   id: 'odc.component.AddConnectionForm.AddressItems.ClusterName',
+                  defaultMessage: '集群名',
                 })}
                 /*集群名*/
                 style={{
@@ -49,6 +50,7 @@ const AddressItems: React.FC<IProps> = function (props) {
                   }}
                   placeholder={formatMessage({
                     id: 'odc.component.AddConnectionForm.AddressItems.EnterAClusterName',
+                    defaultMessage: '请输入集群名',
                   })}
                   /*请输入集群名*/
                 />
@@ -67,6 +69,7 @@ const AddressItems: React.FC<IProps> = function (props) {
                 label={
                   formatMessage({
                     id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.HostIPDomainName',
+                    defaultMessage: '主机 IP/域名',
                   }) //"主机 IP/域名"
                 }
                 rules={[
@@ -74,6 +77,7 @@ const AddressItems: React.FC<IProps> = function (props) {
                     required: true,
                     message: formatMessage({
                       id: 'odc.component.AddConnectionForm.AddressItems.EnterTheHostAddress',
+                      defaultMessage: '请输入主机地址',
                     }),
                     //请输入主机地址
                   },
@@ -86,6 +90,7 @@ const AddressItems: React.FC<IProps> = function (props) {
                   placeholder={
                     formatMessage({
                       id: 'odc.component.AddConnectionForm.AddressItems.EnterTheHostAddress',
+                      defaultMessage: '请输入主机地址',
                     })
 
                     //请输入主机地址
@@ -105,12 +110,14 @@ const AddressItems: React.FC<IProps> = function (props) {
                 }}
                 label={formatMessage({
                   id: 'portal.connection.form.port',
+                  defaultMessage: '端口',
                 })}
                 rules={[
                   {
                     required: true,
                     message: formatMessage({
                       id: 'odc.AddConnectionDrawer.AddConnectionForm.EnterThePortNumber',
+                      defaultMessage: '请填写端口号',
                     }),
                   },
                   {
@@ -125,6 +132,7 @@ const AddressItems: React.FC<IProps> = function (props) {
                   }}
                   placeholder={formatMessage({
                     id: 'odc.component.AddConnectionForm.AddressItems.EnterAPort',
+                    defaultMessage: '请输入端口',
                   })}
                   /*请输入端口*/
                 />
@@ -138,6 +146,7 @@ const AddressItems: React.FC<IProps> = function (props) {
               <Form.Item
                 label={formatMessage({
                   id: 'odc.component.AddConnectionForm.AddressItems.TenantName',
+                  defaultMessage: '租户名',
                 })}
                 /*租户名*/
                 name="tenantName"
@@ -149,6 +158,7 @@ const AddressItems: React.FC<IProps> = function (props) {
                     required: true,
                     message: formatMessage({
                       id: 'odc.component.AddConnectionForm.AddressItems.EnterATenantName',
+                      defaultMessage: '请输入租户名',
                     }),
                     //请输入租户名
                   },
@@ -157,6 +167,7 @@ const AddressItems: React.FC<IProps> = function (props) {
                     validator: validTrimEmptyWithWarn(
                       formatMessage({
                         id: 'portal.connection.form.tenant.validation.trim',
+                        defaultMessage: '租户名首尾包含空格，请注意',
                       }),
                     ),
                   },
@@ -168,6 +179,7 @@ const AddressItems: React.FC<IProps> = function (props) {
                   }}
                   placeholder={formatMessage({
                     id: 'odc.component.AddConnectionForm.AddressItems.EnterATenantName',
+                    defaultMessage: '请输入租户名',
                   })}
                   /*请输入租户名*/
                 />
@@ -188,6 +200,7 @@ const AddressItems: React.FC<IProps> = function (props) {
                       label={
                         formatMessage({
                           id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.BDA4C2AB',
+                          defaultMessage: '数据库',
                         }) /*"数据库"*/
                       }
                       shouldUpdate
@@ -206,6 +219,7 @@ const AddressItems: React.FC<IProps> = function (props) {
                               {
                                 label: formatMessage({
                                   id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.C2435F5F',
+                                  defaultMessage: '服务名',
                                 }), //'服务名'
                                 value: 'serviceName',
                               },
@@ -254,6 +268,7 @@ const AddressItems: React.FC<IProps> = function (props) {
         <label>
           {formatMessage({
             id: 'portal.connection.form.address',
+            defaultMessage: '连接地址',
           })}
         </label>
       </div>

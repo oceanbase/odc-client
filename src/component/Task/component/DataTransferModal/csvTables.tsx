@@ -29,6 +29,7 @@ function getCsvColumns() {
     {
       title: formatMessage({
         id: 'odc.component.TaskDetailDrawer.csvTables.OriginalField',
+        defaultMessage: '原字段',
       }),
       dataIndex: 'srcColumnName',
       width: 210,
@@ -37,13 +38,14 @@ function getCsvColumns() {
     {
       title: formatMessage({
         id: 'odc.component.TaskDetailDrawer.csvTables.FirstLineValue',
+        defaultMessage: '首行值',
       }),
       dataIndex: 'firstLineValue',
       width: 160,
       ellipsis: true,
       render(t) {
         if (t === '') {
-          return formatMessage({ id: 'odc.ImportDrawer.csvMapping.Null' }); // (空)
+          return formatMessage({ id: 'odc.ImportDrawer.csvMapping.Null', defaultMessage: '(空)' }); // (空)
         } else if (isNil(t)) {
           return '(null)';
         }
@@ -54,6 +56,7 @@ function getCsvColumns() {
     {
       title: formatMessage({
         id: 'odc.component.TaskDetailDrawer.csvTables.TargetField',
+        defaultMessage: '目标字段',
       }),
       dataIndex: 'destColumnName',
       width: 160,
@@ -62,6 +65,7 @@ function getCsvColumns() {
     {
       title: formatMessage({
         id: 'odc.component.TaskDetailDrawer.csvTables.TargetFieldType',
+        defaultMessage: '目标字段类型',
       }),
       dataIndex: 'destColumnType',
       width: 160,
@@ -78,6 +82,7 @@ const CsvTable: React.FC<ICsvTableProps> = function (props) {
       <div className="o-tableHeader">
         {formatMessage({
           id: 'odc.component.TaskDetailDrawer.csvTables.FieldMapping',
+          defaultMessage: '字段映射',
         })}
       </div>
       <DisplayTable

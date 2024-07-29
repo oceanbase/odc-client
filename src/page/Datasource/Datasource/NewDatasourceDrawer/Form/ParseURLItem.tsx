@@ -86,11 +86,14 @@ const ParseURLItem: React.FC<IProps> = function (props) {
     <Form.Item
       label={formatMessage({
         id: 'odc.AddConnectionDrawer.AddConnectionForm.IntelligentResolution',
+        defaultMessage: '智能解析',
       })}
     >
       <Input.TextArea
         placeholder={formatMessage({
           id: 'odc.AddConnectionDrawer.AddConnectionForm.PasteTheConnectionStringInformation',
+          defaultMessage:
+            "粘贴连接串信息，自动识别连接信息，如：obclient -h 10.210.2.51 -P2883 -uroot@tenantname#clustername -p'oBpasswORd'",
         })}
         style={{
           width: '100%',
@@ -104,6 +107,7 @@ const ParseURLItem: React.FC<IProps> = function (props) {
           setParserUrl(e.target.value);
         }}
       />
+
       <div className={styles.parserActions}>
         {isparsing ? (
           <Spin indicator={<LoadingOutlined style={{ fontSize: 14 }} spin />} />
@@ -114,6 +118,7 @@ const ParseURLItem: React.FC<IProps> = function (props) {
           >
             {formatMessage({
               id: 'odc.AddConnectionDrawer.AddConnectionForm.IntelligentResolution',
+              defaultMessage: '智能解析',
             })}
           </a>
         )}

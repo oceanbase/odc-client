@@ -81,6 +81,7 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
       {
         name: formatMessage({
           id: 'odc.components.DDLResultSet.ColumnModeModal.ColumnName',
+          defaultMessage: '列名',
         }),
 
         // 列名
@@ -91,6 +92,7 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
       {
         name: formatMessage({
           id: 'odc.components.DDLResultSet.ColumnModeModal.Value',
+          defaultMessage: '值',
         }),
 
         // 值
@@ -101,6 +103,7 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
       {
         name: formatMessage({
           id: 'odc.components.DDLResultSet.ColumnModeModal.Comment',
+          defaultMessage: '注释',
         }), //注释
         key: 'columnComment',
         width: 200,
@@ -141,12 +144,13 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
       }}
       title={formatMessage({
         id: 'workspace.window.sql.button.columnMode',
+        defaultMessage: '列模式',
       })}
       open={visible}
       onCancel={() => onClose()}
       footer={[
         <Button key="close" type="primary" onClick={() => onClose()}>
-          {formatMessage({ id: 'app.button.close' })}
+          {formatMessage({ id: 'app.button.close', defaultMessage: '关闭' })}
         </Button>,
       ]}
     >
@@ -172,14 +176,17 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
       <footer className={styles.columnModeFooter}>
         <span>
           {formatMessage(
-            { id: 'workspace.window.sql.result.pagination.current' },
+            {
+              id: 'workspace.window.sql.result.pagination.current',
+              defaultMessage: '第 {current} 行',
+            },
             {
               current: currentIdx + 1,
             },
           )}
           /
           {formatMessage(
-            { id: 'workspace.window.sql.result.pagination.total' },
+            { id: 'workspace.window.sql.result.pagination.total', defaultMessage: '共 {total} 行' },
             {
               total,
             },

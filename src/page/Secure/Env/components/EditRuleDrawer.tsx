@@ -103,6 +103,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
           options.unshift({
             label: formatMessage({
               id: 'odc.src.page.Secure.Env.components.Null',
+              defaultMessage: '空',
             }), //'空'
             value: -1,
           });
@@ -128,6 +129,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
       title={
         formatMessage({
           id: 'odc.Env.components.EditRuleDrawer.Edit',
+          defaultMessage: '编辑',
         }) //编辑
       }
       width={480}
@@ -146,6 +148,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
             {
               formatMessage({
                 id: 'odc.Env.components.EditRuleDrawer.Cancel',
+                defaultMessage: '取消',
               }) /*取消*/
             }
           </Button>
@@ -153,6 +156,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
             {
               formatMessage({
                 id: 'odc.Env.components.EditRuleDrawer.Submit',
+                defaultMessage: '提交',
               }) /*提交*/
             }
           </Button>
@@ -164,6 +168,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
           label={
             formatMessage({
               id: 'odc.Env.components.EditRuleDrawer.RuleName',
+              defaultMessage: '规则名称',
             }) //规则名称
           }
         >
@@ -173,6 +178,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
           label={
             formatMessage({
               id: 'odc.Env.components.EditRuleDrawer.RuleDescription',
+              defaultMessage: '规则描述',
             }) //规则描述
           }
         >
@@ -182,6 +188,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
           label={
             formatMessage({
               id: 'odc.Env.components.EditRuleDrawer.RuleType',
+              defaultMessage: '规则类型',
             }) //规则类型
           }
         >
@@ -203,6 +210,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
           label={
             formatMessage({
               id: 'odc.Env.components.EditRuleDrawer.SupportsDataSources',
+              defaultMessage: '支持数据源',
             }) //支持数据源
           }
           name={'appliedDialectTypes'}
@@ -250,6 +258,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
             label={
               formatMessage({
                 id: 'odc.Env.components.EditRuleDrawer.ImprovementLevel',
+                defaultMessage: '改进等级',
               }) //改进等级
             }
             name={'level'}
@@ -258,6 +267,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
                 required: true,
                 message: formatMessage({
                   id: 'odc.Env.components.EditRuleDrawer.SelectAnImprovementLevel',
+                  defaultMessage: '请选择改进等级',
                 }), //请选择改进等级
               },
             ]}
@@ -268,6 +278,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
                   leftText
                   title={formatMessage({
                     id: 'odc.Env.components.EditRuleDrawer.AllowExecution',
+                    defaultMessage: '允许执行',
                   })} /*允许执行*/
                 >
                   {RiskLevelTextMap[RiskLevelEnum.DEFAULT]}
@@ -278,6 +289,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
                   leftText
                   title={formatMessage({
                     id: 'odc.Env.components.EditRuleDrawer.ApprovalRequiredBeforeExecution',
+                    defaultMessage: '执行之前需要审批',
                   })} /*执行之前需要审批*/
                 >
                   {RiskLevelTextMap[RiskLevelEnum.SUGGEST]}
@@ -288,6 +300,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
                   leftText
                   title={formatMessage({
                     id: 'odc.Env.components.EditRuleDrawer.ExecutionIsProhibitedAndApproval',
+                    defaultMessage: '禁止执行，无法发起审批',
                   })} /*禁止执行，无法发起审批*/
                 >
                   {RiskLevelTextMap[RiskLevelEnum.MUST]}
@@ -299,7 +312,12 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
 
         <Form.Item
           name="enabled"
-          label={formatMessage({ id: 'src.page.Secure.Env.components.074ED6D7' }) /*"是否启用"*/}
+          label={
+            formatMessage({
+              id: 'src.page.Secure.Env.components.074ED6D7',
+              defaultMessage: '是否启用',
+            }) /*"是否启用"*/
+          }
           required
           valuePropName="checked"
         >

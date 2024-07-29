@@ -107,7 +107,10 @@ export default class ViewColumn extends Component<IProps> {
       <>
         <div className={styles.list}>{value && value.map(this.renderSingleRule)}</div>
         <Button icon={<PlusOutlined />} size="small" onClick={this.handleAdd}>
-          {formatMessage({ id: 'workspace.window.createView.button.addColumn' })}
+          {formatMessage({
+            id: 'workspace.window.createView.button.addColumn',
+            defaultMessage: '添加字段',
+          })}
         </Button>
       </>
     );

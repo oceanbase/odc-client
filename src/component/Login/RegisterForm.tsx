@@ -27,7 +27,8 @@ import './index.less';
  * 冗余的转义符可以增强正则的可读性
  */
 // eslint-disable-next-line
-export const PASSWORD_REGEX = /^(?=(.*[a-z]){2,})(?=(.*[A-Z]){2,})(?=(.*\d){2,})(?=(.*[ !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]){2,})[A-Za-z\d !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]{8,32}$/;
+export const PASSWORD_REGEX =
+  /^(?=(.*[a-z]){2,})(?=(.*[A-Z]){2,})(?=(.*\d){2,})(?=(.*[ !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]){2,})[A-Za-z\d !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]{8,32}$/;
 
 export interface IRegisterFormProps extends FormProps {
   locale?: LoginLocale;
@@ -62,8 +63,11 @@ const Register: React.FC<IRegisterFormProps> = ({
       const isExists = await isUserExists(value);
       if (isExists) {
         throw new Error(
-          formatMessage({ id: 'odc.component.Login.RegisterForm.TheUsernameAlreadyExists' }), //用户名已存在
-        );
+          formatMessage({
+            id: 'odc.component.Login.RegisterForm.TheUsernameAlreadyExists',
+            defaultMessage: '用户名已存在',
+          }),
+        ); //用户名已存在
       }
     },
     [isUserExists],
@@ -78,7 +82,10 @@ const Register: React.FC<IRegisterFormProps> = ({
       const pwd = formRef.getFieldValue('password');
       if (toString(value) !== toString(pwd)) {
         callback(
-          formatMessage({ id: 'odc.component.Login.RegisterForm.ConfirmPasswordInconsistency' }), //确认密码不一致
+          formatMessage({
+            id: 'odc.component.Login.RegisterForm.ConfirmPasswordInconsistency',
+            defaultMessage: '确认密码不一致',
+          }), //确认密码不一致
         );
         return;
       }
@@ -91,6 +98,8 @@ const Register: React.FC<IRegisterFormProps> = ({
     pattern: PASSWORD_REGEX,
     message: formatMessage({
       id: 'odc.component.Login.RegisterForm.ContainsAtLeastDigitsUppercase',
+      defaultMessage:
+        '至少包含 2 个数字、2 个大写字母、2 个小写字母和 2 个特殊字符 (._+@#$%)，长度为 8~32 个字符',
     }), //至少包含 2 位数字、2 位大写字母、2 位小写字母和 2 位特殊字符 (._+@#$%)，长度 8~32 位字符
   };
 
@@ -104,9 +113,13 @@ const Register: React.FC<IRegisterFormProps> = ({
     >
       <Form.Item
         name="username"
-        label={formatMessage({ id: 'odc.component.Login.RegisterForm.Username' })} /*用户名*/
+        label={formatMessage({
+          id: 'odc.component.Login.RegisterForm.Username',
+          defaultMessage: '用户名',
+        })} /*用户名*/
         extra={formatMessage({
           id: 'odc.component.Login.RegisterForm.SupportsEnglishNumbersUnderscoresAnd',
+          defaultMessage: '支持英文、数字、下划线和特殊字符 (._+@#$%)，长度为 4~48 个字符',
         })} /*支持英文、数字、下划线和特殊字符 (._+@#$%)，长度 4~48 位字符*/
         validateFirst
         rules={[
@@ -115,17 +128,22 @@ const Register: React.FC<IRegisterFormProps> = ({
             whitespace: true,
             message: formatMessage({
               id: 'odc.component.Login.RegisterForm.TheUsernameCannotBeEmpty',
+              defaultMessage: '用户名不能为空',
             }), //用户名不能为空
           },
           {
             min: 4,
             max: 48,
-            message: formatMessage({ id: 'odc.component.Login.RegisterForm.TheUsernameMustBeTo' }), //用户名长度 4~48 位字符
+            message: formatMessage({
+              id: 'odc.component.Login.RegisterForm.TheUsernameMustBeTo',
+              defaultMessage: '用户名长度为 4~48 个字符',
+            }), //用户名长度 4~48 位字符
           },
           {
             pattern: /^[a-zA-Z0-9_.+@#$%]+$/,
             message: formatMessage({
               id: 'odc.component.Login.RegisterForm.TheUserNameFormatDoes',
+              defaultMessage: '用户名格式不符合要求',
             }), //用户名格式不符合要求
           },
           {
@@ -137,7 +155,10 @@ const Register: React.FC<IRegisterFormProps> = ({
       </Form.Item>
       <Form.Item
         name="password"
-        label={formatMessage({ id: 'odc.component.Login.RegisterForm.Password' })} /*密码*/
+        label={formatMessage({
+          id: 'odc.component.Login.RegisterForm.Password',
+          defaultMessage: '密码',
+        })} /*密码*/
         dependencies={['confirmPassword']}
         help={passwordRegexpRule.message}
         validateFirst
@@ -146,6 +167,7 @@ const Register: React.FC<IRegisterFormProps> = ({
             required: true,
             message: formatMessage({
               id: 'odc.component.Login.RegisterForm.ThePasswordCannotBeEmpty',
+              defaultMessage: '密码不能为空',
             }), //密码不能为空
           },
           passwordRegexpRule,
@@ -157,6 +179,7 @@ const Register: React.FC<IRegisterFormProps> = ({
         name="confirmPassword"
         label={formatMessage({
           id: 'odc.component.Login.RegisterForm.ConfirmPassword',
+          defaultMessage: '确认密码',
         })} /*确认密码*/
         dependencies={['password']}
         validateFirst
@@ -165,6 +188,7 @@ const Register: React.FC<IRegisterFormProps> = ({
             required: true,
             message: formatMessage({
               id: 'odc.component.Login.RegisterForm.PleaseEnterThePasswordAgain',
+              defaultMessage: '请再次输入密码',
             }), //请再次输入密码
           },
           {
@@ -182,7 +206,12 @@ const Register: React.FC<IRegisterFormProps> = ({
         block={true}
         className={`${prefix}-submit-btn`}
       >
-        {formatMessage({ id: 'odc.component.Login.RegisterForm.RegisterNow' }) /*立即注册*/}
+        {
+          formatMessage({
+            id: 'odc.component.Login.RegisterForm.RegisterNow',
+            defaultMessage: '立即注册',
+          }) /*立即注册*/
+        }
       </Button>
       {errorMessage && (
         <Alert type="error" showIcon={true} className={`${prefix}-alert`} message={errorMessage} />

@@ -34,6 +34,7 @@ const getColumns = (
     {
       title: formatMessage({
         id: 'odc.src.page.Workspace.components.SQLResultSet.SerialNumber',
+        defaultMessage: '序号',
       }),
       //'序号'
       dataIndex: 'row',
@@ -43,6 +44,7 @@ const getColumns = (
     {
       title: formatMessage({
         id: 'odc.src.page.Workspace.components.SQLResultSet.SQLStatement',
+        defaultMessage: 'SQL 语句',
       }),
       //'SQL 语句'
       dataIndex: 'sql',
@@ -55,6 +57,7 @@ const getColumns = (
     {
       title: formatMessage({
         id: 'odc.src.page.Workspace.components.SQLResultSet.AgainstTheRules',
+        defaultMessage: '检查结果',
       }),
       //'违反规则'
       dataIndex: 'rules',
@@ -114,6 +117,8 @@ const getColumns = (
                                   sqlChanged
                                     ? formatMessage({
                                         id: 'odc.src.page.Workspace.components.SQLResultSet.SQLContentHasBeenModified',
+                                        defaultMessage:
+                                          'SQL 内容已修改，已无法定位原问题行，请重新执行 SQL 语句或发起预检查',
                                       }) //'SQL内容已修改，已无法定位原问题行，请重新执行SQL语句或发起预检查'
                                     : ''
                                 }
@@ -180,6 +185,7 @@ export const getMultipleAsyncColumns = (
     {
       title: formatMessage({
         id: 'odc.src.page.Workspace.components.SQLResultSet.SQLStatement',
+        defaultMessage: 'SQL 语句',
       }),
       //'SQL 语句'
       dataIndex: 'sql',
@@ -321,6 +327,8 @@ export const getMultipleAsyncColumns = (
                                   sqlChanged
                                     ? formatMessage({
                                         id: 'odc.src.page.Workspace.components.SQLResultSet.SQLContentHasBeenModified',
+                                        defaultMessage:
+                                          'SQL 内容已修改，已无法定位原问题行，请重新执行 SQL 语句或发起预检查',
                                       }) //'SQL内容已修改，已无法定位原问题行，请重新执行SQL语句或发起预检查'
                                     : ''
                                 }

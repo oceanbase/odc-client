@@ -32,19 +32,22 @@ import { getAuthLabelString, resourceAuthMap, ResourceManagementAction } from '.
 
 const authFilters = [
   {
-    text: formatMessage({ id: 'odc.component.DetailContent.CanBeCreated' }), //可新建
+    text: formatMessage({
+      id: 'odc.component.DetailContent.CanBeCreated',
+      defaultMessage: '可新建',
+    }), //可新建
     value: ResourceManagementAction.can_create,
   },
   {
-    text: formatMessage({ id: 'odc.component.DetailContent.ViewOnly' }), //仅查看
+    text: formatMessage({ id: 'odc.component.DetailContent.ViewOnly', defaultMessage: '仅查看' }), //仅查看
     value: ResourceManagementAction.can_read,
   },
   {
-    text: formatMessage({ id: 'odc.component.DetailContent.Editable' }), //可编辑
+    text: formatMessage({ id: 'odc.component.DetailContent.Editable', defaultMessage: '可编辑' }), //可编辑
     value: ResourceManagementAction.can_update,
   },
   {
-    text: formatMessage({ id: 'odc.component.DetailContent.Manageable' }), //可管理
+    text: formatMessage({ id: 'odc.component.DetailContent.Manageable', defaultMessage: '可管理' }), //可管理
     value: ResourceManagementAction.can_manage,
   },
 ];
@@ -53,13 +56,17 @@ const getColumns = () => {
   return [
     {
       dataIndex: 'name',
-      title: formatMessage({ id: 'odc.component.DetailContent.DataSource' }), //数据源
+      title: formatMessage({
+        id: 'odc.component.DetailContent.DataSource',
+        defaultMessage: '数据源',
+      }), //数据源
       ellipsis: true,
     },
     {
       dataIndex: 'permittedActions',
       title: formatMessage({
         id: 'odc.components.UserPage.component.Permissions',
+        defaultMessage: '权限',
       }),
       // 权限
       width: 108,
@@ -98,13 +105,17 @@ const UserDetail: React.FC<{
     const res = await deleteUser(id);
     if (res) {
       message.success(
-        formatMessage({ id: 'odc.components.UserPage.component.Deleted' }), // 删除成功
+        formatMessage({
+          id: 'odc.components.UserPage.component.Deleted',
+          defaultMessage: '删除成功',
+        }), // 删除成功
       );
       handleCloseAndReload();
     } else {
       message.error(
         formatMessage({
           id: 'odc.components.UserPage.component.UnableToDelete',
+          defaultMessage: '删除失败',
         }),
         // 删除失败
       );
@@ -115,18 +126,22 @@ const UserDetail: React.FC<{
     Modal.confirm({
       title: formatMessage({
         id: 'odc.components.UserPage.component.AreYouSureYouWant',
+        defaultMessage: '是否确定删除用户？',
       }),
       // 确定要删除用户吗？
       icon: <ExclamationCircleFilled style={{ color: '#faad14' }} />,
       content: formatMessage({
         id: 'odc.components.UserPage.component.AfterAUserIsDeleted',
+        defaultMessage: '删除用户后，用户将无法登录系统，相关数据也无法恢复',
       }), // 删除用户后，用户将无法登录系统，相关数据也无法恢复
       cancelText: formatMessage({
         id: 'odc.components.UserPage.component.Cancel',
+        defaultMessage: '取消',
       }),
       // 取消
       okText: formatMessage({
         id: 'odc.components.UserPage.component.Determine',
+        defaultMessage: '确定',
       }),
       // 确定
       centered: true,
@@ -145,6 +160,7 @@ const UserDetail: React.FC<{
       message.success(
         formatMessage({
           id: 'odc.components.UserPage.component.ThePasswordHasBeenReset',
+          defaultMessage: '重置密码成功',
         }), // 重置密码成功
       );
     }
@@ -167,6 +183,7 @@ const UserDetail: React.FC<{
           contentStyle={{ whiteSpace: 'pre' }}
           label={formatMessage({
             id: 'odc.components.UserPage.component.Account',
+            defaultMessage: '账号',
           })}
           /* 账号 */
         >
@@ -175,6 +192,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.UserPage.component.Name',
+            defaultMessage: '姓名',
           })} /* 姓名 */
         >
           {name}
@@ -182,6 +200,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.UserPage.component.Password',
+            defaultMessage: '密码',
           })}
           /* 密码 */
         >
@@ -197,6 +216,7 @@ const UserDetail: React.FC<{
                 {
                   formatMessage({
                     id: 'odc.components.UserPage.component.ResetPassword',
+                    defaultMessage: '重置密码',
                   })
                   /* 重置密码 */
                 }
@@ -207,6 +227,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.UserPage.component.Role',
+            defaultMessage: '角色',
           })}
           /* 角色 */
         >
@@ -215,6 +236,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.UserPage.component.Note',
+            defaultMessage: '备注',
           })}
           /* 备注 */
         >
@@ -223,6 +245,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.UserPage.component.ExtraProperties',
+            defaultMessage: '自定义属性',
           })}
           /* 自定义属性 */
         >
@@ -234,6 +257,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.UserPage.component.Founder',
+            defaultMessage: '创建人',
           })}
           /* 创建人 */
         >
@@ -242,6 +266,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.UserPage.component.Created',
+            defaultMessage: '创建时间',
           })}
           /* 创建时间 */
         >
@@ -250,6 +275,7 @@ const UserDetail: React.FC<{
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.components.UserPage.component.UpdateTime',
+            defaultMessage: '更新时间',
           })}
           /* 更新时间 */
         >
@@ -263,6 +289,7 @@ const UserDetail: React.FC<{
             {
               formatMessage({
                 id: 'odc.components.UserPage.component.AfterAUserIsDeleted',
+                defaultMessage: '删除用户后，用户将无法登录系统，相关数据也无法恢复',
               })
               /* 删除用户后，用户将无法登录系统，相关数据也无法恢复 */
             }
@@ -271,6 +298,7 @@ const UserDetail: React.FC<{
             {
               formatMessage({
                 id: 'odc.components.UserPage.component.DeleteAUser',
+                defaultMessage: '删除用户',
               })
               /* 删除用户 */
             }
@@ -282,6 +310,7 @@ const UserDetail: React.FC<{
         <ChangePasswordModal
           title={formatMessage({
             id: 'odc.components.UserPage.component.ResetPassword',
+            defaultMessage: '重置密码',
           })}
           /* 重置密码 */
           visible={visible}

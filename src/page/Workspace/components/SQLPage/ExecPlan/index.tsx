@@ -64,6 +64,7 @@ const ExecPlan: React.FC<IProps> = function (props) {
     <Drawer
       title={formatMessage({
         id: 'workspace.window.sql.explain.tab.summary.title',
+        defaultMessage: '计划详情',
       })}
       placement="right"
       closable
@@ -95,6 +96,7 @@ const ExecPlan: React.FC<IProps> = function (props) {
           {
             formatMessage({
               id: 'odc.components.SQLPage.Closed',
+              defaultMessage: '关闭',
             })
             /* 关闭 */
           }

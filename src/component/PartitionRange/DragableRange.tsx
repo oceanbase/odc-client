@@ -124,22 +124,27 @@ class DragableRule extends React.PureComponent<{ props: IDragableParamProps }> {
               <Icon component={DragSvg} className={styles.dragHandler} />
             </span>
             <span className="ant-form-item-required">
-              {formatMessage({ id: 'workspace.window.createTable.partition.name' })}：
+              {formatMessage({
+                id: 'workspace.window.createTable.partition.name',
+                defaultMessage: '分区名称',
+              })}
+              ：
             </span>
             <Input
               value={rule.name}
               style={{ width: 160 }}
               onChange={(e) => handleEdit(index, { name: e.target.value })}
             />
+
             <span className="ant-form-item-required" style={{ marginLeft: 16 }}>
               {partitionValueLabel}：
             </span>
             {/* <Input
-              value={rule.value}
-              style={{ flex: 1 }}
-              placeholder={partitionValuePlaceholder}
-              onChange={e => handleEdit(index, { value: e.target.value })}
-            /> */}
+               value={rule.value}
+               style={{ flex: 1 }}
+               placeholder={partitionValuePlaceholder}
+               onChange={e => handleEdit(index, { value: e.target.value })}
+              /> */}
             <PartitionValueInput
               index={index}
               partitionType={partitionType}

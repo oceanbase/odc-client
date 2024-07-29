@@ -169,18 +169,25 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
                 key: PropsTab.INFO,
                 label: formatMessage({
                   id: 'workspace.window.sequence.propstab.info',
+                  defaultMessage: '基本信息',
                 }),
                 children: (
                   <>
                     <Toolbar>
                       <Toolbar.Button
-                        text={formatMessage({ id: 'workspace.window.session.button.edit' })}
+                        text={formatMessage({
+                          id: 'workspace.window.session.button.edit',
+                          defaultMessage: '编辑',
+                        })}
                         icon={<EditOutlined />}
                         onClick={this.showSequenceEditModal}
                       />
 
                       <ToolbarButton
-                        text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
+                        text={formatMessage({
+                          id: 'workspace.window.session.button.refresh',
+                          defaultMessage: '刷新',
+                        })}
                         icon={<SyncOutlined />}
                         onClick={this.reloadSequence.bind(this, params.sequenceName)}
                       />
@@ -190,6 +197,7 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
                         {
                           label: formatMessage({
                             id: 'odc.components.SequencePage.SequenceName',
+                            defaultMessage: '序列名称',
                           }),
                           // 序列名称
                           content: sequence.name,
@@ -198,6 +206,7 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
                         {
                           label: formatMessage({
                             id: 'odc.components.SequencePage.NextBufferValue',
+                            defaultMessage: '下一个缓冲值',
                           }),
                           // 下一个缓冲值
                           content: sequence.nextCacheValue,
@@ -206,6 +215,7 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
                         {
                           label: formatMessage({
                             id: 'odc.components.SequencePage.Incremental',
+                            defaultMessage: '增量',
                           }),
                           // 增量
                           content: sequence.increament,
@@ -214,6 +224,7 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
                         {
                           label: formatMessage({
                             id: 'odc.components.SequencePage.ValidValues',
+                            defaultMessage: '取值范围',
                           }),
                           // 取值范围
                           content: `${sequence.minValue} ~ ${sequence.maxValue}`,
@@ -222,40 +233,58 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
                         {
                           label: formatMessage({
                             id: 'odc.components.SequencePage.CacheSettings',
+                            defaultMessage: '缓存设置',
                           }),
                           // 缓存设置
                           content: sequence.cached
                             ? formatMessage({
                                 id: 'odc.components.SequencePage.Cache',
+                                defaultMessage: '缓存',
                               }) +
                               // `缓存 `
                               sequence.cacheSize
                             : formatMessage({
                                 id: 'odc.components.SequencePage.NoCache',
+                                defaultMessage: '不缓存',
                               }),
                           // 不缓存
                         },
                         {
                           label: formatMessage({
                             id: 'odc.components.SequencePage.Sort',
+                            defaultMessage: '是否排序',
                           }),
                           // 是否排序
                           content: sequence.orderd
-                            ? formatMessage({ id: 'odc.components.SequencePage.Is' }) // 是
-                            : formatMessage({ id: 'odc.components.SequencePage.No' }), // 否
+                            ? formatMessage({
+                                id: 'odc.components.SequencePage.Is',
+                                defaultMessage: '是',
+                              }) // 是
+                            : formatMessage({
+                                id: 'odc.components.SequencePage.No',
+                                defaultMessage: '否',
+                              }), // 否
                         },
                         {
                           label: formatMessage({
                             id: 'odc.components.SequencePage.LoopOrNot',
+                            defaultMessage: '是否循环',
                           }),
                           // 是否循环
                           content: sequence.cycled
-                            ? formatMessage({ id: 'odc.components.SequencePage.Is' }) // 是
-                            : formatMessage({ id: 'odc.components.SequencePage.No' }), // 否
+                            ? formatMessage({
+                                id: 'odc.components.SequencePage.Is',
+                                defaultMessage: '是',
+                              }) // 是
+                            : formatMessage({
+                                id: 'odc.components.SequencePage.No',
+                                defaultMessage: '否',
+                              }), // 否
                         },
                         {
                           label: formatMessage({
                             id: 'odc.components.SequencePage.Owner',
+                            defaultMessage: '所有者',
                           }),
                           // 所有者
                           content: sequence.user,
@@ -275,6 +304,7 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
                         text={
                           formatMessage({
                             id: 'odc.components.SequencePage.Download',
+                            defaultMessage: '下载',
                           }) //下载
                         }
                         icon={<CloudDownloadOutlined />}
@@ -293,10 +323,12 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
                           formated
                             ? formatMessage({
                                 id: 'odc.components.SequencePage.Unformat',
+                                defaultMessage: '取消格式化',
                               })
                             : // 取消格式化
                               formatMessage({
                                 id: 'odc.components.SequencePage.Formatting',
+                                defaultMessage: '格式化',
                               })
 
                           // 格式化
@@ -307,7 +339,10 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
                       />
 
                       <ToolbarButton
-                        text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
+                        text={formatMessage({
+                          id: 'workspace.window.session.button.refresh',
+                          defaultMessage: '刷新',
+                        })}
                         icon={<SyncOutlined />}
                         onClick={this.reloadSequence.bind(this, params.sequenceName)}
                       />

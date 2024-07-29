@@ -129,7 +129,7 @@ const Login: React.FC<LoginProps> = (props) => {
   const switchForm = useCallback(() => {
     if (isLoading) {
       message.warning(
-        formatMessage({ id: 'odc.component.Login.Running' }), //正在执行中
+        formatMessage({ id: 'odc.component.Login.Running', defaultMessage: '正在执行中' }), //正在执行中
       );
     }
     setShowRegister(!showRegister);
@@ -138,7 +138,7 @@ const Login: React.FC<LoginProps> = (props) => {
   const goBack = useCallback(() => {
     if (isLoading) {
       message.warning(
-        formatMessage({ id: 'odc.component.Login.Running' }), //正在执行中
+        formatMessage({ id: 'odc.component.Login.Running', defaultMessage: '正在执行中' }), //正在执行中
       );
     }
     setShowActivate(!showActivate);
@@ -169,6 +169,7 @@ const Login: React.FC<LoginProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.component.Login.SetPasswordToActivateAccount',
+                    defaultMessage: '设置密码激活账号',
                   }) /*设置密码激活账号*/
                 }
               </Typography.Title>
@@ -176,6 +177,7 @@ const Login: React.FC<LoginProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.component.Login.ForAccountSecurityYouNeed',
+                    defaultMessage: '为了账号安全，需要设置密码激活账号',
                   }) /*为了账号安全，需要设置密码激活账号*/
                 }
               </Typography.Paragraph>
@@ -199,7 +201,12 @@ const Login: React.FC<LoginProps> = (props) => {
                   />
 
                   <Typography.Title level={3}>
-                    {formatMessage({ id: 'odc.component.Login.RegisterAnAccount' }) /*注册账号*/}
+                    {
+                      formatMessage({
+                        id: 'odc.component.Login.RegisterAnAccount',
+                        defaultMessage: '注册账号',
+                      }) /*注册账号*/
+                    }
                   </Typography.Title>
                   <RegisterForm
                     {...registerProps}
@@ -235,12 +242,19 @@ const Login: React.FC<LoginProps> = (props) => {
               <a onClick={switchForm} data-testid="login.register.btn">
                 {
                   showRegister
-                    ? formatMessage({ id: 'odc.component.Login.LogOnToAnExisting' }) //登录已有账号
-                    : formatMessage({ id: 'odc.component.Login.RegisterAnAccount' }) //注册账号
+                    ? formatMessage({
+                        id: 'odc.component.Login.LogOnToAnExisting',
+                        defaultMessage: '登录已有账号',
+                      }) //登录已有账号
+                    : formatMessage({
+                        id: 'odc.component.Login.RegisterAnAccount',
+                        defaultMessage: '注册账号',
+                      }) //注册账号
                 }
               </a>
             </div>
           )}
+
           {showWaterMark ? (
             <div className={`${prefix}-watermark-wrapper`}>
               <LogoImg className={`${prefix}-watermark`} />

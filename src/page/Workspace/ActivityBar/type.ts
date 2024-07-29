@@ -24,16 +24,20 @@ export enum ActivityBarItemType {
 export const ActivityBarItemTypeText = {
   [ActivityBarItemType.Database]: formatMessage({
     id: 'odc.Workspace.ActivityBar.type.Database',
+    defaultMessage: '数据库',
   }),
   //数据库
   [ActivityBarItemType.Task]: formatMessage({
     id: 'odc.src.page.Workspace.ActivityBar.WorkOrder',
+    defaultMessage: '工单',
   }), //'工单'
   [ActivityBarItemType.Script]: formatMessage({
     id: 'odc.Workspace.ActivityBar.type.Script',
+    defaultMessage: '脚本',
   }),
   //脚本
   [ActivityBarItemType.Manager]: formatMessage({
     id: 'odc.Workspace.ActivityBar.type.OMManagement',
+    defaultMessage: '运维管理',
   }), //运维管理
 };

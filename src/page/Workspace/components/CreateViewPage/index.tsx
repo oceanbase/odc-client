@@ -143,6 +143,7 @@ class CreateViewPage extends Component<
         formatMessage(
           {
             id: 'odc.components.CreateViewPage.TheViewViewnameHasBeen',
+            defaultMessage: '创建视图 {viewName} 成功!',
           },
 
           { viewName },
@@ -221,6 +222,7 @@ class CreateViewPage extends Component<
           formatMessage(
             {
               id: 'odc.components.CreateViewPage.MultipleTExistYouNeed',
+              defaultMessage: '存在多个{t}, 需要设置不同别名',
             },
             { t: _t },
           ), // `存在多个${_t}, 需要设置不同别名`
@@ -238,6 +240,7 @@ class CreateViewPage extends Component<
         key: EnumStep.BASEINFO,
         title: formatMessage({
           id: 'odc.components.CreateViewPage.BasicInformation',
+          defaultMessage: '基本信息',
         }),
         // 基本信息
         required: true,
@@ -266,6 +269,7 @@ class CreateViewPage extends Component<
         key: EnumStep.SELECT_TABLES,
         title: formatMessage({
           id: 'odc.components.CreateViewPage.BaseTableSelection',
+          defaultMessage: '基表选择',
         }),
         // 基表选择
         required: false,
@@ -299,6 +303,7 @@ class CreateViewPage extends Component<
         key: EnumStep.SELECT_COLUMNS,
         title: formatMessage({
           id: 'odc.components.CreateViewPage.FieldSelection',
+          defaultMessage: '字段选择',
         }),
         // 字段选择
         required: false,
@@ -307,6 +312,7 @@ class CreateViewPage extends Component<
             message.warning(
               formatMessage({
                 id: 'odc.components.CreateViewPage.SelectABaseTableFirst',
+                defaultMessage: '请先选择基表',
               }),
               // 请先选择基表
             );
@@ -331,6 +337,7 @@ class CreateViewPage extends Component<
         key: EnumStep.CONFIRM_SQL,
         title: formatMessage({
           id: 'odc.components.CreateViewPage.NextConfirmTheSqlStatement',
+          defaultMessage: '下一步：确认 SQL',
         }),
         // 下一步：确认 SQL
         required: true,
@@ -380,6 +387,7 @@ class CreateViewPage extends Component<
                           {
                             formatMessage({
                               id: 'odc.components.CreateViewPage.Optional',
+                              defaultMessage: '（选填）',
                             })
                             /* （选填） */
                           }
@@ -455,14 +463,23 @@ class CreateViewPage extends Component<
         items={[
           {
             key: 'SQL_EXEC_RESULT',
-            label: formatMessage({ id: 'odc.components.CreateViewPage.Result' }),
+            label: formatMessage({
+              id: 'odc.components.CreateViewPage.Result',
+              defaultMessage: '运行结果',
+            }),
             children: (
               <div className={styles.result}>
                 <CloseCircleFilled style={{ color: '#F5222D', marginRight: 8 }} />
-                {formatMessage({ id: 'workspace.window.sql.result.failure' })}
+                {formatMessage({
+                  id: 'workspace.window.sql.result.failure',
+                  defaultMessage: '执行以下 SQL 失败',
+                })}
                 <div className={styles.executedSQL}>{executeSql}</div>
                 <div className={styles.failReason}>
-                  {formatMessage({ id: 'workspace.window.sql.result.failureReason' })}
+                  {formatMessage({
+                    id: 'workspace.window.sql.result.failureReason',
+                    defaultMessage: '失败原因：',
+                  })}
                 </div>
                 <div className={styles.track}>{errStack}</div>
               </div>

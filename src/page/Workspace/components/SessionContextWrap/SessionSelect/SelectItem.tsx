@@ -49,6 +49,7 @@ const SelectItem: React.FC<IProps> = ({
   width,
   placeholder = formatMessage({
     id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.66A17FFD',
+    defaultMessage: '请选择',
   }),
   disabled = false,
   onChange,
@@ -84,6 +85,7 @@ const SelectItem: React.FC<IProps> = ({
             component={dataSourceIcon?.component}
             style={{ fontSize: 16, marginRight: 4, verticalAlign: 'textBottom' }}
           />
+
           {dataSource?.name}
         </Space>
       );
@@ -143,6 +145,7 @@ const SelectItem: React.FC<IProps> = ({
               <span>
                 {formatMessage({
                   id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.5AC43B24' /*项目：*/,
+                  defaultMessage: '项目：',
                 })}
                 {database?.data?.project?.name}
               </span>
@@ -151,6 +154,7 @@ const SelectItem: React.FC<IProps> = ({
             <span>
               {formatMessage({
                 id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.7780C356' /*数据源：*/,
+                defaultMessage: '数据源：',
               })}
               {database?.data?.dataSource?.name}
             </span>

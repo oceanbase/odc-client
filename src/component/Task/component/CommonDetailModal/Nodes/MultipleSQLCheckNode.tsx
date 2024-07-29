@@ -64,6 +64,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.component.CommonTaskDetailModal.TaskFlow.ProcessingStatus',
+            defaultMessage: '处理状态',
           })}
         >
           <NodeStatus node={node} />
@@ -77,6 +78,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                   label={
                     formatMessage({
                       id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.SQLExaminationResults',
+                      defaultMessage: 'SQL 检查结果',
                     }) /* SQL 检查结果 */
                   }
                 >
@@ -84,8 +86,11 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                     <>
                       {
                         formatMessage(
-                          { id: 'src.component.Task.component.CommonDetailModal.Nodes.67EAA454' },
-                          { issueCount: issueCount },
+                          {
+                            id: 'src.component.Task.component.CommonDetailModal.Nodes.67EAA454',
+                            defaultMessage: '存在{issueCount}个问题',
+                          },
+                          { issueCount },
                         ) /*`存在${issueCount}个问题`*/
                       }
 
@@ -99,6 +104,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                           {
                             formatMessage({
                               id: 'odc.CommonTaskDetailModal.Nodes.SQLCheckNode.View',
+                              defaultMessage: '查看',
                             }) /*查看*/
                           }
                         </a>
@@ -111,6 +117,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                       {
                         formatMessage({
                           id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.TheNumberOf',
+                          defaultMessage: '，预检查处理 SQL 条数超过最大限制，当前任务流程将按',
                         }) /* 
                 ，预检查处理 SQL 条数超过最大限制，当前任务流程将按
                 */
@@ -125,6 +132,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                         {
                           formatMessage({
                             id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.HighRisk',
+                            defaultMessage: '高风险',
                           }) /* 
                   高风险
                   */
@@ -133,6 +141,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                       {
                         formatMessage({
                           id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.GradeContinuesToAdvance',
+                          defaultMessage: '等级继续推进',
                         }) /* 
                 等级继续推进
                 */
@@ -146,12 +155,16 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                   label={
                     formatMessage({
                       id: 'odc.src.component.Task.component.CommonDetailModal.Nodes.PermissionsInspectionResults',
+                      defaultMessage: '权限检查结果',
                     }) /* 权限检查结果 */
                   }
                 >
                   {
                     formatMessage(
-                      { id: 'src.component.Task.component.CommonDetailModal.Nodes.90FF76EB' },
+                      {
+                        id: 'src.component.Task.component.CommonDetailModal.Nodes.90FF76EB',
+                        defaultMessage: '存在{unauthorizedDatabasesLength}个问题',
+                      },
                       { unauthorizedDatabasesLength: unauthorizedDatabases?.length },
                     ) /*`存在${unauthorizedDatabases?.length}个问题`*/
                   }
@@ -165,6 +178,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                     {
                       formatMessage({
                         id: 'src.component.Task.component.CommonDetailModal.Nodes.3D1ABD2F' /*查看*/,
+                        defaultMessage: '查看',
                       }) /* 查看 */
                     }
                   </a>
@@ -177,6 +191,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.component.CommonTaskDetailModal.TaskFlow.ProcessingTime',
+            defaultMessage: '处理时间',
           })}
         >
           <NodeCompleteTime node={node} />
@@ -205,9 +220,9 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
             {formatMessage(
               {
                 id: 'src.component.Task.component.CommonDetailModal.Nodes.A3187B85',
-                defaultMessage: '存在 ${issueCount} 个问题',
+                defaultMessage: '存在 {issueCount} 个问题',
               },
-              { issueCount: issueCount },
+              { issueCount },
             )}
           </Descriptions.Item>
         </Descriptions>

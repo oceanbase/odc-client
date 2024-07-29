@@ -41,6 +41,7 @@ const ConnectionPopover: React.FC<{
       {
         formatMessage({
           id: 'odc.components.Header.ConnectionPopover.ClusterTenant',
+          defaultMessage: '集群/租户：',
         })
 
         /*集群/租户：*/
@@ -57,6 +58,7 @@ const ConnectionPopover: React.FC<{
           {
             formatMessage({
               id: 'odc.component.ConnectionPopover.InstanceId',
+              defaultMessage: '实例 ID:',
             })
 
             /*实例 ID:*/
@@ -71,6 +73,7 @@ const ConnectionPopover: React.FC<{
           {
             formatMessage({
               id: 'odc.component.ConnectionPopover.InstanceIdTenantId',
+              defaultMessage: '实例ID/租户ID:',
             })
 
             /*实例ID/租户ID:*/
@@ -88,6 +91,7 @@ const ConnectionPopover: React.FC<{
           formatMessage(
             {
               id: 'odc.component.ConnectionPopover.TypeConnecttypetexttype',
+              defaultMessage: '类型：{ConnectTypeTextType}',
             },
 
             { ConnectTypeTextType: ConnectTypeText[type] },
@@ -142,6 +146,7 @@ const ConnectionPopover: React.FC<{
             {
               formatMessage({
                 id: 'odc.components.Header.ConnectionPopover.HostnamePort',
+                defaultMessage: '主机名/端口：',
               })
 
               /*主机名/端口：*/
@@ -149,12 +154,14 @@ const ConnectionPopover: React.FC<{
             {connection.host}:{connection.port}
           </div>
         )}
+
         {clusterAndTenant}
         <div>
           {
             formatMessage(
               {
                 id: 'odc.components.Header.ConnectionPopover.DatabaseUsernameConnectiondbuser',
+                defaultMessage: '数据库用户名：{connectionDbUser}',
               },
 
               { connectionDbUser: connection.username ?? '-' },

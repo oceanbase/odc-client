@@ -49,6 +49,7 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
   const datasource: ITab = {
     title: formatMessage({
       id: 'odc.SideBar.ResourceTree.Container.DataSource',
+      defaultMessage: '数据源',
     }),
     //数据源
     key: PanelType.DataSource,
@@ -103,6 +104,7 @@ const SelectPanel: React.FC<IProps> = function ({ userStore, onClose }) {
   const project: ITab = {
     title: formatMessage({
       id: 'odc.SideBar.ResourceTree.Container.Project',
+      defaultMessage: '项目',
     }),
     //项目
     key: PanelType.Project,

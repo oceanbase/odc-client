@@ -43,6 +43,7 @@ const CsvFormItem: React.FC<IProps> = function (props) {
                     {
                       formatMessage({
                         id: 'odc.ImportForm.formitem.CsvFormItem.SkipTheFirstRow',
+                        defaultMessage: '跳过首行',
                       }) /*跳过首行*/
                     }
 
@@ -61,6 +62,7 @@ const CsvFormItem: React.FC<IProps> = function (props) {
                   <Checkbox>
                     {formatMessage({
                       id: 'odc.ImportDrawer.ImportForm.ConvertAnEmptyStringTo',
+                      defaultMessage: '空字符串转为空值',
                     })}
                   </Checkbox>
                 </FormItem>
@@ -73,6 +75,7 @@ const CsvFormItem: React.FC<IProps> = function (props) {
                       <span>
                         {formatMessage({
                           id: 'odc.ImportDrawer.ImportForm.FieldSeparator',
+                          defaultMessage: '字段分隔符',
                         })}
                       </span>
                     }
@@ -82,6 +85,7 @@ const CsvFormItem: React.FC<IProps> = function (props) {
                         required: true,
                         message: formatMessage({
                           id: 'odc.ImportDrawer.ImportForm.EnterAFieldDelimiter',
+                          defaultMessage: '请填写字段分隔符',
                         }),
                       },
 
@@ -89,6 +93,7 @@ const CsvFormItem: React.FC<IProps> = function (props) {
                         max: 1,
                         message: formatMessage({
                           id: 'odc.ImportForm.formitem.CsvFormItem.YouCanEnterOnlyOne',
+                          defaultMessage: '只能输入一个字符',
                         }), // 只能输入一个字符
                       },
                     ]}
@@ -107,6 +112,7 @@ const CsvFormItem: React.FC<IProps> = function (props) {
                       <span>
                         {formatMessage({
                           id: 'odc.ImportDrawer.ImportForm.TextRecognizer',
+                          defaultMessage: '文本识别符',
                         })}
                       </span>
                     }
@@ -116,6 +122,7 @@ const CsvFormItem: React.FC<IProps> = function (props) {
                         required: true,
                         message: formatMessage({
                           id: 'odc.ImportDrawer.ImportForm.EnterATextIdentifier',
+                          defaultMessage: '请填写文本识别符',
                         }),
                       },
                     ]}
@@ -137,6 +144,7 @@ const CsvFormItem: React.FC<IProps> = function (props) {
                       <span>
                         {formatMessage({
                           id: 'odc.ImportDrawer.ImportForm.LineBreakSymbol',
+                          defaultMessage: '换行符号',
                         })}
                       </span>
                     }
@@ -146,6 +154,7 @@ const CsvFormItem: React.FC<IProps> = function (props) {
                         required: true,
                         message: formatMessage({
                           id: 'odc.ImportDrawer.ImportForm.EnterALineBreakSymbol',
+                          defaultMessage: '请填写换行符号',
                         }),
                       },
                     ]}

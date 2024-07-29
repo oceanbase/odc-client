@@ -51,7 +51,7 @@ const Content = function (props: IProps, ref) {
   return (
     <PageContainer
       titleProps={{
-        title: formatMessage({ id: 'odc.Datasource.Content.DataSource' }), //数据源
+        title: formatMessage({ id: 'odc.Datasource.Content.DataSource', defaultMessage: '数据源' }), //数据源
         type: TitleType.TEXT,
         showDivider: true,
       }}

@@ -40,6 +40,7 @@ export function getSizeLimitTip() {
   return formatMessage(
     {
       id: 'odc.ImportDrawer.ImportForm.helper.TheFileSizeCannotExceed.1',
+      defaultMessage: '文件大小不能超过 {size}',
     },
     { size },
   );

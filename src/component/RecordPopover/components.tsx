@@ -81,10 +81,12 @@ export const RecordTable: React.FC<{
           description: isClient()
             ? formatMessage({
                 id: 'odc.component.RecordPopover.components.NoteTheOperationRecordContains',
+                defaultMessage: '提示：操作记录包含 ODC 上的历史操作',
               })
             : //提示: 操作记录包含 ODC 上的历史操作
               formatMessage({
                 id: 'odc.component.RecordPopover.components.NoteTheOperationRecordsInclude',
+                defaultMessage: '提示：操作记录包含对 OceanBase 数据库及 ODC 上的历史操作',
               }),
 
           //提示: 操作记录包含对数据库的操作及产品操作
@@ -96,6 +98,7 @@ export const RecordTable: React.FC<{
               name: 'executeTime',
               title: formatMessage({
                 id: 'odc.component.RecordPopover.components.ExecutionTime.1',
+                defaultMessage: '执行时间：',
               }),
 
               //执行时间：
@@ -145,6 +148,7 @@ export const RecordTable: React.FC<{
         visible={detailVisible}
         title={formatMessage({
           id: 'odc.component.RecordPopover.components.RecordDetails',
+          defaultMessage: '记录详情',
         })}
         /*记录详情*/
         detailId={detailId}
@@ -153,6 +157,7 @@ export const RecordTable: React.FC<{
             {
               formatMessage({
                 id: 'odc.component.RecordPopover.components.Close',
+                defaultMessage: '关闭',
               })
 
               /*关闭*/

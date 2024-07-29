@@ -49,18 +49,22 @@ const VariableConfig: React.FC<IProps> = (props) => {
         {
           formatMessage({
             id: 'odc.src.component.Task.DataClearTask.CreateModal.CustomVariable',
+            defaultMessage: '\n        自定义变量\n        ',
           }) /* 
-         自定义变量
-         */
+        自定义变量
+        */
         }
+
         <span className={styles.desc}>
           <HelpDoc leftText isTip doc="dataClearVariablesDoc">
             {
               formatMessage({
                 id: 'odc.src.component.Task.DataClearTask.CreateModal.VariablesCanBeReferencedIn',
+                defaultMessage:
+                  '\n              变量可在清理范围的清理条件中引用 (可选)\n            ',
               }) /* 
-             变量可在清理范围的清理条件中引用 (可选)
-             */
+            变量可在清理范围的清理条件中引用 (可选)
+            */
             }
           </HelpDoc>
         </span>
@@ -75,6 +79,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.DataClearTask.CreateModal.VariableConfig.VariableName',
+                defaultMessage: '变量名',
               }) /*变量名*/
             }
           </div>
@@ -86,6 +91,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.DataClearTask.CreateModal.VariableConfig.TimeFormat',
+                defaultMessage: '时间格式',
               }) /*时间格式*/
             }
           </div>
@@ -98,14 +104,16 @@ const VariableConfig: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.src.component.Task.DataClearTask.CreateModal.Shift',
+                  defaultMessage: '\n              时间偏移\n            ',
                 }) /* 
-             时间偏移
-             */
+            时间偏移
+            */
               }
             </HelpDoc>
           </div>
         </Space>
       )}
+
       <Form.List name="variables">
         {(fields, { add, remove }) => (
           <div className={styles.infoBlock}>
@@ -126,6 +134,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                   <Input
                     placeholder={formatMessage({
                       id: 'odc.DataClearTask.CreateModal.VariableConfig.PleaseEnter',
+                      defaultMessage: '请输入',
                     })} /*请输入*/
                   />
                 </Form.Item>
@@ -139,6 +148,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                   <Select
                     placeholder={formatMessage({
                       id: 'odc.DataClearTask.CreateModal.VariableConfig.PleaseSelect',
+                      defaultMessage: '请选择',
                     })}
                     /*请选择*/ options={timeFormatOptions}
                   />
@@ -161,6 +171,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                   required,
                                   message: formatMessage({
                                     id: 'odc.src.component.Task.DataClearTask.CreateModal.PleaseChoose',
+                                    defaultMessage: '请选择',
                                   }), //'请选择'
                                 },
                               ]}
@@ -168,6 +179,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                               <Select
                                 placeholder={formatMessage({
                                   id: 'odc.DataClearTask.CreateModal.VariableConfig.PleaseSelect',
+                                  defaultMessage: '请选择',
                                 })}
                                 /*请选择*/ options={operatorOptions}
                               />
@@ -180,6 +192,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                   required,
                                   message: formatMessage({
                                     id: 'odc.src.component.Task.DataClearTask.CreateModal.PleaseEnter',
+                                    defaultMessage: '请输入',
                                   }), //'请输入'
                                 },
                               ]}
@@ -187,6 +200,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                               <InputNumber
                                 placeholder={formatMessage({
                                   id: 'odc.DataClearTask.CreateModal.VariableConfig.PleaseEnter',
+                                  defaultMessage: '请输入',
                                 })}
                                 /*请输入*/ min={1}
                               />
@@ -199,6 +213,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                   required,
                                   message: formatMessage({
                                     id: 'odc.src.component.Task.DataClearTask.CreateModal.PleaseChoose.1',
+                                    defaultMessage: '请选择',
                                   }), //'请选择'
                                 },
                               ]}
@@ -206,6 +221,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                               <Select
                                 placeholder={formatMessage({
                                   id: 'odc.DataClearTask.CreateModal.VariableConfig.PleaseSelect',
+                                  defaultMessage: '请选择',
                                 })}
                                 /*请选择*/ options={timeUnitOptions}
                               />
@@ -242,6 +258,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.DataClearTask.CreateModal.VariableConfig.AddVariables',
+                    defaultMessage: '添加变量',
                   }) /*添加变量*/
                 }
               </Button>

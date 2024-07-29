@@ -51,6 +51,7 @@ const PreviewSQLModal: React.FC<IProps> = (props) => {
       title={
         formatMessage({
           id: 'src.component.Task.component.PartitionPolicyFormTable.PreviewSQLModal.C02356A3',
+          defaultMessage: 'SQL 预览',
         }) /*"SQL 预览"*/
       }
       open={visible}
@@ -62,6 +63,7 @@ const PreviewSQLModal: React.FC<IProps> = (props) => {
           {
             formatMessage({
               id: 'src.component.Task.component.PartitionPolicyFormTable.PreviewSQLModal.7E1FC0D5' /*关闭*/,
+              defaultMessage: '关闭',
             }) /* 关闭 */
           }
         </Button>

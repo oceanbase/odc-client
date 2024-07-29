@@ -44,7 +44,7 @@ const TaskDurationItem: React.FC<IProps> = ({ form }) => {
                         new Error(
                           formatMessage({
                             id: 'src.component.Task.component.TaskdurationItem.90E3EDCE',
-                            defaultMessage: '请输入(不小于0)',
+                            defaultMessage: '请输入时长 (值不小于0)',
                           }),
                         ),
                       ),

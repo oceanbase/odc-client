@@ -75,7 +75,7 @@ export function hasManageAuth(auths: string[] = []) {
 export const getAuthLabelString = (auths: string[] = []) => {
   const labels = auths.includes('create')
     ? [
-        formatMessage({ id: 'odc.page.Auth.utils.CanBeCreated' }), //可新建
+        formatMessage({ id: 'odc.page.Auth.utils.CanBeCreated', defaultMessage: '可新建' }), //可新建
       ]
     : [];
   const otherLabel = resourceManagementActionOptions?.find((item) => {

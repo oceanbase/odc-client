@@ -111,6 +111,7 @@ export default class PartitionRange extends Component<IProps> {
       {
         title: formatMessage({
           id: 'odc.component.PartitionRange.PartitionName',
+          defaultMessage: '分区名称',
         }),
         dataIndex: 'name',
         key: 'name',
@@ -129,6 +130,7 @@ export default class PartitionRange extends Component<IProps> {
                 }}
                 placeholder={formatMessage({
                   id: 'odc.component.PartitionRange.Enter',
+                  defaultMessage: '请输入',
                 })}
                 autoFocus={true}
               />
@@ -188,7 +190,10 @@ export default class PartitionRange extends Component<IProps> {
           size="small"
           onClick={this.handleAdd}
         >
-          {formatMessage({ id: 'workspace.window.createTable.partition.button.add' })}
+          {formatMessage({
+            id: 'workspace.window.createTable.partition.button.add',
+            defaultMessage: '添加分区',
+          })}
         </Button>
       </>
     );

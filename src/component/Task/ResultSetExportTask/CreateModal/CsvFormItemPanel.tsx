@@ -35,6 +35,7 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                 label={
                   formatMessage({
                     id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.CSVFileSettings',
+                    defaultMessage: 'CSV 文件设置',
                   }) /* CSV 文件设置 */
                 }
                 shouldUpdate
@@ -53,6 +54,7 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                         {
                           formatMessage({
                             id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.Contain',
+                            defaultMessage: '包含列头',
                           }) /* 包含列头 */
                         }
                       </Checkbox>
@@ -69,8 +71,8 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                       <Checkbox>
                         {
                           formatMessage({
-                            id:
-                              'odc.src.component.Task.ResultSetExportTask.CreateModal.EmptyStringTurnsToEmpty',
+                            id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.EmptyStringTurnsToEmpty',
+                            defaultMessage: '空字符串转为空值',
                           }) /* 空字符串转为空值 */
                         }
                       </Checkbox>
@@ -84,8 +86,8 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                         }}
                         label={
                           formatMessage({
-                            id:
-                              'odc.src.component.Task.ResultSetExportTask.CreateModal.FieldSeparator',
+                            id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.FieldSeparator',
+                            defaultMessage: '字段分隔符',
                           }) /* 字段分隔符 */
                         }
                         name={['csvFormat', 'columnSeparator']}
@@ -93,15 +95,15 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                           {
                             required: true,
                             message: formatMessage({
-                              id:
-                                'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheField',
+                              id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheField',
+                              defaultMessage: '请填写字段分隔符',
                             }), //'请填写字段分隔符'
                           },
                           {
                             max: 1,
                             message: formatMessage({
-                              id:
-                                'odc.src.component.Task.ResultSetExportTask.CreateModal.YouCanOnlyEnterOne',
+                              id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.YouCanOnlyEnterOne',
+                              defaultMessage: '只能输入一个字符',
                             }), //'只能输入一个字符'
                           },
                         ]}
@@ -122,8 +124,8 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                         }}
                         label={
                           formatMessage({
-                            id:
-                              'odc.src.component.Task.ResultSetExportTask.CreateModal.TextRecognitionSymbol',
+                            id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.TextRecognitionSymbol',
+                            defaultMessage: '文本识别符',
                           }) /* 文本识别符 */
                         }
                         name={['csvFormat', 'columnDelimiter']}
@@ -131,8 +133,8 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                           {
                             required: true,
                             message: formatMessage({
-                              id:
-                                'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheText',
+                              id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheText',
+                              defaultMessage: '请填写文本识别符',
                             }), //'请填写文本识别符'
                           },
                         ]}
@@ -154,8 +156,8 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                         }}
                         label={
                           formatMessage({
-                            id:
-                              'odc.src.component.Task.ResultSetExportTask.CreateModal.ReplacementSymbol',
+                            id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.ReplacementSymbol',
+                            defaultMessage: '换行符号',
                           }) /* 换行符号 */
                         }
                         name={['csvFormat', 'lineSeparator']}
@@ -163,8 +165,8 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                           {
                             required: true,
                             message: formatMessage({
-                              id:
-                                'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheChange',
+                              id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheChange',
+                              defaultMessage: '请填写换行符号',
                             }), //'请填写换行符号'
                           },
                         ]}
@@ -193,6 +195,7 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                 label={
                   formatMessage({
                     id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.SQLFileSettings',
+                    defaultMessage: 'SQL 文件设置',
                   }) /* SQL 文件设置 */
                 }
                 shouldUpdate
@@ -209,11 +212,11 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                         <HelpDoc isTip leftText doc="exportTableName">
                           {
                             formatMessage({
-                              id:
-                                'odc.src.component.Task.ResultSetExportTask.CreateModal.SpecifiedTableName',
+                              id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.SpecifiedTableName',
+                              defaultMessage: '指定表名',
                             }) /* 
                           指定表名
-                         */
+                          */
                           }
                         </HelpDoc>
                       }
@@ -236,6 +239,7 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                 label={
                   formatMessage({
                     id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.ExcelFileSettings',
+                    defaultMessage: 'Excel 文件设置',
                   }) /* Excel 文件设置 */
                 }
                 shouldUpdate
@@ -254,6 +258,7 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                         {
                           formatMessage({
                             id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.Contain.1',
+                            defaultMessage: '包含列头',
                           }) /* 包含列头 */
                         }
                       </Checkbox>
@@ -269,8 +274,8 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                       <Checkbox>
                         {
                           formatMessage({
-                            id:
-                              'odc.src.component.Task.ResultSetExportTask.CreateModal.ExportSQLToAnotherSheet',
+                            id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.ExportSQLToAnotherSheet',
+                            defaultMessage: '导出 SQL 到另一个 Sheet',
                           }) /* 导出 SQL 到另一个 Sheet */
                         }
                       </Checkbox>

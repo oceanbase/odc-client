@@ -83,7 +83,7 @@ const Login: React.FC<{
     try {
       const { success, message: msg, errCode } = await userStore.login(params);
       if (success) {
-        message.success(formatMessage({ id: 'login.login.success' }));
+        message.success(formatMessage({ id: 'login.login.success', defaultMessage: '登录成功' }));
         await userStore.getOrganizations();
         const isSuccess = await userStore.switchCurrentOrganization();
         if (!isSuccess) {
@@ -118,7 +118,9 @@ const Login: React.FC<{
       }
     } catch (e) {
       console.trace(e);
-      setErrMsg(formatMessage({ id: 'odc.page.Login.NetworkException' }));
+      setErrMsg(
+        formatMessage({ id: 'odc.page.Login.NetworkException', defaultMessage: '网络异常' }),
+      );
       setLoginLoading(false);
       reloadAuthCode();
     }
@@ -134,6 +136,7 @@ const Login: React.FC<{
       status = {
         errMsg: formatMessage({
           id: 'odc.page.Login.ThePasswordCannotContainSpaces',
+          defaultMessage: '密码不能包含空格',
         }), //密码不能包含空格
         loginLoading: false,
       };
@@ -153,7 +156,7 @@ const Login: React.FC<{
 
       if (res) {
         message.success(
-          formatMessage({ id: 'odc.page.Login.Activated' }), // 激活成功
+          formatMessage({ id: 'odc.page.Login.Activated', defaultMessage: '激活成功' }), // 激活成功
         );
         setShowActivate(false);
         setLoginLoading(false);
@@ -162,12 +165,16 @@ const Login: React.FC<{
           return loginValues;
         });
       } else {
-        setErrMsg(formatMessage({ id: 'odc.page.Login.ActivationFailed' })); // 激活失败
+        setErrMsg(
+          formatMessage({ id: 'odc.page.Login.ActivationFailed', defaultMessage: '激活失败' }),
+        ); // 激活失败
         setLoginLoading(false);
       }
     } catch (e) {
       console.trace(e);
-      setErrMsg(formatMessage({ id: 'odc.page.Login.NetworkException' })); // 网络异常
+      setErrMsg(
+        formatMessage({ id: 'odc.page.Login.NetworkException', defaultMessage: '网络异常' }),
+      ); // 网络异常
       setLoginLoading(false);
     }
   };

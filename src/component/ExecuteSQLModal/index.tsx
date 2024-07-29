@@ -121,6 +121,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
         destroyOnClose={true}
         title={formatMessage({
           id: 'workspace.window.session.modal.sql.title',
+          defaultMessage: 'SQL 确认',
         })}
         open={visible}
         onOk={handleSubmit}
@@ -130,6 +131,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.component.ExecuteSQLModal.Format',
+                defaultMessage: '格式化',
               })
               /*格式化*/
             }
@@ -141,14 +143,15 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
               message.success(
                 formatMessage({
                   id: 'workspace.window.session.modal.sql.copied',
+                  defaultMessage: '已拷贝到剪贴板',
                 }),
               );
             }}
           >
-            <Button>{formatMessage({ id: 'app.button.copy' })}</Button>
+            <Button>{formatMessage({ id: 'app.button.copy', defaultMessage: '复制' })}</Button>
           </CopyToClipboard>,
           <Button key="back" onClick={onCancel}>
-            {formatMessage({ id: 'app.button.cancel' })}
+            {formatMessage({ id: 'app.button.cancel', defaultMessage: '取消' })}
           </Button>,
           <Button
             key="submit"
@@ -157,7 +160,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
             loading={loading}
             disabled={status === EStatus.DISABLED}
           >
-            {formatMessage({ id: 'app.button.execute' })}
+            {formatMessage({ id: 'app.button.execute', defaultMessage: '执行' })}
           </Button>,
         ].filter(Boolean)}
         className={styles.executeSqlModal}

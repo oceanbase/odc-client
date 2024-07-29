@@ -135,7 +135,7 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
         >
           <Toolbar>
             <Toolbar.Button
-              text={formatMessage({ id: 'workspace.header.create' })}
+              text={formatMessage({ id: 'workspace.header.create', defaultMessage: '新建' })}
               icon={PlusOutlined}
               onClick={() => {
                 const row = {
@@ -149,7 +149,7 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
 
             <Toolbar.Button
               text={
-                formatMessage({ id: 'odc.CreateTable.TableIndex.Delete' }) //删除
+                formatMessage({ id: 'odc.CreateTable.TableIndex.Delete', defaultMessage: '删除' }) //删除
               }
               icon={DeleteOutlined}
               onClick={() => {
@@ -162,6 +162,7 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
                 icon={<SyncOutlined />}
                 text={formatMessage({
                   id: 'odc.components.ShowTableBaseInfoForm.Refresh',
+                  defaultMessage: '刷新',
                 })}
                 /* 刷新 */ onClick={pageContext.onRefresh}
               />

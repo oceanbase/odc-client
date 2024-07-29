@@ -125,6 +125,7 @@ export default function NewDataBaseButton({
       message.success(
         formatMessage({
           id: 'odc.Info.NewDataBaseButton.New',
+          defaultMessage: '新建成功',
         }), //新建成功
       );
       setOpen(false);
@@ -140,6 +141,7 @@ export default function NewDataBaseButton({
         {
           formatMessage({
             id: 'odc.Info.NewDataBaseButton.CreateADatabase',
+            defaultMessage: '新建数据库',
           }) /*新建数据库*/
         }
       </Button>
@@ -147,6 +149,7 @@ export default function NewDataBaseButton({
         open={open}
         title={formatMessage({
           id: 'odc.Info.NewDataBaseButton.CreateADatabase',
+          defaultMessage: '新建数据库',
         })}
         /*新建数据库*/ onOk={submit}
         onCancel={close}
@@ -171,6 +174,7 @@ export default function NewDataBaseButton({
             name={'name'}
             label={formatMessage({
               id: 'odc.Info.NewDataBaseButton.DatabaseName',
+              defaultMessage: '数据库名称',
             })} /*数据库名称*/
           >
             <CaseInput
@@ -181,6 +185,7 @@ export default function NewDataBaseButton({
               }}
               placeholder={formatMessage({
                 id: 'odc.Info.NewDataBaseButton.PleaseEnter',
+                defaultMessage: '请输入',
               })} /*请输入*/
             />
           </Form.Item>
@@ -190,6 +195,7 @@ export default function NewDataBaseButton({
                 name={'charsetName'}
                 label={formatMessage({
                   id: 'odc.Info.NewDataBaseButton.CharacterEncoding',
+                  defaultMessage: '字符编码',
                 })} /*字符编码*/
               >
                 <Input
@@ -198,6 +204,7 @@ export default function NewDataBaseButton({
                   }}
                   placeholder={formatMessage({
                     id: 'odc.Info.NewDataBaseButton.PleaseEnter',
+                    defaultMessage: '请输入',
                   })} /*请输入*/
                   disabled={mode === ConnectionMode.DORIS}
                 />
@@ -206,6 +213,7 @@ export default function NewDataBaseButton({
                 name={'collationName'}
                 label={formatMessage({
                   id: 'odc.Info.NewDataBaseButton.SortingRules',
+                  defaultMessage: '排序规则',
                 })} /*排序规则*/
               >
                 <Input
@@ -214,17 +222,20 @@ export default function NewDataBaseButton({
                   }}
                   placeholder={formatMessage({
                     id: 'odc.Info.NewDataBaseButton.PleaseEnter',
+                    defaultMessage: '请输入',
                   })} /*请输入*/
                   disabled={mode === ConnectionMode.DORIS}
                 />
               </Form.Item>
             </Space>
           )}
+
           <Form.Item
             name={'projectId'}
             label={
               formatMessage({
                 id: 'odc.src.page.Datasource.Info.NewDataBaseButton.Project',
+                defaultMessage: '项目',
               }) //'项目'
             }
           >
@@ -238,10 +249,10 @@ export default function NewDataBaseButton({
                 formatMessage(
                   {
                     id: 'odc.src.page.Datasource.Info.NewDataBaseButton.CurrentDataSourceProject',
+                    defaultMessage:
+                      '当前数据源所属项目【{projectName}】, 无法修改，可通过编辑数据源修改所属项目',
                   },
-                  {
-                    projectName: projectName,
-                  },
+                  { projectName },
                 ) //`当前数据源所属项目【${projectName}】, 无法修改，可通过编辑数据源修改所属项目`
               }
               projects={project?.contents}

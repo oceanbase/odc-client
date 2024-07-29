@@ -49,6 +49,7 @@ const EditSensitiveColumnModal = ({
       message.success(
         formatMessage({
           id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.UpdatedSuccessfully',
+          defaultMessage: '更新成功',
         }), //更新成功
       );
 
@@ -60,6 +61,7 @@ const EditSensitiveColumnModal = ({
       message.error(
         formatMessage({
           id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.UpdateFailed',
+          defaultMessage: '更新失败',
         }), //更新失败
       );
     }
@@ -70,6 +72,7 @@ const EditSensitiveColumnModal = ({
       width={400}
       title={formatMessage({
         id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.EditSensitiveColumns',
+        defaultMessage: '编辑敏感列',
       })}
       /*编辑敏感列*/ open={modalVisible}
       onCancel={onCancel}
@@ -82,8 +85,8 @@ const EditSensitiveColumnModal = ({
           required
           label={
             formatMessage({
-              id:
-                'odc.SensitiveColumn.components.EditSensitiveColumnModal.DesensitizationAlgorithm',
+              id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.DesensitizationAlgorithm',
+              defaultMessage: '脱敏算法',
             }) //脱敏算法
           }
           name="maskingAlgorithmId"
@@ -91,8 +94,8 @@ const EditSensitiveColumnModal = ({
             {
               required: true,
               message: formatMessage({
-                id:
-                  'odc.SensitiveColumn.components.EditSensitiveColumnModal.SelectADesensitizationAlgorithm',
+                id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.SelectADesensitizationAlgorithm',
+                defaultMessage: '请选择脱敏算法',
               }), //请选择脱敏算法
             },
           ]}
@@ -101,6 +104,7 @@ const EditSensitiveColumnModal = ({
             placeholder={
               formatMessage({
                 id: 'odc.SensitiveColumn.components.EditSensitiveColumnModal.PleaseSelect',
+                defaultMessage: '请选择',
               }) //请选择
             }
             optionLabelProp="label"
@@ -117,22 +121,22 @@ const EditSensitiveColumnModal = ({
                     descriptionsData={[
                       {
                         label: formatMessage({
-                          id:
-                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod.1',
+                          id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.DesensitizationMethod.1',
+                          defaultMessage: '脱敏方式',
                         }), //'脱敏方式'
                         value: maskRuleTypeMap?.[target?.type],
                       },
                       {
                         label: formatMessage({
-                          id:
-                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData.1',
+                          id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.TestData.1',
+                          defaultMessage: '测试数据',
                         }), //'测试数据'
                         value: target?.sampleContent,
                       },
                       {
                         label: formatMessage({
-                          id:
-                            'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview.1',
+                          id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Preview.1',
+                          defaultMessage: '结果预览',
                         }), //'结果预览'
                         value: target?.maskedContent,
                       },

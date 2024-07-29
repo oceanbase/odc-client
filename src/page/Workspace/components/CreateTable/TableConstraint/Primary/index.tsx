@@ -74,7 +74,7 @@ const PrimaryConstaint: React.FC<IProps> = function ({ modified }) {
           <Toolbar>
             <Toolbar.Button
               disabled={pageContext?.editMode}
-              text={formatMessage({ id: 'workspace.header.create' })}
+              text={formatMessage({ id: 'workspace.header.create', defaultMessage: '新建' })}
               icon={PlusOutlined}
               onClick={() => {
                 tableContext.setPrimaryConstraints(
@@ -86,7 +86,7 @@ const PrimaryConstaint: React.FC<IProps> = function ({ modified }) {
             <Toolbar.Button
               disabled={pageContext?.editMode}
               text={
-                formatMessage({ id: 'odc.TableConstraint.Primary.Delete' }) //删除
+                formatMessage({ id: 'odc.TableConstraint.Primary.Delete', defaultMessage: '删除' }) //删除
               }
               icon={DeleteOutlined}
               onClick={() => {

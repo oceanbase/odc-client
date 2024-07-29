@@ -43,7 +43,10 @@ const getColumns = (params: {
   return [
     {
       dataIndex: 'databaseName',
-      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.8E0CB3F5' }), //'数据库'
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.UserAuthList.8E0CB3F5',
+        defaultMessage: '数据库',
+      }), //'数据库'
       ellipsis: true,
       filterDropdown: (props) => {
         return (
@@ -53,6 +56,7 @@ const getColumns = (params: {
             placeholder={
               formatMessage({
                 id: 'src.page.Project.User.ManageModal.UserAuthList.AD0486C8',
+                defaultMessage: '请输入',
               }) /*"请输入"*/
             }
           />
@@ -71,7 +75,10 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'dataSourceName',
-      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.62E06B89' }), //'所属数据源'
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.UserAuthList.62E06B89',
+        defaultMessage: '所属数据源',
+      }), //'所属数据源'
       ellipsis: true,
       width: 188,
       filterDropdown: (props) => {
@@ -82,6 +89,7 @@ const getColumns = (params: {
             placeholder={
               formatMessage({
                 id: 'src.page.Project.User.ManageModal.UserAuthList.C3B2211E',
+                defaultMessage: '请输入',
               }) /*"请输入"*/
             }
           />
@@ -100,7 +108,10 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'type',
-      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.CE23A38D' }), //'权限类型'
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.UserAuthList.CE23A38D',
+        defaultMessage: '权限类型',
+      }), //'权限类型'
       width: 120,
       filters: databasePermissionTypeFilters,
       filteredValue: filters?.type || null,
@@ -108,14 +119,20 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'expireTime',
-      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.19A27247' }), //'过期时间'
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.UserAuthList.19A27247',
+        defaultMessage: '过期时间',
+      }), //'过期时间'
       width: 138,
       sorter: true,
       render: getExpireTimeLabel,
     },
     {
       dataIndex: 'status',
-      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.83F63FE7' }), //'状态'
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.UserAuthList.83F63FE7',
+        defaultMessage: '状态',
+      }), //'状态'
       width: 104,
       filters: databasePermissionStatusFilters,
       filteredValue: filters?.status || null,
@@ -123,7 +140,10 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'action',
-      title: formatMessage({ id: 'src.page.Project.User.ManageModal.UserAuthList.29348DE1' }), //'操作'
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.UserAuthList.29348DE1',
+        defaultMessage: '操作',
+      }), //'操作'
       ellipsis: true,
       width: 65,
       render: (_, record) => {
@@ -137,6 +157,7 @@ const getColumns = (params: {
             {
               formatMessage({
                 id: 'src.page.Project.User.ManageModal.UserAuthList.583E307F' /*回收*/,
+                defaultMessage: '回收',
               }) /* 回收 */
             }
           </Action.Link>
@@ -179,6 +200,7 @@ const UserAuthList: React.FC<IProps> = (props) => {
                   {
                     okText: formatMessage({
                       id: 'src.page.Project.User.ManageModal.UserAuthList.1491B8F7',
+                      defaultMessage: '批量回收',
                     }), //'批量回收'
                     onOk: onReclaim,
                   },

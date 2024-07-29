@@ -161,9 +161,11 @@ const AppContainer: React.FC<IBasicLayoutProps> = (props: IBasicLayoutProps) => 
         tip: isServerReady
           ? formatMessage({
               id: 'odc.src.layout.ObtainConfigurationInformation',
+              defaultMessage: '正在获取配置信息',
             }) //'正在获取配置信息'
           : formatMessage({
               id: 'odc.src.layout.InspectionServiceStatus',
+              defaultMessage: '正在检查服务状态',
             }), //'正在检查服务状态'
         showError: settingStore.settingLoadStatus === 'failed',
         queue:
@@ -181,6 +183,7 @@ const AppContainer: React.FC<IBasicLayoutProps> = (props: IBasicLayoutProps) => 
         // 只在客户端开启用户信息采集窗口
         isClient() && <AskeventTrackingPermissionModal />
       }
+
       <Helmet>
         <title>{getPageTitle(pathname)}</title>
       </Helmet>
@@ -221,4 +224,5 @@ export default (props: any) => (
     </StoreProvider>
   </ErrorBoundary>
 );
+
 // </Media>;

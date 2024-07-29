@@ -60,8 +60,10 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
                             {
                               formatMessage({
                                 id: 'odc.component.AuthNode.ApprovalNode',
+                                defaultMessage: '审批节点',
                               }) /*审批节点*/
                             }
+
                             {index + 1}
                           </span>
                           <Form.Item
@@ -88,6 +90,7 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
                               {
                                 formatMessage({
                                   id: 'odc.component.AuthNode.ExternalApproval',
+                                  defaultMessage: '外部审批',
                                 }) /*外部审批*/
                               }
                             </Checkbox>
@@ -113,8 +116,14 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
                             name: item.name,
                           }));
                         const title = isExternalApproval
-                          ? formatMessage({ id: 'odc.component.AuthNode.ExternalIntegration' }) //外部集成
-                          : formatMessage({ id: 'odc.component.AuthNode.Role' }); //角色
+                          ? formatMessage({
+                              id: 'odc.component.AuthNode.ExternalIntegration',
+                              defaultMessage: '外部集成',
+                            }) //外部集成
+                          : formatMessage({
+                              id: 'odc.component.AuthNode.Role',
+                              defaultMessage: '角色',
+                            }); //角色
                         return (
                           <NodeSelector
                             title={title}
@@ -139,6 +148,7 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
                               {
                                 formatMessage({
                                   id: 'odc.component.AuthNode.AutomaticApproval',
+                                  defaultMessage: '自动审批',
                                 }) /*自动审批*/
                               }
                             </Checkbox>
@@ -170,6 +180,7 @@ export const AuthNode: React.FC<IAuthNodeProps> = (props) => {
                   {
                     formatMessage({
                       id: 'odc.component.AuthNode.AddAnApprovalNode',
+                      defaultMessage: '添加审批节点',
                     }) /*添加审批节点*/
                   }
                 </Button>

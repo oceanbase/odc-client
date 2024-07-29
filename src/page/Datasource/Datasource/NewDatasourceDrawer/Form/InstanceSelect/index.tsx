@@ -122,7 +122,7 @@ const InstanceSelect: React.FC<IProps> = function ({ clusterStore, disabled }) {
           let modeText = '';
           if (clusterName) {
             modeText =
-              formatMessage({ id: 'odc.cloud.InstanceSelect.Mode' }) + //`模式：`
+              formatMessage({ id: 'odc.cloud.InstanceSelect.Mode', defaultMessage: '模式：' }) + //`模式：`
               (mode === ConnectType.OB_MYSQL ? 'MySQL' : 'Oracle');
           }
           return (
@@ -143,8 +143,9 @@ const InstanceSelect: React.FC<IProps> = function ({ clusterStore, disabled }) {
                   innerValue = [cluster, tenant].filter(Boolean);
                 }
                 function onChange({ tenantId, cluster }) {
-                  const tenantMode = tenantListMap[cluster]?.find((t) => t.tenantId === tenantId)
-                    ?.tenantMode;
+                  const tenantMode = tenantListMap[cluster]?.find(
+                    (t) => t.tenantId === tenantId,
+                  )?.tenantMode;
                   form?.setFieldsValue({
                     clusterName: cluster,
                     tenantName: tenantId,
@@ -206,6 +207,7 @@ const InstanceSelect: React.FC<IProps> = function ({ clusterStore, disabled }) {
                         {
                           formatMessage({
                             id: 'odc.cloud.InstanceSelect.SelectAConnectionInstance',
+                            defaultMessage: '请选择连接实例',
                           }) /*请选择连接实例*/
                         }
                       </Typography.Text>

@@ -30,10 +30,12 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 export const ErrorStrategy = {
   ABORT: formatMessage({
     id: 'odc.TaskManagePage.AsyncTask.StopATask',
+    defaultMessage: '停止任务',
   }),
   // 停止任务
   CONTINUE: formatMessage({
     id: 'odc.TaskManagePage.AsyncTask.IgnoreErrorsContinueTasks',
+    defaultMessage: '忽略错误继续任务',
   }),
 
   // 忽略错误继续任务
@@ -59,6 +61,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.TaskNumber',
+              defaultMessage: '任务编号',
             }) /* 任务编号 */
           }
         >
@@ -69,6 +72,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.Database',
+              defaultMessage: '所属数据库',
             }) /* 所属数据库 */
           }
         >
@@ -79,6 +83,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.DataSource',
+              defaultMessage: '所属数据源',
             }) /* 所属数据源 */
           }
         >
@@ -89,12 +94,14 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.Type',
+              defaultMessage: '任务类型',
             }) /* 任务类型 */
           }
         >
           {
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.DatabaseChange',
+              defaultMessage: '数据库变更',
             }) /* 
           数据库变更
           */
@@ -105,6 +112,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             label={
               formatMessage({
                 id: 'odc.src.component.Task.AsyncTask.DetailContent.RiskLevel',
+                defaultMessage: '风险等级',
               }) /* 风险等级 */
             }
           >
@@ -115,6 +123,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
       <SimpleTextItem
         label={formatMessage({
           id: 'odc.TaskManagePage.AsyncTask.SqlContent',
+          defaultMessage: 'SQL 内容',
         })}
         /* SQL 内容 */ content={
           <div
@@ -145,6 +154,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.AsyncTask.DetailContent.RollbackContent',
+                  defaultMessage: '回滚内容',
                 }) /*回滚内容*/
               }
             </span>
@@ -184,6 +194,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.Separatist',
+              defaultMessage: '分隔符',
             }) /* 分隔符 */
           }
         >
@@ -194,6 +205,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.QueryResultsLimit',
+              defaultMessage: '查询结果限制',
             }) /* 查询结果限制 */
           }
         >
@@ -204,6 +216,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.MissionErrorTreatment',
+              defaultMessage: '任务错误处理',
             }) /* 任务错误处理 */
           }
         >
@@ -214,6 +227,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'src.component.Task.AsyncTask.DetailContent.1F4ECA8A',
+              defaultMessage: 'SQL 重试次数',
             }) /*"SQL 重试次数"*/
           }
         >
@@ -224,6 +238,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.ExecuteTimeoutTime',
+              defaultMessage: '执行超时时间',
             }) /* 执行超时时间 */
           }
         >
@@ -232,6 +247,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
               {formatMessage(
                 {
                   id: 'odc.TaskManagePage.AsyncTask.ExecutiontimeoutHours',
+                  defaultMessage: '{executionTimeout} 小时',
                 },
                 {
                   executionTimeout,
@@ -242,8 +258,12 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
               <Tooltip
                 title={
                   formatMessage(
-                    { id: 'src.component.Task.AsyncTask.DetailContent.07EB87E6' },
-                    { executionTimeout: executionTimeout },
+                    {
+                      id: 'src.component.Task.AsyncTask.DetailContent.07EB87E6',
+                      defaultMessage:
+                        '变更语句中包含索引变更，可能耗时较久，已将您的变更工单超时时间调整为 {executionTimeout} 小时',
+                    },
+                    { executionTimeout },
                   ) /*`变更语句中包含索引变更，可能耗时较久，已将您的变更工单超时时间调整为 ${executionTimeout} 小时`*/
                 }
               >
@@ -265,6 +285,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.ImplementationModalities',
+              defaultMessage: '执行方式',
             }) /* 执行方式 */
           }
         >
@@ -276,6 +297,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             label={
               formatMessage({
                 id: 'odc.src.component.Task.AsyncTask.DetailContent.ExecutionTime',
+                defaultMessage: '执行时间',
               }) /* 执行时间 */
             }
           >
@@ -288,6 +310,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.MissionDetails',
+              defaultMessage: '任务描述',
             }) /* 任务描述 */
           }
         >
@@ -306,6 +329,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.Founder',
+              defaultMessage: '创建人',
             }) /* 创建人 */
           }
         >
@@ -316,6 +340,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.CreationTime',
+              defaultMessage: '创建时间',
             }) /* 创建时间 */
           }
         >

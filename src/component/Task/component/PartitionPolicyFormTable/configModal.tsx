@@ -54,27 +54,45 @@ export enum NameRuleType {
 
 export const intervalPrecisionOptions = [
   {
-    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.436BC171' }), //'秒'
+    label: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.436BC171',
+      defaultMessage: '秒',
+    }), //'秒'
     value: 63,
   },
   {
-    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.0E0CEBAC' }), //'分'
+    label: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.0E0CEBAC',
+      defaultMessage: '分',
+    }), //'分'
     value: 31,
   },
   {
-    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.9EC2D1FF' }), //'时'
+    label: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.9EC2D1FF',
+      defaultMessage: '时',
+    }), //'时'
     value: 15,
   },
   {
-    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.1E11DFEA' }), //'日'
+    label: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.1E11DFEA',
+      defaultMessage: '日',
+    }), //'日'
     value: 7,
   },
   {
-    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.1FB1ABDC' }), //'月'
+    label: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.1FB1ABDC',
+      defaultMessage: '月',
+    }), //'月'
     value: 3,
   },
   {
-    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.069255DB' }), //'年'
+    label: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.069255DB',
+      defaultMessage: '年',
+    }), //'年'
     value: 1,
   },
 ];
@@ -95,11 +113,17 @@ const StrategyOptions = Object.keys(TaskPartitionStrategyMap)?.map((key) => ({
 
 const nameRuleOptions = [
   {
-    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.EB655A6C' }), //'前缀 + 后缀'
+    label: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.EB655A6C',
+      defaultMessage: '前缀 + 后缀',
+    }), //'前缀 + 后缀'
     value: NameRuleType.PRE_SUFFIX,
   },
   {
-    label: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.AB4964B2' }), //'自定义'
+    label: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.AB4964B2',
+      defaultMessage: '自定义',
+    }), //'自定义'
     value: NameRuleType.CUSTOM,
   },
 ];
@@ -143,10 +167,14 @@ const suffixOptions = [
 
 const DropConfigMessage = formatMessage({
   id: 'src.component.Task.component.PartitionPolicyFormTable.A9C95E9D',
+  defaultMessage:
+    '当前表如果包含全局索引，删除分区会导致全局索引失效，如果选择重建全局索引可能耗时很久，请谨慎操作',
 }); /*"当前表如果包含全局索引，删除分区会导致全局索引失效，请谨慎操作，如果选择重建全局索引可能耗时很久，请谨慎操作"*/
 
 const CreateConfigMessage = formatMessage({
   id: 'src.component.Task.component.PartitionPolicyFormTable.8DC77765',
+  defaultMessage:
+    '当前表如果属于表组（tablegroup），创建分区可能会失败或破坏负载均衡，请谨慎配置创建策略',
 }); /*"当前表如果属于表组（tablegroup），创建分区可能会失败或破坏负载均衡，请谨慎配置创建策略"*/
 
 export const getAlertMessage = (strategies: TaskPartitionStrategy[]) => {
@@ -196,8 +224,9 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       ? formatMessage(
           {
             id: 'odc.components.PartitionPolicyTable.configModal.WaitForTablelenTables',
+            defaultMessage: '...等 {tableLen} 个表',
           },
-          { tableLen: tableLen },
+          { tableLen },
         ) //`...等 ${tableLen} 个表`
       : '';
   const tableLabels = configs
@@ -385,8 +414,14 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
     <Drawer
       title={
         isBatch
-          ? formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.C3B6B344' })
-          : formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.F441A07F' })
+          ? formatMessage({
+              id: 'src.component.Task.component.PartitionPolicyFormTable.C3B6B344',
+              defaultMessage: '批量设置分区策略',
+            })
+          : formatMessage({
+              id: 'src.component.Task.component.PartitionPolicyFormTable.F441A07F',
+              defaultMessage: '设置分区策略',
+            })
       }
       open={visible}
       destroyOnClose
@@ -399,6 +434,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.components.PartitionPolicyTable.configModal.Cancel',
+                defaultMessage: '取消',
               }) /*取消*/
             }
           </Button>
@@ -410,6 +446,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'src.component.Task.component.PartitionPolicyFormTable.E0664950' /*预览 SQL*/,
+                defaultMessage: '预览 SQL',
               }) /* 预览 SQL */
             }
           </Button>
@@ -418,19 +455,23 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               overlayStyle={{ width: '216px' }}
               title={formatMessage({
                 id: 'odc.components.PartitionPolicyTable.configModal.BatchSettingWillOverwriteThe',
+                defaultMessage: '批量设置将覆盖原有的策略，是否确定设置？',
               })} /*批量设置将覆盖原有的策略，是否确定设置？*/
               onConfirm={handleOk}
               okText={formatMessage({
                 id: 'odc.components.PartitionPolicyTable.configModal.Ok',
+                defaultMessage: '确定',
               })} /*确定*/
               cancelText={formatMessage({
                 id: 'odc.components.PartitionPolicyTable.configModal.Return',
+                defaultMessage: '返回',
               })} /*返回*/
             >
               <Button type="primary">
                 {
                   formatMessage({
                     id: 'odc.components.PartitionPolicyTable.configModal.Ok',
+                    defaultMessage: '确定',
                   }) /*确定*/
                 }
               </Button>
@@ -440,6 +481,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.components.PartitionPolicyTable.configModal.Ok',
+                  defaultMessage: '确定',
                 }) /*确定*/
               }
             </Button>
@@ -462,6 +504,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
             label={
               formatMessage({
                 id: 'src.component.Task.component.PartitionPolicyFormTable.AE09B3CB',
+                defaultMessage: '分区表',
               }) /*"分区表"*/
             }
           >
@@ -471,6 +514,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
             label={
               formatMessage({
                 id: 'src.component.Task.component.PartitionPolicyFormTable.D50C1358',
+                defaultMessage: '分区类型',
               }) /*"分区类型"*/
             }
           >
@@ -482,6 +526,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'src.component.Task.component.PartitionPolicyFormTable.7632AF45',
+              defaultMessage: '分区策略',
             }) /*"分区策略"*/
           }
         >
@@ -504,6 +549,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
             label={
               formatMessage({
                 id: 'src.component.Task.component.PartitionPolicyFormTable.8686ABA2',
+                defaultMessage: '创建分区',
               }) /*"创建分区"*/
             }
           >
@@ -513,6 +559,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               label={
                 formatMessage({
                   id: 'src.component.Task.component.PartitionPolicyFormTable.C0FD367F',
+                  defaultMessage: '预创建分区数量',
                 }) /*"预创建分区数量"*/
               }
               rules={[
@@ -520,6 +567,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                   required: true,
                   message: formatMessage({
                     id: 'src.component.Task.component.PartitionPolicyFormTable.16355175',
+                    defaultMessage: '请输入预创建分区数量',
                   }), //'请输入预创建分区数量'
                 },
               ]}
@@ -528,6 +576,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 placeholder={
                   formatMessage({
                     id: 'src.component.Task.component.PartitionPolicyFormTable.F4F136CA',
+                    defaultMessage: '请输入',
                   }) /*"请输入"*/
                 }
                 min={0}
@@ -542,6 +591,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     {
                       formatMessage({
                         id: 'src.component.Task.component.PartitionPolicyFormTable.C28CD656' /*创建规则*/,
+                        defaultMessage: '创建规则',
                       }) /* 创建规则 */
                     }
                   </span>
@@ -555,6 +605,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     {
                       formatMessage({
                         id: 'src.component.Task.component.PartitionPolicyFormTable.DF75EB9E' /*如何配置*/,
+                        defaultMessage: '如何配置',
                       }) /* 如何配置 */
                     }
                   </Action.Link>
@@ -567,6 +618,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               label={
                 formatMessage({
                   id: 'src.component.Task.component.PartitionPolicyFormTable.C49FCEB6',
+                  defaultMessage: '命名方式',
                 }) /*"命名方式"*/
               }
               name="nameRuleType"
@@ -575,6 +627,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                   required: true,
                   message: formatMessage({
                     id: 'src.component.Task.component.PartitionPolicyFormTable.87D4D0BB',
+                    defaultMessage: '请选择',
                   }), //'请选择'
                 },
               ]}
@@ -585,6 +638,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               label={
                 formatMessage({
                   id: 'src.component.Task.component.PartitionPolicyFormTable.D82DD59C',
+                  defaultMessage: '命名规则',
                 }) /*"命名规则"*/
               }
               required
@@ -601,6 +655,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                           required: true,
                           message: formatMessage({
                             id: 'src.component.Task.component.PartitionPolicyFormTable.E5DA1FA4',
+                            defaultMessage: '请输入表达式',
                           }), //'请输入表达式'
                         },
                       ]}
@@ -610,11 +665,13 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                         placeholder={
                           formatMessage({
                             id: 'src.component.Task.component.PartitionPolicyFormTable.23B74BBB',
+                            defaultMessage: '请输入表达式',
                           }) /*"请输入表达式"*/
                         }
                         addonBefore={
                           formatMessage({
                             id: 'src.component.Task.component.PartitionPolicyFormTable.D97787FE',
+                            defaultMessage: '表达式',
                           }) /*"表达式"*/
                         }
                       />
@@ -631,18 +688,21 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                           required: true,
                           message: formatMessage({
                             id: 'src.component.Task.component.PartitionPolicyFormTable.4293BED4',
+                            defaultMessage: '请输入前缀',
                           }), //'请输入前缀'
                         },
                         {
                           pattern: /^[a-zA-Z][a-zA-Z0-9_]*$/,
                           message: formatMessage({
                             id: 'src.component.Task.component.PartitionPolicyFormTable.F70A7891',
+                            defaultMessage: '仅支持英文/数字/下划线，且以英文开头',
                           }), //'仅支持英文/数字/下划线，且以英文开头'
                         },
                         {
                           max: 32,
                           message: formatMessage({
                             id: 'src.component.Task.component.PartitionPolicyFormTable.D76C944C',
+                            defaultMessage: '不超过32个字符',
                           }), //'不超过32个字符'
                         },
                       ]}
@@ -652,11 +712,13 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                         addonBefore={
                           formatMessage({
                             id: 'src.component.Task.component.PartitionPolicyFormTable.7D91EBA7',
+                            defaultMessage: '前缀',
                           }) /*"前缀"*/
                         }
                         placeholder={
                           formatMessage({
                             id: 'src.component.Task.component.PartitionPolicyFormTable.D2573F4C',
+                            defaultMessage: '请输入前缀',
                           }) /*"请输入前缀"*/
                         }
                       />
@@ -669,12 +731,14 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                           title={
                             formatMessage({
                               id: 'src.component.Task.component.PartitionPolicyFormTable.2CF17EE5',
+                              defaultMessage: '后缀根据指定的分区键上界时间生成',
                             }) /*"后缀根据指定的分区键上界时间生成"*/
                           }
                         >
                           {
                             formatMessage({
                               id: 'src.component.Task.component.PartitionPolicyFormTable.0F79EE9C' /*后缀*/,
+                              defaultMessage: '后缀',
                             }) /* 后缀 */
                           }
                         </HelpDoc>
@@ -687,6 +751,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                             required: true,
                             message: formatMessage({
                               id: 'src.component.Task.component.PartitionPolicyFormTable.CC74D506',
+                              defaultMessage: '请选择',
                             }), //'请选择'
                           },
                         ]}
@@ -695,6 +760,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                           placeholder={
                             formatMessage({
                               id: 'src.component.Task.component.PartitionPolicyFormTable.B7A571C8',
+                              defaultMessage: '请选择',
                             }) /*"请选择"*/
                           }
                           optionLabelProp="label"
@@ -711,6 +777,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                             required: true,
                             message: formatMessage({
                               id: 'src.component.Task.component.PartitionPolicyFormTable.7183DAA0',
+                              defaultMessage: '请选择后缀',
                             }), //'请选择后缀'
                           },
                         ]}
@@ -719,6 +786,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                           placeholder={
                             formatMessage({
                               id: 'src.component.Task.component.PartitionPolicyFormTable.0259BAC2',
+                              defaultMessage: '请选择',
                             }) /*"请选择"*/
                           }
                           style={{ width: 124 }}
@@ -735,6 +803,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'src.component.Task.component.PartitionPolicyFormTable.8067C91E' /*测试生成*/,
+                    defaultMessage: '测试生成',
                   }) /* 测试生成 */
                 }
               </Action.Link>
@@ -742,6 +811,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 <Text type="secondary">
                   {formatMessage({
                     id: 'src.component.Task.component.PartitionPolicyFormTable.B0571B5B' /*分区名示例:*/,
+                    defaultMessage: '分区名示例：',
                   })}
 
                   {ruleExample}
@@ -754,6 +824,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 label={
                   formatMessage({
                     id: 'src.component.Task.component.PartitionPolicyFormTable.7BC3752C',
+                    defaultMessage: '命名间隔',
                   }) /*"命名间隔"*/
                 }
               >
@@ -762,6 +833,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                   placeholder={
                     formatMessage({
                       id: 'src.component.Task.component.PartitionPolicyFormTable.07788524',
+                      defaultMessage: '请输入',
                     }) /*"请输入"*/
                   }
                 />
@@ -776,6 +848,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
             label={
               formatMessage({
                 id: 'src.component.Task.component.PartitionPolicyFormTable.40F7E641',
+                defaultMessage: '删除分区',
               }) /*"删除分区"*/
             }
           >
@@ -788,6 +861,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     {
                       formatMessage({
                         id: 'src.component.Task.component.PartitionPolicyFormTable.7D6F23AE' /*分区保留数量*/,
+                        defaultMessage: '分区保留数量',
                       }) /* 分区保留数量 */
                     }
                   </HelpDoc>
@@ -797,6 +871,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     required: true,
                     message: formatMessage({
                       id: 'src.component.Task.component.PartitionPolicyFormTable.967356C8',
+                      defaultMessage: '请输入',
                     }), //'请输入'
                   },
                 ]}
@@ -805,6 +880,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                   placeholder={
                     formatMessage({
                       id: 'src.component.Task.component.PartitionPolicyFormTable.94B98AF7',
+                      defaultMessage: '请输入',
                     }) /*"请输入"*/
                   }
                   min={0}
@@ -817,6 +893,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 label={
                   formatMessage({
                     id: 'src.component.Task.component.PartitionPolicyFormTable.3C92777E',
+                    defaultMessage: '删除后是否重建索引',
                   }) /*"删除后是否重建索引"*/
                 }
                 rules={[
@@ -824,6 +901,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     required: true,
                     message: formatMessage({
                       id: 'src.component.Task.component.PartitionPolicyFormTable.393D1F82',
+                      defaultMessage: '请选择',
                     }), //'请选择'
                   },
                 ]}
@@ -833,6 +911,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     {
                       formatMessage({
                         id: 'src.component.Task.component.PartitionPolicyFormTable.77C8BE4D' /*是*/,
+                        defaultMessage: '是',
                       }) /* 是 */
                     }
                   </Radio>
@@ -840,6 +919,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     {
                       formatMessage({
                         id: 'src.component.Task.component.PartitionPolicyFormTable.E374E7C8' /*否*/,
+                        defaultMessage: '否',
                       }) /* 否 */
                     }
                   </Radio>

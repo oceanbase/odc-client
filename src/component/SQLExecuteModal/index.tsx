@@ -52,6 +52,7 @@ function SQLExecuteModal(props: {
         message.success(
           formatMessage({
             id: 'odc.component.SQLExecuteModal.ExecutionSucceeded',
+            defaultMessage: '执行成功',
           }), // 执行成功
         );
       } else {
@@ -66,6 +67,7 @@ function SQLExecuteModal(props: {
     <Modal
       title={formatMessage({
         id: 'odc.component.SQLExecuteModal.SqlConfirmation',
+        defaultMessage: 'SQL 确认',
       })} /* SQL 确认 */
       width={600}
       bodyStyle={{

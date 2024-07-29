@@ -50,7 +50,12 @@ export default function DefaultPage() {
       }}
     >
       <Typography.Title level={4}>
-        {formatMessage({ id: 'odc.component.WindowManager.DefaultPage.QuickStart' }) /*快速开始*/}
+        {
+          formatMessage({
+            id: 'odc.component.WindowManager.DefaultPage.QuickStart',
+            defaultMessage: '快速开始',
+          }) /*快速开始*/
+        }
       </Typography.Title>
       <div
         onClick={() => {
@@ -66,6 +71,7 @@ export default function DefaultPage() {
           {
             formatMessage({
               id: 'odc.component.WindowManager.DefaultPage.OpenTheSqlWindow',
+              defaultMessage: '打开 SQL 窗口',
             }) /*打开 SQL 窗口*/
           }
         </div>
@@ -84,6 +90,7 @@ export default function DefaultPage() {
           {
             formatMessage({
               id: 'odc.component.WindowManager.DefaultPage.OpenTheAnonymousBlockWindow',
+              defaultMessage: '打开匿名块窗口',
             }) /*打开匿名块窗口*/
           }
         </div>
@@ -102,6 +109,7 @@ export default function DefaultPage() {
           {
             formatMessage({
               id: 'odc.component.WindowManager.DefaultPage.ViewTickets',
+              defaultMessage: '查看工单',
             }) /*查看工单*/
           }
         </div>
@@ -124,6 +132,7 @@ export default function DefaultPage() {
           {
             formatMessage({
               id: 'odc.component.WindowManager.DefaultPage.SwitchTopics',
+              defaultMessage: '切换主题',
             }) /*切换主题*/
           }
         </div>

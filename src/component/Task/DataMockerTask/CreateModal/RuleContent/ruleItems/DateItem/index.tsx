@@ -77,7 +77,7 @@ const DateItem: React.FC<IDateItemProps> = forwardRef<FormInstance, IDateItemPro
         case DateRuleType.NORMAL: {
           items = getTextItem([
             [
-              formatMessage({ id: 'odc.ruleItems.DateItem.Date' }), // 日期
+              formatMessage({ id: 'odc.ruleItems.DateItem.Date', defaultMessage: '日期' }), // 日期
               value?.['genParams']?.timestamp,
             ],
           ]);
@@ -86,19 +86,26 @@ const DateItem: React.FC<IDateItemProps> = forwardRef<FormInstance, IDateItemPro
         case DateRuleType.ORDER: {
           items = getTextItem([
             [
-              formatMessage({ id: 'odc.ruleItems.DateItem.Date' }), // 日期
+              formatMessage({ id: 'odc.ruleItems.DateItem.Date', defaultMessage: '日期' }), // 日期
               value?.['lowValue'],
             ],
 
             [
-              formatMessage({ id: 'odc.ruleItems.DateItem.StepSize' }), // 步长
-              value?.['genParams']?.step + formatMessage({ id: 'odc.ruleItems.DateItem.Days' }), // 天
+              formatMessage({ id: 'odc.ruleItems.DateItem.StepSize', defaultMessage: '步长' }), // 步长
+              value?.['genParams']?.step +
+                formatMessage({ id: 'odc.ruleItems.DateItem.Days', defaultMessage: '天' }), // 天
             ],
             [
-              formatMessage({ id: 'odc.ruleItems.DateItem.SortingMethod' }), // 排序方式
+              formatMessage({
+                id: 'odc.ruleItems.DateItem.SortingMethod',
+                defaultMessage: '排序方式',
+              }), // 排序方式
               value?.['order'] === 'asc'
-                ? formatMessage({ id: 'odc.ruleItems.DateItem.PositiveSequence' }) // 正序
-                : formatMessage({ id: 'odc.ruleItems.DateItem.Reverse' }), // 倒序
+                ? formatMessage({
+                    id: 'odc.ruleItems.DateItem.PositiveSequence',
+                    defaultMessage: '正序',
+                  }) // 正序
+                : formatMessage({ id: 'odc.ruleItems.DateItem.Reverse', defaultMessage: '倒序' }), // 倒序
             ],
           ]);
           break;
@@ -106,7 +113,7 @@ const DateItem: React.FC<IDateItemProps> = forwardRef<FormInstance, IDateItemPro
         case DateRuleType.RANDOM: {
           items = getTextItem([
             [
-              formatMessage({ id: 'odc.ruleItems.DateItem.DateRange' }), // 日期范围
+              formatMessage({ id: 'odc.ruleItems.DateItem.DateRange', defaultMessage: '日期范围' }), // 日期范围
               value?.['range'],
             ],
           ]);
@@ -130,6 +137,7 @@ const DateItem: React.FC<IDateItemProps> = forwardRef<FormInstance, IDateItemPro
               <WrapItemWithTitle
                 addonBefore={formatMessage({
                   id: 'odc.ruleItems.DateItem.Date',
+                  defaultMessage: '日期',
                 })} /* 日期 */
               >
                 <DatePicker disabledDate={disabledDateOfMock} />
@@ -146,6 +154,7 @@ const DateItem: React.FC<IDateItemProps> = forwardRef<FormInstance, IDateItemPro
                 <WrapItemWithTitle
                   addonBefore={formatMessage({
                     id: 'odc.ruleItems.DateItem.Date',
+                    defaultMessage: '日期',
                   })} /* 日期 */
                 >
                   <DatePicker disabledDate={disabledDateOfMock} />
@@ -159,6 +168,7 @@ const DateItem: React.FC<IDateItemProps> = forwardRef<FormInstance, IDateItemPro
                 <WrapItemWithTitle
                   addonBefore={formatMessage({
                     id: 'odc.ruleItems.DateItem.StepSize',
+                    defaultMessage: '步长',
                   })} /* 步长 */
                 >
                   <InputNumber<number | string>
@@ -168,10 +178,14 @@ const DateItem: React.FC<IDateItemProps> = forwardRef<FormInstance, IDateItemPro
                       (value) =>
                         `${value}${formatMessage({
                           id: 'odc.ruleItems.DateItem.Days',
+                          defaultMessage: '天',
                         })}` // 天
                     }
                     parser={(value) =>
-                      value.replace(formatMessage({ id: 'odc.ruleItems.DateItem.Days' }), '')
+                      value.replace(
+                        formatMessage({ id: 'odc.ruleItems.DateItem.Days', defaultMessage: '天' }),
+                        '',
+                      )
                     }
                   />
                 </WrapItemWithTitle>
@@ -180,6 +194,7 @@ const DateItem: React.FC<IDateItemProps> = forwardRef<FormInstance, IDateItemPro
                 <WrapItemWithTitle
                   addonBefore={formatMessage({
                     id: 'odc.ruleItems.DateItem.Sort',
+                    defaultMessage: '排序',
                   })} /* 排序 */
                 >
                   <Select>
@@ -187,6 +202,7 @@ const DateItem: React.FC<IDateItemProps> = forwardRef<FormInstance, IDateItemPro
                       {
                         formatMessage({
                           id: 'odc.ruleItems.DateItem.PositiveSequence',
+                          defaultMessage: '正序',
                         }) /* 正序 */
                       }
                     </Option>
@@ -194,6 +210,7 @@ const DateItem: React.FC<IDateItemProps> = forwardRef<FormInstance, IDateItemPro
                       {
                         formatMessage({
                           id: 'odc.ruleItems.DateItem.Reverse',
+                          defaultMessage: '倒序',
                         }) /* 倒序 */
                       }
                     </Option>
@@ -211,6 +228,7 @@ const DateItem: React.FC<IDateItemProps> = forwardRef<FormInstance, IDateItemPro
               <WrapItemWithTitle
                 addonBefore={formatMessage({
                   id: 'odc.ruleItems.DateItem.Date',
+                  defaultMessage: '日期',
                 })} /* 日期 */
               >
                 <DatePicker.RangePicker disabledDate={disabledDateOfMock} />

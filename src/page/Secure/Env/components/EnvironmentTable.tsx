@@ -165,6 +165,7 @@ const EnvironmentTable: React.FC<IEnvironmentProps> = ({
       message.success(
         formatMessage({
           id: 'odc.src.page.Secure.Env.components.SubmittedSuccessfully',
+          defaultMessage: '提交成功',
         }), //'提交成功'
       );
       setEditRuleDrawerVisible(false);
@@ -173,6 +174,7 @@ const EnvironmentTable: React.FC<IEnvironmentProps> = ({
       message.error(
         formatMessage({
           id: 'odc.src.page.Secure.Env.components.SubmissionFailed',
+          defaultMessage: '提交失败',
         }), //'提交失败'
       );
     }
@@ -192,25 +194,46 @@ const EnvironmentTable: React.FC<IEnvironmentProps> = ({
       if (successful) {
         message.success(
           rule.enabled
-            ? formatMessage({ id: 'src.page.Secure.Env.components.B398D211' })
-            : formatMessage({ id: 'src.page.Secure.Env.components.666A8F25' }),
+            ? formatMessage({
+                id: 'src.page.Secure.Env.components.B398D211',
+                defaultMessage: '禁用成功',
+              })
+            : formatMessage({
+                id: 'src.page.Secure.Env.components.666A8F25',
+                defaultMessage: '启用成功',
+              }),
         );
         tableRef.current?.reload(argsRef.current || {});
       } else {
         message.error(
           rule.enabled
-            ? formatMessage({ id: 'src.page.Secure.Env.components.8DBF10C0' })
-            : formatMessage({ id: 'src.page.Secure.Env.components.C55A45B1' }),
+            ? formatMessage({
+                id: 'src.page.Secure.Env.components.8DBF10C0',
+                defaultMessage: '禁用失败',
+              })
+            : formatMessage({
+                id: 'src.page.Secure.Env.components.C55A45B1',
+                defaultMessage: '启用失败',
+              }),
         );
       }
     };
     if (isCloseDisabledPLDebug) {
       return modal.confirm({
-        title: formatMessage({ id: 'src.page.Secure.Env.components.C11B3607' }), //'确认禁用？'
+        title: formatMessage({
+          id: 'src.page.Secure.Env.components.C11B3607',
+          defaultMessage: '确认禁用？',
+        }), //'确认禁用？'
         centered: true,
         content: rule?.metadata?.description,
-        cancelText: formatMessage({ id: 'src.page.Secure.Env.components.3CCC8328' }), //'取消'
-        okText: formatMessage({ id: 'src.page.Secure.Env.components.8D575F5C' }), //'确认'
+        cancelText: formatMessage({
+          id: 'src.page.Secure.Env.components.3CCC8328',
+          defaultMessage: '取消',
+        }), //'取消'
+        okText: formatMessage({
+          id: 'src.page.Secure.Env.components.8D575F5C',
+          defaultMessage: '确认',
+        }), //'确认'
         onCancel: () => {},
         onOk: switchRuleStatus,
       });

@@ -46,6 +46,7 @@ const EditToolbar: React.FC<IProps> = function (props) {
               {
                 formatMessage({
                   id: 'odc.components.CreateTable.EditToolbar.Cancel',
+                  defaultMessage: '取消',
                 }) /*取消*/
               }
             </Button>
@@ -56,6 +57,7 @@ const EditToolbar: React.FC<IProps> = function (props) {
                 props.onOk();
               }}
             />
+
             <Button
               type="primary"
               onClick={() => {
@@ -70,6 +72,7 @@ const EditToolbar: React.FC<IProps> = function (props) {
               {
                 formatMessage({
                   id: 'odc.components.CreateTable.EditToolbar.NextStepConfirmSql',
+                  defaultMessage: '下一步：确认 SQL',
                 }) /*下一步：确认 SQL*/
               }
             </Button>

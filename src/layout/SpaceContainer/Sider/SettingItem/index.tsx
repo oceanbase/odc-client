@@ -34,7 +34,10 @@ const SettingItem: React.FC<IProps> = function ({ collapsed }) {
         }}
         icon={SettingOutlined}
         collapsed={collapsed}
-        label={formatMessage({ id: 'src.layout.SpaceContainer.Sider.SettingItem.CBBE0F8B' })}
+        label={formatMessage({
+          id: 'src.layout.SpaceContainer.Sider.SettingItem.CBBE0F8B',
+          defaultMessage: '设置',
+        })}
       />
 
       <ODCSetting />

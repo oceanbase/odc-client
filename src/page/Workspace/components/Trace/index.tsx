@@ -136,6 +136,7 @@ const Trace: React.FC<{
       title={
         formatMessage({
           id: 'odc.src.page.Workspace.components.Trace.FullLinkTraceDetails',
+          defaultMessage: '全链路 Trace 详情',
         }) //'全链路 Trace 详情'
       }
       destroyOnClose={true}
@@ -162,6 +163,7 @@ const Trace: React.FC<{
                 message.success(
                   formatMessage({
                     id: 'odc.src.page.Workspace.components.Trace.Replication',
+                    defaultMessage: '复制成功',
                   }), //'复制成功'
                 );
               }}
@@ -174,6 +176,7 @@ const Trace: React.FC<{
               {
                 formatMessage({
                   id: 'odc.src.page.Workspace.components.Trace.StartingTime',
+                  defaultMessage: '开始时间: ',
                 }) /* 开始时间:  */
               }
             </span>
@@ -185,6 +188,7 @@ const Trace: React.FC<{
               {
                 formatMessage({
                   id: 'odc.src.page.Workspace.components.Trace.Duration',
+                  defaultMessage: '持续时间: ',
                 }) /* 持续时间:  */
               }
             </span>
@@ -200,6 +204,7 @@ const Trace: React.FC<{
             {
               formatMessage({
                 id: 'odc.src.page.Workspace.components.Trace.TraceView',
+                defaultMessage: 'Trace 视图',
               }) /* Trace 视图 */
             }
           </Radio.Button>
@@ -207,6 +212,7 @@ const Trace: React.FC<{
             {
               formatMessage({
                 id: 'odc.src.page.Workspace.components.Trace.ListView',
+                defaultMessage: '列表视图',
               }) /* 列表视图 */
             }
           </Radio.Button>
@@ -219,17 +225,20 @@ const Trace: React.FC<{
             placeholder={
               formatMessage({
                 id: 'odc.src.page.Workspace.components.Trace.SearchForTheKeyword',
+                defaultMessage: '搜索关键字',
               }) /* 搜索关键字 */
             }
             onSearch={onSearch}
           />
+
           <Button loading={downloadLoading} disabled={downloadLoading} onClick={handleJsonDownload}>
             {
               formatMessage({
                 id: 'odc.src.page.Workspace.components.Trace.ExportJson',
+                defaultMessage: '\n            导出 Json\n          ',
               }) /* 
             导出 Json
-           */
+            */
             }
           </Button>
           <Tooltip
@@ -237,6 +246,7 @@ const Trace: React.FC<{
             title={
               formatMessage({
                 id: 'odc.src.page.Workspace.components.Trace.ExportTheJSONFileThat',
+                defaultMessage: '导出符合 OpenTracing 规范的 Json 文件，可导入 Jaeger 查看',
               }) //'导出符合 OpenTracing 规范的 Json 文件，可导入 Jaeger 查看'
             }
           >

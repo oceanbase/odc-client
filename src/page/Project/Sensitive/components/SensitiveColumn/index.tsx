@@ -105,6 +105,7 @@ const getColumns: ({
     {
       title: formatMessage({
         id: 'odc.components.SensitiveColumn.DataSource',
+        defaultMessage: '数据源',
       }),
       //数据源
       width: 170,
@@ -116,6 +117,7 @@ const getColumns: ({
     {
       title: formatMessage({
         id: 'odc.components.SensitiveColumn.DatabaseSchema',
+        defaultMessage: '数据库/schema',
       }),
       //数据库/schema
       width: 170,
@@ -127,6 +129,7 @@ const getColumns: ({
     {
       title: formatMessage({
         id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.TableView',
+        defaultMessage: '表/视图',
       }), //'表/视图'
       //表
       width: 170,
@@ -162,6 +165,7 @@ const getColumns: ({
     {
       title: formatMessage({
         id: 'odc.components.SensitiveColumn.Column',
+        defaultMessage: '列',
       }),
       //列
       width: 170,
@@ -173,6 +177,7 @@ const getColumns: ({
     {
       title: formatMessage({
         id: 'odc.components.SensitiveColumn.DesensitizationAlgorithm',
+        defaultMessage: '脱敏算法',
       }),
       //脱敏算法
       width: 170,
@@ -191,20 +196,22 @@ const getColumns: ({
             descriptionsData={[
               {
                 label: formatMessage({
-                  id:
-                    'odc.src.page.Project.Sensitive.components.SensitiveColumn.DesensitizationMethod',
+                  id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.DesensitizationMethod',
+                  defaultMessage: '脱敏方式',
                 }) /* 脱敏方式 */,
                 value: maskRuleTypeMap?.[target?.type],
               },
               {
                 label: formatMessage({
                   id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.TestData',
+                  defaultMessage: '测试数据',
                 }) /* 测试数据 */,
                 value: target?.sampleContent,
               },
               {
                 label: formatMessage({
                   id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.Preview',
+                  defaultMessage: '结果预览',
                 }) /* 结果预览 */,
                 value: target?.maskedContent,
               },
@@ -221,6 +228,7 @@ const getColumns: ({
     {
       title: formatMessage({
         id: 'odc.components.SensitiveColumn.EnableStatus',
+        defaultMessage: '启用状态',
       }),
       //启用状态
       width: 120,
@@ -230,6 +238,7 @@ const getColumns: ({
         {
           text: formatMessage({
             id: 'odc.components.SensitiveColumn.Enable',
+            defaultMessage: '启用',
           }),
           //启用
           value: true,
@@ -237,11 +246,13 @@ const getColumns: ({
         {
           text: formatMessage({
             id: 'odc.components.SensitiveColumn.Disable',
+            defaultMessage: '禁用',
           }),
           //禁用
           value: false,
         },
       ],
+
       render: (text, { id, enabled }, index) => (
         <StatusSwitch
           key={index}
@@ -255,6 +266,7 @@ const getColumns: ({
     {
       title: formatMessage({
         id: 'odc.components.SensitiveColumn.Operation',
+        defaultMessage: '操作',
       }),
       //操作
       width: 154,
@@ -272,6 +284,7 @@ const getColumns: ({
             {
               formatMessage({
                 id: 'odc.components.SensitiveColumn.Edit',
+                defaultMessage: '编辑',
               }) /*编辑*/
             }
           </Button>
@@ -286,6 +299,7 @@ const getColumns: ({
             {
               formatMessage({
                 id: 'odc.components.SensitiveColumn.Delete',
+                defaultMessage: '删除',
               }) /*删除*/
             }
           </Button>
@@ -302,12 +316,8 @@ const SensitiveColumn = ({
 }) => {
   const tableRef = useRef<ITableInstance>();
   const sensitiveContext = useContext(SensitiveContext);
-  const {
-    dataSourceIdMap,
-    maskingAlgorithms,
-    maskingAlgorithmIdMap,
-    maskingAlgorithmOptions,
-  } = sensitiveContext;
+  const { dataSourceIdMap, maskingAlgorithms, maskingAlgorithmIdMap, maskingAlgorithmOptions } =
+    sensitiveContext;
   const [sensitiveColumnIds, setSensitiveColumnIds] = useState<number[]>([]);
   const [addSensitiveColumnType, setAddSensitiveColumnType] = useState<AddSensitiveColumnType>(
     AddSensitiveColumnType.Scan,
@@ -328,6 +338,7 @@ const SensitiveColumn = ({
       {
         okText: formatMessage({
           id: 'odc.components.SensitiveColumn.BatchEdit',
+          defaultMessage: '批量编辑',
         }),
         //批量编辑
         onOk: (keys) => {
@@ -337,6 +348,7 @@ const SensitiveColumn = ({
       {
         okText: formatMessage({
           id: 'odc.components.SensitiveColumn.BatchDeletion',
+          defaultMessage: '批量删除',
         }),
         //批量删除
         onOk: (keys) => {
@@ -396,6 +408,7 @@ const SensitiveColumn = ({
     return Modal.confirm({
       title: formatMessage({
         id: 'odc.components.SensitiveColumn.AreYouSureYouWant',
+        defaultMessage: '是否确认取消新建？',
       }),
       //确认要取消新建吗？
       onOk: async () => {
@@ -405,10 +418,12 @@ const SensitiveColumn = ({
       onCancel: () => {},
       okText: formatMessage({
         id: 'odc.components.SensitiveColumn.Ok',
+        defaultMessage: '确定',
       }),
       //确定
       cancelText: formatMessage({
         id: 'odc.components.SensitiveColumn.Cancel',
+        defaultMessage: '取消',
       }), //取消
     });
   };
@@ -442,6 +457,7 @@ const SensitiveColumn = ({
       message.success(
         formatMessage({
           id: 'odc.components.SensitiveColumn.UpdatedSuccessfully',
+          defaultMessage: '更新成功',
         }), //更新成功
       );
 
@@ -450,6 +466,7 @@ const SensitiveColumn = ({
       message.error(
         formatMessage({
           id: 'odc.components.SensitiveColumn.UpdateFailed',
+          defaultMessage: '更新失败',
         }), //更新失败
       );
     }
@@ -464,6 +481,7 @@ const SensitiveColumn = ({
     return Modal.confirm({
       title: formatMessage({
         id: 'odc.components.SensitiveColumn.AreYouSureYouWant.1',
+        defaultMessage: '确认要删除敏感列吗？',
       }),
       //确认要删除敏感列吗？
       onOk: debounce(async () => {
@@ -474,12 +492,14 @@ const SensitiveColumn = ({
             message.success(
               formatMessage({
                 id: 'odc.components.SensitiveColumn.DeletedSuccessfully',
+                defaultMessage: '删除成功',
               }), //删除成功
             );
           } else {
             message.error(
               formatMessage({
                 id: 'odc.components.SensitiveColumn.FailedToDelete',
+                defaultMessage: '删除失败',
               }), //删除失败
             );
           }
@@ -500,10 +520,12 @@ const SensitiveColumn = ({
       onCancel: () => {},
       okText: formatMessage({
         id: 'odc.components.SensitiveColumn.Ok',
+        defaultMessage: '确定',
       }),
       //确定
       cancelText: formatMessage({
         id: 'odc.components.SensitiveColumn.Cancel',
+        defaultMessage: '取消',
       }), //取消
     });
   };
@@ -529,6 +551,7 @@ const SensitiveColumn = ({
             {
               formatMessage({
                 id: 'odc.components.SensitiveColumn.AddSensitiveColumns',
+                defaultMessage: '添加敏感列',
               }) /*添加敏感列*/
             }
 
@@ -537,12 +560,14 @@ const SensitiveColumn = ({
         </a>
       </Button>
     ),
+
     menu: {
       items: [
         {
           key: AddSensitiveColumnType.Manual,
           label: formatMessage({
             id: 'odc.components.SensitiveColumn.ManuallyAdd',
+            defaultMessage: '手动添加',
           }),
           onClick: () => {
             setAddSensitiveColumnType(AddSensitiveColumnType.Manual);
@@ -555,6 +580,7 @@ const SensitiveColumn = ({
           key: AddSensitiveColumnType.Scan,
           label: formatMessage({
             id: 'odc.components.SensitiveColumn.ScanAdd',
+            defaultMessage: '扫描添加',
           }),
           onClick: () => {
             setAddSensitiveColumnType(AddSensitiveColumnType.Scan);
@@ -575,13 +601,14 @@ const SensitiveColumn = ({
         filterContent={{
           searchPlaceholder: formatMessage({
             id: 'odc.components.SensitiveColumn.EnterATableNameColumn',
+            defaultMessage: '请输入表名/列名',
           }), //请输入表名/列名
         }}
         cascaderContent={{
           options: cascaderOptions,
           placeholder: formatMessage({
-            id:
-              'odc.src.page.Project.Sensitive.components.SensitiveColumn.PleaseSelectTheDataSource',
+            id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.PleaseSelectTheDataSource',
+            defaultMessage: '请选择数据源和库',
           }), //'请选择数据源和库'
         }}
         operationContent={{

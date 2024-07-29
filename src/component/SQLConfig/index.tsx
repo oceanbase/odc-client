@@ -86,6 +86,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
             {
               formatMessage({
                 id: 'src.component.SQLConfig.2F1AC452' /*报错继续执行*/,
+                defaultMessage: '报错继续执行',
               }) /* 报错继续执行 */
             }
           </Row>
@@ -107,6 +108,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
             {
               formatMessage({
                 id: 'odc.component.SQLConfig.QueryResultLimits',
+                defaultMessage: '查询结果限制',
               })
               /*查询结果限制*/
             }
@@ -121,6 +123,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
               }}
               placeholder={formatMessage({
                 id: 'odc.component.SQLConfig.Unlimited',
+                defaultMessage: '无限制',
               })}
               /*无限制*/
               onChange={(v) => {
@@ -149,6 +152,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
                 {
                   formatMessage({
                     id: 'odc.component.SQLConfig.UnlimitedSystemInstability',
+                    defaultMessage: '无限制易导致系统不稳定',
                   })
 
                   /*无限制易导致系统不稳定*/
@@ -165,6 +169,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
             {
               formatMessage({
                 id: 'odc.component.SQLConfig.ObtainTheColumnInformationOf',
+                defaultMessage: '获取结果集列信息',
               }) /*获取结果集列信息*/
             }
           </Row>
@@ -172,6 +177,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
             <Tooltip
               title={formatMessage({
                 id: 'odc.component.SQLConfig.AfterClosingColumnCommentsAnd',
+                defaultMessage: '关闭后将不查询获取列注释及可编辑的列信息，可降低 DB 耗时',
               })} /*关闭后将不查询获取列注释及可编辑的列信息，可降低 DB 耗时*/
             >
               <Switch
@@ -196,6 +202,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
             {
               formatMessage({
                 id: 'odc.component.SQLConfig.SetSessionVariables',
+                defaultMessage: '设置会话变量 >',
               }) //设置会话变量 >
             }
           </a>
@@ -230,7 +237,12 @@ const SQLConfig: React.FC<IProps> = function (props) {
           <SettingOutlined style={{ fontSize: 14, height: 14, overflow: 'hidden' }} />
           {props.isShowText ? (
             <span style={{ whiteSpace: 'nowrap', marginLeft: 5, lineHeight: 1 }}>
-              {formatMessage({ id: 'odc.component.SQLConfig.Set' }) /*设置*/}
+              {
+                formatMessage({
+                  id: 'odc.component.SQLConfig.Set',
+                  defaultMessage: '设置',
+                }) /*设置*/
+              }
             </span>
           ) : null}
         </span>

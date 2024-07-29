@@ -45,6 +45,7 @@ export default class ModalHelp extends PureComponent<{
             {formatMessage(
               {
                 id: 'odc.components.ModalHelpAbout.VersionNumberPkgversion',
+                defaultMessage: '版本号：{pkgVersion}',
               },
               { pkgVersion: ODC_VERSION },
             )}

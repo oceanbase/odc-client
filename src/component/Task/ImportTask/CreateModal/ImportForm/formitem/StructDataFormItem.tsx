@@ -47,6 +47,7 @@ const StructDataFormItem: React.FC<IProps> = function (props) {
               <FormItemPanel
                 label={formatMessage({
                   id: 'odc.ImportDrawer.ImportForm.ImportDataSettings',
+                  defaultMessage: '导入数据设置',
                 })}
                 keepExpand
                 overview={
@@ -65,6 +66,7 @@ const StructDataFormItem: React.FC<IProps> = function (props) {
                         <HelpDoc leftText isTip doc="truncateTableBeforeImport">
                           {formatMessage({
                             id: 'odc.ImportDrawer.ImportForm.ClearDataBeforeImport',
+                            defaultMessage: '导入前清空数据',
                           })}
                         </HelpDoc>
                       </Checkbox>
@@ -80,6 +82,7 @@ const StructDataFormItem: React.FC<IProps> = function (props) {
                           <HelpDoc leftText isTip doc="batchCommitNum">
                             {formatMessage({
                               id: 'odc.ImportDrawer.ImportForm.BatchSubmissionQuantity',
+                              defaultMessage: '批量提交数量',
                             })}
                           </HelpDoc>
                         }
@@ -89,6 +92,7 @@ const StructDataFormItem: React.FC<IProps> = function (props) {
                             required: true,
                             message: formatMessage({
                               id: 'odc.ImportDrawer.ImportForm.EnterTheNumberOfBatch',
+                              defaultMessage: '请填写批量提交数量',
                             }),
                           },
                         ]}
@@ -112,6 +116,7 @@ const StructDataFormItem: React.FC<IProps> = function (props) {
                                 <span style={{ color: 'var(--text-color-primary)' }}>
                                   {formatMessage({
                                     id: 'odc.ImportDrawer.ImportForm.DataTypeSkipped',
+                                    defaultMessage: '不导入的数据类型',
                                   })}
                                 </span>
                               }
@@ -133,8 +138,8 @@ const StructDataFormItem: React.FC<IProps> = function (props) {
                   <HelpDoc leftText isTip doc="existAction">
                     {
                       formatMessage({
-                        id:
-                          'odc.ImportForm.formitem.StructDataFormItem.ImportStructureSettingsWhenThe',
+                        id: 'odc.ImportForm.formitem.StructDataFormItem.ImportStructureSettingsWhenThe',
+                        defaultMessage: '导入结构设置：结构已存在时',
                       }) /* 导入结构设置：结构已存在时 */
                     }
                   </HelpDoc>
@@ -146,11 +151,13 @@ const StructDataFormItem: React.FC<IProps> = function (props) {
                   <Radio value={false}>
                     {formatMessage({
                       id: 'odc.ImportDrawer.ImportForm.Skip',
+                      defaultMessage: '跳过',
                     })}
                   </Radio>
                   <Radio value>
                     {formatMessage({
                       id: 'odc.ImportDrawer.ImportForm.Replacement',
+                      defaultMessage: '替换',
                     })}
                   </Radio>
                 </Radio.Group>

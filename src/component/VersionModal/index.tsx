@@ -92,6 +92,7 @@ const VersionModal: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.component.VersionModal.ProductFunctionIntroduction',
+                defaultMessage: '产品功能介绍',
               }) /* 产品功能介绍 */
             }
           </div>
@@ -106,6 +107,7 @@ const VersionModal: React.FC<IProps> = (props) => {
               label: menu.title,
             }))}
           />
+
           <Button
             className={styles.menuBtn}
             onClick={() => {
@@ -118,8 +120,11 @@ const VersionModal: React.FC<IProps> = (props) => {
           >
             {
               activeKey === menuList.length - 1
-                ? formatMessage({ id: 'odc.component.VersionModal.ISee' }) // 我知道了
-                : formatMessage({ id: 'odc.component.VersionModal.Next' }) // 下一个
+                ? formatMessage({
+                    id: 'odc.component.VersionModal.ISee',
+                    defaultMessage: '我知道了',
+                  }) // 我知道了
+                : formatMessage({ id: 'odc.component.VersionModal.Next', defaultMessage: '下一个' }) // 下一个
             }
           </Button>
         </div>

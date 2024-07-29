@@ -33,6 +33,7 @@ export default function DBTimeline({ row }: IProps) {
     {
       title: formatMessage({
         id: 'odc.components.SQLResultSet.ExecuteHistory.OdcParsesSql',
+        defaultMessage: 'ODC 解析 SQL',
       }), //ODC 解析 SQL
       key: 'ODC Parse SQL',
     },
@@ -40,16 +41,21 @@ export default function DBTimeline({ row }: IProps) {
     {
       title: formatMessage({
         id: 'odc.components.SQLResultSet.ExecuteHistory.OdcRewriteSql',
+        defaultMessage: 'ODC 重写 SQL',
       }), //ODC 重写 SQL
       key: 'ODC Rewrite SQL',
     },
     {
-      title: formatMessage({ id: 'odc.components.SQLResultSet.DBTimeline.SqlPrecheck' }), //SQL 预检查
+      title: formatMessage({
+        id: 'odc.components.SQLResultSet.DBTimeline.SqlPrecheck',
+        defaultMessage: 'SQL 预检查',
+      }), //SQL 预检查
       key: 'Sql intercept pre-check',
     },
     {
       title: formatMessage({
         id: 'odc.components.SQLResultSet.ExecuteHistory.Run',
+        defaultMessage: '执行',
       }), //执行
       key: 'Execute',
     },
@@ -57,29 +63,36 @@ export default function DBTimeline({ row }: IProps) {
     {
       title: formatMessage({
         id: 'odc.components.SQLResultSet.ExecuteHistory.ObtainTheSqlType',
+        defaultMessage: '获取 SQL 类型',
       }), //获取 SQL 类型
       key: 'Init SQL type',
     },
     {
       title: formatMessage({
         id: 'odc.components.SQLResultSet.ExecuteHistory.ObtainEditableInformation',
+        defaultMessage: '获取可编辑信息',
       }), //获取可编辑信息
       key: 'Init editable info',
     },
     {
       title: formatMessage({
         id: 'odc.components.SQLResultSet.ExecuteHistory.GetColumnInformation',
+        defaultMessage: '获取列信息',
       }), //获取列信息
       key: 'Init column info',
     },
     {
       title: formatMessage({
         id: 'odc.components.SQLResultSet.ExecuteHistory.ObtainAlertContent',
+        defaultMessage: '获取告警内容',
       }), //获取告警内容
       key: 'Init warning message',
     },
     {
-      title: formatMessage({ id: 'odc.components.SQLResultSet.DBTimeline.SqlPostCheck' }), //SQL 后置检查
+      title: formatMessage({
+        id: 'odc.components.SQLResultSet.DBTimeline.SqlPostCheck',
+        defaultMessage: 'SQL 后置检查',
+      }), //SQL 后置检查
       key: 'Sql intercept after-check',
     },
   ];
@@ -120,6 +133,8 @@ export default function DBTimeline({ row }: IProps) {
                     {
                       formatMessage({
                         id: 'odc.components.SQLResultSet.ExecuteHistory.ItTakesTooMuchTime',
+                        defaultMessage:
+                          '耗时过大，建议在 SQL 窗口设置中关闭获取，关闭后不再查询列注释及可编辑的列信息',
                       }) /*耗时过大，建议在SQL窗口设置中关闭获取，关闭后不再查询列注释及可编辑的列信息*/
                     }
                   </Typography.Text>
@@ -133,6 +148,7 @@ export default function DBTimeline({ row }: IProps) {
         {
           formatMessage({
             id: 'odc.components.SQLResultSet.ExecuteHistory.Completed',
+            defaultMessage: '完成',
           }) /*完成*/
         }
 
@@ -140,6 +156,7 @@ export default function DBTimeline({ row }: IProps) {
           {
             formatMessage({
               id: 'odc.components.SQLResultSet.ExecuteHistory.TotalTimeConsumed',
+              defaultMessage: '(总耗时:',
             }) /*(总耗时:*/
           }
           {formatTimeTemplate(timer?.totalDurationMicroseconds / 1000000)})

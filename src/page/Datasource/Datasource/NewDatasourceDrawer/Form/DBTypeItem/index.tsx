@@ -28,7 +28,10 @@ export default function DBTypeItem() {
     <Form.Item
       shouldUpdate
       requiredMark={false}
-      label={formatMessage({ id: 'odc.Form.DBTypeItem.DataSourceType' })} /*数据源类型*/
+      label={formatMessage({
+        id: 'odc.Form.DBTypeItem.DataSourceType',
+        defaultMessage: '数据源类型',
+      })} /*数据源类型*/
     >
       {({ getFieldValue, setFieldsValue }) => {
         const type: ConnectType = getFieldValue('type');

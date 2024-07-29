@@ -58,6 +58,10 @@ const config = {
     method: `formatMessage({id: '$key$' })`,
     withDefaultMessage: true,
   },
+  migrateConfig: {
+    defaultMessage: true,
+    parametersShortHand: true,
+  },
 };
 
 module.exports = config;

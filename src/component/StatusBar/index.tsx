@@ -32,24 +32,29 @@ interface IProps {
 }
 
 const typeTextMap = {
-  COMPILE: formatMessage({ id: 'odc.components.PLPage.statusBar.Compile' }),
-  DEBUG: formatMessage({ id: 'odc.components.PLPage.statusBar.Run' }),
-  RUN: formatMessage({ id: 'odc.components.PLPage.statusBar.Run' }),
+  COMPILE: formatMessage({ id: 'odc.components.PLPage.statusBar.Compile', defaultMessage: '编译' }),
+  DEBUG: formatMessage({ id: 'odc.components.PLPage.statusBar.Run', defaultMessage: '运行' }),
+  RUN: formatMessage({ id: 'odc.components.PLPage.statusBar.Run', defaultMessage: '运行' }),
 };
 
 const statusTextMap = {
   FAIL: formatMessage({
     id: 'odc.components.PLPage.statusBar.AbnormalTermination',
+    defaultMessage: '异常终止',
   }),
 
-  SUCCESS: formatMessage({ id: 'odc.components.PLPage.statusBar.Complete' }),
-  RUNNING: formatMessage({ id: 'odc.components.PLPage.statusBar.Medium' }),
+  SUCCESS: formatMessage({
+    id: 'odc.components.PLPage.statusBar.Complete',
+    defaultMessage: '完成',
+  }),
+  RUNNING: formatMessage({ id: 'odc.components.PLPage.statusBar.Medium', defaultMessage: '中' }),
   WARNING: formatMessage({
     id: 'odc.components.PLPage.statusBar.ManualTermination',
+    defaultMessage: '手动终止',
   }),
 
-  COMPLETED: formatMessage({ id: 'odc.component.StatusBar.Complete' }), //完成
-  TERMINATED: formatMessage({ id: 'odc.component.StatusBar.Termination' }), //终止
+  COMPLETED: formatMessage({ id: 'odc.component.StatusBar.Complete', defaultMessage: '完成' }), //完成
+  TERMINATED: formatMessage({ id: 'odc.component.StatusBar.Termination', defaultMessage: '终止' }), //终止
 };
 
 const antdTypeMap: any = {
@@ -71,7 +76,7 @@ const StatusBar: React.FC<IProps> = function (props) {
   return (
     <div className={styles.footer}>
       <span>
-        {formatMessage({ id: 'odc.components.PLPage.statusBar.Status' })}
+        {formatMessage({ id: 'odc.components.PLPage.statusBar.Status', defaultMessage: '状态：' })}
 
         <Badge
           style={{ fontSize: 12 }}
@@ -82,7 +87,7 @@ const StatusBar: React.FC<IProps> = function (props) {
       <Divider type="vertical" />
       <span>
         {typeTextMap[type]}
-        {formatMessage({ id: 'odc.components.PLPage.statusBar.Time' })}
+        {formatMessage({ id: 'odc.components.PLPage.statusBar.Time', defaultMessage: '时间：' })}
         <TimeText beginTime={startTime} endTime={endTime} />
       </span>
     </div>

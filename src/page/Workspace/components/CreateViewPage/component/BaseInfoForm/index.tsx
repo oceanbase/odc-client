@@ -35,14 +35,14 @@ export default class BaseInfoForm extends PureComponent<IProps> {
     const isOracle = connectionMode === ConnectionMode.OB_ORACLE;
     const r = [
       {
-        name: formatMessage({ id: 'odc.component.BaseInfoForm.No' }), // 无
+        name: formatMessage({ id: 'odc.component.BaseInfoForm.No', defaultMessage: '无' }), // 无
         value: 'NONE',
       },
     ];
 
     if (isOracle) {
       r.push({
-        name: formatMessage({ id: 'odc.component.BaseInfoForm.ReadOnly' }), // 只读
+        name: formatMessage({ id: 'odc.component.BaseInfoForm.ReadOnly', defaultMessage: '只读' }), // 只读
         value: 'READ_ONLY',
       });
     }
@@ -64,6 +64,7 @@ export default class BaseInfoForm extends PureComponent<IProps> {
             <Form.Item
               label={formatMessage({
                 id: 'odc.component.BaseInfoForm.ViewName',
+                defaultMessage: '视图名称',
               })} /* 视图名称 */
               name="viewName"
               rules={[
@@ -71,6 +72,7 @@ export default class BaseInfoForm extends PureComponent<IProps> {
                   required: true,
                   message: formatMessage({
                     id: 'odc.component.BaseInfoForm.EnterAViewName',
+                    defaultMessage: '请输入视图名称',
                   }), // 请输入视图名称
                 },
               ]}
@@ -79,6 +81,7 @@ export default class BaseInfoForm extends PureComponent<IProps> {
                 autoFocus
                 placeholder={formatMessage({
                   id: 'odc.component.BaseInfoForm.EnterAViewName',
+                  defaultMessage: '请输入视图名称',
                 })} /* 请输入视图名称 */
               />
             </Form.Item>
@@ -87,6 +90,7 @@ export default class BaseInfoForm extends PureComponent<IProps> {
             <Form.Item
               label={formatMessage({
                 id: 'odc.component.BaseInfoForm.CheckItem',
+                defaultMessage: '检查项',
               })}
               /* 检查项 */ name="checkOption"
             >
@@ -104,6 +108,7 @@ export default class BaseInfoForm extends PureComponent<IProps> {
           {
             formatMessage({
               id: 'odc.component.BaseInfoForm.Determine',
+              defaultMessage: '确定',
             }) /* 确定 */
           }
         </Button>

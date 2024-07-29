@@ -35,11 +35,9 @@ export async function getExportObjects(
   databaseId: number,
   type?: DbObjectType,
   cid?: number,
-): Promise<
-  {
-    [key in DbObjectType]: string[];
-  }
-> {
+): Promise<{
+  [key in DbObjectType]: string[];
+}> {
   const result = await request.get(`/api/v2/dataTransfer/getExportObjects`, {
     params: {
       connectionId: cid,

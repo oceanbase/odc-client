@@ -267,7 +267,7 @@ const EditTemplate: React.FC<{
                                     {formatMessage(
                                       {
                                         id: 'src.component.Task.MutipleAsyncTask.components.Template.0A55C56F',
-                                        defaultMessage: '执行节点${index + 1}',
+                                        defaultMessage: '执行节点{ BinaryExpression0 }',
                                       },
                                       { BinaryExpression0: index + 1 },
                                     )}

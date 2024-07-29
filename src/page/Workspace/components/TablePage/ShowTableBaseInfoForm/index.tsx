@@ -63,6 +63,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
             {
               formatMessage({
                 id: 'odc.components.ShowTableBaseInfoForm.Editing',
+                defaultMessage: '编辑',
               })
               /* 编辑 */
             }
@@ -72,6 +73,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
               {
                 formatMessage({
                   id: 'odc.components.ShowTableBaseInfoForm.Cancel',
+                  defaultMessage: '取消',
                 })
                 /* 取消 */
               }
@@ -132,6 +134,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
               {
                 formatMessage({
                   id: 'odc.components.ShowTableBaseInfoForm.Determine',
+                  defaultMessage: '确定',
                 })
                 /* 确定 */
               }
@@ -144,6 +147,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
             icon={<EditOutlined />}
             text={formatMessage({
               id: 'odc.components.ShowTableBaseInfoForm.Editing',
+              defaultMessage: '编辑',
             })}
             /* 编辑 */ onClick={() => setIsEditing(true)}
           />
@@ -152,6 +156,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
             icon={<SyncOutlined />}
             text={formatMessage({
               id: 'odc.components.ShowTableBaseInfoForm.Refresh',
+              defaultMessage: '刷新',
             })}
             /* 刷新 */ onClick={tableContext.onRefresh}
           />
@@ -175,6 +180,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
             {
               label: formatMessage({
                 id: 'workspace.window.createTable.baseInfo.tableName',
+                defaultMessage: '表名称',
               }),
 
               content: table?.info.tableName,
@@ -183,6 +189,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
             {
               label: formatMessage({
                 id: 'workspace.window.createTable.baseInfo.character',
+                defaultMessage: '默认字符集',
               }),
 
               content: table?.info.character || 'utf8mb4',
@@ -191,6 +198,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
             {
               label: formatMessage({
                 id: 'workspace.window.createTable.baseInfo.collation',
+                defaultMessage: '默认排序规则',
               }),
 
               content: table?.info?.collation || 'utf8mb4',
@@ -199,40 +207,47 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
             {
               label: formatMessage({
                 id: 'workspace.window.createTable.baseInfo.comment',
+                defaultMessage: '描述',
               }),
 
               content:
                 table?.info?.comment ||
                 formatMessage({
                   id: 'odc.components.ShowTableBaseInfoForm.Empty',
+                  defaultMessage: '空',
                 }),
               // 空
             },
             {
               label: formatMessage({
                 id: 'odc.TablePage.ShowTableBaseInfoForm.Owner',
+                defaultMessage: '所有者',
               }), //所有者
               content:
                 table?.info?.owner ||
                 formatMessage({
                   id: 'odc.components.ShowTableBaseInfoForm.Empty',
+                  defaultMessage: '空',
                 }),
               // 空
             },
             {
               label: formatMessage({
                 id: 'odc.TablePage.ShowTableBaseInfoForm.LastModifiedDate',
+                defaultMessage: '最近修改日期',
               }), //最近修改日期
               content:
                 getLocalFormatDateTime(table?.info?.updateTime) ||
                 formatMessage({
                   id: 'odc.components.ShowTableBaseInfoForm.Empty',
+                  defaultMessage: '空',
                 }),
               // 空
             },
             {
               label: formatMessage({
                 id: 'odc.TablePage.ShowTableBaseInfoForm.RowDataVolume',
+                defaultMessage: '行数据量',
               }), //行数据量 //行数据量
               content: (
                 <HelpDoc
@@ -245,6 +260,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                   {table?.info?.rowCount ||
                     formatMessage({
                       id: 'odc.components.ShowTableBaseInfoForm.Empty',
+                      defaultMessage: '空',
                     })}
                 </HelpDoc>
               ),
@@ -254,6 +270,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
             {
               label: formatMessage({
                 id: 'odc.TablePage.ShowTableBaseInfoForm.Size',
+                defaultMessage: '大小',
               }), //大小 //大小
               content: (
                 <HelpDoc
@@ -266,6 +283,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                   {table?.info?.tableSize ||
                     formatMessage({
                       id: 'odc.components.ShowTableBaseInfoForm.Empty',
+                      defaultMessage: '空',
                     })}
                 </HelpDoc>
               ),

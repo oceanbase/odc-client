@@ -63,6 +63,7 @@ const authTypeFilter = [
   {
     text: formatMessage({
       id: 'odc.components.RolePage.ResourceManagementPermissions',
+      defaultMessage: '资源管理权限',
     }), //资源管理权限
     value: IManagerRolePermissionType.resourceManagementPermissions,
   },
@@ -70,6 +71,7 @@ const authTypeFilter = [
   {
     text: formatMessage({
       id: 'odc.components.RolePage.SystemOperatingPermissions',
+      defaultMessage: '系统操作权限',
     }), //系统操作权限
     value: IManagerRolePermissionType.systemOperationPermissions,
   },
@@ -95,7 +97,10 @@ class RolePage extends React.PureComponent<IProps, IState> {
   private getPageColumns = () => {
     return [
       {
-        title: formatMessage({ id: 'odc.components.RolePage.RoleName' }), // 角色名称
+        title: formatMessage({
+          id: 'odc.components.RolePage.RoleName',
+          defaultMessage: '角色名称',
+        }), // 角色名称
         width: 200,
         dataIndex: 'name',
         className: styles.title,
@@ -105,7 +110,10 @@ class RolePage extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: formatMessage({ id: 'odc.components.RolePage.PermissionType' }), // 权限类型
+        title: formatMessage({
+          id: 'odc.components.RolePage.PermissionType',
+          defaultMessage: '权限类型',
+        }), // 权限类型
         ellipsis: true,
         dataIndex: 'authTypes',
         key: 'authTypes',
@@ -114,7 +122,10 @@ class RolePage extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: formatMessage({ id: 'odc.components.RolePage.UpdateTime' }), // 更新时间
+        title: formatMessage({
+          id: 'odc.components.RolePage.UpdateTime',
+          defaultMessage: '更新时间',
+        }), // 更新时间
         width: 160,
         ellipsis: true,
         key: 'updateTime',
@@ -124,19 +135,19 @@ class RolePage extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: formatMessage({ id: 'odc.Auth.Role.EnableStatus' }), //启用状态
+        title: formatMessage({ id: 'odc.Auth.Role.EnableStatus', defaultMessage: '启用状态' }), //启用状态
         width: 80,
         ellipsis: true,
         key: 'enabled',
         dataIndex: 'enabled',
         filters: [
           {
-            text: formatMessage({ id: 'odc.components.RolePage.Enable' }), // 启用
+            text: formatMessage({ id: 'odc.components.RolePage.Enable', defaultMessage: '启用' }), // 启用
             value: true,
           },
 
           {
-            text: formatMessage({ id: 'odc.components.RolePage.Disable' }), // 停用
+            text: formatMessage({ id: 'odc.components.RolePage.Disable', defaultMessage: '停用' }), // 停用
             value: false,
           },
         ],
@@ -157,7 +168,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: formatMessage({ id: 'odc.components.RolePage.Operation' }), // 操作
+        title: formatMessage({ id: 'odc.components.RolePage.Operation', defaultMessage: '操作' }), // 操作
         width: 132,
         key: 'action',
         fixed: 'right' as FixedType,
@@ -174,6 +185,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
                 {
                   formatMessage({
                     id: 'odc.components.RolePage.See',
+                    defaultMessage: '查看',
                   })
                   /* 查看 */
                 }
@@ -193,6 +205,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
                     {
                       formatMessage({
                         id: 'odc.components.RolePage.Editing',
+                        defaultMessage: '编辑',
                       })
 
                       /* 编辑 */
@@ -231,6 +244,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
       Modal.confirm({
         title: formatMessage({
           id: 'odc.components.RolePage.AreYouSureYouWant',
+          defaultMessage: '是否确定停用角色？',
         }),
 
         // 确定要停用角色吗？
@@ -240,6 +254,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
               {
                 formatMessage({
                   id: 'odc.components.RolePage.DisabledRolesCannotBeUsed',
+                  defaultMessage: '被停用的角色将无法使用',
                 })
 
                 /* 被停用的角色将无法使用 */
@@ -249,6 +264,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
               {
                 formatMessage({
                   id: 'odc.components.RolePage.TheDisabledRoleInformationIs',
+                  defaultMessage: '被停用的角色信息仍保留，支持启用',
                 })
 
                 /* 被停用的角色信息仍保留，支持启用 */
@@ -257,8 +273,8 @@ class RolePage extends React.PureComponent<IProps, IState> {
           </>
         ),
 
-        cancelText: formatMessage({ id: 'odc.components.RolePage.Cancel' }), // 取消
-        okText: formatMessage({ id: 'odc.components.RolePage.Determine' }), // 确定
+        cancelText: formatMessage({ id: 'odc.components.RolePage.Cancel', defaultMessage: '取消' }), // 取消
+        okText: formatMessage({ id: 'odc.components.RolePage.Determine', defaultMessage: '确定' }), // 确定
         centered: true,
         onOk: () => {
           if (role) {
@@ -288,15 +304,18 @@ class RolePage extends React.PureComponent<IProps, IState> {
     if (res) {
       message.success(
         enabled
-          ? formatMessage({ id: 'odc.components.RolePage.Enabled' }) // 启用成功
-          : formatMessage({ id: 'odc.components.RolePage.Disabled' }), // 停用成功
+          ? formatMessage({ id: 'odc.components.RolePage.Enabled', defaultMessage: '启用成功' }) // 启用成功
+          : formatMessage({ id: 'odc.components.RolePage.Disabled', defaultMessage: '停用成功' }), // 停用成功
       );
       this.context.loadRoles();
     } else {
       message.error(
         enabled
-          ? formatMessage({ id: 'odc.components.RolePage.FailedToEnable' }) // 启用失败
-          : formatMessage({ id: 'odc.components.RolePage.Disabled.1' }), // 停用失败
+          ? formatMessage({
+              id: 'odc.components.RolePage.FailedToEnable',
+              defaultMessage: '启用失败',
+            }) // 启用失败
+          : formatMessage({ id: 'odc.components.RolePage.Disabled.1', defaultMessage: '停用失败' }), // 停用失败
       );
     }
   };
@@ -402,6 +421,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
               {
                 formatMessage({
                   id: 'odc.components.RolePage.CopyRoles',
+                  defaultMessage: '复制角色',
                 })
 
                 /* 复制角色 */
@@ -417,6 +437,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
               {
                 formatMessage({
                   id: 'odc.components.RolePage.Editing',
+                  defaultMessage: '编辑',
                 })
 
                 /* 编辑 */
@@ -429,6 +450,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
           {
             formatMessage({
               id: 'odc.components.RolePage.Closed',
+              defaultMessage: '关闭',
             })
 
             /* 关闭 */
@@ -458,6 +480,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
           filterContent={{
             searchPlaceholder: formatMessage({
               id: 'odc.components.RolePage.EnterARoleName',
+              defaultMessage: '请输入角色名称',
             }),
 
             /* 请输入角色名称 */
@@ -472,6 +495,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
                         <span>
                           {formatMessage({
                             id: 'odc.components.RolePage.CreateARole',
+                            defaultMessage: '新建角色',
                           })}
                         </span>
                       ),
@@ -512,6 +536,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
           visible={detailModalVisible}
           title={formatMessage({
             id: 'odc.components.RolePage.RoleInformation',
+            defaultMessage: '角色信息',
           })}
           /* 角色信息 */
           detailId={detailId}
@@ -520,6 +545,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
               key: IManagerDetailTabs.DETAIL,
               title: formatMessage({
                 id: 'odc.components.RolePage.RoleDetails',
+                defaultMessage: '角色详情',
               }),
 
               // 角色详情
@@ -528,6 +554,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
               key: IManagerDetailTabs.RESOURCE,
               title: formatMessage({
                 id: 'odc.components.RolePage.RelatedUsers',
+                defaultMessage: '相关用户',
               }),
 
               // 相关用户

@@ -106,6 +106,7 @@ export default function ({ data, resultData, connectionMode, skip, cancelSkip }:
             key: TabKeys.SYNC,
             label: formatMessage({
               id: 'odc.StructConfigPanel.StructAnalysisResult.SynchronizedTables',
+              defaultMessage: '同步的表',
             }),
             style: { paddingBottom: 50 },
             children: (
@@ -121,6 +122,7 @@ export default function ({ data, resultData, connectionMode, skip, cancelSkip }:
                           {
                             okText: formatMessage({
                               id: 'odc.StructConfigPanel.StructAnalysisResult.BatchSkip',
+                              defaultMessage: '批量跳过',
                             }), //批量跳过
                             onOk: async (keys: number[]) => {
                               return await skip(keys);
@@ -148,6 +150,7 @@ export default function ({ data, resultData, connectionMode, skip, cancelSkip }:
             key: TabKeys.UNSYNC,
             label: formatMessage({
               id: 'odc.StructConfigPanel.StructAnalysisResult.UnsynchronizedTables',
+              defaultMessage: '不同步的表',
             }),
             style: { paddingBottom: 50 },
             children: (
@@ -173,6 +176,7 @@ export default function ({ data, resultData, connectionMode, skip, cancelSkip }:
             key: TabKeys.SQL,
             label: formatMessage({
               id: 'odc.StructConfigPanel.StructAnalysisResult.SqlPreview',
+              defaultMessage: 'SQL 预览',
             }),
             children: (
               <div
@@ -193,6 +197,7 @@ export default function ({ data, resultData, connectionMode, skip, cancelSkip }:
           },
         ]}
       />
+
       <RecordSQLView ref={SQLViewRef} taskId={data?.id} connectionMode={connectionMode} />
     </>
   );

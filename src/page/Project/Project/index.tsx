@@ -41,6 +41,7 @@ const titleOptions: {
   {
     label: formatMessage({
       id: 'odc.Project.Project.AllProjects',
+      defaultMessage: '全部项目',
     }),
     //全部项目
     value: 'all',
@@ -48,11 +49,13 @@ const titleOptions: {
   {
     label: formatMessage({
       id: 'odc.Project.Project.ArchiveProject',
+      defaultMessage: '归档项目',
     }),
     //归档项目
     value: 'deleted',
   },
 ];
+
 const Project = () => {
   const domRef = useRef<HTMLDivElement>();
   const [currentPage, setCurrentPage] = useState(0);
@@ -128,6 +131,7 @@ const Project = () => {
                   label={
                     formatMessage({
                       id: 'odc.src.page.Project.Project.JoinTheProject',
+                      defaultMessage: '加入项目',
                     }) /* 加入项目 */
                   }
                 />
@@ -143,6 +147,7 @@ const Project = () => {
                   {
                     label: formatMessage({
                       id: 'odc.Project.Project.ProjectName',
+                      defaultMessage: '项目名称',
                     }),
                     //项目名称
                     value: 'projectName',
@@ -194,6 +199,7 @@ const Project = () => {
                         {
                           formatMessage({
                             id: 'odc.src.page.Project.Project.NoNewProject',
+                            defaultMessage: '暂无新项目',
                           }) /* 暂无新项目 */
                         }
                       </Title>
@@ -201,6 +207,7 @@ const Project = () => {
                         {
                           formatMessage({
                             id: 'odc.src.page.Project.Project.ItIsCurrentlyUnavailableFor',
+                            defaultMessage: '当前暂无可使用项目，可以通过申请获得项目权限',
                           }) /* 当前暂无可使用项目，可以通过申请获得项目权限 */
                         }
                       </Text>
@@ -211,6 +218,7 @@ const Project = () => {
                     label={
                       formatMessage({
                         id: 'odc.src.page.Project.Project.ApplicationProjectPermissions',
+                        defaultMessage: '申请项目权限',
                       }) /* 申请项目权限 */
                     }
                     type="primary"

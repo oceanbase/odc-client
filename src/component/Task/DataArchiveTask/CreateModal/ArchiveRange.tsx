@@ -50,6 +50,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
       <Form.Item
         label={formatMessage({
           id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.ArchiveScope',
+          defaultMessage: '归档范围',
         })}
         /*归档范围*/ name="archiveRange"
         required
@@ -59,6 +60,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.PartialArchive',
+                defaultMessage: '部分归档',
               }) /*部分归档*/
             }
           </Radio>
@@ -66,6 +68,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.ArchiveTheEntireDatabase',
+                defaultMessage: '整库归档',
               }) /*整库归档*/
             }
           </Radio>
@@ -110,6 +113,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                   {
                     formatMessage({
                       id: 'odc.src.component.Task.DataArchiveTask.CreateModal.ArchiveTable',
+                      defaultMessage: '归档表',
                     }) /* 归档表 */
                   }
                 </div>
@@ -119,6 +123,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                       {
                         formatMessage({
                           id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.FilterConditions',
+                          defaultMessage: '过滤条件',
                         }) /*过滤条件*/
                       }
                     </span>
@@ -126,6 +131,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                       {
                         formatMessage({
                           id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Optional',
+                          defaultMessage: '(可选)',
                         }) /*(可选)*/
                       }
                     </Text>
@@ -133,6 +139,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                       label={
                         formatMessage({
                           id: 'odc.src.component.Task.DataArchiveTask.CreateModal.Archive',
+                          defaultMessage: '归档',
                         }) /* 归档 */
                       }
                     />
@@ -149,6 +156,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                       {
                         formatMessage({
                           id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Optional',
+                          defaultMessage: '(可选)',
                         }) /*(可选)*/
                       }
                     </Text>
@@ -173,6 +181,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                               required: true,
                               message: formatMessage({
                                 id: 'odc.src.component.Task.DataArchiveTask.CreateModal.PleaseSelectTheTable',
+                                defaultMessage: '请选择表',
                               }), //'请选择表'
                             },
                           ]}
@@ -181,6 +190,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             showSearch
                             placeholder={formatMessage({
                               id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.PleaseSelect',
+                              defaultMessage: '请选择',
                             })}
                             /*请选择*/ options={tablesOptions}
                             filterOption={(input, option) =>
@@ -192,6 +202,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                           <Input
                             placeholder={formatMessage({
                               id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.EnterAFilterCondition',
+                              defaultMessage: '请输入过滤条件',
                             })} /*请输入过滤条件*/
                           />
                         </Form.Item>
@@ -209,6 +220,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                                 placeholder={
                                   formatMessage({
                                     id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
+                                    defaultMessage: '请输入',
                                   }) /*"请输入"*/
                                 }
                               />
@@ -238,6 +250,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         {
                           formatMessage({
                             id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Add',
+                            defaultMessage: '添加',
                           }) /*添加*/
                         }
                       </Button>

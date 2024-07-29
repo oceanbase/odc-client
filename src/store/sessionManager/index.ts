@@ -105,10 +105,10 @@ export class SessionManagerStore {
          */
         const now = Date.now();
         if (now - masterSession.createTime > 10 * 1000) {
-         await this.initConnection(datasourceId, databaseid);
-         const datasource = this.connection.get(toInteger(datasourceId));
-         const database = this.database.get(databaseid);
-         masterSession.updateConnectionAndDatabase(datasource, database);
+          await this.initConnection(datasourceId, databaseid);
+          const datasource = this.connection.get(toInteger(datasourceId));
+          const database = this.database.get(databaseid);
+          masterSession.updateConnectionAndDatabase(datasource, database);
         }
         return masterSession;
       }

@@ -29,12 +29,12 @@ import { ITableLoadOptions } from '@/component/CommonTable/interface';
 
 export const maskRuleTypeMap = {
   // 掩盖
-  MASK: formatMessage({ id: 'odc.src.d.ts.CoverUp' }), //掩盖 // 替换
-  SUBSTITUTION: formatMessage({ id: 'odc.src.d.ts.Replace' }), //替换 // 保留格式
-  PSEUDO: formatMessage({ id: 'odc.src.d.ts.ReservedFormat' }), //保留格式 // 哈希
-  HASH: formatMessage({ id: 'odc.src.d.ts.Hash' }), //哈希 // 取整
-  ROUNDING: formatMessage({ id: 'odc.src.d.ts.Rounding' }), //取整 // 置空
-  NULL: formatMessage({ id: 'odc.src.d.ts.Empty' }), //置空
+  MASK: formatMessage({ id: 'odc.src.d.ts.CoverUp', defaultMessage: '掩盖' }), //掩盖 // 替换
+  SUBSTITUTION: formatMessage({ id: 'odc.src.d.ts.Replace', defaultMessage: '替换' }), //替换 // 保留格式
+  PSEUDO: formatMessage({ id: 'odc.src.d.ts.ReservedFormat', defaultMessage: '保留格式' }), //保留格式 // 哈希
+  HASH: formatMessage({ id: 'odc.src.d.ts.Hash', defaultMessage: '哈希' }), //哈希 // 取整
+  ROUNDING: formatMessage({ id: 'odc.src.d.ts.Rounding', defaultMessage: '取整' }), //取整 // 置空
+  NULL: formatMessage({ id: 'odc.src.d.ts.Empty', defaultMessage: '置空' }), //置空
 };
 interface MaskingAlgorithmProps {}
 const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
@@ -48,20 +48,29 @@ const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
   }) => {
     return [
       {
-        title: formatMessage({ id: 'odc.Secure.MaskingAlgorithm.AlgorithmName' }), //算法名称
+        title: formatMessage({
+          id: 'odc.Secure.MaskingAlgorithm.AlgorithmName',
+          defaultMessage: '算法名称',
+        }), //算法名称
         width: 218,
         dataIndex: 'name',
         key: 'name',
       },
       {
-        title: formatMessage({ id: 'odc.Secure.MaskingAlgorithm.DesensitizationMethod' }), //脱敏方式
+        title: formatMessage({
+          id: 'odc.Secure.MaskingAlgorithm.DesensitizationMethod',
+          defaultMessage: '脱敏方式',
+        }), //脱敏方式
         width: 94,
         dataIndex: 'type',
         key: 'type',
         render: (text) => <TooltipContent content={maskRuleTypeMap[text]} />,
       },
       {
-        title: formatMessage({ id: 'odc.Secure.MaskingAlgorithm.TestData' }), //测试数据
+        title: formatMessage({
+          id: 'odc.Secure.MaskingAlgorithm.TestData',
+          defaultMessage: '测试数据',
+        }), //测试数据
         width: 150,
         dataIndex: 'sampleContent',
         key: 'sampleContent',
@@ -78,7 +87,10 @@ const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
         render: (text) => <TooltipContent content={text} />,
       },
       {
-        title: formatMessage({ id: 'odc.Secure.MaskingAlgorithm.ResultPreview' }), //结果预览
+        title: formatMessage({
+          id: 'odc.Secure.MaskingAlgorithm.ResultPreview',
+          defaultMessage: '结果预览',
+        }), //结果预览
         width: 378,
         dataIndex: 'maskedContent',
         key: 'maskedContent',
@@ -95,14 +107,22 @@ const MaskingAlgorithm: React.FC<MaskingAlgorithmProps> = ({}) => {
         render: (text) => <TooltipContent content={text || '-'} />,
       },
       {
-        title: formatMessage({ id: 'odc.Secure.MaskingAlgorithm.Operation' }), //操作
+        title: formatMessage({
+          id: 'odc.Secure.MaskingAlgorithm.Operation',
+          defaultMessage: '操作',
+        }), //操作
         width: 80,
         key: 'action',
         render: (_, record, index) => (
           <>
             <Space>
               <a onClick={() => handleViewDrawerOpen(record)}>
-                {formatMessage({ id: 'odc.Secure.MaskingAlgorithm.View' }) /*查看*/}
+                {
+                  formatMessage({
+                    id: 'odc.Secure.MaskingAlgorithm.View',
+                    defaultMessage: '查看',
+                  }) /*查看*/
+                }
               </a>
             </Space>
           </>

@@ -45,12 +45,18 @@ export default class ModalHelp extends PureComponent<{
         onCancel={this.props.onCancel}
         footer={null}
       >
-        <h3>{formatMessage({ id: 'odc.components.ModalHelpFeedBack.Feedback' })}</h3>
+        <h3>
+          {formatMessage({
+            id: 'odc.components.ModalHelpFeedBack.Feedback',
+            defaultMessage: '意见反馈',
+          })}
+        </h3>
         {feekBackUrl ? <Image width={240} height={240} src={feekBackUrl} /> : null}
         <div className="email">
           <h4>
             {formatMessage({
               id: 'odc.components.ModalHelpFeedBack.SupportedEmailAddresses',
+              defaultMessage: '支持邮箱',
             })}
           </h4>
           <p>{serverSystemInfo?.supportEmail || pkg.bugs.email}</p>

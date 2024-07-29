@@ -70,6 +70,7 @@ const CustomEdge = ({ id, sourceX, sourceY, targetX, targetY, style = {}, data }
             transform: `translate(-50%, -50%) translate(${targetX}px,${
               targetY - TURNNG_LINE_GAP
             }px)`,
+
             pointerEvents: 'all',
             backgroundColor: 'var(--profile-secondry-background-color)',
             border: '1px solid var(--profile-border-color)',

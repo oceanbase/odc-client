@@ -45,6 +45,7 @@ const ThrottleEditableCell: React.FC<IProps> = (props) => {
       message.error(
         formatMessage({
           id: 'odc.src.component.Task.component.ThrottleEditableCell.CanNotBeEmpty',
+          defaultMessage: '不能为空!',
         }), //'不能为空!'
       );
     }
@@ -63,6 +64,7 @@ const ThrottleEditableCell: React.FC<IProps> = (props) => {
             value={lmitValue}
             onChange={handleChange}
           />
+
           <Action.Link onClick={handleOk}>
             <CheckOutlined
               style={{

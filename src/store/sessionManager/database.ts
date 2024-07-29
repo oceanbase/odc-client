@@ -352,8 +352,11 @@ class DatabaseStore {
 
     if (!packageHead && !packageBody) {
       throw new Error(
-        formatMessage({ id: 'odc.src.store.schema.TheHeaderOfTheObtained' }), //获取包体包头为空
-      );
+        formatMessage({
+          id: 'odc.src.store.schema.TheHeaderOfTheObtained',
+          defaultMessage: '获取包体包头为空',
+        }),
+      ); //获取包体包头为空
     }
     const idx = this.packages.findIndex((t) => t.packageName === packageName);
     if (idx !== -1) {

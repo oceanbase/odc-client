@@ -131,6 +131,7 @@ export default inject('userStore')(
           message.error(
             formatMessage({
               id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.DCD2CBF1' /*'窗口异常关闭，请等待窗口创建，输入账号密码点击登录后完成连接测试！'*/,
+              defaultMessage: '窗口异常关闭，请等待窗口创建，输入账号密码点击登录后完成连接测试！',
             }),
           );
           channel.close([ChannelMap.LDAP_MAIN, ChannelMap.LDAP_TEST]);
@@ -237,6 +238,7 @@ export default inject('userStore')(
                 message.success(
                   formatMessage({
                     id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.C5D23829' /*'测试登录成功！'*/,
+                    defaultMessage: '测试登录成功！',
                   }),
                 );
                 loginWindow.current?.close();
@@ -310,6 +312,7 @@ export default inject('userStore')(
             message.success(
               formatMessage({
                 id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.565EDD98' /*'测试登录成功！'*/,
+                defaultMessage: '测试登录成功！',
               }),
             );
             !loginWindow.current?.closed && loginWindow.current?.close();
@@ -350,6 +353,7 @@ export default inject('userStore')(
       const redirectUrl = `${window.ODCApiHost || location.origin}/login/oauth2/code/${
         userStore?.organizationId
       }-test`;
+
       return (
         <Form
           layout="vertical"
@@ -387,15 +391,18 @@ export default inject('userStore')(
                 max: 64,
                 message: formatMessage({
                   id: 'odc.src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.TheConfigurationNameDoesNot',
+                  defaultMessage: '配置名称不超过 64 个字符',
                 }), //'配置名称不超过 64 个字符'
               },
             ]}
             name={'name'}
             label={formatMessage({
               id: 'odc.NewSSODrawerButton.SSOForm.ConfigurationName',
+              defaultMessage: '配置名称',
             })}
             /*配置名称*/ extra={formatMessage({
               id: 'odc.NewSSODrawerButton.SSOForm.TheConfigurationNameWillBe',
+              defaultMessage: '配置名称将会应用于自定义登录名',
             })} /*配置名称将会应用于自定义登录名*/
           >
             <Input
@@ -405,6 +412,7 @@ export default inject('userStore')(
               }}
               placeholder={formatMessage({
                 id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                defaultMessage: '请输入',
               })} /*请输入*/
             />
           </Form.Item>
@@ -413,6 +421,7 @@ export default inject('userStore')(
             name={'type'}
             label={formatMessage({
               id: 'odc.NewSSODrawerButton.SSOForm.Type',
+              defaultMessage: '类型',
             })} /*类型*/
           >
             <Radio.Group
@@ -444,6 +453,7 @@ export default inject('userStore')(
                 name={['mappingRule', 'userProfileViewType']}
                 label={formatMessage({
                   id: 'odc.NewSSODrawerButton.SSOForm.UserInformationDataStructureType',
+                  defaultMessage: '用户信息数据结构类型',
                 })} /*用户信息数据结构类型*/
               >
                 <Select
@@ -462,6 +472,7 @@ export default inject('userStore')(
                   }}
                   placeholder={formatMessage({
                     id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                    defaultMessage: '请输入',
                   })} /*请输入*/
                 />
               </Form.Item>
@@ -472,6 +483,7 @@ export default inject('userStore')(
               <Form.Item
                 label={formatMessage({
                   id: 'odc.NewSSODrawerButton.SSOForm.ObtainNestedUserData',
+                  defaultMessage: '获取嵌套用户数据',
                 })}
                 /*获取嵌套用户数据*/ name={['mappingRule', 'nestedAttributeField']}
                 rules={[requiredRule]}
@@ -482,6 +494,7 @@ export default inject('userStore')(
                   }}
                   placeholder={formatMessage({
                     id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                    defaultMessage: '请输入',
                   })} /*请输入*/
                 />
               </Form.Item>
@@ -495,10 +508,9 @@ export default inject('userStore')(
                   formatMessage(
                     {
                       id: 'odc.NewSSODrawerButton.SSOForm.ASeparateCallbackWhitelistIs',
+                      defaultMessage: '测试连接需要单独的回调白名单，请手动添加 {redirectUrl}',
                     },
-                    {
-                      redirectUrl: redirectUrl,
-                    },
+                    { redirectUrl },
                   ) //`测试连接需要单独的回调白名单，请手动添加 ${redirectUrl}`
                 }
               >
@@ -506,6 +518,7 @@ export default inject('userStore')(
                   {
                     formatMessage({
                       id: 'odc.NewSSODrawerButton.SSOForm.TestConnection',
+                      defaultMessage: '测试连接',
                     }) /*测试连接*/
                   }
                 </a>
@@ -518,6 +531,7 @@ export default inject('userStore')(
               showIcon
               message={formatMessage({
                 id: 'odc.NewSSODrawerButton.SSOForm.TestConnectionSuccessful',
+                defaultMessage: '测试连接成功',
               })}
               /*测试连接成功*/ style={{
                 marginBottom: 12,
@@ -542,6 +556,7 @@ export default inject('userStore')(
               }}
               message={formatMessage({
                 id: 'odc.NewSSODrawerButton.SSOForm.PleaseTestTheConnectionFirst',
+                defaultMessage: '请先进行测试连接，跳转完成登录后，成功获取测试信息即可保存该配置',
               })} /*请先进行测试连接，跳转完成登录后，成功获取测试信息即可保存该配置*/
             />
           )}
@@ -550,6 +565,7 @@ export default inject('userStore')(
             {
               formatMessage({
                 id: 'odc.NewSSODrawerButton.SSOForm.UserFieldMapping',
+                defaultMessage: '用户字段映射',
               }) /*用户字段映射*/
             }
           </Typography.Title>
@@ -560,6 +576,7 @@ export default inject('userStore')(
                 name={['mappingRule', 'userAccountNameField']}
                 label={formatMessage({
                   id: 'odc.NewSSODrawerButton.SSOForm.UsernameField',
+                  defaultMessage: '用户名字段',
                 })} /*用户名字段*/
               >
                 <Input
@@ -568,6 +585,7 @@ export default inject('userStore')(
                   }}
                   placeholder={formatMessage({
                     id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                    defaultMessage: '请输入',
                   })} /*请输入*/
                 />
               </Form.Item>
@@ -579,6 +597,7 @@ export default inject('userStore')(
               name={['mappingRule', 'userNickNameField']}
               label={formatMessage({
                 id: 'odc.NewSSODrawerButton.SSOForm.UserNicknameField',
+                defaultMessage: '用户昵称字段',
               })} /*用户昵称字段*/
             >
               <Select
@@ -589,6 +608,7 @@ export default inject('userStore')(
                 }}
                 placeholder={formatMessage({
                   id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                  defaultMessage: '请输入',
                 })} /*请输入*/
               />
             </Form.Item>
@@ -600,6 +620,7 @@ export default inject('userStore')(
                 name={['mappingRule', 'userProfileViewType']}
                 label={formatMessage({
                   id: 'odc.NewSSODrawerButton.SSOForm.UserInformationDataStructureType',
+                  defaultMessage: '用户信息数据结构类型',
                 })} /*用户信息数据结构类型*/
               >
                 <Select
@@ -618,6 +639,7 @@ export default inject('userStore')(
                   }}
                   placeholder={formatMessage({
                     id: 'odc.NewSSODrawerButton.SSOForm.PleaseEnter',
+                    defaultMessage: '请输入',
                   })} /*请输入*/
                 />
               </Form.Item>
@@ -633,6 +655,7 @@ export default inject('userStore')(
                   }}
                   label={formatMessage({
                     id: 'odc.NewSSODrawerButton.SSOForm.CustomFields',
+                    defaultMessage: '自定义字段',
                   })} /*自定义字段*/
                 >
                   {fields?.map((field, index) => {
@@ -649,6 +672,7 @@ export default inject('userStore')(
                             }}
                             placeholder={formatMessage({
                               id: 'odc.NewSSODrawerButton.SSOForm.EnterAField',
+                              defaultMessage: '请输入字段',
                             })} /*请输入字段*/
                           />
                         </Form.Item>
@@ -659,6 +683,7 @@ export default inject('userStore')(
                             }}
                             placeholder={formatMessage({
                               id: 'odc.NewSSODrawerButton.SSOForm.EnterACustomFieldMapping',
+                              defaultMessage: '请输入自定义字段映射规则',
                             })} /*请输入自定义字段映射规则*/
                           />
                         </Form.Item>
@@ -690,6 +715,7 @@ export default inject('userStore')(
                     {
                       formatMessage({
                         id: 'odc.NewSSODrawerButton.SSOForm.Add',
+                        defaultMessage: '添加',
                       }) /*添加*/
                     }
                   </Button>

@@ -58,76 +58,96 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
             [
               formatMessage({
                 id: 'odc.TaskManagePage.DataMocker.TargetTable',
+                defaultMessage: '目标表',
               }),
               // 目标表
               table.tableName,
               2,
             ],
+
             [
               formatMessage({
                 id: 'odc.TaskManagePage.DataMocker.SimulateTheGeneratedDataVolume',
+                defaultMessage: '模拟生成数据量',
               }),
               // 模拟生成数据量
               table.totalCount,
             ],
+
             [
               formatMessage({
                 id: 'odc.TaskManagePage.DataMocker.BatchSize',
+                defaultMessage: '批处理大小',
               }),
               // 批处理大小
               table.batchSize,
             ],
+
             [
               formatMessage({
                 id: 'odc.TaskManagePage.DataMocker.ClearTheTableBeforeInserting',
+                defaultMessage: '插入模拟数据前清空表',
               }),
               // 插入模拟数据前清空表
               table.whetherTruncate
                 ? formatMessage({
                     id: 'odc.TaskManagePage.DataMocker.Is',
+                    defaultMessage: '是',
                   }) // 是
                 : formatMessage({
                     id: 'odc.TaskManagePage.DataMocker.No',
+                    defaultMessage: '否',
                   }), // 否
             ],
             [
               formatMessage({
                 id: 'odc.TaskManagePage.DataMocker.DataConflictHandlingMethod',
+                defaultMessage: '数据冲突处理方式',
               }),
               // 数据冲突处理方式
               MockStrategyTextMap[table.strategy],
             ],
+
             [
               formatMessage({
                 id: 'odc.TaskManagePage.DataMocker.ActualInsertRecord',
+                defaultMessage: '实际插入记录',
               }),
               // 实际插入记录
               result?.writeCount,
             ],
+
             [
               formatMessage({
                 id: 'odc.TaskManagePage.DataMocker.ConflictRecords',
+                defaultMessage: '冲突记录',
               }),
               // 冲突记录
               result?.conflictCount,
             ],
+
             [
               formatMessage({
                 id: 'odc.TaskManagePage.DataMocker.IgnoreInsert',
+                defaultMessage: '忽略插入',
               }),
               // 忽略插入
               result?.ignoreCount,
             ],
+
             [
               formatMessage({
                 id: 'odc.TaskManagePage.DataMocker.ClearRecords',
+                defaultMessage: '清除记录',
               }),
               // 清除记录
               result?.clearCount,
             ],
+
             [
               formatMessage({
                 id: 'odc.DataMockerTask.DetailContent.Description',
+                defaultMessage: '描述',
               }),
               //描述
               task?.description || '-',
@@ -139,6 +159,7 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
           columnsItems = {
             sectionName: formatMessage({
               id: 'odc.TaskManagePage.DataMocker.RuleSettings',
+              defaultMessage: '规则设置展示',
             }),
             // 规则设置展示
             textItems: [],
@@ -175,30 +196,38 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
         [
           formatMessage({
             id: 'odc.component.DetailModal.dataMocker.TaskNo',
+            defaultMessage: '任务编号',
           }),
           //任务编号
           task?.id,
         ],
+
         [
           formatMessage({
             id: 'odc.component.DetailModal.dataMocker.Database',
+            defaultMessage: '所属数据库',
           }),
           //所属数据库
           <DatabaseLabel database={task?.database} />,
         ],
+
         [
           formatMessage({
             id: 'odc.src.component.Task.DataMockerTask.DetailContent.DataSource',
+            defaultMessage: '所属数据源',
           }), //'所属数据源'
           task?.database?.dataSource?.name || '-',
         ],
+
         [
           formatMessage({
             id: 'odc.component.DetailModal.dataMocker.TaskType',
+            defaultMessage: '任务类型',
           }),
           //任务类型
           formatMessage({
             id: 'odc.component.DetailModal.dataMocker.AnalogData',
+            defaultMessage: '模拟数据',
           }),
 
           //模拟数据
@@ -206,6 +235,7 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
         [
           formatMessage({
             id: 'odc.component.DetailModal.dataMocker.ExecutionMethod',
+            defaultMessage: '执行方式',
           }),
           //执行方式
           taskExecStrategyMap[task?.executionStrategy],
@@ -219,13 +249,16 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
         [
           formatMessage({
             id: 'odc.component.DetailModal.dataMocker.Created',
+            defaultMessage: '创建人',
           }),
           //创建人
           task?.creator?.name || '-',
         ],
+
         [
           formatMessage({
             id: 'odc.TaskManagePage.DataMocker.CreationTime',
+            defaultMessage: '创建时间',
           }),
           // 创建时间
           getFormatDateTime(task.createTime),
@@ -237,6 +270,7 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
     res[0].textItems.push([
       formatMessage({
         id: 'odc.component.DetailModal.dataMocker.ExecutionTime',
+        defaultMessage: '执行时间',
       }),
       //执行时间
       getFormatDateTime(task?.executionTime),
@@ -248,11 +282,13 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
       [
         formatMessage({
           id: 'odc.component.DetailModal.dataMocker.RiskLevel',
+          defaultMessage: '风险等级',
         }),
         //风险等级
         <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />,
       ],
     ];
+
     flowInfo.forEach((item) => {
       res[0].textItems.push(item);
     });

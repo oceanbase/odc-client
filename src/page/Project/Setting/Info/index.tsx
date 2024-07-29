@@ -42,7 +42,7 @@ export default function Info() {
     const isSuccess = await updateProject(context?.projectId, newData);
     if (isSuccess) {
       message.success(
-        formatMessage({ id: 'odc.Setting.Info.UpdatedSuccessfully' }), //更新成功！
+        formatMessage({ id: 'odc.Setting.Info.UpdatedSuccessfully', defaultMessage: '更新成功！' }), //更新成功！
       );
       setIsModify(false);
       context?.reloadProject();
@@ -58,7 +58,7 @@ export default function Info() {
       return;
     }
     message.success(
-      formatMessage({ id: 'odc.Setting.Info.OperationSucceeded' }), //操作成功
+      formatMessage({ id: 'odc.Setting.Info.OperationSucceeded', defaultMessage: '操作成功' }), //操作成功
     );
     history.push('/project');
   }
@@ -77,19 +77,31 @@ export default function Info() {
         <Form.Item
           required
           name={'name'}
-          label={formatMessage({ id: 'odc.Setting.Info.ProjectName' })} /*项目名称*/
+          label={formatMessage({
+            id: 'odc.Setting.Info.ProjectName',
+            defaultMessage: '项目名称',
+          })} /*项目名称*/
         >
           <Input
-            placeholder={formatMessage({ id: 'odc.Setting.Info.EnterAName' })}
+            placeholder={formatMessage({
+              id: 'odc.Setting.Info.EnterAName',
+              defaultMessage: '请输入名称',
+            })}
             /*请输入名称*/ style={{ width: 400 }}
           />
         </Form.Item>
         <Form.Item
           name={'description'}
-          label={formatMessage({ id: 'odc.Setting.Info.Description' })} /*描述*/
+          label={formatMessage({
+            id: 'odc.Setting.Info.Description',
+            defaultMessage: '描述',
+          })} /*描述*/
         >
           <Input.TextArea
-            placeholder={formatMessage({ id: 'odc.Setting.Info.EnterADescription' })} /*请输入描述*/
+            placeholder={formatMessage({
+              id: 'odc.Setting.Info.EnterADescription',
+              defaultMessage: '请输入描述',
+            })} /*请输入描述*/
             style={{ width: 480 }}
             autoSize={{ minRows: 4, maxRows: 8 }}
           />
@@ -97,16 +109,29 @@ export default function Info() {
       </Form>
       <Space size={36} direction="vertical">
         <Button disabled={!isModify} type="primary" onClick={onSubmit}>
-          {formatMessage({ id: 'odc.Setting.Info.ConfirmModification' }) /*确认修改*/}
+          {
+            formatMessage({
+              id: 'odc.Setting.Info.ConfirmModification',
+              defaultMessage: '确认修改',
+            }) /*确认修改*/
+          }
         </Button>
         <Popconfirm
           title={
-            formatMessage({ id: 'odc.Setting.Info.ThisOperationCannotBeRestored' }) //该操作无法恢复，确定要归档项目吗？
+            formatMessage({
+              id: 'odc.Setting.Info.ThisOperationCannotBeRestored',
+              defaultMessage: '该操作无法恢复，是否确定归档项目？',
+            }) //该操作无法恢复，确定要归档项目吗？
           }
           onConfirm={deleteProject}
         >
           <Button danger>
-            {formatMessage({ id: 'odc.Setting.Info.ArchiveProject' }) /*归档项目*/}
+            {
+              formatMessage({
+                id: 'odc.Setting.Info.ArchiveProject',
+                defaultMessage: '归档项目',
+              }) /*归档项目*/
+            }
           </Button>
         </Popconfirm>
       </Space>

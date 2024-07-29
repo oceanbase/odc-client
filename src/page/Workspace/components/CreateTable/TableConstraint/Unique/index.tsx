@@ -72,7 +72,7 @@ const UniqueConstraints: React.FC<IProps> = function ({ modified }) {
         <EditToolbar modified={modified}>
           <Toolbar>
             <Toolbar.Button
-              text={formatMessage({ id: 'workspace.header.create' })}
+              text={formatMessage({ id: 'workspace.header.create', defaultMessage: '新建' })}
               icon={PlusOutlined}
               onClick={() => {
                 const row = {
@@ -85,7 +85,7 @@ const UniqueConstraints: React.FC<IProps> = function ({ modified }) {
 
             <Toolbar.Button
               text={
-                formatMessage({ id: 'odc.TableConstraint.Unique.Delete' }) //删除
+                formatMessage({ id: 'odc.TableConstraint.Unique.Delete', defaultMessage: '删除' }) //删除
               }
               icon={DeleteOutlined}
               disabled={!selectedRowsIdx?.length}

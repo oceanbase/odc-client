@@ -36,18 +36,23 @@ const statusFilters = Object.keys(status).map((key) => {
 export const operationTypeMap = {
   [TaskOperationType.CREATE]: formatMessage({
     id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.CreateATask',
+    defaultMessage: '创建任务',
   }), //创建任务
   [TaskOperationType.UPDATE]: formatMessage({
     id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.EditTask',
+    defaultMessage: '编辑任务',
   }), //编辑任务
   [TaskOperationType.PAUSE]: formatMessage({
     id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.DisableATask',
+    defaultMessage: '停用任务',
   }), //停用任务
   [TaskOperationType.TERMINATION]: formatMessage({
     id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.TerminateATask',
+    defaultMessage: '终止任务',
   }), //终止任务
   [TaskOperationType.RESUME]: formatMessage({
     id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.EnableTasks',
+    defaultMessage: '启用任务',
   }), //启用任务
 };
 
@@ -59,6 +64,7 @@ const getConnectionColumns = (params: {
       dataIndex: 'id',
       title: formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.EventOperations',
+        defaultMessage: '事件操作',
       }), //事件操作
       ellipsis: true,
       width: 280,
@@ -71,6 +77,7 @@ const getConnectionColumns = (params: {
       dataIndex: 'createTime',
       title: formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.OperationTime',
+        defaultMessage: '操作时间',
       }), //操作时间
       ellipsis: true,
       width: 180,
@@ -81,6 +88,7 @@ const getConnectionColumns = (params: {
       dataIndex: 'status',
       title: formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.ApprovalStatus',
+        defaultMessage: '审批状态',
       }), //审批状态
       ellipsis: true,
       width: 140,
@@ -98,6 +106,7 @@ const getConnectionColumns = (params: {
       dataIndex: 'action',
       title: formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.Operation',
+        defaultMessage: '操作',
       }), //操作
       ellipsis: true,
       width: 92,
@@ -111,6 +120,7 @@ const getConnectionColumns = (params: {
             {
               formatMessage({
                 id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.ViewApprovalRecords',
+                defaultMessage: '查看审批记录',
               }) /*查看审批记录*/
             }
           </Action.Link>

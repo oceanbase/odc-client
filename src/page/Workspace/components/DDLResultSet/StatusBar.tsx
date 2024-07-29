@@ -71,27 +71,32 @@ const StatusBar: React.FC<IProps> = function ({
           column.primaryKey
             ? formatMessage({
                 id: 'odc.components.DDLResultSet.StatusBar.PrimaryKey',
+                defaultMessage: '主键',
               })
             : '',
           `${column.dataType}`,
           column.allowNull
             ? formatMessage({
                 id: 'odc.components.DDLResultSet.StatusBar.LeaveThisParameterEmpty',
+                defaultMessage: '允许为空',
               })
             : //允许为空
               formatMessage({
                 id: 'odc.components.DDLResultSet.StatusBar.NotEmpty',
+                defaultMessage: '非空',
               }),
           //非空
           column.autoIncreament
             ? formatMessage({
                 id: 'odc.components.DDLResultSet.StatusBar.AutoIncrement',
+                defaultMessage: '自增',
               })
             : '',
           // 列注释: comment
           column.comment
             ? `${formatMessage({
                 id: 'workspace.window.createView.comment',
+                defaultMessage: '注释',
               })}: ${column.comment}`
             : '',
         ]
@@ -123,6 +128,7 @@ const StatusBar: React.FC<IProps> = function ({
             {
               formatMessage({
                 id: 'odc.components.DDLResultSet.StatusBar.DbTimeConsumption',
+                defaultMessage: 'DB 耗时：',
               }) /*DB 耗时：*/
             }
 
@@ -134,9 +140,9 @@ const StatusBar: React.FC<IProps> = function ({
             {formatMessage(
               {
                 id: 'src.page.Workspace.components.DDLResultSet.0B7666A0',
-                defaultMessage: '总耗时：${DBCostTime}',
+                defaultMessage: '总耗时：{DBCostTime}',
               },
-              { DBCostTime: DBCostTime },
+              { DBCostTime },
             )}
           </span>
           <span>
@@ -144,9 +150,10 @@ const StatusBar: React.FC<IProps> = function ({
               formatMessage(
                 {
                   id: 'odc.components.DDLResultSet.StatusBar.TotalNumberOfEntriesRecordcount',
+                  defaultMessage: '总条数：{recordCount} 条',
                 },
 
-                { recordCount: recordCount },
+                { recordCount },
               )
               /*总条数：{recordCount} 条*/
             }

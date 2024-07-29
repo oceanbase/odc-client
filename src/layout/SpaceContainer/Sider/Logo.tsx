@@ -50,6 +50,7 @@ export default function ({ collapsed }) {
         {
           formatMessage({
             id: 'odc.Index.Sider.Logo.DeveloperCenter',
+            defaultMessage: '开发者中心',
           }) /*开发者中心*/
         }
       </div>

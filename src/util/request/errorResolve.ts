@@ -25,9 +25,18 @@ import { formatMessage } from '../intl';
 import notification from '../notification';
 
 const errorMsgMap = {
-  EXECUTE_DDL_FAILED: formatMessage({ id: 'request.execute.ddl.error' }),
-  ConnectionExpired: formatMessage({ id: 'request.connection.expired' }),
-  ConnectionKilled: formatMessage({ id: 'request.connection.killed' }),
+  EXECUTE_DDL_FAILED: formatMessage({
+    id: 'request.execute.ddl.error',
+    defaultMessage: '执行 DDL 出错',
+  }),
+  ConnectionExpired: formatMessage({
+    id: 'request.connection.expired',
+    defaultMessage: '当前连接已断开，请重新连接',
+  }),
+  ConnectionKilled: formatMessage({
+    id: 'request.connection.killed',
+    defaultMessage: 'SQL 执行异常，导致连接断开',
+  }),
 };
 
 /**
@@ -121,7 +130,9 @@ export function resolveODCError(
       hasShow = true;
       notification.error({
         track:
-          errMsg || errorMsgMap[errCode] || formatMessage({ id: 'request.execute.ddl.default' }),
+          errMsg ||
+          errorMsgMap[errCode] ||
+          formatMessage({ id: 'request.execute.ddl.default', defaultMessage: '出错了' }),
         supportRepeat: true,
         holdErrorTip: params.holdErrorTip,
         requestId,

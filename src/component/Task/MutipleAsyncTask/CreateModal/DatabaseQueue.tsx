@@ -120,7 +120,7 @@ export const DatabaseQueueSelect: React.FC<{
                               {formatMessage(
                                 {
                                   id: 'src.component.Task.MutipleAsyncTask.CreateModal.6E409607',
-                                  defaultMessage: '执行节点${index + 1}',
+                                  defaultMessage: '执行节点{ BinaryExpression0 }',
                                 },
                                 { BinaryExpression0: index + 1 },
                               )}

@@ -167,6 +167,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       message.warning(
         formatMessage({
           id: 'odc.components.CreateAsyncTaskModal.TheMaximumSizeOfThe',
+          defaultMessage: '文件最多不超过 256 MB',
         }),
         //文件最多不超过 256MB
       );
@@ -197,6 +198,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           type,
           formatMessage({
             id: 'odc.components.CreateAsyncTaskModal.TheMaximumSizeOfThe',
+            defaultMessage: '文件最多不超过 256 MB',
           }),
           //文件最多不超过 256MB
         );
@@ -213,6 +215,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         type,
         formatMessage({
           id: 'odc.components.CreateAsyncTaskModal.TheMaximumSizeOfThe',
+          defaultMessage: '文件最多不超过 256 MB',
         }),
         //文件最多不超过 256MB
       );
@@ -335,6 +338,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               'sqlFiles',
               formatMessage({
                 id: 'odc.components.CreateAsyncTaskModal.TheMaximumSizeOfThe',
+                defaultMessage: '文件最多不超过 256 MB',
               }),
               //文件最多不超过 256MB
             );
@@ -346,6 +350,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               'sqlFiles',
               formatMessage({
                 id: 'odc.components.CreateAsyncTaskModal.UploadAnSqlFile',
+                defaultMessage: '请上传 SQL 文件',
               }),
 
               //请上传 SQL 文件
@@ -585,6 +590,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                       required: true,
                       message: formatMessage({
                         id: 'odc.components.CreateAsyncTaskModal.SelectSqlContent',
+                        defaultMessage: '请选择 SQL 内容',
                       }),
 
                       // 请选择 SQL 内容
@@ -600,6 +606,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                       {
                         formatMessage({
                           id: 'odc.components.CreateAsyncTaskModal.SqlEntry',
+                          defaultMessage: 'SQL 录入',
                         })
 
                         /* SQL录入 */
@@ -609,6 +616,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                       {
                         formatMessage({
                           id: 'odc.components.CreateAsyncTaskModal.UploadAttachments',
+                          defaultMessage: '上传附件',
                         })
 
                         /* 上传附件 */
@@ -666,6 +674,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                     multiple={true}
                     tip={formatMessage({
                       id: 'odc.component.OSSDragger2.YouCanDragAndDrop',
+                      defaultMessage: '支持拖拽文件上传，任务将按文件排列的先后顺序执行',
                     })}
                     maxCount={500}
                     action={getAsyncTaskUploadUrl()}
@@ -682,6 +691,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                       {
                         formatMessage({
                           id: 'odc.components.CreateAsyncTaskModal.ClickOrDragMultipleFiles',
+                          defaultMessage: '点击或将多个文件拖拽到这里上传',
                         })
                         /*点击或将多个文件拖拽到这里上传*/
                       }
@@ -690,6 +700,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                       {
                         formatMessage({
                           id: 'odc.components.CreateAsyncTaskModal.TheMaximumSizeOfThe.2',
+                          defaultMessage: '文件最多不超过 256 MB ，支持扩展名 .sql',
                         })
                         /*文件最多不超过 256MB ，支持扩展名 .sql*/
                       }
@@ -722,9 +733,11 @@ const CreateModal: React.FC<IProps> = (props) => {
                       preCheckLoading
                         ? formatMessage({
                             id: 'odc.src.component.Task.AsyncTask.CreateModal.InInspection',
+                            defaultMessage: '检查中',
                           }) //'检查中'
                         : formatMessage({
                             id: 'odc.src.component.Task.AsyncTask.CreateModal.SQLCheck',
+                            defaultMessage: 'SQL 检查',
                           }) //'SQL 检查'
                     }
                   </Button>
@@ -736,6 +749,8 @@ const CreateModal: React.FC<IProps> = (props) => {
                       formatMessage(
                         {
                           id: 'odc.src.component.Task.AsyncTask.CreateModal.ThePreExaminationIs',
+                          defaultMessage:
+                            '预检查完成，{lintResultSetLength} 处语句违反 SQL 开发规范。',
                         },
                         {
                           lintResultSetLength: lintResultSet?.length || 0,
@@ -798,7 +813,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                       <Radio.Button value={SQLContentType.TEXT}>
                         {formatMessage({
                           id: 'src.component.Task.MutipleAsyncTask.CreateModal.F79FDCAD',
-                          defaultMessage: 'SQL录入',
+                          defaultMessage: 'SQL 录入',
                         })}
                       </Radio.Button>
                       <Radio.Button value={SQLContentType.FILE}>

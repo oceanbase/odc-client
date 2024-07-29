@@ -57,12 +57,18 @@ const SpaceSelectModal: React.FC<IProps> = ({ userStore }) => {
     >
       <div className={styles.header}>
         <h2>
-          {formatMessage({ id: 'odc.page.SpaceIndex.SelectYourWorkspace' }) /*选择你的工作空间*/}
+          {
+            formatMessage({
+              id: 'odc.page.SpaceIndex.SelectYourWorkspace',
+              defaultMessage: '选择你的工作空间',
+            }) /*选择你的工作空间*/
+          }
         </h2>
         <p className={styles.desc}>
           {
             formatMessage({
               id: 'odc.page.SpaceIndex.YouCanSwitchBetweenPersonal',
+              defaultMessage: '可在个人设置中切换，此处的选择不影响正常使用',
             }) /*可在个人设置中切换，此处的选择不影响正常使用*/
           }
         </p>

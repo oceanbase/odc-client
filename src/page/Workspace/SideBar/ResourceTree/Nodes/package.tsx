@@ -36,7 +36,10 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
   const dbName = database.name;
   const packages = dbSession?.database?.packages;
   const treeData: TreeDataNode = {
-    title: formatMessage({ id: 'odc.ResourceTree.Nodes.package.Package' }), //程序包
+    title: formatMessage({
+      id: 'odc.ResourceTree.Nodes.package.Package',
+      defaultMessage: '程序包',
+    }), //程序包
     key: `${database.id}-${dbName}-package`,
     type: ResourceNodeType.PackageRoot,
     data: database,
@@ -54,7 +57,10 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
       if (packageHead) {
         let variablesRoot: TreeDataNode, programRoot: TreeDataNode;
         headRoot = {
-          title: formatMessage({ id: 'odc.ResourceTree.Nodes.package.Baotou' }), //包头
+          title: formatMessage({
+            id: 'odc.ResourceTree.Nodes.package.Baotou',
+            defaultMessage: '包头',
+          }), //包头
           key: `${pkgKey}-head`,
           data: pkg,
           icon: (
@@ -71,7 +77,10 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
         };
         if (packageHead.variables?.length) {
           variablesRoot = {
-            title: formatMessage({ id: 'odc.ResourceTree.Nodes.package.Variable' }), //变量
+            title: formatMessage({
+              id: 'odc.ResourceTree.Nodes.package.Variable',
+              defaultMessage: '变量',
+            }), //变量
             key: `${pkgKey}-head-variable`,
             type: ResourceNodeType.PackageHeadVariableRoot,
             icon: (
@@ -96,7 +105,10 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
           let functions = packageHead.functions || [];
           let procedures = packageHead.procedures || [];
           programRoot = {
-            title: formatMessage({ id: 'odc.ResourceTree.Nodes.package.Subprogram' }), //子程序
+            title: formatMessage({
+              id: 'odc.ResourceTree.Nodes.package.Subprogram',
+              defaultMessage: '子程序',
+            }), //子程序
             key: `${pkgKey}-head-program`,
             type: ResourceNodeType.PackageHeadProgramRoot,
             data: pkg,
@@ -142,7 +154,10 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
       if (packageBody) {
         let variablesRoot: TreeDataNode, programRoot: TreeDataNode;
         bodyRoot = {
-          title: formatMessage({ id: 'odc.ResourceTree.Nodes.package.PackageBody' }), //包体
+          title: formatMessage({
+            id: 'odc.ResourceTree.Nodes.package.PackageBody',
+            defaultMessage: '包体',
+          }), //包体
           key: `${pkgKey}-body`,
           type: ResourceNodeType.PackageBody,
           sessionId: dbSession?.sessionId,
@@ -158,7 +173,10 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
         };
         if (packageBody.variables?.length) {
           variablesRoot = {
-            title: formatMessage({ id: 'odc.ResourceTree.Nodes.package.Variable' }), //变量
+            title: formatMessage({
+              id: 'odc.ResourceTree.Nodes.package.Variable',
+              defaultMessage: '变量',
+            }), //变量
             key: `${pkgKey}-body-variable`,
             type: ResourceNodeType.PackageBodyVariableRoot,
             icon: (
@@ -183,7 +201,10 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
           let functions = packageBody.functions || [];
           let procedures = packageBody.procedures || [];
           programRoot = {
-            title: formatMessage({ id: 'odc.ResourceTree.Nodes.package.Subprogram' }), //子程序
+            title: formatMessage({
+              id: 'odc.ResourceTree.Nodes.package.Subprogram',
+              defaultMessage: '子程序',
+            }), //子程序
             key: `${pkgKey}-body-program`,
             type: ResourceNodeType.PackageBodyProgramRoot,
             icon: (
@@ -241,6 +262,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
             }}
           />
         ),
+
         doubleClick(session, node, databaseFrom) {
           openPackageViewPage(pkg.packageName, undefined, undefined, session?.database?.databaseId);
         },

@@ -53,12 +53,24 @@ interface ITableFilter {
 
 const ActionFilters = [
   {
-    text: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.CB8E9B9E' }), //'创建策略'
-    value: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.1CF98543' }), //'创建策略'
+    text: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.CB8E9B9E',
+      defaultMessage: '创建策略',
+    }), //'创建策略'
+    value: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.1CF98543',
+      defaultMessage: '创建策略',
+    }), //'创建策略'
   },
   {
-    text: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.04BF5ADD' }), //'删除策略'
-    value: formatMessage({ id: 'src.component.Task.component.PartitionPolicyFormTable.FD99EEF0' }), //'删除策略'
+    text: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.04BF5ADD',
+      defaultMessage: '删除策略',
+    }), //'删除策略'
+    value: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.FD99EEF0',
+      defaultMessage: '删除策略',
+    }), //'删除策略'
   },
 ];
 
@@ -88,6 +100,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     {
       title: formatMessage({
         id: 'src.component.Task.component.PartitionPolicyFormTable.E6BC178D',
+        defaultMessage: 'Range 分区表',
       }), //'Range 分区表'
       key: 'tableName',
       dataIndex: 'tableName',
@@ -99,6 +112,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
             placeholder={
               formatMessage({
                 id: 'src.component.Task.component.PartitionPolicyFormTable.90B10A59',
+                defaultMessage: '请输入表名',
               }) /*"请输入表名"*/
             }
           />
@@ -118,6 +132,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
                 title={
                   formatMessage({
                     id: 'src.component.Task.component.PartitionPolicyFormTable.6C03EDE8',
+                    defaultMessage: '当前表已存在分区策略，重新设置后将覆盖原有策略',
                   }) /*"当前表已存在分区策略，重新设置后将覆盖原有策略"*/
                 }
               >
@@ -131,6 +146,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     {
       title: formatMessage({
         id: 'src.component.Task.component.PartitionPolicyFormTable.6020D1A1',
+        defaultMessage: '已有分区数量',
       }), //'已有分区数量'
       key: 'definitionCount',
       dataIndex: 'definitionCount',
@@ -139,6 +155,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     {
       title: formatMessage({
         id: 'src.component.Task.component.PartitionPolicyFormTable.787E8B6F',
+        defaultMessage: '分区策略',
       }), //'分区策略'
       key: 'action',
       width: 310,
@@ -154,6 +171,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
                   {
                     formatMessage({
                       id: 'src.component.Task.component.PartitionPolicyFormTable.619CFFCB' /*已设置:*/,
+                      defaultMessage: '已设置：',
                     }) /* 已设置: */
                   }
                 </span>
@@ -167,6 +185,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
               title={
                 formatMessage({
                   id: 'src.component.Task.component.PartitionPolicyFormTable.A0E5BE83',
+                  defaultMessage: '设置分区策略',
                 }) /*"设置分区策略"*/
               }
             >
@@ -290,6 +309,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
         titleContent={{
           description: formatMessage({
             id: 'src.component.Task.component.PartitionPolicyFormTable.9E6847BC',
+            defaultMessage: '仅支持 Range 分区表，可设置对应的分区创建和删除策略',
           }), //'仅支持 Range 分区表，可设置对应的分区创建和删除策略'
         }}
         filterContent={{
@@ -303,6 +323,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
                       {
                         formatMessage({
                           id: 'src.component.Task.component.PartitionPolicyFormTable.51D8B2E7' /*仅显示未设置的表*/,
+                          defaultMessage: '仅显示未设置的表',
                         }) /* 仅显示未设置的表 */
                       }
                     </Checkbox>
@@ -325,6 +346,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
                   title={
                     formatMessage({
                       id: 'src.component.Task.component.PartitionPolicyFormTable.E009861F',
+                      defaultMessage: '该表的分区和已经勾选的表分区不同，无法批量设置',
                     }) /*"该表的分区和已经勾选的表分区不同，无法批量设置"*/
                   }
                 >
@@ -344,6 +366,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
             {
               okText: formatMessage({
                 id: 'odc.components.PartitionPolicyTable.BatchSettings',
+                defaultMessage: '批量设置',
               }), //批量设置
               onOk: handleBatchConfig,
             },

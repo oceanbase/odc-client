@@ -28,7 +28,10 @@ export function SequenceTreeData(dbSession: SessionStore, database: IDatabase): 
   const dbName = database.name;
   const sequences = dbSession?.database?.sequences;
   const treeData: TreeDataNode = {
-    title: formatMessage({ id: 'odc.ResourceTree.Nodes.sequence.Sequence' }), //序列
+    title: formatMessage({
+      id: 'odc.ResourceTree.Nodes.sequence.Sequence',
+      defaultMessage: '序列',
+    }), //序列
     key: `${database.id}-${dbName}-sequence`,
     type: ResourceNodeType.SequenceRoot,
     data: database,
@@ -52,6 +55,7 @@ export function SequenceTreeData(dbSession: SessionStore, database: IDatabase): 
             }}
           />
         ),
+
         doubleClick(session, node, databaseFrom) {
           openSequenceViewPage(sequence.name, undefined, session?.database?.databaseId);
         },

@@ -135,6 +135,7 @@ const RecordPopover = forwardRef<any, any>((props, ref) => {
             {
               formatMessage({
                 id: 'odc.component.RecordPopover.OperationRecords',
+                defaultMessage: '操作记录',
               }) /*操作记录*/
             }
           </span>

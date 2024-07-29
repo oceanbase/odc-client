@@ -69,7 +69,10 @@ export default (props: IProps) => {
     const error = res?.errMsg || res?.data?.errorMessage;
     !error
       ? message.success(
-          formatMessage({ id: 'odc.NewDatasourceDrawer.Form.SysForm.ConnectionSuccessful' }), //连接成功
+          formatMessage({
+            id: 'odc.NewDatasourceDrawer.Form.SysForm.ConnectionSuccessful',
+            defaultMessage: '连接成功',
+          }), //连接成功
         )
       : message.error(error);
   }
@@ -84,6 +87,7 @@ export default (props: IProps) => {
           {
             formatMessage({
               id: 'odc.component.AddConnectionForm.SysForm.UseTheSysTenantAccount',
+              defaultMessage: '使用 sys 租户账号查询租户视图',
             })
             /*使用 sys 租户账号查询租户视图*/
           }
@@ -94,6 +98,7 @@ export default (props: IProps) => {
           {
             formatMessage({
               id: 'odc.component.AddConnectionForm.SysForm.TheExportAndDerivativeSpeed',
+              defaultMessage: '部分对象的导出和导数速度提升均依赖该账号',
             }) /*部分对象的导出和导数速度提升均依赖该账号*/
           }
         </Typography.Text>
@@ -113,6 +118,7 @@ export default (props: IProps) => {
                     <Form.Item
                       label={formatMessage({
                         id: 'odc.AddConnectionDrawer.AddConnectionForm.Account',
+                        defaultMessage: '账号',
                       })}
                       name="sysTenantUsername"
                     >
@@ -121,6 +127,7 @@ export default (props: IProps) => {
                         ref={sysInput}
                         placeholder={formatMessage({
                           id: 'odc.AddConnectionDrawer.AddConnectionForm.Enter',
+                          defaultMessage: '请输入',
                         })}
                       />
                     </Form.Item>
@@ -129,6 +136,7 @@ export default (props: IProps) => {
                     <Form.Item
                       label={formatMessage({
                         id: 'odc.AddConnectionDrawer.AddConnectionForm.Password',
+                        defaultMessage: '密码',
                       })}
                       name="sysTenantPassword"
                     >
@@ -146,6 +154,7 @@ export default (props: IProps) => {
                 >
                   {formatMessage({
                     id: 'portal.connection.form.test',
+                    defaultMessage: '测试连接',
                   })}
                 </a>
                 {isSysPwdCopyMode &&
@@ -163,6 +172,7 @@ export default (props: IProps) => {
                       {
                         formatMessage({
                           id: 'odc.AddConnectionDrawer.AddConnectionForm.CancelModification',
+                          defaultMessage: '取消修改',
                         })
 
                         /* 取消修改 */
@@ -180,6 +190,7 @@ export default (props: IProps) => {
                       {
                         formatMessage({
                           id: 'odc.AddConnectionDrawer.AddConnectionForm.ChangePassword',
+                          defaultMessage: '修改密码',
                         })
 
                         /* 修改密码 */

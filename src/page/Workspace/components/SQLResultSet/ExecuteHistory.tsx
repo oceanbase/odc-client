@@ -115,6 +115,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         dataIndex: 'status',
         title: formatMessage({
           id: 'workspace.window.sql.record.column.status',
+          defaultMessage: '状态',
         }),
 
         width: 50,
@@ -125,6 +126,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         dataIndex: 'executeTimestamp',
         title: formatMessage({
           id: 'workspace.window.sql.record.column.executeTimestamp',
+          defaultMessage: '时间',
         }),
 
         width: isSmallMode ? 80 : 100,
@@ -141,6 +143,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         dataIndex: 'executeSql',
         title: formatMessage({
           id: 'workspace.window.sql.record.column.executeSql',
+          defaultMessage: 'SQL 语句',
         }),
 
         width: isSmallMode ? 150 : 300,
@@ -168,6 +171,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         dataIndex: 'track',
         title: formatMessage({
           id: 'workspace.window.sql.record.column.track',
+          defaultMessage: '结果',
         }),
         ellipsis: true,
         render: (value: string, row: any) =>
@@ -215,6 +219,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
             DB{' '}
             {formatMessage({
               id: 'workspace.window.sql.record.column.elapsedTime',
+              defaultMessage: '耗时',
             })}
           </span>
         ),
@@ -263,6 +268,8 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
             formatMessage(
               {
                 id: 'odc.components.SQLResultSet.ExecuteHistory.TheOdcUsageEnvironmentClock',
+                defaultMessage:
+                  'ODC 使用环境时钟和 ODC 部署环境时钟设置不一致，差异大于 {lagRecordLag} ms，会导致网络耗时统计不精准，请检查两个环境时间和 UTC 时间的差异',
               },
 
               { lagRecordLag: 100 },
@@ -280,6 +287,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
             formatMessage(
               {
                 id: 'odc.components.SQLResultSet.ExecuteHistory.SelectedrowkeyslengthRecordsSelected',
+                defaultMessage: '已选择 {selectedRowKeysLength} 个记录',
               },
 
               { selectedRowKeysLength: selectedRowKeys.length },
@@ -292,6 +300,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
               {
                 formatMessage({
                   id: 'odc.components.SQLResultSet.ExecuteHistory.Delete',
+                  defaultMessage: '删除',
                 })
                 /* 删除 */
               }
@@ -304,6 +313,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
             message.success(
               formatMessage({
                 id: 'odc.components.SQLResultSet.ExecuteHistory.Deleted',
+                defaultMessage: '删除成功',
               }),
               // 删除成功
             );
@@ -321,7 +331,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
             selectedRowKeys,
             selections: [
               {
-                text: formatMessage({ id: 'app.button.selectAll' }),
+                text: formatMessage({ id: 'app.button.selectAll', defaultMessage: '全选' }),
                 key: 'selectAll',
                 onSelect: () => {
                   setSelectedRowKeys(records?.map((r) => r.id));
@@ -329,7 +339,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
               },
 
               {
-                text: formatMessage({ id: 'app.button.deselectAll' }),
+                text: formatMessage({ id: 'app.button.deselectAll', defaultMessage: '取消全选' }),
                 key: 'deselectAll',
                 onSelect: () => {
                   setSelectedRowKeys([]);

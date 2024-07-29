@@ -119,8 +119,14 @@ const ManageModal: React.FC<IProps> = (props) => {
   const handleReclaim = async (ids: number[]) => {
     const isBatch = ids?.length > 1;
     const title = isBatch
-      ? formatMessage({ id: 'src.page.Project.User.ManageModal.A23DCE27' })
-      : formatMessage({ id: 'src.page.Project.User.ManageModal.8B929D18' });
+      ? formatMessage({
+          id: 'src.page.Project.User.ManageModal.A23DCE27',
+          defaultMessage: '确认要批量回收权限吗？',
+        })
+      : formatMessage({
+          id: 'src.page.Project.User.ManageModal.8B929D18',
+          defaultMessage: '确认要回收权限吗？',
+        });
     Modal.confirm({
       title,
       content: (
@@ -131,6 +137,7 @@ const ManageModal: React.FC<IProps> = (props) => {
           })}
         </Text>
       ),
+
       cancelText: formatMessage({
         id: 'src.page.Project.User.ManageModal.Table.C5AD844C',
         defaultMessage: '取消',

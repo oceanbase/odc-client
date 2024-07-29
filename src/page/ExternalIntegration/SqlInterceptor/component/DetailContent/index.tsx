@@ -47,8 +47,9 @@ const Detail: React.FC<{
             formatMessage(
               {
                 id: 'odc.component.DetailContent.TitleName',
+                defaultMessage: '{title}名称',
               },
-              { title: title },
+              { title },
             ) //`${title}名称`
           }
         >
@@ -59,15 +60,19 @@ const Detail: React.FC<{
             formatMessage(
               {
                 id: 'odc.component.DetailContent.TitleStatus',
+                defaultMessage: '{title}状态',
               },
-              { title: title },
+              { title },
             ) //`${title}状态`
           }
         >
           {
             enabled
-              ? formatMessage({ id: 'odc.component.DetailContent.Enable.1' }) //启用
-              : formatMessage({ id: 'odc.component.DetailContent.Disable' }) //停用
+              ? formatMessage({
+                  id: 'odc.component.DetailContent.Enable.1',
+                  defaultMessage: '启用',
+                }) //启用
+              : formatMessage({ id: 'odc.component.DetailContent.Disable', defaultMessage: '停用' }) //停用
           }
         </Descriptions.Item>
         <Descriptions.Item>
@@ -75,8 +80,9 @@ const Detail: React.FC<{
             formatMessage(
               {
                 id: 'odc.component.DetailContent.TitleConfiguration',
+                defaultMessage: '{title}配置',
               },
-              { title: title },
+              { title },
             ) //`${title}配置`
           }
         </Descriptions.Item>
@@ -93,14 +99,21 @@ const Detail: React.FC<{
                   {
                     formatMessage({
                       id: 'odc.component.DetailContent.EncryptionStatus',
+                      defaultMessage: '加密状态',
                     }) /*加密状态*/
                   }
                 </span>
                 <span>
                   {
                     encryption?.enabled
-                      ? formatMessage({ id: 'odc.component.DetailContent.Enable.1' }) //启用
-                      : formatMessage({ id: 'odc.component.DetailContent.NotEnabled' }) //未启用
+                      ? formatMessage({
+                          id: 'odc.component.DetailContent.Enable.1',
+                          defaultMessage: '启用',
+                        }) //启用
+                      : formatMessage({
+                          id: 'odc.component.DetailContent.NotEnabled',
+                          defaultMessage: '未启用',
+                        }) //未启用
                   }
                 </span>
               </Space>
@@ -110,6 +123,7 @@ const Detail: React.FC<{
                     {
                       formatMessage({
                         id: 'odc.component.DetailContent.EncryptionAlgorithm',
+                        defaultMessage: '加密算法',
                       }) /*加密算法*/
                     }
                   </span>
@@ -121,7 +135,10 @@ const Detail: React.FC<{
         }
 
         <Descriptions.Item
-          label={formatMessage({ id: 'odc.component.DetailContent.Remarks' })} /*备注*/
+          label={formatMessage({
+            id: 'odc.component.DetailContent.Remarks',
+            defaultMessage: '备注',
+          })} /*备注*/
         >
           {description || '-'}
         </Descriptions.Item>
@@ -129,17 +146,26 @@ const Detail: React.FC<{
       <Divider />
       <Descriptions column={1}>
         <Descriptions.Item
-          label={formatMessage({ id: 'odc.component.DetailContent.Founder' })} /*创建人*/
+          label={formatMessage({
+            id: 'odc.component.DetailContent.Founder',
+            defaultMessage: '创建人',
+          })} /*创建人*/
         >
           {creatorName}
         </Descriptions.Item>
         <Descriptions.Item
-          label={formatMessage({ id: 'odc.component.DetailContent.CreationTime' })} /*创建时间*/
+          label={formatMessage({
+            id: 'odc.component.DetailContent.CreationTime',
+            defaultMessage: '创建时间',
+          })} /*创建时间*/
         >
           {getLocalFormatDateTime(createTime)}
         </Descriptions.Item>
         <Descriptions.Item
-          label={formatMessage({ id: 'odc.component.DetailContent.UpdateTime' })} /*更新时间*/
+          label={formatMessage({
+            id: 'odc.component.DetailContent.UpdateTime',
+            defaultMessage: '更新时间',
+          })} /*更新时间*/
         >
           {getLocalFormatDateTime(updateTime)}
         </Descriptions.Item>

@@ -53,14 +53,17 @@ export enum PL_RUNNING_STATUS {
   // @ts-ignore
   COMPILE = formatMessage({
     id: 'odc.src.store.sql.Compile',
+    defaultMessage: '编译',
   }),
   // @ts-ignore
   EXEC = formatMessage({
     id: 'odc.src.store.sql.Run',
+    defaultMessage: '运行',
   }),
   // @ts-ignore
   DEBUG = formatMessage({
     id: 'odc.src.store.sql.Debugging',
+    defaultMessage: '调试',
   }),
 }
 export class SQLStore {
@@ -132,7 +135,10 @@ export class SQLStore {
       sessionManager.sessionMap.get(sessionId)?.initSessionStatus();
       if (data?.executeResult?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
-          formatMessage({ id: 'odc.src.store.sql.SubmittedSuccessfully' }), //提交成功
+          formatMessage({
+            id: 'odc.src.store.sql.SubmittedSuccessfully',
+            defaultMessage: '提交成功',
+          }), //提交成功
         );
       }
     } finally {
@@ -151,7 +157,7 @@ export class SQLStore {
       sessionManager.sessionMap.get(sessionId)?.initSessionStatus();
       if (data?.executeResult?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
-          formatMessage({ id: 'odc.src.store.sql.RollbackSucceeded' }), //回滚成功
+          formatMessage({ id: 'odc.src.store.sql.RollbackSucceeded', defaultMessage: '回滚成功' }), //回滚成功
         );
       }
     } finally {
@@ -167,7 +173,10 @@ export class SQLStore {
 
       if (data) {
         message.success(
-          formatMessage({ id: 'odc.src.store.sql.StoppedSuccessfully' }), //停止成功
+          formatMessage({
+            id: 'odc.src.store.sql.StoppedSuccessfully',
+            defaultMessage: '停止成功',
+          }), //停止成功
         );
       }
     } finally {
@@ -289,6 +298,7 @@ export class SQLStore {
           }),
           ...this.records,
         ];
+
         this.initLog(pageKey, info);
       };
 
@@ -541,6 +551,7 @@ export class SQLStore {
         message.error(
           formatMessage({
             id: 'workspace.window.sql.record.empty',
+            defaultMessage: '无法获得 SQL 执行记录',
           }),
         );
         return;
@@ -553,7 +564,8 @@ export class SQLStore {
           };
         }),
         ...this.records,
-      ]; // 在结果集中重新执行 SQL 肯定只有一条
+      ];
+      // 在结果集中重新执行 SQL 肯定只有一条
 
       resultSet[resultSetIndex] = {
         ...generateResultSetColumns(

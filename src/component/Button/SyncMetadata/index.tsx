@@ -49,9 +49,9 @@ export default function Reload({
         formatMessage(
           {
             id: 'src.component.Button.SyncMetadata.FD352980',
-            defaultMessage: '元数据同步（上一次同步时间：${time}）',
+            defaultMessage: '元数据同步（上一次同步时间：{time}）',
           },
-          { time: time },
+          { time },
         ),
       icon: <SyncMetadataSvg onClick={_onClick} style={{ fontSize: size, cursor: 'pointer' }} />,
     },
