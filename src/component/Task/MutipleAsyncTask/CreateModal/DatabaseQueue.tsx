@@ -58,22 +58,25 @@ export const DatabaseQueueSelect: React.FC<{
       true,
       true,
     );
-    setDatabaseOptions(
-      databaseList?.contents?.map((item) => {
-        const statusInfo = datasourceStatus.statusMap.get(item?.dataSource?.id);
-        return {
-          label: item?.name,
-          value: item?.id,
-          environment: item?.environment,
-          dataSource: item?.dataSource,
-          existed: item?.existed,
-          unauthorized: !item?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE),
-          expired: checkDbExpiredByDataSourceStatus(statusInfo?.status),
-        };
-      }),
-    );
     if (databaseList?.contents?.length) {
       setDefaultDatasource(databaseList?.contents?.[0]?.dataSource);
+      await datasourceStatus.asyncUpdateStatus([
+        ...new Set(databaseList?.contents?.map((item) => item.dataSource?.id)),
+      ]);
+      setDatabaseOptions(
+        databaseList?.contents?.map((item) => {
+          const statusInfo = datasourceStatus.statusMap.get(item?.dataSource?.id);
+          return {
+            label: item?.name,
+            value: item?.id,
+            environment: item?.environment,
+            dataSource: item?.dataSource,
+            existed: item?.existed,
+            unauthorized: !item?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE),
+            expired: checkDbExpiredByDataSourceStatus(statusInfo?.status),
+          };
+        }),
+      );
     }
     databaseList?.contents?.forEach((db) => {
       databaseIdMap.set(db.id, false);

@@ -50,21 +50,25 @@ const EditTemplate: React.FC<{
       true,
       true,
     );
-
-    setDatabaseOptions(
-      databaseList?.contents?.map((item) => {
-        const statusInfo = datasourceStatus.statusMap.get(item?.dataSource?.id);
-        return {
-          label: item?.name,
-          value: item?.id,
-          environment: item?.environment,
-          dataSource: item?.dataSource,
-          existed: item?.existed,
-          unauthorized: !item?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE),
-          expired: checkDbExpiredByDataSourceStatus(statusInfo?.status),
-        };
-      }),
-    );
+    if (databaseList?.contents?.length) {
+      await datasourceStatus.asyncUpdateStatus([
+        ...new Set(databaseList?.contents?.map((item) => item?.dataSource?.id)),
+      ]);
+      setDatabaseOptions(
+        databaseList?.contents?.map((item) => {
+          const statusInfo = datasourceStatus.statusMap.get(item?.dataSource?.id);
+          return {
+            label: item?.name,
+            value: item?.id,
+            environment: item?.environment,
+            dataSource: item?.dataSource,
+            existed: item?.existed,
+            unauthorized: !item?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE),
+            expired: checkDbExpiredByDataSourceStatus(statusInfo?.status),
+          };
+        }),
+      );
+    }
   };
   const initTemplate = async (templateId: number) => {
     const response = await detailTemplate(templateId, login?.organizationId?.toString());

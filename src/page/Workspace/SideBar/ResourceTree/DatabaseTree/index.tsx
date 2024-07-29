@@ -45,6 +45,14 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
   async function reloadDatabase() {
     await reloadDatabaseList();
   }
+  async function handleDatabase() {
+    setDatabases(databaseList?.filter((item) => !!item?.authorizedPermissionTypes?.length));
+    const ids: Set<number> = new Set();
+    databaseList.forEach((d) => {
+      ids.add(d.dataSource?.id);
+    });
+    await datasourceStatus.asyncUpdateStatus(Array.from(ids));
+  }
 
   useEffect(() => {
     if (selectDatasourceId || selectProjectId) {
@@ -54,12 +62,7 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
 
   useEffect(() => {
     if (databaseList?.length) {
-      setDatabases(databaseList?.filter((item) => !!item?.authorizedPermissionTypes?.length));
-      const ids: Set<number> = new Set();
-      databaseList.forEach((d) => {
-        ids.add(d.dataSource?.id);
-      });
-      datasourceStatus.asyncUpdateStatus(Array.from(ids));
+      handleDatabase();
     }
   }, [databaseList]);
 
