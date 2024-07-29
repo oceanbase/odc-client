@@ -74,7 +74,7 @@ export class DataSourceStatusStore {
     });
     if (this.status === 'stop') {
       this.status = 'running';
-      await this.fetchStatus();
+      this.fetchStatus();
     }
   }
 

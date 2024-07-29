@@ -51,7 +51,7 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
     databaseList.forEach((d) => {
       ids.add(d.dataSource?.id);
     });
-    await datasourceStatus.asyncUpdateStatus(Array.from(ids));
+    datasourceStatus.asyncUpdateStatus(Array.from(ids));
   }
 
   useEffect(() => {
