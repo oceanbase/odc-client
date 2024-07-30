@@ -87,7 +87,10 @@ const Search = ({
         <Input
           size="small"
           ref={inputRef}
-          placeholder={`搜索数据库、表、字段、视图等`}
+          placeholder={formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.ACB992B0',
+            defaultMessage: '搜索数据库、表、字段、视图等',
+          })}
           onChange={handleChangeDatabaseSearch}
           value={searchKey}
         />

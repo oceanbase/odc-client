@@ -692,13 +692,23 @@ const DDLResultSet: React.FC<IProps> = function (props) {
           })}
         </div>
         <div>
-          集合 SQL 的执行详情、物理执行计划、全链路诊断的多维度视图，帮助快速定位执行慢查询的根因
+          {formatMessage({
+            id: 'src.page.Workspace.components.DDLResultSet.6477DD60',
+            defaultMessage:
+              '集合 SQL 的执行详情、物理执行计划、全链路诊断的多维度视图，帮助快速定位执行慢查询的根因',
+          })}
         </div>
         <img
           style={{ width: 280, display: 'block', paddingBottom: 8 }}
           src={window.publicPath + `img/profile.jpeg`}
         />
-        <Link onClick={updateExecutePlanGuideCache}>我知道了</Link>
+
+        <Link onClick={updateExecutePlanGuideCache}>
+          {formatMessage({
+            id: 'src.page.Workspace.components.DDLResultSet.90E40FCF',
+            defaultMessage: '我知道了',
+          })}
+        </Link>
       </div>
     );
   };
@@ -759,6 +769,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               />
             </Tooltip>
           ))}
+
         {showTrace &&
           (isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=') ? (
             <ToolbarButton
@@ -1094,10 +1105,10 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             ) : null}
 
             {/* <ToolbarButton
-                   text={formatMessage({ id: "workspace.window.session.button.refresh" })}
-                   icon={<Icon type="sync" />}
-                   onClick={onRefresh.bind(this, this.state.limit || 1000)}
-                   /> */}
+                    text={formatMessage({ id: "workspace.window.session.button.refresh" })}
+                    icon={<Icon type="sync" />}
+                    onClick={onRefresh.bind(this, this.state.limit || 1000)}
+                    /> */}
           </div>
           <div className={styles.toolsRight}>
             <span className={styles.limit}>

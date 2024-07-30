@@ -112,7 +112,15 @@ const runningLogPage = (
     <div className={styles.runningSql}>
       <Spin style={{ marginBottom: 16 }} />
       <Space direction="vertical" size="small" align="center">
-        <div>{`共有 ${count} 个 SQL 执行，当前正在执行第 ${currentSQLIndex + 1} 个`}</div>
+        <div>
+          {formatMessage(
+            {
+              id: 'src.page.Workspace.components.SQLResultSet.7F598F77',
+              defaultMessage: '共有 ${count} 个 SQL 执行，当前正在执行第 ${currentSQLIndex + 1} 个',
+            },
+            { count: count, BinaryExpression1: currentSQLIndex + 1 },
+          )}
+        </div>
         <div>
           {currentExecuteInfo?.traceId && (
             <Space size="small">
