@@ -51,6 +51,15 @@ export async function getProject(id: number): Promise<IProject> {
   return res?.data;
 }
 
+export async function getProjectHistoryInfo(id: number): Promise<IProject> {
+  const res = await request.get(`/api/v2/collaboration/projects/${id}`, {
+    params: {
+      ignoreError: true,
+    },
+  });
+  return res?.data;
+}
+
 export async function updateProject(id: number, project: IProject): Promise<IProject> {
   const res = await request.put(`/api/v2/collaboration/projects/${id}`, {
     data: project,

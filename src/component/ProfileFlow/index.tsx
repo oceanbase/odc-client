@@ -47,9 +47,11 @@ function Flow(props: Iprops) {
 
   // 初始化数据
   useEffect(() => {
-    setNodes(initialNodes);
-    setEdges(initialEdges);
-  }, [JSON.stringify(dataSource)]);
+    setTimeout(() => {
+      setNodes(initialNodes);
+      setEdges(initialEdges);
+    }, 300);
+  }, [JSON.stringify(initialNodes)]);
 
   // 视图位置初始化
   useEffect(() => {
@@ -60,14 +62,6 @@ function Flow(props: Iprops) {
   useEffect(() => {
     handleSelectNode(setNodes, selectedNode?.id);
   }, [JSON.stringify(selectedNode?.id)]);
-
-  const onConnect = useCallback(
-    (connection) => {
-      const edge = { ...connection, type: 'CustomEdge' };
-      setEdges((eds) => addEdge(edge, eds));
-    },
-    [setEdges],
-  );
 
   return (
     <div className={styles.profileFlow}>
@@ -93,7 +87,6 @@ function Flow(props: Iprops) {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
         // @ts-ignore
         edgeTypes={edgeTypes}
         nodeTypes={nodeTypes}
