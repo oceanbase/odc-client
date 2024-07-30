@@ -72,7 +72,10 @@ const SQLConfig: React.FC<IProps> = function (props) {
               width: '100%',
             }}
           >
-            Delimiter 设置
+            {formatMessage({
+              id: 'src.component.SQLConfig.1D15916D',
+              defaultMessage: 'Delimiter 设置',
+            })}
           </Row>
           <Row style={{ width: '100%' }}>
             <DelimiterSelect />
@@ -97,7 +100,9 @@ const SQLConfig: React.FC<IProps> = function (props) {
             />
           </Row>
         </div>
-        <h4>查询结果</h4>
+        <h4>
+          {formatMessage({ id: 'src.component.SQLConfig.27EDBEAB', defaultMessage: '查询结果' })}
+        </h4>
         <div className={styles.sqlconfigGroup}>
           <Row
             style={{

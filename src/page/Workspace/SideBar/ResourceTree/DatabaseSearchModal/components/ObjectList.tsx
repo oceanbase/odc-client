@@ -108,6 +108,7 @@ const ObjectList = ({
             </Tooltip>
           </>
         );
+
       case DbObjectType.database: {
         const { dataSource } = item;
         const { name: dataSourceName, dialectType } = dataSource;
@@ -145,7 +146,12 @@ const ObjectList = ({
       <Spin spinning={loading}>
         {!objectlist?.dbColumns?.length && !objectlist?.dbObjects?.length ? (
           <div className={styles.objectlistBoxEmpty}>
-            <Empty description={`如果检索不到已存在的数据库对象，请先同步元数据`} />
+            <Empty
+              description={formatMessage({
+                id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.939E5208',
+                defaultMessage: '如果检索不到已存在的数据库对象，请先同步元数据',
+              })}
+            />
           </div>
         ) : (
           <div className={styles.objectlistBox}>
@@ -170,7 +176,10 @@ const ObjectList = ({
                           type="link"
                           onClick={() => setActiveKey(i.key)}
                         >
-                          全部搜索结果
+                          {formatMessage({
+                            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.5DDBC7F0',
+                            defaultMessage: '全部搜索结果',
+                          })}
                         </Button>
                       ) : null}
                     </div>
@@ -206,6 +215,7 @@ const ObjectList = ({
                                     }}
                                   />
                                 )}
+
                                 <span style={{ paddingRight: 4 }}>{object?.name}</span>
                                 <span
                                   style={{
@@ -287,7 +297,10 @@ const ObjectList = ({
         style={{ padding: 0, height: 18 }}
         onClick={(e) => applyDbPermission(e, object)}
       >
-        申请库权限
+        {formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.DB7526F7',
+          defaultMessage: '申请库权限',
+        })}
       </Button>
     );
   };
@@ -315,7 +328,10 @@ const ObjectList = ({
             setSearchKey('');
           }}
         >
-          继续搜索
+          {formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.E74A1569',
+            defaultMessage: '继续搜索',
+          })}
         </Button>
       );
     }
@@ -325,7 +341,10 @@ const ObjectList = ({
         style={{ padding: 0, height: 18 }}
         onClick={(e) => applyDbPermission(e, object)}
       >
-        申请库权限
+        {formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.64F32480',
+          defaultMessage: '申请库权限',
+        })}
       </Button>
     );
   };
@@ -359,7 +378,16 @@ const ObjectList = ({
             <Empty
               description={
                 <>
-                  <div>暂无数据</div>如果检索不到已存在的数据库对象，请先同步元数据
+                  <div>
+                    {formatMessage({
+                      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.6656C471',
+                      defaultMessage: '暂无数据',
+                    })}
+                  </div>
+                  {formatMessage({
+                    id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.657DE57E',
+                    defaultMessage: '如果检索不到已存在的数据库对象，请先同步元数据',
+                  })}
                 </>
               }
             />
