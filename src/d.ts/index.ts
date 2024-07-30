@@ -2919,7 +2919,7 @@ export interface ITaskFlowNode {
   comment: string;
   deadlineTime: number;
   issueCount: number;
-  unauthorizedDatabases: IUnauthorizedDBResources[];
+  unauthorizedDBResources: IUnauthorizedDBResources[];
   id?: number;
   candidates: {
     id: number;
@@ -3273,6 +3273,7 @@ export enum ODCErrorsCode {
   SysTenantAccountNotSet = 'SysTenantAccountNotSet',
   SysTenantAccountInvalid = 'SysTenantAccountInvalid',
   PermissionChanged = 'PermissionChanged',
+  AccessDenied = 'AccessDenied',
 }
 
 export enum ConnectType {

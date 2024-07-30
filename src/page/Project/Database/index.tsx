@@ -354,8 +354,9 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             //上一次同步时间
             dataIndex: 'lastSyncTime',
             width: 170,
-            render(v) {
-              return getLocalFormatDateTime(v);
+            render(v, record) {
+              const time = record?.lastSyncTime || record?.objectLastSyncTime;
+              return getLocalFormatDateTime(time);
             },
           },
           {
