@@ -4907,7 +4907,7 @@
   "src.component.ProfileFlow.customComponents.12BFFE42": "缩小",
   "src.page.Project.User.ManageModal.Table.UserAuthList.D245E1FF": "操作",
   "src.component.ExecuteSqlDetailModal.A944EAD1": "执行计划详情",
-  "src.component.helpDoc.618FF120": "新建数据库变更类工单（包括数据库变更）的权限和SQL窗口执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束）",
+  "src.component.helpDoc.618FF120": "SQL窗口执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束）",
   "src.page.Project.User.ManageModal.Table.TaskApplyList.D8B38717": "状态",
   "src.page.Workspace.components.SQLExplain.E0AB0E4C": "实际代价",
   "src.component.Task.ApplyTablePermission.DetailContent.4B4A4E81": "任务类型",

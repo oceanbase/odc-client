@@ -692,8 +692,7 @@ export default {
     <p>
       {formatMessage({
         id: 'src.component.helpDoc.618FF120',
-        defaultMessage:
-          '新建数据库变更类工单（包括数据库变更）的权限和SQL窗口执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束）',
+        defaultMessage: 'SQL窗口执行变更语句的权限（SQL窗口可否执行变更受安全规范配置约束）',
       })}
     </p>
   ),
