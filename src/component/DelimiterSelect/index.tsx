@@ -24,7 +24,13 @@ interface IProps {}
 const DelimiterSelect: React.FC<IProps> = function (props) {
   const { session, pageKey } = useContext(SQLConfigContext);
   const [delimiterValue, setDelimiterValue] = useState(null);
+  const [delimiterLoadingStatus, setDelimiterLoadingStatus] = useState(false);
   const delimiter = session?.params?.delimiter;
+  const delimiterLoading = session?.params?.delimiterLoading;
+
+  useEffect(() => {
+    setDelimiterLoadingStatus(delimiterLoading);
+  }, [delimiterLoading]);
 
   useEffect(() => {
     setDelimiterValue(delimiter);
@@ -44,12 +50,13 @@ const DelimiterSelect: React.FC<IProps> = function (props) {
           if (!isSuccess) {
             setDelimiterValue(delimiter);
           }
+          setDelimiterLoadingStatus(false);
         } else {
           setDelimiterValue(delimiter);
         }
       }}
       size="small"
-      disabled={session?.params?.delimiterLoading}
+      disabled={delimiterLoadingStatus}
       options={[';', '/', '//', '$', '$$'].map((value) => {
         return {
           value,
