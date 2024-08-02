@@ -172,7 +172,7 @@ export function getItems(
   const handleRowLimit = async (rowLimit, handleClose) => {
     const res = await updateThrottleConfig(id, {
       rowLimit,
-      dataSizeLimit: mbToKb(parameters?.rateLimitConfig?.dataSizeLimit),
+      dataSizeLimit: parameters?.rateLimitConfig?.dataSizeLimit,
     });
     if (res) {
       message.success(
