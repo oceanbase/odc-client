@@ -276,7 +276,10 @@ class MainServer {
         jvmOptions = setting['client.jvm.params'].split('\n');
         const odcProperties = setting['client.start.params'];
         if (odcProperties) {
-          odcOptions = odcProperties.split('\n').map((item) => '--' + item);
+          odcOptions = odcProperties
+            .split('\n')
+            .filter((item) => Boolean(item.trim()))
+            .map((item) => '--' + item);
           log.info('odc system propeties ', odcOptions, setting['client.start.params']);
         }
       }

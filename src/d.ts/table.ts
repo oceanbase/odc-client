@@ -210,6 +210,11 @@ export enum TablePermissionType {
   EXPORT = 'EXPORT',
 }
 
+export enum UnauthorizedPermissionTypeInSQLExecute {
+  ODC_TABLE = 'ODC_TABLE',
+  ODC_DATABASE = 'ODC_DATABASE',
+}
+
 export interface IUnauthorizedDBResources {
   unauthorizedPermissionTypes: (DatabasePermissionType & TablePermissionType)[];
   dataSourceId: number;
@@ -220,6 +225,7 @@ export interface IUnauthorizedDBResources {
   tableName: string;
   tableId: number;
   applicable: boolean;
+  type: UnauthorizedPermissionTypeInSQLExecute;
 }
 export interface IColumnStoreServerType {
   allColumns?: boolean;

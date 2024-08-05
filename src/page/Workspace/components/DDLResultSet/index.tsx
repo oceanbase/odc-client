@@ -701,14 +701,23 @@ const DDLResultSet: React.FC<IProps> = function (props) {
           })}
         </div>
         <div>
-          集合 SQL 的执行详情、物理执行计划、全链路诊断的多维度视图，帮助快速定位执行慢查询的根因
+          {formatMessage({
+            id: 'src.page.Workspace.components.DDLResultSet.6477DD60',
+            defaultMessage:
+              '集合 SQL 的执行详情、物理执行计划、全链路诊断的多维度视图，帮助快速定位执行慢查询的根因',
+          })}
         </div>
         <img
           style={{ width: 280, display: 'block', paddingBottom: 8 }}
           src={window.publicPath + `img/profile.jpeg`}
         />
 
-        <Link onClick={updateExecutePlanGuideCache}>我知道了</Link>
+        <Link onClick={updateExecutePlanGuideCache}>
+          {formatMessage({
+            id: 'src.page.Workspace.components.DDLResultSet.90E40FCF',
+            defaultMessage: '我知道了',
+          })}
+        </Link>
       </div>
     );
   };

@@ -32,9 +32,8 @@ export const hasPermission = (taskType: TaskType, permissions: DatabasePermissio
     case TaskType.EXPORT:
       return permissions?.length > 0; // 考虑有表没有库权限的情况
     case TaskType.EXPORT_RESULT_SET:
-      return permissions?.length > 0; // 考虑有表没有库权限的情况
-    case TaskType.ASYNC:
-      return permissions?.length > 0; // 考虑有表没有库权限的情况
+      _permissions = [DatabasePermissionType.EXPORT, DatabasePermissionType.QUERY];
+      break;
     default:
       _permissions = [DatabasePermissionType.CHANGE];
   }

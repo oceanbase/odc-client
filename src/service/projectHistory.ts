@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getProject } from '@/common/network/project';
+import { getProjectHistoryInfo } from '@/common/network/project';
 import login from '@/store/login';
 import logger from '@/util/logger';
 import { safeParseJson } from '@/util/utils';
@@ -54,7 +54,7 @@ export async function toDefaultProjectPage() {
   if (!projectId) {
     history.push('/project');
   } else {
-    const project = await getProject(projectId);
+    const project = await getProjectHistoryInfo(projectId);
     const isProjectAvailable = project && !project?.archived;
     isProjectAvailable ? history.push(`/project/${projectId}/database`) : history.push('/project');
   }

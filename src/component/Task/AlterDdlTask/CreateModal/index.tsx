@@ -25,6 +25,7 @@ import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
+import { mbToKb } from '@/util/utils';
 import {
   Alert,
   Button,
@@ -45,6 +46,8 @@ import styles from './index.less';
 import ThrottleFormItem from '../../component/ThrottleFormItem';
 import { SettingStore } from '@/store/setting';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { OscMaxRowLimit, OscMaxDataSizeLimit } from '../../const';
+
 interface IProps {
   modalStore?: ModalStore;
   settingStore?: SettingStore;
@@ -143,7 +146,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             rowLimit || dataSizeLimit
               ? {
                   rowLimit,
-                  dataSizeLimit,
+                  dataSizeLimit: mbToKb(dataSizeLimit),
                 }
               : null,
         };
@@ -622,7 +625,13 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
               </Radio>
             </Radio.Group>
           </Form.Item>
-          {settingStore.enableOSCLimiting && <ThrottleFormItem initialValue={initialValue} />}
+          {settingStore.enableOSCLimiting && (
+            <ThrottleFormItem
+              initialValue={initialValue}
+              maxRowLimit={OscMaxRowLimit}
+              maxDataSizeLimit={OscMaxDataSizeLimit}
+            />
+          )}
         </FormItemPanel>
         <DescriptionInput />
       </Form>

@@ -94,14 +94,27 @@ const DatabaseList = ({
         </Button>
       );
     }
-    return <span style={{ color: 'var(--text-color-hint)' }}>库内搜索</span>;
+    return (
+      <span style={{ color: 'var(--text-color-hint)' }}>
+        {formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.6C33321C',
+          defaultMessage: '库内搜索',
+        })}
+      </span>
+    );
   };
 
   if (database && !searchKey) {
     return (
       <div className={styles.content}>
         <div className={styles.databaseItem} onClick={(e) => openSql(e, database)}>
-          {`定位到数据库 "${database?.name}"`}
+          {formatMessage(
+            {
+              id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.FA5E6855',
+              defaultMessage: '定位到数据库 "${database?.name}"',
+            },
+            { databaseName: database?.name },
+          )}
         </div>
       </div>
     );
