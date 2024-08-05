@@ -265,6 +265,8 @@ const Trace: React.FC<{
         sql={sql}
         session={session}
         searchValue={searchValue}
+        updateTotalElapseMicroSeconds={setTotalElapseMicroSeconds}
+        updateOriginStartTimestamp={setOriginStartTimestamp}
       />
     </Drawer>
   );

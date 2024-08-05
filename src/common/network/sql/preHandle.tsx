@@ -28,9 +28,9 @@ export function executeSQLPreHandle(
     }
     return pre;
   }, []);
-  const unauthorizedDatabases = taskInfo?.unauthorizedDBResources;
+  const unauthorizedDBResources = taskInfo?.unauthorizedDBResources;
   const violatedRules = rootViolatedRules?.concat(taskInfo?.sqls);
-  if (unauthorizedDatabases?.length) {
+  if (unauthorizedDBResources?.length) {
     // 无权限库
     return {
       data: {
@@ -38,7 +38,7 @@ export function executeSQLPreHandle(
         executeSuccess: false,
         executeResult: [],
         violatedRules: [],
-        unauthorizedDatabases,
+        unauthorizedDBResources,
         unauthorizedSql: (params as IExecuteSQLParams)?.sql || (params as string),
       },
       lintResultSet: [],

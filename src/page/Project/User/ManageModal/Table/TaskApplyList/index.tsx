@@ -78,7 +78,10 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'databaseName',
-      title: '所属数据库',
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.47C16695',
+        defaultMessage: '所属数据库',
+      }),
       ellipsis: true,
       width: 208,
       filterDropdown: (props) => {
@@ -295,6 +298,7 @@ const TaskApplyList: React.FC<IProps> = (props) => {
                     onOk: onReclaim,
                   },
                 ],
+
                 getCheckboxProps: (record: ITablePermission) => {
                   return {
                     disabled: record?.status === TablePermissionStatus.EXPIRED,

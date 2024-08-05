@@ -75,7 +75,10 @@ const getColumns = (params: {
     },
     {
       dataIndex: 'databaseName',
-      title: '所属数据库',
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.Table.UserAuthList.AB937C7D',
+        defaultMessage: '所属数据库',
+      }),
       width: 208,
       ellipsis: true,
       filterDropdown: (props) => {
@@ -242,6 +245,7 @@ const UserAuthList: React.FC<IProps> = (props) => {
                     onOk: onReclaim,
                   },
                 ],
+
                 getCheckboxProps: (record: ITablePermission) => {
                   return {
                     disabled: record?.status === TablePermissionStatus.EXPIRED,

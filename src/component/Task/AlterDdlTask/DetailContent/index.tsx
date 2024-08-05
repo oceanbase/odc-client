@@ -20,7 +20,6 @@ import { getTaskExecStrategyMap } from '@/component/Task';
 import type { ITaskResult, TaskDetail } from '@/d.ts';
 import { TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
 import React from 'react';
 import { Typography, message } from 'antd';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
@@ -29,6 +28,9 @@ import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { updateThrottleConfig } from '@/common/network/task';
 import setting from '@/store/setting';
+import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
+import { TaskStatus } from '@/d.ts';
+import { OscMaxRowLimit, OscMaxDataSizeLimit } from '../../const';
 
 const { Text } = Typography;
 interface IDDLAlterParamters {
@@ -129,7 +131,12 @@ export function getItems(
   textItems: [React.ReactNode, React.ReactNode, number?][];
   sectionRender?: (task: TaskDetail<IDDLAlterParamters>) => void;
 }[] {
-  const { parameters, id } = task;
+  const { parameters, id, status } = task;
+  const cantBeModified = [
+    TaskStatus.EXECUTION_SUCCEEDED,
+    TaskStatus.EXECUTION_FAILED,
+    TaskStatus.CANCELLED,
+  ]?.includes(status);
   if (!task) {
     return [];
   }
@@ -158,7 +165,7 @@ export function getItems(
 
   const handleDataSizeLimit = async (dataSizeLimit, handleClose) => {
     const res = await updateThrottleConfig(id, {
-      dataSizeLimit: dataSizeLimit,
+      dataSizeLimit: mbToKb(dataSizeLimit),
       rowLimit: parameters?.rateLimitConfig?.rowLimit,
     });
     if (res) {
@@ -324,11 +331,11 @@ export function getItems(
               <ThrottleEditableCell
                 suffix="Rows/s"
                 min={0}
-                max={setting.maxSingleTaskRowLimit}
+                max={OscMaxRowLimit}
                 defaultValue={parameters?.rateLimitConfig?.rowLimit}
                 onOk={handleRowLimit}
+                readlOnly={cantBeModified}
               />,
-
               1,
             ]
           : null,
@@ -342,9 +349,10 @@ export function getItems(
               <ThrottleEditableCell
                 suffix="MB/s"
                 min={0}
-                max={setting.maxSingleTaskDataSizeLimit}
-                defaultValue={parameters?.rateLimitConfig?.dataSizeLimit}
+                max={OscMaxDataSizeLimit}
+                defaultValue={kbToMb(parameters?.rateLimitConfig?.dataSizeLimit)}
                 onOk={handleDataSizeLimit}
+                readlOnly={cantBeModified}
               />,
 
               1,

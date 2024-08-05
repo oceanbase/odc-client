@@ -53,7 +53,10 @@ export const databasePermissionTypeMap = {
     value: DatabasePermissionType.CHANGE,
   },
   [DatabasePermissionType.ACCESS]: {
-    text: '访问',
+    text: formatMessage({
+      id: 'src.page.Project.User.ManageModal.Database.BC592E63',
+      defaultMessage: '访问',
+    }),
     value: DatabasePermissionType.ACCESS,
   },
 };

@@ -15,7 +15,7 @@ interface IProps {
   flowId: number;
 }
 const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
-  const { status, nodeType, issueCount, unauthorizedDatabases, id, preCheckOverLimit } = node;
+  const { status, nodeType, issueCount, unauthorizedDBResources, id, preCheckOverLimit } = node;
   const [isLoading, setIsLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [permissionResultVisible, setPermissionResultVisible] = useState<boolean>(false);
@@ -26,7 +26,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
     }[]
   >([]);
   const showCount = typeof issueCount === 'number';
-  const showUnauthorized = unauthorizedDatabases?.length > 0;
+  const showUnauthorized = unauthorizedDBResources?.length > 0;
   const showReslut = showCount || showUnauthorized || preCheckOverLimit;
   async function viewLintResult() {
     setVisible(true);
@@ -165,7 +165,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                         id: 'src.component.Task.component.CommonDetailModal.Nodes.90FF76EB',
                         defaultMessage: '存在{unauthorizedDatabasesLength}个问题',
                       },
-                      { unauthorizedDatabasesLength: unauthorizedDatabases?.length },
+                      { unauthorizedDatabasesLength: unauthorizedDBResources?.length },
                     ) /*`存在${unauthorizedDatabases?.length}个问题`*/
                   }
 
@@ -237,7 +237,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
       </Drawer>
       <DBPermissionTableDrawer
         visible={permissionResultVisible}
-        dataSource={unauthorizedDatabases}
+        dataSource={unauthorizedDBResources}
         onClose={() => {
           setPermissionResultVisible(false);
         }}

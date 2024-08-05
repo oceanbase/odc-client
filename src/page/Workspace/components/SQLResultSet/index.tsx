@@ -408,7 +408,10 @@ const SQLResultSet: React.FC<IProps> = function (props) {
               if (isLogTab) {
                 let count = {
                   [ISqlExecuteResultStatus.WAITING]: {
-                    lable: '待执行',
+                    lable: formatMessage({
+                      id: 'src.page.Workspace.components.SQLResultSet.6F910473',
+                      defaultMessage: '待执行',
+                    }),
                     count: set?.total,
                   },
                   [ISqlExecuteResultStatus.SUCCESS]: {
