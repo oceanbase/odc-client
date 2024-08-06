@@ -100,6 +100,7 @@ export default function Reload({
 
   async function _onClick() {
     setIsManual(true);
+    setState(statusMap.SYNCING);
     if (resourceType && resourceId) {
       await syncObject(resourceType, resourceId);
       await reloadDatabase();
