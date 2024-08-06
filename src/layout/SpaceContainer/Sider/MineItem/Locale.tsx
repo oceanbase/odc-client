@@ -30,9 +30,6 @@ const Locale: React.FC<IProps> = function () {
   const localeObj =
     localeList.find((item) => item.value.toLowerCase() === locale?.toLowerCase()) ||
     localeList.find((item) => item.value?.toLowerCase() === defaultLocale?.toLowerCase());
-  if (!odc.appConfig.locale.menu) {
-    return null;
-  }
   return (
     <DropMenu
       small
