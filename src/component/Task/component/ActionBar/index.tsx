@@ -92,6 +92,7 @@ const ActionBar: React.FC<IProps> = inject(
     } = props;
     const isOwner = user?.id === task?.creator?.id;
     const isApprover = task?.approvable;
+    const isCandidateApprovers = task?.candidateApprovers;
     const isOwnerAndApprover = isOwner && isApprover;
     const [activeBtnKey, setActiveBtnKey] = useState(null);
     const [openRollback, setOpenRollback] = useState(false);
@@ -842,13 +843,13 @@ const ActionBar: React.FC<IProps> = inject(
           handleApproval(false);
         },
       };
-
+      const isOperator = isOwner || isCandidateApprovers;
       switch (status) {
         case TaskStatus.APPROVING: {
-          if (isOwnerAndApprover) {
+          if (isOperator && isApprover) {
             tools = [viewBtn, stopBtn, approvalBtn, rejectBtn];
           } else {
-            if (isOwner) {
+            if (isOperator) {
               tools = [viewBtn, stopBtn];
             } else if (isApprover) {
               tools = [viewBtn, approvalBtn, rejectBtn];
@@ -864,7 +865,7 @@ const ActionBar: React.FC<IProps> = inject(
           break;
         }
         case TaskStatus.ENABLED: {
-          if (isOwner) {
+          if (isOperator) {
             tools = [viewBtn, editBtn, disableBtn];
             if (
               [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type) &&
@@ -880,7 +881,7 @@ const ActionBar: React.FC<IProps> = inject(
         }
         case TaskStatus.APPROVAL_EXPIRED:
         case TaskStatus.TERMINATION: {
-          if (isOwner) {
+          if (isOperator) {
             tools = [viewBtn];
           } else {
             tools = [viewBtn];
@@ -888,7 +889,7 @@ const ActionBar: React.FC<IProps> = inject(
           break;
         }
         case TaskStatus.PAUSE: {
-          if (isOwner) {
+          if (isOperator) {
             tools = [viewBtn, editBtn, enableBtn];
           } else {
             tools = [viewBtn];
@@ -896,7 +897,7 @@ const ActionBar: React.FC<IProps> = inject(
           break;
         }
         case TaskStatus.COMPLETED: {
-          if (isOwner) {
+          if (isOperator) {
             tools = [viewBtn];
             if ([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)) {
               tools.push(reTryBtn);
@@ -914,7 +915,7 @@ const ActionBar: React.FC<IProps> = inject(
       } else {
         tools = [viewBtn];
       }
-      // 仅 sql 计划 & 数据归档支持编辑
+      // sql 计划 & 数据归档 & 数据清理 支持编辑
       if (![TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)) {
         tools = tools.filter((item) => item.key !== 'edit');
       }

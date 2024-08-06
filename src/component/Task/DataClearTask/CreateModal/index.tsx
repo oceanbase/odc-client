@@ -154,7 +154,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       targetDatabaseId,
       timeoutMillis,
     } = jobParameters;
-    setEnablePartition(isEdit && !!tables?.find((i) => i?.partitions));
+    setEnablePartition(!!tables?.find((i) => i?.partitions?.length));
     const formData = {
       databaseId,
       rowLimit: rateLimit?.rowLimit,
@@ -285,12 +285,12 @@ const CreateModal: React.FC<IProps> = (props) => {
           targetDatabaseId,
         } = values;
         _tables?.map((i) => {
-          i.partitions = i?.partitions?.length
-            ? i?.partitions
+          i.partitions = Array.isArray(i.partitions)
+            ? i.partitions
+            : i?.partitions
                 ?.replace(/[\r\n]+/g, '')
                 ?.split(',')
-                .filter(Boolean)
-            : [];
+                ?.filter(Boolean);
         });
         const parameters = {
           type: TaskJobType.DATA_DELETE,
@@ -363,12 +363,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       .then(async (values) => {
         const { variables, tables: _tables, archiveRange } = values;
         _tables?.map((i) => {
-          i.partitions = i?.partitions?.length
-            ? i?.partitions
+          i.partitions = Array.isArray(i.partitions)
+            ? i.partitions
+            : i?.partitions
                 ?.replace(/[\r\n]+/g, '')
                 ?.split(',')
-                ?.filter(Boolean)
-            : [];
+                ?.filter(Boolean);
         });
         const parameters = {
           variables: getVariables(variables),
