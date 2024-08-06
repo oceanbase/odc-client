@@ -51,7 +51,7 @@ export async function getProject(id: number): Promise<IProject> {
   return res?.data;
 }
 
-export async function getProjectHistoryInfo(id: number): Promise<IProject> {
+export async function getProjectWithErrorCatch(id: number): Promise<IProject> {
   const res = await request.get(`/api/v2/collaboration/projects/${id}`, {
     params: {
       ignoreError: true,

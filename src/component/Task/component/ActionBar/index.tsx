@@ -92,7 +92,6 @@ const ActionBar: React.FC<IProps> = inject(
     } = props;
     const isOwner = user?.id === task?.creator?.id;
     const isApprover = task?.approvable;
-    const isCandidateApprovers = task?.candidateApprovers;
     const isOwnerAndApprover = isOwner && isApprover;
     const [activeBtnKey, setActiveBtnKey] = useState(null);
     const [openRollback, setOpenRollback] = useState(false);
@@ -843,7 +842,7 @@ const ActionBar: React.FC<IProps> = inject(
           handleApproval(false);
         },
       };
-      const isOperator = isOwner || isCandidateApprovers;
+      const isOperator = isOwner || isTaskProjectOwner;
       switch (status) {
         case TaskStatus.APPROVING: {
           if (isOperator && isApprover) {
