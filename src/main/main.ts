@@ -23,7 +23,7 @@ import { initRenderService } from './renderService';
 import MainServer from './server/main';
 import setAboutPanelOptions from './setAboutPanel';
 import { PathnameStore } from './store';
-import { getParamsFromODCSchema, isODCSchemaUrl } from './utils';
+import { getParamsFromODCSchema, getSetting, isODCSchemaUrl } from './utils';
 import log from './utils/log';
 import { openMainWebWindow } from './windows/mainWeb';
 import startScreen from './windows/startScreen';
@@ -31,15 +31,35 @@ import startScreen from './windows/startScreen';
 Sentry.init({
   dsn: 'https://859452cf23044aeda8677a8bdcc53081@obc-sentry.oceanbase.com/3',
 });
-
+/**
+ * 注册render接口服务
+ */
 initRenderService();
+/** end */
+
+/**
+ * 获取单实例锁
+ */
 const gotTheLock = app.requestSingleInstanceLock();
 process.on('uncaughtException', (e) => {
   log.info('uncaughtException');
   log.info(e);
 });
-app.commandLine.appendSwitch('disable-http-cache');
-app.commandLine.appendSwitch('in-process-gpu');
+/**
+ * 初始化浏览器参数
+ */
+const setting = getSetting();
+if (setting && Object.keys(setting).includes('client.electron.params')) {
+  let arr = setting['client.electron.params']?.split('\n').filter(Boolean);
+  arr.forEach((item) => {
+    app.commandLine.appendSwitch(item);
+  });
+} else {
+  app.commandLine.appendSwitch('disable-http-cache');
+  app.commandLine.appendSwitch('disable-gpu-sandbox');
+}
+/** end */
+
 function resolveWinRemoteParams(argv) {
   if (argv.length > 1) {
     log.info('app opened with argv');
