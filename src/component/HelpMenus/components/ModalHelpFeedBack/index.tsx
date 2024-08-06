@@ -15,6 +15,8 @@
  */
 
 import { SettingStore } from '@/store/setting';
+import { ReactComponent as GithubSvg } from '@/svgr/github.svg';
+import { ReactComponent as ODCColorSvg } from '@/svgr/odc_logo_color.svg';
 import ipcInvoke from '@/util/client/service';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
@@ -23,6 +25,7 @@ import { inject, observer } from 'mobx-react';
 import { PureComponent } from 'react';
 import styles from './index.less';
 
+import Icon from '@ant-design/icons';
 import pkg from '../../../../../package.json';
 
 @inject('settingStore')
@@ -54,12 +57,20 @@ export default class ModalHelp extends PureComponent<{
         {feekBackUrl ? <Image width={240} height={240} src={feekBackUrl} /> : null}
         <div className="email">
           <h4>
+            <Icon style={{ fontSize: 14, marginRight: 8 }} component={ODCColorSvg} />
             {formatMessage({
               id: 'odc.components.ModalHelpFeedBack.SupportedEmailAddresses',
               defaultMessage: '支持邮箱',
             })}
           </h4>
           <p>{serverSystemInfo?.supportEmail || pkg.bugs.email}</p>
+          <h4>
+            <Icon style={{ fontSize: 14, marginRight: 8 }} component={GithubSvg} />
+            {'Github issues'}
+          </h4>
+          <a href="https://github.com/oceanbase/odc/issues">
+            {'https://github.com/oceanbase/odc/issues'}
+          </a>
           {serverSystemInfo?.supportUrl ? <p>Help: {serverSystemInfo?.supportUrl}</p> : null}
         </div>
         {isClient() ? (
