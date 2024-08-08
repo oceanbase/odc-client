@@ -37,6 +37,8 @@ import React, {
 import { isNumber } from 'lodash';
 import styles from './index.less';
 import { EnvColorMap } from '@/constant';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
+import datasourceStatus from '@/store/datasourceStatus';
 
 export type TableItem = { databaseId: number; tableName: string; tableId?: number };
 
@@ -186,7 +188,7 @@ const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false)
       ),
 
       key: id,
-      icon: <Icon component={getDataSourceStyleByConnectType(dataSource.type).dbIcon.component} />,
+      icon: <DataBaseStatusIcon item={database} />,
       checkable: true,
       disabled: hasGetTableList && tableList.length === 0,
       expandable: true,
@@ -221,6 +223,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
     try {
       const res = await listDatabases(projectId, null, null, null, null, null, null, true, true);
       if (res?.contents) {
+        datasourceStatus.asyncUpdateStatus(res?.contents?.map((item) => item?.dataSource?.id));
         const list: IDataBaseWithTable[] = res.contents.map((db) => ({
           ...db,
           tableList: [],

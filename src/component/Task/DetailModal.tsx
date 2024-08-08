@@ -66,7 +66,7 @@ import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
 import { ApplyTablePermissionTaskContent } from './ApplyTablePermission';
 import { StructureComparisonTaskContent } from './StructureComparisonTask';
 import { MutipleAsyncTaskContent } from './MutipleAsyncTask';
-import { getProject } from '@/common/network/project';
+import { getProjectWithErrorCatch } from '@/common/network/project';
 import { ProjectRole } from '@/d.ts/project';
 import userStore from '@/store/login';
 import { isNumber } from 'lodash';
@@ -144,10 +144,10 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       setIsTaskProjectOwner(false);
       return;
     }
-    const res = await getProject(projectId);
-    const userRoleList = res?.members
-      ?.filter((i) => i.id === userStore?.user?.id)
-      ?.map((j) => j.role);
+
+    const res = await getProjectWithErrorCatch(projectId);
+    const userRoleList =
+      res?.members?.filter((i) => i.id === userStore?.user?.id)?.map((j) => j.role) || [];
     setIsTaskProjectOwner(userRoleList.includes(ProjectRole.OWNER));
   };
 

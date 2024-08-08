@@ -81,8 +81,6 @@ const getColumns = (
       render: (action, _) => {
         const dbDisabled = !_.applicable;
         const isTablePermissionError = _.type === UnauthorizedPermissionTypeInSQLExecute.ODC_TABLE;
-        const isDatabasePermissionError =
-          _.type === UnauthorizedPermissionTypeInSQLExecute.ODC_DATABASE;
         let dbTooltip = null,
           tableTooltip = null;
         if (dbDisabled) {
@@ -106,7 +104,7 @@ const getColumns = (
         return (
           <Action.Group size={2}>
             <Action.Link
-              disabled={dbDisabled || !isDatabasePermissionError}
+              disabled={dbDisabled}
               tooltip={dbTooltip}
               key="applyDatabase"
               onClick={async () => {
