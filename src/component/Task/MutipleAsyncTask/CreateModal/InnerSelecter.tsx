@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { formatMessage } from '@/util/intl';
 import { IConnection } from '@/d.ts';
 import { Empty, Form, FormListFieldData, Popover, Select, Space, Tooltip } from 'antd';
@@ -124,7 +140,7 @@ const InnerSelect: React.FC<{
             />
 
             <div style={{ color: 'var(--text-color-primary)' }}>{item?.label}</div>
-            <div style={{ color: 'var(--mask-color)', marginLeft: '4px' }}>
+            <div style={{ color: 'var(--text-color-hint)', marginLeft: '4px' }}>
               {item?.dataSource?.name}
             </div>
           </Space>
@@ -211,7 +227,7 @@ const InnerSelect: React.FC<{
                 [styles.optionDisabled]: disabled,
               })}
               style={{
-                backgroundColor: isCurrentItem ? '#e6f4ff' : null,
+                backgroundColor: isCurrentItem ? 'val(--hover-color)' : null,
               }}
             >
               <Space>
@@ -227,15 +243,21 @@ const InnerSelect: React.FC<{
                 <div
                   style={{
                     color: disabled
-                      ? 'var(--mask-color)'
+                      ? 'var(--text-color-placeholder)'
                       : isCurrentItem
-                      ? 'black'
+                      ? 'var(--text-color-link)'
                       : 'var(--text-color-primary)',
                   }}
                 >
                   {item?.label}
                 </div>
-                <div style={{ color: isCurrentItem ? 'black' : 'var(--icon-color-disable)' }}>
+                <div
+                  style={{
+                    color: isCurrentItem
+                      ? 'var(--text-color-link)'
+                      : 'var(--text-color-placeholder)',
+                  }}
+                >
                   {item?.dataSource?.name}
                 </div>
               </Space>

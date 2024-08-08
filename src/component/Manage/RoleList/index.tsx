@@ -39,13 +39,14 @@ const RoleList: React.FC<{
   isShowIcon?: boolean;
   isWrap?: boolean;
 }> = ({ roles, isShowIcon = false, isWrap = false }) => {
+  const title = roles?.map((item) => item.name)?.join(' | ');
   return (
-    <div title={roles?.map((item) => item.name)?.join(' | ')}>
+    <div title={title}>
       <Space split="|" size={10} wrap={isWrap}>
         {roles?.length ? (
           roles?.map(({ name, enabled }, index) => (
             <Space key={index} size={5}>
-              <span title={name}>{name}</span>
+              <span title={title}>{name}</span>
               {!enabled && isShowIcon && (
                 <span
                   title={formatMessage({

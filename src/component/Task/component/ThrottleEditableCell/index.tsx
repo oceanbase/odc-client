@@ -25,9 +25,10 @@ interface IProps {
   min: number;
   max: number;
   onOk: (value: number, onClose: () => void) => void;
+  readlOnly?: boolean;
 }
 const ThrottleEditableCell: React.FC<IProps> = (props) => {
-  const { defaultValue = 10, min, max, suffix, onOk } = props;
+  const { defaultValue = 10, min, max, suffix, onOk, readlOnly = false } = props;
   const [isLmitRowEdit, setIsLmitRowEdit] = useState(false);
   const [lmitValue, setLmitValue] = useState(Number(defaultValue));
   const [status, setStatus] = useState(null);
@@ -82,13 +83,15 @@ const ThrottleEditableCell: React.FC<IProps> = (props) => {
         <Space>
           <span>{lmitValue}</span>
           <span>{suffix}</span>
-          <Action.Link
-            onClick={() => {
-              setIsLmitRowEdit(true);
-            }}
-          >
-            <EditOutlined />
-          </Action.Link>
+          {!readlOnly ? (
+            <Action.Link
+              onClick={() => {
+                setIsLmitRowEdit(true);
+              }}
+            >
+              <EditOutlined />
+            </Action.Link>
+          ) : null}
         </Space>
       )}
     </>

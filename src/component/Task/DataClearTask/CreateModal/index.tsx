@@ -120,6 +120,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [crontab, setCrontab] = useState<ICrontab>(null);
   const [tables, setTables] = useState<ITable[]>();
+  const [enablePartition, setEnablePartition] = useState<boolean>(false);
   const [form] = Form.useForm();
   const databaseId = Form.useWatch('databaseId', form);
   const { session, database } = useDBSession(databaseId);
@@ -153,6 +154,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       targetDatabaseId,
       timeoutMillis,
     } = jobParameters;
+    setEnablePartition(!!tables?.find((i) => i?.partitions?.length));
     const formData = {
       databaseId,
       rowLimit: rateLimit?.rowLimit,
@@ -283,12 +285,12 @@ const CreateModal: React.FC<IProps> = (props) => {
           targetDatabaseId,
         } = values;
         _tables?.map((i) => {
-          i.partitions = i?.partitions?.length
-            ? i?.partitions
+          i.partitions = Array.isArray(i.partitions)
+            ? i.partitions
+            : i?.partitions
                 ?.replace(/[\r\n]+/g, '')
                 ?.split(',')
-                .filter(Boolean)
-            : [];
+                ?.filter(Boolean);
         });
         const parameters = {
           type: TaskJobType.DATA_DELETE,
@@ -361,12 +363,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       .then(async (values) => {
         const { variables, tables: _tables, archiveRange } = values;
         _tables?.map((i) => {
-          i.partitions = i?.partitions?.length
-            ? i?.partitions
+          i.partitions = Array.isArray(i.partitions)
+            ? i.partitions
+            : i?.partitions
                 ?.replace(/[\r\n]+/g, '')
                 ?.split(',')
-                ?.filter(Boolean)
-            : [];
+                ?.filter(Boolean);
         });
         const parameters = {
           variables: getVariables(variables),
@@ -530,7 +532,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                   <ArchiveRange
                     tables={tables}
                     needCheckBeforeDelete={needCheckBeforeDelete}
-                    form={form}
+                    checkPartition={enablePartition}
                   />
                 );
               }}

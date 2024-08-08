@@ -117,3 +117,81 @@ export const getSqlExplainColumns = ({ handleShowOutputFilter }) => {
     },
   ];
 };
+
+export const getSqlProfileColumns = () => {
+  return [
+    {
+      dataIndex: 'operator',
+      title: formatMessage({
+        id: 'workspace.window.sql.explain.tab.summary.columns.operator',
+      }),
+    },
+    {
+      dataIndex: 'name',
+      title: formatMessage({
+        id: 'workspace.window.sql.explain.tab.summary.columns.name',
+      }),
+      width: 126,
+      fixed: 'right',
+      render: (v) => {
+        return (
+          <div
+            style={{
+              maxWidth: 110,
+              display: 'flex',
+              alignItems: 'center',
+            }}
+            title={v}
+          >
+            <span
+              style={{
+                flex: 1,
+                display: 'inline-block',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {v}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      dataIndex: 'rowCount',
+      title: formatMessage({
+        id: 'workspace.window.sql.explain.tab.summary.columns.rows',
+      }),
+      width: 86,
+      fixed: 'right',
+    },
+    {
+      dataIndex: 'cost',
+      title: formatMessage({
+        id: 'src.page.Workspace.components.SQLExplain.F472322D',
+        defaultMessage: '预估代价',
+      }),
+      width: 86,
+      fixed: 'right',
+    },
+    {
+      dataIndex: 'realRowCount',
+      title: formatMessage({
+        id: 'src.page.Workspace.components.SQLExplain.E0965DAC',
+        defaultMessage: '实际行',
+      }),
+      width: 86,
+      fixed: 'right',
+    },
+    {
+      dataIndex: 'realCost',
+      title: formatMessage({
+        id: 'src.page.Workspace.components.SQLExplain.E0AB0E4C',
+        defaultMessage: '实际代价',
+      }),
+      width: 86,
+      fixed: 'right',
+    },
+  ];
+};

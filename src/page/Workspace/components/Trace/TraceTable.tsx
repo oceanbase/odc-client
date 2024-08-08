@@ -67,25 +67,25 @@ const TraceTable: React.FC<{
             <div
               className={styles.timeStepItem}
               style={{
-                left: `${142 * 1}px`,
+                left: `25%`,
               }}
             ></div>
             <div
               className={styles.timeStepItem}
               style={{
-                left: `${143 * 2}px`,
+                left: `calc(50% - 1px)`,
               }}
             ></div>
             <div
               className={styles.timeStepItem}
               style={{
-                left: `${143 * 3 + 1}px`,
+                left: `calc(75% - 2px)`,
               }}
             ></div>
             <div
               className={styles.timeStepItem}
               style={{
-                left: `${143 * 4 + 3}px`,
+                left: `100%`,
               }}
             ></div>
             <div

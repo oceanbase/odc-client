@@ -25,7 +25,6 @@ import { LockResultSetHint } from '@/component/LockResultSetHint';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { LOCK_RESULT_SET_COOKIE_KEY, TAB_HEADER_HEIGHT } from '@/constant';
 import { IResultSet, ISqlExecuteResultStatus, ITableColumn } from '@/d.ts';
-import { IUnauthorizedDatabase } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
 import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
@@ -37,6 +36,9 @@ import styles from './index.less';
 import LintResultTable from './LintResultTable';
 import SQLResultLog from './SQLResultLog';
 import DBPermissionTable from './DBPermissionTable';
+import { IUnauthorizedDBResources } from '@/d.ts/table';
+import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
+import sessionManager from '@/store/sessionManager';
 
 export const recordsTabKey = 'records';
 export const sqlLintTabKey = 'sqlLint';
@@ -55,7 +57,7 @@ interface IProps {
   editingMap: Record<string, boolean>;
   session: SessionStore;
   lintResultSet: ISQLLintReuslt[];
-  unauthorizedDatabases?: IUnauthorizedDatabase[];
+  unauthorizedResource?: IUnauthorizedDBResources[];
   unauthorizedSql?: string;
   sqlChanged?: boolean;
   baseOffset: number;
@@ -82,7 +84,7 @@ interface IProps {
 const SQLResultSet: React.FC<IProps> = function (props) {
   const {
     activeKey,
-    sqlStore: { resultSets: r },
+    sqlStore,
     ctx,
     modalStore,
     pageKey,
@@ -90,7 +92,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     editingMap,
     session,
     lintResultSet,
-    unauthorizedDatabases,
+    unauthorizedResource,
     unauthorizedSql,
     sqlChanged,
     baseOffset,
@@ -106,6 +108,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     onUpdateEditing,
   } = props;
   const [showLockResultSetHint, setShowLockResultSetHint] = useState(false);
+  const { resultSets: r } = sqlStore;
   const resultSets = r.get(pageKey);
 
   useEffect(() => {
@@ -228,11 +231,31 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     );
   }
   let resultTabCount = 0;
-  if(unauthorizedDatabases?.length){
-    return (
-      <DBPermissionTable sql={unauthorizedSql} dataSource={unauthorizedDatabases} />
-    )
+  if (unauthorizedResource?.length) {
+    return <DBPermissionTable sql={unauthorizedSql} dataSource={unauthorizedResource} />;
   }
+  const stopRunning = () => {
+    sqlStore.stopExec(ctx.props.pageKey, ctx?.getSession()?.sessionId);
+  };
+  const onOpenExecutingDetailModal = (
+    id: string,
+    sql?: string,
+    sessionId?: string,
+    traceEmptyReason?: string,
+  ) => {
+    const session = sessionId ? sessionManager.sessionMap.get(sessionId) : ctx?.getSession();
+    modalStore.changeExecuteSqlDetailModalVisible(
+      true,
+      id,
+      sql,
+      session,
+      ctx?.editor.getSelectionContent(),
+      ProfileType.Execute,
+      traceEmptyReason,
+    );
+  };
+
+  const isSupportProfile = session?.supportFeature.enableProfile;
 
   return (
     <>
@@ -250,6 +273,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
               <ExecuteHistory
                 resultHeight={resultHeight}
                 onShowExecuteDetail={onShowExecuteDetail}
+                onOpenExecutingDetailModal={onOpenExecutingDetailModal}
               />
             ),
           },
@@ -275,6 +299,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     </span>
                   </span>
                 ),
+
                 key: sqlLintTabKey,
                 children: (
                   <LintResultTable
@@ -321,10 +346,13 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     <DDLResultSet
                       key={set.uniqKey || i}
                       dbTotalDurationMicroseconds={executeSQLStage?.totalDurationMicroseconds}
-                      showExplain={session?.supportFeature?.enableSQLExplain}
+                      showExplain={true}
+                      showExecutePlan={session?.supportFeature.enableProfile}
                       showPagination={true}
-                      showTrace={true}
+                      showTrace={session?.supportFeature?.enableSQLTrace}
+                      onOpenExecutingDetailModal={onOpenExecutingDetailModal}
                       columns={set.columns}
+                      timer={set.timer}
                       session={session}
                       sqlId={set.sqlId}
                       autoCommit={session?.params?.autoCommit}
@@ -361,12 +389,20 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                       isEditing={editingMap[set.uniqKey]}
                       withFullLinkTrace={set?.withFullLinkTrace}
                       traceEmptyReason={set?.traceEmptyReason}
+                      withQueryProfile={set?.withQueryProfile}
                     />
                   ),
                 };
               }
               if (isLogTab) {
                 let count = {
+                  [ISqlExecuteResultStatus.WAITING]: {
+                    lable: formatMessage({
+                      id: 'src.page.Workspace.components.SQLResultSet.6F910473',
+                      defaultMessage: '待执行',
+                    }),
+                    count: set?.total,
+                  },
                   [ISqlExecuteResultStatus.SUCCESS]: {
                     lable: formatMessage({
                       id: 'odc.components.SQLResultSet.SuccessfulExecution',
@@ -394,6 +430,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
 
                 set?.logTypeData?.forEach((item) => {
                   count[item.status].count += 1;
+                  count[ISqlExecuteResultStatus.WAITING].count -= 1;
                 });
                 const hasError =
                   count[ISqlExecuteResultStatus.SUCCESS].count !== set?.logTypeData?.length;
@@ -443,11 +480,16 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                       </span>
                     </Tooltip>
                   ),
+
                   key: set.uniqKey,
                   children: (
-                    <SQLResultLog 
+                    <SQLResultLog
                       resultHeight={resultHeight}
                       resultSet={set}
+                      stopRunning={stopRunning}
+                      onOpenExecutingDetailModal={onOpenExecutingDetailModal}
+                      loading={sqlStore.logLoading}
+                      isSupportProfile={isSupportProfile}
                     />
                   ),
                 };

@@ -289,8 +289,9 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             //最近一次同步时间
             dataIndex: 'lastSyncTime',
             width: 200,
-            render(v) {
-              return getLocalFormatDateTime(v);
+            render(v, record) {
+              const time = record?.lastSyncTime || record?.objectLastSyncTime;
+              return getLocalFormatDateTime(time);
             },
           },
           {

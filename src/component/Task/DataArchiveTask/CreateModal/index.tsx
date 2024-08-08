@@ -162,6 +162,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [crontab, setCrontab] = useState<ICrontab>(null);
   const [tables, setTables] = useState<ITable[]>();
+  const [enablePartition, setEnablePartition] = useState<boolean>(false);
   const [form] = Form.useForm();
   const databaseId = Form.useWatch('databaseId', form);
   const { session: sourceDBSession, database: sourceDB } = useDBSession(databaseId);
@@ -196,7 +197,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       timeoutMillis,
       syncTableStructure,
     } = jobParameters;
-
+    setEnablePartition(!!tables?.find((i) => i?.partitions?.length));
     const formData = {
       databaseId: sourceDatabaseId,
       targetDataBaseId: targetDataBaseId,
@@ -328,12 +329,12 @@ const CreateModal: React.FC<IProps> = (props) => {
           syncTableStructure,
         } = values;
         _tables?.map((i) => {
-          i.partitions = i?.partitions?.length
-            ? i?.partitions
+          i.partitions = Array.isArray(i.partitions)
+            ? i.partitions
+            : i?.partitions
                 ?.replace(/[\r\n]+/g, '')
                 ?.split(',')
-                ?.filter(Boolean)
-            : [];
+                ?.filter(Boolean);
         });
         const parameters = {
           type: TaskType.MIGRATION,
@@ -406,12 +407,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       .then(async (values) => {
         const { variables, tables: _tables, archiveRange } = values;
         _tables?.map((i) => {
-          i.partitions = i?.partitions?.length
-            ? i?.partitions
+          i.partitions = Array.isArray(i.partitions)
+            ? i.partitions
+            : i?.partitions
                 ?.replace(/[\r\n]+/g, '')
                 ?.split(',')
-                ?.filter(Boolean)
-            : [];
+                ?.filter(Boolean);
         });
         const parameters = {
           variables: getVariables(variables),
@@ -553,7 +554,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             />
           </Space>
           <Space direction="vertical" size={24} style={{ width: '100%' }}>
-            <ArchiveRange enabledTargetTable tables={tables} form={form} />
+            <ArchiveRange enabledTargetTable tables={tables} checkPartition={enablePartition} />
             <VariableConfig form={form} />
           </Space>
           <Form.Item name="deleteAfterMigration" valuePropName="checked">

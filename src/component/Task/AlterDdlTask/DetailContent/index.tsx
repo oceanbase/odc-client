@@ -20,12 +20,18 @@ import { getTaskExecStrategyMap } from '@/component/Task';
 import type { ITaskResult, TaskDetail } from '@/d.ts';
 import { TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
 import React from 'react';
-import { Typography } from 'antd';
+import { Typography, message } from 'antd';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 import { ClearStrategy, SwapTableType } from '../CreateModal';
+import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
+import { updateThrottleConfig } from '@/common/network/task';
+import setting from '@/store/setting';
+import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
+import { TaskStatus } from '@/d.ts';
+import { OscMaxRowLimit, OscMaxDataSizeLimit } from '../../const';
+
 const { Text } = Typography;
 interface IDDLAlterParamters {
   errorStrategy: TaskExecStrategy;
@@ -42,6 +48,10 @@ interface IDDLAlterParamters {
   swapTableNameRetryTimes: number;
   originTableCleanStrategy: ClearStrategy;
   swapTableType: SwapTableType;
+  rateLimitConfig?: {
+    rowLimit?: number;
+    dataSizeLimit?: number;
+  };
 }
 const ErrorStrategyText = {
   ABORT: formatMessage({
@@ -108,12 +118,18 @@ export function getItems(
   result: ITaskResult,
   hasFlow: boolean,
   theme?: string,
+  handleReloadData?: () => void,
 ): {
   sectionName?: string;
   textItems: [React.ReactNode, React.ReactNode, number?][];
   sectionRender?: (task: TaskDetail<IDDLAlterParamters>) => void;
 }[] {
-  const { parameters } = task;
+  const { parameters, id, status } = task;
+  const cantBeModified = [
+    TaskStatus.EXECUTION_SUCCEEDED,
+    TaskStatus.EXECUTION_FAILED,
+    TaskStatus.CANCELLED,
+  ]?.includes(status);
   if (!task) {
     return [];
   }
@@ -127,6 +143,7 @@ export function getItems(
     //风险等级
     <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />,
   ];
+
   const timerExecutionItem: [string, string] = [
     formatMessage({
       id: 'odc.AlterDdlTask.DetailContent.ExecutionTime',
@@ -134,7 +151,39 @@ export function getItems(
     //执行时间
     getFormatDateTime(task?.executionTime),
   ];
+
   const lockUsers = parameters?.lockUsers?.join(', ');
+
+  const handleDataSizeLimit = async (dataSizeLimit, handleClose) => {
+    const res = await updateThrottleConfig(id, {
+      dataSizeLimit: mbToKb(dataSizeLimit),
+      rowLimit: parameters?.rateLimitConfig?.rowLimit,
+    });
+    if (res) {
+      message.success(
+        formatMessage({
+          id: 'odc.src.component.Task.DataClearTask.DetailContent.SuccessfullyModified.1',
+        }), //'修改成功！'
+      );
+      handleClose();
+      handleReloadData();
+    }
+  };
+  const handleRowLimit = async (rowLimit, handleClose) => {
+    const res = await updateThrottleConfig(id, {
+      rowLimit,
+      dataSizeLimit: parameters?.rateLimitConfig?.dataSizeLimit,
+    });
+    if (res) {
+      message.success(
+        formatMessage({
+          id: 'odc.src.component.Task.DataClearTask.DetailContent.SuccessfullyModified.1',
+        }), //'修改成功！'
+      );
+      handleClose();
+      handleReloadData();
+    }
+  };
   return [
     {
       // @ts-ignore
@@ -146,6 +195,7 @@ export function getItems(
           //任务编号
           task.id,
         ],
+
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.TaskType',
@@ -162,13 +212,15 @@ export function getItems(
           //所属库
           task?.database?.name || '-',
         ],
+
         [
           formatMessage({
             id: 'odc.src.component.Task.AlterDdlTask.DetailContent.DataSource',
           }),
           //'所属数据源'
-          task?.database.dataSource?.name || '-',
+          task?.database?.dataSource?.name || '-',
         ],
+
         hasFlow ? riskItem : null,
         lockUsers
           ? [
@@ -194,6 +246,7 @@ export function getItems(
           taskExecStrategyMap[task?.executionStrategy],
           hasFlow ? 2 : 1,
         ],
+
         [null, <SQLContentSection task={task} key={task.id} theme={theme} />, 2],
         [
           formatMessage({
@@ -202,6 +255,7 @@ export function getItems(
           //锁表超时时间
           `${parameters?.lockTableTimeOutSeconds}s`,
         ],
+
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.NumberOfFailedRetries',
@@ -209,6 +263,7 @@ export function getItems(
           //失败重试次数
           parameters?.swapTableNameRetryTimes,
         ],
+
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.SourceTableCleanupPolicyAfter',
@@ -216,6 +271,7 @@ export function getItems(
           //完成后源表清理策略
           ClearStrategyMap[parameters?.originTableCleanStrategy],
         ],
+
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.ExecutionMethod',
@@ -223,12 +279,14 @@ export function getItems(
           //执行方式
           taskExecStrategyMap[task?.executionStrategy],
         ],
+
         [
           formatMessage({
             id: 'odc.src.component.Task.AlterDdlTask.DetailContent.TableNameSwitchingMethod',
           }), //'表名切换方式'
           SwapTableTypeMap[task?.parameters?.swapTableType] ?? '-',
         ],
+
         isTimerExecution ? timerExecutionItem : null,
         [
           formatMessage({
@@ -238,6 +296,44 @@ export function getItems(
           ErrorStrategyText[parameters.errorStrategy],
           2,
         ],
+
+        setting.enableOSCLimiting
+          ? [
+              formatMessage({
+                id: 'src.component.Task.AlterDdlTask.DetailContent.FE4166B2',
+                defaultMessage: '行限流',
+              }),
+
+              <ThrottleEditableCell
+                suffix="Rows/s"
+                min={0}
+                max={OscMaxRowLimit}
+                defaultValue={parameters?.rateLimitConfig?.rowLimit}
+                onOk={handleRowLimit}
+                readlOnly={cantBeModified}
+              />,
+              1,
+            ]
+          : null,
+        setting.enableOSCLimiting
+          ? [
+              formatMessage({
+                id: 'src.component.Task.AlterDdlTask.DetailContent.45E8ACBB',
+                defaultMessage: '数据大小限流',
+              }),
+
+              <ThrottleEditableCell
+                suffix="MB/s"
+                min={0}
+                max={OscMaxDataSizeLimit}
+                defaultValue={kbToMb(parameters?.rateLimitConfig?.dataSizeLimit)}
+                onOk={handleDataSizeLimit}
+                readlOnly={cantBeModified}
+              />,
+
+              1,
+            ]
+          : null,
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.Description',
@@ -258,6 +354,7 @@ export function getItems(
           task?.creator?.name || '-',
           2,
         ],
+
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.CreationTime',

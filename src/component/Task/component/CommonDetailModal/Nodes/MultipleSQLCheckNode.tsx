@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { getFlowSQLLintResult } from '@/common/network/task';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { ITaskFlowNode } from '@/d.ts';
@@ -15,7 +31,7 @@ interface IProps {
   flowId: number;
 }
 const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
-  const { status, nodeType, issueCount, unauthorizedDatabases, id, preCheckOverLimit } = node;
+  const { status, nodeType, issueCount, unauthorizedDBResources, id, preCheckOverLimit } = node;
   const [isLoading, setIsLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [permissionResultVisible, setPermissionResultVisible] = useState<boolean>(false);
@@ -26,7 +42,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
     }[]
   >([]);
   const showCount = typeof issueCount === 'number';
-  const showUnauthorized = unauthorizedDatabases?.length > 0;
+  const showUnauthorized = unauthorizedDBResources?.length > 0;
   const showReslut = showCount || showUnauthorized || preCheckOverLimit;
   async function viewLintResult() {
     setVisible(true);
@@ -152,7 +168,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
                   {
                     formatMessage(
                       { id: 'src.component.Task.component.CommonDetailModal.Nodes.90FF76EB' },
-                      { unauthorizedDatabasesLength: unauthorizedDatabases?.length },
+                      { unauthorizedDatabasesLength: unauthorizedDBResources?.length },
                     ) /*`存在${unauthorizedDatabases?.length}个问题`*/
                   }
 
@@ -222,7 +238,7 @@ const MultipleSQLCheckNode: React.FC<IProps> = function ({ node, flowId }) {
       </Drawer>
       <DBPermissionTableDrawer
         visible={permissionResultVisible}
-        dataSource={unauthorizedDatabases}
+        dataSource={unauthorizedDBResources}
         onClose={() => {
           setPermissionResultVisible(false);
         }}

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { useState, useContext, useEffect } from 'react';
 import { Modal } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -11,6 +27,7 @@ import ObjectList from './components/ObjectList';
 import DatabaseList from './components/DatabaseList';
 import { IDatabase, IDatabaseObject } from '@/d.ts/database';
 import classNames from 'classnames';
+import { DbObjectType } from '@/d.ts';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -19,14 +36,14 @@ interface IProps {
 const DatabaseSearchModal = ({ modalStore }: IProps) => {
   const [database, setDatabase] = useState<IDatabase>();
   const [searchKey, setSearchKey] = useState<string>('');
-  const [isSelectDatabase, setSelectDatabaseState] = useState(false);
-  const [isSelectAll, setSelectAllState] = useState(true);
   const [objectlist, setObjectlist] = useState<IDatabaseObject>();
   const [activeKey, setActiveKey] = useState(SEARCH_OBJECT_FROM_ALL_DATABASE);
   const [loading, setLoading] = useState<boolean>(false);
-
-  const { selectDatasourceId, selectProjectId, databaseList } = useContext(ResourceTreeContext);
-
+  const { selectDatasourceId, selectProjectId, databaseList, datasourceList } =
+    useContext(ResourceTreeContext);
+  const currentDataSourceType = datasourceList?.find(
+    (item) => item.id === selectDatasourceId,
+  )?.dialectType;
   const handleCancel = () => {
     modalStore.changeDatabaseSearchModalVisible(false);
   };
@@ -40,13 +57,13 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
   }, [database]);
 
   const getType = () => {
-    if (isSelectDatabase && !database) return 'SCHEMA';
+    if (activeKey === DbObjectType.database) return 'SCHEMA';
     if (activeKey === SEARCH_OBJECT_FROM_ALL_DATABASE) return null;
     return activeKey;
   };
 
   const getObjectListData = async (value) => {
-    const databaseIds = isSelectAll ? null : database?.id;
+    const databaseIds = database?.id;
     const type = getType();
     setLoading(true);
     const res = await getDatabaseObject(
@@ -65,30 +82,24 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
     getObjectListData(value);
     switch (type) {
       case SearchTypeMap.OBJECT: {
-        setSelectDatabaseState(false);
+        // setSelectDatabaseState(false);
         break;
       }
       case SearchTypeMap.DATABASE: {
-        setSelectDatabaseState(true);
+        // setSelectDatabaseState(true);
       }
     }
   };
 
   const contentRender = () => {
-    if (isSelectAll && !searchKey) {
-      return null;
-    }
-    if (isSelectDatabase) {
+    if (!searchKey) {
       return (
         <DatabaseList
           database={database}
           setDatabase={setDatabase}
           databaseList={databaseList}
-          setSelectDatabaseState={setSelectDatabaseState}
           searchKey={searchKey}
           setSearchKey={setSearchKey}
-          isSelectAll={isSelectAll}
-          setSelectAllState={setSelectAllState}
           modalStore={modalStore}
           objectlist={objectlist}
         />
@@ -97,11 +108,15 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
     return (
       <ObjectList
         database={database}
+        setDatabase={setDatabase}
         objectlist={objectlist}
         activeKey={activeKey}
         setActiveKey={setActiveKey}
+        setSearchKey={setSearchKey}
         modalStore={modalStore}
         loading={loading}
+        selectProjectId={selectProjectId}
+        currentDataSourceType={currentDataSourceType}
       />
     );
   };
@@ -115,12 +130,10 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
           database={database}
           visible={modalStore.databaseSearchModalVisible && modalStore.canDatabaseSearchModalOpen}
           onChangeInput={onChangeInput}
-          isSelectDatabase={isSelectDatabase}
           searchKey={searchKey}
-          isSelectAll={isSelectAll}
-          setSelectAllState={setSelectAllState}
           loading={loading}
           setDatabase={setDatabase}
+          setSearchKey={setSearchKey}
         />
       }
       open={modalStore.databaseSearchModalVisible && modalStore.canDatabaseSearchModalOpen}
@@ -129,7 +142,7 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
       maskClosable={true}
       closable={false}
       className={classNames(styles.databaseSearchModal, {
-        [styles.withPanel]: !isSelectAll || searchKey,
+        [styles.withPanel]: searchKey,
       })}
       destroyOnClose={true}
       footer={null}

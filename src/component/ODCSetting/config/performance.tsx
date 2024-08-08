@@ -54,6 +54,18 @@ const performanceSettings: IODCSetting[] = [
       return <TextAreaItem value={value} onChange={onChange} />;
     },
   },
+  {
+    label: 'Electron Params',
+    key: 'client.electron.params',
+    tip: restartTip,
+    group: performanceGroup,
+    secondGroup: performanceDefaultGroup,
+    storeType: 'local',
+    span: 24,
+    render: (value, onChange) => {
+      return <TextAreaItem value={value} onChange={onChange} />;
+    },
+  },
 ];
 
 export default performanceSettings;

@@ -101,6 +101,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
 
       // 遍历所有子节点
       const children = dom.querySelectorAll<HTMLHeadingElement>('[data-name]'); // 假定子节点有共同的类名'child'
+      // console.log(children);
       let min = Number.MAX_SAFE_INTEGER;
       let key;
       children.forEach((child) => {
@@ -179,6 +180,18 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
         }
       }
     });
+    if (
+      serverData['odc.editor.shortcut.executeStatement'] ===
+      serverData['odc.editor.shortcut.executeCurrentStatement']
+    ) {
+      message.warning(
+        formatMessage({
+          id: 'src.component.ODCSetting.CFC0C3E8',
+          defaultMessage: '快捷键冲突, 请重新输入。',
+        }),
+      );
+      return;
+    }
     /**
      * submit serverData
      */

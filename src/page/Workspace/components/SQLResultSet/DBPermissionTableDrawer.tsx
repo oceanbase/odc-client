@@ -17,11 +17,11 @@ import { formatMessage } from '@/util/intl';
 
 import { Button, Drawer, Space } from 'antd';
 import React from 'react';
-import { IUnauthorizedDatabase } from '@/d.ts/database';
 import { DBPermissionTableContent } from './DBPermissionTable';
+import { IUnauthorizedDBResources } from '@/d.ts/table';
 
 interface IProps {
-  dataSource: IUnauthorizedDatabase[];
+  dataSource: IUnauthorizedDBResources[];
   visible: boolean;
   onClose: () => void;
 }

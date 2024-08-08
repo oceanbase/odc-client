@@ -95,6 +95,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
     [TaskPageType.APPLY_PROJECT_PERMISSION]: () => modalStore.changeApplyPermissionModal(true),
     [TaskPageType.APPLY_DATABASE_PERMISSION]: () =>
       modalStore.changeApplyDatabasePermissionModal(true),
+    [TaskPageType.APPLY_TABLE_PERMISSION]: () => modalStore.changeApplyTablePermissionModal(true),
     [TaskPageType.MULTIPLE_ASYNC]: () =>
       modalStore.changeMultiDatabaseChangeModal(
         true,

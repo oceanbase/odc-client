@@ -1,8 +1,24 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { IConnection, IConnectionStatus } from '@/d.ts';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { Button, Divider, Form, Space, Timeline, Tooltip } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { DeleteOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -14,16 +30,33 @@ import { DatabasePermissionType } from '@/d.ts/database';
 import { SelectTemplate, CreateTemplate } from '../components/Template';
 import datasourceStatus from '@/store/datasourceStatus';
 import styles from './index.less';
+import { observer } from 'mobx-react';
+
+export const checkDbExpiredByDataSourceStatus = (status: IConnectionStatus) => {
+  switch (status) {
+    case IConnectionStatus.ACTIVE: {
+      return false;
+    }
+    case IConnectionStatus.TESTING:
+    case IConnectionStatus.NOPASSWORD:
+    case IConnectionStatus.DISABLED:
+    case IConnectionStatus.INACTIVE:
+    default: {
+      return true;
+    }
+  }
+};
 
 export const DatabaseQueueSelect: React.FC<{
   rootName: (number | string)[];
   multipleDatabaseChangeOpen: boolean;
   setDefaultDatasource: React.Dispatch<React.SetStateAction<IConnection>>;
-}> = ({ rootName, multipleDatabaseChangeOpen, setDefaultDatasource }) => {
+}> = observer(({ rootName, multipleDatabaseChangeOpen, setDefaultDatasource }) => {
   const form = Form.useFormInstance();
+  const statusMap = datasourceStatus.statusMap;
   const projectId = Form.useWatch('projectId', form);
   const [databaseIdMap, setDatabaseIdMap] = useState<Map<number, boolean>>(new Map());
-  const [databaseOptions, setDatabaseOptions] = useState<DatabaseOption[]>([]);
+  const [_databaseOptions, setDatabaseOptions] = useState<DatabaseOption[]>([]);
   const {
     data,
     run,
@@ -43,42 +76,40 @@ export const DatabaseQueueSelect: React.FC<{
       true,
       true,
     );
-    const checkDbExpiredByDataSourceStatus = (status: IConnectionStatus) => {
-      switch (status) {
-        case IConnectionStatus.ACTIVE: {
-          return false;
-        }
-        case IConnectionStatus.TESTING:
-        case IConnectionStatus.NOPASSWORD:
-        case IConnectionStatus.DISABLED:
-        case IConnectionStatus.INACTIVE:
-        default: {
-          return true;
-        }
-      }
-    };
-    setDatabaseOptions(
-      databaseList?.contents?.map((item) => {
-        const statusInfo = datasourceStatus.statusMap.get(item?.dataSource?.id);
-        return {
-          label: item?.name,
-          value: item?.id,
-          environment: item?.environment,
-          dataSource: item?.dataSource,
-          existed: item?.existed,
-          unauthorized: !item?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE),
-          expired: checkDbExpiredByDataSourceStatus(statusInfo?.status),
-        };
-      }),
-    );
     if (databaseList?.contents?.length) {
       setDefaultDatasource(databaseList?.contents?.[0]?.dataSource);
+      datasourceStatus.asyncUpdateStatus([
+        ...new Set(databaseList?.contents?.map((item) => item.dataSource?.id)),
+      ]);
+      setDatabaseOptions(
+        databaseList?.contents?.map((item) => {
+          const statusInfo = datasourceStatus.statusMap.get(item?.dataSource?.id);
+          return {
+            label: item?.name,
+            value: item?.id,
+            environment: item?.environment,
+            dataSource: item?.dataSource,
+            existed: item?.existed,
+            unauthorized: !item?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE),
+            expired: checkDbExpiredByDataSourceStatus(statusInfo?.status),
+          };
+        }),
+      );
     }
     databaseList?.contents?.forEach((db) => {
       databaseIdMap.set(db.id, false);
     });
     setDatabaseIdMap(databaseIdMap);
   };
+
+  const databaseOptions = useMemo(() => {
+    return _databaseOptions?.map((item) => {
+      return {
+        ...item,
+        expired: checkDbExpiredByDataSourceStatus(statusMap.get(item?.dataSource?.id)?.status),
+      };
+    });
+  }, [statusMap, _databaseOptions]);
 
   useEffect(() => {
     if (multipleDatabaseChangeOpen && projectId) {
@@ -148,7 +179,7 @@ export const DatabaseQueueSelect: React.FC<{
                               <PlusOutlined onClick={() => innerAdd(undefined)} />
                               <UpOutlined
                                 style={{
-                                  color: index === 0 ? 'var(--mask-color)' : null,
+                                  color: index === 0 ? 'var(--icon-color-disable)' : null,
                                   cursor: index === 0 ? 'not-allowed' : null,
                                 }}
                                 onClick={async () => {
@@ -169,7 +200,10 @@ export const DatabaseQueueSelect: React.FC<{
 
                               <DownOutlined
                                 style={{
-                                  color: index === fields?.length - 1 ? 'var(--mask-color)' : null,
+                                  color:
+                                    index === fields?.length - 1
+                                      ? 'var(--icon-color-disable)'
+                                      : null,
                                   cursor: index === fields?.length - 1 ? 'not-allowed' : null,
                                 }}
                                 onClick={async () => {
@@ -227,7 +261,7 @@ export const DatabaseQueueSelect: React.FC<{
       </Form.List>
     </div>
   );
-};
+});
 
 const DatabaseQueue: React.FC<{
   multipleDatabaseChangeOpen: boolean;

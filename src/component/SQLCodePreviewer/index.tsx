@@ -19,32 +19,33 @@
  * 说明：当前odc编辑器在（只读）模式下，不具备可编辑的原生能力（格式化）
  * 场景：仅需要查看格式化后的 SQL，不需要具备编辑能力的场景
  */
-import React from 'react';
 import MonacoEditor, { IEditor, IProps } from '../MonacoEditor';
 
-export class SQLCodePreviewer extends React.PureComponent<IProps> {
-  render() {
-    return (
-      <>
-        <MonacoEditor
-          {...this.props}
-          onEditorCreated={(editor: IEditor) => {
-            const newEditor = Object.create(editor);
-            this.props.onEditorCreated?.(
-              Object.assign(newEditor, {
-                doFormat() {
-                  import('@oceanbase-odc/ob-parser-js').then((module) => {
-                    const doc = new module.SQLDocument({
-                      text: editor.getValue(),
-                    });
-                    editor.setValue(doc.getFormatText());
-                  });
-                },
-              }),
-            );
-          }}
-        />
-      </>
-    );
-  }
+export function SQLCodePreviewer(props: IProps) {
+  return (
+    <MonacoEditor
+      {...props}
+      onEditorCreated={(editor: IEditor) => {
+        const newEditor = Object.create(editor);
+        props.onEditorCreated?.(
+          Object.assign(newEditor, {
+            doFormat() {
+              import('@oceanbase-odc/ob-parser-js').then((module) => {
+                const map = {
+                  obmysql: module.SQLType.OBMySQL,
+                  mysql: module.SQLType.MySQL,
+                  oboracle: module.SQLType.Oracle,
+                };
+                const formatted = module.plugins.format({
+                  sql: editor.getValue(),
+                  type: map[props.language],
+                });
+                editor.setValue(formatted);
+              });
+            },
+          }),
+        );
+      }}
+    />
+  );
 }

@@ -72,7 +72,7 @@ export function getModelService(
       if (!dbName) {
         dbName = sessionFunc()?.database?.dbName;
       }
-      if (/[\w]+/.test(realTableName) && realTableName?.length < 500) {
+      if (/[\u4e00-\u9fa5\w]+/.test(realTableName) && realTableName?.length < 500) {
         const db =
           sessionFunc()?.allIdentities[dbName] ||
           sessionFunc()?.allIdentities[dbName?.toUpperCase()];

@@ -15,14 +15,13 @@
  */
 
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
-import type { ISqlExecuteResult } from '@/d.ts';
+import type { ISqlExecuteResult, IExecutingInfo } from '@/d.ts';
 import { EStatus, ISqlExecuteResultStatus } from '@/d.ts';
-import { IUnauthorizedDatabase } from '@/d.ts/database';
+import { IUnauthorizedDBResources } from '@/d.ts/table';
 import { IRule } from '@/d.ts/rule';
-import modal from '@/store/modal';
-import sessionManager from '@/store/sessionManager';
 import request from '@/util/request';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
+import { executeSQLPreHandle } from './preHandle';
 
 export interface IExecuteSQLParams {
   sql: string;
@@ -49,7 +48,7 @@ export interface ISQLExecuteTask {
   requestId: string;
   sqls: ISQLExecuteTaskSQL[];
   violatedRules: IRule[];
-  unauthorizedDatabases: IUnauthorizedDatabase[];
+  unauthorizedDBResources: IUnauthorizedDBResources[];
 }
 
 /**
@@ -63,7 +62,7 @@ export interface IExecuteTaskResult {
   executeResult: ISqlExecuteResult[];
   lintResultSet?: ISQLLintReuslt[];
   status?: EStatus;
-  unauthorizedDatabases?: IUnauthorizedDatabase[];
+  unauthorizedDBResources?: IUnauthorizedDBResources[];
   unauthorizedSql?: string;
 }
 class Task {
@@ -72,10 +71,15 @@ class Task {
   public taskLoopInterval = 200;
   private timer = null;
   private isStop = false;
-  constructor(public requestId: string, public sessionId: string) {}
+  constructor(
+    public requestId: string,
+    public sessionId: string,
+    private taskInfo: ISQLExecuteTask,
+    private onUpdate: (info: IExecutingInfo) => void,
+  ) {}
   private fetchData = async () => {
     const res = await request.get(
-      `/api/v2/datasource/sessions/${generateSessionSid(this.sessionId)}/sqls/getResult`,
+      `/api/v2/datasource/sessions/${generateSessionSid(this.sessionId)}/sqls/getMoreResults`,
       {
         params: {
           requestId: this.requestId,
@@ -89,6 +93,14 @@ class Task {
   };
   public getResult = async (): Promise<ISqlExecuteResult[]> => {
     return new Promise((resolve, reject) => {
+      this.onUpdate({
+        finished: false,
+        results: [],
+        task: this.taskInfo,
+        traceId: null,
+        executingSQL: null,
+        executingSQLId: null,
+      });
       this._getResult(resolve);
     });
   };
@@ -98,12 +110,36 @@ class Task {
       return;
     }
     try {
-      const data = await this.fetchData();
-      if (data?.length) {
-        callback(data);
+      const data: {
+        finished: boolean;
+        traceId: string;
+        results: ISqlExecuteResult[];
+        sql: string;
+        sqlId: string;
+      } = await this.fetchData();
+      if (this.isStop) {
+        callback(null);
+        return;
+      }
+      /**
+       * merge result
+       */
+      data?.results?.map((result) => {
+        result && this.result.push(result);
+      });
+      this.onUpdate?.({
+        results: this.result || [],
+        finished: data.finished,
+        task: this.taskInfo,
+        traceId: data.traceId,
+        executingSQL: data.sql,
+        executingSQLId: data.sqlId,
+      });
+      if (data?.finished) {
+        callback(this.result);
+        return;
       } else {
         this.timer = setTimeout(() => {
-          this.taskLoopInterval = Math.min(3000, this.taskLoopInterval + 500);
           this._getResult(callback);
         }, this.taskLoopInterval);
       }
@@ -134,8 +170,13 @@ class TaskManager {
     });
     this.tasks = this.tasks.filter(Boolean);
   }
-  public async addAndWaitTask(requestId: string, sessionId: string): Promise<ISqlExecuteResult[]> {
-    const task = new Task(requestId, sessionId);
+  public async addAndWaitTask(
+    requestId: string,
+    sessionId: string,
+    taskInfo: ISQLExecuteTask,
+    onUpdate: (info: IExecutingInfo) => void,
+  ): Promise<ISqlExecuteResult[]> {
+    const task = new Task(requestId, sessionId, taskInfo, onUpdate);
     this.tasks.push(task);
     try {
       const result = await task.getResult();
@@ -160,6 +201,7 @@ export default async function executeSQL(
   sessionId: string,
   dbName: string,
   needModal: boolean = true,
+  onUpdate: (info: IExecutingInfo) => void = () => {},
 ): Promise<IExecuteTaskResult> {
   const sid = generateDatabaseSid(dbName, sessionId);
   const serverParams =
@@ -172,7 +214,7 @@ export default async function executeSQL(
           sid,
           ...params,
         };
-  const res = await request.post(`/api/v2/datasource/sessions/${sid}/sqls/asyncExecute`, {
+  const res = await request.post(`/api/v2/datasource/sessions/${sid}/sqls/streamExecute`, {
     data: serverParams,
   });
   const taskInfo: ISQLExecuteTask = res?.data;
@@ -189,78 +231,36 @@ export default async function executeSQL(
     }
     return pre;
   }, []);
-  const unauthorizedDatabases = taskInfo?.unauthorizedDatabases;
-  const violatedRules = rootViolatedRules.concat(taskInfo?.sqls);
-  if (unauthorizedDatabases?.length) {
+  const unauthorizedResource = taskInfo?.unauthorizedDBResources;
+  if (unauthorizedResource?.length) {
     // 无权限库
     return {
       invalid: true,
       executeSuccess: false,
       executeResult: [],
       violatedRules: [],
-      unauthorizedDatabases,
+      unauthorizedDBResources: unauthorizedResource,
       unauthorizedSql: (params as IExecuteSQLParams)?.sql || (params as string),
     };
   }
-  const lintResultSet = violatedRules?.reduce((pre, cur) => {
-    if (Array.isArray(cur?.violatedRules) && cur?.violatedRules?.length > 0) {
-      return pre.concat({
-        sql: cur?.sqlTuple?.executedSql,
-        violations: cur?.violatedRules?.map((item) => item?.violation),
-      });
-    } else {
-      return pre;
-    }
-  }, []);
-  /**
-   * lintResultSet为空数组时，返回的status默认为submit
-   */
-  const status = getStatus(lintResultSet);
-  // 没有requestId，即是被拦截了
-  if (!taskInfo?.requestId) {
-    // 一些场景下不需要弹出SQL确认弹窗
-    if (!needModal) {
-      return {
-        hasLintResults: lintResultSet?.length > 0,
-        invalid: true,
-        executeSuccess: false,
-        executeResult: [],
-        violatedRules,
-        lintResultSet,
-        status,
-      };
-    }
-    // 当status不为submit时
-    if (status !== EStatus.SUBMIT) {
-      modal.updateWorkSpaceExecuteSQLModalProps({
-        sql: (params as IExecuteSQLParams)?.sql || (params as string),
-        visible: true,
-        sessionId,
-        lintResultSet,
-        status,
-        onSave: () => {
-          // 关闭SQL确认窗口打开新建数据库变更抽屉
-          modal.updateWorkSpaceExecuteSQLModalProps();
-          modal.changeCreateAsyncTaskModal(true, {
-            sql: (params as IExecuteSQLParams)?.sql || (params as string),
-            databaseId: sessionManager.sessionMap.get(sessionId).odcDatabase?.id,
-            rules: lintResultSet,
-          });
-        },
-        // 关闭SQL确认弹窗
-        onCancel: () =>
-          modal.updateWorkSpaceExecuteSQLModalProps({
-            visible: false,
-          }),
-      });
-    }
+
+  const {
+    pass,
+    data: preHandleData,
+    lintResultSet,
+    status,
+  } = executeSQLPreHandle(taskInfo, params, needModal, sessionId);
+  if (!pass) {
+    return preHandleData;
   }
   const requestId = taskInfo?.requestId;
-  const sqls = taskInfo?.sqls;
-  if (!requestId || !sqls?.length) {
-    return null;
-  }
-  let results = await executeTaskManager.addAndWaitTask(requestId, sessionId);
+  let executeRes = await executeTaskManager.addAndWaitTask(
+    requestId,
+    sessionId,
+    taskInfo,
+    onUpdate,
+  );
+  let results = executeRes;
   results = results?.map((result) => {
     if (!result.requestId) {
       result.requestId = requestId;
@@ -277,27 +277,4 @@ export default async function executeSQL(
     hasLintResults: lintResultSet?.length > 0,
     status,
   };
-}
-
-function getStatus(lintResultSet: ISQLLintReuslt[]) {
-  if (Array.isArray(lintResultSet) && lintResultSet?.length) {
-    const violations = lintResultSet.reduce((pre, cur) => {
-      if (cur?.violations?.length === 0) {
-        return pre;
-      }
-      return pre.concat(...cur?.violations);
-    }, []);
-    // 含有必须改进， 中断后续操作，禁止执行
-    if (violations?.some((violation) => violation?.level === 2)) {
-      return EStatus.DISABLED;
-      //  全为无需改进，继续原有的后续操作
-    } else if (violations?.every((violation) => violation?.level === 0)) {
-      return EStatus.SUBMIT;
-    } else {
-      // 既不含必须改进，又不全是无需改进，需要发起审批
-      return EStatus.APPROVAL;
-    }
-  }
-  // 默认返回submit，不中断后续操作
-  return EStatus.SUBMIT;
 }

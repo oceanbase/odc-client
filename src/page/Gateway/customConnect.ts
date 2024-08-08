@@ -173,7 +173,7 @@ export const action = async (config: ICustomConnectAction) => {
   const project = (await listProjects(projectName, 1, 20, false, true))?.contents?.[0];
 
   if (!project || project?.name !== projectName) {
-    return 'User Project Not Fount';
+    return 'User project not found, please contact adminitrator, confirm the bastion integration is enabled';
   }
 
   const params = resolveRemoteData({

@@ -19,6 +19,7 @@ import Toolbar from '@/component/Toolbar';
 import icon, { IConStatus } from '@/component/Toolbar/statefulIcon/index';
 import {
   GeneralSQLType,
+  ISqlExecuteResultTimer,
   ITable,
   ITableColumn,
   LobExt,
@@ -29,9 +30,12 @@ import {
 } from '@/d.ts';
 import modal from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
+import type { GuideCacheStore } from '@/store/guideCache';
 import type { SQLStore } from '@/store/sql';
 import { ReactComponent as SubmitSvg } from '@/svgr/Submit.svg';
 import { ReactComponent as TraceSvg } from '@/svgr/Trace.svg';
+import { ReactComponent as SqlProfile } from '@/svgr/SqlProfile.svg';
+
 import { formatMessage } from '@/util/intl';
 import Icon, {
   BarsOutlined,
@@ -51,7 +55,18 @@ import Icon, {
   VerticalRightOutlined,
 } from '@ant-design/icons';
 import { useControllableValue, useUpdate } from 'ahooks';
-import { Checkbox, Col, Input, InputNumber, message, Popover, Row, Spin, Tooltip } from 'antd';
+import {
+  Checkbox,
+  Col,
+  Input,
+  InputNumber,
+  message,
+  Popover,
+  Row,
+  Spin,
+  Tooltip,
+  Typography,
+} from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { RowType } from '../EditableTable';
@@ -75,11 +90,13 @@ import useColumns, { isNumberType } from './hooks/useColumns';
 import ResultContext from './ResultContext';
 import StatusBar from './StatusBar';
 import { copyToSQL, getColumnNameByColumnKey } from './util';
-import { ODC_TRACE_SUPPORT_VERSION, OBCompare } from '@/util/versionUtils';
+import { OBCompare, ODC_TRACE_SUPPORT_VERSION } from '@/util/versionUtils';
 
 // @ts-ignore
 const ToolbarButton = Toolbar.Button;
 const ToolbarDivider = Toolbar.Divider;
+
+const { Link } = Typography;
 export const DATASET_INDEX_KEY = '_datasetIdx';
 const ExpainSvg = icon.EXPAIN;
 export enum ColumnOrder {
@@ -90,6 +107,7 @@ export enum ColumnOrder {
 interface IProps {
   sqlStore?: SQLStore;
   settingStore?: SettingStore;
+  guideCacheStore?: GuideCacheStore;
   table?: Partial<ITable>;
   session: SessionStore;
   /**
@@ -113,6 +131,7 @@ interface IProps {
   showMock?: boolean;
   showExplain?: boolean;
   showTrace?: boolean; // 是否展示trace功能
+  showExecutePlan?: boolean;
   showPagination?: boolean;
   allowExport?: boolean; // 是否允许导出
   columns: ResultSetColumn[];
@@ -125,11 +144,13 @@ interface IProps {
   resultHeight: number | string;
   pageKey?: string;
   generalSqlType?: GeneralSQLType;
+  timer?: ISqlExecuteResultTimer;
   traceId?: string;
   enableRowId?: boolean;
   autoCommit: boolean;
   withFullLinkTrace?: boolean; // SQL执行结果是否支持Trace功能
   traceEmptyReason?: string; // 若不支持时要展示的Tooltip文本
+  withQueryProfile?: boolean; // SQL执行结果是否支持执行剖析
   /**
    * db 查询耗时
    */
@@ -145,6 +166,12 @@ interface IProps {
   onShowExecuteDetail?: () => void;
   onShowTrace?: () => void;
   onUpdateEditing?: (editing: boolean) => void;
+  onOpenExecutingDetailModal?: (
+    traceId: string,
+    sql?: string,
+    sessionId?: string,
+    traceEmptyReason?: string,
+  ) => void;
 }
 const DDLResultSet: React.FC<IProps> = function (props) {
   const {
@@ -155,9 +182,12 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     columns,
     showPagination,
     sqlStore,
+    guideCacheStore,
+    timer,
     settingStore,
     showExplain,
     showTrace = false,
+    showExecutePlan = false,
     showMock,
     allowExport = true,
     table,
@@ -168,6 +198,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     autoCommit,
     dbTotalDurationMicroseconds,
     withFullLinkTrace = false,
+    withQueryProfile = false,
     traceEmptyReason = '',
     onUpdateEditing,
     onRefresh,
@@ -176,10 +207,14 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     onExport,
     onSubmitRows,
     enableRowId,
+    traceId,
+    onOpenExecutingDetailModal,
+    originSql,
   } = props;
   const sessionId = session?.sessionId;
   const obVersion = session?.params?.obVersion;
   const update = useUpdate();
+
   /**
    * 编辑中的rows
    */
@@ -435,9 +470,15 @@ const DDLResultSet: React.FC<IProps> = function (props) {
       }
       function clipSQL() {
         if (!tableColumns || (!columnName && !isSelectedRow)) {
-          copyToSQL(gridRef.current, columns, undefined, session?.connection?.dialectType);
+          copyToSQL(gridRef.current, columns, undefined, session?.connection?.dialectType, rows);
         } else {
-          copyToSQL(gridRef.current, columns, table?.tableName, session?.connection?.dialectType);
+          copyToSQL(
+            gridRef.current,
+            columns,
+            table?.tableName,
+            session?.connection?.dialectType,
+            rows,
+          );
         }
       }
       function clipCsv() {
@@ -636,6 +677,129 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     [columnsToDisplay],
   );
   const isInTransaction = session?.transState?.transState === TransState.IDLE;
+
+  const updateExecutePlanGuideCache = () => {
+    guideCacheStore.setDataByKey(guideCacheStore.cacheEnum.executePlan);
+  };
+  const executeGuideTipContent = () => {
+    if (guideCacheStore?.[guideCacheStore.cacheEnum.executePlan]) return null;
+    return (
+      <div style={{ color: 'var(--text-color-secondary)' }}>
+        <div style={{ fontSize: 14, color: 'var(--text-color-primary)', fontWeight: 500 }}>
+          {formatMessage({
+            id: 'src.page.Workspace.components.DDLResultSet.E32AB474',
+            defaultMessage: 'SQL 执行画像',
+          })}
+        </div>
+        <div>
+          {formatMessage({
+            id: 'src.page.Workspace.components.DDLResultSet.6477DD60',
+            defaultMessage:
+              '集合 SQL 的执行详情、物理执行计划、全链路诊断的多维度视图，帮助快速定位执行慢查询的根因',
+          })}
+        </div>
+        <img
+          style={{ width: 280, display: 'block', paddingBottom: 8 }}
+          src={window.publicPath + `img/profile.jpeg`}
+        />
+
+        <Link onClick={updateExecutePlanGuideCache}>
+          {formatMessage({
+            id: 'src.page.Workspace.components.DDLResultSet.90E40FCF',
+            defaultMessage: '我知道了',
+          })}
+        </Link>
+      </div>
+    );
+  };
+
+  const getExecuteIcon = () => {
+    return showExecutePlan && withQueryProfile ? (
+      <ToolbarButton
+        text={formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.22F863D6',
+          defaultMessage: '执行画像',
+        })}
+        icon={<Icon component={SqlProfile} />}
+        onClick={() => {
+          onOpenExecutingDetailModal?.(traceId, originSql, null, traceEmptyReason);
+          setTimeout(() => {
+            updateExecutePlanGuideCache();
+          }, 1000);
+        }}
+        tip={executeGuideTipContent()}
+        overlayInnerStyle={{ width: 300 }}
+      />
+    ) : (
+      <>
+        {showExplain &&
+          ([GeneralSQLType.DML, GeneralSQLType.DQL].includes(props?.generalSqlType) &&
+          props?.traceId ? (
+            <ToolbarButton
+              text={
+                formatMessage({
+                  id: 'odc.components.DDLResultSet.Plan',
+                }) // 计划
+              }
+              icon={<ExpainSvg status={IConStatus.INIT} />}
+              onClick={() => {
+                onShowExecuteDetail?.();
+              }}
+            />
+          ) : (
+            <Tooltip
+              title={
+                [GeneralSQLType.DDL, GeneralSQLType.OTHER].includes(props?.generalSqlType)
+                  ? formatMessage({
+                      id: 'odc.components.DDLResultSet.TheCurrentStatementTypeDoes',
+                    })
+                  : // 当前语句类型不支持查看执行详情
+                    formatMessage({
+                      id: 'odc.components.DDLResultSet.TheTraceIdIsEmpty',
+                    })
+                // TRACE ID 为空，请确保该语句运行时 enable_sql_audit 系统参数及 ob_enable_trace_log 变量值均为 ON
+              }
+            >
+              <ToolbarButton
+                icon={<ExpainSvg status={IConStatus.INIT} />}
+                onClick={() => {
+                  onShowExecuteDetail?.();
+                }}
+                disabled
+              />
+            </Tooltip>
+          ))}
+
+        {showTrace &&
+          (isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=') ? (
+            <ToolbarButton
+              text={
+                withFullLinkTrace
+                  ? formatMessage({
+                      id: 'odc.src.page.Workspace.components.DDLResultSet.FullLinkTrace',
+                    }) //'全链路 Trace'
+                  : traceEmptyReason
+              }
+              disabled={!withFullLinkTrace}
+              icon={<TraceSvg />}
+              onClick={() => {
+                onShowTrace?.();
+              }}
+            />
+          ) : (
+            <ToolbarButton
+              text={traceEmptyReason}
+              disabled={true}
+              icon={<TraceSvg />}
+              onClick={() => {
+                onShowTrace?.();
+              }}
+            />
+          ))}
+      </>
+    );
+  };
+
   return (
     <div
       style={{
@@ -872,69 +1036,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 />
               </>
             ) : null}
-            {showExplain &&
-              ([GeneralSQLType.DML, GeneralSQLType.DQL].includes(props?.generalSqlType) &&
-              props?.traceId ? (
-                <ToolbarButton
-                  text={
-                    formatMessage({
-                      id: 'odc.components.DDLResultSet.Plan',
-                    }) // 计划
-                  }
-                  icon={<ExpainSvg status={IConStatus.INIT} />}
-                  onClick={() => {
-                    onShowExecuteDetail?.();
-                  }}
-                />
-              ) : (
-                <Tooltip
-                  title={
-                    [GeneralSQLType.DDL, GeneralSQLType.OTHER].includes(props?.generalSqlType)
-                      ? formatMessage({
-                          id: 'odc.components.DDLResultSet.TheCurrentStatementTypeDoes',
-                        })
-                      : // 当前语句类型不支持查看执行详情
-                        formatMessage({
-                          id: 'odc.components.DDLResultSet.TheTraceIdIsEmpty',
-                        })
-                    // TRACE ID 为空，请确保该语句运行时 enable_sql_audit 系统参数及 ob_enable_trace_log 变量值均为 ON
-                  }
-                >
-                  <ToolbarButton
-                    icon={<ExpainSvg status={IConStatus.INIT} />}
-                    onClick={() => {
-                      onShowExecuteDetail?.();
-                    }}
-                    disabled
-                  />
-                </Tooltip>
-              ))}
-            {showTrace &&
-              (isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=') ? (
-                <ToolbarButton
-                  text={
-                    withFullLinkTrace
-                      ? formatMessage({
-                          id: 'odc.src.page.Workspace.components.DDLResultSet.FullLinkTrace',
-                        }) //'全链路 Trace'
-                      : traceEmptyReason
-                  }
-                  disabled={!withFullLinkTrace}
-                  icon={<TraceSvg />}
-                  onClick={() => {
-                    onShowTrace?.();
-                  }}
-                />
-              ) : (
-                <ToolbarButton
-                  text={traceEmptyReason}
-                  disabled={true}
-                  icon={<TraceSvg />}
-                  onClick={() => {
-                    onShowTrace?.();
-                  }}
-                />
-              ))}
+            {getExecuteIcon()}
             {showPagination && rows.length ? (
               <>
                 <ToolbarDivider />
@@ -1003,10 +1105,10 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             ) : null}
 
             {/* <ToolbarButton
-                  text={formatMessage({ id: "workspace.window.session.button.refresh" })}
-                  icon={<Icon type="sync" />}
-                  onClick={onRefresh.bind(this, this.state.limit || 1000)}
-                  /> */}
+                    text={formatMessage({ id: "workspace.window.session.button.refresh" })}
+                    icon={<Icon type="sync" />}
+                    onClick={onRefresh.bind(this, this.state.limit || 1000)}
+                    /> */}
           </div>
           <div className={styles.toolsRight}>
             <span className={styles.limit}>
@@ -1158,6 +1260,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             enableFrozenRow={true}
             pasteFormatter={pasteFormatter}
           />
+
           <ColumnModeModal
             visible={showColumnMode}
             onClose={() => {
@@ -1178,8 +1281,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
         selectedColumnKeys={selectedCellColumnsKey}
         columns={table?.columns}
         dbTotalDurationMicroseconds={dbTotalDurationMicroseconds}
+        timer={timer}
       />
     </div>
   );
 };
-export default inject('sqlStore', 'settingStore')(observer(DDLResultSet));
+export default inject('sqlStore', 'settingStore', 'guideCacheStore')(observer(DDLResultSet));

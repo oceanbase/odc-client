@@ -24,13 +24,16 @@ import {
   TaskDetail,
   IMockDataParams,
   IApplyDatabasePermissionTaskParams,
+  IApplyTablePermissionTaskParams,
   SubTaskStatus,
   IMultipleAsyncTaskParams,
 } from '@/d.ts';
-import { IDatabase } from '@/d.ts/database';
+import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
+import { TablePermissionType } from '@/d.ts/table';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
 import { IDataSourceModeConfig } from '@/common/datasource/interface';
+import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 
 interface ConnectionData {
   data: any;
@@ -82,7 +85,17 @@ interface ApplyPermissionData {}
 interface ApplyDatabasePermissionData {
   projectId?: number;
   databaseId?: number;
+  types?: DatabasePermissionType[];
   task?: Partial<TaskDetail<IApplyDatabasePermissionTaskParams>>;
+}
+
+interface ApplyTablePermissionData {
+  projectId?: number;
+  databaseId?: number;
+  tableName?: string;
+  tableId?: number;
+  types?: TablePermissionType[];
+  task?: Partial<TaskDetail<IApplyTablePermissionTaskParams>>;
 }
 
 interface IExportModalData {
@@ -201,6 +214,9 @@ export class ModalStore {
   public applyDatabasePermissionVisible: boolean = false;
 
   @observable
+  public applyTablePermissionVisible: boolean = false;
+
+  @observable
   public partitionVisible: boolean = false;
 
   @observable
@@ -256,6 +272,9 @@ export class ModalStore {
 
   @observable
   public applyDatabasePermissionData: ApplyDatabasePermissionData = null;
+
+  @observable
+  public applyTablePermissionData: ApplyTablePermissionData = null;
 
   @observable
   public asyncTaskData: AsyncData = null;
@@ -401,6 +420,41 @@ export class ModalStore {
     };
   }
 
+  @observable
+  public executeSqlDetailModalVisible: boolean = false;
+
+  @observable
+  public executeSqlDetailData: {
+    v?: boolean;
+    traceId?: any;
+    sql?: string;
+    session?: any;
+    selectedSQL?: any;
+    profileType?: ProfileType;
+    traceEmptyReason?: string;
+  } = null;
+
+  @action
+  public changeExecuteSqlDetailModalVisible(
+    v: boolean,
+    traceId?: any,
+    sql?: string,
+    session?: any,
+    selectedSQL?: any,
+    profileType?: ProfileType,
+    traceEmptyReason?: string,
+  ) {
+    this.executeSqlDetailModalVisible = v;
+    this.executeSqlDetailData = {
+      traceId,
+      sql: sql,
+      session,
+      selectedSQL: selectedSQL,
+      profileType: profileType,
+      traceEmptyReason: traceEmptyReason,
+    };
+  }
+
   /** create type */
   @observable
   public createTypeModalVisible: boolean = false;
@@ -481,6 +535,12 @@ export class ModalStore {
   public changeApplyDatabasePermissionModal(isShow: boolean = true, data?: any) {
     this.applyDatabasePermissionVisible = isShow;
     this.applyDatabasePermissionData = isShow ? data : null;
+  }
+
+  @action
+  public changeApplyTablePermissionModal(isShow: boolean = true, data?: any) {
+    this.applyTablePermissionVisible = isShow;
+    this.applyTablePermissionData = isShow ? data : null;
   }
 
   @action
@@ -609,6 +669,7 @@ export class ModalStore {
 
     this.applyPermissionVisible = false;
     this.applyDatabasePermissionVisible = false;
+    this.applyTablePermissionVisible = false;
     this.partitionVisible = false;
     this.dataArchiveVisible = false;
     this.dataClearVisible = false;
@@ -621,6 +682,8 @@ export class ModalStore {
     this.selectDatabaseVisible = false;
     this.databaseSearchModalVisible = false;
     this.canDatabaseSearchModalOpen = false;
+    this.executeSqlDetailModalVisible = false;
+    this.executeSqlDetailData = null;
   }
 }
 

@@ -16,6 +16,7 @@
 
 import { PLType } from '@/constant/plType';
 import { IRiskLevel } from '@/d.ts/riskLevel';
+import { IUnauthorizedDBResources, TablePermissionType } from '@/d.ts/table';
 import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
 import { IDatabase, DatabasePermissionType, IUnauthorizedDatabase } from './database';
@@ -23,6 +24,7 @@ import { EComparisonScope } from './task';
 import { EThemeConfigKey } from '@/store/setting';
 import { SpaceType } from './_index';
 import { DBDefaultStoreType } from './table';
+import { ISQLExecuteTask } from '@/common/network/sql/executeSQL';
 import { IEnvironment } from './environment';
 import { IProject } from './project';
 import { ErrorStrategy } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
@@ -622,6 +624,16 @@ export enum AuditEventActionType {
   DATABASE_PERMISSION_MANAGEMENT = 'DATABASE_PERMISSION_MANAGEMENT',
   GRANT_DATABASE_PERMISSION = 'GRANT_DATABASE_PERMISSION',
   REVOKE_DATABASE_PERMISSION = 'REVOKE_DATABASE_PERMISSION',
+  // 表权限申请
+  APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
+  CREATE_APPLY_TABLE_PERMISSION_TASK = 'CREATE_APPLY_TABLE_PERMISSION_TASK',
+  APPROVE_APPLY_TABLE_PERMISSION_TASK = 'APPROVE_APPLY_TABLE_PERMISSION_TASK',
+  REJECT_APPLY_TABLE_PERMISSION_TASK = 'REJECT_APPLY_TABLE_PERMISSION_TASK',
+  STOP_APPLY_TABLE_PERMISSION_TASK = 'STOP_APPLY_TABLE_PERMISSION_TASK',
+  // 表权限管理
+  TABLE_PERMISSION_MANAGEMENT = 'TABLE_PERMISSION_MANAGEMENT',
+  GRANT_TABLE_PERMISSION = 'GRANT_TABLE_PERMISSION',
+  REVOKE_TABLE_PERMISSION = 'REVOKE_TABLE_PERMISSION',
   // 自动授权
   CREATE_AUTOMATION_RULE = 'CREATE_AUTOMATION_RULE',
   ENABLE_AUTOMATION_RULE = 'ENABLE_AUTOMATION_RULE',
@@ -1045,6 +1057,7 @@ export interface IResultSet extends Partial<ISqlExecuteResult> {
     table?: ITable;
     editable: boolean;
   };
+  timer?: ISqlExecuteResultTimer;
 
   isQueriedEditable?: boolean;
   logTypeData?: {
@@ -1066,6 +1079,7 @@ export interface IResultSet extends Partial<ISqlExecuteResult> {
   }[];
 
   schemaName?: string;
+  currentExecuteInfo?: IExecutingInfo;
 }
 
 export interface IColumnMetaData {
@@ -1159,6 +1173,13 @@ export interface ITable {
   partitions: Partial<ITablePartition>[];
   constraints: Partial<ITableConstraint>[];
   _version?: any;
+  authorizedPermissionTypes?: TablePermissionType[];
+  database?: IDatabase;
+  createTime?: number;
+  id?: number;
+  name?: string;
+  organizationId?: number;
+  updateTime?: number;
 }
 
 interface IEditable {
@@ -1573,6 +1594,7 @@ export interface IResultTimerStage {
 }
 
 export interface ISqlExecuteResult {
+  results?: any[];
   allowExport: boolean;
   columnLabels: string[];
   columns?: string[];
@@ -1630,13 +1652,42 @@ export interface ISqlExecuteResult {
     type: string;
   }[];
   withFullLinkTrace: boolean;
+  withQueryProfile: boolean;
   traceEmptyReason?: string;
+}
+export interface ISqlExecuteResultTimer {
+  name: string;
+  stages: IResultTimerStage[];
+  startTimeMillis: number; // 开始时间
+  totalDurationMicroseconds: number; // 总耗时
+}
+
+export interface IExecutingInfo {
+  finished?: boolean;
+  traceId?: string;
+  executingSQL: string;
+  executingSQLId?: string;
+  results?: ISqlExecuteResult[];
+  task: ISQLExecuteTask;
 }
 
 export enum ISqlExecuteResultStatus {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
   CANCELED = 'CANCELED',
+  WAITING = 'WAITING',
+  RUNNING = 'RUNNING',
+}
+
+export enum IProfileNodeStatus {
+  FINISHED = 'FINISHED',
+  RUNNING = 'RUNNING',
+  PREPARING = 'PREPARING',
+}
+
+export enum IProfileStatus {
+  FINISHED = 'FINISHED',
+  RUNNING = 'RUNNING',
 }
 
 export interface ISqlExecuteResultWidthData {
@@ -1706,6 +1757,51 @@ export interface ISQLExplain {
   outline: string;
   originalText: string;
   showFormatInfo?: boolean;
+  graph?: IProfileGraph;
+  warning?: string;
+  expTree?: string;
+}
+
+export interface IProfileGraph {
+  duration: number;
+  overview: {
+    [overviewType: string]: string | number;
+  };
+  planId: string;
+  statistics: {
+    [statisticType: string]: string | number;
+  };
+  topNodes: {
+    duration: string[];
+  };
+  traceId: string;
+  vertexes: IProfileVertexes[];
+}
+
+export interface IProfileVertexes {
+  attributes: {
+    [attributeType: string]: string | number;
+  };
+  duration: number;
+  graphId: number;
+  inEdges: IInEdges[];
+  name: string;
+  outEdges: IInEdges[];
+  overview: {
+    [overviewType: string]: string | number;
+  };
+  statistics: {
+    [logType: string]: string | number;
+  };
+  status: string;
+  subNodes?: IProfileVertexes;
+  title: string;
+}
+
+export interface IInEdges {
+  from: string;
+  to: string;
+  weight: string;
 }
 
 export interface ISQLExecuteDetail {
@@ -1895,6 +1991,7 @@ export enum TaskPageType {
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
   APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
+  APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
   MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
 }
@@ -1917,6 +2014,7 @@ export enum TaskType {
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
   APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
+  APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
   MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
 }
@@ -2607,6 +2705,25 @@ export interface IApplyDatabasePermissionTaskParams {
   applyReason: string;
 }
 
+export interface IApplyTablePermissionTaskParams {
+  project: {
+    id: number;
+    name?: string;
+  };
+  // 提交时databaseId、tableNames为必填项
+  // 详情返回时五个字段均有
+  tables: {
+    databaseId: number;
+    tableName: string;
+    tableId: number;
+    dataSourceId?: number;
+    dataSourceName?: string;
+    databaseName?: string;
+  }[];
+  types: TablePermissionType[];
+  expireTime: number;
+  applyReason: string;
+}
 export interface IMultipleAsyncTaskParams {
   autoErrorStrategy: boolean;
   batchId: number;
@@ -2802,7 +2919,7 @@ export interface ITaskFlowNode {
   comment: string;
   deadlineTime: number;
   issueCount: number;
-  unauthorizedDatabases: IUnauthorizedDatabase[];
+  unauthorizedDBResources: IUnauthorizedDBResources[];
   id?: number;
   candidates: {
     id: number;
@@ -3156,6 +3273,7 @@ export enum ODCErrorsCode {
   SysTenantAccountNotSet = 'SysTenantAccountNotSet',
   SysTenantAccountInvalid = 'SysTenantAccountInvalid',
   PermissionChanged = 'PermissionChanged',
+  AccessDenied = 'AccessDenied',
 }
 
 export enum ConnectType {

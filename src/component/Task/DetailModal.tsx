@@ -63,9 +63,10 @@ import { getItems as getShadowSyncItems } from './ShadowSyncTask';
 import { SqlPlanTaskContent } from './SQLPlanTask';
 import { ApplyPermissionTaskContent } from './ApplyPermission';
 import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
+import { ApplyTablePermissionTaskContent } from './ApplyTablePermission';
 import { StructureComparisonTaskContent } from './StructureComparisonTask';
 import { MutipleAsyncTaskContent } from './MutipleAsyncTask';
-import { getProject } from '@/common/network/project';
+import { getProjectWithErrorCatch } from '@/common/network/project';
 import { ProjectRole } from '@/d.ts/project';
 import userStore from '@/store/login';
 import { isNumber } from 'lodash';
@@ -143,10 +144,10 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       setIsTaskProjectOwner(false);
       return;
     }
-    const res = await getProject(projectId);
-    const userRoleList = res?.members
-      ?.filter((i) => i.id === userStore?.user?.id)
-      ?.map((j) => j.role);
+
+    const res = await getProjectWithErrorCatch(projectId);
+    const userRoleList =
+      res?.members?.filter((i) => i.id === userStore?.user?.id)?.map((j) => j.role) || [];
     setIsTaskProjectOwner(userRoleList.includes(ProjectRole.OWNER));
   };
 
@@ -154,6 +155,9 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     const data = await getTaskDetail(detailId);
     setLoading(false);
     if (data) {
+      // if (data.type === TaskType.APPLY_DATABASE_PERMISSION) { // TODO 测试写死的， 删除即可
+      //   data.type = TaskType.APPLY_TABLE_PERMISSION // TODO 测试写死的， 删除即可
+      // }// TODO 测试写死的， 删除即可
       setTask(data);
       setDisabledSubmit(false);
     }
@@ -405,6 +409,10 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       taskContent = <ApplyDatabasePermissionTaskContent task={task as any} />;
       break;
     }
+    case TaskType.APPLY_TABLE_PERMISSION: {
+      taskContent = <ApplyTablePermissionTaskContent task={task as any} />;
+      break;
+    }
     case TaskType.STRUCTURE_COMPARISON: {
       taskContent = (
         <StructureComparisonTaskContent
@@ -422,7 +430,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       break;
     }
     default: {
-      getItems = taskContentMap[task?.type]?.getItems;
+      getItems = (...args) => taskContentMap[task?.type]?.getItems(...args, handleReloadData);
       break;
     }
   }

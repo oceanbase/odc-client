@@ -144,6 +144,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.EXPORT_RESULT_SET,
     TaskType.APPLY_PROJECT_PERMISSION,
     TaskType.APPLY_DATABASE_PERMISSION,
+    TaskType.APPLY_TABLE_PERMISSION,
     TaskType.MULTIPLE_ASYNC,
   ].includes(task?.type);
   // 任务日志
@@ -160,6 +161,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.EXPORT_RESULT_SET,
     TaskType.APPLY_PROJECT_PERMISSION,
     TaskType.APPLY_DATABASE_PERMISSION,
+    TaskType.APPLY_TABLE_PERMISSION,
   ].includes(task?.type);
   function onShare() {
     const url =
@@ -190,7 +192,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               {
                 formatMessage({
                   id: 'odc.src.component.Task.component.CommonDetailModal.Share',
-                }) /* 
+                }) /*
             分享  */
               }
               <ShareAltOutlined />
