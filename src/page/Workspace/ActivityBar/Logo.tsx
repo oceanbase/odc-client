@@ -15,8 +15,42 @@
  */
 
 import { ReactComponent as ODCBlackSvg } from '@/svgr/odc_logo_color.svg';
-import Icon from '@ant-design/icons';
+import Icon, { HomeOutlined } from '@ant-design/icons';
+import styles from './index.less';
+import { useState } from 'react';
+import { Tooltip } from 'antd';
+import { isClient } from '@/util/env';
 
 export default function Logo() {
-  return <Icon component={ODCBlackSvg} style={{ fontSize: 18, marginBottom: 14, marginTop: 12 }} />;
+  const [isHover, setHoverSatate] = useState<boolean>(false);
+
+  const backToHome = () => {
+    if (isClient()) return;
+    window.open(location.origin + '/#/project');
+  };
+
+  return (
+    <span
+      onClick={backToHome}
+      className={styles.logo}
+      onMouseEnter={() => setHoverSatate(true)}
+      onMouseLeave={() => setHoverSatate(false)}
+    >
+      {isHover && !isClient() ? (
+        <Tooltip title={'返回首页'} placement="right">
+          <Icon
+            component={HomeOutlined}
+            style={{
+              fontSize: 16,
+              padding: 6,
+              backgroundColor: 'var(--hover-color)',
+              cursor: 'pointer',
+            }}
+          />
+        </Tooltip>
+      ) : (
+        <Icon component={ODCBlackSvg} style={{ fontSize: 16, padding: 6 }} />
+      )}
+    </span>
+  );
 }
