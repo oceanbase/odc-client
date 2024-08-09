@@ -18,6 +18,7 @@ import type { IManagerRole } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Space } from 'antd';
+import { Tooltip } from 'antd';
 import React from 'react';
 
 export const useRoleListByIds = (roles: IManagerRole[], roleIds: number[]) => {
@@ -41,7 +42,7 @@ const RoleList: React.FC<{
 }> = ({ roles, isShowIcon = false, isWrap = false }) => {
   const title = roles?.map((item) => item.name)?.join(' | ');
   return (
-    <div title={title}>
+    <Tooltip title={title}>
       <Space split="|" size={10} wrap={isWrap}>
         {roles?.length ? (
           roles?.map(({ name, enabled }, index) => (
@@ -64,7 +65,7 @@ const RoleList: React.FC<{
           <span>-</span>
         )}
       </Space>
-    </div>
+    </Tooltip>
   );
 };
 

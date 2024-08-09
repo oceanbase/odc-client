@@ -44,7 +44,7 @@ import { useLoop } from '@/util/hooks/useLoop';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { DownOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, DatePicker, Divider, Menu, MenuProps } from 'antd';
+import { Button, DatePicker, Divider, Menu, MenuProps, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
 import moment from 'moment';
@@ -312,8 +312,10 @@ const TaskTable: React.FC<IProps> = inject(
             defaultMessage: '工单描述',
           }),
           //工单描述
-          ellipsis: true,
-          render: (description) => description || '-',
+          ellipsis: {
+            showTitle: false,
+          },
+          render: (description) => <Tooltip title={description}>{description || '-'}</Tooltip>,
         },
         {
           dataIndex: 'candidateApprovers',
