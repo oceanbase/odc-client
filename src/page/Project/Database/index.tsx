@@ -295,7 +295,9 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             //所属数据源
             dataIndex: ['dataSource', 'name'],
             width: 160,
-            ellipsis: true,
+            ellipsis: {
+              showTitle: false,
+            },
             render(value, record, index) {
               /**
                * return datasource icon + label
@@ -311,8 +313,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       marginRight: 4,
                     }}
                   />
-
-                  <span title={value}>{value}</span>
+                  <Tooltip title={value}>{value}</Tooltip>
                 </>
               );
             },
