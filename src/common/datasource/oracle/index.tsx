@@ -70,6 +70,7 @@ const items: Record<ConnectType.ORACLE, IDataSourceModeConfig> = {
         TaskType.EXPORT_RESULT_SET,
         TaskType.SQL_PLAN,
         TaskType.ASYNC,
+        TaskType.DATA_ARCHIVE,
       ],
       obclient: false,
       recycleBin: false,
