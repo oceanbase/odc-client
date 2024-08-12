@@ -5077,7 +5077,7 @@
   "src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.657DE57E": "If no existing database objects are found, please synchronize metadata first.",
   "src.component.SQLConfig.27EDBEAB": "Query Results",
   "src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.E74A1569": "Continue Search",
-  "src.page.Workspace.components.SQLResultSet.7F598F77": "Total {count} SQL executions, currently executing number {count}.",
+  "src.page.Workspace.components.SQLResultSet.7F598F77": "Total {count} SQL executions, currently executing number {BinaryExpression1}.",
   "src.page.Workspace.components.SQLResultSet.6F910473": "Pending Execution",
   "src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.939E5208": "If no existing database objects are found, please synchronize metadata first.",
   "src.component.helpDoc.618FF120": "Permission to create tickets for database changes (including import and database change), and permission to execute change statements in the SQL window (SQL window's ability to execute changes is constrained by security specifications)",
