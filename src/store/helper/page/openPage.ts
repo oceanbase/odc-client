@@ -22,7 +22,6 @@ import {
   getTypemByName,
 } from '@/common/network';
 import {
-  ConnectionMode,
   DbObjectType,
   IFunction,
   IProcedure,
@@ -58,8 +57,11 @@ import {
 } from '@/page/Workspace/components/ViewPage';
 import { formatMessage } from '@/util/intl';
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getTriggerByName } from '@/common/network/trigger';
 import { PLType } from '@/constant/plType';
+import modalStore from '@/store/modal';
+import sessionManager from '@/store/sessionManager';
 import taskStore from '@/store/task';
 import { message } from 'antd';
 import page from '../../page';
@@ -86,9 +88,6 @@ import {
 import { CreateTablePage, CreateTriggerPage, CreateViewPage, SQLConfirmPage } from './pages/create';
 import { AnonymousPage, PackageBodyPage, PackageHeadPage, PLEditPage } from './pages/pl';
 import { findPageByScriptIdAndType } from './util';
-import sessionManager from '@/store/sessionManager';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import modalStore from '@/store/modal';
 
 export function openPackageHeadPage(packageName: string, sql: string, databaseId: number) {
   page.openPage(new PackageHeadPage(databaseId, packageName, sql));

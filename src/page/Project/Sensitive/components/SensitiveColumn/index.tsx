@@ -37,7 +37,7 @@ import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
 import Icon, { DownOutlined } from '@ant-design/icons';
-import { Button, Descriptions, Menu, message, Modal, Popover, Space } from 'antd';
+import { Button, Descriptions, message, Modal, Popover, Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { debounce } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';

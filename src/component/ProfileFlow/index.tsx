@@ -1,20 +1,19 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { IProfileGraph } from '@/d.ts';
+import { useEffect, useRef, useState } from 'react';
 import ReactFlow, {
-  addEdge,
-  useNodesState,
-  useEdgesState,
-  useReactFlow,
   ReactFlowProvider,
+  useEdgesState,
+  useNodesState,
+  useReactFlow,
 } from 'reactflow';
-import CustomEdge from './customComponents/Edge';
-import CustomNode from './customComponents/Node';
+import 'reactflow/dist/style.css';
+import { CPU_TIME, IO_WAIT_TIME, REACT_FLOW_ID } from './constant';
 import CustomControl from './customComponents/Control';
 import CustomDetailBox from './customComponents/DetailBox';
-import { transformDataForReactFlow, initCenter, handleSelectNode } from './utils';
-import { REACT_FLOW_ID, CPU_TIME, IO_WAIT_TIME } from './constant';
-import { IProfileGraph } from '@/d.ts';
+import CustomEdge from './customComponents/Edge';
+import CustomNode from './customComponents/Node';
 import styles from './index.less';
-import 'reactflow/dist/style.css';
+import { handleSelectNode, initCenter, transformDataForReactFlow } from './utils';
 
 const edgeTypes = { CustomEdge: CustomEdge };
 const nodeTypes = { customNode: CustomNode };

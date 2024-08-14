@@ -16,12 +16,12 @@
 
 import { DbObjectType, SynonymType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
+import { openSynonymViewPage } from '@/store/helper/page';
 import SessionStore from '@/store/sessionManager/session';
 import { ReactComponent as SynonymSvg } from '@/svgr/menuSynonym.svg';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
-import { openSynonymViewPage } from '@/store/helper/page';
 
 export function SynonymTreeData(
   dbSession: SessionStore,

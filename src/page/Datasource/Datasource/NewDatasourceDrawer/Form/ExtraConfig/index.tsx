@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { haveOCP } from '@/util/env';
+import { formatMessage } from '@/util/intl';
 import { Collapse, Form, Tabs } from 'antd';
 import React, { useContext } from 'react';
-import SysForm from '../SysForm';
 import DatasourceFormContext from '../context';
-import SSLItem from '../SSLItem';
-import styles from './index.less';
 import InitScriptItem from '../InitScriptItem';
 import JDBCParamsItem from '../JDBCParamsItem';
-import { haveOCP } from '@/util/env';
+import SSLItem from '../SSLItem';
+import SysForm from '../SysForm';
+import styles from './index.less';
 interface IProps {}
 const ExtraConfig: React.FC<IProps> = function () {
   const context = useContext(DatasourceFormContext);

@@ -18,7 +18,6 @@ import { executeSQL } from '@/common/network/sql';
 import { batchGetDataModifySQL, queryTableOrViewData } from '@/common/network/table';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
-import { TAB_HEADER_HEIGHT } from '@/constant';
 import { EStatus, IResultSet, ISqlExecuteResultStatus, ITable } from '@/d.ts';
 import { generateResultSetColumns } from '@/store/helper';
 import modal, { ModalStore } from '@/store/modal';

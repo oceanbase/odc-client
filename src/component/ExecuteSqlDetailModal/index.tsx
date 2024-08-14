@@ -1,39 +1,41 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import modal from '@/store/modal';
-import { Tabs, Button, message, Modal, Radio, Space, Tooltip, Input, Spin } from 'antd';
-import styles from './index.less';
-import { ModalStore } from '@/store/modal';
-import { inject, observer } from 'mobx-react';
-import { getSQLExecuteProfile, getSQLExplain } from '@/common/network/sql';
-import Flow from '@/component/ProfileFlow';
+import {
+  getFullLinkTraceDownloadUrl,
+  getSQLExecuteProfile,
+  getSQLExplain,
+} from '@/common/network/sql';
 import DisplayTable from '@/component/DisplayTable';
-import {
-  getSqlProfileColumns,
-  getSqlExplainColumns,
-} from '@/page/Workspace/components/SQLExplain/column';
+import Flow from '@/component/ProfileFlow';
 import { handleShowOutputFilter } from '@/page/Workspace/components/SQLExplain';
-import { formatMessage } from '@/util/intl';
-import { getFullLinkTraceDownloadUrl } from '@/common/network/sql';
-import { downloadFile } from '@/util/utils';
-import TraceComp from '@/page/Workspace/components/Trace/TraceComponent';
-import { TraceTabsType } from '@/page/Workspace/components/Trace';
 import {
-  ProfileType,
-  TypeMap,
-  EXECUTE_PAGE_TYPE,
-  PLAN_PAGE_TYPE,
-  initConfig,
-  traceViewOptions,
+  getSqlExplainColumns,
+  getSqlProfileColumns,
+} from '@/page/Workspace/components/SQLExplain/column';
+import { TraceTabsType } from '@/page/Workspace/components/Trace';
+import TraceComp from '@/page/Workspace/components/Trace/TraceComponent';
+import modal, { ModalStore } from '@/store/modal';
+import { formatMessage } from '@/util/intl';
+import { downloadFile } from '@/util/utils';
+import { Button, Input, message, Modal, Radio, Space, Spin, Tooltip } from 'antd';
+import { inject, observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
+import {
   executeViewOptions,
   executeViewOptionsInPlan,
+  EXECUTE_PAGE_TYPE,
+  initConfig,
   initTabViewConfig,
   planTabLabel,
+  PLAN_PAGE_TYPE,
+  ProfileType,
+  traceViewOptions,
+  TypeMap,
 } from './constant';
+import styles from './index.less';
 
-import CopyToClipboard from 'react-copy-to-clipboard';
-import { CopyOutlined } from '@ant-design/icons';
 import { IProfileStatus } from '@/d.ts';
 import { randomUUID } from '@/page/Workspace/components/Trace';
+import { CopyOutlined } from '@ant-design/icons';
+import CopyToClipboard from 'react-copy-to-clipboard';
 
 interface IProps {
   modalStore?: ModalStore;

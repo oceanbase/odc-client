@@ -24,8 +24,8 @@ import Dragable, { IDragable } from '../Dragable';
 import styles from './index.less';
 // @ts-ignore
 import { ReactComponent as DragSvg } from '@/svgr/drag.svg';
-import PartitionValueInput from './PartitionValueInput';
 import { formatMessage } from '@/util/intl';
+import PartitionValueInput from './PartitionValueInput';
 
 export interface IDragableParamProps extends IDragable {
   deletable: boolean;

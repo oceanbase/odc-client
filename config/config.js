@@ -69,7 +69,7 @@ const config = {
   title: false,
   favicons: [publicPath + 'img/favicon.png'],
   // ctoken: false,
-
+  clickToComponent: {},
   externals: {
     electron: 'commonjs electron',
   },

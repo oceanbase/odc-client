@@ -15,18 +15,15 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Button, Col, Descriptions, Drawer, Input, Radio, Row, Tooltip, message } from 'antd';
-import React, { useEffect } from 'react';
-import { CopyOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { useState } from 'react';
-import styles from './index.less';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import TraceList from './TraceList';
-import TraceTreeTable from './TraceTreeTable';
-import { getFullLinkTrace, getFullLinkTraceDownloadUrl } from '@/common/network/sql';
-import { downloadFile, formatTimeTemplatMicroSeconds } from '@/util/utils';
+import { getFullLinkTraceDownloadUrl } from '@/common/network/sql';
 import { TraceSpan } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
+import { downloadFile, formatTimeTemplatMicroSeconds } from '@/util/utils';
+import { CopyOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Button, Col, Descriptions, Drawer, Input, message, Radio, Row, Tooltip } from 'antd';
+import React, { useState } from 'react';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import styles from './index.less';
 import TraceComp from './TraceComponent';
 export const InfoRender = ({ infos }) => {
   return (

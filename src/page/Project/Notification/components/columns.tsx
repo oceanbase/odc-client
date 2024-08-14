@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import { Space, Switch } from 'antd';
+import SearchFilter from '@/component/SearchFilter';
 import {
   EChannelType,
   EMessageStatus,
@@ -23,11 +22,12 @@ import {
   IMessage,
   IPolicy,
 } from '@/d.ts/projectNotification';
-import { ColumnType } from 'antd/lib/table';
-import { TPolicyForm, EPolicyFormMode, EChannelTypeMap, EMessageStatusMap } from './interface';
-import SearchFilter from '@/component/SearchFilter';
-import { SearchOutlined } from '@ant-design/icons';
+import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
+import { SearchOutlined } from '@ant-design/icons';
+import { Space, Switch } from 'antd';
+import { ColumnType } from 'antd/lib/table';
+import { EChannelTypeMap, EMessageStatusMap, EPolicyFormMode, TPolicyForm } from './interface';
 import { MessageStatus } from './MessageStatus';
 
 // #region ------------------------- notification message -------------------------

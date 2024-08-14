@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
+import { SQLConsoleResourceType } from '@/common/datasource/interface';
+import { SQLConsoleEmpty } from '@/component/Empty/SQLConsoleEmpty';
 import ScriptEditorModal from '@/page/Workspace/components/ScriptManageModal/ScriptEditorModal';
 import { openSQLPageByScript } from '@/store/helper/page';
 import { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { Input, Spin } from 'antd';
 import { UploadFile } from 'antd/es/upload/interface';
 import { inject, observer } from 'mobx-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
 import Item from './Item';
-import tracert from '@/util/tracert';
 
 interface IProps {
   userStore?: UserStore;
@@ -50,6 +52,18 @@ export default inject('userStore')(
       tracert.click('a3112.b41896.c330989.d367623');
     }, []);
 
+    const filteredUploadFiles = useMemo(() => {
+      return uploadFiles.filter((file) => {
+        return !searchVaue || file.name?.toUpperCase()?.includes(searchVaue?.toUpperCase());
+      });
+    }, [searchVaue, uploadFiles]);
+
+    const filteredScripts = useMemo(() => {
+      return userStore?.scriptStore?.scripts.filter((script) => {
+        return !searchVaue || script.objectName?.toUpperCase()?.includes(searchVaue?.toUpperCase());
+      });
+    }, [searchVaue, userStore?.scriptStore?.scripts]);
+
     return (
       <div className={styles.script}>
         <div className={styles.search}>
@@ -64,53 +78,47 @@ export default inject('userStore')(
         </div>
         <div className={styles.list}>
           <Spin spinning={loading}>
-            {uploadFiles
-              ?.map((file) => {
-                if (searchVaue && !file.name?.toUpperCase()?.includes(searchVaue?.toUpperCase())) {
-                  return null;
-                }
-                return (
-                  <Item
-                    key={file.uid + '-uodcfile'}
-                    name={file.name}
-                    uploading={file.status === 'uploading'}
-                    errorMsg={
-                      file?.response?.errMsg ||
-                      formatMessage({
-                        id: 'odc.component.OSSDragger2.FileListItem.UploadFailed',
-                        defaultMessage: '上传失败',
-                      })
-                    }
-                    removeUploadFile={() => {
-                      setUploadFiles(uploadFiles.filter((file) => file !== file));
-                    }}
-                  />
-                );
-              })
-              .filter(Boolean)}
-            {userStore?.scriptStore?.scripts
-              ?.map((script) => {
-                if (
-                  searchVaue &&
-                  !script.objectName?.toUpperCase()?.includes(searchVaue?.toUpperCase())
-                ) {
-                  return null;
-                }
-                return (
-                  <Item
-                    key={script.id}
-                    name={script.objectName}
-                    script={script}
-                    onClick={() => {
-                      openSQLPageByScript(script.id, null);
-                    }}
-                    editFile={() => {
-                      setEditingScriptId(script.id);
-                    }}
-                  />
-                );
-              })
-              .filter(Boolean)}
+            {filteredUploadFiles?.map((file) => {
+              return (
+                <Item
+                  key={file.uid + '-uodcfile'}
+                  name={file.name}
+                  uploading={file.status === 'uploading'}
+                  errorMsg={
+                    file?.response?.errMsg ||
+                    formatMessage({
+                      id: 'odc.component.OSSDragger2.FileListItem.UploadFailed',
+                      defaultMessage: '上传失败',
+                    })
+                  }
+                  removeUploadFile={() => {
+                    setUploadFiles(uploadFiles.filter((file) => file !== file));
+                  }}
+                />
+              );
+            })}
+            {filteredScripts?.map((script) => {
+              return (
+                <Item
+                  key={script.id}
+                  name={script.objectName}
+                  script={script}
+                  onClick={() => {
+                    openSQLPageByScript(script.id, null);
+                  }}
+                  editFile={() => {
+                    setEditingScriptId(script.id);
+                  }}
+                />
+              );
+            })}
+            {filteredScripts.length === 0 &&
+              filteredUploadFiles.length === 0 &&
+              (searchVaue ? (
+                <SQLConsoleEmpty />
+              ) : (
+                <SQLConsoleEmpty type={SQLConsoleResourceType.Script} />
+              ))}
           </Spin>
         </div>
         <ScriptEditorModal

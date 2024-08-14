@@ -17,8 +17,7 @@
 import type { IManagerRole } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { ExclamationCircleFilled } from '@ant-design/icons';
-import { Space } from 'antd';
-import { Tooltip } from 'antd';
+import { Space, Tooltip } from 'antd';
 import React from 'react';
 
 export const useRoleListByIds = (roles: IManagerRole[], roleIds: number[]) => {

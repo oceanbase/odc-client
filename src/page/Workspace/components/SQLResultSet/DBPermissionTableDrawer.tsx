@@ -15,10 +15,10 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
+import { IUnauthorizedDBResources } from '@/d.ts/table';
 import { Button, Drawer, Space } from 'antd';
 import React from 'react';
 import { DBPermissionTableContent } from './DBPermissionTable';
-import { IUnauthorizedDBResources } from '@/d.ts/table';
 
 interface IProps {
   dataSource: IUnauthorizedDBResources[];

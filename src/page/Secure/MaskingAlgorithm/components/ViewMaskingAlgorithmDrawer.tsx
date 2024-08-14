@@ -15,12 +15,12 @@
  */
 
 import { detailMaskingAlgorithm, testMaskingAlgorithm } from '@/common/network/maskingAlgorithm';
-import { maskRuleTypeMap } from '..';
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
 import { formatMessage } from '@/util/intl';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Descriptions, Drawer, Input, Tooltip, message } from 'antd';
+import { Button, Descriptions, Drawer, Input, message, Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
+import { maskRuleTypeMap } from '..';
 const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClose }) => {
   const [searchText, setSearchText] = useState<string>('');
   const [testResult, setTestResult] = useState<string>('');

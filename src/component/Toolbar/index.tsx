@@ -17,6 +17,7 @@
 import { formatMessage } from '@/util/intl';
 import Icon, { CaretDownOutlined } from '@ant-design/icons';
 import {
+  Badge,
   Button,
   Divider,
   Dropdown,
@@ -25,11 +26,10 @@ import {
   Popconfirm,
   Popover,
   Tooltip,
-  Badge,
 } from 'antd';
 import { PopconfirmProps } from 'antd/lib/popconfirm';
 import classNames from 'classnames'; // @ts-ignore
-import { ComponentType, useState } from 'react';
+import { ComponentType } from 'react';
 import styles from './index.less';
 import statefulIcon, { IConStatus } from './statefulIcon';
 

@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getTableListByDatabaseName } from '@/common/network/table';
 import FormItemPanel from '@/component/FormItemPanel';
 import SysFormItem from '@/component/SysFormItem';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
+import { ENABLED_SYS_FROM_ITEM } from '@/component/Task/helper';
 import { ConnectionMode, EXPORT_CONTENT, IMPORT_TYPE, TaskType } from '@/d.ts';
 import odc from '@/plugins/odc';
 import { useDBSession } from '@/store/sessionManager/hooks';
@@ -29,8 +31,6 @@ import DatabaseSelect from '../../../../component/DatabaseSelect';
 import CsvMapping from '../../csvMapping';
 import CsvProvider from '../CsvProvider';
 import StructDataFormItem from '../formitem/StructDataFormItem';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { ENABLED_SYS_FROM_ITEM } from '@/component/Task/helper';
 
 const FormItem = Form.Item;
 

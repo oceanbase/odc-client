@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getDataSourceManageDatabase, syncDatasource } from '@/common/network/connection';
 import { deleteDatabase } from '@/common/network/database';
 import Action from '@/component/Action';
@@ -26,14 +27,13 @@ import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
+import Icon, { EditOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Button, Input, message, Popconfirm, Space, Tooltip } from 'antd';
 import { toInteger } from 'lodash';
 import React, { useRef, useState } from 'react';
-import Icon, { EditOutlined } from '@ant-design/icons';
 import ChangeProjectModal from './ChangeProjectModal';
 import NewDataBaseButton from './NewDataBaseButton';
-import { getDataSourceModeConfig } from '@/common/datasource';
 interface IProps {
   id: string;
   datasource: IDatasource;

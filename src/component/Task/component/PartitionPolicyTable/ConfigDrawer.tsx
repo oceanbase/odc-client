@@ -15,13 +15,13 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Button, Drawer, Space, Descriptions } from 'antd';
-import React from 'react';
-import { getStrategyLabelByConfig } from './index';
-import ConfigTable from './ConfigTable';
-import { SimpleTextItem } from '../../component/SimpleTextItem';
 import type { IPartitionTableConfig } from '@/d.ts';
-import { TaskPartitionStrategy, PARTITION_NAME_INVOKER, PARTITION_KEY_INVOKER } from '@/d.ts';
+import { PARTITION_KEY_INVOKER, TaskPartitionStrategy } from '@/d.ts';
+import { Button, Descriptions, Drawer, Space } from 'antd';
+import React from 'react';
+import { SimpleTextItem } from '../../component/SimpleTextItem';
+import ConfigTable from './ConfigTable';
+import { getStrategyLabelByConfig } from './index';
 import styles from './index.less';
 
 const periodUnits = [

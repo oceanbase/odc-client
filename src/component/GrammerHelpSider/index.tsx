@@ -23,7 +23,7 @@ import {
 } from '@/store/snippet';
 import { formatMessage } from '@/util/intl';
 import { CloseOutlined, DownOutlined, PlusOutlined } from '@ant-design/icons';
-import { Dropdown, Empty, Input, Layout, Menu, message, Modal } from 'antd';
+import { Dropdown, Empty, Input, Layout, message, Modal } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 import SnippetCard from './component/SnippetCard';

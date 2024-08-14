@@ -71,20 +71,20 @@
   background-color: var(--neutral-grey1-color);
 
   .title {
-    font-weight: 500;
     color: var(--text-color-primary);
+    font-weight: 500;
   }
 
   :global {
     .ant-form-item {
+      margin-bottom: 0px;
       padding-top: 4px;
       padding-bottom: 4px;
-      margin-bottom: 0px;
     }
 
     .ant-timeline-item {
-      padding-bottom: 0 !important;
       margin-bottom: 0px;
+      padding-bottom: 0 !important;
       line-height: 1;
     }
 
@@ -96,8 +96,8 @@
     }
 
     .ant-timeline-item-content {
-      margin-bottom: 0px;
       min-height: auto;
+      margin-bottom: 0px;
     }
   }
 }
@@ -106,8 +106,8 @@
   cursor: pointer;
 }
 .dragIem {
-  padding-left: 8px;
   padding-right: 6px;
+  padding-left: 8px;
   &:hover {
     background-color: var(--hover-color);
   }
@@ -134,36 +134,36 @@
 .selectOptions {
   padding: 0px;
 
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08),
+    0 9px 28px 8px rgba(0, 0, 0, 0.05);
+
   :global {
     .ant-popover-inner-content {
       padding: 0px;
     }
   }
 
-  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08),
-    0 9px 28px 8px rgba(0, 0, 0, 0.05);
-
   .option {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
     width: 390px;
     height: 28px;
     padding: 0px 8px;
-    align-items: center;
-    justify-content: space-between;
 
     &:hover {
-      cursor: pointer;
       background-color: var(--hover-color);
+      cursor: pointer;
     }
   }
 
   .optionDisabled {
-    cursor: not-allowed;
     background-color: var(--hover-color);
+    cursor: not-allowed;
 
     &:hover {
-      cursor: not-allowed;
       background-color: var(--hover-color);
+      cursor: not-allowed;
     }
   }
 }
@@ -172,15 +172,15 @@
   border: 1px solid transparent;
 }
 .columnFormDisabled {
-  border: 1px solid transparent !important;
   background-color: transparent !important;
+  border: 1px solid transparent !important;
 }
 
 .multipleMenu {
   position: fixed;
-  z-index: 1;
-  right: 0px;
   top: 64px;
+  right: 0px;
+  z-index: 1;
   width: 120px;
   padding: 12px 8px;
   :global {
@@ -193,15 +193,15 @@
       }
     }
     .ant-tabs-tab {
-      padding: 0;
       height: 28px;
+      padding: 0;
       line-height: 28px;
     }
   }
 }
 .content {
-  display: flex;
   position: relative;
-  overflow-y: scroll;
+  display: flex;
   max-height: 100%;
+  overflow-y: scroll;
 }

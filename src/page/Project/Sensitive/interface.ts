@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ConnectType } from '@/d.ts';
 import { ESensitiveColumnType } from '@/d.ts/sensitiveColumn';
 import { formatMessage } from '@/util/intl';
 export enum AddSensitiveColumnType {
@@ -23,6 +24,7 @@ export enum AddSensitiveColumnType {
 export interface SelectItemProps {
   label: string;
   value: string | number;
+  type?: ConnectType;
   disabled?: boolean;
 }
 

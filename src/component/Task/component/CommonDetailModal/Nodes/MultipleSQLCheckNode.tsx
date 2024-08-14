@@ -1,15 +1,15 @@
 import { getFlowSQLLintResult } from '@/common/network/task';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { ITaskFlowNode } from '@/d.ts';
-import { Descriptions, Drawer, Tag } from 'antd';
-import React, { useState } from 'react';
-import NodeCompleteTime from './Items/NodeCompleteTime';
-import NodeStatus from './Items/NodeStatus';
-import { formatMessage } from '@/util/intl';
-import styles from '../index.less';
-import MultipleLintResultTable from '@/page/Workspace/components/SQLResultSet/MultipleAsyncSQLLintTable';
 import { IDatabase } from '@/d.ts/database';
 import DBPermissionTableDrawer from '@/page/Workspace/components/SQLResultSet/DBPermissionTableDrawer';
+import MultipleLintResultTable from '@/page/Workspace/components/SQLResultSet/MultipleAsyncSQLLintTable';
+import { formatMessage } from '@/util/intl';
+import { Descriptions, Drawer, Tag } from 'antd';
+import React, { useState } from 'react';
+import styles from '../index.less';
+import NodeCompleteTime from './Items/NodeCompleteTime';
+import NodeStatus from './Items/NodeStatus';
 interface IProps {
   node: Partial<ITaskFlowNode>;
   flowId: number;

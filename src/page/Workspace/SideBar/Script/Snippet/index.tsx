@@ -24,12 +24,14 @@ import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'r
 import ListItem from '../../components/ListItem';
 import styles from './index.less';
 
+import { SQLConsoleResourceType } from '@/common/datasource/interface';
+import { SQLConsoleEmpty } from '@/component/Empty/SQLConsoleEmpty';
 import { ReactComponent as CodeSvg } from '@/svgr/Snippet.svg';
 import { formatMessage } from '@/util/intl';
 import { getWrapedSnippetBody } from '@/util/snippet';
+import tracert from '@/util/tracert';
 import copyToCB from 'copy-to-clipboard';
 import SnippetInfoToolTip from './Info';
-import tracert from '@/util/tracert';
 
 export default inject('snippetStore')(
   observer(
@@ -81,114 +83,115 @@ export default inject('snippetStore')(
           </div>
           <div className={styles.list}>
             <Spin spinning={snippetStore.loading}>
-              {data?.map((snippet) => {
-                return (
-                  <SnippetInfoToolTip
-                    hidden={isDraging || snipptVisible}
-                    key={snippet.id}
-                    snippet={snippet}
-                  >
-                    <DragWrapper
-                      key={snippet.name}
-                      useCustomerDragLayer={true}
-                      onBegin={() => {
-                        setIsDraging(true);
-                        snippetStore.snippetDragging = {
-                          ...snippet,
-                          body: getWrapedSnippetBody(snippet.body),
-                        };
-                      }}
-                      onEnd={() => {
-                        setIsDraging(false);
-                      }}
+              {data.length > 0 ? (
+                data?.map((snippet) => {
+                  return (
+                    <SnippetInfoToolTip
+                      hidden={isDraging || snipptVisible}
+                      key={snippet.id}
+                      snippet={snippet}
                     >
-                      <ListItem
-                        title={snippet.prefix}
-                        desc={snippet.snippetType}
-                        actions={[
-                          {
-                            icon: CopyOutlined,
-                            title: formatMessage({
-                              id: 'odc.Script.Snippet.Copy',
-                              defaultMessage: '复制',
-                            }), //复制
-                            onClick() {
-                              copyToCB(
-                                `<meta name='_!isODCSnippet_' content='yes' />${getWrapedSnippetBody(
-                                  snippet.body,
-                                )}`,
-                                {
-                                  format: 'text/html',
-                                },
-                              );
-                              message.success(
-                                formatMessage(
+                      <DragWrapper
+                        key={snippet.name}
+                        useCustomerDragLayer={true}
+                        onBegin={() => {
+                          setIsDraging(true);
+                          snippetStore.snippetDragging = {
+                            ...snippet,
+                            body: getWrapedSnippetBody(snippet.body),
+                          };
+                        }}
+                        onEnd={() => {
+                          setIsDraging(false);
+                        }}
+                      >
+                        <ListItem
+                          title={snippet.prefix}
+                          desc={snippet.snippetType}
+                          actions={[
+                            {
+                              icon: CopyOutlined,
+                              title: formatMessage({
+                                id: 'odc.Script.Snippet.Copy',
+                                defaultMessage: '复制',
+                              }), //复制
+                              onClick() {
+                                copyToCB(
+                                  `<meta name='_!isODCSnippet_' content='yes' />${getWrapedSnippetBody(
+                                    snippet.body,
+                                  )}`,
                                   {
-                                    id: 'odc.component.SnippetCard.SnippetprefixSyntaxHelpsCopySuccessfully',
-                                    defaultMessage: '{snippetPrefix} 代码片段复制成功！',
+                                    format: 'text/html',
                                   },
-                                  { snippetPrefix: snippet.prefix },
-                                ), //`${snippet.prefix} 代码片段复制成功！`
-                              );
+                                );
+                                message.success(
+                                  formatMessage(
+                                    {
+                                      id: 'odc.component.SnippetCard.SnippetprefixSyntaxHelpsCopySuccessfully',
+                                      defaultMessage: '{snippetPrefix} 代码片段复制成功！',
+                                    },
+                                    { snippetPrefix: snippet.prefix },
+                                  ), //`${snippet.prefix} 代码片段复制成功！`
+                                );
+                              },
                             },
-                          },
-                          {
-                            icon: EditOutlined,
-                            title: formatMessage({
-                              id: 'odc.Script.Snippet.Edit',
-                              defaultMessage: '编辑',
-                            }), //编辑
-                            onClick() {
-                              setSnipptVisible(true);
-                              setSnippet(snippet);
+                            {
+                              icon: EditOutlined,
+                              title: formatMessage({ id: 'odc.Script.Snippet.Edit' }), //编辑
+                              onClick() {
+                                setSnipptVisible(true);
+                                setSnippet(snippet);
+                              },
                             },
-                          },
-                          {
-                            icon: DeleteOutlined,
-                            title: formatMessage({
-                              id: 'odc.Script.Snippet.Delete',
-                              defaultMessage: '删除',
-                            }), //删除
-                            onClick() {
-                              Modal.confirm({
-                                title: formatMessage(
-                                  {
-                                    id: 'odc.component.GrammerHelpSider.AreYouSureYouWant',
-                                    defaultMessage: '是否确认删除代码片段 {snippetPrefix}？',
+                            {
+                              icon: DeleteOutlined,
+                              title: formatMessage({ id: 'odc.Script.Snippet.Delete' }), //删除
+                              onClick() {
+                                Modal.confirm({
+                                  title: formatMessage(
+                                    {
+                                      id: 'odc.component.GrammerHelpSider.AreYouSureYouWant',
+                                    },
+                                    { snippetPrefix: snippet.prefix },
+                                  ), //`确认删除代码片段：${snippet.prefix}?`
+                                  content: snippet.description,
+
+                                  async onOk() {
+                                    const res = await snippetStore.deleteCustomerSnippet(snippet);
+
+                                    if (res) {
+                                      message.success(
+                                        formatMessage(
+                                          {
+                                            id: 'odc.component.GrammerHelpSider.TheSyntaxSnippetSnippetprefixHas',
+                                          },
+                                          { snippetPrefix: snippet.prefix },
+                                        ), //`代码片段 ${snippet.prefix} 删除成功！`
+                                      );
+                                    }
+
+                                    await snippetStore.resetSnippets();
                                   },
-                                  { snippetPrefix: snippet.prefix },
-                                ), //`确认删除代码片段：${snippet.prefix}?`
-                                content: snippet.description,
-
-                                async onOk() {
-                                  const res = await snippetStore.deleteCustomerSnippet(snippet);
-
-                                  if (res) {
-                                    message.success(
-                                      formatMessage(
-                                        {
-                                          id: 'odc.component.GrammerHelpSider.TheSyntaxSnippetSnippetprefixHas',
-                                          defaultMessage: '代码片段 {snippetPrefix} 删除成功！',
-                                        },
-                                        { snippetPrefix: snippet.prefix },
-                                      ), //`代码片段 ${snippet.prefix} 删除成功！`
-                                    );
-                                  }
-
-                                  await snippetStore.resetSnippets();
-                                },
-                              });
+                                });
+                              },
                             },
-                          },
-                        ]}
-                        icon={
-                          <Icon component={CodeSvg} style={{ color: 'var(--brand-blue6-color)' }} />
-                        }
-                      />
-                    </DragWrapper>
-                  </SnippetInfoToolTip>
-                );
-              })}
+                          ]}
+                          icon={
+                            <Icon
+                              component={CodeSvg}
+                              style={{ color: 'var(--brand-blue6-color)' }}
+                            />
+                          }
+                        />
+                      </DragWrapper>
+                    </SnippetInfoToolTip>
+                  );
+                })
+              ) : searchValue ? (
+                <SQLConsoleEmpty />
+              ) : (
+                <SQLConsoleEmpty type={SQLConsoleResourceType.Snippet} />
+              )}
             </Spin>
           </div>
           <SnippetFormDrawer

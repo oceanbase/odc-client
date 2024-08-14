@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import { operationTypeMap } from '@/component/Task/component/CommonDetailModal/TaskOperationRecord';
@@ -27,7 +28,6 @@ import { Collapse, Descriptions, Divider, Space } from 'antd';
 import React from 'react';
 import { getCronCycle } from '../../component/TaskTable';
 import styles from '../../index.less';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 const { Panel } = Collapse;
 const ErrorStrategy = {

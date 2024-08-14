@@ -1,3 +1,5 @@
+import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
+import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import {
   IFlowTaskType,
@@ -7,21 +9,19 @@ import {
   TaskNodeStatus,
   type ITaskResult,
 } from '@/d.ts';
-import { formatMessage } from '@/util/intl';
-import { Descriptions, Divider, Drawer, Space, Steps } from 'antd';
-import { SimpleTextItem } from '../../component/SimpleTextItem';
-import { useState } from 'react';
-import styles from './index.less';
-import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
 import { ModalStore } from '@/store/modal';
-import { inject, observer } from 'mobx-react';
-import { TaskTypeMap } from '../../helper';
-import Icon from '@ant-design/icons';
-import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
+import { formatMessage } from '@/util/intl';
 import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
+import Icon from '@ant-design/icons';
+import { Descriptions, Divider, Drawer, Space, Steps } from 'antd';
+import classNames from 'classnames';
+import { inject, observer } from 'mobx-react';
+import { useState } from 'react';
 import { getTaskExecStrategyMap } from '../..';
 import { ErrorStrategy } from '../../AsyncTask/DetailContent';
-import classNames from 'classnames';
+import { SimpleTextItem } from '../../component/SimpleTextItem';
+import { TaskTypeMap } from '../../helper';
+import styles from './index.less';
 const { Step } = Steps;
 interface IStructureComparisonTaskContentProps {
   modalStore?: ModalStore;

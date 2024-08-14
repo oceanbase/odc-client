@@ -1,14 +1,14 @@
-import { formatMessage } from '@/util/intl';
-import { Button, Space } from 'antd';
-import styles from '../index.less';
-import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import React, { useState, useContext } from 'react';
-import { IDatabase, IDatabaseObject } from '@/d.ts/database';
-import { ModalStore } from '@/store/modal';
-import { openNewSQLPage } from '@/store/helper/page';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
+import { IDatabase, IDatabaseObject } from '@/d.ts/database';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import { openNewSQLPage } from '@/store/helper/page';
+import { ModalStore } from '@/store/modal';
+import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
+import { Button, Space } from 'antd';
+import React, { useContext, useState } from 'react';
+import styles from '../index.less';
 
 interface Iprops {
   database: IDatabase;

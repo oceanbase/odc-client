@@ -30,7 +30,6 @@ import { formatMessage } from '@/util/intl';
 import { history, useParams } from '@umijs/max';
 import { inject, observer } from 'mobx-react';
 import React, { useState } from 'react';
-import Approval from './Approval';
 import { SecureContext } from './context';
 import Env from './Env';
 import MaskingAlgorithm from './MaskingAlgorithm';

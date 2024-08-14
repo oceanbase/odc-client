@@ -17,8 +17,8 @@
 import HelpDoc from '@/component/helpDoc';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, InputNumber, Select, Space, Tooltip } from 'antd';
 import type { FormInstance } from 'antd';
+import { Button, Form, Input, InputNumber, Select, Space, Tooltip } from 'antd';
 import classNames from 'classnames';
 import { variable } from './index';
 import styles from './index.less';

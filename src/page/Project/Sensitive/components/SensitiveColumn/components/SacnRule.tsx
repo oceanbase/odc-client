@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { getConnectionList } from '@/common/network/connection';
 import { listDatabases } from '@/common/network/database';
 import { listSensitiveRules } from '@/common/network/sensitiveRule';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { SelectItemProps } from '@/page/Project/Sensitive/interface';
 import { formatMessage } from '@/util/intl';
+import Icon from '@ant-design/icons';
 import { Button, Divider, Form, Select } from 'antd';
 import { useWatch } from 'antd/es/form/Form';
 import { useContext, useEffect, useState } from 'react';
@@ -42,6 +44,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
     const resData = rawData?.contents?.map((content) => ({
       label: content.name,
       value: content.id,
+      type: content.type,
     }));
     setDataSourceOptions(resData);
   };
@@ -170,7 +173,6 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
         ]}
       >
         <Select
-          options={dataSourceOptions}
           onChange={handleDataSourceIdChange}
           placeholder={
             formatMessage({
@@ -179,10 +181,25 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
             }) //请选择
           }
           maxTagCount="responsive"
-          style={{
-            width: '170px',
-          }}
-        ></Select>
+          style={{ width: 170 }}
+        >
+          {dataSourceOptions.map((option, index) => {
+            const icon = getDataSourceStyleByConnectType(option.type);
+            return (
+              <Select.Option key={index} value={option.value}>
+                <Icon
+                  component={icon?.icon?.component}
+                  style={{
+                    color: icon?.icon?.color,
+                    fontSize: 16,
+                    marginRight: 4,
+                  }}
+                />
+                {option.label}
+              </Select.Option>
+            );
+          })}
+        </Select>
       </Form.Item>
       <Form.Item
         label={

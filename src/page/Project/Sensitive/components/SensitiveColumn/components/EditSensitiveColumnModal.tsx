@@ -15,12 +15,12 @@
  */
 
 import { batchUpdateSensitiveColumn } from '@/common/network/sensitiveColumn';
+import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 import { formatMessage } from '@/util/intl';
 import { Form, message, Modal, Select } from 'antd';
 import { useForm } from 'antd/es/form/Form';
-import styles from './index.less';
-import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 import { PopoverContainer } from '..';
+import styles from './index.less';
 const EditSensitiveColumnModal = ({
   projectId,
   tableRef,

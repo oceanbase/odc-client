@@ -20,13 +20,13 @@ import { UserStore } from '@/store/login';
 import { ReactComponent as PersonalSvg } from '@/svgr/personal_space.svg';
 import { ReactComponent as GroupSvg } from '@/svgr/project_space.svg';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import Icon, { CheckOutlined, ExclamationCircleFilled, SwapOutlined } from '@ant-design/icons';
+import { history } from '@umijs/max';
 import { Checkbox, Modal, Select, Space, Typography } from 'antd';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
-import { history } from '@umijs/max';
 import styles from './index.less';
-import tracert from '@/util/tracert';
 
 const ORGANIZATION_TIP_VSIBLE_KEY = 'odc_organization_tip_visible';
 interface ISpaceSelect {
@@ -52,6 +52,7 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
   const handleChange = async (oriId: number) => {
     const ori = userStore?.organizations?.find((item) => item.id == oriId);
     const tipVisible = localStorage.getItem(ORGANIZATION_TIP_VSIBLE_KEY);
+
     if (tipVisible !== 'no') {
       Modal.confirm({
         title: formatMessage(

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import { updateEnvironment, createEnvironment, getEnvironmentExists } from '@/common/network/env';
+import { createEnvironment, getEnvironmentExists, updateEnvironment } from '@/common/network/env';
+import HelpDoc from '@/component/helpDoc';
 import { EnvColorMap } from '@/constant';
 import { IEnvironment } from '@/d.ts/environment';
-import { message, Modal, Button, Form, Input, Tag, Select, SelectProps } from 'antd';
-import { useForm } from 'antd/lib/form/Form';
-import { useState, useEffect } from 'react';
-import styles from './index.less';
+import { formatMessage } from '@/util/intl';
 import { CheckOutlined } from '@ant-design/icons';
-import HelpDoc from '@/component/helpDoc';
+import { Button, Form, Input, message, Modal, Select, SelectProps, Tag } from 'antd';
+import { useForm } from 'antd/lib/form/Form';
+import { useEffect, useState } from 'react';
+import styles from './index.less';
 
 export const FormEnvironmentModal: React.FC<{
   isEdit?: boolean;

@@ -15,9 +15,9 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { DatabasePermissionStatus } from '@/d.ts/project';
 import HelpDoc from '@/component/helpDoc';
-import { ExclamationCircleFilled, StopFilled, CheckCircleFilled } from '@ant-design/icons';
+import { DatabasePermissionStatus } from '@/d.ts/project';
+import { CheckCircleFilled, ExclamationCircleFilled, StopFilled } from '@ant-design/icons';
 import { Space } from 'antd';
 import React from 'react';
 

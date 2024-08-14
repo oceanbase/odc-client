@@ -1,6 +1,6 @@
 import { formatMessage } from '@/util/intl';
-import { EdgeLabelRenderer } from 'reactflow';
 import { Tooltip } from 'antd';
+import { EdgeLabelRenderer } from 'reactflow';
 import { getEdgeWidth, getUnit } from '../utils';
 
 const CustomEdge = ({ id, sourceX, sourceY, targetX, targetY, style = {}, data }) => {

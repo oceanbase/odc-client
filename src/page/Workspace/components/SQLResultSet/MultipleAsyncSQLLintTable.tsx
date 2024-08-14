@@ -1,14 +1,14 @@
-import { formatMessage } from '@/util/intl';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
+import { IDatabase } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
 import SessionStore from '@/store/sessionManager/session';
+import { formatMessage } from '@/util/intl';
 import { groupByPropertyName } from '@/util/utils';
 import { Table } from 'antd';
 import classNames from 'classnames';
 import { useCallback, useEffect, useState } from 'react';
-import styles from './index.less';
 import { getMultipleAsyncColumns } from './columns';
-import { IDatabase } from '@/d.ts/database';
+import styles from './index.less';
 const LintResultTip = {
   default: formatMessage({
     id: 'odc.src.page.Workspace.components.SQLResultSet.CurrentSQLCanBeExecuted',

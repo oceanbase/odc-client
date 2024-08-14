@@ -35,8 +35,8 @@ import type { FixedType } from 'rc-table/es/interface';
 import React from 'react';
 import FormModal from './component/FormModal';
 
-import styles from './index.less';
 import { projectRoleTextMap } from '@/page/Project/User';
+import styles from './index.less';
 
 const renderTime = (time) => {
   return (

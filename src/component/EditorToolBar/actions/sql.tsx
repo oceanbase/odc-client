@@ -15,20 +15,17 @@
  */
 
 import DelimiterSelect from '@/component/DelimiterSelect';
+import { getKeyCodeText } from '@/component/Input/Keymap/keycodemap';
 import SQLConfig from '@/component/SQLConfig';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { TransState } from '@/d.ts';
 import { SQLPage } from '@/page/Workspace/components/SQLPage';
 import login from '@/store/login';
+import setting from '@/store/setting';
 import sqlStore from '@/store/sql';
-import modalStore from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import { SaveOutlined } from '@ant-design/icons';
 import { ToolBarActions } from '..';
-import setting from '@/store/setting';
-import { KeyCode } from 'monaco-editor';
-import { getKeyCodeText } from '@/component/Input/Keymap/keycodemap';
-import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 
 const sqlActions: ToolBarActions = {
   SQL_SAVE: {

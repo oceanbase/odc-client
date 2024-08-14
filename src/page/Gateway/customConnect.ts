@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
+import { createConnection, testConnection } from '@/common/network/connection';
+import { listDatabases } from '@/common/network/database';
+import { listEnvironments } from '@/common/network/env';
 import { decrypt } from '@/common/network/other';
+import { listProjects } from '@/common/network/project';
 import { AccountType, IRemoteCustomConnectionData } from '@/d.ts';
+import { IDatasource } from '@/d.ts/datasource';
+import { SpaceType } from '@/d.ts/_index';
+import login from '@/store/login';
 import { resolveUnionDbUser } from '@/util/connection';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
+import { gotoSQLWorkspace } from '@/util/route';
 import { generateUniqKey } from '@/util/utils';
+import { history } from '@umijs/max';
 import { message } from 'antd';
 import { Base64 } from 'js-base64';
 import moment from 'moment';
-import { history } from '@umijs/max';
-import login from '@/store/login';
-import { SpaceType } from '@/d.ts/_index';
-import { IDatasource } from '@/d.ts/datasource';
-import { listEnvironments } from '@/common/network/env';
-import { createConnection, testConnection, testExsitConnection } from '@/common/network/connection';
-import { gotoSQLWorkspace } from '@/util/route';
-import { listDatabases } from '@/common/network/database';
-import { listProjects } from '@/common/network/project';
 
 async function getDefaultSchema(dsId: number, userName: string) {
   const res = await listDatabases(null, dsId, 1, 999);

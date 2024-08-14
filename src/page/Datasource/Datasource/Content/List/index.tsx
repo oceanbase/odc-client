@@ -15,8 +15,8 @@
  */
 
 import { getConnectionList } from '@/common/network/connection';
-import { IConnection, IConnectionStatus } from '@/d.ts';
-import { Result, Space, Spin, Tag } from 'antd';
+import { IConnection } from '@/d.ts';
+import { Space, Spin } from 'antd';
 import React, {
   forwardRef,
   useContext,
@@ -34,17 +34,18 @@ import LoadingItem from '../ListItem/Loading';
 import ConnectionName from './ConnectionNameItem';
 import MoreBtn from './MoreBtn';
 
+import { DataSourceEmpty } from '@/component/Empty/DataSourceEmpty';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { IPageType } from '@/d.ts/_index';
 import { ClusterStore } from '@/store/cluster';
 import { CommonStore } from '@/store/common';
+import { DataSourceStatusStore } from '@/store/datasourceStatus';
 import { PageStore } from '@/store/page';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { inject, observer } from 'mobx-react';
 import { history } from '@umijs/max';
+import { inject, observer } from 'mobx-react';
 import TitleButton from '../TitleButton';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { DataSourceStatusStore } from '@/store/datasourceStatus';
 
 interface IProps {
   width: number;
@@ -292,23 +293,7 @@ const List: React.FC<IProps> = forwardRef(function (
         {isLoading ? (
           <Spin />
         ) : (
-          <Result
-            status={'success'}
-            title={formatMessage({
-              id: 'odc.Content.List.NoDatabaseConnection',
-              defaultMessage: '暂无数据库连接',
-            })} /*暂无数据库连接*/
-            subTitle={
-              <span>
-                {
-                  formatMessage({
-                    id: 'odc.Content.List.YouCanConnectToOceanbase',
-                    defaultMessage: '支持连接 OceanBase 数据库；',
-                  }) /*支持连接 OceanBase 数据库；*/
-                }
-              </span>
-            }
-            icon={<img src={window.publicPath + 'img/graphic_empty.png'} style={{ height: 132 }} />}
+          <DataSourceEmpty
             extra={[<TitleButton onReload={() => context.reloadTable()} key="titleButton" />]}
           />
         )}

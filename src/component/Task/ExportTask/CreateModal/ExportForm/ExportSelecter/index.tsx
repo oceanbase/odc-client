@@ -16,7 +16,7 @@
 
 import { getExportObjects } from '@/common/network';
 import ExportCard from '@/component/ExportCard';
-import { DbObjectType, ConnectionMode } from '@/d.ts';
+import { ConnectionMode, DbObjectType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { Empty, Popconfirm, Spin, Tree } from 'antd';

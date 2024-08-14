@@ -26,12 +26,12 @@ import type { UploadFile } from 'antd/lib/upload/interface';
 import update from 'immutability-helper';
 import _ from 'lodash';
 import React, {
+  forwardRef,
   useCallback,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
-  useImperativeHandle,
-  forwardRef,
 } from 'react';
 import FileList from './FileList';
 import styles from './index.less';

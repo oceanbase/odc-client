@@ -22,10 +22,10 @@ import { Checkbox, Empty, Modal, Tooltip } from 'antd';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { inject, observer } from 'mobx-react';
 import { Component } from 'react';
+import { randomUUID } from '../Trace';
 import { getSqlExplainColumns } from './column';
 import styles from './index.less';
 import { SQLExplainProps, SQLExplainState } from './interface';
-import { randomUUID } from '../Trace';
 @inject('sqlStore', 'userStore', 'pageStore')
 @observer
 export default class SQLExplain extends Component<SQLExplainProps, SQLExplainState> {

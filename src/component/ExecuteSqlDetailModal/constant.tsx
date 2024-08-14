@@ -1,8 +1,8 @@
-import { formatMessage } from '@/util/intl';
 import { ReactComponent as List } from '@/svgr/List.svg';
-import { ReactComponent as Tree } from '@/svgr/Tree.svg';
 import { ReactComponent as Text } from '@/svgr/Text.svg';
 import { ReactComponent as TraceSvg } from '@/svgr/Trace.svg';
+import { ReactComponent as Tree } from '@/svgr/Tree.svg';
+import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 
 export const enum ProfileType {

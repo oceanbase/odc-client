@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
+import {
+  getDataSourceModeConfigByConnectionMode,
+  getDataSourceStyleByConnectType,
+} from '@/common/datasource';
 import { getSubTask, getTaskDetail, swapTableName } from '@/common/network/task';
 import Action from '@/component/Action';
 import DisplayTable from '@/component/DisplayTable';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import StatusLabel from '@/component/Task/component/Status';
 import {
@@ -26,23 +31,18 @@ import {
   TaskRecordParameters,
   TaskType,
 } from '@/d.ts';
+import { TaskStore } from '@/store/task';
 import { formatMessage } from '@/util/intl';
-import { Drawer, Popover, Space, message } from 'antd';
-import React, { useContext, useEffect, useState } from 'react';
-import { useRequest } from 'ahooks';
-import { SimpleTextItem } from '../SimpleTextItem';
-import styles from './index.less';
-import {
-  getDataSourceModeConfigByConnectionMode,
-  getDataSourceStyleByConnectType,
-} from '@/common/datasource';
 import { getLocalFormatDateTime } from '@/util/utils';
+import Icon from '@ant-design/icons';
+import { useRequest } from 'ahooks';
+import { Drawer, message, Popover, Space } from 'antd';
+import { inject, observer } from 'mobx-react';
+import React, { useContext, useEffect, useState } from 'react';
 import { flatArray } from '../../MutipleAsyncTask/CreateModal/helper';
 import { TaskDetailContext } from '../../TaskDetailContext';
-import { TaskStore } from '@/store/task';
-import { inject, observer } from 'mobx-react';
-import Icon from '@ant-design/icons';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { SimpleTextItem } from '../SimpleTextItem';
+import styles from './index.less';
 const getColumns = (params: {
   onOpenDetail: (id: number) => void;
   onSwapTable: (id: number) => void;

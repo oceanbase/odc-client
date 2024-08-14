@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
 import { listProjects } from '@/common/network/project';
+import { ProjectRole } from '@/d.ts/project';
+import { formatMessage } from '@/util/intl';
+import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Alert, Form, Space, Tooltip } from 'antd';
 import React, { useContext, useMemo } from 'react';
 import DatasourceFormContext from '../context';
 import ProjectSelect from './ProjectSelect';
-import { ProjectRole } from '@/d.ts/project';
-import { ExclamationCircleFilled } from '@ant-design/icons';
 interface IProps {}
 const ProjectItem: React.FC<IProps> = function () {
   const context = useContext(DatasourceFormContext);

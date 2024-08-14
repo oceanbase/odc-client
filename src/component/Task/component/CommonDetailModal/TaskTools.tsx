@@ -21,13 +21,13 @@ import {
 } from '@/common/network/task';
 import Action from '@/component/Action';
 import {
+  ICycleSubTaskDetailRecord,
   ITaskResult,
   SubTaskStatus,
+  SubTaskType,
   TaskDetail,
   TaskRecord,
   TaskRecordParameters,
-  SubTaskType,
-  ICycleSubTaskDetailRecord,
 } from '@/d.ts';
 import type { ModalStore } from '@/store/modal';
 import type { SettingStore } from '@/store/setting';

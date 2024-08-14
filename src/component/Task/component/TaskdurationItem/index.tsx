@@ -1,6 +1,6 @@
 import { formatMessage } from '@/util/intl';
-import { Form, InputNumber, Space, Checkbox, FormInstance } from 'antd';
-import React, { useState, useEffect } from 'react';
+import { Checkbox, Form, FormInstance, InputNumber, Space } from 'antd';
+import React, { useEffect, useState } from 'react';
 import styles from './index.less';
 
 interface IProps {

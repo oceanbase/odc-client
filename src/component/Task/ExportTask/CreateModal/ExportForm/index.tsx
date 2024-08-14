@@ -15,20 +15,20 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 
-import { ExportFormData, IConnection } from '@/d.ts';
+import { ExportFormData } from '@/d.ts';
 // compatible
 import { Form, message } from 'antd';
 import { inject, observer } from 'mobx-react';
 
 import { ModalStore } from '@/store/modal';
 
+import { getDatabase } from '@/common/network/database';
+import { useRequest } from 'ahooks';
 import { useForm } from 'antd/es/form/Form';
 import ConfigPanel from './ConfigPanel';
 import ObjSelecterPanel from './ObjSelecterPanel';
-import { useRequest } from 'ahooks';
-import { getDatabase } from '@/common/network/database';
 
 export enum FormType {
   ObjSelecter,

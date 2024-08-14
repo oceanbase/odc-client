@@ -23,10 +23,11 @@ import {
   openTriggerViewPage,
 } from '@/store/helper/page';
 import { formatMessage } from '@/util/intl';
-import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
+import { hasChangePermission, hasExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { dropObject } from '@/common/network/database';
 import { getTriggerByName, setTriggerStatus } from '@/common/network/trigger';
 import { PLType } from '@/constant/plType';
@@ -37,7 +38,6 @@ import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { isSupportExport, isSupportPLEdit } from './helper';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TriggerRoot]: [

@@ -18,15 +18,15 @@ import { formatMessage } from '@/util/intl';
 import { cloneDeep, debounce } from 'lodash';
 import React, { Component } from 'react';
 // compatible
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import PartitionRange from '@/component/PartitionRange';
 import TableIndexSelector from '@/component/TableIndexSelector';
 import { IDataType, IPartitionType, ITablePartition } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
-import { Button, Form, FormInstance, Input, InputNumber, Select } from 'antd';
+import { Form, FormInstance, Input, InputNumber, Select } from 'antd';
 import { TableColumn, TablePartition } from '../../interface';
 import { getPartitionValueLabel, partitionValuePlaceholder } from './config';
 import styles from './index.less';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 interface IProps {
   dataTypes: IDataType[];

@@ -17,12 +17,12 @@
 import HelpDoc from '@/component/helpDoc';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, InputNumber, Select, Space } from 'antd';
 import type { FormInstance } from 'antd';
+import { Button, Form, Input, InputNumber, Select, Space } from 'antd';
 import classNames from 'classnames';
+import { timeUnitOptions } from '../../DataArchiveTask/CreateModal/VariableConfig';
 import { variable } from './index';
 import styles from './index.less';
-import { timeUnitOptions } from '../../DataArchiveTask/CreateModal/VariableConfig';
 const ENABLE_PATTERN_OPERATOR = false;
 const timeFormatOptions = ['yyyy-MM-dd', 'yyyyMMdd'].map((item) => ({
   label: item,

@@ -44,7 +44,8 @@ import { useLoop } from '@/util/hooks/useLoop';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { DownOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, DatePicker, Divider, Menu, MenuProps, Tooltip } from 'antd';
+import { Button, DatePicker, Tooltip } from 'antd';
+import { flatten } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
 import moment from 'moment';
@@ -53,8 +54,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getTaskGroupLabels, getTaskLabelByType, isCycleTaskPage } from '../../helper';
 import styles from '../../index.less';
 import TaskTools from '../ActionBar';
-import { flatten } from 'lodash';
-import { MenuDividerType } from 'antd/lib/menu/hooks/useItems';
 const { RangePicker } = DatePicker;
 export const getCronCycle = (triggerConfig: ICycleTaskTriggerConfig) => {
   const { triggerStrategy, days, hours, cronExpression } = triggerConfig;

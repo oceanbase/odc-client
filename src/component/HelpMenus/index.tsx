@@ -19,7 +19,6 @@ import odc from '@/plugins/odc';
 import modal from '@/store/modal';
 import { isClient } from '@/util/env';
 import { formatMessage, getLocalDocs } from '@/util/intl';
-import { Menu } from 'antd';
 import type { DropDownProps } from 'antd/lib/dropdown';
 import classnames from 'classnames';
 import React from 'react';

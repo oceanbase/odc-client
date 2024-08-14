@@ -1,20 +1,19 @@
+import { listDatabases } from '@/common/network/database';
 import { IConnection, IConnectionStatus } from '@/d.ts';
+import { DatabasePermissionType } from '@/d.ts/database';
+import datasourceStatus from '@/store/datasourceStatus';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import { Button, Divider, Form, Space, Timeline, Tooltip } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
 import { DeleteOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons';
+import { useRequest } from 'ahooks';
+import { Button, Divider, Form, Space, Timeline, Tooltip } from 'antd';
+import { observer } from 'mobx-react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { listDatabases } from '@/common/network/database';
-import { useRequest } from 'ahooks';
-import _ from 'lodash';
-import InnerSelecter, { DatabaseOption } from './InnerSelecter';
-import { DatabasePermissionType } from '@/d.ts/database';
-import { SelectTemplate, CreateTemplate } from '../components/Template';
-import datasourceStatus from '@/store/datasourceStatus';
+import { CreateTemplate, SelectTemplate } from '../components/Template';
 import styles from './index.less';
-import { observer } from 'mobx-react';
+import InnerSelecter, { DatabaseOption } from './InnerSelecter';
 
 export const checkDbExpiredByDataSourceStatus = (status: IConnectionStatus) => {
   switch (status) {

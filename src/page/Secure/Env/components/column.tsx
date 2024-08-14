@@ -19,15 +19,14 @@ import SearchFilter from '@/component/SearchFilter';
 import TooltipContent from '@/component/TooltipContent';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IRule } from '@/d.ts/rule';
+import { LintLabel } from '@/page/Workspace/components/SQLResultSet/columns';
 import { formatMessage } from '@/util/intl';
 import { QuestionCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Space, Switch, Tooltip } from 'antd';
 import { useState } from 'react';
-import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
+import { RiskLevelEnum } from '../../interface';
 import { SqlInterceptorKey } from './EditRuleDrawer';
-import { RenderLevel } from './InnerEnvironment';
 import styles from './index.less';
-import { LintLabel } from '@/page/Workspace/components/SQLResultSet/columns';
 
 function getConfig(
   rule: IRule,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import setting, { SettingStore } from '@/store/setting';
+import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { SettingOutlined } from '@ant-design/icons';
 import { Popover, Row, Switch, Tooltip } from 'antd';

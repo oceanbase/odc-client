@@ -16,13 +16,13 @@
 
 import { DbObjectType, TriggerState } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
+import { openTriggerViewPage } from '@/store/helper/page';
 import SessionStore from '@/store/sessionManager/session';
 import { ReactComponent as TriggerSvg } from '@/svgr/menuTrigger.svg';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { ResourceNodeType, TreeDataNode } from '../type';
-import { openTriggerViewPage } from '@/store/helper/page';
 
 enum THEME {
   TRIGGER_ENABLE = 'var(--icon-color-3)',

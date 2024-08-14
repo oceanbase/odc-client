@@ -16,15 +16,15 @@
 
 import { getFlowSQLLintResult } from '@/common/network/task';
 import LintDrawer from '@/component/SQLLintResult/Drawer';
-import DBPermissionTableDrawer from '@/page/Workspace/components/SQLResultSet/DBPermissionTableDrawer';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { ITaskFlowNode } from '@/d.ts';
+import DBPermissionTableDrawer from '@/page/Workspace/components/SQLResultSet/DBPermissionTableDrawer';
+import { formatMessage } from '@/util/intl';
 import { Descriptions, Tag } from 'antd';
 import React, { useState } from 'react';
+import styles from '../index.less';
 import NodeCompleteTime from './Items/NodeCompleteTime';
 import NodeStatus from './Items/NodeStatus';
-import { formatMessage } from '@/util/intl';
-import styles from '../index.less';
 interface IProps {
   node: Partial<ITaskFlowNode>;
   flowId: number;

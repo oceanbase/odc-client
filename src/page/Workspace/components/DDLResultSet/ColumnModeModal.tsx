@@ -20,7 +20,7 @@ import React, { useContext, useEffect, useMemo, useRef } from 'react';
 
 import type { ResultSetColumn } from '@/d.ts';
 import { LeftSquareOutlined, RightSquareOutlined } from '@ant-design/icons';
-import type { FormatterProps, DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
+import type { DataGridRef, FormatterProps } from '@oceanbase-odc/ob-react-data-grid';
 import type { RowType } from '../EditableTable';
 import EditableTable from '../EditableTable';
 import TextFormatter from './hooks/components/TextFormatter';

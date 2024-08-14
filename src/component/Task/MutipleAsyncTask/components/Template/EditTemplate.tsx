@@ -1,25 +1,25 @@
-import { formatMessage } from '@/util/intl';
 import { listDatabases } from '@/common/network/database';
 import {
-  existsTemplateName,
-  Template,
   detailTemplate,
   editTemplate,
+  existsTemplateName,
+  Template,
 } from '@/common/network/databaseChange';
 import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
+import datasourceStatus from '@/store/datasourceStatus';
 import login from '@/store/login';
-import { DownOutlined, PlusOutlined, UpOutlined, DeleteOutlined } from '@ant-design/icons';
+import { formatMessage } from '@/util/intl';
+import { DeleteOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
-import { Form, message, Input, Timeline, Space, Divider, Button, Drawer } from 'antd';
-import { useState, useEffect, useMemo } from 'react';
+import { Button, Divider, Drawer, Form, Input, message, Space, Timeline } from 'antd';
+import { observer } from 'mobx-react';
+import { useEffect, useMemo, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { checkDbExpiredByDataSourceStatus } from '../../CreateModal/DatabaseQueue';
 import { flatArray } from '../../CreateModal/helper';
 import InnerSelecter, { DatabaseOption } from '../../CreateModal/InnerSelecter';
 import styles from './index.less';
-import datasourceStatus from '@/store/datasourceStatus';
-import { checkDbExpiredByDataSourceStatus } from '../../CreateModal/DatabaseQueue';
-import { observer } from 'mobx-react';
 
 const EditTemplate: React.FC<{
   open: boolean;

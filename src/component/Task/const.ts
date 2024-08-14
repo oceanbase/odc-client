@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
 import {
-  TaskPartitionStrategy,
-  TaskErrorStrategy,
-  SyncTableStructureEnum,
   SubTaskType,
+  SyncTableStructureEnum,
+  TaskErrorStrategy,
+  TaskPartitionStrategy,
 } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 
 export const ErrorStrategyMap = {
   [TaskErrorStrategy.ABORT]: formatMessage({

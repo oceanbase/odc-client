@@ -17,10 +17,10 @@
 import { getTableListByDatabaseName } from '@/common/network/table';
 import { getShadowSyncAnalysisResult, startShadowSyncAnalysis } from '@/common/network/task';
 import ExportCard from '@/component/ExportCard';
-import { ModalStore } from '@/store/modal';
 import HelpDoc from '@/component/helpDoc';
 import { DbObjsIcon } from '@/constant';
 import { TaskType } from '@/d.ts';
+import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { useUnmountedRef } from 'ahooks';

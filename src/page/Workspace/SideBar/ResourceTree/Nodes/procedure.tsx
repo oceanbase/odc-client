@@ -24,8 +24,8 @@ import { ResourceNodeType, TreeDataNode } from '../type';
 import { ReactComponent as ParameterSvg } from '@/svgr/Parameter.svg';
 
 import { IDatabase } from '@/d.ts/database';
-import { ReactComponent as ProcedureSvg } from '@/svgr/menuProcedure.svg';
 import { openPackageViewPage, openProcedureViewPage } from '@/store/helper/page';
+import { ReactComponent as ProcedureSvg } from '@/svgr/menuProcedure.svg';
 
 const THEME = 'var(--icon-color-2)';
 

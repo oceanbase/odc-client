@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { IDatasource } from '@/d.ts/datasource';
+import { columnGroupsText } from '@/constant/label';
+import { ColumnStoreType } from '@/d.ts/table';
+import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
+import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Column } from '@oceanbase-odc/ob-react-data-grid';
+import { Tooltip } from 'antd';
 import { uniq } from 'lodash';
 import { useMemo } from 'react';
 import { WrapSelectEditor } from '../../EditableTable/Editors/SelectEditor';
@@ -31,11 +35,6 @@ import {
 } from '../interface';
 import { WrapReverseCheckboxFormatetr } from '../RdgFomatter/CheckboxFormatter';
 import WrapValueFormatter from '../RdgFomatter/ValueFormatter';
-import { ExclamationCircleFilled } from '@ant-design/icons';
-import { Tooltip } from 'antd';
-import SessionStore from '@/store/sessionManager/session';
-import { ColumnStoreType } from '@/d.ts/table';
-import { columnGroupsText } from '@/constant/label';
 function NameFormatter({ row }) {
   if (row.available === false) {
     return (

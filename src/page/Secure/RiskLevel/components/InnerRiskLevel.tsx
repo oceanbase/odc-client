@@ -15,30 +15,30 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Button, Form, Space, message } from 'antd';
-import RiskLevelInfo from './RiskLevelInfo';
-import styles from './index.less';
-import { useEffect, useRef, useState } from 'react';
-import useForm from 'antd/es/form/hooks/useForm';
-import classnames from 'classnames';
-import _ from 'lodash';
-import Condition from './Condition';
-import { Expression, SelectItemProps } from '../interface';
-import TreeTitle from './TreeTitle';
 import {
   createRiskDetectRules,
   deleteRiskDetectRule,
   listRiskDetectRules,
   updateRiskDetectRule,
 } from '@/common/network/riskDetectRule';
-import { IRiskLevel } from '@/d.ts/riskLevel';
-import RootNodeContent from './RootNodeContent';
-import { initOptions } from './options';
-import { IConditionGroup } from '@/d.ts/riskDetectRule';
 import { Acess, createPermission } from '@/component/Acess';
 import Action from '@/component/Action';
-import { IManagerResourceType, actionTypes } from '@/d.ts';
+import { actionTypes, IManagerResourceType } from '@/d.ts';
+import { IConditionGroup } from '@/d.ts/riskDetectRule';
+import { IRiskLevel } from '@/d.ts/riskLevel';
 import tracert from '@/util/tracert';
+import { QuestionCircleOutlined } from '@ant-design/icons';
+import { Button, Form, message, Space, Tooltip } from 'antd';
+import useForm from 'antd/es/form/hooks/useForm';
+import classnames from 'classnames';
+import { useEffect, useRef, useState } from 'react';
+import { Expression, SelectItemProps } from '../interface';
+import Condition from './Condition';
+import styles from './index.less';
+import { initOptions } from './options';
+import RiskLevelInfo from './RiskLevelInfo';
+import RootNodeContent from './RootNodeContent';
+import TreeTitle from './TreeTitle';
 export type Operator = string;
 export enum EBooleanOperator {
   AND = 'AND',
@@ -282,7 +282,14 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
           风险识别规则
           */
           }
-
+          <Tooltip
+            trigger={'hover'}
+            title="风险识别规则是通过表达式配置的规则，会决定工单的审批流程。
+如：「环境 等于 生产」将会匹配在「生产」环境中执行的工单，并执行对应的审批流程"
+          >
+            {' '}
+            <QuestionCircleOutlined />{' '}
+          </Tooltip>
           <span> :</span>
         </div>
         {isEdit ? (
@@ -519,6 +526,28 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
             environmentMap={environmentMap}
             taskTypeIdMap={taskTypeIdMap}
             sqlCheckResultIdMap={sqlCheckResultIdMap}
+            showActionButton={() => {
+              return (
+                <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.create)}>
+                  <Action.Button
+                    disabled={isDefaultLevel}
+                    type="primary"
+                    onClick={async () => {
+                      setIsEdit(true);
+                      setShowConditionGroup(false);
+                      tracert.click('a3112.b64008.c330924.d367478');
+                    }}
+                  >
+                    {
+                      formatMessage({
+                        id: 'odc.src.page.Secure.RiskLevel.components.NewRules',
+                        defaultMessage: '新建规则',
+                      }) //'新建规则'})
+                    }
+                  </Action.Button>
+                </Acess>
+              );
+            }}
           />
         )}
       </div>
@@ -561,25 +590,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
           </Space>
         ) : (
           <Action.Group>
-            {empty ? (
-              <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.create)}>
-                <Action.Button
-                  disabled={isDefaultLevel}
-                  onClick={async () => {
-                    setIsEdit(true);
-                    setShowConditionGroup(false);
-                    tracert.click('a3112.b64008.c330924.d367478');
-                  }}
-                >
-                  {
-                    formatMessage({
-                      id: 'odc.src.page.Secure.RiskLevel.components.NewRules',
-                      defaultMessage: '新建规则',
-                    }) //'新建规则'})
-                  }
-                </Action.Button>
-              </Acess>
-            ) : (
+            {!empty && (
               <Acess {...createPermission(IManagerResourceType.risk_detect, actionTypes.update)}>
                 <Action.Button
                   disabled={isDefaultLevel}

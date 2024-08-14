@@ -1,12 +1,12 @@
-import { formatMessage } from '@/util/intl';
-import { Space, Timeline } from 'antd';
-import Icon from '@ant-design/icons';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { formatMessage } from '@/util/intl';
+import Icon from '@ant-design/icons';
+import { Space, Timeline } from 'antd';
 
-import styles from './index.less';
 import { IConnection } from '@/d.ts';
 import { IEnvironment } from '@/d.ts/environment';
+import styles from './index.less';
 
 const ShowTemplate: React.FC<{
   orderedDatabaseIds: number[][];

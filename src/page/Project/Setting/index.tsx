@@ -17,11 +17,11 @@
 import { formatMessage } from '@/util/intl';
 import React, { useEffect, useState } from 'react';
 
+import tracert from '@/util/tracert';
 import { Menu } from 'antd';
 import styles from './index.less';
 import Info from './Info';
 import Notifacation from './Notifacation';
-import tracert from '@/util/tracert';
 
 enum MenuKey {
   INFO = 'info',

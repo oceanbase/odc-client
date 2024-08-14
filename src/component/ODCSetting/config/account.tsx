@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import RadioItem from '../Item/RadioItem';
-import { IODCSetting, ODCSettingGroup } from '../config';
 import { SpaceType } from '@/d.ts/_index';
+import { formatMessage } from '@/util/intl';
+import { IODCSetting, ODCSettingGroup } from '../config';
+import RadioItem from '../Item/RadioItem';
 
 const accountGroup: ODCSettingGroup = {
   label: formatMessage({ id: 'src.component.ODCSetting.config.01FFDFB6', defaultMessage: '账号' }), //'账号'

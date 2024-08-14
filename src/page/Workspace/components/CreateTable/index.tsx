@@ -52,7 +52,6 @@ import styles from './index.less';
 import Partition from './Partition';
 import TableConstraint from './TableConstraint';
 import TableIndex from './TableIndex';
-import { ColumnStoreType } from '@/d.ts/table';
 
 interface IProps {
   pageKey: string;

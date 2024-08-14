@@ -1,19 +1,18 @@
-import { formatMessage } from '@/util/intl';
-import { IConnection } from '@/d.ts';
-import { Empty, Form, FormListFieldData, Popover, Select, Space, Tooltip } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
-import Icon, { DeleteOutlined } from '@ant-design/icons';
-import { useDrag, useDrop } from 'react-dnd';
-import { IEnvironment } from '@/d.ts/environment';
-import { useWatch } from 'antd/lib/form/Form';
-import _ from 'lodash';
-import { ReactComponent as DragSvg } from '@/svgr/drag.svg';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
-import styles from './index.less';
-import { flatArray } from './helper';
-import classNames from 'classnames';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
 import ConnectionPopover from '@/component/ConnectionPopover';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { IConnection } from '@/d.ts';
+import { IEnvironment } from '@/d.ts/environment';
+import { ReactComponent as DragSvg } from '@/svgr/drag.svg';
+import { formatMessage } from '@/util/intl';
+import Icon, { DeleteOutlined } from '@ant-design/icons';
+import { Empty, Form, FormListFieldData, Popover, Select, Space, Tooltip } from 'antd';
+import { useWatch } from 'antd/lib/form/Form';
+import classNames from 'classnames';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
+import { flatArray } from './helper';
+import styles from './index.less';
 
 export type DatabaseOption = {
   label: string;

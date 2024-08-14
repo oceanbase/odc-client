@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getSequence } from '@/common/network/sequence';
 import { IEditor } from '@/component/MonacoEditor';
 import ObjectInfoView from '@/component/ObjectInfoView';
 import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
-import { ConnectionMode, ISequence } from '@/d.ts';
+import { ISequence } from '@/d.ts';
 import { SequencePage as SequencePageModel } from '@/store/helper/page/pages';
 import type { ModalStore } from '@/store/modal';
 import type { PageStore } from '@/store/page';
@@ -41,7 +42,6 @@ import { Component } from 'react';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { Content } = Layout;
 const ToolbarButton = Toolbar.Button;

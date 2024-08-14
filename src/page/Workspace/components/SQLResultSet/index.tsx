@@ -16,29 +16,29 @@
 
 import { formatMessage } from '@/util/intl';
 import { CloseOutlined, LockOutlined } from '@ant-design/icons';
-import { Badge, Dropdown, Menu, MenuProps, Tabs, Tooltip } from 'antd';
+import { Badge, Dropdown, MenuProps, Tabs, Tooltip } from 'antd';
 import Cookie from 'js-cookie';
 import type { ReactNode } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
 // @ts-ignore
+import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 import { LockResultSetHint } from '@/component/LockResultSetHint';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { LOCK_RESULT_SET_COOKIE_KEY, TAB_HEADER_HEIGHT } from '@/constant';
 import { IResultSet, ISqlExecuteResultStatus, ITableColumn } from '@/d.ts';
+import { IUnauthorizedDBResources } from '@/d.ts/table';
 import { ModalStore } from '@/store/modal';
+import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
 import { inject, observer } from 'mobx-react';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import DDLResultSet from '../DDLResultSet';
+import DBPermissionTable from './DBPermissionTable';
 import ExecuteHistory from './ExecuteHistory';
 import styles from './index.less';
 import LintResultTable from './LintResultTable';
 import SQLResultLog from './SQLResultLog';
-import DBPermissionTable from './DBPermissionTable';
-import { IUnauthorizedDBResources } from '@/d.ts/table';
-import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
-import sessionManager from '@/store/sessionManager';
 
 export const recordsTabKey = 'records';
 export const sqlLintTabKey = 'sqlLint';

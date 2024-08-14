@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import {
-  Badge,
-  Button,
-  Dropdown,
-  Empty,
-  Input,
-  message,
-  Modal,
-  Popover,
-  Space,
-  Spin,
-  Tree,
-  TreeDataNode,
-} from 'antd';
-import ResourceLayout from '../../Layout';
+import { SQLConsoleResourceType } from '@/common/datasource/interface';
 import { deleteConnection } from '@/common/network/connection';
+import Action from '@/component/Action';
+import ConnectionPopover from '@/component/ConnectionPopover';
+import { SQLConsoleEmpty } from '@/component/Empty/SQLConsoleEmpty';
+import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
+import { EnvColorMap } from '@/constant';
+import { ConnectType, IConnectionStatus } from '@/d.ts';
+import { IDatasource } from '@/d.ts/datasource';
+import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
+import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawer/NewButton';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import { DataSourceStatusStore } from '@/store/datasourceStatus';
+import login from '@/store/login';
+import { formatMessage } from '@/util/intl';
+import { PlusOutlined } from '@ant-design/icons';
+import { Badge, Button, Dropdown, Input, message, Modal, Popover, Tree, TreeDataNode } from 'antd';
+import classNames from 'classnames';
+import { throttle, toInteger, toNumber } from 'lodash';
+import { inject, observer } from 'mobx-react';
 import {
   forwardRef,
   useContext,
@@ -40,22 +43,8 @@ import {
   useRef,
   useState,
 } from 'react';
+import ResourceLayout from '../../Layout';
 import styles from './index.less';
-import Action from '@/component/Action';
-import ConnectionPopover from '@/component/ConnectionPopover';
-import { IDatasource } from '@/d.ts/datasource';
-import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import login from '@/store/login';
-import { toInteger, toNumber, throttle } from 'lodash';
-import { ConnectType, IConnectionStatus } from '@/d.ts';
-import { PlusOutlined } from '@ant-design/icons';
-import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
-import classNames from 'classnames';
-import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawer/NewButton';
-import { EnvColorMap } from '@/constant';
-import { inject, observer } from 'mobx-react';
-import { DataSourceStatusStore } from '@/store/datasourceStatus';
 interface IProps {
   filters: {
     envs: number[];
@@ -371,15 +360,10 @@ export default inject('dataSourceStatusStore')(
                     multiple={false}
                     treeData={datasource}
                   />
+                ) : searchKey ? (
+                  <SQLConsoleEmpty />
                 ) : (
-                  <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description={
-                      login.isPrivateSpace() ? (
-                        <NewDatasourceButton onSuccess={() => context?.reloadDatasourceList()} />
-                      ) : null
-                    }
-                  />
+                  <SQLConsoleEmpty type={SQLConsoleResourceType.DataSource} />
                 )}
               </div>
               <NewDatasourceDrawer

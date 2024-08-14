@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
+import {
+  getFunctionByFuncName,
+  getProcedureByProName,
+  newScript,
+  updateScript,
+} from '@/common/network';
+import { executeSQL } from '@/common/network/sql';
 import EditorToolBar from '@/component/EditorToolBar';
 import PL_ACTIONS from '@/component/EditorToolBar/actions/pl';
 import EditPLParamsModal from '@/component/EditPLParamsModal';
+import { IEditor } from '@/component/MonacoEditor';
 import SaveSQLModal from '@/component/SaveSQLModal';
 import ScriptPage from '@/component/ScriptPage';
-import { UserStore } from '@/store/login';
-import { PageStore } from '@/store/page';
-import { SQLStore } from '@/store/sql';
-import editorUtils from '@/util/editor';
-import { formatMessage } from '@/util/intl';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { Checkbox, message, Modal, Typography } from 'antd';
-import EventBus from 'eventbusjs';
-import { inject, observer } from 'mobx-react';
-import { Component } from 'react';
-import PLDebugResultSet from '../PLDebugResultSet';
+import PL_TYPE, { PLType } from '@/constant/plType';
 import {
   ConnectionMode,
   IFormatPLSchema,
@@ -42,15 +41,6 @@ import {
   ISqlExecuteResultStatus,
   ISQLScript,
 } from '@/d.ts';
-import {
-  getFunctionByFuncName,
-  getProcedureByProName,
-  newScript,
-  updateScript,
-} from '@/common/network';
-import { executeSQL } from '@/common/network/sql';
-import { IEditor } from '@/component/MonacoEditor';
-import PL_TYPE, { PLType } from '@/constant/plType';
 import { DebugStore } from '@/store/debug';
 import { DebugStatus, IDebugStackItem } from '@/store/debug/type';
 import { debounceUpdatePageScriptText, updatePage } from '@/store/helper/page';
@@ -61,15 +51,25 @@ import {
   PLEditPage,
   PLPageType,
 } from '@/store/helper/page/pages/pl';
+import { UserStore } from '@/store/login';
+import { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
+import { SQLStore } from '@/store/sql';
+import editorUtils from '@/util/editor';
 import { IPLPageActionData, IPLPageCreatedEventData, ODCEventType } from '@/util/events/type';
+import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { getPLEntryName } from '@/util/parser';
 import { checkPLNameChanged } from '@/util/pl';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { Checkbox, message, Modal, Typography } from 'antd';
+import EventBus from 'eventbusjs';
 import { debounce } from 'lodash';
+import { inject, observer } from 'mobx-react';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { Component } from 'react';
+import PLDebugResultSet from '../PLDebugResultSet';
 import SessionContextWrap from '../SessionContextWrap';
-import { getDataSourceModeConfig } from '@/common/datasource';
 const RESULT_HEIGHT = 230;
 const VERSION_324 = '3.2.4.0';
 const PL_DEBUG_TIP_VSIBLE_KEY = 'odc_pl_debug_visible';

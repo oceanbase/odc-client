@@ -19,7 +19,9 @@ import { newScript, updateScript } from '@/common/network';
 import { executeSQL, runSQLLint } from '@/common/network/sql';
 import { executeTaskManager, IExecuteTaskResult } from '@/common/network/sql/executeSQL';
 import { batchGetDataModifySQL } from '@/common/network/table';
+import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
+import { getKeyCodeValue } from '@/component/Input/Keymap/keycodemap';
 import { IEditor } from '@/component/MonacoEditor';
 import SaveSQLModal from '@/component/SaveSQLModal';
 import ScriptPage from '@/component/ScriptPage';
@@ -38,6 +40,7 @@ import {
   ITableColumn,
   IUserConfig,
 } from '@/d.ts';
+import { IUnauthorizedDBResources } from '@/d.ts/table';
 import { debounceUpdatePageScriptText, ISQLPageParams, updatePage } from '@/store/helper/page';
 import { SQLPage as SQLPageModel } from '@/store/helper/page/pages';
 import type { UserStore } from '@/store/login';
@@ -45,6 +48,7 @@ import modal, { ModalStore } from '@/store/modal';
 import type { PageStore } from '@/store/page';
 import sessionManager, { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
+import setting, { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
 import { isConnectionModeBeMySQLType } from '@/util/connection';
 import utils, { EHighLight } from '@/util/editor';
@@ -53,9 +57,9 @@ import notification from '@/util/notification';
 import { splitSql } from '@/util/sql';
 import { generateAndDownloadFile, getCurrentSQL } from '@/util/utils';
 import { message, Spin } from 'antd';
-import { debounce, isNil, isString } from 'lodash';
+import { debounce, isNil } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import { IDisposable, KeyMod, KeyCode } from 'monaco-editor/esm/vs/editor/editor.api';
+import { IDisposable, KeyCode, KeyMod } from 'monaco-editor/esm/vs/editor/editor.api';
 import { Component, forwardRef } from 'react';
 import { wrapRow } from '../DDLResultSet/util';
 import SessionContextWrap from '../SessionContextWrap';
@@ -64,10 +68,6 @@ import Trace from '../Trace';
 import ExecDetail from './ExecDetail';
 import ExecPlan from './ExecPlan';
 import styles from './index.less';
-import setting, { SettingStore } from '@/store/setting';
-import { getKeyCodeValue } from '@/component/Input/Keymap/keycodemap';
-import { IUnauthorizedDBResources } from '@/d.ts/table';
-import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 
 interface ISQLPageState {
   resultHeight: number;

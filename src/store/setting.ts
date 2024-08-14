@@ -19,15 +19,14 @@ import { formatMessage } from '@/util/intl';
  * 样式与功能开关
  */
 
-import { getServerSystemInfo, getSystemConfig, getPublicKey } from '@/common/network/other';
+import { getPublicKey, getServerSystemInfo, getSystemConfig } from '@/common/network/other';
 import type { IUserConfig, ServerSystemInfo } from '@/d.ts';
 import odc from '@/plugins/odc';
 import { isClient } from '@/util/env';
 import request from '@/util/request';
-import { initTracert } from '@/util/tracert';
+import { isLinux, isWin64 } from '@/util/utils';
 import { message } from 'antd';
 import { action, observable } from 'mobx';
-import { isLinux, isWin64 } from '@/util/utils';
 import login from './login';
 
 export const themeKey = 'odc-theme';

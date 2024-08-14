@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getFunctionByFuncName } from '@/common/network';
 import { dropObject } from '@/common/network/database';
 import { actionTypes } from '@/component/Acess';
@@ -33,10 +34,9 @@ import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
-import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
+import { hasChangePermission, hasExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
-import { getDataSourceModeConfig } from '@/common/datasource';
 import { isSupportExport, isSupportPLEdit } from './helper';
 
 export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {

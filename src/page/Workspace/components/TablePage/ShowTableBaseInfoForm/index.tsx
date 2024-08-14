@@ -24,6 +24,7 @@ import { generateUpdateTableDDL } from '@/common/network/table';
 import HelpDoc from '@/component/helpDoc';
 import ObjectInfoView from '@/component/ObjectInfoView';
 import Toolbar from '@/component/Toolbar';
+import { columnGroupsText } from '@/constant/label';
 import CreateTableBaseInfoForm from '@/page/Workspace/components/CreateTable/BaseInfo';
 import { TablePage } from '@/store/helper/page/pages';
 import page from '@/store/page';
@@ -32,8 +33,6 @@ import type { FormInstance } from 'antd/es/form';
 import { cloneDeep } from 'lodash';
 import TableContext from '../../CreateTable/TableContext';
 import TablePageContext from '../context';
-import { ColumnStoreType } from '@/d.ts/table';
-import { columnGroupsText } from '@/constant/label';
 
 interface IProps {
   pageKey?: string;

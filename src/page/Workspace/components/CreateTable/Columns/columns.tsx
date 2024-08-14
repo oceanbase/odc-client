@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { ConnectionMode, IDataType } from '@/d.ts';
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { IDataType } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import { dataTypesIns } from '@/util/dataType';
 import { formatMessage } from '@/util/intl';
 import { Column } from '@oceanbase-odc/ob-react-data-grid';
 import { isNil } from 'lodash';
 import { useContext, useMemo } from 'react';
+import { CaseTextEditor } from '../../EditableTable/Editors/CaseTextEditor';
 import { InputNumberEditor } from '../../EditableTable/Editors/NumberEditor';
 import { SelectEditor } from '../../EditableTable/Editors/SelectEditor';
 import { TextEditor } from '../../EditableTable/Editors/TextEditor';
@@ -29,8 +31,6 @@ import { TableColumn } from '../interface';
 import WrapCheckboxFormatetr from '../RdgFomatter/CheckboxFormatter';
 import WrapDisableFormatter from '../RdgFomatter/DisableFormatter';
 import { getTypeByColumnName } from './helper';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { CaseTextEditor } from '../../EditableTable/Editors/CaseTextEditor';
 
 interface IColumnParams {
   session?: SessionStore;

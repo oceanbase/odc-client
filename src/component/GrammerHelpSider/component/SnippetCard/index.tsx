@@ -24,7 +24,7 @@ import snippetStore, {
 import { formatMessage } from '@/util/intl';
 import { getSnippetText, getWrapedSnippetBody } from '@/util/snippet';
 import { CopyOutlined, EllipsisOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Card, Dropdown, Menu, message, Popover, Typography } from 'antd';
+import { Card, Dropdown, message, Popover, Typography } from 'antd';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import styles from './index.less';
 

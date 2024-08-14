@@ -15,13 +15,12 @@
 
 import { updateDataBaseOwner } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
-import { DB_OWNER_MAX_COUNT } from '@/page/Project/Database/const';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Form, Modal, message } from 'antd';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import styles from '../index.less';
+import { Form, message, Modal } from 'antd';
+import { useCallback, useEffect, useState } from 'react';
 import { DatabaseOwnerSelect } from '../components/DatabaseOwnerSelect.tsx';
+import styles from '../index.less';
 
 interface IProps {
   visible: boolean;

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import EditorToolBar from '@/component/EditorToolBar';
+import MonacoEditor, { IEditor } from '@/component/MonacoEditor';
+import { ConnectType } from '@/d.ts';
 import snippetStore, {
   EnumSnippetAction,
   EnumSnippetType,
@@ -25,9 +28,6 @@ import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Form, Input, message, Modal, Select } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import React, { PureComponent } from 'react';
-import MonacoEditor, { IEditor } from '@/component/MonacoEditor';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { ConnectType } from '@/d.ts';
 const MAX_SNIPPRT_SIZE = 10000;
 const { Option } = Select;
 const { TextArea } = Input;

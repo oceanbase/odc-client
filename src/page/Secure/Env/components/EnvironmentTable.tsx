@@ -23,16 +23,16 @@ import {
   ITableLoadOptions,
   ITablePagination,
 } from '@/component/CommonTable/interface';
+import { IManagerIntegration } from '@/d.ts';
+import { IEnvironment } from '@/d.ts/environment';
 import { IRule, RuleType } from '@/d.ts/rule';
+import tracert from '@/util/tracert';
 import { message, Spin } from 'antd';
+import modal from 'antd/lib/modal';
 import React, { useRef, useState } from 'react';
 import { getColumns } from './column';
 import EditRuleDrawer from './EditRuleDrawer';
 import styles from './index.less';
-import tracert from '@/util/tracert';
-import { IEnvironment } from '@/d.ts/environment';
-import { IManagerIntegration } from '@/d.ts';
-import modal from 'antd/lib/modal';
 
 interface IEnvironmentProps {
   currentEnvironment: IEnvironment;

@@ -27,8 +27,8 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import CsvFormItem from '../formitem/CsvFormItem';
 import {
   checkImportFile,
-  getFileTypeWithImportType,
   getFileMIMETypeWithImportType,
+  getFileTypeWithImportType,
   getSizeLimitTip,
 } from '../helper';
 

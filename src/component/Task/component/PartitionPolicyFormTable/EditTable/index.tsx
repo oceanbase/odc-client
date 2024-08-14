@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import React from 'react';
-import { Form, Select, Typography } from 'antd';
-import type { FormInstance } from 'antd';
-import VirtualList from 'rc-virtual-list';
-import RuleFormItem from '../RuleFormItem';
 import { PARTITION_KEY_INVOKER } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
+import type { FormInstance } from 'antd';
+import { Form, Select, Typography } from 'antd';
+import VirtualList from 'rc-virtual-list';
+import React from 'react';
+import RuleFormItem from '../RuleFormItem';
 import styles from './index.less';
 
 const TABLE_ROW_HEIGHT = 72;

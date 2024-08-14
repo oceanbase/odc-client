@@ -13,27 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useRef } from 'react';
 import CommonTable from '@/component/CommonTable';
 import { CommonTableMode, ITableLoadOptions } from '@/component/CommonTable/interface';
-import StatusLabel, { subTaskStatus, status } from '@/component/Task/component/Status';
+import StatusLabel, { status, subTaskStatus } from '@/component/Task/component/Status';
 import DetailModal from '@/component/Task/DetailModal';
 import {
   IAsyncTaskParams,
+  IResponseData,
+  SubTaskStatus,
   SubTaskType,
   TaskRecord,
   TaskRecordParameters,
   TaskType,
-  IResponseData,
-  SubTaskStatus,
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
-import LogModal from './LogModal';
-import ExcecuteDetailModal from './ExcecuteDetailModal';
 import { FilterOutlined } from '@ant-design/icons';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import ExcecuteDetailModal from './ExcecuteDetailModal';
 import styles from './index.less';
+import LogModal from './LogModal';
 import TaskTools from './TaskTools';
 
 const TaskLabelMap = {

@@ -17,14 +17,13 @@
 import ODCDragger from '@/component/OSSDragger';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import { downloadFile } from '@/util/utils';
 import { InfoCircleFilled } from '@ant-design/icons';
+import { getLocale } from '@umijs/max';
 import { Alert, Button, Drawer, Form, Space } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import type { UploadFile } from 'antd/lib/upload/interface';
 import Cookies from 'js-cookie';
 import React, { useEffect, useState } from 'react';
-import { getLocale } from '@umijs/max';
 import styles from './index.less';
 // 20M
 const MAX_FILE_SIZE = 1024 * 1024 * 20;
