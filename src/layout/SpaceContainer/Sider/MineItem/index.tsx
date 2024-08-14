@@ -31,6 +31,7 @@ import tracert from '@/util/tracert';
 import { ItemType } from 'antd/es/menu/hooks/useItems';
 import styles from './index.less';
 import Locale from './Locale';
+import odc from '@/plugins/odc';
 
 interface IProps {
   userStore?: UserStore;
@@ -136,10 +137,13 @@ const MineItem: React.FC<IProps> = function ({ children, userStore, settingStore
         },
       });
     }
-    menu.push({
-      label: <Locale />,
-      key: 'locale',
-    });
+    if (odc.appConfig.locale.menu) {
+      menu.push({
+        label: <Locale />,
+        key: 'locale',
+      });
+    }
+
     if (settingStore.enablePersonalRecord) {
       menu.push({
         key: 'record',

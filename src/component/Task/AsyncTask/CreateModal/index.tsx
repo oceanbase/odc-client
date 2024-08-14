@@ -536,9 +536,10 @@ const CreateModal: React.FC<IProps> = (props) => {
       <Form
         name="basic"
         initialValues={{
-          executionStrategy: TaskExecStrategy.AUTO,
+          executionStrategy: TaskExecStrategy.MANUAL,
           databaseId: asyncTaskData?.databaseId,
           retryTimes: 0,
+          generateRollbackPlan: true,
         }}
         layout="vertical"
         requiredMark="optional"

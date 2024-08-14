@@ -198,7 +198,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       timeoutMillis,
       syncTableStructure,
     } = jobParameters;
-    setEnablePartition(isEdit && !!tables?.find((i) => i?.partitions));
+    setEnablePartition(!!tables?.find((i) => i?.partitions?.length));
     const formData = {
       databaseId: sourceDatabaseId,
       targetDataBaseId: targetDataBaseId,
@@ -336,12 +336,12 @@ const CreateModal: React.FC<IProps> = (props) => {
           syncTableStructure,
         } = values;
         _tables?.map((i) => {
-          i.partitions = i?.partitions?.length
-            ? i?.partitions
+          i.partitions = Array.isArray(i.partitions)
+            ? i.partitions
+            : i?.partitions
                 ?.replace(/[\r\n]+/g, '')
                 ?.split(',')
-                ?.filter(Boolean)
-            : [];
+                ?.filter(Boolean);
         });
         const parameters = {
           type: TaskType.MIGRATION,
@@ -414,12 +414,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       .then(async (values) => {
         const { variables, tables: _tables, archiveRange } = values;
         _tables?.map((i) => {
-          i.partitions = i?.partitions?.length
-            ? i?.partitions
+          i.partitions = Array.isArray(i.partitions)
+            ? i.partitions
+            : i?.partitions
                 ?.replace(/[\r\n]+/g, '')
                 ?.split(',')
-                ?.filter(Boolean)
-            : [];
+                ?.filter(Boolean);
         });
         const parameters = {
           variables: getVariables(variables),

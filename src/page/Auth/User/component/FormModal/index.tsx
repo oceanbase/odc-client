@@ -49,6 +49,7 @@ interface IProps {
   editId?: number;
   roles: IManagerRole[];
   onClose: () => void;
+  onCancel: () => void;
   reloadData?: () => void;
   handleStatusChange?: (status: boolean, user: IManagerUser) => void;
 }
@@ -270,7 +271,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
     */
   };
   private handleCancel = (isEdit: boolean) => {
-    const { onClose } = this.props;
+    const { onCancel } = this.props;
     const { hasChange } = this.state;
     if (hasChange) {
       Modal.confirm({
@@ -302,11 +303,11 @@ class FormModal extends React.PureComponent<IProps, IState> {
             hasChange: false,
           });
 
-          onClose();
+          onCancel();
         },
       });
     } else {
-      onClose();
+      onCancel();
     }
   };
 

@@ -4903,7 +4903,7 @@
   "src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.939E5208": "如果檢索不到已存在的數據庫對象,請先同步元數據",
   "src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.6C33321C": "庫內搜索",
   "src.component.helpDoc.618FF120": "新建數據庫變更類工單(包括導入、數據庫變更)的權限和SQL窗口執行變更語句的權限(SQL窗口可否執行變更受安全規範配置約束)",
-  "src.page.Workspace.components.SQLResultSet.7F598F77": "共有 {count} 個 SQL 執行,當前正在執行第 { count } 個",
+  "src.page.Workspace.components.SQLResultSet.7F598F77": "共有 {count} 個 SQL 執行,當前正在執行第 { BinaryExpression1 } 個",
   "src.component.SQLConfig.1D15916D": "Delimiter 設置",
   "src.page.Workspace.components.DDLResultSet.6477DD60": "集合 SQL 的執行詳情、物理執行計劃、全鏈路診斷的多維度視圖,幫助快速定位執行慢查詢的根因",
   "src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.657DE57E": "如果檢索不到已存在的數據庫對象,請先同步元數據",

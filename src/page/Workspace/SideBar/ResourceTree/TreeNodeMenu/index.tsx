@@ -171,13 +171,6 @@ const TreeNodeMenu = (props: IProps) => {
   let allItemsProp: ItemType[] = getMenuItems(menuItems);
 
   function actionsRender() {
-    /* 只有表权限, 则隐藏 */
-    if (
-      node?.data?.authorizedPermissionTypes?.length === 1 &&
-      node?.data?.authorizedPermissionTypes?.includes(DatabasePermissionType.ACCESS)
-    ) {
-      return;
-    }
     let ellipsisItems = menuItems.filter((item) => {
       return item.ellipsis;
     });
@@ -244,9 +237,6 @@ const TreeNodeMenu = (props: IProps) => {
     <>
       <Dropdown
         menu={{
-          style: {
-            width: '160px',
-          },
           items: allItemsProp,
           onClick: (info) => {
             info?.domEvent?.stopPropagation();
