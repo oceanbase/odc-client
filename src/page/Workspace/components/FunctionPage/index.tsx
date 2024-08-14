@@ -17,7 +17,6 @@
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import type { IFunction } from '@/d.ts';
-import { ConnectionMode } from '@/d.ts';
 import type { PageStore } from '@/store/page';
 import type { SQLStore } from '@/store/sql';
 import {
@@ -27,11 +26,12 @@ import {
   FileSearchOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
+import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { Layout, message, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getFunctionByFuncName } from '@/common/network';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
@@ -40,16 +40,15 @@ import { openFunctionEditPageByFuncName } from '@/store/helper/page';
 import { FunctionPage as FunctionPageModel } from '@/store/helper/page/pages';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 import { parseDataType } from '@/util/dataType';
+import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import EditableTable from '../EditableTable';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ShowFunctionBaseInfoForm from '../ShowFunctionBaseInfoForm';
 import styles from './index.less';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { formatMessage } from '@/util/intl';
 
 const ToolbarButton = Toolbar.Button;
 

@@ -15,7 +15,7 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Space, Typography, Popover } from 'antd';
+import { Popover, Space, Typography } from 'antd';
 import styles from './index.less';
 const { Text, Link } = Typography;
 const example1 = "create_time<'2023-01-01'";

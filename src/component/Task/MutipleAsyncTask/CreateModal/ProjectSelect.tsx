@@ -1,9 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import { Empty, Form, Popover, Select, Tooltip } from 'antd';
-import { useState } from 'react';
-import styles from './index.less';
-import _ from 'lodash';
-import classNames from 'classnames';
+import { Form, Select } from 'antd';
 
 const ProjectSelect: React.FC<{
   projectOptions: {

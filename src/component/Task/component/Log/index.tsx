@@ -18,7 +18,7 @@ import Log from '@/component/Log';
 import { CommonTaskLogType } from '@/d.ts';
 import type { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { Spin, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import styles from './index.less';

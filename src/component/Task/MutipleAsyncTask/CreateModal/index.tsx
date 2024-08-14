@@ -1,3 +1,6 @@
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { listProjects } from '@/common/network/project';
+import { runMultipleSQLLint } from '@/common/network/sql';
 import { createTask, getAsyncTaskUploadUrl } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import ODCDragger from '@/component/OSSDragger2';
@@ -11,6 +14,8 @@ import {
   TaskPageType,
   TaskType,
 } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
+import MultipleLintResultTable from '@/page/Workspace/components/SQLResultSet/MultipleAsyncSQLLintTable';
 import { openTasksPage } from '@/store/helper/page';
 import login from '@/store/login';
 import utils, { IEditor } from '@/util/editor';
@@ -31,22 +36,16 @@ import {
 } from 'antd';
 import type { UploadFile } from 'antd/lib/upload/interface';
 import Cookies from 'js-cookie';
+import { merge, throttle } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import styles from './index.less';
-import _, { merge, throttle } from 'lodash';
-import { runMultipleSQLLint } from '@/common/network/sql';
-import MultipleLintResultTable from '@/page/Workspace/components/SQLResultSet/MultipleAsyncSQLLintTable';
-import { IDatabase } from '@/d.ts/database';
-import { MultipleAsyncContext } from './MultipleAsyncContext';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { listProjects } from '@/common/network/project';
-import { ProjectRole } from '@/d.ts/project';
-import ProjectSelect from './ProjectSelect';
 import DatabaseQueue from './DatabaseQueue';
-import { IProps, SiderTabKeys, flatArray, items } from './helper';
-import MoreSetting from './MoreSetting';
 import DrawerFooter from './DrawerFooter';
+import { flatArray, IProps, items, SiderTabKeys } from './helper';
+import styles from './index.less';
+import MoreSetting from './MoreSetting';
+import { MultipleAsyncContext } from './MultipleAsyncContext';
+import ProjectSelect from './ProjectSelect';
 
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 

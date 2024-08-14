@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { getAllConnectTypes } from '@/common/datasource';
+import CheckboxTag from '@/component/CheckboxTag';
 import { ConnectTypeText } from '@/constant/label';
 import { ConnectType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
@@ -22,9 +24,6 @@ import { Popover, Space, Typography } from 'antd';
 import React, { useContext } from 'react';
 import ParamContext from '../../ParamContext';
 import FilterIcon from '../FIlterIcon';
-import { getAllConnectTypes } from '@/common/datasource';
-import { IDataSourceType } from '@/d.ts/datasource';
-import CheckboxTag from '@/component/CheckboxTag';
 
 interface IProps {}
 

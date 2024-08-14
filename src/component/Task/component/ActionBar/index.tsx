@@ -23,21 +23,23 @@ import {
   stopTask,
 } from '@/common/network/task';
 import Action from '@/component/Action';
+import { TaskTypeMap } from '@/component/Task/component/TaskTable';
+import type { ICycleTaskRecord } from '@/d.ts';
 import {
+  IApplyDatabasePermissionTaskParams,
+  IApplyTablePermissionTaskParams,
   IAsyncTaskParams,
   IMockDataParams,
+  IMultipleAsyncTaskParams,
   ITaskResult,
   RollbackType,
+  SubTaskStatus,
   TaskDetail,
   TaskExecStrategy,
   TaskRecord,
   TaskRecordParameters,
-  IApplyDatabasePermissionTaskParams,
   TaskStatus,
   TaskType,
-  SubTaskStatus,
-  IApplyTablePermissionTaskParams,
-  IMultipleAsyncTaskParams,
 } from '@/d.ts';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
@@ -52,8 +54,6 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { isCycleTask } from '../../helper';
 import RollBackModal from '../RollbackModal';
-import { TaskTypeMap } from '@/component/Task/component/TaskTable';
-import type { ICycleTaskRecord } from '@/d.ts';
 
 interface IProps {
   userStore?: UserStore;

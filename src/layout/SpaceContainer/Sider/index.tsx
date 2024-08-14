@@ -23,6 +23,7 @@ import { ReactComponent as LinkOutlined } from '@/svgr/icon_connection.svg';
 import { ReactComponent as TaskSvg } from '@/svgr/icon_task.svg';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import Icon, {
   AppstoreOutlined,
   BulbOutlined,
@@ -34,19 +35,18 @@ import Icon, {
   UserOutlined,
 } from '@ant-design/icons';
 import { Link, useLocation } from '@umijs/max';
+import { useRequest } from 'ahooks';
 import { Badge, Divider, Space } from 'antd';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { useRequest } from 'ahooks';
 import HelpItem from './HelpItem';
 import styles from './index.less';
 import Logo from './Logo';
 import MenuItem from './MenuItem';
 import MineItem from './MineItem';
-import SpaceSelect from './SpaceSelect';
-import tracert from '@/util/tracert';
 import SettingItem from './SettingItem';
+import SpaceSelect from './SpaceSelect';
 
 interface IProps {
   taskStore?: TaskStore;

@@ -1,8 +1,8 @@
+import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { EStatus } from '@/d.ts';
-import { IExecuteSQLParams, ISQLExecuteTask } from './executeSQL';
 import modal from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
-import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
+import { IExecuteSQLParams, ISQLExecuteTask } from './executeSQL';
 
 export function executeSQLPreHandle(
   taskInfo: ISQLExecuteTask,

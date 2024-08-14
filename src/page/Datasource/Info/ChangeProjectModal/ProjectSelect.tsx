@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getDataSourceModeConfig } from '@/common/datasource';
 import { IDatabase } from '@/d.ts/database';
 import { IProject } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';

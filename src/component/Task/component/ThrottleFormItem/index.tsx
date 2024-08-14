@@ -15,10 +15,10 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Form, InputNumber, Space } from 'antd';
-import React from 'react';
 import HelpDoc from '@/component/helpDoc';
 import setting from '@/store/setting';
+import { Form, InputNumber, Space } from 'antd';
+import React from 'react';
 interface IProps {
   initialValue?: {
     rowLimit?: number;

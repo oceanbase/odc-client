@@ -16,18 +16,18 @@
 
 import { getTablePermissions, reclaimTablePermission } from '@/common/network/project';
 import { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
+import HelpDoc from '@/component/helpDoc';
 import type { IResponseData } from '@/d.ts';
-import { TablePermissionType } from '@/d.ts/table';
 import { ITablePermission, PermissionSourceType } from '@/d.ts/project';
+import { TablePermissionType } from '@/d.ts/table';
 import { formatMessage } from '@/util/intl';
-import { Modal, Radio, Space, Typography, message } from 'antd';
+import { message, Modal, Radio, Typography } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import CreateAuth from './CreateAuth';
+import styles from './index.less';
 import { tablePermissionStatusMap } from './Status';
 import TaskApplyList from './TaskApplyList';
 import UserAuthList from './UserAuthList';
-import styles from './index.less';
-import HelpDoc from '@/component/helpDoc';
 
 const { Text } = Typography;
 

@@ -15,11 +15,11 @@
  */
 
 import FormItemPanel from '@/component/FormItemPanel';
+import odc from '@/plugins/odc';
 import { formatMessage, getLocalDocs } from '@/util/intl';
 import { Checkbox, Form, Space } from 'antd';
 import React from 'react';
 import SingleUpload from './SingleUploadFile';
-import odc from '@/plugins/odc';
 
 interface IProps {}
 

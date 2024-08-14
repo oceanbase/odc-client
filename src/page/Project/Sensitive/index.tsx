@@ -20,12 +20,12 @@ import { statsSensitiveColumns } from '@/common/network/sensitiveColumn';
 import { listSensitiveRules } from '@/common/network/sensitiveRule';
 import { IDatasource } from '@/d.ts/datasource';
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
+import tracert from '@/util/tracert';
 import { useEffect, useState } from 'react';
 import SensitiveColumn from './components/SensitiveColumn';
 import styles from './index.less';
 import { FilterItemProps, SelectItemProps } from './interface';
 import SensitiveContext from './SensitiveContext';
-import tracert from '@/util/tracert';
 
 const Sensitive: React.FC<{ id: number }> = ({ id }) => {
   const [dataSourceIdMap, setDataSourceIdMap] = useState<{

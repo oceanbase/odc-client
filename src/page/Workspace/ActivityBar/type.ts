@@ -20,6 +20,7 @@ export enum ActivityBarItemType {
   Script = 'script',
   Task = 'Task',
   Manager = 'manager',
+  Page = 'project',
 }
 export const ActivityBarItemTypeText = {
   [ActivityBarItemType.Database]: formatMessage({

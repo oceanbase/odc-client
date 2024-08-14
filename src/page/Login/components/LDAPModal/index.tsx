@@ -17,19 +17,19 @@
 import { testClientRegistration } from '@/common/network/manager';
 import { getPrefix } from '@/component/Login';
 import { ISSOConfig } from '@/d.ts';
+import { ELDAPMode } from '@/page/ExternalIntegration/SSO/NewSSODrawerButton/SSOForm';
+import { toDefaultProjectPage } from '@/service/projectHistory';
 import { UserStore } from '@/store/login';
 import channel, { ChannelMap } from '@/util/broadcastChannel';
 import { formatMessage, getLocalImg } from '@/util/intl';
+import logger from '@/util/logger';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { history } from '@umijs/max';
 import { Alert, Button, Divider, Form, Input, message } from 'antd';
 import useForm, { FormInstance } from 'antd/lib/form/hooks/useForm';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
-import { toDefaultProjectPage } from '@/service/projectHistory';
-import logger from '@/util/logger';
-import { history } from '@umijs/max';
-import { ELDAPMode } from '@/page/ExternalIntegration/SSO/NewSSODrawerButton/SSOForm';
 
 const LDAP: React.FC<{
   userStore: UserStore;

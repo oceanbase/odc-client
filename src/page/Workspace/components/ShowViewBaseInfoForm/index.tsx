@@ -17,7 +17,7 @@
 import { IView } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { Form, Input, Select } from 'antd';
-import { Component, useEffect } from 'react';
+import { useEffect } from 'react';
 import styles from './index.less';
 
 enum CheckOption {

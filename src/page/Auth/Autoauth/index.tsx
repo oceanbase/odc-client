@@ -30,6 +30,7 @@ import SearchFilter from '@/component/SearchFilter';
 import type { IAutoAuthRule, IResponseData } from '@/d.ts';
 import { IManagerResourceType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { getFormatDateTime } from '@/util/utils';
 import { ExclamationCircleFilled, SearchOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Switch } from 'antd';
@@ -39,7 +40,6 @@ import { ResourceContext } from '../context';
 import DetailContent from './component/DetailContent';
 import FormModal from './component/FormModal';
 import styles from './index.less';
-import tracert from '@/util/tracert';
 interface IProps {}
 export const actionLabelMap = {
   BindRole: formatMessage({

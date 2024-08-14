@@ -14,36 +14,36 @@
  * limitations under the License.
  */
 
-import FormItemPanel from '@/component/FormItemPanel';
 import { previewPartitionPlans } from '@/common/network/task';
-import HelpDoc from '@/component/helpDoc';
 import Action from '@/component/Action';
-import { TaskPartitionStrategy, PARTITION_KEY_INVOKER, PARTITION_NAME_INVOKER } from '@/d.ts';
+import FormItemPanel from '@/component/FormItemPanel';
+import HelpDoc from '@/component/helpDoc';
+import { PARTITION_KEY_INVOKER, PARTITION_NAME_INVOKER, TaskPartitionStrategy } from '@/d.ts';
+import odc from '@/plugins/odc';
 import { formatMessage, getLocalDocs } from '@/util/intl';
-import { TaskPartitionStrategyMap } from '../../const';
-import { START_DATE } from './const';
-import EditTable from './EditTable';
-import PreviewSQLModal from './PreviewSQLModal';
-import { ITableConfig } from '../../PartitionTask/CreateModal';
 import {
   Alert,
   Button,
   Checkbox,
   Descriptions,
+  Drawer,
   Form,
   Input,
   InputNumber,
-  Drawer,
   Popconfirm,
+  Radio,
   Select,
   Space,
   Tag,
-  Radio,
   Typography,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { TaskPartitionStrategyMap } from '../../const';
+import { ITableConfig } from '../../PartitionTask/CreateModal';
+import { START_DATE } from './const';
+import EditTable from './EditTable';
 import styles from './index.less';
-import odc from '@/plugins/odc';
+import PreviewSQLModal from './PreviewSQLModal';
 
 const { Text } = Typography;
 

@@ -21,10 +21,10 @@ import odc from '@/plugins/odc';
 import modal from '@/store/modal';
 import { isClient } from '@/util/env';
 import { formatMessage, getLocalDocs } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { Menu } from 'antd';
 import React, { useState } from 'react';
 import DropMenu from '../DropMenu';
-import tracert from '@/util/tracert';
 
 interface IProps {}
 

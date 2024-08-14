@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { getLocalFormatDateTime } from '@/util/utils';
+import { ISQLExecuteDetail } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
+import { getLocalFormatDateTime } from '@/util/utils';
 import { Card, Descriptions, Tooltip as AntdTooltip } from 'antd';
 import classNames from 'classnames';
 import styles from './index.less';
-import { ISQLExecuteDetail } from '@/d.ts';
 const BasicInfo: React.FC<{ sqlExecuteDetailToShow: ISQLExecuteDetail }> = ({
   sqlExecuteDetailToShow,
 }) => {

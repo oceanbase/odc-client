@@ -21,7 +21,6 @@ import { formatMessage } from '@/util/intl';
 import { checkQueueStatus } from '@/common/network/other';
 import AskeventTrackingPermissionModal from '@/component/AskEventTrackingModal';
 import ErrorBoundary from '@/component/ErrorBoundary';
-import PageLoading from '@/component/PageLoading';
 import authStore, { AuthStore, AuthStoreContext } from '@/store/auth';
 import { ClusterStore } from '@/store/cluster';
 import { UserStore } from '@/store/login';
@@ -30,15 +29,14 @@ import { SettingStore } from '@/store/setting';
 import { SQLStore } from '@/store/sql';
 import { haveLockPwd, initClientService, isLock } from '@/util/client';
 import { isClient } from '@/util/env';
-import { useAppData, useLocation, useRouteData } from '@umijs/max';
+import { Helmet, history, Outlet, useAppData, useLocation, useRouteData } from '@umijs/max';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useState } from 'react';
 import { ContainerQuery } from 'react-container-query';
-import { Helmet, history, Outlet } from '@umijs/max';
 import Context from './MenuContext';
-import StoreProvider from './StoreProvider';
 import { PageLoadingContext } from './PageLoadingWrapper';
+import StoreProvider from './StoreProvider';
 
 // // TODO：支持英文版
 // setLocale('zh-CN');

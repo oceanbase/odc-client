@@ -19,8 +19,8 @@ import showSysAccountConfigModal from '@/component/SysAccountConfigModal';
 import { ODCErrorsCode } from '@/d.ts';
 import odc from '@/plugins/odc';
 import loginStore from '@/store/login';
-import { message } from 'antd';
 import { history } from '@umijs/max';
+import { message } from 'antd';
 import { formatMessage } from '../intl';
 import notification from '../notification';
 

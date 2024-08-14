@@ -16,14 +16,14 @@ import { formatMessage } from '@/util/intl';
  */
 
 import { addDatabasePermissions } from '@/common/network/project';
-import { Button, Drawer, Form, Modal, Select, Space, message, DatePicker, Checkbox } from 'antd';
-import React, { useState } from 'react';
-import DatabaseSelecter from '@/component/Task/component/DatabaseSelecter';
 import {
-  permissionOptions,
   expireTimeOptions,
   getExpireTime,
+  permissionOptions,
 } from '@/component/Task/ApplyDatabasePermission/CreateModal';
+import DatabaseSelecter from '@/component/Task/component/DatabaseSelecter';
+import { Button, Checkbox, DatePicker, Drawer, Form, message, Modal, Select, Space } from 'antd';
+import React, { useState } from 'react';
 import styles from './index.less';
 
 const CheckboxGroup = Checkbox.Group;

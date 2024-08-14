@@ -17,9 +17,9 @@ import { formatMessage } from '@/util/intl';
 
 import { useState } from 'react';
 import SCLayout, { MenuItem } from '../components/SCLayout';
+import Channel from './components/Channel';
 import Message from './components/Message';
 import Policy from './components/Policy';
-import Channel from './components/Channel';
 
 enum ENotificationPage {
   MESSAGE = 'message',

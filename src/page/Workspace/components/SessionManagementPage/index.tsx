@@ -23,6 +23,7 @@ import { Input, Layout, message, Space, Spin, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { useContext, useEffect, useState } from 'react';
 // @ts-ignore
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getDatabaseSessionList, killSessions } from '@/common/network/sessionParams';
 import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
 import MiniTable from '@/component/Table/MiniTable';
@@ -33,7 +34,6 @@ import SessionContextWrap from '../SessionContextWrap';
 import SessionContext from '../SessionContextWrap/context';
 import SessionSelect from '../SessionContextWrap/SessionSelect';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 const ToolbarButton = Toolbar.Button;
 

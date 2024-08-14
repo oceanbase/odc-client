@@ -15,10 +15,10 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { InputNumber, Space, message } from 'antd';
-import React, { useState } from 'react';
-import { EditOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import Action from '@/component/Action';
+import { CheckOutlined, CloseOutlined, EditOutlined } from '@ant-design/icons';
+import { InputNumber, message, Space } from 'antd';
+import React, { useState } from 'react';
 interface IProps {
   defaultValue: number | string;
   suffix: React.ReactNode;

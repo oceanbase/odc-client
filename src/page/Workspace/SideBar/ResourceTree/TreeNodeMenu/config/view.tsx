@@ -18,7 +18,7 @@ import { dropObject } from '@/common/network/database';
 import { getView } from '@/common/network/view';
 import { actionTypes } from '@/component/Acess';
 import { copyObj } from '@/component/TemplateInsertModal';
-import { DbObjectType, DragInsertType, IView, ResourceTreeNodeMenuKeys, TaskType } from '@/d.ts';
+import { DbObjectType, DragInsertType, IView, ResourceTreeNodeMenuKeys } from '@/d.ts';
 import { PropsTab, TopTab } from '@/page/Workspace/components/ViewPage';
 import { openCreateViewPage, openViewViewPage } from '@/store/helper/page';
 import modal from '@/store/modal';
@@ -27,11 +27,9 @@ import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
-import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
+import { hasChangePermission, hasExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
-import setting from '@/store/setting';
-import { getDataSourceModeConfig } from '@/common/datasource';
 import { isSupportExport } from './helper';
 
 export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {

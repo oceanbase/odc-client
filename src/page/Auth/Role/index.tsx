@@ -29,6 +29,7 @@ import CommonDetailModal from '@/component/Manage/DetailModal';
 import type { IManagerRole } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { getFormatDateTime } from '@/util/utils';
 import { Button, message, Modal, Space, Switch } from 'antd';
 import type { FixedType } from 'rc-table/lib/interface';
@@ -37,7 +38,6 @@ import { ResourceContext } from '../context';
 import DetailContent, { PermissionTypes } from './component/DetailContent';
 import FormModal from './component/FormModal';
 import styles from './index.less';
-import tracert from '@/util/tracert';
 
 interface IProps {}
 interface IState {

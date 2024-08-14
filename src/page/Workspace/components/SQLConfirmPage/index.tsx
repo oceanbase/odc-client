@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getFunctionByFuncName, getProcedureByProName } from '@/common/network';
 import { getSequence } from '@/common/network/sequence';
 import { executeSQL } from '@/common/network/sql';
@@ -53,7 +54,6 @@ import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
 import type { IProps, IState } from './type';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 @inject('sqlStore', 'pageStore', 'sessionManagerStore')
 @observer

@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import CommonTable from '@/component/CommonTable';
-import { Button, Divider, Form, Modal, Select, message } from 'antd';
-import { useForm } from 'antd/lib/form/Form';
-import { useEffect, useRef, useState } from 'react';
-import { DetailChannelDrawer, FromChannelDrawer } from './Channel';
 import {
   batchUpdatePolicy,
   getChannelsList,
   getPoliciesList,
 } from '@/common/network/projectNotification';
+import CommonTable from '@/component/CommonTable';
 import {
   IRowSelecter,
   ITableFilter,
@@ -33,10 +28,15 @@ import {
   ITablePagination,
 } from '@/component/CommonTable/interface';
 import { EChannelType, IChannel, IPolicy, TBatchUpdatePolicy } from '@/d.ts/projectNotification';
+import { formatMessage } from '@/util/intl';
 import { useSetState } from 'ahooks';
+import { Button, Divider, Form, message, Modal, Select } from 'antd';
+import { useForm } from 'antd/lib/form/Form';
+import { useEffect, useRef, useState } from 'react';
+import { DetailChannelDrawer, FromChannelDrawer } from './Channel';
 import { getPolicyColumns } from './columns';
-import { EPolicyFormMode, TPolicyForm } from './interface';
 import styles from './index.less';
+import { EPolicyFormMode, TPolicyForm } from './interface';
 
 const Policy: React.FC<{
   projectId: number;

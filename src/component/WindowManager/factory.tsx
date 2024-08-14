@@ -19,8 +19,8 @@ import { QuestionCircleFilled } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
 import { Component, ReactNode } from 'react';
 
-import styles from './index.less';
 import { formatMessage } from '@/util/intl';
+import styles from './index.less';
 
 export default function withConfirmModal(WrappedComponent: any) {
   return class extends Component<

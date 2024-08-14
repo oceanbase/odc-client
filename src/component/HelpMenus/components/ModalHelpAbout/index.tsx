@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import setting from '@/store/setting';
 import { formatMessage, getLocalImg } from '@/util/intl';
+import { GithubFilled } from '@ant-design/icons';
 import { Modal, Space } from 'antd';
 import moment from 'moment';
 import { PureComponent } from 'react';
-import { GithubFilled } from '@ant-design/icons';
 import pkg from '../../../../../package.json';
 import styles from './index.less';
-import setting from '@/store/setting';
 export default class ModalHelp extends PureComponent<{
   showModal: boolean;
   onCancel: () => void;

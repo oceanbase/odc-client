@@ -14,27 +14,7 @@
  * limitations under the License.
  */
 
-import { SQLContent } from '@/component/SQLContent';
-import { getTaskExecStrategyMap } from '@/component/Task';
-import {
-  SubTaskStatus,
-  type ConnectType,
-  type IStructureComparisonTaskParams,
-  type ITaskResult,
-  type TaskDetail,
-  IResponseDataPage,
-  TaskStatus,
-} from '@/d.ts';
-import { formatMessage } from '@/util/intl';
-import { downloadFile, getFormatDateTime } from '@/util/utils';
-import { ConfigProvider, Descriptions, Divider, Empty, Modal, Tabs } from 'antd';
-import { SimpleTextItem } from '../../component/SimpleTextItem';
-import SearchFilter from '@/component/SearchFilter';
-import { SearchOutlined } from '@ant-design/icons';
-import { useEffect, useRef, useState } from 'react';
-import { TaskTypeMap } from '../../component/TaskTable';
-import { EOperationTypeMap, comparisonScopeMap } from '../CreateModal/interface';
-import styles from './index.less';
+import { getDataSourceModeConfig } from '@/common/datasource';
 import {
   getStructrueComparison,
   getStructrueComparisonDetail,
@@ -42,16 +22,6 @@ import {
   getTaskDetail,
   getTaskResult,
 } from '@/common/network/task';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import DiffEditor from '@/component/MonacoEditor/DiffEditor';
-import { ModalStore } from '@/store/modal';
-import { inject, observer } from 'mobx-react';
-import {
-  IComparisonResult,
-  EOperationType,
-  IStructrueComparisonDetail,
-  IComparisonResultData,
-} from '@/d.ts/task';
 import CommonTable from '@/component/CommonTable';
 import {
   CommonTableMode,
@@ -59,6 +29,36 @@ import {
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
 import MonacoEditor from '@/component/MonacoEditor';
+import DiffEditor from '@/component/MonacoEditor/DiffEditor';
+import SearchFilter from '@/component/SearchFilter';
+import { SQLContent } from '@/component/SQLContent';
+import { getTaskExecStrategyMap } from '@/component/Task';
+import {
+  IResponseDataPage,
+  SubTaskStatus,
+  TaskStatus,
+  type ConnectType,
+  type IStructureComparisonTaskParams,
+  type ITaskResult,
+  type TaskDetail,
+} from '@/d.ts';
+import {
+  EOperationType,
+  IComparisonResult,
+  IComparisonResultData,
+  IStructrueComparisonDetail,
+} from '@/d.ts/task';
+import { ModalStore } from '@/store/modal';
+import { formatMessage } from '@/util/intl';
+import { downloadFile, getFormatDateTime } from '@/util/utils';
+import { SearchOutlined } from '@ant-design/icons';
+import { ConfigProvider, Descriptions, Divider, Empty, Modal, Tabs } from 'antd';
+import { inject, observer } from 'mobx-react';
+import { useEffect, useRef, useState } from 'react';
+import { SimpleTextItem } from '../../component/SimpleTextItem';
+import { TaskTypeMap } from '../../component/TaskTable';
+import { comparisonScopeMap, EOperationTypeMap } from '../CreateModal/interface';
+import styles from './index.less';
 interface IStructureComparisonTaskContentProps {
   modalStore?: ModalStore;
   visible?: boolean;

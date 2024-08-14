@@ -35,13 +35,13 @@ import {
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { Descriptions, Space, Steps } from 'antd';
-import React, { useState } from 'react';
+import classNames from 'classnames';
+import React from 'react';
 import styles from './index.less';
 import { getStatusDisplayInfo } from './Nodes/helper';
+import MultipleSQLCheckNode from './Nodes/MultipleSQLCheckNode';
 import RollbackNode from './Nodes/RollbackNode';
 import SQLCheckNode from './Nodes/SQLCheckNode';
-import MultipleSQLCheckNode from './Nodes/MultipleSQLCheckNode';
-import classNames from 'classnames';
 const { Step } = Steps;
 interface IProps {
   task: TaskDetail<TaskRecordParameters>;

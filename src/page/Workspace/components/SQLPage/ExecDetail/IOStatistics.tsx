@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { ISQLExecuteDetail } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Card, Statistic, Col, Row } from 'antd';
+import { Card, Col, Row, Statistic } from 'antd';
 import classNames from 'classnames';
 import styles from './index.less';
-import { ISQLExecuteDetail } from '@/d.ts';
 const IOStatistics: React.FC<{
   sqlExecuteDetailToShow: ISQLExecuteDetail;
 }> = ({ sqlExecuteDetailToShow }) => {

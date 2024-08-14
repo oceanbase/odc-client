@@ -17,16 +17,14 @@
 import { updateDataBase } from '@/common/network/database';
 import { getProject, listProjects } from '@/common/network/project';
 import { IDatabase } from '@/d.ts/database';
+import { IProject } from '@/d.ts/project';
+import { DatabaseOwnerSelect } from '@/page/Project/Database/components/DatabaseOwnerSelect.tsx';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Form, message, Modal, Select } from 'antd';
+import { Form, message, Modal } from 'antd';
 import { isUndefined } from 'lodash';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ProjectSelect from './ProjectSelect';
-import { DB_OWNER_MAX_COUNT } from '@/page/Project/Database/const';
-import ProjectContext from '@/page/Project/ProjectContext';
-import { DatabaseOwnerSelect } from '@/page/Project/Database/components/DatabaseOwnerSelect.tsx';
-import { IProject } from '@/d.ts/project';
 
 interface IProps {
   visible: boolean;

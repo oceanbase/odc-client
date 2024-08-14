@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getSynonym } from '@/common/network/synonym';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
@@ -21,14 +22,14 @@ import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
 import type { ISynonym, SynonymType } from '@/d.ts';
-import { ConnectionMode, SynonymPropsTab } from '@/d.ts';
+import { SynonymPropsTab } from '@/d.ts';
 import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { AlignLeftOutlined, CloudDownloadOutlined } from '@ant-design/icons';
-import { Layout, message, Tabs } from 'antd';
+import { Layout, message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import { Component } from 'react';
@@ -37,7 +38,6 @@ import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ToolPageTabs from '../ToolPageTabs';
 import ToolPageTextFromWrapper from '../ToolPageTextFormWrapper';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { Content } = Layout;
 const ToolbarButton = Toolbar.Button;

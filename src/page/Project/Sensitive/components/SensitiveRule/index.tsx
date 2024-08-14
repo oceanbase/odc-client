@@ -19,6 +19,7 @@ import {
   listSensitiveRules,
   setEnabled,
 } from '@/common/network/sensitiveRule';
+import CommonTable from '@/component/CommonTable';
 import {
   IOperationOptionType,
   ITableInstance,
@@ -28,19 +29,18 @@ import StatusSwitch from '@/component/StatusSwitch';
 import TooltipContent from '@/component/TooltipContent';
 import { IResponseData } from '@/d.ts';
 import { ISensitiveRule, SensitiveRuleType } from '@/d.ts/sensitiveRule';
+import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 import { formatMessage } from '@/util/intl';
-import { Descriptions, message, Modal, Popover, Space } from 'antd';
+import tracert from '@/util/tracert';
+import { message, Modal, Space } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { DetectRuleTypeMap, FilterItemProps } from '../../interface';
 import SensitiveContext from '../../SensitiveContext';
+import { PopoverContainer } from '../SensitiveColumn';
 import FormDrawer from './components/FormSensitiveRuleDrawer';
 import ViewDrawer from './components/ViewSensitiveRuleDrawer';
-import CommonTable from '@/component/CommonTable';
-import tracert from '@/util/tracert';
 import styles from './index.less';
-import { PopoverContainer } from '../SensitiveColumn';
-import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 const getColumns: (columnsFunction: {
   handleViewDrawerOpen;
   hanldeEditDrawerOpen;

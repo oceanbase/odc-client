@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { actionTypes, IConnection, IConnectionStatus } from '@/d.ts';
+import { IConnection, IConnectionStatus } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { message, Popover, Space, Tooltip } from 'antd';
+import { Popover, Space, Tooltip } from 'antd';
 import React from 'react';
 
 import Icon, { Loading3QuartersOutlined, MinusCircleFilled } from '@ant-design/icons';
 
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import ConnectionPopover from '@/component/ConnectionPopover';
 import { IDatasource } from '@/d.ts/datasource';
 import classNames from 'classnames';
 import styles from './index.less';
-import { getDataSourceStyleByConnectType } from '@/common/datasource';
 
 interface IProps {
   connection: IConnection;

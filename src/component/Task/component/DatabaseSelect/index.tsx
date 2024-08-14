@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { ConnectionMode, TaskType } from '@/d.ts';
+import { TaskType } from '@/d.ts';
+import SessionSelect from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SelectItem';
+import { ISessionDropdownFiltersProps } from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SessionDropdown';
 import { formatMessage } from '@/util/intl';
 import { Form } from 'antd';
 import React from 'react';
-import SessionSelect from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SelectItem';
-import { ISessionDropdownFiltersProps } from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SessionDropdown';
 interface IProps {
   type: TaskType;
   label?: string;

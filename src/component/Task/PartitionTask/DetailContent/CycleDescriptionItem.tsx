@@ -19,9 +19,9 @@ import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { getCronCycle } from '@/component/Task/component/TaskTable';
 import type { ICycleTaskTriggerConfig } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
+import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Collapse, Descriptions, Space } from 'antd';
 import React from 'react';
-import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import styles from './index.less';
 const { Panel } = Collapse;
 

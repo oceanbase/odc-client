@@ -25,13 +25,13 @@ import {
   SaveOutlined,
 } from '@ant-design/icons';
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import plType, { PLType } from '@/constant/plType';
 import { PLPage } from '@/page/Workspace/components/PLPage';
 import { DebugStatus } from '@/store/debug/type';
 import sqlStore from '@/store/sql';
 import { ToolBarActions } from '..';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { confirm } = Modal;
 

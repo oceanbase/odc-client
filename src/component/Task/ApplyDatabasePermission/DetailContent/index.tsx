@@ -15,12 +15,12 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
+import DisplayTable from '@/component/DisplayTable';
+import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import type { IApplyDatabasePermissionTaskParams, TaskDetail } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
-import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
-import DisplayTable from '@/component/DisplayTable';
 import { Descriptions, Divider } from 'antd';
-import { permissionOptionsMap, getExpireTimeLabel } from '../';
+import { getExpireTimeLabel, permissionOptionsMap } from '../';
 import styles from './index.less';
 
 const getConnectionColumns = () => {

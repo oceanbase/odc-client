@@ -17,13 +17,13 @@
 import { formatMessage } from '@/util/intl';
 import { EditOutlined } from '@ant-design/icons';
 import type { EditorProps } from '@oceanbase-odc/ob-react-data-grid';
-import { Input, Modal } from 'antd';
+import { Modal } from 'antd';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { CaseTextArea } from '@/component/Input/Case';
 import type { TextAreaRef } from 'antd/lib/input/TextArea';
 import AntdEditorWrap from './AntdEditorWrap';
-import { CaseTextArea } from '@/component/Input/Case';
 
 interface CaseOptions {
   caseSensitive: boolean;

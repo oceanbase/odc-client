@@ -1,8 +1,8 @@
-import { TraceTabsType, ExpandTraceSpan, randomUUID } from './index';
+import { getFullLinkTrace } from '@/common/network/sql';
+import { useEffect, useState } from 'react';
+import { ExpandTraceSpan, randomUUID, TraceTabsType } from './index';
 import TraceList from './TraceList';
 import TraceTreeTable from './TraceTreeTable';
-import { useState, useEffect } from 'react';
-import { getFullLinkTrace, getFullLinkTraceDownloadUrl } from '@/common/network/sql';
 
 export default (props) => {
   const {

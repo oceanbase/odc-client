@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
 import { EComparisonScope, EOperationType } from '@/d.ts/task';
+import { formatMessage } from '@/util/intl';
 export const comparisonScopeMap = {
   [EComparisonScope.ALL]: formatMessage({
     id: 'src.component.Task.StructureComparisonTask.CreateModal.9C98407E',

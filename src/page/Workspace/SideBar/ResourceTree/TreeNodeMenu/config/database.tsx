@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-import { ConnectionMode } from '@/d.ts';
-import { IDatabase } from '@/d.ts/database';
-import { openNewDefaultPLPage, openNewSQLPage, openOBClientPage } from '@/store/helper/page';
-import login from '@/store/login';
-import setting from '@/store/setting';
-import modal from '@/store/modal';
-import { formatMessage } from '@/util/intl';
-import { isClient } from '@/util/env';
-import { ResourceNodeType } from '../../type';
-import { IMenuItemConfig } from '../type';
-import tracert from '@/util/tracert';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { syncObject } from '@/common/network/database';
 import { IManagerResourceType } from '@/d.ts';
+import { DBObjectSyncStatus, IDatabase } from '@/d.ts/database';
+import { openNewDefaultPLPage, openNewSQLPage, openOBClientPage } from '@/store/helper/page';
+import login from '@/store/login';
+import modal from '@/store/modal';
+import setting from '@/store/setting';
+import { isClient } from '@/util/env';
+import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { getLocalFormatDateTime } from '@/util/utils';
-import { DBObjectSyncStatus } from '@/d.ts/database';
-import { message } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
+import { message } from 'antd';
+import { ResourceNodeType } from '../../type';
+import { IMenuItemConfig } from '../type';
 
 export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.Database]: [

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { CaseInput } from '@/component/Input/Case';
+import { columnGroupsText } from '@/constant/label';
+import { ColumnStoreType, DBDefaultStoreType } from '@/d.ts/table';
 import { formatMessage } from '@/util/intl';
 import { Col, Form, Input, Row, Select } from 'antd';
 import { FormInstance } from 'antd/es/form/Form';
@@ -22,10 +25,6 @@ import { useDataSourceConfig, useTableConfig } from '../config';
 import { getDefaultCollation } from '../helper';
 import TableContext from '../TableContext';
 import styles from './index.less';
-import { CaseInput } from '@/component/Input/Case';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { ColumnStoreType, DBDefaultStoreType } from '@/d.ts/table';
-import { columnGroupsText } from '@/constant/label';
 
 interface IProps {
   isEdit?: boolean;

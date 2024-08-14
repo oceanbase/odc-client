@@ -23,18 +23,18 @@ import Icon, { AimOutlined, DownOutlined, LoadingOutlined } from '@ant-design/ic
 import { Divider, Popover, Space, Spin } from 'antd';
 import styles from './index.less';
 
-import { ConnectionMode } from '@/d.ts';
-import classNames from 'classnames';
-import tracert from '@/util/tracert';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
-import SessionDropdown from './SessionDropdown';
+import { IDataSourceModeConfig } from '@/common/datasource/interface';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { EnvColorMap } from '@/constant';
-import login from '@/store/login';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import ActivityBarContext from '@/page/Workspace/context/ActivityBarContext';
+import { ConnectionMode } from '@/d.ts';
 import { ActivityBarItemType } from '@/page/Workspace/ActivityBar/type';
-import { IDataSourceModeConfig } from '@/common/datasource/interface';
+import ActivityBarContext from '@/page/Workspace/context/ActivityBarContext';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import login from '@/store/login';
+import tracert from '@/util/tracert';
+import classNames from 'classnames';
+import SessionDropdown from './SessionDropdown';
 
 export default function SessionSelect({
   readonly,

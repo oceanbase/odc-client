@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import MultiLineOverflowText from '@/component/MultiLineOverflowText';
 import { TAB_HEADER_HEIGHT } from '@/constant';
 import { IExecutingInfo, IResultSet, ISqlExecuteResultStatus, SqlType } from '@/d.ts';
+import { RenderLevel } from '@/page/Secure/Env/components/InnerEnvironment';
 import { formatMessage } from '@/util/intl';
 import {
   CheckCircleFilled,
@@ -26,8 +28,6 @@ import {
 } from '@ant-design/icons';
 import { Button, Space, Spin, Typography } from 'antd';
 import React from 'react';
-import MultiLineOverflowText from '@/component/MultiLineOverflowText';
-import { RenderLevel } from '@/page/Secure/Env/components/InnerEnvironment';
 import styles from './index.less';
 
 const { Link } = Typography;

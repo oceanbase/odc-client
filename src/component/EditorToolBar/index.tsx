@@ -16,13 +16,13 @@
 
 import Toolbar from '@/component/Toolbar';
 import { formatMessage } from '@/util/intl';
-import { Menu, Space, Spin } from 'antd';
+import { Space, Spin } from 'antd';
+import { isFunction } from 'lodash';
 import { Observer, observer } from 'mobx-react';
 import { Component, ComponentType, ReactNode } from 'react';
 import { ContainerQuery } from 'react-container-query';
 import { IConStatus } from '../Toolbar/statefulIcon';
 import { ACTIONS, ACTION_GROUPS } from './config';
-import { isFunction } from 'lodash';
 interface IProps {
   ctx: any;
   actionGroupKey: string;

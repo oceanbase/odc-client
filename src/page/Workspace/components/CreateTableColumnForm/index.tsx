@@ -16,16 +16,15 @@
 
 import Toolbar from '@/component/Toolbar';
 import { IDataType, ITableColumn } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { SyncOutlined } from '@ant-design/icons';
-import { RowsChangeData } from '@oceanbase-odc/ob-react-data-grid';
+import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import memoizeOne from 'memoize-one';
 import React, { Component } from 'react';
-import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
-import EditableTable, { RowType } from '../EditableTable';
+import EditableTable from '../EditableTable';
 import { WrapAutoCompleteEditor } from '../EditableTable/Editors/AutoComplete';
 import { TextEditor } from '../EditableTable/Editors/TextEditor';
 import styles from './index.less';
-import { formatMessage } from '@/util/intl';
 
 const ToolbarButton = Toolbar.Button;
 

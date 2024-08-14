@@ -16,14 +16,14 @@ import { formatMessage } from '@/util/intl';
  */
 
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import type { IPartitionPlanParams, ITaskResult, IIPartitionPlanTaskDetail } from '@/d.ts';
+import type { IIPartitionPlanTaskDetail, IPartitionPlanParams, ITaskResult } from '@/d.ts';
+import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
+import { Descriptions, Divider, Typography } from 'antd';
+import React from 'react';
+import DatabaseLabel from '../../component/DatabaseLabel';
 import PartitionPolicyTable from '../../component/PartitionPolicyTable';
 import { ErrorStrategyMap } from '../../const';
-import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
 import CycleDescriptionItem from './CycleDescriptionItem';
-import { Divider, Descriptions, Typography } from 'antd';
-import DatabaseLabel from '../../component/DatabaseLabel';
-import React from 'react';
 
 const { Text } = Typography;
 

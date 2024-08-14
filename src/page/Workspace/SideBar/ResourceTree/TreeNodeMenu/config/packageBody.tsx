@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { dropObject } from '@/common/network/database';
 import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
-import { ConnectionMode, DbObjectType, IFunction, IPackage, IProcedure } from '@/d.ts';
+import { DbObjectType, IFunction, IPackage, IProcedure } from '@/d.ts';
 import { TopTab } from '@/page/Workspace/components/PackagePage';
 import {
   openFunctionOrProcedureFromPackage,
@@ -29,10 +30,9 @@ import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { QuestionCircleFilled } from '@ant-design/icons';
 import { message, Modal } from 'antd';
-import { hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
+import { hasChangePermission } from '../index';
 import { IMenuItemConfig } from '../type';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 export const packageBodyMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.PackageBody]: [

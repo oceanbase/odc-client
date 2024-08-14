@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import HelpDoc from '@/component/helpDoc';
 import {
   IAuthorizationGrantType,
   IClientAuthenticationMethod,
@@ -22,7 +23,6 @@ import {
 import { formatMessage } from '@/util/intl';
 import { Form, Input, InputNumber, Select, Space, Switch, Typography } from 'antd';
 import React from 'react';
-import HelpDoc from '@/component/helpDoc';
 import { requiredRule } from '.';
 
 export const OAUTH2PartForm: React.FC<{

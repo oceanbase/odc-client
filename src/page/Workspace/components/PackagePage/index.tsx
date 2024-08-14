@@ -16,7 +16,6 @@
 
 import Toolbar from '@/component/Toolbar';
 import type { IPackage } from '@/d.ts';
-import { ConnectionMode } from '@/d.ts';
 import type { PageStore } from '@/store/page';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
@@ -32,7 +31,6 @@ import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import { Component } from 'react';
-import { FormattedMessage } from '@umijs/max';
 
 // @ts-ignore
 

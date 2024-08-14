@@ -16,16 +16,16 @@
 
 import { createSensitiveRule, updateSensitiveRule } from '@/common/network/sensitiveRule';
 import { ISensitiveRule, SensitiveRuleType } from '@/d.ts/sensitiveRule';
+import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Form, Input, message, Modal, Radio, Select, Space } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useContext, useEffect, useState } from 'react';
 import ProjectContext from '../../../../ProjectContext';
 import SensitiveContext from '../../../SensitiveContext';
+import { PopoverContainer } from '../../SensitiveColumn';
 import DetectWay from './DetectWay';
 import styles from './index.less';
-import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
-import { PopoverContainer } from '../../SensitiveColumn';
 const FormSensitiveRuleDrawer = ({
   formDrawerVisible,
   handleFormDrawerClose,

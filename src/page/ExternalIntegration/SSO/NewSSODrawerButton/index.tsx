@@ -17,12 +17,12 @@
 import { createIntegration } from '@/common/network/manager';
 import { EncryptionAlgorithm, IntegrationType, ISSOConfig, ISSOType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { encrypt } from '@/util/utils';
 import { useUpdate } from 'ahooks';
 import { Button, Drawer, FormInstance, message, Space, Tooltip } from 'antd';
 import { useRef, useState } from 'react';
 import SSOForm from './SSOForm';
-import tracert from '@/util/tracert';
 
 interface IProps {
   onSuccess: () => void;

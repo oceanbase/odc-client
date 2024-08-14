@@ -16,11 +16,11 @@ import { formatMessage } from '@/util/intl';
  */
 
 import { getCycleTaskLog } from '@/common/network/task';
+import type { ILog } from '@/component/Task/component/Log';
 import TaskLog from '@/component/Task/component/Log';
 import { CommonTaskLogType, SubTaskStatus } from '@/d.ts';
-import type { ILog } from '@/component/Task/component/Log';
-import { Drawer } from 'antd';
 import { useRequest } from 'ahooks';
+import { Drawer } from 'antd';
 import React, { useEffect, useState } from 'react';
 interface IProps {
   scheduleId: number;

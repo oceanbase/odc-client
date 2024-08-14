@@ -22,13 +22,13 @@ import {
   ShadowTableSyncTaskResult,
 } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
 import StructAnalysisResult from '@/component/Task/ShadowSyncTask/CreateModal/StructConfigPanel/StructAnalysisResult';
-import DatabaseLabel from '../../component/DatabaseLabel';
 import { ConnectionMode, TaskDetail, TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import { Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { getTaskExecStrategyMap } from '../..';
+import DatabaseLabel from '../../component/DatabaseLabel';
 interface IShadowSyncParamters {
   errorStrategy: ErrorStrategy;
   connectionId: string;

@@ -15,14 +15,14 @@
  */
 
 import { TaskExecStrategy, TaskType } from '@/d.ts';
+import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
+import { useSearchParams } from '@umijs/max';
+import { toInteger } from 'lodash';
 import Content from './Content';
+import CreateModals from './CreateModals';
 import styles from './index.less';
 import Sider from './Sider';
-import CreateModals from './CreateModals';
-import { useSearchParams } from '@umijs/max';
-import login from '@/store/login';
-import { toInteger } from 'lodash';
 export const getTaskExecStrategyMap = (type: TaskType) => {
   switch (type) {
     case TaskType.DATA_ARCHIVE:

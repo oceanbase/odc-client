@@ -15,16 +15,16 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { createTask } from '@/common/network/task';
 import { getResourceRoles } from '@/common/network/manager';
+import { createTask } from '@/common/network/task';
+import { useProjects } from '@/component/Task/hooks/useProjects';
 import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import { ProjectRole } from '@/d.ts/project';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
-import { ProjectRole } from '@/d.ts/project';
-import { Button, Drawer, Form, Modal, Select, Space, Input, message, Typography, Tag } from 'antd';
+import { Button, Drawer, Form, Input, message, Modal, Select, Space, Tag, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { useProjects } from '@/component/Task/hooks/useProjects';
 import styles from './index.less';
 const { Text } = Typography;
 export const projectRoleMap = {

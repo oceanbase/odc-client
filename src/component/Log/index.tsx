@@ -15,7 +15,7 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { getPrefixCls, downloadFile } from '@/util/utils';
+import { downloadFile, getPrefixCls } from '@/util/utils';
 import {
   CopyOutlined,
   DownloadOutlined,

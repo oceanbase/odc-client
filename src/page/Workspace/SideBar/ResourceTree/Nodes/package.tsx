@@ -27,8 +27,8 @@ import { ReactComponent as PackageHeadSvg } from '@/svgr/Package-header.svg';
 import { ReactComponent as PackageBodySvg } from '@/svgr/Package-body.svg';
 
 import { IDatabase } from '@/d.ts/database';
-import { ReactComponent as ParameterSvg } from '@/svgr/Parameter.svg';
 import { openPackageViewPage } from '@/store/helper/page';
+import { ReactComponent as ParameterSvg } from '@/svgr/Parameter.svg';
 
 const THEME = 'var(--icon-color-3)';
 

@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
+import HelpDoc from '@/component/helpDoc';
+import { PARTITION_KEY_INVOKER } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import React from 'react';
+import { CloseCircleFilled } from '@ant-design/icons';
 import {
+  DatePicker,
   Form,
   Input,
+  InputNumber,
   Select,
   Space,
   Tag,
-  InputNumber,
   Tooltip,
-  DatePicker,
   Typography,
 } from 'antd';
-import { CloseCircleFilled } from '@ant-design/icons';
-import HelpDoc from '@/component/helpDoc';
+import React from 'react';
 import { intervalPrecisionOptions } from '../configModal';
 import { START_DATE } from '../const';
-import { PARTITION_KEY_INVOKER } from '@/d.ts';
 import styles from '../index.less';
 
 const { Text } = Typography;

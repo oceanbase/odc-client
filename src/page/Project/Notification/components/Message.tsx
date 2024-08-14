@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
 import {
   detailMessage,
   getChannelsList,
   getMessagesList,
 } from '@/common/network/projectNotification';
 import CommonTable from '@/component/CommonTable';
+import { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
+import { IResponseData } from '@/d.ts';
+import { IMessage } from '@/d.ts/projectNotification';
+import { useLoop } from '@/util/hooks/useLoop';
+import { formatMessage } from '@/util/intl';
+import { getLocalFormatDateTime } from '@/util/utils';
 import { Descriptions, Drawer } from 'antd';
 import { useEffect, useRef, useState } from 'react';
-import { IResponseData } from '@/d.ts';
-import { EMessageStatus, IMessage } from '@/d.ts/projectNotification';
 import { getMessageColumns } from './columns';
 import styles from './index.less';
-import { getLocalFormatDateTime } from '@/util/utils';
-import { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import { EMessageStatusMap } from './interface';
-import { useLoop } from '@/util/hooks/useLoop';
 
 const Message: React.FC<{
   projectId: number;

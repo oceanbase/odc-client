@@ -23,8 +23,8 @@ import { Button, Form, Input, Table } from 'antd';
 import update from 'immutability-helper';
 import PartitionValueInput from './PartitionValueInput';
 // @ts-ignore
-import styles from './index.less';
 import { formatMessage } from '@/util/intl';
+import styles from './index.less';
 
 export interface ISinglePartitionRule {
   name: string;

@@ -15,9 +15,9 @@
  */
 
 import { IConnection, IConnectionStatus } from '@/d.ts';
-import { Tooltip } from 'antd';
-import Icon, { Loading3QuartersOutlined, MinusCircleFilled } from '@ant-design/icons';
 import { formatMessage } from '@/util/intl';
+import Icon, { Loading3QuartersOutlined, MinusCircleFilled } from '@ant-design/icons';
+import { Tooltip } from 'antd';
 
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import datasourceStatus from '@/store/datasourceStatus';

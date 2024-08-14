@@ -19,19 +19,19 @@ import { ALL_SELECTED_ID, isSelectedAll } from '@/component/Manage/ResourceSelec
 import { EnableRoleSystemPermission } from '@/constant';
 import type { IManagerRole } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
+import odc from '@/plugins/odc';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { Button, Drawer, message, Modal, Radio, Space } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import { isNull, set } from 'lodash';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import odc from '@/plugins/odc';
 import { ResourceContext } from '../../../context';
 import { resourceManagementActionMap } from '../../../utils';
 import { SystemAction, systemActionMap } from '../ResourceSelector/const';
 import resourceActions from '../ResourceSelector/resourceActions';
 import { FormContent, RoleResource } from './component';
 import styles from './index.less';
-import tracert from '@/util/tracert';
 
 interface IProps {
   visible: boolean;

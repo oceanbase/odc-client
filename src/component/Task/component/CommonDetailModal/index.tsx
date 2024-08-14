@@ -19,8 +19,11 @@ import StatusLabel from '@/component/Task/component/Status';
 import type { ITaskDetailModalProps } from '@/component/Task/interface';
 import { TaskDetailType } from '@/component/Task/interface';
 import { ITaskResult, TaskDetail, TaskRecordParameters, TaskType } from '@/d.ts';
+import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import { Drawer, Radio, Spin, message } from 'antd';
+import { ShareAltOutlined } from '@ant-design/icons';
+import { Drawer, message, Radio, Spin } from 'antd';
+import copy from 'copy-to-clipboard';
 import React from 'react';
 import { isCycleTask } from '../../helper';
 import styles from './index.less';
@@ -31,9 +34,6 @@ import TaskOperationRecord from './TaskOperationRecord';
 import TaskProgress from './TaskProgress';
 import TaskRecord from './TaskRecord';
 import TaskResult from './TaskResult';
-import { ShareAltOutlined } from '@ant-design/icons';
-import login from '@/store/login';
-import copy from 'copy-to-clipboard';
 const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
   const {
     task,

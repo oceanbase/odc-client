@@ -16,7 +16,6 @@
 
 import Toolbar from '@/component/Toolbar';
 import type { IProcedure } from '@/d.ts';
-import { ConnectionMode } from '@/d.ts';
 import type { PageStore } from '@/store/page';
 import type { SQLStore } from '@/store/sql';
 import {
@@ -26,12 +25,13 @@ import {
   FileSearchOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
+import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { Layout, message, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 
 // @ts-ignore
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getProcedureByProName } from '@/common/network';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
@@ -41,16 +41,15 @@ import { openProcedureEditPageByProName, updatePage } from '@/store/helper/page'
 import { ProcedurePage as ProcedurePageModel } from '@/store/helper/page/pages';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
+import { isConnectionModeBeMySQLType } from '@/util/connection';
 import { parseDataType } from '@/util/dataType';
+import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import EditableTable from '../EditableTable';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ShowProcedureBaseInfoForm from '../ShowProcedureBaseInfoForm';
 import styles from './index.less';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { formatMessage } from '@/util/intl';
 
 const ToolbarButton = Toolbar.Button;
 

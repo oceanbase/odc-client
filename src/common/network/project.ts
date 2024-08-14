@@ -15,14 +15,14 @@
  */
 
 import { IResponseData, IUserSummary } from '@/d.ts';
-import {
-  IProject,
-  ProjectRole,
-  PermissionSourceType,
-  IDatabasePermission,
-  ITablePermission,
-} from '@/d.ts/project';
 import { DatabasePermissionType } from '@/d.ts/database';
+import {
+  IDatabasePermission,
+  IProject,
+  ITablePermission,
+  PermissionSourceType,
+  ProjectRole,
+} from '@/d.ts/project';
 import request from '@/util/request';
 
 export async function listProjects(

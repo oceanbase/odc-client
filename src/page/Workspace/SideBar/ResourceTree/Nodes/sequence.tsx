@@ -21,8 +21,8 @@ import Icon from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
 
 import { IDatabase } from '@/d.ts/database';
-import { ReactComponent as SequenceSvg } from '@/svgr/menuSequence.svg';
 import { openSequenceViewPage } from '@/store/helper/page';
+import { ReactComponent as SequenceSvg } from '@/svgr/menuSequence.svg';
 
 export function SequenceTreeData(dbSession: SessionStore, database: IDatabase): TreeDataNode {
   const dbName = database.name;

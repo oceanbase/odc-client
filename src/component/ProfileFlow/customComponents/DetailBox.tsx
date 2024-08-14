@@ -1,12 +1,12 @@
 import { formatMessage } from '@/util/intl';
-import { Divider, Progress, Tooltip, Select, Radio } from 'antd';
-import styles from './index.less';
+import { formatTimeTemplate } from '@/util/utils';
+import { Divider, Progress, Radio, Select, Tooltip } from 'antd';
+import BigNumber from 'bignumber.js';
 import classnames from 'classnames';
 import { useEffect, useState } from 'react';
-import { formatTimeTemplate } from '@/util/utils';
-import BigNumber from 'bignumber.js';
 import type { Node } from 'reactflow';
-import { subNodeSortType, SUM, subNodesSortMap, CPU_TIME, IO_WAIT_TIME } from '../constant';
+import { CPU_TIME, IO_WAIT_TIME, subNodeSortType, subNodesSortMap, SUM } from '../constant';
+import styles from './index.less';
 
 const { Option } = Select;
 

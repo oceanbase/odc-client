@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import CommonTable from '@/component/CommonTable';
 import { CommonTableMode } from '@/component/CommonTable/interface';
 import MonacoEditor from '@/component/MonacoEditor';
@@ -24,7 +25,6 @@ import { useMemo, useRef, useState } from 'react';
 import { IShadowSyncAnalysisResult, ShadowTableSyncTaskResult } from '../../interface';
 import RecordSQLView, { IViewRef } from '../RecordSQLView';
 import { useColumns } from './column';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 enum TabKeys {
   SYNC = 'sync',

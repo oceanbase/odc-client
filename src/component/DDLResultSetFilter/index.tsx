@@ -18,9 +18,9 @@ import { FilterOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Input, Popover } from 'antd';
 import { Component } from 'react';
 // @ts-ignore
+import { formatMessage } from '@/util/intl';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import styles from './index.less';
-import { formatMessage } from '@/util/intl';
 
 export default class DDLResultSetFilter extends Component<
   {

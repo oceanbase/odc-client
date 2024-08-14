@@ -17,19 +17,19 @@ import { formatMessage } from '@/util/intl';
 
 import { deleteEnvironment, listEnvironments } from '@/common/network/env';
 import { getIntegrationList } from '@/common/network/manager';
-import { IManagerIntegration, IManagerResourceType, IntegrationType, actionTypes } from '@/d.ts';
+import { Acess, createPermission } from '@/component/Acess';
+import { actionTypes, IManagerIntegration, IManagerResourceType, IntegrationType } from '@/d.ts';
 import { IEnvironment } from '@/d.ts/environment';
 import { RuleType } from '@/d.ts/rule';
+import tracert from '@/util/tracert';
+import Icon, { PlusOutlined } from '@ant-design/icons';
+import { message, Modal, SelectProps } from 'antd';
 import { useLayoutEffect, useState } from 'react';
 import SecureLayout from '../components/SecureLayout';
 import SecureSider, { SiderItem } from '../components/SecureSider';
-import InnerEnvironment from './components/InnerEnvironment';
-import tracert from '@/util/tracert';
-import styles from './index.less';
-import Icon, { PlusOutlined } from '@ant-design/icons';
-import { Modal, SelectProps, message } from 'antd';
 import { FormEnvironmentModal } from './components/FormEnvironmentModal';
-import { Acess, createPermission } from '@/component/Acess';
+import InnerEnvironment from './components/InnerEnvironment';
+import styles from './index.less';
 
 // 从Environment数组中生成Sider中的Item数据
 function genEnv(env: IEnvironment): {

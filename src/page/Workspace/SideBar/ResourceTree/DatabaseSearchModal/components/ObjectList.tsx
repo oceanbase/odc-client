@@ -1,20 +1,20 @@
-import { formatMessage } from '@/util/intl';
-import {
-  objectTypeConfig,
-  DbObjectTypeMap,
-  SEARCH_OBJECT_FROM_ALL_DATABASE,
-  MAX_OBJECT_LENGTH,
-} from '../constant';
-import { Tabs, Divider, Button, Empty, Tooltip, Spin } from 'antd';
-import styles from '../index.less';
-import { DbObjectType, ConnectionMode } from '@/d.ts';
-import { DbObjsIcon } from '@/constant';
-import Icon from '@ant-design/icons';
-import { useState } from 'react';
-import { IDatabase, IDatabaseObject } from '@/d.ts/database';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
-import { ModalStore } from '@/store/modal';
+import { DbObjsIcon } from '@/constant';
+import { ConnectionMode, DbObjectType } from '@/d.ts';
+import { IDatabase, IDatabaseObject } from '@/d.ts/database';
 import { openNewSQLPage } from '@/store/helper/page';
+import { ModalStore } from '@/store/modal';
+import { formatMessage } from '@/util/intl';
+import Icon from '@ant-design/icons';
+import { Button, Divider, Empty, Spin, Tabs, Tooltip } from 'antd';
+import { useState } from 'react';
+import {
+  DbObjectTypeMap,
+  MAX_OBJECT_LENGTH,
+  objectTypeConfig,
+  SEARCH_OBJECT_FROM_ALL_DATABASE,
+} from '../constant';
+import styles from '../index.less';
 interface Iprops {
   database: IDatabase;
   objectlist: IDatabaseObject;

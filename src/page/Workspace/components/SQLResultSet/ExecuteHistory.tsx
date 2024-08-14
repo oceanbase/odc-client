@@ -17,6 +17,7 @@
 import { TAB_HEADER_HEIGHT } from '@/constant';
 import { ISqlExecuteResult, ISqlExecuteResultStatus, SqlType } from '@/d.ts';
 import type { SQLStore } from '@/store/sql';
+import { ReactComponent as WaitingSvg } from '@/svgr/Waiting.svg';
 import { formatMessage } from '@/util/intl';
 import { formatTimeTemplate } from '@/util/utils';
 import Icon, {
@@ -27,11 +28,10 @@ import Icon, {
   StopFilled,
 } from '@ant-design/icons';
 import { Alert, message, Space, Table, Tooltip, Typography } from 'antd';
+import BigNumber from 'bignumber.js';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { ReactComponent as WaitingSvg } from '@/svgr/Waiting.svg';
-import BigNumber from 'bignumber.js';
 import DBTimeline from './DBTimeline';
 import styles from './index.less';
 

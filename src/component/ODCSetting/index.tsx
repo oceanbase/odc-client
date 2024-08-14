@@ -15,18 +15,17 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { Button, Col, Form, Modal, Row, Space, Tabs, Typography, message } from 'antd';
+import { Button, Col, Form, message, Modal, Row, Space, Tabs, Typography } from 'antd';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import odcSetting, { IODCSetting, ODCSettingGroup, odcSettingMap } from './config';
 
-import styles from './index.less';
-import { inject, observer } from 'mobx-react';
-import modal, { ModalStore } from '@/store/modal';
+import { ModalStore } from '@/store/modal';
 import setting from '@/store/setting';
-import { IUserConfig } from '@/d.ts';
 import { getODCSetting, saveODCSetting } from '@/util/client';
 import { isClient } from '@/util/env';
 import { safeParseJson } from '@/util/utils';
+import { inject, observer } from 'mobx-react';
+import styles from './index.less';
 
 interface IProps {
   modalStore?: ModalStore;

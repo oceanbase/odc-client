@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
 import {
   EChannelType,
   ELanguage,
@@ -22,6 +21,7 @@ import {
   ETimeUnit,
   IPolicy,
 } from '@/d.ts/projectNotification';
+import { formatMessage } from '@/util/intl';
 
 export const TimeUnitMap = {
   [ETimeUnit.MINUTES]: formatMessage({

@@ -15,7 +15,7 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { isUndefined, isNil } from 'lodash';
+import { isNil, isUndefined } from 'lodash';
 
 function unifiedStr(value: string) {
   return value?.replace(/\\"|\\t|\'/g, '');

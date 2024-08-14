@@ -15,8 +15,8 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Modal } from 'antd';
 import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
+import { Modal } from 'antd';
 
 function SQLPreviewModal(props: {
   sql?: string;

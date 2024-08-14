@@ -16,7 +16,7 @@
 
 import { formatMessage } from '@/util/intl';
 import { SortAscendingOutlined } from '@ant-design/icons';
-import { Dropdown, Menu } from 'antd';
+import { Dropdown } from 'antd';
 import React, { useContext } from 'react';
 import ParamContext, { SortType } from '../../ParamContext';
 import FilterIcon from '../FIlterIcon';

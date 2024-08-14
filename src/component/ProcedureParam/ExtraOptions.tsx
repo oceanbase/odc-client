@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { ConnectType, DbObjectType } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { Col, Form, Row, Select } from 'antd';
 import HelpDoc from '../helpDoc';
 export default function ExtraOptions({

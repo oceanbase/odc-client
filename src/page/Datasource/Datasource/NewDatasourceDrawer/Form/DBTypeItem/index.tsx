@@ -19,9 +19,9 @@ import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { Form, Radio, Space } from 'antd';
 
-import styles from './index.less';
-import { IDataSourceType } from '@/d.ts/datasource';
 import { getDataSourceStyle, getDefaultConnectType, getDsByConnectType } from '@/common/datasource';
+import { IDataSourceType } from '@/d.ts/datasource';
+import styles from './index.less';
 
 export default function DBTypeItem() {
   const typeSelect = (

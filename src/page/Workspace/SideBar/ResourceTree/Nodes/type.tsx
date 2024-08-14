@@ -24,9 +24,9 @@ import { FunctionTreeNodeData } from './function';
 import { ReactComponent as TypeSvg } from '@/svgr/menuType.svg';
 
 import { IDatabase } from '@/d.ts/database';
+import { openTypeViewPage } from '@/store/helper/page';
 import { ReactComponent as ParameterSvg } from '@/svgr/Parameter.svg';
 import { ProcedureTreeNodeData } from './procedure';
-import { openTypeViewPage } from '@/store/helper/page';
 
 const THEME = 'var(--icon-color-4)';
 

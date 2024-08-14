@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+import {
+  getScanningResults,
+  ScannResultType,
+  startScanning,
+} from '@/common/network/sensitiveColumn';
+import { ESensitiveColumnType, ISensitiveColumn } from '@/d.ts/sensitiveColumn';
+import ProjectContext from '@/page/Project/ProjectContext';
+import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
+import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
+import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
 import { formatMessage } from '@/util/intl';
 import Icon, { CheckCircleFilled, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import {
@@ -30,25 +40,21 @@ import {
   Table,
   Tooltip,
 } from 'antd';
+import classnames from 'classnames';
+import React, {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
+import { PopoverContainer } from '..';
 import { ScanTableData, ScanTableDataItem } from '../../../interface';
+import SensitiveContext, { ISensitiveContext } from '../../../SensitiveContext';
+import { checkResult, defaultScanTableData } from './FormSensitiveColumnDrawer';
 import styles from './index.less';
 import ScanRule from './SacnRule';
-import classnames from 'classnames';
-import { ESensitiveColumnType, ISensitiveColumn } from '@/d.ts/sensitiveColumn';
-import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
-import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
-import { PopoverContainer } from '..';
-import { forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import SensitiveContext, { ISensitiveContext } from '../../../SensitiveContext';
-import {
-  ScannResultType,
-  getScanningResults,
-  startScanning,
-} from '@/common/network/sensitiveColumn';
-import ProjectContext from '@/page/Project/ProjectContext';
-import { checkResult, defaultScanTableData } from './FormSensitiveColumnDrawer';
-import React from 'react';
-import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 interface IScanFormProps {
   formRef: FormInstance<any>;
   _formRef: FormInstance<any>;

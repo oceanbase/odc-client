@@ -28,8 +28,8 @@ import {
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
-import DatabaseLabel from '../../component/DatabaseLabel';
 import Form from 'antd/lib/form/Form';
+import DatabaseLabel from '../../component/DatabaseLabel';
 export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult, hasFlow: boolean) {
   if (!task) {
     return [];

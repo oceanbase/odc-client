@@ -16,15 +16,14 @@
 
 import { ITable } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Radio, Select, Space, Checkbox, Typography } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Form, Input, Radio, Select, Typography } from 'antd';
 import classNames from 'classnames';
-import { IArchiveRange } from './index';
+import { useEffect, useState } from 'react';
 import ArchiveRangeTip from '../../component/ArchiveRangeTip';
-import styles from './index.less';
-import { useState, useEffect } from 'react';
 import { PartitionTextArea } from '../../component/PartitionTextArea';
-import type { FormInstance } from 'antd/lib/form';
+import { IArchiveRange } from './index';
+import styles from './index.less';
 
 const { TextArea } = Input;
 const { Text, Link } = Typography;

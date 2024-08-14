@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
+import Reload from '@/component/Button/Reload';
+import { ConnectType } from '@/d.ts';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import { UserStore } from '@/store/login';
+import { formatMessage } from '@/util/intl';
+import Icon, { CloseOutlined } from '@ant-design/icons';
+import classNames from 'classnames';
+import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import SideTabs, { ITab } from '../../components/SideTabs';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import { formatMessage } from '@/util/intl';
-import DataSourceTree from './Datasource';
-import ProjectTree from './Project';
-import { inject, observer } from 'mobx-react';
-import Icon, { CloseOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
-import { UserStore } from '@/store/login';
-import styles from './index.less';
-import classNames from 'classnames';
 import DatasourceFilter from '../DatasourceFilter';
-import { ConnectType } from '@/d.ts';
-import Reload from '@/component/Button/Reload';
-import { Tooltip } from 'antd';
+import DataSourceTree from './Datasource';
+import styles from './index.less';
+import ProjectTree from './Project';
 interface IProps {
   userStore?: UserStore;
   onClose: () => void;

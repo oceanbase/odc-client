@@ -15,16 +15,16 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import { getTaskExecStrategyMap } from '@/component/Task';
-import DatabaseLabel from '../../component/DatabaseLabel';
 import type { IResultSetExportTaskParams, ITaskResult, TaskDetail } from '@/d.ts';
-import { ConnectionMode, IExportResultSetFileType, TaskExecStrategy } from '@/d.ts';
+import { IExportResultSetFileType, TaskExecStrategy } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
 import { Divider } from 'antd';
+import DatabaseLabel from '../../component/DatabaseLabel';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 export const getItems = (
   _task: TaskDetail<IResultSetExportTaskParams>,
   result: ITaskResult,

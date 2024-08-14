@@ -14,37 +14,20 @@
  * limitations under the License.
  */
 
-import classNames from 'classnames';
-import { useForm, useWatch } from 'antd/lib/form/Form';
-import { useEffect, useRef, useState } from 'react';
 import {
-  Button,
-  Drawer,
-  Space,
-  Form,
-  Input,
-  Radio,
-  Tabs,
-  Checkbox,
-  Descriptions,
-  Modal,
-  message,
-  Select,
-  InputNumber,
-  Alert,
-} from 'antd';
-import CommonTable from '@/component/CommonTable';
-import { IOperationOptionType, ITableLoadOptions } from '@/component/CommonTable/interface';
-import FormItemPanel from '@/component/FormItemPanel';
-import {
-  editChannel,
   createChannel,
   deleteChannel,
   detailChannel,
+  editChannel,
   existsChannel,
   getChannelsList,
   testChannel,
 } from '@/common/network/projectNotification';
+import CommonTable from '@/component/CommonTable';
+import { IOperationOptionType, ITableLoadOptions } from '@/component/CommonTable/interface';
+import FormItemPanel from '@/component/FormItemPanel';
+import HelpDoc from '@/component/helpDoc';
+import { IResponseData } from '@/d.ts';
 import {
   EChannelType,
   ELanguage,
@@ -55,11 +38,30 @@ import {
   IChannel,
   IRateLimitConfig,
 } from '@/d.ts/projectNotification';
-import { IResponseData } from '@/d.ts';
-import styles from './index.less';
+import odc from '@/plugins/odc';
 import { formatMessage, getLocalDocs } from '@/util/intl';
-import HelpDoc from '@/component/helpDoc';
+import { encrypt } from '@/util/utils';
+import {
+  Alert,
+  Button,
+  Checkbox,
+  Descriptions,
+  Drawer,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Modal,
+  Radio,
+  Select,
+  Space,
+  Tabs,
+} from 'antd';
+import { useForm, useWatch } from 'antd/lib/form/Form';
+import classNames from 'classnames';
+import { useEffect, useRef, useState } from 'react';
 import { getChannelColumns } from './columns';
+import styles from './index.less';
 import {
   EChannelTypeMap,
   EContentTemplateMap,
@@ -67,8 +69,6 @@ import {
   TimeUnitMap,
   WebhookPlaceholderMap,
 } from './interface';
-import odc from '@/plugins/odc';
-import { encrypt } from '@/util/utils';
 
 const Channel: React.FC<{
   projectId: number;

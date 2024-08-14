@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import { Popconfirm, Spin, Tree } from 'antd';
-import React, { useEffect, useState } from 'react';
-import styles from './index.less';
+import { getTableListByDatabaseName } from '@/common/network/table';
 import ExportCard from '@/component/ExportCard';
-import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { DbObjsIcon } from '@/constant';
 import { DbObjectType } from '@/d.ts';
-import classNames from 'classnames';
-import { getTableListByDatabaseName } from '@/common/network/table';
 import { useDBSession } from '@/store/sessionManager/hooks';
+import { formatMessage } from '@/util/intl';
+import Icon, { DeleteOutlined } from '@ant-design/icons';
+import { Popconfirm, Spin, Tree } from 'antd';
+import classNames from 'classnames';
+import React, { useEffect, useState } from 'react';
+import styles from './index.less';
 
 const TableSelector: React.FC<{
   databaseId?: number;

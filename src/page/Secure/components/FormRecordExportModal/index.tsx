@@ -16,6 +16,7 @@
 
 import { exportAudit, getConnectionOptionList, getUserOptionList } from '@/common/network/manager';
 import ConnectionPopover from '@/component/ConnectionPopover';
+import { AuditEventActionMap } from '@/constant/record';
 import type { IManagerPublicConnection, IManagerUser } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { downloadFile, getPreTime } from '@/util/utils';
@@ -24,7 +25,6 @@ import type { FormInstance } from 'antd/lib/form';
 import type { DataNode } from 'antd/lib/tree';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
-import { AuditEventActionMap } from '@/constant/record';
 import styles from './index.less';
 
 const { Option } = Select;

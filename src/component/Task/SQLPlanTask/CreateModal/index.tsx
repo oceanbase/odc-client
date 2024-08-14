@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { createTask, getAsyncTaskUploadUrl, getCycleTaskDetail } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import Crontab from '@/component/Crontab';
@@ -22,7 +23,6 @@ import FormItemPanel from '@/component/FormItemPanel';
 import ODCDragger from '@/component/OSSDragger2';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import {
-  ConnectionMode,
   CreateTaskRecord,
   ISqlPlayJobParameters,
   SQLContentType,
@@ -56,7 +56,6 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 
 interface IProps {

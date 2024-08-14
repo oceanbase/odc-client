@@ -16,27 +16,27 @@ import { formatMessage } from '@/util/intl';
  */
 
 import Action from '@/component/Action';
+import CommonTable from '@/component/CommonTable';
 import {
   CommonTableMode,
-  ITableLoadOptions,
-  ITableInstance,
   FixedType,
+  ITableInstance,
+  ITableLoadOptions,
 } from '@/component/CommonTable/interface';
+import SearchFilter from '@/component/SearchFilter';
 import { getExpireTimeLabel } from '@/component/Task/ApplyDatabasePermission';
-import { DatabasePermissionStatus, IDatabasePermission } from '@/d.ts/project';
+import TaskDetailModal from '@/component/Task/DetailModal';
 import type { IResponseData } from '@/d.ts';
 import { TaskType } from '@/d.ts';
-import TaskDetailModal from '@/component/Task/DetailModal';
-import {
-  databasePermissionTypeFilters,
-  databasePermissionTypeMap,
-  databasePermissionStatusFilters,
-} from '../';
-import StatusLabel from '../Status';
-import SearchFilter from '@/component/SearchFilter';
-import CommonTable from '@/component/CommonTable';
+import { DatabasePermissionStatus, IDatabasePermission } from '@/d.ts/project';
 import { SearchOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
+import {
+  databasePermissionStatusFilters,
+  databasePermissionTypeFilters,
+  databasePermissionTypeMap,
+} from '../';
+import StatusLabel from '../Status';
 
 const getColumns = (params: {
   paramOptions: ITableLoadOptions;

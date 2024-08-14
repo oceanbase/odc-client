@@ -15,9 +15,9 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
+import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import { Button, Modal, Tabs } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import styles from './index.less';
 
 interface IProps {

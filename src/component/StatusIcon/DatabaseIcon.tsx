@@ -15,13 +15,13 @@
  */
 
 import { IConnectionStatus } from '@/d.ts';
-import { Tooltip } from 'antd';
-import Icon, { Loading3QuartersOutlined, MinusCircleFilled } from '@ant-design/icons';
 import { formatMessage } from '@/util/intl';
+import Icon, { Loading3QuartersOutlined, MinusCircleFilled } from '@ant-design/icons';
+import { Tooltip } from 'antd';
 
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
-import datasourceStatus from '@/store/datasourceStatus';
 import { IDatabase } from '@/d.ts/database';
+import datasourceStatus from '@/store/datasourceStatus';
 import { observer } from 'mobx-react';
 
 export default observer(function DataBaseStatusIcon({ item }: { item: IDatabase }) {

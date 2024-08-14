@@ -21,8 +21,8 @@
 import odc from '@/plugins/odc';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import Cookies from 'js-cookie';
 import { getLocale } from '@umijs/max';
+import Cookies from 'js-cookie';
 import type { ResponseError } from 'umi-request';
 import { extend } from 'umi-request';
 import notification from '../notification';

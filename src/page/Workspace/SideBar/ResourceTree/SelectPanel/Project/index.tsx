@@ -16,7 +16,7 @@
 
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
-import { Empty, Input, Spin, Tree, TreeDataNode } from 'antd';
+import { Empty, Input, Tree, TreeDataNode } from 'antd';
 import ResourceLayout from '../../Layout';
 
 import { forwardRef, useContext, useImperativeHandle, useMemo, useState } from 'react';

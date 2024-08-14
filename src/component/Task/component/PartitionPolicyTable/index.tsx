@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import CommonTable from '@/component/CommonTable';
 import { getPartitionPlan } from '@/common/network/task';
+import Action from '@/component/Action';
+import CommonTable from '@/component/CommonTable';
 import { CommonTableMode, ITableLoadOptions } from '@/component/CommonTable/interface';
 import SearchFilter from '@/component/SearchFilter';
-import Action from '@/component/Action';
 import { IPartitionTableConfig, TaskPartitionStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { SearchOutlined, StopFilled, CheckCircleFilled } from '@ant-design/icons';
+import { CheckCircleFilled, SearchOutlined, StopFilled } from '@ant-design/icons';
 import { Space } from 'antd';
-import React, { useRef, useState, useEffect } from 'react';
-import ConfigDrawer from './ConfigDrawer';
+import React, { useEffect, useRef, useState } from 'react';
 import { TaskPartitionStrategyMap } from '../../const';
+import ConfigDrawer from './ConfigDrawer';
 import styles from './index.less';
 
 export const getStrategyLabel = (strategies: TaskPartitionStrategy[], split = ', ') => {

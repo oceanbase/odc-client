@@ -20,7 +20,7 @@ import { PageStore } from '@/store/page';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { ExportOutlined } from '@ant-design/icons';
-import { Layout, Radio, Space, Spin, Tabs } from 'antd';
+import { Radio, Space, Spin, Tabs } from 'antd';
 import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -41,10 +41,10 @@ import Toolbar from '@/component/Toolbar';
 import { TablePage as TablePageModel } from '@/store/helper/page/pages';
 import modal from '@/store/modal';
 import { SessionManagerStore } from '@/store/sessionManager';
+import { getQuoteTableName } from '@/util/utils';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
-import { getQuoteTableName } from '@/util/utils';
 
 interface IProps {
   pageKey: string;

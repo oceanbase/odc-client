@@ -22,8 +22,8 @@ import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { Form, Input, Tooltip } from 'antd';
 // @ts-ignore
-import styles from './PartitionValueInput.less';
 import { formatMessage } from '@/util/intl';
+import styles from './PartitionValueInput.less';
 
 interface PartitionValueInputProps {
   index: number;

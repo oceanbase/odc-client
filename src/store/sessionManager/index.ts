@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { getConnectionDetail, getConnectionDetailResponse } from '@/common/network/connection';
+import { getConnectionDetailResponse } from '@/common/network/connection';
 import { getDatabase } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
+import notification from '@/util/notification';
 import { toInteger } from 'lodash';
 import { action, observable, runInAction } from 'mobx';
 import SessionStore from './session';
-import { message } from 'antd';
-import notification from '@/util/notification';
 
 type ConnectionId = number;
 

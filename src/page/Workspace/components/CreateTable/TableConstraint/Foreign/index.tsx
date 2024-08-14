@@ -16,12 +16,12 @@
 
 import Toolbar from '@/component/Toolbar';
 import { formatMessage } from '@/util/intl';
+import { generateUniqKey } from '@/util/utils';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { TableForeignConstraint } from '../../interface';
 import TableCardLayout from '../../TableCardLayout';
 import TableContext from '../../TableContext';
-import { generateUniqKey } from '@/util/utils';
 
 import { listDatabases } from '@/common/network/database';
 import {

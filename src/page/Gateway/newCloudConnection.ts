@@ -21,6 +21,7 @@ import {
   testExsitConnection,
   updateConnectionFromConnection,
 } from '@/common/network/connection';
+import { listDatabases } from '@/common/network/database';
 import { listEnvironments } from '@/common/network/env';
 import { decrypt } from '@/common/network/other';
 import ShowConnectPassword from '@/component/ConnectPassowrd';
@@ -30,9 +31,8 @@ import { SpaceType } from '@/d.ts/_index';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
-import { message } from 'antd';
-import { listDatabases } from '@/common/network/database';
 import { getSentry } from '@/util/sentry';
+import { message } from 'antd';
 export interface INewCloudConnection {
   action: 'newCloudConnection';
   data: IRemoteNewCloudConnectionData | string;

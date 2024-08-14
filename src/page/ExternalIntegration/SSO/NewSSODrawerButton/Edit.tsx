@@ -17,12 +17,12 @@
 import { getIntegrationDetail, updateIntegration } from '@/common/network/manager';
 import { EncryptionAlgorithm, ISSOConfig, ISSOType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { safeParseJson } from '@/util/utils';
 import { useRequest, useUpdate } from 'ahooks';
 import { Button, Drawer, message, Space, Spin } from 'antd';
 import { useEffect, useMemo, useRef } from 'react';
 import SSOForm, { IFormRef } from './SSOForm';
-import tracert from '@/util/tracert';
 
 interface IProps {
   visible: boolean;

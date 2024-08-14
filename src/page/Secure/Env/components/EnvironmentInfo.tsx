@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
-import { formatMessage } from '@/util/intl';
-import { Button, Descriptions, Dropdown, Space, Tooltip } from 'antd';
-import styles from './index.less';
-import { MenuClickEventHandler, MenuInfo } from 'rc-menu/lib/interface';
-import { IEnvironment } from '@/d.ts/environment';
-import Icon, { EllipsisOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { Acess, canAcess, createPermission } from '@/component/Acess';
-import { IManagerResourceType, actionTypes } from '@/d.ts';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { actionTypes, IManagerResourceType } from '@/d.ts';
+import { IEnvironment } from '@/d.ts/environment';
+import { formatMessage } from '@/util/intl';
+import Icon, { EllipsisOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { Button, Descriptions, Dropdown, Space, Tooltip } from 'antd';
+import { MenuClickEventHandler, MenuInfo } from 'rc-menu/lib/interface';
+import styles from './index.less';
 
 const EnvironmentInfo: React.FC<{
   loading: boolean;

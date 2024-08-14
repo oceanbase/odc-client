@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { getOBUser, parser } from '@/util/dataSourceParser';
 import { formatMessage } from '@/util/intl';
-import { parser, getOBUser } from '@/util/dataSourceParser';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Form, Input, Spin } from 'antd';
 import React, { useCallback, useContext, useState } from 'react';

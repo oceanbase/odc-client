@@ -15,7 +15,6 @@
  */
 
 import { fetchVariableList, updateVariable } from '@/common/network/sessionParams';
-import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import PropertyModal from '@/component/PropertyModal';
 import Toolbar from '@/component/Toolbar';
 import { IConnectionProperty } from '@/d.ts';
@@ -25,13 +24,12 @@ import { SessionManagerStore } from '@/store/sessionManager';
 import { SettingStore } from '@/store/setting';
 import { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
-import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { EditOutlined, SyncOutlined } from '@ant-design/icons';
+import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { Alert, Input, Layout, message, Spin } from 'antd';
 import { debounce } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
-import { FormattedMessage } from '@umijs/max';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import EditableTable, { RowType } from '../EditableTable';
 import SessionSelect from '../SessionContextWrap/SessionSelect';
 import styles from './index.less';

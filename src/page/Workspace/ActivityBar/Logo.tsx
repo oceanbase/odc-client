@@ -15,11 +15,11 @@
  */
 
 import { ReactComponent as ODCBlackSvg } from '@/svgr/odc_logo_color.svg';
-import Icon, { HomeOutlined } from '@ant-design/icons';
-import styles from './index.less';
-import { useState } from 'react';
-import { Tooltip } from 'antd';
 import { isClient } from '@/util/env';
+import Icon, { HomeOutlined } from '@ant-design/icons';
+import { Tooltip } from 'antd';
+import { useState } from 'react';
+import styles from './index.less';
 
 export default function Logo() {
   const [isHover, setHoverSatate] = useState<boolean>(false);

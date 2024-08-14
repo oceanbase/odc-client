@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { getConnectionDetail, getConnectionList } from '@/common/network/connection';
 import { listDatabases, updateDataBase } from '@/common/network/database';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import ApplyDatabasePermissionButton from '@/component/Task/ApplyDatabasePermission/CreateButton';
 import TooltipAction from '@/component/TooltipAction';
-import { formatMessage } from '@/util/intl';
-import { useRequest } from 'ahooks';
-import { useContext, useState } from 'react';
-import { Button, Col, Form, message, Modal, Row, Select, Space, Tooltip } from 'antd';
-import Icon from '@ant-design/icons';
-import { getDataSourceStyleByConnectType } from '@/common/datasource';
-import ProjectContext from '../../ProjectContext';
 import { ProjectRole } from '@/d.ts/project';
-import { DatabaseOwnerSelect } from '../components/DatabaseOwnerSelect.tsx';
 import { ModalStore } from '@/store/modal';
+import { formatMessage } from '@/util/intl';
+import Icon from '@ant-design/icons';
+import { useRequest } from 'ahooks';
+import { Button, Col, Form, message, Modal, Row, Select, Space, Tooltip } from 'antd';
+import { useContext, useState } from 'react';
+import ProjectContext from '../../ProjectContext';
+import { DatabaseOwnerSelect } from '../components/DatabaseOwnerSelect.tsx';
 interface IProps {
   projectId: number;
   orderedDatabaseIds: number[][];

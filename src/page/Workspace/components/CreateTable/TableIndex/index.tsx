@@ -16,6 +16,8 @@
 
 import { generateUpdateTableDDL } from '@/common/network/table';
 import Toolbar from '@/component/Toolbar';
+import { ColumnStoreType, DBDefaultStoreType } from '@/d.ts/table';
+import type SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
 import { generateUniqKey } from '@/util/utils';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
@@ -35,8 +37,6 @@ import {
 import TableCardLayout from '../TableCardLayout';
 import TableContext from '../TableContext';
 import { useColumns } from './columns';
-import type SessionStore from '@/store/sessionManager/session';
-import { ColumnStoreType, DBDefaultStoreType } from '@/d.ts/table';
 
 const defaultIndex: ITableIndex = {
   name: null,

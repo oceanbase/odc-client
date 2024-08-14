@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
+import { updateThrottleConfig } from '@/common/network/task';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import { getTaskExecStrategyMap } from '@/component/Task';
 import type { ITaskResult, TaskDetail } from '@/d.ts';
-import { TaskExecStrategy } from '@/d.ts';
-import { formatMessage } from '@/util/intl';
-import React from 'react';
-import { Typography, message } from 'antd';
-import { SimpleTextItem } from '../../component/SimpleTextItem';
-import { ClearStrategy, SwapTableType } from '../CreateModal';
-import ThrottleEditableCell from '../../component/ThrottleEditableCell';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
-import { updateThrottleConfig } from '@/common/network/task';
+import { TaskExecStrategy, TaskStatus } from '@/d.ts';
 import setting from '@/store/setting';
+import { formatMessage } from '@/util/intl';
 import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
-import { TaskStatus } from '@/d.ts';
-import { OscMaxRowLimit, OscMaxDataSizeLimit } from '../../const';
+import { message, Typography } from 'antd';
+import React from 'react';
+import { SimpleTextItem } from '../../component/SimpleTextItem';
+import ThrottleEditableCell from '../../component/ThrottleEditableCell';
+import { OscMaxDataSizeLimit, OscMaxRowLimit } from '../../const';
+import { ClearStrategy, SwapTableType } from '../CreateModal';
 
 const { Text } = Typography;
 interface IDDLAlterParamters {

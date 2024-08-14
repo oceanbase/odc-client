@@ -14,15 +14,15 @@ import { formatMessage } from '@/util/intl';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RiskLevelEnum, RiskLevelTextMap, levelMap } from '@/page/Secure/interface';
-import utils, { IEditor } from '@/util/editor';
-import { Button, Popover, Space, Tooltip } from 'antd';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import Icon from '@ant-design/icons';
-import { ReactComponent as errorSvg } from '@/svgr/error.svg';
+import { levelMap, RiskLevelEnum, RiskLevelTextMap } from '@/page/Secure/interface';
 import { ReactComponent as alertSvg } from '@/svgr/alert.svg';
+import { ReactComponent as errorSvg } from '@/svgr/error.svg';
 import { ReactComponent as safetySvg } from '@/svgr/safety.svg';
+import utils, { IEditor } from '@/util/editor';
+import Icon from '@ant-design/icons';
+import { Button, Popover, Space, Tooltip } from 'antd';
 import styles from './index.less';
 const getColumns = (
   showLocate: boolean,

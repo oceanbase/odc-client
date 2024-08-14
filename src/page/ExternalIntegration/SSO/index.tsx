@@ -23,6 +23,7 @@ import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import { IManagerIntegration, IntegrationType, IResponseData } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
 import { message, Popconfirm } from 'antd';
@@ -31,7 +32,6 @@ import { useEffect, useRef, useState } from 'react';
 import NewSSODrawerButton from './NewSSODrawerButton';
 import EditSSODrawer from './NewSSODrawerButton/Edit';
 import SSODetailDrawer from './SSODetailDrawer';
-import tracert from '@/util/tracert';
 
 export default function SSO() {
   const [list, setList] = useState<IResponseData<IManagerIntegration>>();

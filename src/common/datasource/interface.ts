@@ -25,6 +25,12 @@ export type columnExtraComponent = React.FC<{
   dialectType?: ConnectionMode;
 }>;
 
+export enum SQLConsoleResourceType {
+  DataSource = 'datasource',
+  Snippet = 'snippet',
+  Script = 'script',
+}
+
 interface ICreateTableConfig {
   /**
    * 是否开启自动递增

@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-import { testConnection } from '@/common/network/connection';
-import { listEnvironments } from '@/common/network/env';
-import { IDataSourceType, IDatasource } from '@/d.ts/datasource';
-import { AccountType, ConnectType, IConnectionTestErrorType } from '@/d.ts';
-import { haveOCP } from '@/util/env';
-import { formatMessage } from '@/util/intl';
-import { useRequest } from 'ahooks';
-import { Form, FormInstance, Input, Select, Space, Typography } from 'antd';
-import Icon from '@ant-design/icons';
-import { forwardRef, useImperativeHandle, useState } from 'react';
-import Account from './Account';
-import AddressItems from './AddressItems';
-import DatasourceFormContext from './context';
-import ParseURLItem from './ParseURLItem';
-import { ConnectTypeText } from '@/constant/label';
 import {
   getAllConnectTypes,
   getDataSourceModeConfig,
   getDataSourceStyleByConnectType,
   getDsByConnectType,
 } from '@/common/datasource';
-import ExtraConfig from './ExtraConfig';
+import { testConnection } from '@/common/network/connection';
+import { listEnvironments } from '@/common/network/env';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import ProjectItem from './ProjectItem';
+import { ConnectTypeText } from '@/constant/label';
+import { AccountType, ConnectType, IConnectionTestErrorType } from '@/d.ts';
+import { IDatasource, IDataSourceType } from '@/d.ts/datasource';
 import login from '@/store/login';
+import { haveOCP } from '@/util/env';
+import { formatMessage } from '@/util/intl';
+import Icon from '@ant-design/icons';
+import { useRequest } from 'ahooks';
+import { Form, FormInstance, Input, Select, Space, Typography } from 'antd';
+import { forwardRef, useImperativeHandle, useState } from 'react';
+import Account from './Account';
+import AddressItems from './AddressItems';
+import DatasourceFormContext from './context';
+import ExtraConfig from './ExtraConfig';
+import ParseURLItem from './ParseURLItem';
+import ProjectItem from './ProjectItem';
 const Option = Select.Option;
 export interface IFormRef {
   form: FormInstance<IDatasource>;

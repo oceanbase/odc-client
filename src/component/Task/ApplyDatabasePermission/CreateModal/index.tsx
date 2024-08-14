@@ -15,31 +15,31 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
+import { listProjects } from '@/common/network/project';
 import { createTask } from '@/common/network/task';
+import HelpDoc from '@/component/helpDoc';
+import DatabaseSelecter from '@/component/Task/component/DatabaseSelecter';
 import { TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { DatabasePermissionType } from '@/d.ts/database';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
+import { useRequest } from 'ahooks';
 import {
+  Alert,
   Button,
+  Checkbox,
+  DatePicker,
   Drawer,
   Form,
+  Input,
+  message,
   Modal,
   Select,
   Space,
-  Input,
-  message,
-  DatePicker,
-  Checkbox,
-  Alert,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import { useRequest } from 'ahooks';
-import { listProjects } from '@/common/network/project';
-import DatabaseSelecter from '@/component/Task/component/DatabaseSelecter';
-import HelpDoc from '@/component/helpDoc';
+import React, { useEffect, useState } from 'react';
 import styles from './index.less';
 
 const CheckboxGroup = Checkbox.Group;

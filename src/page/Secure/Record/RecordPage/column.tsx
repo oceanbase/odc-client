@@ -18,13 +18,13 @@ import Action from '@/component/Action';
 import SearchFilter from '@/component/SearchFilter';
 import TreeFilter from '@/component/TreeFilter';
 import UserPopover from '@/component/UserPopover';
+import { IUserMap } from '@/constant/record';
 import { AuditEventResult } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { FilterFilled, SearchOutlined } from '@ant-design/icons';
 import { DataNode } from 'antd/lib/tree';
 import { Status } from './component';
-import { IUserMap } from '@/constant/record';
 
 export const getPageColumns = (params: {
   openDetailModal: (args: { id: number; [key: string]: any }) => void;

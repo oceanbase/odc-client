@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import RadioItem from '../Item/RadioItem';
-import { IODCSetting, ODCSettingGroup } from '../config';
-import { EThemeConfigKey } from '@/store/setting';
 import { localeList } from '@/constant';
+import { EThemeConfigKey } from '@/store/setting';
+import { formatMessage } from '@/util/intl';
+import { IODCSetting, ODCSettingGroup } from '../config';
+import RadioItem from '../Item/RadioItem';
 
 const preferenceGroup: ODCSettingGroup = {
   label: formatMessage({ id: 'src.component.ODCSetting.config.774332B4', defaultMessage: '外观' }), //'外观'

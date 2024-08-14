@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { createTask, getDatasourceUsers, getLockDatabaseUserRequired } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
-import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType, IDatasourceUser } from '@/d.ts';
+import { IDatasourceUser, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
+import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { mbToKb } from '@/util/utils';
 import {
@@ -36,17 +38,16 @@ import {
   Modal,
   Radio,
   Row,
-  Space,
   Select,
+  Space,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
-import styles from './index.less';
 import ThrottleFormItem from '../../component/ThrottleFormItem';
-import { SettingStore } from '@/store/setting';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { OscMaxRowLimit, OscMaxDataSizeLimit } from '../../const';
+import { OscMaxDataSizeLimit, OscMaxRowLimit } from '../../const';
+
+import styles from './index.less';
 
 interface IProps {
   modalStore?: ModalStore;

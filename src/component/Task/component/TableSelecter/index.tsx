@@ -19,6 +19,7 @@ import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { listDatabases } from '@/common/network/database';
 import { getTableListWithoutSession } from '@/common/network/table';
 import ExportCard from '@/component/ExportCard';
+import { EnvColorMap } from '@/constant';
 import { IDatabase } from '@/d.ts/database';
 import { TablePermissionType } from '@/d.ts/table';
 import { ReactComponent as TableSvg } from '@/svgr/menuTable.svg';
@@ -26,17 +27,9 @@ import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { Badge, Empty, Popconfirm, Space, Spin, Tree, Typography } from 'antd';
 import { DataNode, EventDataNode, TreeProps } from 'antd/lib/tree';
 import classnames from 'classnames';
-import React, {
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useState,
-  useRef,
-} from 'react';
 import { isNumber } from 'lodash';
+import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import styles from './index.less';
-import { EnvColorMap } from '@/constant';
 
 export type TableItem = { databaseId: number; tableName: string; tableId?: number };
 

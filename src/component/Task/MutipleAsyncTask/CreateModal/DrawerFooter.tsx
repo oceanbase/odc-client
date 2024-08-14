@@ -1,5 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import { Space, Button } from 'antd';
+import { Button, Space } from 'antd';
 
 const DrawerFooter: React.FC<{
   hasEdit: boolean;

@@ -15,7 +15,7 @@
  */
 
 import { INlsObject, ITable, ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
-import { ITableModel, TableColumn } from '@/page/Workspace/components/CreateTable/interface';
+import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import sessionManager from '@/store/sessionManager';
 import setting from '@/store/setting';
 import { getNlsValueKey } from '@/util/column';

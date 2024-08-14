@@ -1,7 +1,7 @@
 import FormItemPanel from '@/component/FormItemPanel';
 import { TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Form, Space, AutoComplete, InputNumber, Radio } from 'antd';
+import { AutoComplete, Form, InputNumber, Radio, Space } from 'antd';
 import DescriptionInput from '../../component/DescriptionInput';
 import { ErrorStrategy } from './helper';
 import styles from './index.less';

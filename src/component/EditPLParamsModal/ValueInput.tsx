@@ -17,7 +17,7 @@
 import { ConnectionMode } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { MenuOutlined } from '@ant-design/icons';
-import { Dropdown, Input, Menu } from 'antd';
+import { Dropdown, Input } from 'antd';
 import React, { useMemo } from 'react';
 
 interface IProps {

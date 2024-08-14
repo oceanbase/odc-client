@@ -18,12 +18,11 @@ import { formatMessage } from '@/util/intl';
 import { listDatabases } from '@/common/network/database';
 import ExportCard from '@/component/ExportCard';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
-import React, { useCallback, useEffect, useState } from 'react';
+import { DeleteOutlined } from '@ant-design/icons';
+import { Checkbox, Empty, Popconfirm, Space, Spin, Tooltip, Tree, Typography } from 'antd';
 import { DataNode, TreeProps } from 'antd/lib/tree';
-import { ReactComponent as DatabaseSvg } from '@/svgr/database.svg';
-import Icon, { DeleteOutlined } from '@ant-design/icons';
-import { Empty, Popconfirm, Space, Spin, Tree, Typography, Checkbox, Tooltip } from 'antd';
 import classnames from 'classnames';
+import React, { useCallback, useEffect, useState } from 'react';
 import styles from './index.less';
 
 const { Text } = Typography;

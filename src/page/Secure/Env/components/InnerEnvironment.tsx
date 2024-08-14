@@ -15,17 +15,17 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
+import { setEnabled } from '@/common/network/env';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { IManagerIntegration } from '@/d.ts';
+import { IEnvironment } from '@/d.ts/environment';
 import { RuleType } from '@/d.ts/rule';
-import { Tabs, message } from 'antd';
+import { message, Tabs } from 'antd';
+import { useState } from 'react';
 import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
 import EnvironmentInfo from './EnvironmentInfo';
 import EnvironmentTable from './EnvironmentTable';
 import styles from './index.less';
-import { IEnvironment } from '@/d.ts/environment';
-import { IManagerIntegration } from '@/d.ts';
-import { setEnabled } from '@/common/network/env';
-import { useState } from 'react';
 
 export const RenderLevel: React.FC<{
   level: number | string;

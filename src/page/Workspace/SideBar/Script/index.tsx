@@ -18,6 +18,7 @@ import OSSUpload from '@/component/OSSDragger/Upload';
 import login from '@/store/login';
 import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { PlusOutlined, ReloadOutlined, UploadOutlined } from '@ant-design/icons';
 import { getLocale } from '@umijs/max';
 import { message } from 'antd';
@@ -27,7 +28,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import SideTabs from '../components/SideTabs';
 import ScriptFile from './ScriptFile';
 import Snippet from './Snippet';
-import tracert from '@/util/tracert';
 
 const Script: React.FC<{}> = function () {
   const snippetRef = useRef(null);
