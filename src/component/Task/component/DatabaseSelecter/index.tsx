@@ -24,6 +24,7 @@ import { DataNode, TreeProps } from 'antd/lib/tree';
 import classnames from 'classnames';
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from './index.less';
+import datasourceStatus from '@/store/datasourceStatus';
 
 const { Text } = Typography;
 
@@ -51,6 +52,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
     try {
       const res = await listDatabases(projectId, null, null, null, null, null, null, true, null);
       if (res?.contents) {
+        datasourceStatus.asyncUpdateStatus(res?.contents?.map((item) => item?.dataSource?.id));
         setDatabaseList(res?.contents);
       }
     } catch (e) {

@@ -144,7 +144,9 @@ const ObjectList = ({
   const renderAllTab = () => {
     return (
       <Spin spinning={loading}>
-        {!objectlist?.dbColumns?.length && !objectlist?.dbObjects?.length ? (
+        {!objectlist?.dbColumns?.length &&
+        !objectlist?.dbObjects?.length &&
+        !objectlist?.databases?.length ? (
           <div className={styles.objectlistBoxEmpty}>
             <Empty
               description={formatMessage({

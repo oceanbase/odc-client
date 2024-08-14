@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { BrowserWindow } from 'electron';
+import { app, BrowserWindow, dialog } from 'electron';
 import { PathnameStore } from '../../store';
+import log from '../../utils/log';
 import { downloadEvent, newWindowEvent } from './event';
 
 export function openMainWebWindow(mainWindow: BrowserWindow) {
@@ -31,7 +32,14 @@ export function openMainWebWindow(mainWindow: BrowserWindow) {
   if (process.env.ODC_DEBUG_MODE === 'open' || process.env.NODE_ENV === 'development') {
     mainWindow!.webContents.openDevTools();
   }
-  mainWindow!.loadURL(PathnameStore.getUrl());
+  mainWindow!.loadURL(PathnameStore.getUrl()).catch((e) => {
+    log.error('loadURL error', e);
+    dialog.showErrorBox(
+      `Open ODC Window Failed`,
+      `Please submit the log to the administrator（${app.getPath('userData')}/logs）`,
+    );
+    app.quit();
+  });
   PathnameStore.reset();
 
   return mainWindow;

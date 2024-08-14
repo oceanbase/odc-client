@@ -572,6 +572,12 @@ class UserPage extends React.PureComponent<IProps, IState> {
             });
             this.loadData();
           }}
+          onCancel={() => {
+            this.setState({
+              formModalVisible: false,
+              editId: null,
+            });
+          }}
         />
 
         <CommonDetailModal

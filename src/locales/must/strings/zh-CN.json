@@ -5082,7 +5082,7 @@
   "src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.6C33321C": "库内搜索",
   "src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.E74A1569": "继续搜索",
   "src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.939E5208": "如果检索不到已存在的数据库对象，请先同步元数据",
-  "src.page.Workspace.components.SQLResultSet.7F598F77": "共有 {count} 个 SQL 执行，当前正在执行第 { count } 个",
+  "src.page.Workspace.components.SQLResultSet.7F598F77": "共有 {count} 个 SQL 执行，当前正在执行第 { BinaryExpression1 } 个",
   "src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.DB7526F7": "申请库权限",
   "src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.5DDBC7F0": "全部搜索结果",
   "src.page.Project.User.ManageModal.Table.TaskApplyList.47C16695": "所属数据库",
