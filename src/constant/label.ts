@@ -99,6 +99,7 @@ export const ConnectTypeText = {
   [ConnectType.MYSQL]: 'MySQL',
   [ConnectType.DORIS]: 'Doris',
   [ConnectType.ORACLE]: 'Oracle',
+  [ConnectType.PG]: 'PostgreSQL',
 };
 
 export const DragInsertTypeText = {

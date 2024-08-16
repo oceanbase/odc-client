@@ -101,6 +101,13 @@ export default function NewDataBaseButton({
         });
         return;
       }
+      case ConnectionMode.PG: {
+        form.setFieldsValue({
+          collationName: 'C',
+          charsetName: 'UTF8',
+        });
+        return;
+      }
     }
   }, [mode, open]);
 

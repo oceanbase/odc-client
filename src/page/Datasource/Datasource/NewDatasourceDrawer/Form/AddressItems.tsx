@@ -248,6 +248,21 @@ const AddressItems: React.FC<IProps> = function (props) {
             </Col>
           );
         }
+        case 'databaseName': {
+          return (
+            <Col span={24}>
+              <Form.Item
+                required
+                label={`数据库名称`}
+                rules={[{ required: true, message: '请输入数据库名称' }]}
+                style={{ width: '100%', marginLeft: -1 }}
+                name="databaseName"
+              >
+                <Input style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+          );
+        }
         default: {
           return null;
         }
