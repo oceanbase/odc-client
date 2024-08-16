@@ -64,6 +64,7 @@ const NewDatasourceButton: React.FC<{
   const mysqlConnectTypes = getAllConnectTypes(IDataSourceType.MySQL);
   const dorisConnectTypes = getAllConnectTypes(IDataSourceType.Doris);
   const oracleConnectTypes = getAllConnectTypes(IDataSourceType.Oracle);
+  const pgConnectTypes = getAllConnectTypes(IDataSourceType.PG);
 
   const batchImportRef = useRef<{
     closeModal: () => void;
@@ -148,6 +149,28 @@ const NewDatasourceButton: React.FC<{
       });
       results = results.concat(
         dorisConnectTypes.map((item) => {
+          return {
+            label: ConnectTypeText[item],
+            key: item,
+            icon: (
+              <Icon
+                component={getDataSourceStyleByConnectType(item)?.icon?.component}
+                style={{
+                  color: getDataSourceStyleByConnectType(item)?.icon?.color,
+                  fontSize: '16px',
+                }}
+              />
+            ),
+          };
+        }),
+      );
+    }
+    if (pgConnectTypes?.length) {
+      results.push({
+        type: 'divider',
+      });
+      results = results.concat(
+        pgConnectTypes.map((item) => {
           return {
             label: ConnectTypeText[item],
             key: item,

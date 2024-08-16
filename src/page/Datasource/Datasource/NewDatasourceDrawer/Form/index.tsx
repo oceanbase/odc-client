@@ -89,6 +89,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         'sid',
         'serviceName',
         'userRole',
+        'databaseName',
       ]);
     } catch (e) {}
     if (!values) {

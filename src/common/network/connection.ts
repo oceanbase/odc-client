@@ -64,6 +64,7 @@ function generateConnectionParams(formData: Partial<IConnectionFormData>, isHide
     jdbcUrlParameters: formData.jdbcUrlParameters || {},
     temp: isHiden,
     sessionInitScript: formData.sessionInitScript,
+    databaseName: formData?.databaseName,
   };
   const config = getDataSourceModeConfig(formData.type)?.connection;
   config?.address?.items?.forEach((item) => {

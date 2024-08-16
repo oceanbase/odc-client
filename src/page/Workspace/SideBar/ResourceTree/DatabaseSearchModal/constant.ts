@@ -24,6 +24,14 @@ const mysqlObjectType = [
   DbObjectType.procedure,
 ];
 
+const pgObjectType = [
+  DbObjectType.table,
+  DbObjectType.column,
+  DbObjectType.function,
+  DbObjectType.view,
+  DbObjectType.trigger,
+];
+
 const oracleObjectType = [
   DbObjectType.database,
   DbObjectType.table,
@@ -42,6 +50,7 @@ export const objectTypeConfig = {
   [ConnectType.OB_MYSQL]: mysqlObjectType,
   [ConnectType.MYSQL]: mysqlObjectType,
   [ConnectType.DORIS]: mysqlObjectType,
+  [ConnectType.PG]: pgObjectType,
   [ConnectType.OB_ORACLE]: oracleObjectType,
   [ConnectType.ORACLE]: oracleObjectType,
   SEARCH_OBJECT_FROM_ALL_DATABASE: oracleObjectType,
