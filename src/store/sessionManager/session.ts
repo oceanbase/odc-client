@@ -218,7 +218,6 @@ class SessionStore {
       if (!this.database) {
         return;
       }
-      await this.initSessionStatus(true);
       if (!this.transState) {
         return false;
       }
@@ -254,7 +253,7 @@ class SessionStore {
     if (!data) {
       throw new Error('getSupportFeature error');
     }
-    await this.initSessionStatus();
+    await this.initSessionStatus(true);
     const keyValueMap = {
       support_show_foreign_key: 'enableShowForeignKey',
       support_partition_modify: 'enableCreatePartition',
