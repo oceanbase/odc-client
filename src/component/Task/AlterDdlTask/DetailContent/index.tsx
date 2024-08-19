@@ -28,7 +28,7 @@ import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { updateThrottleConfig } from '@/common/network/task';
 import setting from '@/store/setting';
-import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
+import { getFormatDateTime, mbToB, bToMb } from '@/util/utils';
 import { TaskStatus } from '@/d.ts';
 import { OscMaxRowLimit, OscMaxDataSizeLimit } from '../../const';
 
@@ -156,7 +156,7 @@ export function getItems(
 
   const handleDataSizeLimit = async (dataSizeLimit, handleClose) => {
     const res = await updateThrottleConfig(id, {
-      dataSizeLimit: mbToKb(dataSizeLimit),
+      dataSizeLimit: bToMb(dataSizeLimit),
       rowLimit: parameters?.rateLimitConfig?.rowLimit,
     });
     if (res) {
@@ -326,7 +326,7 @@ export function getItems(
                 suffix="MB/s"
                 min={0}
                 max={OscMaxDataSizeLimit}
-                defaultValue={kbToMb(parameters?.rateLimitConfig?.dataSizeLimit)}
+                defaultValue={mbToB(parameters?.rateLimitConfig?.dataSizeLimit)}
                 onOk={handleDataSizeLimit}
                 readlOnly={cantBeModified}
               />,
