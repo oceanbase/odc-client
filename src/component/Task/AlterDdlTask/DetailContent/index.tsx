@@ -156,7 +156,7 @@ export function getItems(
 
   const handleDataSizeLimit = async (dataSizeLimit, handleClose) => {
     const res = await updateThrottleConfig(id, {
-      dataSizeLimit: bToMb(dataSizeLimit),
+      dataSizeLimit: mbToB(dataSizeLimit),
       rowLimit: parameters?.rateLimitConfig?.rowLimit,
     });
     if (res) {
@@ -326,7 +326,7 @@ export function getItems(
                 suffix="MB/s"
                 min={0}
                 max={OscMaxDataSizeLimit}
-                defaultValue={mbToB(parameters?.rateLimitConfig?.dataSizeLimit)}
+                defaultValue={bToMb(parameters?.rateLimitConfig?.dataSizeLimit)}
                 onOk={handleDataSizeLimit}
                 readlOnly={cantBeModified}
               />,
