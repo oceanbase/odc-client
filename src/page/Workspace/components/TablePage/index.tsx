@@ -338,4 +338,5 @@ export default WrapSessionPage(
   inject('pageStore', 'sessionManagerStore', 'settingStore')(observer(TablePage)),
   true,
   true,
+  true,
 );

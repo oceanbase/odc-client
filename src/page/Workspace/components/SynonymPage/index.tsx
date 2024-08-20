@@ -304,12 +304,17 @@ class SynonymPage extends Component<
     );
   }
 }
-export default WrapSessionPage(function (props) {
-  return (
-    <SessionContext.Consumer>
-      {({ session }) => {
-        return <SynonymPage {...props} session={session} />;
-      }}
-    </SessionContext.Consumer>
-  );
-}, true);
+export default WrapSessionPage(
+  function (props) {
+    return (
+      <SessionContext.Consumer>
+        {({ session }) => {
+          return <SynonymPage {...props} session={session} />;
+        }}
+      </SessionContext.Consumer>
+    );
+  },
+  true,
+  false,
+  true,
+);

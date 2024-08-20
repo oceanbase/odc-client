@@ -363,12 +363,17 @@ class TypePage extends Component<
     );
   }
 }
-export default WrapSessionPage(function (props: IProps) {
-  return (
-    <SessionContext.Consumer>
-      {({ session }) => {
-        return <TypePage {...props} session={session} />;
-      }}
-    </SessionContext.Consumer>
-  );
-}, true);
+export default WrapSessionPage(
+  function (props: IProps) {
+    return (
+      <SessionContext.Consumer>
+        {({ session }) => {
+          return <TypePage {...props} session={session} />;
+        }}
+      </SessionContext.Consumer>
+    );
+  },
+  true,
+  false,
+  true,
+);

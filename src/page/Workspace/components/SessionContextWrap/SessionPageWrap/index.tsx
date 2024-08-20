@@ -26,9 +26,17 @@ interface IProps extends PropsWithChildren<any> {
   databaseFrom: 'project' | 'datasource';
   readonly?: boolean;
   useMaster?: boolean;
+  supportLocation?: boolean;
 }
 
-export function SessionPage({ children, databaseId, databaseFrom, readonly, useMaster }: IProps) {
+export function SessionPage({
+  children,
+  databaseId,
+  databaseFrom,
+  readonly,
+  useMaster,
+  supportLocation,
+}: IProps) {
   return (
     <SessionContextWrap
       useMaster={useMaster}
@@ -38,7 +46,7 @@ export function SessionPage({ children, databaseId, databaseFrom, readonly, useM
       {({ session }) => {
         return (
           <div className={styles.sessionWrap}>
-            <SessionSelect readonly={readonly} />
+            <SessionSelect readonly={readonly} supportLocation={supportLocation} />
             <div key={session?.sessionId} className={styles.content}>
               {!session ? <WorkSpacePageLoading /> : children}
             </div>
@@ -49,7 +57,12 @@ export function SessionPage({ children, databaseId, databaseFrom, readonly, useM
   );
 }
 
-export default function WrapSessionPage(Component, readonly?: boolean, useMaster?: boolean) {
+export default function WrapSessionPage(
+  Component,
+  readonly?: boolean,
+  useMaster?: boolean,
+  supportLocation?: boolean,
+) {
   return function WrapComponent(props) {
     return (
       <SessionPage
@@ -57,6 +70,7 @@ export default function WrapSessionPage(Component, readonly?: boolean, useMaster
         databaseId={props?.params?.databaseId}
         readonly={readonly}
         useMaster={useMaster}
+        supportLocation={supportLocation}
       >
         <Component {...props} />
       </SessionPage>
