@@ -39,10 +39,12 @@ import SessionDropdown from './SessionDropdown';
 export default function SessionSelect({
   readonly,
   feature,
+  supportLocation,
 }: {
   readonly?: boolean;
   dialectTypes?: ConnectionMode[];
   feature?: keyof IDataSourceModeConfig['features'];
+  supportLocation?: boolean;
 }) {
   const context = useContext(SessionContext);
   const resourceTreeContext = useContext(ResourceTreeContext);
@@ -52,7 +54,7 @@ export default function SessionSelect({
   }, []);
 
   function focusDataBase(e: React.MouseEvent) {
-    const datasourceId = context?.session?.odcDatabase?.dataSource?.id;
+    const datasourceId = context?.session?.odcDatabase?.dataSource?.id || context?.datasourceId;
     const databaseId = context?.session?.odcDatabase?.id;
     activityContext.setActiveKey(ActivityBarItemType.Database);
     resourceTreeContext.setSelectDatasourceId(datasourceId);
@@ -141,6 +143,7 @@ export default function SessionSelect({
           {renderEnv()}
           <div className={classNames(styles.readonly)}>
             {databaseItem}
+            {supportLocation && <>{aimItem}</>}
             {datasourceAndProjectItem}
           </div>
         </>
