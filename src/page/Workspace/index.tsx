@@ -77,6 +77,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     if (projectId) {
       resourceTreeContext?.setSelectTabKey(ResourceTreeTab.project);
       resourceTreeContext?.setSelectProjectId(projectId);
+      databaseId && resourceTreeContext?.setCurrentDatabaseId(databaseId);
       databaseId && openNewSQLPage(databaseId, 'project');
     } else if (datasourceId) {
       resourceTreeContext?.setSelectTabKey(ResourceTreeTab.datasource);

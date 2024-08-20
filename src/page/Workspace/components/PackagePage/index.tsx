@@ -641,12 +641,17 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
   }
 }
 
-export default WrapSessionPage(function (props) {
-  return (
-    <SessionContext.Consumer>
-      {({ session }) => {
-        return <PackagePage {...props} session={session} />;
-      }}
-    </SessionContext.Consumer>
-  );
-}, true);
+export default WrapSessionPage(
+  function (props) {
+    return (
+      <SessionContext.Consumer>
+        {({ session }) => {
+          return <PackagePage {...props} session={session} />;
+        }}
+      </SessionContext.Consumer>
+    );
+  },
+  true,
+  false,
+  true,
+);
