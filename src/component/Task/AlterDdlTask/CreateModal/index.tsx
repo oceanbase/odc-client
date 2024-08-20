@@ -27,7 +27,7 @@ import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { mbToKb } from '@/util/utils';
+import { mbToB } from '@/util/utils';
 import {
   Alert,
   Button,
@@ -147,7 +147,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             rowLimit || dataSizeLimit
               ? {
                   rowLimit,
-                  dataSizeLimit: mbToKb(dataSizeLimit),
+                  dataSizeLimit: mbToB(dataSizeLimit),
                 }
               : null,
         };
