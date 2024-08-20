@@ -609,6 +609,16 @@ export const kbToMb = (value: number) => {
   return value / 1024;
 };
 
+// MB -> B
+export const mbToB = (value: number) => {
+  return value * 1024 * 1024;
+};
+
+// B -> MB
+export const bToMb = (value: number) => {
+  return value / 1024 / 1024;
+};
+
 /**
  * https://tc39.es/proposal-array-grouping/#sec-object.groupby
  * @param array object array => [{ level: 1, name: 'test1'}, { level: 1, name: 'test2'}, { level: 3, name: 'test3'}]

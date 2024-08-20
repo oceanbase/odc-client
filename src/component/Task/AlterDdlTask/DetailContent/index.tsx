@@ -22,7 +22,7 @@ import type { ITaskResult, TaskDetail } from '@/d.ts';
 import { TaskExecStrategy, TaskStatus } from '@/d.ts';
 import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime, kbToMb, mbToKb } from '@/util/utils';
+import { bToMb, getFormatDateTime, kbToMb, mbToB, mbToKb } from '@/util/utils';
 import { message, Typography } from 'antd';
 import React from 'react';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
@@ -163,7 +163,7 @@ export function getItems(
 
   const handleDataSizeLimit = async (dataSizeLimit, handleClose) => {
     const res = await updateThrottleConfig(id, {
-      dataSizeLimit: mbToKb(dataSizeLimit),
+      dataSizeLimit: mbToB(dataSizeLimit),
       rowLimit: parameters?.rateLimitConfig?.rowLimit,
     });
     if (res) {
@@ -348,7 +348,7 @@ export function getItems(
                 suffix="MB/s"
                 min={0}
                 max={OscMaxDataSizeLimit}
-                defaultValue={kbToMb(parameters?.rateLimitConfig?.dataSizeLimit)}
+                defaultValue={bToMb(parameters?.rateLimitConfig?.dataSizeLimit)}
                 onOk={handleDataSizeLimit}
                 readlOnly={cantBeModified}
               />,
