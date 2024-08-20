@@ -628,4 +628,5 @@ export default WrapSessionPage(
   },
   true,
   true,
+  true,
 );

@@ -370,12 +370,17 @@ class SequencePage extends Component<IProps & { session: SessionStore }, IState>
   }
 }
 
-export default WrapSessionPage(function (props: IProps) {
-  return (
-    <SessionContext.Consumer>
-      {({ session }) => {
-        return <SequencePage {...props} session={session} />;
-      }}
-    </SessionContext.Consumer>
-  );
-}, true);
+export default WrapSessionPage(
+  function (props: IProps) {
+    return (
+      <SessionContext.Consumer>
+        {({ session }) => {
+          return <SequencePage {...props} session={session} />;
+        }}
+      </SessionContext.Consumer>
+    );
+  },
+  true,
+  false,
+  true,
+);

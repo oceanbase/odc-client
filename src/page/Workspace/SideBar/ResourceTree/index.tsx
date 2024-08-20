@@ -108,10 +108,16 @@ const ResourceTree: React.FC<IProps> = function ({
   const setDatabaseSelected = (key) => {
     setExpandedKeys([key]);
     treeContext.setCurrentDatabaseId(key);
-    // 滚动到指定高度
-    const findIndex = databases.findIndex((i) => i.id === key);
-    treeRef?.current?.scrollTo({ top: findIndex * 28 });
   };
+
+  useEffect(() => {
+    //滚动到指定高度
+    const key = treeContext?.currentDatabaseId;
+    const findIndex = databases.findIndex((i) => i.id === key);
+    setTimeout(() => {
+      treeRef?.current?.scrollTo({ top: findIndex * 28 });
+    });
+  }, [treeContext?.currentDatabaseId, databases]);
 
   const treeData: TreeDataNode[] = (() => {
     const root = databases
