@@ -187,7 +187,7 @@ class SessionStore {
         this.dataTypes = data.dataTypeUnits;
         this.charsets = data.charsets;
         this.collations = data.collations;
-        this.initSupportFeature(data.supports);
+        await this.initSupportFeature(data.supports);
         this.isAlive = true;
         return await this.initSessionBaseInfo();
       }
