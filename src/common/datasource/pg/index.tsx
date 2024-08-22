@@ -58,7 +58,7 @@ const items: Record<ConnectType.PG, IDataSourceModeConfig> = {
   [ConnectType.PG]: {
     connection: {
       address: {
-        items: ['ip', 'port', 'databaseName'],
+        items: ['ip', 'port', 'catalogName'],
       },
       account: true,
       sys: false,

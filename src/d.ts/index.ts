@@ -824,7 +824,7 @@ export interface IConnection {
   serviceName?: string;
   userRole?: string;
   readonly projectName?: string;
-  databaseName?: string;
+  catalogName?: string;
 }
 
 export interface IConnectionLabel {

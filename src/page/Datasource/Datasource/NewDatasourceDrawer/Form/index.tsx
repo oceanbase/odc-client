@@ -89,7 +89,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         'sid',
         'serviceName',
         'userRole',
-        'databaseName',
+        'catalogName',
       ]);
     } catch (e) {}
     if (!values) {
