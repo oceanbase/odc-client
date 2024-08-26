@@ -19,6 +19,7 @@ import SessionStore from '@/store/sessionManager/session';
 import type { IconComponentProps } from '@ant-design/icons/lib/components/Icon';
 import React from 'react';
 import { ResourceNodeType, TreeDataNode } from '../type';
+import { DatabasePermissionType } from '@/d.ts/database';
 
 export interface IMenuItemConfig {
   // 每一个菜单子项command的唯一标识符，最终用来触发对应的action
@@ -43,6 +44,8 @@ export interface IMenuItemConfig {
     databaseFrom: 'datasource' | 'project',
     pollingDatabase?: () => void,
   ) => void;
+  // 所需权限点list
+  needAccessTypeList?: DatabasePermissionType[];
 }
 
 export interface IProps {

@@ -29,6 +29,7 @@ import { IMenuItemConfig, IProps } from './type';
 import { EnvColorMap } from '@/constant';
 import classNames from 'classnames';
 import { ReactNode } from 'react';
+import { menuAccessWrap } from './config/database';
 
 export const hasExportPermission = (dbSession: SessionStore) => {
   return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
@@ -143,7 +144,11 @@ const TreeNodeMenu = (props: IProps) => {
               return {
                 key: child.key,
                 className: styles.ellipsis,
-                label: child.text,
+                label: menuAccessWrap(
+                  child?.needAccessTypeList,
+                  node?.data?.authorizedPermissionTypes,
+                  child.text as ReactNode,
+                ),
               };
             })
             ?.filter(Boolean),
