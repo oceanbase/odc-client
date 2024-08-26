@@ -38,6 +38,7 @@ import type {
   TaskRecord,
   IIPartitionPlanTaskDetail,
   IResponseData,
+  ILogicalDatabaseAsyncTaskParams,
 } from '@/d.ts';
 import {
   CommonTaskLogType,
@@ -66,6 +67,7 @@ import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
 import { ApplyTablePermissionTaskContent } from './ApplyTablePermission';
 import { StructureComparisonTaskContent } from './StructureComparisonTask';
 import { MutipleAsyncTaskContent } from './MutipleAsyncTask';
+import { LogicDatabaseAsyncTaskContent } from './LogicDatabaseAsyncTask';
 import { getProjectWithErrorCatch } from '@/common/network/project';
 import { ProjectRole } from '@/d.ts/project';
 import userStore from '@/store/login';
@@ -155,9 +157,6 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     const data = await getTaskDetail(detailId);
     setLoading(false);
     if (data) {
-      // if (data.type === TaskType.APPLY_DATABASE_PERMISSION) { // TODO 测试写死的， 删除即可
-      //   data.type = TaskType.APPLY_TABLE_PERMISSION // TODO 测试写死的， 删除即可
-      // }// TODO 测试写死的， 删除即可
       setTask(data);
       setDisabledSubmit(false);
     }
@@ -427,6 +426,16 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     }
     case TaskType.MULTIPLE_ASYNC: {
       taskContent = <MutipleAsyncTaskContent task={task} result={result} hasFlow={hasFlow} />;
+      break;
+    }
+    case TaskType.LOGICAL_DATABASE_CHANGE: {
+      taskContent = (
+        <LogicDatabaseAsyncTaskContent
+          task={task as TaskDetail<ILogicalDatabaseAsyncTaskParams>}
+          result={result}
+          hasFlow={hasFlow}
+        />
+      );
       break;
     }
     default: {

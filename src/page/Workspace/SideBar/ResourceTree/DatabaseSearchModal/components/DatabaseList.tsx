@@ -77,7 +77,7 @@ const DatabaseList = ({
           filter: 'grayscale(1) opacity(0.6)',
           fontSize: 14,
         }}
-        component={DBIcon.component}
+        component={DBIcon?.component}
       />
     );
   };

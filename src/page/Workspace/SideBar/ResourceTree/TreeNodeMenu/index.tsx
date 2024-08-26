@@ -164,7 +164,7 @@ const TreeNodeMenu = (props: IProps) => {
         };
       }
       menuItems.push(menuItem);
-      if (item.hasDivider) {
+      if (typeof item.hasDivider === 'function' ? item.hasDivider(node) : item.hasDivider) {
         menuItems.push({
           type: 'divider',
         });

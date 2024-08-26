@@ -22,6 +22,7 @@ export function gotoSQLWorkspace(
   databaseId?: number,
   currentPage?: boolean,
   tabKey: string = '',
+  isLogicalDatabase: boolean = false,
 ) {
   const url =
     location.origin +
@@ -30,7 +31,7 @@ export function gotoSQLWorkspace(
       ? `#/sqlworkspace/${tabKey}/${datasourceId}`
       : `#/sqlworkspace?projectId=${projectId || ''}&datasourceId=${
           datasourceId || ''
-        }&databaseId=${databaseId || ''}`);
+        }&databaseId=${databaseId || ''}&isLogicalDatabase=${isLogicalDatabase}`);
 
   const name = 'sqlworkspace' + '%' + login.organizationId + tabKey;
   if (currentPage) {

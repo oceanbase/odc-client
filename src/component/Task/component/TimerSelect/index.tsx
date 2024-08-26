@@ -23,9 +23,7 @@ import type { RangePickerProps } from 'antd/es/date-picker';
 import moment from 'moment';
 import React from 'react';
 
-interface IProps {
-  isReadonlyPublicConn?: boolean;
-}
+interface IProps {}
 
 const disabledDate: RangePickerProps['disabledDate'] = (current) => {
   return current && current < moment();

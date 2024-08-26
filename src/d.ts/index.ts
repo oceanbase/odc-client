@@ -738,6 +738,7 @@ export enum ConnectionMode {
   OB_MYSQL = 'OB_MYSQL',
   OB_ORACLE = 'OB_ORACLE',
   ALL = 'ALL',
+  UNKNOWN = 'UNKNOWN',
 }
 
 export enum IConnectionType {
@@ -1997,6 +1998,7 @@ export enum TaskPageType {
   APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
   MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
+  LOGICAL_DATABASE_CHANGE = 'LOGICAL_DATABASE_CHANGE',
 }
 
 export enum TaskType {
@@ -2020,6 +2022,7 @@ export enum TaskType {
   APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
   MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
+  LOGICAL_DATABASE_CHANGE = 'LOGICAL_DATABASE_CHANGE',
 }
 
 export enum TaskJobType {
@@ -2403,7 +2406,8 @@ export type TaskRecordParameters =
   | IResultSetExportTaskParams
   | IApplyPermissionTaskParams
   | IApplyDatabasePermissionTaskParams
-  | IMultipleAsyncTaskParams;
+  | IMultipleAsyncTaskParams
+  | ILogicalDatabaseAsyncTaskParams;
 
 export interface ITaskResult {
   autoModifyTimeout?: boolean;
@@ -2667,6 +2671,22 @@ export interface CreateStructureComparisonTaskRecord {
   };
 }
 export interface IAsyncTaskParams {
+  timeoutMillis: number;
+  errorStrategy: string;
+  sqlContent: string;
+  sqlObjectIds: string[];
+  sqlObjectNames: string[];
+  delimiter: string;
+  queryLimit: number;
+  rollbackSqlContent: string;
+  rollbackSqlObjectIds: string[];
+  rollbackSqlObjectNames: string[];
+  generateRollbackPlan: boolean;
+  parentFlowInstanceId?: number;
+  retryTimes: number;
+}
+
+export interface ILogicalDatabaseAsyncTaskParams {
   timeoutMillis: number;
   errorStrategy: string;
   sqlContent: string;

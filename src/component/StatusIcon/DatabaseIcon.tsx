@@ -23,12 +23,14 @@ import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { IDatabase } from '@/d.ts/database';
 import datasourceStatus from '@/store/datasourceStatus';
 import { observer } from 'mobx-react';
+import LogicIcon from '../logicIcon';
+import { isLogicalDatabase } from '@/util/database';
 
 export default observer(function DataBaseStatusIcon({ item }: { item: IDatabase }) {
   const datasource = item.dataSource;
-  const statusInfo = datasourceStatus.statusMap.get(datasource?.id) || datasource.status;
-  let status = statusInfo?.status;
-  const icon = getDataSourceStyleByConnectType(datasource?.type)?.dbIcon;
+  const statusInfo = datasourceStatus.statusMap.get(datasource?.id) || datasource?.status;
+  let status = isLogicalDatabase(item) ? IConnectionStatus.ACTIVE : statusInfo?.status;
+  const icon = getDataSourceStyleByConnectType(datasource?.type || item?.connectType)?.dbIcon;
   switch (status) {
     case IConnectionStatus.TESTING: {
       return (
@@ -57,7 +59,10 @@ export default observer(function DataBaseStatusIcon({ item }: { item: IDatabase 
             defaultMessage: '有效连接',
           })}
         >
-          <Icon component={icon.component} style={{ fontSize: 16 }} />
+          <div style={{ display: 'flex', height: '100%', alignItems: 'center' }}>
+            <Icon component={icon?.component} style={{ fontSize: 16, paddingRight: 4 }} />
+            {isLogicalDatabase(item) && <LogicIcon />}
+          </div>
         </Tooltip>
       );
     }

@@ -19,11 +19,14 @@ import { listDatabases } from '@/common/network/database';
 import ExportCard from '@/component/ExportCard';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { DeleteOutlined } from '@ant-design/icons';
-import { Checkbox, Empty, Popconfirm, Space, Spin, Tooltip, Tree, Typography } from 'antd';
 import { DataNode, TreeProps } from 'antd/lib/tree';
+import { ReactComponent as DatabaseSvg } from '@/svgr/database.svg';
+import { Empty, Popconfirm, Space, Spin, Tree, Typography, Checkbox, Tooltip, Badge } from 'antd';
 import classnames from 'classnames';
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from './index.less';
+import { EnvColorMap } from '@/constant';
+import { DBType } from '@/d.ts/database';
 import datasourceStatus from '@/store/datasourceStatus';
 
 const { Text } = Typography;
@@ -34,6 +37,12 @@ interface IProps {
   // 最多可以选中的数据的数量
   maxCount?: number;
   onChange?: (newValue: any[]) => void;
+  databaseFilter?: any;
+  baseDatabase?: number;
+  showEnv?: boolean;
+  // 选择说明
+  infoText?: string;
+  setShowSelectLogicDBTip?: (v: boolean) => void;
 }
 
 const DatabaseSelecter: React.FC<IProps> = function ({
@@ -41,6 +50,11 @@ const DatabaseSelecter: React.FC<IProps> = function ({
   value: checkedKeys = [],
   maxCount,
   onChange,
+  databaseFilter,
+  baseDatabase,
+  showEnv,
+  infoText,
+  setShowSelectLogicDBTip,
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [sourceSearchValue, setSourceSearchValue] = useState(null);
@@ -52,8 +66,14 @@ const DatabaseSelecter: React.FC<IProps> = function ({
     try {
       const res = await listDatabases(projectId, null, null, null, null, null, null, true, null);
       if (res?.contents) {
-        datasourceStatus.asyncUpdateStatus(res?.contents?.map((item) => item?.dataSource?.id));
-        setDatabaseList(res?.contents);
+        setDatabaseList(databaseFilter ? databaseFilter(res?.contents) : res?.contents);
+        datasourceStatus.asyncUpdateStatus([
+          ...new Set(
+            res?.contents
+              ?.filter((item) => item.type !== 'LOGICAL')
+              ?.map((item) => item?.dataSource?.id),
+          ),
+        ]);
       }
     } catch (e) {
       console.trace(e);
@@ -72,7 +92,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
       handleReset();
       loadExportObjects();
     }
-  }, [projectId]);
+  }, [projectId, baseDatabase]);
 
   const getCheckedTreeData = () => {
     const validDatabaseList =
@@ -83,7 +103,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
             ? true
             : item?.name?.toLowerCase().indexOf(targetSearchValue?.toLowerCase()) !== -1;
         }) ?? [];
-    return getTreeData(validDatabaseList);
+    return getTreeData(validDatabaseList, true);
   };
 
   const getAllTreeData = () => {
@@ -109,17 +129,30 @@ const DatabaseSelecter: React.FC<IProps> = function ({
     }
   };
 
-  function getTreeData(validDatabaseList: any[]) {
+  function envRender(environment) {
+    if (!environment) {
+      return null;
+    }
+    return (
+      <Badge
+        className={styles.env}
+        color={EnvColorMap[environment?.style?.toUpperCase()]?.tipColor}
+      />
+    );
+  }
+
+  function getTreeData(validDatabaseList: any[], isSelectedTree?: boolean) {
     const allTreeData = validDatabaseList?.map((item) => {
-      const disabled = maxCount
+      const disabledByCount = maxCount
         ? !(checkedKeys.length < maxCount || checkedKeys.includes(item.id))
         : false;
+      const disabledByBaseDb = item?.id === baseDatabase;
       return {
         title: (
           <Tooltip
             placement="topLeft"
             title={
-              disabled
+              disabledByCount
                 ? formatMessage(
                     {
                       id: 'src.component.Task.component.DatabaseSelecter.EC5561FD',
@@ -127,24 +160,28 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                     },
                     { maxCount },
                   )
+                : disabledByBaseDb
+                ? '默认选中基准库'
                 : ''
             }
           >
             <div
-              style={{ display: 'flex', width: 320 }}
+              style={{ display: 'flex', width: 260, justifyContent: 'space-between' }}
               onClick={() => {
-                handleCheck(item?.id);
+                !isSelectedTree && handleCheck(item?.id);
               }}
             >
-              <Text style={{ wordBreak: 'keep-all', paddingRight: 4 }}>{item?.name}</Text>
-              <Text type="secondary" ellipsis>
-                {item?.dataSource?.name}
-              </Text>
+              <div>
+                <Text style={{ wordBreak: 'keep-all', paddingRight: 4 }}>{item?.name}</Text>
+                <Text type="secondary" ellipsis>
+                  {item?.dataSource?.name}
+                </Text>
+              </div>
+              {showEnv && !isSelectedTree && envRender(item?.environment)}
             </div>
           </Tooltip>
         ),
-
-        disabled,
+        disabled: disabledByCount || disabledByBaseDb,
         key: item?.id,
         icon: <DataBaseStatusIcon item={item} />,
       };
@@ -181,11 +218,16 @@ const DatabaseSelecter: React.FC<IProps> = function ({
    */
   const handleChosenDataBase: TreeProps['onCheck'] = useCallback(
     (_checkedKeys, { checked, node: { key: curNodeKey } }) => {
+      let list;
       if (checked) {
-        onChange([...checkedKeys, curNodeKey]);
+        list = [...(checkedKeys || []), curNodeKey];
       } else {
-        onChange(checkedKeys.filter((key) => key !== curNodeKey));
+        list = checkedKeys?.filter((key) => key !== curNodeKey);
       }
+      setShowSelectLogicDBTip?.(
+        databaseList?.find((i) => list?.includes(i?.id) && i?.type === DBType.LOGICAL),
+      );
+      onChange(list || []);
     },
     [checkedKeys, onChange],
   );
@@ -200,113 +242,124 @@ const DatabaseSelecter: React.FC<IProps> = function ({
   const indeterminate = selectedTreeDataCount && selectedTreeDataCount < allTreeDataCount;
 
   return (
-    <div className={styles.selecter}>
-      <div className={styles.content}>
-        <Spin spinning={isLoading}>
+    <>
+      {infoText && (
+        <div style={{ color: 'var(--text-color-hint)', paddingBottom: 4 }}>
+          仅支持选择与基准库相同数据源类型和环境的数据库
+        </div>
+      )}
+      <div className={styles.selecter}>
+        <div className={styles.content}>
+          <Spin spinning={isLoading}>
+            <ExportCard
+              title={
+                <Space size={4}>
+                  <Checkbox
+                    indeterminate={indeterminate}
+                    checked={checkAll}
+                    onChange={handleSwitchSelectAll}
+                    style={{ marginRight: '8px' }}
+                  />
+
+                  <span>
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.component.DatabaseSelecter.D17AE43F' /*选择数据库*/,
+                        defaultMessage: '选择数据库',
+                      }) /* 选择数据库 */
+                    }
+                  </span>
+                  <Text type="secondary">({allTreeDataCount})</Text>
+                </Space>
+              }
+              onSearch={handleSearch}
+            >
+              <Tree
+                showIcon
+                checkable
+                height={300}
+                className={styles.allTree}
+                treeData={allTreeData}
+                checkedKeys={checkedKeys}
+                onCheck={handleChosenDataBase}
+              />
+            </ExportCard>
+          </Spin>
+        </div>
+        <div className={classnames(styles.content, styles.hasIconTree)}>
           <ExportCard
             title={
-              <Space size={4}>
-                <Checkbox
-                  indeterminate={indeterminate}
-                  checked={checkAll}
-                  onChange={handleSwitchSelectAll}
-                  style={{ marginRight: '8px' }}
-                />
-
-                <span>
+              formatMessage(
+                {
+                  id: 'src.component.Task.component.DatabaseSelecter.D06DB16B',
+                  defaultMessage: '已选 {selectedTreeDataCount} 项',
+                },
+                { selectedTreeDataCount },
+              ) /*`已选 ${selectedTreeDataCount} 项`*/
+            }
+            onSearch={(v) => setTargetSearchValue(v)}
+            extra={
+              <Popconfirm
+                onConfirm={() => {
+                  onChange([]);
+                }}
+                placement="left"
+                title={
+                  formatMessage({
+                    id: 'src.component.Task.component.DatabaseSelecter.2FB288CA',
+                    defaultMessage: '确定要清空已选对象吗？',
+                  }) /*"确定要清空已选对象吗？"*/
+                }
+              >
+                <a>
                   {
                     formatMessage({
-                      id: 'src.component.Task.component.DatabaseSelecter.D17AE43F' /*选择数据库*/,
-                      defaultMessage: '选择数据库',
-                    }) /* 选择数据库 */
+                      id: 'src.component.Task.component.DatabaseSelecter.302B4FB5' /*清空*/,
+                      defaultMessage: '清空',
+                    }) /* 清空 */
                   }
-                </span>
-                <Text type="secondary">({allTreeDataCount})</Text>
-              </Space>
+                </a>
+              </Popconfirm>
             }
-            onSearch={handleSearch}
+            disabled
           >
-            <Tree
-              showIcon
-              checkable
-              height={300}
-              className={styles.allTree}
-              treeData={allTreeData}
-              checkedKeys={checkedKeys}
-              onCheck={handleChosenDataBase}
-            />
+            {selectedTreeData?.length ? (
+              <Tree
+                showIcon
+                defaultExpandAll
+                autoExpandParent
+                checkable={false}
+                selectable={false}
+                height={300}
+                className={styles.selectedTree}
+                treeData={selectedTreeData}
+                titleRender={(node) => {
+                  const disabledByBaseDb = node?.key === baseDatabase;
+
+                  return (
+                    <div className={styles.node}>
+                      <div className={styles.nodeName}>{node.title}</div>
+                      {!disabledByBaseDb && (
+                        <a
+                          className={styles.delete}
+                          onClick={() => {
+                            handleDelete(node);
+                          }}
+                        >
+                          <DeleteOutlined />
+                        </a>
+                      )}
+                    </div>
+                  );
+                }}
+              />
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
           </ExportCard>
-        </Spin>
+        </div>
       </div>
-      <div className={classnames(styles.content, styles.hasIconTree)}>
-        <ExportCard
-          title={
-            formatMessage(
-              {
-                id: 'src.component.Task.component.DatabaseSelecter.D06DB16B',
-                defaultMessage: '已选 {selectedTreeDataCount} 项',
-              },
-              { selectedTreeDataCount },
-            ) /*`已选 ${selectedTreeDataCount} 项`*/
-          }
-          onSearch={(v) => setTargetSearchValue(v)}
-          extra={
-            <Popconfirm
-              onConfirm={() => {
-                onChange([]);
-              }}
-              placement="left"
-              title={
-                formatMessage({
-                  id: 'src.component.Task.component.DatabaseSelecter.2FB288CA',
-                  defaultMessage: '确定要清空已选对象吗？',
-                }) /*"确定要清空已选对象吗？"*/
-              }
-            >
-              <a>
-                {
-                  formatMessage({
-                    id: 'src.component.Task.component.DatabaseSelecter.302B4FB5' /*清空*/,
-                    defaultMessage: '清空',
-                  }) /* 清空 */
-                }
-              </a>
-            </Popconfirm>
-          }
-          disabled
-        >
-          {selectedTreeData?.length ? (
-            <Tree
-              showIcon
-              defaultExpandAll
-              autoExpandParent
-              checkable={false}
-              selectable={false}
-              height={300}
-              className={styles.selectedTree}
-              treeData={selectedTreeData}
-              titleRender={(node) => {
-                return (
-                  <div className={styles.node}>
-                    <div className={styles.nodeName}>{node.title}</div>
-                    <a
-                      className={styles.delete}
-                      onClick={() => {
-                        handleDelete(node);
-                      }}
-                    >
-                      <DeleteOutlined />
-                    </a>
-                  </div>
-                );
-              }}
-            />
-          ) : (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-          )}
-        </ExportCard>
-      </div>
-    </div>
+    </>
   );
 };
 

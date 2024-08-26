@@ -233,12 +233,14 @@ export class TablePage extends Page {
     tableName: string;
     topTab: TableTopTab;
     propsTab: TablePropsTab;
+    tableId: number;
   };
   constructor(
     databaseId: number,
     tableName: string,
     topTab: TableTopTab = TableTopTab.PROPS,
     propsTab: TablePropsTab = TablePropsTab.INFO,
+    tableId: number,
   ) {
     super();
     this.pageType = PageType.TABLE;
@@ -250,6 +252,7 @@ export class TablePage extends Page {
       tableName,
       topTab,
       propsTab,
+      tableId,
     };
   }
 }

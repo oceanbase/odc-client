@@ -27,6 +27,7 @@ import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { LoadingOutlined } from '@ant-design/icons';
+import { isLogicalDatabase } from '@/util/database';
 import { Tooltip, message, Typography } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
@@ -81,6 +82,9 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         tracert.click('a3112.b41896.c330992.d367627');
         openNewSQLPage(node.cid, databaseFrom);
       },
+      isHide: (_, node) => {
+        return isLogicalDatabase(node?.data);
+      },
     },
     {
       key: 'NEW_PL',
@@ -92,7 +96,10 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ],
       isHide(_, node) {
         const database: IDatabase = node.data;
-        return !getDataSourceModeConfig(database?.dataSource?.type)?.features?.anonymousBlock;
+        return (
+          !getDataSourceModeConfig(database?.dataSource?.type)?.features?.anonymousBlock ||
+          isLogicalDatabase(database)
+        );
       },
       ellipsis: true,
       run(session, node, databaseFrom) {
@@ -109,12 +116,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         }), //打开命令行窗口
       ],
       isHide(_, node) {
-        return !login.isPrivateSpace() || !setting.enableOBClient;
+        return !login.isPrivateSpace() || !setting.enableOBClient || isLogicalDatabase(node.data);
       },
       ellipsis: true,
       run(session, node) {
         const database: IDatabase = node.data;
-        openOBClientPage(database?.dataSource?.id, database?.id);
+        openOBClientPage(database?.dataSource?.id, database?.id) || isLogicalDatabase(database);
       },
     },
     {
@@ -127,6 +134,9 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ],
 
       ellipsis: true,
+      isHide(_, node) {
+        return isLogicalDatabase(node.data);
+      },
       children: [
         {
           key: 'TASK_EXPORT',
@@ -192,7 +202,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return !setting.enableDBImport;
+            return !setting.enableDBImport || isLogicalDatabase(node.data);
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -212,7 +222,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return !setting.enableMockdata;
+            return !setting.enableMockdata || isLogicalDatabase(node.data);
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -252,7 +262,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return !setting.enableOSC;
+            return !setting.enableOSC || isLogicalDatabase(node.data);
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -269,6 +279,9 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '影子表同步',
             }) /*'影子表同步'*/,
           ],
+          isHide(_, node) {
+            return isLogicalDatabase(node.data);
+          },
 
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
@@ -289,6 +302,9 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           ],
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
+          isHide(_, node) {
+            return isLogicalDatabase(node.data);
+          },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
             modal.changeStructureComparisonModal(true, {
@@ -308,9 +324,13 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ],
 
       ellipsis: true,
-      hasDivider:
-        setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'true' &&
-        (isClient() || isPersonal),
+      hasDivider(node) {
+        return (
+          setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'true' &&
+          !isLogicalDatabase(node?.data) &&
+          !(isClient() || isPersonal)
+        );
+      },
       isHide(_, node) {
         return isClient();
       },
@@ -346,7 +366,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return isClient();
+            return isClient() || isLogicalDatabase(node.data);
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -366,7 +386,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return isClient();
+            return isClient() || isLogicalDatabase(node.data);
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -386,7 +406,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return isClient();
+            return isClient() || isLogicalDatabase(node.data);
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -461,7 +481,10 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       },
       ellipsis: true,
       isHide(_, node) {
-        return setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'false';
+        return (
+          setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'false' ||
+          isLogicalDatabase(node.data)
+        );
       },
       run(session, node, databaseFrom, pollingDatabase) {
         const database: IDatabase = node.data;

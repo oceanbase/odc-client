@@ -32,6 +32,9 @@ import Database from './Database';
 import Notification from './Notification';
 import ProjectContext from './ProjectContext';
 import Sensitive from './Sensitive';
+import { ReactComponent as NewOpenSvg } from '@/svgr/newopen.svg';
+import Icon from '@ant-design/icons';
+
 import Setting from './Setting';
 import Task from './Task';
 import User from './User';
@@ -66,15 +69,10 @@ const ExtraContent = ({ projectId }) => {
             tracert.click('a3112.b64002.c330858.d367386');
             gotoSQLWorkspace(projectId);
           }}
-          type="primary"
           disabled={disabled}
         >
-          {
-            formatMessage({
-              id: 'odc.page.Project.LogOnToTheDatabase',
-              defaultMessage: '登录数据库',
-            }) /*登录数据库*/
-          }
+          SQL 控制台
+          <Icon component={NewOpenSvg} />
         </Button>
       </TooltipAction>
     </Space>

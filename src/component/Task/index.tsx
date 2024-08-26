@@ -106,7 +106,7 @@ const TaskManaerPage: React.FC<IProps> = (props) => {
     <>
       <div className={styles.task}>
         <div className={styles.sider}>
-          <Sider />
+          <Sider inProject={inProject} />
         </div>
         <Content
           projectId={projectId}
@@ -114,7 +114,6 @@ const TaskManaerPage: React.FC<IProps> = (props) => {
           defaultTaskType={defaultTaskType}
           defaultTaskId={isOrganizationMatch ? toInteger(defaultTaskId) : null}
         />
-
         <CreateModals projectId={projectId} theme="white" />
       </div>
     </>

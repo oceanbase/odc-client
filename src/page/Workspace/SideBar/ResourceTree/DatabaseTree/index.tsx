@@ -21,7 +21,7 @@ import { useRequest } from 'ahooks';
 import { listDatabases } from '@/common/network/database';
 import TreeTitle from './Title';
 import datasourceStatus from '@/store/datasourceStatus';
-import { IDatabase } from '@/d.ts/database';
+import { DBType, IDatabase } from '@/d.ts/database';
 
 interface IProps {
   openSelectPanel?: () => void;
@@ -57,7 +57,9 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
       setDatabases(databaseList?.filter((item) => !!item?.authorizedPermissionTypes?.length));
       const ids: Set<number> = new Set();
       databaseList.forEach((d) => {
-        ids.add(d.dataSource?.id);
+        if (d.type !== DBType.LOGICAL) {
+          ids.add(d.dataSource?.id);
+        }
       });
       datasourceStatus.asyncUpdateStatus(Array.from(ids));
     }

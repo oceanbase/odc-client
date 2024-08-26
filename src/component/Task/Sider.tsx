@@ -32,9 +32,10 @@ interface IProps {
   pageStore?: PageStore;
   className?: string;
   isPage?: boolean;
+  inProject?: boolean;
 }
 
-const Sider: React.FC<IProps> = function ({ taskStore, pageStore, className, isPage }) {
+const Sider: React.FC<IProps> = function ({ taskStore, pageStore, className, isPage, inProject }) {
   const firstEnabledTask = getFirstEnabledTask();
   const pageKey = isPage ? pageStore?.activePageKey : taskStore?.taskPageType;
 

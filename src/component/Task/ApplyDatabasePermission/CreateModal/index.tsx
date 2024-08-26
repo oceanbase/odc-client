@@ -183,6 +183,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
   const [showSelectTip, setShowSelectTip] = useState(false);
+  const [showSelectLogicDBTip, setShowSelectLogicDBTip] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { run: getProjects, data: projects } = useRequest(listProjects, {
     defaultParams: [null, null, null],
@@ -420,8 +421,20 @@ const CreateModal: React.FC<IProps> = (props) => {
             </div>
           }
         >
-          <DatabaseSelecter projectId={projectId} maxCount={10} />
+          <DatabaseSelecter
+            projectId={projectId}
+            maxCount={10}
+            setShowSelectLogicDBTip={setShowSelectLogicDBTip}
+          />
         </Form.Item>
+        {showSelectLogicDBTip && (
+          <Alert
+            message="已选数据库中包含逻辑库，审批通过后将默认获得关联物理库的权限；逻辑库仅支持 DDL 变更。"
+            type="info"
+            showIcon
+            style={{ margin: '4px 0px' }}
+          />
+        )}
         <Form.Item
           name="types"
           label={

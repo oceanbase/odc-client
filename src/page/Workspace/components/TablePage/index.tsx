@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getTableInfo } from '@/common/network/table';
+import { getTableInfo, getLogicTableInfo } from '@/common/network/table';
 import { DbObjectType, TaskType } from '@/d.ts';
 import { PageStore } from '@/store/page';
 import { SettingStore } from '@/store/setting';
@@ -45,6 +45,7 @@ import { getQuoteTableName } from '@/util/utils';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
+import { isLogicalDatabase } from '@/util/database';
 
 interface IProps {
   pageKey: string;
@@ -85,6 +86,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
     ) => Promise<boolean>;
   }>();
   const { session } = useContext(SessionContext);
+  const dbType = session?.odcDatabase?.type;
   const dbName = session?.database?.dbName;
   const showPartition = !!table?.partitions?.partType;
   const enableConstraint = session?.supportFeature?.enableConstraint;
@@ -93,7 +95,12 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
     if (table?.info?.tableName === params.tableName) {
       return;
     }
-    const newTable = await getTableInfo(params.tableName, dbName, session?.sessionId);
+    let newTable;
+    if (isLogicalDatabase(session?.odcDatabase)) {
+      newTable = await getLogicTableInfo(session?.odcDatabase?.id, params?.tableId);
+    } else {
+      newTable = await getTableInfo(params.tableName, dbName, session?.sessionId);
+    }
     if (newTable) {
       version.current++;
       setTable(newTable);
@@ -110,7 +117,13 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
           ...newTable,
           info: Object.assign({}, newTable?.info, { tableName: newTableName }),
         });
-        const tablePage = new TablePageModel(params?.databaseId, newTableName);
+        const tablePage = new TablePageModel(
+          params?.databaseId,
+          newTableName,
+          topTab,
+          propsTab,
+          params?.tableId,
+        );
         await pageStore.updatePage(
           pageKey,
           {
@@ -183,9 +196,14 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
             <Radio.Button value={TopTab.PROPS}>
               {formatMessage({ id: 'workspace.window.table.toptab.props', defaultMessage: '属性' })}
             </Radio.Button>
-            <Radio.Button value={TopTab.DATA}>
-              {formatMessage({ id: 'workspace.window.table.toptab.data', defaultMessage: '数据' })}
-            </Radio.Button>
+            {!isLogicalDatabase && (
+              <Radio.Button value={TopTab.DATA}>
+                {formatMessage({
+                  id: 'workspace.window.table.toptab.data',
+                  defaultMessage: '数据',
+                })}
+              </Radio.Button>
+            )}
           </Radio.Group>
           <Space>
             {settingStore.enableDBExport &&
@@ -244,7 +262,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                           defaultMessage: '基本信息',
                         }),
                         key: PropsTab.INFO,
-                        children: <ShowTableBaseInfoForm pageKey={pageKey} />,
+                        children: <ShowTableBaseInfoForm pageKey={pageKey} dbType={dbType} />,
                       },
                       {
                         label: formatMessage({
@@ -317,7 +335,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                     <TableData
                       table={oldTable}
                       session={session}
-                      tableName={table?.info.tableName}
+                      tableName={table?.info?.tableName}
                       pageKey={pageKey}
                       key={version.current}
                     />

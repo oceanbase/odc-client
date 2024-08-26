@@ -1,0 +1,23 @@
+.exportCard {
+  .doubleExportCardContainer {
+    display: flex;
+    width: 100%;
+  }
+  .content {
+    flex: 1 1 50%;
+    width: 50%;
+    height: 480px;
+    overflow-y: auto;
+    border: 1px solid var(--odc-border-color);
+    border-right-width: 0;
+    .centerContainer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+  }
+  .content + .content {
+    border-right-width: 1px;
+  }
+}

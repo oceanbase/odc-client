@@ -56,6 +56,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
           {...props}
           onRowChange={(row: TableColumn) => {
             const type = row.type;
+            // const dataType = dataTypesIns.getDataType('OB_MYSQL', type);
             const dataType = dataTypesIns.getDataType(session.connection.dialectType, type);
             onRowChange(
               {

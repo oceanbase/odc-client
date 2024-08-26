@@ -122,6 +122,7 @@ const ResourceTree: React.FC<IProps> = function ({
   const treeData: TreeDataNode[] = (() => {
     const root = databases
       ?.filter((db) => {
+        // if(db.type === 'LOGICAL') return false;
         if (
           searchValue?.type === DbObjectType.database &&
           !db.name.toLowerCase()?.includes(searchValue?.value?.toLowerCase())
