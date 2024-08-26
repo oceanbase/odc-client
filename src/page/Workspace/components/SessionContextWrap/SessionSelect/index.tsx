@@ -126,14 +126,15 @@ export default function SessionSelect({
             {context?.session?.odcDatabase?.project?.name}
           </span>
         )}
-
-        <span>
-          {formatMessage({
-            id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.CD007EC1' /*数据源：*/,
-            defaultMessage: '数据源：',
-          })}
-          {context?.session?.odcDatabase?.dataSource?.name}
-        </span>
+        {context?.session?.odcDatabase?.dataSource?.name && (
+          <span>
+            {formatMessage({
+              id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.CD007EC1' /*数据源：*/,
+              defaultMessage: '数据源：',
+            })}
+            {context?.session?.odcDatabase?.dataSource?.name}
+          </span>
+        )}
       </Space>
     ) : null;
 

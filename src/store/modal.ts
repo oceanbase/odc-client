@@ -253,6 +253,16 @@ export class ModalStore {
   >();
 
   @observable
+  public logicDatabaseVisible: boolean = false;
+
+  @observable
+  public logicDatabaseInfo: {
+    projectId?: number;
+    ddl?: string;
+    databaseId?: number;
+  } = null;
+
+  @observable
   public dataClearVisible: boolean = false;
 
   @observable
@@ -569,6 +579,12 @@ export class ModalStore {
   public changeMultiDatabaseChangeModal(isShow: boolean = true, data?: IMultipleAsyncTaskData) {
     this.multipleDatabaseChangeOpen = isShow;
     this.multipleAsyncTaskData = isShow ? data : null;
+  }
+
+  @action
+  public changeLogicialDatabaseModal(isShow: boolean = true, data?: any) {
+    this.logicDatabaseVisible = isShow;
+    this.logicDatabaseInfo = isShow ? data : null;
   }
 
   @action

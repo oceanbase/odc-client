@@ -22,6 +22,7 @@ import {
   SQLLintMode,
   SQLSessionMode,
 } from '@/d.ts';
+import { DBType } from '@/d.ts/database';
 import { ColumnStoreType } from '@/d.ts/table';
 import { formatMessage } from '@/util/intl';
 
@@ -100,6 +101,11 @@ export const ConnectTypeText = {
   [ConnectType.DORIS]: 'Doris',
   [ConnectType.ORACLE]: 'Oracle',
   [ConnectType.PG]: 'PostgreSQL',
+};
+
+export const DBTypeText = {
+  [DBType.LOGICAL]: '逻辑库',
+  [DBType.PHYSICAL]: '物理库',
 };
 
 export const DragInsertTypeText = {

@@ -35,6 +35,7 @@ import { ResourceNodeType } from '../../type';
 import { hasTableChangePermission, hasTableExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
+import { isLogicalDatabase } from '@/util/database';
 export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TableRoot]: [
     {
@@ -90,6 +91,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           TopTab.PROPS,
           PropsTab.DDL,
           session?.odcDatabase?.id,
+          node?.data?.info?.tableId,
         );
       },
     },
@@ -104,6 +106,9 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
 
       ellipsis: true,
       hasDivider: true,
+      isHide: (session) => {
+        return isLogicalDatabase(session?.odcDatabase);
+      },
       run(session, node) {
         const tableName = (node.data as ITableModel)?.info?.tableName;
         const exsitPage = pageStore.pages.find((page) => {
@@ -120,7 +125,13 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
             propsTab = oldPropsTab;
           }
         }
-        openTableViewPage(tableName, TopTab.DATA, propsTab, session?.odcDatabase?.id);
+        openTableViewPage(
+          tableName,
+          TopTab.DATA,
+          propsTab,
+          session?.odcDatabase?.id,
+          node?.data?.info?.tableId,
+        );
       },
     },
     {
@@ -139,7 +150,8 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           !setting.enableDBImport ||
           !getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
             TaskType.IMPORT,
-          )
+          ) ||
+          isLogicalDatabase(session?.odcDatabase)
         );
       },
       run(session, node) {
@@ -162,7 +174,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
         return !hasTableExportPermission(session, node);
       },
       isHide: (session) => {
-        return !isSupportExport(session);
+        return !isSupportExport(session) || isLogicalDatabase(session?.odcDatabase);
       },
       run(session, node) {
         const table = node.data as ITableModel;
@@ -181,6 +193,9 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       }),
       //下载
       ellipsis: true,
+      isHide: (session) => {
+        return isLogicalDatabase(session?.odcDatabase);
+      },
       async run(session, node) {
         const tableName = (node.data as ITableModel)?.info?.tableName;
         const table = await getTableInfo(tableName, session.database.dbName, session.sessionId);
@@ -200,7 +215,7 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
 
       ellipsis: true,
       disabled: (session, node) => {
-        return !hasTableChangePermission(session, node);
+        return !hasTableChangePermission(session, node) || isLogicalDatabase(session?.odcDatabase);
       },
       isHide: (session) => {
         return (
@@ -229,6 +244,9 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           defaultMessage: '打开 SQL 窗口',
         }), //'打开 SQL 窗口'
       ],
+      isHide: (session) => {
+        return isLogicalDatabase(session?.odcDatabase);
+      },
       run(session, node) {
         tracert.click('a3112.b41896.c330992.d367627');
         openNewSQLPage(session?.database?.databaseId);
@@ -243,7 +261,6 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           defaultMessage: '复制',
         }), //复制
       ],
-
       children: [
         {
           key: ResourceTreeNodeMenuKeys.COPY_NAME,
@@ -274,7 +291,9 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
 
             //SELECT 语句
           ],
-
+          isHide: (session) => {
+            return isLogicalDatabase(session?.odcDatabase);
+          },
           run(session, node) {
             const table = node.data as ITableModel;
             copyObj(
@@ -295,7 +314,9 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
 
             //INSERT 语句
           ],
-
+          isHide: (session) => {
+            return isLogicalDatabase(session?.odcDatabase);
+          },
           run(session, node) {
             const table = node.data as ITableModel;
             copyObj(
@@ -316,7 +337,9 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
 
             //UPDATE 语句
           ],
-
+          isHide: (session) => {
+            return isLogicalDatabase(session?.odcDatabase);
+          },
           run(session, node) {
             const table = node.data as ITableModel;
             copyObj(
@@ -337,7 +360,9 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
 
             //DELETE 语句
           ],
-
+          isHide: (session) => {
+            return isLogicalDatabase(session?.odcDatabase);
+          },
           run(session, node) {
             const table = node.data as ITableModel;
             copyObj(
@@ -360,7 +385,6 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           defaultMessage: '删除',
         }),
       ],
-
       actionType: actionTypes.delete,
       ellipsis: true,
       disabled: (session, node) => {
@@ -416,7 +440,6 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           defaultMessage: '刷新',
         }),
       ],
-
       ellipsis: true,
       async run(session, node) {
         const table = node.data as ITableModel;
@@ -439,7 +462,13 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;
-        openTableViewPage(tableName, TopTab.PROPS, PropsTab.COLUMN, session?.odcDatabase?.id);
+        openTableViewPage(
+          tableName,
+          TopTab.PROPS,
+          PropsTab.COLUMN,
+          session?.odcDatabase?.id,
+          node?.data?.info?.tableId,
+        );
       },
     },
     {
@@ -473,7 +502,13 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;
-        openTableViewPage(tableName, TopTab.PROPS, PropsTab.INDEX, session?.odcDatabase?.id);
+        openTableViewPage(
+          tableName,
+          TopTab.PROPS,
+          PropsTab.INDEX,
+          session?.odcDatabase?.id,
+          node?.data?.info?.tableId,
+        );
       },
     },
     {
@@ -507,7 +542,13 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;
-        openTableViewPage(tableName, TopTab.PROPS, PropsTab.PARTITION, session?.odcDatabase?.id);
+        openTableViewPage(
+          tableName,
+          TopTab.PROPS,
+          PropsTab.PARTITION,
+          session?.odcDatabase?.id,
+          node?.data?.info?.tableId,
+        );
       },
     },
     {
@@ -541,7 +582,13 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       run(session, node) {
         const table = node.data as ITableModel;
         const tableName = table?.info?.tableName;
-        openTableViewPage(tableName, TopTab.PROPS, PropsTab.CONSTRAINT, session?.odcDatabase?.id);
+        openTableViewPage(
+          tableName,
+          TopTab.PROPS,
+          PropsTab.CONSTRAINT,
+          session?.odcDatabase?.id,
+          node?.data?.info?.tableId,
+        );
       },
     },
     {

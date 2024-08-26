@@ -25,24 +25,27 @@ import { useDataSourceConfig, useTableConfig } from '../config';
 import { getDefaultCollation } from '../helper';
 import TableContext from '../TableContext';
 import styles from './index.less';
+import { DBType } from '@/d.ts/database';
+import LogicTableBaseInfo from './LogicTableBaseInfo';
 
 interface IProps {
   isEdit?: boolean;
   formRef?: React.Ref<FormInstance<any>>;
+  dbType?: DBType;
 }
 
 const { Option } = Select;
 
 const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
-  const { isEdit, formRef } = props;
-
+  const { isEdit, formRef, dbType } = props;
   const [form] = Form.useForm();
   const tableContext = useContext(TableContext);
   const model = tableContext.info;
   const session = tableContext.session;
+  const setIsLogicalTableValid = tableContext.setIsLogicalTableValid;
   const { collations, charsets } = session;
   const config = useTableConfig(session.connection?.dialectType);
-  const datasourceConfig = useDataSourceConfig(session.connection.type);
+  const datasourceConfig = useDataSourceConfig(session?.connection?.type);
   const layout = session?.supportFeature?.enableColumnStore
     ? [8, 5, 6, 5].reverse()
     : [11, 6, 7].reverse();
@@ -82,7 +85,17 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
     },
     [form],
   );
-  return (
+  return dbType === DBType.LOGICAL ? (
+    <LogicTableBaseInfo
+      form={form}
+      session={session}
+      tableContext={tableContext}
+      datasourceConfig={datasourceConfig}
+      config={config}
+      isEdit={isEdit}
+      setIsLogicalTableValid={setIsLogicalTableValid}
+    />
+  ) : (
     <Form
       className={styles.form}
       form={form}

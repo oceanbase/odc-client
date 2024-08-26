@@ -29,7 +29,7 @@ export interface IMenuItemConfig {
   // 菜单中额外信息的展示
   subText?: (node: TreeDataNode) => React.ReactNode;
   // 当前菜单项后面是否需要显示分割线
-  hasDivider?: boolean;
+  hasDivider?: boolean | ((node: TreeDataNode) => boolean);
   // 动态配置菜单子项的是否启用
   disabled?: (session: SessionStore, node: TreeDataNode) => boolean;
   // 动态配置菜单子项的显隐

@@ -31,6 +31,9 @@ export default observer(function StatusName({
   const statusMap = datasourceStatus.statusMap;
   const status = statusMap.get(item.dataSource?.id) || item.dataSource?.status;
   let content;
+  if (item?.type === 'LOGICAL') {
+    return <a onClick={onClick}>{item?.name}</a>;
+  }
   switch (status.status) {
     case IConnectionStatus.TESTING: {
       return (

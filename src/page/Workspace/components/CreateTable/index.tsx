@@ -41,6 +41,7 @@ import { CreateTablePage } from '@/store/helper/page/pages/create';
 import modal from '@/store/modal';
 import page from '@/store/page';
 import sessionManager, { SessionManagerStore } from '@/store/sessionManager';
+import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { useRequest } from 'ahooks';
@@ -52,10 +53,12 @@ import styles from './index.less';
 import Partition from './Partition';
 import TableConstraint from './TableConstraint';
 import TableIndex from './TableIndex';
+import { isLogicalDatabase } from '@/util/database';
 
 interface IProps {
   pageKey: string;
   sessionManagerStore?: SessionManagerStore;
+  modalStore?: ModalStore;
   params: CreateTablePage['pageParams'];
 }
 
@@ -69,7 +72,12 @@ const defaultInfo: TableInfo = {
 
 const defaultPartitions: TablePartition = null;
 
-const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManagerStore }) {
+const CreateTable: React.FC<IProps> = function ({
+  pageKey,
+  params,
+  sessionManagerStore,
+  modalStore,
+}) {
   const [info, setInfo] = useState<TableInfo>(defaultInfo);
   const [columns, setColumns] = useState<TableColumn[]>([defaultColumn]);
   const [partitions, setPartitions] = useState<Partial<TablePartition>>(defaultPartitions);
@@ -85,9 +93,10 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
   const { loading, run: runGenerateCreateTableDDL } = useRequest(generateCreateTableDDL, {
     manual: true,
   });
+  const [isLogicalTableValid, setIsLogicalTableValid] = useState<boolean>(true);
 
   const { session } = useContext(SessionContext);
-
+  const dbType = session?.odcDatabase?.type;
   const handleSubmit = async () => {
     const sql = await runGenerateCreateTableDDL(
       {
@@ -110,6 +119,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
   const isComplete = useMemo(() => {
     return (
       info.tableName &&
+      isLogicalTableValid &&
       // && info.character
       // && info.collation
       columns.length &&
@@ -181,6 +191,8 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
           checkConstraints,
           setCheckConstraints,
           session,
+          isLogicalTableValid,
+          setIsLogicalTableValid,
         }}
       >
         <Tabs
@@ -193,7 +205,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
                 id: 'odc.components.CreateTable.BasicInformation',
                 defaultMessage: '基本信息',
               }),
-              children: <BaseInfo />,
+              children: <BaseInfo dbType={dbType} />,
             },
             {
               key: TableTabType.COLUMN,
@@ -252,6 +264,16 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
             page.close(pageKey);
           }}
           onSave={async () => {
+            if (isLogicalDatabase(session?.odcDatabase)) {
+              // 关闭弹窗, 将sql带到工单
+              modalStore.changeLogicialDatabaseModal(true, {
+                ddl: DDL,
+                projectId: session?.odcDatabase?.project?.id,
+                databaseId: session?.odcDatabase?.id,
+              });
+              setDDL('');
+              return;
+            }
             const results = await executeSQL(
               DDL,
               session?.sessionId,
@@ -329,4 +351,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
     </Card>
   );
 };
-export default inject('sessionManagerStore')(observer(WrapSessionPage(CreateTable, false, true)));
+export default inject(
+  'sessionManagerStore',
+  'modalStore',
+)(observer(WrapSessionPage(CreateTable, false, true)));

@@ -30,6 +30,7 @@ interface IProps {
   extra?: string;
   width?: string;
   placeholder?: string;
+  isLogicalDatabase?: boolean;
   onChange?: (v: number) => void;
 }
 const DatabaseSelect: React.FC<IProps> = (props) => {
@@ -46,6 +47,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     width,
     placeholder,
     disabled = false,
+    isLogicalDatabase = false,
     onChange,
   } = props;
 
@@ -71,6 +73,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
         taskType={type}
         width={width}
         onChange={onChange}
+        isLogicalDatabase={isLogicalDatabase}
         placeholder={placeholder}
       />
     </Form.Item>

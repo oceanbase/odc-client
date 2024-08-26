@@ -62,7 +62,11 @@ export const DatabaseQueueSelect: React.FC<{
     if (databaseList?.contents?.length) {
       setDefaultDatasource(databaseList?.contents?.[0]?.dataSource);
       datasourceStatus.asyncUpdateStatus([
-        ...new Set(databaseList?.contents?.map((item) => item.dataSource?.id)),
+        ...new Set(
+          databaseList?.contents
+            ?.filter((item) => item.type !== 'LOGICAL')
+            ?.map((item) => item?.dataSource?.id),
+        ),
       ]);
       setDatabaseOptions(
         databaseList?.contents?.map((item) => {

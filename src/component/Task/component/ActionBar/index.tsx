@@ -214,6 +214,10 @@ const ActionBar: React.FC<IProps> = inject(
           });
           return;
         }
+        case TaskType.LOGICAL_DATABASE_CHANGE: {
+          modalStore.changeLogicialDatabaseModal(true);
+          return;
+        }
         default: {
           const { database, executionStrategy, executionTime, parameters, description } = task;
           const data = {

@@ -19,6 +19,7 @@ import { SessionManagerStore } from '@/store/sessionManager';
 import { EventDataNode } from 'antd/lib/tree';
 import { ITableModel } from '../../components/CreateTable/interface';
 import { ResourceNodeType, TreeDataNode } from './type';
+import { isLogicalDatabase } from '@/util/database';
 
 export async function loadNode(
   sessionManagerStore: SessionManagerStore,
@@ -29,6 +30,10 @@ export async function loadNode(
     case ResourceNodeType.TableRoot: {
       const dbSession = sessionManagerStore.sessionMap.get(sessionId);
       if (!dbSession) {
+        break;
+      }
+      if (isLogicalDatabase(dbSession?.odcDatabase)) {
+        await dbSession.database.getLogicTableList();
         break;
       }
       await dbSession.database.getTableList();

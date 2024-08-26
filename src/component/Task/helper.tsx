@@ -173,6 +173,11 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
           // 数据库变更
         },
         {
+          value: TaskPageType.LOGICAL_DATABASE_CHANGE,
+          label: '逻辑库变更',
+          enabled: true,
+        },
+        {
           value: TaskPageType.SHADOW,
           label: formatMessage({
             id: 'odc.TaskManagePage.component.TaskTable.ShadowTableSynchronization',

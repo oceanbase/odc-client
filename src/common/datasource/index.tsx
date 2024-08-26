@@ -32,6 +32,7 @@ import { ReactComponent as PGSvg } from '@/svgr/pg.svg';
 import { ReactComponent as DBDorisSvg } from '@/svgr/database_doris.svg';
 import { ReactComponent as OracleSvg } from '@/svgr/oracle.svg';
 import { ReactComponent as DBOracleSvg } from '@/svgr/database_oracle.svg';
+import { DBType } from '@/d.ts/database';
 import { ReactComponent as DBPGSvg } from '@/svgr/database_pg.svg';
 
 const _types: Map<
@@ -144,6 +145,14 @@ function getAllConnectTypes(ds?: IDataSourceType): ConnectType[] {
   return _types.get(ds)?.connectTypes;
 }
 
+function getAllDBTypes(dbType?: DBType): DBType[] {
+  if (!dbType) {
+    return Object.entries(DBType)?.reduce((prev, [key, value]) => {
+      return prev.concat(DBType?.[key]);
+    }, []);
+  }
+}
+
 function getDataSourceModeConfig(connectType: ConnectType) {
   const ds = connectType2Ds[connectType];
   return _types.get(ds)?.config?.[connectType];
@@ -180,4 +189,5 @@ export {
   getDataSourceStyleByConnectType,
   getDefaultConnectType,
   getDsByConnectType,
+  getAllDBTypes,
 };

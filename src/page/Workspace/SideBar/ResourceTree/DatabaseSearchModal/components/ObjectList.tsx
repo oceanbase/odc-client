@@ -410,7 +410,7 @@ const ObjectList = ({
                     {isDatabasetab ? (
                       <Icon
                         component={
-                          getDataSourceStyleByConnectType(object?.dataSource?.dialectType).dbIcon
+                          getDataSourceStyleByConnectType(object?.dataSource?.dialectType)?.dbIcon
                             ?.component
                         }
                         style={{ fontSize: 14, marginRight: 4 }}

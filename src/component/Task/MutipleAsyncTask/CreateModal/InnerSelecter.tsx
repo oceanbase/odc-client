@@ -130,17 +130,22 @@ const InnerSelect: React.FC<{
         </div>
       );
     }
-    return (
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ color: 'var(--text-color-primary)' }}>{currnetOrderedDatabaseId}</div>
-      </div>
-    );
+    // return (
+    //   <div
+    //     style={{
+    //       display: 'flex',
+    //       alignItems: 'center',
+    //       justifyContent: 'space-between',
+    //     }}
+    //   >
+    //     <div style={{ color: 'var(--text-color-primary)' }}>{currnetOrderedDatabaseId}</div>
+    //   </div>
+    // );
+
+    return formatMessage({
+      id: 'src.component.Task.MutipleAsyncTask.CreateModal.91F6B921',
+      defaultMessage: '请选择数据库',
+    });
   };
 
   const checkDatabaseExsisted = async (ruler, value) => {

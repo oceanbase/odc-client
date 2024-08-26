@@ -222,8 +222,9 @@ export function openTableViewPage(
   topTab: TableTopTab = TableTopTab.PROPS,
   propsTab: TablePropsTab = TablePropsTab.INFO,
   databaseId: number,
+  tableId: number,
 ) {
-  page.openPage(new TablePage(databaseId, tableName, topTab, propsTab));
+  page.openPage(new TablePage(databaseId, tableName, topTab, propsTab, tableId));
 }
 
 /**

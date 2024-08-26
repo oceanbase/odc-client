@@ -22,7 +22,7 @@ import {
   generateViewSid,
 } from '@/common/network/pathUtil';
 import { getSynonymList } from '@/common/network/synonym';
-import { getTableInfo } from '@/common/network/table';
+import { getTableInfo, getLogicTableInfo } from '@/common/network/table';
 import { getType, getTypeList } from '@/common/network/type';
 import {
   IFunction,
@@ -40,6 +40,8 @@ import { ITableModel, TableInfo } from '@/page/Workspace/components/CreateTable/
 import { formatMessage } from '@/util/intl';
 import request from '@/util/request';
 import { action, observable, runInAction } from 'mobx';
+import { DBType } from '@/d.ts/database';
+import { logicalDatabaseDetail } from '@/common/network/logicalDatabase';
 
 class DatabaseStore {
   @observable.shallow
@@ -91,26 +93,38 @@ class DatabaseStore {
   public readonly sessionId: string = null;
 
   public readonly dbName: string = null;
+  public readonly databaseIdType: DBType = null;
 
   public readonly databaseId: number = null;
 
-  static async createInstance(sessionId: string, dbName: string, databaseId: number) {
-    const db = new DatabaseStore(sessionId, dbName, databaseId);
+  static async createInstance(sessionId: string, dbName: string, databaseId: number, type: DBType) {
+    const db = new DatabaseStore(sessionId, dbName, databaseId, type);
     return db;
   }
 
-  constructor(sessionId, dbName, databaseId) {
+  constructor(sessionId, dbName, databaseId, type) {
     this.sessionId = sessionId;
     this.dbName = dbName;
     this.databaseId = databaseId;
+    this.databaseIdType = type;
   }
 
   @action
   public async getTableList() {
     const sid = generateDatabaseSidByDataBaseId(this.databaseId, this.sessionId);
-    const data = await request.get(`/api/v2/databaseSchema/tables`, {
-      params: { databaseId: this.databaseId, includePermittedAction: true },
-    });
+    let data;
+    switch (this.databaseIdType) {
+      case DBType.PHYSICAL: {
+        data = await request.get(`/api/v2/databaseSchema/tables`, {
+          params: { databaseId: this.databaseId, includePermittedAction: true },
+        });
+        break;
+      }
+      case DBType.LOGICAL: {
+        data = await logicalDatabaseDetail(this.databaseId);
+        break;
+      }
+    }
     runInAction(() => {
       this.tables =
         data?.data?.contents?.map((table: ITable) => ({
@@ -131,9 +145,41 @@ class DatabaseStore {
   }
 
   @action
+  public async getLogicTableList() {
+    const data = await request.get(
+      `/api/v2/connect/logicaldatabase/logicalDatabases/${this.databaseId}`,
+    );
+    runInAction(() => {
+      this.tables =
+        data?.data?.logicalTables?.map((table: ITable) => ({
+          info: {
+            tableName: table.name,
+            character: table?.character,
+            collation: table?.collation,
+            comment: table?.comment,
+            DDL: table?.ddlSql,
+            updateTime: table?.gmtModified,
+            createTime: table?.gmtCreated,
+            tableSize: table?.tableSize,
+            authorizedPermissionTypes: table?.authorizedPermissionTypes || [],
+            isLogicalTable: true,
+            tableId: table?.id,
+            databaseId: this?.databaseId,
+          },
+        })) || [];
+      this.tableVersion = Date.now();
+    });
+  }
+
+  @action
   public async loadTable(tableInfo: TableInfo) {
-    const { tableName, authorizedPermissionTypes } = tableInfo;
-    const table = await getTableInfo(tableName, this.dbName, this.sessionId);
+    const { tableName, authorizedPermissionTypes, isLogicalTable, tableId, databaseId } = tableInfo;
+    let table;
+    if (isLogicalTable) {
+      table = await getLogicTableInfo(databaseId, tableId);
+    } else {
+      table = await getTableInfo(tableName, this.dbName, this.sessionId);
+    }
     if (!table) {
       return;
     }
@@ -147,6 +193,7 @@ class DatabaseStore {
       newTables[idx] = table;
       runInAction(() => {
         this.tables = newTables;
+        console.log(this.tables);
       });
     }
   }

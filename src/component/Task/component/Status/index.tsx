@@ -35,6 +35,7 @@ import { Space, Tooltip } from 'antd';
 import { isNil } from 'lodash';
 import React from 'react';
 import { isCycleTask } from '../../helper';
+import { SchemaChangeRecordStatus } from '@/d.ts/logicalDatabase';
 export const nodeStatus = {
   [TaskFlowNodeType.APPROVAL_TASK]: {
     [TaskNodeStatus.PENDING]: {
@@ -597,6 +598,54 @@ export const subTaskStatus = {
       id: 'odc.component.Status.Running',
       defaultMessage: '执行中',
     }), //执行中
+  },
+};
+
+// 逻辑库-任务状态
+export const logicDBChangeTaskStatus = {
+  [SchemaChangeRecordStatus.FAILED]: {
+    icon: (
+      <CloseCircleFilled
+        style={{
+          color: 'var(--function-red6-color)',
+        }}
+      />
+    ),
+    text: '执行失败',
+  },
+  [SchemaChangeRecordStatus.PENDING]: {
+    icon: (
+      <EllipsisOutlined
+        style={{
+          color: '#ffffff',
+          background: 'rgb(250, 173, 20)',
+          borderRadius: '14px',
+          padding: 1,
+          fontSize: 13,
+        }}
+      />
+    ),
+    text: '待执行',
+  },
+  [SchemaChangeRecordStatus.RUNNING]: {
+    icon: (
+      <LoadingOutlined
+        style={{
+          color: 'var(--icon-blue-color)',
+        }}
+      />
+    ),
+    text: '执行中',
+  },
+  [SchemaChangeRecordStatus.SUCCESS]: {
+    icon: (
+      <CheckCircleFilled
+        style={{
+          color: 'var(--icon-green-color)',
+        }}
+      />
+    ),
+    text: '执行成功',
   },
 };
 

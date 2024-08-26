@@ -33,10 +33,10 @@ import {
 } from '@/d.ts';
 import { TaskStore } from '@/store/task';
 import { formatMessage } from '@/util/intl';
+import { Button, Drawer, Popover, Space, message } from 'antd';
 import { getLocalFormatDateTime } from '@/util/utils';
 import Icon from '@ant-design/icons';
 import { useRequest } from 'ahooks';
-import { Drawer, message, Popover, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useState } from 'react';
 import { flatArray } from '../../MutipleAsyncTask/CreateModal/helper';
@@ -265,6 +265,90 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
     },
   ];
 };
+
+const getLogicalDatabaseAsyncColumns = () => {
+  return [
+    {
+      title: '执行数据库',
+      key: 'database',
+      dataIndex: 'database',
+      ellipsis: {
+        showTitle: true,
+      },
+      render: (_, record) => {
+        const icon = getDataSourceStyleByConnectType(record?.database?.dataSource?.type);
+        return (
+          <Popover
+            content={
+              <Space size={0}>
+                <RiskLevelLabel
+                  content={record?.database?.environment?.name}
+                  color={record?.database?.environment?.style}
+                />
+
+                <Space size={4}>
+                  <Icon
+                    component={icon?.icon?.component}
+                    style={{
+                      color: icon?.icon?.color,
+                      fontSize: 16,
+                      marginRight: 4,
+                    }}
+                  />
+
+                  <div>{record?.database?.name}</div>
+                  <div style={{ color: 'var(--neutral-black45-color)' }}>
+                    {record?.database?.dataSource?.name}
+                  </div>
+                </Space>
+              </Space>
+            }
+          >
+            <Space size={0}>
+              <RiskLevelLabel
+                content={record?.database?.environment?.name}
+                color={record?.database?.environment?.style}
+              />
+
+              <Space size={4}>
+                <Icon
+                  component={icon?.icon?.component}
+                  style={{
+                    color: icon?.icon?.color,
+                    fontSize: 16,
+                    marginRight: 4,
+                  }}
+                />
+
+                <div>{record?.database?.name}</div>
+                <div style={{ color: 'var(--neutral-black45-color)' }}>
+                  {record?.database?.dataSource?.name}
+                </div>
+              </Space>
+            </Space>
+          </Popover>
+        );
+      },
+    },
+    {
+      title: '数据源',
+      key: 'datasource',
+      dataIndex: 'datasource',
+    },
+    {
+      title: '执行状态',
+      key: 'status',
+      dataIndex: 'status',
+    },
+    {
+      title: '操作',
+      key: 'operation',
+      render: (value, record) => {
+        return <Button type="link">查看</Button>;
+      },
+    },
+  ];
+};
 interface IProps {
   taskStore?: TaskStore;
   task: TaskDetail<TaskRecordParameters>;
@@ -354,15 +438,34 @@ const TaskProgress: React.FC<IProps> = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
-  const columns =
-    task?.type === TaskType.MULTIPLE_ASYNC
-      ? getMultipleAsyncColumns({
+  const getColumnsByTaskType = (type: TaskType) => {
+    switch (type) {
+      case TaskType.MULTIPLE_ASYNC: {
+        // return getLogicalDatabaseAsyncColumns();
+        return getMultipleAsyncColumns({
           onOpenDetail,
-        })
-      : getColumns({
+        });
+      }
+      case TaskType.ONLINE_SCHEMA_CHANGE: {
+        return getColumns({
           onOpenDetail: handleDetailVisible,
           onSwapTable: handleSwapTable,
         });
+      }
+      case TaskType.LOGICAL_DATABASE_CHANGE: {
+        return getLogicalDatabaseAsyncColumns();
+      }
+    }
+  };
+  const columns = getColumnsByTaskType(task?.type);
+  // task?.type === TaskType.MULTIPLE_ASYNC
+  //   ? getMultipleAsyncColumns({
+  //       onOpenDetail,
+  //     })
+  //   : getColumns({
+  //       onOpenDetail: handleDetailVisible,
+  //       onSwapTable: handleSwapTable,
+  //     });
   const pendingExectionDatabases = databases?.filter((item) => !item?.status)?.length;
   return (
     <>

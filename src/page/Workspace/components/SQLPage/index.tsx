@@ -68,6 +68,7 @@ import Trace from '../Trace';
 import ExecDetail from './ExecDetail';
 import ExecPlan from './ExecPlan';
 import styles from './index.less';
+import { isLogicalDatabase } from '@/util/database';
 
 interface ISQLPageState {
   resultHeight: number;
@@ -246,7 +247,9 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       /**
        * 异步加载内置片段
        */
-      this.getSession()?.addBuiltinSnippets();
+      if (!isLogicalDatabase(this.getSession()?.odcDatabase)) {
+        this.getSession()?.addBuiltinSnippets();
+      }
     } else if (this.props.settingStore.configurations !== this.config) {
       this.bindEditorKeymap();
     }

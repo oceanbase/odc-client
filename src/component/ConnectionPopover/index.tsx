@@ -25,16 +25,63 @@ import { Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import RiskLevelLabel from '../RiskLevelLabel';
+import { IDatabase } from '@/d.ts/database';
+import { isLogicalDatabase } from '@/util/database';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 
 const ConnectionPopover: React.FC<{
   connection: Partial<IConnection>;
-  showResourceGroups?: boolean;
+  database?: IDatabase;
   showType?: boolean;
   clusterStore?: ClusterStore;
 }> = (props) => {
-  const { connection, clusterStore, showResourceGroups = false, showType = true } = props;
-  if (!connection) {
+  const { connection, clusterStore, showType = true, database } = props;
+  const isLogicDb = isLogicalDatabase(database);
+
+  if (!connection && !isLogicDb) {
     return null;
+  }
+
+  const DBIcon = getDataSourceStyleByConnectType(connection?.type || database?.connectType)?.icon;
+
+  if (isLogicDb) {
+    return (
+      <div
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+        style={{ lineHeight: '20px' }}
+      >
+        <Space direction="vertical">
+          <Tooltip>
+            <div
+              style={{
+                marginBottom: 4,
+                fontFamily: 'PingFangSC-Semibold',
+                color: 'var(--text-color-primary)',
+                fontWeight: 'bold',
+                maxWidth: '240px',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <RiskLevelLabel
+                  content={database?.environment?.name}
+                  color={database?.environment?.style?.toLowerCase()}
+                />
+                <DataBaseStatusIcon item={database} />
+                {database?.name}
+              </div>
+            </div>
+          </Tooltip>
+          <div>{`逻辑库别名: ${database?.alias}`}</div>
+          <div>{`项目: ${database?.project?.name}`}</div>
+          <div>{`类型: ${ConnectTypeText[database?.connectType]}`}</div>
+        </Space>
+      </div>
+    );
   }
   let clusterAndTenant = (
     <div>
@@ -84,6 +131,7 @@ const ConnectionPopover: React.FC<{
     }
   }
   function renderConnectionMode() {
+    if (isLogicDb) return;
     const { type } = connection;
     return (
       <div>
@@ -102,7 +150,7 @@ const ConnectionPopover: React.FC<{
       </div>
     );
   }
-  const DBIcon = getDataSourceStyleByConnectType(connection?.type)?.icon;
+
   return (
     <div
       onClick={(e) => {

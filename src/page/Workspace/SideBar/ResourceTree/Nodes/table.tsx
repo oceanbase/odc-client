@@ -56,14 +56,14 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
 
     treeData.children = tables
       // 无权限的表过滤掉， 就像无权限的库一样
-      .filter((table) => table?.info?.authorizedPermissionTypes?.length > 0)
+      // .filter((table) => table?.info?.authorizedPermissionTypes?.length > 0)??
       .map((table) => {
         if (visited.has(table.info?.tableName)) {
           logger.error('table name is duplicated', table.info?.tableName);
           return;
         }
         visited.add(table.info?.tableName);
-        const tableKey = `${database.id}-${dbSession?.database?.tableVersion}-${dbName}-table-${table.info.tableName}`;
+        const tableKey = `${database.id}-${dbSession?.database?.tableVersion}-${dbName}-table-${table?.info?.tableName}`;
         let columnRoot: TreeDataNode;
         if (table.columns) {
           columnRoot = {
@@ -355,7 +355,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
         }
 
         return {
-          title: table.info.tableName,
+          title: table?.info?.tableName,
           key: tableKey,
           type: ResourceNodeType.Table,
           data: table,
@@ -366,6 +366,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               TopTab.PROPS,
               PropsTab.DDL,
               session?.odcDatabase?.id,
+              node?.data?.info?.tableId,
             );
           },
           icon: (
