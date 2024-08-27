@@ -40,7 +40,7 @@ const ProjectDatabaseSelector: React.FC<{
   const defaultPlaceholder = '请选择';
   const [projectName, setProjectName] = useState<string>();
   const [datasourceName, setDatasourceName] = useState<string>();
-  console.log('databaseOptions', databaseOptions);
+
   return (
     <Form.Item
       label={
@@ -196,8 +196,7 @@ const CreateLogicialDatabase: React.FC<{
                       width: '6px',
                       height: '6px',
                       borderRadius: '1px',
-                      backgroundColor:
-                        EnvColorMap[cur?.environment?.style?.toUpperCase()]?.borderColor,
+                      background: EnvColorMap[cur?.environment?.style?.toUpperCase()]?.tipColor,
                       position: 'absolute',
                       right: '0px',
                     }}

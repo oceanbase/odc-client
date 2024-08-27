@@ -55,7 +55,7 @@ function SelectModal({ modalStore }: IProps) {
         if (!data?.dataSourceId) {
           return;
         }
-        await modalStore.selectDatabaseModallData?.onOk(data?.dataSourceId);
+        await modalStore.selectDatabaseModalData?.onOk(data?.dataSourceId);
         modalStore.changeSelectDatabaseVisible(false);
         form.resetFields();
       }}
@@ -72,8 +72,8 @@ function SelectModal({ modalStore }: IProps) {
           <SessionSelect
             datasourceMode={true}
             filters={
-              modalStore?.selectDatabaseModallData?.features
-                ? { feature: modalStore?.selectDatabaseModallData?.features }
+              modalStore?.selectDatabaseModalData?.features
+                ? { feature: modalStore?.selectDatabaseModalData?.features }
                 : null
             }
           />

@@ -641,29 +641,31 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                     </Action.Link>
                   )}
 
-                  <Action.Link
-                    key={'ddl'}
-                    onClick={() => {
-                      tracert.click('a3112.b64002.c330858.d367385');
-                      handleMenuClick(TaskPageType.ASYNC, record.id);
-                    }}
-                    disabled={!hasChangeAuth}
-                    tooltip={
-                      !hasChangeAuth
-                        ? formatMessage({
-                            id: 'src.page.Project.Database.8AFF2CDE',
-                            defaultMessage: '暂无变更权限，请先申请数据库权限',
-                          })
-                        : ''
-                    }
-                  >
-                    {
-                      formatMessage({
-                        id: 'odc.Project.Database.DatabaseChanges',
-                        defaultMessage: '数据库变更',
-                      }) /*数据库变更*/
-                    }
-                  </Action.Link>
+                  {config?.features?.task?.includes(TaskType.ASYNC) && (
+                    <Action.Link
+                      key={'ddl'}
+                      onClick={() => {
+                        tracert.click('a3112.b64002.c330858.d367385');
+                        handleMenuClick(TaskPageType.ASYNC, record.id);
+                      }}
+                      disabled={!hasChangeAuth}
+                      tooltip={
+                        !hasChangeAuth
+                          ? formatMessage({
+                              id: 'src.page.Project.Database.8AFF2CDE',
+                              defaultMessage: '暂无变更权限，请先申请数据库权限',
+                            })
+                          : ''
+                      }
+                    >
+                      {
+                        formatMessage({
+                          id: 'odc.Project.Database.DatabaseChanges',
+                          defaultMessage: '数据库变更',
+                        }) /*数据库变更*/
+                      }
+                    </Action.Link>
+                  )}
                   <Action.Link
                     key={'login'}
                     onClick={() => {
