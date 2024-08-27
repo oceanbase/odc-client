@@ -70,6 +70,7 @@ const items: Record<ConnectType.PG, IDataSourceModeConfig> = {
       obclient: false,
       recycleBin: false,
       sessionManage: false,
+      sessionParams: false,
       sqlExplain: false,
       export: {
         fileLimit: false,

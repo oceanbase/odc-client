@@ -73,10 +73,12 @@ const items: Record<ConnectType.DORIS, IDataSourceModeConfig> = {
         TaskType.IMPORT,
         TaskType.EXPORT,
         TaskType.EXPORT_RESULT_SET,
+        TaskType.MULTIPLE_ASYNC,
       ],
       obclient: true,
       recycleBin: false,
       sessionManage: true,
+      sessionParams: true,
       sqlExplain: true,
       export: {
         fileLimit: false,

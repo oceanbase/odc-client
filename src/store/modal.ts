@@ -165,7 +165,7 @@ export class ModalStore {
   public selectDatabaseVisible: boolean = false;
 
   @observable
-  public selectDatabaseModallData: {
+  public selectDatabaseModalData: {
     features?: keyof IDataSourceModeConfig['features'];
     datasourceId: number;
     onOk?: (datasourceId: number) => Promise<void>;
@@ -652,8 +652,8 @@ export class ModalStore {
     onOk?: (datasourceId: number) => Promise<void>,
   ) {
     this.selectDatabaseVisible = isShow;
-    this.selectDatabaseModallData = isShow
-      ? { ...this.selectDatabaseModallData, features, onOk }
+    this.selectDatabaseModalData = isShow
+      ? { ...this.selectDatabaseModalData, features, onOk }
       : null;
   }
 

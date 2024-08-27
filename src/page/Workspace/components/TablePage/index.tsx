@@ -196,7 +196,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
             <Radio.Button value={TopTab.PROPS}>
               {formatMessage({ id: 'workspace.window.table.toptab.props', defaultMessage: '属性' })}
             </Radio.Button>
-            {!isLogicalDatabase && (
+            {!isLogicalDatabase(session?.odcDatabase) && (
               <Radio.Button value={TopTab.DATA}>
                 {formatMessage({
                   id: 'workspace.window.table.toptab.data',

@@ -252,6 +252,19 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           },
         },
         {
+          key: 'MULTIPLE_ASYNC',
+          text: ['多库变更'],
+          needAccessTypeList: [DatabasePermissionType.CHANGE],
+          ellipsis: true,
+          run(session, node) {
+            const database: IDatabase = node.data;
+            modal.changeMultiDatabaseChangeModal(true, {
+              projectId: database?.project?.id,
+              orderedDatabaseIds: [[database?.id]],
+            });
+          },
+        },
+        {
           key: 'TASK_ONLINE_SCHEMA_CHANGE',
           text: [
             formatMessage({

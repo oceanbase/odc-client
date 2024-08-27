@@ -141,6 +141,7 @@ export interface IDataSourceModeConfig {
     supportOBProxy?: boolean;
     disableTriggerSwitch?: boolean;
     plRun?: boolean;
+    sessionParams?: boolean;
     export: {
       fileLimit: boolean;
       snapshot: boolean;

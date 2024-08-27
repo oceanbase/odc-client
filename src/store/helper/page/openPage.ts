@@ -188,7 +188,7 @@ export async function openSessionManagePage(datasourceId?: number) {
 
 export async function openSessionParamsPage(datasourceId?: number) {
   if (!datasourceId) {
-    modalStore.changeSelectDatabaseVisible(true, null, (datasourceId) =>
+    modalStore.changeSelectDatabaseVisible(true, 'sessionParams', (datasourceId) =>
       page.openPage(new SessionParamsPage(datasourceId)),
     );
   }
