@@ -18,7 +18,7 @@ import { formatMessage } from '@/util/intl';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 // compatible
-import { PASSWORD_REGEX, SPACE_REGEX } from '@/constant';
+import { PASSWORD_REGEX, SPACE_REGEX, PASSWORD_VALIDATE_MESSAGE } from '@/constant';
 import { UserStore } from '@/store/login';
 import { Form, Input, Modal } from 'antd';
 import { FormInstance } from 'antd/lib/form';
@@ -144,11 +144,7 @@ class ChangePasswordModal extends Component<IProps> {
 
                     {
                       pattern: PASSWORD_REGEX,
-                      message: formatMessage({
-                        id: 'login.password.valid',
-                        defaultMessage:
-                          '至少包含 2 个数字、2 个大写字母、2 个小写字母和 2 个特殊字符（._+@#$%），长度为 8~32 个字符',
-                      }),
+                      message: PASSWORD_VALIDATE_MESSAGE,
                     },
 
                     {
