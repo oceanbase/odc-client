@@ -183,7 +183,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
         ),
         disabled: disabledByCount || disabledByBaseDb,
         key: item?.id,
-        icon: <DataBaseStatusIcon item={item} />,
+        icon: <DataBaseStatusIcon item={item} showStatusTooltip={false} />,
       };
     });
     return allTreeData;
@@ -207,7 +207,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
   }
 
   const handleSwitchSelectAll = () => {
-    onChange(checkAll ? [] : maxTreeDataKeys);
+    onChange(checkAll ? [baseDatabase || null] : maxTreeDataKeys);
   };
 
   const handleSearch = (value) => {

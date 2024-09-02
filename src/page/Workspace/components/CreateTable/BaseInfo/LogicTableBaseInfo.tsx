@@ -1,5 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import { Col, Form, Input, Row, Select, Typography, Empty, Tooltip, Space } from 'antd';
+import { Col, Form, Input, Row, Select, Typography, Empty, Popover, Space } from 'antd';
 import { FormInstance } from 'antd/es/form/Form';
 import React, { useContext, useEffect, useImperativeHandle, useState } from 'react';
 import { getDefaultCollation } from '../helper';
@@ -49,7 +49,6 @@ const LogicTableBaseInfo = ({
 }) => {
   if (!session) return;
   const { collations, charsets } = session;
-  const [tooltipVisible, setTooltipVisible] = useState(false);
 
   const [previewTopologiesList, setPreviewTopologiesList] = useState([]);
 
@@ -128,21 +127,16 @@ const LogicTableBaseInfo = ({
     >
       <Row gutter={12}>
         <Col span={24}>
-          <Tooltip title={inputTooltipContent} open={tooltipVisible} placement="left" color="white">
+          <Popover content={inputTooltipContent} placement="left" color="white">
             <Form.Item
               name="tableName"
               label="逻辑表表达式"
               extra={previewTopologiesBtn}
               tooltip="设置物理表在实际数据库上的分布规则"
             >
-              <Input
-                autoFocus
-                placeholder="请输入"
-                onFocus={() => setTooltipVisible(true)}
-                onBlur={() => setTooltipVisible(false)}
-              />
+              <Input autoFocus placeholder="请输入" />
             </Form.Item>
-          </Tooltip>
+          </Popover>
         </Col>
         <Col span={12}>
           <Form.Item

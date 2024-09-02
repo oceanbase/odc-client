@@ -170,7 +170,7 @@ const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false)
       title: (
         <Space>
           <Text>{name}</Text>
-          <Text type="secondary" ellipsis>
+          <Text type="secondary" ellipsis style={{ maxWidth: 200 }} title={dataSource?.name}>
             {dataSource?.name}
           </Text>
           <Text type="secondary" ellipsis>

@@ -60,11 +60,14 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       ssl: true,
     },
     features: {
-      task: Object.values(TaskType).filter((type) => ![TaskType.SHADOW].includes(type)),
+      task: Object.values(TaskType).filter(
+        (type) => ![TaskType.SHADOW, TaskType.ONLINE_SCHEMA_CHANGE].includes(type),
+      ),
       obclient: true,
       recycleBin: true,
       sessionManage: true,
       sessionParams: true,
+      resourceTree: true,
       sqlExplain: true,
       compile: true,
       plEdit: true,
@@ -109,6 +112,7 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       compile: true,
       sessionManage: true,
       sessionParams: true,
+      resourceTree: true,
       plEdit: true,
       anonymousBlock: true,
       supportOBProxy: true,
