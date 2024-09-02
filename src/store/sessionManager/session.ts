@@ -173,7 +173,7 @@ class SessionStore {
         }
         this.sessionId = data.sessionId;
         this.dataTypes = data.dataTypeUnits;
-        this.initSupportFeature(data.supports);
+        await this.initSupportFeature(data.supports);
         this.isAlive = true;
         return true;
       } else {

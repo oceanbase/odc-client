@@ -163,15 +163,7 @@ const CreateLogicialDatabase: React.FC<{
                     alignItems: 'center',
                   }}
                 >
-                  <div style={{ display: 'flex' }}>
-                    {/* <Icon
-                      component={icon?.icon?.component}
-                      style={{
-                        color: icon?.icon?.color,
-                        fontSize: 16,
-                        marginRight: 4,
-                      }}
-                    /> */}
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
                     <DataBaseStatusIcon item={cur} />
                     <div style={{ maxWidth: '210px', marginLeft: 4 }}>{cur.name}</div>
                     <div

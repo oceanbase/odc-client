@@ -79,6 +79,7 @@ const items: Record<ConnectType.ORACLE, IDataSourceModeConfig> = {
       sqlExplain: false,
       sessionManage: true,
       sessionParams: true,
+      resourceTree: true,
       disableTriggerSwitch: true,
       compile: false,
       plEdit: true,

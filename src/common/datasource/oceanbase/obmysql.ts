@@ -77,6 +77,7 @@ const items: Record<
       sqlExplain: true,
       sessionManage: true,
       sessionParams: true,
+      resourceTree: true,
       supportOBProxy: true,
       plRun: true,
       export: {
@@ -113,6 +114,7 @@ const items: Record<
       recycleBin: true,
       sessionManage: true,
       sessionParams: true,
+      resourceTree: true,
       sqlExplain: true,
       supportOBProxy: true,
       export: {
@@ -151,6 +153,7 @@ const items: Record<
       sessionManage: true,
       sqlExplain: false,
       sessionParams: true,
+      resourceTree: true,
       supportOBProxy: true,
       export: {
         fileLimit: true,

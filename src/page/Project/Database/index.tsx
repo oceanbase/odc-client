@@ -153,7 +153,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
       default:
     }
   };
-  const renderDisabledDBWithTip = (name: React.ReactNode) => {
+  const renderNoPermissionDBWithTip = (name: React.ReactNode) => {
     return (
       <span className={styles.disable}>
         <Tooltip
@@ -267,7 +267,6 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
               );
               const disabled =
                 !hasChangeAuth && !hasQueryAuth && !record?.authorizedPermissionTypes?.length;
-              /* todo 这里需要乐别给字段, 逻辑库没有数据源,拿不到type */
               const style = getDataSourceStyleByConnectType(record?.dataSource?.type);
               if (!record.existed) {
                 return disabled ? (
@@ -279,7 +278,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       defaultMessage: '当前数据库不存在',
                     })} /*当前数据库不存在*/
                   >
-                    {renderDisabledDBWithTip(name)}
+                    {renderNoPermissionDBWithTip(name)}
                   </HelpDoc>
                 ) : (
                   <HelpDoc
@@ -295,7 +294,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                 );
               }
               return disabled ? (
-                renderDisabledDBWithTip(name)
+                renderNoPermissionDBWithTip(name)
               ) : (
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   {record?.type === 'LOGICAL' && <LogicIcon />}
@@ -446,6 +445,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             width: 210,
             render(_, record) {
               const config = getDataSourceModeConfig(record?.dataSource?.type);
+              const notSupportToResourceTree = !config?.features?.resourceTree;
               const disableTransfer =
                 !!record?.dataSource?.projectId &&
                 !config?.schema?.innerSchema?.includes(record?.name);
@@ -679,7 +679,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                         isLogicalDatabase(record),
                       );
                     }}
-                    disabled={!hasLoginAuth}
+                    disabled={!hasLoginAuth || notSupportToResourceTree}
                     tooltip={
                       !hasLoginAuth
                         ? formatMessage({
