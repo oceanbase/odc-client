@@ -404,10 +404,14 @@ export async function syncDatasource(dsId: number): Promise<boolean> {
 export async function getDataSourceManageDatabase(
   datasourceId: number,
   name?: string,
+  existed?: boolean,
+  belongsToProject?: boolean,
 ): Promise<IResponseData<IDatabase>> {
   const res = await request.get(`/api/v2/datasource/datasources/${datasourceId}/databases`, {
     params: {
       name,
+      existed,
+      belongsToProject,
     },
   });
   return res?.data;
