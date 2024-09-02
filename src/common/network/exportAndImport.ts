@@ -264,9 +264,9 @@ export async function getTaskInfoAndLog(
   return res?.data;
 }
 
-export async function getImportFileMeta(filePath) {
+export async function getImportFileMeta(filePath: string, fileType: IMPORT_TYPE) {
   const res = await request.get(`/api/v2/dataTransfer/getMetaInfo`, {
-    params: { fileName: filePath },
+    params: { fileName: filePath, fileType: fileType },
   });
   return res?.data;
 }

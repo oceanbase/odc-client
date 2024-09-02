@@ -2167,6 +2167,7 @@ export enum IMPORT_TYPE {
   ZIP = 'ZIP',
   SQL = 'SQL',
   CSV = 'CSV',
+  DIR = 'DIR',
 }
 
 /**

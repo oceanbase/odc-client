@@ -66,3 +66,26 @@ export function getFileMIMETypeWithImportType(importType: IMPORT_TYPE | EXPORT_T
 
   return _m[importType];
 }
+
+export function getImportTypeByFileExtension(flieExtension: string) {
+  if (['zip']?.includes(flieExtension)) {
+    return IMPORT_TYPE.ZIP;
+  }
+  if (['sql']?.includes(flieExtension)) {
+    return IMPORT_TYPE.SQL;
+  }
+  if (['csv', 'txt']?.includes(flieExtension)) {
+    return IMPORT_TYPE.CSV;
+  }
+}
+
+export function getImportTypeLabel(importType: IMPORT_TYPE) {
+  if (!importType) return '';
+  const map = {
+    [IMPORT_TYPE.ZIP]: 'ZIP',
+    [IMPORT_TYPE.SQL]: 'SQL',
+    [IMPORT_TYPE.CSV]: 'CSV',
+    [IMPORT_TYPE.DIR]: '目录文件',
+  };
+  return map[importType];
+}
