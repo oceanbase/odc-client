@@ -26,6 +26,7 @@ import React from 'react';
 import CsvTable from './csvTables';
 import styles from './index.less';
 import ObjTable from './ObjTables';
+import { getImportTypeLabel } from '../../ImportTask/CreateModal/ImportForm/helper';
 const SimpleTextItem: React.FC<{
   label: string;
   content: React.ReactNode;
@@ -351,7 +352,7 @@ class TaskContent extends React.Component<any, any> {
             }
             content={
               taskConfig?.fileType
-                ? taskConfig?.fileType +
+                ? getImportTypeLabel(taskConfig?.fileType) +
                   formatMessage({
                     id: 'odc.component.TaskDetailDrawer.TaskInfo.Format',
                     defaultMessage: '格式',

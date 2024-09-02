@@ -38,6 +38,8 @@ import { isClient } from '@/util/env';
 import { getLocale } from '@umijs/max';
 import FormContext from '../FormContext';
 import styles from './index.less';
+import { selectFolder } from '@/util/client';
+import { getImportFileMeta } from '@/common/network/exportAndImport';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -46,7 +48,21 @@ interface IProps {
   isSingleImport: boolean;
   form: FormInstance<any>;
 }
-
+function getTiltleByFileType(fileType) {
+  switch (fileType) {
+    case IMPORT_TYPE.ZIP:
+    case IMPORT_TYPE.CSV:
+    case IMPORT_TYPE.SQL: {
+      return formatMessage({
+        id: 'odc.ImportDrawer.ImportForm.ClickOrDragTheFile',
+        defaultMessage: '点击或将文件拖拽到这里上传',
+      });
+    }
+    case IMPORT_TYPE.DIR: {
+      return '点击或将目录文件拖拽到这里上传';
+    }
+  }
+}
 function getTipByFileType(fileType) {
   switch (fileType) {
     case IMPORT_TYPE.ZIP: {
@@ -74,6 +90,9 @@ function getTipByFileType(fileType) {
       ]
         .filter(Boolean)
         .join(',');
+    }
+    case IMPORT_TYPE.DIR: {
+      return '仅支持上传 ODC 导出的目录文件';
     }
   }
 }
@@ -140,6 +159,25 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
     return isLimit ? Upload.LIST_IGNORE : checkImportFile(file, fileList, silence);
   }
 
+  const handleOpenFolderSelector = async (fileType: IMPORT_TYPE) => {
+    const path = await selectFolder();
+    if (!path) return;
+    const response = await getImportFileMeta(path, fileType);
+    console.log(response);
+    formContext.updateFormData({
+      importFileName: [
+        {
+          uid: Date.now(),
+          name: path,
+          status: response.errorCode ? 'error' : 'done',
+          response: response.errorCode ? response.errorMessage : { data: response },
+        },
+      ],
+    });
+  };
+
+  const isDirImport = (fileType) => fileType === IMPORT_TYPE.DIR;
+
   return (
     <>
       <FormItem
@@ -189,6 +227,11 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
 
                 /* SQL 文件 */
               }
+            </Option>
+          )}
+          {isClient() && (
+            <Option key={IMPORT_TYPE.DIR} value={IMPORT_TYPE.DIR}>
+              目录文件
             </Option>
           )}
         </Select>
@@ -285,44 +328,49 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
                   }
                 }}
                 action={getImportUploadUrl()}
+                openFileDialogOnClick={isDirImport(fileType) ? false : true}
               >
-                <p
-                  style={{
-                    fontSize: 12,
-                    color: 'var(--text-color-primary)',
-                    lineHeight: '20px',
-                  }}
+                <div
+                  onClick={isDirImport(fileType) ? () => handleOpenFolderSelector(fileType) : null}
+                  className={styles.fileImportUpload}
                 >
-                  {formatMessage({
-                    id: 'odc.ImportDrawer.ImportForm.ClickOrDragTheFile',
-                    defaultMessage: '点击或将文件拖拽到这里上传',
-                  })}
-                </p>
-                <p
-                  style={{
-                    marginTop: 4,
-                    fontSize: 12,
-                    color: 'var(--text-color-hint)',
-                    lineHeight: '20px',
-                  }}
-                >
-                  {getTipByFileType(fileType)}
-                </p>
-                <p
-                  style={{
-                    marginTop: 4,
-                    fontSize: 12,
-                    color: 'var(--text-color-hint)',
-                    lineHeight: '20px',
-                  }}
-                >
-                  {formatMessage({
-                    id: 'odc.ImportDrawer.ImportForm.SupportedExtensions',
-                    defaultMessage: '支持扩展名：',
-                  })}
+                  <p
+                    style={{
+                      fontSize: 12,
+                      color: 'var(--text-color-primary)',
+                      lineHeight: '20px',
+                    }}
+                  >
+                    {getTiltleByFileType(fileType)}
+                  </p>
+                  <p
+                    style={{
+                      marginTop: 4,
+                      fontSize: 12,
+                      color: 'var(--text-color-hint)',
+                      lineHeight: '20px',
+                    }}
+                  >
+                    {getTipByFileType(fileType)}
+                  </p>
+                  {!isDirImport(fileType) && (
+                    <p
+                      style={{
+                        marginTop: 4,
+                        fontSize: 12,
+                        color: 'var(--text-color-hint)',
+                        lineHeight: '20px',
+                      }}
+                    >
+                      {formatMessage({
+                        id: 'odc.ImportDrawer.ImportForm.SupportedExtensions',
+                        defaultMessage: '支持扩展名：',
+                      })}
 
-                  {getFileTypeWithImportType(fileType)}
-                </p>
+                      {getFileTypeWithImportType(fileType)}
+                    </p>
+                  )}
+                </div>
               </ODCDragger>
             </FormItem>
           );
