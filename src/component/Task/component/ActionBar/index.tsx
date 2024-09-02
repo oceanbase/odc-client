@@ -171,6 +171,7 @@ const ActionBar: React.FC<IProps> = inject(
           //执行成功
         );
         closeTaskDetail();
+        props?.onReloadList?.();
       }
     };
 
