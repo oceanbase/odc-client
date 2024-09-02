@@ -71,6 +71,11 @@ export enum DBType {
   PHYSICAL = 'PHYSICAL',
 }
 
+export enum BooleanOptionType {
+  TRUE = 'true',
+  FALSE = 'false',
+}
+
 export interface IDatabase {
   id: number;
   databaseId?: string;

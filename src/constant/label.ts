@@ -22,7 +22,7 @@ import {
   SQLLintMode,
   SQLSessionMode,
 } from '@/d.ts';
-import { DBType } from '@/d.ts/database';
+import { DBType, BooleanOptionType } from '@/d.ts/database';
 import { ColumnStoreType } from '@/d.ts/table';
 import { formatMessage } from '@/util/intl';
 
@@ -106,6 +106,16 @@ export const ConnectTypeText = {
 export const DBTypeText = {
   [DBType.LOGICAL]: '逻辑库',
   [DBType.PHYSICAL]: '物理库',
+};
+
+export const DatabaseAvailableTypeText = {
+  [BooleanOptionType.TRUE]: '可用',
+  [BooleanOptionType.FALSE]: '不可用',
+};
+
+export const DatabaseBelongsToProjectTypeText = {
+  [BooleanOptionType.TRUE]: '已分配项目',
+  [BooleanOptionType.FALSE]: '未分配项目',
 };
 
 export const DragInsertTypeText = {
