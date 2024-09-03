@@ -70,7 +70,7 @@ const Environment = () => {
       envs?.map((env) => {
         return {
           label: env?.name,
-          value: env?.id,
+          value: env?.rulesetId,
         };
       }),
     );
