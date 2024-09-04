@@ -114,6 +114,7 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       sessionParams: true,
       resourceTree: true,
       plEdit: true,
+      plRun: true,
       anonymousBlock: true,
       supportOBProxy: true,
       export: {

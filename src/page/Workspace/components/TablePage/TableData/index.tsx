@@ -262,6 +262,9 @@ class TableData extends React.Component<
         session.database.dbName,
         false,
       );
+      if (result?.unauthorizedDBResources?.length) {
+        return { unauthorizedDBResources: result?.unauthorizedDBResources };
+      }
       if (!hasExecuted) {
         if (result?.status !== EStatus.SUBMIT) {
           this.setState({
