@@ -36,7 +36,7 @@ import { DatabasePermissionType } from '@/d.ts/database';
 
 const { Text } = Typography;
 
-const isPersonal = userStore?.isPrivateSpace();
+const isPrivateSpace = userStore?.isPrivateSpace();
 
 /**
  * 菜单展示权限包裹方法
@@ -242,7 +242,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return !setting.enableAsyncTask;
+            return !setting.enableAsyncTask || isLogicalDatabase(node.data);
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -256,11 +256,29 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           text: ['多库变更'],
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
+          isHide(_, node) {
+            return isLogicalDatabase(node.data);
+          },
           run(session, node) {
             const database: IDatabase = node.data;
             modal.changeMultiDatabaseChangeModal(true, {
               projectId: database?.project?.id,
               orderedDatabaseIds: [[database?.id]],
+            });
+          },
+        },
+        {
+          key: 'TASK_ASYNC',
+          text: ['逻辑库变更'],
+          needAccessTypeList: [DatabasePermissionType.CHANGE],
+          ellipsis: true,
+          isHide(_, node) {
+            return !isLogicalDatabase(node.data);
+          },
+          run(session, node, databaseFrom) {
+            modal.changeLogicialDatabaseModal(true, {
+              projectId: node?.data?.odcDatabase?.project?.id,
+              databaseId: node?.data?.id,
             });
           },
         },
@@ -341,7 +359,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         return (
           setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'true' &&
           !isLogicalDatabase(node?.data) &&
-          !(isClient() || isPersonal)
+          (isClient() || isPrivateSpace)
         );
       },
       isHide(_, node) {
@@ -436,8 +454,8 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ellipsis: true,
       hasDivider:
         setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'true',
-      isHide() {
-        return isClient() || isPersonal;
+      isHide(_, node) {
+        return isClient() || isPrivateSpace || isLogicalDatabase(node.data);
       },
       children: [
         {
@@ -452,7 +470,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
             });
           },
           isHide() {
-            return isClient() || isPersonal;
+            return isClient() || isPrivateSpace;
           },
         },
       ],

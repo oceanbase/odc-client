@@ -3831,6 +3831,7 @@ export interface IPLExecResult {
   };
   returnValue?: IPLOutParam;
   outParams?: IPLOutParam[];
+  unauthorizedDBResources?: IUnauthorizedDBResources[];
 }
 export interface IPLCompileResult {
   messages: string;

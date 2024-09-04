@@ -643,6 +643,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
               EXEC: {
                 status: 'FAIL',
                 errorMessage: resExec.errorMessage,
+                unauthorizedDBResources: resExec.unauthorizedDBResources,
               },
               DBMS: resExec.dbms,
             },

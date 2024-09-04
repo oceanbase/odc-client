@@ -117,6 +117,7 @@ const items: Record<
       resourceTree: true,
       sqlExplain: true,
       supportOBProxy: true,
+      plRun: true,
       export: {
         fileLimit: true,
         snapshot: true,

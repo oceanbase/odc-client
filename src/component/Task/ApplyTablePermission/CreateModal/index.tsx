@@ -366,6 +366,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
   return (
     <Drawer
+      zIndex={1002}
       destroyOnClose
       className={styles.createModal}
       width={816}

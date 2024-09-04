@@ -20,12 +20,14 @@ import Icon, { HomeOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { useState } from 'react';
 import styles from './index.less';
+import login from '@/store/login';
 
 export default function Logo() {
   const [isHover, setHoverSatate] = useState<boolean>(false);
 
   const backToHome = () => {
     if (isClient()) return;
+    if (login.isPrivateSpace()) return;
     window.open(location.origin + '/#/project');
   };
 
@@ -36,7 +38,7 @@ export default function Logo() {
       onMouseEnter={() => setHoverSatate(true)}
       onMouseLeave={() => setHoverSatate(false)}
     >
-      {isHover && !isClient() ? (
+      {isHover && !isClient() && !login.isPrivateSpace() ? (
         <Tooltip title={'返回首页'} placement="right">
           <Icon
             component={HomeOutlined}

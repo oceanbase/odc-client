@@ -35,6 +35,7 @@ import CursorCell from './CursorCell';
 import DebugLog from './DebugLog';
 import DebugVariables from './DebugVariables';
 import styles from './index.less';
+import DBPermissionTableContent from '../DBPermissionTableContent';
 
 interface IProps {
   session: SessionStore;
@@ -174,7 +175,7 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
             },
           };
 
-          const { errorMessage = '', status } = data.EXEC || {};
+          const { errorMessage = '', status, unauthorizedDBResources } = data.EXEC || {};
           const formatStatus = status !== 'FAIL' ? 'SUCCESS' : 'FAIL';
           const statusInfo = statusMap[formatStatus];
           const paramsColumns = [
@@ -296,6 +297,9 @@ const PLDebugResultSet: React.FC<IProps> = (props) => {
                     />
                   </Col>
                 </Row>
+              )}
+              {unauthorizedDBResources?.length && (
+                <DBPermissionTableContent dataSource={unauthorizedDBResources} showAction />
               )}
             </div>
           );
