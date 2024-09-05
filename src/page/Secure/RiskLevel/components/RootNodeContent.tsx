@@ -15,7 +15,7 @@
  */
 
 import ScanRuleEmpty from '@/component/Empty/ScanRuleEmpty';
-import { Space } from 'antd';
+import { Input, Space } from 'antd';
 import { useState } from 'react';
 import { Expression, ExpressionMap, OperatorMap } from '../interface';
 import styles from './index.less';
@@ -69,11 +69,16 @@ const RootNodeContent = ({
         <div className={styles.treeInputBorder} key={2}>
           {OperatorMap?.[node?.operator]}
         </div>
-        <div className={styles.treeInputBorder} key={3}>
-          {Array.isArray(node?.value)
-            ? node?.value?.map((v) => valueMap?.[v] || v)?.join(', ')
-            : valueMap?.[node?.value] || node?.value}
-        </div>
+        <Input
+          style={{ width: 250 }}
+          key={3}
+          disabled
+          value={
+            Array.isArray(node?.value)
+              ? node?.value?.map((v) => valueMap?.[v] || v)?.join(', ')
+              : valueMap?.[node?.value] || node?.value
+          }
+        />
       </Space>
     );
   };

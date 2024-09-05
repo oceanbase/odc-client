@@ -82,13 +82,15 @@ const RiskLevel = ({ userStore }) => {
         />
       }
       content={
-        <Spin spinning={loading}>
-          <InnerRiskLevel
-            key={currentRiskLevel?.id}
-            currentRiskLevel={currentRiskLevel}
-            memoryReload={memoryReload}
-          />
-        </Spin>
+        <div style={{ height: '100%', overflowY: 'auto' }}>
+          <Spin spinning={loading}>
+            <InnerRiskLevel
+              key={currentRiskLevel?.id}
+              currentRiskLevel={currentRiskLevel}
+              memoryReload={memoryReload}
+            />
+          </Spin>
+        </div>
       }
     />
   );
