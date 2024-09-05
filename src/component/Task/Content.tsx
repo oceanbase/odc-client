@@ -77,7 +77,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
   const { detailId, detailType, detailVisible, cycleTasks, tasks } = state;
   const taskList = isCycleTaskPage(taskTabType) ? cycleTasks : tasks;
   const theme = isSqlworkspace ? null : 'vs';
-  const tableRef = React.createRef<ITableInstance>();
+  const tableRef = useRef<ITableInstance>();
 
   const TaskEventMap = {
     [TaskPageType.IMPORT]: () => modalStore.changeImportModal(true),
