@@ -74,11 +74,14 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     const projectId = toInteger(params.get('projectId'));
     const databaseId = toInteger(params.get('databaseId'));
     const datasourceId = toInteger(params.get('datasourceId'));
+    const isLogicalDatabase = params.get('isLogicalDatabase') === 'true';
     if (projectId) {
       resourceTreeContext?.setSelectTabKey(ResourceTreeTab.project);
       resourceTreeContext?.setSelectProjectId(projectId);
       databaseId && resourceTreeContext?.setCurrentDatabaseId(databaseId);
-      databaseId && openNewSQLPage(databaseId, 'project');
+      if (!isLogicalDatabase) {
+        databaseId && openNewSQLPage(databaseId, 'project');
+      }
     } else if (datasourceId) {
       resourceTreeContext?.setSelectTabKey(ResourceTreeTab.datasource);
       resourceTreeContext?.setSelectDatasourceId(datasourceId);

@@ -109,7 +109,6 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [hasPreCheck, setHasPreCheck] = useState<boolean>(false);
   const [lintResultSet, setLintResultSet] = useState<ISQLLintReuslt[]>([]);
   const connection = database?.dataSource;
-  const isReadonlyPublicConn = isReadonlyPublicConnection(database?.dataSource);
   const sqlFileRef = useRef<{
     setValue: (value: UploadFile[]) => void;
     resetFields: () => void;

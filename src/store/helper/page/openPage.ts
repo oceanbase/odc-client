@@ -188,7 +188,7 @@ export async function openSessionManagePage(datasourceId?: number) {
 
 export async function openSessionParamsPage(datasourceId?: number) {
   if (!datasourceId) {
-    modalStore.changeSelectDatabaseVisible(true, null, (datasourceId) =>
+    modalStore.changeSelectDatabaseVisible(true, 'sessionParams', (datasourceId) =>
       page.openPage(new SessionParamsPage(datasourceId)),
     );
   }
@@ -222,8 +222,9 @@ export function openTableViewPage(
   topTab: TableTopTab = TableTopTab.PROPS,
   propsTab: TablePropsTab = TablePropsTab.INFO,
   databaseId: number,
+  tableId: number,
 ) {
-  page.openPage(new TablePage(databaseId, tableName, topTab, propsTab));
+  page.openPage(new TablePage(databaseId, tableName, topTab, propsTab, tableId));
 }
 
 /**

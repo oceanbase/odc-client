@@ -62,6 +62,7 @@ const Columns: React.FC<IProps> = function ({}) {
   const gridColumns = useColumns({ session }, columns);
   const gridRef = useRef<DataGridRef>();
   const config = useTableConfig(session.connection.dialectType);
+  // const config = useTableConfig(session?.connection?.dialectType || 'OB_MYSQL');
   const [editColumns, setEditColumns] = useState(null);
   const displayColumns = editColumns || columns;
 

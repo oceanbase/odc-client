@@ -20,6 +20,8 @@ import { checkDbExpiredByDataSourceStatus } from '../../CreateModal/DatabaseQueu
 import { flatArray } from '../../CreateModal/helper';
 import InnerSelecter, { DatabaseOption } from '../../CreateModal/InnerSelecter';
 import styles from './index.less';
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { TaskType } from '@/d.ts';
 
 const EditTemplate: React.FC<{
   open: boolean;
@@ -54,21 +56,32 @@ const EditTemplate: React.FC<{
     );
     if (databaseList?.contents?.length) {
       datasourceStatus.asyncUpdateStatus([
-        ...new Set(databaseList?.contents?.map((item) => item?.dataSource?.id)),
+        ...new Set(
+          databaseList?.contents
+            ?.filter((item) => item.type !== 'LOGICAL')
+            ?.map((item) => item?.dataSource?.id),
+        ),
       ]);
       setDatabaseOptions(
-        databaseList?.contents?.map((item) => {
-          const statusInfo = datasourceStatus.statusMap.get(item?.dataSource?.id);
-          return {
-            label: item?.name,
-            value: item?.id,
-            environment: item?.environment,
-            dataSource: item?.dataSource,
-            existed: item?.existed,
-            unauthorized: !item?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE),
-            expired: checkDbExpiredByDataSourceStatus(statusInfo?.status),
-          };
-        }),
+        databaseList?.contents
+          ?.filter((i) => {
+            const config = getDataSourceModeConfig(i?.dataSource?.type);
+            return config?.features?.task?.includes(TaskType.MULTIPLE_ASYNC);
+          })
+          ?.map((item) => {
+            const statusInfo = datasourceStatus.statusMap.get(item?.dataSource?.id);
+            return {
+              label: item?.name,
+              value: item?.id,
+              environment: item?.environment,
+              dataSource: item?.dataSource,
+              existed: item?.existed,
+              unauthorized: !item?.authorizedPermissionTypes?.includes(
+                DatabasePermissionType.CHANGE,
+              ),
+              expired: checkDbExpiredByDataSourceStatus(statusInfo?.status),
+            };
+          }),
       );
     }
   };

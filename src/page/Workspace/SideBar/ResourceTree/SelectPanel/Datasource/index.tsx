@@ -45,6 +45,8 @@ import {
 } from 'react';
 import ResourceLayout from '../../Layout';
 import styles from './index.less';
+import { getDataSourceModeConfig } from '@/common/datasource';
+
 interface IProps {
   filters: {
     envs: number[];
@@ -99,6 +101,16 @@ export default inject('dataSourceStatusStore')(
       const datasource: TreeDataNode[] = useMemo(() => {
         return datasourceList
           ?.map((item) => {
+            const config = getDataSourceModeConfig(item?.type);
+            /**
+             * feature filter
+             */
+            if (!config?.features?.resourceTree) {
+              return;
+            }
+            /**
+             * search filter
+             */
             if (searchKey && !item.name?.toLowerCase()?.includes(searchKey?.toLowerCase())) {
               return null;
             }

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { DbObjectType, IResponseData, IManagerResourceType } from '@/d.ts';
-import { IDatabase, IDatabaseObject } from '@/d.ts/database';
+import { DbObjectType, IResponseData, IManagerResourceType, ConnectType } from '@/d.ts';
+import { DBType, IDatabase, IDatabaseObject } from '@/d.ts/database';
 import sessionManager from '@/store/sessionManager';
 import notification from '@/util/notification';
 import request from '@/util/request';
@@ -30,13 +30,15 @@ export async function listDatabases(
   page?: number,
   size?: number,
   name?: string,
-  environmentId?: number,
+  environmentId?: number[],
   /**
    * 是否包含未分配项目的数据库
    */
   containsUnassigned?: boolean,
   existed?: boolean,
   includesPermittedAction?: boolean,
+  type?: DBType[],
+  connectType?: ConnectType[],
 ): Promise<IResponseData<IDatabase>> {
   const res = await request.get(`/api/v2/database/databases`, {
     params: {
@@ -49,6 +51,8 @@ export async function listDatabases(
       containsUnassigned,
       existed,
       includesPermittedAction,
+      type: type,
+      connectType: connectType,
     },
   });
 

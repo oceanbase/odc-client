@@ -20,21 +20,34 @@ import { listDatabases, updateDataBase } from '@/common/network/database';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import ApplyDatabasePermissionButton from '@/component/Task/ApplyDatabasePermission/CreateButton';
 import TooltipAction from '@/component/TooltipAction';
-import { ProjectRole } from '@/d.ts/project';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
-import Icon from '@ant-design/icons';
 import { useRequest } from 'ahooks';
-import { Button, Col, Form, message, Modal, Row, Select, Space, Tooltip } from 'antd';
+import Icon, { DownOutlined } from '@ant-design/icons';
+import ProjectContext from '../../../ProjectContext';
+import { ProjectRole } from '@/d.ts/project';
+import { DatabaseOwnerSelect } from '../DatabaseOwnerSelect';
+import {
+  Button,
+  Col,
+  Form,
+  message,
+  Modal,
+  Row,
+  Select,
+  Space,
+  Tooltip,
+  MenuProps,
+  Dropdown,
+} from 'antd';
 import { useContext, useState } from 'react';
-import ProjectContext from '../../ProjectContext';
-import { DatabaseOwnerSelect } from '../components/DatabaseOwnerSelect.tsx';
 interface IProps {
   projectId: number;
   orderedDatabaseIds: number[][];
   modalStore?: ModalStore;
   onSuccess: () => void;
   clearSelectedRowKeys: () => void;
+  onOpenLogicialDatabase: () => void;
 }
 const AddDataBaseButton: React.FC<IProps> = ({
   projectId,
@@ -42,6 +55,7 @@ const AddDataBaseButton: React.FC<IProps> = ({
   modalStore,
   onSuccess,
   clearSelectedRowKeys,
+  onOpenLogicialDatabase,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const { project } = useContext(ProjectContext);
@@ -102,6 +116,15 @@ const AddDataBaseButton: React.FC<IProps> = ({
       form.resetFields();
     }
   }
+  const items: MenuProps['items'] = [
+    {
+      label: '配置逻辑库',
+      key: '1',
+      onClick: () => {
+        onOpenLogicialDatabase();
+      },
+    },
+  ];
   return (
     <>
       <Space size={12}>
@@ -115,14 +138,15 @@ const AddDataBaseButton: React.FC<IProps> = ({
               : ''
           }
         >
-          <Button onClick={() => setOpen(true)} type="primary" disabled={disabledAction}>
-            {
-              formatMessage({
-                id: 'odc.Database.AddDataBaseButton.AddDatabase',
-                defaultMessage: '添加数据库',
-              }) /*添加数据库*/
-            }
-          </Button>
+          <Dropdown.Button
+            type="primary"
+            icon={<DownOutlined />}
+            menu={{ items }}
+            onClick={() => setOpen(true)}
+            disabled={disabledAction}
+          >
+            添加数据库
+          </Dropdown.Button>
         </TooltipAction>
         <Button
           onClick={() => {

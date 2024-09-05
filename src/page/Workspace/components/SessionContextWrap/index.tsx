@@ -93,6 +93,7 @@ export default function SessionContextWrap({
         datasourceMode,
         datasourceId,
         from,
+        setFrom,
       }}
     >
       {typeof children === 'function'

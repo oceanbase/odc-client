@@ -31,9 +31,12 @@ import Icon, { EditOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Button, Input, message, Popconfirm, Space, Tooltip } from 'antd';
 import { toInteger } from 'lodash';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import ChangeProjectModal from './ChangeProjectModal';
 import NewDataBaseButton from './NewDataBaseButton';
+import Header from './Header';
+import ParamContext, { IFilterParams } from './ParamContext';
+
 interface IProps {
   id: string;
   datasource: IDatasource;
@@ -47,11 +50,25 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
     pageSize: 0,
     current: 0,
   });
+  const [filterParams, setFilterParams] = useState<IFilterParams>({
+    existed: undefined,
+    belongsToProject: undefined,
+  });
+
+  useEffect(() => {
+    loadData(lastParams.current.pageSize, lastParams.current.current);
+  }, [filterParams]);
+
   const [data, setData] = useState<IDatabase[]>([]);
   const loadData = async (pageSize, current, name: string = searchValue) => {
     lastParams.current.pageSize = pageSize;
     lastParams.current.current = current;
-    const res = await getDataSourceManageDatabase(parseInt(id), name);
+    const res = await getDataSourceManageDatabase(
+      parseInt(id),
+      name,
+      filterParams?.existed,
+      filterParams?.belongsToProject,
+    );
     if (res) {
       setData(res?.contents);
       setTotal(res?.page?.totalElements);
@@ -121,21 +138,22 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
       }
       extra={
         <Space>
-          <Input.Search
-            onSearch={(v) => {
-              setSearchValue(v);
-              reload(v);
+          <ParamContext.Provider
+            value={{
+              searchValue,
+              setSearchValue,
+              filterParams,
+              setFilterParams,
+              reload: () => {
+                lastParams.current.current = 1;
+                reload();
+              },
             }}
-            placeholder={formatMessage({
-              id: 'odc.Datasource.Info.SearchDatabase',
-              defaultMessage: '搜索数据库',
-            })}
-            /*搜索数据库*/ style={{
-              width: 200,
-            }}
-          />
-
-          <Reload onClick={() => reload()} />
+          >
+            <Space>
+              <Header />
+            </Space>
+          </ParamContext.Provider>
         </Space>
       }
     >

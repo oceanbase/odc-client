@@ -76,6 +76,8 @@ const items: Record<
       recycleBin: true,
       sqlExplain: true,
       sessionManage: true,
+      sessionParams: true,
+      resourceTree: true,
       supportOBProxy: true,
       plRun: true,
       export: {
@@ -111,8 +113,11 @@ const items: Record<
       obclient: true,
       recycleBin: true,
       sessionManage: true,
+      sessionParams: true,
+      resourceTree: true,
       sqlExplain: true,
       supportOBProxy: true,
+      plRun: true,
       export: {
         fileLimit: true,
         snapshot: true,
@@ -143,11 +148,13 @@ const items: Record<
       unionUser: true,
     },
     features: {
-      task: [TaskType.ASYNC, TaskType.SQL_PLAN],
+      task: [TaskType.ASYNC, TaskType.SQL_PLAN, TaskType.MULTIPLE_ASYNC],
       obclient: false,
       recycleBin: false,
       sessionManage: true,
       sqlExplain: false,
+      sessionParams: true,
+      resourceTree: true,
       supportOBProxy: true,
       export: {
         fileLimit: true,

@@ -170,7 +170,7 @@ const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false)
       title: (
         <Space>
           <Text>{name}</Text>
-          <Text type="secondary" ellipsis>
+          <Text type="secondary" ellipsis style={{ maxWidth: 200 }} title={dataSource?.name}>
             {dataSource?.name}
           </Text>
           <Text type="secondary" ellipsis>
@@ -216,7 +216,11 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
     try {
       const res = await listDatabases(projectId, null, null, null, null, null, null, true, true);
       if (res?.contents) {
-        datasourceStatus.asyncUpdateStatus(res?.contents?.map((item) => item?.dataSource?.id));
+        datasourceStatus.asyncUpdateStatus(
+          res?.contents
+            ?.filter((item) => item.type !== 'LOGICAL')
+            ?.map((item) => item?.dataSource?.id),
+        );
         const list: IDataBaseWithTable[] = res.contents.map((db) => ({
           ...db,
           tableList: [],

@@ -209,6 +209,10 @@ const SelectPanel = forwardRef<any, IProps>(function (
     const databaseId = shadowSyncData?.databaseId;
     if (databaseId) {
       form.setFieldsValue({ databaseId });
+      setData({
+        ...data,
+        databaseId,
+      });
     }
   }, [shadowSyncData?.databaseId]);
 

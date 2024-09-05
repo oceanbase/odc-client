@@ -105,6 +105,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
             }
           : null,
       ),
+    [TaskPageType.LOGICAL_DATABASE_CHANGE]: () => modalStore.changeLogicialDatabaseModal(true),
   };
   const loadList = async (args: ITableLoadOptions, executeDate: [Moment, Moment]) => {
     const { pageKey, taskStore } = props;

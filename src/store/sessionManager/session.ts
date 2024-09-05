@@ -40,6 +40,7 @@ import { DBDefaultStoreType } from '@/d.ts/table';
 import { isString } from 'lodash';
 import { OBCompare, ODC_PROFILE_SUPPORT_VERSION } from '@/util/versionUtils';
 import { ConnectionMode } from '@/d.ts';
+import { isLogicalDatabase } from '@/util/database';
 
 const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';
@@ -172,7 +173,7 @@ class SessionStore {
         }
         this.sessionId = data.sessionId;
         this.dataTypes = data.dataTypeUnits;
-        this.initSupportFeature(data.supports);
+        await this.initSupportFeature(data.supports);
         this.isAlive = true;
         return true;
       } else {
@@ -218,6 +219,7 @@ class SessionStore {
       if (!this.database) {
         return;
       }
+      await this.initSessionStatus(true, isLogicalDatabase(this?.odcDatabase));
       if (!this.transState) {
         return false;
       }
@@ -241,6 +243,7 @@ class SessionStore {
       this.sessionId,
       dbName,
       this.odcDatabase?.id,
+      this.odcDatabase?.type,
     );
     if (!this.database) {
       return false;
@@ -369,10 +372,9 @@ class SessionStore {
   }
 
   @action
-  public async initSessionStatus(init: boolean = false) {
+  public async initSessionStatus(init: boolean = false, isLogicDbSessionInit: boolean = false) {
     try {
       const data = await getSessionStatus(this.sessionId);
-
       this.params.autoCommit = data?.settings?.autocommit;
       this.params.delimiter = data?.settings?.delimiter || DEFAULT_DELIMITER;
       this.params.queryLimit = data?.settings?.queryLimit;
@@ -388,6 +390,19 @@ class SessionStore {
       }
       if (data?.session) {
         this.transState = data?.session;
+      }
+      if (isLogicDbSessionInit) {
+        /* TODO */
+        this.transState = {
+          sid: null,
+          sessionId: null,
+          state: null,
+          transState: null,
+          transId: null,
+          sqlId: null,
+          activeQueries: null,
+          defaultTableStoreFormat: null,
+        };
       }
     } catch (e) {
       console.error(e);

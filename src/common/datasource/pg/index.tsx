@@ -58,7 +58,7 @@ const items: Record<ConnectType.PG, IDataSourceModeConfig> = {
   [ConnectType.PG]: {
     connection: {
       address: {
-        items: ['ip', 'port', 'databaseName'],
+        items: ['ip', 'port', 'catalogName'],
       },
       account: true,
       sys: false,
@@ -70,7 +70,9 @@ const items: Record<ConnectType.PG, IDataSourceModeConfig> = {
       obclient: false,
       recycleBin: false,
       sessionManage: false,
+      sessionParams: false,
       sqlExplain: false,
+      resourceTree: false,
       export: {
         fileLimit: false,
         snapshot: false,

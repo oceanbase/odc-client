@@ -29,7 +29,7 @@ import { isNil, toInteger } from 'lodash';
 import moment from 'moment';
 import { generateDatabaseSid, generateTableSid } from '../pathUtil';
 import { convertServerTableToTable, convertTableToServerTable } from './helper';
-
+import { getLogicalTableDetail } from '@/common/network/logicalDatabase';
 export async function getTableColumnList(
   tableName: string,
   databaseName?: string,
@@ -72,6 +72,14 @@ export async function getTableInfo(
   );
 
   return convertServerTableToTable(res?.data);
+}
+
+export async function getLogicTableInfo(
+  databaseId: number,
+  tableId: number,
+): Promise<Partial<ITableModel>> {
+  const res = await getLogicalTableDetail(databaseId, tableId);
+  return { ...res, ...convertServerTableToTable({ ...res?.basePhysicalTable, name: res?.name }) };
 }
 
 export async function queryTableOrViewData(

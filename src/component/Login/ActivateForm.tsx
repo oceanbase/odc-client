@@ -22,7 +22,7 @@ import React, { useCallback } from 'react';
 import type { LoginLocale } from './index';
 import { getPrefix } from './index';
 import './index.less';
-import { PASSWORD_REGEX } from './RegisterForm';
+import { PASSWORD_REGEX, PASSWORD_VALIDATE_MESSAGE } from '@/constant';
 
 export interface IActivateFormProps extends FormProps {
   locale?: LoginLocale;
@@ -72,11 +72,7 @@ const Activate: React.FC<IActivateFormProps> = ({
 
   const passwordRegexpRule = passwordRule || {
     pattern: PASSWORD_REGEX,
-    message: formatMessage({
-      id: 'odc.component.Login.ActivateForm.ContainsAtLeastDigitsUppercase',
-      defaultMessage:
-        '至少包含 2 个数字、2 个大写字母、2 个小写字母和 2 个特殊字符 (._+@#$%)，长度为 8~32 个字符',
-    }), //至少包含 2 位数字、2 位大写字母、2 位小写字母和 2 位特殊字符 (._+@#$%)，长度 8~32 位字符
+    message: PASSWORD_VALIDATE_MESSAGE,
   };
 
   return (

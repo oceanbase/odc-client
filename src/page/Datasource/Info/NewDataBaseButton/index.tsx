@@ -20,14 +20,14 @@ import { getProject, listProjects } from '@/common/network/project';
 import { CaseInput } from '@/component/Input/Case';
 import { ConnectionMode } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
-import { IProject } from '@/d.ts/project';
-import { DatabaseOwnerSelect } from '@/page/Project/Database/components/DatabaseOwnerSelect.tsx';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Button, Form, Input, message, Modal, Space } from 'antd';
 import { toInteger } from 'lodash';
 import { useEffect, useState } from 'react';
 import ProjectSelect from '../ChangeProjectModal/ProjectSelect';
+import { DatabaseOwnerSelect } from '@/page/Project/Database/components/DatabaseOwnerSelect';
+import { IProject } from '@/d.ts/project';
 
 interface IProps {
   dataSourceId: string;
