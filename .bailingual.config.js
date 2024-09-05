@@ -1,5 +1,3 @@
-// more config: https://yuque.antfin.com/bailingual/guides/cli-config
-/** @type {import('@alipay/bailingual-cli').BailingualConfig} */
 module.exports = {
   import: {
     type: 'json',
