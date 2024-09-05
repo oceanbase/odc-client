@@ -104,6 +104,7 @@
   "workspace.window.createView.definer": "建立人",
   "workspace.window.createProcedure.success": "建立預存程序成功",
   "odc.component.SaveSQLModal.CannotContainBlankCharacters": "不能含有空白字元",
+  "workspace.window.sql.modal.saveSQL.success": "儲存 SQL 成功",
   "workspace.window.createTable.column.name.validation": "請填寫欄位名稱",
   "register.success": "註冊使用者成功",
   "odc.components.PLDebugResultSet.Selected": "已選",

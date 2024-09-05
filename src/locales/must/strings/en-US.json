@@ -1625,6 +1625,7 @@
   "odc.component.VersionModal.newVersionConfig.YouCanRightClickTable": "More features are added to the context menu of tables, and you can drag and drop tables to the SQL window to generate statements",
   "odc.ScriptManageModal.ScriptEditorModal.Save": "Save",
   "odc.component.SaveSQLModal.SaveScript": "Save Script",
+  "workspace.window.sql.modal.saveSQL.success": "SQL statement saved.",
   "odc.ScriptManageModal.ScriptEditorModal.CloseWindow": "Close the window",
   "odc.component.SQLConfig.SetSessionVariables": "Set Session Variables>",
   "odc.ScriptManageModal.ScriptEditorModal.TheCurrentOperationIsNot": "The current operation is not saved, are you sure you want to close the window?",
