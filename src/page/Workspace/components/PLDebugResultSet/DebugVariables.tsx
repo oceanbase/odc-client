@@ -41,7 +41,7 @@ const DebugVariables: React.FC<IProps> = (props) => {
         id: 'odc.components.PLDebugResultSet.Value',
       }),
       render(v) {
-        return <pre>{v}</pre>;
+        return <pre style={{ margin: 0 }}>{v}</pre>;
       },
     },
   ];
