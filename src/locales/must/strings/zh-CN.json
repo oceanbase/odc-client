@@ -131,6 +131,7 @@
   "odc.components.TriggerPage.Cancel": "取消",
   "workspace.window.table.datatab.placeholder": "请输入",
   "workspace.window.sql.modal.savePL.success": "保存 PL 成功",
+  "workspace.window.sql.modal.saveSQL.success": "保存 SQL 成功",
   "workspace.window.session.management.column.status": "状态",
   "workspace.window.sql.modal.close.content": "“{name}” 已经被修改，如不保存，修改将丢失",
   "workspace.window.session.management.column.obproxyIp": "OB Proxy",
