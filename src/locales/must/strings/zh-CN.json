@@ -559,7 +559,7 @@
   "workspace.window.createTable.partition.value.listColumns.placelholder": "(字段1,字段2),(字段1,字段2)",
   "workspace.window.sql.limit.placeholder": "1000",
   "workspace.window.recyclebin.button.purgeAll": "清空",
-  "odc.component.GrammerHelpSider.SnippetslacksInTotal": "共 {snippetsLength} 条",
+  "odc.component.GrammerHelpSider.SnippetslacksInTotal": "共 {snippetsLength} 条",
   "odc.helper.page.openPage.CreateATrigger": "新建触发器",
   "odc.ResourceTree.actions.ViewType": "查看类型",
   "odc.component.GlobalHeader.AboutDeveloperCenter": "关于开发者中心",
