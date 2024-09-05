@@ -32,6 +32,7 @@ import ArchiveRange from './ArchiveRange';
 import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 import { TaskExecStrategy } from '@/d.ts';
 import { getLocalFormatDateTime } from '@/util/utils';
+import { shardingStrategyOptions } from '../../component/ShardingStrategyItem';
 
 const { Panel } = Collapse;
 const { Text } = Typography;
@@ -232,7 +233,13 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             </Collapse>
           </Descriptions.Item>
         )}
-
+        <Descriptions.Item
+          label="搜索策略"
+          span={isCycleTriggerStrategy(triggerConfig?.triggerStrategy) ? 2 : 1}
+        >
+          {shardingStrategyOptions.find((item) => item.value === jobParameters?.shardingStrategy)
+            ?.label || '-'}
+        </Descriptions.Item>
         <Descriptions.Item
           label={
             formatMessage({

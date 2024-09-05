@@ -30,6 +30,7 @@ import {
   TaskPageType,
   TaskType,
   IDataClearJobParameters,
+  ShardingStrategy,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
@@ -51,6 +52,7 @@ import ThrottleFormItem from '../../component/ThrottleFormItem';
 import SQLPreviewModal from '../../component/SQLPreviewModal';
 import { getVariableValue } from '../../DataArchiveTask/CreateModal';
 import TaskdurationItem from '../../component/TaskdurationItem';
+import ShardingStrategyItem from '../../component/ShardingStrategyItem';
 
 export enum IArchiveRange {
   PORTION = 'portion',
@@ -76,6 +78,7 @@ const deleteByUniqueKeyOptions = [
 const defaultValue = {
   triggerStrategy: TaskExecStrategy.START_NOW,
   archiveRange: IArchiveRange.PORTION,
+  shardingStrategy: ShardingStrategy.FIXED_LENGTH,
   tables: [null],
   rowLimit: 100,
   dataSizeLimit: 1,
@@ -147,6 +150,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     const {
       databaseId,
       rateLimit,
+      shardingStrategy,
       tables,
       variables,
       deleteByUniqueKey,
@@ -163,6 +167,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         i.partitions = (i?.partitions as [])?.join(',');
         return i;
       }),
+      shardingStrategy,
       deleteByUniqueKey,
       variables: getVariableValue(variables),
       archiveRange: IArchiveRange.PORTION,
@@ -277,6 +282,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           triggerStrategy,
           archiveRange,
           description,
+          shardingStrategy,
           rowLimit,
           dataSizeLimit,
           deleteByUniqueKey,
@@ -300,6 +306,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             databaseId,
             deleteByUniqueKey,
             variables: getVariables(variables),
+            shardingStrategy,
             tables:
               archiveRange === IArchiveRange.ALL
                 ? tables?.map((item) => {
@@ -605,6 +612,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             keepExpand
           >
             <TaskdurationItem form={form} />
+            <ShardingStrategyItem />
             <ThrottleFormItem />
             <Form.Item
               label={

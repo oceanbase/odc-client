@@ -34,6 +34,7 @@ import ArchiveRange from './ArchiveRange';
 import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { SyncTableStructureConfig } from '../../const';
+import { shardingStrategyOptions } from '../../component/ShardingStrategyItem';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -245,6 +246,10 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           span={isCycleStrategy ? 2 : 1}
         >
           {insertActionLabel || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item label="搜索策略" span={isCycleStrategy ? 2 : 1}>
+          {shardingStrategyOptions.find((item) => item.value === jobParameters?.shardingStrategy)
+            ?.label || '-'}
         </Descriptions.Item>
         <Descriptions.Item
           label={formatMessage({
