@@ -39,6 +39,7 @@ import { SyncTableStructureConfig } from '../../const';
 import styles from '../../index.less';
 import { InsertActionOptions } from '../CreateModal';
 import ArchiveRange from './ArchiveRange';
+import { shardingStrategyOptions } from '../../component/ShardingStrategyItem';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -267,6 +268,16 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           span={isCycleStrategy ? 2 : 1}
         >
           {insertActionLabel || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.DataArchiveTask.DetailContent.4844C10F',
+            defaultMessage: '搜索策略',
+          })}
+          span={isCycleStrategy ? 2 : 1}
+        >
+          {shardingStrategyOptions.find((item) => item.value === jobParameters?.shardingStrategy)
+            ?.label || '-'}
         </Descriptions.Item>
         <Descriptions.Item
           label={formatMessage({
