@@ -233,8 +233,12 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             </Collapse>
           </Descriptions.Item>
         )}
+
         <Descriptions.Item
-          label="搜索策略"
+          label={formatMessage({
+            id: 'src.component.Task.DataClearTask.DetailContent.E977DA21',
+            defaultMessage: '搜索策略',
+          })}
           span={isCycleTriggerStrategy(triggerConfig?.triggerStrategy) ? 2 : 1}
         >
           {shardingStrategyOptions.find((item) => item.value === jobParameters?.shardingStrategy)

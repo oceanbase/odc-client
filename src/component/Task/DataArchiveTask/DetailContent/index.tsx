@@ -247,7 +247,13 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         >
           {insertActionLabel || '-'}
         </Descriptions.Item>
-        <Descriptions.Item label="搜索策略" span={isCycleStrategy ? 2 : 1}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.DataArchiveTask.DetailContent.4844C10F',
+            defaultMessage: '搜索策略',
+          })}
+          span={isCycleStrategy ? 2 : 1}
+        >
           {shardingStrategyOptions.find((item) => item.value === jobParameters?.shardingStrategy)
             ?.label || '-'}
         </Descriptions.Item>
