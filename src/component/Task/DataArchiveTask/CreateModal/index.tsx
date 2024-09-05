@@ -25,6 +25,7 @@ import {
   ICycleTaskTriggerConfig,
   ITable,
   MigrationInsertAction,
+  ShardingStrategy,
   TaskExecStrategy,
   TaskOperationType,
   TaskPageScope,
@@ -49,6 +50,7 @@ import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig from './VariableConfig';
 import ThrottleFormItem from '../../component/ThrottleFormItem';
+import ShardingStrategyItem from '../../component/ShardingStrategyItem';
 import { timeUnitOptions } from './VariableConfig';
 import TaskdurationItem from '../../component/TaskdurationItem';
 import SynchronizationItem from '../../component/SynchronizationItem';
@@ -88,6 +90,7 @@ const defaultValue = {
   archiveRange: IArchiveRange.PORTION,
   tables: [null],
   migrationInsertAction: MigrationInsertAction.INSERT_DUPLICATE_UPDATE,
+  shardingStrategy: ShardingStrategy.FIXED_LENGTH,
   rowLimit: 100,
   dataSizeLimit: 1,
 };
@@ -191,6 +194,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       sourceDatabaseId,
       deleteAfterMigration,
       migrationInsertAction,
+      shardingStrategy,
       rateLimit,
       tables,
       variables,
@@ -205,6 +209,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       dataSizeLimit: kbToMb(rateLimit?.dataSizeLimit),
       deleteAfterMigration,
       migrationInsertAction,
+      shardingStrategy,
       tables: tables?.map((i) => {
         i.partitions = (i?.partitions as [])?.join(',');
         return i;
@@ -321,6 +326,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           deleteAfterMigration,
           triggerStrategy,
           migrationInsertAction,
+          shardingStrategy,
           archiveRange,
           description,
           rowLimit,
@@ -356,6 +362,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 : _tables,
             deleteAfterMigration,
             migrationInsertAction,
+            shardingStrategy,
             syncTableStructure,
             timeoutMillis: hourToMilliSeconds(timeoutMillis),
             rateLimit: {
@@ -667,6 +674,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             >
               <Radio.Group options={InsertActionOptions} />
             </Form.Item>
+            <ShardingStrategyItem />
             <ThrottleFormItem />
           </FormItemPanel>
           <DescriptionInput />

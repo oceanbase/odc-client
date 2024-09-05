@@ -2430,6 +2430,11 @@ export enum MigrationInsertAction {
   INSERT_DUPLICATE_UPDATE = 'INSERT_DUPLICATE_UPDATE',
 }
 
+export enum ShardingStrategy {
+  FIXED_LENGTH = 'FIXED_LENGTH',
+  MATCH = 'MATCH',
+}
+
 export enum SyncTableStructureEnum {
   COLUMN = 'COLUMN',
   CONSTRAINT = 'CONSTRAINT',
@@ -2447,6 +2452,7 @@ export interface IDataArchiveJobParameters {
   targetDatabaseName?: string;
   targetDataSourceName?: string;
   migrationInsertAction?: MigrationInsertAction;
+  shardingStrategy?: ShardingStrategy;
   deleteByUniqueKey?: boolean;
   rateLimit?: {
     rowLimit?: number;
@@ -2492,6 +2498,7 @@ export interface IDataClearJobParameters {
   targetDatabaseName?: string;
   sourceDataSourceName?: string;
   targetDataSourceName?: string;
+  shardingStrategy?: ShardingStrategy;
 }
 
 export interface ISqlPlayJobParameters {
