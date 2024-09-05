@@ -43,7 +43,7 @@ const DebugVariables: React.FC<IProps> = (props) => {
         defaultMessage: '值',
       }),
       render(v) {
-        return <pre>v</pre>;
+        return <pre>{v}</pre>;
       },
     },
   ];
