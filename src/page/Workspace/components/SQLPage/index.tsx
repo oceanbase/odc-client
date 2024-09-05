@@ -485,7 +485,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         if (file) {
           message.success(
             formatMessage({
-              id: this.getLocaleConfig().success,
+              id: 'workspace.window.sql.modal.saveSQL.success',
             }),
           );
 
@@ -556,7 +556,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       onChangeSaved(pageKey);
       message.success(
         formatMessage({
-          id: this.getLocaleConfig().success,
+          id: 'workspace.window.sql.modal.saveSQL.success',
         }),
       );
 
@@ -1418,12 +1418,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   private isDbObjectTypeExists(resultsToRefresh: ISqlExecuteResult[], type: DbObjectType) {
     return resultsToRefresh.some((r) => r.dbObjectType === type);
   }
-
-  private getLocaleConfig = () => {
-    return {
-      success: 'workspace.window.sql.modal.saveSQL.success',
-    };
-  };
 }
 
 export default forwardRef(function (props: IProps, ref: React.ForwardedRef<SQLPage>) {
