@@ -162,6 +162,7 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const handleExecute = async () => {
+      setActiveBtnKey('execute');
       const res = await executeTask(task.id);
       if (res) {
         message.success(
@@ -173,6 +174,7 @@ const ActionBar: React.FC<IProps> = inject(
           //执行成功
         );
         closeTaskDetail();
+        props?.onReloadList?.();
       }
     };
 
