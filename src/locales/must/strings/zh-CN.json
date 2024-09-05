@@ -559,7 +559,7 @@
   "workspace.window.createTable.partition.value.listColumns.placelholder": "(字段1,字段2),(字段1,字段2)",
   "workspace.window.sql.limit.placeholder": "1000",
   "workspace.window.recyclebin.button.purgeAll": "清空",
-  "odc.component.GrammerHelpSider.SnippetslacksInTotal": "共 {snippetsLength} 条",
+  "odc.component.GrammerHelpSider.SnippetslacksInTotal": "共 {snippetsLength} 条",
   "odc.helper.page.openPage.CreateATrigger": "新建触发器",
   "odc.ResourceTree.actions.ViewType": "查看类型",
   "odc.component.GlobalHeader.AboutDeveloperCenter": "关于开发者中心",
@@ -5092,5 +5092,11 @@
   "src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.ACB992B0": "搜索数据库、表、字段、视图等",
   "src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.FA5E6855": "定位到数据库 \"{databaseName}\"",
   "src.page.Workspace.components.DDLResultSet.6477DD60": "集合 SQL 的执行详情、物理执行计划、全链路诊断的多维度视图，帮助快速定位执行慢查询的根因",
-  "src.component.ExecuteSqlDetailModal.1882C007": "计划统计"
+  "src.component.ExecuteSqlDetailModal.1882C007": "计划统计",
+  "src.component.Task.component.ShardingStrategyItem.E5A6B481": "全表扫描",
+  "src.component.Task.component.ShardingStrategyItem.F91EEC6C": "条件匹配",
+  "src.component.Task.component.ShardingStrategyItem.3BD95C1A": "搜索策略",
+  "src.component.Task.component.ShardingStrategyItem.D5F45B7A": "请选择搜索策略",
+  "src.component.Task.DataClearTask.DetailContent.E977DA21": "搜索策略",
+  "src.component.Task.DataArchiveTask.DetailContent.4844C10F": "搜索策略"
 }
