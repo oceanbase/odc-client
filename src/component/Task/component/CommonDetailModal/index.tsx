@@ -148,6 +148,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.APPLY_DATABASE_PERMISSION,
     TaskType.APPLY_TABLE_PERMISSION,
     TaskType.MULTIPLE_ASYNC,
+    TaskType.LOGICAL_DATABASE_CHANGE,
   ].includes(task?.type);
   // 任务日志
   const hasLog = [
@@ -164,6 +165,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
     TaskType.APPLY_PROJECT_PERMISSION,
     TaskType.APPLY_DATABASE_PERMISSION,
     TaskType.APPLY_TABLE_PERMISSION,
+    TaskType.LOGICAL_DATABASE_CHANGE,
   ].includes(task?.type);
   function onShare() {
     const url =
@@ -280,8 +282,11 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
               </Radio.Button>
             </>
           )}
-
-          {[TaskType.ONLINE_SCHEMA_CHANGE, TaskType.MULTIPLE_ASYNC]?.includes(task?.type) && (
+          {[
+            TaskType.ONLINE_SCHEMA_CHANGE,
+            TaskType.MULTIPLE_ASYNC,
+            TaskType.LOGICAL_DATABASE_CHANGE,
+          ]?.includes(task?.type) && (
             <Radio.Button value={TaskDetailType.PROGRESS} key={TaskDetailType.PROGRESS}>
               {
                 formatMessage({

@@ -16,7 +16,7 @@
 
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { syncObject } from '@/common/network/database';
-import { IManagerResourceType } from '@/d.ts';
+import { IManagerResourceType, TaskPageType } from '@/d.ts';
 import { DBObjectSyncStatus, IDatabase } from '@/d.ts/database';
 import { openNewDefaultPLPage, openNewSQLPage, openOBClientPage } from '@/store/helper/page';
 import login from '@/store/login';
@@ -27,9 +27,44 @@ import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { LoadingOutlined } from '@ant-design/icons';
-import { message } from 'antd';
+import { isLogicalDatabase } from '@/util/database';
+import { Tooltip, message, Typography } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
+import userStore from '@/store/login';
+import { DatabasePermissionType } from '@/d.ts/database';
+
+const { Text } = Typography;
+
+const isPrivateSpace = userStore?.isPrivateSpace();
+
+/**
+ * 菜单展示权限包裹方法
+ * @param needPermissionTypeList 需要的权限点
+ * @param permissionList 当前权限点
+ * @param menuNode 当前菜单名称
+ */
+export const menuAccessWrap = (
+  needPermissionTypeList: DatabasePermissionType[],
+  permissionList: DatabasePermissionType[],
+  menuNode: React.ReactNode,
+) => {
+  /* 不需要权限控制 */
+  if (!needPermissionTypeList?.length) {
+    return menuNode;
+  }
+  /* 需要的每一个权限点都存在于当前拥有的权限中 */
+  if (needPermissionTypeList.every((element) => permissionList.includes(element))) {
+    return menuNode;
+  }
+  return (
+    <Tooltip title={'暂无权限'} placement="right">
+      <Text type="secondary" onClick={(e) => e.stopPropagation()}>
+        <div style={{ width: '100%' }}>{menuNode}</div>
+      </Text>
+    </Tooltip>
+  );
+};
 
 export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.Database]: [
@@ -47,6 +82,9 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         tracert.click('a3112.b41896.c330992.d367627');
         openNewSQLPage(node.cid, databaseFrom);
       },
+      isHide: (_, node) => {
+        return isLogicalDatabase(node?.data);
+      },
     },
     {
       key: 'NEW_PL',
@@ -58,7 +96,10 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ],
       isHide(_, node) {
         const database: IDatabase = node.data;
-        return !getDataSourceModeConfig(database?.dataSource?.type)?.features?.anonymousBlock;
+        return (
+          !getDataSourceModeConfig(database?.dataSource?.type)?.features?.anonymousBlock ||
+          isLogicalDatabase(database)
+        );
       },
       ellipsis: true,
       run(session, node, databaseFrom) {
@@ -75,12 +116,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         }), //打开命令行窗口
       ],
       isHide(_, node) {
-        return !login.isPrivateSpace() || !setting.enableOBClient;
+        return !login.isPrivateSpace() || !setting.enableOBClient || isLogicalDatabase(node.data);
       },
       ellipsis: true,
       run(session, node) {
         const database: IDatabase = node.data;
-        openOBClientPage(database?.dataSource?.id, database?.id);
+        openOBClientPage(database?.dataSource?.id, database?.id) || isLogicalDatabase(database);
       },
     },
     {
@@ -93,6 +134,9 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ],
 
       ellipsis: true,
+      isHide(_, node) {
+        return isLogicalDatabase(node.data);
+      },
       children: [
         {
           key: 'TASK_EXPORT',
@@ -102,7 +146,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '导出',
             }) /*'导出'*/,
           ],
-
+          needAccessTypeList: [DatabasePermissionType.EXPORT],
           ellipsis: true,
           isHide(_, node) {
             return !setting.enableDBExport;
@@ -122,7 +166,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '导出结果集',
             }) /*'导出结果集'*/,
           ],
-
+          needAccessTypeList: [DatabasePermissionType.EXPORT],
           ellipsis: true,
           isHide(_, node) {
             return !setting.enableDBExport;
@@ -155,10 +199,10 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '导入',
             }) /*'导入'*/,
           ],
-
+          needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return !setting.enableDBImport;
+            return !setting.enableDBImport || isLogicalDatabase(node.data);
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -175,10 +219,10 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '模拟数据',
             }) /*'模拟数据'*/,
           ],
-
+          needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return !setting.enableMockdata;
+            return !setting.enableMockdata || isLogicalDatabase(node.data);
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -195,15 +239,46 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '数据库变更',
             }) /*'数据库变更'*/,
           ],
-
+          needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return !setting.enableAsyncTask;
+            return !setting.enableAsyncTask || isLogicalDatabase(node.data);
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
             modal.changeCreateAsyncTaskModal(true, {
               databaseId: database?.id,
+            });
+          },
+        },
+        {
+          key: 'MULTIPLE_ASYNC',
+          text: ['多库变更'],
+          needAccessTypeList: [DatabasePermissionType.CHANGE],
+          ellipsis: true,
+          isHide(_, node) {
+            return isLogicalDatabase(node.data);
+          },
+          run(session, node) {
+            const database: IDatabase = node.data;
+            modal.changeMultiDatabaseChangeModal(true, {
+              projectId: database?.project?.id,
+              orderedDatabaseIds: [[database?.id]],
+            });
+          },
+        },
+        {
+          key: 'TASK_ASYNC',
+          text: ['逻辑库变更'],
+          needAccessTypeList: [DatabasePermissionType.CHANGE],
+          ellipsis: true,
+          isHide(_, node) {
+            return !isLogicalDatabase(node.data);
+          },
+          run(session, node, databaseFrom) {
+            modal.changeLogicialDatabaseModal(true, {
+              projectId: node?.data?.odcDatabase?.project?.id,
+              databaseId: node?.data?.id,
             });
           },
         },
@@ -215,10 +290,10 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '无锁结构变更',
             }) /*'无锁结构变更'*/,
           ],
-
+          needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return !setting.enableOSC;
+            return !setting.enableOSC || isLogicalDatabase(node.data);
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -235,7 +310,11 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '影子表同步',
             }) /*'影子表同步'*/,
           ],
+          isHide(_, node) {
+            return isLogicalDatabase(node.data);
+          },
 
+          needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -252,8 +331,11 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '结构比对',
             }) /*'结构比对'*/,
           ],
-
+          needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
+          isHide(_, node) {
+            return isLogicalDatabase(node.data);
+          },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
             modal.changeStructureComparisonModal(true, {
@@ -273,8 +355,13 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       ],
 
       ellipsis: true,
-      hasDivider:
-        setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'true',
+      hasDivider(node) {
+        return (
+          setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'true' &&
+          !isLogicalDatabase(node?.data) &&
+          (isClient() || isPrivateSpace)
+        );
+      },
       isHide(_, node) {
         return isClient();
       },
@@ -287,7 +374,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: 'SQL 计划',
             }) /*'SQL 计划'*/,
           ],
-
+          needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
             return isClient();
@@ -307,10 +394,10 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '分区计划',
             }) /*'分区计划'*/,
           ],
-
+          needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return isClient();
+            return isClient() || isLogicalDatabase(node.data);
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -327,10 +414,10 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '数据归档',
             }) /*'数据归档'*/,
           ],
-
+          needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return isClient();
+            return isClient() || isLogicalDatabase(node.data);
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -347,16 +434,43 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '数据清理',
             }) /*'数据清理'*/,
           ],
-
+          needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return isClient();
+            return isClient() || isLogicalDatabase(node.data);
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
             modal.changeDataClearModal(true, {
               databaseId: database?.id,
             });
+          },
+        },
+      ],
+    },
+    {
+      key: 'APPLY_DATABASE_PERMISSION_MENU',
+      text: ['权限申请'],
+      ellipsis: true,
+      hasDivider:
+        setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'true',
+      isHide(_, node) {
+        return isClient() || isPrivateSpace || isLogicalDatabase(node.data);
+      },
+      children: [
+        {
+          key: TaskPageType.APPLY_DATABASE_PERMISSION,
+          text: ['申请库权限'],
+          ellipsis: true,
+          run(session, node) {
+            const database: IDatabase = node.data;
+            modal.changeApplyDatabasePermissionModal(true, {
+              projectId: database?.project?.id,
+              databaseId: database?.id,
+            });
+          },
+          isHide() {
+            return isClient() || isPrivateSpace;
           },
         },
       ],
@@ -398,7 +512,10 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       },
       ellipsis: true,
       isHide(_, node) {
-        return setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'false';
+        return (
+          setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'false' ||
+          isLogicalDatabase(node.data)
+        );
       },
       run(session, node, databaseFrom, pollingDatabase) {
         const database: IDatabase = node.data;

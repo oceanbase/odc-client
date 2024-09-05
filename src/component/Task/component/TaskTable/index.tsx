@@ -44,7 +44,7 @@ import { useLoop } from '@/util/hooks/useLoop';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { DownOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, DatePicker, Tooltip } from 'antd';
+import { Button, DatePicker, Tooltip, Popover, Space, Typography } from 'antd';
 import { flatten } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
@@ -55,6 +55,8 @@ import { getTaskGroupLabels, getTaskLabelByType, isCycleTaskPage } from '../../h
 import styles from '../../index.less';
 import TaskTools from '../ActionBar';
 const { RangePicker } = DatePicker;
+const { Text, Link } = Typography;
+
 export const getCronCycle = (triggerConfig: ICycleTaskTriggerConfig) => {
   const { triggerStrategy, days, hours, cronExpression } = triggerConfig;
   return triggerStrategy !== TaskExecStrategy.CRON
@@ -149,6 +151,7 @@ export const TaskTypeMap = {
     id: 'src.component.Task.component.TaskTable.A3CA13D5',
     defaultMessage: '多库变更',
   }),
+  [TaskType.LOGICAL_DATABASE_CHANGE]: '逻辑库变更',
 };
 export const getStatusFilters = (status: {
   [key: string]: {
@@ -459,6 +462,58 @@ const TaskTable: React.FC<IProps> = inject(
     ].includes(taskTabType);
     const menus = getTaskGroupLabels()?.filter((item) => !!item.groupName);
     const activeTaskLabel = getTaskLabelByType(taskTabType);
+
+    const newTaskMenu = () => {
+      const items = flatten(
+        menus
+          ?.map(({ group, groupName }, index) => {
+            const tasks = group?.filter((task) => task.enabled);
+            if (tasks.length === 0) {
+              return null;
+            }
+            return {
+              key: index,
+              label: groupName,
+              children: tasks?.map((item) => {
+                return {
+                  key: item.value,
+                  label: item.label,
+                };
+              }),
+              type: 'group',
+            };
+          })
+          .filter(Boolean),
+      );
+      return (
+        <Space align="start" size={20}>
+          {items?.map((i) => {
+            return (
+              <Space direction="vertical">
+                <Text type="secondary" key={i.key}>
+                  {i?.label}
+                </Text>
+                <Space size={0} direction="vertical">
+                  {i?.children?.map((i) => {
+                    return (
+                      <div
+                        className={styles.menuItem}
+                        onClick={() => {
+                          props.onMenuClick(i?.key as TaskPageType);
+                        }}
+                      >
+                        {i?.label}
+                      </div>
+                    );
+                  })}
+                </Space>
+              </Space>
+            );
+          })}
+        </Space>
+      );
+    };
+
     return (
       <CommonTable
         ref={tableRef}
@@ -468,46 +523,20 @@ const TaskTable: React.FC<IProps> = inject(
           options: [
             isAll
               ? {
-                  type: IOperationOptionType.dropdown,
-                  content: (
-                    <Button type="primary">
-                      {
-                        formatMessage({
-                          id: 'odc.component.TaskTable.NewWorkOrder',
-                          defaultMessage: '新建工单',
-                        }) /*新建工单*/
-                      }
-
-                      <DownOutlined />
-                    </Button>
+                  type: IOperationOptionType.custom,
+                  render: () => (
+                    <Popover content={newTaskMenu} placement="bottomLeft">
+                      <Button type="primary">
+                        {
+                          formatMessage({
+                            id: 'odc.component.TaskTable.NewWorkOrder',
+                            defaultMessage: '新建工单',
+                          }) /*新建工单*/
+                        }
+                        <DownOutlined />
+                      </Button>
+                    </Popover>
                   ),
-
-                  menu: {
-                    onClick: ({ key }) => {
-                      props.onMenuClick(key as TaskPageType);
-                    },
-                    items: flatten(
-                      menus
-                        ?.map(({ group, groupName }, index) => {
-                          const tasks = group?.filter((task) => task.enabled);
-                          if (tasks.length === 0) {
-                            return null;
-                          }
-                          return {
-                            key: index,
-                            label: groupName,
-                            children: tasks?.map((item) => {
-                              return {
-                                key: item.value,
-                                label: item.label,
-                              };
-                            }),
-                            type: 'group',
-                          };
-                        })
-                        .filter(Boolean),
-                    ),
-                  },
                 }
               : {
                   type: IOperationOptionType.button,

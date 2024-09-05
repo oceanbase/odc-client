@@ -15,7 +15,7 @@
  */
 
 import { createUser, getUserDetail, updateUser } from '@/common/network/manager';
-import { PASSWORD_REGEX, SPACE_REGEX } from '@/constant';
+import { PASSWORD_REGEX, SPACE_REGEX, PASSWORD_VALIDATE_MESSAGE } from '@/constant';
 import type { IManagerRole, IManagerUser } from '@/d.ts';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
@@ -671,13 +671,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                               },
                               {
                                 pattern: PASSWORD_REGEX,
-                                message: formatMessage({
-                                  id: 'odc.components.FormUserModal.TheDescriptionMustBeTo',
-                                  defaultMessage:
-                                    '长度为 8~32 个字符，至少包含 2 个数字、2 个大写字母、2 个小写字母和 2 个特殊字符（即：._+@#$%）',
-                                }),
-
-                                // 长度为 8~32 位, 至少包含2位数字、2位大写字母、2位小写字母和2位特殊字(即：._+@#$%)
+                                message: PASSWORD_VALIDATE_MESSAGE,
                               },
                               {
                                 pattern: SPACE_REGEX,

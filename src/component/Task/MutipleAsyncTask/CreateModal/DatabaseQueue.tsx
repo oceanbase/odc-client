@@ -1,5 +1,5 @@
 import { listDatabases } from '@/common/network/database';
-import { IConnection, IConnectionStatus } from '@/d.ts';
+import { IConnection, IConnectionStatus, TaskType } from '@/d.ts';
 import { DatabasePermissionType } from '@/d.ts/database';
 import datasourceStatus from '@/store/datasourceStatus';
 import login from '@/store/login';
@@ -14,6 +14,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { CreateTemplate, SelectTemplate } from '../components/Template';
 import styles from './index.less';
 import InnerSelecter, { DatabaseOption } from './InnerSelecter';
+import { getDataSourceModeConfig } from '@/common/datasource';
 
 export const checkDbExpiredByDataSourceStatus = (status: IConnectionStatus) => {
   switch (status) {
@@ -62,21 +63,32 @@ export const DatabaseQueueSelect: React.FC<{
     if (databaseList?.contents?.length) {
       setDefaultDatasource(databaseList?.contents?.[0]?.dataSource);
       datasourceStatus.asyncUpdateStatus([
-        ...new Set(databaseList?.contents?.map((item) => item.dataSource?.id)),
+        ...new Set(
+          databaseList?.contents
+            ?.filter((item) => item.type !== 'LOGICAL')
+            ?.map((item) => item?.dataSource?.id),
+        ),
       ]);
       setDatabaseOptions(
-        databaseList?.contents?.map((item) => {
-          const statusInfo = datasourceStatus.statusMap.get(item?.dataSource?.id);
-          return {
-            label: item?.name,
-            value: item?.id,
-            environment: item?.environment,
-            dataSource: item?.dataSource,
-            existed: item?.existed,
-            unauthorized: !item?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE),
-            expired: checkDbExpiredByDataSourceStatus(statusInfo?.status),
-          };
-        }),
+        databaseList?.contents
+          ?.filter((i) => {
+            const config = getDataSourceModeConfig(i?.dataSource?.type);
+            return config?.features?.task?.includes(TaskType.MULTIPLE_ASYNC);
+          })
+          .map((item) => {
+            const statusInfo = datasourceStatus.statusMap.get(item?.dataSource?.id);
+            return {
+              label: item?.name,
+              value: item?.id,
+              environment: item?.environment,
+              dataSource: item?.dataSource,
+              existed: item?.existed,
+              unauthorized: !item?.authorizedPermissionTypes?.includes(
+                DatabasePermissionType.CHANGE,
+              ),
+              expired: checkDbExpiredByDataSourceStatus(statusInfo?.status),
+            };
+          }),
       );
     }
     databaseList?.contents?.forEach((db) => {

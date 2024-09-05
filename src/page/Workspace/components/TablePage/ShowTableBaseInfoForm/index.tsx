@@ -33,19 +33,28 @@ import type { FormInstance } from 'antd/es/form';
 import { cloneDeep } from 'lodash';
 import TableContext from '../../CreateTable/TableContext';
 import TablePageContext from '../context';
+import { DBType } from '@/d.ts/database';
+import LogicTableBaseInfo from './LogicTableBaseInfo';
+import {
+  PropsTab as TablePropsTab,
+  TopTab as TableTopTab,
+} from '@/page/Workspace/components/TablePage';
 
 interface IProps {
   pageKey?: string;
+  dbType?: DBType;
 }
 
-const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
+const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey, dbType }) => {
   const tableContext = useContext(TablePageContext);
   const session = tableContext.session;
   const table = tableContext?.table;
   const [isEditing, setIsEditing] = useState(false);
   const formRef = useRef<FormInstance<any>>();
 
-  return (
+  return dbType === DBType.LOGICAL ? (
+    <LogicTableBaseInfo table={table} />
+  ) : (
     <div>
       {isEditing ? (
         <div
@@ -104,7 +113,13 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                         await session.database.getTableList();
                         const params = page.pages.find((p) => p.key === pageKey)
                           ?.params as TablePage['pageParams'];
-                        const tablePage = new TablePage(params?.databaseId, newTableName);
+                        const tablePage = new TablePage(
+                          params?.databaseId,
+                          newTableName,
+                          TableTopTab.PROPS,
+                          TablePropsTab.INFO,
+                          params?.tableId,
+                        );
                         await page.updatePage(
                           pageKey,
                           {
@@ -182,7 +197,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                 defaultMessage: '表名称',
               }),
 
-              content: table?.info.tableName,
+              content: table?.info?.tableName,
             },
 
             {
@@ -191,7 +206,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                 defaultMessage: '默认字符集',
               }),
 
-              content: table?.info.character || 'utf8mb4',
+              content: table?.info?.character || 'utf8mb4',
             },
 
             {

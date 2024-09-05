@@ -165,7 +165,7 @@ export class ModalStore {
   public selectDatabaseVisible: boolean = false;
 
   @observable
-  public selectDatabaseModallData: {
+  public selectDatabaseModalData: {
     features?: keyof IDataSourceModeConfig['features'];
     datasourceId: number;
     onOk?: (datasourceId: number) => Promise<void>;
@@ -251,6 +251,16 @@ export class ModalStore {
       status: SubTaskStatus;
     }
   >();
+
+  @observable
+  public logicDatabaseVisible: boolean = false;
+
+  @observable
+  public logicDatabaseInfo: {
+    projectId?: number;
+    ddl?: string;
+    databaseId?: number;
+  } = null;
 
   @observable
   public dataClearVisible: boolean = false;
@@ -572,6 +582,12 @@ export class ModalStore {
   }
 
   @action
+  public changeLogicialDatabaseModal(isShow: boolean = true, data?: any) {
+    this.logicDatabaseVisible = isShow;
+    this.logicDatabaseInfo = isShow ? data : null;
+  }
+
+  @action
   public updateStructureComparisonDataMap(
     taskId?: number,
     structureComparisonData?: {
@@ -636,8 +652,8 @@ export class ModalStore {
     onOk?: (datasourceId: number) => Promise<void>,
   ) {
     this.selectDatabaseVisible = isShow;
-    this.selectDatabaseModallData = isShow
-      ? { ...this.selectDatabaseModallData, features, onOk }
+    this.selectDatabaseModalData = isShow
+      ? { ...this.selectDatabaseModalData, features, onOk }
       : null;
   }
 

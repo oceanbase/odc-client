@@ -17,7 +17,7 @@
 import { IDatasource } from './datasource';
 import { IEnvironment } from './environment';
 import { IProject } from './project';
-import { DbObjectType } from '@/d.ts';
+import { ConnectType, DbObjectType } from '@/d.ts';
 
 export enum DatabaseSyncStatus {
   FAILED = 'FAILED',
@@ -66,13 +66,23 @@ export enum DBObjectSyncStatus {
   FAILED = 'FAILED',
 }
 
+export enum DBType {
+  LOGICAL = 'LOGICAL',
+  PHYSICAL = 'PHYSICAL',
+}
+
+export enum BooleanOptionType {
+  TRUE = 'true',
+  FALSE = 'false',
+}
+
 export interface IDatabase {
   id: number;
   databaseId?: string;
   name: string;
   project: IProject;
   lockDatabaseUserRequired: boolean;
-  dataSource: IDatasource;
+  dataSource?: IDatasource;
   syncStatus: DatabaseSyncStatus;
   lastSyncTime: number;
   organizationId: number;
@@ -89,6 +99,9 @@ export interface IDatabase {
   ownerIds: number[];
   objectSyncStatus: DBObjectSyncStatus;
   objectLastSyncTime: number;
+  type: DBType;
+  connectType?: ConnectType;
+  alias?: string;
 }
 
 /**
@@ -110,4 +123,12 @@ export interface IUnauthorizedDatabase {
   dataSource: IDatasource;
   environment: IEnvironment;
   applicable: boolean;
+}
+
+export enum PreviewLogicalTableTopologiesErrorEnum {
+  LogicalTableBadExpressionSyntax = 'LogicalTableBadExpressionSyntax',
+  LogicalTableExpressionNotEvenlyDivided = 'LogicalTableExpressionNotEvenlyDivided',
+  LogicalTableExpressionNotPositiveStep = 'LogicalTableExpressionNotPositiveStep',
+  LogicalTableExpressionRangeStartGreaterThanEnd = 'LogicalTableExpressionRangeStartGreaterThanEnd',
+  LogicalTableExpressionNotValidIntegerRange = 'LogicalTableExpressionNotValidIntegerRange',
 }

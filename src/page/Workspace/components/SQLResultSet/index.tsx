@@ -107,6 +107,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     hanldeCloseLintPage,
     onUpdateEditing,
   } = props;
+
   const [showLockResultSetHint, setShowLockResultSetHint] = useState(false);
   const { resultSets: r } = sqlStore;
   const resultSets = r.get(pageKey);

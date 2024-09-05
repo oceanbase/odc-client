@@ -22,7 +22,6 @@ import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
 import { hasPermission, TaskTypeMap } from '@/component/Task/helper';
 import { EnvColorMap } from '@/constant';
 import { ConnectionMode, TaskType } from '@/d.ts';
-import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
 import { IProject } from '@/d.ts/project';
 import { DataSourceStatusStore } from '@/store/datasourceStatus';
@@ -35,6 +34,7 @@ import { useParams } from '@umijs/max';
 import { useRequest } from 'ahooks';
 import { Badge, Input, Popover, Select, Space, Spin, Tooltip, Tree } from 'antd';
 import { DataNode } from 'antd/lib/tree';
+import { IDatabase, DBType } from '@/d.ts/database';
 import { toInteger } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -72,7 +72,7 @@ const DatabasesTitle: React.FC<IDatabasesTitleProps> = (props) => {
         <Popover
           showArrow={false}
           placement={'right'}
-          content={<ConnectionPopover connection={db?.dataSource} />}
+          content={<ConnectionPopover connection={db?.dataSource} database={db} />}
         >
           <div className={styles.textoverflow}>{db.name}</div>
         </Popover>
@@ -106,6 +106,7 @@ const SessionDropdown: React.FC<IProps> = function ({
   dataSourceStatusStore,
 }) {
   const context = useContext(SessionContext);
+  const { from, setFrom } = context;
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const treeRef = useRef(null);
@@ -113,7 +114,6 @@ const SessionDropdown: React.FC<IProps> = function ({
     datasourceId: string;
   }>();
   const [searchValue, setSearchValue] = useState<string>('');
-  const [from, setFrom] = useState<'project' | 'datasource'>('project');
   const [expandedKeys, setExpandedKeys] = useState<Key[]>([]);
 
   const hasDialectTypesFilter =
@@ -148,11 +148,17 @@ const SessionDropdown: React.FC<IProps> = function ({
     const allProjects: IProject[] = [],
       allDatasources: IDatasource[] = [];
     data?.contents?.forEach((db) => {
-      const { project, dataSource } = db;
-      // 插入项目ID用于下方筛选
-      dataSource.projectId = project?.id;
+      let { project, dataSource } = db;
+      if (context?.isLogicalDatabase ? db.type !== 'LOGICAL' : db.type !== 'PHYSICAL') {
+        return;
+      }
+      if (dataSource) {
+        // 插入项目ID用于下方筛选
+        dataSource.projectId = project?.id;
+      }
       const support =
         !taskType ||
+        db.type === 'LOGICAL' ||
         getDataSourceModeConfig(db.dataSource?.type)?.features?.task?.includes(taskType);
       if (!support) {
         return;
@@ -173,7 +179,9 @@ const SessionDropdown: React.FC<IProps> = function ({
           datasource: dataSource,
           databases: [],
         };
-        datasourceDatabases.databases.push(db);
+        if (db.type === 'PHYSICAL') {
+          datasourceDatabases.databases.push(db);
+        }
         if (!datasources.has(dataSource?.id)) {
           allDatasources.push(dataSource);
         }
@@ -204,8 +212,13 @@ const SessionDropdown: React.FC<IProps> = function ({
   useEffect(() => {
     const databaseId = context?.databaseId;
     const db = data?.contents.find((db) => db.id === databaseId);
-    if (db) {
-      setExpandedKeys([db.dataSource.id]);
+    if (db && db?.dataSource && from === 'datasource') {
+      setExpandedKeys([db?.dataSource.id]);
+      setTimeout(() => {
+        treeRef?.current?.scrollTo({ key: `db:${databaseId}` });
+      }, 500);
+    } else {
+      setExpandedKeys([db?.project?.id]);
       setTimeout(() => {
         treeRef?.current?.scrollTo({ key: `db:${databaseId}` });
       }, 500);
@@ -357,7 +370,14 @@ const SessionDropdown: React.FC<IProps> = function ({
                   ? !hasPermission(taskType, db.authorizedPermissionTypes)
                   : !db.authorizedPermissionTypes?.length;
                 return {
-                  title: <DatabasesTitle taskType={taskType} db={db} disabled={disabled} />,
+                  title:
+                    db.type === DBType.LOGICAL ? (
+                      <Space>
+                        <DatabasesTitle taskType={taskType} db={db} disabled={disabled} />
+                      </Space>
+                    ) : (
+                      <DatabasesTitle taskType={taskType} db={db} disabled={disabled} />
+                    ),
                   key: `db:${db.id}`,
                   selectable: true,
                   isLeaf: true,
@@ -451,7 +471,7 @@ const SessionDropdown: React.FC<IProps> = function ({
         <Spin spinning={loading || fetchLoading}>
           <div className={styles.main} style={{ width: '100%' }}>
             <Space.Compact block>
-              {context?.datasourceMode || login.isPrivateSpace() ? null : (
+              {context?.datasourceMode || context?.projectMode || login.isPrivateSpace() ? null : (
                 <Select
                   onChange={(v) => setFrom(v)}
                   value={from}
@@ -490,7 +510,10 @@ const SessionDropdown: React.FC<IProps> = function ({
                 }
                 onChange={(v) => setSearchValue(v.target.value)}
                 style={{
-                  width: context?.datasourceMode || login.isPrivateSpace() ? '100%' : '65%',
+                  width:
+                    context?.datasourceMode || context?.projectMode || login.isPrivateSpace()
+                      ? '100%'
+                      : '65%',
                 }}
               />
             </Space.Compact>

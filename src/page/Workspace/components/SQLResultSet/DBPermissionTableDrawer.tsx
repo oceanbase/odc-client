@@ -18,7 +18,7 @@ import { formatMessage } from '@/util/intl';
 import { IUnauthorizedDBResources } from '@/d.ts/table';
 import { Button, Drawer, Space } from 'antd';
 import React from 'react';
-import { DBPermissionTableContent } from './DBPermissionTable';
+import DBPermissionTableContent from '../DBPermissionTableContent';
 
 interface IProps {
   dataSource: IUnauthorizedDBResources[];

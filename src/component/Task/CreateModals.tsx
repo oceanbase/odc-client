@@ -31,6 +31,7 @@ import ApplyDatabasePermissionCreateModal from './ApplyDatabasePermission';
 import ApplyTablePermissionCreateModal from './ApplyTablePermission';
 import StructureComparisonTask from './StructureComparisonTask';
 import MutipleAsyncTask from './MutipleAsyncTask';
+import LogicDatabaseAsyncTask from './LogicDatabaseAsyncTask';
 
 interface IProps {
   projectId?: number;
@@ -57,6 +58,7 @@ const CreateModals: React.FC<IProps> = (props) => {
       <ApplyTablePermissionCreateModal projectId={projectId} />
       <StructureComparisonTask projectId={projectId} />
       <MutipleAsyncTask projectId={projectId} theme={theme} />
+      <LogicDatabaseAsyncTask projectId={projectId} />
     </>
   );
 };

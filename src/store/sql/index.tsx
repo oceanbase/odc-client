@@ -478,6 +478,7 @@ export class SQLStore {
         return {
           status: 'FAIL',
           errorMessage: 'Request Abort',
+          unauthorizedDBResources: data?.unauthorizedDBResources,
         };
       } else if (
         data?.executeResult?.[0]?.status !== ISqlExecuteResultStatus.SUCCESS &&

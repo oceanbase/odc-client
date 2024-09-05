@@ -15,7 +15,7 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 // compatible
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { EStatus } from '@/d.ts';
@@ -29,13 +29,17 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import MonacoEditor from '../MonacoEditor';
 import { ISQLLintReuslt } from '../SQLLintResult/type';
 import styles from './index.less';
+import { IUnauthorizedDBResources } from '@/d.ts/table';
+import DBPermissionTableContent from '@/page/Workspace/components/DBPermissionTableContent';
 
 interface IProps {
   sessionStore: SessionStore;
   sql: string;
   tip?: string;
   theme?: 'dark' | 'white';
-  onSave: (sql?: string) => Promise<boolean | void>;
+  onSave: (
+    sql?: string,
+  ) => Promise<boolean | void | { unauthorizedDBResources: IUnauthorizedDBResources[] }>;
   visible: boolean;
   onCancel: () => void;
   readonly?: boolean;
@@ -64,6 +68,12 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
   const editorRef = useRef<editor.IStandaloneCodeEditor>();
   const connectionMode = sessionStore?.connection?.dialectType;
   const config = getDataSourceModeConfigByConnectionMode(connectionMode);
+  const [permissionList, setPermissionList] = useState<IUnauthorizedDBResources[]>();
+  const hadlintResultSet = lintResultSet?.length > 0;
+
+  const hasTable = useMemo(() => {
+    return hadlintResultSet || permissionList?.length > 0;
+  }, [hadlintResultSet, permissionList]);
 
   useEffect(() => {
     if (sql !== editorRef?.current?.getValue()) {
@@ -80,7 +90,12 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
     if (!status || status === EStatus.SUBMIT) {
       setLoading(true);
       try {
-        await onSave(updateSQL);
+        const res = (await onSave(updateSQL)) as {
+          unauthorizedDBResources: IUnauthorizedDBResources[];
+        };
+        if (res?.unauthorizedDBResources) {
+          setPermissionList(res?.unauthorizedDBResources);
+        }
       } catch (e) {
       } finally {
         setLoading(false);
@@ -95,6 +110,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
       onCancel?.();
       // 打开新建数据库抽屉后执行回调完成交互，例如 取消表格编辑状态、关闭当前页
       callback?.();
+      setPermissionList([]);
     }
   }, [onSave, callback]);
 
@@ -113,6 +129,15 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
     props?.onChange?.(sql);
   };
 
+  const getHeight = () => {
+    if (!hadlintResultSet && permissionList?.length === 0) return 420;
+    return 300;
+  };
+
+  const handleCancel = () => {
+    onCancel?.();
+    setPermissionList([]);
+  };
   return (
     <>
       <Modal
@@ -125,7 +150,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
         })}
         open={visible}
         onOk={handleSubmit}
-        onCancel={onCancel}
+        onCancel={handleCancel}
         footer={[
           <Button key="format" onClick={handleFormat}>
             {
@@ -150,7 +175,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
           >
             <Button>{formatMessage({ id: 'app.button.copy', defaultMessage: '复制' })}</Button>
           </CopyToClipboard>,
-          <Button key="back" onClick={onCancel}>
+          <Button key="back" onClick={handleCancel}>
             {formatMessage({ id: 'app.button.cancel', defaultMessage: '取消' })}
           </Button>,
           <Button
@@ -170,12 +195,12 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: lintResultSet?.length > 0 ? '16px' : '0px',
+            gap: hasTable ? '16px' : '0px',
           }}
         >
           <div
             style={{
-              height: lintResultSet?.length > 0 ? 240 : 420,
+              height: getHeight(),
               width: '100%',
               padding: 4,
               border: '1px solid var(--odc-border-color)',
@@ -196,7 +221,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
               }}
             />
           </div>
-          {lintResultSet?.length > 0 && (
+          {hadlintResultSet && (
             <LintResultTable
               resultHeight={166}
               ctx={editorRef.current}
@@ -204,6 +229,9 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
               hasExtraOpt={false}
               pageSize={5}
             />
+          )}
+          {permissionList?.length > 0 && (
+            <DBPermissionTableContent showAction dataSource={permissionList} pageSize={5} />
           )}
         </div>
       </Modal>

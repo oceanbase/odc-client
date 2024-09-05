@@ -248,7 +248,7 @@ const AddressItems: React.FC<IProps> = function (props) {
             </Col>
           );
         }
-        case 'databaseName': {
+        case 'catalogName': {
           return (
             <Col span={24}>
               <Form.Item
@@ -256,7 +256,7 @@ const AddressItems: React.FC<IProps> = function (props) {
                 label={`数据库名称`}
                 rules={[{ required: true, message: '请输入数据库名称' }]}
                 style={{ width: '100%', marginLeft: -1 }}
-                name="databaseName"
+                name="catalogName"
               >
                 <Input style={{ width: '100%' }} />
               </Form.Item>
