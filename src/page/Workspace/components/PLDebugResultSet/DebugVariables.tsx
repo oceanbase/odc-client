@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { render } from '@/app';
 import DisplayTable from '@/component/DisplayTable';
 import { Debug } from '@/store/debug';
 import { formatMessage } from '@/util/intl';
@@ -39,6 +40,9 @@ const DebugVariables: React.FC<IProps> = (props) => {
       title: formatMessage({
         id: 'odc.components.PLDebugResultSet.Value',
       }),
+      render(v) {
+        return <pre>v</pre>;
+      },
     },
   ];
   const variables = debug?.contextVariables;
