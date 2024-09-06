@@ -15,6 +15,7 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
+import { PartitionBound } from '@/constant';
 import type { IPartitionTableConfig } from '@/d.ts';
 import { PARTITION_KEY_INVOKER, TaskPartitionStrategy } from '@/d.ts';
 import { Button, Descriptions, Drawer, Space } from 'antd';
@@ -47,6 +48,11 @@ const periodUnits = [
     value: 5,
   },
 ];
+
+const partitionBoundDescriptions: Record<PartitionBound, string> = {
+  [PartitionBound.PARTITION_UPPER_BOUND]: '分区上界',
+  [PartitionBound.PARTITION_LOWER_BOUND]: '分区下界',
+};
 
 interface IProps {
   visible: boolean;
@@ -85,6 +91,11 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       ); //`时间格式: ${suffixExpression}`
     }
     return suffix.filter(Boolean).join(', ');
+  };
+  const getNamingSuffixStrategy = () => {
+    const namingSuffixStrategy =
+      partitionNameInvokerParameters?.partitionNameGeneratorConfig?.namingSuffixStrategy;
+    return partitionBoundDescriptions[namingSuffixStrategy] || '-';
   };
 
   const getUnitLabel = (periodUnit) => {
@@ -187,55 +198,30 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       )}
 
       {!!createKeyConfigs?.length && (
-        <Descriptions style={{ marginTop: '8px' }} column={1}>
-          <Descriptions.Item
-            label={
-              formatMessage({
-                id: 'src.component.Task.component.PartitionPolicyTable.371328F9',
-                defaultMessage: '命名规则',
-              }) /*"命名规则"*/
-            }
-          >
-            {config?.partitionNameInvokerParameters?.partitionNameGeneratorConfig?.namingPrefix ? (
-              <Space>
-                {formatMessage(
-                  {
-                    id: 'src.component.Task.component.PartitionPolicyTable.1D7346EE',
-                    defaultMessage:
-                      '前缀：{partitionNameInvokerParametersPartitionNameGeneratorConfigNamingPrefix}',
-                  },
-                  {
-                    partitionNameInvokerParametersPartitionNameGeneratorConfigNamingPrefix:
-                      partitionNameInvokerParameters?.partitionNameGeneratorConfig?.namingPrefix,
-                  },
-                )}
-                <Space size={2}>
-                  <span>
-                    {
-                      formatMessage({
-                        id: 'src.component.Task.component.PartitionPolicyTable.68E34A9C' /*后缀:*/,
-                        defaultMessage: '后缀：',
-                      }) /* 后缀: */
-                    }
-                  </span>
-                  {getNamingSuffix()}
-                </Space>
-              </Space>
-            ) : (
-              formatMessage(
-                {
-                  id: 'src.component.Task.component.PartitionPolicyTable.59CEB82C',
-                  defaultMessage:
-                    '自定义：{partitionNameInvokerParametersPartitionNameGeneratorConfigGenerateExpr}',
-                },
-                {
-                  partitionNameInvokerParametersPartitionNameGeneratorConfigGenerateExpr:
-                    partitionNameInvokerParameters?.partitionNameGeneratorConfig?.generateExpr,
-                },
+        <div style={{ marginTop: 8 }}>
+          <SimpleTextItem
+            showSplit={false}
+            label="命名规则"
+            content={
+              config?.partitionNameInvokerParameters?.partitionNameGeneratorConfig?.namingPrefix ? (
+                <>
+                  <Descriptions column={1}>
+                    <Descriptions.Item label="前缀">
+                      {partitionNameInvokerParameters?.partitionNameGeneratorConfig?.namingPrefix}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="后缀">{getNamingSuffix()}</Descriptions.Item>
+                    <Descriptions.Item label="取值策略">
+                      {getNamingSuffixStrategy()}
+                    </Descriptions.Item>
+                  </Descriptions>
+                </>
+              ) : (
+                `自定义：${partitionNameInvokerParameters?.partitionNameGeneratorConfig?.generateExpr}`
               )
-            )}
-          </Descriptions.Item>
-        </Descriptions>
+            }
+            direction="column"
+          />
+        </div>
       )}
 
       {dropKeyConfig && (
