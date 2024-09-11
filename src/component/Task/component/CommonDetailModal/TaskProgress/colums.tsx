@@ -1,13 +1,12 @@
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import Action from '@/component/Action';
-import StatusLabel, { logicDBChangeTaskStatus } from '@/component/Task/component/Status';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
+import StatusLabel from '@/component/Task/component/Status';
 import { TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Button, Popover, Space, Typography } from 'antd';
-import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { getLocalFormatDateTime } from '@/util/utils';
 import Icon from '@ant-design/icons';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { ISchemaChangeRecord } from '@/d.ts/logicalDatabase';
+import { Popover, Space, Typography } from 'antd';
 
 const { Link } = Typography;
 

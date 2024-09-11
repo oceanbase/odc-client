@@ -17,9 +17,9 @@ import { updateDataBaseOwner } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { DatabaseOwnerSelect } from '../DatabaseOwnerSelect';
 import { Form, message, Modal } from 'antd';
+import { useCallback, useEffect, useState } from 'react';
+import { DatabaseOwnerSelect } from '../DatabaseOwnerSelect';
 import styles from './index.less';
 
 interface IProps {

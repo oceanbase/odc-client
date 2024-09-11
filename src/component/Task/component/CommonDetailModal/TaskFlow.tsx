@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getTaskDetail, getTaskList } from '@/common/network/task';
 import MultiLineOverflowText from '@/component/MultiLineOverflowText';
 import {
   nodeStatus as nodeStatusMap,
@@ -37,13 +38,12 @@ import { getLocalFormatDateTime } from '@/util/utils';
 import { Descriptions, Space, Steps } from 'antd';
 import classNames from 'classnames';
 import React, { useEffect, useMemo, useState } from 'react';
+import { isLogicalDbChangeTask } from '../../helper';
 import styles from './index.less';
 import { getStatusDisplayInfo } from './Nodes/helper';
 import MultipleSQLCheckNode from './Nodes/MultipleSQLCheckNode';
 import RollbackNode from './Nodes/RollbackNode';
 import SQLCheckNode from './Nodes/SQLCheckNode';
-import { isLogicalDbChangeTask } from '../../helper';
-import { getTaskList, getTaskDetail } from '@/common/network/task';
 
 const { Step } = Steps;
 interface IProps {

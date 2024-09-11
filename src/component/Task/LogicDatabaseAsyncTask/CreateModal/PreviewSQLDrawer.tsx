@@ -1,10 +1,10 @@
+import { previewSqls } from '@/common/network/logicalDatabase';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import MiniTable from '@/component/Table/MiniTable';
+import { IDatabase } from '@/d.ts/database';
+import { IPreviewSql } from '@/d.ts/logicalDatabase';
 import { Drawer, Space } from 'antd';
 import { useEffect, useState } from 'react';
-import { previewSqls } from '@/common/network/logicalDatabase';
-import { IPreviewSql } from '@/d.ts/logicalDatabase';
-import { IDatabase } from '@/d.ts/database';
-import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 
 const PreviewSQLDrawer: React.FC<{
   open: boolean;

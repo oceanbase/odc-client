@@ -17,22 +17,20 @@
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { syncObject } from '@/common/network/database';
 import { IManagerResourceType, TaskPageType, TaskType } from '@/d.ts';
-import { DBObjectSyncStatus, IDatabase } from '@/d.ts/database';
+import { DatabasePermissionType, DBObjectSyncStatus, IDatabase } from '@/d.ts/database';
 import { openNewDefaultPLPage, openNewSQLPage, openOBClientPage } from '@/store/helper/page';
-import login from '@/store/login';
+import { default as login, default as userStore } from '@/store/login';
 import modal from '@/store/modal';
 import setting from '@/store/setting';
+import { isLogicalDatabase } from '@/util/database';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { LoadingOutlined } from '@ant-design/icons';
-import { isLogicalDatabase } from '@/util/database';
-import { Tooltip, message, Typography } from 'antd';
+import { message, Tooltip, Typography } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
-import userStore from '@/store/login';
-import { DatabasePermissionType } from '@/d.ts/database';
 
 const { Text } = Typography;
 

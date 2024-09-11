@@ -1,20 +1,20 @@
-import DisplayTable from '@/component/DisplayTable';
-import { Descriptions, Modal, Space, Tooltip } from 'antd';
-import { useEffect, useMemo, useState } from 'react';
-import styles from './index.less';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
-import Icon, { InfoCircleOutlined } from '@ant-design/icons';
-import { ISchemaChangeRecord } from '@/d.ts/logicalDatabase';
 import { getPhysicalExecuteDetails } from '@/common/network/logicalDatabase';
+import DisplayTable from '@/component/DisplayTable';
 import { ISqlExecuteResult, ISqlExecuteResultStatus } from '@/d.ts';
+import { ISchemaChangeRecord } from '@/d.ts/logicalDatabase';
+import { SqlExecuteResultStatusLabel } from '@/page/Workspace/components/SQLResultSet/const';
+import DBTimeline from '@/page/Workspace/components/SQLResultSet/DBTimeline';
 import {
-  getSqlExecuteResultStatusIcon,
   getResultText,
+  getSqlExecuteResultStatusIcon,
 } from '@/page/Workspace/components/SQLResultSet/ExecuteHistory';
 import { formatTimeTemplate } from '@/util/utils';
+import Icon, { InfoCircleOutlined } from '@ant-design/icons';
+import { Descriptions, Modal, Space, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
-import DBTimeline from '@/page/Workspace/components/SQLResultSet/DBTimeline';
-import { SqlExecuteResultStatusLabel } from '@/page/Workspace/components/SQLResultSet/const';
+import { useEffect, useMemo, useState } from 'react';
+import styles from './index.less';
 
 const getColumns = () => {
   return [

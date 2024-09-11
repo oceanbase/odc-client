@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import { skipPhysicalSqlExecute, stopPhysicalSqlExecute } from '@/common/network/logicalDatabase';
+import { getScheduleTaskDetail } from '@/common/network/task';
 import CommonTable from '@/component/CommonTable';
 import { CommonTableMode, ITableLoadOptions } from '@/component/CommonTable/interface';
+import SearchFilter from '@/component/SearchFilter';
 import StatusLabel, {
+  logicDBChangeTaskStatus,
   status,
   subTaskStatus,
-  logicDBChangeTaskStatus,
 } from '@/component/Task/component/Status';
 import DetailModal from '@/component/Task/DetailModal';
 import {
@@ -30,24 +34,18 @@ import {
   TaskRecordParameters,
   TaskType,
 } from '@/d.ts';
+import { ISchemaChangeRecord, SchemaChangeRecordStatus } from '@/d.ts/logicalDatabase';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
-import { FilterOutlined } from '@ant-design/icons';
+import Icon, { FilterOutlined, SearchOutlined } from '@ant-design/icons';
+import { Space, Typography } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
+import { isLogicalDbChangeTask } from '../../helper';
 import ExcecuteDetailModal from './ExcecuteDetailModal';
 import styles from './index.less';
 import LogModal from './LogModal';
-import TaskTools from './TaskTools';
-import { isLogicalDbChangeTask } from '../../helper';
-import { skipPhysicalSqlExecute, stopPhysicalSqlExecute } from '@/common/network/logicalDatabase';
 import TaskProgressModal from './TaskExecuteModal';
-import { getDataSourceStyleByConnectType } from '@/common/datasource';
-import { Space, Typography } from 'antd';
-import Icon from '@ant-design/icons';
-import { ISchemaChangeRecord, SchemaChangeRecordStatus } from '@/d.ts/logicalDatabase';
-import SearchFilter from '@/component/SearchFilter';
-import { SearchOutlined } from '@ant-design/icons';
-import { getScheduleTaskDetail } from '@/common/network/task';
+import TaskTools from './TaskTools';
 
 const { Link } = Typography;
 

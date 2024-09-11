@@ -13,43 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTask, getCycleTaskDetail } from '@/common/network/task';
+import { createTask } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import { SQLContentType, TaskExecStrategy, TaskType } from '@/d.ts';
-import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
 import utils, { IEditor } from '@/util/editor';
 import { formatMessage } from '@/util/intl';
-import Crontab from '@/component/Crontab';
-import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
 import { FieldTimeOutlined } from '@ant-design/icons';
 
+import { ICycleTaskTriggerConfig, TaskOperationType } from '@/d.ts';
 import {
   Alert,
   AutoComplete,
   Button,
-  Checkbox,
-  Divider,
+  DatePicker,
   Drawer,
   Form,
   InputNumber,
-  DatePicker,
   Modal,
   Radio,
   Space,
   Tooltip,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
+import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
 import PreviewSQLDrawer from './PreviewSQLDrawer';
-import { TaskOperationType, ICycleTaskTriggerConfig, IDataClearJobParameters } from '@/d.ts';
-import moment from 'moment';
 
 interface IProps {
   sqlStore?: SQLStore;

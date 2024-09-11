@@ -1,13 +1,13 @@
 import { IResponse, IResponseData } from '@/d.ts';
+import { PreviewLogicalTableTopologiesErrorEnum } from '@/d.ts/database';
 import {
   ILogicalDatabase,
+  ILogicalTable,
   IPreviewSql,
   ISchemaChangeRecord,
   ITopology,
-  ILogicalTable,
 } from '@/d.ts/logicalDatabase';
 import request from '@/util/request';
-import { PreviewLogicalTableTopologiesErrorEnum } from '@/d.ts/database';
 
 export async function extractLogicalTables(logicalDatabaseId: number) {
   const res = await request.post(

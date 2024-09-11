@@ -22,6 +22,7 @@ import {
   TaskStatus,
   TaskType,
 } from '@/d.ts';
+import { SchemaChangeRecordStatus } from '@/d.ts/logicalDatabase';
 import { formatMessage } from '@/util/intl';
 import {
   CheckCircleFilled,
@@ -35,7 +36,6 @@ import { Space, Tooltip } from 'antd';
 import { isNil } from 'lodash';
 import React from 'react';
 import { isCycleTask } from '../../helper';
-import { SchemaChangeRecordStatus } from '@/d.ts/logicalDatabase';
 export const nodeStatus = {
   [TaskFlowNodeType.APPROVAL_TASK]: {
     [TaskNodeStatus.PENDING]: {

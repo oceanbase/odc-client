@@ -15,7 +15,7 @@
  */
 
 import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
-import { listDatabases } from '@/common/network/database';
+import { getDatabase, listDatabases } from '@/common/network/database';
 import { listEnvironments } from '@/common/network/env';
 import { deleteLogicalDatabse } from '@/common/network/logicalDatabase';
 import Action from '@/component/Action';
@@ -54,9 +54,7 @@ import { CreateLogicialDatabase, ManageLogicDatabase } from './components/LogicD
 import Header from './Header';
 import styles from './index.less';
 import ParamContext, { IFilterParams } from './ParamContext';
-import { getDatabase } from '@/common/network/database';
 import StatusName from './StatusName';
-
 interface IProps {
   id: string;
   modalStore?: ModalStore;

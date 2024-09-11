@@ -18,11 +18,13 @@ import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { getConnectionList } from '@/common/network/connection';
 import { listDatabases } from '@/common/network/database';
 import { listSensitiveRules } from '@/common/network/sensitiveRule';
+import ConnectionPopover from '@/component/ConnectionPopover';
+import { IConnection, IResponseData } from '@/d.ts';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { SelectItemProps } from '@/page/Project/Sensitive/interface';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
-import { Button, Divider, Form, Select } from 'antd';
+import { Button, Divider, Form, Popover, Select } from 'antd';
 import { useWatch } from 'antd/es/form/Form';
 import { useContext, useEffect, useState } from 'react';
 import SensitiveContext from '../../../SensitiveContext';
@@ -37,10 +39,12 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const [dataSourceOptions, setDataSourceOptions] = useState<SelectItemProps[]>([]);
   const [databaseIdsOptions, setDatabaseIdsOptions] = useState<SelectItemProps[]>([]);
   const [sensitiveOptions, setSensitiveOptions] = useState<SelectItemProps[]>([]);
+  const [rawData, setRawData] = useState<IResponseData<IConnection>>();
   const initDataSources = async () => {
     const rawData = await getConnectionList({
       projectId: sensitiveContext.projectId,
     });
+    setRawData(rawData);
     const resData = rawData?.contents?.map((content) => ({
       label: content.name,
       value: content.id,
@@ -171,6 +175,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
         ]}
       >
         <Select
+          showSearch
           onChange={handleDataSourceIdChange}
           placeholder={formatMessage({
             id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect',
@@ -178,20 +183,33 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
           })}
           maxTagCount="responsive"
           style={{ width: 170 }}
+          filterOption={(input, option) => {
+            return (
+              // @ts-ignore
+              option.children?.props?.children?.[1]?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            );
+          }}
         >
           {dataSourceOptions.map((option, index) => {
             const icon = getDataSourceStyleByConnectType(option.type);
+            const connection = rawData?.contents?.[index];
             return (
               <Select.Option key={index} value={option.value}>
-                <Icon
-                  component={icon?.icon?.component}
-                  style={{
-                    color: icon?.icon?.color,
-                    fontSize: 16,
-                    marginRight: 4,
-                  }}
-                />
-                {option.label}
+                <Popover
+                  overlayStyle={{ zIndex: 10000 }}
+                  placement="right"
+                  content={<ConnectionPopover connection={connection} showType={false} />}
+                >
+                  <Icon
+                    component={icon?.icon?.component}
+                    style={{
+                      color: icon?.icon?.color,
+                      fontSize: 16,
+                      marginRight: 4,
+                    }}
+                  />
+                  {option.label}
+                </Popover>
               </Select.Option>
             );
           })}
