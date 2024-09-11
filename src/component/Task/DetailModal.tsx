@@ -311,7 +311,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     return () => {
       clearTimeout(clockRef.current);
     };
-  }, [detailId, visible, detailType, logType]);
+  }, [detailId, visible, detailType, logType, task?.status]);
 
   useEffect(() => {
     if (visible && detailId && !task) {

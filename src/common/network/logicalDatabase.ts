@@ -49,7 +49,7 @@ export async function createLogicalDatabase(data: {
   name: string;
   alias: string;
   physicalDatabaseIds: number[];
-}): Promise<IResponseData<boolean>> {
+}): Promise<ILogicalDatabase> {
   const res = await request.post('/api/v2/connect/logicaldatabase/logicalDatabases', {
     data,
   });
