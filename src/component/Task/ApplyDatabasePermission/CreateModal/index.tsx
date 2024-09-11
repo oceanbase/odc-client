@@ -213,6 +213,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
+        zIndex: 1003,
         title: formatMessage({
           id: 'src.component.Task.ApplyDatabasePermission.CreateModal.B35BDC54',
           defaultMessage: '确认取消申请库权限吗？',

@@ -54,6 +54,7 @@ import { CreateLogicialDatabase, ManageLogicDatabase } from './components/LogicD
 import Header from './Header';
 import styles from './index.less';
 import ParamContext, { IFilterParams } from './ParamContext';
+import { getDatabase } from '@/common/network/database';
 import StatusName from './StatusName';
 
 interface IProps {
@@ -781,6 +782,11 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
         reload={reload}
         openLogicialDatabase={openLogicialDatabase}
         setOpenLogicialDatabase={setOpenLogicialDatabase}
+        openLogicDatabaseManageModal={async (id) => {
+          const res = await getDatabase(id);
+          setDatabase(res?.data);
+          setOpenManageLogicDatabase(true);
+        }}
       />
       <ManageLogicDatabase
         database={database}

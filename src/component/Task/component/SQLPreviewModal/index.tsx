@@ -17,6 +17,7 @@ import { formatMessage } from '@/util/intl';
 
 import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import { Modal } from 'antd';
+import { useEffect, useState } from 'react';
 
 function SQLPreviewModal(props: {
   sql?: string;
@@ -25,6 +26,11 @@ function SQLPreviewModal(props: {
   onOk: () => void;
 }) {
   const { sql, visible, onClose, onOk } = props;
+  const [confirmLoading, setConfirmLoading] = useState(false);
+
+  useEffect(() => {
+    setConfirmLoading(false);
+  }, [visible]);
 
   return (
     <Modal
@@ -43,7 +49,13 @@ function SQLPreviewModal(props: {
       }}
       open={visible}
       onCancel={onClose}
-      onOk={onOk}
+      onOk={() => {
+        setConfirmLoading(true);
+        setTimeout(() => {
+          onOk();
+        });
+      }}
+      confirmLoading={confirmLoading}
     >
       <div
         style={{
