@@ -503,7 +503,11 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                     <SQLResultLog
                       resultHeight={resultHeight}
                       resultSet={set}
-                      stopRunning={stopRunning}
+                      stopRunning={
+                        (ctx?.getSession() as SessionStore)?.supportFeature?.enableKillQuery
+                          ? stopRunning
+                          : null
+                      }
                       onOpenExecutingDetailModal={onOpenExecutingDetailModal}
                       loading={sqlStore.logLoading}
                       isSupportProfile={isSupportProfile}

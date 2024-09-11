@@ -157,12 +157,14 @@ const runningLogPage = (
           )}
         </div>
       </Space>
-      <Button onClick={stopRunning} style={{ marginTop: 16 }}>
-        {formatMessage({
-          id: 'src.page.Workspace.components.SQLResultSet.D3F95049',
-          defaultMessage: '终 止',
-        })}
-      </Button>
+      {!!stopRunning && (
+        <Button onClick={stopRunning} style={{ marginTop: 16 }}>
+          {formatMessage({
+            id: 'src.page.Workspace.components.SQLResultSet.D3F95049',
+            defaultMessage: '终 止',
+          })}
+        </Button>
+      )}
     </div>
   );
 };
