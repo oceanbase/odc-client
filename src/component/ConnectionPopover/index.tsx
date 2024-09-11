@@ -28,6 +28,7 @@ import RiskLevelLabel from '../RiskLevelLabel';
 import { IDatabase } from '@/d.ts/database';
 import { isLogicalDatabase } from '@/util/database';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
+import styles from './index.less';
 
 const ConnectionPopover: React.FC<{
   connection: Partial<IConnection>;
@@ -72,11 +73,17 @@ const ConnectionPopover: React.FC<{
                   color={database?.environment?.style?.toLowerCase()}
                 />
                 <DataBaseStatusIcon item={database} />
-                {database?.name}
+                <div className={styles.ellipsis} title={database?.name}>{`${database?.name}`}</div>
               </div>
             </div>
           </Tooltip>
-          <div>{`逻辑库别名: ${database?.alias}`}</div>
+          <div
+            style={{
+              maxWidth: '400px',
+            }}
+            className={styles.ellipsis}
+            title={database?.alias}
+          >{`逻辑库别名: ${database?.alias}`}</div>
           <div>{`项目: ${database?.project?.name}`}</div>
           <div>{`类型: ${ConnectTypeText[database?.connectType]}`}</div>
         </Space>

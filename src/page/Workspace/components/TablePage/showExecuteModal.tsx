@@ -96,6 +96,9 @@ export default forwardRef<any, { session: SessionStore; callbackRef: React.Mutab
           if (!results) {
             return;
           }
+          if (results?.unauthorizedDBResources?.length) {
+            return { unauthorizedDBResources: results?.unauthorizedDBResources };
+          }
           if (!hasExecuted) {
             /**
              * status为submit时，即SQL内容没有被拦截，继续执行后续代码，完成相关交互

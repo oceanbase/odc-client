@@ -57,7 +57,7 @@ const getColumns = ({ logicalDatabaseId, reload }) => {
                 `表${inconsistentTableList}表结构不一致，请检查`
               }
             >
-              {record?.inconsistentPhysicalTables?.length && (
+              {record?.inconsistentPhysicalTables?.length > 0 && (
                 <ExclamationCircleFilled style={{ color: 'var(--function-gold6-color)' }} />
               )}
             </Tooltip>
@@ -78,6 +78,9 @@ const getColumns = ({ logicalDatabaseId, reload }) => {
       key: 'physicalTableCount',
       title: '物理表数量',
       dataIndex: 'physicalTableCount',
+      render: (value) => {
+        return <div style={{ width: 60 }}>{value}</div>;
+      },
     },
     {
       key: 'action',

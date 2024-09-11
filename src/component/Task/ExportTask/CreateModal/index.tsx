@@ -355,7 +355,7 @@ class CreateModal extends React.Component<IProps, IState> {
                   <a
                     style={{ marginLeft: 4 }}
                     target="__blank"
-                    href="https://www.oceanbase.com/docs/common-oceanbase-dumper-loader-1000000000381191"
+                    href="https://www.oceanbase.com/docs/common-oceanbase-dumper-loader-1000000001189488"
                   >
                     {
                       formatMessage({

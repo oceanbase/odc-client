@@ -29,6 +29,7 @@ import login from '@/store/login';
 import Icon from '@ant-design/icons';
 import { DEFALT_WIDTH } from './const';
 import { logicalDatabaseDetail } from '@/common/network/logicalDatabase';
+import styles from './index.less';
 
 interface IProps {
   value?: number;
@@ -109,20 +110,28 @@ const SelectItem: React.FC<IProps> = ({
         logicalDatabase?.data?.dialectType as any,
       )?.dbIcon;
       return (
-        <Space size={1} style={{ color: 'var(--text-color-primary)', width: '100%' }}>
+        <div
+          style={{
+            color: 'var(--text-color-primary)',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+          }}
+        >
           <>
             <RiskLevelLabel
               content={logicalDatabase?.data?.environment?.name}
               color={logicalDatabase?.data?.environment?.style}
             />
-
             <Icon
               component={dbIcon?.component}
               style={{ fontSize: 16, marginRight: 4, verticalAlign: 'textBottom' }}
             />
+            <span className={styles.ellipsis} title={logicalDatabase?.data?.name}>
+              {logicalDatabase?.data?.name}
+            </span>
           </>
-          {logicalDatabase?.data?.name}
-        </Space>
+        </div>
       );
     }
     if (!datasourceMode && database?.data) {

@@ -27,10 +27,6 @@ const PreviewSQLDrawer: React.FC<{
     };
     const res = await previewSqls(databaseId, params);
     setPreviewList(res);
-    // setPreviewList([
-    //   { sql: '1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111', database: { id: 1, name: 'sss' } },
-    //   { sql: '222', database: { id: 2, name: '222' } },
-    // ]);
   };
 
   const handleCancel = () => {

@@ -35,19 +35,18 @@ import { inject, observer } from 'mobx-react';
 import { getColumnsByTaskType } from './colums';
 import TaskProgressHeader from './TaskProgressHeader';
 import TaskProgressDrawer from './TaskProgressDrawer';
-import TaskProgressModal from './TaskProgressModal';
 import { isLogicalDatabase } from '@/util/database';
-import { skipPhysicalSqlExecute, stopPhysicalSqlExecute } from '@/common/network/logicalDatabase';
 
 interface IProps {
   taskStore?: TaskStore;
   task: TaskDetail<TaskRecordParameters>;
   theme?: string;
+  onReload: () => void;
 }
 const TaskProgress: React.FC<IProps> = (props) => {
   // #region ------------------------- props or state -------------------------
   const { handleDetailVisible: _handleDetailVisible, setState } = useContext(TaskDetailContext);
-  const { task, theme, taskStore } = props;
+  const { task, theme, taskStore, onReload } = props;
   const [subTasks, setSubTasks] = useState([]);
   const [databases, setDatabases] = useState([]);
   const [detailId, setDetailId] = useState(null);
@@ -119,6 +118,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
     setDrawerOpen(true);
     setDetailId(id);
   };
+
   const handleMultipleAsyncOpen = async (taskId: number) => {
     const data = await getTaskDetail(taskId, true);
     setState({
@@ -127,21 +127,9 @@ const TaskProgress: React.FC<IProps> = (props) => {
     taskStore.changeTaskPageType(TaskPageType.ASYNC);
     _handleDetailVisible(data, true);
   };
+
   const handleClose = () => {
     setDrawerOpen(false);
-  };
-  const handleLogicalDatabaseAsyncModalOpen = (detailId: number) => {
-    setModalOpen(true);
-    setDetailId(detailId);
-  };
-  const handleLogicalDatabaseTaskStop = async (detailId: number) => {
-    /* 交互待确认, 应该是二次确认弹窗 */
-    const res = await skipPhysicalSqlExecute(detailId);
-  };
-
-  const handleLogicalDatabaseTaskSkip = async () => {
-    /* 交互待确认, 应该是二次确认弹窗 */
-    const res = await stopPhysicalSqlExecute(detailId);
   };
   // #endregion
 
@@ -154,11 +142,9 @@ const TaskProgress: React.FC<IProps> = (props) => {
   const columns = getColumnsByTaskType(task?.type, {
     handleDetailVisible,
     handleMultipleAsyncOpen,
-    handleLogicalDatabaseAsyncModalOpen,
     handleSwapTable,
-    handleLogicalDatabaseTaskStop,
-    handleLogicalDatabaseTaskSkip,
   });
+
   return (
     <>
       <TaskProgressHeader
@@ -180,12 +166,6 @@ const TaskProgress: React.FC<IProps> = (props) => {
         theme={theme}
         resultJson={resultJson}
         handleClose={handleClose}
-      />
-      <TaskProgressModal
-        detailId={detailId}
-        modalOpen={modalOpen}
-        setModalOpen={setModalOpen}
-        subTasks={subTasks}
       />
     </>
   );

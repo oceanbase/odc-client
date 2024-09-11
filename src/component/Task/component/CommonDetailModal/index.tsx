@@ -25,7 +25,7 @@ import { ShareAltOutlined } from '@ant-design/icons';
 import { Drawer, message, Radio, Spin } from 'antd';
 import copy from 'copy-to-clipboard';
 import React from 'react';
-import { isCycleTask } from '../../helper';
+import { isCycleTask, isLogicalDbChangeTask } from '../../helper';
 import styles from './index.less';
 import TaskExecuteRecord from './TaskExecuteRecord';
 import TaskFlow from './TaskFlow';
@@ -94,7 +94,7 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
       content = <TaskOperationRecord opRecord={opRecord} onReload={onReload} />;
       break;
     case TaskDetailType.PROGRESS:
-      content = <TaskProgress task={task} theme={theme} />;
+      content = <TaskProgress task={task} theme={theme} onReload={onReload} />;
       break;
     default:
       break;
@@ -269,24 +269,22 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
                   }) /*执行记录*/
                 }
               </Radio.Button>
-              <Radio.Button
-                value={TaskDetailType.OPERATION_RECORD}
-                key={TaskDetailType.OPERATION_RECORD}
-              >
-                {
-                  formatMessage({
-                    id: 'odc.component.CommonTaskDetailModal.OperationRecord',
-                    defaultMessage: '操作记录',
-                  }) /*操作记录*/
-                }
-              </Radio.Button>
+              {!isLogicalDbChangeTask(task?.type) && (
+                <Radio.Button
+                  value={TaskDetailType.OPERATION_RECORD}
+                  key={TaskDetailType.OPERATION_RECORD}
+                >
+                  {
+                    formatMessage({
+                      id: 'odc.component.CommonTaskDetailModal.OperationRecord',
+                      defaultMessage: '操作记录',
+                    }) /*操作记录*/
+                  }
+                </Radio.Button>
+              )}
             </>
           )}
-          {[
-            TaskType.ONLINE_SCHEMA_CHANGE,
-            TaskType.MULTIPLE_ASYNC,
-            TaskType.LOGICAL_DATABASE_CHANGE,
-          ]?.includes(task?.type) && (
+          {[TaskType.ONLINE_SCHEMA_CHANGE, TaskType.MULTIPLE_ASYNC]?.includes(task?.type) && (
             <Radio.Button value={TaskDetailType.PROGRESS} key={TaskDetailType.PROGRESS}>
               {
                 formatMessage({

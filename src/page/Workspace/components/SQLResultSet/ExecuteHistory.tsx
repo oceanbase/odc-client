@@ -49,7 +49,7 @@ interface IProps {
   ) => void;
 }
 
-function getResultText(rs: ISqlExecuteResult) {
+export function getResultText(rs: ISqlExecuteResult) {
   if (!rs.total) return '-';
   if ([SqlType.show, SqlType.select].includes(rs.sqlType)) {
     return `${rs.total} row(s) returned`;
@@ -57,6 +57,31 @@ function getResultText(rs: ISqlExecuteResult) {
     return `${rs.total} row(s) affected`;
   }
 }
+
+export const getSqlExecuteResultStatusIcon = (status) => {
+  switch (status) {
+    case ISqlExecuteResultStatus.SUCCESS: {
+      return <CheckCircleFilled style={{ color: 'var(--function-green6-color)' }} />;
+    }
+    case ISqlExecuteResultStatus.FAILED: {
+      return <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />;
+    }
+    case ISqlExecuteResultStatus.CANCELED: {
+      return <StopFilled style={{ color: 'var(--profile-icon-unready-color)' }} />;
+    }
+    case ISqlExecuteResultStatus.CREATED: {
+      return (
+        <Icon
+          component={WaitingSvg}
+          style={{ fontSize: 14, color: 'var(--profile-icon-unready-color)' }}
+        />
+      );
+    }
+    case ISqlExecuteResultStatus.RUNNING: {
+      return <LoadingOutlined style={{ color: 'var(--brand-blue6-color)' }} />;
+    }
+  }
+};
 
 const ExecuteHistory: React.FC<IProps> = function (props) {
   const { onShowExecuteDetail, resultHeight, sqlStore, onOpenExecutingDetailModal } = props;
@@ -86,30 +111,6 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
     };
   }, []);
 
-  const getIcon = (status) => {
-    switch (status) {
-      case ISqlExecuteResultStatus.SUCCESS: {
-        return <CheckCircleFilled style={{ color: 'var(--function-green6-color)' }} />;
-      }
-      case ISqlExecuteResultStatus.FAILED: {
-        return <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />;
-      }
-      case ISqlExecuteResultStatus.CANCELED: {
-        return <StopFilled style={{ color: 'var(--profile-icon-unready-color)' }} />;
-      }
-      case ISqlExecuteResultStatus.WAITING: {
-        return (
-          <Icon
-            component={WaitingSvg}
-            style={{ fontSize: 14, color: 'var(--profile-icon-unready-color)' }}
-          />
-        );
-      }
-      case ISqlExecuteResultStatus.RUNNING: {
-        return <LoadingOutlined style={{ color: 'var(--brand-blue6-color)' }} />;
-      }
-    }
-  };
   /**
    * 执行记录
    */
@@ -124,7 +125,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         }),
 
         width: 50,
-        render: (value: ISqlExecuteResultStatus) => getIcon(value),
+        render: (value: ISqlExecuteResultStatus) => getSqlExecuteResultStatusIcon(value),
       },
 
       {

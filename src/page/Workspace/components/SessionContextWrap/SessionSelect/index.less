@@ -1,3 +1,4 @@
+@import (reference) '~@/func.less';
 .line {
   display: flex;
   align-items: center;
@@ -22,4 +23,8 @@
   &:hover {
     color: var(--text-color-link);
   }
+}
+
+.ellipsis {
+  .odc-text-ellipsis();
 }

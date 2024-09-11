@@ -350,12 +350,8 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
   'modalStore',
 )(
   observer((props) => {
-    const { task: _task, result, modalStore, theme, visible } = props;
-    const [task, setTask] = useState<TaskDetail<IStructureComparisonTaskParams>>(_task);
+    const { task: task, result, modalStore, theme, visible } = props;
     const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
-    const timerTaskRef = useRef<ReturnType<typeof setTimeout>>(null);
-    const taskEndRef = useRef<boolean>(null);
-    const currentTaskRef = useRef<TaskDetail<IStructureComparisonTaskParams>>(_task);
     const [currentResult, setCurrentResult] = useState<ITaskResult>(result);
     const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
     const [comparisonResult, setComparisonResult] = useState<IComparisonResultData>(null);
@@ -390,20 +386,16 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
     };
     const loop = (timeout: number = 0) => {
       timerRef.current = setTimeout(async () => {
-        if (!detailModalOpen || taskEndRef.current) {
-          return;
-        }
         const currentResult = await getTaskResult(task?.id);
         if (
           currentResult &&
           [SubTaskStatus.DONE, SubTaskStatus.FAILED].includes((currentResult as any)?.status)
         ) {
           setCurrentResult(currentResult);
-          taskEndRef.current = true;
           clearTimeout(timerRef.current);
           timerRef.current = null;
+          loadStructureComparisonResults();
         } else {
-          taskEndRef.current = false;
           modalStore?.updateStructureComparisonDataMap(task?.id, {
             database: null,
             storageObjectId: null,
@@ -411,31 +403,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             overSizeLimit: null,
             status: (currentResult as any)?.status,
           });
-          loop(2000);
         }
-      }, timeout);
-    };
-    /**
-     * 轮询更新Drawer内Task内容
-     */
-    const loopGetTask = async (timeout: number = 0) => {
-      timerTaskRef.current = setTimeout(async () => {
-        if (
-          [
-            TaskStatus?.EXECUTING,
-            TaskStatus.APPROVING,
-            TaskStatus.WAIT_FOR_EXECUTION,
-            TaskStatus.CREATED,
-          ]?.includes(currentTaskRef.current?.status)
-        ) {
-          loopGetTask(6000);
-        } else {
-          clearTimeout(timerTaskRef.current);
-          timerTaskRef.current = null;
-        }
-        const currentTask = await getTaskDetail(task?.id);
-        setTask(currentTask as TaskDetail<IStructureComparisonTaskParams>);
-        currentTaskRef.current = currentTask as TaskDetail<IStructureComparisonTaskParams>;
       }, timeout);
     };
     const handleDetailModalOpen = async (taskId: number, structureComparisonId: number) => {
@@ -456,15 +424,17 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
     useEffect(() => {
       if (visible) {
         loop();
-        loopGetTask();
       }
       return () => {
         clearTimeout(timerRef.current);
         timerRef.current = null;
-        clearTimeout(timerTaskRef.current);
-        timerTaskRef.current = null;
       };
     }, [visible]);
+
+    useEffect(() => {
+      loop();
+    }, [task?.status]);
+
     const tabItems = [
       {
         label: formatMessage({

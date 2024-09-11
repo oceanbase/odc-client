@@ -27,6 +27,8 @@ import {
   IApplyTablePermissionTaskParams,
   SubTaskStatus,
   IMultipleAsyncTaskParams,
+  ILogicalDatabaseAsyncTaskParams,
+  ICycleTaskRecord,
 } from '@/d.ts';
 import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
 import { TablePermissionType } from '@/d.ts/table';
@@ -260,6 +262,7 @@ export class ModalStore {
     projectId?: number;
     ddl?: string;
     databaseId?: number;
+    task?: ICycleTaskRecord<ILogicalDatabaseAsyncTaskParams>;
   } = null;
 
   @observable

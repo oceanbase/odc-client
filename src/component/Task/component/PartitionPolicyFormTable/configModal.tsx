@@ -18,6 +18,7 @@ import { previewPartitionPlans } from '@/common/network/task';
 import Action from '@/component/Action';
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
+import { PartitionBound } from '@/constant';
 import { PARTITION_KEY_INVOKER, PARTITION_NAME_INVOKER, TaskPartitionStrategy } from '@/d.ts';
 import odc from '@/plugins/odc';
 import { formatMessage, getLocalDocs } from '@/util/intl';
@@ -104,6 +105,7 @@ const defaultInitialValues = {
   reloadIndexes: true,
   namingPrefix: 'p',
   namingSuffixExpression: 'yyyyMMdd',
+  namingSuffixStrategy: PartitionBound.PARTITION_LOWER_BOUND,
 };
 
 const StrategyOptions = Object.keys(TaskPartitionStrategyMap)?.map((key) => ({
@@ -216,6 +218,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   const isDropConfigVisible = strategies?.includes(TaskPartitionStrategy.DROP);
   const isCreateConfigVisible = strategies?.includes(TaskPartitionStrategy.CREATE);
   const isCustomRuleType = nameRuleType === NameRuleType.CUSTOM;
+
   const tableNames = configs?.map((item) => item.tableName);
 
   const tableLen = configs?.length;
@@ -266,6 +269,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
           refPartitionKey,
           intervalGenerateExpr,
           reloadIndexes,
+          namingSuffixStrategy,
         } = data;
         const partitionKeyConfigs =
           option?.partitionKeyConfigs?.map((item) => {
@@ -349,6 +353,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               namingPrefix,
               namingSuffixExpression,
               refPartitionKey,
+              namingSuffixStrategy,
             },
           };
         } else {
@@ -725,16 +730,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     </Form.Item>
                     <Input.Group compact>
                       <Tag className={styles.suffix}>
-                        <HelpDoc
-                          leftText
-                          isTip
-                          title={
-                            formatMessage({
-                              id: 'src.component.Task.component.PartitionPolicyFormTable.2CF17EE5',
-                              defaultMessage: '后缀根据指定的分区键上界时间生成',
-                            }) /*"后缀根据指定的分区键上界时间生成"*/
-                          }
-                        >
+                        <HelpDoc leftText isTip title={'后缀根据指定的分区键取值策略生成'}>
                           {
                             formatMessage({
                               id: 'src.component.Task.component.PartitionPolicyFormTable.0F79EE9C' /*后缀*/,
@@ -792,6 +788,31 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                           style={{ width: 124 }}
                           options={suffixOptions}
                         />
+                      </Form.Item>
+                    </Input.Group>
+                    <Input.Group compact>
+                      <Tag className={styles.suffix}>取值策略</Tag>
+                      <Form.Item
+                        name="namingSuffixStrategy"
+                        className={styles.noMarginBottom}
+                        rules={[
+                          {
+                            required: true,
+                          },
+                        ]}
+                      >
+                        <Select
+                          placeholder="请选择"
+                          dropdownMatchSelectWidth={100}
+                          style={{ width: 100 }}
+                        >
+                          <Select.Option value={PartitionBound.PARTITION_UPPER_BOUND}>
+                            分区上界
+                          </Select.Option>
+                          <Select.Option value={PartitionBound.PARTITION_LOWER_BOUND}>
+                            分区下界
+                          </Select.Option>
+                        </Select>
                       </Form.Item>
                     </Input.Group>
                   </Space>

@@ -93,6 +93,7 @@ export interface ITableConfig {
   reloadIndexes?: boolean;
   namingPrefix?: string;
   namingSuffixExpression?: string;
+  namingSuffixStrategy?: string;
   refPartitionKey?: string;
   intervalGenerateExpr?: string;
   strategies?: TaskPartitionStrategy[];
@@ -320,6 +321,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               reloadIndexes,
               namingPrefix,
               namingSuffixExpression,
+              namingSuffixStrategy,
               refPartitionKey,
               intervalGenerateExpr,
               tableName,
@@ -407,6 +409,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                 partitionNameGeneratorConfig: {
                   namingPrefix,
                   namingSuffixExpression,
+                  namingSuffixStrategy,
                   refPartitionKey,
                 },
               };

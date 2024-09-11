@@ -1679,7 +1679,7 @@ export enum ISqlExecuteResultStatus {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
   CANCELED = 'CANCELED',
-  WAITING = 'WAITING',
+  CREATED = 'CREATED',
   RUNNING = 'RUNNING',
 }
 
@@ -2002,26 +2002,47 @@ export enum TaskPageType {
 }
 
 export enum TaskType {
+  /* 导入 */
   IMPORT = 'IMPORT',
+  /* 导出 */
   EXPORT = 'EXPORT',
+  /* 模拟数据 */
   DATAMOCK = 'MOCKDATA',
+  /* 数据库变更 */
   ASYNC = 'ASYNC',
+  /* 分区计划 */
   PARTITION_PLAN = 'PARTITION_PLAN',
+  /* sql 计划 */
   SQL_PLAN = 'SQL_PLAN',
+  /* 计划变更(调度任务) */
   ALTER_SCHEDULE = 'ALTER_SCHEDULE',
+  /* 影子表同步 */
   SHADOW = 'SHADOWTABLE_SYNC',
+  /* ? (疑似弃用) */
   DATA_SAVE = 'DATA_SAVE',
+  /* 权限申请 (疑似弃用) */
   PERMISSION_APPLY = 'PERMISSION_APPLY',
+  /* 数据归档 */
   DATA_ARCHIVE = 'DATA_ARCHIVE',
+  /* ? (疑似弃用) */
   MIGRATION = 'DATA_ARCHIVE',
+  /* 无锁结构变更 */
   ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
+  /* 数据清理 */
   DATA_DELETE = 'DATA_DELETE',
+  /* 导出结果集 */
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
+  /* 申请项目权限 */
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
+  /* 申请库权限 */
   APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
+  /* 申请表权限 */
   APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
+  /* 结构对比 */
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
+  /* 多库变更 */
   MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
+  /* 逻辑库变更 */
   LOGICAL_DATABASE_CHANGE = 'LOGICAL_DATABASE_CHANGE',
 }
 
@@ -2555,6 +2576,17 @@ export interface ICycleSubTaskDetailRecord {
   executionDetails: string;
 }
 
+export interface ICycleTaskJobRecord<T> {
+  createTime: number;
+  executionDetails: T;
+  fireTime: number;
+  id: number;
+  parameters: any;
+  status: SubTaskStatus;
+  type: TaskType.LOGICAL_DATABASE_CHANGE;
+  updateTime: number;
+}
+
 export enum SubTaskType {
   MIGRATE = 'MIGRATE',
   CHECK = 'CHECK',
@@ -2695,19 +2727,10 @@ export interface IAsyncTaskParams {
 }
 
 export interface ILogicalDatabaseAsyncTaskParams {
-  timeoutMillis: number;
-  errorStrategy: string;
   sqlContent: string;
-  sqlObjectIds: string[];
-  sqlObjectNames: string[];
   delimiter: string;
-  queryLimit: number;
-  rollbackSqlContent: string;
-  rollbackSqlObjectIds: string[];
-  rollbackSqlObjectNames: string[];
-  generateRollbackPlan: boolean;
-  parentFlowInstanceId?: number;
-  retryTimes: number;
+  timeoutMillis: number;
+  databaseId: number;
 }
 
 export interface IApplyPermissionTaskParams {

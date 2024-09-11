@@ -280,6 +280,9 @@ const CreateTable: React.FC<IProps> = function ({
               session?.odcDatabase?.name,
               false,
             );
+            if (results?.unauthorizedDBResources?.length) {
+              return { unauthorizedDBResources: results?.unauthorizedDBResources };
+            }
             if (!hasExecuted) {
               if (results?.status !== EStatus.SUBMIT) {
                 setLintResultSet(results?.lintResultSet);

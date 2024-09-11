@@ -647,6 +647,10 @@ export const logicDBChangeTaskStatus = {
     ),
     text: '执行成功',
   },
+  [SchemaChangeRecordStatus.TERMINATED]: {
+    icon: <StopFilled style={{ color: 'var(--profile-icon-unready-color)' }} />,
+    text: '已终止',
+  },
 };
 
 interface IProps {
