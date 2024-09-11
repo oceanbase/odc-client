@@ -430,11 +430,17 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
             handleLogicalDatabaseTaskSkip,
             handleLogicalDatabaseAsyncModalOpen,
           }),
-          dataSource: subTasks,
+          dataSource: isLogicalDbChangeTask(task?.type) ? subTasks : flowList?.contents,
           rowKey: 'id',
           scroll: {
             x: 650,
           },
+          pagination: !isLogicalDbChangeTask(task?.type)
+            ? {
+                current: flowList?.page?.number,
+                total: flowList?.page?.totalElements,
+              }
+            : null,
         }}
         onLoad={handleLoad}
         onChange={onReload}
