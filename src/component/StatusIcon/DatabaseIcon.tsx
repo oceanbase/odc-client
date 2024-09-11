@@ -22,9 +22,9 @@ import { Tooltip } from 'antd';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { IDatabase } from '@/d.ts/database';
 import datasourceStatus from '@/store/datasourceStatus';
+import { isLogicalDatabase } from '@/util/database';
 import { observer } from 'mobx-react';
 import LogicIcon from '../logicIcon';
-import { isLogicalDatabase } from '@/util/database';
 
 export default observer(function DataBaseStatusIcon({
   item,

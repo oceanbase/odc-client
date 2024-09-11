@@ -17,14 +17,15 @@ import { formatMessage } from '@/util/intl';
 
 import { listProjects } from '@/common/network/project';
 import { createTask } from '@/common/network/task';
+import HelpDoc from '@/component/helpDoc';
 import TableSelecter, {
-  TableSelecterRef,
   flatTableByGroupedParams,
   groupTableByDataBase,
+  TableSelecterRef,
 } from '@/component/Task/component/TableSelecter';
-import HelpDoc from '@/component/helpDoc';
 import { TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { TablePermissionType } from '@/d.ts/table';
+import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useRequest } from 'ahooks';
 import {
@@ -32,19 +33,18 @@ import {
   Checkbox,
   DatePicker,
   Drawer,
+  Empty,
   Form,
   Input,
+  message,
   Modal,
   Select,
   Space,
-  message,
-  Empty,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './index.less';
-import { openTasksPage } from '@/store/helper/page';
 
 const CheckboxGroup = Checkbox.Group;
 

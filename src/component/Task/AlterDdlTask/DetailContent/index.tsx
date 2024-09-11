@@ -22,7 +22,7 @@ import type { ITaskResult, TaskDetail } from '@/d.ts';
 import { TaskExecStrategy, TaskStatus } from '@/d.ts';
 import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { bToMb, getFormatDateTime, kbToMb, mbToB, mbToKb } from '@/util/utils';
+import { bToMb, getFormatDateTime, mbToB } from '@/util/utils';
 import { message, Typography } from 'antd';
 import React from 'react';
 import { SimpleTextItem } from '../../component/SimpleTextItem';

@@ -34,12 +34,12 @@ import type { SQLStore } from '@/store/sql';
 import { inject, observer } from 'mobx-react';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import DDLResultSet from '../DDLResultSet';
+import { SqlExecuteResultStatusLabel } from './const';
 import DBPermissionTable from './DBPermissionTable';
 import ExecuteHistory from './ExecuteHistory';
 import styles from './index.less';
 import LintResultTable from './LintResultTable';
 import SQLResultLog from './SQLResultLog';
-import { SqlExecuteResultStatusLabel } from './const';
 
 export const recordsTabKey = 'records';
 export const sqlLintTabKey = 'sqlLint';

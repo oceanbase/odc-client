@@ -23,19 +23,19 @@ import {
   TaskRecordParameters,
   TaskType,
 } from '@/d.ts';
+import { TaskStore } from '@/store/task';
+import { isLogicalDatabase } from '@/util/database';
 import { formatMessage } from '@/util/intl';
-import { message } from 'antd';
-import React, { useContext, useEffect, useState } from 'react';
 import { useRequest } from 'ahooks';
-import styles from './index.less';
+import { message } from 'antd';
+import { inject, observer } from 'mobx-react';
+import React, { useContext, useEffect, useState } from 'react';
 import { flatArray } from '../../../MutipleAsyncTask/CreateModal/helper';
 import { TaskDetailContext } from '../../../TaskDetailContext';
-import { TaskStore } from '@/store/task';
-import { inject, observer } from 'mobx-react';
 import { getColumnsByTaskType } from './colums';
-import TaskProgressHeader from './TaskProgressHeader';
+import styles from './index.less';
 import TaskProgressDrawer from './TaskProgressDrawer';
-import { isLogicalDatabase } from '@/util/database';
+import TaskProgressHeader from './TaskProgressHeader';
 
 interface IProps {
   taskStore?: TaskStore;

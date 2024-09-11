@@ -6,10 +6,10 @@
 }
 .tree {
   .textoverflow {
+    max-width: 230px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    max-width: 230px;
   }
   :global {
     .ant-tree-treenode {
@@ -20,15 +20,15 @@
     }
     .ant-tree-node-content-wrapper {
       display: flex;
+      display: flex;
       flex-grow: 1;
       overflow: hidden;
       white-space: nowrap;
-      display: flex;
-      .ant-tree-iconEle {
-        min-width: 24px;
-        width: auto;
-      }
       text-overflow: ellipsis;
+      .ant-tree-iconEle {
+        width: auto;
+        min-width: 24px;
+      }
       .ant-tree-title {
         flex: 1;
         padding-right: 8px;

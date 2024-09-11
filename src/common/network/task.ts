@@ -17,17 +17,20 @@
 import { IShadowSyncAnalysisResult } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
 import {
   CommonTaskLogType,
+  CreateStructureComparisonTaskRecord,
   CreateTaskRecord,
-  IPartitionTablePreviewConfig,
   CycleTaskDetail,
   IAsyncTaskResultSet,
-  ICycleSubTaskRecord,
-  ICycleTaskRecord,
   ICycleSubTaskDetailRecord,
+  ICycleSubTaskRecord,
+  ICycleTaskJobRecord,
+  ICycleTaskRecord,
+  IDatasourceUser,
   IFunction,
   IPartitionPlan,
-  IPartitionPlanTable,
   IPartitionPlanKeyType,
+  IPartitionPlanTable,
+  IPartitionTablePreviewConfig,
   IResponseData,
   ISubTaskRecords,
   ITaskResult,
@@ -37,17 +40,14 @@ import {
   TaskRecordParameters,
   TaskStatus,
   TaskType,
-  IDatasourceUser,
-  CreateStructureComparisonTaskRecord,
-  ICycleTaskJobRecord,
 } from '@/d.ts';
+import { ISchemaChangeRecord } from '@/d.ts/logicalDatabase';
+import { IProject } from '@/d.ts/project';
+import { EOperationType, IComparisonResultData, IStructrueComparisonDetail } from '@/d.ts/task';
 import setting from '@/store/setting';
 import request from '@/util/request';
 import { downloadFile } from '@/util/utils';
-import { IProject } from '@/d.ts/project';
 import { generateFunctionSid } from './pathUtil';
-import { EOperationType, IComparisonResultData, IStructrueComparisonDetail } from '@/d.ts/task';
-import { ISchemaChangeRecord } from '@/d.ts/logicalDatabase';
 
 /**
  * 根据函数获取ddl sql

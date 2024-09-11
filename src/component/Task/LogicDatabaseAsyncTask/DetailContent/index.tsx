@@ -1,12 +1,12 @@
-import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
+import { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import { getTaskExecStrategyMap } from '@/component/Task';
-import type { ITaskResult, TaskDetail } from '@/d.ts';
+import type { ITaskResult } from '@/d.ts';
 import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { Descriptions, Divider, Space, Tooltip } from 'antd';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
-import { InfoCircleOutlined } from '@ant-design/icons';
 export const ErrorStrategy = {
   ABORT: '停止任务',
   CONTINUE: '忽略错误继续任务',

@@ -38,10 +38,10 @@ import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { EStatus } from '@/d.ts';
 import { CreateTablePage } from '@/store/helper/page/pages/create';
-import modal from '@/store/modal';
+import modal, { ModalStore } from '@/store/modal';
 import page from '@/store/page';
 import sessionManager, { SessionManagerStore } from '@/store/sessionManager';
-import { ModalStore } from '@/store/modal';
+import { isLogicalDatabase } from '@/util/database';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { useRequest } from 'ahooks';
@@ -53,7 +53,6 @@ import styles from './index.less';
 import Partition from './Partition';
 import TableConstraint from './TableConstraint';
 import TableIndex from './TableIndex';
-import { isLogicalDatabase } from '@/util/database';
 
 interface IProps {
   pageKey: string;

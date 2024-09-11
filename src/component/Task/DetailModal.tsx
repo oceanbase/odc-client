@@ -14,31 +14,32 @@
  * limitations under the License.
  */
 
+import { getProjectWithErrorCatch } from '@/common/network/project';
 import {
   getCycleTaskDetail,
+  getCycleTaskLog,
   getDataArchiveSubTask,
   getTaskDetail,
   getTaskList,
   getTaskLog,
   getTaskResult,
-  getCycleTaskLog,
 } from '@/common/network/task';
+import type { ITableLoadOptions } from '@/component/CommonTable/interface';
 import CommonDetailModal from '@/component/Task/component/CommonDetailModal';
 import DataTransferTaskContent from '@/component/Task/component/DataTransferModal';
 import type { ILog } from '@/component/Task/component/Log';
-import type { ITableLoadOptions } from '@/component/CommonTable/interface';
 import type {
   CycleTaskDetail,
   IAsyncTaskParams,
   ICycleSubTaskRecord,
   IDataArchiveJobParameters,
   IDataClearJobParameters,
+  IIPartitionPlanTaskDetail,
   IPartitionPlanParams,
+  IResponseData,
   ITaskResult,
   TaskDetail,
   TaskRecord,
-  IIPartitionPlanTaskDetail,
-  IResponseData,
 } from '@/d.ts';
 import {
   CommonTaskLogType,
@@ -48,8 +49,14 @@ import {
   TaskStatus,
   TaskType,
 } from '@/d.ts';
+import { ProjectRole } from '@/d.ts/project';
+import userStore from '@/store/login';
+import { isNumber } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import { getItems as getDDLAlterItems } from './AlterDdlTask';
+import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
+import { ApplyPermissionTaskContent } from './ApplyPermission';
+import { ApplyTablePermissionTaskContent } from './ApplyTablePermission';
 import { AsyncTaskContent } from './AsyncTask';
 import TaskTools from './component/ActionBar';
 import ApprovalModal from './component/ApprovalModal';
@@ -58,20 +65,13 @@ import { DataClearTaskContent } from './DataClearTask';
 import { getItems as getDataMockerItems } from './DataMockerTask';
 import { isCycleTask, isLogicalDbChangeTask } from './helper';
 import { TaskDetailType } from './interface';
+import { LogicDatabaseAsyncTaskContent } from './LogicDatabaseAsyncTask';
+import { MutipleAsyncTaskContent } from './MutipleAsyncTask';
 import { PartitionTaskContent } from './PartitionTask';
 import { getItems as getResultSetExportTaskContentItems } from './ResultSetExportTask/DetailContent';
 import { getItems as getShadowSyncItems } from './ShadowSyncTask';
 import { SqlPlanTaskContent } from './SQLPlanTask';
-import { ApplyPermissionTaskContent } from './ApplyPermission';
-import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
-import { ApplyTablePermissionTaskContent } from './ApplyTablePermission';
 import { StructureComparisonTaskContent } from './StructureComparisonTask';
-import { MutipleAsyncTaskContent } from './MutipleAsyncTask';
-import { LogicDatabaseAsyncTaskContent } from './LogicDatabaseAsyncTask';
-import { getProjectWithErrorCatch } from '@/common/network/project';
-import { ProjectRole } from '@/d.ts/project';
-import userStore from '@/store/login';
-import { isNumber } from 'lodash';
 
 interface IProps {
   taskOpenRef?: React.RefObject<boolean>;

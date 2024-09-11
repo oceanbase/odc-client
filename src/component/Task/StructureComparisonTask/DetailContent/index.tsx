@@ -19,7 +19,6 @@ import {
   getStructrueComparison,
   getStructrueComparisonDetail,
   getStructureComparisonTaskFile,
-  getTaskDetail,
   getTaskResult,
 } from '@/common/network/task';
 import CommonTable from '@/component/CommonTable';

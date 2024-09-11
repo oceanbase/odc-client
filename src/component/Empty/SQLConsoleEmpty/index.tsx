@@ -23,7 +23,7 @@ export function SQLConsoleEmpty(props: IProps) {
             <NewDatasourceButton onSuccess={() => context?.reloadDatasourceList()} />
           </div>
         ) : null;
-      case SQLConsoleResourceType.Snippet:
+      case SQLConsoleResourceType.Script:
         return (
           <div>
             <div className={styles.description}>暂无数据</div>
@@ -33,7 +33,7 @@ export function SQLConsoleEmpty(props: IProps) {
             </div>
           </div>
         );
-      case SQLConsoleResourceType.Script:
+      case SQLConsoleResourceType.Snippet:
         return (
           <div>
             <div className={styles.description}>暂无数据</div>

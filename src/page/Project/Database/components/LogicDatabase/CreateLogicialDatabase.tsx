@@ -1,38 +1,32 @@
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import { listDatabases } from '@/common/network/database';
+import { createLogicalDatabase } from '@/common/network/logicalDatabase';
 import HelpDoc from '@/component/helpDoc';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
+import DatabaseSelecter from '@/component/Task/component/DatabaseSelecter';
+import { EnvColorMap, SPACE_REGEX } from '@/constant';
+import { IDatabase } from '@/d.ts/database';
+import login from '@/store/login';
+import Icon from '@ant-design/icons';
+import { useRequest } from 'ahooks';
 import {
   Alert,
   Button,
-  Checkbox,
-  Col,
   Divider,
   Drawer,
   Form,
   Input,
-  Row,
+  message,
   Select,
   SelectProps,
   Space,
   Tooltip,
-  Tree,
   Typography,
-  message,
 } from 'antd';
-import React, { useEffect, useState } from 'react';
-import styles from './index.less';
 import { useForm, useWatch } from 'antd/lib/form/Form';
-import { useRequest } from 'ahooks';
-import { listDatabases } from '@/common/network/database';
-import login from '@/store/login';
-import { IDatabase } from '@/d.ts/database';
-import { EnvColorMap } from '@/constant';
-import { getDataSourceStyleByConnectType } from '@/common/datasource';
-import Icon from '@ant-design/icons';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { DefaultOptionType } from 'antd/lib/select';
-import { createLogicalDatabase } from '@/common/network/logicalDatabase';
-import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
-import DatabaseSelecter from '@/component/Task/component/DatabaseSelecter';
-import { SPACE_REGEX } from '@/constant';
+import React, { useEffect, useState } from 'react';
 
 const ProjectDatabaseSelector: React.FC<{
   width?: number | string;

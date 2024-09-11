@@ -15,9 +15,12 @@
  */
 
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { ConnectTypeText } from '@/constant/label';
 import { IConnection } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import { ClusterStore } from '@/store/cluster';
+import { isLogicalDatabase } from '@/util/database';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
@@ -25,9 +28,6 @@ import { Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import RiskLevelLabel from '../RiskLevelLabel';
-import { IDatabase } from '@/d.ts/database';
-import { isLogicalDatabase } from '@/util/database';
-import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import styles from './index.less';
 
 const ConnectionPopover: React.FC<{

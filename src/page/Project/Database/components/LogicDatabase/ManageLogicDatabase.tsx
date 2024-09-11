@@ -8,32 +8,18 @@ import {
 import Action from '@/component/Action';
 import Reload from '@/component/Button/Reload';
 import HelpDoc from '@/component/helpDoc';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
-import { IResponseData, IResponseDataPage } from '@/d.ts';
+import { IResponseData } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import { ILogicalDatabase, ILogicalTable, InconsistentPhysicalTable } from '@/d.ts/logicalDatabase';
-import { gotoSQLWorkspace } from '@/util/route';
-import {
-  Button,
-  ConfigProvider,
-  Descriptions,
-  Drawer,
-  Empty,
-  message,
-  Space,
-  Table,
-  TablePaginationConfig,
-  Tooltip,
-} from 'antd';
-import { FilterValue } from 'antd/lib/table/interface';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import LogicIcon from '@/component/logicIcon';
-import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { ReactComponent as NewOpenSvg } from '@/svgr/newopen.svg';
-import Icon from '@ant-design/icons';
-import { ExclamationCircleFilled } from '@ant-design/icons';
 import { isLogicalDatabase } from '@/util/database';
+import { gotoSQLWorkspace } from '@/util/route';
+import Icon, { ExclamationCircleFilled } from '@ant-design/icons';
+import { Button, ConfigProvider, Descriptions, Drawer, Empty, message, Space, Tooltip } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
 
 const getColumns = ({ logicalDatabaseId, reload }) => {
   return [

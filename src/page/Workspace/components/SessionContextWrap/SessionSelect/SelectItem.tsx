@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import React, { useEffect, useState } from 'react';
-import SessionDropdown, { ISessionDropdownFiltersProps } from './SessionDropdown';
-import SessionContext from '../context';
-import { Divider, Select, Space } from 'antd';
-import { useRequest } from 'ahooks';
-import { getDatabase } from '@/common/network/database';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { getConnectionDetail } from '@/common/network/connection';
+import { getDatabase } from '@/common/network/database';
+import { logicalDatabaseDetail } from '@/common/network/logicalDatabase';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { TaskType } from '@/d.ts';
 import login from '@/store/login';
+import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
+import { useRequest } from 'ahooks';
+import { Divider, Select, Space } from 'antd';
+import React, { useEffect, useState } from 'react';
+import SessionContext from '../context';
 import { DEFALT_WIDTH } from './const';
-import { logicalDatabaseDetail } from '@/common/network/logicalDatabase';
 import styles from './index.less';
+import SessionDropdown, { ISessionDropdownFiltersProps } from './SessionDropdown';
 
 interface IProps {
   value?: number;

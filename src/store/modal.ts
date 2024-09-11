@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
+import { IDataSourceModeConfig } from '@/common/datasource/interface';
+import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import {
   DbObjectType,
   EStatus,
-  IAsyncTaskParams,
-  ITable,
-  RollbackType,
-  TaskDetail,
-  IMockDataParams,
   IApplyDatabasePermissionTaskParams,
   IApplyTablePermissionTaskParams,
-  SubTaskStatus,
-  IMultipleAsyncTaskParams,
-  ILogicalDatabaseAsyncTaskParams,
+  IAsyncTaskParams,
   ICycleTaskRecord,
+  ILogicalDatabaseAsyncTaskParams,
+  IMockDataParams,
+  IMultipleAsyncTaskParams,
+  ITable,
+  RollbackType,
+  SubTaskStatus,
+  TaskDetail,
 } from '@/d.ts';
 import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
 import { TablePermissionType } from '@/d.ts/table';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
-import { IDataSourceModeConfig } from '@/common/datasource/interface';
-import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 
 interface ConnectionData {
   data: any;
