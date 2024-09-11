@@ -525,13 +525,14 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       disabled={!isOwnerOrDBA}
                       tooltip={!isOwnerOrDBA ? '暂无权限' : ''}
                     >
-                      逻辑库管理
+                      逻辑表管理
                     </Action.Link>
                     <Action.Link
                       key={'update'}
                       onClick={() =>
                         modalStore.changeLogicialDatabaseModal(true, {
                           projectId: project?.id,
+                          databaseId: record?.id,
                         })
                       }
                       disabled={!hasChangeAuth}

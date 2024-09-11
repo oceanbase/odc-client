@@ -7,6 +7,7 @@ import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { getLocalFormatDateTime } from '@/util/utils';
 import Icon from '@ant-design/icons';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { ISchemaChangeRecord } from '@/d.ts/logicalDatabase';
 
 const { Link } = Typography;
 
@@ -227,118 +228,12 @@ const getMultipleAsyncColumns = (params: { handleMultipleAsyncOpen: (taskId: num
   ];
 };
 
-const getLogicalDatabaseAsyncColumns = (params: {
-  handleLogicalDatabaseAsyncModalOpen: (taskId: number) => void;
-  handleLogicalDatabaseTaskStop: (taskId: number) => void;
-  handleLogicalDatabaseTaskSkip: (taskId: number) => void;
-}) => {
-  return [
-    {
-      title: '执行数据库',
-      key: 'database',
-      dataIndex: 'database',
-      ellipsis: {
-        showTitle: true,
-      },
-      render: (_, record) => {
-        const icon = getDataSourceStyleByConnectType(record?.database?.dataSource?.type);
-        return (
-          <Popover
-            content={
-              <Space size={0}>
-                <RiskLevelLabel
-                  content={record?.database?.environment?.name}
-                  color={record?.database?.environment?.style}
-                />
-
-                <Space size={4}>
-                  <Icon
-                    component={icon?.icon?.component}
-                    style={{
-                      color: icon?.icon?.color,
-                      fontSize: 16,
-                      marginRight: 4,
-                    }}
-                  />
-
-                  <div>{record?.database?.name}</div>
-                  <div style={{ color: 'var(--neutral-black45-color)' }}>
-                    {record?.database?.dataSource?.name}
-                  </div>
-                </Space>
-              </Space>
-            }
-          >
-            <Space size={0}>
-              <RiskLevelLabel
-                content={record?.database?.environment?.name}
-                color={record?.database?.environment?.style}
-              />
-
-              <Space size={4}>
-                <Icon
-                  component={icon?.icon?.component}
-                  style={{
-                    color: icon?.icon?.color,
-                    fontSize: 16,
-                    marginRight: 4,
-                  }}
-                />
-
-                <div>{record?.database?.name}</div>
-                <div style={{ color: 'var(--neutral-black45-color)' }}>
-                  {record?.database?.dataSource?.name}
-                </div>
-              </Space>
-            </Space>
-          </Popover>
-        );
-      },
-    },
-    {
-      title: '数据源',
-      key: 'datasource',
-      dataIndex: 'datasource',
-    },
-    {
-      title: '执行状态',
-      key: 'status',
-      dataIndex: 'status',
-      render: (value, row) => {
-        return (
-          <Space>
-            {logicDBChangeTaskStatus[value]?.icon}
-            {logicDBChangeTaskStatus[value]?.text}
-          </Space>
-        );
-      },
-    },
-    {
-      title: '操作',
-      key: 'operation',
-      render: (value, record) => {
-        return (
-          <Space>
-            <Link onClick={() => params?.handleLogicalDatabaseAsyncModalOpen(record?.id)}>
-              查看
-            </Link>
-            <Link onClick={() => params?.handleLogicalDatabaseTaskStop(record?.id)}>终止</Link>
-            <Link onClick={() => params?.handleLogicalDatabaseTaskSkip(record?.id)}>跳过</Link>
-          </Space>
-        );
-      },
-    },
-  ];
-};
 export const getColumnsByTaskType = (
   type: TaskType,
   params: {
     handleDetailVisible;
     handleSwapTable;
     handleMultipleAsyncOpen;
-    handleLogicalDatabaseAsyncModalOpen;
-    handleLogicalDatabaseTaskStop;
-    handleLogicalDatabaseTaskSkip;
   },
 ) => {
   switch (type) {
@@ -351,13 +246,6 @@ export const getColumnsByTaskType = (
       return getColumns({
         handleDetailVisible: params?.handleDetailVisible,
         onSwapTable: params?.handleSwapTable,
-      });
-    }
-    case TaskType.LOGICAL_DATABASE_CHANGE: {
-      return getLogicalDatabaseAsyncColumns({
-        handleLogicalDatabaseAsyncModalOpen: params?.handleLogicalDatabaseAsyncModalOpen,
-        handleLogicalDatabaseTaskStop: params?.handleLogicalDatabaseTaskStop,
-        handleLogicalDatabaseTaskSkip: params?.handleLogicalDatabaseTaskSkip,
       });
     }
   }

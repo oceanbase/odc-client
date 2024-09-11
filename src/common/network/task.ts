@@ -39,6 +39,7 @@ import {
   TaskType,
   IDatasourceUser,
   CreateStructureComparisonTaskRecord,
+  ICycleTaskJobRecord,
 } from '@/d.ts';
 import setting from '@/store/setting';
 import request from '@/util/request';
@@ -46,6 +47,7 @@ import { downloadFile } from '@/util/utils';
 import { IProject } from '@/d.ts/project';
 import { generateFunctionSid } from './pathUtil';
 import { EOperationType, IComparisonResultData, IStructrueComparisonDetail } from '@/d.ts/task';
+import { ISchemaChangeRecord } from '@/d.ts/logicalDatabase';
 
 /**
  * 根据函数获取ddl sql
@@ -208,7 +210,7 @@ export async function getCycleSubTaskDetail(
 }
 
 /**
- * 查询任务列表
+ * 查询任务详情
  */
 export async function getTaskDetail(
   id: number,
@@ -542,7 +544,7 @@ export async function getFlowSQLLintResult(flowId: number, nodeId: number) {
 }
 
 /**
- * 获取子任务
+ * 获取调度任务的task列表
  */
 export async function getDataArchiveSubTask(
   taskId: number,
@@ -552,6 +554,17 @@ export async function getDataArchiveSubTask(
   },
 ): Promise<IResponseData<ICycleSubTaskRecord>> {
   const res = await request.get(`/api/v2/schedule/schedules/${taskId}/tasks`, { params });
+  return res?.data;
+}
+
+/**
+ * 获取调度任务的task详情
+ */
+export async function getScheduleTaskDetail(
+  taskId: number,
+  jobId: number,
+): Promise<ICycleTaskJobRecord<ISchemaChangeRecord[]>> {
+  const res = await request.get(`/api/v2/schedule/schedules/${taskId}/tasks/${jobId}`);
   return res?.data;
 }
 
@@ -583,7 +596,7 @@ export async function getSubTask(id: number): Promise<IResponseData<ISubTaskReco
   return res?.data;
 }
 
-/*
+/**
  * 切换表名
  */
 export async function swapTableName(taskId: number): Promise<boolean> {
@@ -623,7 +636,7 @@ export async function getLockDatabaseUserRequired(databaseId: number): Promise<{
   const res = await request.get(`/api/v2/osc/lockDatabaseUserRequired/${databaseId}`);
   return res?.data;
 }
-/*
+/**
  * 更新限流配置
  */
 export async function updateLimiterConfig(
@@ -639,7 +652,7 @@ export async function updateLimiterConfig(
   return !!res?.data;
 }
 
-/*
+/**
  * 更新无锁结构变更限流配置
  */
 export async function updateThrottleConfig(

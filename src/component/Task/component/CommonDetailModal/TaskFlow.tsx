@@ -36,12 +36,15 @@ import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { Descriptions, Space, Steps } from 'antd';
 import classNames from 'classnames';
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
 import { getStatusDisplayInfo } from './Nodes/helper';
 import MultipleSQLCheckNode from './Nodes/MultipleSQLCheckNode';
 import RollbackNode from './Nodes/RollbackNode';
 import SQLCheckNode from './Nodes/SQLCheckNode';
+import { isLogicalDbChangeTask } from '../../helper';
+import { getTaskList, getTaskDetail } from '@/common/network/task';
+
 const { Step } = Steps;
 interface IProps {
   task: TaskDetail<TaskRecordParameters>;
@@ -66,7 +69,8 @@ interface ITaskRenderFlowNode extends ITaskFlowNode {
 }
 const TaskFlow: React.FC<IProps> = (props) => {
   const { task, result } = props;
-  const { creator, parameters, nodeList } = task ?? {};
+  const isLogicDbChangeTask = isLogicalDbChangeTask(task?.type);
+  const { creator, parameters } = task ?? {};
   let approvalCount = 0;
   let executeNodeCount = 0;
   let currrentRenderExecuteNodeCount = 0;
@@ -75,6 +79,35 @@ const TaskFlow: React.FC<IProps> = (props) => {
     visible: boolean;
     hasDescription: boolean;
   } = null;
+  const [flowDetail, setFlowDetail] = useState<TaskDetail<TaskRecordParameters>>();
+
+  useEffect(() => {
+    if (isLogicDbChangeTask && task?.id) {
+      getJobList();
+    }
+  }, [task]);
+
+  const getJobList = async () => {
+    const flowList = await getTaskList({
+      createdByCurrentUser: false,
+      approveByCurrentUser: false,
+      parentInstanceId: task?.id,
+      taskType: TaskType.ALTER_SCHEDULE,
+    });
+    const flowId = flowList?.contents?.[0]?.id;
+    if (flowId) {
+      const flowDetail = await getTaskDetail(flowId);
+      setFlowDetail(flowDetail);
+    }
+  };
+
+  const nodeList = useMemo(() => {
+    if (isLogicDbChangeTask && flowDetail) {
+      return flowDetail?.nodeList;
+    }
+    return task?.nodeList;
+  }, [flowDetail, task]);
+
   const handleApproval = (node: Partial<ITaskRenderFlowNode>) => {
     let _node = node;
     if (node.nodeType === TaskFlowNodeType.APPROVAL_TASK) {
@@ -276,7 +309,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
       }
 
       // 最后一个节点特殊处理（仅任务执行成功后才进行）
-      if (index === task?.nodeList?.length - 1 && index >= 1) {
+      if (index === nodeList?.length - 1 && index >= 1) {
         // 回滚成功 | 回滚失败
         if ([TaskStatus.ROLLBACK_FAILED, TaskStatus.ROLLBACK_SUCCEEDED].includes(task.status)) {
           _node = {
@@ -311,7 +344,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
     }
     return _node;
   };
-  const taskFlow: Partial<ITaskRenderFlowNode>[] = (task?.nodeList ?? [])
+  const taskFlow: Partial<ITaskRenderFlowNode>[] = (nodeList ?? [])
     .map(handleApproval)
     .map(handleTask);
   if (

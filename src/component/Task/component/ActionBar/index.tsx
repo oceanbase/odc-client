@@ -165,14 +165,7 @@ const ActionBar: React.FC<IProps> = inject(
       setActiveBtnKey('execute');
       const res = await executeTask(task.id);
       if (res) {
-        message.success(
-          formatMessage({
-            id: 'odc.TaskManagePage.component.TaskTools.ExecutionSucceeded',
-            defaultMessage: '执行成功',
-          }),
-
-          //执行成功
-        );
+        message.success('开始执行');
         closeTaskDetail();
         props?.onReloadList?.();
       }
@@ -214,10 +207,6 @@ const ActionBar: React.FC<IProps> = inject(
             projectId: (task as TaskDetail<IMultipleAsyncTaskParams>)?.parameters?.projectId,
             task: task as TaskDetail<IMultipleAsyncTaskParams>,
           });
-          return;
-        }
-        case TaskType.LOGICAL_DATABASE_CHANGE: {
-          modalStore.changeLogicialDatabaseModal(true);
           return;
         }
         default: {
@@ -272,16 +261,25 @@ const ActionBar: React.FC<IProps> = inject(
 
     const handleReTryCycleTask = async () => {
       props?.onClose?.();
-      if (task?.type === TaskType.DATA_ARCHIVE) {
-        props.modalStore.changeDataArchiveModal(true, {
-          id: task?.id,
-          type: 'RETRY',
-        });
-      } else if (task?.type === TaskType.DATA_DELETE) {
-        props.modalStore.changeDataClearModal(true, {
-          id: task?.id,
-          type: 'RETRY',
-        });
+      switch (task?.type) {
+        case TaskType.DATA_ARCHIVE: {
+          props.modalStore.changeDataArchiveModal(true, {
+            id: task?.id,
+            type: 'RETRY',
+          });
+        }
+        case TaskType.LOGICAL_DATABASE_CHANGE: {
+          modalStore.changeLogicialDatabaseModal(true, {
+            task: task,
+          });
+          return;
+        }
+        case TaskType.DATA_DELETE: {
+          props.modalStore.changeDataClearModal(true, {
+            id: task?.id,
+            type: 'RETRY',
+          });
+        }
       }
     };
 

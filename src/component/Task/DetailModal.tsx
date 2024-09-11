@@ -21,6 +21,7 @@ import {
   getTaskList,
   getTaskLog,
   getTaskResult,
+  getCycleTaskLog,
 } from '@/common/network/task';
 import CommonDetailModal from '@/component/Task/component/CommonDetailModal';
 import DataTransferTaskContent from '@/component/Task/component/DataTransferModal';
@@ -38,7 +39,6 @@ import type {
   TaskRecord,
   IIPartitionPlanTaskDetail,
   IResponseData,
-  ILogicalDatabaseAsyncTaskParams,
 } from '@/d.ts';
 import {
   CommonTaskLogType,
@@ -56,7 +56,7 @@ import ApprovalModal from './component/ApprovalModal';
 import { DataArchiveTaskContent } from './DataArchiveTask';
 import { DataClearTaskContent } from './DataClearTask';
 import { getItems as getDataMockerItems } from './DataMockerTask';
-import { isCycleTask } from './helper';
+import { isCycleTask, isLogicalDbChangeTask } from './helper';
 import { TaskDetailType } from './interface';
 import { PartitionTaskContent } from './PartitionTask';
 import { getItems as getResultSetExportTaskContentItems } from './ResultSetExportTask/DetailContent';
@@ -120,10 +120,13 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   const [approvalStatus, setApprovalStatus] = useState(false);
   const [isTaskProjectOwner, setIsTaskProjectOwner] = useState(false);
 
-  const hasFlow = !!task?.nodeList?.find(
-    (node) =>
-      node.nodeType === TaskFlowNodeType.APPROVAL_TASK || node.taskType === IFlowTaskType.PRE_CHECK,
-  );
+  const hasFlow =
+    !!task?.nodeList?.find(
+      (node) =>
+        node.nodeType === TaskFlowNodeType.APPROVAL_TASK ||
+        node.taskType === IFlowTaskType.PRE_CHECK,
+    ) || isLogicalDbChangeTask(task?.type);
+
   const hasLog = true;
   const hasResult =
     ![TaskType.ALTER_SCHEDULE, TaskType.ONLINE_SCHEMA_CHANGE].includes(type) &&
@@ -172,6 +175,17 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   };
 
   const getLog = async function () {
+    if (isLogicalDbChangeTask(task?.type)) {
+      const flowId = subTasks?.contents?.[0]?.id;
+      if (flowId) {
+        const res = await getCycleTaskLog(task?.id, flowId, logType);
+        setLog({
+          ...log,
+          [logType]: res,
+        });
+        return;
+      }
+    }
     if (hasLog && (isLoop || log?.[logType] === undefined)) {
       const data = await getTaskLog(detailId, logType);
       setLoading(false);
@@ -215,7 +229,12 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
 
   const getExecuteRecord = async function (args?: ITableLoadOptions) {
     if (
-      [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE, TaskType.ALTER_SCHEDULE].includes(task?.type)
+      [
+        TaskType.DATA_ARCHIVE,
+        TaskType.DATA_DELETE,
+        TaskType.ALTER_SCHEDULE,
+        TaskType.LOGICAL_DATABASE_CHANGE,
+      ].includes(task?.type)
     ) {
       loadDataArchiveSubTask(args);
     } else {
@@ -264,7 +283,12 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     }
     switch (detailType) {
       case TaskDetailType.LOG: {
-        getLog();
+        if (isLogicalDbChangeTask(task?.type)) {
+          await getExecuteRecord(args);
+          getLog();
+        } else {
+          getLog();
+        }
         break;
       }
       case TaskDetailType.EXECUTE_RECORD: {
@@ -331,6 +355,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   };
 
   const onClose = () => {
+    setSubTasks(null);
     props.onDetailVisible(null, false);
   };
 
@@ -430,11 +455,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     }
     case TaskType.LOGICAL_DATABASE_CHANGE: {
       taskContent = (
-        <LogicDatabaseAsyncTaskContent
-          task={task as TaskDetail<ILogicalDatabaseAsyncTaskParams>}
-          result={result}
-          hasFlow={hasFlow}
-        />
+        <LogicDatabaseAsyncTaskContent task={task as any} result={result} hasFlow={hasFlow} />
       );
       break;
     }

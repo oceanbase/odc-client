@@ -1,6 +1,6 @@
 import { formatMessage } from '@/util/intl';
 import React from 'react';
-import { SchemaChangeRecordStatus, SqlExecuteStatus } from '@/d.ts/logicalDatabase';
+import { SchemaChangeRecordStatus } from '@/d.ts/logicalDatabase';
 
 const TaskProgressHeader: React.FC<{
   subTasks: any[];
