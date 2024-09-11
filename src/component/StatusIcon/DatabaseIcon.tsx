@@ -73,7 +73,7 @@ export default observer(function DataBaseStatusIcon({
           )}
         >
           <div style={{ display: 'flex', height: '100%', alignItems: 'center' }}>
-            <Icon component={icon?.component} style={{ fontSize: 16, paddingRight: 4 }} />
+            <Icon component={icon?.component} style={{ fontSize: 16 }} />
             {isLogicalDatabase(item) && <LogicIcon />}
           </div>
         </Tooltip>

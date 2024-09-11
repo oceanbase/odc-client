@@ -39,6 +39,7 @@ import ExecuteHistory from './ExecuteHistory';
 import styles from './index.less';
 import LintResultTable from './LintResultTable';
 import SQLResultLog from './SQLResultLog';
+import { SqlExecuteResultStatusLabel } from './const';
 
 export const recordsTabKey = 'records';
 export const sqlLintTabKey = 'sqlLint';
@@ -408,36 +409,24 @@ const SQLResultSet: React.FC<IProps> = function (props) {
               }
               if (isLogTab) {
                 let count = {
-                  [ISqlExecuteResultStatus.WAITING]: {
-                    lable: formatMessage({
-                      id: 'src.page.Workspace.components.SQLResultSet.6F910473',
-                      defaultMessage: '待执行',
-                    }),
+                  [ISqlExecuteResultStatus.CREATED]: {
+                    lable: SqlExecuteResultStatusLabel.CREATED,
                     count: set?.total,
                   },
                   [ISqlExecuteResultStatus.SUCCESS]: {
-                    lable: formatMessage({
-                      id: 'odc.components.SQLResultSet.SuccessfulExecution',
-                      defaultMessage: '执行成功',
-                    }),
+                    lable: SqlExecuteResultStatusLabel.SUCCESS,
                     //执行成功
                     count: 0,
                   },
 
                   [ISqlExecuteResultStatus.FAILED]: {
-                    lable: formatMessage({
-                      id: 'odc.components.SQLResultSet.ExecutionFailed',
-                      defaultMessage: '执行失败',
-                    }),
+                    lable: SqlExecuteResultStatusLabel.FAILED,
                     //执行失败
                     count: 0,
                   },
 
                   [ISqlExecuteResultStatus.CANCELED]: {
-                    lable: formatMessage({
-                      id: 'odc.components.SQLResultSet.CancelExecution',
-                      defaultMessage: '执行取消',
-                    }),
+                    lable: SqlExecuteResultStatusLabel.CANCELED,
                     //执行取消
                     count: 0,
                   },
@@ -445,7 +434,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
 
                 set?.logTypeData?.forEach((item) => {
                   count[item.status].count += 1;
-                  count[ISqlExecuteResultStatus.WAITING].count -= 1;
+                  count[ISqlExecuteResultStatus.CREATED].count -= 1;
                 });
                 const hasError =
                   count[ISqlExecuteResultStatus.SUCCESS].count !== set?.logTypeData?.length;

@@ -41,8 +41,14 @@ export const hasPermission = (taskType: TaskType, permissions: DatabasePermissio
 };
 
 export const isCycleTask = (type: TaskType) => {
-  return [TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type);
+  return [
+    TaskType.LOGICAL_DATABASE_CHANGE,
+    TaskType.SQL_PLAN,
+    TaskType.DATA_ARCHIVE,
+    TaskType.DATA_DELETE,
+  ].includes(type);
 };
+export const isLogicalDbChangeTask = (type: TaskType) => TaskType.LOGICAL_DATABASE_CHANGE === type;
 export const isCycleTriggerStrategy = (execStrategy: TaskExecStrategy) => {
   return [
     TaskExecStrategy.CRON,
@@ -60,9 +66,12 @@ export const isSubCycleTask = (type: SubTaskType) => {
   ].includes(type);
 };
 export const isCycleTaskPage = (type: TaskPageType) => {
-  return [TaskPageType.SQL_PLAN, TaskPageType.DATA_ARCHIVE, TaskPageType.DATA_DELETE].includes(
-    type,
-  );
+  return [
+    TaskPageType.SQL_PLAN,
+    TaskPageType.DATA_ARCHIVE,
+    TaskPageType.DATA_DELETE,
+    TaskPageType.LOGICAL_DATABASE_CHANGE,
+  ].includes(type);
 };
 interface ITaskGroupLabel {
   groupName: string;

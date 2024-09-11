@@ -16,7 +16,7 @@
 
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { syncObject } from '@/common/network/database';
-import { IManagerResourceType, TaskPageType } from '@/d.ts';
+import { IManagerResourceType, TaskPageType, TaskType } from '@/d.ts';
 import { DBObjectSyncStatus, IDatabase } from '@/d.ts/database';
 import { openNewDefaultPLPage, openNewSQLPage, openOBClientPage } from '@/store/helper/page';
 import login from '@/store/login';
@@ -135,7 +135,13 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
 
       ellipsis: true,
       isHide(_, node) {
-        return isLogicalDatabase(node.data);
+        const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
+        return (
+          isLogicalDatabase(node.data) ||
+          config?.features?.task?.every(
+            (i) => ![TaskType.EXPORT, TaskType.EXPORT_RESULT_SET]?.includes(i),
+          )
+        );
       },
       children: [
         {
@@ -149,7 +155,8 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.EXPORT],
           ellipsis: true,
           isHide(_, node) {
-            return !setting.enableDBExport;
+            const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
+            return !setting.enableDBExport || !config?.features?.task?.includes(TaskType.EXPORT);
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -169,7 +176,11 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.EXPORT],
           ellipsis: true,
           isHide(_, node) {
-            return !setting.enableDBExport;
+            const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
+            return (
+              !setting.enableDBExport ||
+              !config?.features?.task?.includes(TaskType.EXPORT_RESULT_SET)
+            );
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -202,7 +213,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return !setting.enableDBImport || isLogicalDatabase(node.data);
+            const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
+            return (
+              !setting.enableDBImport ||
+              isLogicalDatabase(node.data) ||
+              !config?.features?.task?.includes(TaskType.IMPORT)
+            );
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -222,7 +238,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return !setting.enableMockdata || isLogicalDatabase(node.data);
+            const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
+            return (
+              !setting.enableMockdata ||
+              isLogicalDatabase(node.data) ||
+              !config?.features?.task?.includes(TaskType.DATAMOCK)
+            );
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -242,7 +263,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return !setting.enableAsyncTask || isLogicalDatabase(node.data);
+            const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
+            return (
+              !setting.enableAsyncTask ||
+              isLogicalDatabase(node.data) ||
+              !config?.features?.task?.includes(TaskType.ASYNC)
+            );
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -257,7 +283,11 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return isLogicalDatabase(node.data);
+            const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
+            return (
+              isLogicalDatabase(node.data) ||
+              !config?.features?.task?.includes(TaskType.MULTIPLE_ASYNC)
+            );
           },
           run(session, node) {
             const database: IDatabase = node.data;
@@ -293,7 +323,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return !setting.enableOSC || isLogicalDatabase(node.data);
+            const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
+            return (
+              !setting.enableOSC ||
+              isLogicalDatabase(node.data) ||
+              !config?.features?.task?.includes(TaskType.ONLINE_SCHEMA_CHANGE)
+            );
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -311,7 +346,10 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
             }) /*'影子表同步'*/,
           ],
           isHide(_, node) {
-            return isLogicalDatabase(node.data);
+            const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
+            return (
+              isLogicalDatabase(node.data) || !config?.features?.task?.includes(TaskType.SHADOW)
+            );
           },
 
           needAccessTypeList: [DatabasePermissionType.CHANGE],
@@ -334,7 +372,11 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return isLogicalDatabase(node.data);
+            const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
+            return (
+              isLogicalDatabase(node.data) ||
+              !config?.features?.task?.includes(TaskType.STRUCTURE_COMPARISON)
+            );
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -363,7 +405,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         );
       },
       isHide(_, node) {
-        return isClient();
+        return isClient() || isLogicalDatabase(node?.data);
       },
       children: [
         {
@@ -377,7 +419,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return isClient();
+            const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
+            return (
+              isClient() ||
+              isLogicalDatabase(node?.data) ||
+              !config?.features?.task?.includes(TaskType.SQL_PLAN)
+            );
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -397,7 +444,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return isClient() || isLogicalDatabase(node.data);
+            const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
+            return (
+              isClient() ||
+              isLogicalDatabase(node.data) ||
+              !config?.features?.task?.includes(TaskType.PARTITION_PLAN)
+            );
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -417,7 +469,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return isClient() || isLogicalDatabase(node.data);
+            const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
+            return (
+              isClient() ||
+              isLogicalDatabase(node.data) ||
+              !config?.features?.task?.includes(TaskType.DATA_ARCHIVE)
+            );
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -437,7 +494,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return isClient() || isLogicalDatabase(node.data);
+            const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
+            return (
+              isClient() ||
+              isLogicalDatabase(node.data) ||
+              !config?.features?.task?.includes(TaskType.DATA_DELETE)
+            );
           },
           run(session, node, databaseFrom) {
             const database: IDatabase = node.data;
@@ -469,8 +531,13 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               databaseId: database?.id,
             });
           },
-          isHide() {
-            return isClient() || isPrivateSpace;
+          isHide(_, node) {
+            const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
+            return (
+              isClient() ||
+              isPrivateSpace ||
+              !config?.features?.task?.includes(TaskType.APPLY_DATABASE_PERMISSION)
+            );
           },
         },
       ],

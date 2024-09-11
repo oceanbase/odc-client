@@ -370,14 +370,7 @@ const SessionDropdown: React.FC<IProps> = function ({
                   ? !hasPermission(taskType, db.authorizedPermissionTypes)
                   : !db.authorizedPermissionTypes?.length;
                 return {
-                  title:
-                    db.type === DBType.LOGICAL ? (
-                      <Space>
-                        <DatabasesTitle taskType={taskType} db={db} disabled={disabled} />
-                      </Space>
-                    ) : (
-                      <DatabasesTitle taskType={taskType} db={db} disabled={disabled} />
-                    ),
+                  title: <DatabasesTitle taskType={taskType} db={db} disabled={disabled} />,
                   key: `db:${db.id}`,
                   selectable: true,
                   isLeaf: true,

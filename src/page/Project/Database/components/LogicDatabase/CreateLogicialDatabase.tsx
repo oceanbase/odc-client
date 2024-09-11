@@ -336,7 +336,7 @@ const CreateLogicialDatabase: React.FC<{
           <ProjectDatabaseSelector databaseOptions={databaseOptions} width={'400px'} />
           <Form.Item
             label={
-              <HelpDoc isTip leftText title={'别名可用于区分同名的逻辑库，默认与实际逻辑库名一致'}>
+              <HelpDoc isTip leftText title={'别名可用于区分同名的逻辑库'}>
                 逻辑库别名
               </HelpDoc>
             }

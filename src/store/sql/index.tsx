@@ -269,7 +269,7 @@ export class SQLStore {
             originSql: i.sqlTuple.originalSql,
             executeSql: i.sqlTuple.executedSql,
             sqlId: i.sqlTuple.sqlId,
-            status: ISqlExecuteResultStatus.WAITING,
+            status: ISqlExecuteResultStatus.CREATED,
             timer: null,
             track: null,
             total: null,

@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTask, getAsyncTaskUploadUrl } from '@/common/network/task';
+import { createTask, getCycleTaskDetail } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
-import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
-import TaskTimer from '@/component/Task/component/TimerSelect';
-import { SQLContentType, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import { SQLContentType, TaskExecStrategy, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
 import utils, { IEditor } from '@/util/editor';
 import { formatMessage } from '@/util/intl';
+import Crontab from '@/component/Crontab';
+import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
+import { FieldTimeOutlined } from '@ant-design/icons';
+
 import {
   Alert,
   AutoComplete,
@@ -35,7 +37,7 @@ import {
   Drawer,
   Form,
   InputNumber,
-  message,
+  DatePicker,
   Modal,
   Radio,
   Space,
@@ -46,6 +48,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
 import PreviewSQLDrawer from './PreviewSQLDrawer';
+import { TaskOperationType, ICycleTaskTriggerConfig, IDataClearJobParameters } from '@/d.ts';
+import moment from 'moment';
 
 interface IProps {
   sqlStore?: SQLStore;
@@ -57,7 +61,8 @@ interface IProps {
 
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId, theme } = props;
-  const { asyncTaskData, logicDatabaseInfo } = modalStore;
+  const { logicDatabaseInfo } = modalStore;
+  const task = logicDatabaseInfo?.task;
   const [form] = Form.useForm();
   const editorRef = useRef<CommonIDE>();
   const [sqlContentType, setSqlContentType] = useState(SQLContentType.TEXT);
@@ -66,38 +71,34 @@ const CreateModal: React.FC<IProps> = (props) => {
   const databaseId = Form.useWatch('databaseId', form);
   const sqlContent = Form.useWatch('sqlContent', form);
   const delimiter = Form.useWatch('delimiter', form);
-
-  const [executeOrPreCheckSql, setExecuteOrPreCheckSql] = useState<string>();
-  const [sqlChanged, setSqlChanged] = useState<boolean>(false);
-  const initSqlContent =
-    asyncTaskData?.task?.parameters?.sqlContent || asyncTaskData?.sql || logicDatabaseInfo?.ddl;
   const [previewOpen, setPreviewOpen] = useState<boolean>(false);
-  const loadEditData = async () => {
-    const { task, type, objectId } = asyncTaskData;
+  const loadEditData = async (task) => {
     const {
-      parameters,
-      projectId,
-      database: { id: databaseId },
+      jobParameters,
       description,
-      executionStrategy,
+      triggerConfig: { triggerStrategy, startAt },
     } = task;
-    const { delimiter, queryLimit, errorStrategy, timeoutMillis, sqlContent } = parameters ?? {};
-    let sqlContentType = null;
+    const { databaseId, delimiter, sqlContent, timeoutMillis } = jobParameters;
     const formData = {
-      projectId,
+      startAt: undefined,
       databaseId,
       description,
-      executionStrategy,
-      sqlContentType,
-      sqlContent,
       delimiter,
-      queryLimit,
+      sqlContent,
       timeoutMillis: timeoutMillis / 1000 / 60 / 60,
-      errorStrategy,
+      triggerStrategy,
     };
-    setSqlContentType(formData.sqlContentType);
+    if (triggerStrategy === TaskExecStrategy.START_AT) {
+      formData.startAt = moment(startAt);
+    }
     form.setFieldsValue(formData);
   };
+
+  useEffect(() => {
+    if (logicDatabaseInfo?.ddl) {
+      form?.setFieldValue('sqlContent', logicDatabaseInfo?.ddl);
+    }
+  }, [logicDatabaseInfo?.ddl]);
 
   const handleSqlChange = (type: 'sqlContent', sql: string) => {
     form?.setFieldsValue({
@@ -109,14 +110,6 @@ const CreateModal: React.FC<IProps> = (props) => {
     setHasEdit(true);
   };
 
-  const setFormStatus = (fieldName: string, errorMessage: string) => {
-    form.setFields([
-      {
-        name: [fieldName],
-        errors: errorMessage ? [errorMessage] : [],
-      },
-    ]);
-  };
   const hadleReset = () => {
     form.resetFields(null);
     setSqlContentType(SQLContentType.TEXT);
@@ -146,47 +139,44 @@ const CreateModal: React.FC<IProps> = (props) => {
       .then(async (values) => {
         const {
           databaseId,
-          databaseName,
-          executionStrategy,
-          executionTime,
-          sqlContentType,
           sqlContent,
           timeoutMillis,
           errorStrategy,
           description,
-          queryLimit,
           delimiter,
+          triggerStrategy,
+          startAt,
         } = values;
         const parameters = {
-          timeoutMillis: timeoutMillis ? timeoutMillis * 60 * 60 * 1000 : undefined,
-          errorStrategy,
-          sqlContent,
-          queryLimit,
-          delimiter,
           type: TaskType.LOGICAL_DATABASE_CHANGE,
+          operationType: TaskOperationType.CREATE,
+          scheduleTaskParameters: {
+            timeoutMillis: timeoutMillis ? timeoutMillis * 60 * 60 * 1000 : undefined,
+            errorStrategy,
+            sqlContent,
+            delimiter,
+            databaseId,
+          },
+          triggerConfig: {
+            triggerStrategy,
+          } as ICycleTaskTriggerConfig,
         };
+        if (triggerStrategy === TaskExecStrategy.START_AT) {
+          parameters.triggerConfig = {
+            triggerStrategy: TaskExecStrategy.START_AT,
+            startAt: startAt?.valueOf(),
+          };
+        }
         const data = {
-          projectId,
           databaseId,
-          parentFlowInstanceId: asyncTaskData?.task ? asyncTaskData?.task?.id : undefined,
           taskType: TaskType.ALTER_SCHEDULE,
-          executionStrategy,
-          executionTime,
           parameters,
           description,
         };
-        if (executionStrategy === TaskExecStrategy.TIMER) {
-          data.executionTime = executionTime?.valueOf();
-        } else {
-          data.executionTime = undefined;
-        }
         setConfirmLoading(true);
-        const res = await createTask(data);
+        await createTask(data);
         handleCancel(false);
         setConfirmLoading(false);
-        if (res) {
-          openTasksPage(TaskPageType.ASYNC, TaskPageScope.CREATED_BY_CURRENT_USER);
-        }
       })
       .catch((errorInfo) => {
         console.error(JSON.stringify(errorInfo));
@@ -216,30 +206,11 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    if (asyncTaskData?.task) {
-      loadEditData();
+    if (task) {
+      loadEditData(task);
     }
-    if (asyncTaskData?.rules) {
-      // if (asyncTaskData?.rules?.length > 0) {
-      //   setLintResultSet(asyncTaskData?.rules);
-      //   setHasPreCheck(true);
-      // }
-    }
-    if (asyncTaskData?.sql) {
-      setExecuteOrPreCheckSql(asyncTaskData?.sql);
-      setSqlChanged(false);
-    }
-  }, [asyncTaskData]);
-  useEffect(() => {
-    if (initSqlContent) {
-      handleSqlChange('sqlContent', initSqlContent);
-    }
-  }, [initSqlContent]);
-  useEffect(() => {
-    form.setFieldsValue({
-      databaseId: asyncTaskData?.databaseId,
-    });
-  }, [asyncTaskData?.databaseId]);
+  }, [task]);
+
   return (
     <>
       <Drawer
@@ -274,8 +245,8 @@ const CreateModal: React.FC<IProps> = (props) => {
         <Form
           name="basic"
           initialValues={{
-            executionStrategy: TaskExecStrategy.AUTO,
-            databaseId: asyncTaskData?.databaseId || logicDatabaseInfo?.databaseId,
+            triggerStrategy: TaskExecStrategy.START_NOW,
+            databaseId: logicDatabaseInfo?.databaseId,
           }}
           layout="vertical"
           requiredMark="optional"
@@ -342,17 +313,11 @@ const CreateModal: React.FC<IProps> = (props) => {
           >
             <CommonIDE
               ref={editorRef}
-              initialSQL={initSqlContent}
-              // TODO: 逻辑库直接获取方言类型
+              initialSQL={sqlContent}
               language={'sql'}
               onEditorAfterCreatedCallback={onEditorAfterCreatedCallback}
               onSQLChange={(sql) => {
                 handleSqlChange('sqlContent', sql);
-                if (executeOrPreCheckSql !== sql) {
-                  setSqlChanged(true);
-                } else {
-                  setSqlChanged(false);
-                }
               }}
             />
           </Form.Item>
@@ -393,7 +358,59 @@ const CreateModal: React.FC<IProps> = (props) => {
             })}
             /*任务设置*/ keepExpand
           >
-            <TaskTimer />
+            <Form.Item
+              label={formatMessage({
+                id: 'odc.DataClearTask.CreateModal.ExecutionMethod',
+                defaultMessage: '执行方式',
+              })}
+              /*执行方式*/ name="triggerStrategy"
+              required
+            >
+              <Radio.Group>
+                <Radio.Button value={TaskExecStrategy.START_NOW}>
+                  {
+                    formatMessage({
+                      id: 'odc.DataClearTask.CreateModal.ExecuteNow',
+                      defaultMessage: '立即执行',
+                    }) /*立即执行*/
+                  }
+                </Radio.Button>
+                <Radio.Button value={TaskExecStrategy.MANUAL}>
+                  {formatMessage({
+                    id: 'odc.components.TaskManagePage.ManualExecution',
+                    defaultMessage: '手动执行',
+                  })}
+                </Radio.Button>
+                <Radio.Button value={TaskExecStrategy.START_AT}>
+                  {
+                    formatMessage({
+                      id: 'odc.DataClearTask.CreateModal.ScheduledExecution',
+                      defaultMessage: '定时执行',
+                    }) /*定时执行*/
+                  }
+                </Radio.Button>
+              </Radio.Group>
+            </Form.Item>
+            <Form.Item shouldUpdate noStyle>
+              {({ getFieldValue }) => {
+                const triggerStrategy = getFieldValue('triggerStrategy') || [];
+                if (triggerStrategy === TaskExecStrategy.START_AT) {
+                  return (
+                    <Form.Item
+                      name="startAt"
+                      label={formatMessage({
+                        id: 'odc.DataArchiveTask.CreateModal.ExecutionTime',
+                        defaultMessage: '执行时间',
+                      })}
+                      /*执行时间*/ required
+                    >
+                      <DatePicker showTime suffixIcon={<FieldTimeOutlined />} />
+                    </Form.Item>
+                  );
+                }
+                return null;
+              }}
+            </Form.Item>
           </FormItemPanel>
           <Form.Item label="执行超时时间" required>
             <Form.Item
