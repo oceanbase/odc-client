@@ -103,7 +103,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
             ? true
             : item?.name?.toLowerCase().indexOf(targetSearchValue?.toLowerCase()) !== -1;
         }) ?? [];
-    return getTreeData(validDatabaseList, true);
+    return getTreeData(validDatabaseList);
   };
 
   const getAllTreeData = () => {
@@ -141,12 +141,12 @@ const DatabaseSelecter: React.FC<IProps> = function ({
     );
   }
 
-  function getTreeData(validDatabaseList: any[], isSelectedTree?: boolean) {
+  function getTreeData(validDatabaseList: any[]) {
     const allTreeData = validDatabaseList?.map((item) => {
       const disabledByCount = maxCount
         ? !(checkedKeys.length < maxCount || checkedKeys.includes(item.id))
         : false;
-      const disabledByBaseDb = item?.id === baseDatabase;
+      const isBaseDb = item?.id === baseDatabase;
       return {
         title: (
           <Tooltip
@@ -160,7 +160,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                     },
                     { maxCount },
                   )
-                : disabledByBaseDb
+                : isBaseDb
                 ? '默认选中基准库'
                 : ''
             }
@@ -168,7 +168,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
             <div
               style={{ display: 'flex', width: 260, justifyContent: 'space-between' }}
               onClick={() => {
-                !isSelectedTree && handleCheck(item?.id);
+                !isBaseDb && handleCheck(item?.id);
               }}
             >
               <div>
@@ -177,11 +177,11 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                   {item?.dataSource?.name}
                 </Text>
               </div>
-              {showEnv && !isSelectedTree && envRender(item?.environment)}
+              {showEnv && !isBaseDb && envRender(item?.environment)}
             </div>
           </Tooltip>
         ),
-        disabled: disabledByCount || disabledByBaseDb,
+        disabled: disabledByCount || isBaseDb,
         key: item?.id,
         icon: <DataBaseStatusIcon item={item} showStatusTooltip={false} />,
       };
