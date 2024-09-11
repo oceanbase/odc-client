@@ -208,3 +208,8 @@ export const EnvColorMap: Record<
     borderColor: 'var(--odc-color5-color)',
   },
 };
+
+export enum PartitionBound {
+  PARTITION_UPPER_BOUND = 'PARTITION_UPPER_BOUND',
+  PARTITION_LOWER_BOUND = 'PARTITION_LOWER_BOUND',
+}

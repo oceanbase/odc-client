@@ -155,12 +155,10 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
       }}
     >
       <Form.Item
-        label={
-          formatMessage({
-            id: 'odc.SensitiveColumn.components.SacnRule.DataSource',
-            defaultMessage: '数据源',
-          }) //数据源
-        }
+        label={formatMessage({
+          id: 'odc.SensitiveColumn.components.SacnRule.DataSource',
+          defaultMessage: '数据源',
+        })}
         name="connectionId"
         rules={[
           {
@@ -168,18 +166,16 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
             message: formatMessage({
               id: 'odc.SensitiveColumn.components.SacnRule.SelectADataSource',
               defaultMessage: '请选择数据源',
-            }), //请选择数据源
+            }),
           },
         ]}
       >
         <Select
           onChange={handleDataSourceIdChange}
-          placeholder={
-            formatMessage({
-              id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect',
-              defaultMessage: '请选择',
-            }) //请选择
-          }
+          placeholder={formatMessage({
+            id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect',
+            defaultMessage: '请选择',
+          })}
           maxTagCount="responsive"
           style={{ width: 170 }}
         >

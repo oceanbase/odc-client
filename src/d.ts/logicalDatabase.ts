@@ -40,10 +40,10 @@ export interface ISchemaChangeRecord {
   database: IDatabase;
   dataSource: IDatasource;
   sql: string;
-  sqlExecuteResult: IAsyncTaskResultSet;
+  sqlExecuteResults: IAsyncTaskResultSet[];
   totalSqlCount: number;
   completedSqlCount: number;
-  SchemaChangeRecordStatus: SchemaChangeRecordStatus;
+  status: SchemaChangeRecordStatus;
 }
 
 export enum SchemaChangeRecordStatus {
@@ -51,10 +51,7 @@ export enum SchemaChangeRecordStatus {
   RUNNING = 'RUNNING',
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
-}
-
-export enum SqlExecuteStatus {
-  CREATED = 'CREATED',
+  TERMINATED = 'TERMINATED',
 }
 
 export interface IPreviewSql {

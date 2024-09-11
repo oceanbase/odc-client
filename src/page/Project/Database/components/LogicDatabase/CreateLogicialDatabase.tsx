@@ -32,6 +32,7 @@ import { DefaultOptionType } from 'antd/lib/select';
 import { createLogicalDatabase } from '@/common/network/logicalDatabase';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import DatabaseSelecter from '@/component/Task/component/DatabaseSelecter';
+import { SPACE_REGEX } from '@/constant';
 
 const ProjectDatabaseSelector: React.FC<{
   width?: number | string;
@@ -91,7 +92,14 @@ const CreateLogicialDatabase: React.FC<{
   openLogicialDatabase: boolean;
   reload: (name?: string) => void;
   setOpenLogicialDatabase: (open: boolean) => void;
-}> = ({ projectId, openLogicialDatabase, reload, setOpenLogicialDatabase }) => {
+  openLogicDatabaseManageModal: (id: number) => void;
+}> = ({
+  projectId,
+  openLogicialDatabase,
+  reload,
+  setOpenLogicialDatabase,
+  openLogicDatabaseManageModal,
+}) => {
   const [form] = useForm<{
     baseDatabase: number;
     alias: string;
@@ -238,20 +246,19 @@ const CreateLogicialDatabase: React.FC<{
   };
   const handleSubmit = async () => {
     const values = await form.validateFields().catch();
-    const successful = await createLogicalDatabase({
+    const res = await createLogicalDatabase({
       alias: values?.alias,
       physicalDatabaseIds: values?.physicalDatabaseIds,
       projectId,
       name,
     });
-    /* 这里我拿不到当前新增的表的信息, 所以只能跳转到对应项目下的sqlconsole */
-    if (successful) {
+    if (res?.id) {
       reload?.();
       message.success(
         <Space>
           <div>逻辑库配置成功，后台正在提取逻辑表，可前往</div>
           <div>
-            <Typography.Link onClick={() => setOpenLogicialDatabase(true)}>
+            <Typography.Link onClick={() => openLogicDatabaseManageModal(res?.id)}>
               逻辑表管理
             </Typography.Link>
           </div>
@@ -329,7 +336,7 @@ const CreateLogicialDatabase: React.FC<{
           <ProjectDatabaseSelector databaseOptions={databaseOptions} width={'400px'} />
           <Form.Item
             label={
-              <HelpDoc isTip leftText title={'别名可用于区分同名的逻辑库，默认与实际逻辑库名一致'}>
+              <HelpDoc isTip leftText title={'别名可用于区分同名的逻辑库'}>
                 逻辑库别名
               </HelpDoc>
             }
@@ -350,6 +357,10 @@ const CreateLogicialDatabase: React.FC<{
                     }
                   },
                 },
+                {
+                  pattern: SPACE_REGEX,
+                  message: '不能包含空格',
+                },
               ]}
             >
               <Input
@@ -364,6 +375,8 @@ const CreateLogicialDatabase: React.FC<{
                     },
                   ]);
                 }}
+                showCount
+                maxLength={64}
               />
             </Form.Item>
           </Form.Item>

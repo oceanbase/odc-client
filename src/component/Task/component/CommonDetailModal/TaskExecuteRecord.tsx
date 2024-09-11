@@ -15,7 +15,11 @@
  */
 import CommonTable from '@/component/CommonTable';
 import { CommonTableMode, ITableLoadOptions } from '@/component/CommonTable/interface';
-import StatusLabel, { status, subTaskStatus } from '@/component/Task/component/Status';
+import StatusLabel, {
+  status,
+  subTaskStatus,
+  logicDBChangeTaskStatus,
+} from '@/component/Task/component/Status';
 import DetailModal from '@/component/Task/DetailModal';
 import {
   IAsyncTaskParams,
@@ -29,11 +33,23 @@ import {
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import { FilterOutlined } from '@ant-design/icons';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ExcecuteDetailModal from './ExcecuteDetailModal';
 import styles from './index.less';
 import LogModal from './LogModal';
 import TaskTools from './TaskTools';
+import { isLogicalDbChangeTask } from '../../helper';
+import { skipPhysicalSqlExecute, stopPhysicalSqlExecute } from '@/common/network/logicalDatabase';
+import TaskProgressModal from './TaskExecuteModal';
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import { Space, Typography } from 'antd';
+import Icon from '@ant-design/icons';
+import { ISchemaChangeRecord, SchemaChangeRecordStatus } from '@/d.ts/logicalDatabase';
+import SearchFilter from '@/component/SearchFilter';
+import { SearchOutlined } from '@ant-design/icons';
+import { getScheduleTaskDetail } from '@/common/network/task';
+
+const { Link } = Typography;
 
 const TaskLabelMap = {
   [TaskType.DATA_ARCHIVE]: {
@@ -81,6 +97,113 @@ const getJobFilter = (taskType: TaskType) => {
   }));
 };
 
+const getLogicalDatabaseAsyncColumns = (params: {
+  handleLogicalDatabaseAsyncModalOpen: (taskId: number) => void;
+  handleLogicalDatabaseTaskStop: (taskId: number) => void;
+  handleLogicalDatabaseTaskSkip: (taskId: number) => void;
+}) => {
+  return [
+    {
+      title: '执行数据库',
+      key: 'database',
+      dataIndex: 'database',
+      ellipsis: {
+        showTitle: true,
+      },
+      filterDropdown: (props) => {
+        return <SearchFilter {...props} placeholder="请输入执行数据库名称" />;
+      },
+      filterIcon: (filtered) => (
+        <SearchOutlined style={{ color: filtered ? 'var(--icon-color-focus)' : undefined }} />
+      ),
+      onFilter: (value, record) => {
+        return record?.database?.name?.includes(value);
+      },
+      render: (_, record) => {
+        const icon = getDataSourceStyleByConnectType(record?.database?.dataSource?.type);
+        return (
+          <Space size={0}>
+            <Space size={4}>
+              <Icon
+                component={icon?.icon?.component}
+                style={{
+                  color: icon?.icon?.color,
+                  fontSize: 16,
+                  marginRight: 4,
+                }}
+              />
+
+              <div>{record?.database?.name}</div>
+            </Space>
+          </Space>
+        );
+      },
+    },
+    {
+      title: '数据源',
+      key: 'datasource',
+      dataIndex: 'datasource',
+      render: (value, record) => {
+        return record?.database?.dataSource?.name;
+      },
+      filterDropdown: (props) => {
+        return <SearchFilter {...props} placeholder="请输入数据源名称" />;
+      },
+      filterIcon: (filtered) => (
+        <SearchOutlined style={{ color: filtered ? 'var(--icon-color-focus)' : undefined }} />
+      ),
+      onFilter: (value, record) => {
+        return record?.dataSource?.name?.includes(value);
+      },
+    },
+    {
+      title: '执行状态',
+      key: 'status',
+      dataIndex: 'status',
+      render: (value, row: ISchemaChangeRecord) => {
+        return (
+          <Space>
+            {logicDBChangeTaskStatus[value]?.icon}
+            <Space size={0}>
+              {logicDBChangeTaskStatus[value]?.text}({row?.completedSqlCount}/{row?.totalSqlCount})
+            </Space>
+          </Space>
+        );
+      },
+      onFilter: (value, record) => {
+        return value == record?.status;
+      },
+      filters: Object.entries(SchemaChangeRecordStatus).map(([key, value]) => {
+        return {
+          text: logicDBChangeTaskStatus[key]?.text,
+          value: key,
+        };
+      }),
+    },
+    {
+      title: '操作',
+      key: 'operation',
+      render: (value, record: ISchemaChangeRecord) => {
+        return (
+          <Space>
+            <Link onClick={() => params?.handleLogicalDatabaseAsyncModalOpen(record?.id)}>
+              查看
+            </Link>
+            {record?.status === SchemaChangeRecordStatus.RUNNING && (
+              <Link onClick={() => params?.handleLogicalDatabaseTaskStop(record?.id)}>终止</Link>
+            )}
+            {[SchemaChangeRecordStatus.FAILED, SchemaChangeRecordStatus.TERMINATED]?.includes(
+              record?.status,
+            ) && (
+              <Link onClick={() => params?.handleLogicalDatabaseTaskSkip(record?.id)}>跳过</Link>
+            )}
+          </Space>
+        );
+      },
+    },
+  ];
+};
+
 const getConnectionColumns = (params: {
   taskType: TaskType;
   taskId: number;
@@ -89,6 +212,9 @@ const getConnectionColumns = (params: {
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onLogVisible: (recordId: number, visible: boolean, status: SubTaskStatus) => void;
   onExcecuteDetailVisible: (recordId: number, visible: boolean) => void;
+  handleLogicalDatabaseTaskStop;
+  handleLogicalDatabaseTaskSkip;
+  handleLogicalDatabaseAsyncModalOpen;
 }) => {
   const {
     taskType,
@@ -98,7 +224,17 @@ const getConnectionColumns = (params: {
     onDetailVisible,
     onLogVisible,
     onExcecuteDetailVisible,
+    handleLogicalDatabaseTaskStop,
+    handleLogicalDatabaseTaskSkip,
+    handleLogicalDatabaseAsyncModalOpen,
   } = params;
+  if (isLogicalDbChangeTask(taskType)) {
+    return getLogicalDatabaseAsyncColumns({
+      handleLogicalDatabaseTaskStop,
+      handleLogicalDatabaseTaskSkip,
+      handleLogicalDatabaseAsyncModalOpen,
+    });
+  }
   const jobFilter = getJobFilter(taskType);
   const isSqlPlan = taskType === TaskType.SQL_PLAN;
   const statusFilters = getStatusFilters(!isSqlPlan);
@@ -199,7 +335,8 @@ interface IProps {
 }
 
 const TaskExecuteRecord: React.FC<IProps> = (props) => {
-  const { task, subTasks, onReload } = props;
+  const { task, subTasks: flowList, onReload } = props;
+  const [subTasks, setSubTasks] = useState([]);
   const [detailId, setDetailId] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
   const [logVisible, setLogVisible] = useState(false);
@@ -208,6 +345,7 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
   const tableRef = useRef();
   const taskId = task?.id;
   const showLog = [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE]?.includes(task?.type);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const handleDetailVisible = (
     task: TaskRecord<TaskRecordParameters>,
@@ -215,6 +353,19 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
   ) => {
     setDetailId(task?.id);
     setDetailVisible(visible);
+  };
+  /* 逻辑库变更是永远只有一个flow的调度任务, 逻辑库交互上少了flow列表这一层的话需要自己拿第一个结果的id查 */
+  useEffect(() => {
+    if (flowList?.contents?.length) {
+      const taskId = task?.id;
+      const flowId = flowList?.contents?.[0]?.id;
+      getSubTasks(taskId, flowId);
+    }
+  }, [flowList]);
+
+  const getSubTasks = async (taskId: number, jobId: number) => {
+    const res = await getScheduleTaskDetail(taskId, jobId);
+    setSubTasks(res?.executionDetails);
   };
 
   const handleLogVisible = (
@@ -243,6 +394,21 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
     onReload(args);
   };
 
+  const handleLogicalDatabaseAsyncModalOpen = (detailId: number) => {
+    setModalOpen(true);
+    setDetailId(detailId);
+  };
+
+  const handleLogicalDatabaseTaskStop = async (detailId: number) => {
+    await skipPhysicalSqlExecute(flowList?.contents?.[0]?.id, detailId);
+    onReload?.();
+  };
+
+  const handleLogicalDatabaseTaskSkip = async () => {
+    await stopPhysicalSqlExecute(flowList?.contents?.[0]?.id, detailId);
+    onReload?.();
+  };
+
   return (
     <>
       <CommonTable
@@ -260,13 +426,12 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
             onDetailVisible: handleDetailVisible,
             onLogVisible: handleLogVisible,
             onExcecuteDetailVisible: handleExcecuteDetailVisible,
+            handleLogicalDatabaseTaskStop,
+            handleLogicalDatabaseTaskSkip,
+            handleLogicalDatabaseAsyncModalOpen,
           }),
-          dataSource: subTasks?.contents,
+          dataSource: subTasks,
           rowKey: 'id',
-          pagination: {
-            current: subTasks?.page?.number,
-            total: subTasks?.page?.totalElements,
-          },
           scroll: {
             x: 650,
           },
@@ -296,6 +461,12 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
         scheduleId={task?.id}
         recordId={detailId}
         onClose={handleCloseExcecuteDetail}
+      />
+      <TaskProgressModal
+        physicalDatabaseId={detailId}
+        scheduleTaskId={flowList?.contents?.[0]?.id}
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
       />
     </>
   );

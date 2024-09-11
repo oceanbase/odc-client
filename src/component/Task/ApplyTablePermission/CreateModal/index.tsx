@@ -216,6 +216,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
+        zIndex: 1003,
         title: formatMessage({
           id: 'src.component.Task.ApplyTablePermission.CreateModal.11B637AA',
           defaultMessage: '确认取消申请表权限吗？',
@@ -317,9 +318,11 @@ const CreateModal: React.FC<IProps> = (props) => {
         projectId: projectId || props?.projectId,
         databaseId,
         // 格式化成TableSelecter value所需格式
-        tables: flatTableByGroupedParams([
-          { databaseId, tableList: [{ name: tableName, id: tableId }] },
-        ]),
+        tables: tableId
+          ? flatTableByGroupedParams([
+              { databaseId, tableList: [{ name: tableName, id: tableId }] },
+            ])
+          : [],
         types,
       };
       if (projectId && databaseId) {
@@ -366,7 +369,6 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
   return (
     <Drawer
-      zIndex={1002}
       destroyOnClose
       className={styles.createModal}
       width={816}

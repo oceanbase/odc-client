@@ -1,17 +1,9 @@
 import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import { getTaskExecStrategyMap } from '@/component/Task';
-import type {
-  IAsyncTaskParams,
-  ILogicalDatabaseAsyncTaskParams,
-  ITaskResult,
-  TaskDetail,
-} from '@/d.ts';
-import { TaskExecStrategy } from '@/d.ts';
-import { formatMessage } from '@/util/intl';
+import type { ITaskResult, TaskDetail } from '@/d.ts';
 import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
 import { Descriptions, Divider, Space, Tooltip } from 'antd';
-import { DownloadFileAction } from '../../component/DownloadFileAction';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { InfoCircleOutlined } from '@ant-design/icons';
@@ -21,16 +13,16 @@ export const ErrorStrategy = {
 };
 
 interface IProps {
-  task: TaskDetail<ILogicalDatabaseAsyncTaskParams>;
+  task: any;
   result: ITaskResult;
   hasFlow: boolean;
 }
 const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
   const { task, hasFlow, result } = props;
-  const parameters = task?.parameters;
-  const executionTimeout = milliSecondsToHour(parameters?.timeoutMillis);
-  const riskLevel = task?.riskLevel;
+  const jobParameters = task?.jobParameters;
+  const executionTimeout = milliSecondsToHour(jobParameters?.timeoutMillis);
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
+
   return (
     <>
       <Descriptions column={4}>
@@ -44,11 +36,7 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
           {task?.database?.name || '-'}
         </Descriptions.Item>
         <Descriptions.Item span={2} label="所属项目">
-          {
-            // TODO:
-            //@ts-ignore
-            task?.parameters?.project?.name || '-'
-          }
+          {task?.database?.project?.name || '-'}
         </Descriptions.Item>
         {hasFlow && (
           <Descriptions.Item label="风险等级">
@@ -69,9 +57,9 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
             }}
           >
             <SQLContent
-              sqlContent={task?.parameters?.sqlContent}
-              sqlObjectIds={task?.parameters?.sqlObjectIds}
-              sqlObjectNames={task?.parameters?.sqlObjectNames}
+              sqlContent={jobParameters?.sqlContent}
+              sqlObjectIds={jobParameters?.sqlObjectIds}
+              sqlObjectNames={jobParameters?.sqlObjectNames}
               taskId={task?.id}
               language={
                 getDataSourceModeConfigByConnectionMode(task?.database?.dataSource?.dialectType)
@@ -90,16 +78,10 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
         }}
       >
         <Descriptions.Item span={2} label="分隔符">
-          {parameters?.delimiter}
-        </Descriptions.Item>
-        <Descriptions.Item span={2} label="查询结果限制">
-          {parameters?.queryLimit}
+          {jobParameters?.delimiter}
         </Descriptions.Item>
         <Descriptions.Item span={2} label="执行方式">
-          {taskExecStrategyMap[task?.executionStrategy]}
-        </Descriptions.Item>
-        <Descriptions.Item span={2} label="任务错误处理">
-          {ErrorStrategy[parameters?.errorStrategy]}
+          {taskExecStrategyMap[task?.triggerConfig?.triggerStrategy]}
         </Descriptions.Item>
         <Descriptions.Item span={4} label="执行超时时间">
           <Space align="center" size={6}>

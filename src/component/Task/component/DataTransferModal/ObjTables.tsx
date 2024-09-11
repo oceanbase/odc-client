@@ -51,6 +51,7 @@ function getColumns(transferDDL: boolean, transferData: boolean, isImport: boole
       dataIndex: 'dbObjectType',
       width: 80,
       render: (t) => DbObjectTypeTextMap[t],
+      ellipsis: true,
     },
   ];
 
@@ -67,6 +68,7 @@ function getColumns(transferDDL: boolean, transferData: boolean, isImport: boole
         render(t) {
           return <StatusItem status={t} />;
         },
+        ellipsis: true,
         filters: [
           ITransferDataObjStatus.INITIAL,
           ITransferDataObjStatus.SUCCESS,
@@ -89,6 +91,7 @@ function getColumns(transferDDL: boolean, transferData: boolean, isImport: boole
         }), // 实际处理数量
         dataIndex: ['dataInfo', 'count'],
         width: 100,
+        ellipsis: true,
       },
 
       transferData && {
@@ -96,6 +99,7 @@ function getColumns(transferDDL: boolean, transferData: boolean, isImport: boole
           id: 'odc.component.TaskDetailDrawer.ObjTables.DataProcessingStatus',
           defaultMessage: '数据处理状态',
         }),
+        ellipsis: true,
 
         dataIndex: ['dataInfo', 'status'],
         width: 120,
