@@ -38,6 +38,7 @@ import {
   Radio,
   Space,
   Tooltip,
+  message,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
@@ -172,6 +173,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         await createTask(data);
         handleCancel(false);
         setConfirmLoading(false);
+        message.success('创建成功');
       })
       .catch((errorInfo) => {
         console.error(JSON.stringify(errorInfo));

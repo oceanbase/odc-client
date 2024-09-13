@@ -255,6 +255,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             dataIndex: 'name',
             fixed: 'left',
             ellipsis: true,
+            width: 250,
             render: (name, record) => {
               const hasChangeAuth = record.authorizedPermissionTypes?.includes(
                 DatabasePermissionType.CHANGE,
@@ -318,7 +319,9 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                         );
                       }}
                     />
-                    <Typography.Text type="secondary">{record?.alias}</Typography.Text>
+                    <Typography.Text type="secondary" title={record?.alias}>
+                      {record?.alias}
+                    </Typography.Text>
                   </Space>
                 </div>
               );

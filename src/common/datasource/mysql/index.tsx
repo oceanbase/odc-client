@@ -78,6 +78,7 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
         TaskType.EXPORT_RESULT_SET,
         TaskType.STRUCTURE_COMPARISON,
         TaskType.MULTIPLE_ASYNC,
+        TaskType.LOGICAL_DATABASE_CHANGE,
       ],
       obclient: true,
       recycleBin: false,
