@@ -61,7 +61,12 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
     },
     features: {
       task: Object.values(TaskType).filter(
-        (type) => ![TaskType.SHADOW, TaskType.ONLINE_SCHEMA_CHANGE].includes(type),
+        (type) =>
+          ![
+            TaskType.SHADOW,
+            TaskType.ONLINE_SCHEMA_CHANGE,
+            TaskType.LOGICAL_DATABASE_CHANGE,
+          ].includes(type),
       ),
       obclient: true,
       recycleBin: true,
@@ -104,7 +109,13 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
     },
     features: {
       task: Object.values(TaskType).filter(
-        (type) => ![TaskType.SHADOW, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type),
+        (type) =>
+          ![
+            TaskType.SHADOW,
+            TaskType.DATA_ARCHIVE,
+            TaskType.DATA_DELETE,
+            TaskType.LOGICAL_DATABASE_CHANGE,
+          ].includes(type),
       ),
       obclient: true,
       recycleBin: true,

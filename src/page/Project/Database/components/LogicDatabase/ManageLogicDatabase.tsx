@@ -18,7 +18,17 @@ import { ReactComponent as NewOpenSvg } from '@/svgr/newopen.svg';
 import { isLogicalDatabase } from '@/util/database';
 import { gotoSQLWorkspace } from '@/util/route';
 import Icon, { ExclamationCircleFilled } from '@ant-design/icons';
-import { Button, ConfigProvider, Descriptions, Drawer, Empty, message, Space, Tooltip } from 'antd';
+import {
+  Button,
+  ConfigProvider,
+  Descriptions,
+  Drawer,
+  Empty,
+  message,
+  Space,
+  Tooltip,
+  Modal,
+} from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 
 const getColumns = ({ logicalDatabaseId, reload }) => {
@@ -88,13 +98,17 @@ const getColumns = ({ logicalDatabaseId, reload }) => {
             <Action.Link
               key={'delete'}
               onClick={async () => {
-                const successful = await deleteLogicalTable(logicalDatabaseId, record.id);
-                if (successful) {
-                  message.success('删除成功');
-                  reload?.();
-                  return;
-                }
-                message.error('删除失败');
+                Modal.confirm({
+                  title: `确认要移除逻辑表${record?.name}?`,
+                  onOk: async () => {
+                    const successful = await deleteLogicalTable(logicalDatabaseId, record.id);
+                    if (successful) {
+                      message.success('移除成功');
+                      reload?.();
+                      return;
+                    }
+                  },
+                });
               }}
               disabled={record.physicalTableCount === 0}
               tooltip={record.physicalTableCount === 0 ? '存在物理表，暂不可移除' : ''}

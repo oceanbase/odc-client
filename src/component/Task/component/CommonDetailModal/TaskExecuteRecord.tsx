@@ -402,7 +402,7 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
     onReload?.();
   };
 
-  const handleLogicalDatabaseTaskSkip = async () => {
+  const handleLogicalDatabaseTaskSkip = async (detailId: number) => {
     await stopPhysicalSqlExecute(flowList?.contents?.[0]?.id, detailId);
     onReload?.();
   };

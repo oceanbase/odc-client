@@ -71,14 +71,14 @@ const LogicTableBaseInfo = ({
     }
     const dbId = session?.odcDatabase?.id;
     const res = await previewLogicalTableTopologies(dbId, form.getFieldValue('tableName'));
-    if (res) {
+    if (Array.isArray(res)) {
       setPreviewTopologiesList(res);
     } else {
       setPreviewTopologiesList([]);
       form.setFields([
         {
           name: 'tableName',
-          errors: ['语法错误'],
+          errors: [res || '语法错误'],
         },
       ]);
     }

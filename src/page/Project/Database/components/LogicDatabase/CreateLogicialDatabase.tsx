@@ -27,6 +27,8 @@ import {
 import { useForm, useWatch } from 'antd/lib/form/Form';
 import { DefaultOptionType } from 'antd/lib/select';
 import React, { useEffect, useState } from 'react';
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { TaskType } from '@/d.ts';
 
 const ProjectDatabaseSelector: React.FC<{
   width?: number | string;
@@ -151,6 +153,10 @@ const CreateLogicialDatabase: React.FC<{
       setDatabaseOptions(
         databaseList?.contents?.reduce((pre, cur) => {
           if (cur.type === 'LOGICAL') {
+            return pre;
+          }
+          const config = getDataSourceModeConfig(cur?.dataSource?.type);
+          if (!config?.features?.task?.includes(TaskType.LOGICAL_DATABASE_CHANGE)) {
             return pre;
           }
           const icon = getDataSourceStyleByConnectType(cur?.dataSource?.type);

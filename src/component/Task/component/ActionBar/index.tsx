@@ -24,7 +24,7 @@ import {
 } from '@/common/network/task';
 import Action from '@/component/Action';
 import { TaskTypeMap } from '@/component/Task/component/TaskTable';
-import type { ICycleTaskRecord } from '@/d.ts';
+import type { ICycleTaskRecord, ILogicalDatabaseAsyncTaskParams } from '@/d.ts';
 import {
   IApplyDatabasePermissionTaskParams,
   IApplyTablePermissionTaskParams,
@@ -267,27 +267,32 @@ const ActionBar: React.FC<IProps> = inject(
             id: task?.id,
             type: 'RETRY',
           });
+          break;
         }
         case TaskType.LOGICAL_DATABASE_CHANGE: {
           modalStore.changeLogicialDatabaseModal(true, {
             task: task,
           });
-          return;
+          break;
         }
         case TaskType.DATA_DELETE: {
           props.modalStore.changeDataClearModal(true, {
             id: task?.id,
             type: 'RETRY',
           });
+          break;
         }
       }
     };
 
     const disableCycleTask = async () => {
-      const {
-        database: { id: databaseId },
-        id,
-      } = task;
+      let databaseId;
+      if (task.database) {
+        databaseId = task.database?.id;
+      } else {
+        databaseId = (task as ICycleTaskRecord<ILogicalDatabaseAsyncTaskParams>).jobParameters
+          ?.databaseId;
+      }
       Modal.confirm({
         title: formatMessage(
           {
@@ -332,7 +337,7 @@ const ActionBar: React.FC<IProps> = inject(
             databaseId,
             taskType: TaskType.ALTER_SCHEDULE,
             parameters: {
-              taskId: id,
+              taskId: task.id,
               operationType: 'PAUSE',
             },
           });
@@ -342,10 +347,13 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const enableCycleTask = async () => {
-      const {
-        database: { id: databaseId },
-        id,
-      } = task;
+      let databaseId;
+      if (task.database) {
+        databaseId = task.database?.id;
+      } else {
+        databaseId = (task as ICycleTaskRecord<ILogicalDatabaseAsyncTaskParams>).jobParameters
+          ?.databaseId;
+      }
       Modal.confirm({
         title: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.AreYouSureYouWant.2',
@@ -386,7 +394,7 @@ const ActionBar: React.FC<IProps> = inject(
             databaseId,
             taskType: TaskType.ALTER_SCHEDULE,
             parameters: {
-              taskId: id,
+              taskId: task?.id,
               operationType: 'RESUME',
             },
           });
@@ -396,15 +404,18 @@ const ActionBar: React.FC<IProps> = inject(
     };
 
     const stopCycleTask = async () => {
-      const {
-        database: { id: databaseId },
-        id,
-      } = task;
+      let databaseId;
+      if (task.database) {
+        databaseId = task.database?.id;
+      } else {
+        databaseId = (task as ICycleTaskRecord<ILogicalDatabaseAsyncTaskParams>).jobParameters
+          ?.databaseId;
+      }
       await createTask({
         databaseId,
         taskType: TaskType.ALTER_SCHEDULE,
         parameters: {
-          taskId: id,
+          taskId: task?.id,
           operationType: 'TERMINATION',
         },
       });

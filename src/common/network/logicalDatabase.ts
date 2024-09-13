@@ -89,7 +89,7 @@ export async function getLogicalTableDetail(
 export async function previewLogicalTableTopologies(
   logicalDatabaseId: number,
   expression: string,
-): Promise<ITopology[] | false> {
+): Promise<ITopology[] | string> {
   const res = await request.post(
     `/api/v2/connect/logicaldatabase/logicalDatabases/${logicalDatabaseId}/previewLogicalTableTopologies?expression=${encodeURIComponent(
       expression,
@@ -109,7 +109,7 @@ export async function previewLogicalTableTopologies(
       PreviewLogicalTableTopologiesErrorEnum.LogicalTableExpressionRangeStartGreaterThanEnd,
     ].includes(res.errCode)
   ) {
-    return false;
+    return res?.errMsg;
   }
   return res?.data?.contents;
 }

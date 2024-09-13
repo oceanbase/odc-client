@@ -87,6 +87,7 @@ export interface ISessionDropdownFiltersProps {
   dialectTypes?: ConnectionMode[];
   dataSourceId?: number;
   feature?: keyof IDataSourceModeConfig['features'];
+  isIncludeLogicalDb?: boolean;
 }
 interface IProps {
   dialectTypes?: ConnectionMode[];
@@ -120,6 +121,7 @@ const SessionDropdown: React.FC<IProps> = function ({
     filters?.dialectTypes && Array.isArray(filters?.dialectTypes) && filters?.dialectTypes?.length;
   const hasProjectIdFilter = !!filters?.projectId;
   const hasFeature = !!filters?.feature;
+  const isIncludeLogicalDb = !!filters?.isIncludeLogicalDb;
   const {
     data,
     run,
@@ -149,7 +151,14 @@ const SessionDropdown: React.FC<IProps> = function ({
       allDatasources: IDatasource[] = [];
     data?.contents?.forEach((db) => {
       let { project, dataSource } = db;
-      if (context?.isLogicalDatabase ? db.type !== 'LOGICAL' : db.type !== 'PHYSICAL') {
+      if (!context?.isLogicalDatabase && db.type === 'LOGICAL' && !isIncludeLogicalDb) {
+        return;
+      }
+      if (
+        context?.isLogicalDatabase
+          ? db.type !== 'LOGICAL'
+          : db.type !== 'PHYSICAL' && !isIncludeLogicalDb
+      ) {
         return;
       }
       if (dataSource) {

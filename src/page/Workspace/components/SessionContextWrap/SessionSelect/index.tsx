@@ -40,11 +40,13 @@ export default function SessionSelect({
   readonly,
   feature,
   supportLocation,
+  isIncludeLogicalDb = true,
 }: {
   readonly?: boolean;
   dialectTypes?: ConnectionMode[];
   feature?: keyof IDataSourceModeConfig['features'];
   supportLocation?: boolean;
+  isIncludeLogicalDb?: boolean;
 }) {
   const context = useContext(SessionContext);
   const resourceTreeContext = useContext(ResourceTreeContext);
@@ -153,7 +155,7 @@ export default function SessionSelect({
     return (
       <div className={styles.content}>
         {renderEnv()}
-        <SessionDropdown filters={{ feature }}>
+        <SessionDropdown filters={{ feature, isIncludeLogicalDb }}>
           <div>{databaseItem}</div>
         </SessionDropdown>
         <div>{aimItem}</div>
