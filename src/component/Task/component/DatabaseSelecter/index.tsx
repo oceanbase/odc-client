@@ -18,16 +18,15 @@ import { formatMessage } from '@/util/intl';
 import { listDatabases } from '@/common/network/database';
 import ExportCard from '@/component/ExportCard';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
-import { DeleteOutlined } from '@ant-design/icons';
-import { DataNode, TreeProps } from 'antd/lib/tree';
-import { ReactComponent as DatabaseSvg } from '@/svgr/database.svg';
-import { Empty, Popconfirm, Space, Spin, Tree, Typography, Checkbox, Tooltip, Badge } from 'antd';
-import classnames from 'classnames';
-import React, { useCallback, useEffect, useState } from 'react';
-import styles from './index.less';
 import { EnvColorMap } from '@/constant';
 import { DBType } from '@/d.ts/database';
 import datasourceStatus from '@/store/datasourceStatus';
+import { DeleteOutlined } from '@ant-design/icons';
+import { Badge, Checkbox, Empty, Popconfirm, Space, Spin, Tooltip, Tree, Typography } from 'antd';
+import { DataNode, TreeProps } from 'antd/lib/tree';
+import classnames from 'classnames';
+import React, { useCallback, useEffect, useState } from 'react';
+import styles from './index.less';
 
 const { Text } = Typography;
 
