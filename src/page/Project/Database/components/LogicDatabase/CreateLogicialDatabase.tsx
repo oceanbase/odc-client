@@ -1,4 +1,4 @@
-import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
 import { listDatabases } from '@/common/network/database';
 import { createLogicalDatabase } from '@/common/network/logicalDatabase';
 import HelpDoc from '@/component/helpDoc';
@@ -6,6 +6,7 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import DatabaseSelecter from '@/component/Task/component/DatabaseSelecter';
 import { EnvColorMap, SPACE_REGEX } from '@/constant';
+import { TaskType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import login from '@/store/login';
 import Icon from '@ant-design/icons';
@@ -27,8 +28,6 @@ import {
 import { useForm, useWatch } from 'antd/lib/form/Form';
 import { DefaultOptionType } from 'antd/lib/select';
 import React, { useEffect, useState } from 'react';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { TaskType } from '@/d.ts';
 
 const ProjectDatabaseSelector: React.FC<{
   width?: number | string;

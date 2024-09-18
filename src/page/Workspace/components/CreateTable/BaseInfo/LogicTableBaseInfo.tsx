@@ -1,13 +1,12 @@
+import { previewLogicalTableTopologies } from '@/common/network/logicalDatabase';
+import CommonTable from '@/component/CommonTable';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { formatMessage } from '@/util/intl';
-import { Col, Form, Input, Row, Select, Typography, Empty, Popover, Space } from 'antd';
-import { FormInstance } from 'antd/es/form/Form';
-import React, { useContext, useEffect, useImperativeHandle, useState } from 'react';
+import { Col, Empty, Form, Input, Popover, Row, Select, Space, Typography } from 'antd';
+import { useState } from 'react';
 import { getDefaultCollation } from '../helper';
 import styles from './index.less';
-import CommonTable from '@/component/CommonTable';
-import { previewLogicalTableTopologies } from '@/common/network/logicalDatabase';
 const { Text, Link } = Typography;
-import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 
 const { Option } = Select;
 

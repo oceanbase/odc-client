@@ -68,8 +68,12 @@ export default class ModalHelp extends PureComponent<{
             <Icon style={{ fontSize: 14, marginRight: 8 }} component={GithubSvg} />
             {'Github issues'}
           </h4>
-          <a href="https://github.com/oceanbase/odc/issues">
-            {'https://github.com/oceanbase/odc/issues'}
+          <a
+            href="https://github.com/oceanbase/odc/issues"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            https://github.com/oceanbase/odc/issues
           </a>
           {serverSystemInfo?.supportUrl ? <p>Help: {serverSystemInfo?.supportUrl}</p> : null}
         </div>
