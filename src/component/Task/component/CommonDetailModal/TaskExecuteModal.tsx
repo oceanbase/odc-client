@@ -60,8 +60,9 @@ const getColumns = () => {
     },
     {
       title: '结果',
-      key: 'result',
-      dataIndex: 'result',
+      key: 'track',
+      dataIndex: 'track',
+      ellipsis: true,
       render: (value: string, row: any) =>
         row.status === ISqlExecuteResultStatus.SUCCESS ? (
           getResultText(row)
@@ -105,25 +106,31 @@ const getColumns = () => {
           (stage) => stage.stageName === 'DB Server Execute SQL',
         );
         const DBCostTime = formatTimeTemplate(
-          BigNumber(executeSQLStage?.totalDurationMicroseconds).div(1000000).toNumber(),
+          BigNumber(executeStage?.totalDurationMicroseconds).div(1000000).toNumber(),
         );
+        const showDBTimeline = ![
+          ISqlExecuteResultStatus.CANCELED,
+          ISqlExecuteResultStatus.CREATED,
+        ].includes(row?.status);
 
         return (
           <Space size={5}>
             <span>{DBCostTime}</span>
-            <Tooltip
-              overlayStyle={{ maxWidth: 370 }}
-              color="var(--background-primary-color)"
-              overlayInnerStyle={{
-                maxHeight: 500,
-                overflow: 'auto',
-              }}
-              placement="rightTop"
-              showArrow={false}
-              title={<DBTimeline row={row} />}
-            >
-              <InfoCircleOutlined style={{ color: 'var(--text-color-hint)' }} />
-            </Tooltip>
+            {showDBTimeline ? (
+              <Tooltip
+                overlayStyle={{ maxWidth: 370 }}
+                color="var(--background-primary-color)"
+                overlayInnerStyle={{
+                  maxHeight: 500,
+                  overflow: 'auto',
+                }}
+                placement="rightTop"
+                showArrow={false}
+                title={<DBTimeline row={row} />}
+              >
+                <InfoCircleOutlined style={{ color: 'var(--text-color-hint)' }} />
+              </Tooltip>
+            ) : null}
           </Space>
         );
       },

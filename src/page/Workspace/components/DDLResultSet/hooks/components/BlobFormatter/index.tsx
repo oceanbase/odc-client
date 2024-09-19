@@ -35,7 +35,7 @@ export default React.memo(
     /**
      * 是否支持查看详情
      */
-    const supportModal = !isOriginValueBeNil && !isMasked;
+    const supportModal = !isOriginValueBeNil && !isNil(value) && !isMasked;
     return (
       <div className={styles.textFormatter}>
         {isNil(value) ? (

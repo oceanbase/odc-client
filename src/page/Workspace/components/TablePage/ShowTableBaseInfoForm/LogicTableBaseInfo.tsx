@@ -136,7 +136,7 @@ const LogicTableBaseInfo = ({ table }) => {
           },
           {
             label: '逻辑表表达式',
-            content: table?.info?.expression,
+            content: table?.expression,
             span: 8,
           },
           {

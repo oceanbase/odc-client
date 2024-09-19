@@ -372,12 +372,6 @@ const CreateModal: React.FC<IProps> = (props) => {
                     }) /*立即执行*/
                   }
                 </Radio.Button>
-                <Radio.Button value={TaskExecStrategy.MANUAL}>
-                  {formatMessage({
-                    id: 'odc.components.TaskManagePage.ManualExecution',
-                    defaultMessage: '手动执行',
-                  })}
-                </Radio.Button>
                 <Radio.Button value={TaskExecStrategy.START_AT}>
                   {
                     formatMessage({

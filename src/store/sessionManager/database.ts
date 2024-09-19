@@ -112,19 +112,9 @@ class DatabaseStore {
   @action
   public async getTableList() {
     const sid = generateDatabaseSidByDataBaseId(this.databaseId, this.sessionId);
-    let data;
-    switch (this.databaseIdType) {
-      case DBType.PHYSICAL: {
-        data = await request.get(`/api/v2/databaseSchema/tables`, {
-          params: { databaseId: this.databaseId, includePermittedAction: true },
-        });
-        break;
-      }
-      case DBType.LOGICAL: {
-        data = await logicalDatabaseDetail(this.databaseId);
-        break;
-      }
-    }
+    const data = await request.get(`/api/v2/databaseSchema/tables`, {
+      params: { databaseId: this.databaseId, includePermittedAction: true },
+    });
     runInAction(() => {
       this.tables =
         data?.data?.contents?.map((table: ITable) => ({

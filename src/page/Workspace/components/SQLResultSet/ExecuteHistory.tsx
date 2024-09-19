@@ -249,23 +249,29 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
           const DBCostTime = formatTimeTemplate(
             BigNumber(executeSQLStage?.totalDurationMicroseconds).div(1000000).toNumber(),
           );
+          const showDBTimeline = ![
+            ISqlExecuteResultStatus.CANCELED,
+            ISqlExecuteResultStatus.CREATED,
+          ].includes(row?.status);
 
           return (
             <Space size={5}>
               <span>{DBCostTime}</span>
-              <Tooltip
-                overlayStyle={{ maxWidth: 370 }}
-                color="var(--background-primary-color)"
-                overlayInnerStyle={{
-                  maxHeight: 500,
-                  overflow: 'auto',
-                }}
-                placement="leftTop"
-                showArrow={false}
-                title={<DBTimeline row={row} />}
-              >
-                <InfoCircleOutlined style={{ color: 'var(--text-color-hint)' }} />
-              </Tooltip>
+              {showDBTimeline ? (
+                <Tooltip
+                  overlayStyle={{ maxWidth: 370 }}
+                  color="var(--background-primary-color)"
+                  overlayInnerStyle={{
+                    maxHeight: 500,
+                    overflow: 'auto',
+                  }}
+                  placement="leftTop"
+                  showArrow={false}
+                  title={<DBTimeline row={row} />}
+                >
+                  <InfoCircleOutlined style={{ color: 'var(--text-color-hint)' }} />
+                </Tooltip>
+              ) : null}
             </Space>
           );
         },
