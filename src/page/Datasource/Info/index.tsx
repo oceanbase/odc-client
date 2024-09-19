@@ -322,7 +322,7 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             dataIndex: 'lastSyncTime',
             width: 200,
             render(v, record) {
-              const time = record?.lastSyncTime || record?.objectLastSyncTime;
+              const time = record?.objectLastSyncTime || record?.lastSyncTime;
               return getLocalFormatDateTime(time);
             },
           },

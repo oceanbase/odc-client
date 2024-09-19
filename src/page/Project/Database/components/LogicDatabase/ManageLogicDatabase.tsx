@@ -1,3 +1,4 @@
+import { render } from '@/app';
 import {
   checkLogicalTable,
   deleteLogicalTable,
@@ -28,8 +29,13 @@ import {
   Modal,
   Space,
   Tooltip,
+  Typography,
 } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { getLocalFormatDateTime } from '@/util/utils';
+import type { FixedType } from 'rc-table/es/interface';
 
 const getColumns = ({ logicalDatabaseId, reload }) => {
   return [
@@ -148,6 +154,72 @@ const subColumn = [
     },
   },
 ];
+
+const physicalDbColumns = [
+  {
+    key: 'name',
+    title: '数据库名称',
+    dataIndex: 'name',
+    width: 100,
+    fixed: 'left' as FixedType,
+    render(value, record) {
+      return (
+        <>
+          <Space size={2}>
+            <DataBaseStatusIcon item={record} />
+            {value}
+          </Space>
+        </>
+      );
+    },
+  },
+  {
+    title: '所属数据源',
+    dataIndex: ['dataSource', 'name'],
+    width: 160,
+    ellipsis: {
+      showTitle: false,
+    },
+    render(value, record, index) {
+      const style = getDataSourceStyleByConnectType(record?.dialectType);
+      if (!value) {
+        return '-';
+      }
+      return (
+        <>
+          <Icon
+            component={style?.icon?.component}
+            style={{
+              color: style?.icon?.color,
+              fontSize: 16,
+              marginRight: 4,
+            }}
+          />
+          <Tooltip title={value}>{value}</Tooltip>
+        </>
+      );
+    },
+  },
+  {
+    title: '环境',
+    dataIndex: 'environmentId',
+    width: 80,
+    render(value, record, index) {
+      return (
+        <RiskLevelLabel color={record?.environment?.style} content={record?.environment?.name} />
+      );
+    },
+  },
+  {
+    title: '上一次同步时间',
+    dataIndex: 'objectLastSyncTime',
+    width: 170,
+    render(v, record) {
+      const time = record?.objectLastSyncTime || record?.lastSyncTime;
+      return getLocalFormatDateTime(time);
+    },
+  },
+];
 const expandedRowRender = (record: ILogicalTable, logicalDatabaseId: number, callback: any) => {
   return (
     <div key={record?.id}>
@@ -181,6 +253,7 @@ const ManageLogicDatabase: React.FC<{
   const [_logicalTableMap, setLogicalTableMap] = useState<
     Map<number, IResponseData<InconsistentPhysicalTable>>
   >(new Map());
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
   const handleExtractLogicalTables = async () => {
     const successful = await extractLogicalTables(database?.id);
@@ -198,7 +271,11 @@ const ManageLogicDatabase: React.FC<{
     logicalDatabaseId: currentDatabase?.id,
     reload: queryLogicalDatabaseById,
   });
-  // const CallbackExpandedRowRender = useCallback((record) => expandedRowRender(record, logicalTableMap, _logicalTableMap), [_logicalTableMap])
+
+  const openPhysicalDbdrawer = () => {
+    setDrawerOpen(true);
+  };
+
   useEffect(() => {
     if (database && openManageLogicDatabase) {
       queryLogicalDatabaseById();
@@ -209,97 +286,115 @@ const ManageLogicDatabase: React.FC<{
     };
   }, [openManageLogicDatabase]);
   return (
-    <Drawer
-      open={openManageLogicDatabase}
-      destroyOnClose
-      title={'逻辑表管理'}
-      width={800}
-      closable
-      onClose={() => setOpenManageLogicDatabase(false)}
-    >
-      <Descriptions column={1}>
-        <Descriptions.Item label={'当前库'}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <DataBaseStatusIcon item={database} />
-            {database?.name}
-          </div>
-        </Descriptions.Item>
-      </Descriptions>
-      <TableCard
-        title={
-          <Space size={8}>
-            <Tooltip title="将表名相似、结构一致的表提取为逻辑表">
-              <Button type="primary" onClick={handleExtractLogicalTables}>
-                提取逻辑表
-              </Button>
-            </Tooltip>
-            <Button
-              onClick={() =>
-                gotoSQLWorkspace(
-                  database?.project?.id,
-                  null,
-                  database?.id,
-                  null,
-                  '',
-                  isLogicalDatabase(database),
-                )
-              }
-            >
-              新建逻辑表 <Icon component={NewOpenSvg} />
-            </Button>
-          </Space>
-        }
-        extra={<Reload onClick={queryLogicalDatabaseById} />}
+    <>
+      <Drawer
+        open={openManageLogicDatabase}
+        destroyOnClose
+        title={'逻辑表管理'}
+        width={800}
+        closable
+        onClose={() => setOpenManageLogicDatabase(false)}
       >
-        <ConfigProvider
-          renderEmpty={() => (
-            <Empty
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description={
-                <div>
-                  <div>暂无数据</div>
-                  {isOwner && (
-                    <div>
-                      系统可能正在将表名相似、结构一致的表提取逻辑表，请耐心等待；也可选择手动提取
-                    </div>
-                  )}
-                </div>
-              }
-            />
-          )}
+        <Descriptions column={1}>
+          <Descriptions.Item label={'当前库'}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <DataBaseStatusIcon item={database} />
+              <Typography.Link onClick={openPhysicalDbdrawer}>{database?.name}</Typography.Link>
+            </div>
+          </Descriptions.Item>
+        </Descriptions>
+        <TableCard
+          title={
+            <Space size={8}>
+              <Tooltip title="将表名相似、结构一致的表提取为逻辑表">
+                <Button type="primary" onClick={handleExtractLogicalTables}>
+                  提取逻辑表
+                </Button>
+              </Tooltip>
+              <Button
+                onClick={() =>
+                  gotoSQLWorkspace(
+                    database?.project?.id,
+                    null,
+                    database?.id,
+                    null,
+                    '',
+                    isLogicalDatabase(database),
+                  )
+                }
+              >
+                新建逻辑表 <Icon component={NewOpenSvg} />
+              </Button>
+            </Space>
+          }
+          extra={<Reload onClick={queryLogicalDatabaseById} />}
         >
-          <MiniTable<ILogicalTable>
-            rowKey={'id'}
-            scroll={{
-              x: 752,
-            }}
-            expandable={{
-              expandedRowRender: (record) =>
-                expandedRowRender(record, currentDatabase?.id, (values) => {
-                  const newLogicalTables = currentDatabase?.logicalTables?.reduce((pre, cur) => {
-                    if (record?.id === cur?.id) {
-                      cur.topologies = values;
-                    }
-                    pre.push(cur);
-                    return pre;
-                  }, []);
-                  currentDatabase.logicalTables = newLogicalTables;
-                  setCurrentDatabase({ ...currentDatabase });
-                }),
-              rowExpandable: (record) => record.physicalTableCount > 0,
-            }}
-            columns={columns}
-            dataSource={currentDatabase?.logicalTables ?? []}
-            pagination={null}
-            loadData={(page, filters) => {
-              const pageSize = page.pageSize;
-              const current = page.current;
-              // loadData(pageSize, current, filters['environmentId']?.[0]);
-            }}
-          />
-        </ConfigProvider>
-      </TableCard>
-    </Drawer>
+          <ConfigProvider
+            renderEmpty={() => (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={
+                  <div>
+                    <div>暂无数据</div>
+                    {isOwner && (
+                      <div>
+                        系统可能正在将表名相似、结构一致的表提取逻辑表，请耐心等待；也可选择手动提取
+                      </div>
+                    )}
+                  </div>
+                }
+              />
+            )}
+          >
+            <MiniTable<ILogicalTable>
+              rowKey={'id'}
+              scroll={{
+                x: 752,
+              }}
+              expandable={{
+                expandedRowRender: (record) =>
+                  expandedRowRender(record, currentDatabase?.id, (values) => {
+                    const newLogicalTables = currentDatabase?.logicalTables?.reduce((pre, cur) => {
+                      if (record?.id === cur?.id) {
+                        cur.topologies = values;
+                      }
+                      pre.push(cur);
+                      return pre;
+                    }, []);
+                    currentDatabase.logicalTables = newLogicalTables;
+                    setCurrentDatabase({ ...currentDatabase });
+                  }),
+                rowExpandable: (record) => record.physicalTableCount > 0,
+              }}
+              columns={columns}
+              dataSource={currentDatabase?.logicalTables ?? []}
+              pagination={null}
+              loadData={(page, filters) => {
+                const pageSize = page.pageSize;
+                const current = page.current;
+                // loadData(pageSize, current, filters['environmentId']?.[0]);
+              }}
+            />
+          </ConfigProvider>
+        </TableCard>
+      </Drawer>
+      <Drawer
+        title={`逻辑库${database?.name}的物理分库`}
+        width={600}
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        closable
+        destroyOnClose
+      >
+        <MiniTable
+          rowKey={'id'}
+          columns={physicalDbColumns}
+          dataSource={currentDatabase?.physicalDatabases}
+          pagination={null}
+          loadData={() => {}}
+        />
+      </Drawer>
+    </>
   );
 };
 export default ManageLogicDatabase;

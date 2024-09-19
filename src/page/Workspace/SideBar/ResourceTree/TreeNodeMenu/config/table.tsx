@@ -69,6 +69,10 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       icon: ReloadOutlined,
       actionType: actionTypes.read,
       async run(session, node) {
+        if (isLogicalDatabase(session?.odcDatabase)) {
+          await session.database.getLogicTableList();
+          return;
+        }
         await session.database.getTableList();
       },
     },

@@ -79,7 +79,17 @@ export async function getLogicTableInfo(
   tableId: number,
 ): Promise<Partial<ITableModel>> {
   const res = await getLogicalTableDetail(databaseId, tableId);
-  return { ...res, ...convertServerTableToTable({ ...res?.basePhysicalTable, name: res?.name }) };
+  return {
+    ...res,
+    ...convertServerTableToTable(
+      { ...res?.basePhysicalTable, name: res?.name },
+      {
+        isLogicalTable: true,
+        tableId,
+        databaseId,
+      },
+    ),
+  };
 }
 
 export async function queryTableOrViewData(
