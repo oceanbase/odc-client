@@ -3037,6 +3037,7 @@ export enum TaskStatus {
   TERMINATION = 'TERMINATION',
   TIMEOUT = 'TIMEOUT',
   PRE_CHECK_FAILED = 'PRE_CHECK_FAILED',
+  CREATING = 'CREATING',
 }
 
 export enum SubTaskStatus {

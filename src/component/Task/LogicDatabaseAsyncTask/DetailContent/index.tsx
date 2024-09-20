@@ -43,7 +43,7 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
             <ODCRiskLevelLabel
               iconMode
               level={task?.riskLevel?.level}
-              content={task?.riskLevel?.name}
+              content={task?.riskLevel?.name || '-'}
             />
           </Descriptions.Item>
         )}

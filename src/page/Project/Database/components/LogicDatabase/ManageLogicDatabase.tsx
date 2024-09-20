@@ -320,6 +320,7 @@ const ManageLogicDatabase: React.FC<{
                     null,
                     '',
                     isLogicalDatabase(database),
+                    true,
                   )
                 }
               >

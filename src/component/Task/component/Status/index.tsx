@@ -521,6 +521,17 @@ export const cycleStatus = {
       defaultMessage: '执行失败',
     }), //执行失败
   },
+
+  [TaskStatus.CREATING]: {
+    icon: (
+      <LoadingOutlined
+        style={{
+          color: 'var(--icon-blue-color)',
+        }}
+      />
+    ),
+    text: '创建中',
+  },
 };
 
 // 子任务状态（仅周期任务 + 无锁结构变更）
