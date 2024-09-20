@@ -138,12 +138,7 @@ const ActionBar: React.FC<IProps> = inject(
     const handleExecute = async () => {
       const res = await startDataArchiveSubTask(taskId, record.id);
       if (res) {
-        message.success(
-          formatMessage({
-            id: 'odc.component.CommonDetailModal.TaskTools.SuccessfulExecution',
-            defaultMessage: '执行成功',
-          }), //执行成功
-        );
+        message.success('发起执行成功');
 
         props.onReloadList();
       }

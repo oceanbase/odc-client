@@ -38,7 +38,7 @@ import { ISchemaChangeRecord, SchemaChangeRecordStatus } from '@/d.ts/logicalDat
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import Icon, { FilterOutlined, SearchOutlined } from '@ant-design/icons';
-import { Space, Typography } from 'antd';
+import { Space, Typography, message } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import { isLogicalDbChangeTask } from '../../helper';
 import ExcecuteDetailModal from './ExcecuteDetailModal';
@@ -190,9 +190,11 @@ const getLogicalDatabaseAsyncColumns = (params: {
             {record?.status === SchemaChangeRecordStatus.RUNNING && (
               <Link onClick={() => params?.handleLogicalDatabaseTaskStop(record?.id)}>终止</Link>
             )}
-            {[SchemaChangeRecordStatus.FAILED, SchemaChangeRecordStatus.TERMINATED]?.includes(
-              record?.status,
-            ) && (
+            {[
+              SchemaChangeRecordStatus.FAILED,
+              SchemaChangeRecordStatus.TERMINATED,
+              SchemaChangeRecordStatus.TERMINATE_FAILED,
+            ]?.includes(record?.status) && (
               <Link onClick={() => params?.handleLogicalDatabaseTaskSkip(record?.id)}>跳过</Link>
             )}
           </Space>
@@ -398,12 +400,22 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
   };
 
   const handleLogicalDatabaseTaskStop = async (detailId: number) => {
-    await stopPhysicalSqlExecute(flowList?.contents?.[0]?.id, detailId);
+    const res = await stopPhysicalSqlExecute(flowList?.contents?.[0]?.id, detailId);
+    if (res) {
+      message.success('正在尝试终止');
+    } else {
+      message.warning('正在尝试终止');
+    }
     onReload?.();
   };
 
   const handleLogicalDatabaseTaskSkip = async (detailId: number) => {
-    await skipPhysicalSqlExecute(flowList?.contents?.[0]?.id, detailId);
+    const res = await skipPhysicalSqlExecute(flowList?.contents?.[0]?.id, detailId);
+    if (res) {
+      message.success('当前任务状态不支持终止');
+    } else {
+      message.warning('当前任务状态不支持跳过');
+    }
     onReload?.();
   };
 
@@ -412,8 +424,9 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
       <CommonTable
         mode={CommonTableMode.SMALL}
         ref={tableRef}
-        showToolbar={false}
         titleContent={null}
+        showToolbar={isLogicalDbChangeTask(task?.type)}
+        enabledReload={isLogicalDbChangeTask(task?.type)}
         tableProps={{
           className: styles.subTaskTable,
           columns: getConnectionColumns({

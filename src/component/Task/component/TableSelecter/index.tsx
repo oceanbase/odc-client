@@ -32,6 +32,8 @@ import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState }
 import styles from './index.less';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import datasourceStatus from '@/store/datasourceStatus';
+import { isLogicalDatabase } from '@/util/database';
+import { logicalDatabaseDetail } from '@/common/network/logicalDatabase';
 
 export type TableItem = { databaseId: number; tableName: string; tableId?: number };
 
@@ -40,6 +42,10 @@ type IProps = {
   value?: TableItem[];
   onChange?: (newValue: TableItem[]) => void;
 };
+
+export interface tableTreeEventDataNode extends EventDataNode<DataNode> {
+  isLogicalDatabase: boolean;
+}
 
 export interface TableSelecterRef {
   loadTables: (dbId: number) => Promise<void>;
@@ -187,6 +193,7 @@ const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false)
       expandable: true,
       children,
       isLeaf: false,
+      isLogicalDatabase: isLogicalDatabase(database),
     };
   });
   return allTreeData;
@@ -326,16 +333,32 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
     },
     [checkedKeys, onChange],
   );
+
+  /**
+   * 获取库下的表list
+   */
+  const getTableList = async (databaseId, isLogicalDatabase) => {
+    if (isLogicalDatabase) {
+      const res = await logicalDatabaseDetail(databaseId);
+      return res?.data?.logicalTables;
+    } else {
+      return await getTableListWithoutSession(databaseId);
+    }
+  };
+
   /**
    * 加载库里包含的表
    */
   const handleLoadTables = useCallback(async (databaseId: number) => {
-    const tables = await getTableListWithoutSession(databaseId);
-    const tableList = tables.map(({ name, id }) => {
+    const res = await listDatabases(projectId, null, null, null, null, null, null, true, true);
+    const db = res?.contents?.find((_db) => _db.id === databaseId);
+    const tables = await getTableList(databaseId, isLogicalDatabase(db));
+    const tableList = tables.map((_table) => {
+      const { name, id } = _table;
       return { name: name, id: id };
     });
     setDataBaseWithTableList((prevData) => {
-      for (const item of prevData) {
+      for (const item of prevData ?? []) {
         if (item.id === databaseId) {
           item.tableList = tableList;
           item.hasGetTableList = true;
@@ -362,13 +385,14 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
     return keys;
   }, [allTreeData]);
 
-  const fetchChildKeysForParent = useCallback(async (parentId) => {
-    const tables = await getTableListWithoutSession(parentId);
-    const tableList = tables.map(({ name, id }) => {
+  const fetchChildKeysForParent = useCallback(async (parentId, isLogicalDatabase) => {
+    const tables = await getTableList(parentId, isLogicalDatabase);
+    const tableList = tables.map((_table) => {
+      const { name, id } = _table;
       return { name: name, id: id };
     });
     setDataBaseWithTableList((prevData) => {
-      for (const item of prevData) {
+      for (const item of prevData ?? []) {
         if (item.id === parentId) {
           item.tableList = tableList;
           item.hasGetTableList = true;
@@ -389,10 +413,11 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
    * 选中一张表后
    */
   const handleChosenTable: TreeProps['onCheck'] = useCallback(
-    async (_checkedKeys: string[], { checked, node: { key: curNodeKey, children } }) => {
+    async (_checkedKeys: string[], { checked, node }) => {
+      const { key: curNodeKey, children, isLogicalDatabase } = node as tableTreeEventDataNode;
       if (isNumber(curNodeKey)) {
         if (checked) {
-          const newList = await fetchChildKeysForParent(curNodeKey);
+          const newList = await fetchChildKeysForParent(curNodeKey, isLogicalDatabase);
           const tableList = [...checkedKeys.map(parseDataBaseIdAndTableNamebByKey), ...newList];
           onChange(tableList);
           setSelectedExpandKeys(tableList.map((i) => i.databaseId));
