@@ -30,6 +30,7 @@ import DefaultPage from './DefaultPage';
 import DraggableTabs from './DraggableTabs';
 import { getPageTitleText } from './helper';
 import styles from './index.less';
+import { isLogicalDatabase } from '@/util/database';
 
 interface IProps {
   pages: IPage[];
@@ -345,7 +346,14 @@ const WindowManager: React.FC<IProps> = function (props) {
                     key: 'newPL',
                     onClick(e) {
                       e.domEvent.stopPropagation();
-                      openNewDefaultPLPage(undefined, treeContext?.currentDatabaseId);
+                      const db = treeContext.currentDatabaseId;
+                      const isLogicalDb = isLogicalDatabase(
+                        treeContext?.databaseList?.find((_db) => _db?.id === db),
+                      );
+                      openNewDefaultPLPage(
+                        undefined,
+                        isLogicalDb ? null : treeContext?.currentDatabaseId,
+                      );
                     },
                   },
                 ],

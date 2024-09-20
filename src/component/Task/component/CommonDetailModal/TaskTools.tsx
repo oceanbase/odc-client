@@ -136,13 +136,29 @@ const ActionBar: React.FC<IProps> = inject(
       });
     };
     const handleExecute = async () => {
+      Modal.confirm({
+        title: '是否确定执行任务?',
+        icon: <ExclamationCircleOutlined />,
+        okText: formatMessage({
+          id: 'odc.component.CommonDetailModal.TaskTools.Confirm',
+          defaultMessage: '确认',
+        }),
+        cancelText: formatMessage({
+          id: 'odc.component.CommonDetailModal.TaskTools.Cancel',
+          defaultMessage: '取消',
+        }),
+        onOk: confirmExecute,
+      });
+    };
+
+    const confirmExecute = async () => {
       const res = await startDataArchiveSubTask(taskId, record.id);
       if (res) {
         message.success('发起执行成功');
-
         props.onReloadList();
       }
     };
+
     const handleReTry = async () => {
       const res = await startDataArchiveSubTask(taskId, record.id);
       if (res) {

@@ -21,7 +21,7 @@ import WindowManager from '@/component/WindowManager';
 import WorkspaceSideTip from '@/component/WorkspaceSideTip';
 import type { IPage } from '@/d.ts';
 import odc from '@/plugins/odc';
-import { movePagePostion, openNewSQLPage } from '@/store/helper/page';
+import { movePagePostion, openNewSQLPage, openCreateTablePage } from '@/store/helper/page';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import type { PageStore } from '@/store/page';
@@ -43,6 +43,7 @@ import WorkspaceStore from './context/WorkspaceStore';
 import GlobalModals from './GlobalModals';
 import WorkBenchLayout from './Layout';
 import SideBar from './SideBar';
+import { isLogicalDatabase } from '@/util/database';
 
 let _closeMsg = '';
 export function changeCloseMsg(t: any) {
@@ -75,12 +76,16 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     const databaseId = toInteger(params.get('databaseId'));
     const datasourceId = toInteger(params.get('datasourceId'));
     const isLogicalDatabase = params.get('isLogicalDatabase') === 'true';
+    const isCreateTable = params.get('isCreateTable') === 'true';
     if (projectId) {
       resourceTreeContext?.setSelectTabKey(ResourceTreeTab.project);
       resourceTreeContext?.setSelectProjectId(projectId);
       databaseId && resourceTreeContext?.setCurrentDatabaseId(databaseId);
       if (!isLogicalDatabase) {
         databaseId && openNewSQLPage(databaseId, 'project');
+      }
+      if (isCreateTable) {
+        openCreateTablePage(databaseId);
       }
     } else if (datasourceId) {
       resourceTreeContext?.setSelectTabKey(ResourceTreeTab.datasource);
@@ -105,7 +110,10 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
 
   const handleOpenPage = async () => {
     const db = resourceTreeContext.currentDatabaseId;
-    openNewSQLPage(db);
+    const isLogicalDb = isLogicalDatabase(
+      resourceTreeContext?.databaseList?.find((_db) => _db?.id === db),
+    );
+    openNewSQLPage(isLogicalDb ? null : db);
   };
 
   const openPageAfterTargetPage = async (targetPage: IPage) => {

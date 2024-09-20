@@ -404,7 +404,7 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
     if (res) {
       message.success('正在尝试终止');
     } else {
-      message.warning('正在尝试终止');
+      message.warning('当前任务状态不支持终止');
     }
     onReload?.();
   };
@@ -412,7 +412,7 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
   const handleLogicalDatabaseTaskSkip = async (detailId: number) => {
     const res = await skipPhysicalSqlExecute(flowList?.contents?.[0]?.id, detailId);
     if (res) {
-      message.success('当前任务状态不支持终止');
+      message.success('正在尝试跳过');
     } else {
       message.warning('当前任务状态不支持跳过');
     }

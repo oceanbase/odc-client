@@ -113,21 +113,6 @@ const CreateLogicialDatabase: React.FC<{
   const [databaseList, setDatabaseList] = useState<IDatabase[]>([]);
   const [checkedDatabaseList, setCheckedDatabaseList] = useState<number[]>([]);
 
-  useEffect(() => {
-    const name = databaseOptions?.find((i) => i.value === baseDatabase)?.name;
-    form.setFields([
-      {
-        name: 'alias',
-        value: name,
-        errors: [],
-      },
-      {
-        name: 'name',
-        value: `logical_${name}`,
-        errors: [],
-      },
-    ]);
-  }, [baseDatabase]);
   const {
     data,
     run,
@@ -335,6 +320,48 @@ const CreateLogicialDatabase: React.FC<{
           <ProjectDatabaseSelector databaseOptions={databaseOptions} width={'400px'} />
           <Form.Item
             label={
+              <HelpDoc
+                isTip
+                leftText
+                title={'逻辑数据库名，即物理库名共同前缀，例如foo00～foo99所对应的逻辑库为foo'}
+              >
+                逻辑库名
+              </HelpDoc>
+            }
+          >
+            <Form.Item
+              noStyle
+              name={'name'}
+              rules={[
+                {
+                  required: true,
+                  message: '请输入',
+                },
+                {
+                  validator: async (ruler, value) => {
+                    const name = value?.trim();
+                    if (!name) {
+                      return;
+                    }
+                  },
+                },
+                {
+                  pattern: SPACE_REGEX,
+                  message: '不能包含空格',
+                },
+              ]}
+            >
+              <Input
+                style={{ width: '400px' }}
+                placeholder={'请输入'}
+                onChange={async (e) => {}}
+                showCount
+                maxLength={64}
+              />
+            </Form.Item>
+          </Form.Item>
+          <Form.Item
+            label={
               <HelpDoc isTip leftText title={'别名可用于区分同名的逻辑库'}>
                 逻辑库别名
               </HelpDoc>
@@ -362,21 +389,7 @@ const CreateLogicialDatabase: React.FC<{
                 },
               ]}
             >
-              <Input
-                style={{ width: '400px' }}
-                placeholder={'请输入'}
-                onChange={async (e) => {
-                  await form.setFields([
-                    {
-                      name: 'name',
-                      value: `${e.target.value}`,
-                      errors: [],
-                    },
-                  ]);
-                }}
-                showCount
-                maxLength={64}
-              />
+              <Input style={{ width: '400px' }} placeholder={'请输入'} showCount maxLength={64} />
             </Form.Item>
           </Form.Item>
           <Form.Item label="数据库" name="physicalDatabaseIds" shouldUpdate>

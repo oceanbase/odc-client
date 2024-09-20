@@ -209,7 +209,8 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
             {settingStore.enableDBExport &&
             getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
               TaskType.EXPORT,
-            ) ? (
+            ) &&
+            !isLogicalDatabase(session?.odcDatabase) ? (
               <Toolbar.Button
                 text={
                   formatMessage({ id: 'odc.components.TablePage.Export', defaultMessage: '导出' }) //导出
