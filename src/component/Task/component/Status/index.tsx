@@ -651,6 +651,40 @@ export const logicDBChangeTaskStatus = {
     icon: <StopFilled style={{ color: 'var(--profile-icon-unready-color)' }} />,
     text: '已终止',
   },
+  [SchemaChangeRecordStatus.SKIPPING]: {
+    icon: (
+      <LoadingOutlined
+        style={{
+          color: 'var(--icon-blue-color)',
+        }}
+      />
+    ),
+    text: '跳过中',
+  },
+  [SchemaChangeRecordStatus.SKIPPED]: {
+    icon: <StopFilled style={{ color: 'var(--profile-icon-unready-color)' }} />,
+    text: '已跳过',
+  },
+  [SchemaChangeRecordStatus.TERMINATING]: {
+    icon: (
+      <LoadingOutlined
+        style={{
+          color: 'var(--icon-blue-color)',
+        }}
+      />
+    ),
+    text: '终止中',
+  },
+  [SchemaChangeRecordStatus.TERMINATE_FAILED]: {
+    icon: (
+      <CloseCircleFilled
+        style={{
+          color: 'var(--function-red6-color)',
+        }}
+      />
+    ),
+    text: '终止失败',
+  },
 };
 
 interface IProps {

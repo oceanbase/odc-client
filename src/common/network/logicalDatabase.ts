@@ -100,15 +100,7 @@ export async function previewLogicalTableTopologies(
       },
     },
   );
-  if (
-    [
-      PreviewLogicalTableTopologiesErrorEnum.LogicalTableBadExpressionSyntax,
-      PreviewLogicalTableTopologiesErrorEnum.LogicalTableExpressionNotEvenlyDivided,
-      PreviewLogicalTableTopologiesErrorEnum.LogicalTableExpressionNotPositiveStep,
-      PreviewLogicalTableTopologiesErrorEnum.LogicalTableExpressionNotPositiveStep,
-      PreviewLogicalTableTopologiesErrorEnum.LogicalTableExpressionRangeStartGreaterThanEnd,
-    ].includes(res.errCode)
-  ) {
+  if (res.errCode) {
     return res?.errMsg;
   }
   return res?.data?.contents;

@@ -62,6 +62,8 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
         }
       });
       datasourceStatus.asyncUpdateStatus(Array.from(ids));
+    } else {
+      setDatabases([]);
     }
   }, [databaseList]);
 

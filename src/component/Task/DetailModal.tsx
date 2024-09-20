@@ -185,6 +185,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
         });
         return;
       }
+      return;
     }
     if (hasLog && (isLoop || log?.[logType] === undefined)) {
       const data = await getTaskLog(detailId, logType);
@@ -219,6 +220,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     const data = await getDataArchiveSubTask(task?.id, { page: current, size: pageSize });
     setLoading(false);
     setSubTasks(data);
+    // debugger;
   };
 
   const getResult = async function () {

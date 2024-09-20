@@ -13,7 +13,7 @@ export interface InconsistentPhysicalTable {
 }
 export interface ILogicalTable {
   id?: number;
-  name: string;
+  name?: string;
   expression: string;
   physicalTableCount: number;
   inconsistentPhysicalTables: InconsistentPhysicalTable[];
@@ -52,6 +52,10 @@ export enum SchemaChangeRecordStatus {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
   TERMINATED = 'TERMINATED',
+  SKIPPING = 'SKIPPING',
+  SKIPPED = 'SKIPPED',
+  TERMINATING = 'TERMINATING',
+  TERMINATE_FAILED = 'TERMINATE_FAILED',
 }
 
 export interface IPreviewSql {
