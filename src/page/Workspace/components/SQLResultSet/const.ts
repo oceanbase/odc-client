@@ -20,5 +20,8 @@ export const SqlExecuteResultStatusLabel = {
     id: 'odc.components.SQLResultSet.CancelExecution',
     defaultMessage: '执行取消',
   }),
-  [ISqlExecuteResultStatus.RUNNING]: '执行中',
+  [ISqlExecuteResultStatus.RUNNING]: formatMessage({
+    id: 'src.page.Workspace.components.SQLResultSet.2B7B765F',
+    defaultMessage: '执行中',
+  }),
 };

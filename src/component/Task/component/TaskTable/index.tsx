@@ -151,7 +151,10 @@ export const TaskTypeMap = {
     id: 'src.component.Task.component.TaskTable.A3CA13D5',
     defaultMessage: '多库变更',
   }),
-  [TaskType.LOGICAL_DATABASE_CHANGE]: '逻辑库变更',
+  [TaskType.LOGICAL_DATABASE_CHANGE]: formatMessage({
+    id: 'src.component.Task.component.TaskTable.4203E912',
+    defaultMessage: '逻辑库变更',
+  }),
 };
 export const getStatusFilters = (status: {
   [key: string]: {
@@ -553,6 +556,7 @@ const TaskTable: React.FC<IProps> = inject(
                             defaultMessage: '新建工单',
                           }) /*新建工单*/
                         }
+
                         <DownOutlined />
                       </Button>
                     </Popover>

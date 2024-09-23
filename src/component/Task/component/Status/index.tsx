@@ -530,7 +530,11 @@ export const cycleStatus = {
         }}
       />
     ),
-    text: '创建中',
+
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.3DCF46EC',
+      defaultMessage: '创建中',
+    }),
   },
 };
 
@@ -622,7 +626,11 @@ export const logicDBChangeTaskStatus = {
         }}
       />
     ),
-    text: '执行失败',
+
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.64D3C12B',
+      defaultMessage: '执行失败',
+    }),
   },
   [SchemaChangeRecordStatus.PENDING]: {
     icon: (
@@ -636,7 +644,11 @@ export const logicDBChangeTaskStatus = {
         }}
       />
     ),
-    text: '待执行',
+
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.1B9301A5',
+      defaultMessage: '待执行',
+    }),
   },
   [SchemaChangeRecordStatus.RUNNING]: {
     icon: (
@@ -646,7 +658,11 @@ export const logicDBChangeTaskStatus = {
         }}
       />
     ),
-    text: '执行中',
+
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.2497FE39',
+      defaultMessage: '执行中',
+    }),
   },
   [SchemaChangeRecordStatus.SUCCESS]: {
     icon: (
@@ -656,11 +672,18 @@ export const logicDBChangeTaskStatus = {
         }}
       />
     ),
-    text: '执行成功',
+
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.8FA22B8A',
+      defaultMessage: '执行成功',
+    }),
   },
   [SchemaChangeRecordStatus.TERMINATED]: {
     icon: <StopFilled style={{ color: 'var(--profile-icon-unready-color)' }} />,
-    text: '已终止',
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.F1235EE9',
+      defaultMessage: '已终止',
+    }),
   },
   [SchemaChangeRecordStatus.SKIPPING]: {
     icon: (
@@ -670,11 +693,18 @@ export const logicDBChangeTaskStatus = {
         }}
       />
     ),
-    text: '跳过中',
+
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.CA4AFAD3',
+      defaultMessage: '跳过中',
+    }),
   },
   [SchemaChangeRecordStatus.SKIPPED]: {
     icon: <StopFilled style={{ color: 'var(--profile-icon-unready-color)' }} />,
-    text: '已跳过',
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.D08E449C',
+      defaultMessage: '已跳过',
+    }),
   },
   [SchemaChangeRecordStatus.TERMINATING]: {
     icon: (
@@ -684,7 +714,11 @@ export const logicDBChangeTaskStatus = {
         }}
       />
     ),
-    text: '终止中',
+
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.726F85D7',
+      defaultMessage: '终止中',
+    }),
   },
   [SchemaChangeRecordStatus.TERMINATE_FAILED]: {
     icon: (
@@ -694,7 +728,11 @@ export const logicDBChangeTaskStatus = {
         }}
       />
     ),
-    text: '终止失败',
+
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.BB5E3650',
+      defaultMessage: '终止失败',
+    }),
   },
 };
 

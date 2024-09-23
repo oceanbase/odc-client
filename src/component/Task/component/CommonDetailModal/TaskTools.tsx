@@ -137,7 +137,10 @@ const ActionBar: React.FC<IProps> = inject(
     };
     const handleExecute = async () => {
       Modal.confirm({
-        title: '是否确定执行任务?',
+        title: formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.CA1CB37E',
+          defaultMessage: '是否确定执行任务?',
+        }),
         icon: <ExclamationCircleOutlined />,
         okText: formatMessage({
           id: 'odc.component.CommonDetailModal.TaskTools.Confirm',
@@ -154,7 +157,12 @@ const ActionBar: React.FC<IProps> = inject(
     const confirmExecute = async () => {
       const res = await startDataArchiveSubTask(taskId, record.id);
       if (res) {
-        message.success('发起执行成功');
+        message.success(
+          formatMessage({
+            id: 'src.component.Task.component.CommonDetailModal.8C3AF870',
+            defaultMessage: '发起执行成功',
+          }),
+        );
         props.onReloadList();
       }
     };

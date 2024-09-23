@@ -147,12 +147,10 @@ const CreateSequenceModal: React.FC<IProps> = function (props) {
         width={760}
         title={
           isEditMode
-            ? `${
-                formatMessage({
-                  id: 'odc.components.CreateSequenceModal.EditSequence',
-                  defaultMessage: '编辑序列',
-                }) // 编辑序列
-              }(${createSequenceModalData?.data?.name})`
+            ? formatMessage({
+                id: 'odc.components.CreateSequenceModal.EditSequence',
+                defaultMessage: '编辑序列',
+              }) + createSequenceModalData?.data?.name
             : formatMessage({
                 id: 'odc.components.CreateSequenceModal.CreateASequence',
                 defaultMessage: '新建序列',

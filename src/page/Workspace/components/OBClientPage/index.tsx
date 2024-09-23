@@ -203,10 +203,10 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
       this.ws.onclose = (e) => {
         console.log(e);
         this.xtermInstance.write(
-          `${formatMessage({
+          formatMessage({
             id: 'odc.components.OBClientPage.TheConnectionHasBeenDisconnected',
             defaultMessage: '***连接已断开***',
-          })}\r\n`, //* **连接已断开***
+          }) + '\r\n',
         );
         clearTimeout(this._pingClock);
         this.setState({

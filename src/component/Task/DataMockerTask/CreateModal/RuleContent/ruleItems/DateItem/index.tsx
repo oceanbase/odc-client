@@ -176,10 +176,11 @@ const DateItem: React.FC<IDateItemProps> = forwardRef<FormInstance, IDateItemPro
                     min={0}
                     formatter={
                       (value) =>
-                        `${value}${formatMessage({
+                        value +
+                        formatMessage({
                           id: 'odc.ruleItems.DateItem.Days',
                           defaultMessage: '天',
-                        })}` // 天
+                        }) // 天
                     }
                     parser={(value) =>
                       value.replace(

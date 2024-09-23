@@ -50,8 +50,14 @@ const periodUnits = [
 ];
 
 const partitionBoundDescriptions: Record<PartitionBound, string> = {
-  [PartitionBound.PARTITION_UPPER_BOUND]: '分区上界',
-  [PartitionBound.PARTITION_LOWER_BOUND]: '分区下界',
+  [PartitionBound.PARTITION_UPPER_BOUND]: formatMessage({
+    id: 'src.component.Task.component.PartitionPolicyTable.CBBEA962',
+    defaultMessage: '分区上界',
+  }),
+  [PartitionBound.PARTITION_LOWER_BOUND]: formatMessage({
+    id: 'src.component.Task.component.PartitionPolicyTable.E9F0CC43',
+    defaultMessage: '分区下界',
+  }),
 };
 
 interface IProps {
@@ -201,22 +207,52 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         <div style={{ marginTop: 8 }}>
           <SimpleTextItem
             showSplit={false}
-            label="命名规则"
+            label={formatMessage({
+              id: 'src.component.Task.component.PartitionPolicyTable.E4B505E8',
+              defaultMessage: '命名规则',
+            })}
             content={
               config?.partitionNameInvokerParameters?.partitionNameGeneratorConfig?.namingPrefix ? (
                 <>
                   <Descriptions column={1}>
-                    <Descriptions.Item label="前缀">
+                    <Descriptions.Item
+                      label={formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyTable.E44DF129',
+                        defaultMessage: '前缀',
+                      })}
+                    >
                       {partitionNameInvokerParameters?.partitionNameGeneratorConfig?.namingPrefix}
                     </Descriptions.Item>
-                    <Descriptions.Item label="后缀">{getNamingSuffix()}</Descriptions.Item>
-                    <Descriptions.Item label="取值策略">
+                    <Descriptions.Item
+                      label={formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyTable.9D6EB3A7',
+                        defaultMessage: '后缀',
+                      })}
+                    >
+                      {getNamingSuffix()}
+                    </Descriptions.Item>
+                    <Descriptions.Item
+                      label={formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyTable.6131695C',
+                        defaultMessage: '取值策略',
+                      })}
+                    >
                       {getNamingSuffixStrategy()}
                     </Descriptions.Item>
                   </Descriptions>
                 </>
               ) : (
-                `自定义：${partitionNameInvokerParameters?.partitionNameGeneratorConfig?.generateExpr}`
+                formatMessage(
+                  {
+                    id: 'src.component.Task.component.PartitionPolicyTable.F6F3B2EC',
+                    defaultMessage:
+                      '自定义：{partitionNameInvokerParametersPartitionNameGeneratorConfigGenerateExpr}',
+                  },
+                  {
+                    partitionNameInvokerParametersPartitionNameGeneratorConfigGenerateExpr:
+                      partitionNameInvokerParameters?.partitionNameGeneratorConfig?.generateExpr,
+                  },
+                )
               )
             }
             direction="column"

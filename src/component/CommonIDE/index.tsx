@@ -205,10 +205,11 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                           key: `resultset-${set.uniqKey}`,
                           label: this.getResultSetTitle(
                             set.executeSql,
-                            `${formatMessage({
+                            formatMessage({
                               id: 'workspace.window.sql.result',
                               defaultMessage: '结果',
-                            })}${i + 1}`,
+                            }) +
+                              (i + 1),
                           ),
                           children:
                             !!set.columns?.length &&

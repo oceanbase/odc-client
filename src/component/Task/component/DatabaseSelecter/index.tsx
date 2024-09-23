@@ -160,7 +160,10 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                     { maxCount },
                   )
                 : isBaseDb
-                ? '默认选中基准库'
+                ? formatMessage({
+                    id: 'src.component.Task.component.DatabaseSelecter.36C7926E',
+                    defaultMessage: '默认选中基准库',
+                  })
                 : ''
             }
           >
@@ -180,6 +183,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
             </div>
           </Tooltip>
         ),
+
         disabled: disabledByCount || isBaseDb,
         key: item?.id,
         icon: <DataBaseStatusIcon item={item} showStatusTooltip={false} />,
@@ -244,9 +248,13 @@ const DatabaseSelecter: React.FC<IProps> = function ({
     <>
       {infoText && (
         <div style={{ color: 'var(--text-color-hint)', paddingBottom: 4 }}>
-          仅支持选择与基准库相同数据源类型和环境的数据库
+          {formatMessage({
+            id: 'src.component.Task.component.DatabaseSelecter.1AD108EB',
+            defaultMessage: '仅支持选择与基准库相同数据源类型和环境的数据库',
+          })}
         </div>
       )}
+
       <div className={styles.selecter}>
         <div className={styles.content}>
           <Spin spinning={isLoading}>

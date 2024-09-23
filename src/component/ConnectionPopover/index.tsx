@@ -72,6 +72,7 @@ const ConnectionPopover: React.FC<{
                   content={database?.environment?.name}
                   color={database?.environment?.style?.toLowerCase()}
                 />
+
                 <DataBaseStatusIcon item={database} />
                 <div className={styles.ellipsis} title={database?.name}>{`${database?.name}`}</div>
               </div>
@@ -83,9 +84,33 @@ const ConnectionPopover: React.FC<{
             }}
             className={styles.ellipsis}
             title={database?.alias}
-          >{`逻辑库别名: ${database?.alias}`}</div>
-          <div>{`项目: ${database?.project?.name}`}</div>
-          <div>{`类型: ${ConnectTypeText[database?.connectType]}`}</div>
+          >
+            {formatMessage(
+              {
+                id: 'src.component.ConnectionPopover.F992A18D',
+                defaultMessage: '逻辑库别名: {databaseAlias}',
+              },
+              { databaseAlias: database?.alias },
+            )}
+          </div>
+          <div>
+            {formatMessage(
+              {
+                id: 'src.component.ConnectionPopover.7A5FFB14',
+                defaultMessage: '项目: {databaseProjectName}',
+              },
+              { databaseProjectName: database?.project?.name },
+            )}
+          </div>
+          <div>
+            {formatMessage(
+              {
+                id: 'src.component.ConnectionPopover.8E155F86',
+                defaultMessage: '类型: {ConnectTypeTextDatabaseConnectType}',
+              },
+              { ConnectTypeTextDatabaseConnectType: ConnectTypeText[database?.connectType] },
+            )}
+          </div>
         </Space>
       </div>
     );

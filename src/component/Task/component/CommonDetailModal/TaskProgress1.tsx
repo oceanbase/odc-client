@@ -269,7 +269,10 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
 const getLogicalDatabaseAsyncColumns = () => {
   return [
     {
-      title: '执行数据库',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.E38B64D9',
+        defaultMessage: '执行数据库',
+      }),
       key: 'database',
       dataIndex: 'database',
       ellipsis: {
@@ -331,20 +334,36 @@ const getLogicalDatabaseAsyncColumns = () => {
       },
     },
     {
-      title: '数据源',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.AB5C26BA',
+        defaultMessage: '数据源',
+      }),
       key: 'datasource',
       dataIndex: 'datasource',
     },
     {
-      title: '执行状态',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.7902B91E',
+        defaultMessage: '执行状态',
+      }),
       key: 'status',
       dataIndex: 'status',
     },
     {
-      title: '操作',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.EDEF0329',
+        defaultMessage: '操作',
+      }),
       key: 'operation',
       render: (value, record) => {
-        return <Button type="link">查看</Button>;
+        return (
+          <Button type="link">
+            {formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.593D5BD8',
+              defaultMessage: '查看',
+            })}
+          </Button>
+        );
       },
     },
   ];

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { getPhysicalExecuteDetails } from '@/common/network/logicalDatabase';
 import DisplayTable from '@/component/DisplayTable';
@@ -19,7 +20,10 @@ import styles from './index.less';
 const getColumns = () => {
   return [
     {
-      title: '状态',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.E54A5EC1',
+        defaultMessage: '状态',
+      }),
       key: 'status',
       dataIndex: 'status',
       render: (value: ISqlExecuteResultStatus, record, index) => {
@@ -36,7 +40,10 @@ const getColumns = () => {
       }),
     },
     {
-      title: 'SQL 语句',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.5E35D23F',
+        defaultMessage: 'SQL 语句',
+      }),
       key: 'executeSql',
       dataIndex: 'executeSql',
       ellipsis: true,
@@ -59,7 +66,10 @@ const getColumns = () => {
       ),
     },
     {
-      title: '结果',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.E05F7579',
+        defaultMessage: '结果',
+      }),
       key: 'track',
       dataIndex: 'track',
       ellipsis: true,
@@ -99,7 +109,10 @@ const getColumns = () => {
       width: 200,
     },
     {
-      title: 'DB 耗时',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.7021CF96',
+        defaultMessage: 'DB 耗时',
+      }),
       key: 'timeout',
       dataIndex: 'timeout',
       render: (value: string, row: ISqlExecuteResult) => {
@@ -168,7 +181,10 @@ const TaskProgressModal = ({ physicalDatabaseId, scheduleTaskId, modalOpen, setM
 
   return (
     <Modal
-      title="执行详情"
+      title={formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.8FBFD910',
+        defaultMessage: '执行详情',
+      })}
       width={840}
       open={modalOpen}
       closable
@@ -178,7 +194,12 @@ const TaskProgressModal = ({ physicalDatabaseId, scheduleTaskId, modalOpen, setM
       footer={null}
     >
       <Descriptions column={1}>
-        <Descriptions.Item label="执行数据库">
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.component.CommonDetailModal.F4DCEC5F',
+            defaultMessage: '执行数据库',
+          })}
+        >
           {' '}
           <Space size={0}>
             <Space size={4}>
@@ -202,7 +223,14 @@ const TaskProgressModal = ({ physicalDatabaseId, scheduleTaskId, modalOpen, setM
             </Space>
           </Space>
         </Descriptions.Item>
-        <Descriptions.Item label="所属数据源">{details?.dataSource?.name}</Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.component.CommonDetailModal.8CDFB676',
+            defaultMessage: '所属数据源',
+          })}
+        >
+          {details?.dataSource?.name}
+        </Descriptions.Item>
       </Descriptions>
       <DisplayTable
         className={styles.subTaskTable}

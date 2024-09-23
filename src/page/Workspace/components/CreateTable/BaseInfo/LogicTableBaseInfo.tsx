@@ -12,17 +12,26 @@ const { Option } = Select;
 
 export const columns = [
   {
-    title: '表达式',
+    title: formatMessage({
+      id: 'src.page.Workspace.components.CreateTable.BaseInfo.8993186C',
+      defaultMessage: '表达式',
+    }),
     key: 'expression',
     dataIndex: 'expression',
   },
   {
-    title: '物理表数量',
+    title: formatMessage({
+      id: 'src.page.Workspace.components.CreateTable.BaseInfo.1C442EC6',
+      defaultMessage: '物理表数量',
+    }),
     key: 'tableCount',
     dataIndex: 'tableCount',
   },
   {
-    title: '物理库',
+    title: formatMessage({
+      id: 'src.page.Workspace.components.CreateTable.BaseInfo.4F605871',
+      defaultMessage: '物理库',
+    }),
     key: 'physicalDatabase',
     dataIndex: 'physicalDatabase',
     render(value) {
@@ -37,6 +46,7 @@ export const columns = [
     },
   },
 ];
+
 const LogicTableBaseInfo = ({
   form,
   session,
@@ -63,7 +73,12 @@ const LogicTableBaseInfo = ({
       form.setFields([
         {
           name: 'tableName',
-          errors: ['请输入'],
+          errors: [
+            formatMessage({
+              id: 'src.page.Workspace.components.CreateTable.BaseInfo.295F57AB',
+              defaultMessage: '请输入',
+            }),
+          ],
         },
       ]);
       return;
@@ -83,33 +98,86 @@ const LogicTableBaseInfo = ({
       form.setFields([
         {
           name: 'tableName',
-          errors: [res || '语法错误'],
+          errors: [
+            res ||
+              formatMessage({
+                id: 'src.page.Workspace.components.CreateTable.BaseInfo.BB53E42B',
+                defaultMessage: '语法错误',
+              }),
+          ],
         },
       ]);
     }
   };
 
-  const previewTopologiesBtn = <Link onClick={previewTopologies}>预览拓扑</Link>;
+  const previewTopologiesBtn = (
+    <Link onClick={previewTopologies}>
+      {formatMessage({
+        id: 'src.page.Workspace.components.CreateTable.BaseInfo.636631AC',
+        defaultMessage: '预览拓扑',
+      })}
+    </Link>
+  );
   const inputTooltipContent = () => {
     return (
       <Space direction="vertical" onClick={(e) => e.stopPropagation()}>
-        <Text strong>常见示例</Text>
+        <Text strong>
+          {formatMessage({
+            id: 'src.page.Workspace.components.CreateTable.BaseInfo.F3910740',
+            defaultMessage: '常见示例',
+          })}
+        </Text>
         <Text>db.test_[00-09]</Text>
-        <Text type="secondary">在 db 单库下创建 10 张表</Text>
+        <Text type="secondary">
+          {formatMessage({
+            id: 'src.page.Workspace.components.CreateTable.BaseInfo.609D2F60',
+            defaultMessage: '在 db 单库下创建 10 张表',
+          })}
+        </Text>
         <Text>db_[00-31].test</Text>
-        <Text type="secondary">在 db_00 - db_31 一共32 个库上均创建 test 表</Text>
+        <Text type="secondary">
+          {formatMessage({
+            id: 'src.page.Workspace.components.CreateTable.BaseInfo.270970B2',
+            defaultMessage: '在 db_00 - db_31 一共32 个库上均创建 test 表',
+          })}
+        </Text>
         <Text>db_[00-31].test_[00-31]</Text>
-        <Text type="secondary">在 32 个库下共创建 32 张表，注意表的数量需要能被库数量整除：</Text>
+        <Text type="secondary">
+          {formatMessage({
+            id: 'src.page.Workspace.components.CreateTable.BaseInfo.61D2312D',
+            defaultMessage: '在 32 个库下共创建 32 张表，注意表的数量需要能被库数量整除：',
+          })}
+        </Text>
         <Text type="secondary">db_00.test_00, db_01.test_01 ...</Text>
         <Text>db_[00-31].test_[[00-31]]</Text>
-        <Text type="secondary">在指定的 32 个库下各创建 32 张表，共 1024 张表：</Text>
+        <Text type="secondary">
+          {formatMessage({
+            id: 'src.page.Workspace.components.CreateTable.BaseInfo.A165C668',
+            defaultMessage: '在指定的 32 个库下各创建 32 张表，共 1024 张表：',
+          })}
+        </Text>
         <Text type="secondary">db_00.test_00, db_00.test_01 ... db_31.test_30, db_31.test_31</Text>
         <Text>db.test_[1-10:2]</Text>
-        <Text type="secondary">在 db 单库下创建 5 张表，起始值为 1，最大值为 10，步长为 2：</Text>
+        <Text type="secondary">
+          {formatMessage({
+            id: 'src.page.Workspace.components.CreateTable.BaseInfo.19F98E57',
+            defaultMessage: '在 db 单库下创建 5 张表，起始值为 1，最大值为 10，步长为 2：',
+          })}
+        </Text>
         <Text type="secondary">db.test_1, db.test_3, db.test_5, db.test_7, db.test_9</Text>
         <Text>db.test_1,db.test_2,db.test_4</Text>
-        <Text type="secondary">在 db 单库下创建 3 张表：db.test_1,db.test_2,db.test_4</Text>
-        <Link>查看更多</Link>
+        <Text type="secondary">
+          {formatMessage({
+            id: 'src.page.Workspace.components.CreateTable.BaseInfo.2D3445A1',
+            defaultMessage: '在 db 单库下创建 3 张表：db.test_1,db.test_2,db.test_4',
+          })}
+        </Text>
+        <Link>
+          {formatMessage({
+            id: 'src.page.Workspace.components.CreateTable.BaseInfo.C3013389',
+            defaultMessage: '查看更多',
+          })}
+        </Link>
       </Space>
     );
   };
@@ -142,11 +210,23 @@ const LogicTableBaseInfo = ({
           <Popover content={inputTooltipContent} placement="left" color="white">
             <Form.Item
               name="tableName"
-              label="逻辑表表达式"
+              label={formatMessage({
+                id: 'src.page.Workspace.components.CreateTable.BaseInfo.7641485F',
+                defaultMessage: '逻辑表表达式',
+              })}
               extra={previewTopologiesBtn}
-              tooltip="设置物理表在实际数据库上的分布规则"
+              tooltip={formatMessage({
+                id: 'src.page.Workspace.components.CreateTable.BaseInfo.B17B453C',
+                defaultMessage: '设置物理表在实际数据库上的分布规则',
+              })}
             >
-              <Input autoFocus placeholder="请输入" />
+              <Input
+                autoFocus
+                placeholder={formatMessage({
+                  id: 'src.page.Workspace.components.CreateTable.BaseInfo.4B6F9099',
+                  defaultMessage: '请输入',
+                })}
+              />
             </Form.Item>
           </Popover>
         </Col>
@@ -240,7 +320,17 @@ const LogicTableBaseInfo = ({
         </Form.Item>
       </Row>
       <Row>
-        <Form.Item name="comment" label="逻辑表拓扑" tooltip="物理表在实际数据库上分布">
+        <Form.Item
+          name="comment"
+          label={formatMessage({
+            id: 'src.page.Workspace.components.CreateTable.BaseInfo.AC6FB5A2',
+            defaultMessage: '逻辑表拓扑',
+          })}
+          tooltip={formatMessage({
+            id: 'src.page.Workspace.components.CreateTable.BaseInfo.12225948',
+            defaultMessage: '物理表在实际数据库上分布',
+          })}
+        >
           <CommonTable
             key="CompareTable"
             titleContent={null}
@@ -257,7 +347,15 @@ const LogicTableBaseInfo = ({
                 emptyText: (
                   <Empty
                     image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description={<div>暂无数据, 请先 {previewTopologiesBtn}</div>}
+                    description={
+                      <div>
+                        {formatMessage({
+                          id: 'src.page.Workspace.components.CreateTable.BaseInfo.1F8270D8',
+                          defaultMessage: '暂无数据, 请先',
+                        })}
+                        {previewTopologiesBtn}
+                      </div>
+                    }
                   ></Empty>
                 ),
               },

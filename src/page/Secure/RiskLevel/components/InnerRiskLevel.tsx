@@ -282,10 +282,14 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
           风险识别规则
           */
           }
+
           <Tooltip
             trigger={'hover'}
-            title="风险识别规则是通过表达式配置的规则，会决定工单的审批流程。
-如：「环境 等于 生产」将会匹配在「生产」环境中执行的工单，并执行对应的审批流程"
+            title={formatMessage({
+              id: 'src.page.Secure.RiskLevel.components.6814586C',
+              defaultMessage:
+                '风险识别规则是通过表达式配置的规则，会决定工单的审批流程。\n如：「环境 等于 生产」将会匹配在「生产」环境中执行的工单，并执行对应的审批流程',
+            })}
           >
             {' '}
             <QuestionCircleOutlined />{' '}

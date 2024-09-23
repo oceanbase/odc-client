@@ -120,13 +120,17 @@ const AddDataBaseButton: React.FC<IProps> = ({
   }
   const items: MenuProps['items'] = [
     {
-      label: '配置逻辑库',
+      label: formatMessage({
+        id: 'src.page.Project.Database.components.AddDataBaseButton.BCE1BC95',
+        defaultMessage: '配置逻辑库',
+      }),
       key: '1',
       onClick: () => {
         onOpenLogicialDatabase();
       },
     },
   ];
+
   return (
     <>
       <Space size={12}>
@@ -147,12 +151,20 @@ const AddDataBaseButton: React.FC<IProps> = ({
             onClick={() => setOpen(true)}
             disabled={disabledAction}
           >
-            添加数据库
+            {formatMessage({
+              id: 'src.page.Project.Database.components.AddDataBaseButton.EE4B77AC',
+              defaultMessage: '添加数据库',
+            })}
           </Dropdown.Button>
         </TooltipAction>
         <Tooltip
           title={
-            disabledMultiDBChanges ? '仅支持选择相同类型的数据源的数据库发起多库变更任务' : null
+            disabledMultiDBChanges
+              ? formatMessage({
+                  id: 'src.page.Project.Database.components.AddDataBaseButton.11CC7812',
+                  defaultMessage: '仅支持选择相同类型的数据源的数据库发起多库变更任务',
+                })
+              : null
           }
         >
           <Button

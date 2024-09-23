@@ -71,7 +71,8 @@ const ExtraContent = ({ projectId }) => {
           }}
           disabled={disabled}
         >
-          SQL 控制台
+          {formatMessage({ id: 'src.page.Project.8635398D', defaultMessage: 'SQL 控制台' })}
+
           <Icon component={NewOpenSvg} />
         </Button>
       </TooltipAction>

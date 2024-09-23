@@ -439,10 +439,11 @@ const CharItem: React.FC<ICharItemProps> = forwardRef<FormInstance, ICharItemPro
                     min={0}
                     formatter={
                       (value) =>
-                        `${value}${formatMessage({
+                        value +
+                        formatMessage({
                           id: 'odc.ruleItems.CharItem.Days',
                           defaultMessage: '天',
-                        })}` // 天
+                        }) // 天
                     }
                     parser={(value) =>
                       value.replace(

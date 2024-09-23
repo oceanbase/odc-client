@@ -54,8 +54,11 @@ import { ReactComponent as timeSvg } from '@/svgr/Field-time.svg'; // 同步 OCP
 export const PASSWORD_REGEX =
   /^(?:(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])|(?=.*[0-9])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[0-9])(?=.*[a-z])(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*[a-z])(?=.*[^A-Za-z0-9]))[A-Za-z0-9!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]{8,32}$/;
 
-export const PASSWORD_VALIDATE_MESSAGE =
-  '密码为长度 8~32 位, 包含以下四种类型字符至少三种及以上：数字（0~9）、大写字母（A~Z）、小写字母(a~z)、特殊符号：全部的英文特殊字符';
+export const PASSWORD_VALIDATE_MESSAGE = formatMessage({
+  id: 'src.constant.59F82FE0',
+  defaultMessage:
+    '密码为长度 8~32 位, 包含以下四种类型字符至少三种及以上：数字（0~9）、大写字母（A~Z）、小写字母(a~z)、特殊符号：全部的英文特殊字符',
+});
 
 export const SPACE_REGEX = /^[^\s]+$/;
 
@@ -108,6 +111,7 @@ export const localeList = [
     value: 'zh-TW',
   },
 ];
+
 // 连接目前支持的颜色集
 
 // 管控台-角色管理-系统权限入口

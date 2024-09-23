@@ -50,10 +50,12 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
   async function copy() {
     const newConnection = {
       ...connection,
-      name: `${connection.name}_${formatMessage({
-        id: 'portal.connection.tooltip.copy',
-        defaultMessage: '复制',
-      })}`,
+      name:
+        `${connection.name}_` +
+        formatMessage({
+          id: 'portal.connection.tooltip.copy',
+          defaultMessage: '复制',
+        }),
       copyFromSid: connection?.id,
     };
     modalStore.changeAddConnectionModal(true, {
