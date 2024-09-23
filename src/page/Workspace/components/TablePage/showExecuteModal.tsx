@@ -21,6 +21,7 @@ import { EStatus } from '@/d.ts';
 import modal from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
+import { isLogicalDatabase } from '@/util/database';
 import notification from '@/util/notification';
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 
@@ -87,6 +88,16 @@ export default forwardRef<any, { session: SessionStore; callbackRef: React.Mutab
           callbackRef?.current?.();
         }}
         onSave={async () => {
+          if (isLogicalDatabase(session?.odcDatabase)) {
+            setVisible(false);
+            // 关闭弹窗, 将sql带到工单
+            modal.changeLogicialDatabaseModal(true, {
+              ddl: sql,
+              projectId: session?.odcDatabase?.project?.id,
+              databaseId: session?.odcDatabase?.id,
+            });
+            return;
+          }
           const results = await executeSQL(
             sql,
             session?.sessionId,

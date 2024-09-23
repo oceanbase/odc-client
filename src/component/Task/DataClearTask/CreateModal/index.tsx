@@ -53,6 +53,7 @@ import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig from './VariableConfig';
 import ShardingStrategyItem from '../../component/ShardingStrategyItem';
+import { disabledDate } from '@/util/utils';
 
 export enum IArchiveRange {
   PORTION = 'portion',
@@ -612,7 +613,11 @@ const CreateModal: React.FC<IProps> = (props) => {
               if (triggerStrategy === TaskExecStrategy.START_AT) {
                 return (
                   <Form.Item name="startAt">
-                    <DatePicker showTime suffixIcon={<FieldTimeOutlined />} />
+                    <DatePicker
+                      showTime
+                      suffixIcon={<FieldTimeOutlined />}
+                      disabledDate={disabledDate}
+                    />
                   </Form.Item>
                 );
               }

@@ -39,6 +39,7 @@ export const DatabaseQueueSelect: React.FC<{
   const form = Form.useFormInstance();
   const statusMap = datasourceStatus.statusMap;
   const projectId = Form.useWatch('projectId', form);
+  const orderedDatabaseIds = Form.useWatch(['parameters', 'orderedDatabaseIds'], form);
   const [databaseIdMap, setDatabaseIdMap] = useState<Map<number, boolean>>(new Map());
   const [_databaseOptions, setDatabaseOptions] = useState<DatabaseOption[]>([]);
   const {
@@ -87,6 +88,7 @@ export const DatabaseQueueSelect: React.FC<{
                 DatabasePermissionType.CHANGE,
               ),
               expired: checkDbExpiredByDataSourceStatus(statusInfo?.status),
+              connectType: item?.connectType,
             };
           }),
       );
@@ -98,13 +100,27 @@ export const DatabaseQueueSelect: React.FC<{
   };
 
   const databaseOptions = useMemo(() => {
-    return _databaseOptions?.map((item) => {
-      return {
-        ...item,
-        expired: checkDbExpiredByDataSourceStatus(statusMap.get(item?.dataSource?.id)?.status),
-      };
-    });
-  }, [statusMap, _databaseOptions]);
+    const selectedDbId = orderedDatabaseIds?.flat()?.filter(Boolean)?.[0];
+    const selectedDbInfo = _databaseOptions?.find((_db) => _db.value === selectedDbId);
+    if (selectedDbId) {
+      // 这里加同数据源类型的限制
+      return _databaseOptions
+        ?.filter((_db) => _db?.connectType === selectedDbInfo?.connectType)
+        ?.map((item) => {
+          return {
+            ...item,
+            expired: checkDbExpiredByDataSourceStatus(statusMap.get(item?.dataSource?.id)?.status),
+          };
+        });
+    } else {
+      return _databaseOptions?.map((item) => {
+        return {
+          ...item,
+          expired: checkDbExpiredByDataSourceStatus(statusMap.get(item?.dataSource?.id)?.status),
+        };
+      });
+    }
+  }, [statusMap, _databaseOptions, orderedDatabaseIds]);
 
   useEffect(() => {
     if (multipleDatabaseChangeOpen && projectId) {
