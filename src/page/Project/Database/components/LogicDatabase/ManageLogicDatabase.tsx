@@ -258,7 +258,7 @@ const ManageLogicDatabase: React.FC<{
   const handleExtractLogicalTables = async () => {
     const successful = await extractLogicalTables(database?.id);
     if (successful) {
-      message.info('逻辑表正在提取中，请耐心等待。提取后需确认是否更新逻辑表。');
+      message.info('逻辑表正在提取中，请耐心等待。');
     }
   };
   const queryLogicalDatabaseById = async () => {

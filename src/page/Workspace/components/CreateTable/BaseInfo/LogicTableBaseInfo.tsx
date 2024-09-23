@@ -72,6 +72,12 @@ const LogicTableBaseInfo = ({
     const res = await previewLogicalTableTopologies(dbId, form.getFieldValue('tableName'));
     if (Array.isArray(res)) {
       setPreviewTopologiesList(res);
+      form.setFields([
+        {
+          name: 'tableName',
+          errors: [],
+        },
+      ]);
     } else {
       setPreviewTopologiesList([]);
       form.setFields([
@@ -88,14 +94,21 @@ const LogicTableBaseInfo = ({
     return (
       <Space direction="vertical" onClick={(e) => e.stopPropagation()}>
         <Text strong>常见示例</Text>
-        <Text>test_[00-09]</Text>
-        <Text type="secondary">共创建 10 张表</Text>
+        <Text>db.test_[00-09]</Text>
+        <Text type="secondary">在 db 单库下创建 10 张表</Text>
         <Text>db_[00-31].test</Text>
-        <Text type="secondary">在指定的 32 个库上均创建 test 表</Text>
+        <Text type="secondary">在 db_00 - db_31 一共32 个库上均创建 test 表</Text>
         <Text>db_[00-31].test_[00-31]</Text>
-        <Text type="secondary">在指定的 32 个库下共创建 32 张表</Text>
+        <Text type="secondary">在 32 个库下共创建 32 张表，注意表的数量需要能被库数量整除：</Text>
+        <Text type="secondary">db_00.test_00, db_01.test_01 ...</Text>
         <Text>db_[00-31].test_[[00-31]]</Text>
-        <Text type="secondary">在指定的 32 个库下各创建 32 张表</Text>
+        <Text type="secondary">在指定的 32 个库下各创建 32 张表，共 1024 张表：</Text>
+        <Text type="secondary">db_00.test_00, db_00.test_01 ... db_31.test_30, db_31.test_31</Text>
+        <Text>db.test_[1-10:2]</Text>
+        <Text type="secondary">在 db 单库下创建 5 张表，起始值为 1，最大值为 10，步长为 2：</Text>
+        <Text type="secondary">db.test_1, db.test_3, db.test_5, db.test_7, db.test_9</Text>
+        <Text>db.test_1,db.test_2,db.test_4</Text>
+        <Text type="secondary">在 db 单库下创建 3 张表：db.test_1,db.test_2,db.test_4</Text>
         <Link>查看更多</Link>
       </Space>
     );

@@ -24,7 +24,7 @@ import type { TaskStore } from '@/store/task';
 import utils, { IEditor } from '@/util/editor';
 import { formatMessage } from '@/util/intl';
 import { FieldTimeOutlined } from '@ant-design/icons';
-
+import { disabledDate } from '@/util/utils';
 import { ICycleTaskTriggerConfig, TaskOperationType } from '@/d.ts';
 import {
   Alert,
@@ -93,6 +93,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   useEffect(() => {
     if (logicDatabaseInfo?.ddl) {
       form?.setFieldValue('sqlContent', logicDatabaseInfo?.ddl);
+      form?.setFieldValue('databaseId', logicDatabaseInfo?.databaseId);
     }
   }, [logicDatabaseInfo?.ddl]);
 
@@ -243,19 +244,13 @@ const CreateModal: React.FC<IProps> = (props) => {
           name="basic"
           initialValues={{
             triggerStrategy: TaskExecStrategy.START_NOW,
-            databaseId: logicDatabaseInfo?.databaseId,
           }}
           layout="vertical"
           requiredMark="optional"
           form={form}
           onFieldsChange={handleFieldsChange}
         >
-          <DatabaseSelect
-            isLogicalDatabase
-            label={'逻辑库'}
-            type={TaskType.ALTER_SCHEDULE}
-            projectId={logicDatabaseInfo?.projectId}
-          />
+          <DatabaseSelect isLogicalDatabase label={'逻辑库'} type={TaskType.ALTER_SCHEDULE} />
           <Form.Item label="SQL 内容" required>
             <div
               style={{
@@ -395,7 +390,11 @@ const CreateModal: React.FC<IProps> = (props) => {
                       })}
                       /*执行时间*/ required
                     >
-                      <DatePicker showTime suffixIcon={<FieldTimeOutlined />} />
+                      <DatePicker
+                        showTime
+                        suffixIcon={<FieldTimeOutlined />}
+                        disabledDate={disabledDate}
+                      />
                     </Form.Item>
                   );
                 }
