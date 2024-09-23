@@ -82,51 +82,6 @@ const LogicTableBaseInfo = ({ table }) => {
             // 空
             span: 8,
           },
-          {
-            label: formatMessage({
-              id: 'odc.TablePage.ShowTableBaseInfoForm.RowDataVolume',
-              defaultMessage: '行数据量',
-            }), //行数据量 //行数据量
-            content: (
-              <HelpDoc
-                {...{
-                  doc: 'tableRowcountToolTip',
-                  leftText: true,
-                  isTip: true,
-                }}
-              >
-                {table?.info?.rowCount ||
-                  formatMessage({
-                    id: 'odc.components.ShowTableBaseInfoForm.Empty',
-                    defaultMessage: '空',
-                  })}
-              </HelpDoc>
-            ),
-            // 空
-            span: 8,
-          },
-          {
-            label: formatMessage({
-              id: 'odc.TablePage.ShowTableBaseInfoForm.Size',
-              defaultMessage: '大小',
-            }), //大小 //大小
-            content: (
-              <HelpDoc
-                {...{
-                  doc: 'tableSizeToolTip',
-                  leftText: true,
-                  isTip: true,
-                }}
-              >
-                {table?.info?.tableSize ||
-                  formatMessage({
-                    id: 'odc.components.ShowTableBaseInfoForm.Empty',
-                    defaultMessage: '空',
-                  })}
-              </HelpDoc>
-            ),
-            span: 8,
-          },
           !!table?.info?.columnGroups?.length && {
             label: formatMessage({
               id: 'src.page.Workspace.components.TablePage.ShowTableBaseInfoForm.FC24F422',
@@ -142,7 +97,7 @@ const LogicTableBaseInfo = ({ table }) => {
           {
             label: '表拓扑',
             content: '',
-            span: 8,
+            span: 24,
           },
           {
             label: '',

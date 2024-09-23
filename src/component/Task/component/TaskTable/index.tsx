@@ -203,6 +203,8 @@ const TaskTable: React.FC<IProps> = inject(
       return !start || !end ? null : [moment(start), moment(end)];
     });
     const [loading, setLoading] = useState(false);
+    const [hoverInNewTaskMenuBtn, setHoverInNewTaskMenuBtn] = useState(false);
+    const [hoverInNewTaskMenu, setHoverInNewTaskMenu] = useState(false);
     const [listParams, setListParams] = useState(null);
     const loadParams = useRef(null);
     const { activePageKey } = pageStore;
@@ -486,7 +488,12 @@ const TaskTable: React.FC<IProps> = inject(
           .filter(Boolean),
       );
       return (
-        <Space align="start" size={20}>
+        <Space
+          align="start"
+          size={20}
+          onMouseMove={() => setHoverInNewTaskMenuBtn(true)}
+          onMouseLeave={() => setHoverInNewTaskMenuBtn(false)}
+        >
           {items?.map((i) => {
             return (
               <Space direction="vertical">
@@ -499,6 +506,7 @@ const TaskTable: React.FC<IProps> = inject(
                       <div
                         className={styles.menuItem}
                         onClick={() => {
+                          setHoverInNewTaskMenuBtn(false);
                           props.onMenuClick(i?.key as TaskPageType);
                         }}
                       >
@@ -525,8 +533,20 @@ const TaskTable: React.FC<IProps> = inject(
               ? {
                   type: IOperationOptionType.custom,
                   render: () => (
-                    <Popover content={newTaskMenu} placement="bottomLeft">
-                      <Button type="primary">
+                    <Popover
+                      content={newTaskMenu}
+                      placement="bottomLeft"
+                      open={hoverInNewTaskMenuBtn || hoverInNewTaskMenu}
+                    >
+                      <Button
+                        type="primary"
+                        onMouseMove={() => setHoverInNewTaskMenu(true)}
+                        onMouseLeave={() => {
+                          setTimeout(() => {
+                            setHoverInNewTaskMenu(false);
+                          }, 500);
+                        }}
+                      >
                         {
                           formatMessage({
                             id: 'odc.component.TaskTable.NewWorkOrder',

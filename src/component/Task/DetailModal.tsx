@@ -174,9 +174,13 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     }
   };
 
-  const getLog = async function () {
+  const getLog = async function (args?: ITableLoadOptions) {
     if (isLogicalDbChangeTask(task?.type)) {
-      const flowId = subTasks?.contents?.[0]?.id;
+      let flowId = subTasks?.contents?.[0]?.id;
+      if (!flowId) {
+        const data = await loadDataArchiveSubTask(args);
+        flowId = data?.contents?.[0]?.id;
+      }
       if (flowId) {
         const res = await getCycleTaskLog(task?.id, flowId, logType);
         setLog({
@@ -220,7 +224,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     const data = await getDataArchiveSubTask(task?.id, { page: current, size: pageSize });
     setLoading(false);
     setSubTasks(data);
-    // debugger;
+    return data;
   };
 
   const getResult = async function () {
@@ -286,8 +290,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     switch (detailType) {
       case TaskDetailType.LOG: {
         if (isLogicalDbChangeTask(task?.type)) {
-          await getExecuteRecord(args);
-          getLog();
+          getLog(args);
         } else {
           getLog();
         }

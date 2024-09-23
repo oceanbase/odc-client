@@ -80,6 +80,7 @@ const EditTemplate: React.FC<{
                 DatabasePermissionType.CHANGE,
               ),
               expired: checkDbExpiredByDataSourceStatus(statusInfo?.status),
+              connectType: item?.connectType,
             };
           }),
       );

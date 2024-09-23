@@ -90,8 +90,11 @@ const getColumns = () => {
       dataIndex: 'traceId',
       ellipsis: true,
       render: (value: string, row: any) => {
-        if (!value) return '-';
-        return value;
+        return (
+          <Tooltip placement="topLeft" title={value || '-'}>
+            {value || '-'}
+          </Tooltip>
+        );
       },
       width: 200,
     },

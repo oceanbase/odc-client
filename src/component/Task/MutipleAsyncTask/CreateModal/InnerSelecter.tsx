@@ -1,7 +1,7 @@
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import ConnectionPopover from '@/component/ConnectionPopover';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { IConnection } from '@/d.ts';
+import { ConnectType, IConnection } from '@/d.ts';
 import { IEnvironment } from '@/d.ts/environment';
 import { ReactComponent as DragSvg } from '@/svgr/drag.svg';
 import { formatMessage } from '@/util/intl';
@@ -22,6 +22,7 @@ export type DatabaseOption = {
   existed: boolean;
   unauthorized: boolean;
   expired: boolean;
+  connectType: ConnectType;
 };
 const InnerSelect: React.FC<{
   rootName: (number | string)[];

@@ -31,7 +31,7 @@ import { isNil } from 'lodash';
 import moment from 'moment';
 import { isSqlEmpty } from './parser/sql';
 import { encodeIdentifiers, splitSql } from './sql';
-
+import type { RangePickerProps } from 'antd/es/date-picker';
 export const invalidRegexpStr = /[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g;
 
 /**
@@ -637,3 +637,7 @@ export function groupByPropertyName(array: any[], property: string): Object {
     return group;
   }, {});
 }
+
+export const disabledDate: RangePickerProps['disabledDate'] = (current) => {
+  return current && current < moment();
+};

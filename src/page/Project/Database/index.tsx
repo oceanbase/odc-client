@@ -46,7 +46,7 @@ import { useRequest } from 'ahooks';
 import { message, Modal, Space, Tooltip, Typography } from 'antd';
 import { toInteger } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import ProjectContext from '../ProjectContext';
 import AddDataBaseButton from './components/AddDataBaseButton';
 import ChangeOwnerModal from './components/ChangeOwnerModal';
@@ -180,6 +180,21 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
   const curRoles = project?.currentUserResourceRoles || [];
   const isOwner = curRoles.some((role) => [ProjectRole.OWNER].includes(role));
 
+  const initDialectType = useMemo(() => {
+    return data?.find((_db) => _db?.id === selectedRowKeys?.[0])?.connectType;
+  }, [selectedRowKeys[0]]);
+
+  const disabledMultiDBChanges = useMemo(() => {
+    if (!selectedRowKeys?.length) return false;
+    return !selectedRowKeys?.every(
+      (key) =>
+        /* 当前数据库分页没有这一条数据 */
+        !data?.find((_db) => _db?.id === key) ||
+        /* 当前数据库分页有这一条数据且类型相同 */
+        data?.find((_db) => _db?.id === key)?.connectType === initDialectType,
+    );
+  }, [selectedRowKeys, data]);
+
   return (
     <TableCard
       title={
@@ -187,6 +202,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           orderedDatabaseIds={
             selectedRowKeys?.length ? [selectedRowKeys as number[]] : [[undefined]]
           }
+          disabledMultiDBChanges={disabledMultiDBChanges}
           clearSelectedRowKeys={clearSelectedRowKeys}
           modalStore={modalStore}
           onSuccess={() => reload()}
@@ -232,12 +248,14 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             const disabled =
               !hasChangeAuth && !hasQueryAuth && !record?.authorizedPermissionTypes?.length;
             const status = statusMap.get(record?.dataSource?.id) || record?.dataSource?.status;
+            const config = getDataSourceModeConfig(record?.dataSource?.type);
 
             return {
               disabled:
                 disabled ||
                 !record.existed ||
-                ![IConnectionStatus.ACTIVE, IConnectionStatus.TESTING]?.includes(status?.status),
+                ![IConnectionStatus.ACTIVE, IConnectionStatus.TESTING]?.includes(status?.status) ||
+                !config?.features?.task?.includes(TaskType.MULTIPLE_ASYNC),
               name: record.name,
             };
           },
