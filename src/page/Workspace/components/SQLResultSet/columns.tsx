@@ -52,7 +52,11 @@ const getColumns = (
       ellipsis: {
         showTitle: false,
       },
-      render: (text) => <Tooltip title={text}>{text}</Tooltip>,
+      render: (text) => (
+        <Tooltip placement="left" title={text}>
+          {text}
+        </Tooltip>
+      ),
     },
     {
       title: formatMessage({
