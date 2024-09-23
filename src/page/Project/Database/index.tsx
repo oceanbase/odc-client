@@ -588,7 +588,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                 );
               }
               return (
-                <Action.Group size={3}>
+                <Action.Group size={2}>
                   {config?.features?.task?.includes(TaskType.EXPORT) && setting.enableDBExport && (
                     <Action.Link
                       key={'export'}

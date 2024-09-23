@@ -331,6 +331,7 @@ export class SQLStore {
     } catch (e) {
       throw e;
     } finally {
+      this.logLoading = false;
       this.runningPageKey.delete(pageKey);
       this.isRunningSection.delete(pageKey);
     }
