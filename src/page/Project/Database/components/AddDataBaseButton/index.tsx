@@ -48,6 +48,7 @@ interface IProps {
   onSuccess: () => void;
   clearSelectedRowKeys: () => void;
   onOpenLogicialDatabase: () => void;
+  disabledMultiDBChanges?: boolean;
 }
 const AddDataBaseButton: React.FC<IProps> = ({
   projectId,
@@ -56,6 +57,7 @@ const AddDataBaseButton: React.FC<IProps> = ({
   onSuccess,
   clearSelectedRowKeys,
   onOpenLogicialDatabase,
+  disabledMultiDBChanges,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const { project } = useContext(ProjectContext);
@@ -148,20 +150,27 @@ const AddDataBaseButton: React.FC<IProps> = ({
             添加数据库
           </Dropdown.Button>
         </TooltipAction>
-        <Button
-          onClick={() => {
-            modalStore?.changeMultiDatabaseChangeModal(true, {
-              projectId,
-              orderedDatabaseIds,
-            });
-            clearSelectedRowKeys?.();
-          }}
+        <Tooltip
+          title={
+            disabledMultiDBChanges ? '仅支持选择相同类型的数据源的数据库发起多库变更任务' : null
+          }
         >
-          {formatMessage({
-            id: 'src.page.Project.Database.AddDataBaseButton.693C4817',
-            defaultMessage: '多库变更',
-          })}
-        </Button>
+          <Button
+            disabled={disabledMultiDBChanges}
+            onClick={() => {
+              modalStore?.changeMultiDatabaseChangeModal(true, {
+                projectId,
+                orderedDatabaseIds,
+              });
+              clearSelectedRowKeys?.();
+            }}
+          >
+            {formatMessage({
+              id: 'src.page.Project.Database.AddDataBaseButton.693C4817',
+              defaultMessage: '多库变更',
+            })}
+          </Button>
+        </Tooltip>
         <ApplyDatabasePermissionButton
           label={
             formatMessage({

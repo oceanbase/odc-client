@@ -53,6 +53,7 @@ import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig, { timeUnitOptions } from './VariableConfig';
 import ShardingStrategyItem from '../../component/ShardingStrategyItem';
+import { disabledDate } from '@/util/utils';
 
 export enum IArchiveRange {
   PORTION = 'portion',
@@ -654,7 +655,11 @@ const CreateModal: React.FC<IProps> = (props) => {
                     })}
                     /*执行时间*/ required
                   >
-                    <DatePicker showTime suffixIcon={<FieldTimeOutlined />} />
+                    <DatePicker
+                      showTime
+                      suffixIcon={<FieldTimeOutlined />}
+                      disabledDate={disabledDate}
+                    />
                   </Form.Item>
                 );
               }

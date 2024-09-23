@@ -64,6 +64,7 @@ const items: Record<ConnectType.PG, IDataSourceModeConfig> = {
       sys: false,
       ssl: false,
       jdbcDoc: 'https://jdbc.postgresql.org/documentation/use/',
+      disableURLParse: true,
     },
     features: {
       task: [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE],
