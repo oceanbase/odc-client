@@ -47,8 +47,8 @@ devDependencies:
     specifier: ^1.2.9
     version: 1.2.9(monaco-editor@0.36.1)
   '@oceanbase-odc/ob-intl-cli':
-    specifier: ^2.1.2
-    version: 2.1.2(prettier@2.8.8)(typescript@4.9.5)
+    specifier: ^2.1.3
+    version: 2.1.3(prettier@2.8.8)(typescript@4.9.5)
   '@oceanbase-odc/ob-parser-js':
     specifier: ^3.0.5
     version: 3.0.5
@@ -3877,8 +3877,8 @@ packages:
       monaco-editor: 0.36.1
     dev: true
 
-  /@oceanbase-odc/ob-intl-cli@2.1.2(prettier@2.8.8)(typescript@4.9.5):
-    resolution: {integrity: sha512-qvQ5C+PJzcSp8kK4hMPlPS5sufr8dAJDAffjjY5UG0ZJMpQjr5Yn9rfUw9nRS5JAzqnuqKJklqbO9R4773J5eg==}
+  /@oceanbase-odc/ob-intl-cli@2.1.3(prettier@2.8.8)(typescript@4.9.5):
+    resolution: {integrity: sha512-gU8FurOzsP2RcbYLOfJmbIanO4+j/8QCU3lu7tYZ/4aYxAlXw2GtEFSC97nQBZ4pUdsSBFuxesRyVX0+3tKzOA==}
     hasBin: true
     dependencies:
       '@babel/core': 7.24.7
