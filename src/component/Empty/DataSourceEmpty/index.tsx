@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Acess, createPermission } from '@/component/Acess';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
 import TitleButton from '@/page/Datasource/Datasource/Content/TitleButton';
@@ -14,15 +15,35 @@ export function DataSourceEmpty({ extra }) {
       <Acess
         fallback={
           <div className={styles.subTitle}>
-            <div>{'请联系管理员添加数据源；'}</div>
-            <div>{'也可尝试切换至个人空间，自由管理个人数据源'}</div>
+            <div>
+              {formatMessage({
+                id: 'src.component.Empty.DataSourceEmpty.54644C36',
+                defaultMessage: '请联系管理员添加数据源；',
+              })}
+            </div>
+            <div>
+              {formatMessage({
+                id: 'src.component.Empty.DataSourceEmpty.809DB9AA',
+                defaultMessage: '也可尝试切换至个人空间，自由管理个人数据源',
+              })}
+            </div>
           </div>
         }
         {...createPermission(IManagerResourceType.project, actionTypes.create)}
       >
         <div className={styles.subTitle}>
-          <div>{'支持管理 OceanBase 、 MySQL 等数据源；'}</div>
-          <div>{'可将数据源下的数据库添加到对应的项目内，供团队协同开发使用'}</div>
+          <div>
+            {formatMessage({
+              id: 'src.component.Empty.DataSourceEmpty.46EEDFA4',
+              defaultMessage: '支持管理 OceanBase 、 MySQL 等数据源；',
+            })}
+          </div>
+          <div>
+            {formatMessage({
+              id: 'src.component.Empty.DataSourceEmpty.811D4040',
+              defaultMessage: '可将数据源下的数据库添加到对应的项目内，供团队协同开发使用',
+            })}
+          </div>
         </div>
       </Acess>
     );
@@ -30,7 +51,14 @@ export function DataSourceEmpty({ extra }) {
   return (
     <Result
       status={'success'}
-      title={<div className={styles.title}>暂无数据源</div>}
+      title={
+        <div className={styles.title}>
+          {formatMessage({
+            id: 'src.component.Empty.DataSourceEmpty.4FF7D961',
+            defaultMessage: '暂无数据源',
+          })}
+        </div>
+      }
       subTitle={renderSubTitle()}
       icon={
         <img

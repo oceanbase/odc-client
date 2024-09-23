@@ -165,7 +165,12 @@ const ActionBar: React.FC<IProps> = inject(
       setActiveBtnKey('execute');
       const res = await executeTask(task.id);
       if (res) {
-        message.success('开始执行');
+        message.success(
+          formatMessage({
+            id: 'src.component.Task.component.ActionBar.10A4FEFD',
+            defaultMessage: '开始执行',
+          }),
+        );
         closeTaskDetail();
         props?.onReloadList?.();
       }

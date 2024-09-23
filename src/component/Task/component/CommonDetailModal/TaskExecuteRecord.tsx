@@ -102,18 +102,30 @@ const getLogicalDatabaseAsyncColumns = (params: {
 }) => {
   return [
     {
-      title: '执行数据库',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.7E35E39B',
+        defaultMessage: '执行数据库',
+      }),
       key: 'database',
       dataIndex: 'database',
       ellipsis: {
         showTitle: true,
       },
       filterDropdown: (props) => {
-        return <SearchFilter {...props} placeholder="请输入执行数据库名称" />;
+        return (
+          <SearchFilter
+            {...props}
+            placeholder={formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.B77644B9',
+              defaultMessage: '请输入执行数据库名称',
+            })}
+          />
+        );
       },
       filterIcon: (filtered) => (
         <SearchOutlined style={{ color: filtered ? 'var(--icon-color-focus)' : undefined }} />
       ),
+
       onFilter: (value, record) => {
         return record?.database?.name?.includes(value);
       },
@@ -138,24 +150,39 @@ const getLogicalDatabaseAsyncColumns = (params: {
       },
     },
     {
-      title: '数据源',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.B38FABC4',
+        defaultMessage: '数据源',
+      }),
       key: 'datasource',
       dataIndex: 'datasource',
       render: (value, record) => {
         return record?.database?.dataSource?.name;
       },
       filterDropdown: (props) => {
-        return <SearchFilter {...props} placeholder="请输入数据源名称" />;
+        return (
+          <SearchFilter
+            {...props}
+            placeholder={formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.EB0FAD1D',
+              defaultMessage: '请输入数据源名称',
+            })}
+          />
+        );
       },
       filterIcon: (filtered) => (
         <SearchOutlined style={{ color: filtered ? 'var(--icon-color-focus)' : undefined }} />
       ),
+
       onFilter: (value, record) => {
         return record?.dataSource?.name?.includes(value);
       },
     },
     {
-      title: '执行状态',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.D5F9DCA0',
+        defaultMessage: '执行状态',
+      }),
       key: 'status',
       dataIndex: 'status',
       render: (value, row: ISchemaChangeRecord) => {
@@ -179,23 +206,40 @@ const getLogicalDatabaseAsyncColumns = (params: {
       }),
     },
     {
-      title: '操作',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.13DCD7AB',
+        defaultMessage: '操作',
+      }),
       key: 'operation',
       render: (value, record: ISchemaChangeRecord) => {
         return (
           <Space>
             <Link onClick={() => params?.handleLogicalDatabaseAsyncModalOpen(record?.id)}>
-              查看
+              {formatMessage({
+                id: 'src.component.Task.component.CommonDetailModal.178F11D7',
+                defaultMessage: '查看',
+              })}
             </Link>
             {record?.status === SchemaChangeRecordStatus.RUNNING && (
-              <Link onClick={() => params?.handleLogicalDatabaseTaskStop(record?.id)}>终止</Link>
+              <Link onClick={() => params?.handleLogicalDatabaseTaskStop(record?.id)}>
+                {formatMessage({
+                  id: 'src.component.Task.component.CommonDetailModal.7EF67970',
+                  defaultMessage: '终止',
+                })}
+              </Link>
             )}
+
             {[
               SchemaChangeRecordStatus.FAILED,
               SchemaChangeRecordStatus.TERMINATED,
               SchemaChangeRecordStatus.TERMINATE_FAILED,
             ]?.includes(record?.status) && (
-              <Link onClick={() => params?.handleLogicalDatabaseTaskSkip(record?.id)}>跳过</Link>
+              <Link onClick={() => params?.handleLogicalDatabaseTaskSkip(record?.id)}>
+                {formatMessage({
+                  id: 'src.component.Task.component.CommonDetailModal.88502ED7',
+                  defaultMessage: '跳过',
+                })}
+              </Link>
             )}
           </Space>
         );
@@ -402,9 +446,19 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
   const handleLogicalDatabaseTaskStop = async (detailId: number) => {
     const res = await stopPhysicalSqlExecute(flowList?.contents?.[0]?.id, detailId);
     if (res) {
-      message.success('正在尝试终止');
+      message.success(
+        formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.1F689C8D',
+          defaultMessage: '正在尝试终止',
+        }),
+      );
     } else {
-      message.warning('当前任务状态不支持终止');
+      message.warning(
+        formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.30E204EE',
+          defaultMessage: '当前任务状态不支持终止',
+        }),
+      );
     }
     onReload?.();
   };
@@ -412,9 +466,19 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
   const handleLogicalDatabaseTaskSkip = async (detailId: number) => {
     const res = await skipPhysicalSqlExecute(flowList?.contents?.[0]?.id, detailId);
     if (res) {
-      message.success('正在尝试跳过');
+      message.success(
+        formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.B0CD0DE9',
+          defaultMessage: '正在尝试跳过',
+        }),
+      );
     } else {
-      message.warning('当前任务状态不支持跳过');
+      message.warning(
+        formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.6C8E11EA',
+          defaultMessage: '当前任务状态不支持跳过',
+        }),
+      );
     }
     onReload?.();
   };
@@ -479,6 +543,7 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
         recordId={detailId}
         onClose={handleCloseExcecuteDetail}
       />
+
       <TaskProgressModal
         physicalDatabaseId={detailId}
         scheduleTaskId={flowList?.contents?.[0]?.id}

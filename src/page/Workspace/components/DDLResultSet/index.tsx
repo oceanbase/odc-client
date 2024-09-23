@@ -594,17 +594,19 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                     [getBlobValueKey(columnKey)]: new LobExt(serverFileName, RSModifyDataType.FILE),
                   });
                   message.success(
-                    `${file.name} ${formatMessage({
-                      id: 'workspace.window.table.object.upload.success',
-                      defaultMessage: '上传成功',
-                    })}`,
+                    `${file.name} ` +
+                      formatMessage({
+                        id: 'workspace.window.table.object.upload.success',
+                        defaultMessage: '上传成功',
+                      }),
                   );
                 } else {
                   message.error(
-                    `${file.name} ${formatMessage({
-                      id: 'workspace.window.table.object.upload.failure',
-                      defaultMessage: '上传失败',
-                    })}`,
+                    `${file.name} ` +
+                      formatMessage({
+                        id: 'workspace.window.table.object.upload.failure',
+                        defaultMessage: '上传失败',
+                      }),
                   );
                 }
               }

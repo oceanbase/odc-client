@@ -183,7 +183,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         },
         {
           value: TaskPageType.LOGICAL_DATABASE_CHANGE,
-          label: '逻辑库变更',
+          label: formatMessage({ id: 'src.component.Task.A7954C70', defaultMessage: '逻辑库变更' }),
           enabled: true,
         },
         {

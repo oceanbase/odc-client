@@ -56,7 +56,13 @@ export const menuAccessWrap = (
     return menuNode;
   }
   return (
-    <Tooltip title={'暂无权限'} placement="right">
+    <Tooltip
+      title={formatMessage({
+        id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.3B3090CC',
+        defaultMessage: '暂无权限',
+      })}
+      placement="right"
+    >
       <Text type="secondary" onClick={(e) => e.stopPropagation()}>
         <div style={{ width: '100%' }}>{menuNode}</div>
       </Text>
@@ -150,6 +156,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '导出',
             }) /*'导出'*/,
           ],
+
           needAccessTypeList: [DatabasePermissionType.EXPORT],
           ellipsis: true,
           isHide(_, node) {
@@ -171,6 +178,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '导出结果集',
             }) /*'导出结果集'*/,
           ],
+
           needAccessTypeList: [DatabasePermissionType.EXPORT],
           ellipsis: true,
           isHide(_, node) {
@@ -208,6 +216,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '导入',
             }) /*'导入'*/,
           ],
+
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
@@ -233,6 +242,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '模拟数据',
             }) /*'模拟数据'*/,
           ],
+
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
@@ -258,6 +268,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '数据库变更',
             }) /*'数据库变更'*/,
           ],
+
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
@@ -277,7 +288,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         },
         {
           key: 'MULTIPLE_ASYNC',
-          text: ['多库变更'],
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.C0230CDC',
+              defaultMessage: '多库变更',
+            }),
+          ],
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
@@ -297,7 +313,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         },
         {
           key: 'TASK_ASYNC',
-          text: ['逻辑库变更'],
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.11F98E6B',
+              defaultMessage: '逻辑库变更',
+            }),
+          ],
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
@@ -318,6 +339,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '无锁结构变更',
             }) /*'无锁结构变更'*/,
           ],
+
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
@@ -343,6 +365,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '影子表同步',
             }) /*'影子表同步'*/,
           ],
+
           isHide(_, node) {
             const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
             return (
@@ -367,6 +390,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '结构比对',
             }) /*'结构比对'*/,
           ],
+
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
@@ -414,6 +438,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: 'SQL 计划',
             }) /*'SQL 计划'*/,
           ],
+
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
@@ -439,6 +464,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '分区计划',
             }) /*'分区计划'*/,
           ],
+
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
@@ -464,6 +490,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '数据归档',
             }) /*'数据归档'*/,
           ],
+
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
@@ -489,6 +516,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '数据清理',
             }) /*'数据清理'*/,
           ],
+
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
@@ -510,7 +538,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     },
     {
       key: 'APPLY_DATABASE_PERMISSION_MENU',
-      text: ['权限申请'],
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.628998D2',
+          defaultMessage: '权限申请',
+        }),
+      ],
       ellipsis: true,
       hasDivider:
         setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'true',
@@ -520,7 +553,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       children: [
         {
           key: TaskPageType.APPLY_DATABASE_PERMISSION,
-          text: ['申请库权限'],
+          text: [
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.B508546B',
+              defaultMessage: '申请库权限',
+            }),
+          ],
           ellipsis: true,
           run(session, node) {
             const database: IDatabase = node.data;

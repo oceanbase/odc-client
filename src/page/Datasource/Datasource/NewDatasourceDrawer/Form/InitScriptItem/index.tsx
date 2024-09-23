@@ -28,7 +28,10 @@ interface IProps {
   onChange?: (v: string) => void;
 }
 
-const tooltipText = '复制全部 SQL';
+const tooltipText = formatMessage({
+  id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.InitScriptItem.4FA07412',
+  defaultMessage: '复制全部 SQL',
+});
 
 const onCopy = (_, result: boolean) => {
   if (result) {
@@ -54,15 +57,24 @@ const formatList = [
   `SET SESSION nls_timestamp_format='YYYY-MM-DD HH:MI:SS.XFF3';`,
   `SET SESSION nls_timestamp_tz_format='YYYY-MM-DD HH24:MI:SS.XFF3 TZH:TZM';`,
 ];
+
 const timeoutList = ['SET SESSION ob_query_timeout = 20000000;'];
 
 const content = () => {
   return (
     <Space direction="vertical">
       <div>
-        <Typography.Title level={5}>1、备库弱读</Typography.Title>
+        <Typography.Title level={5}>
+          {formatMessage({
+            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.InitScriptItem.84547DA8',
+            defaultMessage: '1、备库弱读',
+          })}
+        </Typography.Title>
         <FormItemPanel
-          label={'设置数据库读一致性级别，默认备库应启用弱读'}
+          label={formatMessage({
+            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.InitScriptItem.BC905C29',
+            defaultMessage: '设置数据库读一致性级别，默认备库应启用弱读',
+          })}
           keepExpand
           customExtra={
             <CommonCopyIcon
@@ -80,11 +92,18 @@ const content = () => {
         </FormItemPanel>
       </div>
       <div>
-        <Typography.Title level={5}>2、日期字段显示格式</Typography.Title>
+        <Typography.Title level={5}>
+          {formatMessage({
+            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.InitScriptItem.446BC11B',
+            defaultMessage: '2、日期字段显示格式',
+          })}
+        </Typography.Title>
         <FormItemPanel
-          label={
-            '该组变量仅适用于 OceanBase 数据库 Oracle 模式，用于控制日期类型转化为特定的字符串格式。'
-          }
+          label={formatMessage({
+            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.InitScriptItem.8CB2E790',
+            defaultMessage:
+              '该组变量仅适用于 OceanBase 数据库 Oracle 模式，用于控制日期类型转化为特定的字符串格式。',
+          })}
           keepExpand
           customExtra={
             <CommonCopyIcon
@@ -102,9 +121,17 @@ const content = () => {
         </FormItemPanel>
       </div>
       <div>
-        <Typography.Title level={5}>3、SQL 超时</Typography.Title>
+        <Typography.Title level={5}>
+          {formatMessage({
+            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.InitScriptItem.B6942AC5',
+            defaultMessage: '3、SQL 超时',
+          })}
+        </Typography.Title>
         <FormItemPanel
-          label={'设置 SQL 最大执行时间，单位为微秒。'}
+          label={formatMessage({
+            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.InitScriptItem.64E4EA49',
+            defaultMessage: '设置 SQL 最大执行时间，单位为微秒。',
+          })}
           keepExpand
           customExtra={
             <CommonCopyIcon

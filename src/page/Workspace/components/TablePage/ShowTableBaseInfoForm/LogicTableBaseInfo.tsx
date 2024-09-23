@@ -13,7 +13,10 @@ const LogicTableBaseInfo = ({ table }) => {
       <ObjectInfoView
         data={[
           {
-            label: '逻辑表名称',
+            label: formatMessage({
+              id: 'src.page.Workspace.components.TablePage.ShowTableBaseInfoForm.56FAF24C',
+              defaultMessage: '逻辑表名称',
+            }),
 
             content: table?.info?.tableName,
             span: 8,
@@ -90,12 +93,18 @@ const LogicTableBaseInfo = ({ table }) => {
             content: table?.info?.columnGroups?.map((c) => columnGroupsText[c]).join(', '),
           },
           {
-            label: '逻辑表表达式',
+            label: formatMessage({
+              id: 'src.page.Workspace.components.TablePage.ShowTableBaseInfoForm.C1C0A345',
+              defaultMessage: '逻辑表表达式',
+            }),
             content: table?.expression,
             span: 8,
           },
           {
-            label: '表拓扑',
+            label: formatMessage({
+              id: 'src.page.Workspace.components.TablePage.ShowTableBaseInfoForm.200BCB34',
+              defaultMessage: '表拓扑',
+            }),
             content: '',
             span: 24,
           },
@@ -118,7 +127,14 @@ const LogicTableBaseInfo = ({ table }) => {
                     emptyText: (
                       <Empty
                         image={Empty.PRESENTED_IMAGE_SIMPLE}
-                        description={<div>暂无数据</div>}
+                        description={
+                          <div>
+                            {formatMessage({
+                              id: 'src.page.Workspace.components.TablePage.ShowTableBaseInfoForm.378BAC1A',
+                              defaultMessage: '暂无数据',
+                            })}
+                          </div>
+                        }
                       ></Empty>
                     ),
                   },
@@ -129,6 +145,7 @@ const LogicTableBaseInfo = ({ table }) => {
                 onLoad={async () => {}}
               />
             ),
+
             span: 20,
           },
         ].filter(Boolean)}

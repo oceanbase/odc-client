@@ -348,10 +348,10 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                   label: getResultSetTitle(
                     i,
                     set.executeSql,
-                    `${formatMessage({
+                    formatMessage({
                       id: 'workspace.window.sql.result',
                       defaultMessage: '结果',
-                    })}${resultTabCount}`,
+                    }) + resultTabCount,
                     set.locked,
                     set.uniqKey,
                   ),

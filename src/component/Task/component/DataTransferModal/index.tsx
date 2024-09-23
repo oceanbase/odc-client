@@ -155,22 +155,22 @@ class TaskContent extends React.Component<any, any> {
           }),
         );
       csvDisplayData.push(
-        `${formatMessage({
+        formatMessage({
           id: 'odc.component.TaskDetailDrawer.TaskInfo.FieldSeparator',
           defaultMessage: '字段分隔符:',
-        })}${taskConfig?.csvConfig?.columnSeparator}`,
+        }) + taskConfig?.csvConfig?.columnSeparator,
       );
       csvDisplayData.push(
-        `${formatMessage({
+        formatMessage({
           id: 'odc.component.TaskDetailDrawer.TaskInfo.TextIdentifier',
           defaultMessage: '文本识别符:',
-        })}${taskConfig?.csvConfig?.columnDelimiter}`,
+        }) + taskConfig?.csvConfig?.columnDelimiter,
       );
       csvDisplayData.push(
-        `${formatMessage({
+        formatMessage({
           id: 'odc.component.TaskDetailDrawer.TaskInfo.LineBreakSymbol',
           defaultMessage: '换行符号：',
-        })}${taskConfig?.csvConfig?.lineSeparator}`,
+        }) + taskConfig?.csvConfig?.lineSeparator,
       );
     }
     const fileFormatView = (

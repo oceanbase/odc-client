@@ -136,7 +136,17 @@ const StatusBar: React.FC<IProps> = function ({
           </span>
         ) : null}
         <Space size={'small'}>
-          {timer && <span>{`DB 耗时：${DBCostTime}`}</span>}
+          {timer && (
+            <span>
+              {formatMessage(
+                {
+                  id: 'src.page.Workspace.components.DDLResultSet.C6B35DB8',
+                  defaultMessage: 'DB 耗时：{DBCostTime}',
+                },
+                { DBCostTime },
+              )}
+            </span>
+          )}
           <span>
             {
               formatMessage(

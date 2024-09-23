@@ -68,7 +68,12 @@ const Filter: React.FC<IProps> = function ({}) {
             alignItems: 'center',
           }}
         >
-          <Typography.Text strong>筛选</Typography.Text>
+          <Typography.Text strong>
+            {formatMessage({
+              id: 'src.page.Datasource.Info.Header.Filter.881015FF',
+              defaultMessage: '筛选',
+            })}
+          </Typography.Text>
           <a onClick={clear}>
             {formatMessage({ id: 'odc.Header.Filter.Clear', defaultMessage: '清空' }) /*清空*/}
           </a>
@@ -78,7 +83,12 @@ const Filter: React.FC<IProps> = function ({}) {
         <div>
           <Space direction="vertical" size={16}>
             <Space direction="vertical" size={5}>
-              <Typography.Text type="secondary">数据库状态</Typography.Text>
+              <Typography.Text type="secondary">
+                {formatMessage({
+                  id: 'src.page.Datasource.Info.Header.Filter.AB1F0599',
+                  defaultMessage: '数据库状态',
+                })}
+              </Typography.Text>
               <RadioTag
                 value={context?.filterParams?.existed}
                 options={[]
@@ -94,7 +104,12 @@ const Filter: React.FC<IProps> = function ({}) {
             </Space>
 
             <Space direction="vertical" size={5}>
-              <Typography.Text type="secondary">数据库分配</Typography.Text>
+              <Typography.Text type="secondary">
+                {formatMessage({
+                  id: 'src.page.Datasource.Info.Header.Filter.7A10CB43',
+                  defaultMessage: '数据库分配',
+                })}
+              </Typography.Text>
               <RadioTag
                 value={context?.filterParams?.belongsToProject}
                 options={[]

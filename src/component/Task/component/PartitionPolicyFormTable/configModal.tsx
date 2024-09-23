@@ -730,7 +730,14 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     </Form.Item>
                     <Input.Group compact>
                       <Tag className={styles.suffix}>
-                        <HelpDoc leftText isTip title={'后缀根据指定的分区键取值策略生成'}>
+                        <HelpDoc
+                          leftText
+                          isTip
+                          title={formatMessage({
+                            id: 'src.component.Task.component.PartitionPolicyFormTable.BB3B1843',
+                            defaultMessage: '后缀根据指定的分区键取值策略生成',
+                          })}
+                        >
                           {
                             formatMessage({
                               id: 'src.component.Task.component.PartitionPolicyFormTable.0F79EE9C' /*后缀*/,
@@ -791,7 +798,12 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                       </Form.Item>
                     </Input.Group>
                     <Input.Group compact>
-                      <Tag className={styles.suffix}>取值策略</Tag>
+                      <Tag className={styles.suffix}>
+                        {formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.7B83EDD7',
+                          defaultMessage: '取值策略',
+                        })}
+                      </Tag>
                       <Form.Item
                         name="namingSuffixStrategy"
                         className={styles.noMarginBottom}
@@ -802,15 +814,24 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                         ]}
                       >
                         <Select
-                          placeholder="请选择"
+                          placeholder={formatMessage({
+                            id: 'src.component.Task.component.PartitionPolicyFormTable.ACFEE807',
+                            defaultMessage: '请选择',
+                          })}
                           dropdownMatchSelectWidth={100}
                           style={{ width: 100 }}
                         >
                           <Select.Option value={PartitionBound.PARTITION_UPPER_BOUND}>
-                            分区上界
+                            {formatMessage({
+                              id: 'src.component.Task.component.PartitionPolicyFormTable.602BD66C',
+                              defaultMessage: '分区上界',
+                            })}
                           </Select.Option>
                           <Select.Option value={PartitionBound.PARTITION_LOWER_BOUND}>
-                            分区下界
+                            {formatMessage({
+                              id: 'src.component.Task.component.PartitionPolicyFormTable.2384A1C3',
+                              defaultMessage: '分区下界',
+                            })}
                           </Select.Option>
                         </Select>
                       </Form.Item>

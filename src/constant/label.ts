@@ -104,18 +104,27 @@ export const ConnectTypeText = {
 };
 
 export const DBTypeText = {
-  [DBType.LOGICAL]: '逻辑库',
-  [DBType.PHYSICAL]: '物理库',
+  [DBType.LOGICAL]: formatMessage({ id: 'src.constant.D2F0EBE8', defaultMessage: '逻辑库' }),
+  [DBType.PHYSICAL]: formatMessage({ id: 'src.constant.5363D697', defaultMessage: '物理库' }),
 };
 
 export const DatabaseAvailableTypeText = {
-  [BooleanOptionType.TRUE]: '可用',
-  [BooleanOptionType.FALSE]: '不可用',
+  [BooleanOptionType.TRUE]: formatMessage({ id: 'src.constant.AA47C15A', defaultMessage: '可用' }),
+  [BooleanOptionType.FALSE]: formatMessage({
+    id: 'src.constant.64EC9D59',
+    defaultMessage: '不可用',
+  }),
 };
 
 export const DatabaseBelongsToProjectTypeText = {
-  [BooleanOptionType.TRUE]: '已分配项目',
-  [BooleanOptionType.FALSE]: '未分配项目',
+  [BooleanOptionType.TRUE]: formatMessage({
+    id: 'src.constant.EF974350',
+    defaultMessage: '已分配项目',
+  }),
+  [BooleanOptionType.FALSE]: formatMessage({
+    id: 'src.constant.8641DB35',
+    defaultMessage: '未分配项目',
+  }),
 };
 
 export const DragInsertTypeText = {

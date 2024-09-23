@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { render } from '@/app';
 import {
   checkLogicalTable,
@@ -41,7 +42,10 @@ const getColumns = ({ logicalDatabaseId, reload }) => {
   return [
     {
       key: 'name',
-      title: '逻辑表',
+      title: formatMessage({
+        id: 'src.page.Project.Database.components.LogicDatabase.9C2434F4',
+        defaultMessage: '逻辑表',
+      }),
       dataIndex: 'name',
       render: (value: string, record) => {
         const inconsistentTableList = record?.inconsistentPhysicalTables?.reduce(
@@ -56,7 +60,13 @@ const getColumns = ({ logicalDatabaseId, reload }) => {
             <Tooltip
               title={
                 record?.inconsistentPhysicalTables?.length &&
-                `表${inconsistentTableList}表结构不一致，请检查`
+                formatMessage(
+                  {
+                    id: 'src.page.Project.Database.components.LogicDatabase.4541D5D8',
+                    defaultMessage: '表{inconsistentTableList}表结构不一致，请检查',
+                  },
+                  { inconsistentTableList },
+                )
               }
             >
               {record?.inconsistentPhysicalTables?.length > 0 && (
@@ -70,15 +80,29 @@ const getColumns = ({ logicalDatabaseId, reload }) => {
     {
       key: 'expression',
       title: () => (
-        <HelpDoc isTip leftText title={'根据物理表在实际数据库上分布，计算获得的拓扑'}>
-          表达式
+        <HelpDoc
+          isTip
+          leftText
+          title={formatMessage({
+            id: 'src.page.Project.Database.components.LogicDatabase.5C864DDF',
+            defaultMessage: '根据物理表在实际数据库上分布，计算获得的拓扑',
+          })}
+        >
+          {formatMessage({
+            id: 'src.page.Project.Database.components.LogicDatabase.6483A6AD',
+            defaultMessage: '表达式',
+          })}
         </HelpDoc>
       ),
+
       dataIndex: 'expression',
     },
     {
       key: 'physicalTableCount',
-      title: '物理表数量',
+      title: formatMessage({
+        id: 'src.page.Project.Database.components.LogicDatabase.050806D0',
+        defaultMessage: '物理表数量',
+      }),
       dataIndex: 'physicalTableCount',
       render: (value) => {
         return <div style={{ width: 60 }}>{value}</div>;
@@ -86,7 +110,10 @@ const getColumns = ({ logicalDatabaseId, reload }) => {
     },
     {
       key: 'action',
-      title: '操作',
+      title: formatMessage({
+        id: 'src.page.Project.Database.components.LogicDatabase.CEDEA776',
+        defaultMessage: '操作',
+      }),
       render(record: ILogicalTable) {
         return (
           <Action.Group size={2}>
@@ -95,21 +122,40 @@ const getColumns = ({ logicalDatabaseId, reload }) => {
               onClick={async () => {
                 const res = await checkLogicalTable(logicalDatabaseId, record.id);
                 if (res) {
-                  message.success('检查中');
+                  message.success(
+                    formatMessage({
+                      id: 'src.page.Project.Database.components.LogicDatabase.E3A5218D',
+                      defaultMessage: '检查中',
+                    }),
+                  );
                 }
               }}
             >
-              检查
+              {formatMessage({
+                id: 'src.page.Project.Database.components.LogicDatabase.5DF738A9',
+                defaultMessage: '检查',
+              })}
             </Action.Link>
             <Action.Link
               key={'delete'}
               onClick={async () => {
                 Modal.confirm({
-                  title: `确认要移除逻辑表${record?.name}?`,
+                  title: formatMessage(
+                    {
+                      id: 'src.page.Project.Database.components.LogicDatabase.1620D67B',
+                      defaultMessage: '确认要移除逻辑表{recordName}?',
+                    },
+                    { recordName: record?.name },
+                  ),
                   onOk: async () => {
                     const successful = await deleteLogicalTable(logicalDatabaseId, record.id);
                     if (successful) {
-                      message.success('移除成功');
+                      message.success(
+                        formatMessage({
+                          id: 'src.page.Project.Database.components.LogicDatabase.238549D2',
+                          defaultMessage: '移除成功',
+                        }),
+                      );
                       reload?.();
                       return;
                     }
@@ -117,9 +163,19 @@ const getColumns = ({ logicalDatabaseId, reload }) => {
                 });
               }}
               disabled={record.physicalTableCount === 0}
-              tooltip={record.physicalTableCount === 0 ? '存在物理表，暂不可移除' : ''}
+              tooltip={
+                record.physicalTableCount === 0
+                  ? formatMessage({
+                      id: 'src.page.Project.Database.components.LogicDatabase.B3657267',
+                      defaultMessage: '存在物理表，暂不可移除',
+                    })
+                  : ''
+              }
             >
-              移除
+              {formatMessage({
+                id: 'src.page.Project.Database.components.LogicDatabase.CF774305',
+                defaultMessage: '移除',
+              })}
             </Action.Link>
           </Action.Group>
         );
@@ -130,17 +186,26 @@ const getColumns = ({ logicalDatabaseId, reload }) => {
 const subColumn = [
   {
     key: 'expression',
-    title: '表达式',
+    title: formatMessage({
+      id: 'src.page.Project.Database.components.LogicDatabase.B79AD693',
+      defaultMessage: '表达式',
+    }),
     dataIndex: 'expression',
   },
   {
     key: 'tableCount',
-    title: '物理表数量',
+    title: formatMessage({
+      id: 'src.page.Project.Database.components.LogicDatabase.9BABFCEF',
+      defaultMessage: '物理表数量',
+    }),
     dataIndex: 'tableCount',
   },
   {
     key: 'name',
-    title: '数据库',
+    title: formatMessage({
+      id: 'src.page.Project.Database.components.LogicDatabase.ECD64A3E',
+      defaultMessage: '数据库',
+    }),
     dataIndex: ['physicalDatabase', 'name'],
     render(value, record) {
       return record?.physicalDatabase ? (
@@ -158,7 +223,10 @@ const subColumn = [
 const physicalDbColumns = [
   {
     key: 'name',
-    title: '数据库名称',
+    title: formatMessage({
+      id: 'src.page.Project.Database.components.LogicDatabase.35970C60',
+      defaultMessage: '数据库名称',
+    }),
     dataIndex: 'name',
     width: 100,
     fixed: 'left' as FixedType,
@@ -174,7 +242,10 @@ const physicalDbColumns = [
     },
   },
   {
-    title: '所属数据源',
+    title: formatMessage({
+      id: 'src.page.Project.Database.components.LogicDatabase.74E8F833',
+      defaultMessage: '所属数据源',
+    }),
     dataIndex: ['dataSource', 'name'],
     width: 160,
     ellipsis: {
@@ -195,13 +266,17 @@ const physicalDbColumns = [
               marginRight: 4,
             }}
           />
+
           <Tooltip title={value}>{value}</Tooltip>
         </>
       );
     },
   },
   {
-    title: '环境',
+    title: formatMessage({
+      id: 'src.page.Project.Database.components.LogicDatabase.B2364234',
+      defaultMessage: '环境',
+    }),
     dataIndex: 'environmentId',
     width: 80,
     render(value, record, index) {
@@ -211,7 +286,10 @@ const physicalDbColumns = [
     },
   },
   {
-    title: '上一次同步时间',
+    title: formatMessage({
+      id: 'src.page.Project.Database.components.LogicDatabase.8BC044C4',
+      defaultMessage: '上一次同步时间',
+    }),
     dataIndex: 'objectLastSyncTime',
     width: 170,
     render(v, record) {
@@ -220,6 +298,7 @@ const physicalDbColumns = [
     },
   },
 ];
+
 const expandedRowRender = (record: ILogicalTable, logicalDatabaseId: number, callback: any) => {
   return (
     <div key={record?.id}>
@@ -258,7 +337,12 @@ const ManageLogicDatabase: React.FC<{
   const handleExtractLogicalTables = async () => {
     const successful = await extractLogicalTables(database?.id);
     if (successful) {
-      message.info('逻辑表正在提取中，请耐心等待。');
+      message.info(
+        formatMessage({
+          id: 'src.page.Project.Database.components.LogicDatabase.031534C2',
+          defaultMessage: '逻辑表正在提取中，请耐心等待。',
+        }),
+      );
     }
   };
   const queryLogicalDatabaseById = async () => {
@@ -290,13 +374,21 @@ const ManageLogicDatabase: React.FC<{
       <Drawer
         open={openManageLogicDatabase}
         destroyOnClose
-        title={'逻辑表管理'}
+        title={formatMessage({
+          id: 'src.page.Project.Database.components.LogicDatabase.6425DB17',
+          defaultMessage: '逻辑表管理',
+        })}
         width={800}
         closable
         onClose={() => setOpenManageLogicDatabase(false)}
       >
         <Descriptions column={1}>
-          <Descriptions.Item label={'当前库'}>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.page.Project.Database.components.LogicDatabase.C900315F',
+              defaultMessage: '当前库',
+            })}
+          >
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <DataBaseStatusIcon item={database} />
               <Typography.Link onClick={openPhysicalDbdrawer}>{database?.name}</Typography.Link>
@@ -306,9 +398,17 @@ const ManageLogicDatabase: React.FC<{
         <TableCard
           title={
             <Space size={8}>
-              <Tooltip title="将表名相似、结构一致的表提取为逻辑表">
+              <Tooltip
+                title={formatMessage({
+                  id: 'src.page.Project.Database.components.LogicDatabase.BC210D00',
+                  defaultMessage: '将表名相似、结构一致的表提取为逻辑表',
+                })}
+              >
                 <Button type="primary" onClick={handleExtractLogicalTables}>
-                  提取逻辑表
+                  {formatMessage({
+                    id: 'src.page.Project.Database.components.LogicDatabase.5FE18380',
+                    defaultMessage: '提取逻辑表',
+                  })}
                 </Button>
               </Tooltip>
               <Button
@@ -324,7 +424,12 @@ const ManageLogicDatabase: React.FC<{
                   )
                 }
               >
-                新建逻辑表 <Icon component={NewOpenSvg} />
+                {formatMessage({
+                  id: 'src.page.Project.Database.components.LogicDatabase.7F48554F',
+                  defaultMessage: '新建逻辑表',
+                })}
+
+                <Icon component={NewOpenSvg} />
               </Button>
             </Space>
           }
@@ -336,10 +441,19 @@ const ManageLogicDatabase: React.FC<{
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
                 description={
                   <div>
-                    <div>暂无数据</div>
+                    <div>
+                      {formatMessage({
+                        id: 'src.page.Project.Database.components.LogicDatabase.6D19E2E5',
+                        defaultMessage: '暂无数据',
+                      })}
+                    </div>
                     {isOwner && (
                       <div>
-                        系统可能正在将表名相似、结构一致的表提取逻辑表，请耐心等待；也可选择手动提取
+                        {formatMessage({
+                          id: 'src.page.Project.Database.components.LogicDatabase.CF799F8B',
+                          defaultMessage:
+                            '系统可能正在将表名相似、结构一致的表提取逻辑表，请耐心等待；也可选择手动提取',
+                        })}
                       </div>
                     )}
                   </div>
@@ -380,7 +494,13 @@ const ManageLogicDatabase: React.FC<{
         </TableCard>
       </Drawer>
       <Drawer
-        title={`逻辑库${database?.name}的物理分库`}
+        title={formatMessage(
+          {
+            id: 'src.page.Project.Database.components.LogicDatabase.71602A20',
+            defaultMessage: '逻辑库{databaseName}的物理分库',
+          },
+          { databaseName: database?.name },
+        )}
         width={600}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}

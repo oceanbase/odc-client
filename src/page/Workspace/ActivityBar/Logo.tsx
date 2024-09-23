@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -39,7 +40,13 @@ export default function Logo() {
       onMouseLeave={() => setHoverSatate(false)}
     >
       {isHover && !isClient() && !login.isPrivateSpace() ? (
-        <Tooltip title={'返回首页'} placement="right">
+        <Tooltip
+          title={formatMessage({
+            id: 'src.page.Workspace.ActivityBar.F4EC445B',
+            defaultMessage: '返回首页',
+          })}
+          placement="right"
+        >
           <Icon
             component={HomeOutlined}
             style={{

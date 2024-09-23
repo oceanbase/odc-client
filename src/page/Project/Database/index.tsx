@@ -171,9 +171,15 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
 
   const showDeleteErrorModal = (name: string) => {
     Modal.error({
-      title: `逻辑 ${name} 移除失败？`,
+      title: formatMessage(
+        { id: 'src.page.Project.Database.2D8C1CD8', defaultMessage: '逻辑 {name} 移除失败？' },
+        { name },
+      ),
       centered: true,
-      content: '当前逻辑库存在执行中的工单，暂时无法删除，请完成或终止工单后再移除。',
+      content: formatMessage({
+        id: 'src.page.Project.Database.C8C89C9E',
+        defaultMessage: '当前逻辑库存在执行中的工单，暂时无法删除，请完成或终止工单后再移除。',
+      }),
     });
   };
 
@@ -322,6 +328,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       marginRight: 4,
                     }}
                   />
+
                   <Space>
                     <StatusName
                       item={record}
@@ -337,6 +344,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                         );
                       }}
                     />
+
                     <Typography.Text type="secondary" title={record?.alias}>
                       {record?.alias}
                     </Typography.Text>
@@ -396,6 +404,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       marginRight: 4,
                     }}
                   />
+
                   <Tooltip title={value}>{value}</Tooltip>
                 </>
               );
@@ -541,9 +550,19 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                         setOpenManageLogicDatabase(true);
                       }}
                       disabled={!isOwnerOrDBA}
-                      tooltip={!isOwnerOrDBA ? '暂无权限' : ''}
+                      tooltip={
+                        !isOwnerOrDBA
+                          ? formatMessage({
+                              id: 'src.page.Project.Database.D8BEA086',
+                              defaultMessage: '暂无权限',
+                            })
+                          : ''
+                      }
                     >
-                      逻辑表管理
+                      {formatMessage({
+                        id: 'src.page.Project.Database.D9A05E1E',
+                        defaultMessage: '逻辑表管理',
+                      })}
                     </Action.Link>
                     <Action.Link
                       key={'update'}
@@ -554,13 +573,30 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                         })
                       }
                       disabled={!hasChangeAuth}
-                      tooltip={!hasChangeAuth ? '暂无权限, 请先申请库权限' : ''}
+                      tooltip={
+                        !hasChangeAuth
+                          ? formatMessage({
+                              id: 'src.page.Project.Database.12FDA4F2',
+                              defaultMessage: '暂无权限, 请先申请库权限',
+                            })
+                          : ''
+                      }
                     >
-                      逻辑库变更
+                      {formatMessage({
+                        id: 'src.page.Project.Database.D45EF5F3',
+                        defaultMessage: '逻辑库变更',
+                      })}
                     </Action.Link>
                     <Action.Link
                       disabled={!hasQueryAuth}
-                      tooltip={!hasQueryAuth ? '暂无权限, 请先申请库权限' : ''}
+                      tooltip={
+                        !hasQueryAuth
+                          ? formatMessage({
+                              id: 'src.page.Project.Database.8B2C5A3A',
+                              defaultMessage: '暂无权限, 请先申请库权限',
+                            })
+                          : ''
+                      }
                       key={'login'}
                       onClick={() => {
                         gotoSQLWorkspace(
@@ -573,25 +609,55 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                         );
                       }}
                     >
-                      登录数据库
+                      {formatMessage({
+                        id: 'src.page.Project.Database.F8F1FF42',
+                        defaultMessage: '登录数据库',
+                      })}
                     </Action.Link>
                     <Action.Link
                       disabled={!isOwnerOrDBA}
-                      tooltip={!isOwnerOrDBA ? '暂无权限' : ''}
+                      tooltip={
+                        !isOwnerOrDBA
+                          ? formatMessage({
+                              id: 'src.page.Project.Database.680DB47A',
+                              defaultMessage: '暂无权限',
+                            })
+                          : ''
+                      }
                       key={'delete'}
                       onClick={() => {
                         Modal.confirm({
-                          title: `确认要移除逻辑库 ${record.name} 吗？`,
+                          title: formatMessage(
+                            {
+                              id: 'src.page.Project.Database.DFEFF83D',
+                              defaultMessage: '确认要移除逻辑库 {recordName} 吗？',
+                            },
+                            { recordName: record.name },
+                          ),
                           centered: true,
-                          content: '仅移除逻辑库及其相关配置，不影响实际数据库的数据。',
-                          cancelText: '取消',
-                          okText: '移除',
+                          content: formatMessage({
+                            id: 'src.page.Project.Database.4EC56DD2',
+                            defaultMessage: '仅移除逻辑库及其相关配置，不影响实际数据库的数据。',
+                          }),
+                          cancelText: formatMessage({
+                            id: 'src.page.Project.Database.4F537F46',
+                            defaultMessage: '取消',
+                          }),
+                          okText: formatMessage({
+                            id: 'src.page.Project.Database.0DD4D2EB',
+                            defaultMessage: '移除',
+                          }),
                           okType: 'danger',
                           onCancel: () => {},
                           onOk: async () => {
                             const successful = await deleteLogicalDatabse(record?.id);
                             if (successful) {
-                              message.success('移除成功');
+                              message.success(
+                                formatMessage({
+                                  id: 'src.page.Project.Database.026A9C34',
+                                  defaultMessage: '移除成功',
+                                }),
+                              );
                               reload?.();
                               return;
                             }
@@ -600,7 +666,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                         });
                       }}
                     >
-                      移除逻辑库
+                      {formatMessage({
+                        id: 'src.page.Project.Database.3A2CD412',
+                        defaultMessage: '移除逻辑库',
+                      })}
                     </Action.Link>
                   </Action.Group>
                 );
@@ -684,6 +753,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       }
                     </Action.Link>
                   )}
+
                   <Action.Link
                     key={'login'}
                     onClick={() => {
@@ -796,6 +866,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
         close={() => setChangeOwnerModalVisible(false)}
         onSuccess={() => reload()}
       />
+
       <CreateLogicialDatabase
         projectId={project?.id}
         reload={reload}
@@ -807,12 +878,14 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           setOpenManageLogicDatabase(true);
         }}
       />
+
       <ManageLogicDatabase
         database={database}
         openManageLogicDatabase={openManageLogicDatabase}
         setOpenManageLogicDatabase={setOpenManageLogicDatabase}
         isOwner={isOwner}
       />
+
       <ExportTaskCreateModal />
       <ImportTaskCreateModal />
       <AsyncTaskCreateModal theme="white" />

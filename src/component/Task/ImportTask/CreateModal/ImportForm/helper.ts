@@ -85,7 +85,10 @@ export function getImportTypeLabel(importType: IMPORT_TYPE) {
     [IMPORT_TYPE.ZIP]: 'ZIP',
     [IMPORT_TYPE.SQL]: 'SQL',
     [IMPORT_TYPE.CSV]: 'CSV',
-    [IMPORT_TYPE.DIR]: '目录文件',
+    [IMPORT_TYPE.DIR]: formatMessage({
+      id: 'src.component.Task.ImportTask.CreateModal.ImportForm.198F258B',
+      defaultMessage: '目录文件',
+    }),
   };
   return map[importType];
 }

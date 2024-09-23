@@ -93,10 +93,10 @@ export class SQLPage extends Page {
     } else if (params?.dbName) {
       return params?.dbName;
     }
-    return `${formatMessage({
+    return formatMessage({
       id: 'workspace.header.create.sql',
       defaultMessage: 'SQL 窗口',
-    })}`;
+    });
   }
   public findCurrentNum() {
     const indexList = page.pages
@@ -426,7 +426,7 @@ export class BatchCompilePage extends Page {
     databaseId: number;
   };
   static getTitleByParams(params: BatchCompilePage['pageParams']) {
-    return `${formatMessage(
+    return formatMessage(
       {
         id: 'odc.helper.page.openPage.BatchCompilationLabel',
         defaultMessage: '批量编译{label}',
@@ -434,7 +434,7 @@ export class BatchCompilePage extends Page {
       {
         label: PLPageMap?.[params?.type]?.label ?? '',
       },
-    )}`;
+    );
   }
   constructor(pageType: PageType, dbObjectType: DbObjectType, databaseId: number) {
     super();

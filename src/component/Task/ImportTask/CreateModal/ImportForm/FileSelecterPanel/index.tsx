@@ -59,7 +59,10 @@ function getTiltleByFileType(fileType) {
       });
     }
     case IMPORT_TYPE.DIR: {
-      return '点击或将目录文件拖拽到这里上传';
+      return formatMessage({
+        id: 'src.component.Task.ImportTask.CreateModal.ImportForm.FileSelecterPanel.051A8387',
+        defaultMessage: '点击或将目录文件拖拽到这里上传',
+      });
     }
   }
 }
@@ -92,7 +95,10 @@ function getTipByFileType(fileType) {
         .join(',');
     }
     case IMPORT_TYPE.DIR: {
-      return '仅支持上传 ODC 导出的目录文件';
+      return formatMessage({
+        id: 'src.component.Task.ImportTask.CreateModal.ImportForm.FileSelecterPanel.272612BC',
+        defaultMessage: '仅支持上传 ODC 导出的目录文件',
+      });
     }
   }
 }
@@ -229,9 +235,13 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
               }
             </Option>
           )}
+
           {isClient() && (
             <Option key={IMPORT_TYPE.DIR} value={IMPORT_TYPE.DIR}>
-              目录文件
+              {formatMessage({
+                id: 'src.component.Task.ImportTask.CreateModal.ImportForm.FileSelecterPanel.D738185C',
+                defaultMessage: '目录文件',
+              })}
             </Option>
           )}
         </Select>

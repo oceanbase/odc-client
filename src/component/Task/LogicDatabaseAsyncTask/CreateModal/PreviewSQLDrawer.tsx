@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { previewSqls } from '@/common/network/logicalDatabase';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import MiniTable from '@/component/Table/MiniTable';
@@ -36,7 +37,10 @@ const PreviewSQLDrawer: React.FC<{
   const columns = [
     {
       key: 'sql',
-      title: '实际 SQL',
+      title: formatMessage({
+        id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.7909813D',
+        defaultMessage: '实际 SQL',
+      }),
       dataIndex: 'sql',
       width: 440,
       ellipsis: true,
@@ -46,7 +50,10 @@ const PreviewSQLDrawer: React.FC<{
     },
     {
       key: 'database',
-      title: '执行数据库',
+      title: formatMessage({
+        id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.2570043F',
+        defaultMessage: '执行数据库',
+      }),
       dataIndex: 'database',
       filters: Array.from(new Set(previewList?.map((item) => item.database?.id)))?.map((i) => {
         return {
@@ -70,7 +77,10 @@ const PreviewSQLDrawer: React.FC<{
 
   return (
     <Drawer
-      title="预览实际 SQL"
+      title={formatMessage({
+        id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.8C0ECF89',
+        defaultMessage: '预览实际 SQL',
+      })}
       width={720}
       open={open}
       onClose={handleCancel}

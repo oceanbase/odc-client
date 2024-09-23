@@ -15,7 +15,16 @@ const TaskProgressHeader: React.FC<{
     const failedCount =
       subTasks?.find((i) => i?.status === SchemaChangeRecordStatus.FAILED)?.length || 0;
     return (
-      <div>{`以下 ${executeCount} 个数据库执行中， ${successCount} 个数据库执行成功， ${failedCount} 个数据库执行失败`}</div>
+      <div>
+        {formatMessage(
+          {
+            id: 'src.component.Task.component.CommonDetailModal.TaskProgress.4F56B34E',
+            defaultMessage:
+              '以下 {executeCount} 个数据库执行中， {successCount} 个数据库执行成功， {failedCount} 个数据库执行失败',
+          },
+          { executeCount, successCount, failedCount },
+        )}
+      </div>
     );
   }
   return (

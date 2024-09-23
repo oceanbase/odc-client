@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { SearchOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import React, { useContext, useState } from 'react';
@@ -34,7 +35,10 @@ const Search: React.FC<IProps> = function () {
   return (
     <Input.Search
       prefix={<SearchOutlined />}
-      placeholder="搜索数据库"
+      placeholder={formatMessage({
+        id: 'src.page.Datasource.Info.Header.B547D3A4',
+        defaultMessage: '搜索数据库',
+      })}
       onChange={changeInput}
       onBlur={handleBlur}
       onSearch={(v) => {

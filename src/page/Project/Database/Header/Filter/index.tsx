@@ -72,7 +72,12 @@ const Filter: React.FC<IProps> = function ({}) {
             alignItems: 'center',
           }}
         >
-          <Typography.Text strong>筛选</Typography.Text>
+          <Typography.Text strong>
+            {formatMessage({
+              id: 'src.page.Project.Database.Header.Filter.3C4103AA',
+              defaultMessage: '筛选',
+            })}
+          </Typography.Text>
           <a onClick={clear}>
             {formatMessage({ id: 'odc.Header.Filter.Clear', defaultMessage: '清空' }) /*清空*/}
           </a>
@@ -82,7 +87,12 @@ const Filter: React.FC<IProps> = function ({}) {
         <div>
           <Space direction="vertical" size={16}>
             <Space direction="vertical" size={5}>
-              <Typography.Text type="secondary">数据源类型</Typography.Text>
+              <Typography.Text type="secondary">
+                {formatMessage({
+                  id: 'src.page.Project.Database.Header.Filter.ADA9E6A7',
+                  defaultMessage: '数据源类型',
+                })}
+              </Typography.Text>
               <CheckboxTag
                 value={context?.filterParams?.connectType}
                 options={[]
@@ -98,7 +108,12 @@ const Filter: React.FC<IProps> = function ({}) {
             </Space>
 
             <Space direction="vertical" size={5}>
-              <Typography.Text type="secondary">数据库类型</Typography.Text>
+              <Typography.Text type="secondary">
+                {formatMessage({
+                  id: 'src.page.Project.Database.Header.Filter.BCBEF8AA',
+                  defaultMessage: '数据库类型',
+                })}
+              </Typography.Text>
               <CheckboxTag
                 value={context?.filterParams?.type}
                 options={[]
@@ -114,7 +129,12 @@ const Filter: React.FC<IProps> = function ({}) {
             </Space>
 
             <Space direction="vertical" size={5}>
-              <Typography.Text type="secondary">环境</Typography.Text>
+              <Typography.Text type="secondary">
+                {formatMessage({
+                  id: 'src.page.Project.Database.Header.Filter.F048B0EE',
+                  defaultMessage: '环境',
+                })}
+              </Typography.Text>
               <CheckboxTag
                 value={context?.filterParams?.environmentId}
                 options={[].concat(context?.envList).map((v) => ({ label: v?.name, value: v?.id }))}

@@ -431,12 +431,17 @@ const CreateModal: React.FC<IProps> = (props) => {
         </Form.Item>
         {showSelectLogicDBTip && (
           <Alert
-            message="已选数据库中包含逻辑库，审批通过后将默认获得关联物理库的权限；逻辑库仅支持 DDL 变更。"
+            message={formatMessage({
+              id: 'src.component.Task.ApplyDatabasePermission.CreateModal.F5428F5B',
+              defaultMessage:
+                '已选数据库中包含逻辑库，审批通过后将默认获得关联物理库的权限；逻辑库仅支持 DDL 变更。',
+            })}
             type="info"
             showIcon
             style={{ margin: '4px 0px' }}
           />
         )}
+
         <Form.Item
           name="types"
           label={
