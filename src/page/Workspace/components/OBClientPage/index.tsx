@@ -148,38 +148,37 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
     this.ws = new WebSocket(url.href);
     this.ws.onerror = (e) => {
       this.xtermInstance.write(
-        `${
-          formatMessage({
-            id: 'odc.components.OBClientPage.NetworkException',
-            defaultMessage: '网络异常:',
-          }) + // 网络异常:
-          e.type
-        }` + '\r\n',
+        formatMessage({
+          id: 'odc.components.OBClientPage.NetworkException',
+          defaultMessage: '网络异常:',
+        }) +
+          e.type +
+          '\r\n',
       );
 
       console.log(e);
     };
     this.xtermInstance.write(
-      `${formatMessage({
+      formatMessage({
         id: 'odc.components.OBClientPage.EstablishingConnection',
         defaultMessage: '建立连接中....',
-      })}\r\n`, // 建立连接中....
+      }) + '\r\n',
     );
     this.ws.onclose = (e) => {
       console.log(e);
       this.xtermInstance.write(
-        `${formatMessage({
+        formatMessage({
           id: 'odc.components.OBClientPage.ConnectionFailed',
           defaultMessage: '***连接失败***',
-        })}\r\n`, //* **连接失败***
+        }) + '\r\n',
       );
     };
     this.ws.onopen = (e) => {
       this.xtermInstance.write(
-        `${formatMessage({
+        formatMessage({
           id: 'odc.components.OBClientPage.ConnectionEstablished',
           defaultMessage: '建立连接成功....',
-        })}\r\n`, // 建立连接成功....
+        }) + '\r\n',
       );
       console.log('ws opened!');
       const warnMsg = [
