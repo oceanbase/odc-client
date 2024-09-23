@@ -48,7 +48,7 @@ const onCopy = (_, result: boolean) => {
   }
 };
 
-const consistencyList = [`Set SESSION ob_read_consistency='WEAK';`];
+const consistencyList = [`SET SESSION ob_read_consistency='WEAK';`];
 const formatList = [
   `SET SESSION nls_date_format='YYYY-MM-DD';`,
   `SET SESSION nls_timestamp_format='YYYY-MM-DD HH:MI:SS.XFF3';`,
@@ -108,7 +108,7 @@ const content = () => {
           keepExpand
           customExtra={
             <CommonCopyIcon
-              text={formatList?.join('\n')}
+              text={timeoutList?.join('\n')}
               tooltipText={tooltipText}
               onCopy={onCopy}
             />
