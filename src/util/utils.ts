@@ -639,5 +639,27 @@ export function groupByPropertyName(array: any[], property: string): Object {
 }
 
 export const disabledDate: RangePickerProps['disabledDate'] = (current) => {
-  return current && current < moment();
+  return current && current < moment().subtract(1, 'days').endOf('day');
+};
+
+export const disabledTime = (selectedDate) => {
+  const now = moment();
+  if (selectedDate && selectedDate.isSame(now, 'day')) {
+    return {
+      disabledHours: () => Array.from({ length: now.hours() }, (_, i) => i),
+      disabledMinutes: (selectedHour) => {
+        if (selectedHour === now.hours()) {
+          return Array.from({ length: now.minutes() }, (_, i) => i);
+        }
+        return [];
+      },
+      disabledSeconds: (selectedHour, selectedMinute) => {
+        if (selectedHour === now.hours() && selectedMinute === now.minutes()) {
+          return Array.from({ length: now.seconds() }, (_, i) => i);
+        }
+        return [];
+      },
+    };
+  }
+  return {};
 };

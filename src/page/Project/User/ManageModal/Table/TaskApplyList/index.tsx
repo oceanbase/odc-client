@@ -137,6 +137,9 @@ const getColumns = (params: {
 
       filteredValue: filters?.dataSourceName || null,
       filters: [],
+      render(value) {
+        return value || '-';
+      },
     },
     {
       dataIndex: 'ticketId',

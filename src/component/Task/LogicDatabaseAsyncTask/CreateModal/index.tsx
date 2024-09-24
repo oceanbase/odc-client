@@ -24,7 +24,7 @@ import type { TaskStore } from '@/store/task';
 import utils, { IEditor } from '@/util/editor';
 import { formatMessage } from '@/util/intl';
 import { FieldTimeOutlined } from '@ant-design/icons';
-import { disabledDate } from '@/util/utils';
+import { disabledDate, disabledTime } from '@/util/utils';
 import { ICycleTaskTriggerConfig, TaskOperationType } from '@/d.ts';
 import {
   Alert,
@@ -463,6 +463,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                         showTime
                         suffixIcon={<FieldTimeOutlined />}
                         disabledDate={disabledDate}
+                        disabledTime={disabledTime}
                       />
                     </Form.Item>
                   );

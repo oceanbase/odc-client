@@ -21,10 +21,16 @@ import {
   getStructureComparisonTaskFile,
   getTaskResult,
   stopTask,
+  stopDataArchiveSubTask,
+  getDataArchiveSubTask,
 } from '@/common/network/task';
 import Action from '@/component/Action';
 import { TaskTypeMap } from '@/component/Task/component/TaskTable';
-import type { ICycleTaskRecord, ILogicalDatabaseAsyncTaskParams } from '@/d.ts';
+import type {
+  ICycleSubTaskRecord,
+  ICycleTaskRecord,
+  ILogicalDatabaseAsyncTaskParams,
+} from '@/d.ts';
 import {
   IApplyDatabasePermissionTaskParams,
   IApplyTablePermissionTaskParams,
@@ -52,7 +58,7 @@ import { downloadFile, getLocalFormatDateTime } from '@/util/utils';
 import { message, Modal, Popconfirm, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
-import { isCycleTask } from '../../helper';
+import { isCycleTask, isLogicalDbChangeTask } from '../../helper';
 import RollBackModal from '../RollbackModal';
 
 interface IProps {
@@ -95,6 +101,20 @@ const ActionBar: React.FC<IProps> = inject(
     const isOwnerAndApprover = isOwner && isApprover;
     const [activeBtnKey, setActiveBtnKey] = useState(null);
     const [openRollback, setOpenRollback] = useState(false);
+    const [taskList, setTaskList] = useState<ICycleSubTaskRecord[]>([]);
+
+    useEffect(() => {
+      if (task?.id && isLogicalDbChangeTask(task?.type) && isDetailModal) {
+        getScheduleTask();
+      }
+    }, [task?.id]);
+
+    const getScheduleTask = async () => {
+      const taskList = await getDataArchiveSubTask(task?.id);
+      setTaskList(taskList?.contents);
+      return taskList?.contents;
+    };
+
     const disabledApproval =
       task?.status === TaskStatus.WAIT_FOR_CONFIRM && !isDetailModal ? true : disabledSubmit;
 
@@ -288,6 +308,12 @@ const ActionBar: React.FC<IProps> = inject(
           break;
         }
       }
+    };
+
+    const stopScheduleTask = async () => {
+      await stopDataArchiveSubTask(task?.id, taskList?.[0]?.id);
+      await getScheduleTask();
+      props?.onReload?.();
     };
 
     const disableCycleTask = async () => {
@@ -884,6 +910,18 @@ const ActionBar: React.FC<IProps> = inject(
         type: 'button',
       };
 
+      /* 禁用Schedule下的Task for logical database change task */
+      /* 很脏的逻辑, ued少一层导致的 */
+      const stopScheduleTaskBtn = {
+        key: 'stopLogicalChangeTask',
+        text: formatMessage({
+          id: 'odc.TaskManagePage.component.TaskTools.Termination',
+          defaultMessage: '终止',
+        }), //终止
+        action: stopScheduleTask,
+        type: 'button',
+      };
+
       const enableBtn = {
         key: 'enable',
         text: formatMessage({
@@ -942,6 +980,9 @@ const ActionBar: React.FC<IProps> = inject(
         case TaskStatus.ENABLED: {
           if (isOperator) {
             tools = [viewBtn, editBtn, disableBtn];
+            if (isLogicalDbChangeTask(task?.type)) {
+              tools = [viewBtn, editBtn];
+            }
             if (
               [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type) &&
               (task as ICycleTaskRecord<TaskRecordParameters>)?.triggerConfig?.triggerStrategy ===
@@ -993,6 +1034,10 @@ const ActionBar: React.FC<IProps> = inject(
       // sql 计划 & 数据归档 & 数据清理 支持编辑
       if (![TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)) {
         tools = tools.filter((item) => item.key !== 'edit');
+      }
+      if ((taskList?.[0]?.status as any) === SubTaskStatus.RUNNING) {
+        // debugger
+        tools = [...tools, stopScheduleTaskBtn];
       }
       return tools;
     };

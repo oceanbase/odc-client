@@ -4,8 +4,9 @@ import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import MiniTable from '@/component/Table/MiniTable';
 import { IDatabase } from '@/d.ts/database';
 import { IPreviewSql } from '@/d.ts/logicalDatabase';
-import { Drawer, Space } from 'antd';
+import { Drawer, Space, Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
+import datasourceStatus from '@/store/datasourceStatus';
 
 const PreviewSQLDrawer: React.FC<{
   open: boolean;
@@ -28,6 +29,7 @@ const PreviewSQLDrawer: React.FC<{
     };
     const res = await previewSqls(databaseId, params);
     setPreviewList(res);
+    datasourceStatus.asyncUpdateStatus(res?.map((a) => a.database?.dataSource?.id));
   };
 
   const handleCancel = () => {
@@ -45,7 +47,27 @@ const PreviewSQLDrawer: React.FC<{
       width: 440,
       ellipsis: true,
       render(value) {
-        return <span title={value}>{value}</span>;
+        return (
+          <Tooltip
+            overlayInnerStyle={{
+              whiteSpace: 'pre-wrap',
+              maxHeight: '500px',
+              overflowY: 'auto',
+            }}
+            title={value}
+          >
+            <div
+              style={{
+                width: 430,
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {value}
+            </div>
+          </Tooltip>
+        );
       },
     },
     {
