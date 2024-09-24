@@ -52,6 +52,7 @@ const getColumns = (params: {
         defaultMessage: '数据库',
       }), //'数据库'
       ellipsis: true,
+      width: 140,
       filterDropdown: (props) => {
         return (
           <SearchFilter
@@ -109,6 +110,9 @@ const getColumns = (params: {
 
       filteredValue: filters?.dataSourceName || null,
       filters: [],
+      render(value) {
+        return value || '-';
+      },
     },
     {
       dataIndex: 'ticketId',

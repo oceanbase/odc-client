@@ -391,7 +391,7 @@ const ManageLogicDatabase: React.FC<{
           >
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <DataBaseStatusIcon item={database} />
-              <Typography.Link onClick={openPhysicalDbdrawer}>{database?.name}</Typography.Link>
+              <Typography.Text>{database?.name}</Typography.Text>
             </div>
           </Descriptions.Item>
         </Descriptions>
@@ -431,6 +431,7 @@ const ManageLogicDatabase: React.FC<{
 
                 <Icon component={NewOpenSvg} />
               </Button>
+              <Button onClick={openPhysicalDbdrawer}>查看物理库</Button>
             </Space>
           }
           extra={<Reload onClick={queryLogicalDatabaseById} />}

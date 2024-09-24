@@ -53,7 +53,7 @@ import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig from './VariableConfig';
 import ShardingStrategyItem from '../../component/ShardingStrategyItem';
-import { disabledDate } from '@/util/utils';
+import { disabledDate, disabledTime } from '@/util/utils';
 
 export enum IArchiveRange {
   PORTION = 'portion',
@@ -617,6 +617,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                       showTime
                       suffixIcon={<FieldTimeOutlined />}
                       disabledDate={disabledDate}
+                      disabledTime={disabledTime}
                     />
                   </Form.Item>
                 );

@@ -42,6 +42,9 @@ const getConnectionColumns = () => {
         defaultMessage: '所属数据源',
       }), //'所属数据源'
       ellipsis: true,
+      render(value) {
+        return value || '-';
+      },
     },
   ];
 };

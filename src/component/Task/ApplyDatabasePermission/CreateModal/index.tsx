@@ -209,6 +209,8 @@ const CreateModal: React.FC<IProps> = (props) => {
   const hadleReset = () => {
     form.resetFields(null);
     setHasEdit(false);
+    setShowSelectTip(false);
+    setShowSelectLogicDBTip(false);
   };
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {

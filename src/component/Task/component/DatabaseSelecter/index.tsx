@@ -232,7 +232,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
       );
       onChange(list || []);
     },
-    [checkedKeys, onChange],
+    [checkedKeys, onChange, databaseList],
   );
 
   const allTreeDataKeys = getAllTreeDataKeys();

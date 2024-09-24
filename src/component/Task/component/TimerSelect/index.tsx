@@ -19,15 +19,10 @@ import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { FieldTimeOutlined } from '@ant-design/icons';
 import { DatePicker, Form, Radio } from 'antd';
-import type { RangePickerProps } from 'antd/es/date-picker';
-import moment from 'moment';
 import React from 'react';
+import { disabledDate, disabledTime } from '@/util/utils';
 
 interface IProps {}
-
-const disabledDate: RangePickerProps['disabledDate'] = (current) => {
-  return current && current < moment();
-};
 
 const TimerSelect: React.FC<IProps> = (props) => {
   const label = formatMessage({
@@ -95,6 +90,7 @@ const TimerSelect: React.FC<IProps> = (props) => {
               >
                 <DatePicker
                   disabledDate={disabledDate}
+                  disabledTime={disabledTime}
                   showTime
                   suffixIcon={<FieldTimeOutlined />}
                 />
