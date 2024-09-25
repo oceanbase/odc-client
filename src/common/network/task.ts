@@ -259,6 +259,16 @@ export async function getCycleTaskLog(
 }
 
 /**
+ * 获取全量日志下载URL
+ */
+export async function getDownloadUrl(scheduleId: number, taskId: number) {
+  const res = await request.post(
+    `/api/v2/schedule/schedules/${scheduleId}/tasks/${taskId}/log/getDownloadUrl`,
+  );
+  return res?.data;
+}
+
+/**
  * 回滚任务
  */
 export async function rollbackTask(id: number): Promise<boolean> {
