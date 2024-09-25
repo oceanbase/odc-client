@@ -642,8 +642,23 @@ export const disabledDate: RangePickerProps['disabledDate'] = (current) => {
   return current && current < moment().subtract(1, 'days').endOf('day');
 };
 
+const range = (start: number, end: number) => {
+  const result = [];
+  for (let i = start; i < end; i++) {
+    result.push(i);
+  }
+  return result;
+};
+
 export const disabledTime = (selectedDate) => {
   const now = moment();
+  if (!selectedDate) {
+    return {
+      disabledHours: () => range(0, 24),
+      disabledMinutes: () => range(0, 60),
+      disabledSeconds: () => range(0, 60),
+    };
+  }
   if (selectedDate && selectedDate.isSame(now, 'day')) {
     return {
       disabledHours: () => Array.from({ length: now.hours() }, (_, i) => i),

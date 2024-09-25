@@ -39,6 +39,7 @@ export const columns = [
         <Space>
           <DataBaseStatusIcon item={value} />
           {value?.name}
+          <Typography.Text type="secondary">{value?.datasource?.name || '-'}</Typography.Text>
         </Space>
       ) : (
         value?.name

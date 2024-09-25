@@ -46,7 +46,9 @@ const getColumns = () => {
       }),
       key: 'executeSql',
       dataIndex: 'executeSql',
-      ellipsis: true,
+      ellipsis: {
+        tooltip: false
+      },
       render: (value: string) => (
         <Tooltip
           placement="topLeft"

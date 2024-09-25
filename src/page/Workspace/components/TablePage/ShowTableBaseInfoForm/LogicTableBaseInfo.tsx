@@ -59,20 +59,6 @@ const LogicTableBaseInfo = ({ table }) => {
           },
           {
             label: formatMessage({
-              id: 'odc.TablePage.ShowTableBaseInfoForm.Owner',
-              defaultMessage: '所有者',
-            }), //所有者
-            content:
-              table?.info?.owner ||
-              formatMessage({
-                id: 'odc.components.ShowTableBaseInfoForm.Empty',
-                defaultMessage: '空',
-              }),
-            // 空
-            span: 8,
-          },
-          {
-            label: formatMessage({
               id: 'odc.TablePage.ShowTableBaseInfoForm.LastModifiedDate',
               defaultMessage: '最近修改日期',
             }), //最近修改日期

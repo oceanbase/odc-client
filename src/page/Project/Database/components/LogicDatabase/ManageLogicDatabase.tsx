@@ -212,6 +212,9 @@ const subColumn = [
         <Space>
           <DataBaseStatusIcon item={record?.physicalDatabase} />
           {value}
+          <Typography.Text type="secondary">
+            {record?.physicalDatabase?.dataSource?.name || '-'}
+          </Typography.Text>
         </Space>
       ) : (
         value
@@ -431,7 +434,13 @@ const ManageLogicDatabase: React.FC<{
 
                 <Icon component={NewOpenSvg} />
               </Button>
-              <Button onClick={openPhysicalDbdrawer}>查看物理库</Button>
+              <Button onClick={openPhysicalDbdrawer}>
+                {formatMessage({
+                  id: 'src.component.Task.component.CommonDetailModal.178F11D7',
+                  defaultMessage: '查看',
+                })}
+                {formatMessage({ id: 'src.constant.5363D697', defaultMessage: '物理库' })}
+              </Button>
             </Space>
           }
           extra={<Reload onClick={queryLogicalDatabaseById} />}
