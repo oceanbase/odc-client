@@ -1,12 +1,13 @@
 import { previewLogicalTableTopologies } from '@/common/network/logicalDatabase';
 import CommonTable from '@/component/CommonTable';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
-import { formatMessage } from '@/util/intl';
+import { formatMessage, getLocalDocs } from '@/util/intl';
 import { Col, Empty, Form, Input, Popover, Row, Select, Space, Typography } from 'antd';
 import { useState } from 'react';
 import { getDefaultCollation } from '../helper';
 import styles from './index.less';
 const { Text, Link } = Typography;
+import odc from '@/plugins/odc';
 
 const { Option } = Select;
 
@@ -119,6 +120,9 @@ const LogicTableBaseInfo = ({
       })}
     </Link>
   );
+
+  const helpDocUrl = odc.appConfig.docs.url || getLocalDocs('200.web-odc-create-a-table.html');
+
   const inputTooltipContent = () => {
     return (
       <Space direction="vertical" onClick={(e) => e.stopPropagation()}>
@@ -173,7 +177,7 @@ const LogicTableBaseInfo = ({
             defaultMessage: '在 db 单库下创建 3 张表：db.test_1,db.test_2,db.test_4',
           })}
         </Text>
-        <Link>
+        <Link href={helpDocUrl} target={'_blank'}>
           {formatMessage({
             id: 'src.page.Workspace.components.CreateTable.BaseInfo.C3013389',
             defaultMessage: '查看更多',
