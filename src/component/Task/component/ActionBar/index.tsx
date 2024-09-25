@@ -60,6 +60,7 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { isCycleTask, isLogicalDbChangeTask } from '../../helper';
 import RollBackModal from '../RollbackModal';
+import { useRequest } from 'ahooks';
 
 interface IProps {
   userStore?: UserStore;
@@ -105,8 +106,9 @@ const ActionBar: React.FC<IProps> = inject(
 
     useEffect(() => {
       if (task?.id && isLogicalDbChangeTask(task?.type) && isDetailModal) {
-        getScheduleTask();
+        loadtaskList();
       }
+      return cancel();
     }, [task?.id]);
 
     const getScheduleTask = async () => {
@@ -114,6 +116,20 @@ const ActionBar: React.FC<IProps> = inject(
       setTaskList(taskList?.contents);
       return taskList?.contents;
     };
+
+    const { run: loadtaskList, cancel } = useRequest(getScheduleTask, {
+      pollingInterval: 3000,
+      manual: true,
+      onSuccess: (data) => {
+        if (
+          [SubTaskStatus.CANCELED, SubTaskStatus.DONE, SubTaskStatus.FAILED]?.includes(
+            data?.[0]?.status as any,
+          )
+        ) {
+          cancel();
+        }
+      },
+    });
 
     const disabledApproval =
       task?.status === TaskStatus.WAIT_FOR_CONFIRM && !isDetailModal ? true : disabledSubmit;
@@ -1036,7 +1052,6 @@ const ActionBar: React.FC<IProps> = inject(
         tools = tools.filter((item) => item.key !== 'edit');
       }
       if ((taskList?.[0]?.status as any) === SubTaskStatus.RUNNING) {
-        // debugger
         tools = [...tools, stopScheduleTaskBtn];
       }
       return tools;

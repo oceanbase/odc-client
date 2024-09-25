@@ -17,7 +17,7 @@ import { createTask } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
-import { SQLContentType, TaskExecStrategy, TaskType } from '@/d.ts';
+import { SQLContentType, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import type { ModalStore } from '@/store/modal';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
@@ -39,6 +39,7 @@ import {
   Radio,
   Space,
   Tooltip,
+  Typography,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
@@ -46,6 +47,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
 import PreviewSQLDrawer from './PreviewSQLDrawer';
+import { openTasksPage } from '@/store/helper/page';
 
 interface IProps {
   sqlStore?: SQLStore;
@@ -189,6 +191,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             defaultMessage: '创建成功',
           }),
         );
+        openTasksPage(TaskPageType.LOGICAL_DATABASE_CHANGE, TaskPageScope.CREATED_BY_CURRENT_USER);
       })
       .catch((errorInfo) => {
         console.error(JSON.stringify(errorInfo));
@@ -348,6 +351,11 @@ const CreateModal: React.FC<IProps> = (props) => {
               </Tooltip>
             </div>
           </Form.Item>
+          <Typography.Text type="secondary">
+            When using logical table expressions, you must enclose the expressions in backticks,
+            such as `db_[00-31].test_[00-31]`. Otherwise, the logical table topology will not be
+            recognized.
+          </Typography.Text>
           <Form.Item
             name="sqlContent"
             className={`${styles.sqlContent} ${
@@ -364,6 +372,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             ]}
             style={{
               height: '280px',
+              paddingTop: 8,
             }}
           >
             <CommonIDE

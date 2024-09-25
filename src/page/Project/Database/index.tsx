@@ -91,7 +91,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
   }, []);
 
   useEffect(() => {
-    loadData(params.current.pageSize, params.current.current);
+    loadData(params.current.pageSize, 1);
   }, [filterParams]);
 
   const loadData = async (
@@ -541,6 +541,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                 );
               }
               if (record.type === 'LOGICAL') {
+                const hasOperateAuth = isOwnerOrDBA || hasChangeAuth;
                 return (
                   <Action.Group size={2}>
                     <Action.Link
@@ -549,9 +550,9 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                         setDatabase(record);
                         setOpenManageLogicDatabase(true);
                       }}
-                      disabled={!isOwnerOrDBA}
+                      disabled={!hasOperateAuth}
                       tooltip={
-                        !isOwnerOrDBA
+                        !hasOperateAuth
                           ? formatMessage({
                               id: 'src.page.Project.Database.D8BEA086',
                               defaultMessage: '暂无权限',
@@ -615,9 +616,9 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       })}
                     </Action.Link>
                     <Action.Link
-                      disabled={!isOwnerOrDBA}
+                      disabled={!hasOperateAuth}
                       tooltip={
-                        !isOwnerOrDBA
+                        !hasOperateAuth
                           ? formatMessage({
                               id: 'src.page.Project.Database.680DB47A',
                               defaultMessage: '暂无权限',

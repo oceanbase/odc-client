@@ -22,7 +22,7 @@ import { IUnauthorizedDBResources, TablePermissionType } from '@/d.ts/table';
 import { EThemeConfigKey } from '@/store/setting';
 import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
-import { DatabasePermissionType, IDatabase } from './database';
+import { DBType, DatabasePermissionType, IDatabase } from './database';
 import { IEnvironment } from './environment';
 import { IProject } from './project';
 import { DBDefaultStoreType } from './table';
@@ -2753,6 +2753,10 @@ export interface IApplyDatabasePermissionTaskParams {
   databases: {
     id: number;
     name?: string;
+    type?: DBType;
+    dataSourceId?: number;
+    dataSourceName?: string;
+    dataSourceType?: ConnectType;
   }[];
   types: DatabasePermissionType[];
   expireTime: number;

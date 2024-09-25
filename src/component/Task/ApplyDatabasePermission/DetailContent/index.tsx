@@ -17,11 +17,17 @@ import { formatMessage } from '@/util/intl';
 
 import DisplayTable from '@/component/DisplayTable';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
-import type { IApplyDatabasePermissionTaskParams, TaskDetail } from '@/d.ts';
+import {
+  IConnectionStatus,
+  type IApplyDatabasePermissionTaskParams,
+  type TaskDetail,
+} from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
-import { Descriptions, Divider } from 'antd';
+import { Descriptions, Divider, Alert, Space } from 'antd';
 import { getExpireTimeLabel, permissionOptionsMap } from '../';
 import styles from './index.less';
+import { DBType, IDatabase } from '@/d.ts/database';
+import DatabaseIcon from '@/component/StatusIcon/DatabaseIcon';
 
 const getConnectionColumns = () => {
   return [
@@ -33,6 +39,22 @@ const getConnectionColumns = () => {
       }), //'数据库'
       ellipsis: true,
       width: 339,
+      render(value, record) {
+        const item = {
+          type: record?.type,
+          dataSource: {
+            type: record?.dataSourceType,
+            name: record?.dataSourceName,
+            status: { status: IConnectionStatus.ACTIVE },
+          },
+        };
+        return (
+          <Space>
+            <DatabaseIcon item={item as IDatabase} />
+            {value}
+          </Space>
+        );
+      },
     },
 
     {
@@ -90,7 +112,14 @@ const TaskContent: React.FC<IProps> = (props) => {
           marginTop: 4,
         }}
       />
-
+      {parameters?.databases?.find((_db) => _db?.type === DBType.LOGICAL) && (
+        <Alert
+          message="The database list includes logical databases, and upon approval, permissions for the associated physical databases will be granted by default."
+          type="info"
+          showIcon
+          style={{ margin: '4px 0px 8px 0px' }}
+        />
+      )}
       <Descriptions column={1}>
         <Descriptions.Item
           label={
