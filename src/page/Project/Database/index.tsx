@@ -63,7 +63,7 @@ interface IProps {
 const Database: React.FC<IProps> = ({ id, modalStore }) => {
   const statusMap = datasourceStatus.statusMap;
   const { project } = useContext(ProjectContext);
-  console.log(project);
+
   const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState('');
   const [filterParams, setFilterParams] = useState<IFilterParams>({
@@ -504,7 +504,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                             id: 'odc.src.page.Project.Database.ModifyTheProject',
                             defaultMessage:
                               '\n                      修改所属项目\n                    ',
-                          }) /* 
+                          }) /*
                       修改所属项目
                       */
                         }
@@ -742,7 +742,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                           id: 'odc.src.page.Project.Database.ModifyTheProject',
                           defaultMessage:
                             '\n                      修改所属项目\n                    ',
-                        }) /* 
+                        }) /*
                     修改所属项目
                     */
                       }
