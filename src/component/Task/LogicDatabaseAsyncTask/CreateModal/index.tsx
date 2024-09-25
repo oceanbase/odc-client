@@ -352,7 +352,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             </div>
           </Form.Item>
           <Typography.Text type="secondary">
-            When using logical table expressions, you must enclose the expressions in backticks,
+            When using logical table expressions, you must enclose the expressions in backticks(`),
             such as `db_[00-31].test_[00-31]`. Otherwise, the logical table topology will not be
             recognized.
           </Typography.Text>
