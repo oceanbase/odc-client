@@ -260,6 +260,7 @@ const TaskTable: React.FC<IProps> = inject(
       const columns = [
         {
           dataIndex: 'id',
+          key: 'id',
           title: formatMessage({
             id: 'odc.component.TaskTable.No',
             defaultMessage: '编号',
@@ -296,6 +297,7 @@ const TaskTable: React.FC<IProps> = inject(
         },
         {
           dataIndex: 'type',
+          key: 'type',
           title: formatMessage({
             id: 'odc.component.TaskTable.Type',
             defaultMessage: '类型',
@@ -309,10 +311,12 @@ const TaskTable: React.FC<IProps> = inject(
         },
         {
           dataIndex: 'description',
+          key: 'description',
           title: formatMessage({
             id: 'odc.component.TaskTable.TicketDescription',
             defaultMessage: '工单描述',
           }),
+          width: 100,
           //工单描述
           ellipsis: {
             showTitle: false,
@@ -321,6 +325,7 @@ const TaskTable: React.FC<IProps> = inject(
         },
         {
           dataIndex: 'candidateApprovers',
+          key: 'candidateApprovers',
           title: formatMessage({
             id: 'odc.component.TaskTable.CurrentHandler',
             defaultMessage: '当前处理人',
@@ -356,6 +361,7 @@ const TaskTable: React.FC<IProps> = inject(
         },
         {
           dataIndex: 'creator',
+          key: 'creator',
           title: formatMessage({
             id: 'odc.TaskManagePage.component.TaskTable.Created',
             defaultMessage: '创建人',
@@ -414,6 +420,7 @@ const TaskTable: React.FC<IProps> = inject(
         },
         {
           dataIndex: 'status',
+          key: 'status',
           title: formatMessage({
             id: 'odc.component.TaskTable.Status',
             defaultMessage: '状态',
@@ -432,6 +439,8 @@ const TaskTable: React.FC<IProps> = inject(
         },
         {
           dataIndex: 'deal',
+
+          key: 'deal',
           title: formatMessage({
             id: 'odc.components.TaskManagePage.Operation',
             defaultMessage: '操作',
@@ -519,6 +528,7 @@ const TaskTable: React.FC<IProps> = inject(
         ref={tableRef}
         mode={CommonTableMode.SMALL}
         titleContent={null}
+        enableResize
         operationContent={{
           options: [
             isAll
@@ -613,9 +623,6 @@ const TaskTable: React.FC<IProps> = inject(
           pagination: {
             current: currentTask?.page?.number,
             total: currentTask?.page?.totalElements,
-          },
-          scroll: {
-            x: 900,
           },
         }}
       />

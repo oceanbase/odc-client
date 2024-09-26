@@ -20,6 +20,7 @@ import styles from '../index.less';
 
 export function ResizeTitle(props) {
   const { width, onResize, onClick, ...restProps } = props;
+
   const [isDrag, setIsDrag] = useState(false);
   if (!width) {
     return <th {...restProps} />;
