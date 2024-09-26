@@ -36,6 +36,7 @@ import { hasTableChangePermission, hasTableExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
 import { isLogicalDatabase } from '@/util/database';
+import { DatabasePermissionType } from '@/d.ts/database';
 export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TableRoot]: [
     {
@@ -55,6 +56,14 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       actionType: actionTypes.create,
       async run(session, node) {
         openCreateTablePage(session?.odcDatabase?.id);
+      },
+      isHide(session, node) {
+        if (isLogicalDatabase(node.data)) {
+          return !session?.odcDatabase?.authorizedPermissionTypes?.includes(
+            DatabasePermissionType.CHANGE,
+          );
+        }
+        return false;
       },
     },
     {

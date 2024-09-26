@@ -14,7 +14,7 @@ import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import { IResponseData } from '@/d.ts';
-import { IDatabase } from '@/d.ts/database';
+import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
 import { ILogicalDatabase, ILogicalTable, InconsistentPhysicalTable } from '@/d.ts/logicalDatabase';
 import { ReactComponent as NewOpenSvg } from '@/svgr/newopen.svg';
 import { isLogicalDatabase } from '@/util/database';
@@ -37,8 +37,9 @@ import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { getLocalFormatDateTime } from '@/util/utils';
 import type { FixedType } from 'rc-table/es/interface';
+import datasourceStatus from '@/store/datasourceStatus';
 
-const getColumns = ({ logicalDatabaseId, reload }) => {
+const getColumns = ({ logicalDatabaseId, reload, hasOperateAuth }) => {
   return [
     {
       key: 'name',
@@ -94,8 +95,18 @@ const getColumns = ({ logicalDatabaseId, reload }) => {
           })}
         </HelpDoc>
       ),
-
+      width: 400,
+      ellipsis: {
+        showTitle: false,
+      },
       dataIndex: 'expression',
+      render(value) {
+        return (
+          <Tooltip title={value} placement="topLeft">
+            {value}
+          </Tooltip>
+        );
+      },
     },
     {
       key: 'physicalTableCount',
@@ -130,6 +141,15 @@ const getColumns = ({ logicalDatabaseId, reload }) => {
                   );
                 }
               }}
+              disabled={!hasOperateAuth}
+              tooltip={
+                hasOperateAuth
+                  ? null
+                  : formatMessage({
+                      id: 'src.page.Project.Database.8FB9732D',
+                      defaultMessage: '暂无权限',
+                    })
+              }
             >
               {formatMessage({
                 id: 'src.page.Project.Database.components.LogicDatabase.5DF738A9',
@@ -162,14 +182,19 @@ const getColumns = ({ logicalDatabaseId, reload }) => {
                   },
                 });
               }}
-              disabled={record.physicalTableCount === 0}
+              disabled={record.physicalTableCount === 0 || !hasOperateAuth}
               tooltip={
                 record.physicalTableCount === 0
                   ? formatMessage({
                       id: 'src.page.Project.Database.components.LogicDatabase.B3657267',
                       defaultMessage: '存在物理表，暂不可移除',
                     })
-                  : ''
+                  : !hasOperateAuth
+                  ? formatMessage({
+                      id: 'src.page.Project.Database.8FB9732D',
+                      defaultMessage: '暂无权限',
+                    })
+                  : null
               }
             >
               {formatMessage({
@@ -330,6 +355,8 @@ const ManageLogicDatabase: React.FC<{
   setOpenManageLogicDatabase,
   isOwner = false,
 }) => {
+  const hasOperateAuth =
+    isOwner || database?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
   const [currentDatabase, setCurrentDatabase] = useState<ILogicalDatabase>();
   const logicalTableMap = useRef<Map<number, IResponseData<InconsistentPhysicalTable>>>(new Map());
   const [_logicalTableMap, setLogicalTableMap] = useState<
@@ -352,11 +379,15 @@ const ManageLogicDatabase: React.FC<{
     const responseData = await logicalDatabaseDetail(database?.id);
     if (responseData?.successful) {
       setCurrentDatabase(responseData?.data);
+      datasourceStatus.asyncUpdateStatus(
+        responseData?.data?.physicalDatabases?.map((a) => a?.dataSource?.id),
+      );
     }
   };
   const columns = getColumns({
     logicalDatabaseId: currentDatabase?.id,
     reload: queryLogicalDatabaseById,
+    hasOperateAuth: hasOperateAuth,
   });
 
   const openPhysicalDbdrawer = () => {
@@ -402,38 +433,61 @@ const ManageLogicDatabase: React.FC<{
           title={
             <Space size={8}>
               <Tooltip
-                title={formatMessage({
-                  id: 'src.page.Project.Database.components.LogicDatabase.BC210D00',
-                  defaultMessage: '将表名相似、结构一致的表提取为逻辑表',
-                })}
+                title={
+                  hasOperateAuth
+                    ? formatMessage({
+                        id: 'src.page.Project.Database.components.LogicDatabase.BC210D00',
+                        defaultMessage: '将表名相似、结构一致的表提取为逻辑表',
+                      })
+                    : formatMessage({
+                        id: 'src.page.Project.Database.8FB9732D',
+                        defaultMessage: '暂无权限',
+                      })
+                }
               >
-                <Button type="primary" onClick={handleExtractLogicalTables}>
+                <Button
+                  type="primary"
+                  onClick={handleExtractLogicalTables}
+                  disabled={!hasOperateAuth}
+                >
                   {formatMessage({
                     id: 'src.page.Project.Database.components.LogicDatabase.5FE18380',
                     defaultMessage: '提取逻辑表',
                   })}
                 </Button>
               </Tooltip>
-              <Button
-                onClick={() =>
-                  gotoSQLWorkspace(
-                    database?.project?.id,
-                    null,
-                    database?.id,
-                    null,
-                    '',
-                    isLogicalDatabase(database),
-                    true,
-                  )
+              <Tooltip
+                title={
+                  hasOperateAuth
+                    ? null
+                    : formatMessage({
+                        id: 'src.page.Project.Database.8FB9732D',
+                        defaultMessage: '暂无权限',
+                      })
                 }
               >
-                {formatMessage({
-                  id: 'src.page.Project.Database.components.LogicDatabase.7F48554F',
-                  defaultMessage: '新建逻辑表',
-                })}
+                <Button
+                  disabled={!hasOperateAuth}
+                  onClick={() =>
+                    gotoSQLWorkspace(
+                      database?.project?.id,
+                      null,
+                      database?.id,
+                      null,
+                      '',
+                      isLogicalDatabase(database),
+                      true,
+                    )
+                  }
+                >
+                  {formatMessage({
+                    id: 'src.page.Project.Database.components.LogicDatabase.7F48554F',
+                    defaultMessage: '新建逻辑表',
+                  })}
 
-                <Icon component={NewOpenSvg} />
-              </Button>
+                  <Icon component={NewOpenSvg} />
+                </Button>
+              </Tooltip>
               <Button onClick={openPhysicalDbdrawer}>
                 {formatMessage({
                   id: 'src.component.Task.component.CommonDetailModal.178F11D7',
@@ -457,7 +511,7 @@ const ManageLogicDatabase: React.FC<{
                         defaultMessage: '暂无数据',
                       })}
                     </div>
-                    {isOwner && (
+                    {hasOperateAuth && (
                       <div>
                         {formatMessage({
                           id: 'src.page.Project.Database.components.LogicDatabase.CF799F8B',

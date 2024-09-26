@@ -47,7 +47,7 @@ const getColumns = () => {
       key: 'executeSql',
       dataIndex: 'executeSql',
       ellipsis: {
-        tooltip: false
+        showTitle: false,
       },
       render: (value: string) => (
         <Tooltip
