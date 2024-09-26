@@ -43,7 +43,7 @@ const getConnectionColumns = () => {
         const item = {
           type: record?.type,
           dataSource: {
-            type: record?.dataSourceType,
+            type: record?.dialectType,
             name: record?.dataSourceName,
             status: { status: IConnectionStatus.ACTIVE },
           },

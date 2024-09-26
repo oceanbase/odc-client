@@ -2756,7 +2756,7 @@ export interface IApplyDatabasePermissionTaskParams {
     type?: DBType;
     dataSourceId?: number;
     dataSourceName?: string;
-    dataSourceType?: ConnectType;
+    dialectType?: ConnectType;
   }[];
   types: DatabasePermissionType[];
   expireTime: number;
