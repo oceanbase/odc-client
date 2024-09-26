@@ -40,13 +40,17 @@ export default function MiniTable<T extends object>({
     if (domRef.current) {
       function resize() {
         const height = domRef.current.clientHeight - 24 - 60;
+        console.log('resize', height);
         setPageSize(Math.floor(height / 40));
       }
       const height = domRef.current.clientHeight - 24 - 60;
       setPageSize(Math.floor(height / 40));
-      domRef.current.addEventListener('resize', resize);
+      const obsever = new ResizeObserver(() => {
+        resize();
+      });
+      obsever.observe(domRef.current);
       return () => {
-        domRef.current.removeEventListener('resize', resize);
+        obsever.disconnect();
       };
     }
   });
