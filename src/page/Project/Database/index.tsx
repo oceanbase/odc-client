@@ -253,6 +253,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             }),
             //数据库名称
             dataIndex: 'name',
+            key: 'name',
             fixed: 'left',
             ellipsis: true,
             width: 250,
@@ -334,6 +335,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             }),
             //项目角色
             dataIndex: 'owners',
+            key: 'owners',
             ellipsis: true,
             width: 160,
             render(v) {
@@ -356,6 +358,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             }),
             //所属数据源
             dataIndex: ['dataSource', 'name'],
+            key: 'dataSource-name',
             width: 160,
             ellipsis: {
               showTitle: false,
@@ -390,6 +393,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             }),
             //环境
             dataIndex: 'environmentId',
+            key: 'environmentId',
             width: 80,
             render(value, record, index) {
               return (
@@ -407,6 +411,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             }),
             //字符编码
             dataIndex: 'charsetName',
+            key: 'charsetName',
             width: 120,
             render: (value) => (value ? value : '-'),
           },
@@ -417,6 +422,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             }),
             //排序规则
             dataIndex: 'collationName',
+            key: 'collationName',
             width: 120,
             ellipsis: true,
             render: (collationName) => collationName || '-',
@@ -428,6 +434,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             }),
             //上一次同步时间
             dataIndex: 'objectLastSyncTime',
+            key: 'objectLastSyncTime',
             width: 170,
             render(v, record) {
               const time = record?.objectLastSyncTime || record?.lastSyncTime;
@@ -441,6 +448,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             }),
             //操作
             dataIndex: 'actions',
+            key: 'actions',
             width: 210,
             render(_, record) {
               const config = getDataSourceModeConfig(record?.dataSource?.type);
@@ -763,6 +771,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           const current = page.current;
           loadData(pageSize, current);
         }}
+        enableResize
       />
 
       <ChangeProjectModal
