@@ -616,9 +616,9 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       })}
                     </Action.Link>
                     <Action.Link
-                      disabled={!hasOperateAuth}
+                      disabled={!hasChangeAuth}
                       tooltip={
-                        !hasOperateAuth
+                        !hasChangeAuth
                           ? formatMessage({
                               id: 'src.page.Project.Database.680DB47A',
                               defaultMessage: '暂无权限',
