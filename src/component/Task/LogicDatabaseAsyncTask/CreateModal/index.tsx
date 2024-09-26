@@ -283,6 +283,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           name="basic"
           initialValues={{
             triggerStrategy: TaskExecStrategy.START_NOW,
+            databaseId: logicDatabaseInfo?.databaseId,
           }}
           layout="vertical"
           requiredMark="optional"

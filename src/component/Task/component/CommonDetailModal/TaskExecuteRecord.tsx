@@ -400,7 +400,7 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
   };
   /* 逻辑库变更是永远只有一个flow的调度任务, 逻辑库交互上少了flow列表这一层的话需要自己拿第一个结果的id查 */
   useEffect(() => {
-    if (flowList?.contents?.length) {
+    if (flowList?.contents?.length && isLogicalDbChangeTask(task?.type)) {
       const taskId = task?.id;
       const flowId = flowList?.contents?.[0]?.id;
       getSubTasks(taskId, flowId);
