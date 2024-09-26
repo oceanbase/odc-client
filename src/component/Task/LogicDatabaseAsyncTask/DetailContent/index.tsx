@@ -72,20 +72,6 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
         >
           {task?.database?.project?.name || '-'}
         </Descriptions.Item>
-        {hasFlow && (
-          <Descriptions.Item
-            label={formatMessage({
-              id: 'src.component.Task.LogicDatabaseAsyncTask.DetailContent.3F322353',
-              defaultMessage: '风险等级',
-            })}
-          >
-            <ODCRiskLevelLabel
-              iconMode
-              level={task?.riskLevel?.level}
-              content={task?.riskLevel?.name || '-'}
-            />
-          </Descriptions.Item>
-        )}
       </Descriptions>
       <SimpleTextItem
         label={formatMessage({
