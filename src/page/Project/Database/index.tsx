@@ -493,7 +493,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
               const isParticipant = curRoles.some((role) =>
                 [ProjectRole.PARTICIPANT].includes(role),
               );
-              const hasLoginAuth = !!record.authorizedPermissionTypes?.length;
+              const hasDBAuth = !!record.authorizedPermissionTypes?.length;
 
               if (!record.existed) {
                 return (
@@ -541,7 +541,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                 );
               }
               if (record.type === 'LOGICAL') {
-                const hasOperateAuth = isOwnerOrDBA || hasChangeAuth;
+                const hasOperateAuth = isOwnerOrDBA || hasDBAuth;
                 return (
                   <Action.Group size={2}>
                     <Action.Link
@@ -768,9 +768,9 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                         isLogicalDatabase(record),
                       );
                     }}
-                    disabled={!hasLoginAuth || notSupportToResourceTree}
+                    disabled={!hasDBAuth || notSupportToResourceTree}
                     tooltip={
-                      !hasLoginAuth
+                      !hasDBAuth
                         ? formatMessage({
                             id: 'src.page.Project.Database.6EC9F229',
                             defaultMessage: '暂无权限',
