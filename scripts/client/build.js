@@ -43,7 +43,7 @@ async function buildClient(target) {
     'mac-jre': [
       {
         ENV: 'jre',
-        ARCH: '',
+        ARCH: 'x64',
         targets: electronBuilder.Platform.MAC.createTarget(['dmg'], electronBuilder.Arch.x64),
       },
     ],
@@ -164,14 +164,14 @@ async function run() {
       /**
       * mac (jre)
       */
-      execSync('npm run prepack jre jar', {
-        stdio: 'inherit',
-        env: {
-          ...process.env,
-          platform: 'mac',
-        },
-      });
-      await buildWeb();
+      // execSync('npm run prepack jre jar', {
+      //   stdio: 'inherit',
+      //   env: {
+      //     ...process.env,
+      //     platform: 'mac',
+      //   },
+      // });
+      // await buildWeb();
       await buildClient('mac-jre');
 
       /**
@@ -212,7 +212,7 @@ async function run() {
       return;
     }
     case 'test': {
-      await buildClient('mac');
+      await buildClient('mac-jre');
       return;
     }
   }
