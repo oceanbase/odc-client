@@ -14,13 +14,13 @@ import { formatMessage } from '@/util/intl';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { getCycleTaskLog } from '@/common/network/task';
+import { getCycleTaskLog, getDownloadUrl } from '@/common/network/task';
+import type { ILog } from '@/component/Task/component/Log';
 import TaskLog from '@/component/Task/component/Log';
 import { CommonTaskLogType, SubTaskStatus } from '@/d.ts';
-import type { ILog } from '@/component/Task/component/Log';
-import { Drawer } from 'antd';
 import { useRequest } from 'ahooks';
+import { Drawer } from 'antd';
+import login from '@/store/login';
 import React, { useEffect, useState } from 'react';
 interface IProps {
   scheduleId: number;
@@ -34,6 +34,7 @@ const LogModal: React.FC<IProps> = function (props) {
   const [logType, setLogType] = useState<CommonTaskLogType>(CommonTaskLogType.ALL);
   const [loading, setLoading] = useState(false);
   const [log, setLog] = useState<ILog>(null);
+  const [downloadUrl, setDownloadUrl] = useState<string>(undefined);
   const { run: getLog, cancel } = useRequest(
     async (scheduleId, recordId, logType) => {
       if (scheduleId && recordId && logType) {
@@ -55,14 +56,26 @@ const LogModal: React.FC<IProps> = function (props) {
       pollingInterval: 3000,
     },
   );
+
+  const { run: getLogDownLoadUrl } = useRequest(async (scheduleId, recordId, logType) => {
+    if (scheduleId && recordId) {
+      const res = await getDownloadUrl(scheduleId, recordId);
+      if (!!res) {
+        setDownloadUrl(`${res}?currentOrganizationId=${login.organizationId}`);
+      }
+    }
+  });
+
   const handleLogTypeChange = (type: CommonTaskLogType) => {
     setLogType(type);
   };
   useEffect(() => {
     if (visible) {
       getLog(scheduleId, recordId, logType);
+      getLogDownLoadUrl(scheduleId, recordId, logType);
     }
   }, [scheduleId, recordId, visible, logType]);
+
   useEffect(() => {
     if (visible) {
       setLoading(true);
@@ -80,7 +93,10 @@ const LogModal: React.FC<IProps> = function (props) {
       width={520}
       onClose={onClose}
       title={
-        formatMessage({ id: 'odc.src.component.Task.component.CommonDetailModal.Log' }) /* 日志 */
+        formatMessage({
+          id: 'odc.src.component.Task.component.CommonDetailModal.Log',
+          defaultMessage: '日志',
+        }) /* 日志 */
       }
       destroyOnClose
       footer={null}
@@ -89,6 +105,7 @@ const LogModal: React.FC<IProps> = function (props) {
         log={log}
         logType={logType}
         isLoading={loading}
+        downloadUrl={downloadUrl}
         onLogTypeChange={handleLogTypeChange}
       />
     </Drawer>

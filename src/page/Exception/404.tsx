@@ -29,6 +29,7 @@ export default () => {
       desc=""
       backText={formatMessage({
         id: 'odc.page.Exception.404.ReturnToHomePage',
+        defaultMessage: '返回主页',
       })}
       redirect="/"
     />

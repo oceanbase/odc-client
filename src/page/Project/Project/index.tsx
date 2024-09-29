@@ -18,21 +18,23 @@ import { listProjects } from '@/common/network/project';
 import { Acess, createPermission } from '@/component/Acess';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import Reload from '@/component/Button/Reload';
+import ProjectEmpty from '@/component/Empty/ProjectEmpty';
 import Search from '@/component/Input/Search';
 import PageContainer, { TitleType } from '@/component/PageContainer';
+import ApplyPermissionButton from '@/component/Task/ApplyPermission/CreateButton';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IProject } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
+import { setDefaultProject } from '@/service/projectHistory';
 import { formatMessage } from '@/util/intl';
 import { useNavigate } from '@umijs/max';
-import { Empty, List, Space, Spin, Typography } from 'antd';
+import { List, Space, Spin, Typography } from 'antd';
 import VirtualList from 'rc-virtual-list';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
+import ProjectContext from '../ProjectContext';
 import CreateProjectDrawer from './CreateProject/Drawer';
 import styles from './index.less';
 import ListItem from './ListItem';
-import { setDefaultProject } from '@/service/projectHistory';
-import ApplyPermissionButton from '@/component/Task/ApplyPermission/CreateButton';
 const { Title, Text } = Typography;
 const titleOptions: {
   label: string;
@@ -41,6 +43,7 @@ const titleOptions: {
   {
     label: formatMessage({
       id: 'odc.Project.Project.AllProjects',
+      defaultMessage: '全部项目',
     }),
     //全部项目
     value: 'all',
@@ -48,11 +51,13 @@ const titleOptions: {
   {
     label: formatMessage({
       id: 'odc.Project.Project.ArchiveProject',
+      defaultMessage: '归档项目',
     }),
     //归档项目
     value: 'deleted',
   },
 ];
+
 const Project = () => {
   const domRef = useRef<HTMLDivElement>();
   const [currentPage, setCurrentPage] = useState(0);
@@ -64,6 +69,8 @@ const Project = () => {
   const [projectType, setProjectType] = useState<'all' | 'deleted'>('all');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const context = useContext(ProjectContext);
+  const { project } = context;
   const isProjectDeleted = projectType === 'deleted';
   const appendData = async (currentPage, dataSource, projectType, projectSearchName) => {
     setLoading(true);
@@ -128,6 +135,7 @@ const Project = () => {
                   label={
                     formatMessage({
                       id: 'odc.src.page.Project.Project.JoinTheProject',
+                      defaultMessage: '加入项目',
                     }) /* 加入项目 */
                   }
                 />
@@ -143,6 +151,7 @@ const Project = () => {
                   {
                     label: formatMessage({
                       id: 'odc.Project.Project.ProjectName',
+                      defaultMessage: '项目名称',
                     }),
                     //项目名称
                     value: 'projectName',
@@ -187,35 +196,37 @@ const Project = () => {
           ) : (
             <Spin spinning={loading} wrapperClassName={styles.spin}>
               <Space direction="vertical" align="center">
-                <Empty
-                  description={
-                    <Space direction="vertical" size={0}>
-                      <Title level={4}>
-                        {
-                          formatMessage({
-                            id: 'odc.src.page.Project.Project.NoNewProject',
-                          }) /* 暂无新项目 */
-                        }
-                      </Title>
-                      <Text type="secondary">
-                        {
-                          formatMessage({
-                            id: 'odc.src.page.Project.Project.ItIsCurrentlyUnavailableFor',
-                          }) /* 当前暂无可使用项目，可以通过申请获得项目权限 */
-                        }
-                      </Text>
-                    </Space>
-                  }
-                >
-                  <ApplyPermissionButton
-                    label={
-                      formatMessage({
-                        id: 'odc.src.page.Project.Project.ApplicationProjectPermissions',
-                      }) /* 申请项目权限 */
-                    }
-                    type="primary"
+                {!loading && (
+                  <ProjectEmpty
+                    type={projectType}
+                    renderActionButton={() => {
+                      return (
+                        <div className={styles.projectActions}>
+                          <Acess
+                            fallback={
+                              <ApplyPermissionButton
+                                disabled={isProjectDeleted}
+                                type="primary"
+                                label={
+                                  formatMessage({
+                                    id: 'odc.src.page.Project.Project.JoinTheProject',
+                                    defaultMessage: '加入项目',
+                                  }) /* 加入项目 */
+                                }
+                              />
+                            }
+                            {...createPermission(IManagerResourceType.project, actionTypes.create)}
+                          >
+                            <CreateProjectDrawer
+                              disabled={isProjectDeleted}
+                              onCreate={() => reload()}
+                            />
+                          </Acess>
+                        </div>
+                      );
+                    }}
                   />
-                </Empty>
+                )}
               </Space>
             </Spin>
           )}

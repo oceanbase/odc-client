@@ -24,8 +24,8 @@ import { ResourceNodeType, TreeDataNode } from '../type';
 import { ReactComponent as ParameterSvg } from '@/svgr/Parameter.svg';
 
 import { IDatabase } from '@/d.ts/database';
-import { ReactComponent as ProcedureSvg } from '@/svgr/menuProcedure.svg';
 import { openPackageViewPage, openProcedureViewPage } from '@/store/helper/page';
+import { ReactComponent as ProcedureSvg } from '@/svgr/menuProcedure.svg';
 
 const THEME = 'var(--icon-color-2)';
 
@@ -46,7 +46,10 @@ export function ProcedureTreeNodeData(
 
   if (proc.params?.length) {
     paramRoot = {
-      title: formatMessage({ id: 'odc.ResourceTree.Nodes.procedure.Parameter' }), //参数
+      title: formatMessage({
+        id: 'odc.ResourceTree.Nodes.procedure.Parameter',
+        defaultMessage: '参数',
+      }), //参数
       key: `${funcKey}-param`,
       type: ResourceNodeType.ProcedureParamRoot,
       icon: (
@@ -71,7 +74,10 @@ export function ProcedureTreeNodeData(
 
   if (proc.variables?.length) {
     variableRoot = {
-      title: formatMessage({ id: 'odc.ResourceTree.Nodes.procedure.Variable' }), //变量
+      title: formatMessage({
+        id: 'odc.ResourceTree.Nodes.procedure.Variable',
+        defaultMessage: '变量',
+      }), //变量
       key: `${funcKey}-variable`,
       icon: (
         <InfoOutlined
@@ -109,6 +115,7 @@ export function ProcedureTreeNodeData(
         }}
       />
     ),
+
     doubleClick(session, node, databaseFrom) {
       pkg
         ? openPackageViewPage(pkg.packageName, null, false, session?.database?.databaseId)
@@ -136,7 +143,10 @@ export function ProcedureTreeData(
   const dbName = database.name;
   const procedures = dbSession?.database?.procedures;
   const treeData: TreeDataNode = {
-    title: formatMessage({ id: 'odc.ResourceTree.Nodes.procedure.StoredProcedure' }), //存储过程
+    title: formatMessage({
+      id: 'odc.ResourceTree.Nodes.procedure.StoredProcedure',
+      defaultMessage: '存储过程',
+    }), //存储过程
     key: `${database.id}-${packageName}-${dbName}-procedure`,
     type: ResourceNodeType.ProcedureRoot,
     data: database,

@@ -15,20 +15,21 @@
  */
 
 import { ModalStore } from '@/store/modal';
-import React from 'react';
 import { Button, Space } from 'antd';
 import type { ButtonProps } from 'antd/lib/button';
 import { inject, observer } from 'mobx-react';
+import React from 'react';
 import ApplyPermissionCreateModal from './CreateModal';
 
 interface IProps extends ButtonProps {
   label: React.ReactNode;
   modalStore?: ModalStore;
+  type?: 'link' | 'text' | 'ghost' | 'default' | 'primary' | 'dashed';
 }
 
 const ApplyPermissionButton: React.FC<IProps> = inject('modalStore')(
   observer((props) => {
-    const { label, modalStore, ...rest } = props;
+    const { label, modalStore, type = 'default', ...rest } = props;
 
     const handleApplyPermission = () => {
       modalStore.changeApplyPermissionModal(true);
@@ -36,7 +37,7 @@ const ApplyPermissionButton: React.FC<IProps> = inject('modalStore')(
 
     return (
       <>
-        <Button {...rest} onClick={handleApplyPermission}>
+        <Button {...rest} onClick={handleApplyPermission} type={type}>
           <Space size={4}>{label}</Space>
         </Button>
         <ApplyPermissionCreateModal />

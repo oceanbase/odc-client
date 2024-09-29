@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import setting from '@/store/setting';
+import { ESSOLgoinType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import {
   LockOutlined,
@@ -29,7 +29,6 @@ import React, { useState } from 'react';
 import type { LoginLocale } from '.';
 import { getPrefix } from './index';
 import './index.less';
-import { ESSOLgoinType } from '@/d.ts';
 
 export interface Values {
   username: string;
@@ -82,6 +81,7 @@ const Login: React.FC<ILoginFormProps> = ({
             required: true,
             message: formatMessage({
               id: 'odc.component.Login.LoginForm.TheUsernameCannotBeEmpty',
+              defaultMessage: '用户名不能为空',
             }), //用户名不能为空
           },
         ]}
@@ -90,6 +90,7 @@ const Login: React.FC<ILoginFormProps> = ({
           prefix={<UserOutlined />}
           placeholder={formatMessage({
             id: 'odc.component.Login.LoginForm.EnterAUsername',
+            defaultMessage: '请输入用户名',
           })} /*请输入用户名*/
           onFocus={() => {
             setFocusInput('username');
@@ -109,6 +110,7 @@ const Login: React.FC<ILoginFormProps> = ({
             required: true,
             message: formatMessage({
               id: 'odc.component.Login.LoginForm.ThePasswordCannotBeEmpty',
+              defaultMessage: '密码不能为空',
             }), //密码不能为空
           },
         ]}
@@ -119,6 +121,7 @@ const Login: React.FC<ILoginFormProps> = ({
           prefix={<LockOutlined />}
           placeholder={formatMessage({
             id: 'odc.component.Login.LoginForm.EnterAPassword',
+            defaultMessage: '请输入密码',
           })} /*请输入密码*/
           onFocus={() => {
             setFocusInput('password');
@@ -138,6 +141,7 @@ const Login: React.FC<ILoginFormProps> = ({
                 required: true,
                 message: formatMessage({
                   id: 'odc.component.Login.LoginForm.TheVerificationCodeCannotBe',
+                  defaultMessage: '验证码不能为空',
                 }), //验证码不能为空
               },
             ]}
@@ -146,6 +150,7 @@ const Login: React.FC<ILoginFormProps> = ({
               prefix={<SafetyCertificateOutlined />}
               placeholder={formatMessage({
                 id: 'odc.component.Login.LoginForm.PleaseEnterAVerificationCode',
+                defaultMessage: '请输入验证码',
               })} /*请输入验证码*/
               onFocus={() => {
                 setFocusInput('authCode');
@@ -166,6 +171,7 @@ const Login: React.FC<ILoginFormProps> = ({
           </div>
         </Space>
       )}
+
       <Button
         // 按下回车键，即可触发点击事件
         htmlType="submit"
@@ -174,7 +180,12 @@ const Login: React.FC<ILoginFormProps> = ({
         block={true}
         className={`${prefix}-submit-btn`}
       >
-        {formatMessage({ id: 'odc.component.Login.LoginForm.Login' }) /*登录*/}
+        {
+          formatMessage({
+            id: 'odc.component.Login.LoginForm.Login',
+            defaultMessage: '登录',
+          }) /*登录*/
+        }
       </Button>
       {showOtherLoginButton && (
         <>
@@ -182,6 +193,7 @@ const Login: React.FC<ILoginFormProps> = ({
             {
               formatMessage({
                 id: 'odc.component.Login.LoginForm.OtherLogonMethods',
+                defaultMessage: '其他登录方式',
               }) /*其他登录方式*/
             }
           </Divider>
@@ -203,6 +215,7 @@ const Login: React.FC<ILoginFormProps> = ({
               ssoLoginName ||
                 formatMessage({
                   id: 'odc.component.Login.LoginForm.ThirdPartyLogin',
+                  defaultMessage: '第三方登录',
                 }) /*第三方登录*/
             }
           </Button>

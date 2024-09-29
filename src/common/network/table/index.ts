@@ -15,7 +15,7 @@
  */
 
 import { INlsObject, ITable, ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
-import { ITableModel, TableColumn } from '@/page/Workspace/components/CreateTable/interface';
+import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import sessionManager from '@/store/sessionManager';
 import setting from '@/store/setting';
 import { getNlsValueKey } from '@/util/column';
@@ -29,7 +29,7 @@ import { isNil, toInteger } from 'lodash';
 import moment from 'moment';
 import { generateDatabaseSid, generateTableSid } from '../pathUtil';
 import { convertServerTableToTable, convertTableToServerTable } from './helper';
-
+import { getLogicalTableDetail } from '@/common/network/logicalDatabase';
 export async function getTableColumnList(
   tableName: string,
   databaseName?: string,
@@ -72,6 +72,24 @@ export async function getTableInfo(
   );
 
   return convertServerTableToTable(res?.data);
+}
+
+export async function getLogicTableInfo(
+  databaseId: number,
+  tableId: number,
+): Promise<Partial<ITableModel>> {
+  const res = await getLogicalTableDetail(databaseId, tableId);
+  return {
+    ...res,
+    ...convertServerTableToTable(
+      { ...res?.basePhysicalTable, name: res?.name },
+      {
+        isLogicalTable: true,
+        tableId,
+        databaseId,
+      },
+    ),
+  };
 }
 
 export async function queryTableOrViewData(
@@ -144,7 +162,10 @@ export async function generateUpdateTableDDL(
 
   if (!res?.data?.sql) {
     notification.error({
-      track: formatMessage({ id: 'odc.network.table.CurrentlyNoSqlCanBe' }), //当前无 SQL 可提交
+      track: formatMessage({
+        id: 'odc.network.table.CurrentlyNoSqlCanBe',
+        defaultMessage: '当前无 SQL 可提交',
+      }), //当前无 SQL 可提交
     });
   }
   return res?.data || { sql: '', tip: '' };

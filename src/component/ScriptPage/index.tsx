@@ -116,7 +116,11 @@ export default class ScriptPage extends PureComponent<IProps> {
         <Content style={{ position: 'relative' }}>
           {toolbar && <EditorToolBar {...toolbar} ctx={ctx} />}
           {showSessionSelect && (
-            <SessionSelect dialectTypes={dialectTypes} readonly={sessionSelectReadonly} />
+            <SessionSelect
+              dialectTypes={dialectTypes}
+              readonly={sessionSelectReadonly}
+              isIncludeLogicalDb={false}
+            />
           )}
 
           {isShowDebugStackBar ? (
@@ -176,6 +180,7 @@ export default class ScriptPage extends PureComponent<IProps> {
                   message.warn(
                     formatMessage({
                       id: 'src.component.ScriptPage.D0B6C37B' /*'该对象不属于当前数据库'*/,
+                      defaultMessage: '该对象不属于当前数据库',
                     }),
                   );
                   return;

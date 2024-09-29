@@ -103,6 +103,7 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
                 {
                   formatMessage({
                     id: 'odc.component.ColumnSelector.TipYouCanClickCustom',
+                    defaultMessage: '提示：可点击自定义新建字段',
                   }) /* 提示：可点击自定义新建字段 */
                 }
               </span>
@@ -111,6 +112,7 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
                 {
                   formatMessage({
                     id: 'odc.component.ColumnSelector.Custom',
+                    defaultMessage: '自定义',
                   }) /* 自定义 */
                 }
               </a>
@@ -119,6 +121,7 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
           locale={{
             searchPlaceholder: formatMessage({
               id: 'odc.component.ColumnSelector.EnterAFieldName',
+              defaultMessage: '请输入字段名称',
             }), // 请输入字段名称
           }}
           onChange={this.handleTransfer}
@@ -139,6 +142,7 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
           {
             formatMessage({
               id: 'odc.component.ColumnSelector.Determine',
+              defaultMessage: '确定',
             }) /* 确定 */
           }
         </Button>
@@ -179,6 +183,7 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
           {
             formatMessage({
               id: 'odc.component.ColumnSelector.AllFields',
+              defaultMessage: '全部字段',
             }) /* 全部字段 */
           }
         </Checkbox>
@@ -304,6 +309,7 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
         key: `d=${dbName}&${tableName ? `t=${tableName}` : `v=${viewName}`}${
           aliasName ? `&aliasName=${aliasName}` : ''
         }`,
+
         title: `${tableName || viewName}${aliasName ? `<${aliasName}>` : ''}`,
         children: [],
       };

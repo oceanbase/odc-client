@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
+import { listDatabases } from '@/common/network/database';
+import { getProject, listProjects } from '@/common/network/project';
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import TooltipAction from '@/component/TooltipAction';
+import { IProject, ProjectRole } from '@/d.ts/project';
+import { IPageType } from '@/d.ts/_index';
 import { formatMessage } from '@/util/intl';
-import { Button, Menu, Space } from 'antd';
+import { gotoSQLWorkspace } from '@/util/route';
+import tracert from '@/util/tracert';
+import { history, Link, useNavigate, useParams } from '@umijs/max';
+import { useRequest } from 'ahooks';
+import { Button, Space } from 'antd';
+import { isNumber } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { history, useParams } from '@umijs/max';
 import Database from './Database';
+import Notification from './Notification';
+import ProjectContext from './ProjectContext';
+import Sensitive from './Sensitive';
+import { ReactComponent as NewOpenSvg } from '@/svgr/newopen.svg';
+import Icon from '@ant-design/icons';
+
 import Setting from './Setting';
 import Task from './Task';
 import User from './User';
-import Notification from './Notification';
-import { getProject, listProjects } from '@/common/network/project';
-import { listDatabases } from '@/common/network/database';
-import { IProject, ProjectRole } from '@/d.ts/project';
-import { IPageType } from '@/d.ts/_index';
-import { gotoSQLWorkspace } from '@/util/route';
-import { Link, useNavigate } from '@umijs/max';
-import { useRequest } from 'ahooks';
-import { isNumber } from 'lodash';
-import ProjectContext from './ProjectContext';
-import Sensitive from './Sensitive';
-import tracert from '@/util/tracert';
 const ExtraContent = ({ projectId }) => {
   const [disabled, setDisabled] = useState(false);
 
@@ -55,20 +57,23 @@ const ExtraContent = ({ projectId }) => {
 
   return (
     <Space size={12}>
-      <TooltipAction title={disabled ? formatMessage({ id: 'src.page.Project.653AB743' }) : ''}>
+      <TooltipAction
+        title={
+          disabled
+            ? formatMessage({ id: 'src.page.Project.653AB743', defaultMessage: '暂无权限' })
+            : ''
+        }
+      >
         <Button
           onClick={() => {
             tracert.click('a3112.b64002.c330858.d367386');
             gotoSQLWorkspace(projectId);
           }}
-          type="primary"
           disabled={disabled}
         >
-          {
-            formatMessage({
-              id: 'odc.page.Project.LogOnToTheDatabase',
-            }) /*登录数据库*/
-          }
+          {formatMessage({ id: 'src.page.Project.8635398D', defaultMessage: 'SQL 控制台' })}
+
+          <Icon component={NewOpenSvg} />
         </Button>
       </TooltipAction>
     </Space>
@@ -99,6 +104,7 @@ const tabs = [
   {
     tab: formatMessage({
       id: 'odc.page.Project.Database',
+      defaultMessage: '数据库',
     }),
     //数据库
     key: IPageType.Project_Database,
@@ -106,6 +112,7 @@ const tabs = [
   {
     tab: formatMessage({
       id: 'odc.page.Project.Ticket',
+      defaultMessage: '工单',
     }),
     //工单
     key: IPageType.Project_Task,
@@ -113,6 +120,7 @@ const tabs = [
   {
     tab: formatMessage({
       id: 'odc.page.Project.Member',
+      defaultMessage: '成员',
     }),
     //成员
     key: IPageType.Project_User,
@@ -120,16 +128,18 @@ const tabs = [
   {
     tab: formatMessage({
       id: 'odc.src.page.Project.Sensitive',
+      defaultMessage: '敏感列',
     }), //'敏感列'
     key: IPageType.Project_Sensitive,
   },
   {
-    tab: formatMessage({ id: 'src.page.Project.B4D9BC23' }), //'消息'
+    tab: formatMessage({ id: 'src.page.Project.B4D9BC23', defaultMessage: '消息' }), //'消息'
     key: IPageType.Project_Notification,
   },
   {
     tab: formatMessage({
       id: 'odc.page.Project.Settings',
+      defaultMessage: '设置',
     }),
     //设置
     key: IPageType.Project_Setting,
@@ -271,6 +281,7 @@ const Index: React.FC<IProps> = function () {
           {
             formatMessage({
               id: 'odc.page.Project.ViewAllProjects',
+              defaultMessage: '查看所有项目',
             }) /*查看所有项目*/
           }
         </Link>

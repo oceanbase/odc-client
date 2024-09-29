@@ -21,8 +21,11 @@ interface ISessionContext {
   session: SessionStore;
   databaseId?: number;
   datasourceId?: number;
+  projectMode?: boolean;
   datasourceMode?: boolean;
+  isLogicalDatabase?: boolean;
   from?: 'project' | 'datasource';
+  setFrom?: React.Dispatch<React.SetStateAction<'project' | 'datasource'>>;
   selectSession: (databaseId: number, datasourceId: number, from: 'project' | 'datasource') => void;
 }
 

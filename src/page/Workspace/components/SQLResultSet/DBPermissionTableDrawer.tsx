@@ -15,10 +15,10 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
+import { IUnauthorizedDBResources } from '@/d.ts/table';
 import { Button, Drawer, Space } from 'antd';
 import React from 'react';
-import { DBPermissionTableContent } from './DBPermissionTable';
-import { IUnauthorizedDBResources } from '@/d.ts/table';
+import DBPermissionTableContent from '../DBPermissionTableContent';
 
 interface IProps {
   dataSource: IUnauthorizedDBResources[];
@@ -35,6 +35,7 @@ const DBPermissionTableDrawer: React.FC<IProps> = function ({ visible, dataSourc
       title={
         formatMessage({
           id: 'src.page.Workspace.components.SQLResultSet.B81C8729',
+          defaultMessage: '权限检查结果',
         }) /*'权限检查结果'*/
       }
       footer={
@@ -47,6 +48,7 @@ const DBPermissionTableDrawer: React.FC<IProps> = function ({ visible, dataSourc
             {
               formatMessage({
                 id: 'src.page.Workspace.components.SQLResultSet.2C272DCF' /*关闭*/,
+                defaultMessage: '关闭',
               }) /* 关闭 */
             }
           </Button>

@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 
+import { updateLimiterConfig } from '@/common/network/task';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { getTaskExecStrategyMap } from '@/component/Task';
-import { updateLimiterConfig } from '@/common/network/task';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import VariableConfigTable from '@/component/Task/component/VariableConfigTable';
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
-import setting from '@/store/setting';
 import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } from '@/d.ts';
 import { TaskExecStrategy } from '@/d.ts';
+import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime, kbToMb, mbToKb, milliSecondsToHour } from '@/util/utils';
+import {
+  getFormatDateTime,
+  getLocalFormatDateTime,
+  kbToMb,
+  mbToKb,
+  milliSecondsToHour,
+} from '@/util/utils';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
-import { Collapse, Descriptions, Divider, Space, Typography, message } from 'antd';
+import { Collapse, Descriptions, Divider, message, Space, Typography } from 'antd';
 import React from 'react';
+import ThrottleEditableCell from '../../component/ThrottleEditableCell';
+import { SyncTableStructureConfig } from '../../const';
 import styles from '../../index.less';
 import { InsertActionOptions } from '../CreateModal';
 import ArchiveRange from './ArchiveRange';
-import ThrottleEditableCell from '../../component/ThrottleEditableCell';
-import { getLocalFormatDateTime } from '@/util/utils';
-import { SyncTableStructureConfig } from '../../const';
 import { shardingStrategyOptions } from '../../component/ShardingStrategyItem';
 
 const { Text } = Typography;
@@ -60,6 +65,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
       message.success(
         formatMessage({
           id: 'odc.src.component.Task.DataArchiveTask.DetailContent.SuccessfullyModified',
+          defaultMessage: '修改成功！',
         }), //'修改成功！'
       );
       handleClose();
@@ -74,6 +80,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
       message.success(
         formatMessage({
           id: 'odc.src.component.Task.DataArchiveTask.DetailContent.SuccessfullyModified.1',
+          defaultMessage: '修改成功！',
         }), //'修改成功！'
       );
       handleClose();
@@ -87,6 +94,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           span={2}
           label={formatMessage({
             id: 'odc.DataArchiveTask.DetailContent.TaskNumber',
+            defaultMessage: '任务编号',
           })} /*任务编号*/
         >
           {task?.id}
@@ -95,11 +103,13 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           span={2}
           label={formatMessage({
             id: 'odc.DataArchiveTask.DetailContent.TaskType',
+            defaultMessage: '任务类型',
           })} /*任务类型*/
         >
           {
             formatMessage({
               id: 'odc.DataArchiveTask.DetailContent.DataArchiving',
+              defaultMessage: '数据归档',
             }) /*数据归档*/
           }
         </Descriptions.Item>
@@ -107,6 +117,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           span={2}
           label={formatMessage({
             id: 'odc.DataArchiveTask.DetailContent.SourceDatabase',
+            defaultMessage: '源数据库',
           })} /*源数据库*/
         >
           <Space size={2}>
@@ -118,6 +129,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           span={2}
           label={formatMessage({
             id: 'odc.DataArchiveTask.DetailContent.TargetDatabase',
+            defaultMessage: '目标数据库',
           })} /*目标数据库*/
         >
           <Space size={2}>
@@ -129,6 +141,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           <Descriptions.Item
             label={formatMessage({
               id: 'odc.DataArchiveTask.DetailContent.RiskLevel',
+              defaultMessage: '风险等级',
             })} /*风险等级*/
           >
             <RiskLevelLabel level={task?.riskLevel?.level} color={task?.riskLevel?.style} />
@@ -139,6 +152,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
       <SimpleTextItem
         label={formatMessage({
           id: 'odc.DataArchiveTask.DetailContent.VariableConfiguration',
+          defaultMessage: '变量配置',
         })}
         /*变量配置*/ content={
           <div
@@ -155,6 +169,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
       <SimpleTextItem
         label={formatMessage({
           id: 'odc.DataArchiveTask.DetailContent.ArchiveScope',
+          defaultMessage: '归档范围',
         })}
         /*归档范围*/ content={
           <div
@@ -173,15 +188,18 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           span={2}
           label={formatMessage({
             id: 'odc.DataArchiveTask.DetailContent.CleanUpArchivedDataFrom',
+            defaultMessage: '清理源端已归档的数据',
           })} /*清理源端已归档的数据*/
         >
           {
             jobParameters?.deleteAfterMigration
               ? formatMessage({
                   id: 'odc.DataArchiveTask.DetailContent.Yes',
+                  defaultMessage: '是',
                 }) //是
               : formatMessage({
                   id: 'odc.DataArchiveTask.DetailContent.No',
+                  defaultMessage: '否',
                 }) //否
           }
         </Descriptions.Item>
@@ -190,6 +208,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.DataArchiveTask.DetailContent.ExecutionMethod',
+            defaultMessage: '执行方式',
           })} /*执行方式*/
         >
           {taskExecStrategyMap[triggerConfig.triggerStrategy]}
@@ -199,6 +218,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
             label={
               formatMessage({
                 id: 'src.component.Task.DataArchiveTask.DetailContent.074676BE',
+                defaultMessage: '执行时间',
               }) /*"执行时间"*/
             }
           >
@@ -216,6 +236,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
                 <SimpleTextItem
                   label={formatMessage({
                     id: 'odc.DataArchiveTask.DetailContent.NextExecutionTime',
+                    defaultMessage: '下一次执行时间',
                   })}
                   /*下一次执行时间*/ content={
                     <Space>
@@ -241,6 +262,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.DataArchiveTask.DetailContent.InsertionStrategy',
+              defaultMessage: '插入策略',
             }) /* 插入策略 */
           }
           span={isCycleStrategy ? 2 : 1}
@@ -304,6 +326,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.DataArchiveTask.DetailContent.RestrictedFlow',
+              defaultMessage: '行限流',
             }) /* 行限流 */
           }
         >
@@ -319,6 +342,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.DataArchiveTask.DetailContent.DataSizeLimit',
+              defaultMessage: '数据大小限流',
             }) //'数据大小限流'
           }
         >
@@ -333,6 +357,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.DataArchiveTask.DetailContent.Remarks',
+            defaultMessage: '备注',
           })}
           /*备注*/ span={2}
         >
@@ -350,6 +375,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.DataArchiveTask.DetailContent.Founder',
+            defaultMessage: '创建人',
           })} /*创建人*/
         >
           {task?.creator?.name || '-'}
@@ -357,6 +383,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.DataArchiveTask.DetailContent.CreationTime',
+            defaultMessage: '创建时间',
           })} /*创建时间*/
         >
           {getFormatDateTime(task.createTime)}

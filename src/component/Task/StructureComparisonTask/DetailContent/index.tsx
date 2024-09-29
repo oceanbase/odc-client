@@ -14,44 +14,13 @@
  * limitations under the License.
  */
 
-import { SQLContent } from '@/component/SQLContent';
-import { getTaskExecStrategyMap } from '@/component/Task';
-import {
-  SubTaskStatus,
-  type ConnectType,
-  type IStructureComparisonTaskParams,
-  type ITaskResult,
-  type TaskDetail,
-  IResponseDataPage,
-  TaskStatus,
-} from '@/d.ts';
-import { formatMessage } from '@/util/intl';
-import { downloadFile, getFormatDateTime } from '@/util/utils';
-import { ConfigProvider, Descriptions, Divider, Empty, Modal, Tabs } from 'antd';
-import { SimpleTextItem } from '../../component/SimpleTextItem';
-import SearchFilter from '@/component/SearchFilter';
-import { SearchOutlined } from '@ant-design/icons';
-import { useEffect, useRef, useState } from 'react';
-import { TaskTypeMap } from '../../component/TaskTable';
-import { EOperationTypeMap, comparisonScopeMap } from '../CreateModal/interface';
-import styles from './index.less';
+import { getDataSourceModeConfig } from '@/common/datasource';
 import {
   getStructrueComparison,
   getStructrueComparisonDetail,
   getStructureComparisonTaskFile,
-  getTaskDetail,
   getTaskResult,
 } from '@/common/network/task';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import DiffEditor from '@/component/MonacoEditor/DiffEditor';
-import { ModalStore } from '@/store/modal';
-import { inject, observer } from 'mobx-react';
-import {
-  IComparisonResult,
-  EOperationType,
-  IStructrueComparisonDetail,
-  IComparisonResultData,
-} from '@/d.ts/task';
 import CommonTable from '@/component/CommonTable';
 import {
   CommonTableMode,
@@ -59,6 +28,36 @@ import {
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
 import MonacoEditor from '@/component/MonacoEditor';
+import DiffEditor from '@/component/MonacoEditor/DiffEditor';
+import SearchFilter from '@/component/SearchFilter';
+import { SQLContent } from '@/component/SQLContent';
+import { getTaskExecStrategyMap } from '@/component/Task';
+import {
+  IResponseDataPage,
+  SubTaskStatus,
+  TaskStatus,
+  type ConnectType,
+  type IStructureComparisonTaskParams,
+  type ITaskResult,
+  type TaskDetail,
+} from '@/d.ts';
+import {
+  EOperationType,
+  IComparisonResult,
+  IComparisonResultData,
+  IStructrueComparisonDetail,
+} from '@/d.ts/task';
+import { ModalStore } from '@/store/modal';
+import { formatMessage } from '@/util/intl';
+import { downloadFile, getFormatDateTime } from '@/util/utils';
+import { SearchOutlined } from '@ant-design/icons';
+import { ConfigProvider, Descriptions, Divider, Empty, Modal, Tabs } from 'antd';
+import { inject, observer } from 'mobx-react';
+import { useEffect, useRef, useState } from 'react';
+import { SimpleTextItem } from '../../component/SimpleTextItem';
+import { TaskTypeMap } from '../../component/TaskTable';
+import { comparisonScopeMap, EOperationTypeMap } from '../CreateModal/interface';
+import styles from './index.less';
 interface IStructureComparisonTaskContentProps {
   modalStore?: ModalStore;
   visible?: boolean;
@@ -97,6 +96,7 @@ const CompareTable: React.FC<{
     {
       title: formatMessage({
         id: 'src.component.Task.StructureComparisonTask.DetailContent.6825620C',
+        defaultMessage: '比对表',
       }), //'比对表'
       key: 'dbObjectName',
       dataIndex: 'dbObjectName',
@@ -107,6 +107,7 @@ const CompareTable: React.FC<{
             {...props}
             placeholder={formatMessage({
               id: 'odc.Env.components.InnerEnvironment.RuleName',
+              defaultMessage: '规则名称',
             })} //规则名称
           />
         );
@@ -122,6 +123,7 @@ const CompareTable: React.FC<{
     {
       title: formatMessage({
         id: 'src.component.Task.StructureComparisonTask.DetailContent.A725ADD7',
+        defaultMessage: '比对结果',
       }), //'比对结果'
       key: 'operationType',
       dataIndex: 'operationType',
@@ -160,6 +162,7 @@ const CompareTable: React.FC<{
     {
       title: formatMessage({
         id: 'src.component.Task.StructureComparisonTask.DetailContent.E8DAF6BA',
+        defaultMessage: '操作',
       }), //'操作'
       key: 'action',
       render: (_, record: IComparisonResult) => (
@@ -171,6 +174,7 @@ const CompareTable: React.FC<{
           {
             formatMessage({
               id: 'src.component.Task.StructureComparisonTask.DetailContent.DF21DA79' /*查看*/,
+              defaultMessage: '查看',
             }) /* 查看 */
           }
         </a>
@@ -186,6 +190,7 @@ const CompareTable: React.FC<{
             {
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.1A3F5341' /*正在比对中，暂无数据*/,
+                defaultMessage: '正在比对中，暂无数据',
               }) /* 正在比对中，暂无数据 */
             }
           </>
@@ -194,6 +199,7 @@ const CompareTable: React.FC<{
       default: {
         return formatMessage({
           id: 'src.component.Task.StructureComparisonTask.DetailContent.F042A675',
+          defaultMessage: '无数据',
         });
       }
     }
@@ -257,16 +263,19 @@ const SQLPreview: React.FC<{
               <div>
                 {formatMessage({
                   id: 'src.component.Task.StructureComparisonTask.DetailContent.099109D1' /*当前 SQL 文件超过 1 兆，暂不支持预览，请*/,
+                  defaultMessage: '当前 SQL 文件超过 1 兆，暂不支持预览，请',
                 })}
                 <a onClick={sqlDownload}>
                   {
                     formatMessage({
                       id: 'src.component.Task.StructureComparisonTask.DetailContent.49F7605B' /*下载 SQL*/,
+                      defaultMessage: '下载 SQL',
                     }) /* 下载 SQL */
                   }
                 </a>{' '}
                 {formatMessage({
                   id: 'src.component.Task.StructureComparisonTask.DetailContent.734F1D69' /*进行查看*/,
+                  defaultMessage: '进行查看',
                 })}
               </div>
             </span>
@@ -279,6 +288,7 @@ const SQLPreview: React.FC<{
           <span style={{ color: 'var(--text-color-placeholder', cursor: 'default' }}>
             {formatMessage({
               id: 'src.component.Task.StructureComparisonTask.DetailContent.8453A485',
+              defaultMessage: '正在比对中，暂无数据',
             })}
           </span>
         );
@@ -289,6 +299,7 @@ const SQLPreview: React.FC<{
             {
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.BB570BB4' /*无数据*/,
+                defaultMessage: '无数据',
               }) /* 无数据 */
             }
           </span>
@@ -301,6 +312,7 @@ const SQLPreview: React.FC<{
       <div className={styles.tip}>
         {formatMessage({
           id: 'src.component.Task.StructureComparisonTask.DetailContent.9DFA1E59' /*删除表、索引、字段等风险变更 SQL 已修改为注释，如需执行，需手动修改 SQL*/,
+          defaultMessage: '删除表、索引、字段等风险变更 SQL 已修改为注释，如需执行，需手动修改 SQL',
         })}
       </div>
       <div
@@ -337,12 +349,8 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
   'modalStore',
 )(
   observer((props) => {
-    const { task: _task, result, modalStore, theme, visible } = props;
-    const [task, setTask] = useState<TaskDetail<IStructureComparisonTaskParams>>(_task);
+    const { task: task, result, modalStore, theme, visible } = props;
     const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
-    const timerTaskRef = useRef<ReturnType<typeof setTimeout>>(null);
-    const taskEndRef = useRef<boolean>(null);
-    const currentTaskRef = useRef<TaskDetail<IStructureComparisonTaskParams>>(_task);
     const [currentResult, setCurrentResult] = useState<ITaskResult>(result);
     const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
     const [comparisonResult, setComparisonResult] = useState<IComparisonResultData>(null);
@@ -377,20 +385,16 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
     };
     const loop = (timeout: number = 0) => {
       timerRef.current = setTimeout(async () => {
-        if (!detailModalOpen || taskEndRef.current) {
-          return;
-        }
         const currentResult = await getTaskResult(task?.id);
         if (
           currentResult &&
           [SubTaskStatus.DONE, SubTaskStatus.FAILED].includes((currentResult as any)?.status)
         ) {
           setCurrentResult(currentResult);
-          taskEndRef.current = true;
           clearTimeout(timerRef.current);
           timerRef.current = null;
+          loadStructureComparisonResults();
         } else {
-          taskEndRef.current = false;
           modalStore?.updateStructureComparisonDataMap(task?.id, {
             database: null,
             storageObjectId: null,
@@ -398,31 +402,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             overSizeLimit: null,
             status: (currentResult as any)?.status,
           });
-          loop(2000);
         }
-      }, timeout);
-    };
-    /**
-     * 轮询更新Drawer内Task内容
-     */
-    const loopGetTask = async (timeout: number = 0) => {
-      timerTaskRef.current = setTimeout(async () => {
-        if (
-          [
-            TaskStatus?.EXECUTING,
-            TaskStatus.APPROVING,
-            TaskStatus.WAIT_FOR_EXECUTION,
-            TaskStatus.CREATED,
-          ]?.includes(currentTaskRef.current?.status)
-        ) {
-          loopGetTask(6000);
-        } else {
-          clearTimeout(timerTaskRef.current);
-          timerTaskRef.current = null;
-        }
-        const currentTask = await getTaskDetail(task?.id);
-        setTask(currentTask as TaskDetail<IStructureComparisonTaskParams>);
-        currentTaskRef.current = currentTask as TaskDetail<IStructureComparisonTaskParams>;
       }, timeout);
     };
     const handleDetailModalOpen = async (taskId: number, structureComparisonId: number) => {
@@ -443,19 +423,22 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
     useEffect(() => {
       if (visible) {
         loop();
-        loopGetTask();
       }
       return () => {
         clearTimeout(timerRef.current);
         timerRef.current = null;
-        clearTimeout(timerTaskRef.current);
-        timerTaskRef.current = null;
       };
     }, [visible]);
+
+    useEffect(() => {
+      loop();
+    }, [task?.status]);
+
     const tabItems = [
       {
         label: formatMessage({
           id: 'src.component.Task.StructureComparisonTask.DetailContent.59BDC22F',
+          defaultMessage: '比对的表',
         }), //'比对的表'
         key: '1',
         children: (
@@ -472,6 +455,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
       {
         label: formatMessage({
           id: 'src.component.Task.StructureComparisonTask.DetailContent.69BFA988',
+          defaultMessage: 'SQL 预览',
         }), //'SQL 预览'
         key: '2',
         children: (
@@ -490,6 +474,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
           title={
             formatMessage({
               id: 'src.component.Task.StructureComparisonTask.DetailContent.2B43CB55',
+              defaultMessage: '结构比对详情',
             }) /*"结构比对详情"*/
           }
           open={detailModalOpen}
@@ -509,6 +494,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
                 label={
                   formatMessage({
                     id: 'src.component.Task.StructureComparisonTask.DetailContent.3AB981EC',
+                    defaultMessage: '源表结构',
                   }) /*"源表结构"*/
                 }
                 className={styles.descriptionItem}
@@ -520,6 +506,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
                 label={
                   formatMessage({
                     id: 'src.component.Task.StructureComparisonTask.DetailContent.CD265898',
+                    defaultMessage: '比对表结构',
                   }) /*"比对表结构"*/
                 }
                 className={styles.descriptionItem}
@@ -537,6 +524,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
               <SimpleTextItem
                 label={formatMessage({
                   id: 'src.component.Task.StructureComparisonTask.DetailContent.F1BC87F0',
+                  defaultMessage: '变更脚本',
                 })}
                 content={
                   <div>
@@ -564,6 +552,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.152888BE',
+                defaultMessage: '任务编号',
               }) /*"任务编号"*/
             }
           >
@@ -574,6 +563,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.5E3A8702',
+                defaultMessage: '任务类型',
               }) /*"任务类型"*/
             }
           >
@@ -584,6 +574,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.575F8B39',
+                defaultMessage: '比对范围',
               }) /*"比对范围"*/
             }
           >
@@ -595,6 +586,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.0570289A',
+                defaultMessage: '项目',
               }) /*"项目"*/
             }
           >
@@ -605,6 +597,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.BB26A84B',
+                defaultMessage: '源端数据源',
               }) /*"源端数据源"*/
             }
           >
@@ -615,6 +608,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.D26187E4',
+                defaultMessage: '源端数据库',
               }) /*"源端数据库"*/
             }
           >
@@ -626,6 +620,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.5B5EF5E5',
+                defaultMessage: '执行方式',
               }) /*"执行方式"*/
             }
           >
@@ -636,6 +631,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.CE00A7E1',
+                defaultMessage: '目标端数据源',
               }) /*"目标端数据源"*/
             }
           >
@@ -646,6 +642,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.3C7B0B00',
+                defaultMessage: '目标端数据库',
               }) /*"目标端数据库"*/
             }
           >
@@ -657,6 +654,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.A0036BAC',
+                defaultMessage: '描述',
               }) /*"描述"*/
             }
           >
@@ -683,6 +681,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             label={
               formatMessage({
                 id: 'odc.src.component.Task.AsyncTask.DetailContent.Founder',
+                defaultMessage: '创建人',
               }) /* 创建人 */
             }
           >
@@ -693,6 +692,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             label={
               formatMessage({
                 id: 'odc.src.component.Task.AsyncTask.DetailContent.CreationTime',
+                defaultMessage: '创建时间',
               }) /* 创建时间 */
             }
           >

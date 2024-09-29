@@ -68,7 +68,10 @@ export default function UpdateUserModal({
     });
     if (isSuccess) {
       message.success(
-        formatMessage({ id: 'odc.User.UpdateUserModal.OperationSucceeded' }), //操作成功
+        formatMessage({
+          id: 'odc.User.UpdateUserModal.OperationSucceeded',
+          defaultMessage: '操作成功',
+        }), //操作成功
       );
       close();
       onSuccess();
@@ -77,7 +80,10 @@ export default function UpdateUserModal({
 
   return (
     <Modal
-      title={formatMessage({ id: 'odc.User.UpdateUserModal.EditMember' })}
+      title={formatMessage({
+        id: 'odc.User.UpdateUserModal.EditMember',
+        defaultMessage: '编辑成员',
+      })}
       /*编辑成员*/ onCancel={() => close()}
       className={styles.modal}
       onOk={submit}
@@ -88,14 +94,22 @@ export default function UpdateUserModal({
         <Form.Item
           rules={[{ required: true }]}
           name={'roles'}
-          label={formatMessage({ id: 'odc.User.UpdateUserModal.ProjectRole' })} /*项目角色*/
+          label={formatMessage({
+            id: 'odc.User.UpdateUserModal.ProjectRole',
+            defaultMessage: '项目角色',
+          })} /*项目角色*/
         >
           <Checkbox.Group
             options={[
               {
                 label: (
                   <HelpDoc leftText doc="projectOwner">
-                    {formatMessage({ id: 'odc.User.UpdateUserModal.Administrator' }) /*管理员*/}
+                    {
+                      formatMessage({
+                        id: 'odc.User.UpdateUserModal.Administrator',
+                        defaultMessage: '管理员',
+                      }) /*管理员*/
+                    }
                   </HelpDoc>
                 ),
 
@@ -116,6 +130,7 @@ export default function UpdateUserModal({
                     {
                       formatMessage({
                         id: 'src.page.Project.User.UpdateUserModal.09F81F9F' /*开发者*/,
+                        defaultMessage: '开发者',
                       }) /* 开发者 */
                     }
                   </HelpDoc>

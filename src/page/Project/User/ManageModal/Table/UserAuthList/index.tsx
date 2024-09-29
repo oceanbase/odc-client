@@ -27,6 +27,7 @@ import { getExpireTimeLabel } from '@/component/Task/ApplyTablePermission';
 import type { IResponseData } from '@/d.ts';
 import { ITablePermission, TablePermissionStatus } from '@/d.ts/project';
 import { SearchOutlined } from '@ant-design/icons';
+import { ColumnType } from 'antd/es/table';
 import React from 'react';
 import {
   tablePermissionStatusFilters,
@@ -34,7 +35,6 @@ import {
   tablePermissionTypeMap,
 } from '../';
 import StatusLabel from '../Status';
-import { ColumnType } from 'antd/es/table';
 
 const getColumns = (params: {
   paramOptions: ITableLoadOptions;

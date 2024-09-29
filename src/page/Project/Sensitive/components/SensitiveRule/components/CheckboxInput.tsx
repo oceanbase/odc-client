@@ -59,6 +59,7 @@ const CheckboxInput: React.FC<CheckboxInputProps> = ({
       return Promise.reject(
         formatMessage({
           id: 'odc.SensitiveRule.components.CheckboxInput.SelectAtLeastOneRecognition',
+          defaultMessage: '至少勾选一个识别对象',
         }), //至少勾选一个识别对象
       );
     }
@@ -72,13 +73,17 @@ const CheckboxInput: React.FC<CheckboxInputProps> = ({
         name={[...name, 'checked']}
         label={
           hasLabel &&
-          formatMessage({ id: 'odc.SensitiveRule.components.CheckboxInput.IdentifyObjects' }) //识别对象
+          formatMessage({
+            id: 'odc.SensitiveRule.components.CheckboxInput.IdentifyObjects',
+            defaultMessage: '识别对象',
+          }) //识别对象
         }
         validateTrigger="onBlur"
         rules={[
           {
             message: formatMessage({
               id: 'odc.SensitiveRule.components.CheckboxInput.PleaseSelectTheIdentificationObject',
+              defaultMessage: '请先勾选识别对象',
             }), //请先勾选识别对象
             validator: handleLeastOneCheck,
           },
@@ -99,7 +104,10 @@ const CheckboxInput: React.FC<CheckboxInputProps> = ({
         name={[...name, 'regExp']}
         label={
           hasLabel &&
-          formatMessage({ id: 'odc.SensitiveRule.components.CheckboxInput.RegularExpression' }) //正则表达式
+          formatMessage({
+            id: 'odc.SensitiveRule.components.CheckboxInput.RegularExpression',
+            defaultMessage: '正则表达式',
+          }) //正则表达式
         }
         validateTrigger="onBlur"
         rules={[
@@ -107,6 +115,7 @@ const CheckboxInput: React.FC<CheckboxInputProps> = ({
             required: checked?.length > 0 || value?.checked?.length > 0,
             message: formatMessage({
               id: 'odc.SensitiveRule.components.CheckboxInput.EnterARegularExpression',
+              defaultMessage: '请填写正则表达式',
             }), //请填写正则表达式
           },
         ]}
@@ -119,7 +128,10 @@ const CheckboxInput: React.FC<CheckboxInputProps> = ({
           disabled={value?.checked?.length === 0 || false}
           onChange={onInputChange}
           placeholder={
-            formatMessage({ id: 'odc.SensitiveRule.components.CheckboxInput.PleaseEnter' }) //请输入
+            formatMessage({
+              id: 'odc.SensitiveRule.components.CheckboxInput.PleaseEnter',
+              defaultMessage: '请输入',
+            }) //请输入
           }
         />
       </Form.Item>

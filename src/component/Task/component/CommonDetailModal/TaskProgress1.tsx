@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
+import {
+  getDataSourceModeConfigByConnectionMode,
+  getDataSourceStyleByConnectType,
+} from '@/common/datasource';
 import { getSubTask, getTaskDetail, swapTableName } from '@/common/network/task';
 import Action from '@/component/Action';
 import DisplayTable from '@/component/DisplayTable';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import StatusLabel from '@/component/Task/component/Status';
 import {
@@ -26,23 +31,18 @@ import {
   TaskRecordParameters,
   TaskType,
 } from '@/d.ts';
+import { TaskStore } from '@/store/task';
 import { formatMessage } from '@/util/intl';
-import { Drawer, Popover, Space, message } from 'antd';
-import React, { useContext, useEffect, useState } from 'react';
-import { useRequest } from 'ahooks';
-import { SimpleTextItem } from '../SimpleTextItem';
-import styles from './index.less';
-import {
-  getDataSourceModeConfigByConnectionMode,
-  getDataSourceStyleByConnectType,
-} from '@/common/datasource';
+import { Button, Drawer, Popover, Space, message } from 'antd';
 import { getLocalFormatDateTime } from '@/util/utils';
+import Icon from '@ant-design/icons';
+import { useRequest } from 'ahooks';
+import { inject, observer } from 'mobx-react';
+import React, { useContext, useEffect, useState } from 'react';
 import { flatArray } from '../../MutipleAsyncTask/CreateModal/helper';
 import { TaskDetailContext } from '../../TaskDetailContext';
-import { TaskStore } from '@/store/task';
-import { inject, observer } from 'mobx-react';
-import Icon from '@ant-design/icons';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { SimpleTextItem } from '../SimpleTextItem';
+import styles from './index.less';
 const getColumns = (params: {
   onOpenDetail: (id: number) => void;
   onSwapTable: (id: number) => void;
@@ -52,6 +52,7 @@ const getColumns = (params: {
       dataIndex: 'resultJson',
       title: formatMessage({
         id: 'odc.component.CommonDetailModal.TaskProgress.SourceTable',
+        defaultMessage: '源表',
       }),
       //源表
       ellipsis: true,
@@ -63,6 +64,7 @@ const getColumns = (params: {
       dataIndex: 'status',
       title: formatMessage({
         id: 'odc.component.CommonDetailModal.TaskProgress.ExecutionStatus',
+        defaultMessage: '执行状态',
       }),
       //执行状态
       ellipsis: true,
@@ -77,6 +79,7 @@ const getColumns = (params: {
       dataIndex: 'action',
       title: formatMessage({
         id: 'odc.component.CommonDetailModal.TaskProgress.Operation',
+        defaultMessage: '操作',
       }),
       //操作
       ellipsis: true,
@@ -93,6 +96,7 @@ const getColumns = (params: {
               {
                 formatMessage({
                   id: 'odc.component.CommonDetailModal.TaskProgress.View',
+                  defaultMessage: '查看',
                 }) /*查看*/
               }
             </Action.Link>
@@ -105,6 +109,7 @@ const getColumns = (params: {
                 {
                   formatMessage({
                     id: 'odc.src.component.Task.component.CommonDetailModal.WatchNameSwitch',
+                    defaultMessage: '\n                表名切换\n              ',
                   }) /* 
             表名切换
             */
@@ -250,10 +255,114 @@ const getMultipleAsyncColumns = ({ onOpenDetail }: { onOpenDetail: (taskId: numb
               {
                 formatMessage({
                   id: 'odc.component.CommonDetailModal.TaskProgress.View',
+                  defaultMessage: '查看',
                 }) /*查看*/
               }
             </Action.Link>
           </>
+        );
+      },
+    },
+  ];
+};
+
+const getLogicalDatabaseAsyncColumns = () => {
+  return [
+    {
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.E38B64D9',
+        defaultMessage: '执行数据库',
+      }),
+      key: 'database',
+      dataIndex: 'database',
+      ellipsis: {
+        showTitle: true,
+      },
+      render: (_, record) => {
+        const icon = getDataSourceStyleByConnectType(record?.database?.dataSource?.type);
+        return (
+          <Popover
+            content={
+              <Space size={0}>
+                <RiskLevelLabel
+                  content={record?.database?.environment?.name}
+                  color={record?.database?.environment?.style}
+                />
+
+                <Space size={4}>
+                  <Icon
+                    component={icon?.icon?.component}
+                    style={{
+                      color: icon?.icon?.color,
+                      fontSize: 16,
+                      marginRight: 4,
+                    }}
+                  />
+
+                  <div>{record?.database?.name}</div>
+                  <div style={{ color: 'var(--neutral-black45-color)' }}>
+                    {record?.database?.dataSource?.name}
+                  </div>
+                </Space>
+              </Space>
+            }
+          >
+            <Space size={0}>
+              <RiskLevelLabel
+                content={record?.database?.environment?.name}
+                color={record?.database?.environment?.style}
+              />
+
+              <Space size={4}>
+                <Icon
+                  component={icon?.icon?.component}
+                  style={{
+                    color: icon?.icon?.color,
+                    fontSize: 16,
+                    marginRight: 4,
+                  }}
+                />
+
+                <div>{record?.database?.name}</div>
+                <div style={{ color: 'var(--neutral-black45-color)' }}>
+                  {record?.database?.dataSource?.name}
+                </div>
+              </Space>
+            </Space>
+          </Popover>
+        );
+      },
+    },
+    {
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.AB5C26BA',
+        defaultMessage: '数据源',
+      }),
+      key: 'datasource',
+      dataIndex: 'datasource',
+    },
+    {
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.7902B91E',
+        defaultMessage: '执行状态',
+      }),
+      key: 'status',
+      dataIndex: 'status',
+    },
+    {
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.EDEF0329',
+        defaultMessage: '操作',
+      }),
+      key: 'operation',
+      render: (value, record) => {
+        return (
+          <Button type="link">
+            {formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.593D5BD8',
+              defaultMessage: '查看',
+            })}
+          </Button>
         );
       },
     },
@@ -321,6 +430,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
       message.success(
         formatMessage({
           id: 'odc.src.component.Task.component.CommonDetailModal.StartTheNameSwitching',
+          defaultMessage: '开始表名切换',
         }), //'开始表名切换'
       );
       loadData();
@@ -347,15 +457,34 @@ const TaskProgress: React.FC<IProps> = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
-  const columns =
-    task?.type === TaskType.MULTIPLE_ASYNC
-      ? getMultipleAsyncColumns({
+  const getColumnsByTaskType = (type: TaskType) => {
+    switch (type) {
+      case TaskType.MULTIPLE_ASYNC: {
+        // return getLogicalDatabaseAsyncColumns();
+        return getMultipleAsyncColumns({
           onOpenDetail,
-        })
-      : getColumns({
+        });
+      }
+      case TaskType.ONLINE_SCHEMA_CHANGE: {
+        return getColumns({
           onOpenDetail: handleDetailVisible,
           onSwapTable: handleSwapTable,
         });
+      }
+      case TaskType.LOGICAL_DATABASE_CHANGE: {
+        return getLogicalDatabaseAsyncColumns();
+      }
+    }
+  };
+  const columns = getColumnsByTaskType(task?.type);
+  // task?.type === TaskType.MULTIPLE_ASYNC
+  //   ? getMultipleAsyncColumns({
+  //       onOpenDetail,
+  //     })
+  //   : getColumns({
+  //       onOpenDetail: handleDetailVisible,
+  //       onSwapTable: handleSwapTable,
+  //     });
   const pendingExectionDatabases = databases?.filter((item) => !item?.status)?.length;
   return (
     <>
@@ -364,12 +493,11 @@ const TaskProgress: React.FC<IProps> = (props) => {
           {formatMessage(
             {
               id: 'src.component.Task.component.CommonDetailModal.E75BF608',
-              defaultMessage:
-                '共 ${subTasks?.length} 个数据库， ${pendingExectionDatabases} 个待执行',
+              defaultMessage: '共 {subTasksLength} 个数据库， {pendingExectionDatabases} 个待执行',
             },
             {
               subTasksLength: subTasks?.length,
-              pendingExectionDatabases: pendingExectionDatabases,
+              pendingExectionDatabases,
             },
           )}
         </div>
@@ -400,6 +528,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
           <SimpleTextItem
             label={formatMessage({
               id: 'odc.component.CommonDetailModal.TaskProgress.NewTableDdl',
+              defaultMessage: '新表 DDL',
             })}
             /*新表 DDL*/ content={
               <div
@@ -425,6 +554,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
           <SimpleTextItem
             label={formatMessage({
               id: 'odc.component.CommonDetailModal.TaskProgress.SourceTableDdl',
+              defaultMessage: '源表 DDL',
             })}
             /*源表 DDL*/ content={
               <div

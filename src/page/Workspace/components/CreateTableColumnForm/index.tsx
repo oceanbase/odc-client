@@ -16,16 +16,15 @@
 
 import Toolbar from '@/component/Toolbar';
 import { IDataType, ITableColumn } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 import { SyncOutlined } from '@ant-design/icons';
-import { RowsChangeData } from '@oceanbase-odc/ob-react-data-grid';
+import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import memoizeOne from 'memoize-one';
 import React, { Component } from 'react';
-import type { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
-import EditableTable, { RowType } from '../EditableTable';
+import EditableTable from '../EditableTable';
 import { WrapAutoCompleteEditor } from '../EditableTable/Editors/AutoComplete';
 import { TextEditor } from '../EditableTable/Editors/TextEditor';
 import styles from './index.less';
-import { formatMessage } from '@/util/intl';
 
 const ToolbarButton = Toolbar.Button;
 
@@ -109,19 +108,16 @@ export default class CreateTableColumnForm extends Component<
   }
 
   public render() {
-    const {
-      hideBorder,
-      fixedFooter,
-      columns,
-      allowRefresh,
-      tableHeight,
-      enableRowRecord,
-    } = this.props;
+    const { hideBorder, fixedFooter, columns, allowRefresh, tableHeight, enableRowRecord } =
+      this.props;
 
     const tableColumns = [
       {
         key: 'columnName',
-        name: formatMessage({ id: 'workspace.window.createTable.column.name' }),
+        name: formatMessage({
+          id: 'workspace.window.createTable.column.name',
+          defaultMessage: '字段名称',
+        }),
         resizable: true,
         required: true,
         editable: (row) => this.handleCheckCellIsEditable('columnName', row),
@@ -131,6 +127,7 @@ export default class CreateTableColumnForm extends Component<
             return formatMessage(
               {
                 id: 'odc.components.CreateTableColumnForm.PrimaryKeyRowcolumnname',
+                defaultMessage: '<主键>{rowColumnName}',
               },
               { rowColumnName: row.columnName },
             );
@@ -143,6 +140,7 @@ export default class CreateTableColumnForm extends Component<
         key: 'dataType',
         name: formatMessage({
           id: 'workspace.window.createTable.column.dataType',
+          defaultMessage: '数据类型',
         }),
         resizable: true,
         editable: (row) => this.handleCheckCellIsEditable('dataType', row, true),
@@ -155,6 +153,7 @@ export default class CreateTableColumnForm extends Component<
         key: 'comment',
         name: formatMessage({
           id: 'workspace.window.createTable.column.comment',
+          defaultMessage: '字段注释',
         }),
         resizable: true,
         editable: (row) => this.handleCheckCellIsEditable('comment', row, true),
@@ -176,7 +175,10 @@ export default class CreateTableColumnForm extends Component<
           <Toolbar>
             {allowRefresh && (
               <ToolbarButton
-                text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
+                text={formatMessage({
+                  id: 'workspace.window.session.button.refresh',
+                  defaultMessage: '刷新',
+                })}
                 icon={<SyncOutlined />}
                 onClick={this.handleRefreshColumn}
               />

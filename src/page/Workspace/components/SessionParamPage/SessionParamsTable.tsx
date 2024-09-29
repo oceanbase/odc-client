@@ -15,7 +15,6 @@
  */
 
 import { fetchVariableList, updateVariable } from '@/common/network/sessionParams';
-import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import PropertyModal from '@/component/PropertyModal';
 import Toolbar from '@/component/Toolbar';
 import { IConnectionProperty } from '@/d.ts';
@@ -25,13 +24,12 @@ import { SessionManagerStore } from '@/store/sessionManager';
 import { SettingStore } from '@/store/setting';
 import { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
-import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { EditOutlined, SyncOutlined } from '@ant-design/icons';
+import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { Alert, Input, Layout, message, Spin } from 'antd';
 import { debounce } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
-import { FormattedMessage } from '@umijs/max';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import EditableTable, { RowType } from '../EditableTable';
 import SessionSelect from '../SessionContextWrap/SessionSelect';
 import styles from './index.less';
@@ -52,14 +50,8 @@ function SessionParamsTable(props: {
   sessionManagerStore?: SessionManagerStore;
   showDatasource?: boolean;
 }) {
-  const {
-    sessionManagerStore,
-    connectionPropertyType,
-    sessionId,
-    tip,
-    bordered,
-    showDatasource,
-  } = props;
+  const { sessionManagerStore, connectionPropertyType, sessionId, tip, bordered, showDatasource } =
+    props;
   const [listLoading, setListLoading] = useState(false);
   const [selectedRowIndex, setSelectedRowIndex] = useState(-1);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -109,6 +101,7 @@ function SessionParamsTable(props: {
       key: 'key',
       name: formatMessage({
         id: 'workspace.window.session.form.key',
+        defaultMessage: '变量名',
       }),
       editable: false,
       sortable: true,
@@ -117,11 +110,13 @@ function SessionParamsTable(props: {
       key: 'value',
       name: formatMessage({
         id: 'workspace.window.session.form.value',
+        defaultMessage: '值',
       }),
       editable: false,
       sortable: false,
     },
   ];
+
   const filteredRows = useMemo(() => {
     return rows?.filter((p) => p.key?.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1) || [];
   }, [searchKey, rows]);
@@ -146,6 +141,7 @@ function SessionParamsTable(props: {
           message.success(
             formatMessage({
               id: 'workspace.window.session.modal.sql.execute.success',
+              defaultMessage: '编辑变量成功',
             }),
           );
           setShowEditModal(false);
@@ -172,7 +168,10 @@ function SessionParamsTable(props: {
             <div className="tools-left">
               <ToolbarButton
                 isShowText
-                text={formatMessage({ id: 'workspace.window.session.button.edit' })}
+                text={formatMessage({
+                  id: 'workspace.window.session.button.edit',
+                  defaultMessage: '编辑',
+                })}
                 icon={<EditOutlined />}
                 onClick={handleOpenEditModal}
                 // disabled={connectionPropertyType === ConnectionPropertyType.GLOBAL}
@@ -183,14 +182,19 @@ function SessionParamsTable(props: {
                 allowClear={true}
                 placeholder={formatMessage({
                   id: 'workspace.window.session.button.search',
+                  defaultMessage: '搜索',
                 })}
                 onSearch={handleSearch}
                 onChange={(e) => handleSearch(e.target.value)}
                 size="small"
                 className={styles.search}
               />
+
               <ToolbarButton
-                text={formatMessage({ id: 'workspace.window.session.button.refresh' })}
+                text={formatMessage({
+                  id: 'workspace.window.session.button.refresh',
+                  defaultMessage: '刷新',
+                })}
                 icon={<SyncOutlined />}
                 onClick={handleRefresh}
               />

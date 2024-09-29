@@ -27,6 +27,7 @@ export function getRangeInputRules(isDate: boolean = false): Rule[] {
           callback(
             formatMessage({
               id: 'odc.RuleContent.ruleItems.valid.TheValueMustBeSpecified',
+              defaultMessage: '该值不能为空',
             }),
             // 该值不能为空
           );
@@ -38,6 +39,7 @@ export function getRangeInputRules(isDate: boolean = false): Rule[] {
           callback(
             formatMessage({
               id: 'odc.RuleContent.ruleItems.valid.TheStartValueMustBe.1',
+              defaultMessage: '起始值必须为数字类型且不为空',
             }), //起始值必须为数字类型且不为空
           );
           return;
@@ -46,6 +48,7 @@ export function getRangeInputRules(isDate: boolean = false): Rule[] {
           callback(
             formatMessage({
               id: 'odc.RuleContent.ruleItems.valid.TheMaximumValueMustBe.1',
+              defaultMessage: '最大值必须为数字类型且不为空',
             }), //最大值必须为数字类型且不为空
           );
           return;
@@ -55,6 +58,7 @@ export function getRangeInputRules(isDate: boolean = false): Rule[] {
           callback(
             formatMessage({
               id: 'odc.RuleContent.ruleItems.valid.TheMaximumValueCannotBe',
+              defaultMessage: '最大值需大于起始值',
             }),
             // 最大值不能小于或等于起始值
           );
@@ -72,6 +76,7 @@ export function getRequiredRules(): Rule[] {
       required: true,
       message: formatMessage({
         id: 'odc.RuleContent.ruleItems.valid.TheValueMustBeSpecified',
+        defaultMessage: '该值不能为空',
       }),
       // 该值不能为空
     },

@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
+import { ISQLExecuteTask } from '@/common/network/sql/executeSQL';
+import { ErrorStrategy } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
 import { PLType } from '@/constant/plType';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import { IUnauthorizedDBResources, TablePermissionType } from '@/d.ts/table';
+import { EThemeConfigKey } from '@/store/setting';
 import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
-import { IDatabase, DatabasePermissionType, IUnauthorizedDatabase } from './database';
-import { EComparisonScope } from './task';
-import { EThemeConfigKey } from '@/store/setting';
-import { SpaceType } from './_index';
-import { DBDefaultStoreType } from './table';
-import { ISQLExecuteTask } from '@/common/network/sql/executeSQL';
+import { DBType, DatabasePermissionType, IDatabase } from './database';
 import { IEnvironment } from './environment';
 import { IProject } from './project';
-import { ErrorStrategy } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
+import { DBDefaultStoreType } from './table';
+import { EComparisonScope } from './task';
+import { SpaceType } from './_index';
 
 export interface IUser {
   email: string;
@@ -673,6 +673,7 @@ export enum AuditEventDialectType {
   ORACLE = 'ORACLE',
   MYSQL = 'MYSQL',
   DORIS = 'DORIS',
+  PG = 'POSTGRESQL',
   UNKNOWN = 'UNKNOWN',
 }
 
@@ -732,10 +733,12 @@ export type ISQLScript = IScriptMeta;
 export enum ConnectionMode {
   MYSQL = 'MYSQL',
   DORIS = 'DORIS',
+  PG = 'POSTGRESQL',
   ORACLE = 'ORACLE',
   OB_MYSQL = 'OB_MYSQL',
   OB_ORACLE = 'OB_ORACLE',
   ALL = 'ALL',
+  UNKNOWN = 'UNKNOWN',
 }
 
 export enum IConnectionType {
@@ -822,6 +825,7 @@ export interface IConnection {
   serviceName?: string;
   userRole?: string;
   readonly projectName?: string;
+  catalogName?: string;
 }
 
 export interface IConnectionLabel {
@@ -1675,7 +1679,7 @@ export enum ISqlExecuteResultStatus {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
   CANCELED = 'CANCELED',
-  WAITING = 'WAITING',
+  CREATED = 'CREATED',
   RUNNING = 'RUNNING',
 }
 
@@ -1994,29 +1998,52 @@ export enum TaskPageType {
   APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
   MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
+  LOGICAL_DATABASE_CHANGE = 'LOGICAL_DATABASE_CHANGE',
 }
 
 export enum TaskType {
+  /* 导入 */
   IMPORT = 'IMPORT',
+  /* 导出 */
   EXPORT = 'EXPORT',
+  /* 模拟数据 */
   DATAMOCK = 'MOCKDATA',
+  /* 数据库变更 */
   ASYNC = 'ASYNC',
+  /* 分区计划 */
   PARTITION_PLAN = 'PARTITION_PLAN',
+  /* sql 计划 */
   SQL_PLAN = 'SQL_PLAN',
+  /* 计划变更(调度任务) */
   ALTER_SCHEDULE = 'ALTER_SCHEDULE',
+  /* 影子表同步 */
   SHADOW = 'SHADOWTABLE_SYNC',
+  /* ? (疑似弃用) */
   DATA_SAVE = 'DATA_SAVE',
+  /* 权限申请 (疑似弃用) */
   PERMISSION_APPLY = 'PERMISSION_APPLY',
+  /* 数据归档 */
   DATA_ARCHIVE = 'DATA_ARCHIVE',
+  /* ? (疑似弃用) */
   MIGRATION = 'DATA_ARCHIVE',
+  /* 无锁结构变更 */
   ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
+  /* 数据清理 */
   DATA_DELETE = 'DATA_DELETE',
+  /* 导出结果集 */
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
+  /* 申请项目权限 */
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
+  /* 申请库权限 */
   APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
+  /* 申请表权限 */
   APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
+  /* 结构对比 */
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
+  /* 多库变更 */
   MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
+  /* 逻辑库变更 */
+  LOGICAL_DATABASE_CHANGE = 'LOGICAL_DATABASE_CHANGE',
 }
 
 export enum TaskJobType {
@@ -2161,6 +2188,7 @@ export enum IMPORT_TYPE {
   ZIP = 'ZIP',
   SQL = 'SQL',
   CSV = 'CSV',
+  DIR = 'DIR',
 }
 
 /**
@@ -2400,7 +2428,8 @@ export type TaskRecordParameters =
   | IResultSetExportTaskParams
   | IApplyPermissionTaskParams
   | IApplyDatabasePermissionTaskParams
-  | IMultipleAsyncTaskParams;
+  | IMultipleAsyncTaskParams
+  | ILogicalDatabaseAsyncTaskParams;
 
 export interface ITaskResult {
   autoModifyTimeout?: boolean;
@@ -2547,6 +2576,17 @@ export interface ICycleSubTaskDetailRecord {
   executionDetails: string;
 }
 
+export interface ICycleTaskJobRecord<T> {
+  createTime: number;
+  executionDetails: T;
+  fireTime: number;
+  id: number;
+  parameters: any;
+  status: SubTaskStatus;
+  type: TaskType.LOGICAL_DATABASE_CHANGE;
+  updateTime: number;
+}
+
 export enum SubTaskType {
   MIGRATE = 'MIGRATE',
   CHECK = 'CHECK',
@@ -2686,6 +2726,13 @@ export interface IAsyncTaskParams {
   retryTimes: number;
 }
 
+export interface ILogicalDatabaseAsyncTaskParams {
+  sqlContent: string;
+  delimiter: string;
+  timeoutMillis: number;
+  databaseId: number;
+}
+
 export interface IApplyPermissionTaskParams {
   applyReason: string;
   project: {
@@ -2706,6 +2753,10 @@ export interface IApplyDatabasePermissionTaskParams {
   databases: {
     id: number;
     name?: string;
+    type?: DBType;
+    dataSourceId?: number;
+    dataSourceName?: string;
+    dialectType?: ConnectType;
   }[];
   types: DatabasePermissionType[];
   expireTime: number;
@@ -2990,6 +3041,7 @@ export enum TaskStatus {
   TERMINATION = 'TERMINATION',
   TIMEOUT = 'TIMEOUT',
   PRE_CHECK_FAILED = 'PRE_CHECK_FAILED',
+  CREATING = 'CREATING',
 }
 
 export enum SubTaskStatus {
@@ -3292,6 +3344,7 @@ export enum ConnectType {
   ODP_SHARDING_OB_MYSQL = 'ODP_SHARDING_OB_MYSQL',
   MYSQL = 'MYSQL',
   DORIS = 'DORIS',
+  PG = 'POSTGRESQL',
   ORACLE = 'ORACLE',
 }
 
@@ -3813,6 +3866,7 @@ export interface IPLExecResult {
   };
   returnValue?: IPLOutParam;
   outParams?: IPLOutParam[];
+  unauthorizedDBResources?: IUnauthorizedDBResources[];
 }
 export interface IPLCompileResult {
   messages: string;

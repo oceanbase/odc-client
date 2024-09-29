@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import { Popconfirm, Spin, Tree } from 'antd';
-import React, { useEffect, useState } from 'react';
-import styles from './index.less';
+import { getTableListByDatabaseName } from '@/common/network/table';
 import ExportCard from '@/component/ExportCard';
-import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { DbObjsIcon } from '@/constant';
 import { DbObjectType } from '@/d.ts';
-import classNames from 'classnames';
-import { getTableListByDatabaseName } from '@/common/network/table';
 import { useDBSession } from '@/store/sessionManager/hooks';
+import { formatMessage } from '@/util/intl';
+import Icon, { DeleteOutlined } from '@ant-design/icons';
+import { Popconfirm, Spin, Tree } from 'antd';
+import classNames from 'classnames';
+import React, { useEffect, useState } from 'react';
+import styles from './index.less';
 
 const TableSelector: React.FC<{
   databaseId?: number;
@@ -124,7 +124,10 @@ const TableSelector: React.FC<{
         <ExportCard
           title={
             formatMessage(
-              { id: 'src.component.Task.StructureComparisonTask.CreateModal.8C047E8D' },
+              {
+                id: 'src.component.Task.StructureComparisonTask.CreateModal.8C047E8D',
+                defaultMessage: '源表（{checkedKeysLength}/{treeDataLength}）',
+              },
               { checkedKeysLength: checkedKeys?.length, treeDataLength: treeData?.length },
             ) /*`选择源表 (${checkedKeys?.length}/${treeData?.length})`*/
           }
@@ -156,7 +159,10 @@ const TableSelector: React.FC<{
         <ExportCard
           title={
             formatMessage(
-              { id: 'src.component.Task.StructureComparisonTask.CreateModal.199215C7' },
+              {
+                id: 'src.component.Task.StructureComparisonTask.CreateModal.199215C7',
+                defaultMessage: '已选表（{checkedKeysLength}）',
+              },
               { checkedKeysLength: checkedKeys?.length },
             ) /*`已选表(${checkedKeys?.length})`*/
           }
@@ -170,6 +176,7 @@ const TableSelector: React.FC<{
               title={
                 formatMessage({
                   id: 'src.component.Task.StructureComparisonTask.CreateModal.C8820D9E',
+                  defaultMessage: '确定要清空已选对象吗？',
                 }) /*"确定要清空已选对象吗？"*/
               }
             >
@@ -177,6 +184,7 @@ const TableSelector: React.FC<{
                 {
                   formatMessage({
                     id: 'src.component.Task.StructureComparisonTask.CreateModal.4CA31C77' /*清空*/,
+                    defaultMessage: '清空',
                   }) /* 清空 */
                 }
               </a>

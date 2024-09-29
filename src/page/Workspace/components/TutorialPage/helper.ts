@@ -67,6 +67,7 @@ export function renderMd(docText: string) {
   };
   const insertBtnText = formatMessage({
     id: 'odc.components.TutorialPage.helper.InsertToWorkbench',
+    defaultMessage: '插入到工作台',
   }); //插入到工作台
   md.renderer.rules.code_block = function (tokens, idx, options, env, self) {
     const type = tokens[idx]?.info;

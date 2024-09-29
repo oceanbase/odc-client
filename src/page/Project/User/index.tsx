@@ -21,28 +21,34 @@ import Reload from '@/component/Button/Reload';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import TooltipAction from '@/component/TooltipAction';
-import type { UserStore } from '@/store/login';
 import { IProject, ProjectRole } from '@/d.ts/project';
+import type { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
+import { Button, message, Popconfirm, Space, Tag } from 'antd';
 import { inject, observer } from 'mobx-react';
-import { Button, message, Popconfirm, Space, Tag, Tooltip } from 'antd';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ProjectContext from '../ProjectContext';
 import AddUserModal from './AddUserModal';
-import UpdateUserModal from './UpdateUserModal';
 import ManageModal from './ManageModal';
-import tracert from '@/util/tracert';
+import UpdateUserModal from './UpdateUserModal';
 export const projectRoleTextMap = {
   [ProjectRole.OWNER]: formatMessage({
     id: 'odc.User.AddUserModal.Administrator',
+    defaultMessage: '管理员',
   }),
-  [ProjectRole.DEVELOPER]: formatMessage({ id: 'src.page.Project.User.A0288936' }), //'开发者'
+  [ProjectRole.DEVELOPER]: formatMessage({
+    id: 'src.page.Project.User.A0288936',
+    defaultMessage: '开发者',
+  }), //'开发者'
   [ProjectRole.DBA]: 'DBA',
   [ProjectRole.SECURITY_ADMINISTRATOR]: formatMessage({
     id: 'odc.src.page.Project.User.SecurityAdministrator',
+    defaultMessage: '安全管理员',
   }), //'安全管理员'
   [ProjectRole.PARTICIPANT]: formatMessage({
     id: 'odc.src.page.Project.User.Participant',
+    defaultMessage: '参与者',
   }), //'参与者'
 };
 interface IProps {
@@ -94,6 +100,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
       message.success(
         formatMessage({
           id: 'odc.Project.User.DeletedSuccessfully',
+          defaultMessage: '删除成功',
         }), //删除成功
       );
 
@@ -118,7 +125,11 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
     <TableCard
       title={
         <TooltipAction
-          title={isOwner || isDBA ? '' : formatMessage({ id: 'src.page.Project.User.0C0586E8' })}
+          title={
+            isOwner || isDBA
+              ? ''
+              : formatMessage({ id: 'src.page.Project.User.0C0586E8', defaultMessage: '暂无权限' })
+          }
         >
           <Button
             type="primary"
@@ -128,6 +139,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
             {
               formatMessage({
                 id: 'odc.Project.User.AddMembers',
+                defaultMessage: '添加成员',
               }) /*添加成员*/
             }
           </Button>
@@ -145,6 +157,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
           {
             title: formatMessage({
               id: 'odc.Project.User.UserName',
+              defaultMessage: '用户名称',
             }),
             //用户名称
             dataIndex: 'name',
@@ -154,7 +167,12 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                 <Space size={5}>
                   {name}
                   <Tag style={{ border: 'none' }} color="blue">
-                    {formatMessage({ id: 'src.page.Project.User.15775BB9' /*我*/ }) /* 我 */}
+                    {
+                      formatMessage({
+                        id: 'src.page.Project.User.15775BB9' /*我*/,
+                        defaultMessage: '我',
+                      }) /* 我 */
+                    }
                   </Tag>
                 </Space>
               ) : (
@@ -165,6 +183,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
           {
             title: formatMessage({
               id: 'odc.Project.User.Account',
+              defaultMessage: '账号',
             }),
             //账号
             dataIndex: 'accountName',
@@ -173,6 +192,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
           {
             title: formatMessage({
               id: 'odc.Project.User.ProjectRole',
+              defaultMessage: '项目角色',
             }),
             //项目角色
             dataIndex: 'roles',
@@ -184,6 +204,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
           {
             title: formatMessage({
               id: 'odc.Project.User.Operation',
+              defaultMessage: '操作',
             }),
             //操作
             dataIndex: 'name',
@@ -198,7 +219,10 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                     disabled={disabled && !isMe}
                     tooltip={
                       disabled && !isMe
-                        ? formatMessage({ id: 'src.page.Project.User.907FD906' })
+                        ? formatMessage({
+                            id: 'src.page.Project.User.907FD906',
+                            defaultMessage: '暂无权限',
+                          })
                         : ''
                     }
                     onClick={() => {
@@ -215,7 +239,12 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                     key={'export'}
                     disabled={disabled}
                     tooltip={
-                      disabled ? formatMessage({ id: 'src.page.Project.User.AC258D23' }) : ''
+                      disabled
+                        ? formatMessage({
+                            id: 'src.page.Project.User.AC258D23',
+                            defaultMessage: '暂无权限',
+                          })
+                        : ''
                     }
                   >
                     {formatMessage({
@@ -227,6 +256,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                     key="import"
                     title={formatMessage({
                       id: 'odc.Project.User.AreYouSureYouWant',
+                      defaultMessage: '是否确定删除该成员？',
                     })}
                     /*确定删除该成员吗？*/ onConfirm={() => deleteUser(record.id)}
                   >
@@ -234,12 +264,18 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
                       key={'import'}
                       disabled={disabled}
                       tooltip={
-                        disabled ? formatMessage({ id: 'src.page.Project.User.FE2F4924' }) : ''
+                        disabled
+                          ? formatMessage({
+                              id: 'src.page.Project.User.FE2F4924',
+                              defaultMessage: '暂无权限',
+                            })
+                          : ''
                       }
                     >
                       {
                         formatMessage({
                           id: 'odc.Project.User.Remove',
+                          defaultMessage: '移除',
                         }) /*移除*/
                       }
                     </Action.Link>

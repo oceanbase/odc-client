@@ -16,7 +16,7 @@
 
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
-import { Empty, Input, Spin, Tree, TreeDataNode } from 'antd';
+import { Empty, Input, Tree, TreeDataNode } from 'antd';
 import ResourceLayout from '../../Layout';
 
 import { forwardRef, useContext, useImperativeHandle, useMemo, useState } from 'react';
@@ -76,6 +76,7 @@ export default forwardRef(function ProjectTree(
               }}
               placeholder={formatMessage({
                 id: 'odc.ResourceTree.Project.SearchForProjectName',
+                defaultMessage: '搜索项目名称',
               })} /*搜索项目名称*/
               style={{ width: '100%' }}
               size="small"

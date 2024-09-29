@@ -40,7 +40,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
   const dbName = database.name;
   const tables = dbSession?.database?.tables;
   const treeData: TreeDataNode = {
-    title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Table' }), //表
+    title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Table', defaultMessage: '表' }), //表
     key: `${database?.id}-${dbName}-table`,
     type: ResourceNodeType.TableRoot,
     data: database,
@@ -56,18 +56,21 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
 
     treeData.children = tables
       // 无权限的表过滤掉， 就像无权限的库一样
-      .filter((table) => table?.info?.authorizedPermissionTypes?.length > 0)
+      // .filter((table) => table?.info?.authorizedPermissionTypes?.length > 0)??
       .map((table) => {
         if (visited.has(table.info?.tableName)) {
           logger.error('table name is duplicated', table.info?.tableName);
           return;
         }
         visited.add(table.info?.tableName);
-        const tableKey = `${database.id}-${dbSession?.database?.tableVersion}-${dbName}-table-${table.info.tableName}`;
+        const tableKey = `${database.id}-${dbSession?.database?.tableVersion}-${dbName}-table-${table?.info?.tableName}`;
         let columnRoot: TreeDataNode;
         if (table.columns) {
           columnRoot = {
-            title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Column' }), //列
+            title: formatMessage({
+              id: 'odc.ResourceTree.Nodes.table.Column',
+              defaultMessage: '列',
+            }), //列
             type: ResourceNodeType.TableColumnRoot,
             key: `${tableKey}-column`,
             sessionId: dbSession?.sessionId,
@@ -103,7 +106,10 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
         let indexRoot: TreeDataNode;
         if (table.indexes?.length) {
           indexRoot = {
-            title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Index' }), //索引
+            title: formatMessage({
+              id: 'odc.ResourceTree.Nodes.table.Index',
+              defaultMessage: '索引',
+            }), //索引
             type: ResourceNodeType.TableIndexRoot,
             key: `${tableKey}-index`,
             data: table,
@@ -139,7 +145,10 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
         }
 
         let partitionRoot: TreeDataNode = {
-          title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Partition' }), //分区
+          title: formatMessage({
+            id: 'odc.ResourceTree.Nodes.table.Partition',
+            defaultMessage: '分区',
+          }), //分区
           type: ResourceNodeType.TablePartitionRoot,
           key: `${tableKey}-partition`,
           data: table,
@@ -307,7 +316,10 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
 
         if (constraint.length) {
           constraintRoot = {
-            title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Constraints' }), //约束
+            title: formatMessage({
+              id: 'odc.ResourceTree.Nodes.table.Constraints',
+              defaultMessage: '约束',
+            }), //约束
             type: ResourceNodeType.TableConstraintRoot,
             key: `${tableKey}-constraint`,
             data: table,
@@ -343,7 +355,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
         }
 
         return {
-          title: table.info.tableName,
+          title: table?.info?.tableName,
           key: tableKey,
           type: ResourceNodeType.Table,
           data: table,
@@ -354,6 +366,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
               TopTab.PROPS,
               PropsTab.DDL,
               session?.odcDatabase?.id,
+              node?.data?.info?.tableId,
             );
           },
           icon: (

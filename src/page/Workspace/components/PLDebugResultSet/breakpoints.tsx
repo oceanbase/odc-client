@@ -53,6 +53,7 @@ const Breakpoints: React.FC<IProps> = (props) => {
       dataIndex: 'plName',
       title: formatMessage({
         id: 'odc.components.PLDebugResultSet.PlObjectName',
+        defaultMessage: 'PL 对象名',
       }),
       render(t, _) {
         return (
@@ -67,6 +68,7 @@ const Breakpoints: React.FC<IProps> = (props) => {
       dataIndex: 'line',
       title: formatMessage({
         id: 'odc.components.PLDebugResultSet.LineNumber',
+        defaultMessage: '行号',
       }),
       width: 80,
     },
@@ -76,6 +78,7 @@ const Breakpoints: React.FC<IProps> = (props) => {
           dataIndex: 'action',
           title: formatMessage({
             id: 'odc.components.PLDebugResultSet.Operation',
+            defaultMessage: '操作',
           }),
           width: 100,
           render: (_, point) => {
@@ -102,6 +105,7 @@ const Breakpoints: React.FC<IProps> = (props) => {
                 >
                   {formatMessage({
                     id: 'odc.components.PLDebugResultSet.Cancel',
+                    defaultMessage: '取消',
                   })}
                 </a>
                 <Divider type="vertical" />
@@ -117,6 +121,7 @@ const Breakpoints: React.FC<IProps> = (props) => {
                 >
                   {formatMessage({
                     id: 'odc.components.PLDebugResultSet.See',
+                    defaultMessage: '查看',
                   })}
                 </a>
               </span>
@@ -134,9 +139,13 @@ const Breakpoints: React.FC<IProps> = (props) => {
     <>
       {selectedRowKeys?.length && !isDebugEnd ? (
         <div className={styles.breakpointHead}>
-          {formatMessage({ id: 'odc.components.PLDebugResultSet.Selected' })}&nbsp;&nbsp;
+          {formatMessage({
+            id: 'odc.components.PLDebugResultSet.Selected',
+            defaultMessage: '已选',
+          })}
+          &nbsp;&nbsp;
           {selectedRowKeys?.length}&nbsp;&nbsp;
-          {formatMessage({ id: 'odc.components.PLDebugResultSet.Item' })}{' '}
+          {formatMessage({ id: 'odc.components.PLDebugResultSet.Item', defaultMessage: '项' })}{' '}
           <Button
             type="primary"
             onClick={async () => {
@@ -160,7 +169,10 @@ const Breakpoints: React.FC<IProps> = (props) => {
               }
             }}
           >
-            {formatMessage({ id: 'odc.components.PLDebugResultSet.BatchCancel' })}
+            {formatMessage({
+              id: 'odc.components.PLDebugResultSet.BatchCancel',
+              defaultMessage: '批量取消',
+            })}
           </Button>
         </div>
       ) : null}

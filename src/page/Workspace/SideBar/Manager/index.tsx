@@ -41,7 +41,10 @@ const Manager: React.FC<{}> = function () {
       key="Manager"
       tabs={[
         {
-          title: formatMessage({ id: 'odc.SideBar.Manager.DatabaseOM' }), //数据库运维
+          title: formatMessage({
+            id: 'odc.SideBar.Manager.DatabaseOM',
+            defaultMessage: '数据库运维',
+          }), //数据库运维
           key: 'manager',
           actions: [],
           render() {
@@ -52,9 +55,11 @@ const Manager: React.FC<{}> = function () {
                     key="sessionManager"
                     title={formatMessage({
                       id: 'odc.SideBar.Manager.SessionManagement',
+                      defaultMessage: '会话管理',
                     })} /*会话管理*/
                     desc={formatMessage({
                       id: 'odc.SideBar.Manager.ManageAllSessionInformationIn',
+                      defaultMessage: '管理数据源下所有会话信息',
                     })} /*管理数据源下所有会话信息*/
                     icon={
                       <Icon
@@ -75,9 +80,11 @@ const Manager: React.FC<{}> = function () {
                     key="sessionParams"
                     title={formatMessage({
                       id: 'odc.SideBar.Manager.GlobalVariables',
+                      defaultMessage: '全局变量',
                     })} /*全局变量*/
                     desc={formatMessage({
                       id: 'odc.SideBar.Manager.ManageAllSessionVariablesIn',
+                      defaultMessage: '管理数据源下所有会话变量',
                     })} /*管理数据源下所有会话变量*/
                     icon={<Icon component={VariableSvg} style={{ fontSize: 18 }} />}
                     actions={[]}
@@ -91,9 +98,13 @@ const Manager: React.FC<{}> = function () {
 
                   <ListItem
                     key="recyleBin"
-                    title={formatMessage({ id: 'odc.SideBar.Manager.RecycleBin' })} /*回收站*/
+                    title={formatMessage({
+                      id: 'odc.SideBar.Manager.RecycleBin',
+                      defaultMessage: '回收站',
+                    })} /*回收站*/
                     desc={formatMessage({
                       id: 'odc.SideBar.Manager.QueryAndRestoreDeletedDatabase',
+                      defaultMessage: '查询和还原被删除的数据库对象',
                     })} /*查询和还原被删除的数据库对象*/
                     icon={<Icon component={TabRecycleSvg} style={{ fontSize: 18 }} />}
                     actions={[]}

@@ -37,18 +37,24 @@ const getPageColumns = (openEditPage: (title: string, type?: string) => void) =>
     },
 
     {
-      title: formatMessage({ id: 'odc.components.CompileResult.Status' }), //状态
+      title: formatMessage({ id: 'odc.components.CompileResult.Status', defaultMessage: '状态' }), //状态
       width: 64,
       key: 'status',
       dataIndex: 'status',
       filters: [
         {
           value: 'VALID',
-          text: formatMessage({ id: 'odc.components.CompileResult.Effective' }), //有效
+          text: formatMessage({
+            id: 'odc.components.CompileResult.Effective',
+            defaultMessage: '有效',
+          }), //有效
         },
         {
           value: 'INVALID',
-          text: formatMessage({ id: 'odc.components.CompileResult.Invalid' }), //无效
+          text: formatMessage({
+            id: 'odc.components.CompileResult.Invalid',
+            defaultMessage: '无效',
+          }), //无效
         },
       ],
 
@@ -59,7 +65,10 @@ const getPageColumns = (openEditPage: (title: string, type?: string) => void) =>
     },
 
     {
-      title: formatMessage({ id: 'odc.components.CompileResult.ObjectName' }), //对象名称
+      title: formatMessage({
+        id: 'odc.components.CompileResult.ObjectName',
+        defaultMessage: '对象名称',
+      }), //对象名称
       width: 275,
       ellipsis: true,
       key: 'name',
@@ -69,6 +78,7 @@ const getPageColumns = (openEditPage: (title: string, type?: string) => void) =>
     {
       title: formatMessage({
         id: 'odc.components.CompileResult.CompilationResults',
+        defaultMessage: '编译结果',
       }),
       //编译结果
       ellipsis: true,
@@ -77,7 +87,10 @@ const getPageColumns = (openEditPage: (title: string, type?: string) => void) =>
     },
 
     {
-      title: formatMessage({ id: 'odc.components.CompileResult.Operation' }), //操作
+      title: formatMessage({
+        id: 'odc.components.CompileResult.Operation',
+        defaultMessage: '操作',
+      }), //操作
       width: 120,
       key: 'type',
       dataIndex: 'type',
@@ -92,6 +105,7 @@ const getPageColumns = (openEditPage: (title: string, type?: string) => void) =>
             {
               formatMessage({
                 id: 'odc.components.CompileResult.Edit',
+                defaultMessage: '编辑',
               })
               /*编辑*/
             }
@@ -147,6 +161,7 @@ const CompileResult: React.FC<IProps> = (props) => {
           key: 'result',
           label: formatMessage({
             id: 'odc.components.CompileResult.CompilationResults',
+            defaultMessage: '编译结果',
           }),
           children:
             status === CompileStatus.RUNNING ? (
@@ -157,9 +172,10 @@ const CompileResult: React.FC<IProps> = (props) => {
                     formatMessage(
                       {
                         id: 'odc.components.CompileResult.CompilingCompletedcountTotalcount',
+                        defaultMessage: '编译中 ({completedCount}/{totalCount})...',
                       },
 
-                      { completedCount: completedCount, totalCount: totalCount },
+                      { completedCount, totalCount },
                     )
                     //`编译中 (${completedCount}/${totalCount})...`
                   }

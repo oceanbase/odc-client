@@ -15,10 +15,10 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Form, InputNumber, Space } from 'antd';
-import React from 'react';
 import HelpDoc from '@/component/helpDoc';
 import setting from '@/store/setting';
+import { Form, InputNumber, Space } from 'antd';
+import React from 'react';
 interface IProps {
   initialValue?: {
     rowLimit?: number;
@@ -38,6 +38,7 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
       label={
         formatMessage({
           id: 'odc.src.component.Task.component.ThrottleFormItem.StreamingStrategy',
+          defaultMessage: '限流策略',
         }) /* 限流策略 */
       }
       required
@@ -50,6 +51,7 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.src.component.Task.component.ThrottleFormItem.RestrictedFlow',
+                    defaultMessage: '行限流',
                   }) /* 行限流 */
                 }
               </span>
@@ -70,6 +72,7 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
                   required: true,
                   message: formatMessage({
                     id: 'odc.src.component.Task.component.ThrottleFormItem.PleaseImportTheBobbyFlow',
+                    defaultMessage: '请输行限流限流',
                   }), //'请输行限流限流'
                 },
               ]}
@@ -86,6 +89,7 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.src.component.Task.component.ThrottleFormItem.DataSizeLimit',
+                    defaultMessage: '数据大小限流',
                   }) /* 数据大小限流 */
                 }
               </span>
@@ -105,6 +109,7 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
                   required: true,
                   message: formatMessage({
                     id: 'odc.src.component.Task.component.ThrottleFormItem.PleaseLoseTheDataSize',
+                    defaultMessage: '请输数据大小限流',
                   }), //'请输数据大小限流'
                 },
               ]}

@@ -111,6 +111,7 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
           locale={{
             searchPlaceholder: formatMessage({
               id: 'odc.component.TableSelector.EnterATableOrView',
+              defaultMessage: '请输入表/视图名称',
             }), // 请输入表/视图名称
           }}
           onChange={this.handleTransfer}
@@ -132,6 +133,7 @@ export default class TreeSelector extends PureComponent<IProps, IState> {
           {
             formatMessage({
               id: 'odc.component.TableSelector.Determine',
+              defaultMessage: '确定',
             }) /* 确定 */
           }
         </Button>
