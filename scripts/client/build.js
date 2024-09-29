@@ -164,14 +164,14 @@ async function run() {
       /**
       * mac (jre)
       */
-      // execSync('npm run prepack jre jar', {
-      //   stdio: 'inherit',
-      //   env: {
-      //     ...process.env,
-      //     platform: 'mac',
-      //   },
-      // });
-      // await buildWeb();
+      execSync('npm run prepack jre jar', {
+        stdio: 'inherit',
+        env: {
+          ...process.env,
+          platform: 'mac',
+        },
+      });
+      await buildWeb();
       await buildClient('mac-jre');
 
       /**
