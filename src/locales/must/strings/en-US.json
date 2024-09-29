@@ -416,7 +416,7 @@
   "workspace.window.createSequence.baseInfo.name.validation": "Enter the sequence name",
   "odc.component.CreateTypeModal.ObjectType": "Object Type",
   "odc.src.d.ts.Database": "Database",
-  "odc.src.store.sql.StoppedSuccessfully": "Stopped successfully",
+  "odc.src.store.sql.StoppedSuccessfully": "Stopping",
   "odc.components.PLDebugResultSet.Type": "Type",
   "odc.components.SQLExplain.ViewPlanText": "View Plan Text",
   "workspace.window.createTable.modal.delete": "Are you sure you want to delete {name}?",

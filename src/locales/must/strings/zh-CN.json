@@ -416,7 +416,7 @@
   "workspace.window.createSequence.baseInfo.name.validation": "请输入序列名称",
   "odc.component.CreateTypeModal.ObjectType": "对象类型",
   "odc.src.d.ts.Database": "数据库",
-  "odc.src.store.sql.StoppedSuccessfully": "停止成功",
+  "odc.src.store.sql.StoppedSuccessfully": "正在停止中",
   "odc.components.PLDebugResultSet.Type": "类型",
   "odc.components.SQLExplain.ViewPlanText": "查看计划文本",
   "workspace.window.createTable.modal.delete": "是否确定删除 {name} ？",

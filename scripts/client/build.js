@@ -43,7 +43,7 @@ async function buildClient(target) {
     'mac-jre': [
       {
         ENV: 'jre',
-        ARCH: '',
+        ARCH: 'x64',
         targets: electronBuilder.Platform.MAC.createTarget(['dmg'], electronBuilder.Arch.x64),
       },
     ],
@@ -212,7 +212,7 @@ async function run() {
       return;
     }
     case 'test': {
-      await buildClient('mac');
+      await buildClient('mac-jre');
       return;
     }
   }

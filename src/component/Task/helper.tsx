@@ -184,7 +184,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         {
           value: TaskPageType.LOGICAL_DATABASE_CHANGE,
           label: formatMessage({ id: 'src.component.Task.A7954C70', defaultMessage: '逻辑库变更' }),
-          enabled: true,
+          enabled: !login.isPrivateSpace(),
         },
         {
           value: TaskPageType.SHADOW,
