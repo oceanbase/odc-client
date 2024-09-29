@@ -1,14 +1,30 @@
-import { formatMessage } from '@/util/intl';
-import { Button, Space } from 'antd';
-import styles from '../index.less';
-import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import React, { useState, useContext } from 'react';
-import { IDatabase, IDatabaseObject } from '@/d.ts/database';
-import { ModalStore } from '@/store/modal';
-import { openNewSQLPage } from '@/store/helper/page';
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
+import { IDatabase, IDatabaseObject } from '@/d.ts/database';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import { openNewSQLPage } from '@/store/helper/page';
+import { ModalStore } from '@/store/modal';
+import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
+import { Button, Space } from 'antd';
+import React, { useContext, useState } from 'react';
+import styles from '../index.less';
 
 interface Iprops {
   database: IDatabase;
@@ -77,7 +93,7 @@ const DatabaseList = ({
           filter: 'grayscale(1) opacity(0.6)',
           fontSize: 14,
         }}
-        component={DBIcon.component}
+        component={DBIcon?.component}
       />
     );
   };
@@ -89,7 +105,7 @@ const DatabaseList = ({
         <Button type="link" style={{ padding: 0 }} onClick={(e) => applyPermission(e, db)}>
           {formatMessage({
             id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.DC41DDB8',
-            defaultMessage: '权限库申请',
+            defaultMessage: '申请库权限',
           })}
         </Button>
       );
@@ -126,14 +142,14 @@ const DatabaseList = ({
           ? formatMessage(
               {
                 id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.6D5791AB',
-                defaultMessage: '当前项目: ${selectProject?.name}',
+                defaultMessage: '当前项目：{selectProjectName}',
               },
               { selectProjectName: selectProject?.name },
             )
           : formatMessage(
               {
                 id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.987D5B8A',
-                defaultMessage: '当前数据源: ${selectDatasource?.name}',
+                defaultMessage: '当前数据源: {selectDatasourceName}',
               },
               { selectDatasourceName: selectDatasource?.name },
             )}

@@ -55,6 +55,9 @@ export interface TableInfo {
   tableSize?: string;
   authorizedPermissionTypes?: TablePermissionType[];
   columnGroups: ColumnStoreType[];
+  isLogicalTable?: boolean;
+  tableId?: number;
+  databaseId?: number;
 }
 
 export interface TableColumn {

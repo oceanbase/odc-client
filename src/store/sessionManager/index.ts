@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { getConnectionDetail, getConnectionDetailResponse } from '@/common/network/connection';
+import { getConnectionDetailResponse } from '@/common/network/connection';
 import { getDatabase } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
+import notification from '@/util/notification';
 import { toInteger } from 'lodash';
 import { action, observable, runInAction } from 'mobx';
 import SessionStore from './session';
-import { message } from 'antd';
-import notification from '@/util/notification';
+import { ConnectType, ConnectionMode, IConnectionStatus } from '@/d.ts';
 
 type ConnectionId = number;
 
@@ -64,7 +64,7 @@ export class SessionManagerStore {
         return false;
       }
       this.database.set(databaseId, database);
-      this.connection.set(database.dataSource?.id, database?.dataSource);
+      this.connection.set(database.dataSource?.id || database?.id, database?.dataSource);
       return true;
     } else {
       const res = await getConnectionDetailResponse(connectionId);
@@ -105,10 +105,10 @@ export class SessionManagerStore {
          */
         const now = Date.now();
         if (now - masterSession.createTime > 10 * 1000) {
-         await this.initConnection(datasourceId, databaseid);
-         const datasource = this.connection.get(toInteger(datasourceId));
-         const database = this.database.get(databaseid);
-         masterSession.updateConnectionAndDatabase(datasource, database);
+          await this.initConnection(datasourceId, databaseid);
+          const datasource = this.connection.get(toInteger(datasourceId));
+          const database = this.database.get(databaseid);
+          masterSession.updateConnectionAndDatabase(datasource, database);
         }
         return masterSession;
       }
@@ -121,7 +121,65 @@ export class SessionManagerStore {
     }
     const database = this.database.get(databaseid);
     datasourceId = datasourceId || database?.dataSource?.id;
-    const datasource = this.connection.get(toInteger(datasourceId));
+    const datasource = this.connection.get(toInteger(datasourceId)) || {
+      id: 1,
+      ownerId: 1,
+      environmentId: 1,
+      environmentName: 'test',
+      environmentStyle: null,
+      sslConfig: {
+        enabled: null,
+        clientCertObjectId: null,
+        clientKeyObjectId: null,
+        CACertObjectId: null,
+      },
+      organizationId: null,
+      creatorId: null,
+      creator: null,
+      name: 'test',
+      dialectType: ConnectionMode.OB_MYSQL,
+      host: null,
+      port: null,
+      clusterName: null,
+      tenantName: null,
+      username: null,
+      password: null,
+      passwordEncrypted: null,
+      sysTenantUsername: null,
+      sysTenantPassword: null,
+      queryTimeoutSeconds: null,
+      createTime: null,
+      updateTime: null,
+      status: {
+        status: IConnectionStatus.ACTIVE,
+        errorMessage: null,
+      },
+      properties: null,
+      copyFromId: null,
+      lastAccessTime: null,
+      enabled: null,
+      passwordSaved: null,
+      cipher: null,
+      salt: null,
+      configUrl: null,
+      temp: null,
+      cloudDBAddress: null,
+      sessionTimeout: null,
+      permittedActions: null,
+      supportedOperations: null,
+      type: ConnectType.OB_MYSQL,
+      errorMessage: null,
+      jdbcUrlParameters: null,
+      sessionInitScript: null,
+      defaultSchema: null,
+      projectId: null,
+      sid: null,
+      serviceName: null,
+      userRole: null,
+    };
+    // if(database.type === DBType.LOGICAL){
+    //   return
+    // }
     const session = await SessionStore.createInstance(datasource, database);
     runInAction(() => {
       if (session) {

@@ -65,6 +65,7 @@ const getConnectionColumns = (params: {
       dataIndex: 'id',
       title: formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskRecord.TaskNumber',
+        defaultMessage: '任务编号',
       }), //任务编号
       ellipsis: true,
       width: 80,
@@ -74,6 +75,7 @@ const getConnectionColumns = (params: {
       dataIndex: 'databaseName',
       title: formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskRecord.Library',
+        defaultMessage: '所属库',
       }), //所属库
       ellipsis: true,
       width: 200,
@@ -88,6 +90,7 @@ const getConnectionColumns = (params: {
       dataIndex: 'createTime',
       title: formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskRecord.CreationTime',
+        defaultMessage: '创建时间',
       }), //创建时间
       ellipsis: true,
       width: 180,
@@ -98,6 +101,7 @@ const getConnectionColumns = (params: {
       dataIndex: 'status',
       title: formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskRecord.TaskStatus',
+        defaultMessage: '任务状态',
       }), //任务状态
       ellipsis: true,
       width: 140,
@@ -115,6 +119,7 @@ const getConnectionColumns = (params: {
       dataIndex: 'action',
       title: formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskRecord.Operation',
+        defaultMessage: '操作',
       }), //操作
       ellipsis: true,
       width: 92,
@@ -128,6 +133,7 @@ const getConnectionColumns = (params: {
             {
               formatMessage({
                 id: 'odc.component.CommonTaskDetailModal.TaskRecord.View',
+                defaultMessage: '查看',
               }) /*查看*/
             }
           </Action.Link>

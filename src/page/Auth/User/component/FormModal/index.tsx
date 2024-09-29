@@ -15,7 +15,7 @@
  */
 
 import { createUser, getUserDetail, updateUser } from '@/common/network/manager';
-import { PASSWORD_REGEX, SPACE_REGEX } from '@/constant';
+import { PASSWORD_REGEX, SPACE_REGEX, PASSWORD_VALIDATE_MESSAGE } from '@/constant';
 import type { IManagerRole, IManagerUser } from '@/d.ts';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
@@ -151,7 +151,10 @@ class FormModal extends React.PureComponent<IProps, IState> {
     const data = await createUser(formData);
     if (data) {
       message.success(
-        formatMessage({ id: 'odc.components.FormUserModal.UserCreated' }), // 用户创建成功
+        formatMessage({
+          id: 'odc.components.FormUserModal.UserCreated',
+          defaultMessage: '用户创建成功',
+        }), // 用户创建成功
       );
       this.props.reloadData?.();
       this.props.onClose();
@@ -163,6 +166,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
       message.error(
         formatMessage({
           id: 'odc.components.FormUserModal.UnableToCreateTheUser',
+          defaultMessage: '用户创建失败',
         }),
 
         // 用户创建失败
@@ -182,7 +186,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
 
     if (data) {
       message.success(
-        formatMessage({ id: 'odc.components.FormUserModal.Saved' }), // 用户保存成功
+        formatMessage({ id: 'odc.components.FormUserModal.Saved', defaultMessage: '用户保存成功' }), // 用户保存成功
       );
       this.props.reloadData();
       this.props.onClose();
@@ -190,6 +194,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
       message.error(
         formatMessage({
           id: 'odc.components.FormUserModal.UnableToSaveTheUser',
+          defaultMessage: '用户保存失败',
         }),
 
         // 用户保存失败
@@ -226,6 +231,8 @@ class FormModal extends React.PureComponent<IProps, IState> {
         return formatMessage(
           {
             id: 'odc.components.FormUserModal.AccountItemaccountnameNameItemnamePassword',
+            defaultMessage:
+              '账号: {itemAccountName}\n      姓名: {itemName}\n      密码: {itemPassword}',
           },
 
           {
@@ -249,6 +256,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
     message.success(
       formatMessage({
         id: 'odc.components.FormUserModal.UserInformationCopied',
+        defaultMessage: '用户信息复制成功',
       }),
       //用户信息复制成功
     );
@@ -270,19 +278,25 @@ class FormModal extends React.PureComponent<IProps, IState> {
         title: isEdit
           ? formatMessage({
               id: 'odc.components.FormUserModal.AreYouSureYouWant',
+              defaultMessage: '是否确定取消编辑？取消后，编辑的内容将不生效',
             })
           : // 确定要取消编辑吗？取消保存后，所编辑的内容将不生效
             formatMessage({
               id: 'odc.components.FormUserModal.AreYouSureYouWant.1',
+              defaultMessage: '是否确定取消新建？',
             }),
 
         // 确定要取消新建吗?
         cancelText: formatMessage({
           id: 'odc.components.FormUserModal.Cancel',
+          defaultMessage: '取消',
         }),
 
         // 取消
-        okText: formatMessage({ id: 'odc.components.FormUserModal.Determine' }), // 确定
+        okText: formatMessage({
+          id: 'odc.components.FormUserModal.Determine',
+          defaultMessage: '确定',
+        }), // 确定
         centered: true,
         onOk: () => {
           this.setState({
@@ -379,8 +393,14 @@ class FormModal extends React.PureComponent<IProps, IState> {
           width={isEdit ? 520 : 720}
           title={
             isEdit
-              ? formatMessage({ id: 'odc.components.FormUserModal.EditUser' }) // 编辑用户
-              : formatMessage({ id: 'odc.components.FormUserModal.CreateUser' }) // 新建用户
+              ? formatMessage({
+                  id: 'odc.components.FormUserModal.EditUser',
+                  defaultMessage: '编辑用户',
+                }) // 编辑用户
+              : formatMessage({
+                  id: 'odc.components.FormUserModal.CreateUser',
+                  defaultMessage: '新建用户',
+                }) // 新建用户
           }
           className={styles.userModal}
           footer={
@@ -393,6 +413,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                 {
                   formatMessage({
                     id: 'odc.components.FormUserModal.Cancel',
+                    defaultMessage: '取消',
                   })
 
                   /* 取消 */
@@ -401,8 +422,14 @@ class FormModal extends React.PureComponent<IProps, IState> {
               <Button type="primary" onClick={this.handleSubmit}>
                 {
                   isEdit
-                    ? formatMessage({ id: 'odc.components.FormUserModal.Save' }) // 保存
-                    : formatMessage({ id: 'odc.components.FormUserModal.New' }) // 新建
+                    ? formatMessage({
+                        id: 'odc.components.FormUserModal.Save',
+                        defaultMessage: '保存',
+                      }) // 保存
+                    : formatMessage({
+                        id: 'odc.components.FormUserModal.New',
+                        defaultMessage: '新建',
+                      }) // 新建
                 }
               </Button>
             </Space>
@@ -418,6 +445,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
               type="info"
               message={formatMessage({
                 id: 'odc.components.FormUserModal.TheAccountCannotBeModified',
+                defaultMessage: '用户新建成功后，账号无法修改',
               })}
               /* 用户新建成功后，账号无法修改 */ showIcon
             />
@@ -445,12 +473,14 @@ class FormModal extends React.PureComponent<IProps, IState> {
                 <Form.Item
                   label={formatMessage({
                     id: 'odc.components.FormUserModal.Account',
+                    defaultMessage: '账号',
                   })}
                   /* 账号 */ name="accountName"
                 >
                   <Input
                     placeholder={formatMessage({
                       id: 'odc.components.FormUserModal.EnterAnAccount',
+                      defaultMessage: '请输入账号',
                     })}
                     /* 请输入账号 */ disabled
                   />
@@ -458,6 +488,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                 <Form.Item
                   label={formatMessage({
                     id: 'odc.components.FormUserModal.Name',
+                    defaultMessage: '姓名',
                   })}
                   /* 姓名 */
                   name="name"
@@ -466,6 +497,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                       required: true,
                       message: formatMessage({
                         id: 'odc.components.FormUserModal.EnterAName',
+                        defaultMessage: '请输入姓名',
                       }),
 
                       // 请输入姓名
@@ -474,12 +506,14 @@ class FormModal extends React.PureComponent<IProps, IState> {
                       max: 64,
                       message: formatMessage({
                         id: 'odc.components.FormUserModal.TheNameCannotExceedCharacters.2',
+                        defaultMessage: '姓名不超过 64 个字符',
                       }), //姓名不超过 64 个字符
                     },
                     {
                       validator: validTrimEmptyWithWarn(
                         formatMessage({
                           id: 'odc.components.FormUserModal.TheNameContainsSpacesAt',
+                          defaultMessage: '姓名首尾包含空格',
                         }), //姓名首尾包含空格
                       ),
                     },
@@ -488,6 +522,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                   <Input
                     placeholder={formatMessage({
                       id: 'odc.components.FormUserModal.EnterAName',
+                      defaultMessage: '请输入姓名',
                     })}
 
                     /* 请输入姓名 */
@@ -496,6 +531,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                 <Form.Item
                   label={formatMessage({
                     id: 'odc.components.FormUserModal.Password',
+                    defaultMessage: '密码',
                   })}
                   /* 密码 */ name="password"
                 >
@@ -508,6 +544,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                   {
                     formatMessage({
                       id: 'odc.components.FormUserModal.UserInformation',
+                      defaultMessage: '用户信息',
                     })
 
                     /* 用户信息 */
@@ -534,6 +571,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                                 required: this.getRequiredStatus(index),
                                 message: formatMessage({
                                   id: 'odc.components.FormUserModal.EnterAnAccount.1',
+                                  defaultMessage: '请输账号',
                                 }),
 
                                 //请输账号
@@ -543,12 +581,15 @@ class FormModal extends React.PureComponent<IProps, IState> {
                                 max: 64,
                                 message: formatMessage({
                                   id: 'odc.components.FormUserModal.AccountNoMoreThanCharacters',
+                                  defaultMessage: '账号长度为  4~64 个字符',
                                 }), //账号不超过 64 个字符/账号不能少于 4 个字符
                               },
                               {
                                 pattern: /^[a-zA-Z0-9_\.\+\@\#\$\%]+$/,
                                 message: formatMessage({
                                   id: 'odc.components.FormUserModal.ItCanContainLettersDigits',
+                                  defaultMessage:
+                                    '支持英文、数字、下划线和特殊字符的组合（即：._+@#$%）',
                                 }),
 
                                 // 支持英文、数字、下划线和特殊字符的组合(即：._+@#$%)
@@ -557,6 +598,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                                 validator: validTrimEmptyWithWarn(
                                   formatMessage({
                                     id: 'odc.components.FormUserModal.TheEndOfTheAccount',
+                                    defaultMessage: '账号首尾包含空格',
                                   }), //账号首尾包含空格
                                 ),
                               },
@@ -566,6 +608,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                               onChange={this.handleUserInfoChange}
                               placeholder={formatMessage({
                                 id: 'odc.components.FormUserModal.EnterAnAccount',
+                                defaultMessage: '请输入账号',
                               })}
 
                               /* 请输入账号 */
@@ -580,6 +623,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                                 required: this.getRequiredStatus(index),
                                 message: formatMessage({
                                   id: 'odc.components.FormUserModal.EnterAName.1',
+                                  defaultMessage: '请输姓名',
                                 }),
 
                                 //请输姓名
@@ -588,12 +632,14 @@ class FormModal extends React.PureComponent<IProps, IState> {
                                 max: 64,
                                 message: formatMessage({
                                   id: 'odc.components.FormUserModal.TheNameCannotExceedCharacters.2',
+                                  defaultMessage: '姓名不超过 64 个字符',
                                 }), //姓名不超过 64 个字符
                               },
                               {
                                 validator: validTrimEmptyWithWarn(
                                   formatMessage({
                                     id: 'odc.components.FormUserModal.TheNameContainsSpacesAt',
+                                    defaultMessage: '姓名首尾包含空格',
                                   }), //姓名首尾包含空格
                                 ),
                               },
@@ -603,6 +649,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                               onChange={this.handleUserInfoChange}
                               placeholder={formatMessage({
                                 id: 'odc.components.FormUserModal.EnterAName',
+                                defaultMessage: '请输入姓名',
                               })}
 
                               /* 请输入姓名 */
@@ -617,22 +664,20 @@ class FormModal extends React.PureComponent<IProps, IState> {
                                 required: this.getRequiredStatus(index),
                                 message: formatMessage({
                                   id: 'odc.components.FormUserModal.EnterAPassword.1',
+                                  defaultMessage: '请输入密码',
                                 }),
 
                                 //请输密码
                               },
                               {
                                 pattern: PASSWORD_REGEX,
-                                message: formatMessage({
-                                  id: 'odc.components.FormUserModal.TheDescriptionMustBeTo',
-                                }),
-
-                                // 长度为 8~32 位, 至少包含2位数字、2位大写字母、2位小写字母和2位特殊字(即：._+@#$%)
+                                message: PASSWORD_VALIDATE_MESSAGE,
                               },
                               {
                                 pattern: SPACE_REGEX,
                                 message: formatMessage({
                                   id: 'odc.components.FormUserModal.ThePasswordCannotContainSpaces',
+                                  defaultMessage: '密码不能包含空格',
                                 }), //密码不能包含空格
                               },
                             ]}
@@ -641,6 +686,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                               onChange={this.handleUserInfoChange}
                               placeholder={formatMessage({
                                 id: 'odc.components.FormUserModal.EnterAPassword',
+                                defaultMessage: '请输入密码',
                               })}
 
                               /* 请输入密码 */
@@ -655,6 +701,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                             {
                               formatMessage({
                                 id: 'odc.components.FormUserModal.RandomPassword',
+                                defaultMessage: '随机密码',
                               })
 
                               /* 随机密码 */
@@ -674,6 +721,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                           {
                             formatMessage({
                               id: 'odc.components.FormUserModal.AddUser',
+                              defaultMessage: '添加用户',
                             })
 
                             /* 添加用户 */
@@ -689,6 +737,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
             <Form.Item
               label={formatMessage({
                 id: 'odc.components.FormUserModal.AccountStatus',
+                defaultMessage: '账号状态',
               })}
               /* 账号状态 */
               name="enabled"
@@ -697,6 +746,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                   required: true,
                   message: formatMessage({
                     id: 'odc.components.FormUserModal.EnterAnAccount',
+                    defaultMessage: '请输入账号',
                   }),
 
                   // 请输入账号
@@ -712,6 +762,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                   {
                     formatMessage({
                       id: 'odc.components.FormUserModal.Enable',
+                      defaultMessage: '启用',
                     })
 
                     /* 启用 */
@@ -721,6 +772,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                   {
                     formatMessage({
                       id: 'odc.components.FormUserModal.Disable',
+                      defaultMessage: '停用',
                     })
 
                     /* 停用 */
@@ -731,6 +783,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
             <Form.Item
               label={formatMessage({
                 id: 'odc.components.FormUserModal.Role',
+                defaultMessage: '角色',
               })}
               /* 角色 */
               name="roleIds"
@@ -739,6 +792,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                   required: false,
                   message: formatMessage({
                     id: 'odc.components.FormUserModal.SelectARole',
+                    defaultMessage: '请选择角色',
                   }),
 
                   // 请选择角色
@@ -756,6 +810,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                     {
                       formatMessage({
                         id: 'odc.components.FormUserModal.NoRoleIsAvailableCreate',
+                        defaultMessage: '暂无角色，请在角色管理中创建角色',
                       })
 
                       /* 暂无角色，请在角色管理中创建角色 */
@@ -772,6 +827,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
             <Form.Item
               label={formatMessage({
                 id: 'odc.components.FormUserModal.Note',
+                defaultMessage: '备注',
               })}
               /* 备注 */
               name="description"
@@ -780,6 +836,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                   max: 140,
                   message: formatMessage({
                     id: 'odc.components.FormUserModal.TheDescriptionCannotExceedCharacters',
+                    defaultMessage: '备注不超过 140 个字符',
                   }),
 
                   // 备注不超过 140 个字符
@@ -795,6 +852,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
           wrapClassName={styles.userInfoModal}
           title={formatMessage({
             id: 'odc.components.FormUserModal.UserCreated',
+            defaultMessage: '用户创建成功',
           })}
           /* 用户创建成功 */
           footer={
@@ -803,6 +861,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                 {
                   formatMessage({
                     id: 'odc.components.FormUserModal.Close',
+                    defaultMessage: '关闭',
                   })
                   /*关闭*/
                 }
@@ -811,6 +870,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                 {
                   formatMessage({
                     id: 'odc.components.FormUserModal.DownloadUserInformation',
+                    defaultMessage: '下载用户信息',
                   })
 
                   /* 下载用户信息 */
@@ -820,6 +880,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                 {
                   formatMessage({
                     id: 'odc.components.FormUserModal.CopyUserInformation',
+                    defaultMessage: '复制用户信息',
                   })
 
                   /* 复制用户信息 */
@@ -832,6 +893,8 @@ class FormModal extends React.PureComponent<IProps, IState> {
           <Alert
             message={formatMessage({
               id: 'odc.components.FormUserModal.ToEnsureSecurityTheSystem',
+              defaultMessage:
+                '为保障安全，系统内无法查看用户密码，请先保存用户信息，如忘记密码可重置',
             })}
             /* 为保障安全，系统内无法查看用户密码，请先保存用户信息若忘记密码可重置 */
             type="info"
@@ -846,6 +909,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                   <Descriptions.Item
                     label={formatMessage({
                       id: 'odc.components.FormUserModal.Account',
+                      defaultMessage: '账号',
                     })}
 
                     /* 账号 */
@@ -855,6 +919,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                   <Descriptions.Item
                     label={formatMessage({
                       id: 'odc.components.FormUserModal.Name',
+                      defaultMessage: '姓名',
                     })}
 
                     /* 姓名 */
@@ -864,6 +929,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                   <Descriptions.Item
                     label={formatMessage({
                       id: 'odc.components.FormUserModal.Password',
+                      defaultMessage: '密码',
                     })}
 
                     /* 密码 */

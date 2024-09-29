@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { IDatasource } from '@/d.ts/datasource';
+import { columnGroupsText } from '@/constant/label';
+import { ColumnStoreType } from '@/d.ts/table';
+import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
+import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Column } from '@oceanbase-odc/ob-react-data-grid';
+import { Tooltip } from 'antd';
 import { uniq } from 'lodash';
 import { useMemo } from 'react';
 import { WrapSelectEditor } from '../../EditableTable/Editors/SelectEditor';
@@ -31,11 +35,6 @@ import {
 } from '../interface';
 import { WrapReverseCheckboxFormatetr } from '../RdgFomatter/CheckboxFormatter';
 import WrapValueFormatter from '../RdgFomatter/ValueFormatter';
-import { ExclamationCircleFilled } from '@ant-design/icons';
-import { Tooltip } from 'antd';
-import SessionStore from '@/store/sessionManager/session';
-import { ColumnStoreType } from '@/d.ts/table';
-import { columnGroupsText } from '@/constant/label';
 function NameFormatter({ row }) {
   if (row.available === false) {
     return (
@@ -44,6 +43,7 @@ function NameFormatter({ row }) {
           title={
             formatMessage({
               id: 'odc.src.page.Workspace.components.CreateTable.TableIndex.IndexIsNotAvailable',
+              defaultMessage: '索引不可用',
             }) /* 索引不可用 */
           }
         >
@@ -68,6 +68,7 @@ export function useColumns(
   const methodOptions = {
     [TableIndexMehod.NONE]: formatMessage({
       id: 'odc.CreateTable.TableIndex.columns.Empty',
+      defaultMessage: '空',
     }),
     //空
     [TableIndexMehod.HASH]: 'HASH',
@@ -127,6 +128,7 @@ export function useColumns(
       key: 'name',
       name: formatMessage({
         id: 'odc.CreateTable.Columns.columns.Name',
+        defaultMessage: '名称',
       }),
       //名称
       resizable: true,
@@ -138,6 +140,7 @@ export function useColumns(
       key: 'scope',
       name: formatMessage({
         id: 'odc.CreateTable.TableIndex.columns.Scope',
+        defaultMessage: '范围',
       }),
       //范围
       resizable: true,
@@ -149,6 +152,7 @@ export function useColumns(
       key: 'method',
       name: formatMessage({
         id: 'odc.CreateTable.TableIndex.columns.Method',
+        defaultMessage: '方法',
       }),
       //方法
       resizable: true,
@@ -162,6 +166,7 @@ export function useColumns(
       key: 'type',
       name: formatMessage({
         id: 'odc.CreateTable.TableIndex.columns.Type',
+        defaultMessage: '类型',
       }),
       //类型
       resizable: true,
@@ -174,6 +179,7 @@ export function useColumns(
       key: 'columns',
       name: formatMessage({
         id: 'odc.CreateTable.TableIndex.columns.Column',
+        defaultMessage: '列',
       }),
       //列
       resizable: true,
@@ -188,6 +194,7 @@ export function useColumns(
       key: 'visible',
       name: formatMessage({
         id: 'odc.CreateTable.TableIndex.columns.Invisible',
+        defaultMessage: '不可见',
       }),
       //不可见
       resizable: true,

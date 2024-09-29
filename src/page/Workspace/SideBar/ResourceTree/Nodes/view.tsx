@@ -31,7 +31,7 @@ export function ViewTreeData(dbSession: SessionStore, database: IDatabase): Tree
   const dbName = database.name;
   const views = dbSession?.database?.views;
   const treeData: TreeDataNode = {
-    title: formatMessage({ id: 'odc.ResourceTree.Nodes.view.View' }), //视图
+    title: formatMessage({ id: 'odc.ResourceTree.Nodes.view.View', defaultMessage: '视图' }), //视图
     key: `${database.id}-${dbName}-view`,
     type: ResourceNodeType.ViewRoot,
     data: database,
@@ -45,7 +45,7 @@ export function ViewTreeData(dbSession: SessionStore, database: IDatabase): Tree
       let columnRoot: TreeDataNode;
       if (view.columns) {
         columnRoot = {
-          title: formatMessage({ id: 'odc.ResourceTree.Nodes.view.Column' }), //列
+          title: formatMessage({ id: 'odc.ResourceTree.Nodes.view.Column', defaultMessage: '列' }), //列
           type: ResourceNodeType.ViewColumnRoot,
           key: `${viewKey}-view`,
           sessionId: dbSession?.sessionId,

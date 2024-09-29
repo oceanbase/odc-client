@@ -17,9 +17,9 @@
 /**
  * ODC 对外能力开放节点，修改记得同步更新文档
  */
+import { history } from '@umijs/max';
 import { Layout, Spin, Tag } from 'antd'; // @ts-ignore
 import React, { useEffect, useState } from 'react';
-import { history } from '@umijs/max';
 
 import { decrypt } from '@/common/network/other';
 import { UserStore } from '@/store/login';
@@ -27,6 +27,7 @@ import { PageStore } from '@/store/page';
 import { SettingStore } from '@/store/setting';
 import { ReactComponent as Logo } from '@/svgr/LogoOB.svg';
 import { isClient } from '@/util/env';
+import { formatMessage } from '@/util/intl';
 import { useMatch } from '@umijs/max';
 import { Base64 } from 'js-base64';
 import { inject, observer } from 'mobx-react';
@@ -36,7 +37,6 @@ import { action as newCloudConnectionAction, INewCloudConnection } from './newCl
 import { apply as ssoLoginAction, ISSOLogin } from './ssoLogin';
 import { action as taskAction, ITaskAction } from './task';
 import { action as tutorialAction, ITutorialAction } from './tutorial';
-import { formatMessage } from '@/util/intl';
 
 const { Content } = Layout;
 
@@ -172,6 +172,7 @@ const Gateway: React.FC<GatewayProps> = (props: GatewayProps) => {
             size="large"
             tip={formatMessage({
               id: 'odc.page.Gateway.Jumping',
+              defaultMessage: '跳转中...',
             })}
           />
         );
@@ -188,6 +189,7 @@ const Gateway: React.FC<GatewayProps> = (props: GatewayProps) => {
             <Tag color="red">
               {formatMessage({
                 id: 'odc.page.Gateway.SorryTheActionDoesNot',
+                defaultMessage: '抱歉，系统中不存在该 Action',
               })}
             </Tag>
           </div>
@@ -205,6 +207,7 @@ const Gateway: React.FC<GatewayProps> = (props: GatewayProps) => {
             <Tag color="magenta">
               {formatMessage({
                 id: 'odc.page.Gateway.ConfirmTheFormatOfThe',
+                defaultMessage: '请确认传入的参数格式',
               })}
             </Tag>
           </div>

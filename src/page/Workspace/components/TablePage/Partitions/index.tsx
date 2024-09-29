@@ -51,10 +51,12 @@ export function getTitleByPartType(partType: IPartitionType | undefined): string
   if (partType === IPartitionType.RANGE || partType === IPartitionType.RANGE_COLUMNS) {
     return formatMessage({
       id: 'workspace.window.createTable.partition.value.range',
+      defaultMessage: '区间上限值',
     });
   } else if (partType === IPartitionType.LIST || partType === IPartitionType.LIST_COLUMNS) {
     return formatMessage({
       id: 'workspace.window.createTable.partition.value.list',
+      defaultMessage: '枚举值',
     });
   }
   return '';
@@ -85,6 +87,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
       key: 'name',
       name: formatMessage({
         id: 'workspace.window.createTable.partition.name',
+        defaultMessage: '分区名称',
       }),
       resizable: true,
       sortable: false,
@@ -96,6 +99,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
       key: 'position',
       name: formatMessage({
         id: 'workspace.window.createTable.partition.position',
+        defaultMessage: '顺序',
       }),
       resizable: true,
       sortable: false,
@@ -120,28 +124,36 @@ const TablePartitions: React.FC<IProps> = function ({}) {
       const partType = values.partType;
       switch (partType) {
         case IPartitionType.LIST: {
-          (newPartitions as ITableListPartition).partitions = (newPartitions as ITableListPartition).partitions.concat(
+          (newPartitions as ITableListPartition).partitions = (
+            newPartitions as ITableListPartition
+          ).partitions.concat(
             values.partitions?.map((part) => Object.assign({ key: generateUniqKey() }, part)),
           );
           setEditPartitions(newPartitions);
           return;
         }
         case IPartitionType.RANGE: {
-          (newPartitions as ITableRangePartition).partitions = (newPartitions as ITableRangePartition).partitions.concat(
+          (newPartitions as ITableRangePartition).partitions = (
+            newPartitions as ITableRangePartition
+          ).partitions.concat(
             values.partitions?.map((part) => Object.assign({ key: generateUniqKey() }, part)),
           );
           setEditPartitions(newPartitions);
           return;
         }
         case IPartitionType.LIST_COLUMNS: {
-          (newPartitions as ITableListColumnsPartition).partitions = (newPartitions as ITableListColumnsPartition).partitions.concat(
+          (newPartitions as ITableListColumnsPartition).partitions = (
+            newPartitions as ITableListColumnsPartition
+          ).partitions.concat(
             values.partitions?.map((part) => Object.assign({ key: generateUniqKey() }, part)),
           );
           setEditPartitions(newPartitions);
           return;
         }
         case IPartitionType.RANGE_COLUMNS: {
-          (newPartitions as ITableRangeColumnsPartition).partitions = (newPartitions as ITableRangeColumnsPartition).partitions.concat(
+          (newPartitions as ITableRangeColumnsPartition).partitions = (
+            newPartitions as ITableRangeColumnsPartition
+          ).partitions.concat(
             values.partitions?.map((part) => Object.assign({ key: generateUniqKey() }, part)),
           );
           setEditPartitions(newPartitions);
@@ -185,6 +197,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
           <Form.Item
             label={formatMessage({
               id: 'workspace.window.createTable.partition.type',
+              defaultMessage: '分区方法',
             })}
           >
             <Input
@@ -196,6 +209,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
           <Form.Item
             label={formatMessage({
               id: 'workspace.window.createTable.partition.expression',
+              defaultMessage: '表达式',
             })}
           >
             <Input
@@ -207,6 +221,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
           <Form.Item
             label={formatMessage({
               id: 'workspace.window.createTable.partition.partNumber',
+              defaultMessage: '分区数量',
             })}
           >
             <InputNumber value={partNumber} disabled={true} />
@@ -221,6 +236,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
           <Form.Item
             label={formatMessage({
               id: 'workspace.window.createTable.partition.type',
+              defaultMessage: '分区方法',
             })}
           >
             <Input
@@ -232,6 +248,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
           <Form.Item
             label={formatMessage({
               id: 'workspace.window.createTable.partition.expression',
+              defaultMessage: '表达式',
             })}
           >
             <Input style={{ width: 240 }} value={expression} disabled={true} />
@@ -239,6 +256,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
           <Form.Item
             label={formatMessage({
               id: 'workspace.window.createTable.partition.partNumber',
+              defaultMessage: '分区数量',
             })}
           >
             <InputNumber value={partNumber} disabled={true} />
@@ -298,21 +316,27 @@ const TablePartitions: React.FC<IProps> = function ({}) {
               >
                 <Toolbar>
                   <ToolbarButton
-                    text={formatMessage({ id: 'workspace.header.create' })}
+                    text={formatMessage({ id: 'workspace.header.create', defaultMessage: '新建' })}
                     icon={<PlusOutlined />}
                     onClick={handleAddColumn}
                   />
+
                   <ToolbarButton
                     text={
-                      formatMessage({ id: 'odc.TablePage.Partitions.Delete' }) //删除
+                      formatMessage({
+                        id: 'odc.TablePage.Partitions.Delete',
+                        defaultMessage: '删除',
+                      }) //删除
                     }
                     icon={DeleteOutlined}
                     onClick={handleDeleteColumn}
                   />
+
                   <Toolbar.Button
                     icon={<SyncOutlined />}
                     text={formatMessage({
                       id: 'odc.components.ShowTableBaseInfoForm.Refresh',
+                      defaultMessage: '刷新',
                     })}
                     /* 刷新 */ onClick={tableContext.onRefresh}
                   />
@@ -327,6 +351,7 @@ const TablePartitions: React.FC<IProps> = function ({}) {
                     formatMessage(
                       {
                         id: 'odc.TablePage.Partitions.PartitionMethodPartitionnamemapparttype',
+                        defaultMessage: '分区方法: {partitionNameMapPartType}',
                       },
                       { partitionNameMapPartType: partitionNameMap[partType] },
                     ) /*分区方法: {partitionNameMapPartType}*/
@@ -337,16 +362,20 @@ const TablePartitions: React.FC<IProps> = function ({}) {
                     {
                       formatMessage({
                         id: 'odc.TablePage.Partitions.Expression',
+                        defaultMessage: '表达式:',
                       }) /*表达式:*/
                     }
+
                     {(partitions as ITableListPartition).expression}
                   </span>
                 )}
+
                 {isColumnsPartition && (
                   <span>
                     {
                       formatMessage({
                         id: 'odc.TablePage.Partitions.Column',
+                        defaultMessage: '列：',
                       }) /*列:*/
                     }{' '}
                     {(partitions as ITableListColumnsPartition).columns

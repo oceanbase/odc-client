@@ -43,14 +43,16 @@ export const NodeSelector: React.FC<INodeSelectorProps> = (props) => {
   const message = formatMessage(
     {
       id: 'odc.component.NodeSelector.SelectTitle',
+      defaultMessage: '请选择{title}',
     },
-    { title: title },
+    { title },
   ); //`请选择${title}`
   const placeholder = formatMessage(
     {
       id: 'odc.component.NodeSelector.SelectTitle',
+      defaultMessage: '请选择{title}',
     },
-    { title: title },
+    { title },
   ); //`请选择${title}`
   return (
     <Form.Item

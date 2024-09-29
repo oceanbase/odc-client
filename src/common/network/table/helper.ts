@@ -240,7 +240,14 @@ export function convertTableToServerTable(
   return serverTable;
 }
 
-export function convertServerTableToTable(data: IServerTable): Partial<ITableModel> {
+export function convertServerTableToTable(
+  data: IServerTable,
+  logicalDbTableParams?: {
+    isLogicalTable: boolean;
+    tableId: number;
+    databaseId: number;
+  },
+): Partial<ITableModel> {
   if (!data) {
     return null;
   }
@@ -261,6 +268,9 @@ export function convertServerTableToTable(data: IServerTable): Partial<ITableMod
       data.columnGroups?.map((item) => {
         return item.allColumns ? ColumnStoreType.ROW : ColumnStoreType.COLUMN;
       }) || [],
+    isLogicalTable: logicalDbTableParams?.isLogicalTable,
+    tableId: logicalDbTableParams?.tableId,
+    databaseId: logicalDbTableParams?.databaseId,
   };
   // column
   table.columns = data.columns.map((column) => {

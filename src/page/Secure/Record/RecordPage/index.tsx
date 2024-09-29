@@ -20,6 +20,7 @@ import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/
 import { IOperationOptionType } from '@/component/CommonTable/interface';
 import CommonDetailModal from '@/component/Manage/DetailModal';
 import { TimeOptions } from '@/component/TimeSelect';
+import { AuditEventMetaMap, getEventFilterAndOptions } from '@/constant/record';
 import type { IAudit } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getPreTime } from '@/util/utils';
@@ -32,7 +33,6 @@ import FormRecordExportModal from '../../components/FormRecordExportModal';
 import { SecureContext } from '../../context';
 import { getPageColumns } from './column';
 import { RecordContent } from './component';
-import { AuditEventMetaMap, getEventFilterAndOptions } from '@/constant/record';
 
 const { RangePicker } = DatePicker;
 
@@ -156,6 +156,7 @@ const RecordPage: React.FC<any> = () => {
               name: 'executeTime',
               title: formatMessage({
                 id: 'odc.components.RecordPage.ExecutionTime.1',
+                defaultMessage: '执行时间：',
               }),
 
               //执行时间：
@@ -190,11 +191,13 @@ const RecordPage: React.FC<any> = () => {
               icon: <ExportOutlined />,
               content: formatMessage({
                 id: 'odc.components.RecordPage.Export',
+                defaultMessage: '导出',
               }),
 
               //导出
               tooltip: formatMessage({
                 id: 'odc.components.RecordPage.ExportOperationRecords',
+                defaultMessage: '导出操作记录',
               }),
 
               //导出操作记录
@@ -229,12 +232,18 @@ const RecordPage: React.FC<any> = () => {
         visible={detailModalVisible}
         title={formatMessage({
           id: 'odc.components.RecordPage.RecordDetails',
+          defaultMessage: '记录详情',
         })}
         /*记录详情*/
         detailId={detailId}
         footer={
           <Button onClick={handleCloseDetailModal}>
-            {formatMessage({ id: 'odc.components.RecordPage.Close' }) /*关闭*/}
+            {
+              formatMessage({
+                id: 'odc.components.RecordPage.Close',
+                defaultMessage: '关闭',
+              }) /*关闭*/
+            }
           </Button>
         }
         onClose={handleCloseDetailModal}

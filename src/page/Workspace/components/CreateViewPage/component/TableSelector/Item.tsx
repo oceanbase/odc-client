@@ -55,14 +55,8 @@ interface IProps extends IDragable {
 
 class Item extends PureComponent<IProps> {
   render() {
-    const {
-      index,
-      dataKey,
-      isDragging,
-      isLast,
-      connectDragSource,
-      handleDelete,
-    } = this.props.props;
+    const { index, dataKey, isDragging, isLast, connectDragSource, handleDelete } =
+      this.props.props;
     const params = parse(dataKey);
     const { d, v, t, uid } = params;
     return connectDragSource(
@@ -84,8 +78,10 @@ class Item extends PureComponent<IProps> {
                 onChange={this.handleChangeAliasName}
                 placeholder={formatMessage({
                   id: 'odc.component.TableSelector.Item.Alias',
+                  defaultMessage: '别名',
                 })} /* 别名 */
               />
+
               {!isLast && (
                 <Select
                   defaultValue={JOIN_KEYWORDS[0]}

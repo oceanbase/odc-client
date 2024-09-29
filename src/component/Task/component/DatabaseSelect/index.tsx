@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { ConnectionMode, TaskType } from '@/d.ts';
+import { TaskType } from '@/d.ts';
+import SessionSelect from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SelectItem';
+import { ISessionDropdownFiltersProps } from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SessionDropdown';
 import { formatMessage } from '@/util/intl';
 import { Form } from 'antd';
 import React from 'react';
-import SessionSelect from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SelectItem';
-import { ISessionDropdownFiltersProps } from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SessionDropdown';
 interface IProps {
   type: TaskType;
   label?: string;
@@ -30,6 +30,7 @@ interface IProps {
   extra?: string;
   width?: string;
   placeholder?: string;
+  isLogicalDatabase?: boolean;
   onChange?: (v: number) => void;
 }
 const DatabaseSelect: React.FC<IProps> = (props) => {
@@ -37,6 +38,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     type,
     label = formatMessage({
       id: 'odc.component.DatabaseSelect.Database',
+      defaultMessage: '数据库',
     }),
     //数据库
     name = 'databaseId',
@@ -45,6 +47,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     width,
     placeholder,
     disabled = false,
+    isLogicalDatabase = false,
     onChange,
   } = props;
 
@@ -58,6 +61,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
           required: true,
           message: formatMessage({
             id: 'odc.component.DatabaseSelect.SelectADatabase',
+            defaultMessage: '请选择数据库',
           }), //请选择数据库
         },
       ]}
@@ -69,6 +73,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
         taskType={type}
         width={width}
         onChange={onChange}
+        isLogicalDatabase={isLogicalDatabase}
         placeholder={placeholder}
       />
     </Form.Item>

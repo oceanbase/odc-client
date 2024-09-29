@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import {
-  Badge,
-  Button,
-  Dropdown,
-  Empty,
-  Input,
-  message,
-  Modal,
-  Popover,
-  Space,
-  Spin,
-  Tree,
-  TreeDataNode,
-} from 'antd';
-import ResourceLayout from '../../Layout';
+import { SQLConsoleResourceType } from '@/common/datasource/interface';
 import { deleteConnection } from '@/common/network/connection';
+import Action from '@/component/Action';
+import ConnectionPopover from '@/component/ConnectionPopover';
+import { SQLConsoleEmpty } from '@/component/Empty/SQLConsoleEmpty';
+import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
+import { EnvColorMap } from '@/constant';
+import { ConnectType, IConnectionStatus } from '@/d.ts';
+import { IDatasource } from '@/d.ts/datasource';
+import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
+import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawer/NewButton';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import { DataSourceStatusStore } from '@/store/datasourceStatus';
+import login from '@/store/login';
+import { formatMessage } from '@/util/intl';
+import { PlusOutlined } from '@ant-design/icons';
+import { Badge, Button, Dropdown, Input, message, Modal, Popover, Tree, TreeDataNode } from 'antd';
+import classNames from 'classnames';
+import { throttle, toInteger, toNumber } from 'lodash';
+import { inject, observer } from 'mobx-react';
 import {
   forwardRef,
   useContext,
@@ -40,22 +43,10 @@ import {
   useRef,
   useState,
 } from 'react';
+import ResourceLayout from '../../Layout';
 import styles from './index.less';
-import Action from '@/component/Action';
-import ConnectionPopover from '@/component/ConnectionPopover';
-import { IDatasource } from '@/d.ts/datasource';
-import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import login from '@/store/login';
-import { toInteger, toNumber, throttle } from 'lodash';
-import { ConnectType, IConnectionStatus } from '@/d.ts';
-import { PlusOutlined } from '@ant-design/icons';
-import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
-import classNames from 'classnames';
-import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawer/NewButton';
-import { EnvColorMap } from '@/constant';
-import { inject, observer } from 'mobx-react';
-import { DataSourceStatusStore } from '@/store/datasourceStatus';
+import { getDataSourceModeConfig } from '@/common/datasource';
+
 interface IProps {
   filters: {
     envs: number[];
@@ -110,6 +101,16 @@ export default inject('dataSourceStatusStore')(
       const datasource: TreeDataNode[] = useMemo(() => {
         return datasourceList
           ?.map((item) => {
+            const config = getDataSourceModeConfig(item?.type);
+            /**
+             * feature filter
+             */
+            if (!config?.features?.resourceTree) {
+              return;
+            }
+            /**
+             * search filter
+             */
             if (searchKey && !item.name?.toLowerCase()?.includes(searchKey?.toLowerCase())) {
               return null;
             }
@@ -159,10 +160,9 @@ export default inject('dataSourceStatusStore')(
           title: formatMessage(
             {
               id: 'odc.ResourceTree.Datasource.AreYouSureYouWant',
+              defaultMessage: '确认删除数据源 {name}?',
             },
-            {
-              name: name,
-            },
+            { name },
           ),
           //`确认删除数据源 ${name}?`
           async onOk() {
@@ -171,6 +171,7 @@ export default inject('dataSourceStatusStore')(
               message.success(
                 formatMessage({
                   id: 'odc.ResourceTree.Datasource.DeletedSuccessfully',
+                  defaultMessage: '删除成功',
                 }), //删除成功
               );
 
@@ -194,6 +195,7 @@ export default inject('dataSourceStatusStore')(
                   allowClear
                   placeholder={formatMessage({
                     id: 'odc.ResourceTree.Datasource.SearchForDataSources',
+                    defaultMessage: '搜索数据源',
                   })}
                   /*搜索数据源*/ style={{
                     width: '100%',
@@ -202,6 +204,7 @@ export default inject('dataSourceStatusStore')(
                   }}
                   size="small"
                 />
+
                 {login.isPrivateSpace() ? (
                   <NewDatasourceButton onSuccess={() => context?.reloadDatasourceList()}>
                     <Button
@@ -251,8 +254,8 @@ export default inject('dataSourceStatusStore')(
                                   items: [
                                     {
                                       label: formatMessage({
-                                        id:
-                                          'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone',
+                                        id: 'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone',
+                                        defaultMessage: '克隆',
                                       }), //'克隆'
                                       key: 'clone',
                                       onClick: (e) => {
@@ -263,6 +266,7 @@ export default inject('dataSourceStatusStore')(
                                     {
                                       label: formatMessage({
                                         id: 'odc.ResourceTree.Datasource.Edit',
+                                        defaultMessage: '编辑',
                                       }),
                                       //编辑
                                       key: 'edit',
@@ -275,6 +279,7 @@ export default inject('dataSourceStatusStore')(
                                     {
                                       label: formatMessage({
                                         id: 'odc.ResourceTree.Datasource.Delete',
+                                        defaultMessage: '删除',
                                       }),
                                       //删除
                                       key: 'delete',
@@ -312,11 +317,12 @@ export default inject('dataSourceStatusStore')(
                                     >
                                       {
                                         formatMessage({
-                                          id:
-                                            'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone.1',
+                                          id: 'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone.1',
+                                          defaultMessage:
+                                            '\n                                  克隆\n                                ',
                                         }) /* 
-                                    克隆
-                                   */
+                                克隆
+                                */
                                       }
                                     </Action.Link>
                                     <Action.Link
@@ -328,6 +334,7 @@ export default inject('dataSourceStatusStore')(
                                     >
                                       {formatMessage({
                                         id: 'odc.ResourceTree.Datasource.Edit',
+                                        defaultMessage: '编辑',
                                       })}
                                     </Action.Link>
                                     <Action.Link
@@ -338,6 +345,7 @@ export default inject('dataSourceStatusStore')(
                                     >
                                       {formatMessage({
                                         id: 'odc.ResourceTree.Datasource.Delete',
+                                        defaultMessage: '删除',
                                       })}
                                     </Action.Link>
                                   </Action.Group>
@@ -364,15 +372,10 @@ export default inject('dataSourceStatusStore')(
                     multiple={false}
                     treeData={datasource}
                   />
+                ) : searchKey ? (
+                  <SQLConsoleEmpty />
                 ) : (
-                  <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description={
-                      login.isPrivateSpace() ? (
-                        <NewDatasourceButton onSuccess={() => context?.reloadDatasourceList()} />
-                      ) : null
-                    }
-                  />
+                  <SQLConsoleEmpty type={SQLConsoleResourceType.DataSource} />
                 )}
               </div>
               <NewDatasourceDrawer
@@ -387,6 +390,7 @@ export default inject('dataSourceStatusStore')(
                   context?.reloadDatasourceList();
                 }}
               />
+
               <NewDatasourceDrawer
                 isEdit={false}
                 isCopy={true}

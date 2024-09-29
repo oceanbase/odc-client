@@ -232,6 +232,7 @@ export default async function executeSQL(
     return pre;
   }, []);
   const unauthorizedResource = taskInfo?.unauthorizedDBResources;
+
   if (unauthorizedResource?.length) {
     // 无权限库
     return {

@@ -22,7 +22,6 @@ import {
   getTypemByName,
 } from '@/common/network';
 import {
-  ConnectionMode,
   DbObjectType,
   IFunction,
   IProcedure,
@@ -58,8 +57,11 @@ import {
 } from '@/page/Workspace/components/ViewPage';
 import { formatMessage } from '@/util/intl';
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getTriggerByName } from '@/common/network/trigger';
 import { PLType } from '@/constant/plType';
+import modalStore from '@/store/modal';
+import sessionManager from '@/store/sessionManager';
 import taskStore from '@/store/task';
 import { message } from 'antd';
 import page from '../../page';
@@ -86,9 +88,6 @@ import {
 import { CreateTablePage, CreateTriggerPage, CreateViewPage, SQLConfirmPage } from './pages/create';
 import { AnonymousPage, PackageBodyPage, PackageHeadPage, PLEditPage } from './pages/pl';
 import { findPageByScriptIdAndType } from './util';
-import sessionManager from '@/store/sessionManager';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import modalStore from '@/store/modal';
 
 export function openPackageHeadPage(packageName: string, sql: string, databaseId: number) {
   page.openPage(new PackageHeadPage(databaseId, packageName, sql));
@@ -189,7 +188,7 @@ export async function openSessionManagePage(datasourceId?: number) {
 
 export async function openSessionParamsPage(datasourceId?: number) {
   if (!datasourceId) {
-    modalStore.changeSelectDatabaseVisible(true, null, (datasourceId) =>
+    modalStore.changeSelectDatabaseVisible(true, 'sessionParams', (datasourceId) =>
       page.openPage(new SessionParamsPage(datasourceId)),
     );
   }
@@ -223,8 +222,9 @@ export function openTableViewPage(
   topTab: TableTopTab = TableTopTab.PROPS,
   propsTab: TablePropsTab = TablePropsTab.INFO,
   databaseId: number,
+  tableId: number,
 ) {
-  page.openPage(new TablePage(databaseId, tableName, topTab, propsTab));
+  page.openPage(new TablePage(databaseId, tableName, topTab, propsTab, tableId));
 }
 
 /**
@@ -256,6 +256,7 @@ export function openCreateFunctionPage(sql: string, databaseId: number, dbName: 
       databaseId,
       formatMessage({
         id: 'workspace.window.createFunction.modal.title',
+        defaultMessage: '新建函数',
       }),
       sql,
     ),
@@ -294,6 +295,7 @@ export function openCreateProcedurePage(sql: string, databaseId: number, dbName:
       databaseId,
       formatMessage({
         id: 'workspace.window.createProcedure.modal.title',
+        defaultMessage: '新建存储过程',
       }),
       sql,
     ),
@@ -319,6 +321,7 @@ export function openCreatePackagePage(sql: string, databaseId: number, dbName: s
       databaseId,
       formatMessage({
         id: 'workspace.window.createPackage.modal.title',
+        defaultMessage: '新建程序包',
       }),
       sql,
     ),
@@ -333,6 +336,7 @@ export function openCreatePackageBodyPage(sql: string, databaseId: number, dbNam
       databaseId,
       formatMessage({
         id: 'workspace.window.createPackageBody.modal.title',
+        defaultMessage: '新建程序包体',
       }),
       sql,
       true,
@@ -348,6 +352,7 @@ export function openCreateSequencePage(sql: string, databaseId: number, dbName: 
       databaseId,
       formatMessage({
         id: 'workspace.window.createSequence.modal.title',
+        defaultMessage: '新建序列',
       }),
       sql,
     ),
@@ -438,6 +443,7 @@ export async function openOBClientPage(cid: number, dbId: number) {
       formatMessage(
         {
           id: 'odc.helper.page.openPage.YouCannotOpenMoreThan',
+          defaultMessage: '不能打开超过 {MAXCLIENTPAGE} 个命令行窗口',
         },
 
         { MAXCLIENTPAGE: MAX_CLIENT_PAGE },
@@ -471,7 +477,10 @@ export async function openCreateTriggerSQLPage(
     new SQLConfirmPage(
       PageType.CREATE_TRIGGER_SQL,
       databaseId,
-      formatMessage({ id: 'odc.helper.page.openPage.CreateATrigger' }),
+      formatMessage({
+        id: 'odc.helper.page.openPage.CreateATrigger',
+        defaultMessage: '新建触发器',
+      }),
       sql,
       false,
       preData,
@@ -516,7 +525,7 @@ export function openCreateSynonymPage(
     new SQLConfirmPage(
       PageType.CREATE_SYNONYM,
       databaseId,
-      formatMessage({ id: 'odc.helper.page.openPage.CreateSynonym' }),
+      formatMessage({ id: 'odc.helper.page.openPage.CreateSynonym', defaultMessage: '新建同义词' }),
       sql,
       false,
       null,
@@ -541,7 +550,7 @@ export function openCreateTypePage(sql: string, databaseId: number, dbName: stri
     new SQLConfirmPage(
       PageType.CREATE_TYPE,
       databaseId,
-      formatMessage({ id: 'odc.helper.page.openPage.NewType' }),
+      formatMessage({ id: 'odc.helper.page.openPage.NewType', defaultMessage: '新建类型' }),
       sql,
     ),
   );

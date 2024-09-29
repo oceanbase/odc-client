@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { getTableInfo } from '@/common/network/table';
+import { getTableInfo, getLogicTableInfo } from '@/common/network/table';
 import { DbObjectType, TaskType } from '@/d.ts';
 import { PageStore } from '@/store/page';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { ExportOutlined } from '@ant-design/icons';
-import { Layout, Radio, Space, Spin, Tabs } from 'antd';
+import { Radio, Space, Spin, Tabs } from 'antd';
 import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -41,10 +41,11 @@ import Toolbar from '@/component/Toolbar';
 import { TablePage as TablePageModel } from '@/store/helper/page/pages';
 import modal from '@/store/modal';
 import { SessionManagerStore } from '@/store/sessionManager';
+import { getQuoteTableName } from '@/util/utils';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
-import { getQuoteTableName } from '@/util/utils';
+import { isLogicalDatabase } from '@/util/database';
 
 interface IProps {
   pageKey: string;
@@ -85,6 +86,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
     ) => Promise<boolean>;
   }>();
   const { session } = useContext(SessionContext);
+  const dbType = session?.odcDatabase?.type;
   const dbName = session?.database?.dbName;
   const showPartition = !!table?.partitions?.partType;
   const enableConstraint = session?.supportFeature?.enableConstraint;
@@ -93,7 +95,12 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
     if (table?.info?.tableName === params.tableName) {
       return;
     }
-    const newTable = await getTableInfo(params.tableName, dbName, session?.sessionId);
+    let newTable;
+    if (isLogicalDatabase(session?.odcDatabase)) {
+      newTable = await getLogicTableInfo(session?.odcDatabase?.id, params?.tableId);
+    } else {
+      newTable = await getTableInfo(params.tableName, dbName, session?.sessionId);
+    }
     if (newTable) {
       version.current++;
       setTable(newTable);
@@ -110,7 +117,13 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
           ...newTable,
           info: Object.assign({}, newTable?.info, { tableName: newTableName }),
         });
-        const tablePage = new TablePageModel(params?.databaseId, newTableName);
+        const tablePage = new TablePageModel(
+          params?.databaseId,
+          newTableName,
+          topTab,
+          propsTab,
+          params?.tableId,
+        );
         await pageStore.updatePage(
           pageKey,
           {
@@ -181,20 +194,26 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
         <div className={styles.header}>
           <Radio.Group onChange={handleTopTabChanged} value={topTab} className={styles.topbar}>
             <Radio.Button value={TopTab.PROPS}>
-              {formatMessage({ id: 'workspace.window.table.toptab.props' })}
+              {formatMessage({ id: 'workspace.window.table.toptab.props', defaultMessage: '属性' })}
             </Radio.Button>
-            <Radio.Button value={TopTab.DATA}>
-              {formatMessage({ id: 'workspace.window.table.toptab.data' })}
-            </Radio.Button>
+            {!isLogicalDatabase(session?.odcDatabase) && (
+              <Radio.Button value={TopTab.DATA}>
+                {formatMessage({
+                  id: 'workspace.window.table.toptab.data',
+                  defaultMessage: '数据',
+                })}
+              </Radio.Button>
+            )}
           </Radio.Group>
           <Space>
             {settingStore.enableDBExport &&
             getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
               TaskType.EXPORT,
-            ) ? (
+            ) &&
+            !isLogicalDatabase(session?.odcDatabase) ? (
               <Toolbar.Button
                 text={
-                  formatMessage({ id: 'odc.components.TablePage.Export' }) //导出
+                  formatMessage({ id: 'odc.components.TablePage.Export', defaultMessage: '导出' }) //导出
                 }
                 icon={ExportOutlined}
                 isShowText
@@ -241,13 +260,15 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                       {
                         label: formatMessage({
                           id: 'workspace.window.table.propstab.info',
+                          defaultMessage: '基本信息',
                         }),
                         key: PropsTab.INFO,
-                        children: <ShowTableBaseInfoForm pageKey={pageKey} />,
+                        children: <ShowTableBaseInfoForm pageKey={pageKey} dbType={dbType} />,
                       },
                       {
                         label: formatMessage({
                           id: 'workspace.window.table.propstab.column',
+                          defaultMessage: '列',
                         }),
                         key: PropsTab.COLUMN,
                         children: (
@@ -260,6 +281,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                         key: PropsTab.INDEX,
                         label: formatMessage({
                           id: 'workspace.window.table.propstab.index',
+                          defaultMessage: '索引',
                         }),
                         children: (
                           <Spin spinning={false}>
@@ -273,9 +295,11 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                             <TableConstraints />
                           </Spin>
                         ),
+
                         key: PropsTab.CONSTRAINT,
                         label: formatMessage({
                           id: 'workspace.window.table.propstab.constraint',
+                          defaultMessage: '约束',
                         }),
                       },
                       showPartition
@@ -283,6 +307,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                             key: PropsTab.PARTITION,
                             label: formatMessage({
                               id: 'workspace.window.table.propstab.partition',
+                              defaultMessage: '分区',
                             }),
                             children: (
                               <Spin spinning={false}>
@@ -295,6 +320,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                         key: PropsTab.DDL,
                         label: formatMessage({
                           id: 'workspace.window.table.propstab.ddl',
+                          defaultMessage: 'DDL',
                         }),
                         children: <TableDDL key={version.current} />,
                       },
@@ -310,7 +336,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
                     <TableData
                       table={oldTable}
                       session={session}
-                      tableName={table?.info.tableName}
+                      tableName={table?.info?.tableName}
                       pageKey={pageKey}
                       key={version.current}
                     />
@@ -329,6 +355,7 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
 
 export default WrapSessionPage(
   inject('pageStore', 'sessionManagerStore', 'settingStore')(observer(TablePage)),
+  true,
   true,
   true,
 );

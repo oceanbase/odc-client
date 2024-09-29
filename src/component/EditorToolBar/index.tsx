@@ -16,13 +16,13 @@
 
 import Toolbar from '@/component/Toolbar';
 import { formatMessage } from '@/util/intl';
-import { Menu, Space, Spin } from 'antd';
+import { Space, Spin } from 'antd';
+import { isFunction } from 'lodash';
 import { Observer, observer } from 'mobx-react';
 import { Component, ComponentType, ReactNode } from 'react';
 import { ContainerQuery } from 'react-container-query';
 import { IConStatus } from '../Toolbar/statefulIcon';
 import { ACTIONS, ACTION_GROUPS } from './config';
-import { isFunction } from 'lodash';
 interface IProps {
   ctx: any;
   actionGroupKey: string;
@@ -194,8 +194,9 @@ export default class EditorToolBar extends Component<IProps, IState> {
         throw new Error(
           formatMessage({
             id: 'odc.component.EditorToolBar.TheToolbarIsIncorrectlyConfigured',
-          }), //toolbar 配置错误！请检查 actions 中的配置符合 TS 定义
-        );
+            defaultMessage: 'toolbar 配置错误！请检查 actions 中的配置符合 TS 定义',
+          }),
+        ); //toolbar 配置错误！请检查 actions 中的配置符合 TS 定义
       }
     }
 

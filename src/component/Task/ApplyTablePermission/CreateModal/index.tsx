@@ -17,14 +17,15 @@ import { formatMessage } from '@/util/intl';
 
 import { listProjects } from '@/common/network/project';
 import { createTask } from '@/common/network/task';
+import HelpDoc from '@/component/helpDoc';
 import TableSelecter, {
-  TableSelecterRef,
   flatTableByGroupedParams,
   groupTableByDataBase,
+  TableSelecterRef,
 } from '@/component/Task/component/TableSelecter';
-import HelpDoc from '@/component/helpDoc';
 import { TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { TablePermissionType } from '@/d.ts/table';
+import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useRequest } from 'ahooks';
 import {
@@ -32,19 +33,18 @@ import {
   Checkbox,
   DatePicker,
   Drawer,
+  Empty,
   Form,
   Input,
+  message,
   Modal,
   Select,
   Space,
-  message,
-  Empty,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './index.less';
-import { openTasksPage } from '@/store/helper/page';
 
 const CheckboxGroup = Checkbox.Group;
 
@@ -216,6 +216,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
+        zIndex: 1003,
         title: formatMessage({
           id: 'src.component.Task.ApplyTablePermission.CreateModal.11B637AA',
           defaultMessage: '确认取消申请表权限吗？',
@@ -317,9 +318,11 @@ const CreateModal: React.FC<IProps> = (props) => {
         projectId: projectId || props?.projectId,
         databaseId,
         // 格式化成TableSelecter value所需格式
-        tables: flatTableByGroupedParams([
-          { databaseId, tableList: [{ name: tableName, id: tableId }] },
-        ]),
+        tables: tableId
+          ? flatTableByGroupedParams([
+              { databaseId, tableList: [{ name: tableName, id: tableId }] },
+            ])
+          : [],
         types,
       };
       if (projectId && databaseId) {
@@ -366,6 +369,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
   return (
     <Drawer
+      zIndex={1002}
       destroyOnClose
       className={styles.createModal}
       width={816}

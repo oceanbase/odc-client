@@ -14,43 +14,47 @@
  * limitations under the License.
  */
 
-import { listDatabases } from '@/common/network/database';
+import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
+import { getDatabase, listDatabases } from '@/common/network/database';
 import { listEnvironments } from '@/common/network/env';
+import { deleteLogicalDatabse } from '@/common/network/logicalDatabase';
 import Action from '@/component/Action';
-import FilterIcon from '@/component/Button/FIlterIcon';
-import Icon from '@ant-design/icons';
-import Reload from '@/component/Button/Reload';
 import HelpDoc from '@/component/helpDoc';
+import LogicIcon from '@/component/logicIcon';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import AsyncTaskCreateModal from '@/component/Task/AsyncTask';
 import ExportTaskCreateModal from '@/component/Task/ExportTask';
 import ImportTaskCreateModal from '@/component/Task/ImportTask';
+import LogicDatabaseAsyncTask from '@/component/Task/LogicDatabaseAsyncTask';
+import MutipleAsyncTask from '@/component/Task/MutipleAsyncTask';
 import { IConnectionStatus, TaskPageType, TaskType } from '@/d.ts';
-import { IDatabase, DatabasePermissionType } from '@/d.ts/database';
+import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
+import { ProjectRole } from '@/d.ts/project';
 import ChangeProjectModal from '@/page/Datasource/Info/ChangeProjectModal';
+import datasourceStatus from '@/store/datasourceStatus';
 import { ModalStore } from '@/store/modal';
+import setting from '@/store/setting';
+import { isLogicalDatabase } from '@/util/database';
 import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
-import { getLocalFormatDateTime } from '@/util/utils';
-import { useRequest } from 'ahooks';
-import { Input, Space, Tooltip } from 'antd';
-import { toInteger } from 'lodash';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import AddDataBaseButton from './AddDataBaseButton';
 import tracert from '@/util/tracert';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
-import ProjectContext from '../ProjectContext';
-import styles from './index.less';
-import setting from '@/store/setting';
-import datasourceStatus from '@/store/datasourceStatus';
+import { getLocalFormatDateTime } from '@/util/utils';
+import Icon from '@ant-design/icons';
+import { useRequest } from 'ahooks';
+import { message, Modal, Space, Tooltip, Typography } from 'antd';
+import { toInteger } from 'lodash';
 import { inject, observer } from 'mobx-react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import ProjectContext from '../ProjectContext';
+import AddDataBaseButton from './components/AddDataBaseButton';
+import ChangeOwnerModal from './components/ChangeOwnerModal';
+import { CreateLogicialDatabase, ManageLogicDatabase } from './components/LogicDatabase';
+import Header from './Header';
+import styles from './index.less';
+import ParamContext, { IFilterParams } from './ParamContext';
 import StatusName from './StatusName';
-import ChangeOwnerModal from '@/page/Project/Database/ChangeOwnerModal';
-import { ProjectRole } from '@/d.ts/project';
-import MutipleAsyncTask from '@/component/Task/MutipleAsyncTask';
-import { databasePermissionTypeMap } from '@/page/Project/User/ManageModal/Database';
 interface IProps {
   id: string;
   modalStore?: ModalStore;
@@ -59,8 +63,14 @@ interface IProps {
 const Database: React.FC<IProps> = ({ id, modalStore }) => {
   const statusMap = datasourceStatus.statusMap;
   const { project } = useContext(ProjectContext);
+  console.log(project);
   const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState('');
+  const [filterParams, setFilterParams] = useState<IFilterParams>({
+    environmentId: null,
+    connectType: null,
+    type: null,
+  });
   const [data, setData] = useState<IDatabase[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [visible, setVisible] = useState(false);
@@ -68,20 +78,32 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
    * 修改管理员弹窗显示与隐藏
    */
   const [changeOwnerModalVisible, setChangeOwnerModalVisible] = useState(false);
+  const [openLogicialDatabase, setOpenLogicialDatabase] = useState<boolean>(false);
+  const [openManageLogicDatabase, setOpenManageLogicDatabase] = useState<boolean>(false);
   const [database, setDatabase] = useState<IDatabase>(null);
   const params = useRef({
     pageSize: 0,
     current: 0,
-    environmentId: null,
   });
   const { data: envList } = useRequest(listEnvironments);
   useEffect(() => {
     tracert.expo('a3112.b64002.c330858');
   }, []);
-  const loadData = async (pageSize, current, environmentId, name: string = searchValue) => {
+
+  useEffect(() => {
+    loadData(params.current.pageSize, 1);
+  }, [filterParams]);
+
+  const loadData = async (
+    pageSize,
+    current,
+    name: string = searchValue,
+    environmentId = filterParams?.environmentId,
+    connectType = filterParams?.connectType,
+    type = filterParams.type,
+  ) => {
     params.current.pageSize = pageSize;
     params.current.current = current;
-    params.current.environmentId = environmentId;
     const res = await listDatabases(
       parseInt(id),
       null,
@@ -92,15 +114,21 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
       null,
       null,
       true,
+      type,
+      connectType,
     );
     if (res) {
-      datasourceStatus.asyncUpdateStatus(res?.contents?.map((item) => item?.dataSource?.id));
+      datasourceStatus.asyncUpdateStatus(
+        res?.contents
+          ?.filter((item) => item.type !== 'LOGICAL')
+          ?.map((item) => item?.dataSource?.id),
+      );
       setData(res?.contents);
       setTotal(res?.page?.totalElements);
     }
   };
   function reload(name: string = searchValue) {
-    loadData(params.current.pageSize, params.current.current, params.current.environmentId, name);
+    loadData(params.current.pageSize, params.current.current, name);
   }
   const handleMenuClick = (type: TaskPageType, databaseId: number) => {
     switch (type) {
@@ -122,10 +150,15 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
       default:
     }
   };
-  const renderDisabledDBWithTip = (name: React.ReactNode) => {
+  const renderNoPermissionDBWithTip = (name: React.ReactNode) => {
     return (
       <span className={styles.disable}>
-        <Tooltip title={formatMessage({ id: 'src.page.Project.Database.B4A5A6AC' })}>
+        <Tooltip
+          title={formatMessage({
+            id: 'src.page.Project.Database.B4A5A6AC',
+            defaultMessage: '当前账号的项目成员角色没有该库的操作权限，请先申请库权限',
+          })}
+        >
           {name}
         </Tooltip>
       </span>
@@ -135,6 +168,39 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
   const clearSelectedRowKeys = () => {
     setSelectedRowKeys([]);
   };
+
+  const showDeleteErrorModal = (name: string) => {
+    Modal.error({
+      title: formatMessage(
+        { id: 'src.page.Project.Database.2D8C1CD8', defaultMessage: '逻辑 {name} 移除失败？' },
+        { name },
+      ),
+      centered: true,
+      content: formatMessage({
+        id: 'src.page.Project.Database.C8C89C9E',
+        defaultMessage: '当前逻辑库存在执行中的工单，暂时无法删除，请完成或终止工单后再移除。',
+      }),
+    });
+  };
+
+  const curRoles = project?.currentUserResourceRoles || [];
+  const isOwner = curRoles.some((role) => [ProjectRole.OWNER].includes(role));
+
+  const initDialectType = useMemo(() => {
+    return data?.find((_db) => _db?.id === selectedRowKeys?.[0])?.connectType;
+  }, [selectedRowKeys[0]]);
+
+  const disabledMultiDBChanges = useMemo(() => {
+    if (!selectedRowKeys?.length) return false;
+    return !selectedRowKeys?.every(
+      (key) =>
+        /* 当前数据库分页没有这一条数据 */
+        !data?.find((_db) => _db?.id === key) ||
+        /* 当前数据库分页有这一条数据且类型相同 */
+        data?.find((_db) => _db?.id === key)?.connectType === initDialectType,
+    );
+  }, [selectedRowKeys, data]);
+
   return (
     <TableCard
       title={
@@ -142,32 +208,32 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           orderedDatabaseIds={
             selectedRowKeys?.length ? [selectedRowKeys as number[]] : [[undefined]]
           }
+          disabledMultiDBChanges={disabledMultiDBChanges}
           clearSelectedRowKeys={clearSelectedRowKeys}
           modalStore={modalStore}
           onSuccess={() => reload()}
           projectId={parseInt(id)}
+          onOpenLogicialDatabase={() => setOpenLogicialDatabase(true)}
         />
       }
       extra={
-        <Space>
-          <Input.Search
-            onSearch={(v) => {
-              setSearchValue(v);
+        <ParamContext.Provider
+          value={{
+            searchValue,
+            setSearchValue,
+            filterParams,
+            setFilterParams,
+            reload: () => {
               params.current.current = 1;
-              reload(v);
-            }}
-            placeholder={formatMessage({
-              id: 'odc.Project.Database.SearchDatabase',
-            })}
-            /*搜索数据库*/ style={{
-              width: 200,
-            }}
-          />
-
-          <FilterIcon onClick={() => reload()}>
-            <Reload />
-          </FilterIcon>
-        </Space>
+              reload();
+            },
+            envList,
+          }}
+        >
+          <Space>
+            <Header />
+          </Space>
+        </ParamContext.Provider>
       }
     >
       <MiniTable<IDatabase>
@@ -188,12 +254,14 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             const disabled =
               !hasChangeAuth && !hasQueryAuth && !record?.authorizedPermissionTypes?.length;
             const status = statusMap.get(record?.dataSource?.id) || record?.dataSource?.status;
+            const config = getDataSourceModeConfig(record?.dataSource?.type);
 
             return {
               disabled:
                 disabled ||
                 !record.existed ||
-                ![IConnectionStatus.ACTIVE, IConnectionStatus.TESTING]?.includes(status?.status),
+                ![IConnectionStatus.ACTIVE, IConnectionStatus.TESTING]?.includes(status?.status) ||
+                !config?.features?.task?.includes(TaskType.MULTIPLE_ASYNC),
               name: record.name,
             };
           },
@@ -205,11 +273,13 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           {
             title: formatMessage({
               id: 'odc.Project.Database.DatabaseName',
+              defaultMessage: '数据库名称',
             }),
             //数据库名称
             dataIndex: 'name',
             fixed: 'left',
             ellipsis: true,
+            width: 250,
             render: (name, record) => {
               const hasChangeAuth = record.authorizedPermissionTypes?.includes(
                 DatabasePermissionType.CHANGE,
@@ -219,7 +289,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
               );
               const disabled =
                 !hasChangeAuth && !hasQueryAuth && !record?.authorizedPermissionTypes?.length;
-
+              const style = getDataSourceStyleByConnectType(record?.dataSource?.type);
               if (!record.existed) {
                 return disabled ? (
                   <HelpDoc
@@ -227,9 +297,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                     isTip={false}
                     title={formatMessage({
                       id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
+                      defaultMessage: '当前数据库不存在',
                     })} /*当前数据库不存在*/
                   >
-                    {renderDisabledDBWithTip(name)}
+                    {renderNoPermissionDBWithTip(name)}
                   </HelpDoc>
                 ) : (
                   <HelpDoc
@@ -237,6 +308,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                     isTip={false}
                     title={formatMessage({
                       id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
+                      defaultMessage: '当前数据库不存在',
                     })} /*当前数据库不存在*/
                   >
                     {name}
@@ -244,15 +316,40 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                 );
               }
               return disabled ? (
-                renderDisabledDBWithTip(name)
+                renderNoPermissionDBWithTip(name)
               ) : (
-                <StatusName
-                  item={record}
-                  onClick={() => {
-                    tracert.click('a3112.b64002.c330858.d367382');
-                    gotoSQLWorkspace(toInteger(id), null, record.id);
-                  }}
-                />
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  {record?.type === 'LOGICAL' && <LogicIcon />}
+                  <Icon
+                    component={style?.icon?.component}
+                    style={{
+                      color: style?.icon?.color,
+                      fontSize: 16,
+                      marginRight: 4,
+                    }}
+                  />
+
+                  <Space>
+                    <StatusName
+                      item={record}
+                      onClick={() => {
+                        tracert.click('a3112.b64002.c330858.d367382');
+                        gotoSQLWorkspace(
+                          toInteger(id),
+                          null,
+                          record.id,
+                          null,
+                          '',
+                          isLogicalDatabase(record),
+                        );
+                      }}
+                    />
+
+                    <Typography.Text type="secondary" title={record?.alias}>
+                      {record?.alias}
+                    </Typography.Text>
+                  </Space>
+                </div>
               );
             },
           },
@@ -272,6 +369,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                 <span style={{ color: 'var(--text-color-hint)' }}>
                   {formatMessage({
                     id: 'odc.Project.Database.OwnerEmptyText',
+                    defaultMessage: '未设置',
                   })}
                 </span>
               );
@@ -280,16 +378,22 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           {
             title: formatMessage({
               id: 'odc.Project.Database.DataSource',
+              defaultMessage: '所属数据源',
             }),
             //所属数据源
             dataIndex: ['dataSource', 'name'],
             width: 160,
-            ellipsis: true,
+            ellipsis: {
+              showTitle: false,
+            },
             render(value, record, index) {
               /**
                * return datasource icon + label
                */
               const style = getDataSourceStyleByConnectType(record.dataSource?.type);
+              if (!value) {
+                return '-';
+              }
               return (
                 <>
                   <Icon
@@ -301,7 +405,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                     }}
                   />
 
-                  <span title={value}>{value}</span>
+                  <Tooltip title={value}>{value}</Tooltip>
                 </>
               );
             },
@@ -309,16 +413,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           {
             title: formatMessage({
               id: 'odc.Project.Database.Environment',
+              defaultMessage: '环境',
             }),
             //环境
             dataIndex: 'environmentId',
-            filters: envList?.map((env) => {
-              return {
-                text: env.name,
-                value: env.id,
-              };
-            }),
-            filterMultiple: false,
             width: 80,
             render(value, record, index) {
               return (
@@ -332,14 +430,17 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           {
             title: formatMessage({
               id: 'odc.Project.Database.CharacterEncoding',
+              defaultMessage: '字符编码',
             }),
             //字符编码
             dataIndex: 'charsetName',
             width: 120,
+            render: (value) => (value ? value : '-'),
           },
           {
             title: formatMessage({
               id: 'odc.Project.Database.SortingRules',
+              defaultMessage: '排序规则',
             }),
             //排序规则
             dataIndex: 'collationName',
@@ -350,24 +451,27 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           {
             title: formatMessage({
               id: 'odc.Project.Database.LastSynchronizationTime',
+              defaultMessage: '上一次同步时间',
             }),
             //上一次同步时间
-            dataIndex: 'lastSyncTime',
+            dataIndex: 'objectLastSyncTime',
             width: 170,
             render(v, record) {
-              const time = record?.lastSyncTime || record?.objectLastSyncTime;
+              const time = record?.objectLastSyncTime || record?.lastSyncTime;
               return getLocalFormatDateTime(time);
             },
           },
           {
             title: formatMessage({
               id: 'odc.Project.Database.Operation',
+              defaultMessage: '操作',
             }),
             //操作
             dataIndex: 'actions',
             width: 210,
             render(_, record) {
               const config = getDataSourceModeConfig(record?.dataSource?.type);
+              const notSupportToResourceTree = !config?.features?.resourceTree;
               const disableTransfer =
                 !!record?.dataSource?.projectId &&
                 !config?.schema?.innerSchema?.includes(record?.name);
@@ -383,11 +487,13 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
               );
 
               const curRoles = project?.currentUserResourceRoles || [];
-              const hasChangeOwnerAuth = curRoles.some((role) =>
+              const isOwnerOrDBA = curRoles.some((role) =>
                 [ProjectRole.OWNER, ProjectRole.DBA].includes(role),
               );
-
-              const hasLoginAuth = !!record.authorizedPermissionTypes?.length;
+              const isParticipant = curRoles.some((role) =>
+                [ProjectRole.PARTICIPANT].includes(role),
+              );
+              const hasDBAuth = !!record.authorizedPermissionTypes?.length;
 
               if (!record.existed) {
                 return (
@@ -402,7 +508,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       disabled={!hasChangeAuth || disableTransfer}
                       tooltip={
                         !hasChangeAuth || disableTransfer
-                          ? formatMessage({ id: 'src.page.Project.Database.8FB9732D' })
+                          ? formatMessage({
+                              id: 'src.page.Project.Database.8FB9732D',
+                              defaultMessage: '暂无权限',
+                            })
                           : ''
                       }
                     >
@@ -411,6 +520,8 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                           disableTransfer
                             ? formatMessage({
                                 id: 'odc.src.page.Project.Database.TheDataSourceHasBeen',
+                                defaultMessage:
+                                  '所属的数据源已关联当前项目，无法修改。可通过编辑数据源修改所属项目',
                               }) //`所属的数据源已关联当前项目，无法修改。可通过编辑数据源修改所属项目`
                             : null
                         }
@@ -418,6 +529,8 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                         {
                           formatMessage({
                             id: 'odc.src.page.Project.Database.ModifyTheProject',
+                            defaultMessage:
+                              '\n                      修改所属项目\n                    ',
                           }) /* 
                       修改所属项目
                       */
@@ -427,8 +540,143 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                   </Action.Group>
                 );
               }
+              if (record.type === 'LOGICAL') {
+                const hasOperateAuth = isOwnerOrDBA || hasDBAuth;
+                return (
+                  <Action.Group size={2}>
+                    <Action.Link
+                      key={'manage'}
+                      onClick={() => {
+                        setDatabase(record);
+                        setOpenManageLogicDatabase(true);
+                      }}
+                      disabled={!hasOperateAuth}
+                      tooltip={
+                        !hasOperateAuth
+                          ? formatMessage({
+                              id: 'src.page.Project.Database.D8BEA086',
+                              defaultMessage: '暂无权限',
+                            })
+                          : ''
+                      }
+                    >
+                      {formatMessage({
+                        id: 'src.page.Project.Database.D9A05E1E',
+                        defaultMessage: '逻辑表管理',
+                      })}
+                    </Action.Link>
+                    <Action.Link
+                      key={'update'}
+                      onClick={() =>
+                        modalStore.changeLogicialDatabaseModal(true, {
+                          projectId: project?.id,
+                          databaseId: record?.id,
+                        })
+                      }
+                      disabled={!hasChangeAuth}
+                      tooltip={
+                        !hasChangeAuth
+                          ? formatMessage({
+                              id: 'src.page.Project.Database.12FDA4F2',
+                              defaultMessage: '暂无权限, 请先申请库权限',
+                            })
+                          : ''
+                      }
+                    >
+                      {formatMessage({
+                        id: 'src.page.Project.Database.D45EF5F3',
+                        defaultMessage: '逻辑库变更',
+                      })}
+                    </Action.Link>
+                    <Action.Link
+                      disabled={!hasQueryAuth}
+                      tooltip={
+                        !hasQueryAuth
+                          ? formatMessage({
+                              id: 'src.page.Project.Database.8B2C5A3A',
+                              defaultMessage: '暂无权限, 请先申请库权限',
+                            })
+                          : ''
+                      }
+                      key={'login'}
+                      onClick={() => {
+                        gotoSQLWorkspace(
+                          project?.id,
+                          record?.dataSource?.id,
+                          record?.id,
+                          null,
+                          '',
+                          isLogicalDatabase(record),
+                        );
+                      }}
+                    >
+                      {formatMessage({
+                        id: 'src.page.Project.Database.F8F1FF42',
+                        defaultMessage: '登录数据库',
+                      })}
+                    </Action.Link>
+                    <Action.Link
+                      disabled={!hasChangeAuth}
+                      tooltip={
+                        !hasChangeAuth
+                          ? formatMessage({
+                              id: 'src.page.Project.Database.680DB47A',
+                              defaultMessage: '暂无权限',
+                            })
+                          : ''
+                      }
+                      key={'delete'}
+                      onClick={() => {
+                        Modal.confirm({
+                          title: formatMessage(
+                            {
+                              id: 'src.page.Project.Database.DFEFF83D',
+                              defaultMessage: '确认要移除逻辑库 {recordName} 吗？',
+                            },
+                            { recordName: record.name },
+                          ),
+                          centered: true,
+                          content: formatMessage({
+                            id: 'src.page.Project.Database.4EC56DD2',
+                            defaultMessage: '仅移除逻辑库及其相关配置，不影响实际数据库的数据。',
+                          }),
+                          cancelText: formatMessage({
+                            id: 'src.page.Project.Database.4F537F46',
+                            defaultMessage: '取消',
+                          }),
+                          okText: formatMessage({
+                            id: 'src.page.Project.Database.0DD4D2EB',
+                            defaultMessage: '移除',
+                          }),
+                          okType: 'danger',
+                          onCancel: () => {},
+                          onOk: async () => {
+                            const successful = await deleteLogicalDatabse(record?.id);
+                            if (successful) {
+                              message.success(
+                                formatMessage({
+                                  id: 'src.page.Project.Database.026A9C34',
+                                  defaultMessage: '移除成功',
+                                }),
+                              );
+                              reload?.();
+                              return;
+                            }
+                            showDeleteErrorModal(record.name);
+                          },
+                        });
+                      }}
+                    >
+                      {formatMessage({
+                        id: 'src.page.Project.Database.3A2CD412',
+                        defaultMessage: '移除逻辑库',
+                      })}
+                    </Action.Link>
+                  </Action.Group>
+                );
+              }
               return (
-                <Action.Group size={3}>
+                <Action.Group size={2}>
                   {config?.features?.task?.includes(TaskType.EXPORT) && setting.enableDBExport && (
                     <Action.Link
                       key={'export'}
@@ -439,13 +687,17 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       disabled={!hasExportAuth}
                       tooltip={
                         !hasExportAuth
-                          ? formatMessage({ id: 'src.page.Project.Database.A74B21AE' })
+                          ? formatMessage({
+                              id: 'src.page.Project.Database.A74B21AE',
+                              defaultMessage: '暂无导出权限，请先申请数据库权限',
+                            })
                           : ''
                       }
                     >
                       {
                         formatMessage({
                           id: 'odc.Project.Database.Export',
+                          defaultMessage: '导出',
                         }) /*导出*/
                       }
                     </Action.Link>
@@ -461,53 +713,75 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       disabled={!hasChangeAuth}
                       tooltip={
                         !hasChangeAuth
-                          ? formatMessage({ id: 'src.page.Project.Database.EA72923D' })
+                          ? formatMessage({
+                              id: 'src.page.Project.Database.EA72923D',
+                              defaultMessage: '暂无变更权限，请先申请数据库权限',
+                            })
                           : ''
                       }
                     >
                       {
                         formatMessage({
                           id: 'odc.Project.Database.Import',
+                          defaultMessage: '导入',
                         }) /*导入*/
                       }
                     </Action.Link>
                   )}
 
-                  <Action.Link
-                    key={'ddl'}
-                    onClick={() => {
-                      tracert.click('a3112.b64002.c330858.d367385');
-                      handleMenuClick(TaskPageType.ASYNC, record.id);
-                    }}
-                    disabled={!hasChangeAuth}
-                    tooltip={
-                      !hasChangeAuth
-                        ? formatMessage({ id: 'src.page.Project.Database.8AFF2CDE' })
-                        : ''
-                    }
-                  >
-                    {
-                      formatMessage({
-                        id: 'odc.Project.Database.DatabaseChanges',
-                      }) /*数据库变更*/
-                    }
-                  </Action.Link>
+                  {config?.features?.task?.includes(TaskType.ASYNC) && (
+                    <Action.Link
+                      key={'ddl'}
+                      onClick={() => {
+                        tracert.click('a3112.b64002.c330858.d367385');
+                        handleMenuClick(TaskPageType.ASYNC, record.id);
+                      }}
+                      disabled={!hasChangeAuth}
+                      tooltip={
+                        !hasChangeAuth
+                          ? formatMessage({
+                              id: 'src.page.Project.Database.8AFF2CDE',
+                              defaultMessage: '暂无变更权限，请先申请数据库权限',
+                            })
+                          : ''
+                      }
+                    >
+                      {
+                        formatMessage({
+                          id: 'odc.Project.Database.DatabaseChanges',
+                          defaultMessage: '数据库变更',
+                        }) /*数据库变更*/
+                      }
+                    </Action.Link>
+                  )}
+
                   <Action.Link
                     key={'login'}
                     onClick={() => {
                       tracert.click('a3112.b64002.c330858.d367381');
-                      gotoSQLWorkspace(parseInt(id), record?.dataSource?.id, record?.id);
+                      gotoSQLWorkspace(
+                        parseInt(id),
+                        record?.dataSource?.id,
+                        record?.id,
+                        null,
+                        '',
+                        isLogicalDatabase(record),
+                      );
                     }}
-                    disabled={!hasLoginAuth}
+                    disabled={!hasDBAuth || notSupportToResourceTree}
                     tooltip={
-                      !hasLoginAuth
-                        ? formatMessage({ id: 'src.page.Project.Database.6EC9F229' })
+                      !hasDBAuth
+                        ? formatMessage({
+                            id: 'src.page.Project.Database.6EC9F229',
+                            defaultMessage: '暂无权限',
+                          })
                         : ''
                     }
                   >
                     {
                       formatMessage({
                         id: 'odc.Project.Database.LogOnToTheDatabase',
+                        defaultMessage: '登录数据库',
                       }) /*登录数据库*/
                     }
                   </Action.Link>
@@ -517,7 +791,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       setChangeOwnerModalVisible(true);
                       setDatabase(record);
                     }}
-                    disabled={!hasChangeOwnerAuth}
+                    disabled={!isOwnerOrDBA}
                   >
                     {formatMessage({
                       id: 'src.page.Project.Database.DEFC0E70',
@@ -534,7 +808,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                     disabled={!hasChangeAuth || disableTransfer}
                     tooltip={
                       !hasChangeAuth || disableTransfer
-                        ? formatMessage({ id: 'src.page.Project.Database.8FB9732D' })
+                        ? formatMessage({
+                            id: 'src.page.Project.Database.8FB9732D',
+                            defaultMessage: '暂无权限',
+                          })
                         : ''
                     }
                   >
@@ -543,6 +820,8 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                         disableTransfer
                           ? formatMessage({
                               id: 'odc.src.page.Project.Database.TheDataSourceHasBeen',
+                              defaultMessage:
+                                '所属的数据源已关联当前项目，无法修改。可通过编辑数据源修改所属项目',
                             }) //`所属的数据源已关联当前项目，无法修改。可通过编辑数据源修改所属项目`
                           : null
                       }
@@ -550,6 +829,8 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       {
                         formatMessage({
                           id: 'odc.src.page.Project.Database.ModifyTheProject',
+                          defaultMessage:
+                            '\n                      修改所属项目\n                    ',
                         }) /* 
                     修改所属项目
                     */
@@ -566,10 +847,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           total,
           current: params.current.current,
         }}
-        loadData={(page, filters) => {
+        loadData={(page) => {
           const pageSize = page.pageSize;
           const current = page.current;
-          loadData(pageSize, current, filters['environmentId']?.[0]);
+          loadData(pageSize, current);
         }}
       />
 
@@ -587,10 +868,30 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
         onSuccess={() => reload()}
       />
 
+      <CreateLogicialDatabase
+        projectId={project?.id}
+        reload={reload}
+        openLogicialDatabase={openLogicialDatabase}
+        setOpenLogicialDatabase={setOpenLogicialDatabase}
+        openLogicDatabaseManageModal={async (id) => {
+          const res = await getDatabase(id);
+          setDatabase(res?.data);
+          setOpenManageLogicDatabase(true);
+        }}
+      />
+
+      <ManageLogicDatabase
+        database={database}
+        openManageLogicDatabase={openManageLogicDatabase}
+        setOpenManageLogicDatabase={setOpenManageLogicDatabase}
+        isOwner={isOwner}
+      />
+
       <ExportTaskCreateModal />
       <ImportTaskCreateModal />
       <AsyncTaskCreateModal theme="white" />
       <MutipleAsyncTask />
+      <LogicDatabaseAsyncTask theme="white" />
     </TableCard>
   );
 };

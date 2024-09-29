@@ -15,9 +15,12 @@
  */
 
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { ConnectTypeText } from '@/constant/label';
 import { IConnection } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import { ClusterStore } from '@/store/cluster';
+import { isLogicalDatabase } from '@/util/database';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
@@ -25,22 +28,99 @@ import { Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import RiskLevelLabel from '../RiskLevelLabel';
+import styles from './index.less';
 
 const ConnectionPopover: React.FC<{
   connection: Partial<IConnection>;
-  showResourceGroups?: boolean;
+  database?: IDatabase;
   showType?: boolean;
   clusterStore?: ClusterStore;
 }> = (props) => {
-  const { connection, clusterStore, showResourceGroups = false, showType = true } = props;
-  if (!connection) {
+  const { connection, clusterStore, showType = true, database } = props;
+  const isLogicDb = isLogicalDatabase(database);
+
+  if (!connection && !isLogicDb) {
     return null;
+  }
+
+  const DBIcon = getDataSourceStyleByConnectType(connection?.type || database?.connectType)?.icon;
+
+  if (isLogicDb) {
+    return (
+      <div
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+        style={{ lineHeight: '20px' }}
+      >
+        <Space direction="vertical">
+          <Tooltip>
+            <div
+              style={{
+                marginBottom: 4,
+                fontFamily: 'PingFangSC-Semibold',
+                color: 'var(--text-color-primary)',
+                fontWeight: 'bold',
+                maxWidth: '240px',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <RiskLevelLabel
+                  content={database?.environment?.name}
+                  color={database?.environment?.style?.toLowerCase()}
+                />
+
+                <DataBaseStatusIcon item={database} />
+                <div className={styles.ellipsis} title={database?.name}>{`${database?.name}`}</div>
+              </div>
+            </div>
+          </Tooltip>
+          <div
+            style={{
+              maxWidth: '400px',
+            }}
+            className={styles.ellipsis}
+            title={database?.alias}
+          >
+            {formatMessage(
+              {
+                id: 'src.component.ConnectionPopover.F992A18D',
+                defaultMessage: '逻辑库别名: {databaseAlias}',
+              },
+              { databaseAlias: database?.alias },
+            )}
+          </div>
+          <div>
+            {formatMessage(
+              {
+                id: 'src.component.ConnectionPopover.7A5FFB14',
+                defaultMessage: '项目: {databaseProjectName}',
+              },
+              { databaseProjectName: database?.project?.name },
+            )}
+          </div>
+          <div>
+            {formatMessage(
+              {
+                id: 'src.component.ConnectionPopover.8E155F86',
+                defaultMessage: '类型: {ConnectTypeTextDatabaseConnectType}',
+              },
+              { ConnectTypeTextDatabaseConnectType: ConnectTypeText[database?.connectType] },
+            )}
+          </div>
+        </Space>
+      </div>
+    );
   }
   let clusterAndTenant = (
     <div>
       {
         formatMessage({
           id: 'odc.components.Header.ConnectionPopover.ClusterTenant',
+          defaultMessage: '集群/租户：',
         })
 
         /*集群/租户：*/
@@ -57,6 +137,7 @@ const ConnectionPopover: React.FC<{
           {
             formatMessage({
               id: 'odc.component.ConnectionPopover.InstanceId',
+              defaultMessage: '实例 ID:',
             })
 
             /*实例 ID:*/
@@ -71,6 +152,7 @@ const ConnectionPopover: React.FC<{
           {
             formatMessage({
               id: 'odc.component.ConnectionPopover.InstanceIdTenantId',
+              defaultMessage: '实例ID/租户ID:',
             })
 
             /*实例ID/租户ID:*/
@@ -81,6 +163,7 @@ const ConnectionPopover: React.FC<{
     }
   }
   function renderConnectionMode() {
+    if (isLogicDb) return;
     const { type } = connection;
     return (
       <div>
@@ -88,6 +171,7 @@ const ConnectionPopover: React.FC<{
           formatMessage(
             {
               id: 'odc.component.ConnectionPopover.TypeConnecttypetexttype',
+              defaultMessage: '类型：{ConnectTypeTextType}',
             },
 
             { ConnectTypeTextType: ConnectTypeText[type] },
@@ -98,7 +182,7 @@ const ConnectionPopover: React.FC<{
       </div>
     );
   }
-  const DBIcon = getDataSourceStyleByConnectType(connection?.type)?.icon;
+
   return (
     <div
       onClick={(e) => {
@@ -142,6 +226,7 @@ const ConnectionPopover: React.FC<{
             {
               formatMessage({
                 id: 'odc.components.Header.ConnectionPopover.HostnamePort',
+                defaultMessage: '主机名/端口：',
               })
 
               /*主机名/端口：*/
@@ -149,12 +234,14 @@ const ConnectionPopover: React.FC<{
             {connection.host}:{connection.port}
           </div>
         )}
+
         {clusterAndTenant}
         <div>
           {
             formatMessage(
               {
                 id: 'odc.components.Header.ConnectionPopover.DatabaseUsernameConnectiondbuser',
+                defaultMessage: '数据库用户名：{connectionDbUser}',
               },
 
               { connectionDbUser: connection.username ?? '-' },

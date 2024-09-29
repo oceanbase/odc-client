@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getDataSourceModeConfig } from '@/common/datasource';
 import { IDatabase } from '@/d.ts/database';
 import { IProject } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';
@@ -94,6 +93,7 @@ export default function ProjectSelect({
           {
             formatMessage({
               id: 'odc.Info.ChangeProjectModal.ProjectSelect.DoNotAssignProjects',
+              defaultMessage: '不分配项目',
             }) /*不分配项目*/
           }
         </Checkbox>

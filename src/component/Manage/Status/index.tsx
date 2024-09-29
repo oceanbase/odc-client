@@ -29,15 +29,18 @@ export const COMMON_STATUS: Record<
 > = {
   [IManagerUserStatus.ACTIVATE]: {
     icon: <CheckCircleFilled style={{ color: '#52c41a' }} />,
-    text: formatMessage({ id: 'odc.components.CommonStatus.Enable' }), // 启用
+    text: formatMessage({ id: 'odc.components.CommonStatus.Enable', defaultMessage: '启用' }), // 启用
   },
   [IManagerUserStatus.DEACTIVATE]: {
     icon: <StopFilled style={{ color: 'var(--text-color-hint)' }} />,
-    text: formatMessage({ id: 'odc.components.CommonStatus.Disable' }), // 停用
+    text: formatMessage({ id: 'odc.components.CommonStatus.Disable', defaultMessage: '停用' }), // 停用
   },
   [IManagerUserStatus.INACTIVATE]: {
     icon: <CheckCircleFilled style={{ color: '#52c41a' }} />,
-    text: formatMessage({ id: 'odc.components.CommonStatus.NotActivated' }), // 未激活
+    text: formatMessage({
+      id: 'odc.components.CommonStatus.NotActivated',
+      defaultMessage: '未激活',
+    }), // 未激活
   },
 };
 

@@ -20,12 +20,18 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { TableProps } from 'antd/es/table';
 import { FilterValue } from 'antd/lib/table/interface';
 import styles from './index.less';
+import classNames from 'classnames';
 
 interface IProps<T> extends TableProps<T> {
+  isExpandedRowRender?: boolean;
   loadData: (page: TablePaginationConfig, filters: Record<string, FilterValue>) => void;
 }
 
-export default function MiniTable<T extends object>({ loadData, ...restProps }: IProps<T>) {
+export default function MiniTable<T extends object>({
+  loadData,
+  isExpandedRowRender = false,
+  ...restProps
+}: IProps<T>) {
   const [pageSize, setPageSize] = useState(0);
 
   const domRef = useRef<HTMLDivElement>();
@@ -34,13 +40,17 @@ export default function MiniTable<T extends object>({ loadData, ...restProps }: 
     if (domRef.current) {
       function resize() {
         const height = domRef.current.clientHeight - 24 - 60;
+        console.log('resize', height);
         setPageSize(Math.floor(height / 40));
       }
       const height = domRef.current.clientHeight - 24 - 60;
       setPageSize(Math.floor(height / 40));
-      domRef.current.addEventListener('resize', resize);
+      const obsever = new ResizeObserver(() => {
+        resize();
+      });
+      obsever.observe(domRef.current);
       return () => {
-        domRef.current.removeEventListener('resize', resize);
+        obsever.disconnect();
       };
     }
   });
@@ -69,7 +79,13 @@ export default function MiniTable<T extends object>({ loadData, ...restProps }: 
 
   return (
     <div ref={domRef} style={{ height: '100%' }}>
-      <Table<T> size="small" className={styles.table} {...cloneProps} />
+      <Table<T>
+        size="small"
+        className={classNames(styles.table, {
+          [styles.expandedRowRender]: isExpandedRowRender,
+        })}
+        {...cloneProps}
+      />
     </div>
   );
 }

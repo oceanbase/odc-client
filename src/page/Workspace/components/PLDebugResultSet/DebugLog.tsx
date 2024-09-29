@@ -35,6 +35,7 @@ const DebugLog: React.FC<IProps> = (props) => {
       width: 60,
       title: formatMessage({
         id: 'odc.components.PLDebugResultSet.State',
+        defaultMessage: '状态',
       }),
       render(type) {
         const iconMap = {
@@ -49,6 +50,7 @@ const DebugLog: React.FC<IProps> = (props) => {
       dataIndex: 'time',
       title: formatMessage({
         id: 'odc.components.PLDebugResultSet.Time',
+        defaultMessage: '时间',
       }),
       render(value) {
         return moment(value - 0).format('YYYY-MM-DD HH:mm:ss');
@@ -58,12 +60,14 @@ const DebugLog: React.FC<IProps> = (props) => {
       dataIndex: 'log',
       title: formatMessage({
         id: 'odc.components.PLDebugResultSet.Results',
+        defaultMessage: '结果',
       }),
       render(t, _) {
         return <span style={{ wordBreak: 'break-all' }}>{t}</span>;
       },
     },
   ];
+
   const logs = debug?.history.records;
   if (!logs?.length) {
     return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;

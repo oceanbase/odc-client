@@ -25,6 +25,12 @@ export type columnExtraComponent = React.FC<{
   dialectType?: ConnectionMode;
 }>;
 
+export enum SQLConsoleResourceType {
+  DataSource = 'datasource',
+  Snippet = 'snippet',
+  Script = 'script',
+}
+
 interface ICreateTableConfig {
   /**
    * 是否开启自动递增
@@ -111,7 +117,7 @@ export interface IDataSourceModeConfig {
   priority?: number;
   connection: {
     address: {
-      items: ('ip' | 'port' | 'cluster' | 'tenant' | 'sid')[];
+      items: ('ip' | 'port' | 'cluster' | 'tenant' | 'sid' | 'catalogName')[];
     };
     account: boolean;
     role?: boolean;
@@ -135,6 +141,8 @@ export interface IDataSourceModeConfig {
     supportOBProxy?: boolean;
     disableTriggerSwitch?: boolean;
     plRun?: boolean;
+    sessionParams?: boolean;
+    resourceTree?: boolean;
     export: {
       fileLimit: boolean;
       snapshot: boolean;
