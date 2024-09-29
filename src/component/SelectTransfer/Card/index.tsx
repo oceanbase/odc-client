@@ -63,9 +63,11 @@ const Card: React.FC<IProps> = function ({
             style={{ marginRight: '8px' }}
           />
         )}
+
         <Input.Search
           placeholder={formatMessage({
             id: 'odc.ExportSelecter.ExportCard.SearchKeywords',
+            defaultMessage: '搜索关键字',
           })} /*搜索关键字*/
           style={{ width: '100%' }}
           onSearch={(v) => {

@@ -44,7 +44,8 @@ import { useLoop } from '@/util/hooks/useLoop';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { DownOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, DatePicker, Divider, Menu, MenuProps } from 'antd';
+import { Button, DatePicker, Tooltip, Popover, Space, Typography } from 'antd';
+import { flatten } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
 import moment from 'moment';
@@ -53,9 +54,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getTaskGroupLabels, getTaskLabelByType, isCycleTaskPage } from '../../helper';
 import styles from '../../index.less';
 import TaskTools from '../ActionBar';
-import { flatten } from 'lodash';
-import { MenuDividerType } from 'antd/lib/menu/hooks/useItems';
 const { RangePicker } = DatePicker;
+const { Text, Link } = Typography;
+
 export const getCronCycle = (triggerConfig: ICycleTaskTriggerConfig) => {
   const { triggerStrategy, days, hours, cronExpression } = triggerConfig;
   return triggerStrategy !== TaskExecStrategy.CRON
@@ -69,67 +70,90 @@ export const getCronCycle = (triggerConfig: ICycleTaskTriggerConfig) => {
 export const TaskTypeMap = {
   [TaskType.IMPORT]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.Import',
+    defaultMessage: '导入',
   }),
   //导入
   [TaskType.EXPORT]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.Export',
+    defaultMessage: '导出',
   }),
   //导出
   [TaskType.DATAMOCK]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.AnalogData',
+    defaultMessage: '模拟数据',
   }),
   //模拟数据
   [TaskType.ASYNC]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.DatabaseChanges',
+    defaultMessage: '数据库变更',
   }),
   // 数据库变更
 
   [TaskType.PARTITION_PLAN]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.PartitionPlan',
+    defaultMessage: '分区计划',
   }),
   //分区计划
 
   [TaskType.SHADOW]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.ShadowTableSynchronization',
+    defaultMessage: '影子表同步',
   }),
   //影子表同步
 
   [TaskType.ALTER_SCHEDULE]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.PlannedChange',
+    defaultMessage: '计划变更',
   }),
   //计划变更
   [TaskType.EXPORT_RESULT_SET]: formatMessage({
     id: 'odc.src.component.Task.component.TaskTable.ExportResultSet',
+    defaultMessage: '导出结果集',
   }),
   //'导出结果集'
   [TaskType.SQL_PLAN]: formatMessage({
     id: 'odc.component.TaskTable.SqlPlan',
+    defaultMessage: 'SQL 计划',
   }),
   //SQL 计划
   [TaskType.DATA_ARCHIVE]: formatMessage({
     id: 'odc.component.TaskTable.DataArchiving',
+    defaultMessage: '数据归档',
   }),
   //数据归档
   [TaskType.ONLINE_SCHEMA_CHANGE]: formatMessage({
     id: 'odc.component.TaskTable.LockFreeStructureChange',
+    defaultMessage: '无锁结构变更',
   }),
   //无锁结构变更
   [TaskType.DATA_DELETE]: formatMessage({
     id: 'odc.component.TaskTable.DataCleansing',
+    defaultMessage: '数据清理',
   }),
   //数据清理
   [TaskType.APPLY_PROJECT_PERMISSION]: formatMessage({
     id: 'odc.src.component.Task.component.TaskTable.ApplicationProjectPermissions',
+    defaultMessage: '申请项目权限',
   }), //'申请项目权限'
   [TaskType.APPLY_DATABASE_PERMISSION]: formatMessage({
     id: 'src.component.Task.component.TaskTable.E1E161BA',
+    defaultMessage: '申请库权限',
   }), //'申请库权限'
+  [TaskType.APPLY_TABLE_PERMISSION]: formatMessage({
+    id: 'src.component.Task.component.TaskTable.3236150E',
+    defaultMessage: '申请表权限',
+  }),
   [TaskType.STRUCTURE_COMPARISON]: formatMessage({
     id: 'src.component.Task.component.TaskTable.80E1D16A',
+    defaultMessage: '结构比对',
   }), //'结构比对'
   [TaskType.MULTIPLE_ASYNC]: formatMessage({
     id: 'src.component.Task.component.TaskTable.A3CA13D5',
     defaultMessage: '多库变更',
+  }),
+  [TaskType.LOGICAL_DATABASE_CHANGE]: formatMessage({
+    id: 'src.component.Task.component.TaskTable.4203E912',
+    defaultMessage: '逻辑库变更',
   }),
 };
 export const getStatusFilters = (status: {
@@ -182,6 +206,8 @@ const TaskTable: React.FC<IProps> = inject(
       return !start || !end ? null : [moment(start), moment(end)];
     });
     const [loading, setLoading] = useState(false);
+    const [hoverInNewTaskMenuBtn, setHoverInNewTaskMenuBtn] = useState(false);
+    const [hoverInNewTaskMenu, setHoverInNewTaskMenu] = useState(false);
     const [listParams, setListParams] = useState(null);
     const loadParams = useRef(null);
     const { activePageKey } = pageStore;
@@ -241,6 +267,7 @@ const TaskTable: React.FC<IProps> = inject(
           dataIndex: 'id',
           title: formatMessage({
             id: 'odc.component.TaskTable.No',
+            defaultMessage: '编号',
           }),
           //编号
           filterDropdown: (props) => {
@@ -250,6 +277,7 @@ const TaskTable: React.FC<IProps> = inject(
                 selectedKeys={filters?.id}
                 placeholder={formatMessage({
                   id: 'odc.TaskManagePage.component.TaskTable.PleaseEnterTheNumber',
+                  defaultMessage: '请输入编号',
                 })}
 
                 /*请输入编号*/
@@ -275,6 +303,7 @@ const TaskTable: React.FC<IProps> = inject(
           dataIndex: 'type',
           title: formatMessage({
             id: 'odc.component.TaskTable.Type',
+            defaultMessage: '类型',
           }),
           //类型
           ellipsis: true,
@@ -287,15 +316,19 @@ const TaskTable: React.FC<IProps> = inject(
           dataIndex: 'description',
           title: formatMessage({
             id: 'odc.component.TaskTable.TicketDescription',
+            defaultMessage: '工单描述',
           }),
           //工单描述
-          ellipsis: true,
-          render: (description) => description || '-',
+          ellipsis: {
+            showTitle: false,
+          },
+          render: (description) => <Tooltip title={description}>{description || '-'}</Tooltip>,
         },
         {
           dataIndex: 'candidateApprovers',
           title: formatMessage({
             id: 'odc.component.TaskTable.CurrentHandler',
+            defaultMessage: '当前处理人',
           }),
           //当前处理人
           ellipsis: true,
@@ -307,6 +340,7 @@ const TaskTable: React.FC<IProps> = inject(
                 selectedKeys={filters?.candidateApprovers}
                 placeholder={formatMessage({
                   id: 'odc.component.TaskTable.CurrentHandler',
+                  defaultMessage: '当前处理人',
                 })} /*当前处理人*/
               />
             );
@@ -329,6 +363,7 @@ const TaskTable: React.FC<IProps> = inject(
           dataIndex: 'creator',
           title: formatMessage({
             id: 'odc.TaskManagePage.component.TaskTable.Created',
+            defaultMessage: '创建人',
           }),
           //创建人
           width: 80,
@@ -342,6 +377,7 @@ const TaskTable: React.FC<IProps> = inject(
                 selectedKeys={filters?.creator}
                 placeholder={formatMessage({
                   id: 'odc.TaskManagePage.component.TaskTable.EnterTheCreator',
+                  defaultMessage: '请输入创建人',
                 })}
 
                 /*请输入创建人*/
@@ -374,6 +410,7 @@ const TaskTable: React.FC<IProps> = inject(
           key: 'createTime',
           title: formatMessage({
             id: 'odc.components.TaskManagePage.CreationTime',
+            defaultMessage: '创建时间',
           }),
           render: (time: number) => getLocalFormatDateTime(time),
           sorter: true,
@@ -384,6 +421,7 @@ const TaskTable: React.FC<IProps> = inject(
           dataIndex: 'status',
           title: formatMessage({
             id: 'odc.component.TaskTable.Status',
+            defaultMessage: '状态',
           }),
           //状态
           width: 120,
@@ -401,6 +439,7 @@ const TaskTable: React.FC<IProps> = inject(
           dataIndex: 'deal',
           title: formatMessage({
             id: 'odc.components.TaskManagePage.Operation',
+            defaultMessage: '操作',
           }),
           width: 145,
           render: (_, record) => (
@@ -428,6 +467,64 @@ const TaskTable: React.FC<IProps> = inject(
     ].includes(taskTabType);
     const menus = getTaskGroupLabels()?.filter((item) => !!item.groupName);
     const activeTaskLabel = getTaskLabelByType(taskTabType);
+
+    const newTaskMenu = () => {
+      const items = flatten(
+        menus
+          ?.map(({ group, groupName }, index) => {
+            const tasks = group?.filter((task) => task.enabled);
+            if (tasks.length === 0) {
+              return null;
+            }
+            return {
+              key: index,
+              label: groupName,
+              children: tasks?.map((item) => {
+                return {
+                  key: item.value,
+                  label: item.label,
+                };
+              }),
+              type: 'group',
+            };
+          })
+          .filter(Boolean),
+      );
+      return (
+        <Space
+          align="start"
+          size={20}
+          onMouseMove={() => setHoverInNewTaskMenuBtn(true)}
+          onMouseLeave={() => setHoverInNewTaskMenuBtn(false)}
+        >
+          {items?.map((i) => {
+            return (
+              <Space direction="vertical">
+                <Text type="secondary" key={i.key}>
+                  {i?.label}
+                </Text>
+                <Space size={0} direction="vertical">
+                  {i?.children?.map((i) => {
+                    return (
+                      <div
+                        className={styles.menuItem}
+                        onClick={() => {
+                          setHoverInNewTaskMenuBtn(false);
+                          props.onMenuClick(i?.key as TaskPageType);
+                        }}
+                      >
+                        {i?.label}
+                      </div>
+                    );
+                  })}
+                </Space>
+              </Space>
+            );
+          })}
+        </Space>
+      );
+    };
+
     return (
       <CommonTable
         ref={tableRef}
@@ -437,60 +534,48 @@ const TaskTable: React.FC<IProps> = inject(
           options: [
             isAll
               ? {
-                  type: IOperationOptionType.dropdown,
-                  content: (
-                    <Button type="primary">
-                      {
-                        formatMessage({
-                          id: 'odc.component.TaskTable.NewWorkOrder',
-                        }) /*新建工单*/
-                      }
+                  type: IOperationOptionType.custom,
+                  render: () => (
+                    <Popover
+                      content={newTaskMenu}
+                      placement="bottomLeft"
+                      open={hoverInNewTaskMenuBtn || hoverInNewTaskMenu}
+                    >
+                      <Button
+                        type="primary"
+                        onMouseMove={() => setHoverInNewTaskMenu(true)}
+                        onMouseLeave={() => {
+                          setTimeout(() => {
+                            setHoverInNewTaskMenu(false);
+                          }, 500);
+                        }}
+                      >
+                        {
+                          formatMessage({
+                            id: 'odc.component.TaskTable.NewWorkOrder',
+                            defaultMessage: '新建工单',
+                          }) /*新建工单*/
+                        }
 
-                      <DownOutlined />
-                    </Button>
+                        <DownOutlined />
+                      </Button>
+                    </Popover>
                   ),
-
-                  menu: {
-                    onClick: ({ key }) => {
-                      props.onMenuClick(key as TaskPageType);
-                    },
-                    items: flatten(
-                      menus
-                        ?.map(({ group, groupName }, index) => {
-                          const tasks = group?.filter((task) => task.enabled);
-                          if (tasks.length === 0) {
-                            return null;
-                          }
-                          return {
-                            key: index,
-                            label: groupName,
-                            children: tasks?.map((item) => {
-                              return {
-                                key: item.value,
-                                label: item.label,
-                              };
-                            }),
-                            type: 'group',
-                          };
-                        })
-                        .filter(Boolean),
-                    ),
-                  },
                 }
               : {
                   type: IOperationOptionType.button,
                   content: [
                     TaskPageType.APPLY_PROJECT_PERMISSION,
                     TaskPageType.APPLY_DATABASE_PERMISSION,
+                    TaskPageType.APPLY_TABLE_PERMISSION,
                   ].includes(taskTabType)
                     ? activeTaskLabel
                     : formatMessage(
                         {
                           id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
+                          defaultMessage: '新建{activeTaskLabel}',
                         },
-                        {
-                          activeTaskLabel: activeTaskLabel,
-                        },
+                        { activeTaskLabel },
                       ),
                   //`新建${activeTaskLabel}`
                   isPrimary: true,

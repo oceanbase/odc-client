@@ -50,9 +50,12 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
   async function copy() {
     const newConnection = {
       ...connection,
-      name: `${connection.name}_${formatMessage({
-        id: 'portal.connection.tooltip.copy',
-      })}`,
+      name:
+        `${connection.name}_` +
+        formatMessage({
+          id: 'portal.connection.tooltip.copy',
+          defaultMessage: '复制',
+        }),
       copyFromSid: connection?.id,
     };
     modalStore.changeAddConnectionModal(true, {
@@ -66,6 +69,7 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
       title: formatMessage(
         {
           id: 'portal.connection.delete.modal.title',
+          defaultMessage: '是否确认删除 {name} ？',
         },
         {
           name: connection.name,
@@ -73,13 +77,16 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
       ),
       content: formatMessage({
         id: 'odc.src.page.Datasource.AfterDeletingYouWill',
+        defaultMessage: '删除后将无法访问该数据源',
       }),
       //'删除后将无法访问该数据源'
       okText: formatMessage({
         id: 'app.button.ok',
+        defaultMessage: '确定',
       }),
       cancelText: formatMessage({
         id: 'app.button.cancel',
+        defaultMessage: '取消',
       }),
       centered: true,
       icon: <QuestionCircleFilled />,
@@ -90,6 +97,7 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
           message.success(
             formatMessage({
               id: 'portal.connection.delete.success',
+              defaultMessage: '删除成功',
             }),
           );
         }
@@ -101,6 +109,7 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
       ? {
           label: formatMessage({
             id: 'odc.List.MoreBtn.Edit',
+            defaultMessage: '编辑',
           }),
           key: Actions.EDIT,
           icon: <EditOutlined />,
@@ -110,6 +119,7 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
       ? {
           label: formatMessage({
             id: 'odc.src.page.Datasource.Datasource.Content.List.MoreBtn.Clone',
+            defaultMessage: '克隆',
           }), //'克隆'
           key: Actions.CLONE,
           icon: <CopyOutlined />,
@@ -119,6 +129,7 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
       ? {
           label: formatMessage({
             id: 'odc.src.page.Datasource.Datasource.Content.List.MoreBtn.Delete',
+            defaultMessage: '删除',
           }),
           //'删除'
           key: Actions.REMOVE,
@@ -132,6 +143,7 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
       label:
         formatMessage({
           id: 'odc.List.MoreBtn.UpdatedOn',
+          defaultMessage: '更新于',
         }) + getFormatDateTime(connection?.updateTime),
       key: 'updateTime',
       disabled: true,
@@ -140,6 +152,7 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
       },
     },
   ];
+
   return (
     <Dropdown
       menu={{

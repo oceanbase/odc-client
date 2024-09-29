@@ -24,6 +24,8 @@
       .ant-tree-iconEle {
         color: var(--icon-color-disable);
         font-size: 14px;
+        width: auto;
+        min-width: 24px;
       }
       .ant-tree-node-content-wrapper {
         display: flex;
@@ -71,6 +73,19 @@
   :global {
     .ant-tree-switcher-noop {
       display: none;
+    }
+  }
+}
+
+.env {
+  position: absolute;
+  top: 0px;
+  right: 8px;
+  bottom: 0px;
+  align-items: center;
+  :global {
+    .ant-badge-status-dot {
+      border-radius: 0px;
     }
   }
 }

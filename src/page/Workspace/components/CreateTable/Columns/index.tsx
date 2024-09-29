@@ -62,6 +62,7 @@ const Columns: React.FC<IProps> = function ({}) {
   const gridColumns = useColumns({ session }, columns);
   const gridRef = useRef<DataGridRef>();
   const config = useTableConfig(session.connection.dialectType);
+  // const config = useTableConfig(session?.connection?.dialectType || 'OB_MYSQL');
   const [editColumns, setEditColumns] = useState(null);
   const displayColumns = editColumns || columns;
 
@@ -158,7 +159,7 @@ const Columns: React.FC<IProps> = function ({}) {
             >
               <Toolbar>
                 <Toolbar.Button
-                  text={formatMessage({ id: 'workspace.header.create' })}
+                  text={formatMessage({ id: 'workspace.header.create', defaultMessage: '新建' })}
                   icon={PlusOutlined}
                   onClick={() => {
                     if (editMode) {
@@ -171,7 +172,7 @@ const Columns: React.FC<IProps> = function ({}) {
 
                 <Toolbar.Button
                   text={
-                    formatMessage({ id: 'odc.CreateTable.Columns.Delete' }) //删除
+                    formatMessage({ id: 'odc.CreateTable.Columns.Delete', defaultMessage: '删除' }) //删除
                   }
                   icon={DeleteOutlined}
                   disabled={!selectedRowsIdx?.length}
@@ -192,6 +193,7 @@ const Columns: React.FC<IProps> = function ({}) {
                     icon={<SyncOutlined />}
                     text={formatMessage({
                       id: 'odc.components.ShowTableBaseInfoForm.Refresh',
+                      defaultMessage: '刷新',
                     })}
                     /* 刷新 */ onClick={pageContext.onRefresh}
                   />

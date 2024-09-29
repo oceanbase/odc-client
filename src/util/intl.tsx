@@ -56,17 +56,6 @@ export function getLocalImg(fileName) {
   return window.publicPath + `img/${local}/${fileName}`;
 }
 
-export function getLocalTemplate(fileName) {
-  let local: string = getEnvLocale();
-  local = local.toLowerCase();
-  const existLocal = ['en-us', 'zh-cn', 'zh-tw'];
-  if (!existLocal.includes(local)) {
-    local = defaultLocale;
-  }
-  //@ts-ignore
-  return window.publicPath + `template/${local}/${fileName}`;
-}
-
 export function getLocalDocs(hash?: string) {
   let local: string = getEnvLocale();
   local = local.toLowerCase();

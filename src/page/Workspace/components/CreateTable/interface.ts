@@ -20,6 +20,7 @@ import {
   TableConstraintDefer,
   TableForeignConstraintOnDeleteType,
   TableForeignConstraintOnUpdateType,
+  TablePermissionType,
 } from '@/d.ts/table';
 
 export enum TableTabType {
@@ -39,6 +40,7 @@ export interface ITableModel {
   uniqueConstraints: TableUniqueConstraint[];
   foreignConstraints: TableForeignConstraint[];
   checkConstraints: TableCheckConstraint[];
+  authorizedPermissionTypes?: TablePermissionType[];
 }
 export interface TableInfo {
   tableName: string;
@@ -51,7 +53,11 @@ export interface TableInfo {
   owner?: string;
   rowCount?: number;
   tableSize?: string;
+  authorizedPermissionTypes?: TablePermissionType[];
   columnGroups: ColumnStoreType[];
+  isLogicalTable?: boolean;
+  tableId?: number;
+  databaseId?: number;
 }
 
 export interface TableColumn {

@@ -1,22 +1,43 @@
-import { formatMessage } from '@/util/intl';
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { listDatabases } from '@/common/network/database';
 import {
-  existsTemplateName,
-  Template,
   detailTemplate,
   editTemplate,
+  existsTemplateName,
+  Template,
 } from '@/common/network/databaseChange';
-import { DBObjectSyncStatus, DatabasePermissionType, IDatabase } from '@/d.ts/database';
+import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
+import datasourceStatus from '@/store/datasourceStatus';
 import login from '@/store/login';
-import { DownOutlined, PlusOutlined, UpOutlined, DeleteOutlined } from '@ant-design/icons';
+import { formatMessage } from '@/util/intl';
+import { DeleteOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
-import { Form, message, Input, Timeline, Space, Divider, Button, Drawer } from 'antd';
-import { useState, useEffect } from 'react';
+import { Button, Divider, Drawer, Form, Input, message, Space, Timeline } from 'antd';
+import { observer } from 'mobx-react';
+import { useEffect, useMemo, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { checkDbExpiredByDataSourceStatus } from '../../CreateModal/DatabaseQueue';
 import { flatArray } from '../../CreateModal/helper';
 import InnerSelecter, { DatabaseOption } from '../../CreateModal/InnerSelecter';
 import styles from './index.less';
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { TaskType } from '@/d.ts';
 
 const EditTemplate: React.FC<{
   open: boolean;
@@ -24,11 +45,12 @@ const EditTemplate: React.FC<{
   templateId: number;
   onSuccess?: () => Promise<void>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ open, projectId, templateId, setOpen, onSuccess }) => {
+}> = observer(({ open, projectId, templateId, setOpen, onSuccess }) => {
   const [form] = Form.useForm();
+  const statusMap = datasourceStatus.statusMap;
   const orderedDatabaseIds = Form.useWatch<number[][]>(['orders'], form);
   const [currentTemplate, setCurrentTemplate] = useState<Template>();
-  const [databaseOptions, setDatabaseOptions] = useState<DatabaseOption[]>([]);
+  const [_databaseOptions, setDatabaseOptions] = useState<DatabaseOption[]>([]);
   const {
     data,
     run,
@@ -48,18 +70,48 @@ const EditTemplate: React.FC<{
       true,
       true,
     );
-    setDatabaseOptions(
-      databaseList?.contents?.map((item) => ({
-        label: item?.name,
-        value: item?.id,
-        environment: item?.environment,
-        dataSource: item?.dataSource,
-        existed: item?.existed,
-        unauthorized: !item?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE),
-        expired: item?.objectSyncStatus === DBObjectSyncStatus.FAILED,
-      })),
-    );
+    if (databaseList?.contents?.length) {
+      datasourceStatus.asyncUpdateStatus([
+        ...new Set(
+          databaseList?.contents
+            ?.filter((item) => item.type !== 'LOGICAL')
+            ?.map((item) => item?.dataSource?.id),
+        ),
+      ]);
+      setDatabaseOptions(
+        databaseList?.contents
+          ?.filter((i) => {
+            const config = getDataSourceModeConfig(i?.dataSource?.type);
+            return config?.features?.task?.includes(TaskType.MULTIPLE_ASYNC);
+          })
+          ?.map((item) => {
+            const statusInfo = datasourceStatus.statusMap.get(item?.dataSource?.id);
+            return {
+              label: item?.name,
+              value: item?.id,
+              environment: item?.environment,
+              dataSource: item?.dataSource,
+              existed: item?.existed,
+              unauthorized: !item?.authorizedPermissionTypes?.includes(
+                DatabasePermissionType.CHANGE,
+              ),
+              expired: checkDbExpiredByDataSourceStatus(statusInfo?.status),
+              connectType: item?.connectType,
+            };
+          }),
+      );
+    }
   };
+
+  const databaseOptions = useMemo(() => {
+    return _databaseOptions?.map((item) => {
+      return {
+        ...item,
+        expired: checkDbExpiredByDataSourceStatus(statusMap.get(item?.dataSource?.id)?.status),
+      };
+    });
+  }, [statusMap, _databaseOptions]);
+
   const initTemplate = async (templateId: number) => {
     const response = await detailTemplate(templateId, login?.organizationId?.toString());
     setCurrentTemplate(response);
@@ -267,7 +319,7 @@ const EditTemplate: React.FC<{
                                     {formatMessage(
                                       {
                                         id: 'src.component.Task.MutipleAsyncTask.components.Template.0A55C56F',
-                                        defaultMessage: '执行节点${index + 1}',
+                                        defaultMessage: '执行节点{ BinaryExpression0 }',
                                       },
                                       { BinaryExpression0: index + 1 },
                                     )}
@@ -295,7 +347,7 @@ const EditTemplate: React.FC<{
                                     <PlusOutlined onClick={() => innerAdd(undefined)} />
                                     <UpOutlined
                                       style={{
-                                        color: index === 0 ? 'var(--mask-color)' : null,
+                                        color: index === 0 ? 'var(--icon-color-disable)' : null,
                                         cursor: index === 0 ? 'not-allowed' : null,
                                       }}
                                       onClick={async () => {
@@ -317,7 +369,9 @@ const EditTemplate: React.FC<{
                                     <DownOutlined
                                       style={{
                                         color:
-                                          index === fields?.length - 1 ? 'var(--mask-color)' : null,
+                                          index === fields?.length - 1
+                                            ? 'var(--icon-color-disable)'
+                                            : null,
                                         cursor: index === fields?.length - 1 ? 'not-allowed' : null,
                                       }}
                                       onClick={async () => {
@@ -382,5 +436,5 @@ const EditTemplate: React.FC<{
       </Form>
     </Drawer>
   );
-};
+});
 export default EditTemplate;

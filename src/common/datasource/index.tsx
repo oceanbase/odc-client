@@ -22,14 +22,18 @@ import obMySQL from './oceanbase/obmysql';
 import oracle from './oracle';
 import MySQL from './mysql';
 import Doris from './doris';
+import PG from './pg';
 import { ReactComponent as OBSvg } from '@/svgr/source_ob.svg';
 import { ReactComponent as DBOBSvg } from '@/svgr/database_oceanbase.svg';
 import { ReactComponent as MySQLSvg } from '@/svgr/mysql.svg';
 import { ReactComponent as DBMySQLSvg } from '@/svgr/database_mysql.svg';
 import { ReactComponent as DorisSvg } from '@/svgr/doris.svg';
+import { ReactComponent as PGSvg } from '@/svgr/pg.svg';
 import { ReactComponent as DBDorisSvg } from '@/svgr/database_doris.svg';
 import { ReactComponent as OracleSvg } from '@/svgr/oracle.svg';
 import { ReactComponent as DBOracleSvg } from '@/svgr/database_oracle.svg';
+import { DBType, BooleanOptionType } from '@/d.ts/database';
+import { ReactComponent as DBPGSvg } from '@/svgr/database_pg.svg';
 
 const _types: Map<
   IDataSourceType,
@@ -78,6 +82,15 @@ const _styles = {
       component: DBOracleSvg,
     },
   },
+  [IDataSourceType.PG]: {
+    icon: {
+      component: PGSvg,
+      color: '#000000',
+    },
+    dbIcon: {
+      component: DBPGSvg,
+    },
+  },
 };
 
 const connectType2Ds: Map<ConnectType, IDataSourceType> = new Map();
@@ -121,6 +134,7 @@ register(IDataSourceType.OceanBase, obMySQL);
 register(IDataSourceType.MySQL, MySQL);
 register(IDataSourceType.Doris, Doris);
 register(IDataSourceType.Oracle, oracle);
+register(IDataSourceType.PG, PG);
 
 function getAllConnectTypes(ds?: IDataSourceType): ConnectType[] {
   if (!ds) {
@@ -129,6 +143,29 @@ function getAllConnectTypes(ds?: IDataSourceType): ConnectType[] {
     }, []);
   }
   return _types.get(ds)?.connectTypes;
+}
+
+function getBooleanOptionsType(): string[] {
+  return Object.entries(BooleanOptionType)?.reduce((prev, [key, value]) => {
+    return prev.concat(BooleanOptionType?.[key]);
+  }, []);
+}
+
+function getIsDBAvailableInDataSourceTypes(): string[] {
+  console.log(getBooleanOptionsType());
+  return getBooleanOptionsType();
+}
+
+function getIsDBBelongsToProjectsInDataSourceTypes(): string[] {
+  return getBooleanOptionsType();
+}
+
+function getAllDBTypes(dbType?: DBType): DBType[] {
+  if (!dbType) {
+    return Object.entries(DBType)?.reduce((prev, [key, value]) => {
+      return prev.concat(DBType?.[key]);
+    }, []);
+  }
 }
 
 function getDataSourceModeConfig(connectType: ConnectType) {
@@ -167,4 +204,7 @@ export {
   getDataSourceStyleByConnectType,
   getDefaultConnectType,
   getDsByConnectType,
+  getAllDBTypes,
+  getIsDBAvailableInDataSourceTypes,
+  getIsDBBelongsToProjectsInDataSourceTypes,
 };

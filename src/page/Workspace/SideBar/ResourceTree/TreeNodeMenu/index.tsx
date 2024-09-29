@@ -29,12 +29,20 @@ import { IMenuItemConfig, IProps } from './type';
 import { EnvColorMap } from '@/constant';
 import classNames from 'classnames';
 import { ReactNode } from 'react';
+import { menuAccessWrap } from './config/database';
 
 export const hasExportPermission = (dbSession: SessionStore) => {
   return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
 };
 export const hasChangePermission = (dbSession: SessionStore) => {
   return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
+};
+export const hasTableExportPermission = (dbSession: SessionStore, node: TreeDataNode) => {
+  return node?.data?.info?.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
+};
+
+export const hasTableChangePermission = (dbSession: SessionStore, node: TreeDataNode) => {
+  return node?.data?.info?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
 };
 
 const TreeNodeMenu = (props: IProps) => {
@@ -136,7 +144,11 @@ const TreeNodeMenu = (props: IProps) => {
               return {
                 key: child.key,
                 className: styles.ellipsis,
-                label: child.text,
+                label: menuAccessWrap(
+                  child?.needAccessTypeList,
+                  node?.data?.authorizedPermissionTypes,
+                  child.text as ReactNode,
+                ),
               };
             })
             ?.filter(Boolean),
@@ -152,7 +164,7 @@ const TreeNodeMenu = (props: IProps) => {
         };
       }
       menuItems.push(menuItem);
-      if (item.hasDivider) {
+      if (typeof item.hasDivider === 'function' ? item.hasDivider(node) : item.hasDivider) {
         menuItems.push({
           type: 'divider',
         });
@@ -230,9 +242,6 @@ const TreeNodeMenu = (props: IProps) => {
     <>
       <Dropdown
         menu={{
-          style: {
-            width: '160px',
-          },
           items: allItemsProp,
           onClick: (info) => {
             info?.domEvent?.stopPropagation();

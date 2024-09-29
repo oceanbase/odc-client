@@ -52,7 +52,13 @@ import { ReactComponent as SetSvg } from '@/svgr/Set.svg'; // 集合类型 icon
 import { ReactComponent as timeSvg } from '@/svgr/Field-time.svg'; // 同步 OCP 等保三密码强度要求
 
 export const PASSWORD_REGEX =
-  /^(?=(.*[a-z]){2,})(?=(.*[A-Z]){2,})(?=(.*\d){2,})(?=(.*[ !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]){2,})[A-Za-z\d !"#\$%&'\(\)\*\+,-\./:;<=>\?@\[\\\]\^_`\{\|\}~]{8,32}$/; // 工作区头部高度
+  /^(?:(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])|(?=.*[0-9])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[0-9])(?=.*[a-z])(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*[a-z])(?=.*[^A-Za-z0-9]))[A-Za-z0-9!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]{8,32}$/;
+
+export const PASSWORD_VALIDATE_MESSAGE = formatMessage({
+  id: 'src.constant.59F82FE0',
+  defaultMessage:
+    '密码为长度 8~32 位, 包含以下四种类型字符至少三种及以上：数字（0~9）、大写字母（A~Z）、小写字母(a~z)、特殊符号：全部的英文特殊字符',
+});
 
 export const SPACE_REGEX = /^[^\s]+$/;
 
@@ -97,14 +103,16 @@ export const localeList = [
     value: 'en-US',
   },
   {
-    label: formatMessage({ id: 'odc.src.constant.SimplifiedChinese' }), //简体中文
+    label: formatMessage({ id: 'odc.src.constant.SimplifiedChinese', defaultMessage: '简体中文' }), //简体中文
     value: 'zh-CN',
   },
   {
-    label: formatMessage({ id: 'odc.src.constant.TraditionalChinese' }), //繁体中文
+    label: formatMessage({ id: 'odc.src.constant.TraditionalChinese', defaultMessage: '繁体中文' }), //繁体中文
     value: 'zh-TW',
   },
-]; // 连接目前支持的颜色集
+];
+
+// 连接目前支持的颜色集
 
 // 管控台-角色管理-系统权限入口
 export const EnableRoleSystemPermission = true;
@@ -204,3 +212,8 @@ export const EnvColorMap: Record<
     borderColor: 'var(--odc-color5-color)',
   },
 };
+
+export enum PartitionBound {
+  PARTITION_UPPER_BOUND = 'PARTITION_UPPER_BOUND',
+  PARTITION_LOWER_BOUND = 'PARTITION_LOWER_BOUND',
+}

@@ -64,6 +64,7 @@ function generateConnectionParams(formData: Partial<IConnectionFormData>, isHide
     jdbcUrlParameters: formData.jdbcUrlParameters || {},
     temp: isHiden,
     sessionInitScript: formData.sessionInitScript,
+    catalogName: formData?.catalogName,
   };
   const config = getDataSourceModeConfig(formData.type)?.connection;
   config?.address?.items?.forEach((item) => {
@@ -403,10 +404,14 @@ export async function syncDatasource(dsId: number): Promise<boolean> {
 export async function getDataSourceManageDatabase(
   datasourceId: number,
   name?: string,
+  existed?: boolean,
+  belongsToProject?: boolean,
 ): Promise<IResponseData<IDatabase>> {
   const res = await request.get(`/api/v2/datasource/datasources/${datasourceId}/databases`, {
     params: {
       name,
+      existed,
+      belongsToProject,
     },
   });
   return res?.data;

@@ -63,6 +63,7 @@ class Item extends PureComponent<IProps> {
                   onChange={this.handleSetColumnName}
                   placeholder={formatMessage({
                     id: 'odc.component.ColumnSelector.Item.CustomFields',
+                    defaultMessage: '自定义字段',
                   })} /* 自定义字段 */
                 />
               )}
@@ -91,6 +92,7 @@ class Item extends PureComponent<IProps> {
                 onChange={this.handleChangeAliasName}
                 placeholder={formatMessage({
                   id: 'odc.component.ColumnSelector.Item.Alias',
+                  defaultMessage: '别名',
                 })} /* 别名 */
               />
             </Space>

@@ -24,18 +24,21 @@ export const operationOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormAutoAuthModal.conditionSelect.Include',
+      defaultMessage: '包含',
     }), //包含
     value: 'contains',
   },
   {
     label: formatMessage({
       id: 'odc.components.FormAutoAuthModal.conditionSelect.Match',
+      defaultMessage: '匹配',
     }), //匹配
     value: 'matches',
   },
   {
     label: formatMessage({
       id: 'odc.components.FormAutoAuthModal.conditionSelect.Equal',
+      defaultMessage: '等于',
     }), //等于
     value: 'equals',
   },
@@ -107,6 +110,7 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                       required: isRequired,
                       message: formatMessage({
                         id: 'odc.components.FormAutoAuthModal.conditionSelect.PleaseSelect',
+                        defaultMessage: '请选择',
                       }), //请选择
                     },
                   ]}
@@ -122,6 +126,7 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                       required: isRequired,
                       message: formatMessage({
                         id: 'odc.components.FormAutoAuthModal.conditionSelect.PleaseEnter',
+                        defaultMessage: '请输入',
                       }), //请输入
                     },
                   ]}
@@ -132,6 +137,7 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                     <Input
                       placeholder={formatMessage({
                         id: 'odc.components.FormAutoAuthModal.conditionSelect.EnterAnIndexKeySuch',
+                        defaultMessage: '请输入索引键，如 dept[0].deptname',
                       })} /*请输入索引键，如 dept[0].deptname*/
                     />
                   )}
@@ -145,6 +151,7 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                       required: isRequired,
                       message: formatMessage({
                         id: 'odc.components.FormAutoAuthModal.conditionSelect.PleaseSelect',
+                        defaultMessage: '请选择',
                       }), //请选择
                     },
                   ]}
@@ -160,6 +167,7 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                       required: isRequired,
                       message: formatMessage({
                         id: 'odc.components.FormAutoAuthModal.conditionSelect.PleaseEnter',
+                        defaultMessage: '请输入',
                       }), //请输入
                     },
                   ]}
@@ -167,6 +175,7 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                   <Input
                     placeholder={formatMessage({
                       id: 'odc.components.FormAutoAuthModal.conditionSelect.EnterAValue',
+                      defaultMessage: '请输入值',
                     })} /*请输入值*/
                   />
                 </Form.Item>
@@ -195,6 +204,7 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.components.FormAutoAuthModal.conditionSelect.Add',
+                    defaultMessage: '添加',
                   }) /*添加*/
                 }
               </Button>

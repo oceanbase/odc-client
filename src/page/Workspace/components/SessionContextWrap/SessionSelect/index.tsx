@@ -23,26 +23,30 @@ import Icon, { AimOutlined, DownOutlined, LoadingOutlined } from '@ant-design/ic
 import { Divider, Popover, Space, Spin } from 'antd';
 import styles from './index.less';
 
-import { ConnectionMode } from '@/d.ts';
-import classNames from 'classnames';
-import tracert from '@/util/tracert';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
-import SessionDropdown from './SessionDropdown';
+import { IDataSourceModeConfig } from '@/common/datasource/interface';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { EnvColorMap } from '@/constant';
-import login from '@/store/login';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import ActivityBarContext from '@/page/Workspace/context/ActivityBarContext';
+import { ConnectionMode } from '@/d.ts';
 import { ActivityBarItemType } from '@/page/Workspace/ActivityBar/type';
-import { IDataSourceModeConfig } from '@/common/datasource/interface';
+import ActivityBarContext from '@/page/Workspace/context/ActivityBarContext';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import login from '@/store/login';
+import tracert from '@/util/tracert';
+import classNames from 'classnames';
+import SessionDropdown from './SessionDropdown';
 
 export default function SessionSelect({
   readonly,
   feature,
+  supportLocation,
+  isIncludeLogicalDb = true,
 }: {
   readonly?: boolean;
   dialectTypes?: ConnectionMode[];
   feature?: keyof IDataSourceModeConfig['features'];
+  supportLocation?: boolean;
+  isIncludeLogicalDb?: boolean;
 }) {
   const context = useContext(SessionContext);
   const resourceTreeContext = useContext(ResourceTreeContext);
@@ -52,7 +56,7 @@ export default function SessionSelect({
   }, []);
 
   function focusDataBase(e: React.MouseEvent) {
-    const datasourceId = context?.session?.odcDatabase?.dataSource?.id;
+    const datasourceId = context?.session?.odcDatabase?.dataSource?.id || context?.datasourceId;
     const databaseId = context?.session?.odcDatabase?.id;
     activityContext.setActiveKey(ActivityBarItemType.Database);
     resourceTreeContext.setSelectDatasourceId(datasourceId);
@@ -107,6 +111,7 @@ export default function SessionSelect({
         )}
       </Popover>
     );
+
     const aimItem = <AimOutlined className={styles.aim} onClick={focusDataBase} />;
     const datasourceAndProjectItem = !fromDataSource ? (
       <Space
@@ -118,17 +123,20 @@ export default function SessionSelect({
           <span>
             {formatMessage({
               id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.38EA55F4' /*项目：*/,
+              defaultMessage: '项目：',
             })}
             {context?.session?.odcDatabase?.project?.name}
           </span>
         )}
-
-        <span>
-          {formatMessage({
-            id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.CD007EC1' /*数据源：*/,
-          })}
-          {context?.session?.odcDatabase?.dataSource?.name}
-        </span>
+        {context?.session?.odcDatabase?.dataSource?.name && (
+          <span>
+            {formatMessage({
+              id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.CD007EC1' /*数据源：*/,
+              defaultMessage: '数据源：',
+            })}
+            {context?.session?.odcDatabase?.dataSource?.name}
+          </span>
+        )}
       </Space>
     ) : null;
 
@@ -138,6 +146,7 @@ export default function SessionSelect({
           {renderEnv()}
           <div className={classNames(styles.readonly)}>
             {databaseItem}
+            {supportLocation && <>{aimItem}</>}
             {datasourceAndProjectItem}
           </div>
         </>
@@ -146,7 +155,7 @@ export default function SessionSelect({
     return (
       <div className={styles.content}>
         {renderEnv()}
-        <SessionDropdown filters={{ feature }}>
+        <SessionDropdown filters={{ feature, isIncludeLogicalDb }}>
           <div>{databaseItem}</div>
         </SessionDropdown>
         <div>{aimItem}</div>
@@ -170,6 +179,7 @@ export default function SessionSelect({
               {
                 formatMessage({
                   id: 'odc.SessionContextWrap.SessionSelect.SelectADatabase',
+                  defaultMessage: '请选择数据库',
                 }) /*请选择数据库*/
               }
             </a>

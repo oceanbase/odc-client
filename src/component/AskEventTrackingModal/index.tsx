@@ -32,22 +32,64 @@ interface IProps {
 }
 const popoverContent: React.FC = () => {
   const listData: string[] = [
-    formatMessage({ id: 'odc.component.AskEventTrackingModal.Login' }), //登录
-    formatMessage({ id: 'odc.component.AskEventTrackingModal.ThirdPartyJumpPage' }), //第三方跳转页面
-    formatMessage({ id: 'odc.component.AskEventTrackingModal.ApplicationPassword' }), //应用密码
-    formatMessage({ id: 'odc.component.AskEventTrackingModal.ConnectionList' }), //连接列表
-    formatMessage({ id: 'odc.component.AskEventTrackingModal.Workbench' }), //工作台
-    formatMessage({ id: 'odc.component.AskEventTrackingModal.ControlDesk' }), //管控台
-    formatMessage({ id: 'odc.component.AskEventTrackingModal.Error' }), //404报错
-    formatMessage({ id: 'odc.component.AskEventTrackingModal.Error.1' }), //403报错
-    formatMessage({ id: 'odc.component.AskEventTrackingModal.SqlWindow' }), //SQL窗口
-    formatMessage({ id: 'odc.component.AskEventTrackingModal.SessionManagement' }), //会话管理
-    formatMessage({ id: 'odc.component.AskEventTrackingModal.TableDetails' }), //表详情
-    formatMessage({ id: 'odc.component.AskEventTrackingModal.RecycleBin' }), //回收站
-    formatMessage({ id: 'odc.component.AskEventTrackingModal.TutorialWindow' }), //教程窗口
-    formatMessage({ id: 'odc.component.AskEventTrackingModal.TutorialList' }), //教程列表
-    formatMessage({ id: 'odc.component.AskEventTrackingModal.CreateSimulationData' }), //创建模拟数据
-    formatMessage({ id: 'odc.component.AskEventTrackingModal.TaskCenter' }), //任务中心
+    formatMessage({ id: 'odc.component.AskEventTrackingModal.Login', defaultMessage: '登录' }), //登录
+    formatMessage({
+      id: 'odc.component.AskEventTrackingModal.ThirdPartyJumpPage',
+      defaultMessage: '第三方跳转页面',
+    }), //第三方跳转页面
+    formatMessage({
+      id: 'odc.component.AskEventTrackingModal.ApplicationPassword',
+      defaultMessage: '应用密码',
+    }), //应用密码
+    formatMessage({
+      id: 'odc.component.AskEventTrackingModal.ConnectionList',
+      defaultMessage: '连接列表',
+    }), //连接列表
+    formatMessage({
+      id: 'odc.component.AskEventTrackingModal.Workbench',
+      defaultMessage: '工作台',
+    }), //工作台
+    formatMessage({
+      id: 'odc.component.AskEventTrackingModal.ControlDesk',
+      defaultMessage: '管控台',
+    }), //管控台
+    formatMessage({ id: 'odc.component.AskEventTrackingModal.Error', defaultMessage: '404 报错' }), //404报错
+    formatMessage({
+      id: 'odc.component.AskEventTrackingModal.Error.1',
+      defaultMessage: '403 报错',
+    }), //403报错
+    formatMessage({
+      id: 'odc.component.AskEventTrackingModal.SqlWindow',
+      defaultMessage: 'SQL 窗口',
+    }), //SQL窗口
+    formatMessage({
+      id: 'odc.component.AskEventTrackingModal.SessionManagement',
+      defaultMessage: '会话管理',
+    }), //会话管理
+    formatMessage({
+      id: 'odc.component.AskEventTrackingModal.TableDetails',
+      defaultMessage: '表详情',
+    }), //表详情
+    formatMessage({
+      id: 'odc.component.AskEventTrackingModal.RecycleBin',
+      defaultMessage: '回收站',
+    }), //回收站
+    formatMessage({
+      id: 'odc.component.AskEventTrackingModal.TutorialWindow',
+      defaultMessage: '教程窗口',
+    }), //教程窗口
+    formatMessage({
+      id: 'odc.component.AskEventTrackingModal.TutorialList',
+      defaultMessage: '教程列表',
+    }), //教程列表
+    formatMessage({
+      id: 'odc.component.AskEventTrackingModal.CreateSimulationData',
+      defaultMessage: '创建模拟数据',
+    }), //创建模拟数据
+    formatMessage({
+      id: 'odc.component.AskEventTrackingModal.TaskCenter',
+      defaultMessage: '任务中心',
+    }), //任务中心
   ];
 
   return (
@@ -56,6 +98,7 @@ const popoverContent: React.FC = () => {
         {
           formatMessage({
             id: 'odc.component.AskEventTrackingModal.OdcDoesNotCollectPersonal',
+            defaultMessage: 'ODC 不会收集用户的个人信息，仅采集以下页面的使用频率：',
           }) /*ODC不会收集用户的个人信息，仅采集以下页面的使用频率：*/
         }
       </p>
@@ -97,10 +140,13 @@ const AskeventTrackingPermissionModal: React.FC<IProps> = (props: IProps) => {
       open={visible}
       onOk={save}
       okText={
-        formatMessage({ id: 'odc.component.AskEventTrackingModal.Agree' }) //同意
+        formatMessage({ id: 'odc.component.AskEventTrackingModal.Agree', defaultMessage: '同意' }) //同意
       }
       cancelText={
-        formatMessage({ id: 'odc.component.AskEventTrackingModal.Disagree' }) //不同意
+        formatMessage({
+          id: 'odc.component.AskEventTrackingModal.Disagree',
+          defaultMessage: '不同意',
+        }) //不同意
       }
       onCancel={cancel}
     >
@@ -109,6 +155,8 @@ const AskeventTrackingPermissionModal: React.FC<IProps> = (props: IProps) => {
           {
             formatMessage({
               id: 'odc.component.AskEventTrackingModal.InOrderToImproveAnd',
+              defaultMessage:
+                '为了改进和开发我们的产品，以便给您提供更好的服务，ODC 在运行过程中会收集部分模块的使用频次信息。',
             }) /*为了改进和开发我们的产品，以便给您提供更好的服务，ODC在运行过程中会收集部分模块的使用频次信息。*/
           }
         </p>
@@ -125,6 +173,7 @@ const AskeventTrackingPermissionModal: React.FC<IProps> = (props: IProps) => {
             {
               formatMessage({
                 id: 'odc.component.AskEventTrackingModal.InformationCollectionList',
+                defaultMessage: '信息采集列表',
               }) /*信息采集列表*/
             }
           </Button>

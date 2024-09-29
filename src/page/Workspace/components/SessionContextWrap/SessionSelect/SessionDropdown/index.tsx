@@ -13,34 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { formatMessage } from '@/util/intl';
-import { Badge, Input, Popover, Select, Space, Spin, Tooltip, Tree } from 'antd';
-import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import styles from './index.less';
-import Icon, { SearchOutlined } from '@ant-design/icons';
-import tracert from '@/util/tracert';
-import { ConnectionMode, TaskType } from '@/d.ts';
-import SessionContext from '../../context';
-import { useRequest } from 'ahooks';
-import { listDatabases } from '@/common/network/database';
-import login from '@/store/login';
-import { DataNode } from 'antd/lib/tree';
 import { getDataSourceModeConfig } from '@/common/datasource';
-import { ReactComponent as PjSvg } from '@/svgr/project_space.svg';
-import { IDatabase } from '@/d.ts/database';
-import { toInteger } from 'lodash';
-import { useParams } from '@umijs/max';
-import { EnvColorMap } from '@/constant';
-import ConnectionPopover from '@/component/ConnectionPopover';
-import { IProject } from '@/d.ts/project';
-import { IDatasource } from '@/d.ts/datasource';
-import { hasPermission, TaskTypeMap } from '@/component/Task/helper';
-import { inject, observer } from 'mobx-react';
-import { DataSourceStatusStore } from '@/store/datasourceStatus';
-import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
-import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
-import { DEFALT_HEIGHT, DEFALT_WIDTH } from '../const';
 import { IDataSourceModeConfig } from '@/common/datasource/interface';
+import { listDatabases } from '@/common/network/database';
+import ConnectionPopover from '@/component/ConnectionPopover';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
+import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
+import { hasPermission, TaskTypeMap } from '@/component/Task/helper';
+import { EnvColorMap } from '@/constant';
+import { ConnectionMode, TaskType } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
+import { IDatasource } from '@/d.ts/datasource';
+import { IProject } from '@/d.ts/project';
+import { DataSourceStatusStore } from '@/store/datasourceStatus';
+import login from '@/store/login';
+import { ReactComponent as PjSvg } from '@/svgr/project_space.svg';
+import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
+import Icon, { SearchOutlined } from '@ant-design/icons';
+import { useParams } from '@umijs/max';
+import { useRequest } from 'ahooks';
+import { Badge, Input, Popover, Select, Space, Spin, Tooltip, Tree } from 'antd';
+import { DataNode } from 'antd/lib/tree';
+import { toInteger } from 'lodash';
+import { inject, observer } from 'mobx-react';
+import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import SessionContext from '../../context';
+import { DEFALT_HEIGHT, DEFALT_WIDTH } from '../const';
+import styles from './index.less';
 
 interface IDatabasesTitleProps {
   db: IDatabase;
@@ -60,8 +60,9 @@ const DatabasesTitle: React.FC<IDatabasesTitleProps> = (props) => {
             formatMessage(
               {
                 id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DC4CF38C',
+                defaultMessage: '暂无{task}权限，请先申请库权限',
               },
-              { task: task },
+              { task },
             ) /*`暂无${task}权限，请先申请库权限`*/
           }
         >
@@ -71,7 +72,7 @@ const DatabasesTitle: React.FC<IDatabasesTitleProps> = (props) => {
         <Popover
           showArrow={false}
           placement={'right'}
-          content={<ConnectionPopover connection={db?.dataSource} />}
+          content={<ConnectionPopover connection={db?.dataSource} database={db} />}
         >
           <div className={styles.textoverflow}>{db.name}</div>
         </Popover>
@@ -86,6 +87,7 @@ export interface ISessionDropdownFiltersProps {
   dialectTypes?: ConnectionMode[];
   dataSourceId?: number;
   feature?: keyof IDataSourceModeConfig['features'];
+  isIncludeLogicalDb?: boolean;
 }
 interface IProps {
   dialectTypes?: ConnectionMode[];
@@ -105,6 +107,7 @@ const SessionDropdown: React.FC<IProps> = function ({
   dataSourceStatusStore,
 }) {
   const context = useContext(SessionContext);
+  const { from, setFrom } = context;
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const treeRef = useRef(null);
@@ -112,13 +115,13 @@ const SessionDropdown: React.FC<IProps> = function ({
     datasourceId: string;
   }>();
   const [searchValue, setSearchValue] = useState<string>('');
-  const [from, setFrom] = useState<'project' | 'datasource'>('project');
   const [expandedKeys, setExpandedKeys] = useState<Key[]>([]);
 
   const hasDialectTypesFilter =
     filters?.dialectTypes && Array.isArray(filters?.dialectTypes) && filters?.dialectTypes?.length;
   const hasProjectIdFilter = !!filters?.projectId;
   const hasFeature = !!filters?.feature;
+  const isIncludeLogicalDb = !!filters?.isIncludeLogicalDb;
   const {
     data,
     run,
@@ -147,11 +150,24 @@ const SessionDropdown: React.FC<IProps> = function ({
     const allProjects: IProject[] = [],
       allDatasources: IDatasource[] = [];
     data?.contents?.forEach((db) => {
-      const { project, dataSource } = db;
-      // 插入项目ID用于下方筛选
-      dataSource.projectId = project?.id;
+      let { project, dataSource } = db;
+      if (!context?.isLogicalDatabase && db.type === 'LOGICAL' && !isIncludeLogicalDb) {
+        return;
+      }
+      if (
+        context?.isLogicalDatabase
+          ? db.type !== 'LOGICAL'
+          : db.type !== 'PHYSICAL' && !isIncludeLogicalDb
+      ) {
+        return;
+      }
+      if (dataSource) {
+        // 插入项目ID用于下方筛选
+        dataSource.projectId = project?.id;
+      }
       const support =
         !taskType ||
+        db.type === 'LOGICAL' ||
         getDataSourceModeConfig(db.dataSource?.type)?.features?.task?.includes(taskType);
       if (!support) {
         return;
@@ -172,7 +188,9 @@ const SessionDropdown: React.FC<IProps> = function ({
           datasource: dataSource,
           databases: [],
         };
-        datasourceDatabases.databases.push(db);
+        if (db.type === 'PHYSICAL') {
+          datasourceDatabases.databases.push(db);
+        }
         if (!datasources.has(dataSource?.id)) {
           allDatasources.push(dataSource);
         }
@@ -203,8 +221,13 @@ const SessionDropdown: React.FC<IProps> = function ({
   useEffect(() => {
     const databaseId = context?.databaseId;
     const db = data?.contents.find((db) => db.id === databaseId);
-    if (db) {
-      setExpandedKeys([db.dataSource.id]);
+    if (db && db?.dataSource && from === 'datasource') {
+      setExpandedKeys([db?.dataSource.id]);
+      setTimeout(() => {
+        treeRef?.current?.scrollTo({ key: `db:${databaseId}` });
+      }, 500);
+    } else {
+      setExpandedKeys([db?.project?.id]);
       setTimeout(() => {
         treeRef?.current?.scrollTo({ key: `db:${databaseId}` });
       }, 500);
@@ -450,7 +473,7 @@ const SessionDropdown: React.FC<IProps> = function ({
         <Spin spinning={loading || fetchLoading}>
           <div className={styles.main} style={{ width: '100%' }}>
             <Space.Compact block>
-              {context?.datasourceMode || login.isPrivateSpace() ? null : (
+              {context?.datasourceMode || context?.projectMode || login.isPrivateSpace() ? null : (
                 <Select
                   onChange={(v) => setFrom(v)}
                   value={from}
@@ -462,12 +485,14 @@ const SessionDropdown: React.FC<IProps> = function ({
                     {
                       label: formatMessage({
                         id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.Project',
+                        defaultMessage: '按项目',
                       }), //'按项目'
                       value: 'project',
                     },
                     {
                       label: formatMessage({
                         id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DataSource',
+                        defaultMessage: '按数据源',
                       }), //'按数据源'
                       value: 'datasource',
                     },
@@ -482,11 +507,15 @@ const SessionDropdown: React.FC<IProps> = function ({
                 placeholder={
                   formatMessage({
                     id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.SearchForTheKeyword',
+                    defaultMessage: '搜索关键字',
                   }) /* 搜索关键字 */
                 }
                 onChange={(v) => setSearchValue(v.target.value)}
                 style={{
-                  width: context?.datasourceMode || login.isPrivateSpace() ? '100%' : '65%',
+                  width:
+                    context?.datasourceMode || context?.projectMode || login.isPrivateSpace()
+                      ? '100%'
+                      : '65%',
                 }}
               />
             </Space.Compact>

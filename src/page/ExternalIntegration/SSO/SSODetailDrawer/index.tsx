@@ -115,6 +115,7 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
               label={
                 formatMessage({
                   id: 'src.page.ExternalIntegration.SSO.SSODetailDrawer.F86DB093',
+                  defaultMessage: '用户 DN',
                 }) /*"用户 DN"*/
               }
             >
@@ -147,12 +148,15 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
   return (
     <Drawer
       width={520}
-      title={formatMessage({ id: 'src.page.ExternalIntegration.SSO.SSODetailDrawer.EBD42949' })}
+      title={formatMessage({
+        id: 'src.page.ExternalIntegration.SSO.SSODetailDrawer.EBD42949',
+        defaultMessage: '查看登录集成配置',
+      })}
       open={visible}
       onClose={() => close()}
       footer={
         <Button style={{ float: 'right' }} onClick={() => close()}>
-          {formatMessage({ id: 'odc.SSO.SSODetailDrawer.Close' }) /*关闭*/}
+          {formatMessage({ id: 'odc.SSO.SSODetailDrawer.Close', defaultMessage: '关闭' }) /*关闭*/}
         </Button>
       }
     >
@@ -160,26 +164,36 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
         <Space direction="vertical">
           <Descriptions
             column={1}
-            title={formatMessage({ id: 'odc.SSO.SSODetailDrawer.BasicInformation' })} /*基本信息*/
+            title={formatMessage({
+              id: 'odc.SSO.SSODetailDrawer.BasicInformation',
+              defaultMessage: '基本信息',
+            })} /*基本信息*/
           >
             <Descriptions.Item
               label={formatMessage({
                 id: 'odc.SSO.SSODetailDrawer.ConfigurationName',
+                defaultMessage: '配置名称',
               })} /*配置名称*/
             >
               {data?.name}
             </Descriptions.Item>
             <Descriptions.Item
-              label={formatMessage({ id: 'odc.SSO.SSODetailDrawer.Status' })} /*状态*/
+              label={formatMessage({
+                id: 'odc.SSO.SSODetailDrawer.Status',
+                defaultMessage: '状态',
+              })} /*状态*/
             >
               {
                 data?.enabled
-                  ? formatMessage({ id: 'odc.SSO.SSODetailDrawer.Start' }) //启动
-                  : formatMessage({ id: 'odc.SSO.SSODetailDrawer.Close' }) //关闭
+                  ? formatMessage({ id: 'odc.SSO.SSODetailDrawer.Start', defaultMessage: '启动' }) //启动
+                  : formatMessage({ id: 'odc.SSO.SSODetailDrawer.Close', defaultMessage: '关闭' }) //关闭
               }
             </Descriptions.Item>
             <Descriptions.Item
-              label={formatMessage({ id: 'odc.SSO.SSODetailDrawer.Type' })} /*类型*/
+              label={formatMessage({
+                id: 'odc.SSO.SSODetailDrawer.Type',
+                defaultMessage: '类型',
+              })} /*类型*/
             >
               {configJson?.type}
             </Descriptions.Item>
@@ -189,12 +203,14 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
             column={2}
             title={formatMessage({
               id: 'odc.SSO.SSODetailDrawer.UserFieldMapping',
+              defaultMessage: '用户字段映射',
             })} /*用户字段映射*/
           >
             {!isLdap && (
               <Descriptions.Item
                 label={formatMessage({
                   id: 'odc.SSO.SSODetailDrawer.UsernameField',
+                  defaultMessage: '用户名字段',
                 })} /*用户名字段*/
               >
                 {configJson?.mappingRule?.userAccountNameField}
@@ -204,6 +220,7 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
             <Descriptions.Item
               label={formatMessage({
                 id: 'odc.SSO.SSODetailDrawer.UserNicknameField',
+                defaultMessage: '用户昵称字段',
               })} /*用户昵称字段*/
             >
               {configJson?.mappingRule?.userNickNameField}
@@ -211,6 +228,7 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
             <Descriptions.Item
               label={formatMessage({
                 id: 'odc.SSO.SSODetailDrawer.UserInformationDataStructureType',
+                defaultMessage: '用户信息数据结构类型',
               })} /*用户信息数据结构类型*/
             >
               {configJson?.mappingRule?.userProfileViewType}
@@ -219,6 +237,7 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
               <Descriptions.Item
                 label={formatMessage({
                   id: 'odc.SSO.SSODetailDrawer.ObtainNestedUserData',
+                  defaultMessage: '获取嵌套用户数据',
                 })} /*获取嵌套用户数据*/
               >
                 {data?.name}
@@ -228,7 +247,10 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
           {configJson?.mappingRule?.extraInfo?.length ? (
             <Descriptions
               column={1}
-              title={formatMessage({ id: 'odc.SSO.SSODetailDrawer.CustomFields' })} /*自定义字段*/
+              title={formatMessage({
+                id: 'odc.SSO.SSODetailDrawer.CustomFields',
+                defaultMessage: '自定义字段',
+              })} /*自定义字段*/
             >
               {configJson?.mappingRule?.extraInfo?.map((item) => {
                 return (

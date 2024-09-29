@@ -28,9 +28,10 @@ const DataTypeSelect: React.FC<{
 }> = forwardRef((props, ref) => {
   const { dataTypes, isOracle, ...rest } = props;
   const _dataTypes = dataTypes.filter((dataType) => {
-    return (isOracle
-      ? ['blob', 'clob']
-      : ['tinyblob', 'blob', 'mediumblob', 'logblob', 'binary', 'varbinary']
+    return (
+      isOracle
+        ? ['blob', 'clob']
+        : ['tinyblob', 'blob', 'mediumblob', 'logblob', 'binary', 'varbinary']
     ).includes(dataType.databaseType?.toLowerCase());
   });
   return (
@@ -38,6 +39,7 @@ const DataTypeSelect: React.FC<{
       mode="multiple"
       placeholder={formatMessage({
         id: 'odc.component.DataTypeSelect.SelectADataType',
+        defaultMessage: '请选择数据类型',
       })}
       ref={ref}
       {...rest}

@@ -1,14 +1,29 @@
-import { formatMessage } from '@/util/intl';
-import { LoadingOutlined } from '@ant-design/icons';
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { syncObject } from '@/common/network/database';
-import { ReactComponent as SyncMetadataSvg } from '@/svgr/sync_metadata.svg';
-import { useRequest } from 'ahooks';
-import { DBObjectSyncStatus } from '@/d.ts/database';
 import { IManagerResourceType } from '@/d.ts';
-import { Tooltip } from 'antd';
+import { DBObjectSyncStatus, IDatabase } from '@/d.ts/database';
+import { ReactComponent as SyncMetadataSvg } from '@/svgr/sync_metadata.svg';
+import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
+import { LoadingOutlined } from '@ant-design/icons';
+import { useRequest } from 'ahooks';
+import { Tooltip } from 'antd';
 import { useState } from 'react';
-import { IDatabase } from '@/d.ts/database';
 
 export default function Reload({
   size = '13px',
@@ -49,9 +64,9 @@ export default function Reload({
         formatMessage(
           {
             id: 'src.component.Button.SyncMetadata.FD352980',
-            defaultMessage: '元数据同步（上一次同步时间：${time}）',
+            defaultMessage: '元数据同步（上一次同步时间：{time}）',
           },
-          { time: time },
+          { time },
         ),
       icon: <SyncMetadataSvg onClick={_onClick} style={{ fontSize: size, cursor: 'pointer' }} />,
     },
@@ -100,6 +115,7 @@ export default function Reload({
 
   async function _onClick() {
     setIsManual(true);
+    setState(statusMap.SYNCING);
     if (resourceType && resourceId) {
       await syncObject(resourceType, resourceId);
       await reloadDatabase();

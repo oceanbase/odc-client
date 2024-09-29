@@ -20,7 +20,7 @@ import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
 import { clone } from 'lodash';
-import React, { useContext, useMemo, useRef, useState, useEffect } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import EditableTable from '../../../EditableTable';
 import TablePageContext from '../../../TablePage/context';
 import EditToolbar from '../../EditToolbar';
@@ -74,7 +74,7 @@ const PrimaryConstaint: React.FC<IProps> = function ({ modified }) {
           <Toolbar>
             <Toolbar.Button
               disabled={pageContext?.editMode}
-              text={formatMessage({ id: 'workspace.header.create' })}
+              text={formatMessage({ id: 'workspace.header.create', defaultMessage: '新建' })}
               icon={PlusOutlined}
               onClick={() => {
                 tableContext.setPrimaryConstraints(
@@ -86,7 +86,7 @@ const PrimaryConstaint: React.FC<IProps> = function ({ modified }) {
             <Toolbar.Button
               disabled={pageContext?.editMode}
               text={
-                formatMessage({ id: 'odc.TableConstraint.Primary.Delete' }) //删除
+                formatMessage({ id: 'odc.TableConstraint.Primary.Delete', defaultMessage: '删除' }) //删除
               }
               icon={DeleteOutlined}
               onClick={() => {

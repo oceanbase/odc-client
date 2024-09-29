@@ -15,6 +15,7 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
+import { getTaskDetail } from '@/common/network/task';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import type {
   IAlterScheduleTaskParams,
@@ -27,19 +28,18 @@ import type {
 import { IConnectionType, ICycleTaskRecord, TaskPageType, TaskRecord, TaskType } from '@/d.ts';
 import { ModalStore } from '@/store/modal';
 import type { TaskStore } from '@/store/task';
+import tracert from '@/util/tracert';
 import { getPreTime } from '@/util/utils';
+import { useLocation } from '@umijs/max';
+import { useSetState } from 'ahooks';
+import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
-import { useLocation } from '@umijs/max';
 import React, { useEffect, useRef } from 'react';
 import TaskTable from './component/TaskTable';
 import DetailModal from './DetailModal';
 import { isCycleTaskPage } from './helper';
 import styles from './index.less';
-import tracert from '@/util/tracert';
-import { getTaskDetail } from '@/common/network/task';
-import { message } from 'antd';
-import { useSetState } from 'ahooks';
 import { TaskDetailContext } from './TaskDetailContext';
 interface IProps {
   taskStore?: TaskStore;
@@ -77,7 +77,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
   const { detailId, detailType, detailVisible, cycleTasks, tasks } = state;
   const taskList = isCycleTaskPage(taskTabType) ? cycleTasks : tasks;
   const theme = isSqlworkspace ? null : 'vs';
-  const tableRef = React.createRef<ITableInstance>();
+  const tableRef = useRef<ITableInstance>();
 
   const TaskEventMap = {
     [TaskPageType.IMPORT]: () => modalStore.changeImportModal(true),
@@ -95,6 +95,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
     [TaskPageType.APPLY_PROJECT_PERMISSION]: () => modalStore.changeApplyPermissionModal(true),
     [TaskPageType.APPLY_DATABASE_PERMISSION]: () =>
       modalStore.changeApplyDatabasePermissionModal(true),
+    [TaskPageType.APPLY_TABLE_PERMISSION]: () => modalStore.changeApplyTablePermissionModal(true),
     [TaskPageType.MULTIPLE_ASYNC]: () =>
       modalStore.changeMultiDatabaseChangeModal(
         true,
@@ -104,6 +105,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
             }
           : null,
       ),
+    [TaskPageType.LOGICAL_DATABASE_CHANGE]: () => modalStore.changeLogicialDatabaseModal(true),
   };
   const loadList = async (args: ITableLoadOptions, executeDate: [Moment, Moment]) => {
     const { pageKey, taskStore } = props;
@@ -249,6 +251,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
         message.error(
           formatMessage({
             id: 'odc.src.component.Task.NoCurrentWorkOrderView',
+            defaultMessage: '无当前工单查看权限',
           }), //'无当前工单查看权限'
         );
         return;

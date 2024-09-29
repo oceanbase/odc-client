@@ -14,22 +14,34 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
 import {
-  TaskPartitionStrategy,
-  TaskErrorStrategy,
-  SyncTableStructureEnum,
   SubTaskType,
+  SyncTableStructureEnum,
+  TaskErrorStrategy,
+  TaskPartitionStrategy,
 } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
 
 export const ErrorStrategyMap = {
-  [TaskErrorStrategy.ABORT]: formatMessage({ id: 'src.component.Task.F0079010' }), //'停止任务'
-  [TaskErrorStrategy.CONTINUE]: formatMessage({ id: 'src.component.Task.2DA054B9' }), //'忽略错误继续任务'
+  [TaskErrorStrategy.ABORT]: formatMessage({
+    id: 'src.component.Task.F0079010',
+    defaultMessage: '停止任务',
+  }), //'停止任务'
+  [TaskErrorStrategy.CONTINUE]: formatMessage({
+    id: 'src.component.Task.2DA054B9',
+    defaultMessage: '忽略错误继续任务',
+  }), //'忽略错误继续任务'
 };
 
 export const TaskPartitionStrategyMap = {
-  [TaskPartitionStrategy.CREATE]: formatMessage({ id: 'src.component.Task.CD347F96' }), //'创建策略'
-  [TaskPartitionStrategy.DROP]: formatMessage({ id: 'src.component.Task.9262EB40' }), //'删除策略'
+  [TaskPartitionStrategy.CREATE]: formatMessage({
+    id: 'src.component.Task.CD347F96',
+    defaultMessage: '创建策略',
+  }), //'创建策略'
+  [TaskPartitionStrategy.DROP]: formatMessage({
+    id: 'src.component.Task.9262EB40',
+    defaultMessage: '删除策略',
+  }), //'删除策略'
 };
 
 export const SyncTableStructureConfig = {
@@ -87,3 +99,6 @@ export const SubTaskTypeMap = {
     label: formatMessage({ id: 'src.d.ts.DF449BBC', defaultMessage: '回滚' }),
   },
 };
+
+export const OscMaxRowLimit = 10000;
+export const OscMaxDataSizeLimit = 1000;

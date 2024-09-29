@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { createTask } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
@@ -20,7 +21,6 @@ import InputBigNumber from '@/component/InputBigNumber';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import {
-  ConnectionMode,
   EXPORT_TYPE,
   IExportResultSetFileType,
   IMPORT_ENCODING,
@@ -41,7 +41,6 @@ import React, { useEffect, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import { CsvFormItemPanel } from './CsvFormItemPanel';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 const { Text } = Typography;
 const { Option } = Select;
 interface IProps {
@@ -78,6 +77,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       Modal.confirm({
         title: formatMessage({
           id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.DoYouConfirmTheCancellation',
+          defaultMessage: '确认取消导出结果集吗？',
         }), //'确认取消导出结果集吗？'
         centered: true,
         onOk: () => {
@@ -163,6 +163,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       title={
         formatMessage({
           id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.NewExportResultSet',
+          defaultMessage: '新建导出结果集',
         }) /* 新建导出结果集 */
       }
       footer={
@@ -175,18 +176,20 @@ const CreateModal: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.Cancel',
+                defaultMessage: '取消',
               }) /* 
-            取消
-           */
+          取消
+          */
             }
           </Button>
           <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
             {
               formatMessage({
                 id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.NewlyBuilt',
+                defaultMessage: '新建',
               }) /* 
-            新建
-           */
+          新建
+          */
             }
           </Button>
         </Space>
@@ -226,6 +229,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.QuerySQL',
+                    defaultMessage: '查询 SQL',
                   }) /* 查询 SQL */
                 }
               </span>
@@ -233,6 +237,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.OnlySupportInputSingleSQL',
+                    defaultMessage: '仅支持输入单条 SQL',
                   }) /* 仅支持输入单条 SQL */
                 }
               </Text>
@@ -245,6 +250,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               required: true,
               message: formatMessage({
                 id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInSQLContent',
+                defaultMessage: '请填写 SQL 内容',
               }), //'请填写 SQL 内容'
             },
           ]}
@@ -268,6 +274,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.QueryResultNumberLimit',
+              defaultMessage: '查询结果条数限制',
             }) /* 查询结果条数限制 */
           }
           rules={[
@@ -275,6 +282,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               required: true,
               message: formatMessage({
                 id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheNumber',
+                defaultMessage: '请填写条数限制',
               }), //'请填写条数限制'
             },
           ]}
@@ -292,6 +300,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.FileName',
+              defaultMessage: '文件名称',
             }) /* 文件名称 */
           }
           rules={[
@@ -299,6 +308,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               required: true,
               message: formatMessage({
                 id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.PleaseFillInTheFile',
+                defaultMessage: '请填写文件名称',
               }), //'请填写文件名称'
             },
             ChineseAndEnglishAndNumberAndUnderline,
@@ -316,6 +326,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.FileFormat',
+              defaultMessage: '文件格式',
             }) /* 文件格式 */
           }
         >
@@ -337,6 +348,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               label={
                 formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.FileEncoding',
+                  defaultMessage: '文件编码',
                 }) /* 文件编码 */
               }
             >
@@ -359,6 +371,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           label={
             formatMessage({
               id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.TaskSetting',
+              defaultMessage: '任务设置',
             }) /* 任务设置 */
           }
           keepExpand

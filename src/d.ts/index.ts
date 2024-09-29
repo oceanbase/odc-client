@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
+import { ISQLExecuteTask } from '@/common/network/sql/executeSQL';
+import { ErrorStrategy } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
 import { PLType } from '@/constant/plType';
 import { IRiskLevel } from '@/d.ts/riskLevel';
+import { IUnauthorizedDBResources, TablePermissionType } from '@/d.ts/table';
+import { EThemeConfigKey } from '@/store/setting';
 import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
-import { IDatabase, DatabasePermissionType, IUnauthorizedDatabase } from './database';
-import { EComparisonScope } from './task';
-import { EThemeConfigKey } from '@/store/setting';
-import { SpaceType } from './_index';
-import { DBDefaultStoreType } from './table';
+import { DBType, DatabasePermissionType, IDatabase } from './database';
 import { IEnvironment } from './environment';
 import { IProject } from './project';
-import { ErrorStrategy } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
+import { DBDefaultStoreType } from './table';
+import { EComparisonScope } from './task';
+import { SpaceType } from './_index';
 
 export interface IUser {
   email: string;
@@ -622,6 +624,16 @@ export enum AuditEventActionType {
   DATABASE_PERMISSION_MANAGEMENT = 'DATABASE_PERMISSION_MANAGEMENT',
   GRANT_DATABASE_PERMISSION = 'GRANT_DATABASE_PERMISSION',
   REVOKE_DATABASE_PERMISSION = 'REVOKE_DATABASE_PERMISSION',
+  // 表权限申请
+  APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
+  CREATE_APPLY_TABLE_PERMISSION_TASK = 'CREATE_APPLY_TABLE_PERMISSION_TASK',
+  APPROVE_APPLY_TABLE_PERMISSION_TASK = 'APPROVE_APPLY_TABLE_PERMISSION_TASK',
+  REJECT_APPLY_TABLE_PERMISSION_TASK = 'REJECT_APPLY_TABLE_PERMISSION_TASK',
+  STOP_APPLY_TABLE_PERMISSION_TASK = 'STOP_APPLY_TABLE_PERMISSION_TASK',
+  // 表权限管理
+  TABLE_PERMISSION_MANAGEMENT = 'TABLE_PERMISSION_MANAGEMENT',
+  GRANT_TABLE_PERMISSION = 'GRANT_TABLE_PERMISSION',
+  REVOKE_TABLE_PERMISSION = 'REVOKE_TABLE_PERMISSION',
   // 自动授权
   CREATE_AUTOMATION_RULE = 'CREATE_AUTOMATION_RULE',
   ENABLE_AUTOMATION_RULE = 'ENABLE_AUTOMATION_RULE',
@@ -661,6 +673,7 @@ export enum AuditEventDialectType {
   ORACLE = 'ORACLE',
   MYSQL = 'MYSQL',
   DORIS = 'DORIS',
+  PG = 'POSTGRESQL',
   UNKNOWN = 'UNKNOWN',
 }
 
@@ -720,10 +733,12 @@ export type ISQLScript = IScriptMeta;
 export enum ConnectionMode {
   MYSQL = 'MYSQL',
   DORIS = 'DORIS',
+  PG = 'POSTGRESQL',
   ORACLE = 'ORACLE',
   OB_MYSQL = 'OB_MYSQL',
   OB_ORACLE = 'OB_ORACLE',
   ALL = 'ALL',
+  UNKNOWN = 'UNKNOWN',
 }
 
 export enum IConnectionType {
@@ -810,6 +825,7 @@ export interface IConnection {
   serviceName?: string;
   userRole?: string;
   readonly projectName?: string;
+  catalogName?: string;
 }
 
 export interface IConnectionLabel {
@@ -1045,6 +1061,7 @@ export interface IResultSet extends Partial<ISqlExecuteResult> {
     table?: ITable;
     editable: boolean;
   };
+  timer?: ISqlExecuteResultTimer;
 
   isQueriedEditable?: boolean;
   logTypeData?: {
@@ -1066,6 +1083,7 @@ export interface IResultSet extends Partial<ISqlExecuteResult> {
   }[];
 
   schemaName?: string;
+  currentExecuteInfo?: IExecutingInfo;
 }
 
 export interface IColumnMetaData {
@@ -1159,6 +1177,13 @@ export interface ITable {
   partitions: Partial<ITablePartition>[];
   constraints: Partial<ITableConstraint>[];
   _version?: any;
+  authorizedPermissionTypes?: TablePermissionType[];
+  database?: IDatabase;
+  createTime?: number;
+  id?: number;
+  name?: string;
+  organizationId?: number;
+  updateTime?: number;
 }
 
 interface IEditable {
@@ -1573,6 +1598,7 @@ export interface IResultTimerStage {
 }
 
 export interface ISqlExecuteResult {
+  results?: any[];
   allowExport: boolean;
   columnLabels: string[];
   columns?: string[];
@@ -1630,13 +1656,42 @@ export interface ISqlExecuteResult {
     type: string;
   }[];
   withFullLinkTrace: boolean;
+  withQueryProfile: boolean;
   traceEmptyReason?: string;
+}
+export interface ISqlExecuteResultTimer {
+  name: string;
+  stages: IResultTimerStage[];
+  startTimeMillis: number; // 开始时间
+  totalDurationMicroseconds: number; // 总耗时
+}
+
+export interface IExecutingInfo {
+  finished?: boolean;
+  traceId?: string;
+  executingSQL: string;
+  executingSQLId?: string;
+  results?: ISqlExecuteResult[];
+  task: ISQLExecuteTask;
 }
 
 export enum ISqlExecuteResultStatus {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
   CANCELED = 'CANCELED',
+  CREATED = 'CREATED',
+  RUNNING = 'RUNNING',
+}
+
+export enum IProfileNodeStatus {
+  FINISHED = 'FINISHED',
+  RUNNING = 'RUNNING',
+  PREPARING = 'PREPARING',
+}
+
+export enum IProfileStatus {
+  FINISHED = 'FINISHED',
+  RUNNING = 'RUNNING',
 }
 
 export interface ISqlExecuteResultWidthData {
@@ -1706,6 +1761,51 @@ export interface ISQLExplain {
   outline: string;
   originalText: string;
   showFormatInfo?: boolean;
+  graph?: IProfileGraph;
+  warning?: string;
+  expTree?: string;
+}
+
+export interface IProfileGraph {
+  duration: number;
+  overview: {
+    [overviewType: string]: string | number;
+  };
+  planId: string;
+  statistics: {
+    [statisticType: string]: string | number;
+  };
+  topNodes: {
+    duration: string[];
+  };
+  traceId: string;
+  vertexes: IProfileVertexes[];
+}
+
+export interface IProfileVertexes {
+  attributes: {
+    [attributeType: string]: string | number;
+  };
+  duration: number;
+  graphId: number;
+  inEdges: IInEdges[];
+  name: string;
+  outEdges: IInEdges[];
+  overview: {
+    [overviewType: string]: string | number;
+  };
+  statistics: {
+    [logType: string]: string | number;
+  };
+  status: string;
+  subNodes?: IProfileVertexes;
+  title: string;
+}
+
+export interface IInEdges {
+  from: string;
+  to: string;
+  weight: string;
 }
 
 export interface ISQLExecuteDetail {
@@ -1895,30 +1995,55 @@ export enum TaskPageType {
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
   APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
+  APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
   MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
+  LOGICAL_DATABASE_CHANGE = 'LOGICAL_DATABASE_CHANGE',
 }
 
 export enum TaskType {
+  /* 导入 */
   IMPORT = 'IMPORT',
+  /* 导出 */
   EXPORT = 'EXPORT',
+  /* 模拟数据 */
   DATAMOCK = 'MOCKDATA',
+  /* 数据库变更 */
   ASYNC = 'ASYNC',
+  /* 分区计划 */
   PARTITION_PLAN = 'PARTITION_PLAN',
+  /* sql 计划 */
   SQL_PLAN = 'SQL_PLAN',
+  /* 计划变更(调度任务) */
   ALTER_SCHEDULE = 'ALTER_SCHEDULE',
+  /* 影子表同步 */
   SHADOW = 'SHADOWTABLE_SYNC',
+  /* ? (疑似弃用) */
   DATA_SAVE = 'DATA_SAVE',
+  /* 权限申请 (疑似弃用) */
   PERMISSION_APPLY = 'PERMISSION_APPLY',
+  /* 数据归档 */
   DATA_ARCHIVE = 'DATA_ARCHIVE',
+  /* ? (疑似弃用) */
   MIGRATION = 'DATA_ARCHIVE',
+  /* 无锁结构变更 */
   ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
+  /* 数据清理 */
   DATA_DELETE = 'DATA_DELETE',
+  /* 导出结果集 */
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
+  /* 申请项目权限 */
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
+  /* 申请库权限 */
   APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
+  /* 申请表权限 */
+  APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
+  /* 结构对比 */
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
+  /* 多库变更 */
   MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
+  /* 逻辑库变更 */
+  LOGICAL_DATABASE_CHANGE = 'LOGICAL_DATABASE_CHANGE',
 }
 
 export enum TaskJobType {
@@ -2063,6 +2188,7 @@ export enum IMPORT_TYPE {
   ZIP = 'ZIP',
   SQL = 'SQL',
   CSV = 'CSV',
+  DIR = 'DIR',
 }
 
 /**
@@ -2302,7 +2428,8 @@ export type TaskRecordParameters =
   | IResultSetExportTaskParams
   | IApplyPermissionTaskParams
   | IApplyDatabasePermissionTaskParams
-  | IMultipleAsyncTaskParams;
+  | IMultipleAsyncTaskParams
+  | ILogicalDatabaseAsyncTaskParams;
 
 export interface ITaskResult {
   autoModifyTimeout?: boolean;
@@ -2332,6 +2459,11 @@ export enum MigrationInsertAction {
   INSERT_DUPLICATE_UPDATE = 'INSERT_DUPLICATE_UPDATE',
 }
 
+export enum ShardingStrategy {
+  FIXED_LENGTH = 'FIXED_LENGTH',
+  MATCH = 'MATCH',
+}
+
 export enum SyncTableStructureEnum {
   COLUMN = 'COLUMN',
   CONSTRAINT = 'CONSTRAINT',
@@ -2349,6 +2481,7 @@ export interface IDataArchiveJobParameters {
   targetDatabaseName?: string;
   targetDataSourceName?: string;
   migrationInsertAction?: MigrationInsertAction;
+  shardingStrategy?: ShardingStrategy;
   deleteByUniqueKey?: boolean;
   rateLimit?: {
     rowLimit?: number;
@@ -2394,6 +2527,7 @@ export interface IDataClearJobParameters {
   targetDatabaseName?: string;
   sourceDataSourceName?: string;
   targetDataSourceName?: string;
+  shardingStrategy?: ShardingStrategy;
 }
 
 export interface ISqlPlayJobParameters {
@@ -2440,6 +2574,17 @@ export interface ICycleSubTaskDetailRecord {
   status: SubTaskStatus;
   updateTime: number;
   executionDetails: string;
+}
+
+export interface ICycleTaskJobRecord<T> {
+  createTime: number;
+  executionDetails: T;
+  fireTime: number;
+  id: number;
+  parameters: any;
+  status: SubTaskStatus;
+  type: TaskType.LOGICAL_DATABASE_CHANGE;
+  updateTime: number;
 }
 
 export enum SubTaskType {
@@ -2581,6 +2726,13 @@ export interface IAsyncTaskParams {
   retryTimes: number;
 }
 
+export interface ILogicalDatabaseAsyncTaskParams {
+  sqlContent: string;
+  delimiter: string;
+  timeoutMillis: number;
+  databaseId: number;
+}
+
 export interface IApplyPermissionTaskParams {
   applyReason: string;
   project: {
@@ -2601,12 +2753,35 @@ export interface IApplyDatabasePermissionTaskParams {
   databases: {
     id: number;
     name?: string;
+    type?: DBType;
+    dataSourceId?: number;
+    dataSourceName?: string;
+    dialectType?: ConnectType;
   }[];
   types: DatabasePermissionType[];
   expireTime: number;
   applyReason: string;
 }
 
+export interface IApplyTablePermissionTaskParams {
+  project: {
+    id: number;
+    name?: string;
+  };
+  // 提交时databaseId、tableNames为必填项
+  // 详情返回时五个字段均有
+  tables: {
+    databaseId: number;
+    tableName: string;
+    tableId: number;
+    dataSourceId?: number;
+    dataSourceName?: string;
+    databaseName?: string;
+  }[];
+  types: TablePermissionType[];
+  expireTime: number;
+  applyReason: string;
+}
 export interface IMultipleAsyncTaskParams {
   autoErrorStrategy: boolean;
   batchId: number;
@@ -2802,7 +2977,7 @@ export interface ITaskFlowNode {
   comment: string;
   deadlineTime: number;
   issueCount: number;
-  unauthorizedDatabases: IUnauthorizedDatabase[];
+  unauthorizedDBResources: IUnauthorizedDBResources[];
   id?: number;
   candidates: {
     id: number;
@@ -2866,6 +3041,7 @@ export enum TaskStatus {
   TERMINATION = 'TERMINATION',
   TIMEOUT = 'TIMEOUT',
   PRE_CHECK_FAILED = 'PRE_CHECK_FAILED',
+  CREATING = 'CREATING',
 }
 
 export enum SubTaskStatus {
@@ -3156,6 +3332,7 @@ export enum ODCErrorsCode {
   SysTenantAccountNotSet = 'SysTenantAccountNotSet',
   SysTenantAccountInvalid = 'SysTenantAccountInvalid',
   PermissionChanged = 'PermissionChanged',
+  AccessDenied = 'AccessDenied',
 }
 
 export enum ConnectType {
@@ -3167,6 +3344,7 @@ export enum ConnectType {
   ODP_SHARDING_OB_MYSQL = 'ODP_SHARDING_OB_MYSQL',
   MYSQL = 'MYSQL',
   DORIS = 'DORIS',
+  PG = 'POSTGRESQL',
   ORACLE = 'ORACLE',
 }
 
@@ -3688,6 +3866,7 @@ export interface IPLExecResult {
   };
   returnValue?: IPLOutParam;
   outParams?: IPLOutParam[];
+  unauthorizedDBResources?: IUnauthorizedDBResources[];
 }
 export interface IPLCompileResult {
   messages: string;

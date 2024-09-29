@@ -21,7 +21,7 @@ import WindowManager from '@/component/WindowManager';
 import WorkspaceSideTip from '@/component/WorkspaceSideTip';
 import type { IPage } from '@/d.ts';
 import odc from '@/plugins/odc';
-import { movePagePostion, openNewSQLPage } from '@/store/helper/page';
+import { movePagePostion, openNewSQLPage, openCreateTablePage } from '@/store/helper/page';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import type { PageStore } from '@/store/page';
@@ -43,6 +43,7 @@ import WorkspaceStore from './context/WorkspaceStore';
 import GlobalModals from './GlobalModals';
 import WorkBenchLayout from './Layout';
 import SideBar from './SideBar';
+import { isLogicalDatabase } from '@/util/database';
 
 let _closeMsg = '';
 export function changeCloseMsg(t: any) {
@@ -74,10 +75,18 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     const projectId = toInteger(params.get('projectId'));
     const databaseId = toInteger(params.get('databaseId'));
     const datasourceId = toInteger(params.get('datasourceId'));
+    const isLogicalDatabase = params.get('isLogicalDatabase') === 'true';
+    const isCreateTable = params.get('isCreateTable') === 'true';
     if (projectId) {
       resourceTreeContext?.setSelectTabKey(ResourceTreeTab.project);
       resourceTreeContext?.setSelectProjectId(projectId);
-      databaseId && openNewSQLPage(databaseId, 'project');
+      databaseId && resourceTreeContext?.setCurrentDatabaseId(databaseId);
+      if (!isLogicalDatabase) {
+        databaseId && openNewSQLPage(databaseId, 'project');
+      }
+      if (isCreateTable) {
+        openCreateTablePage(databaseId);
+      }
     } else if (datasourceId) {
       resourceTreeContext?.setSelectTabKey(ResourceTreeTab.datasource);
       resourceTreeContext?.setSelectDatasourceId(datasourceId);
@@ -101,7 +110,10 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
 
   const handleOpenPage = async () => {
     const db = resourceTreeContext.currentDatabaseId;
-    openNewSQLPage(db);
+    const isLogicalDb = isLogicalDatabase(
+      resourceTreeContext?.databaseList?.find((_db) => _db?.id === db),
+    );
+    openNewSQLPage(isLogicalDb ? null : db);
   };
 
   const openPageAfterTargetPage = async (targetPage: IPage) => {
@@ -130,9 +142,13 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
 
     if (runningPageKey.has(targetPageKey)) {
       Modal.confirm({
-        title: formatMessage({ id: 'odc.page.Workspace.ConfirmCloseWindow' }), // 确认关闭窗口？
+        title: formatMessage({
+          id: 'odc.page.Workspace.ConfirmCloseWindow',
+          defaultMessage: '是否确认关闭窗口？',
+        }), // 确认关闭窗口？
         content: formatMessage({
           id: 'odc.page.Workspace.WhenTheOperationIsRunning',
+          defaultMessage: '操作执行中，关闭窗口将终止窗口操作，是否确认关闭？',
         }),
 
         // 操作执行中，关闭窗口将终止窗口操作，确认关闭吗？
@@ -161,6 +177,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
         formatMessage(
           {
             id: 'odc.page.Workspace.DockedpagetitleIsBeingDebuggedAnd',
+            defaultMessage: '{dockedPageTitle}正在调试，无法关闭',
           },
 
           { dockedPageTitle: dockedPage.title },
@@ -174,14 +191,17 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       Modal.confirm({
         title: formatMessage({
           id: 'odc.page.Workspace.TheTaskIsNotSaved',
+          defaultMessage: '任务未保存',
         }),
 
         content: formatMessage({
           id: 'odc.page.Workspace.UnsavedContentWillDisappearAfter',
+          defaultMessage: '关闭之后未保存内容将会消失',
         }),
 
         okText: formatMessage({
           id: 'odc.page.Workspace.Closed',
+          defaultMessage: '关闭',
         }),
 
         okType: 'danger',
@@ -333,12 +353,14 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
           ) : null
         }
       />
+
       {isReady && (
         <>
           {!!serverSystemInfo?.tutorialEnabled && <WorkspaceSideTip />}
           <GlobalModals />
         </>
       )}
+
       <WrapWorkSpaceExecuteSQLModal modalStore={modalStore} />
     </>
   );

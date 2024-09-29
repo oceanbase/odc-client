@@ -17,17 +17,20 @@
 import { IShadowSyncAnalysisResult } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
 import {
   CommonTaskLogType,
+  CreateStructureComparisonTaskRecord,
   CreateTaskRecord,
-  IPartitionTablePreviewConfig,
   CycleTaskDetail,
   IAsyncTaskResultSet,
-  ICycleSubTaskRecord,
-  ICycleTaskRecord,
   ICycleSubTaskDetailRecord,
+  ICycleSubTaskRecord,
+  ICycleTaskJobRecord,
+  ICycleTaskRecord,
+  IDatasourceUser,
   IFunction,
   IPartitionPlan,
-  IPartitionPlanTable,
   IPartitionPlanKeyType,
+  IPartitionPlanTable,
+  IPartitionTablePreviewConfig,
   IResponseData,
   ISubTaskRecords,
   ITaskResult,
@@ -37,15 +40,14 @@ import {
   TaskRecordParameters,
   TaskStatus,
   TaskType,
-  IDatasourceUser,
-  CreateStructureComparisonTaskRecord,
 } from '@/d.ts';
+import { ISchemaChangeRecord } from '@/d.ts/logicalDatabase';
+import { IProject } from '@/d.ts/project';
+import { EOperationType, IComparisonResultData, IStructrueComparisonDetail } from '@/d.ts/task';
 import setting from '@/store/setting';
 import request from '@/util/request';
 import { downloadFile } from '@/util/utils';
-import { IProject } from '@/d.ts/project';
 import { generateFunctionSid } from './pathUtil';
-import { EOperationType, IComparisonResultData, IStructrueComparisonDetail } from '@/d.ts/task';
 
 /**
  * 根据函数获取ddl sql
@@ -208,7 +210,7 @@ export async function getCycleSubTaskDetail(
 }
 
 /**
- * 查询任务列表
+ * 查询任务详情
  */
 export async function getTaskDetail(
   id: number,
@@ -253,6 +255,16 @@ export async function getCycleTaskLog(
       logType,
     },
   });
+  return res?.data;
+}
+
+/**
+ * 获取全量日志下载URL
+ */
+export async function getDownloadUrl(scheduleId: number, taskId: number) {
+  const res = await request.post(
+    `/api/v2/schedule/schedules/${scheduleId}/tasks/${taskId}/log/getDownloadUrl`,
+  );
   return res?.data;
 }
 
@@ -542,7 +554,7 @@ export async function getFlowSQLLintResult(flowId: number, nodeId: number) {
 }
 
 /**
- * 获取子任务
+ * 获取调度任务的task列表
  */
 export async function getDataArchiveSubTask(
   taskId: number,
@@ -552,6 +564,17 @@ export async function getDataArchiveSubTask(
   },
 ): Promise<IResponseData<ICycleSubTaskRecord>> {
   const res = await request.get(`/api/v2/schedule/schedules/${taskId}/tasks`, { params });
+  return res?.data;
+}
+
+/**
+ * 获取调度任务的task详情
+ */
+export async function getScheduleTaskDetail(
+  taskId: number,
+  jobId: number,
+): Promise<ICycleTaskJobRecord<ISchemaChangeRecord[]>> {
+  const res = await request.get(`/api/v2/schedule/schedules/${taskId}/tasks/${jobId}`);
   return res?.data;
 }
 
@@ -583,7 +606,7 @@ export async function getSubTask(id: number): Promise<IResponseData<ISubTaskReco
   return res?.data;
 }
 
-/*
+/**
  * 切换表名
  */
 export async function swapTableName(taskId: number): Promise<boolean> {
@@ -623,7 +646,7 @@ export async function getLockDatabaseUserRequired(databaseId: number): Promise<{
   const res = await request.get(`/api/v2/osc/lockDatabaseUserRequired/${databaseId}`);
   return res?.data;
 }
-/*
+/**
  * 更新限流配置
  */
 export async function updateLimiterConfig(
@@ -638,6 +661,26 @@ export async function updateLimiterConfig(
   });
   return !!res?.data;
 }
+
+/**
+ * 更新无锁结构变更限流配置
+ */
+export async function updateThrottleConfig(
+  flowInstanceId: number,
+  rateLimitConfig: {
+    rowLimit?: number;
+    dataSizeLimit?: number;
+  },
+): Promise<boolean> {
+  const res = await request.post(`/api/v2/osc/updateRateLimitConfig`, {
+    data: {
+      flowInstanceId,
+      rateLimitConfig,
+    },
+  });
+  return !!res?.data;
+}
+
 /**
  * 获取结构比对中涉及的表信息
  * @param taskId 结构比对工单id

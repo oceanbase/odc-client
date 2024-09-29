@@ -14,34 +14,34 @@
  * limitations under the License.
  */
 
+import { getAllConnectTypes, getDataSourceStyleByConnectType } from '@/common/datasource';
+import { batchImportPrivateConnection } from '@/common/network/connection';
+import BatchImportButton from '@/component/BatchImportButton';
+import { ConnectTypeText } from '@/constant/label';
+import { ConnectType, IConnectionType } from '@/d.ts';
+import { IDatasource, IDataSourceType } from '@/d.ts/datasource';
+import { ReactComponent as ConIcon } from '@/svgr/icon_connection.svg';
+import { encryptConnection } from '@/util/connection';
 import { formatMessage } from '@/util/intl';
+import Icon, { DownOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import {
   Button,
   Dropdown,
   Empty,
+  message,
   Popover,
   Space,
   Tooltip,
   Typography,
   UploadFile,
-  message,
 } from 'antd';
+import { ItemType } from 'antd/es/menu/hooks/useItems';
 import { useMemo, useRef, useState } from 'react';
 import NewDatasourceDrawer from '.';
-import { ConnectType, IConnectionType } from '@/d.ts';
-import Icon, { DownOutlined, ExclamationCircleFilled } from '@ant-design/icons';
-import { getAllConnectTypes, getDataSourceStyleByConnectType } from '@/common/datasource';
-import { IDataSourceType, IDatasource } from '@/d.ts/datasource';
-import { ConnectTypeText } from '@/constant/label';
-import { ItemType } from 'antd/es/menu/hooks/useItems';
-import BatchImportButton from '@/component/BatchImportButton';
-import { encryptConnection } from '@/util/connection';
-import { batchImportPrivateConnection } from '@/common/network/connection';
-import { ReactComponent as ConIcon } from '@/svgr/icon_connection.svg';
 
-import styles from './index.less';
 import ConnectionPopover from '@/component/ConnectionPopover';
 import { haveOCP } from '@/util/env';
+import styles from './index.less';
 
 const getResultByFiles = (files: UploadFile[]) => {
   const res = [];
@@ -64,6 +64,7 @@ const NewDatasourceButton: React.FC<{
   const mysqlConnectTypes = getAllConnectTypes(IDataSourceType.MySQL);
   const dorisConnectTypes = getAllConnectTypes(IDataSourceType.Doris);
   const oracleConnectTypes = getAllConnectTypes(IDataSourceType.Oracle);
+  const pgConnectTypes = getAllConnectTypes(IDataSourceType.PG);
 
   const batchImportRef = useRef<{
     closeModal: () => void;
@@ -77,6 +78,7 @@ const NewDatasourceButton: React.FC<{
       message.success(
         formatMessage({
           id: 'odc.Content.TitleButton.BatchImportSucceeded',
+          defaultMessage: '批量导入成功',
         }), //批量导入成功
       );
 
@@ -163,6 +165,28 @@ const NewDatasourceButton: React.FC<{
         }),
       );
     }
+    if (pgConnectTypes?.length) {
+      results.push({
+        type: 'divider',
+      });
+      results = results.concat(
+        pgConnectTypes.map((item) => {
+          return {
+            label: ConnectTypeText[item],
+            key: item,
+            icon: (
+              <Icon
+                component={getDataSourceStyleByConnectType(item)?.icon?.component}
+                style={{
+                  color: getDataSourceStyleByConnectType(item)?.icon?.color,
+                  fontSize: '16px',
+                }}
+              />
+            ),
+          };
+        }),
+      );
+    }
     if (!haveOCP()) {
       results.push({
         type: 'divider',
@@ -170,6 +194,7 @@ const NewDatasourceButton: React.FC<{
       results = results.concat({
         label: formatMessage({
           id: 'odc.component.BatchImportButton.BatchImport',
+          defaultMessage: '批量导入',
         }) /*批量导入*/,
         key: 'batchImport',
       });
@@ -223,8 +248,10 @@ const NewDatasourceButton: React.FC<{
             {
               formatMessage({
                 id: 'odc.Datasource.NewDatasourceDrawer.NewButton.CreateADataSource',
+                defaultMessage: '新建数据源',
               }) /*新建数据源*/
             }
+
             <DownOutlined />
           </Button>
         )}
@@ -237,9 +264,11 @@ const NewDatasourceButton: React.FC<{
         description={
           formatMessage({
             id: 'odc.src.page.Datasource.Datasource.Content.TitleButton.TheFileNeedsToInclude',
+            defaultMessage:
+              '文件需包含类型、主机端口、租户名、数据库账号等相关数据源信息，建议使用数据源配置模版',
           }) /* 文件需包含类型、主机端口、租户名、数据库账号等相关数据源信息，建议使用数据源配置模版 */
         }
-        templateName="datasource_template.xlsx"
+        templatePath="/api/v2/datasource/datasources/template"
         data={{
           visibleScope: IConnectionType.PRIVATE,
         }}
@@ -250,6 +279,7 @@ const NewDatasourceButton: React.FC<{
                 description={
                   formatMessage({
                     id: 'odc.src.page.Datasource.Datasource.Content.TitleButton.NoValidDataSourceInformation',
+                    defaultMessage: '暂无有效数据源信息',
                   }) /* 暂无有效数据源信息 */
                 }
               />
@@ -266,6 +296,7 @@ const NewDatasourceButton: React.FC<{
                         marginRight: '4px',
                       }}
                     />
+
                     {hasError ? (
                       <Tooltip title={item.errorMessage}>
                         <Space size={4}>
@@ -296,6 +327,7 @@ const NewDatasourceButton: React.FC<{
         onChange={handleFileChange}
         onSubmit={handleBatchImportSubmit}
       />
+
       <NewDatasourceDrawer
         disableTheme={props.disableTheme}
         type={type}

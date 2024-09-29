@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { createTask, getDatasourceUsers, getLockDatabaseUserRequired } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
-import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType, IDatasourceUser } from '@/d.ts';
+import { IDatasourceUser, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
+import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
+import { mbToB } from '@/util/utils';
 import {
   Alert,
   Button,
@@ -35,16 +38,20 @@ import {
   Modal,
   Radio,
   Row,
-  Space,
   Select,
+  Space,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
+import ThrottleFormItem from '../../component/ThrottleFormItem';
+import { OscMaxDataSizeLimit, OscMaxRowLimit } from '../../const';
+
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
+
 interface IProps {
   modalStore?: ModalStore;
+  settingStore?: SettingStore;
   projectId?: number;
   theme?: 'dark' | 'white';
 }
@@ -65,7 +72,7 @@ export enum ClearStrategy {
   ORIGIN_TABLE_DROP = 'ORIGIN_TABLE_DROP',
 }
 const CreateDDLTaskModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId, theme } = props;
+  const { modalStore, settingStore, projectId, theme } = props;
   const { ddlAlterData } = modalStore;
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
@@ -75,6 +82,10 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const databaseId = Form.useWatch('databaseId', form);
   const { database } = useDBSession(databaseId);
   const connection = database?.dataSource;
+  const initialValue = {
+    rowLimit: 100,
+    dataSizeLimit: 1.0,
+  };
   const datasourceUserOptions = datasourceUser?.map(({ name }) => ({
     label: name,
     value: name,
@@ -89,6 +100,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
       Modal.confirm({
         title: formatMessage({
           id: 'odc.AlterDdlTask.CreateModal.AreYouSureYouWant',
+          defaultMessage: '是否确认取消无锁结构变更？',
         }),
         //确认取消无锁结构变更吗？
         centered: true,
@@ -119,6 +131,8 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           executionTime,
           executionStrategy,
           lockUsers,
+          dataSizeLimit,
+          rowLimit,
         } = values;
         const parameters = {
           lockTableTimeOutSeconds,
@@ -129,6 +143,13 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           originTableCleanStrategy,
           lockUsers,
           swapTableType,
+          rateLimitConfig:
+            rowLimit || dataSizeLimit
+              ? {
+                  rowLimit,
+                  dataSizeLimit: mbToB(dataSizeLimit),
+                }
+              : null,
         };
         const data = {
           projectId,
@@ -203,6 +224,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
       width={720}
       title={formatMessage({
         id: 'odc.AlterDdlTask.CreateModal.NewLockFreeStructureChange',
+        defaultMessage: '新建无锁结构变更',
       })}
       /*新建无锁结构变更*/ footer={
         <Space>
@@ -214,6 +236,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.AlterDdlTask.CreateModal.Cancel',
+                defaultMessage: '取消',
               }) /*取消*/
             }
           </Button>
@@ -221,6 +244,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.AlterDdlTask.CreateModal.Create',
+                defaultMessage: '新建',
               }) /*新建*/
             }
           </Button>
@@ -240,6 +264,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         message={
           formatMessage({
             id: 'odc.src.component.Task.AlterDdlTask.CreateModal.Notice',
+            defaultMessage: '注意',
           }) /* 注意 */
         }
         description={
@@ -247,35 +272,42 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.src.component.Task.AlterDdlTask.CreateModal.1BeforePerformingThe',
+                defaultMessage: '1. 执行无锁结构变更前请确保数据库服务器磁盘空间充足；',
               }) /* 
-            1、执行无锁结构变更前请确保数据库服务器磁盘空间充足；
-             */
+          1、执行无锁结构变更前请确保数据库服务器磁盘空间充足；
+          */
             }
+
             <br />
             {
               formatMessage({
                 id: 'odc.src.component.Task.AlterDdlTask.CreateModal.2WhenCreatingA',
+                defaultMessage: '2. 创建工单选择源表清理策略时建议选择保留源表；',
               }) /* 
-            2、创建工单选择源表清理策略时建议选择保留源表；
-             */
+          2、创建工单选择源表清理策略时建议选择保留源表；
+          */
             }
+
             {lockDatabaseUserRequired && (
               <>
                 <br />
                 {
                   formatMessage({
                     id: 'odc.src.component.Task.AlterDdlTask.CreateModal.3IfTheOB',
+                    defaultMessage:
+                      '3. 若 OceanBase Oracle 模式版本小于 4.0.0 或 OceanBase MySQL 模式版本小于 4.3.0，表名切换之前会锁定您指定的数据库账号，并关闭该账号对应的会话。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行；',
                   }) /* 
-                3、若 OB Oracle 模式版本小于 4.0 或 OB MySQL 模式版本小于
-                4.3，表名切换之前会锁定您指定的数据库账号，并 kill 该账号对应的
-                session。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行；
-               */
+            3、若 OB Oracle 模式版本小于 4.0 或 OB MySQL 模式版本小于
+            4.3，表名切换之前会锁定您指定的数据库账号，并 kill 该账号对应的
+            session。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行；
+            */
                 }
               </>
             )}
           </div>
         }
       />
+
       <Form
         name="basic"
         initialValues={{
@@ -302,9 +334,10 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                     {
                       formatMessage({
                         id: 'odc.src.component.Task.AlterDdlTask.CreateModal.LockUsers.1',
+                        defaultMessage: '锁定用户',
                       }) /* 
-                    锁定用户
-                   */
+                锁定用户
+                */
                     }
                   </HelpDoc>
                 }
@@ -320,6 +353,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                   placeholder={
                     formatMessage({
                       id: 'odc.src.component.Task.AlterDdlTask.CreateModal.PleaseChoose',
+                      defaultMessage: '请选择',
                     }) /* 请选择 */
                   }
                   options={datasourceUserOptions}
@@ -331,6 +365,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         <Form.Item
           label={formatMessage({
             id: 'odc.AlterDdlTask.CreateModal.ChangeDefinition',
+            defaultMessage: '变更定义',
           })}
           /*变更定义*/ name="sqlType"
           initialValue={SqlType.CREATE}
@@ -339,6 +374,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
               required: true,
               message: formatMessage({
                 id: 'odc.AlterDdlTask.CreateModal.SelectAChangeDefinition',
+                defaultMessage: '请选择变更定义',
               }), //请选择变更定义
             },
           ]}
@@ -352,6 +388,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           name="sqlContent"
           label={formatMessage({
             id: 'odc.AlterDdlTask.CreateModal.SqlContent',
+            defaultMessage: 'SQL 内容',
           })}
           /*SQL 内容*/ className={styles.sqlContent}
           rules={[
@@ -359,6 +396,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
               required: true,
               message: formatMessage({
                 id: 'odc.AlterDdlTask.CreateModal.EnterTheSqlContent',
+                defaultMessage: '请填写 SQL 内容',
               }), //请填写 SQL 内容
             },
           ]}
@@ -380,6 +418,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
               {
                 formatMessage({
                   id: 'odc.AlterDdlTask.CreateModal.SwitchTableSettings',
+                  defaultMessage: '切换表设置',
                 }) /*切换表设置*/
               }
             </HelpDoc>
@@ -394,6 +433,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                     {
                       formatMessage({
                         id: 'odc.AlterDdlTask.CreateModal.LockTableTimeout',
+                        defaultMessage: '锁表超时时间',
                       }) /*锁表超时时间*/
                     }
                   </HelpDoc>
@@ -403,6 +443,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                 <Form.Item
                   label={formatMessage({
                     id: 'odc.AlterDdlTask.CreateModal.Seconds',
+                    defaultMessage: '秒',
                   })}
                   /*秒*/ name="lockTableTimeOutSeconds"
                   rules={[
@@ -410,6 +451,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                       required: true,
                       message: formatMessage({
                         id: 'odc.AlterDdlTask.CreateModal.EnterATimeoutPeriod',
+                        defaultMessage: '请输入超时时间',
                       }), //请输入超时时间
                     },
                     {
@@ -417,6 +459,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                       max: 3600,
                       message: formatMessage({
                         id: 'odc.AlterDdlTask.CreateModal.UpToSeconds',
+                        defaultMessage: '最大不超过 3600 秒',
                       }), //最大不超过 3600 秒
                     },
                   ]}
@@ -429,6 +472,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                   {
                     formatMessage({
                       id: 'odc.AlterDdlTask.CreateModal.Seconds',
+                      defaultMessage: '秒',
                     }) /*秒*/
                   }
                 </span>
@@ -442,6 +486,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                     {
                       formatMessage({
                         id: 'odc.AlterDdlTask.CreateModal.NumberOfFailedRetries',
+                        defaultMessage: '失败重试次数',
                       }) /*失败重试次数*/
                     }
                   </HelpDoc>
@@ -453,6 +498,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                     required: true,
                     message: formatMessage({
                       id: 'odc.AlterDdlTask.CreateModal.PleaseEnterTheNumberOf',
+                      defaultMessage: '请输入失败重试次数',
                     }), //请输入失败重试次数
                   },
                 ]}
@@ -464,6 +510,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           <Form.Item
             label={formatMessage({
               id: 'odc.AlterDdlTask.CreateModal.SourceTableCleanupPolicyAfter',
+              defaultMessage: '完成后源表清理策略',
             })}
             /*完成后源表清理策略*/ name="originTableCleanStrategy"
             initialValue={ClearStrategy.ORIGIN_TABLE_RENAME_AND_RESERVED}
@@ -472,6 +519,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                 required: true,
                 message: formatMessage({
                   id: 'odc.AlterDdlTask.CreateModal.SelectACleanupPolicy',
+                  defaultMessage: '请选择清理策略',
                 }), //请选择清理策略
               },
             ]}
@@ -481,6 +529,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.AlterDdlTask.CreateModal.RenameNotProcessed',
+                    defaultMessage: '重命名不处理',
                   }) /*重命名不处理*/
                 }
               </Radio>
@@ -488,6 +537,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.AlterDdlTask.CreateModal.DeleteNow',
+                    defaultMessage: '立即删除',
                   }) /*立即删除*/
                 }
               </Radio>
@@ -497,6 +547,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         <FormItemPanel
           label={formatMessage({
             id: 'odc.AlterDdlTask.CreateModal.TaskSettings',
+            defaultMessage: '任务设置',
           })}
           /*任务设置*/ keepExpand
         >
@@ -504,6 +555,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           <Form.Item
             label={formatMessage({
               id: 'odc.AlterDdlTask.CreateModal.TaskErrorHandling',
+              defaultMessage: '任务错误处理',
             })}
             /*任务错误处理*/ name="errorStrategy"
             initialValue={ErrorStrategy.ABORT}
@@ -512,6 +564,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                 required: true,
                 message: formatMessage({
                   id: 'odc.AlterDdlTask.CreateModal.SelectTaskErrorHandling',
+                  defaultMessage: '请选择任务错误处理',
                 }), //请选择任务错误处理
               },
             ]}
@@ -521,6 +574,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.AlterDdlTask.CreateModal.StopATask',
+                    defaultMessage: '停止任务',
                   }) /*停止任务*/
                 }
               </Radio>
@@ -528,6 +582,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.AlterDdlTask.CreateModal.IgnoreErrorsToContinueThe',
+                    defaultMessage: '忽略错误继续任务',
                   }) /*忽略错误继续任务*/
                 }
               </Radio>
@@ -537,6 +592,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             label={
               formatMessage({
                 id: 'odc.src.component.Task.AlterDdlTask.CreateModal.TableNameSwitchingMethod',
+                defaultMessage: '表名切换方式',
               }) /* 表名切换方式 */
             }
             name="swapTableType"
@@ -546,6 +602,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                 required: true,
                 message: formatMessage({
                   id: 'odc.src.component.Task.AlterDdlTask.CreateModal.PleaseSelectTheTableName',
+                  defaultMessage: '请选择表名切换方式',
                 }), //'请选择表名切换方式'
               },
             ]}
@@ -555,6 +612,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.src.component.Task.AlterDdlTask.CreateModal.AutomaticSwitch',
+                    defaultMessage: '自动切换',
                   }) /* 自动切换 */
                 }
               </Radio>
@@ -562,15 +620,23 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                 {
                   formatMessage({
                     id: 'odc.src.component.Task.AlterDdlTask.CreateModal.ManualSwitch',
+                    defaultMessage: '手动切换',
                   }) /* 手工切换 */
                 }
               </Radio>
             </Radio.Group>
           </Form.Item>
+          {settingStore.enableOSCLimiting && (
+            <ThrottleFormItem
+              initialValue={initialValue}
+              maxRowLimit={OscMaxRowLimit}
+              maxDataSizeLimit={OscMaxDataSizeLimit}
+            />
+          )}
         </FormItemPanel>
         <DescriptionInput />
       </Form>
     </Drawer>
   );
 };
-export default inject('modalStore')(observer(CreateDDLTaskModal));
+export default inject('modalStore', 'settingStore')(observer(CreateDDLTaskModal));

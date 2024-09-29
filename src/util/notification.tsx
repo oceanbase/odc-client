@@ -41,7 +41,12 @@ const ExtraMessage: React.FC<ExtraMessageProps> = (props: ExtraMessageProps) => 
       <>
         <div>
           <strong>
-            {formatMessage({ id: 'odc.src.util.notification.ErrorMessage' }) /*报错信息:*/}
+            {
+              formatMessage({
+                id: 'odc.src.util.notification.ErrorMessage',
+                defaultMessage: '报错信息:',
+              }) /*报错信息:*/
+            }
           </strong>
         </div>
         {extraMessageParamsKeys.map(
@@ -67,7 +72,7 @@ function Description(props: DescriptionProps) {
     }
     Modal.info({
       zIndex: 1011,
-      title: formatMessage({ id: 'odc.src.util.notification.Details' }), // 详情
+      title: formatMessage({ id: 'odc.src.util.notification.Details', defaultMessage: '详情' }), // 详情
       content: <div>{description}</div>,
       onCancel: () => {
         setIsOpen(false);
@@ -86,6 +91,7 @@ function Description(props: DescriptionProps) {
         {
           formatMessage({
             id: 'odc.src.util.notification.NoErrorMessage',
+            defaultMessage: '无错误信息',
           })
           /* 无错误信息 */
         }
@@ -102,7 +108,12 @@ function Description(props: DescriptionProps) {
     <span>
       {!!requestId && (
         <div style={{ color: 'var(--text-color-hint)' }}>
-          {formatMessage({ id: 'odc.src.util.notification.RequestId' }) /*请求Id：*/}
+          {
+            formatMessage({
+              id: 'odc.src.util.notification.RequestId',
+              defaultMessage: '请求 ID：',
+            }) /*请求Id：*/
+          }
           {requestId}
         </div>
       )}
@@ -114,6 +125,7 @@ function Description(props: DescriptionProps) {
           {
             formatMessage({
               id: 'odc.src.util.notification.Details',
+              defaultMessage: '详情',
             }) /* 详情 */
           }
         </a>
@@ -165,7 +177,10 @@ export default {
       notification.close(notificationCache.get(description));
     }
     notification.error({
-      message: formatMessage({ id: 'odc.src.util.notification.RequestFailed' }), // 请求失败
+      message: formatMessage({
+        id: 'odc.src.util.notification.RequestFailed',
+        defaultMessage: '请求失败',
+      }), // 请求失败
       description: (
         <Description description={description} requestId={requestId} {...extraMessage} />
       ),
@@ -194,7 +209,7 @@ export default {
       notification.close(notificationCache.get(description));
     }
     notification.warn({
-      message: formatMessage({ id: 'odc.src.util.notification.Cue' }), // 提示
+      message: formatMessage({ id: 'odc.src.util.notification.Cue', defaultMessage: '提示' }), // 提示
       description: <Description description={description} requestId={requestId} />,
       duration,
       key,

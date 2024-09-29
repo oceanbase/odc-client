@@ -23,7 +23,7 @@ const Task = () => {
     <PageContainer
       titleProps={{
         type: TitleType.TEXT,
-        title: formatMessage({ id: 'odc.page.Task.Ticket' }), //工单
+        title: formatMessage({ id: 'odc.page.Task.Ticket', defaultMessage: '工单' }), //工单
         showDivider: true,
       }}
     >

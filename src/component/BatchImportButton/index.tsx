@@ -25,7 +25,7 @@ interface IProps {
   type?: 'button' | 'string';
   action: string;
   description: string;
-  templateName: string;
+  templatePath: string;
   data?: any;
   noButton?: boolean;
   getResultByFiles: (files: UploadFile[]) => any[];
@@ -69,6 +69,7 @@ const BatchImportButton = (props, ref) => {
           {
             formatMessage({
               id: 'odc.component.BatchImportButton.BatchImport',
+              defaultMessage: '批量导入',
             }) /*批量导入*/
           }
         </Button>
@@ -77,6 +78,7 @@ const BatchImportButton = (props, ref) => {
           {
             formatMessage({
               id: 'odc.component.BatchImportButton.BatchImport',
+              defaultMessage: '批量导入',
             }) /*批量导入*/
           }
         </span>

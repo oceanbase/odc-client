@@ -73,7 +73,7 @@ interface IProps<RecordType> {
   operationContent?: IOperationContent;
   // 是否展示 操作连 筛选区&自定义操作区 分割标记
   isSplit?: boolean;
-  // 行选择 相关配置
+  // 行选择 相关配置 (初使用时容易与antd的rowSelection混淆重复导致bug)
   rowSelecter?: IRowSelecter<RecordType>;
   // 行选择状态回调
   rowSelectedCallback?: (selectedRowKeys: any[]) => void;
@@ -276,12 +276,11 @@ const CommonTable: <RecordType extends object = any>(
   }
 
   function handleRowKeyChange(selected: boolean, changeKeys: number[]) {
-    const keys = [...selectedRowKeys];
+    let keys = [...selectedRowKeys];
     if (selected) {
       keys.push(...changeKeys);
     } else {
-      const firstKeyIndex = keys.indexOf(changeKeys[0]);
-      keys.splice(firstKeyIndex, changeKeys.length);
+      keys = keys.filter((item) => !changeKeys.includes(item));
     }
     setSelectedRowKeys(keys);
   }
@@ -398,6 +397,7 @@ const CommonTable: <RecordType extends object = any>(
           onOperationClick={handleOperationClick}
         />
       )}
+
       {alertInfoVisible && (
         <Alert
           className={styles.alertInfo}
@@ -408,6 +408,7 @@ const CommonTable: <RecordType extends object = any>(
           onClose={handleCloseAlert}
         />
       )}
+
       {showInfoBar && (
         <TableInfo
           {...rowSelecter}
@@ -416,6 +417,7 @@ const CommonTable: <RecordType extends object = any>(
           onSelectAllRows={handleSelectAllRows}
         />
       )}
+
       {
         <Spin key="wrapTableSpin" spinning={loading}>
           <Table
@@ -480,6 +482,7 @@ const CommonTable: <RecordType extends object = any>(
                 return formatMessage(
                   {
                     id: 'odc.components.CommonTable.TotalTotals',
+                    defaultMessage: '共 {totals} 条',
                   },
                   { totals },
                 ); // `共 ${totals} 条`

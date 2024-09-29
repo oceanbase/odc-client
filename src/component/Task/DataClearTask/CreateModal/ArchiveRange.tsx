@@ -16,15 +16,14 @@
 
 import { ITable } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Radio, Select, Space, Checkbox, Typography } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Form, Input, Radio, Select, Typography } from 'antd';
 import classNames from 'classnames';
-import { IArchiveRange } from './index';
+import { useEffect, useState } from 'react';
 import ArchiveRangeTip from '../../component/ArchiveRangeTip';
-import styles from './index.less';
-import { useState, useEffect } from 'react';
 import { PartitionTextArea } from '../../component/PartitionTextArea';
-import type { FormInstance } from 'antd/lib/form';
+import { IArchiveRange } from './index';
+import styles from './index.less';
 
 const { TextArea } = Input;
 const { Text, Link } = Typography;
@@ -32,11 +31,11 @@ const { Text, Link } = Typography;
 interface IProps {
   tables: ITable[];
   needCheckBeforeDelete?: boolean;
-  form?: FormInstance<any>;
+  checkPartition?: boolean;
 }
 const ArchiveRange: React.FC<IProps> = (props) => {
-  const { tables, needCheckBeforeDelete = false, form } = props;
-  const [enablePartition, setEnablePartition] = useState<boolean>(false);
+  const { tables, needCheckBeforeDelete = false, checkPartition } = props;
+  const [enablePartition, setEnablePartition] = useState<boolean>(checkPartition);
   const tablesOptions = tables?.map((item) => ({
     label: item.tableName,
     value: item.tableName,
@@ -45,14 +44,15 @@ const ArchiveRange: React.FC<IProps> = (props) => {
   const hasAdvancedOptionCol = enablePartition || needCheckBeforeDelete;
 
   useEffect(() => {
-    setEnablePartition(!!form?.getFieldsValue()?.tables?.find((i) => i?.partitions));
-  }, [form?.getFieldsValue()?.tables]);
+    setEnablePartition(checkPartition);
+  }, [checkPartition]);
 
   return (
     <>
       <Form.Item
         label={formatMessage({
           id: 'odc.DataClearTask.CreateModal.ArchiveRange.CleaningRange',
+          defaultMessage: '清理范围',
         })}
         /*清理范围*/ name="archiveRange"
         required
@@ -62,6 +62,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.DataClearTask.CreateModal.ArchiveRange.PartialCleaning',
+                defaultMessage: '部分清理',
               }) /*部分清理*/
             }
           </Radio>
@@ -69,6 +70,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
             {
               formatMessage({
                 id: 'odc.DataClearTask.CreateModal.ArchiveRange.CleanUpTheEntireDatabase',
+                defaultMessage: '整库清理',
               }) /*整库清理*/
             }
           </Radio>
@@ -121,6 +123,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                     {
                       formatMessage({
                         id: 'odc.DataClearTask.CreateModal.ArchiveRange.CleaningConditions',
+                        defaultMessage: '清理条件',
                       }) /*清理条件*/
                     }
 
@@ -128,6 +131,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                       {
                         formatMessage({
                           id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Optional',
+                          defaultMessage: '(可选)',
                         }) /*(可选)*/
                       }
                     </Text>
@@ -135,6 +139,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                       label={
                         formatMessage({
                           id: 'odc.src.component.Task.DataClearTask.CreateModal.CleanUp',
+                          defaultMessage: '清理',
                         }) /* 清理 */
                       }
                     />
@@ -153,6 +158,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         {
                           formatMessage({
                             id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Optional',
+                            defaultMessage: '(可选)',
                           }) /*(可选)*/
                         }
                       </Text>
@@ -179,6 +185,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                               required: true,
                               message: formatMessage({
                                 id: 'odc.DataClearTask.CreateModal.ArchiveRange.PleaseSelect',
+                                defaultMessage: '请选择',
                               }), //请选择
                             },
                           ]}
@@ -188,6 +195,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             showSearch
                             placeholder={formatMessage({
                               id: 'odc.DataClearTask.CreateModal.ArchiveRange.PleaseSelect',
+                              defaultMessage: '请选择',
                             })}
                             /*请选择*/ options={tablesOptions}
                             filterOption={(input, option) =>
@@ -199,6 +207,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                           <Input
                             placeholder={formatMessage({
                               id: 'odc.DataClearTask.CreateModal.ArchiveRange.EnterACleanupCondition',
+                              defaultMessage: '请输入清理条件',
                             })} /*请输入清理条件*/
                           />
                         </Form.Item>
@@ -217,6 +226,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                                   placeholder={
                                     formatMessage({
                                       id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
+                                      defaultMessage: '请输入',
                                     }) /*"请输入"*/
                                   }
                                 />
@@ -248,6 +258,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         {
                           formatMessage({
                             id: 'odc.DataClearTask.CreateModal.ArchiveRange.Add',
+                            defaultMessage: '添加',
                           }) /*添加*/
                         }
                       </Button>

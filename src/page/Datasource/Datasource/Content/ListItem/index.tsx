@@ -57,8 +57,9 @@ const ListItem: React.FC<IProps> = function ({
                 formatMessage(
                   {
                     id: 'odc.Content.ListItem.ClusterCluster',
+                    defaultMessage: '集群: {cluster}',
                   },
-                  { cluster: cluster },
+                  { cluster },
                 ) /*集群: {cluster}*/
               }
             </Space>
@@ -79,8 +80,9 @@ const ListItem: React.FC<IProps> = function ({
                 formatMessage(
                   {
                     id: 'odc.Content.ListItem.TenantTenant',
+                    defaultMessage: '租户: {tenant}',
                   },
-                  { tenant: tenant },
+                  { tenant },
                 ) /*租户: {tenant}*/
               }
             </Space>
@@ -101,8 +103,9 @@ const ListItem: React.FC<IProps> = function ({
                   formatMessage(
                     {
                       id: 'odc.Content.ListItem.HostPortHost',
+                      defaultMessage: '主机:端口: {host}',
                     },
-                    { host: host },
+                    { host },
                   ) /*主机:端口: {host}*/
                 }
               </Space>
@@ -116,6 +119,7 @@ const ListItem: React.FC<IProps> = function ({
             </div>
           </Tooltip>
         )}
+
         <div className={classNames(styles.base, styles.env)}>{env}</div>
         <div className={classNames(styles.base, styles.action)}>{action}</div>
       </div>
