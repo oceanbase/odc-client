@@ -15,6 +15,7 @@
  */
 
 import {
+  againTask,
   createTask,
   downloadTaskFlow,
   executeTask,
@@ -231,6 +232,17 @@ const ActionBar: React.FC<IProps> = inject(
             );
           }
         }
+      }
+    };
+
+    const handleAgain = async () => {
+      const { id } = task;
+
+      const res = await againTask({ id: id });
+      if (res) {
+        message.success('发起重试成功');
+        props?.onReloadList?.();
+        props?.onReload?.();
       }
     };
 
@@ -573,6 +585,14 @@ const ActionBar: React.FC<IProps> = inject(
         action: handleReTry,
       };
 
+      const againBtn = {
+        key: 'again',
+        text: '重试',
+        //再次发起
+        type: 'button',
+        action: handleAgain,
+      };
+
       const downloadBtn = {
         key: 'download',
         text: formatMessage({
@@ -779,6 +799,15 @@ const ActionBar: React.FC<IProps> = inject(
               tools = [];
             }
             tools = setProjectOwnerStopBtn(tools, stopBtn);
+            break;
+          }
+          case TaskStatus.EXECUTION_ABNORMAL: {
+            if (isOwner) {
+              tools = [reTryBtn, againBtn, stopBtn];
+            }
+            if (isApprover) {
+              tools = [];
+            }
             break;
           }
           default:
