@@ -3038,6 +3038,7 @@ export enum TaskStatus {
   TIMEOUT = 'TIMEOUT',
   PRE_CHECK_FAILED = 'PRE_CHECK_FAILED',
   CREATING = 'CREATING',
+  EXECUTION_ABNORMAL = 'EXECUTION_ABNORMAL', // 执行异常
 }
 
 export enum SubTaskStatus {
@@ -3045,8 +3046,9 @@ export enum SubTaskStatus {
   RUNNING = 'RUNNING', // 运行中
   DONE = 'DONE', // 执行完成
   FAILED = 'FAILED', // 执行失败
-  CANCELED = 'CANCELED',
-} // 执行取消
+  CANCELED = 'CANCELED', // 执行取消
+  ABNORMAL = 'ABNORMAL', // 执行异常
+}
 
 export enum StatusNodeType {
   FLOW_TASK = 'FLOW_TASK',
@@ -3898,4 +3900,8 @@ export enum EStatus {
   SUBMIT = 'submit',
   APPROVAL = 'approval',
   DISABLED = 'disabled',
+}
+
+export interface AgainTaskRecord {
+  id: string | number;
 }
