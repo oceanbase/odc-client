@@ -79,28 +79,10 @@ export enum EOperator {
   NOT_IN = 'NOT_IN',
 }
 export const OperatorMap = {
-  [EOperator.EQUALS]: formatMessage({
-    id: 'odc.src.page.Secure.RiskLevel.Equal',
-    defaultMessage: '等于',
-  }), //'等于'
-  [EOperator.NOT_EQUALS]: formatMessage({
-    id: 'odc.src.page.Secure.RiskLevel.NotEqualTo',
-    defaultMessage: '不等于',
-  }), //'不等于'
-  [EOperator.CONTAINS]: formatMessage({
-    id: 'odc.src.page.Secure.RiskLevel.Include',
-    defaultMessage: '包含',
-  }), //'包含'
-  [EOperator.NOT_CONTAINS]: formatMessage({
-    id: 'odc.src.page.Secure.RiskLevel.NotInclude',
-    defaultMessage: '不包含',
-  }), //'不包含'
-  [EOperator.IN]: formatMessage({
-    id: 'odc.src.page.Secure.RiskLevel.Exist',
-    defaultMessage: '在',
-  }), //'在'
-  [EOperator.NOT_IN]: formatMessage({
-    id: 'odc.src.page.Secure.RiskLevel.Absence',
-    defaultMessage: '不在',
-  }), //'不在'
+  [EOperator.EQUALS]: '=', //'等于'
+  [EOperator.NOT_EQUALS]: '!=', //'不等于'
+  [EOperator.CONTAINS]: 'contains', //'包含'
+  [EOperator.NOT_CONTAINS]: 'not contains', //'不包含'
+  [EOperator.IN]: 'in', //'在'
+  [EOperator.NOT_IN]: 'not in', //'不在'
 };
