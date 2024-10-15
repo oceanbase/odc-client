@@ -137,6 +137,7 @@ export enum IManagerDetailTabs {
   ROLE = 'ROLE',
   TASK_FLOW = 'TASK_FLOW',
 }
+
 /**
  * ODC_CONNECTION
 ODC_PROJECT
@@ -3904,4 +3905,15 @@ export enum EStatus {
 
 export interface AgainTaskRecord {
   id: string | number;
+}
+
+// 无锁结构变更任务进度状态
+export enum ProgressOfLocklessStructureChangeTaskStatusMap {
+  CREATE_GHOST_TABLES = 'CREATE_GHOST_TABLES', //'创建影子表'
+  CREATE_DATA_TASK = 'CREATE_DATA_TASK', //'创建数据迁移任务'
+  MONITOR_DATA_TASK_TRANSFER_PRECHECK = 'MONITOR_DATA_TASK_TRANSFER_PRECHECK', //'数据迁移任务预检查'
+  MONITOR_DATA_TASK_FULL_TRANSFER = 'MONITOR_DATA_TASK_FULL_TRANSFER', //数据迁移任务迁移全量数据'
+  MONITOR_DATA_TASK_TRANSFER_APP_SWITCH_FALSE = 'MONITOR_DATA_TASK_TRANSFER_APP_SWITCH_FALSE', //'数据迁移任务迁移增量数据'
+  SWAP_TABLE = 'SWAP_TABLE', // '切换中'
+  CLEAR_RESOURCE = 'CLEAR_RESOURCE', // '释放迁移任务资源'
 }

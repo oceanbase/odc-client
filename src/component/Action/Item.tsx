@@ -17,7 +17,7 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Button, Tooltip, Typography } from 'antd';
 import { TooltipPlacement } from 'antd/lib/tooltip';
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 export interface BaseProps {
   /** 是否显示 */
@@ -28,7 +28,7 @@ export interface BaseProps {
   type?: 'default' | 'primary';
   className?: string;
   enableLoading?: boolean;
-  tooltip?: string;
+  tooltip?: string | React.ReactElement;
   placement?: TooltipPlacement;
   loading?: boolean;
   /** loading的时候覆盖children，用于icon的场景 */

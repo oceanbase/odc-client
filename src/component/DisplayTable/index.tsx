@@ -146,7 +146,6 @@ export default class DisplayTable extends React.Component<
     const { defaultPageSize, columnWidthMap } = this.state;
 
     const resizableColumns = this.getResizableColumns();
-    const a = enableResize ? resizableColumns : columns;
 
     return (
       <div className={`${styles.table} ${className}`}>
@@ -176,7 +175,7 @@ export default class DisplayTable extends React.Component<
             }
           }
           components={enableResize ? this.components : null}
-          scroll={{ x: 650 }}
+          scroll={{ x: 'max-content' }}
         />
       </div>
     );
