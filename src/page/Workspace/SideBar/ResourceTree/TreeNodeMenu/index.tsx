@@ -242,6 +242,9 @@ const TreeNodeMenu = (props: IProps) => {
     <>
       <Dropdown
         menu={{
+          style: {
+            minWidth: '160px',
+          },
           items: allItemsProp,
           onClick: (info) => {
             info?.domEvent?.stopPropagation();
