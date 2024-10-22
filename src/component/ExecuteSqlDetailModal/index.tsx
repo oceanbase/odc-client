@@ -238,7 +238,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
         >
           {option?.map((i) => {
             return (
-              <Radio.Button value={i.value}>
+              <Radio.Button value={i.value} key={i?.value}>
                 <Tooltip title={i?.message}>{i?.icon}</Tooltip>
               </Radio.Button>
             );
@@ -297,7 +297,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
           >
             {traceViewOptions.map((i) => {
               return (
-                <Radio.Button value={i.value}>
+                <Radio.Button value={i.value} key={i?.value}>
                   <Tooltip title={i?.message}>{i?.icon}</Tooltip>
                 </Radio.Button>
               );
@@ -411,7 +411,7 @@ const ExecuteSQLDetailModal: React.FC<IProps> = ({ modalStore }: IProps) => {
                 >
                   {page?.radioOption.map((i) => {
                     return (
-                      <Radio.Button value={i.value} disabled={i.disabled}>
+                      <Radio.Button value={i.value} disabled={i.disabled} key={i?.value}>
                         <Tooltip title={getDisabledTooltip(i.label)}>{i.label}</Tooltip>
                       </Radio.Button>
                     );
