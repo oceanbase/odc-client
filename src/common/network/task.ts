@@ -728,3 +728,21 @@ export async function againTask(data: Partial<AgainTaskRecord>): Promise<number>
 
   return res?.successful;
 }
+
+/**
+ * 无锁结构变更阿里云检查用户OMS资源
+ */
+export async function queryOmsWorkerInstance(): Promise<{
+  successful: boolean;
+  data: { hasUnconfiguredProject?: boolean };
+}> {
+  const res = await request.get(`/api/v2/aliyun/osc/queryOmsWorkerInstance`);
+
+  if (res.successful) {
+    return {
+      successful: res.successful,
+      data: JSON.parse(res.data || {}),
+    };
+  }
+  return res;
+}
