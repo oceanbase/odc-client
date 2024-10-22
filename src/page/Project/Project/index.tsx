@@ -35,6 +35,8 @@ import ProjectContext from '../ProjectContext';
 import CreateProjectDrawer from './CreateProject/Drawer';
 import styles from './index.less';
 import ListItem from './ListItem';
+import userStore from '@/store/login';
+
 const { Title, Text } = Typography;
 const titleOptions: {
   label: string;
@@ -72,6 +74,9 @@ const Project = () => {
   const context = useContext(ProjectContext);
   const { project } = context;
   const isProjectDeleted = projectType === 'deleted';
+
+  const sessionStorageKey = `projectSearch-${userStore?.organizationId}-${userStore?.user?.id}`;
+
   const appendData = async (currentPage, dataSource, projectType, projectSearchName) => {
     setLoading(true);
     try {
@@ -92,19 +97,24 @@ const Project = () => {
       setLoading(false);
     }
   };
+
   function reload(newProjectType?: string, projectSearchName?: string) {
     setCurrentPage(0);
     setDataSource([]);
     appendData(0, [], newProjectType || projectType, projectSearchName);
   }
+
   useEffect(() => {
-    appendData(currentPage, dataSource, projectType, projectSearchName);
+    // sessionStorage存在搜索值时，刷新页面请求时需带上搜索值
+    const sessionStorageValue = sessionStorage.getItem(sessionStorageKey);
+    appendData(currentPage, dataSource, projectType, sessionStorageValue || projectSearchName);
   }, []);
   const onScroll = (e: React.UIEvent<HTMLElement, UIEvent>) => {
     if (e.currentTarget.scrollHeight - e.currentTarget.scrollTop === domRef.current?.clientHeight) {
       appendData(currentPage, dataSource, projectType, projectSearchName);
     }
   };
+
   return (
     <PageContainer
       titleProps={{
@@ -143,7 +153,14 @@ const Project = () => {
             </Space>
             <Space size={12}>
               <Search
+                defaultValue={sessionStorage.getItem(sessionStorageKey) || ''}
                 onSearch={(v) => {
+                  if (v) {
+                    sessionStorage.setItem(sessionStorageKey, v);
+                  } else {
+                    sessionStorage.removeItem(sessionStorageKey);
+                  }
+
                   setProjectSearchName(v);
                   reload(null, v);
                 }}

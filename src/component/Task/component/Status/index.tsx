@@ -398,6 +398,17 @@ export const status = {
       defaultMessage: '已完成',
     }), //已完成
   },
+  [TaskStatus.EXECUTION_ABNORMAL]: {
+    icon: (
+      <CloseCircleFilled
+        style={{
+          color: 'var(--text-color-error)',
+        }}
+      />
+    ),
+
+    text: '执行异常', //执行异常
+  },
 };
 
 // 周期任务状态
@@ -613,6 +624,17 @@ export const subTaskStatus = {
       id: 'odc.component.Status.Running',
       defaultMessage: '执行中',
     }), //执行中
+  },
+  [SubTaskStatus.ABNORMAL]: {
+    icon: (
+      <CloseCircleFilled
+        style={{
+          color: 'var(--text-color-error)',
+        }}
+      />
+    ),
+
+    text: '执行异常',
   },
 };
 

@@ -21,18 +21,24 @@ import { TableProps } from 'antd/es/table';
 import { FilterValue } from 'antd/lib/table/interface';
 import styles from './index.less';
 import classNames from 'classnames';
+import { ResizeTitle } from '@/component/CommonTable/component/ResizeTitle';
+import { DEFAULT_COLUMN_WIDTH } from '@/component/CommonTable/const';
 
 interface IProps<T> extends TableProps<T> {
   isExpandedRowRender?: boolean;
   loadData: (page: TablePaginationConfig, filters: Record<string, FilterValue>) => void;
+  // 是否启用 列宽可拖拽
+  enableResize?: boolean;
 }
 
 export default function MiniTable<T extends object>({
   loadData,
   isExpandedRowRender = false,
+  enableResize = false,
   ...restProps
 }: IProps<T>) {
   const [pageSize, setPageSize] = useState(0);
+  const [columnWidthMap, setColumnWidthMap] = useState(null);
 
   const domRef = useRef<HTMLDivElement>();
 
@@ -77,6 +83,18 @@ export default function MiniTable<T extends object>({
     loadData(page, filters);
   };
 
+  function handleResize(oriColumn) {
+    return (e, { size }) => {
+      if (size?.width < oriColumn?.width) {
+        return;
+      }
+      setColumnWidthMap({
+        ...columnWidthMap,
+        [oriColumn.key]: size?.width,
+      });
+    };
+  }
+
   return (
     <div ref={domRef} style={{ height: '100%' }}>
       <Table<T>
@@ -85,6 +103,32 @@ export default function MiniTable<T extends object>({
           [styles.expandedRowRender]: isExpandedRowRender,
         })}
         {...cloneProps}
+        components={
+          enableResize
+            ? {
+                header: {
+                  cell: ResizeTitle,
+                },
+              }
+            : undefined
+        }
+        columns={
+          enableResize
+            ? restProps?.columns?.map((oriColumn) => {
+                return {
+                  ...oriColumn,
+                  width:
+                    columnWidthMap?.[oriColumn?.key] || oriColumn.width || DEFAULT_COLUMN_WIDTH,
+                  onHeaderCell: (column) =>
+                    ({
+                      width:
+                        columnWidthMap?.[column?.key] || oriColumn.width || DEFAULT_COLUMN_WIDTH,
+                      onResize: handleResize(oriColumn),
+                    } as React.HTMLAttributes<HTMLElement>),
+                };
+              })
+            : restProps?.columns || []
+        }
       />
     </div>
   );
