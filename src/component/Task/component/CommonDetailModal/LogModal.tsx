@@ -61,7 +61,7 @@ const LogModal: React.FC<IProps> = function (props) {
     if (scheduleId && recordId) {
       const res = await getDownloadUrl(scheduleId, recordId);
       if (!!res) {
-        setDownloadUrl(`${res}?currentOrganizationId=${login.organizationId}`);
+        setDownloadUrl(res);
       }
     }
   });
