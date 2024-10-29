@@ -15,7 +15,12 @@
  */
 
 import { getDataSourceModeConfig } from '@/common/datasource';
-import { createTask, getDatasourceUsers, getLockDatabaseUserRequired } from '@/common/network/task';
+import {
+  createTask,
+  getDatasourceUsers,
+  getLockDatabaseUserRequired,
+  queryOmsWorkerInstance,
+} from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
@@ -40,6 +45,7 @@ import {
   Row,
   Select,
   Space,
+  Tooltip,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
@@ -48,6 +54,7 @@ import ThrottleFormItem from '../../component/ThrottleFormItem';
 import { OscMaxDataSizeLimit, OscMaxRowLimit } from '../../const';
 
 import styles from './index.less';
+import { isBoolean } from 'lodash';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -78,6 +85,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [datasourceUser, setDatasourceUser] = useState<IDatasourceUser[]>([]);
+  const [canCreateTask, setCanCreateTask] = useState(true); // 判断是否可以进行创建任务
   const [lockDatabaseUserRequired, setLockDatabaseUserRequired] = useState(false);
   const databaseId = Form.useWatch('databaseId', form);
   const { database } = useDBSession(databaseId);
@@ -90,6 +98,12 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
     label: name,
     value: name,
   }));
+
+  // 当前路径处理 为了处理跳转到其他页面
+  const { origin, pathname } = new URL(window.location.href);
+  // /截取出来后第一个为空值，进行剔除
+  const [regionId] = pathname.split('/').slice(1);
+
   const hadleReset = () => {
     form.resetFields(null);
     setHasEdit(false);
@@ -217,6 +231,22 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
     }
   }, [ddlAlterData?.databaseId]);
 
+  useEffect(() => {
+    if (!modalStore.createDDLAlterVisible) return;
+    settingStore.enableOSCLimiting &&
+      queryOmsWorkerInstance().then((res) => {
+        //接口返回正常 &&  hasUnconfiguredProject有值且为布尔类型的 false 时 禁用新建
+        if (
+          isBoolean(res?.data?.hasUnconfiguredProject) &&
+          !res?.data?.hasUnconfiguredProject &&
+          res.successful
+        ) {
+          setCanCreateTask(false);
+          return;
+        }
+      });
+  }, [modalStore.createDDLAlterVisible]);
+
   return (
     <Drawer
       destroyOnClose
@@ -240,14 +270,22 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
               }) /*取消*/
             }
           </Button>
-          <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
-            {
-              formatMessage({
-                id: 'odc.AlterDdlTask.CreateModal.Create',
-                defaultMessage: '新建',
-              }) /*新建*/
-            }
-          </Button>
+
+          <Tooltip title={canCreateTask ? '' : '请购买数据传输资源'}>
+            <Button
+              type="primary"
+              loading={confirmLoading}
+              onClick={handleSubmit}
+              disabled={!canCreateTask}
+            >
+              {
+                formatMessage({
+                  id: 'odc.AlterDdlTask.CreateModal.Create',
+                  defaultMessage: '新建',
+                }) /*新建*/
+              }
+            </Button>
+          </Tooltip>
         </Space>
       }
       open={modalStore.createDDLAlterVisible}
@@ -273,7 +311,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
               formatMessage({
                 id: 'odc.src.component.Task.AlterDdlTask.CreateModal.1BeforePerformingThe',
                 defaultMessage: '1. 执行无锁结构变更前请确保数据库服务器磁盘空间充足；',
-              }) /* 
+              }) /*
           1、执行无锁结构变更前请确保数据库服务器磁盘空间充足；
           */
             }
@@ -283,7 +321,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
               formatMessage({
                 id: 'odc.src.component.Task.AlterDdlTask.CreateModal.2WhenCreatingA',
                 defaultMessage: '2. 创建工单选择源表清理策略时建议选择保留源表；',
-              }) /* 
+              }) /*
           2、创建工单选择源表清理策略时建议选择保留源表；
           */
             }
@@ -296,7 +334,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                     id: 'odc.src.component.Task.AlterDdlTask.CreateModal.3IfTheOB',
                     defaultMessage:
                       '3. 若 OceanBase Oracle 模式版本小于 4.0.0 或 OceanBase MySQL 模式版本小于 4.3.0，表名切换之前会锁定您指定的数据库账号，并关闭该账号对应的会话。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行；',
-                  }) /* 
+                  }) /*
             3、若 OB Oracle 模式版本小于 4.0 或 OB MySQL 模式版本小于
             4.3，表名切换之前会锁定您指定的数据库账号，并 kill 该账号对应的
             session。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行；
@@ -307,6 +345,42 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           </div>
         }
       />
+      {!canCreateTask && (
+        <Alert
+          style={{
+            marginBottom: 12,
+          }}
+          type="warning"
+          showIcon
+          message={
+            formatMessage({
+              id: 'odc.src.component.Task.AlterDdlTask.CreateModal.Notice',
+              defaultMessage: '注意',
+            }) /* 注意 */
+          }
+          description={
+            <div>
+              依赖
+              <a
+                href={`${origin}/oms-v2/${regionId}/migration?pageNumber=1&type=MIGRATION`}
+                target="_blank"
+              >
+                数据迁移服务
+              </a>
+              完成数据拷贝，检查到您没有空闲的数据迁移资源。
+              <br />
+              请进行
+              <a
+                href={`https://pre-valid-common-buy.aliyun.com/?commodityCode=oceanbase_omspost_public_cn&regionId=${regionId}`}
+                target="_blank"
+              >
+                购买
+              </a>
+              ，重新配置任务。
+            </div>
+          }
+        />
+      )}
 
       <Form
         name="basic"
@@ -335,7 +409,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                       formatMessage({
                         id: 'odc.src.component.Task.AlterDdlTask.CreateModal.LockUsers.1',
                         defaultMessage: '锁定用户',
-                      }) /* 
+                      }) /*
                 锁定用户
                 */
                     }

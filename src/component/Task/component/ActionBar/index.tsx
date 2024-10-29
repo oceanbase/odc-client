@@ -15,6 +15,7 @@
  */
 
 import {
+  againTask,
   createTask,
   downloadTaskFlow,
   executeTask,
@@ -61,7 +62,6 @@ import React, { useEffect, useState } from 'react';
 import { isCycleTask, isLogicalDbChangeTask } from '../../helper';
 import RollBackModal from '../RollbackModal';
 import { useRequest } from 'ahooks';
-
 interface IProps {
   userStore?: UserStore;
   taskStore?: TaskStore;
@@ -104,19 +104,20 @@ const ActionBar: React.FC<IProps> = inject(
     const [openRollback, setOpenRollback] = useState(false);
     const [taskList, setTaskList] = useState<ICycleSubTaskRecord[]>([]);
 
+    const disabledApproval =
+      task?.status === TaskStatus.WAIT_FOR_CONFIRM && !isDetailModal ? true : disabledSubmit;
+
     useEffect(() => {
       if (task?.id && isLogicalDbChangeTask(task?.type) && isDetailModal) {
         loadtaskList();
       }
       return cancel();
     }, [task?.id]);
-
     const getScheduleTask = async () => {
       const taskList = await getDataArchiveSubTask(task?.id);
       setTaskList(taskList?.contents);
       return taskList?.contents;
     };
-
     const { run: loadtaskList, cancel } = useRequest(getScheduleTask, {
       pollingInterval: 3000,
       manual: true,
@@ -130,9 +131,6 @@ const ActionBar: React.FC<IProps> = inject(
         }
       },
     });
-
-    const disabledApproval =
-      task?.status === TaskStatus.WAIT_FOR_CONFIRM && !isDetailModal ? true : disabledSubmit;
 
     const openTaskDetail = async () => {
       props.onDetailVisible(task as TaskRecord<TaskRecordParameters>, true);
@@ -272,6 +270,17 @@ const ActionBar: React.FC<IProps> = inject(
             );
           }
         }
+      }
+    };
+
+    const handleAgain = async () => {
+      const { id } = task;
+
+      const res = await againTask({ id: id });
+      if (res) {
+        message.success('发起重试成功');
+        props?.onReloadList?.();
+        props?.onReload?.();
       }
     };
 
@@ -620,6 +629,14 @@ const ActionBar: React.FC<IProps> = inject(
         action: handleReTry,
       };
 
+      const againBtn = {
+        key: 'again',
+        text: '重试',
+        //再次发起
+        type: 'button',
+        action: handleAgain,
+      };
+
       const downloadBtn = {
         key: 'download',
         text: formatMessage({
@@ -826,6 +843,15 @@ const ActionBar: React.FC<IProps> = inject(
               tools = [];
             }
             tools = setProjectOwnerStopBtn(tools, stopBtn);
+            break;
+          }
+          case TaskStatus.EXECUTION_ABNORMAL: {
+            if (isOwner) {
+              tools = [reTryBtn, againBtn, stopBtn];
+            }
+            if (isApprover) {
+              tools = [];
+            }
             break;
           }
           default:

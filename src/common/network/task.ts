@@ -16,6 +16,7 @@
 
 import { IShadowSyncAnalysisResult } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
 import {
+  AgainTaskRecord,
   CommonTaskLogType,
   CreateStructureComparisonTaskRecord,
   CreateTaskRecord,
@@ -563,7 +564,9 @@ export async function getDataArchiveSubTask(
     size?: number;
   },
 ): Promise<IResponseData<ICycleSubTaskRecord>> {
-  const res = await request.get(`/api/v2/schedule/schedules/${taskId}/tasks`, { params });
+  const res = await request.get(`/api/v2/schedule/schedules/${taskId}/tasks`, {
+    params,
+  });
   return res?.data;
 }
 
@@ -714,4 +717,32 @@ export async function getStructrueComparisonDetail(
     `/api/v2/schema-sync/structureComparison/${taskId}/${structureComparisonId}`,
   );
   return res?.data;
+}
+
+/**
+ * 重试
+ * 无锁结构变更 执行异常时发起重试
+ */
+export async function againTask(data: Partial<AgainTaskRecord>): Promise<number> {
+  const res = await request.post(`/api/v2/osc/${data.id}/resume`);
+
+  return res?.successful;
+}
+
+/**
+ * 无锁结构变更阿里云检查用户OMS资源
+ */
+export async function queryOmsWorkerInstance(): Promise<{
+  successful: boolean;
+  data: { hasUnconfiguredProject?: boolean };
+}> {
+  const res = await request.get(`/api/v2/aliyun/osc/queryOmsWorkerInstance`);
+
+  if (res.successful) {
+    return {
+      successful: res.successful,
+      data: JSON.parse(res.data || {}),
+    };
+  }
+  return res;
 }
