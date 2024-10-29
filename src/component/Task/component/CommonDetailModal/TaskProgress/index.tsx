@@ -36,6 +36,7 @@ import { getColumnsByTaskType } from './colums';
 import styles from './index.less';
 import TaskProgressDrawer from './TaskProgressDrawer';
 import TaskProgressHeader from './TaskProgressHeader';
+import ProgressDetailsModal from './ProgressDetailsModal';
 
 interface IProps {
   taskStore?: TaskStore;
@@ -51,7 +52,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
   const [databases, setDatabases] = useState([]);
   const [detailId, setDetailId] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [progressModalOpen, setProgressModalOpen] = useState<boolean>(false);
   const { run: loadData } = useRequest(
     async () => {
       const res = await getSubTask(task.id);
@@ -98,6 +99,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
   );
   const subTask = subTasks?.find((item) => item.id === detailId);
   const resultJson = JSON.parse(subTask?.resultJson ?? '{}');
+  const parametersJson = JSON.parse(subTask?.parametersJson ?? '{}');
   const pendingExectionDatabases = databases?.filter((item) => !item?.status)?.length;
   // #endregion
 
@@ -131,6 +133,14 @@ const TaskProgress: React.FC<IProps> = (props) => {
   const handleClose = () => {
     setDrawerOpen(false);
   };
+
+  const handleProgressDetailVisible = (id: number) => {
+    setDetailId(id);
+    setProgressModalOpen(true);
+  };
+  const handleProgressModalClose = () => {
+    setProgressModalOpen(false);
+  };
   // #endregion
 
   // #region ------------------------- hooks -------------------------
@@ -145,6 +155,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
       handleDetailVisible,
       handleMultipleAsyncOpen,
       handleSwapTable,
+      handleProgressDetailVisible,
     },
     task.status,
   );
@@ -170,6 +181,12 @@ const TaskProgress: React.FC<IProps> = (props) => {
         theme={theme}
         resultJson={resultJson}
         handleClose={handleClose}
+      />
+      <ProgressDetailsModal
+        modalOpen={progressModalOpen}
+        handleClose={handleProgressModalClose}
+        parametersJson={parametersJson}
+        resultJson={resultJson}
       />
     </>
   );
