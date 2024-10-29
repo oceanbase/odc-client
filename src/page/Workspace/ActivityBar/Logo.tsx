@@ -16,7 +16,7 @@ import { formatMessage } from '@/util/intl';
  */
 
 import { ReactComponent as ODCBlackSvg } from '@/svgr/odc_logo_color.svg';
-import { isClient } from '@/util/env';
+import { haveOCP, isClient } from '@/util/env';
 import Icon, { HomeOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { useState } from 'react';
@@ -29,6 +29,10 @@ export default function Logo() {
   const backToHome = () => {
     if (isClient()) return;
     if (login.isPrivateSpace()) return;
+    if (haveOCP) {
+      window.open(location.origin + location.pathname);
+      return;
+    }
     window.open(location.origin + '/#/project');
   };
 

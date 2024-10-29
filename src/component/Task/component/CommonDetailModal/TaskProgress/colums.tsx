@@ -2,7 +2,7 @@ import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import Action from '@/component/Action';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import StatusLabel from '@/component/Task/component/Status';
-import { TaskType } from '@/d.ts';
+import { TaskStatus, TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import Icon from '@ant-design/icons';
@@ -13,6 +13,7 @@ const { Link } = Typography;
 const getColumns = (params: {
   handleDetailVisible: (id: number) => void;
   onSwapTable: (id: number) => void;
+  taskStatus: TaskStatus;
 }) => {
   return [
     {
@@ -50,6 +51,7 @@ const getColumns = (params: {
       width: 120,
       render: (_, record) => {
         const resultJson = JSON.parse(record?.resultJson);
+        const isTaskFailed = [TaskStatus.EXECUTING]?.includes(params.taskStatus);
         return (
           <>
             <Action.Link
@@ -63,7 +65,7 @@ const getColumns = (params: {
                 }) /*查看*/
               }
             </Action.Link>
-            {resultJson?.manualSwapTableEnabled && (
+            {resultJson?.manualSwapTableEnabled && !isTaskFailed && (
               <Action.Link
                 onClick={async () => {
                   params?.onSwapTable(record?.id);
@@ -234,6 +236,7 @@ export const getColumnsByTaskType = (
     handleSwapTable;
     handleMultipleAsyncOpen;
   },
+  status: TaskStatus,
 ) => {
   switch (type) {
     case TaskType.MULTIPLE_ASYNC: {
@@ -245,6 +248,7 @@ export const getColumnsByTaskType = (
       return getColumns({
         handleDetailVisible: params?.handleDetailVisible,
         onSwapTable: params?.handleSwapTable,
+        taskStatus: status,
       });
     }
   }
