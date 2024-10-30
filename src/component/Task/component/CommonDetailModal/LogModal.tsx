@@ -57,7 +57,7 @@ const LogModal: React.FC<IProps> = function (props) {
     },
   );
 
-  const { run: getLogDownLoadUrl } = useRequest(async (scheduleId, recordId, logType) => {
+  const { run: getLogDownLoadUrl } = useRequest(async (scheduleId, recordId) => {
     if (scheduleId && recordId) {
       const res = await getDownloadUrl(scheduleId, recordId);
       if (!!res) {
@@ -72,7 +72,7 @@ const LogModal: React.FC<IProps> = function (props) {
   useEffect(() => {
     if (visible) {
       getLog(scheduleId, recordId, logType);
-      getLogDownLoadUrl(scheduleId, recordId, logType);
+      getLogDownLoadUrl(scheduleId, recordId);
     }
   }, [scheduleId, recordId, visible, logType]);
 
@@ -105,7 +105,7 @@ const LogModal: React.FC<IProps> = function (props) {
         log={log}
         logType={logType}
         isLoading={loading}
-        downloadUrl={downloadUrl}
+        downloadUrl={logType === CommonTaskLogType.ALL ? downloadUrl : undefined}
         onLogTypeChange={handleLogTypeChange}
       />
     </Drawer>

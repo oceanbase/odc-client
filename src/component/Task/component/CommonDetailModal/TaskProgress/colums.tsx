@@ -2,7 +2,7 @@ import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import Action from '@/component/Action';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import StatusLabel from '@/component/Task/component/Status';
-import { SubTaskStatus, TaskType } from '@/d.ts';
+import { SubTaskStatus, TaskType, TaskStatus } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import Icon, { QuestionCircleOutlined } from '@ant-design/icons';
@@ -14,6 +14,7 @@ const getColumns = (params: {
   handleDetailVisible: (id: number) => void;
   onSwapTable: (id: number) => void;
   handleProgressDetailVisible: (id: number) => void;
+  taskStatus: TaskStatus;
 }) => {
   // 查看进度 提示文本
   const viewProgressTooltip = (
@@ -72,6 +73,7 @@ const getColumns = (params: {
       render: (_, record) => {
         const { status } = record;
         const resultJson = JSON.parse(record?.resultJson);
+        const isTaskFailed = [TaskStatus.EXECUTING]?.includes(params.taskStatus);
         return (
           <Space>
             <Action.Link
@@ -81,7 +83,7 @@ const getColumns = (params: {
             >
               查看结构
             </Action.Link>
-            {resultJson?.manualSwapTableEnabled && (
+            {resultJson?.manualSwapTableEnabled && !isTaskFailed && (
               <Action.Link
                 onClick={async () => {
                   params?.onSwapTable(record?.id);
@@ -268,6 +270,7 @@ export const getColumnsByTaskType = (
     handleMultipleAsyncOpen;
     handleProgressDetailVisible;
   },
+  status: TaskStatus,
 ) => {
   switch (type) {
     case TaskType.MULTIPLE_ASYNC: {
@@ -280,6 +283,7 @@ export const getColumnsByTaskType = (
         handleDetailVisible: params?.handleDetailVisible,
         onSwapTable: params?.handleSwapTable,
         handleProgressDetailVisible: params?.handleProgressDetailVisible,
+        taskStatus: status,
       });
     }
   }

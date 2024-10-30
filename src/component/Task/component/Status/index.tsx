@@ -541,7 +541,6 @@ export const cycleStatus = {
         }}
       />
     ),
-
     text: formatMessage({
       id: 'src.component.Task.component.Status.3DCF46EC',
       defaultMessage: '创建中',
@@ -648,7 +647,6 @@ export const logicDBChangeTaskStatus = {
         }}
       />
     ),
-
     text: formatMessage({
       id: 'src.component.Task.component.Status.64D3C12B',
       defaultMessage: '执行失败',
@@ -666,7 +664,6 @@ export const logicDBChangeTaskStatus = {
         }}
       />
     ),
-
     text: formatMessage({
       id: 'src.component.Task.component.Status.1B9301A5',
       defaultMessage: '待执行',
@@ -680,7 +677,6 @@ export const logicDBChangeTaskStatus = {
         }}
       />
     ),
-
     text: formatMessage({
       id: 'src.component.Task.component.Status.2497FE39',
       defaultMessage: '执行中',
@@ -694,7 +690,6 @@ export const logicDBChangeTaskStatus = {
         }}
       />
     ),
-
     text: formatMessage({
       id: 'src.component.Task.component.Status.8FA22B8A',
       defaultMessage: '执行成功',
@@ -715,7 +710,6 @@ export const logicDBChangeTaskStatus = {
         }}
       />
     ),
-
     text: formatMessage({
       id: 'src.component.Task.component.Status.CA4AFAD3',
       defaultMessage: '跳过中',
@@ -736,7 +730,6 @@ export const logicDBChangeTaskStatus = {
         }}
       />
     ),
-
     text: formatMessage({
       id: 'src.component.Task.component.Status.726F85D7',
       defaultMessage: '终止中',
@@ -750,7 +743,6 @@ export const logicDBChangeTaskStatus = {
         }}
       />
     ),
-
     text: formatMessage({
       id: 'src.component.Task.component.Status.BB5E3650',
       defaultMessage: '终止失败',
