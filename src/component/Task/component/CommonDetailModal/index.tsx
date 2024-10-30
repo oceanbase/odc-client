@@ -18,7 +18,7 @@ import TaskLog from '@/component/Task/component/Log';
 import StatusLabel from '@/component/Task/component/Status';
 import type { ITaskDetailModalProps } from '@/component/Task/interface';
 import { TaskDetailType } from '@/component/Task/interface';
-import { ITaskResult, TaskDetail, TaskRecordParameters, TaskType } from '@/d.ts';
+import { ITaskResult, TaskDetail, TaskRecordParameters, TaskType, CommonTaskLogType } from '@/d.ts';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { ShareAltOutlined } from '@ant-design/icons';
@@ -51,8 +51,19 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
     hasFlow,
     onLogTypeChange,
     onReload,
+    downloadUrl,
   } = props;
   let content = null;
+  const getDownloadUrl = () => {
+    if (isLogicalDbChangeTask(task?.type) && logType === CommonTaskLogType.ALL) {
+      return downloadUrl;
+    } else if (!isLogicalDbChangeTask(task?.type)) {
+      return result?.fullLogDownloadUrl;
+    } else {
+      return undefined;
+    }
+  };
+
   switch (detailType) {
     case TaskDetailType.INFO:
       content = taskContent ? (
@@ -64,7 +75,6 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
           isSplit={isSplit}
         />
       );
-
       break;
     case TaskDetailType.LOG:
       content = (
@@ -72,7 +82,7 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
           log={log}
           logType={logType}
           isLoading={isLoading}
-          downloadUrl={result?.fullLogDownloadUrl}
+          downloadUrl={getDownloadUrl()}
           onLogTypeChange={onLogTypeChange}
         />
       );
@@ -109,6 +119,7 @@ interface ICommonTaskDetailModalProps extends ITaskDetailModalProps {
   width?: number;
   isSplit?: boolean;
   theme?: string;
+  downloadUrl?: string;
   getItems?: (
     task: TaskDetail<TaskRecordParameters>,
     result: ITaskResult,
