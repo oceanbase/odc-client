@@ -15,10 +15,9 @@
  */
 
 import odc from '@/plugins/odc';
-import privateRequest from './private';
-
+import service from './service';
 function getRequest() {
-  return odc.ODCRequest || privateRequest;
+  return odc.ODCRequest || service;
 }
 
 export function getODCServerHost() {
