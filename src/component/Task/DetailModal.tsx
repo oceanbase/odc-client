@@ -23,6 +23,7 @@ import {
   getTaskList,
   getTaskLog,
   getTaskResult,
+  getDownloadUrl,
 } from '@/common/network/task';
 import type { ITableLoadOptions } from '@/component/CommonTable/interface';
 import CommonDetailModal from '@/component/Task/component/CommonDetailModal';
@@ -119,7 +120,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   const [approvalVisible, setApprovalVisible] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState(false);
   const [isTaskProjectOwner, setIsTaskProjectOwner] = useState(false);
-
+  const [downloadUrl, setDownloadUrl] = useState<string>(undefined);
   const hasFlow =
     !!task?.nodeList?.find(
       (node) =>
@@ -187,6 +188,8 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
           ...log,
           [logType]: res,
         });
+        const url = await getDownloadUrl(task?.id, flowId);
+        setDownloadUrl(url);
         return;
       }
       return;
@@ -516,6 +519,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
         onReload={loadData}
         taskContent={taskContent}
         getItems={getItems}
+        downloadUrl={downloadUrl}
       />
       <ApprovalModal
         id={

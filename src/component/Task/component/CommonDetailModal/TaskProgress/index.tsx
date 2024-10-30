@@ -149,12 +149,16 @@ const TaskProgress: React.FC<IProps> = (props) => {
   }, []);
   // #endregion
 
-  const columns = getColumnsByTaskType(task?.type, {
-    handleDetailVisible,
-    handleMultipleAsyncOpen,
-    handleSwapTable,
-    handleProgressDetailVisible,
-  });
+  const columns = getColumnsByTaskType(
+    task?.type,
+    {
+      handleDetailVisible,
+      handleMultipleAsyncOpen,
+      handleSwapTable,
+      handleProgressDetailVisible,
+    },
+    task.status,
+  );
 
   return (
     <>
