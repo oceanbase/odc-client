@@ -16,6 +16,7 @@
 
 import odc from '@/plugins/odc';
 import service from './service';
+
 function getRequest() {
   return odc.ODCRequest || service;
 }
