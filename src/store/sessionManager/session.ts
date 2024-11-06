@@ -80,6 +80,7 @@ class SessionStore {
   @observable.shallow
   public allIdentities: {
     [dbName: string]: {
+      external_table: string[];
       tables: string[];
       views: string[];
     };
@@ -315,6 +316,7 @@ class SessionStore {
       support_pl_debug: (allConfig) => {
         this.supportFeature.enablePLDebug = allConfig['support_pl_debug'];
       },
+      support_external_table: 'enableExternalTable',
     };
     const allConfig = {};
     data?.forEach((item) => {
@@ -448,6 +450,7 @@ class SessionStore {
   @action
   public async destory(force: boolean = false) {
     this.isAlive = false;
+    console.log(generateSessionSid(this.sessionId));
     await request.delete(`/api/v2/datasource/sessions`, {
       data: { sessionIds: [generateSessionSid(this.sessionId)], delay: force ? null : 60 },
     });
@@ -476,16 +479,21 @@ class SessionStore {
       return;
     }
     this.lastIdentitiesLoadTime = now;
-    const data = await queryIdentities(['TABLE', 'VIEW'], this.sessionId, this.database?.dbName);
+    const data = await queryIdentities(
+      ['TABLE', 'VIEW', 'EXTERNAL_TABLE'],
+      this.sessionId,
+      this.database?.dbName,
+    );
     if (!data) {
       this.lastTableAndViewLoadTime = 0;
     }
     runInAction(() => {
       data?.forEach((item) => {
         const { schemaName, identities } = item;
-        this.allIdentities[schemaName] = { tables: [], views: [] };
+        this.allIdentities[schemaName] = { tables: [], views: [], external_table: [] };
         identities.forEach((identity) => {
           const { type, name } = identity;
+
           switch (type) {
             case 'TABLE': {
               this.allIdentities[schemaName].tables.push(name);
@@ -493,6 +501,10 @@ class SessionStore {
             }
             case 'VIEW': {
               this.allIdentities[schemaName].views.push(name);
+              return;
+            }
+            case 'EXTERNAL_TABLE': {
+              this.allIdentities[schemaName].external_table.push(name);
               return;
             }
           }

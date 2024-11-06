@@ -59,6 +59,7 @@ interface IProps {
   sessionManagerStore?: SessionManagerStore;
   modalStore?: ModalStore;
   params: CreateTablePage['pageParams'];
+  isExternalTable?: boolean;
 }
 
 const defaultInfo: TableInfo = {
@@ -76,6 +77,7 @@ const CreateTable: React.FC<IProps> = function ({
   params,
   sessionManagerStore,
   modalStore,
+  isExternalTable,
 }) {
   const [info, setInfo] = useState<TableInfo>(defaultInfo);
   const [columns, setColumns] = useState<TableColumn[]>([defaultColumn]);
@@ -212,7 +214,7 @@ const CreateTable: React.FC<IProps> = function ({
                 id: 'odc.components.CreateTable.Column',
                 defaultMessage: '列',
               }),
-              children: <Columns />,
+              children: <Columns isExternalTable />,
             },
             {
               key: TableTabType.INDEX,

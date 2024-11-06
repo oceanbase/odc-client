@@ -15,19 +15,16 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { listDatabases } from '@/common/network/database';
 import { getTableListWithoutSession } from '@/common/network/table';
 import ExportCard from '@/component/ExportCard';
 import { EnvColorMap } from '@/constant';
-import { IDatabase } from '@/d.ts/database';
-import { TablePermissionType } from '@/d.ts/table';
 import { ReactComponent as TableSvg } from '@/svgr/menuTable.svg';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { Badge, Empty, Popconfirm, Space, Spin, Tree, Typography } from 'antd';
 import { DataNode, EventDataNode, TreeProps } from 'antd/lib/tree';
 import classnames from 'classnames';
-import { isNumber } from 'lodash';
+import { isNumber, toNumber } from 'lodash';
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import styles from './index.less';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
@@ -35,7 +32,14 @@ import datasourceStatus from '@/store/datasourceStatus';
 import { isLogicalDatabase } from '@/util/database';
 import { logicalDatabaseDetail } from '@/common/network/logicalDatabase';
 
-export type TableItem = { databaseId: number; tableName: string; tableId?: number };
+import {
+  IDataBaseWithTable,
+  TableItem,
+  TableItemInDB,
+  TableSelecterRef,
+  tableTreeEventDataNode,
+} from './interface';
+import sessionManager from '@/store/sessionManager';
 
 type IProps = {
   projectId: number;
@@ -43,39 +47,9 @@ type IProps = {
   onChange?: (newValue: TableItem[]) => void;
 };
 
-export interface tableTreeEventDataNode extends EventDataNode<DataNode> {
-  isLogicalDatabase: boolean;
-}
-
-export interface TableSelecterRef {
-  loadTables: (dbId: number) => Promise<void>;
-  expandTable: (dbId: number) => void;
-}
-
-export interface TableListItem {
-  tableName: string;
-  authorizedPermissionTypes: TablePermissionType[];
-}
-
-export type TableItemInDB = {
-  name: string;
-  id: number;
-};
-
-/**
- * 库以及它下面的表的信息
- */
-interface IDataBaseWithTable extends IDatabase {
-  /**
-   * 表列表
-   */
-  tableList: TableItemInDB[];
-  hasGetTableList?: boolean;
-}
-
 const { Text } = Typography;
 
-const KEY_SPLIT_CHAR = '-';
+const KEY_SPLIT_CHAR = '@--@';
 /**
  *  使用dataBaseId和tableName生成key 用于树节点的Key
  */
@@ -88,52 +62,8 @@ const generateKeyByDataBaseIdAndTableName = ({ databaseId, tableName, tableId }:
  */
 const parseDataBaseIdAndTableNamebByKey = (key: string): TableItem => {
   const [databaseId, tableName, tableId] = key.split(KEY_SPLIT_CHAR);
+
   return { databaseId: Number(databaseId), tableName, tableId: Number(tableId) };
-};
-
-/**
- * 按库将表分组返回：
- * 可用来获取:用户授权的提交参数
- * @param tables
- * @returns
- */
-export const groupTableByDataBase = (tables: TableItem[]): { tableId: number }[] => {
-  return tables.map((item) => {
-    return {
-      tableId: item.tableId,
-    };
-  });
-};
-
-/**
- * 按库将表分组返回：
- * 可用来获取:工单授权的提交参数
- * @param tables
- * @returns
- */
-export const groupTableIdsByDataBase = (tables: TableItem[]): number[] => {
-  return [...new Set(tables?.map((i) => i.tableId))];
-};
-/**
- * 和groupTableByDataBase配合使用
- * 可将groupTableByDataBase按库分组后的值拍平为TableItem
- * 就可以直接set到TableSeletor上了
- * @param tables
- * @returns
- */
-export const flatTableByGroupedParams = (
-  tables: { databaseId: number; tableList: TableItemInDB[] }[],
-): TableItem[] => {
-  if (!tables) {
-    return [];
-  }
-  const result: TableItem[] = [];
-  tables.forEach(({ databaseId, tableList }) => {
-    tableList?.forEach((item) => {
-      item?.name && result.push({ databaseId, tableName: item.name, tableId: item.id });
-    });
-  });
-  return result;
 };
 
 function envRender(environment) {
@@ -155,43 +85,87 @@ function envRender(environment) {
  */
 const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false) => {
   const allTreeData = validTableList?.map((database) => {
-    const { id, name, tableList, dataSource, hasGetTableList, environment } = database;
-    const children = tableList.map((tableItem) => ({
-      title: (
-        <Space>
-          <Text>{tableItem.name}</Text>
-        </Space>
-      ),
+    const {
+      id,
+      name,
+      tableList,
+      dataSource,
+      externalTablesList,
+      hasGetTableList,
+      environment,
+      supportExternalTable,
+    } = database;
 
-      key: generateKeyByDataBaseIdAndTableName({
-        databaseId: id,
-        tableName: tableItem.name,
-        tableId: tableItem.id,
-      }),
-      icon: <Icon component={TableSvg} />,
-      checkable: true,
-      isLeaf: true,
-    }));
+    let children = [];
+
+    const childrenForTable = {
+      title: '表',
+      key: `${id}-table`,
+      selectable: false,
+      disabled: hasGetTableList && tableList?.length === 0,
+      children: tableList?.map((tableItem) => ({
+        title: (
+          <Space>
+            <Text>{tableItem.name}</Text>
+          </Space>
+        ),
+        key: generateKeyByDataBaseIdAndTableName({
+          databaseId: id,
+          tableName: tableItem.name,
+          tableId: tableItem.id,
+        }),
+        icon: <Icon component={TableSvg} />,
+        checkable: true,
+        isLeaf: true,
+      })),
+    };
+    const childrenForExternalTable = supportExternalTable
+      ? {
+          title: '外表',
+          key: `${id}-externalTable`,
+          disabled: hasGetTableList && externalTablesList?.length === 0,
+          children: externalTablesList?.map((tableItem) => ({
+            title: (
+              <Space>
+                <Text>{tableItem.name}</Text>
+              </Space>
+            ),
+            key: generateKeyByDataBaseIdAndTableName({
+              databaseId: id,
+              tableName: tableItem.name,
+              tableId: tableItem.id,
+            }),
+            icon: <Icon component={TableSvg} />,
+            checkable: true,
+            isLeaf: true,
+            selectable: !externalTablesList.length,
+          })),
+        }
+      : null;
+
+    children = !hasGetTableList
+      ? []
+      : [childrenForTable, childrenForExternalTable]?.filter(Boolean);
+
     return {
       title: (
         <Space>
           <Text>{name}</Text>
-          <Text type="secondary" ellipsis style={{ maxWidth: 200 }} title={dataSource?.name}>
+          <Text type="secondary" ellipsis style={{ maxWidth: 100 }} title={dataSource?.name}>
             {dataSource?.name}
           </Text>
           <Text type="secondary" ellipsis>
-            {hasGetTableList && isSourceTree ? `(${tableList.length})` : ''}
+            {hasGetTableList && isSourceTree ? `(${tableList?.length})` : ''}
           </Text>
           {isSourceTree ? envRender(environment) : null}
         </Space>
       ),
-
       key: id,
       icon: <DataBaseStatusIcon item={database} />,
       checkable: true,
-      disabled: hasGetTableList && tableList.length === 0,
+      disabled: hasGetTableList && tableList?.length === 0,
       expandable: true,
-      children,
+      children: children,
       isLeaf: false,
       isLogicalDatabase: isLogicalDatabase(database),
     };
@@ -208,13 +182,15 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
   const [targetSearchValue, setTargetSearchValue] = useState(null);
   const [databaseWithTableList, setDataBaseWithTableList] = useState<IDataBaseWithTable[]>([]);
   const [sourceTreeExpandKeys, setSourceTreeExpandKeys] = useState<number[]>([]);
-  const [selectedExpandKeys, setSelectedExpandKeys] = useState<number[]>([]);
+  const [selectedExpandKeys, setSelectedExpandKeys] = useState<(number | string)[]>([]);
+  const [selecting, setSelecting] = useState(false);
   /**
    * 需要的参数格式转换成树的Key
    */
   const checkedKeys: string[] = useMemo(() => {
     return value.map(generateKeyByDataBaseIdAndTableName);
   }, [value]);
+
   /**
    * 获取项目下所有的数据库
    */
@@ -222,16 +198,22 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
     setIsLoading(true);
     try {
       const res = await listDatabases(projectId, null, null, null, null, null, null, true, true);
+
       if (res?.contents) {
         datasourceStatus.asyncUpdateStatus(
           res?.contents
             ?.filter((item) => item.type !== 'LOGICAL')
             ?.map((item) => item?.dataSource?.id),
         );
-        const list: IDataBaseWithTable[] = res.contents.map((db) => ({
-          ...db,
-          tableList: [],
-        }));
+        const list: IDataBaseWithTable[] = res.contents.map((db) => {
+          return {
+            ...db,
+            tableList: [],
+            externalTablesList: [],
+            isExternalTable: false,
+            showTable: true,
+          };
+        });
         setDataBaseWithTableList(list || []);
       }
     } catch (e) {
@@ -248,7 +230,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
     setTargetSearchValue(null);
   };
   /**
-   * 待选择的所有库表（按搜索条件过滤后）
+   * 待选择的所有库表（按搜索条件过滤后） 左侧数据
    */
   const allTreeData = useMemo(() => {
     if (!sourceSearchValue?.length) {
@@ -256,32 +238,38 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
     }
     const filtedDataSource = [];
     for (const datasource of databaseWithTableList) {
-      let { tableList, name } = datasource;
+      let { tableList, name, externalTablesList } = datasource;
       if (name?.toLowerCase().includes(sourceSearchValue?.toLowerCase())) {
         filtedDataSource.push(datasource);
       } else {
         const targetTableList = tableList.filter((item) => item?.name?.includes(sourceSearchValue));
+        const targetExternalTableList = externalTablesList?.filter((item) =>
+          item?.name?.includes(sourceSearchValue),
+        );
         if (targetTableList.length > 0) {
           filtedDataSource.push({
             ...datasource,
             tableList: targetTableList,
+            externalTablesList: targetExternalTableList,
           });
         }
       }
     }
+
     return getTreeData(filtedDataSource, true);
   }, [sourceSearchValue, databaseWithTableList]);
 
   /**
-   * 已选择的所有库表(按搜索条件过滤)
+   * 已选择的所有库表(按搜索条件过滤) 右侧数据
    */
   const selectedTreeData = useMemo(() => {
     try {
-      const filtedDataSource = [];
+      const filtedDataSource: IDataBaseWithTable[] = [];
       for (const datasource of databaseWithTableList) {
-        let { tableList, id: databaseId, name: tableName } = datasource;
+        let { tableList, id: databaseId, name: databaseName, externalTablesList } = datasource;
+
         const checkedTableNames = tableList.filter((item) =>
-          checkedKeys?.includes(
+          checkedKeys.includes(
             generateKeyByDataBaseIdAndTableName({
               databaseId,
               tableName: item.name,
@@ -289,39 +277,84 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
             }),
           ),
         );
-        if (!checkedKeys.includes(String(databaseId)) && checkedTableNames.length < 1) {
+
+        const externalTableTableNames = externalTablesList?.filter((item) => {
+          return checkedKeys.includes(
+            generateKeyByDataBaseIdAndTableName({
+              databaseId,
+              tableName: item.name,
+              tableId: item.id,
+            }),
+          );
+        });
+
+        if (!checkedTableNames?.length && !externalTableTableNames?.length) {
           continue;
         }
-        if (tableName.includes(targetSearchValue) || !targetSearchValue) {
+
+        if (databaseName.includes(targetSearchValue) || !targetSearchValue) {
           filtedDataSource.push({
             ...datasource,
             tableList: checkedTableNames,
+            externalTablesList: externalTableTableNames,
           });
         } else {
           const searchedTableList = checkedTableNames.filter((item) =>
             item?.name.includes(targetSearchValue),
           );
-          if (searchedTableList.length > 0) {
+          const searchedExternalTableTableList = externalTableTableNames.filter((item) =>
+            item?.name.includes(targetSearchValue),
+          );
+
+          if (searchedTableList.length > 0 || searchedExternalTableTableList.length > 0) {
             filtedDataSource.push({
               ...datasource,
               tableList: searchedTableList,
+              externalTablesList: searchedExternalTableTableList,
             });
           }
         }
       }
-      return getTreeData(filtedDataSource);
+      return getTreeData(filtedDataSource, false);
     } catch (err) {}
   }, [databaseWithTableList, checkedKeys, targetSearchValue]);
+
   /**
    * 点击删除已选中的选项
    */
   const handleDelete = useCallback(
     (node: DataNode) => {
-      const { key, children } = node;
+      const { key, children, isLeaf } = node;
       let remainKeys = [];
-      if (children?.length > 0) {
-        const chidrenKeys = children.map(({ key }) => key);
-        remainKeys = checkedKeys.filter((key) => !chidrenKeys.includes(key));
+      if (isNumber(key)) {
+        /**
+         * delete database
+         */
+        const db = databaseWithTableList?.find((_db) => _db.id === key);
+        const tableIds = []
+          .concat(db.tableList || [])
+          .concat(db.externalTablesList || [])
+          ?.map((t) => t.id);
+        remainKeys = checkedKeys.filter(
+          (key) => !tableIds.includes(parseDataBaseIdAndTableNamebByKey(key)?.tableId),
+        );
+      } else if (!isLeaf) {
+        /**
+         * delete table group
+         */
+        const [databaseId, type] = key.split('-');
+        const db = databaseWithTableList?.find((_db) => _db.id === Number(databaseId));
+        if (!db) {
+          return;
+        }
+        let tables = db?.tableList;
+        if (type == 'externalTable') {
+          tables = db?.externalTablesList;
+        }
+        const tableIds = new Set(tables?.map((table) => table.id));
+        remainKeys = checkedKeys.filter((key) => {
+          return !tableIds.has(parseDataBaseIdAndTableNamebByKey(key)?.tableId);
+        });
       } else {
         const nodeKey = key as string;
         remainKeys = checkedKeys.filter((key) => key !== nodeKey);
@@ -331,42 +364,94 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
       const willExpandKeys: number[] = newValue.map(({ databaseId }) => databaseId);
       setSelectedExpandKeys(Array.from(new Set(willExpandKeys)));
     },
-    [checkedKeys, onChange],
+    [checkedKeys, onChange, databaseWithTableList],
   );
 
   /**
    * 获取库下的表list
    */
-  const getTableList = async (databaseId, isLogicalDatabase) => {
-    if (isLogicalDatabase) {
+  const getTableList = async (
+    databaseId,
+  ): Promise<{
+    tables: {
+      name: string;
+      id: number;
+      databaseId: number;
+    }[];
+    externalTables: {
+      name: string;
+      id: number;
+      databaseId: number;
+    }[];
+    supportExternalTable: boolean;
+  }> => {
+    const db = databaseWithTableList?.find((_db) => _db.id === databaseId);
+    let tables: { name: string; id: number; databaseId: number }[],
+      externalTables: { name: string; id: number; databaseId: number }[],
+      supportExternalTable: boolean;
+    if (isLogicalDatabase(db)) {
       const res = await logicalDatabaseDetail(databaseId);
-      return res?.data?.logicalTables;
+      tables = res?.data?.logicalTables?.map((table) => ({
+        name: table.name,
+        id: table.id,
+        databaseId,
+      }));
     } else {
-      return await getTableListWithoutSession(databaseId);
+      const session = await sessionManager.createSession(db?.dataSource?.id, db?.id);
+      if (!session || session === 'NotFound') {
+        return;
+      }
+      supportExternalTable = session?.supportFeature?.enableExternalTable;
+      await session?.database?.getTableList();
+      if (supportExternalTable) {
+        await session?.database?.getTableList(true);
+      }
+      tables = session?.database?.tables?.map((table) => ({
+        name: table.info?.tableName,
+        id: table.info?.tableId,
+        databaseId,
+      }));
+      externalTables = session?.database?.externalTableTables?.map((table) => ({
+        name: table.info?.tableName,
+        id: table.info?.tableId,
+        databaseId,
+      }));
+      sessionManager.destorySession(session?.sessionId, true);
     }
+    return {
+      tables,
+      externalTables,
+      supportExternalTable,
+    };
   };
 
   /**
    * 加载库里包含的表
    */
-  const handleLoadTables = useCallback(async (databaseId: number) => {
-    const res = await listDatabases(projectId, null, null, null, null, null, null, true, true);
-    const db = res?.contents?.find((_db) => _db.id === databaseId);
-    const tables = await getTableList(databaseId, isLogicalDatabase(db));
-    const tableList = tables.map((_table) => {
-      const { name, id } = _table;
-      return { name: name, id: id };
-    });
-    setDataBaseWithTableList((prevData) => {
-      for (const item of prevData ?? []) {
-        if (item.id === databaseId) {
-          item.tableList = tableList;
-          item.hasGetTableList = true;
-          return [...prevData];
+  const handleLoadTables = useCallback(
+    async (databaseId: number) => {
+      if (typeof databaseId === 'string') return;
+      let { tables, externalTables, supportExternalTable } = (await getTableList(databaseId)) || {};
+
+      setDataBaseWithTableList((prevData) => {
+        for (const item of prevData ?? []) {
+          if (item.id === databaseId) {
+            item.tableList = tables;
+            item.hasGetTableList = true;
+            item.externalTablesList = externalTables;
+            item.supportExternalTable = supportExternalTable;
+            return [...prevData];
+          }
         }
-      }
-    });
-  }, []);
+      });
+      return {
+        tables,
+        externalTables,
+        supportExternalTable,
+      };
+    },
+    [databaseWithTableList],
+  );
   /**
    * 所有选中的节点的Key
    */
@@ -385,52 +470,91 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
     return keys;
   }, [allTreeData]);
 
-  const fetchChildKeysForParent = useCallback(async (parentId, isLogicalDatabase) => {
-    const tables = await getTableList(parentId, isLogicalDatabase);
-    const tableList = tables.map((_table) => {
-      const { name, id } = _table;
-      return { name: name, id: id };
-    });
-    setDataBaseWithTableList((prevData) => {
-      for (const item of prevData ?? []) {
-        if (item.id === parentId) {
-          item.tableList = tableList;
-          item.hasGetTableList = true;
-          return [...prevData];
-        }
-      }
-    });
-    return tables.map((table) => {
-      return {
-        databaseId: parentId,
-        tableName: table.name,
-        tableId: table.id,
-      };
-    });
-  }, []);
-
   /**
-   * 选中一张表后
+   * 树选择
    */
   const handleChosenTable: TreeProps['onCheck'] = useCallback(
     async (_checkedKeys: string[], { checked, node }) => {
-      const { key: curNodeKey, children, isLogicalDatabase } = node as tableTreeEventDataNode;
+      const { key: curNodeKey, isLeaf } = node as tableTreeEventDataNode;
       if (isNumber(curNodeKey)) {
+        /**
+         * 选中整个库，需要自动获取并选中所有的表
+         */
         if (checked) {
-          const newList = await fetchChildKeysForParent(curNodeKey, isLogicalDatabase);
-          const tableList = [...checkedKeys.map(parseDataBaseIdAndTableNamebByKey), ...newList];
-          onChange(tableList);
-          setSelectedExpandKeys(tableList.map((i) => i.databaseId));
+          setSelecting(true);
+          try {
+            const { tables, externalTables, supportExternalTable } = await handleLoadTables(
+              curNodeKey,
+            );
+            const tableList = [...checkedKeys.map(parseDataBaseIdAndTableNamebByKey)];
+            tables?.forEach((table) => {
+              tableList.push({
+                databaseId: table?.databaseId,
+                tableName: table?.name,
+                tableId: table?.id,
+              });
+            });
+            if (supportExternalTable) {
+              externalTables?.forEach((table) => {
+                tableList.push({
+                  databaseId: table?.databaseId,
+                  tableName: table?.name,
+                  tableId: table?.id,
+                });
+              });
+            }
+            onChange(tableList);
+            setSelectedExpandKeys(tableList.map((i) => i.databaseId));
+          } finally {
+            setSelecting(false);
+          }
         } else {
-          const childrenList = [
-            ...children.map((i) => parseDataBaseIdAndTableNamebByKey(i.key as string)),
-          ]?.map((i) => i.tableId);
+          const db = databaseWithTableList?.find((_db) => _db.id === curNodeKey);
+          if (!db) {
+            return;
+          }
+          const targetDBTablesId = []
+            .concat(db.tableList || [])
+            .concat(db.externalTablesList || [])
+            ?.map((t) => t.id);
           const tableList = [...checkedKeys.map(parseDataBaseIdAndTableNamebByKey)].filter((i) => {
-            return !childrenList.includes(i.tableId);
+            return !targetDBTablesId.includes(i.tableId);
           });
           onChange(tableList);
           setSelectedExpandKeys(tableList.map((i) => i.databaseId));
         }
+      } else if (!isLeaf) {
+        /**
+         * 选中外表或者表的group
+         */
+        const [databaseId, type] = curNodeKey.split('-');
+        const db = databaseWithTableList?.find((_db) => _db.id === Number(databaseId));
+        if (!db) {
+          return;
+        }
+        let tables = db?.tableList;
+        let externalTables = db?.externalTablesList;
+        let tableIds = new Set(tables.map((table) => table?.id));
+
+        if (type == 'externalTable') {
+          tables = db?.externalTablesList;
+          tableIds = new Set(externalTables?.map((table) => table?.id));
+        }
+        let tableList = [...checkedKeys.map(parseDataBaseIdAndTableNamebByKey)];
+        if (checked) {
+          tables?.forEach((table) => {
+            tableList.push({
+              databaseId: toNumber(databaseId),
+              tableName: table?.name,
+              tableId: table?.id,
+            });
+          });
+        } else {
+          tableList = tableList.filter((i) => {
+            return !tableIds.has(i.tableId);
+          });
+        }
+        onChange(tableList);
       } else {
         const preCheckKeys = checked
           ? checkedKeys
@@ -446,7 +570,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
         setSelectedExpandKeys(Array.from(new Set(willExpandKeys)));
       }
     },
-    [checkedKeys, onChange],
+    [checkedKeys, onChange, handleLoadTables],
   );
 
   useImperativeHandle(
@@ -497,7 +621,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
   return (
     <div className={styles.selecter}>
       <div className={styles.content}>
-        <Spin spinning={isLoading}>
+        <Spin spinning={isLoading || selecting}>
           <ExportCard
             title={
               <Space size={4}>
@@ -521,7 +645,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
               checkedKeys={checkedKeys}
               onCheck={handleChosenTable}
               expandedKeys={sourceTreeExpandKeys}
-              onExpand={(keys) => {
+              onExpand={(keys, a) => {
                 setSourceTreeExpandKeys(keys as number[]);
               }}
               loadData={({ key }: EventDataNode<DataNode>) => handleLoadTables(key as number)}

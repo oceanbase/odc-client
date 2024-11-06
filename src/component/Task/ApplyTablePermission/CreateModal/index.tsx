@@ -18,11 +18,12 @@ import { formatMessage } from '@/util/intl';
 import { listProjects } from '@/common/network/project';
 import { createTask } from '@/common/network/task';
 import HelpDoc from '@/component/helpDoc';
-import TableSelecter, {
+import TableSelecter from '@/component/Task/component/TableSelecter';
+import { TableSelecterRef } from '@/component/Task/component/TableSelecter/interface';
+import {
   flatTableByGroupedParams,
   groupTableByDataBase,
-  TableSelecterRef,
-} from '@/component/Task/component/TableSelecter';
+} from '@/component/Task/component/TableSelecter/util';
 import { TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { TablePermissionType } from '@/d.ts/table';
 import { openTasksPage } from '@/store/helper/page';

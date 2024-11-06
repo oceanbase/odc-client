@@ -27,6 +27,7 @@ import { TableTreeData } from './table';
 import { TriggerTreeData } from './trigger';
 import { TypeTreeData } from './type';
 import { ViewTreeData } from './view';
+import { ExternalTableTreeData } from './externalTables';
 
 import { ReactComponent as DatabaseSvg } from '@/svgr/database.svg';
 import { openNewSQLPage } from '@/store/helper/page';
@@ -46,10 +47,16 @@ export function DataBaseTreeData(
 
   const tableTreeData = TableTreeData(dbSession, database);
 
+  const externalTableTreeData =
+    dbSession?.supportFeature?.enableExternalTable &&
+    isPhysicalDatabase(dbSession?.odcDatabase) &&
+    ExternalTableTreeData(dbSession, database);
+
   const viewTreeData =
     dbSession?.supportFeature?.enableView &&
     isPhysicalDatabase(dbSession?.odcDatabase) &&
     ViewTreeData(dbSession, database);
+
   const functionTreeData =
     dbSession?.supportFeature?.enableFunction &&
     isPhysicalDatabase(dbSession?.odcDatabase) &&
@@ -164,7 +171,16 @@ export function DataBaseTreeData(
         }));
       break;
     }
+    case DbObjectType.external_table: {
+      externalTableTreeData &&
+        //@ts-ignore
+        (externalTableTreeData.children = externalTableTreeData.children?.filter((item) => {
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value?.toLowerCase());
+        }));
+      break;
+    }
   }
+
   return {
     title: dbName,
     key: database?.id,
@@ -187,6 +203,7 @@ export function DataBaseTreeData(
     children: dbSession
       ? [
           tableTreeData,
+          externalTableTreeData,
           viewTreeData,
           functionTreeData,
           procedureTreeData,

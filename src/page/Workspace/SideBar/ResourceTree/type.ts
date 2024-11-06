@@ -73,6 +73,9 @@ export enum ResourceNodeType {
   TypeVariableRoot,
   TypeVariable,
   TypeProgramRoot,
+  ExternalTable,
+  ExternalTableRoot,
+  ExternalTableColumnRoot,
   // 只会在menu中用，用来区别function和type function 的菜单
   TypeFunction,
   TypeProcedure,

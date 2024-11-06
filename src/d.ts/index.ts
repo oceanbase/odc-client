@@ -1589,6 +1589,7 @@ export enum DbObjectType {
   table_group = 'TABLE_GROUP',
   file = 'FILE',
   column = 'COLUMN',
+  external_table = 'EXTERNAL_TABLE',
 }
 
 export interface IResultTimerStage {
@@ -2352,6 +2353,8 @@ export enum ResourceTreeNodeMenuKeys {
   CREATE_SYNONYM = 'CREATE_SYNONYM',
   DELETE_SYNONYM = 'DELETE_SYNONYM',
   REFRESH_SYNONYM = 'REFRESH_SYNONYM',
+  // EXTERNAL_TABLE
+  EXTERNAL_TABLE_SYNCHRONIZATION_TABLE = 'EXTERNAL_TABLE_SYNCHRONIZATION_TABLE',
 }
 
 export interface TaskRecord<P> {
