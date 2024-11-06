@@ -163,6 +163,21 @@ const ActionBar: React.FC<IProps> = inject(
       }
     };
 
+    const deleteTask = async () => {
+      const { id } = task;
+      const res = await createTask({
+        taskType: TaskType.ALTER_SCHEDULE,
+        parameters: {
+          taskId: id,
+          operationType: 'DELETE',
+        },
+      });
+      if (res) {
+        message.success('删除成功');
+        props?.onReloadList?.();
+      }
+    };
+
     const download = async () => {
       downloadTaskFlow(task.id);
     };
@@ -898,7 +913,6 @@ const ActionBar: React.FC<IProps> = inject(
 
     const getCycleTaskTools = (_task) => {
       let tools = [];
-
       if (!_task) {
         return [];
       }
@@ -1001,6 +1015,14 @@ const ActionBar: React.FC<IProps> = inject(
           handleApproval(false);
         },
       };
+
+      const deleteBtn = {
+        key: 'delete',
+        text: '删除',
+        type: 'button',
+        confirmText: '你确定要删除这个任务吗？',
+        action: deleteTask,
+      };
       const isOperator = isOwner || isTaskProjectOwner;
       switch (status) {
         case TaskStatus.APPROVING: {
@@ -1063,6 +1085,24 @@ const ActionBar: React.FC<IProps> = inject(
             if ([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)) {
               tools.push(reTryBtn);
             }
+            if (
+              [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE, TaskType.SQL_PLAN].includes(task?.type)
+            ) {
+              tools.push(deleteBtn);
+            }
+          } else {
+            tools = [viewBtn];
+          }
+          break;
+        }
+        case TaskStatus.CANCELLED: {
+          if (isOperator) {
+            tools = [viewBtn];
+            if (
+              [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE, TaskType.SQL_PLAN].includes(task?.type)
+            ) {
+              tools.push(deleteBtn);
+            }
           } else {
             tools = [viewBtn];
           }
@@ -1072,10 +1112,11 @@ const ActionBar: React.FC<IProps> = inject(
       }
 
       if (isDetailModal) {
-        tools = tools.filter((item) => item.key !== 'view');
+        tools = tools.filter((item) => !['view', 'delete'].includes(item.key));
       } else {
-        tools = [viewBtn];
+        tools = tools.filter((item) => ['view', 'delete'].includes(item.key));
       }
+
       // sql 计划 & 数据归档 & 数据清理 支持编辑
       if (![TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)) {
         tools = tools.filter((item) => item.key !== 'edit');
