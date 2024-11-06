@@ -168,6 +168,7 @@ export default class DisplayTable extends React.Component<
           // columns={resizableColumns}
           dataSource={dataSource}
           columns={columns}
+          scroll={{ x: 'max-content' }}
           rowClassName={(record, i) => (i % 2 === 0 ? styles.even : styles.odd)}
           pagination={
             !disablePagination && {

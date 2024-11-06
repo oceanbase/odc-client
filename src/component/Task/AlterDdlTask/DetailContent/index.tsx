@@ -337,25 +337,6 @@ export function getItems(
               1,
             ]
           : null,
-        setting.enableOSCLimiting
-          ? [
-              formatMessage({
-                id: 'src.component.Task.AlterDdlTask.DetailContent.45E8ACBB',
-                defaultMessage: '数据大小限流',
-              }),
-
-              <ThrottleEditableCell
-                suffix="MB/s"
-                min={0}
-                max={OscMaxDataSizeLimit}
-                defaultValue={bToMb(parameters?.rateLimitConfig?.dataSizeLimit)}
-                onOk={handleDataSizeLimit}
-                readlOnly={cantBeModified}
-              />,
-
-              1,
-            ]
-          : null,
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.Description',
