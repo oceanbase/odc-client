@@ -493,7 +493,7 @@ const SQLResultSet: React.FC<IProps> = function (props) {
                       resultHeight={resultHeight}
                       resultSet={set}
                       stopRunning={
-                        (ctx?.getSession() as SessionStore)?.supportFeature?.enableKillQuery
+                        (ctx?.getSession() as SessionStore)?.params?.killCurrentQuerySupported
                           ? stopRunning
                           : null
                       }
