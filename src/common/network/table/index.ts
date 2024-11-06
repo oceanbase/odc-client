@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { INlsObject, ITable, ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
+import { DbObjectType, INlsObject, ITable, ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
 import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import sessionManager from '@/store/sessionManager';
 import setting from '@/store/setting';
@@ -64,11 +64,18 @@ export async function getTableInfo(
   tableName: string,
   databaseName: string,
   sessionId: string,
+  isExternalTable?: boolean,
 ): Promise<Partial<ITableModel>> {
+  const params: { type?: string } = {};
+  if (isExternalTable) {
+    params.type = 'EXTERNAL_TABLE';
+  }
+
   const res = await request.get(
     `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
       databaseName,
     )}/tables/${encodeObjName(Base64.encode(tableName))}`,
+    { params },
   );
 
   return convertServerTableToTable(res?.data);
@@ -185,8 +192,14 @@ export async function getTableListByDatabaseName(
  * @param databaseId 数据库ID
  * @returns 数据库的表列表
  */
-export async function getTableListWithoutSession(databaseId: number): Promise<ITable[]> {
-  const params = { databaseId: databaseId };
+export async function getTableListWithoutSession(
+  databaseId: number,
+  supportExternalTable?: Boolean,
+): Promise<ITable[]> {
+  const params: { type?: string; databaseId: number } = { databaseId: databaseId };
+  if (supportExternalTable) {
+    params.type = DbObjectType.external_table;
+  }
   const ret = await request.get(`/api/v2/databaseSchema/tables`, { params });
   return ret?.data?.contents || [];
 }

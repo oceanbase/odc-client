@@ -46,6 +46,7 @@ interface ITableDataProps {
   tableName: string;
   pageKey: string;
   session: SessionStore;
+  isExternalTable?: boolean;
 }
 
 @inject('sqlStore', 'pageStore', 'settingStore', 'modalStore')
@@ -382,7 +383,7 @@ class TableData extends React.Component<
   };
 
   render() {
-    const { tableName, pageKey, table, settingStore, session } = this.props;
+    const { tableName, pageKey, table, settingStore, session, isExternalTable } = this.props;
     const {
       dataLoading,
       resultSet,
@@ -398,12 +399,13 @@ class TableData extends React.Component<
       <Spin wrapperClassName={styles.spin} spinning={dataLoading || !resultSet}>
         {resultSet && (
           <DDLResultSet
+            isExternalTable={isExternalTable}
             key={this._resultSetKey}
             autoCommit={session?.params.autoCommit}
             showPagination={true}
             showMock={settingStore.enableMockdata}
             isEditing={isEditing}
-            disableEdit={!resultSet.resultSetMetaData?.editable}
+            disableEdit={!resultSet.resultSetMetaData?.editable || isExternalTable}
             table={{ ...table, columns: resultSet.resultSetMetaData?.columnList }}
             pageKey={pageKey}
             session={session}

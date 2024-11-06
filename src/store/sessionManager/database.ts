@@ -42,10 +42,17 @@ import request from '@/util/request';
 import { action, observable, runInAction } from 'mobx';
 import { DBType } from '@/d.ts/database';
 import { logicalDatabaseDetail } from '@/common/network/logicalDatabase';
+import { message } from 'antd';
 
 class DatabaseStore {
+  static a() {
+    throw new Error('Method not implemented.');
+  }
   @observable.shallow
   public tables: Array<Partial<ITableModel>> = [];
+
+  @observable.shallow
+  public externalTableTables: Array<Partial<ITableModel>> = [];
 
   @observable.shallow
   public views: Array<Partial<IView>> = [];
@@ -80,6 +87,7 @@ class DatabaseStore {
    */
 
   public tableVersion: number = 0;
+  public externalTableTableVersion: number = 0;
   public viewVersion: number = 0;
   public functionVersion: number = 0;
   public procedureVersion: number = 0;
@@ -110,13 +118,28 @@ class DatabaseStore {
   }
 
   @action
-  public async getTableList() {
+  /**
+   * isExternalTable 表示是否为外表
+   *
+   */
+  public async getTableList(isExternalTable?: boolean) {
     const sid = generateDatabaseSidByDataBaseId(this.databaseId, this.sessionId);
+
+    const params: { databaseId: number; includePermittedAction: boolean; type?: string } = {
+      databaseId: this.databaseId,
+      includePermittedAction: true,
+    };
+
+    if (isExternalTable) {
+      params.type = 'EXTERNAL_TABLE';
+    }
+
     const data = await request.get(`/api/v2/databaseSchema/tables`, {
-      params: { databaseId: this.databaseId, includePermittedAction: true },
+      params,
     });
+
     runInAction(() => {
-      this.tables =
+      const tablesValue: Partial<ITableModel>[] =
         data?.data?.contents?.map((table: ITable) => ({
           info: {
             tableName: table.name,
@@ -128,9 +151,14 @@ class DatabaseStore {
             createTime: table.gmtCreated,
             tableSize: table.tableSize,
             authorizedPermissionTypes: table.authorizedPermissionTypes || [],
+            tableId: table.id,
           },
         })) || [];
+
+      isExternalTable ? (this.externalTableTables = tablesValue) : (this.tables = tablesValue);
+
       this.tableVersion = Date.now();
+      this.externalTableTableVersion = Date.now();
     });
   }
 
@@ -162,13 +190,13 @@ class DatabaseStore {
   }
 
   @action
-  public async loadTable(tableInfo: TableInfo) {
+  public async loadTable(tableInfo: TableInfo, isExternalTable?: boolean) {
     const { tableName, authorizedPermissionTypes, isLogicalTable, tableId, databaseId } = tableInfo;
     let table;
     if (isLogicalTable) {
       table = await getLogicTableInfo(databaseId, tableId);
     } else {
-      table = await getTableInfo(tableName, this.dbName, this.sessionId);
+      table = await getTableInfo(tableName, this.dbName, this.sessionId, isExternalTable);
     }
     if (!table) {
       return;
@@ -177,13 +205,27 @@ class DatabaseStore {
     if (table.info) {
       table.info.authorizedPermissionTypes = authorizedPermissionTypes;
     }
+
     const idx = this.tables.findIndex((t) => t.info.tableName === tableName);
+
+    // 外表数据
+    const externalTableIdx = this.externalTableTables.findIndex(
+      (t) => t.info.tableName === tableName,
+    );
+
+    if (externalTableIdx > -1 && isExternalTable) {
+      const newExternalTable = [...this.externalTableTables];
+      newExternalTable[externalTableIdx] = table;
+      runInAction(() => {
+        this.externalTableTables = newExternalTable;
+      });
+    }
+
     if (idx > -1) {
       const newTables = [...this.tables];
       newTables[idx] = table;
       runInAction(() => {
         this.tables = newTables;
-        console.log(this.tables);
       });
     }
   }

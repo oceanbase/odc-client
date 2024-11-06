@@ -302,7 +302,7 @@ export function convertServerTableToTable(
     };
   });
   // index
-  table.indexes = data.indexes.map((index) => {
+  table.indexes = data?.indexes?.map((index) => {
     return {
       name: index.name,
       type: index.type as TableIndexType,

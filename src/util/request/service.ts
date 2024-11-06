@@ -58,10 +58,13 @@ service.interceptors.request.use((config) => {
     Math.random().toString(36).substring(2).toUpperCase() +
     Math.random().toString(36).substring(2).toUpperCase();
   const extraParams = odc.requestParamsResolver?.(config, requestId) || {};
-
+  /**
+   * delete 的 data = config.data
+   * post 的 data = config.data.data
+   */
   return {
     ...config,
-    data: config?.data?.data,
+    data: config.method === 'delete' ? config?.data : config?.data?.data,
     params: {
       currentOrganizationId: login?.organizationId,
       ...extraParams,

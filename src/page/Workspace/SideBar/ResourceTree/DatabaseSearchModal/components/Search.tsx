@@ -87,10 +87,7 @@ const Search = ({
         <Input
           size="small"
           ref={inputRef}
-          placeholder={formatMessage({
-            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.ACB992B0',
-            defaultMessage: '搜索数据库、表、字段、视图等',
-          })}
+          placeholder={'搜索数据库、表、外表、字段、视图等'}
           onChange={handleChangeDatabaseSearch}
           value={searchKey}
         />
@@ -102,7 +99,7 @@ const Search = ({
         ref={inputRef}
         placeholder={formatMessage({
           id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.EF45DCA4',
-          defaultMessage: '搜索表、字段、视图等',
+          defaultMessage: '搜索表、外表、字段、视图等',
         })}
         onChange={handleChangeObjectSearch}
         value={searchKey}
