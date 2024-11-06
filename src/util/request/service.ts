@@ -13,12 +13,16 @@ import { resolveODCError } from './errorResolve';
 import notification from '../notification';
 import type { AxiosInstance, AxiosHeaders } from 'axios';
 import { cloneDeep } from 'lodash';
+import qs from 'qs';
 
 //  https://www.axios-http.cn/docs/req_config
 const service: AxiosInstance = axios.create({
   baseURL: window.ODCApiHost || '',
   timeout: 1000 * 60 * 60 * 10, // 后端去除了queryTimeout，前端默认给一个超大的时间
   withCredentials: true,
+  paramsSerializer: function (params) {
+    return qs.stringify(params, { arrayFormat: 'repeat' });
+  },
 });
 
 // 错误处理器
@@ -54,6 +58,7 @@ service.interceptors.request.use((config) => {
     Math.random().toString(36).substring(2).toUpperCase() +
     Math.random().toString(36).substring(2).toUpperCase();
   const extraParams = odc.requestParamsResolver?.(config, requestId) || {};
+
   return {
     ...config,
     data: config?.data?.data,
