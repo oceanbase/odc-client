@@ -73,7 +73,7 @@ const getColumns = (params: {
       render: (_, record) => {
         const { status } = record;
         const resultJson = JSON.parse(record?.resultJson);
-        const isTaskFailed = [TaskStatus.EXECUTING]?.includes(params.taskStatus);
+        const isTaskFailed = [TaskStatus.EXECUTION_FAILED]?.includes(params.taskStatus);
         return (
           <Space>
             <Action.Link
