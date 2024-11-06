@@ -154,7 +154,9 @@ export const action = async (config: INewCloudConnection) => {
     return 'Get Conneciton List Failed';
   }
   let targetConnection = connectionList?.contents?.find(
-    (c) => c.tenantName === params.tenantName && c.username === params.username,
+    (c) =>
+      c.tenantName === params.tenantName &&
+      c.username?.toLowerCase() === params.username?.toLowerCase(),
   );
   let isExist = true;
   if (!targetConnection) {

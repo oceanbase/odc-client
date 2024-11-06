@@ -96,6 +96,10 @@ class SessionStore {
     fullLinkTraceEnabled: boolean;
     continueExecutionOnError: boolean;
     defaultTableStoreFormat: DBDefaultStoreType;
+    /**
+     * 用于控制sql窗口的kill
+     */
+    killCurrentQuerySupported: boolean;
   } = {
     autoCommit: true,
     delimiter: DEFAULT_DELIMITER,
@@ -106,6 +110,7 @@ class SessionStore {
     fullLinkTraceEnabled: true,
     continueExecutionOnError: true,
     defaultTableStoreFormat: DBDefaultStoreType.ROW,
+    killCurrentQuerySupported: false,
   };
 
   /**
@@ -380,6 +385,7 @@ class SessionStore {
       this.params.queryLimit = data?.settings?.queryLimit;
       this.params.obVersion = data?.settings?.obVersion;
       this.params.defaultTableStoreFormat = data?.session?.defaultTableStoreFormat;
+      this.params.killCurrentQuerySupported = data?.session?.killCurrentQuerySupported;
       if (init) {
         this.params.tableColumnInfoVisible =
           setting.configurations['odc.sqlexecute.default.fetchColumnInfo'] === 'true';
@@ -402,6 +408,7 @@ class SessionStore {
           sqlId: null,
           activeQueries: null,
           defaultTableStoreFormat: null,
+          killCurrentQuerySupported: false,
         };
       }
     } catch (e) {
