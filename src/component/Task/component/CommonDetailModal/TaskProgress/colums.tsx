@@ -69,7 +69,7 @@ const getColumns = (params: {
       }),
       //操作
       ellipsis: true,
-      width: 120,
+      width: 150,
       render: (_, record) => {
         const { status } = record;
         const resultJson = JSON.parse(record?.resultJson);
