@@ -61,7 +61,9 @@ export interface ISupportFeature {
   enableObclient: boolean;
 
   enableKillSession: boolean;
-
+  /**
+   * 只适用于会话管理中的 kill query
+   */
   enableKillQuery: boolean;
 
   enableConstraint: boolean;
