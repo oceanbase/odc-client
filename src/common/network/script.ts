@@ -59,7 +59,7 @@ export async function newScript(
     return result?.contents;
   }
   const result = await request.post(`/api/v2/script/scripts/batchUpload`, {
-    body: formData,
+    data: formData,
   });
 
   return result?.data?.contents;

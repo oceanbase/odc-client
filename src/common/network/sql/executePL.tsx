@@ -55,15 +55,12 @@ export async function executePL(parmas: params, sessionId: string, ignoreError: 
     }
   }
   async function loopStatus(resultId: string) {
-    const taskResponse = await request.get(
-      fetchResult,
-      {
-        params: {
-          resultId,
-        },
+    const taskResponse = await request.get(fetchResult, {
+      params: {
+        resultId,
+        ignoreError,
       },
-      { ignoreError },
-    );
+    });
     const taskResult = taskResponse?.data;
     if (taskResponse?.isError || taskResult) {
       return taskResponse;
@@ -71,13 +68,7 @@ export async function executePL(parmas: params, sessionId: string, ignoreError: 
     return await loopStatus(resultId);
   }
 
-  const res = await request.post(
-    createTask,
-    { data },
-    {
-      ignoreError,
-    },
-  );
+  const res = await request.post(createTask, { data, params: { ignoreError } });
   const resultId: string = res?.data;
   if (!resultId) {
     return res;
