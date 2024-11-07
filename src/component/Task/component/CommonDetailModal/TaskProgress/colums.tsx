@@ -73,7 +73,7 @@ const getColumns = (params: {
       render: (_, record) => {
         const { status } = record;
         const resultJson = JSON.parse(record?.resultJson);
-        const isTaskFailed = [TaskStatus.EXECUTION_FAILED]?.includes(params.taskStatus);
+        const isTaskExecuting = [TaskStatus.EXECUTING]?.includes(params.taskStatus);
         return (
           <Space>
             <Action.Link
@@ -83,7 +83,7 @@ const getColumns = (params: {
             >
               查看结构
             </Action.Link>
-            {resultJson?.manualSwapTableEnabled && !isTaskFailed && (
+            {resultJson?.manualSwapTableEnabled && isTaskExecuting && (
               <Action.Link
                 onClick={async () => {
                   params?.onSwapTable(record?.id);
