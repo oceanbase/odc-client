@@ -172,6 +172,7 @@ interface IProps {
     sessionId?: string,
     traceEmptyReason?: string,
   ) => void;
+  isExternalTable?: boolean; // 是否为外表
 }
 const DDLResultSet: React.FC<IProps> = function (props) {
   const {
@@ -210,6 +211,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     traceId,
     onOpenExecutingDetailModal,
     originSql,
+    isExternalTable,
   } = props;
   const sessionId = session?.sessionId;
   const obVersion = session?.params?.obVersion;
@@ -1043,6 +1045,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               />
             ) : null}
             {!isEditing &&
+            !isExternalTable &&
             showMock &&
             getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
               TaskType.DATAMOCK,

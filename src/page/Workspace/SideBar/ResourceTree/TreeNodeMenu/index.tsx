@@ -47,8 +47,10 @@ export const hasTableChangePermission = (dbSession: SessionStore, node: TreeData
 
 const TreeNodeMenu = (props: IProps) => {
   const { type = '', dbSession, databaseFrom, node, showTip, pollingDatabase } = props;
+
   // menuKey 用来定制menu
   const menuKey = node?.menuKey;
+
   const menuItems: IMenuItemConfig[] = MenuConfig[menuKey || type];
   /**
    * 非database的情况下，必须存在session
@@ -81,6 +83,7 @@ const TreeNodeMenu = (props: IProps) => {
       ) : null}
     </span>
   );
+
   const nodeChild = node.dbObjectType ? (
     <DragWrapper
       key={node.key + '-drag'}
@@ -103,6 +106,7 @@ const TreeNodeMenu = (props: IProps) => {
   ) : (
     titleNode
   );
+
   if (!isSessionValid || !menuItems?.length) {
     return nodeChild;
   }
@@ -181,7 +185,6 @@ const TreeNodeMenu = (props: IProps) => {
     });
 
     let ellipsisItemsProp: ItemType[] = getMenuItems(ellipsisItems);
-
     return (
       <div className={treeStyles.menuActions}>
         {menuItems

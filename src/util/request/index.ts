@@ -28,42 +28,52 @@ export function getODCServerHost() {
 export default {
   get(
     url: string,
-    data?: Record<string, any>,
-
-    params?: Record<string, any>,
+    options?: {
+      data?: Record<string, any>;
+      params?: Record<string, any>;
+      [key: string]: Record<string, any>;
+    },
   ) {
-    return getRequest().get(url, data, params);
+    return getRequest().get(url, options);
   },
   post(
     url: string,
-    data?: Record<string, any>,
-
-    params?: Record<string, any>,
+    options?: {
+      data?: Record<string, any>;
+      params?: Record<string, any>;
+      [key: string]: Record<string, any>;
+    },
   ) {
-    return getRequest().post(url, data, params);
+    return getRequest().post(url, options?.data, options);
   },
   put(
     url: string,
-    data?: Record<string, any>,
-
-    params?: Record<string, any>,
+    options?: {
+      data?: Record<string, any>;
+      params?: Record<string, any>;
+      [key: string]: Record<string, any>;
+    },
   ) {
-    return getRequest().put(url, data, params);
+    return getRequest().put(url, options?.data, options);
   },
   patch(
     url: string,
-    data?: Record<string, any>,
-
-    params?: Record<string, any>,
+    options?: {
+      data?: Record<string, any>;
+      params?: Record<string, any>;
+      [key: string]: Record<string, any>;
+    },
   ) {
-    return getRequest().patch(url, data, params);
+    return getRequest().patch(url, options?.data, options);
   },
   delete(
     url: string,
-    data?: Record<string, any>,
-
-    params?: Record<string, any>,
+    options?: {
+      data?: Record<string, any>;
+      params?: Record<string, any>;
+      [key: string]: Record<string, any>;
+    },
   ) {
-    return getRequest().delete(url, data, params);
+    return getRequest().delete(url, options);
   },
 };

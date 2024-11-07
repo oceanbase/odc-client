@@ -356,6 +356,10 @@ const ObjectList = ({
     const type = object?.type || DbObjectType.column;
     e.stopPropagation();
     const databaseId = object?.dbObject?.database?.id || object?.database?.id;
+
+    if (type === DbObjectType.external_table) {
+      object.isExternalTable = true;
+    }
     DbObjectTypeMap?.[type]?.openPage(object)(
       ...DbObjectTypeMap?.[type]?.getOpenTab(object, databaseId),
     );

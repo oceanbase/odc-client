@@ -84,6 +84,8 @@ export const DbObjectTypeTextMap = {
   }), //表组
   [DbObjectType.file]: formatMessage({ id: 'odc.src.constant.label.File', defaultMessage: '文件' }), //文件 //文件
   [DbObjectType.type]: formatMessage({ id: 'odc.src.constant.label.Type', defaultMessage: '类型' }), //类型
+
+  [DbObjectType.external_table]: '外表',
 };
 
 export const ConnectTypeText = {

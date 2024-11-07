@@ -82,7 +82,6 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                 }}
               />
             ),
-
             children: table.columns?.map((c) => {
               return {
                 title: c.name,

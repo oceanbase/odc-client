@@ -10,6 +10,7 @@ import {
   openSequenceViewPage,
   openSynonymViewPage,
   openViewViewPage,
+  openExternalTableTableViewPage,
 } from '@/store/helper/page';
 import { PropsTab, TopTab } from '@/page/Workspace/components/TablePage';
 import { TopTab as PackageTopTab } from '@/page/Workspace/components/PackagePage';
@@ -18,6 +19,7 @@ import { DbObjectTypeTextMap } from '@/constant/label';
 const mysqlObjectType = [
   DbObjectType.database,
   DbObjectType.table,
+  DbObjectType.external_table,
   DbObjectType.column,
   DbObjectType.function,
   DbObjectType.view,
@@ -35,6 +37,7 @@ const pgObjectType = [
 const oracleObjectType = [
   DbObjectType.database,
   DbObjectType.table,
+  DbObjectType.external_table,
   DbObjectType.column,
   DbObjectType.function,
   DbObjectType.view,
@@ -83,6 +86,14 @@ export const DbObjectTypeMap = {
       return [name, TopTab.PROPS, PropsTab.DDL, databaseId];
     },
   },
+  [DbObjectType.external_table]: {
+    label: '外表',
+    openPage: (object) => openExternalTableTableViewPage,
+    getOpenTab: (object, databaseId) => {
+      const name = object?.name;
+      return [name, TopTab.PROPS, PropsTab.DDL, databaseId];
+    },
+  },
   [DbObjectType.column]: {
     label: formatMessage({
       id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.35B21489',
@@ -92,6 +103,7 @@ export const DbObjectTypeMap = {
       const funcMap = {
         [DbObjectType.view]: openViewViewPage,
         [DbObjectType.table]: openTableViewPage,
+        [DbObjectType.external_table]: openExternalTableTableViewPage,
       };
       return funcMap[object?.dbObject?.type];
     },

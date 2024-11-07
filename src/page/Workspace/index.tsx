@@ -328,7 +328,6 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [settingStore.configurations['odc.database.default.enableGlobalObjectSearch']]);
-
   return (
     <>
       <WorkBenchLayout

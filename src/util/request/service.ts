@@ -61,12 +61,10 @@ service.interceptors.request.use((config) => {
 
   return {
     ...config,
-    data: config?.data?.data,
     params: {
       currentOrganizationId: login?.organizationId,
       ...extraParams,
       ...config?.params,
-      ...config?.data?.params,
     },
     headers: {
       ...(config?.headers || {}),
