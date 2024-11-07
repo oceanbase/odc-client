@@ -227,6 +227,17 @@ export function openTableViewPage(
   page.openPage(new TablePage(databaseId, tableName, topTab, propsTab, tableId));
 }
 
+/** 外表Table详情页面 */
+export function openExternalTableTableViewPage(
+  tableName: string,
+  topTab: TableTopTab = TableTopTab.PROPS,
+  propsTab: TablePropsTab = TablePropsTab.INFO,
+  databaseId: number,
+  tableId: number,
+) {
+  page.openPage(new TablePage(databaseId, tableName, topTab, propsTab, tableId, true));
+}
+
 /**
  * 创建视图页面
  */
