@@ -54,6 +54,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getTaskGroupLabels, getTaskLabelByType, isCycleTaskPage } from '../../helper';
 import styles from '../../index.less';
 import TaskTools from '../ActionBar';
+import { listProjects } from '@/common/network/project';
+import { useRequest } from 'ahooks';
 const { RangePicker } = DatePicker;
 const { Text, Link } = Typography;
 
@@ -188,15 +190,33 @@ interface IProps {
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onChange?: (args: ITableLoadOptions) => void;
   onMenuClick?: (type: TaskPageType) => void;
+  disableProjectCol?: boolean;
 }
 const TaskTable: React.FC<IProps> = inject(
   'taskStore',
   'pageStore',
 )(
   observer((props) => {
-    const { taskStore, pageStore, taskTabType, tableRef, taskList, isMultiPage } = props;
+    const {
+      taskStore,
+      pageStore,
+      taskTabType,
+      tableRef,
+      taskList,
+      isMultiPage,
+      disableProjectCol,
+    } = props;
     const { taskPageScope } = taskStore;
     const taskStatusFilters = getStatusFilters(isCycleTaskPage(taskTabType) ? cycleStatus : status);
+
+    const { data: projects } = useRequest(listProjects, {
+      defaultParams: [null, 1, 40],
+    });
+    const projectOptions = projects?.contents?.map(({ name, id }) => ({
+      text: name,
+      value: id?.toString(),
+    }));
+
     const currentTask = taskList;
     const [executeTime, setExecuteTime] = useState(() => {
       return JSON.parse(localStorage?.getItem(TASK_EXECUTE_TIME_KEY)) ?? 7;
@@ -209,6 +229,7 @@ const TaskTable: React.FC<IProps> = inject(
     const [hoverInNewTaskMenuBtn, setHoverInNewTaskMenuBtn] = useState(false);
     const [hoverInNewTaskMenu, setHoverInNewTaskMenu] = useState(false);
     const [listParams, setListParams] = useState(null);
+
     const loadParams = useRef(null);
     const { activePageKey } = pageStore;
     const columns = initColumns(listParams);
@@ -225,6 +246,7 @@ const TaskTable: React.FC<IProps> = inject(
           ...args?.filters,
           executeTime: _executeTime,
         };
+
         setListParams({
           ...args,
           filters,
@@ -242,6 +264,7 @@ const TaskTable: React.FC<IProps> = inject(
     useEffect(() => {
       loadData(loadParams.current);
     }, [executeDate]);
+
     useEffect(() => {
       if (loadParams.current) {
         setLoading(true);
@@ -262,6 +285,7 @@ const TaskTable: React.FC<IProps> = inject(
     }, [executeTime]);
     function initColumns(listParams: { filters: ITableFilter; sorter: ITableSorter }) {
       const { filters, sorter } = listParams ?? {};
+
       const columns = [
         {
           dataIndex: 'id',
@@ -285,7 +309,6 @@ const TaskTable: React.FC<IProps> = inject(
               />
             );
           },
-
           filterIcon: (filtered) => (
             <SearchOutlined
               style={{
@@ -293,12 +316,10 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
-
           filteredValue: filters?.id || null,
           filters: [],
           ellipsis: true,
           width: 80,
-          fixed: 'left' as FixedType,
         },
         {
           dataIndex: 'type',
@@ -312,6 +333,19 @@ const TaskTable: React.FC<IProps> = inject(
           width: 100,
           render: (type, record) => {
             return TaskTypeMap[type === TaskType.ALTER_SCHEDULE ? record?.parameters?.type : type];
+          },
+        },
+        {
+          dataIndex: 'project',
+          key: 'projectIdList',
+          title: '项目名称',
+          filters: projectOptions,
+          filteredValue: filters?.projectIdList || null,
+          ellipsis: true,
+          width: 80,
+          render(value, record) {
+            const { projectId, project } = record;
+            return project?.name || projectId || '-';
           },
         },
         {
@@ -460,6 +494,8 @@ const TaskTable: React.FC<IProps> = inject(
           ),
         },
       ];
+
+      (disableProjectCol as boolean) && columns.splice(2, 1);
 
       return !isClient() ? columns : columns.filter((item) => item.dataIndex !== 'creator');
     }
