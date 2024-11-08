@@ -146,6 +146,7 @@ export async function getTaskList<T>(params: {
   sort?: string;
   page?: number;
   size?: number;
+  projectId?: number[] | number;
 }): Promise<IResponseData<TaskRecord<T>>> {
   const res = await request.get('/api/v2/flow/flowInstances/', {
     params,

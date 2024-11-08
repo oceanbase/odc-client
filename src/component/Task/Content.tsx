@@ -123,7 +123,8 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
   ) => {
     const { projectId } = props;
     const { filters, sorter, pagination, pageSize } = args ?? {};
-    const { status, executeTime, candidateApprovers, creator, connection, id } = filters ?? {};
+    const { status, executeTime, candidateApprovers, creator, connection, id, projectIdList } =
+      filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
     const connectionId = connection?.filter(
@@ -140,7 +141,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
     const params = {
       fuzzySearchKeyword: id ? id : undefined,
       taskType: isAllScope ? (isAll ? undefined : taskTabType) : undefined,
-      projectId,
+      projectId: projectId || projectIdList,
       status,
       startTime: executeDate?.[0]?.valueOf() ?? getPreTime(7),
       endTime: executeDate?.[1]?.valueOf() ?? getPreTime(0),
@@ -176,7 +177,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
   ) => {
     const { projectId } = props;
     const { filters, sorter, pagination, pageSize } = args ?? {};
-    const { status, executeTime, candidateApprovers, creator, id } = filters ?? {};
+    const { status, executeTime, candidateApprovers, creator, id, projectIdList } = filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
     const isAllScope = ![
@@ -190,7 +191,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
     const params = {
       id: id ? id : undefined,
       type: isAllScope ? (isAll ? undefined : taskTabType) : undefined,
-      projectId,
+      projectId: projectId || projectIdList,
       status,
       candidateApprovers,
       creator,
@@ -276,6 +277,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
     >
       <div className={styles.content}>
         <TaskTable
+          disableProjectCol={inProject || pageKey !== undefined}
           tableRef={tableRef}
           taskTabType={taskTabType}
           taskList={taskList}
