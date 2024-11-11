@@ -106,7 +106,6 @@ export interface ITableLoadOptions {
   sorter?: ITableSorter;
   pagination?: ITablePagination;
   pageSize?: number;
-  projectIdList?: string[];
 }
 export interface ITableSorter {
   column: {

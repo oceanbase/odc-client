@@ -335,19 +335,21 @@ const TaskTable: React.FC<IProps> = inject(
             return TaskTypeMap[type === TaskType.ALTER_SCHEDULE ? record?.parameters?.type : type];
           },
         },
-        {
-          dataIndex: 'project',
-          key: 'projectIdList',
-          title: '项目名称',
-          filters: projectOptions,
-          filteredValue: filters?.projectIdList || null,
-          ellipsis: true,
-          width: 80,
-          render(value, record) {
-            const { projectId, project } = record;
-            return project?.name || projectId || '-';
-          },
-        },
+        disableProjectCol
+          ? null
+          : {
+              dataIndex: 'project',
+              key: 'projectIdList',
+              title: '项目',
+              filters: projectOptions,
+              filteredValue: filters?.projectIdList || null,
+              ellipsis: true,
+              width: 80,
+              render(value, record) {
+                const { projectId, project } = record;
+                return project?.name || projectId || '-';
+              },
+            },
         {
           dataIndex: 'description',
           key: 'description',
@@ -493,9 +495,7 @@ const TaskTable: React.FC<IProps> = inject(
             />
           ),
         },
-      ];
-
-      (disableProjectCol as boolean) && columns.splice(2, 1);
+      ].filter(Boolean);
 
       return !isClient() ? columns : columns.filter((item) => item.dataIndex !== 'creator');
     }
