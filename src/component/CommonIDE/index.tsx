@@ -87,6 +87,8 @@ interface ICommonIDEProps {
    * 创建后监听事件
    */
   onEditorAfterCreatedCallback?: (editor: IEditor) => void;
+
+  placeholder?: string;
 }
 interface ICommonIDEState {
   resultHeight: number;
@@ -149,6 +151,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
       resultSets,
       toolbarActions,
       session,
+      placeholder,
     } = this.props;
 
     const { resultHeight } = this.state;
@@ -182,6 +185,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                   defaultValue={initialSQL}
                   onValueChange={this.onSQLChange}
                   onEditorCreated={this.onEditorCreated}
+                  placeholder={placeholder}
                   {...editorProps}
                 />
               </div>
@@ -249,6 +253,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                 defaultValue={initialSQL}
                 onValueChange={this.onSQLChange}
                 onEditorCreated={this.onEditorCreated}
+                placeholder={placeholder}
                 {...editorProps}
               />
             </div>
