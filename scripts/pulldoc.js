@@ -23,7 +23,7 @@ const pkg = require('../package.json');
 const run = async function () {
   console.log('开始下载文档包');
   const isSuccess = await download(
-    `https://obodc-front.oss-cn-beijing.aliyuncs.com/docs/${pkg.version}/doc.zip`,
+    `https://odc-front.oss-cn-beijing.aliyuncs.com/docs/${pkg.version}/doc.zip`,
     'public/help-doc',
     'doc.zip',
   );
