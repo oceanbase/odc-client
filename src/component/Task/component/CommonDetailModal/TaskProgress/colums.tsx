@@ -19,23 +19,79 @@ const getColumns = (params: {
   // 查看进度 提示文本
   const viewProgressTooltip = (
     <div>
-      <div>ODC无锁结构变更功能包含如下步骤，步骤按照先后执行</div>
       <div>
-        1.创建影子表.该阶段为创建命名规则为 _${'{'}原始表名{'}'}_osc_new_ 的影子表
+        {formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.TaskProgress.BD5053CC',
+          defaultMessage: 'ODC无锁结构变更功能包含如下步骤，步骤按照先后执行',
+        })}
       </div>
       <div>
-        2.创建数据迁移任务.该阶段为创建数据迁移服务.无锁结构变更依赖数据迁移服务进行原表到影子表的数据复制
+        {formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.TaskProgress.D7170E72',
+          defaultMessage: '1.创建影子表.该阶段为创建命名规则为 _$',
+        })}
+        {'{'}
+        {formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.TaskProgress.5E1F4A52',
+          defaultMessage: '原始表名',
+        })}
+        {'}'}
+        {formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.TaskProgress.B2A83585',
+          defaultMessage: '_osc_new_ 的影子表',
+        })}
       </div>
-      <div>3.数据迁移任务预检查.该阶段为数据迁移服务检查用户数据库是否满足迁移条件</div>
-      <div>4.数据迁移任务迁移全量数据. 该阶段为数据迁移服务复制静态数据到影子表</div>
-      <div>5.数据迁移服务补齐增量数据.该阶段为数据迁移服务应用增量变更数据到影子表</div>
       <div>
-        6.切换表结构.该阶段为表切换阶段，在保证数据一致的前提下，原表重命名到 _$ {'{'}原始表名{'}'}
-        _osc_old_, 影子表重命名为原表
+        {formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.TaskProgress.9EB23593',
+          defaultMessage:
+            '2.创建数据迁移任务.该阶段为创建数据迁移服务.无锁结构变更依赖数据迁移服务进行原表到影子表的数据复制',
+        })}
       </div>
-      <div>7.释放数据迁移任务资源.该阶段为释放数据迁移服务的相关资源</div>
+      <div>
+        {formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.TaskProgress.E054491C',
+          defaultMessage: '3.数据迁移任务预检查.该阶段为数据迁移服务检查用户数据库是否满足迁移条件',
+        })}
+      </div>
+      <div>
+        {formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.TaskProgress.A0022050',
+          defaultMessage: '4.数据迁移任务迁移全量数据. 该阶段为数据迁移服务复制静态数据到影子表',
+        })}
+      </div>
+      <div>
+        {formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.TaskProgress.0E8BD1DF',
+          defaultMessage: '5.数据迁移服务补齐增量数据.该阶段为数据迁移服务应用增量变更数据到影子表',
+        })}
+      </div>
+      <div>
+        {formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.TaskProgress.FA8BFF19',
+          defaultMessage:
+            '6.切换表结构.该阶段为表切换阶段，在保证数据一致的前提下，原表重命名到 _$',
+        })}
+        {'{'}
+        {formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.TaskProgress.BE01B8C6',
+          defaultMessage: '原始表名',
+        })}
+        {'}'}
+        {formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.TaskProgress.CFC86411',
+          defaultMessage: '_osc_old_, 影子表重命名为原表',
+        })}
+      </div>
+      <div>
+        {formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.TaskProgress.D35FDAA6',
+          defaultMessage: '7.释放数据迁移任务资源.该阶段为释放数据迁移服务的相关资源',
+        })}
+      </div>
     </div>
   );
+
   return [
     {
       dataIndex: 'resultJson',
@@ -81,7 +137,10 @@ const getColumns = (params: {
                 params?.handleDetailVisible(record?.id);
               }}
             >
-              查看结构
+              {formatMessage({
+                id: 'src.component.Task.component.CommonDetailModal.TaskProgress.1AA009D5',
+                defaultMessage: '查看结构',
+              })}
             </Action.Link>
             {resultJson?.manualSwapTableEnabled && isTaskExecuting && (
               <Action.Link
@@ -106,7 +165,10 @@ const getColumns = (params: {
                     params?.handleProgressDetailVisible(record?.id);
                   }}
                 >
-                  查看进度
+                  {formatMessage({
+                    id: 'src.component.Task.component.CommonDetailModal.TaskProgress.D1ECE614',
+                    defaultMessage: '查看进度',
+                  })}
                 </Action.Link>
                 <Tooltip placement={'bottomRight'} title={viewProgressTooltip}>
                   <QuestionCircleOutlined />
