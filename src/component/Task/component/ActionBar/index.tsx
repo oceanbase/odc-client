@@ -278,7 +278,12 @@ const ActionBar: React.FC<IProps> = inject(
 
       const res = await againTask({ id: id });
       if (res) {
-        message.success('发起重试成功');
+        message.success(
+          formatMessage({
+            id: 'src.component.Task.component.ActionBar.15961986',
+            defaultMessage: '发起重试成功',
+          }),
+        );
         props?.onReloadList?.();
         props?.onReload?.();
       }
@@ -631,7 +636,10 @@ const ActionBar: React.FC<IProps> = inject(
 
       const againBtn = {
         key: 'again',
-        text: '重试',
+        text: formatMessage({
+          id: 'src.component.Task.component.ActionBar.57DBF8A7',
+          defaultMessage: '重试',
+        }),
         //再次发起
         type: 'button',
         action: handleAgain,
