@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { ProgressOfLocklessStructureChangeTaskStatusMap } from '@/d.ts';
 import { Button, Modal, Steps } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -10,29 +11,53 @@ export default ({ modalOpen, handleClose, parametersJson, resultJson }) => {
 
   const statusList = [
     {
-      title: '创建影子表',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.TaskProgress.852A480D',
+        defaultMessage: '创建影子表',
+      }),
       value: ProgressOfLocklessStructureChangeTaskStatusMap.CREATE_GHOST_TABLES,
     },
     {
-      title: '创建数据迁移任务',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.TaskProgress.3A9A7A8E',
+        defaultMessage: '创建数据迁移任务',
+      }),
       value: ProgressOfLocklessStructureChangeTaskStatusMap.CREATE_DATA_TASK,
     },
     {
-      title: '数据迁移任务预检查',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.TaskProgress.97D96659',
+        defaultMessage: '数据迁移任务预检查',
+      }),
       value: ProgressOfLocklessStructureChangeTaskStatusMap.MONITOR_DATA_TASK_TRANSFER_PRECHECK,
     },
     {
-      title: '数据迁移任务迁移全量数据',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.TaskProgress.68726E74',
+        defaultMessage: '数据迁移任务迁移全量数据',
+      }),
       value: ProgressOfLocklessStructureChangeTaskStatusMap.MONITOR_DATA_TASK_FULL_TRANSFER,
     },
     {
-      title: '数据迁移任务迁移增量数据',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.TaskProgress.BE72E514',
+        defaultMessage: '数据迁移任务迁移增量数据',
+      }),
       value:
         ProgressOfLocklessStructureChangeTaskStatusMap.MONITOR_DATA_TASK_TRANSFER_APP_SWITCH_FALSE,
     },
-    { title: '切换中', value: ProgressOfLocklessStructureChangeTaskStatusMap.SWAP_TABLE },
     {
-      title: '释放迁移任务资源',
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.TaskProgress.CDEAB162',
+        defaultMessage: '切换中',
+      }),
+      value: ProgressOfLocklessStructureChangeTaskStatusMap.SWAP_TABLE,
+    },
+    {
+      title: formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.TaskProgress.3FB36ACC',
+        defaultMessage: '释放迁移任务资源',
+      }),
       value: ProgressOfLocklessStructureChangeTaskStatusMap.CLEAR_RESOURCE,
     },
   ];
@@ -43,7 +68,10 @@ export default ({ modalOpen, handleClose, parametersJson, resultJson }) => {
       if (manualSwapTableEnabled && item.value === 'MONITOR_DATA_TASK_TRANSFER_APP_SWITCH_FALSE') {
         return {
           ...item,
-          title: '数据迁移任务迁移增量数据(切换就绪)',
+          title: formatMessage({
+            id: 'src.component.Task.component.CommonDetailModal.TaskProgress.6874EAFE',
+            defaultMessage: '数据迁移任务迁移增量数据(切换就绪)',
+          }),
         };
       }
       // manualSwapTableEnabled 为false 表示在迁移中
@@ -56,18 +84,34 @@ export default ({ modalOpen, handleClose, parametersJson, resultJson }) => {
       ) {
         return {
           ...item,
-          title: '数据迁移任务迁移增量数据(进行中)',
+          title: formatMessage({
+            id: 'src.component.Task.component.CommonDetailModal.TaskProgress.E8233762',
+            defaultMessage: '数据迁移任务迁移增量数据(进行中)',
+          }),
         };
       }
 
       if (item.value === 'MONITOR_DATA_TASK_FULL_TRANSFER' && fullTransferProgressPercentage) {
         return {
           ...item,
-          title: `数据迁移任务迁移全量数据${
-            fullTransferProgressPercentage < 100
-              ? `(进度${parseInt(fullTransferProgressPercentage)}%)`
-              : ''
-          }`,
+          title: formatMessage(
+            {
+              id: 'src.component.Task.component.CommonDetailModal.TaskProgress.37E1F426',
+              defaultMessage: '数据迁移任务迁移全量数据{ConditionalExpression0}',
+            },
+            {
+              ConditionalExpression0:
+                fullTransferProgressPercentage < 100
+                  ? formatMessage(
+                      {
+                        id: 'src.component.Task.component.CommonDetailModal.TaskProgress.E7E10C5B',
+                        defaultMessage: '(进度{CallExpression0}%)',
+                      },
+                      { CallExpression0: parseInt(fullTransferProgressPercentage) },
+                    )
+                  : '',
+            },
+          ),
         };
       }
       return item;
@@ -107,7 +151,15 @@ export default ({ modalOpen, handleClose, parametersJson, resultJson }) => {
 
   return (
     <>
-      <Modal title="任务进度" open={modalOpen} onOk={handleClose} onCancel={handleClose}>
+      <Modal
+        title={formatMessage({
+          id: 'src.component.Task.component.CommonDetailModal.TaskProgress.B843E8CA',
+          defaultMessage: '任务进度',
+        })}
+        open={modalOpen}
+        onOk={handleClose}
+        onCancel={handleClose}
+      >
         <Steps direction="vertical" size="small" current={stepsCurrent} items={stepsItems} />
       </Modal>
     </>

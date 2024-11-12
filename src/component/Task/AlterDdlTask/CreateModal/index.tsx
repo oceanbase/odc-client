@@ -271,7 +271,16 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             }
           </Button>
 
-          <Tooltip title={canCreateTask ? '' : '请购买数据传输资源'}>
+          <Tooltip
+            title={
+              canCreateTask
+                ? ''
+                : formatMessage({
+                    id: 'src.component.Task.AlterDdlTask.CreateModal.22DADB05',
+                    defaultMessage: '请购买数据传输资源',
+                  })
+            }
+          >
             <Button
               type="primary"
               loading={confirmLoading}
@@ -345,6 +354,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           </div>
         }
       />
+
       {!canCreateTask && (
         <Alert
           style={{
@@ -360,23 +370,44 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           }
           description={
             <div>
-              依赖
+              {formatMessage({
+                id: 'src.component.Task.AlterDdlTask.CreateModal.336C0D2E',
+                defaultMessage: '依赖',
+              })}
+
               <a
                 href={`${origin}/oms-v2/${regionId}/migration?pageNumber=1&type=MIGRATION`}
                 target="_blank"
               >
-                数据迁移服务
+                {formatMessage({
+                  id: 'src.component.Task.AlterDdlTask.CreateModal.D2A9FCAE',
+                  defaultMessage: '数据迁移服务',
+                })}
               </a>
-              完成数据拷贝，检查到您没有空闲的数据迁移资源。
+              {formatMessage({
+                id: 'src.component.Task.AlterDdlTask.CreateModal.7E1F9429',
+                defaultMessage: '完成数据拷贝，检查到您没有空闲的数据迁移资源。',
+              })}
+
               <br />
-              请进行
+              {formatMessage({
+                id: 'src.component.Task.AlterDdlTask.CreateModal.6B29781E',
+                defaultMessage: '请进行',
+              })}
+
               <a
                 href={`https://pre-valid-common-buy.aliyun.com/?commodityCode=oceanbase_omspost_public_cn&regionId=${regionId}`}
                 target="_blank"
               >
-                购买
+                {formatMessage({
+                  id: 'src.component.Task.AlterDdlTask.CreateModal.2C714DF6',
+                  defaultMessage: '购买',
+                })}
               </a>
-              ，重新配置任务。
+              {formatMessage({
+                id: 'src.component.Task.AlterDdlTask.CreateModal.5EB376C2',
+                defaultMessage: '，重新配置任务。',
+              })}
             </div>
           }
         />
