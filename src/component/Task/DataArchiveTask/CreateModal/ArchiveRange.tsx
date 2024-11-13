@@ -25,7 +25,6 @@ import { PartitionTextArea } from '../../component/PartitionTextArea';
 import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 import { IArchiveRange } from './index';
 import styles from './index.less';
-import type { FormInstance } from 'antd';
 import BatchSelectionPopover from '@/component/BatchSelectionPopover';
 const { Text, Link } = Typography;
 
@@ -33,10 +32,10 @@ interface IProps {
   tables: ITable[];
   enabledTargetTable?: boolean;
   checkPartition?: boolean;
-  form: FormInstance;
 }
 const ArchiveRange: React.FC<IProps> = (props) => {
-  const { tables, enabledTargetTable = false, checkPartition, form } = props;
+  const { tables, enabledTargetTable = false, checkPartition } = props;
+  const form = Form.useFormInstance();
   const [enablePartition, setEnablePartition] = useState<boolean>(checkPartition);
   const tablesOptions = tables?.map((item) => ({
     label: item.tableName,
