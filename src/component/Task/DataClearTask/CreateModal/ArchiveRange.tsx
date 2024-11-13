@@ -26,7 +26,6 @@ import { IArchiveRange } from './index';
 import BatchSelectionPopover from '@/component/BatchSelectionPopover';
 import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 import styles from './index.less';
-import type { FormInstance } from 'antd';
 
 const { Text, Link } = Typography;
 
@@ -34,10 +33,10 @@ interface IProps {
   tables: ITable[];
   needCheckBeforeDelete?: boolean;
   checkPartition?: boolean;
-  form: FormInstance;
 }
 const ArchiveRange: React.FC<IProps> = (props) => {
-  const { tables, needCheckBeforeDelete = false, checkPartition, form } = props;
+  const { tables, needCheckBeforeDelete = false, checkPartition } = props;
+  const form = Form.useFormInstance();
   const [enablePartition, setEnablePartition] = useState<boolean>(checkPartition);
   const tablesOptions = tables?.map((item) => ({
     label: item.tableName,
@@ -51,7 +50,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
   }, [checkPartition]);
 
   const handleConfirm = (
-    checkLista: CheckboxValueType[],
+    checkList: CheckboxValueType[],
     add: (defaultValue?: any, insertIndex?: number) => void,
     remove: (index: number | number[]) => void,
   ) => {
@@ -62,7 +61,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
         remove(i);
       }
     }
-    checkLista.forEach((item) => {
+    checkList.forEach((item) => {
       add({ tableName: item });
     });
   };
@@ -285,7 +284,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         </Button>
                         <BatchSelectionPopover
                           options={tablesOptions}
-                          handleConfirm={(checkLista) => handleConfirm(checkLista, add, remove)}
+                          handleConfirm={(checkList) => handleConfirm(checkList, add, remove)}
                         />
                       </div>
                     </Form.Item>

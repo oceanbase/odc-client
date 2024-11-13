@@ -580,12 +580,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             />
           </Space>
           <Space direction="vertical" size={24} style={{ width: '100%' }}>
-            <ArchiveRange
-              enabledTargetTable
-              tables={tables}
-              checkPartition={enablePartition}
-              form={form}
-            />
+            <ArchiveRange enabledTargetTable tables={tables} checkPartition={enablePartition} />
             <VariableConfig form={form} />
           </Space>
           <Form.Item name="deleteAfterMigration" valuePropName="checked">
