@@ -23,18 +23,21 @@ import { useEffect, useState } from 'react';
 import ArchiveRangeTip from '../../component/ArchiveRangeTip';
 import { PartitionTextArea } from '../../component/PartitionTextArea';
 import { IArchiveRange } from './index';
+import BatchSelectionPopover from '@/component/BatchSelectionPopover';
+import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 import styles from './index.less';
+import type { FormInstance } from 'antd';
 
-const { TextArea } = Input;
 const { Text, Link } = Typography;
 
 interface IProps {
   tables: ITable[];
   needCheckBeforeDelete?: boolean;
   checkPartition?: boolean;
+  form: FormInstance;
 }
 const ArchiveRange: React.FC<IProps> = (props) => {
-  const { tables, needCheckBeforeDelete = false, checkPartition } = props;
+  const { tables, needCheckBeforeDelete = false, checkPartition, form } = props;
   const [enablePartition, setEnablePartition] = useState<boolean>(checkPartition);
   const tablesOptions = tables?.map((item) => ({
     label: item.tableName,
@@ -46,6 +49,23 @@ const ArchiveRange: React.FC<IProps> = (props) => {
   useEffect(() => {
     setEnablePartition(checkPartition);
   }, [checkPartition]);
+
+  const handleConfirm = (
+    checkLista: CheckboxValueType[],
+    add: (defaultValue?: any, insertIndex?: number) => void,
+    remove: (index: number | number[]) => void,
+  ) => {
+    const filedList = form.getFieldValue('tables');
+    // 批量增加时，先移除空的fields
+    for (let i = 0; i < filedList.length; i++) {
+      if (!filedList[i]) {
+        remove(i);
+      }
+    }
+    checkLista.forEach((item) => {
+      add({ tableName: item });
+    });
+  };
 
   return (
     <>
@@ -254,14 +274,20 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         marginBottom: 0,
                       }}
                     >
-                      <Button onClick={() => add()} block icon={<PlusOutlined />}>
-                        {
-                          formatMessage({
-                            id: 'odc.DataClearTask.CreateModal.ArchiveRange.Add',
-                            defaultMessage: '添加',
-                          }) /*添加*/
-                        }
-                      </Button>
+                      <div className={styles.operationContainer}>
+                        <Button type="link" onClick={() => add()} icon={<PlusOutlined />}>
+                          {
+                            formatMessage({
+                              id: 'odc.DataClearTask.CreateModal.ArchiveRange.Add',
+                              defaultMessage: '添加',
+                            }) /*添加*/
+                          }
+                        </Button>
+                        <BatchSelectionPopover
+                          options={tablesOptions}
+                          handleConfirm={(checkLista) => handleConfirm(checkLista, add, remove)}
+                        />
+                      </div>
                     </Form.Item>
                   </div>
                 )}
