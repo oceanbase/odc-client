@@ -564,6 +564,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                     tables={tables}
                     needCheckBeforeDelete={needCheckBeforeDelete}
                     checkPartition={enablePartition}
+                    form={form}
                   />
                 );
               }}
