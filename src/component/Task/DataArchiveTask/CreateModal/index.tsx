@@ -710,7 +710,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               <Radio.Group options={InsertActionOptions} />
             </Form.Item>
             <ShardingStrategyItem />
-            <ThrottleFormItem />
+            <ThrottleFormItem isShowDataSizeLimit={true} />
           </FormItemPanel>
           <DescriptionInput />
         </Form>

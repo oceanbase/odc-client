@@ -19,6 +19,7 @@ import HelpDoc from '@/component/helpDoc';
 import setting from '@/store/setting';
 import { Form, InputNumber, Space } from 'antd';
 import React from 'react';
+import { TaskType } from '@/d.ts';
 interface IProps {
   initialValue?: {
     rowLimit?: number;
@@ -26,12 +27,14 @@ interface IProps {
   };
   maxRowLimit?: number;
   maxDataSizeLimit?: number;
+  isShowDataSizeLimit?: boolean;
 }
 const ThrottleFormItem: React.FC<IProps> = (props) => {
   const {
     initialValue,
     maxRowLimit = setting.maxSingleTaskRowLimit,
     maxDataSizeLimit = setting.maxSingleTaskDataSizeLimit,
+    isShowDataSizeLimit,
   } = props;
   return (
     <Form.Item
@@ -82,6 +85,46 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
             <span>Rows/s</span>
           </Space>
         </Form.Item>
+        {isShowDataSizeLimit ? (
+          <Form.Item
+            label={
+              <Space size={2}>
+                <span>
+                  {
+                    formatMessage({
+                      id: 'odc.src.component.Task.component.ThrottleFormItem.DataSizeLimit',
+                      defaultMessage: '数据大小限流',
+                    }) /* 数据大小限流 */
+                  }
+                </span>
+                <HelpDoc leftText isTip doc="TaskLmitData" />
+              </Space>
+            }
+            required
+          >
+            <Space size={4} align="center">
+              <Form.Item
+                name="dataSizeLimit"
+                style={{
+                  marginBottom: 0,
+                }}
+                rules={[
+                  {
+                    required: true,
+                    message: formatMessage({
+                      id: 'odc.src.component.Task.component.ThrottleFormItem.PleaseLoseTheDataSize',
+                      defaultMessage: '请输数据大小限流',
+                    }), //'请输数据大小限流'
+                  },
+                ]}
+                initialValue={initialValue?.dataSizeLimit}
+              >
+                <InputNumber min={1} max={maxDataSizeLimit} precision={1} />
+              </Form.Item>
+              <span>MB/s</span>
+            </Space>
+          </Form.Item>
+        ) : null}
       </Space>
     </Form.Item>
   );
