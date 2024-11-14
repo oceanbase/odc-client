@@ -491,7 +491,7 @@ export const cycleStatus = {
     }), //已禁用
   },
 
-  [TaskStatus.TERMINATION]: {
+  [TaskStatus.TERMINATED]: {
     icon: (
       <StopFilled
         style={{
