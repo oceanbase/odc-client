@@ -96,7 +96,8 @@ const CreateModal: React.FC<IProps> = (props) => {
 
   const { createSQLPlanVisible, sqlPlanData } = modalStore;
   const SQLPlanEditId = sqlPlanData?.id;
-  const isEdit = !!SQLPlanEditId;
+  const taskId = sqlPlanData?.taskId;
+  const isEdit = !!SQLPlanEditId || !!taskId;
   const isInitContent = isEdit ? isEdit && formData : true;
   const loadEditData = async (editId: number) => {
     const data = await getCycleTaskDetail<ISqlPlayJobParameters>(editId);
@@ -145,10 +146,10 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    if (SQLPlanEditId) {
-      loadEditData(SQLPlanEditId);
+    if (SQLPlanEditId || taskId) {
+      loadEditData(SQLPlanEditId || taskId);
     }
-  }, [SQLPlanEditId]);
+  }, [SQLPlanEditId, taskId]);
 
   const setFormStatus = (fieldName: string, errorMessage: string) => {
     form.setFields([
@@ -296,7 +297,8 @@ const CreateModal: React.FC<IProps> = (props) => {
         const parameters = {
           taskId: SQLPlanEditId,
           type: TaskType.SQL_PLAN,
-          operationType: isEdit ? TaskOperationType.UPDATE : TaskOperationType.CREATE,
+          operationType:
+            isEdit && SQLPlanEditId ? TaskOperationType.UPDATE : TaskOperationType.CREATE,
           allowConcurrent,
           scheduleTaskParameters: {
             timeoutMillis: timeoutMillis ? timeoutMillis * 60 * 60 * 1000 : undefined,
@@ -358,10 +360,10 @@ const CreateModal: React.FC<IProps> = (props) => {
         };
 
         setConfirmLoading(true);
-        if (!isEdit) {
+        if (!isEdit && SQLPlanEditId) {
           delete parameters.taskId;
         }
-        if (isEdit && formData?.status !== TaskStatus.PAUSE) {
+        if (isEdit && formData?.status !== TaskStatus.PAUSE && SQLPlanEditId) {
           handleEditAndConfirm(data);
         } else {
           handleCreate(data);
@@ -474,7 +476,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       className={styles['sql-plan']}
       width={720}
       title={
-        isEdit
+        isEdit && SQLPlanEditId
           ? formatMessage({
               id: 'odc.components.CreateSQLPlanTaskModal.EditSqlPlan',
               defaultMessage: '编辑 SQL 计划',
@@ -503,7 +505,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           </Button>
           <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
             {
-              isEdit
+              isEdit && SQLPlanEditId
                 ? formatMessage({
                     id: 'odc.components.CreateSQLPlanTaskModal.Save',
                     defaultMessage: '保存',
@@ -531,7 +533,11 @@ const CreateModal: React.FC<IProps> = (props) => {
         initialValues={defaultValue}
         onFieldsChange={handleFieldsChange}
       >
-        <DatabaseSelect disabled={isEdit} type={TaskType.SQL_PLAN} projectId={projectId} />
+        <DatabaseSelect
+          disabled={isEdit && !!SQLPlanEditId}
+          type={TaskType.SQL_PLAN}
+          projectId={projectId}
+        />
         <Form.Item
           label={formatMessage({
             id: 'odc.components.CreateSQLPlanTaskModal.SqlContent',
