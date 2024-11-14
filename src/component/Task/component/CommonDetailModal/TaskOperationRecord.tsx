@@ -46,7 +46,7 @@ export const operationTypeMap = {
     id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.DisableATask',
     defaultMessage: '停用任务',
   }), //停用任务
-  [TaskOperationType.TERMINATION]: formatMessage({
+  [TaskOperationType.TERMINATED]: formatMessage({
     id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.TerminateATask',
     defaultMessage: '终止任务',
   }), //终止任务

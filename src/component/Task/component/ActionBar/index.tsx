@@ -43,6 +43,7 @@ import {
   SubTaskStatus,
   TaskDetail,
   TaskExecStrategy,
+  TaskOperationType,
   TaskRecord,
   TaskRecordParameters,
   TaskStatus,
@@ -492,7 +493,7 @@ const ActionBar: React.FC<IProps> = inject(
         taskType: TaskType.ALTER_SCHEDULE,
         parameters: {
           taskId: task?.id,
-          operationType: 'TERMINATION',
+          operationType: TaskOperationType.TERMINATED,
         },
       });
       props?.onReload?.();
@@ -1068,7 +1069,7 @@ const ActionBar: React.FC<IProps> = inject(
           break;
         }
         case TaskStatus.APPROVAL_EXPIRED:
-        case TaskStatus.TERMINATION: {
+        case TaskStatus.TERMINATED: {
           if (isOperator) {
             tools = [viewBtn];
           } else {
