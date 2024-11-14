@@ -32,7 +32,7 @@ import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useStat
 import DatabaseSelect from '../../component/DatabaseSelect';
 import RuleConfigTable from './RuleConfigTable';
 import { convertFormToServerColumns, getDefaultRule, getDefaultValue } from './RuleContent';
-import { IMockFormData, MockStrategy, MockStrategyTextMap } from './type';
+import { IMockFormData, MockStrategy, MockStrategyTextMap, RuleConfigList } from './type';
 
 const { Option } = Select;
 
@@ -43,12 +43,13 @@ interface IDataMockerFormProps {
   dbId?: number;
   projectId: number;
   onDbModeChange: (mode: ConnectionMode) => void;
+  ruleConfigList?: RuleConfigList[];
 }
 
 const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
   observer(
     forwardRef((props, ref) => {
-      const { settingStore, tableName, dbId, projectId, onDbModeChange } = props;
+      const { settingStore, tableName, dbId, projectId, onDbModeChange, ruleConfigList } = props;
       const [form] = Form.useForm<IMockFormData>();
       /**
        * 字段长度信息表
@@ -92,6 +93,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
             setColumnSizeMap({});
             forceUpdate();
             let columns = await getTableColumnList(value, databaseName, session?.sessionId);
+
             if (columns?.length) {
               columns = columns.map((column) => {
                 /**
@@ -115,18 +117,28 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                 columns: columns.map((column) => {
                   const dbMode = database?.dataSource?.dialectType;
                   const rule: any = getDefaultRule(column.dataType, dbMode);
+                  const aaa = getDefaultValue(
+                    dbMode,
+                    column.dataType,
+                    rule,
+                    _sizeMap[column.columnName],
+                  );
+
+                  const newTypeConfig = ruleConfigList?.find(
+                    (item) => item.columnName === column.columnName,
+                  );
 
                   return {
                     columnName: column.columnName,
                     columnType: column.dataType,
                     columnObj: column,
                     rule,
-                    typeConfig: getDefaultValue(
-                      dbMode,
-                      column.dataType,
-                      rule,
-                      _sizeMap[column.columnName],
-                    ),
+                    typeConfig: newTypeConfig
+                      ? {
+                          range: newTypeConfig.range,
+                          genParams: newTypeConfig.typeConfig.genParams,
+                        }
+                      : getDefaultValue(dbMode, column.dataType, rule, _sizeMap[column.columnName]),
                   };
                 }),
               });

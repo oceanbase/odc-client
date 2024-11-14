@@ -15,11 +15,15 @@
  */
 
 import { getTableListByDatabaseName } from '@/common/network/table';
-import { getShadowSyncAnalysisResult, startShadowSyncAnalysis } from '@/common/network/task';
+import {
+  getShadowSyncAnalysisResult,
+  getTaskDetail,
+  startShadowSyncAnalysis,
+} from '@/common/network/task';
 import ExportCard from '@/component/ExportCard';
 import HelpDoc from '@/component/helpDoc';
 import { DbObjsIcon } from '@/constant';
-import { TaskType } from '@/d.ts';
+import { ShadowSyncTaskParams, TaskDetail, TaskType } from '@/d.ts';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
@@ -53,6 +57,9 @@ const SelectPanel = forwardRef<any, IProps>(function (
   const [form] = Form.useForm<IShaodwSyncData>();
   const loopRef = useRef<any>();
   const unmountedRef = useUnmountedRef();
+
+  const [selectDestTableNames, setSelectDestTableNames] = useState([]);
+
   const sourceDisplayTables = useMemo(() => {
     if (!sourceSearchValue) {
       return tables?.map((t) => ({ label: t.tableName, value: t.tableName }));
@@ -63,6 +70,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
       })
       ?.map((t) => ({ label: t.tableName, value: t.tableName }));
   }, [tables, sourceSearchValue]);
+
   const targetDisplayTables = useMemo(() => {
     let targetTables = [];
     if (!targetSearchValue) {
@@ -83,6 +91,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
     })?.length;
     return [_sourceSelectCount ?? 0, sourceDisplayTables?.length ?? 0];
   }, [sourceDisplayTables, data.originTableNames]);
+
   useImperativeHandle(
     ref,
     () => {
@@ -136,8 +145,12 @@ const SelectPanel = forwardRef<any, IProps>(function (
                   getResult();
                 }, 3000);
               } else {
+                if (selectDestTableNames.length) {
+                  setSelectDestTableNames([]);
+                }
                 setData({
                   ...data,
+                  originTableNames: new Set([]),
                   shadowAnalysisData: result,
                 });
 
@@ -161,7 +174,9 @@ const SelectPanel = forwardRef<any, IProps>(function (
     setTables(tables);
     setData({
       ...data,
-      originTableNames: new Set(),
+      originTableNames: selectDestTableNames.length
+        ? clone(new Set(selectDestTableNames))
+        : new Set(),
     });
 
     return tables;
@@ -177,8 +192,12 @@ const SelectPanel = forwardRef<any, IProps>(function (
 
   const TableIcon = DbObjsIcon.TABLE;
 
-  function handleSelect(event: CheckboxChangeEvent, index: number = -1) {
-    const checked = event.target.checked;
+  function handleSelect(
+    event: CheckboxChangeEvent,
+    index: number = -1,
+    requestTable?: { value: string }[],
+  ) {
+    const checked = requestTable ? true : event.target.checked;
     if (index !== -1) {
       // index不等于-1时，说明是VirtualList中的checkbox;
       if (checked) {
@@ -207,6 +226,8 @@ const SelectPanel = forwardRef<any, IProps>(function (
 
   useEffect(() => {
     const databaseId = shadowSyncData?.databaseId;
+    const taskId = shadowSyncData?.taskId;
+
     if (databaseId) {
       form.setFieldsValue({ databaseId });
       setData({
@@ -214,7 +235,33 @@ const SelectPanel = forwardRef<any, IProps>(function (
         databaseId,
       });
     }
+
+    if (taskId) {
+      getTaskDetailValue(taskId, databaseId);
+    }
   }, [shadowSyncData?.databaseId]);
+
+  const getTaskDetailValue = async (taskId: number, databaseId: number) => {
+    const detailRes = (await getTaskDetail(taskId)) as TaskDetail<ShadowSyncTaskParams>;
+
+    const res = await getShadowSyncAnalysisResult(detailRes.parameters.comparingTaskId.toString());
+
+    const newDataObj = {
+      ...data,
+      originTableNames: clone(new Set<string>(res?.tables?.map((item) => item.originTableName))),
+    };
+
+    if (!data.originTableNames.size) {
+      newDataObj.originTableNames = new Set();
+    }
+
+    if (databaseId) {
+      newDataObj.databaseId = databaseId;
+    }
+
+    setSelectDestTableNames(res?.tables?.map((item) => item.originTableName));
+    setData(newDataObj);
+  };
 
   return (
     <Form
@@ -393,22 +440,24 @@ const SelectPanel = forwardRef<any, IProps>(function (
                       rowHeight={22}
                       overscanRowCount={25}
                       rowCount={sourceDisplayTables?.length}
-                      rowRenderer={({ key, index, style: _style }) => (
-                        <Row key={key} style={{ height: 22, ..._style }}>
-                          <Checkbox
-                            checked={data.originTableNames.has(sourceDisplayTables[index]?.value)}
-                            key={sourceDisplayTables[index]?.value}
-                            onChange={(e: CheckboxChangeEvent) => handleSelect(e, index)}
-                          >
-                            <span
-                              style={{ whiteSpace: 'nowrap' }}
-                              title={sourceDisplayTables[index].label}
+                      rowRenderer={({ key, index, style: _style }) => {
+                        return (
+                          <Row key={key} style={{ height: 22, ..._style }}>
+                            <Checkbox
+                              checked={data.originTableNames.has(sourceDisplayTables[index]?.value)}
+                              key={sourceDisplayTables[index]?.value}
+                              onChange={(e: CheckboxChangeEvent) => handleSelect(e, index)}
                             >
-                              {sourceDisplayTables[index]?.label}
-                            </span>
-                          </Checkbox>
-                        </Row>
-                      )}
+                              <span
+                                style={{ whiteSpace: 'nowrap' }}
+                                title={sourceDisplayTables[index].label}
+                              >
+                                {sourceDisplayTables[index]?.label}
+                              </span>
+                            </Checkbox>
+                          </Row>
+                        );
+                      }}
                     />
                   </ExportCard>
                 </Col>

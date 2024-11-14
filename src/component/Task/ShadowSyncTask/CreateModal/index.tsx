@@ -77,6 +77,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
   const [data, _setData] = useState({
     ...defaultData,
   });
+
   const { session, database } = useDBSession(data?.databaseId);
   const schemaName = database?.name;
   const sessionId = session?.sessionId;
@@ -90,6 +91,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
       setIsChanged(true);
     }
   }
+
   const contentRef = useRef<{
     next: () => Promise<boolean>;
   }>();

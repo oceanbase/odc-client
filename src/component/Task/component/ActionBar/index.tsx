@@ -232,6 +232,7 @@ const ActionBar: React.FC<IProps> = inject(
 
     const handleReTry = async () => {
       const { type } = task;
+
       switch (type) {
         case TaskType.ASYNC: {
           props.modalStore.changeCreateAsyncTaskModal(true, {
@@ -264,8 +265,38 @@ const ActionBar: React.FC<IProps> = inject(
           });
           return;
         }
+        case TaskType.SHADOW: {
+          modalStore.changeShadowSyncVisible(true, {
+            taskId: task?.id,
+            databaseId: task.database?.id,
+          });
+          return;
+        }
+        case TaskType.STRUCTURE_COMPARISON: {
+          modalStore.changeStructureComparisonModal(true, {
+            databaseId: task.database?.id,
+            taskId: task?.id,
+          });
+          return;
+        }
+        case TaskType.EXPORT: {
+          modalStore.changeExportModal(true, {
+            databaseId: task.database?.id,
+            taskId: task?.id,
+          });
+          return;
+        }
+        case TaskType.EXPORT_RESULT_SET: {
+          modalStore.changeCreateResultSetExportTaskModal(true, {
+            databaseId: task.database?.id,
+            taskId: task?.id,
+          });
+          return;
+        }
+
         default: {
           const { database, executionStrategy, executionTime, parameters, description } = task;
+
           const data = {
             taskType: type,
             parameters,
@@ -274,6 +305,7 @@ const ActionBar: React.FC<IProps> = inject(
             executionTime,
             description,
           };
+
           const res = await createTask(data);
           if (res) {
             message.success(
@@ -352,6 +384,20 @@ const ActionBar: React.FC<IProps> = inject(
             type: 'RETRY',
           });
           break;
+        }
+        case TaskType.SQL_PLAN: {
+          modalStore.changeCreateSQLPlanTaskModal(true, {
+            databaseId: task.database?.id,
+            taskId: task?.id,
+          });
+          return;
+        }
+        case TaskType.DATA_ARCHIVE: {
+          modalStore.changeDataArchiveModal(true, {
+            databaseId: task.database?.id,
+            taskId: task?.id,
+          });
+          return;
         }
       }
     };
@@ -656,7 +702,7 @@ const ActionBar: React.FC<IProps> = inject(
           id: 'src.component.Task.component.ActionBar.57DBF8A7',
           defaultMessage: '重试',
         }),
-        //再次发起
+        // 重试
         type: 'button',
         action: handleAgain,
       };
@@ -905,7 +951,7 @@ const ActionBar: React.FC<IProps> = inject(
             }
             task?.executionStrategy === TaskExecStrategy.AUTO
               ? tools.push(stopBtn)
-              : tools.push(_executeBtn, stopBtn);
+              : tools.push(reTryBtn, _executeBtn, stopBtn);
           }
           tools = setProjectOwnerStopBtn(tools, stopBtn);
         }
@@ -1052,12 +1098,15 @@ const ActionBar: React.FC<IProps> = inject(
         }
         case TaskStatus.ENABLED: {
           if (isOperator) {
-            tools = [viewBtn, editBtn, disableBtn];
+            tools = [reTryBtn, viewBtn, editBtn, disableBtn];
             if (isLogicalDbChangeTask(task?.type)) {
               tools = [viewBtn, editBtn];
             }
+            if ([TaskType.DATA_ARCHIVE].includes(task?.type)) {
+              tools = [reTryBtn, viewBtn];
+            }
             if (
-              [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type) &&
+              [TaskType.DATA_DELETE].includes(task?.type) &&
               (task as ICycleTaskRecord<TaskRecordParameters>)?.triggerConfig?.triggerStrategy ===
                 TaskExecStrategy.START_NOW
             ) {
@@ -1079,7 +1128,7 @@ const ActionBar: React.FC<IProps> = inject(
         }
         case TaskStatus.PAUSE: {
           if (isOperator) {
-            tools = [viewBtn, editBtn, enableBtn];
+            tools = [reTryBtn, viewBtn, editBtn, enableBtn];
           } else {
             tools = [viewBtn];
           }

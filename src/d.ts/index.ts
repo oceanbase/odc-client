@@ -2184,6 +2184,7 @@ export interface ExportFormData {
   overwriteSysConfig?: boolean;
   exportAllObjects?: boolean; // 导出整库
   exportFilePath?: string; // 桌面端导出路径
+  taskId?: number;
 }
 
 export enum IMPORT_TYPE {
@@ -2838,6 +2839,9 @@ export interface IResultSetExportTaskParams {
   };
   fileName: string;
   maxRows: string;
+}
+export interface ShadowSyncTaskParams {
+  comparingTaskId: number;
 }
 
 export enum RollbackType {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { getDataSourceModeConfig } from '@/common/datasource';
-import { createTask } from '@/common/network/task';
+import { createTask, getTaskDetail } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import InputBigNumber from '@/component/InputBigNumber';
@@ -22,8 +22,11 @@ import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
 import {
   EXPORT_TYPE,
+  ExportFormData,
   IExportResultSetFileType,
   IMPORT_ENCODING,
+  IResultSetExportTaskParams,
+  TaskDetail,
   TaskExecStrategy,
   TaskPageScope,
   TaskPageType,
@@ -51,6 +54,8 @@ interface IProps {
 }
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId, theme } = props;
+
+  const { taskId } = modalStore?.resultSetExportData || {};
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -58,7 +63,9 @@ const CreateModal: React.FC<IProps> = (props) => {
   const { database } = useDBSession(databaseId);
   const connection = database?.dataSource;
   const { resultSetExportData } = modalStore;
-  const initSql = resultSetExportData?.sql;
+  const [detailData, setDetailData] = useState<IResultSetExportTaskParams>(null);
+  const initSql = resultSetExportData?.sql || detailData?.sql;
+
   const handleSqlChange = (sql: string) => {
     form?.setFieldsValue({
       sql,
@@ -155,6 +162,18 @@ const CreateModal: React.FC<IProps> = (props) => {
     }
   }, [resultSetExportData]);
 
+  useEffect(() => {
+    if (taskId) {
+      getTaskDetailValue();
+    }
+  }, [taskId]);
+
+  const getTaskDetailValue = async () => {
+    const detailRes = (await getTaskDetail(taskId)) as TaskDetail<IResultSetExportTaskParams>;
+    setDetailData(detailRes.parameters);
+    form.setFieldsValue(detailRes.parameters);
+  };
+
   return (
     <Drawer
       destroyOnClose
@@ -177,7 +196,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               formatMessage({
                 id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.Cancel',
                 defaultMessage: '取消',
-              }) /* 
+              }) /*
           取消
           */
             }
@@ -187,7 +206,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               formatMessage({
                 id: 'odc.src.component.Task.ResultSetExportTask.CreateModal.NewlyBuilt',
                 defaultMessage: '新建',
-              }) /* 
+              }) /*
           新建
           */
             }
