@@ -2184,6 +2184,7 @@ export interface ExportFormData {
   overwriteSysConfig?: boolean;
   exportAllObjects?: boolean; // 导出整库
   exportFilePath?: string; // 桌面端导出路径
+  taskId?: number;
 }
 
 export enum IMPORT_TYPE {
@@ -2838,6 +2839,9 @@ export interface IResultSetExportTaskParams {
   };
   fileName: string;
   maxRows: string;
+}
+export interface ShadowSyncTaskParams {
+  comparingTaskId: number;
 }
 
 export enum RollbackType {
@@ -3762,6 +3766,7 @@ export enum ISSOType {
   OIDC = 'OIDC',
   OAUTH2 = 'OAUTH2',
   LDAP = 'LDAP',
+  SAML = 'SAML',
 }
 
 export enum IClientAuthenticationMethod {
@@ -3823,6 +3828,13 @@ export interface ISSO_LDAP_CONFIG {
   redirectUrl: string;
 }
 
+export interface ISSO_SAML_CONFIG {
+  acsLocation: string;
+  redirectUrl: string;
+  registrationId: string;
+  secret: string;
+}
+
 export interface ISSO_MAPPINGRULE {
   userNickNameField: string;
   userProfileViewType: 'FLAT' | 'NESTED';
@@ -3850,6 +3862,12 @@ export type ISSOConfig =
       type: ISSOType.LDAP;
       ssoParameter: ISSO_LDAP_CONFIG;
       mappingRule: Omit<ISSO_MAPPINGRULE, 'userAccountNameField'>;
+    }
+  | {
+      name: string;
+      type: ISSOType.SAML;
+      ssoParameter: ISSO_SAML_CONFIG;
+      mappingRule: ISSO_MAPPINGRULE;
     };
 
 export interface IFormatPLSchema {

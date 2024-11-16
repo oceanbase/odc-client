@@ -21,9 +21,11 @@ import {
   IUserInfoAuthenticationMethod,
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Form, Input, InputNumber, Select, Space, Switch, Typography } from 'antd';
+import { Checkbox, Form, Input, InputNumber, Select, Space, Switch, Typography } from 'antd';
 import React from 'react';
-import { requiredRule } from '.';
+import { requiredRule, SAMLCheckBoxConfigType } from '.';
+
+const { TextArea } = Input;
 
 export const OAUTH2PartForm: React.FC<{
   isEdit: boolean;
@@ -871,6 +873,221 @@ export const OIDCPartForm: React.FC<{
           })} /*自动生成*/
         />
       </Form.Item>
+    </>
+  );
+};
+
+export const SAMLPartForm: React.FC<{
+  isEdit: boolean;
+  showExtraConfigForSAML: boolean;
+  setShowExtraConfigForSAML: (show: boolean) => void;
+  updateSAMLCheckBoxConfig: (type: string, checked: boolean, value?: string) => void;
+  SAMLCheckBoxConfig: SAMLCheckBoxConfigType;
+  registrationId: string;
+}> = ({
+  isEdit,
+  showExtraConfigForSAML,
+  setShowExtraConfigForSAML,
+  updateSAMLCheckBoxConfig,
+  SAMLCheckBoxConfig,
+  registrationId,
+}) => {
+  return (
+    <>
+      <Typography.Title level={5}>SAML 信息</Typography.Title>
+      <Form.Item
+        name={['ssoParameter', 'acsLocation']}
+        label="SP Endpoint"
+        tooltip={'123'}
+        rules={[requiredRule]}
+      >
+        <Input
+          style={{
+            width: '100%',
+          }}
+          disabled
+          placeholder={'自动生成，{baseUrl}/login/saml2/sso/{registrationId}'}
+        />
+      </Form.Item>
+      <Form.Item
+        name={['ssoParameter', 'ACSEntityID']}
+        label="ACS EntityID"
+        tooltip={'123'}
+        rules={[requiredRule]}
+      >
+        <Input
+          style={{
+            width: '100%',
+          }}
+          disabled
+          placeholder={'自动生成，{baseUrl}/saml2/service-provider-metadata/{registrationId}'}
+        />
+      </Form.Item>
+      <Form.Item
+        rules={[{ required: showExtraConfigForSAML ? false : true }]}
+        name={['ssoParameter', 'MetadataURI']}
+        label="Metadata URI"
+        tooltip={'123'}
+      >
+        <Input
+          style={{
+            width: '100%',
+          }}
+          placeholder={'如：https://odctestsaml.authing.cn/api/v2/saml-idp/xxxxxxx/metadata'}
+        />
+      </Form.Item>
+      <Space
+        style={{
+          marginBottom: 12,
+          marginTop: 10,
+        }}
+      >
+        <span
+          style={{
+            fontWeight: 'bold',
+          }}
+        >
+          {
+            formatMessage({
+              id: 'odc.NewSSODrawerButton.SSOForm.AdvancedOptions',
+              defaultMessage: '高级选项',
+            }) /*高级选项*/
+          }
+        </span>
+        <Switch
+          size="small"
+          checked={showExtraConfigForSAML}
+          onChange={(v) => setShowExtraConfigForSAML(v)}
+        />
+      </Space>
+      <div
+        style={{
+          display: showExtraConfigForSAML ? 'block' : 'none',
+        }}
+      >
+        <Form.Item
+          name={['ssoParameter', 'jwkSetUri']}
+          label="Provider EntityID"
+          tooltip={'123'}
+          rules={[requiredRule]}
+        >
+          <Input
+            style={{
+              width: '100%',
+            }}
+            disabled
+            placeholder={'系统自动生成，{baseUrl}/saml2/service-provider-metadata/{registrationId}'}
+          />
+        </Form.Item>
+        <Form.Item name={['ssoParameter', 'ssoConfig']} label={'SSO 配置'} rules={[requiredRule]}>
+          <div style={{ padding: '8px 16px 6px 16px', background: '#f7f9fb', borderRadius: 2 }}>
+            <Form.Item
+              label="URL"
+              name={['ssoParameter', 'ssoConfig', 'url']}
+              tooltip={123}
+              rules={[requiredRule]}
+            >
+              <Input
+                style={{
+                  width: '100%',
+                }}
+                placeholder={'如：https://odctestsaml.authing.cn/api/v2/saml-idp/xxxxxxx/metadata'}
+              />
+            </Form.Item>
+            <Form.Item
+              name={['ssoParameter', 'ssoConfig', 'bindingMethod']}
+              label="绑定方法"
+              tooltip={123}
+              initialValue={'Post'}
+              rules={[requiredRule]}
+            >
+              <Select
+                style={{
+                  width: 200,
+                }}
+                options={[
+                  {
+                    label: 'Post',
+                    value: 'Post',
+                  },
+                  {
+                    label: 'Redirect',
+                    value: 'Redirect',
+                  },
+                ]}
+              />
+            </Form.Item>
+            <Form.Item
+              name={['ssoParameter', 'ssoConfig', 'loginRequest']}
+              label="登录请求"
+              tooltip={123}
+              initialValue={'True'}
+              rules={[requiredRule]}
+            >
+              <Select
+                style={{
+                  width: 200,
+                }}
+                options={[
+                  {
+                    label: 'True',
+                    value: 'True',
+                  },
+                  {
+                    label: 'False',
+                    value: 'False',
+                  },
+                ]}
+              />
+            </Form.Item>
+          </div>
+        </Form.Item>
+
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Checkbox
+            checked={SAMLCheckBoxConfig.decryption.checked}
+            onChange={(e) => updateSAMLCheckBoxConfig('decryption', e.target.checked)}
+          >
+            签名配置
+          </Checkbox>
+          <div
+            style={{
+              height: 100,
+              width: '100%',
+              background: '#0000000a',
+              display: SAMLCheckBoxConfig.decryption.checked ? 'block' : 'none',
+            }}
+          ></div>
+          <Checkbox
+            checked={SAMLCheckBoxConfig.singlesignon.checked}
+            onChange={(e) => updateSAMLCheckBoxConfig('singlesignon', e.target.checked)}
+          >
+            认证配置
+          </Checkbox>
+
+          <TextArea
+            rows={6}
+            onChange={(e) => {
+              updateSAMLCheckBoxConfig('singlesignon', true, e.target.value);
+            }}
+            style={{ display: SAMLCheckBoxConfig.singlesignon.checked ? 'block' : 'none' }}
+          />
+          <Checkbox
+            checked={SAMLCheckBoxConfig.verification.checked}
+            onChange={(e) => updateSAMLCheckBoxConfig('verification', e.target.checked)}
+          >
+            解密配置
+          </Checkbox>
+          <div
+            style={{
+              height: 100,
+              width: '100%',
+              background: '#0000000a',
+              display: SAMLCheckBoxConfig.verification.checked ? 'block' : 'none',
+            }}
+          ></div>
+        </Space>
+      </div>
     </>
   );
 };
