@@ -233,6 +233,9 @@ export default inject('userStore')(
           ['ssoParameter', 'issueUrl'],
           ['mappingRule', 'userProfileViewType'],
           ['mappingRule', 'nestedAttributeField'],
+          ['ssoParameter', 'acsLocation'],
+          ['ssoParameter', 'acsEntityId'],
+          ['ssoParameter', 'metadataUri'],
         ]);
         console.log('value');
         if (!value) {
@@ -371,7 +374,7 @@ export default inject('userStore')(
             form.setFieldsValue({
               ssoParameter: {
                 acsLocation: `${window.ODCApiHost || location.origin}/login/oauth2/code/${id}`,
-                entityId: `${
+                acsEntityId: `${
                   window.ODCApiHost || location.origin
                 }/saml2/service-provider-metadata/${id}`,
               },
