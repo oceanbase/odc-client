@@ -906,7 +906,6 @@ export const SAMLPartForm: React.FC<{
   setShowExtraConfigForSAML,
   updateSAMLCheckBoxConfig,
   SAMLCheckBoxConfig,
-  registrationId,
   formConfig,
 }) => {
   const metadataUriValue = Form.useWatch(['ssoParameter', 'metadataUri'], formConfig);
@@ -929,7 +928,7 @@ export const SAMLPartForm: React.FC<{
         />
       </Form.Item>
       <Form.Item
-        name={['ssoParameter', 'entityId']}
+        name={['ssoParameter', 'acsEntityId']}
         label="ACS EntityID"
         tooltip={'123'}
         rules={[requiredRule]}

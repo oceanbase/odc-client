@@ -3833,7 +3833,7 @@ export interface ISSO_SAML_CONFIG {
   redirectUrl: string;
   registrationId: string;
   secret: string;
-  entityId?: string;
+  acsEntityId?: string;
   providerEntityId?: string;
 }
 
