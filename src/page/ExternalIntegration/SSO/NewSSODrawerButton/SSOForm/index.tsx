@@ -426,12 +426,28 @@ export default inject('userStore')(
 
       const updateSAMLCheckBoxConfig = async (type: string, checked: boolean, value?: string) => {
         if (checked) {
-          // if([SAMLType.signing,SAMLType.decryption].includes(type))
           switch (type) {
             case SAMLType.signing:
-              if (SAMLCheckBoxConfig[SAMLType.signing].value) {
-                return;
-              }
+              const signingValue = await querySecretKey();
+              setSAMLCheckBoxConfig({
+                ...SAMLCheckBoxConfig,
+                [type]: {
+                  checked,
+                  value: signingValue,
+                },
+              });
+              return;
+            case SAMLType.decryption:
+              const decryptionValue = await querySecretKey();
+              setSAMLCheckBoxConfig({
+                ...SAMLCheckBoxConfig,
+                [type]: {
+                  checked,
+                  value: decryptionValue,
+                },
+              });
+              return;
+            default:
               setSAMLCheckBoxConfig({
                 ...SAMLCheckBoxConfig,
                 [type]: {
@@ -441,6 +457,7 @@ export default inject('userStore')(
               });
           }
         }
+
         setSAMLCheckBoxConfig({
           ...SAMLCheckBoxConfig,
           [type]: {

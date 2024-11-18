@@ -803,8 +803,7 @@ export async function getTestUserInfo(testId: string): Promise<string> {
 /**
  * 生成密钥对
  */
-export async function querySecretKey(): Promise<IManagerIntegration> {
+export async function querySecretKey(): Promise<string> {
   const result = await request.get(`/api/v2/sso/credential`);
-  console.log('result', result);
-  return result;
+  return result?.data?.certificate || '';
 }
