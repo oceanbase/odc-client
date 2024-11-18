@@ -3829,10 +3829,12 @@ export interface ISSO_LDAP_CONFIG {
 }
 
 export interface ISSO_SAML_CONFIG {
-  acsLocation: string;
+  acsLocation?: string;
   redirectUrl: string;
   registrationId: string;
   secret: string;
+  entityId?: string;
+  providerEntityId?: string;
 }
 
 export interface ISSO_MAPPINGRULE {
