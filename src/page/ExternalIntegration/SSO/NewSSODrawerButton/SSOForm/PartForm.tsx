@@ -18,10 +18,21 @@ import HelpDoc from '@/component/helpDoc';
 import {
   IAuthorizationGrantType,
   IClientAuthenticationMethod,
+  ISSOConfig,
   IUserInfoAuthenticationMethod,
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Checkbox, Form, Input, InputNumber, Select, Space, Switch, Typography } from 'antd';
+import {
+  Checkbox,
+  Form,
+  FormInstance,
+  Input,
+  InputNumber,
+  Select,
+  Space,
+  Switch,
+  Typography,
+} from 'antd';
 import React from 'react';
 import { requiredRule, SAMLCheckBoxConfigType } from '.';
 
@@ -884,6 +895,7 @@ export const SAMLPartForm: React.FC<{
   updateSAMLCheckBoxConfig: (type: string, checked: boolean, value?: string) => void;
   SAMLCheckBoxConfig: SAMLCheckBoxConfigType;
   registrationId: string;
+  formConfig: FormInstance<ISSOConfig>;
 }> = ({
   isEdit,
   showExtraConfigForSAML,
@@ -891,7 +903,9 @@ export const SAMLPartForm: React.FC<{
   updateSAMLCheckBoxConfig,
   SAMLCheckBoxConfig,
   registrationId,
+  formConfig,
 }) => {
+  const metadataUriValue = Form.useWatch(['ssoParameter', 'metadataUri'], formConfig);
   return (
     <>
       <Typography.Title level={5}>SAML 信息</Typography.Title>
@@ -901,31 +915,33 @@ export const SAMLPartForm: React.FC<{
         tooltip={'123'}
         rules={[requiredRule]}
       >
-        <Input
-          style={{
-            width: '100%',
+        <TextArea
+          autoSize={{
+            minRows: 2,
+            maxRows: 3,
           }}
           disabled
-          placeholder={'自动生成，{baseUrl}/login/saml2/sso/{registrationId}'}
+          placeholder={'自动生成'}
         />
       </Form.Item>
       <Form.Item
-        name={['ssoParameter', 'ACSEntityID']}
+        name={['ssoParameter', 'entityId']}
         label="ACS EntityID"
         tooltip={'123'}
         rules={[requiredRule]}
       >
-        <Input
-          style={{
-            width: '100%',
+        <TextArea
+          autoSize={{
+            minRows: 2,
+            maxRows: 3,
           }}
           disabled
-          placeholder={'自动生成，{baseUrl}/saml2/service-provider-metadata/{registrationId}'}
+          placeholder={'自动生成'}
         />
       </Form.Item>
       <Form.Item
         rules={[{ required: showExtraConfigForSAML ? false : true }]}
-        name={['ssoParameter', 'MetadataURI']}
+        name={['ssoParameter', 'metadataUri']}
         label="Metadata URI"
         tooltip={'123'}
       >
@@ -966,26 +982,31 @@ export const SAMLPartForm: React.FC<{
         }}
       >
         <Form.Item
-          name={['ssoParameter', 'jwkSetUri']}
+          name={['ssoParameter', 'providerEntityId']}
           label="Provider EntityID"
           tooltip={'123'}
           rules={[requiredRule]}
         >
-          <Input
-            style={{
-              width: '100%',
+          <TextArea
+            autoSize={{
+              minRows: 2,
+              maxRows: 3,
             }}
             disabled
-            placeholder={'系统自动生成，{baseUrl}/saml2/service-provider-metadata/{registrationId}'}
+            placeholder={'自动生成'}
           />
         </Form.Item>
-        <Form.Item name={['ssoParameter', 'ssoConfig']} label={'SSO 配置'} rules={[requiredRule]}>
+        <Form.Item
+          name={['ssoParameter', 'singlesignon']}
+          label={'SSO 配置'}
+          rules={[requiredRule]}
+        >
           <div style={{ padding: '8px 16px 6px 16px', background: '#f7f9fb', borderRadius: 2 }}>
             <Form.Item
               label="URL"
-              name={['ssoParameter', 'ssoConfig', 'url']}
+              name={['ssoParameter', 'singlesignon', 'url']}
               tooltip={123}
-              rules={[requiredRule]}
+              rules={[{ required: !metadataUriValue }]}
             >
               <Input
                 style={{
@@ -995,11 +1016,11 @@ export const SAMLPartForm: React.FC<{
               />
             </Form.Item>
             <Form.Item
-              name={['ssoParameter', 'ssoConfig', 'bindingMethod']}
+              name={['ssoParameter', 'singlesignon', 'binding']}
               label="绑定方法"
               tooltip={123}
               initialValue={'Post'}
-              rules={[requiredRule]}
+              rules={[{ required: !metadataUriValue }]}
             >
               <Select
                 style={{
@@ -1018,11 +1039,11 @@ export const SAMLPartForm: React.FC<{
               />
             </Form.Item>
             <Form.Item
-              name={['ssoParameter', 'ssoConfig', 'loginRequest']}
+              name={['ssoParameter', 'singlesignon', 'signRequest']}
               label="登录请求"
               tooltip={123}
               initialValue={'True'}
-              rules={[requiredRule]}
+              rules={[{ required: !metadataUriValue }]}
             >
               <Select
                 style={{
@@ -1045,8 +1066,8 @@ export const SAMLPartForm: React.FC<{
 
         <Space direction="vertical" style={{ width: '100%' }}>
           <Checkbox
-            checked={SAMLCheckBoxConfig.decryption.checked}
-            onChange={(e) => updateSAMLCheckBoxConfig('decryption', e.target.checked)}
+            checked={SAMLCheckBoxConfig.signing.checked}
+            onChange={(e) => updateSAMLCheckBoxConfig('signing', e.target.checked)}
           >
             签名配置
           </Checkbox>
@@ -1055,12 +1076,12 @@ export const SAMLPartForm: React.FC<{
               height: 100,
               width: '100%',
               background: '#0000000a',
-              display: SAMLCheckBoxConfig.decryption.checked ? 'block' : 'none',
+              display: SAMLCheckBoxConfig.signing.checked ? 'block' : 'none',
             }}
           ></div>
           <Checkbox
-            checked={SAMLCheckBoxConfig.singlesignon.checked}
-            onChange={(e) => updateSAMLCheckBoxConfig('singlesignon', e.target.checked)}
+            checked={SAMLCheckBoxConfig.verification.checked}
+            onChange={(e) => updateSAMLCheckBoxConfig('verification', e.target.checked)}
           >
             认证配置
           </Checkbox>
@@ -1068,13 +1089,13 @@ export const SAMLPartForm: React.FC<{
           <TextArea
             rows={6}
             onChange={(e) => {
-              updateSAMLCheckBoxConfig('singlesignon', true, e.target.value);
+              updateSAMLCheckBoxConfig('verification', true, e.target.value);
             }}
-            style={{ display: SAMLCheckBoxConfig.singlesignon.checked ? 'block' : 'none' }}
+            style={{ display: SAMLCheckBoxConfig.verification.checked ? 'block' : 'none' }}
           />
           <Checkbox
-            checked={SAMLCheckBoxConfig.verification.checked}
-            onChange={(e) => updateSAMLCheckBoxConfig('verification', e.target.checked)}
+            checked={SAMLCheckBoxConfig.decryption.checked}
+            onChange={(e) => updateSAMLCheckBoxConfig('decryption', e.target.checked)}
           >
             解密配置
           </Checkbox>
@@ -1083,7 +1104,7 @@ export const SAMLPartForm: React.FC<{
               height: 100,
               width: '100%',
               background: '#0000000a',
-              display: SAMLCheckBoxConfig.verification.checked ? 'block' : 'none',
+              display: SAMLCheckBoxConfig.decryption.checked ? 'block' : 'none',
             }}
           ></div>
         </Space>

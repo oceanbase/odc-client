@@ -799,3 +799,12 @@ export async function getTestUserInfo(testId: string): Promise<string> {
   });
   return res?.data;
 }
+
+/**
+ * 生成密钥对
+ */
+export async function querySecretKey(): Promise<IManagerIntegration> {
+  const result = await request.get(`/api/v2/sso/credential`);
+  console.log('result', result);
+  return result;
+}
