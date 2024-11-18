@@ -28,6 +28,7 @@ import {
   FormInstance,
   Input,
   InputNumber,
+  message,
   Select,
   Space,
   Switch,
@@ -35,6 +36,9 @@ import {
 } from 'antd';
 import React from 'react';
 import { requiredRule, SAMLCheckBoxConfigType } from '.';
+import copyToCB from 'copy-to-clipboard';
+import Icon, { CopyOutlined } from '@ant-design/icons';
+import styles from './partForm.less';
 
 const { TextArea } = Input;
 
@@ -1065,34 +1069,56 @@ export const SAMLPartForm: React.FC<{
         </Form.Item>
 
         <Space direction="vertical" style={{ width: '100%' }}>
-          <Checkbox
-            checked={SAMLCheckBoxConfig.signing.checked}
-            onChange={(e) => updateSAMLCheckBoxConfig('signing', e.target.checked)}
-          >
-            签名配置
-          </Checkbox>
-          <div
-            style={{
-              height: 100,
-              width: '100%',
-              background: '#0000000a',
-              display: SAMLCheckBoxConfig.signing.checked ? 'block' : 'none',
-            }}
-          ></div>
-          <Checkbox
-            checked={SAMLCheckBoxConfig.verification.checked}
-            onChange={(e) => updateSAMLCheckBoxConfig('verification', e.target.checked)}
-          >
-            认证配置
-          </Checkbox>
+          <div>
+            <Checkbox
+              checked={SAMLCheckBoxConfig.signing.checked}
+              onChange={(e) => updateSAMLCheckBoxConfig('signing', e.target.checked)}
+            >
+              签名配置
+            </Checkbox>
 
-          <TextArea
-            rows={6}
-            onChange={(e) => {
-              updateSAMLCheckBoxConfig('verification', true, e.target.value);
-            }}
-            style={{ display: SAMLCheckBoxConfig.verification.checked ? 'block' : 'none' }}
-          />
+            <div
+              className={styles.SAMLCheckBoxConfigDiv}
+              style={{
+                display: SAMLCheckBoxConfig.signing.checked ? 'block' : 'none',
+              }}
+            >
+              <a
+                onClick={() => {
+                  copyToCB(SAMLCheckBoxConfig.signing.value);
+                  message.success(
+                    formatMessage({
+                      id: 'odc.component.Log.CopiedSuccessfully',
+                      defaultMessage: '复制成功',
+                    }), //复制成功
+                  );
+                }}
+                className={styles.SAMLCopyButton}
+              >
+                <CopyOutlined />
+              </a>
+              {SAMLCheckBoxConfig.signing.value}
+            </div>
+          </div>
+
+          <div>
+            <Checkbox
+              checked={SAMLCheckBoxConfig.verification.checked}
+              onChange={(e) => updateSAMLCheckBoxConfig('verification', e.target.checked)}
+            >
+              认证配置
+            </Checkbox>
+
+            <TextArea
+              rows={6}
+              onChange={(e) => {
+                updateSAMLCheckBoxConfig('verification', true, e.target.value);
+              }}
+              style={{
+                display: SAMLCheckBoxConfig.verification.checked ? 'block' : 'none',
+              }}
+            />
+          </div>
           <Checkbox
             checked={SAMLCheckBoxConfig.decryption.checked}
             onChange={(e) => updateSAMLCheckBoxConfig('decryption', e.target.checked)}
@@ -1100,13 +1126,27 @@ export const SAMLPartForm: React.FC<{
             解密配置
           </Checkbox>
           <div
+            className={styles.SAMLCheckBoxConfigDiv}
             style={{
-              height: 100,
-              width: '100%',
-              background: '#0000000a',
               display: SAMLCheckBoxConfig.decryption.checked ? 'block' : 'none',
             }}
-          ></div>
+          >
+            <a
+              onClick={() => {
+                copyToCB(SAMLCheckBoxConfig.decryption.value);
+                message.success(
+                  formatMessage({
+                    id: 'odc.component.Log.CopiedSuccessfully',
+                    defaultMessage: '复制成功',
+                  }), //复制成功
+                );
+              }}
+              className={styles.SAMLCopyButton}
+            >
+              <CopyOutlined />
+            </a>
+            {SAMLCheckBoxConfig.decryption.value}
+          </div>
         </Space>
       </div>
     </>
