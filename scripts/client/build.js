@@ -176,6 +176,10 @@ async function run() {
           platform: 'mac',
         },
       });
+      if (!!process.env.APPLE_ID) {
+        //sign jar first
+        await sign();
+      }
       await buildWeb();
       await buildClient('mac-jre');
 
