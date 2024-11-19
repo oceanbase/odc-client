@@ -18,7 +18,7 @@ import { SubTaskType, TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
 import { DatabasePermissionType } from '@/d.ts/database';
 import login from '@/store/login';
 import settingStore from '@/store/setting';
-import { isClient } from '@/util/env';
+import { haveOCP, isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { flatten } from 'lodash';
 export { TaskTypeMap } from '@/component/Task/component/TaskTable';
@@ -184,7 +184,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         {
           value: TaskPageType.LOGICAL_DATABASE_CHANGE,
           label: formatMessage({ id: 'src.component.Task.A7954C70', defaultMessage: '逻辑库变更' }),
-          enabled: !login.isPrivateSpace(),
+          enabled: !login.isPrivateSpace() && settingStore?.enableLogicaldatabase
         },
         {
           value: TaskPageType.SHADOW,
