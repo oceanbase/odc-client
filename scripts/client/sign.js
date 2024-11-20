@@ -79,7 +79,10 @@ async function signAllFiles(srcPath) {
         fs.rmSync(file);
         if (file.endsWith('.jar')) {
             execSync(`jar   -cMf0 ${file}   -C ${tempDir} .`, {
-                env: process.env
+                env: {
+                    ...process.env,
+                    JAVA_HOME: "`/usr/libexec/java_home -v 1.8`"
+                }
             })
         } else {
 
