@@ -78,12 +78,7 @@ async function signAllFiles(srcPath) {
         console.log('overwrite zip: ', file)
         fs.rmSync(file);
         if (file.endsWith('.jar')) {
-            execSync(`jar   -cMf0 ${file}   -C ${tempDir} .`, {
-                env: {
-                    ...process.env,
-                    JAVA_HOME: "`/usr/libexec/java_home -v 1.8.0_202`"
-                }
-            })
+            execSync(`jar   -cMf0 ${file}   -C ${tempDir} .`)
         } else {
 
             const zip2 = new AdmZip();
