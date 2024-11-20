@@ -16,7 +16,9 @@ if (!fs.existsSync(temp)) {
 function getUniqKey() {
     return new Date().getTime() + '_' + Math.random().toString(36).substring(2, 6);
 }
-
+console.log(
+    execSync('java -version')?.toString()
+)
 function walkSync(currentDirPath) {
     const files = [];
     fs.readdirSync(currentDirPath, { withFileTypes: true }).forEach(function (dirent) {
@@ -74,7 +76,9 @@ async function signAllFiles(srcPath) {
         console.log('overwrite zip: ', file)
         fs.rmSync(file);
         if (file.endsWith('.jar')) {
-            execSync(`jar   -cMf0 ${file}   -C ${tempDir} .`)
+            execSync(`jar   -cMf0 ${file}   -C ${tempDir} .`, {
+                env: process.env
+            })
         } else {
 
             const zip2 = new AdmZip();
