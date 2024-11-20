@@ -81,7 +81,7 @@ async function signAllFiles(srcPath) {
             execSync(`jar   -cMf0 ${file}   -C ${tempDir} .`, {
                 env: {
                     ...process.env,
-                    JAVA_HOME: "`/usr/libexec/java_home -v 1.8`"
+                    JAVA_HOME: "`/usr/libexec/java_home -v 1.8.0_202`"
                 }
             })
         } else {
