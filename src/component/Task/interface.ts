@@ -23,6 +23,7 @@ import type {
   TaskRecord,
   TaskRecordParameters,
   IResponseData,
+  Operation,
 } from '@/d.ts';
 export interface ITaskDetailModalProps {
   visible: boolean;
@@ -32,7 +33,7 @@ export interface ITaskDetailModalProps {
   detailId: number;
   task: TaskDetail<TaskRecordParameters>;
   subTasks: IResponseData<TaskRecord<IAsyncTaskParams>>;
-  opRecord: TaskRecord<any>[];
+  opRecord: TaskRecord<any>[] | Operation[];
   hasFlow: boolean;
   result: ITaskResult;
   log: ILog;
