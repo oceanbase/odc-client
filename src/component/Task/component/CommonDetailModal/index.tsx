@@ -101,7 +101,9 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
       content = <TaskExecuteRecord task={task} subTasks={subTasks} onReload={onReload} />;
       break;
     case TaskDetailType.OPERATION_RECORD:
-      content = <TaskOperationRecord opRecord={opRecord} onReload={onReload} />;
+      content = (
+        <TaskOperationRecord opRecord={opRecord} onReload={onReload} taskType={task.type} />
+      );
       break;
     case TaskDetailType.PROGRESS:
       content = <TaskProgress task={task} theme={theme} onReload={onReload} />;

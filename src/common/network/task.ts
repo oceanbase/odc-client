@@ -35,6 +35,7 @@ import {
   IResponseData,
   ISubTaskRecords,
   ITaskResult,
+  Operation,
   TaskDetail,
   TaskPageType,
   TaskRecord,
@@ -266,6 +267,27 @@ export async function getCycleTaskLog(
 export async function getDownloadUrl(scheduleId: number, taskId: number) {
   const res = await request.post(
     `/api/v2/schedule/schedules/${scheduleId}/tasks/${taskId}/log/getDownloadUrl`,
+  );
+  return res?.data;
+}
+
+/**
+ * 操作列表
+ */
+export async function getOperationList(scheduleId: number): Promise<IResponseData<Operation>> {
+  const res = await request.get(`/api/v2/schedule/schedules/${scheduleId}/changes`);
+  return res?.data;
+}
+
+/**
+ * 操作详情
+ */
+export async function getOperationDetail(
+  scheduleId: number,
+  scheduleChangeLogId: number,
+): Promise<Operation> {
+  const res = await request.get(
+    `/api/v2/schedule/schedules/${scheduleId}/changes/${scheduleChangeLogId}`,
   );
   return res?.data;
 }

@@ -21,6 +21,7 @@ import {
   getDataArchiveSubTask,
   getTaskDetail,
   getTaskList,
+  getOperationList,
   getTaskLog,
   getTaskResult,
   getDownloadUrl,
@@ -40,6 +41,7 @@ import type {
   IResponseData,
   ITaskResult,
   TaskDetail,
+  Operation,
   TaskRecord,
 } from '@/d.ts';
 import {
@@ -64,7 +66,7 @@ import ApprovalModal from './component/ApprovalModal';
 import { DataArchiveTaskContent } from './DataArchiveTask';
 import { DataClearTaskContent } from './DataClearTask';
 import { getItems as getDataMockerItems } from './DataMockerTask';
-import { isCycleTask, isLogicalDbChangeTask } from './helper';
+import { isCycleTask, isLogicalDbChangeTask, isSupportChangeDetail } from './helper';
 import { TaskDetailType } from './interface';
 import { LogicDatabaseAsyncTaskContent } from './LogicDatabaseAsyncTask';
 import { MutipleAsyncTaskContent } from './MutipleAsyncTask';
@@ -110,7 +112,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     | CycleTaskDetail<IDataArchiveJobParameters | IDataClearJobParameters>
   >(null);
   const [subTasks, setSubTasks] = useState<IResponseData<ICycleSubTaskRecord>>(null);
-  const [opRecord, setOpRecord] = useState<TaskRecord<any>[]>(null);
+  const [opRecord, setOpRecord] = useState<TaskRecord<any>[] | Operation[]>(null);
   const [detailType, setDetailType] = useState<TaskDetailType>(TaskDetailType.INFO);
   const [log, setLog] = useState<ILog>(null);
   const [result, setResult] = useState<ITaskResult>(null);
@@ -257,12 +259,17 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   };
 
   const getOperationRecord = async function () {
-    const data = await getTaskList({
-      createdByCurrentUser: false,
-      approveByCurrentUser: false,
-      parentInstanceId: task?.id,
-      taskType: TaskType.ALTER_SCHEDULE,
-    });
+    let data;
+    if (isSupportChangeDetail(task.type)) {
+      data = await getOperationList(task?.id);
+    } else {
+      data = await getTaskList({
+        createdByCurrentUser: false,
+        approveByCurrentUser: false,
+        parentInstanceId: task?.id,
+        taskType: TaskType.ALTER_SCHEDULE,
+      });
+    }
     setLoading(false);
     setOpRecord(data?.contents);
   };
