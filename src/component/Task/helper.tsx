@@ -73,6 +73,11 @@ export const isCycleTaskPage = (type: TaskPageType) => {
     TaskPageType.LOGICAL_DATABASE_CHANGE,
   ].includes(type);
 };
+
+export const isSupportChangeDetail = (type: TaskType) => {
+  return [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type);
+};
+
 interface ITaskGroupLabel {
   groupName: string;
   icon?: React.ReactNode;

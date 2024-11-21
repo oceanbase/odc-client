@@ -139,10 +139,6 @@ service.interceptors.response.use(
     const { params } = config || {};
     const { responseURL: url } = request || {};
     const json = cloneDeep(data);
-    if (!response) {
-      const result = errorHandler(error);
-      return result;
-    }
     if (json?.error) {
       json.errCode = json?.error?.code || json?.errCode;
       json.errMsg = json?.error?.message || json?.errMsg;
@@ -154,6 +150,8 @@ service.interceptors.response.use(
     if (isThrowError) {
       return null;
     }
+    const result = errorHandler(error);
+    return result;
   },
 );
 
