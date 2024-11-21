@@ -16,7 +16,11 @@ if (!fs.existsSync(temp)) {
 function getUniqKey() {
     return new Date().getTime() + '_' + Math.random().toString(36).substring(2, 6);
 }
-
+console.log(
+    execSync('java -version', {
+        stdio: 'inherit'
+    })?.toString()
+)
 function walkSync(currentDirPath) {
     const files = [];
     fs.readdirSync(currentDirPath, { withFileTypes: true }).forEach(function (dirent) {

@@ -25,7 +25,7 @@ const urlMap = {
   'linux_aarch64': `library/obclient/2_2_4/aarch64/obclient.tar.gz`,
 }
 
-const baseUrl = "https://obodc-front.oss-cn-beijing.aliyuncs.com/";
+const baseUrl = "https://odc-front.oss-cn-beijing.aliyuncs.com/";
 
 exports.run = async function () {
   const uri = urlMap[process.env.platform];
