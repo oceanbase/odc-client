@@ -2459,6 +2459,26 @@ export interface ITaskResult {
   };
 }
 
+export interface Operation {
+  createTime: number;
+  flowInstanceId: number;
+  id: number;
+  newParameter: string;
+  previousParameters: string;
+  scheduleId: number;
+  status: ScheduleChangeStatus;
+  type: TaskOperationType;
+  updateTime: number;
+}
+
+export enum ScheduleChangeStatus {
+  PREPARING = 'PREPARING',
+  APPROVING = 'APPROVING',
+  CHANGING = 'CHANGING',
+  SUCCESS = 'SUCCESS',
+  FAILED = 'FAILED',
+}
+
 export enum MigrationInsertAction {
   INSERT_IGNORE = 'INSERT_IGNORE',
   INSERT_DUPLICATE_UPDATE = 'INSERT_DUPLICATE_UPDATE',
