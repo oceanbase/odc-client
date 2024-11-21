@@ -915,7 +915,7 @@ export const SAMLPartForm: React.FC<{
       <Form.Item
         name={['ssoParameter', 'acsLocation']}
         label="SP Endpoint"
-        tooltip={'123'}
+        tooltip={'用户接受 SSO 服务响应'}
         rules={[requiredRule]}
       >
         <TextArea
@@ -924,7 +924,7 @@ export const SAMLPartForm: React.FC<{
             maxRows: 3,
           }}
           disabled
-          placeholder={'自动生成'}
+          placeholder={'自动生成，{baseUrl}/login/saml2/sso/{registrationId}'}
         />
       </Form.Item>
       <Form.Item
@@ -939,7 +939,7 @@ export const SAMLPartForm: React.FC<{
             maxRows: 3,
           }}
           disabled
-          placeholder={'自动生成'}
+          placeholder={'自动生成，{baseUrl}/saml2/service-provider-metadata/{registrationId}'}
         />
       </Form.Item>
       <Form.Item
@@ -996,7 +996,7 @@ export const SAMLPartForm: React.FC<{
               maxRows: 3,
             }}
             disabled
-            placeholder={'自动生成'}
+            placeholder={'系统自动生成，{baseUrl}/saml2/service-provider-metadata/{registrationId}'}
           />
         </Form.Item>
         <Form.Item
