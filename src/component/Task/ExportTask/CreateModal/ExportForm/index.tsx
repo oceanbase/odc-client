@@ -15,9 +15,9 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 
-import { ExportFormData } from '@/d.ts';
+import { ExportFormData, TaskDetail } from '@/d.ts';
 // compatible
 import { Form, message } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -29,6 +29,7 @@ import { useRequest } from 'ahooks';
 import { useForm } from 'antd/es/form/Form';
 import ConfigPanel from './ConfigPanel';
 import ObjSelecterPanel from './ObjSelecterPanel';
+import { getTaskDetail } from '@/common/network/task';
 
 export enum FormType {
   ObjSelecter,
@@ -47,6 +48,7 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
   observer(
     forwardRef(function (props, ref) {
       const { formData, formType, onFormValueChange, projectId } = props;
+      const { taskId } = formData;
       const [form] = useForm<ExportFormData>();
       const databaseId = Form.useWatch('databaseId', form);
       const { data, run } = useRequest(getDatabase, {
@@ -83,6 +85,20 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
         }
         callback(false, values);
       }
+
+      useEffect(() => {
+        getTaskDetailFoTaskId();
+      }, [taskId]);
+
+      const getTaskDetailFoTaskId = async () => {
+        if (taskId) {
+          const detailRes = (await getTaskDetail(taskId)) as TaskDetail<ExportFormData>;
+          form.setFieldValue('exportDbObjects', detailRes?.parameters?.exportDbObjects);
+          onFormValueChange('exportDbObjects', {
+            exportDbObjects: detailRes?.parameters?.exportDbObjects,
+          });
+        }
+      };
 
       useImperativeHandle(ref, () => {
         return {

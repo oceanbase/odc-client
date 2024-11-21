@@ -73,6 +73,7 @@ interface IRuleContentProps {
   onChange?: (value: any) => void;
   columnSizeMap: IColumnSizeMap;
   readonly?: boolean;
+  typeConfigValue?: { genParams?: { caseOption: string }; range: string[] | number[] };
 }
 
 /**
@@ -94,6 +95,7 @@ const RuleContent: React.FC<IRuleContentProps> = (props) => {
   let emptyShowFunc;
   let { dbMode, columnType, ruleType, readonly, value, columnSizeMap, columnName, onChange } =
     props;
+
   const maxLength = columnSizeMap?.[columnName];
   columnType = convertColumnType(columnType);
   const ruleItem = columnTypeToRuleMap[dbMode]?.[columnType];

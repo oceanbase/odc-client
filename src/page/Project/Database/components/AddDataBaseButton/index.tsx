@@ -41,6 +41,7 @@ import {
   Dropdown,
 } from 'antd';
 import { useContext, useState } from 'react';
+import settingStore from '@/store/setting';
 interface IProps {
   projectId: number;
   orderedDatabaseIds: number[][];
@@ -144,18 +145,27 @@ const AddDataBaseButton: React.FC<IProps> = ({
               : ''
           }
         >
-          <Dropdown.Button
-            type="primary"
-            icon={<DownOutlined />}
-            menu={{ items }}
-            onClick={() => setOpen(true)}
-            disabled={disabledAction}
-          >
-            {formatMessage({
-              id: 'src.page.Project.Database.components.AddDataBaseButton.EE4B77AC',
-              defaultMessage: '添加数据库',
-            })}
-          </Dropdown.Button>
+          {!settingStore?.enableLogicaldatabase ? (
+            <Button type="primary" onClick={() => setOpen(true)} disabled={disabledAction}>
+              {formatMessage({
+                id: 'src.page.Project.Database.components.AddDataBaseButton.EE4B77AC',
+                defaultMessage: '添加数据库',
+              })}
+            </Button>
+          ) : (
+            <Dropdown.Button
+              type="primary"
+              icon={<DownOutlined />}
+              menu={{ items }}
+              onClick={() => setOpen(true)}
+              disabled={disabledAction}
+            >
+              {formatMessage({
+                id: 'src.page.Project.Database.components.AddDataBaseButton.EE4B77AC',
+                defaultMessage: '添加数据库',
+              })}
+            </Dropdown.Button>
+          )}
         </TooltipAction>
         <Tooltip
           title={

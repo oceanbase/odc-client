@@ -22,7 +22,7 @@ import { ColumnProps } from 'antd/es/table';
 import React, { useState } from 'react';
 import RuleContent, { getDefaultValue } from './RuleContent';
 import RuleSelect from './RuleSelect';
-import { IMockFormColumn, IMockFormData } from './type';
+import { IMockFormColumn, IMockFormData, RuleConfigList } from './type';
 
 const { Option } = Select;
 
