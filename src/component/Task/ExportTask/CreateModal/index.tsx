@@ -25,6 +25,7 @@ import {
   TaskExecStrategy,
   TaskPageScope,
   TaskPageType,
+  TaskDetail,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import login from '@/store/login';
@@ -39,6 +40,8 @@ import React from 'react';
 import ExportForm, { FormType } from './ExportForm';
 import FormContext from './ExportForm/FormContext';
 import styles from './index.less';
+import { getTaskDetail } from '@/common/network/task';
+import { FormInstance, useForm } from 'antd/es/form/Form';
 export interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
@@ -66,6 +69,7 @@ class CreateModal extends React.Component<IProps, IState> {
       isSaveDefaultConfig: false,
       formData: this.getDefaultFormData(),
     };
+
     if (modalStore.exportModalData) {
       this.state.formData.exportDbObjects = [
         {
@@ -242,8 +246,9 @@ class CreateModal extends React.Component<IProps, IState> {
     }
   };
   private getDefaultFormData = () => {
-    return {
+    const formData = {
       databaseId: this.props.modalStore.exportModalData?.databaseId,
+      taskId: this.props.modalStore.exportModalData?.taskId,
       executionStrategy: TaskExecStrategy.AUTO,
       taskName: null,
       dataTransferFormat: this.defaultConfig?.dataTransferFormat ?? EXPORT_TYPE.CSV,
@@ -272,6 +277,8 @@ class CreateModal extends React.Component<IProps, IState> {
       exportAllObjects: false,
       exportDbObjects: [],
     };
+
+    return formData;
   };
   private resetFormData = () => {
     this.setState({
@@ -282,10 +289,11 @@ class CreateModal extends React.Component<IProps, IState> {
   static getDerivedStateFromProps(props, state) {
     const nextModalData = props.modalStore?.exportModalData;
     if (nextModalData && !state.formData.exportDbObjects?.length) {
-      const { databaseId, name, type, exportPkgBody } = nextModalData;
+      const { databaseId, name, type, exportPkgBody, taskId } = nextModalData;
       const formData = {
         ...state.formData,
         databaseId,
+        taskId,
       };
       if (name) {
         formData.exportDbObjects = [
@@ -307,16 +315,19 @@ class CreateModal extends React.Component<IProps, IState> {
     }
     return null;
   }
+
   render() {
     const { modalStore, projectId } = this.props;
     const { formData, submitting, stepIndex, isSaveDefaultConfig } = this.state;
     const currentStep = this.steps[stepIndex],
       prevStep = this.steps[stepIndex - 1],
       nextStep = this.steps[stepIndex + 1];
+
     const isNextStepDisabled =
       nextStep?.key === FormType.Config &&
-      !this.state.formData?.exportAllObjects &&
-      !this.state.formData?.exportDbObjects?.length;
+      !formData.exportAllObjects &&
+      !formData.exportDbObjects?.length;
+
     const nextTip = isNextStepDisabled
       ? formatMessage({
           id: 'odc.components.ExportDrawer.SelectAtLeastOneExport',
@@ -324,6 +335,7 @@ class CreateModal extends React.Component<IProps, IState> {
         })
       : //至少选择一个导出对象
         null;
+
     return (
       <Drawer
         title={

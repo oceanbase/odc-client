@@ -80,6 +80,7 @@ interface ResultSetExportData {
   sql?: string;
   databaseId?: number;
   tableName?: string;
+  taskId?: number;
 }
 
 interface ApplyPermissionData {}
@@ -105,6 +106,7 @@ interface IExportModalData {
   name?: string;
   databaseId?: number;
   exportPkgBody?: boolean;
+  taskId?: number;
 }
 
 interface IImportModalData {
@@ -116,6 +118,7 @@ interface IDataArchiveTaskData {
   id?: number;
   type?: 'RETRY' | 'EDIT';
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IDataClearTaskData extends IDataArchiveTaskData {}
@@ -123,6 +126,7 @@ interface IDataClearTaskData extends IDataArchiveTaskData {}
 interface ISQLPlanTaskData {
   id?: number;
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IPartitionTaskData {
@@ -135,10 +139,12 @@ interface IDDLAlterTaskData {
 
 interface IShadowSyncTaskData {
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IStructureComparisonTaskData {
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IWorkSpaceExecuteSQLModalProps {

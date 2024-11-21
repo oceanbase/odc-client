@@ -46,9 +46,11 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [dbMode, setDbMode] = useState<ConnectionMode>(null);
     const formRef = useRef<FormInstance<IMockFormData>>(null);
+    const [ruleConfigList, setRuleConfigList] = useState([]);
 
     const loadEditData = async () => {
       const { task } = dataMockerData;
+
       const {
         parameters: { taskDetail },
         database: { id: databaseId },
@@ -58,8 +60,18 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       const taskDetailObj: {
         tables: IServerMockTable;
       } = JSON.parse(taskDetail);
-      const { tableName, whetherTruncate, totalCount, strategy, batchSize } =
+      const { tableName, whetherTruncate, totalCount, strategy, batchSize, columns } =
         taskDetailObj?.tables?.[0] ?? {};
+      setRuleConfigList(
+        columns.map((item) => {
+          const { typeConfig } = item;
+          return {
+            ...item,
+            range: [typeConfig.lowValue, typeConfig.highValue],
+          };
+        }) || [],
+      );
+
       const formData = {
         databaseId,
         tableName,
@@ -69,6 +81,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         batchSize,
         executionStrategy,
         description,
+        columns,
       };
       formRef.current?.setFieldsValue(formData);
     };
@@ -129,6 +142,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               onClick={async () => {
                 try {
                   const values = await formRef.current.validateFields();
+
                   const editingColumn = values?.columns?.find((c) => {
                     return c.typeConfig?._isEditing;
                   });
@@ -205,6 +219,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           projectId={projectId}
           onDbModeChange={handleDbModeChange}
           ref={formRef}
+          ruleConfigList={ruleConfigList}
         />
       </Drawer>
     );

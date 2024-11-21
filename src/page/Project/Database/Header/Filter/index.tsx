@@ -9,6 +9,7 @@ import FilterIcon from '@/page/Datasource/Datasource/Header/FIlterIcon';
 import { getAllConnectTypes, getAllDBTypes } from '@/common/datasource';
 import CheckboxTag from '@/component/CheckboxTag';
 import { DBType } from '@/d.ts/database';
+import settingStore from '@/store/setting';
 
 interface IProps {}
 
@@ -106,28 +107,28 @@ const Filter: React.FC<IProps> = function ({}) {
                 }}
               />
             </Space>
-
-            <Space direction="vertical" size={5}>
-              <Typography.Text type="secondary">
-                {formatMessage({
-                  id: 'src.page.Project.Database.Header.Filter.BCBEF8AA',
-                  defaultMessage: '数据库类型',
-                })}
-              </Typography.Text>
-              <CheckboxTag
-                value={context?.filterParams?.type}
-                options={[]
-                  .concat(getAllDBTypes())
-                  .map((v) => ({ label: DBTypeText[v], value: v }))}
-                onChange={(v) => {
-                  context.setFilterParams({
-                    ...context?.filterParams,
-                    type: v as DBType[],
-                  });
-                }}
-              />
-            </Space>
-
+            {settingStore?.enableLogicaldatabase ? (
+              <Space direction="vertical" size={5}>
+                <Typography.Text type="secondary">
+                  {formatMessage({
+                    id: 'src.page.Project.Database.Header.Filter.BCBEF8AA',
+                    defaultMessage: '数据库类型',
+                  })}
+                </Typography.Text>
+                <CheckboxTag
+                  value={context?.filterParams?.type}
+                  options={[]
+                    .concat(getAllDBTypes())
+                    .map((v) => ({ label: DBTypeText[v], value: v }))}
+                  onChange={(v) => {
+                    context.setFilterParams({
+                      ...context?.filterParams,
+                      type: v as DBType[],
+                    });
+                  }}
+                />
+              </Space>
+            ) : null}
             <Space direction="vertical" size={5}>
               <Typography.Text type="secondary">
                 {formatMessage({

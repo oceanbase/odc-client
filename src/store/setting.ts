@@ -119,6 +119,9 @@ export class SettingStore {
   @observable
   public enableMockdata: boolean = false;
 
+  @observable
+  public enableLogicaldatabase: boolean = false;
+
   /**
    * 上传文件是否为oss，s3之类的云存储
    */
@@ -268,6 +271,7 @@ export class SettingStore {
     this.enableDBExport =
       res?.['odc.features.task.export.enabled'] === 'true' && this.enableDataExport;
     this.enableMockdata = res?.['odc.features.task.mockdata.enabled'] === 'true';
+    this.enableLogicaldatabase = res?.['odc.features.logicaldatabase.enabled'] === 'true';
     this.enableOSC = res?.['odc.features.task.osc.enabled'] === 'true';
     if (login.isPrivateSpace()) {
       this.enableOSC = res?.['odc.features.task.osc.individual.space.enabled'] === 'true';

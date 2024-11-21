@@ -647,7 +647,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           >
             <TaskdurationItem form={form} />
             <ShardingStrategyItem />
-            <ThrottleFormItem />
+            <ThrottleFormItem isShowDataSizeLimit={true} />
             <Form.Item
               label={
                 formatMessage({

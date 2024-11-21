@@ -138,3 +138,14 @@ export const MockStrategyTextMap = {
     defaultMessage: '终止',
   }), // 终止
 };
+
+export interface RuleConfigList {
+  range: string[] | number[];
+  columnName: string;
+  typeConfig: {
+    columnType: string;
+    genParams: string | { caseOption: string };
+    highValue;
+    lowValue: number | string;
+  };
+}
