@@ -46,6 +46,7 @@ interface IProps {
   onChange?: (sql: string) => void;
   status?: EStatus;
   lintResultSet?: ISQLLintReuslt[];
+  unauthorizedDBResources?: IUnauthorizedDBResources[]
   callback?: () => void;
 }
 const ExecuteSQLModal: React.FC<IProps> = (props) => {
@@ -61,6 +62,7 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
     callback,
     status,
     lintResultSet,
+    unauthorizedDBResources
   } = props;
   const [loading, setLoading] = useState(false);
   const [isFormatting, setIsFormatting] = useState(false);
@@ -68,8 +70,12 @@ const ExecuteSQLModal: React.FC<IProps> = (props) => {
   const editorRef = useRef<editor.IStandaloneCodeEditor>();
   const connectionMode = sessionStore?.connection?.dialectType;
   const config = getDataSourceModeConfigByConnectionMode(connectionMode);
-  const [permissionList, setPermissionList] = useState<IUnauthorizedDBResources[]>();
+  const [permissionList, setPermissionList] = useState<IUnauthorizedDBResources[]>(unauthorizedDBResources);
   const hadlintResultSet = lintResultSet?.length > 0;
+
+  useEffect(()=>{
+    setPermissionList(unauthorizedDBResources)
+  }, [unauthorizedDBResources])
 
   const hasTable = useMemo(() => {
     return hadlintResultSet || permissionList?.length > 0;

@@ -164,7 +164,7 @@ export default {
       holdErrorTip = false,
       requestId,
       extraMessage = {},
-    } = errorParams;
+    } = errorParams || {};
     /**
      * 最小 4.5，最大 20 秒，其余情况 length * 0.1s
      */

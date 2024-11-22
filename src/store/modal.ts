@@ -33,7 +33,7 @@ import {
   TaskDetail,
 } from '@/d.ts';
 import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
-import { TablePermissionType } from '@/d.ts/table';
+import { IUnauthorizedDBResources, TablePermissionType } from '@/d.ts/table';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
 
@@ -157,6 +157,7 @@ interface IWorkSpaceExecuteSQLModalProps {
   onSave: any;
   status: EStatus;
   lintResultSet: ISQLLintReuslt[];
+  unauthorizedDBResources: IUnauthorizedDBResources[]
 }
 
 export class ModalStore {

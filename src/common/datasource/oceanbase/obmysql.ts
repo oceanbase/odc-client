@@ -80,6 +80,7 @@ const items: Record<
       resourceTree: true,
       supportOBProxy: true,
       plRun: true,
+      plEdit: true,
       export: {
         fileLimit: true,
         snapshot: true,
