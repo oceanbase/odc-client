@@ -453,6 +453,44 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
         });
         tableViewIndex++;
       }
+      for (const key in databaseColumn?.externalTable2Columns) {
+        const leaves = databaseColumn?.externalTable2Columns?.[key].map(
+          (externalTableColumn, _index) => ({
+            title: externalTableColumn?.name,
+            key: `0-${index}-${tableViewIndex}-${_index}`,
+            icon: (
+              <span className={styles.icon}>
+                <Icon
+                  component={
+                    fieldIconMap[
+                      convertDataTypeToDataShowType(
+                        externalTableColumn?.typeName,
+                        databaseColumn?.dataTypeUnits,
+                      )
+                    ]
+                  }
+                />
+              </span>
+            ),
+
+            type: ESensitiveColumnType.TABLE_COLUMN,
+          }),
+        );
+        allColumns = allColumns + leaves?.length;
+        tables.push({
+          title: key,
+          key: `0-${index}-${tableViewIndex}`,
+          icon: (
+            <span className={styles.icon}>
+              <Icon component={TableOutlined} />
+            </span>
+          ),
+
+          children: leaves,
+          type: ESensitiveColumnType.TABLE_COLUMN,
+        });
+        tableViewIndex++;
+      }
       treeData.push({
         title: databaseColumn?.databaseName,
         key: `0-${index}`,
@@ -563,6 +601,27 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
             key: `0-${index}-${tableViewIndex}`,
             children: leaves,
             type: ESensitiveColumnType.VIEW_COLUMN,
+          });
+        }
+        tableViewIndex++;
+      }
+      for (const key in databaseColumn?.externalTable2Columns) {
+        const leaves = databaseColumn?.externalTable2Columns?.[key]
+          .map((externalTableColumn, _index) => ({
+            title: externalTableColumn?.name,
+            key: `0-${index}-${tableViewIndex}-${_index}`,
+            type: ESensitiveColumnType.TABLE_COLUMN,
+            columnType: externalTableColumn?.typeName,
+            dataTypeUnits: databaseColumn?.dataTypeUnits,
+          }))
+          ?.filter((leaf) => checkedKeys?.includes(leaf?.key));
+        checkedColumns = checkedColumns + leaves?.length;
+        if (leaves?.length > 0) {
+          tables.push({
+            title: key,
+            key: `0-${index}-${tableViewIndex}`,
+            children: leaves,
+            type: ESensitiveColumnType.TABLE_COLUMN,
           });
         }
         tableViewIndex++;

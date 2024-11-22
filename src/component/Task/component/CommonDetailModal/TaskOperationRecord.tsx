@@ -72,7 +72,7 @@ const getConnectionColumns = (params: {
         defaultMessage: '事件操作',
       }), //事件操作
       ellipsis: true,
-      width: 280,
+      width: 140,
       render: (id, record) => {
         if (isSupportChangeDetail(params.taskType)) {
           return <span>{operationTypeMap?.[record.type]}</span>;

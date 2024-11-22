@@ -1185,6 +1185,7 @@ export interface ITable {
   name?: string;
   organizationId?: number;
   updateTime?: number;
+  type?: DbObjectType;
 }
 
 interface IEditable {
