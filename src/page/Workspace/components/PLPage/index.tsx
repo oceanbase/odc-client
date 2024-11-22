@@ -70,6 +70,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { Component } from 'react';
 import PLDebugResultSet from '../PLDebugResultSet';
 import SessionContextWrap from '../SessionContextWrap';
+import executePLForMysql from '@/common/network/sql/executePLForMysql';
 const RESULT_HEIGHT = 230;
 const VERSION_324 = '3.2.4.0';
 const PL_DEBUG_TIP_VSIBLE_KEY = 'odc_pl_debug_visible';
@@ -260,7 +261,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     }
     if (
       nextProps.params?.scriptText != this.props.params?.scriptText &&
-      nextProps.params?.scriptText != this.editor.getValue()
+      nextProps.params?.scriptText != this.editor?.getValue()
     ) {
       this.setState({
         initialSQL: nextProps.params?.scriptText,
@@ -398,6 +399,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
   };
   public getFormatPLSchema(): IFormatPLSchema {
     const { params } = this.props;
+
     // 程序包内部 PL 加程序包名前缀
     switch (params?.plPageType) {
       case PLPageType.plEdit: {
@@ -880,10 +882,11 @@ export class PLPage extends Component<IProps, ISQLPageState> {
   /**
    * 提交PL DDL更改
    */
-  private async savePL(opts?: any) {
+  private async savePL(opts?: any, isMysql?: boolean, editorValue?: string) {
     const { pageStore, params, onChangeSaved, pageKey, page } = this.props;
     const plSchema = this.getFormatPLSchema();
     const { plName, plType, packageName } = plSchema;
+
     const newPLEntryName = await getPLEntryName(params.scriptText);
     if (!this.isPackageProgram()) {
       /** 暂时还检测不了程序包内的函数等 */
@@ -910,80 +913,24 @@ export class PLPage extends Component<IProps, ISQLPageState> {
         return;
       }
     }
-    const data = await executeSQL(
-      {
-        sql: params.scriptText,
-        split: false,
-      },
-      this.getSession()?.sessionId,
-      this.getSession()?.database.dbName,
-    );
-    if (data.invalid) {
-      pageStore.cancelSaving(pageKey);
-      return;
-    }
-    let isSuccess = data?.executeResult?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;
-    if (!isSuccess) {
-      notification.error(data?.executeResult?.[0]);
-    }
-    if (isSuccess) {
-      switch (params?.plPageType) {
-        case PLPageType.plEdit: {
-          let newParams;
-          let ddl = params.scriptText;
-          if (!this.isPackageProgram()) {
-            if (plType === PL_TYPE.FUNCTION) {
-              const newFunc = await getFunctionByFuncName(
-                plName,
-                false,
-                this.getSession().sessionId,
-                this.getSession().database.dbName,
-              );
-              newParams = newFunc?.params;
-              ddl = newFunc?.ddl;
-            }
-            if (plType === PL_TYPE.PROCEDURE) {
-              const newProcedure = await getProcedureByProName(
-                plName,
-                false,
-                this.getSession().sessionId,
-                this.getSession().database.dbName,
-              );
-              newParams = newProcedure?.params;
-              ddl = newProcedure?.ddl;
-            }
-          }
-          await pageStore.updatePage(
-            pageKey,
-            {
-              title: page.title,
-              isSaved: true,
-              startSaving: false,
-            },
-            {
-              scriptText: ddl,
-              plSchema: {
-                ...params.plSchema,
-                ddl: ddl,
-                params: newParams || plSchema.params,
-              },
-            },
-          );
-          this.editor?.setValue(ddl);
-          break;
-        }
+    if (isMysql) {
+      const queryData = {
+        sql: editorValue,
+        objectName: plName,
+        objectType: plType,
+        isMysql,
+      };
+      const res = await executePLForMysql(
+        queryData,
+        this.getSession()?.sessionId,
+        this.getSession()?.database.dbName,
+      );
+      if (res && res?.errorMessage) {
+        notification.error({ track: res?.errorMessage });
+        return;
       }
-
-      // if (
-      //   params?.plSchema?.plType === PL_TYPE.PKG_HEAD ||
-      //   params?.plSchema?.plType === PL_TYPE.PKG_BODY ||
-      //   params?.fromPackage
-      // ) {
-      //   await schemaStore?.loadPackage(packageName);
-      // }
-
       // 编译、运行、调试、情况不用弹出保存成功
-      if (!opts || opts.hideMessage !== true) {
+      if ((!opts || opts.hideMessage !== true) && (!res?.approvalRequired || res?.errorMessage)) {
         message.success(
           formatMessage({
             id: 'odc.components.PLPage.SavedSuccessfully',
@@ -993,9 +940,94 @@ export class PLPage extends Component<IProps, ISQLPageState> {
       }
       onChangeSaved(pageKey);
     } else {
-      pageStore.cancelSaving(pageKey);
+      const data = await executeSQL(
+        {
+          sql: params.scriptText,
+          split: false,
+        },
+        this.getSession()?.sessionId,
+        this.getSession()?.database.dbName,
+      );
+      if (data?.invalid) {
+        pageStore.cancelSaving(pageKey);
+        return;
+      }
+      let isSuccess = data?.executeResult?.[0]?.status === ISqlExecuteResultStatus.SUCCESS;
+      if (!isSuccess) {
+        notification.error(data?.executeResult?.[0]);
+      }
+      if (isSuccess) {
+        switch (params?.plPageType) {
+          case PLPageType.plEdit: {
+            let newParams;
+            let ddl = params.scriptText;
+            if (!this.isPackageProgram()) {
+              if (plType === PL_TYPE.FUNCTION) {
+                const newFunc = await getFunctionByFuncName(
+                  plName,
+                  false,
+                  this.getSession().sessionId,
+                  this.getSession().database.dbName,
+                );
+                newParams = newFunc?.params;
+                ddl = newFunc?.ddl;
+              }
+              if (plType === PL_TYPE.PROCEDURE) {
+                const newProcedure = await getProcedureByProName(
+                  plName,
+                  false,
+                  this.getSession().sessionId,
+                  this.getSession().database.dbName,
+                );
+                newParams = newProcedure?.params;
+                ddl = newProcedure?.ddl;
+              }
+            }
+            await pageStore.updatePage(
+              pageKey,
+              {
+                title: page.title,
+                isSaved: true,
+                startSaving: false,
+              },
+              {
+                scriptText: ddl,
+                plSchema: {
+                  ...params.plSchema,
+                  ddl: ddl,
+                  params: newParams || plSchema.params,
+                },
+              },
+            );
+            this.editor?.setValue(ddl);
+            break;
+          }
+        }
+
+        // if (
+        //   params?.plSchema?.plType === PL_TYPE.PKG_HEAD ||
+        //   params?.plSchema?.plType === PL_TYPE.PKG_BODY ||
+        //   params?.fromPackage
+        // ) {
+        //   await schemaStore?.loadPackage(packageName);
+        // }
+
+        // 编译、运行、调试、情况不用弹出保存成功
+        if (!opts || opts.hideMessage !== true) {
+          message.success(
+            formatMessage({
+              id: 'odc.components.PLPage.SavedSuccessfully',
+              defaultMessage: '保存成功',
+            }),
+          );
+        }
+        onChangeSaved(pageKey);
+      } else {
+        pageStore.cancelSaving(pageKey);
+      }
     }
   }
+
   public getSession() {
     return this.props.sessionManagerStore.sessionMap?.get(this.props.sessionId);
   }
@@ -1180,6 +1212,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
   }
   public render() {
     const { pageKey, pageStore, params } = this.props;
+
     const debug = this.getDebug();
     const {
       showSaveSQLModal,
@@ -1199,6 +1232,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     const formatPLSchema = this.getFormatPLSchema();
     return (
       <ScriptPage
+        databaseType={this.getSession()?.connection?.type}
         session={this.getSession()}
         ctx={this}
         language={getDataSourceModeConfig(this.getSession()?.connection?.type)?.sql?.language}
@@ -1219,7 +1253,12 @@ export class PLPage extends Component<IProps, ISQLPageState> {
           onEditorCreated: this.handleEditorCreated,
         }}
         sessionSelectReadonly={!!formatPLSchema?.plName || !!formatPLSchema?.packageName || !!debug}
-        dialectTypes={[ConnectionMode.OB_ORACLE, ConnectionMode.ORACLE]}
+        dialectTypes={[
+          ConnectionMode.OB_ORACLE,
+          ConnectionMode.ORACLE,
+          ConnectionMode.MYSQL,
+          ConnectionMode.OB_MYSQL,
+        ]}
         statusBar={isDebugMode ? this.getDebugStatusBar() : statusBar}
         Result={
           <PLDebugResultSet

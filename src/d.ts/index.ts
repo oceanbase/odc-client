@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ISQLExecuteTask } from '@/common/network/sql/executeSQL';
 import { ErrorStrategy } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
 import { PLType } from '@/constant/plType';
 import { IRiskLevel } from '@/d.ts/riskLevel';
@@ -28,6 +27,7 @@ import { IProject } from './project';
 import { DBDefaultStoreType } from './table';
 import { EComparisonScope } from './task';
 import { SpaceType } from './_index';
+import { ISQLExecuteTask } from '@/common/network/sql/preHandle';
 
 export interface IUser {
   email: string;
