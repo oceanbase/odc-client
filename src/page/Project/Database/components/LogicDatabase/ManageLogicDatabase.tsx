@@ -256,14 +256,14 @@ const physicalDbColumns = [
       defaultMessage: '数据库名称',
     }),
     dataIndex: 'name',
-    width: 100,
+    width: 130,
     fixed: 'left' as FixedType,
     render(value, record) {
       return (
         <>
           <Space size={2}>
             <DataBaseStatusIcon item={record} />
-            {value}
+            <Typography.Text ellipsis title={value} style={{maxWidth: 100}}>{value}</Typography.Text>
           </Space>
         </>
       );

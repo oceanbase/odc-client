@@ -3703,7 +3703,6 @@ export interface ISessionStatus {
   sqlId: string;
   activeQueries: string;
   defaultTableStoreFormat: DBDefaultStoreType;
-  killCurrentQuerySupported: boolean;
 }
 
 export interface IAutoAuthEvent {

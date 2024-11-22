@@ -22,7 +22,7 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { TaskType } from '@/d.ts';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import Icon from '@ant-design/icons';
+import Icon, { LoadingOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Divider, Select, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -105,7 +105,10 @@ const SelectItem: React.FC<IProps> = ({
         </Space>
       );
     }
-    if (projectMode && logicalDatabase?.data) {
+    if (projectMode) {
+      if (!logicalDatabase?.data) {
+        return <LoadingOutlined />;
+      }
       const dbIcon = getDataSourceStyleByConnectType(
         logicalDatabase?.data?.dialectType as any,
       )?.dbIcon;
