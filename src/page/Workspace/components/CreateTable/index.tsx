@@ -214,7 +214,7 @@ const CreateTable: React.FC<IProps> = function ({
                 id: 'odc.components.CreateTable.Column',
                 defaultMessage: '列',
               }),
-              children: <Columns isExternalTable />,
+              children: <Columns isExternalTable={isExternalTable} />,
             },
             {
               key: TableTabType.INDEX,

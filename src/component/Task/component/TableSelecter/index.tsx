@@ -140,9 +140,9 @@ const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false)
 
     return {
       title: (
-        <Space>
-          <Text>{name}</Text>
-          <Text type="secondary" ellipsis style={{ maxWidth: 100 }} title={dataSource?.name}>
+        <Space size={2}>
+          <Text ellipsis style={{ wordBreak: 'keep-all', paddingLeft: 4, maxWidth: 160 }} title={name}>{name}</Text>
+          <Text type="secondary" ellipsis style={{ maxWidth: 80 }} title={dataSource?.name}>
             {dataSource?.name}
           </Text>
           <Text type="secondary" ellipsis>
@@ -598,7 +598,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
 
   return (
     <div className={styles.selecter}>
-      <div className={styles.content}>
+      <div className={classnames(styles.content, styles.hasIconTree)}>
         <Spin spinning={isLoading || selecting}>
           <ExportCard
             title={

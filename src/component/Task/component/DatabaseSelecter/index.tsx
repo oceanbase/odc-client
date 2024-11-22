@@ -174,8 +174,8 @@ const DatabaseSelecter: React.FC<IProps> = function ({
               }}
             >
               <div>
-                <Text style={{ wordBreak: 'keep-all', paddingRight: 4 }}>{item?.name}</Text>
-                <Text type="secondary" ellipsis>
+                <Text ellipsis style={{ wordBreak: 'keep-all', paddingRight: 4, maxWidth: 180 }} title={item?.name}>{item?.name}</Text>
+                <Text type="secondary" ellipsis style={{ maxWidth: 80 }}>
                   {item?.dataSource?.name}
                 </Text>
               </div>
