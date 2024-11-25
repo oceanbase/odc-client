@@ -562,16 +562,7 @@ export default {
     </p>
   ),
 
-  projectDBA: (
-    <p>
-      {
-        formatMessage({
-          id: 'src.component.helpDoc.D8B031DB' /*拥有项目内除添加/移除成员和归档项目以外的所有权限*/,
-          defaultMessage: '拥有项目内除添加/移除成员和归档项目以外的所有权限',
-        }) /* 拥有项目内除添加/移除成员和归档项目以外的所有权限 */
-      }
-    </p>
-  ),
+  projectDBA: <p>{'拥有项目内除成员管理、消息配置和项目设置外的所有权限'}</p>,
 
   projectDev: (
     <p>

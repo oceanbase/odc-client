@@ -245,8 +245,12 @@ class CreateModal extends React.Component<IProps, IState> {
             );
             if (this.state.isSaveDefaultConfig) {
               this.saveCurrentConfig();
+              this.setDefaultConfig();
             }
             this.props.modalStore.changeImportModal(false);
+            this.setState({
+              isSaveDefaultConfig: false,
+            });
             openTasksPage(TaskPageType.IMPORT, TaskPageScope.CREATED_BY_CURRENT_USER);
           }
         } catch (e) {
@@ -384,8 +388,8 @@ class CreateModal extends React.Component<IProps, IState> {
     return {
       useSys: false,
       databaseId: this.props.modalStore.importModalData?.databaseId,
-      executionStrategy: TaskExecStrategy.AUTO,
-      fileType: IMPORT_TYPE.ZIP,
+      executionStrategy: this.defaultConfig?.executionStrategy ?? TaskExecStrategy.AUTO,
+      fileType: this.defaultConfig?.fileType ?? IMPORT_TYPE.ZIP,
       encoding: this.defaultConfig?.encoding ?? IMPORT_ENCODING.UTF8,
       importFileName: null,
       importContent: IMPORT_CONTENT.DATA_AND_STRUCT,
