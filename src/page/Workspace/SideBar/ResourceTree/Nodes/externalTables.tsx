@@ -25,7 +25,7 @@ import { ResourceNodeType, TreeDataNode } from '../type';
 
 import { IDatabase } from '@/d.ts/database';
 import { PropsTab, TopTab } from '@/page/Workspace/components/TablePage';
-import { openTableViewPage } from '@/store/helper/page';
+import { openExternalTableTableViewPage } from '@/store/helper/page';
 import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
 import logger from '@/util/logger';
 
@@ -105,7 +105,7 @@ export function ExternalTableTreeData(dbSession: SessionStore, database: IDataba
           data: table,
           dbObjectType: DbObjectType.table,
           doubleClick(session, node, databaseFrom) {
-            openTableViewPage(
+            openExternalTableTableViewPage(
               table.info.tableName,
               TopTab.PROPS,
               PropsTab.DDL,
