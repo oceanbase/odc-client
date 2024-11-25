@@ -114,6 +114,9 @@ class CreateModal extends React.Component<IProps, IState> {
   private handleClose = () => {
     this.props.modalStore.changeExportModal(false);
     this.resetFormData();
+    this.setState({
+      isSaveDefaultConfig: false,
+    });
   };
   private closeSelf = () => {
     if (!this.state.isFormChanged) {
@@ -211,6 +214,7 @@ class CreateModal extends React.Component<IProps, IState> {
             );
             if (this.state.isSaveDefaultConfig) {
               this.saveCurrentConfig();
+              this.setDefaultConfig();
             }
             this.handleClose();
             openTasksPage(TaskPageType.EXPORT, TaskPageScope.CREATED_BY_CURRENT_USER);
@@ -249,7 +253,7 @@ class CreateModal extends React.Component<IProps, IState> {
     const formData = {
       databaseId: this.props.modalStore.exportModalData?.databaseId,
       taskId: this.props.modalStore.exportModalData?.taskId,
-      executionStrategy: TaskExecStrategy.AUTO,
+      executionStrategy: this.defaultConfig?.executionStrategy ?? TaskExecStrategy.AUTO,
       taskName: null,
       dataTransferFormat: this.defaultConfig?.dataTransferFormat ?? EXPORT_TYPE.CSV,
       exportContent: this.defaultConfig?.exportContent ?? EXPORT_CONTENT.DATA_AND_STRUCT,
@@ -274,7 +278,7 @@ class CreateModal extends React.Component<IProps, IState> {
       columnDelimiter: this.defaultConfig?.columnDelimiter ?? '"',
       lineSeparator: this.defaultConfig?.lineSeparator ?? '\\r\\n',
       useSys: false,
-      exportAllObjects: false,
+      exportAllObjects: this.defaultConfig?.exportAllObjects ?? false,
       exportDbObjects: [],
     };
 
