@@ -34,7 +34,7 @@ import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import tracert from '@/util/tracert';
-import { PlusOutlined, QuestionCircleFilled } from '@ant-design/icons';
+import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { hasTableChangePermission, hasTableExportPermission } from '../index';
@@ -42,7 +42,6 @@ import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
 import { isLogicalDatabase } from '@/util/database';
 import { DatabasePermissionType } from '@/d.ts/database';
-import { ReactComponent as RefreshSvg } from '@/svgr/refresh.svg';
 import request from '@/util/request';
 import DatabaseStore from '@/store/sessionManager/database';
 
@@ -51,7 +50,7 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
     {
       key: 'REFRESH',
       text: '刷新',
-      icon: RefreshSvg,
+      icon: ReloadOutlined,
       actionType: actionTypes.read,
       async run(session, node) {
         if (isLogicalDatabase(session?.odcDatabase)) {
