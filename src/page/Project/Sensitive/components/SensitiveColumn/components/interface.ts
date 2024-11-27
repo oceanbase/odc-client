@@ -50,6 +50,9 @@ export type DatabaseColumn = {
   view2Columns: {
     [key in string | number]: any[];
   };
+  externalTable2Columns: {
+    [key in string | number]: any[];
+  };
 };
 export interface ManualFormProps {
   modalOpen: boolean;

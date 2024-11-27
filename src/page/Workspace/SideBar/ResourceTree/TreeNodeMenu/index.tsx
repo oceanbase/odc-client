@@ -30,6 +30,7 @@ import { EnvColorMap } from '@/constant';
 import classNames from 'classnames';
 import { ReactNode } from 'react';
 import { menuAccessWrap } from './config/database';
+import IconLoadingWrapper from './IconLoadingWrapper';
 
 export const hasExportPermission = (dbSession: SessionStore) => {
   return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
@@ -202,7 +203,11 @@ const TreeNodeMenu = (props: IProps) => {
                   }}
                   className={styles.actionItem}
                 >
-                  <Icon component={item.icon || InfoCircleFilled} />
+                  {item?.key === 'REFRESH' ? (
+                    <IconLoadingWrapper icon={item.icon || InfoCircleFilled} />
+                  ) : (
+                    <Icon component={item.icon || InfoCircleFilled} />
+                  )}
                 </div>
               </Tooltip>
             );

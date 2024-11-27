@@ -326,6 +326,7 @@ export async function getSessionStatus(sessionId?: string): Promise<{
     obVersion: string;
   };
   session: ISessionStatus;
+  killCurrentQuerySupported: boolean
 }> {
   const sid = generateSessionSid(sessionId);
   const res = await request.get(`/api/v2/datasource/sessions/${sessionId}/status`);

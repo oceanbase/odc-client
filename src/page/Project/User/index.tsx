@@ -126,7 +126,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
       title={
         <TooltipAction
           title={
-            isOwner || isDBA
+            isOwner
               ? ''
               : formatMessage({ id: 'src.page.Project.User.0C0586E8', defaultMessage: '暂无权限' })
           }
@@ -134,7 +134,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
           <Button
             type="primary"
             onClick={() => setAddUserModalVisiable(true)}
-            disabled={!isOwner && !isDBA}
+            disabled={!isOwner}
           >
             {
               formatMessage({
@@ -210,7 +210,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
             dataIndex: 'name',
             width: 135,
             render(_, record) {
-              const disabled = !isOwner && !isDBA;
+              const disabled = !isOwner
               const isMe = userStore?.user?.id === record.id;
               return (
                 <Action.Group size={3}>

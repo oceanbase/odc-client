@@ -123,9 +123,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Editing', defaultMessage: '编辑' }), //编辑
       ],
-      disabled: (session, node) => {
-        return !isSupportPLEdit(session);
-      },
+
       actionType: actionTypes.update,
       ellipsis: true,
       async run(session, node) {
