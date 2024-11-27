@@ -17,7 +17,7 @@
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { newScript, updateScript } from '@/common/network';
 import { executeSQL, runSQLLint } from '@/common/network/sql';
-import { executeTaskManager, IExecuteTaskResult } from '@/common/network/sql/executeSQL';
+import { executeTaskManager } from '@/common/network/sql/executeSQL';
 import { batchGetDataModifySQL } from '@/common/network/table';
 import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
@@ -69,6 +69,7 @@ import ExecDetail from './ExecDetail';
 import ExecPlan from './ExecPlan';
 import styles from './index.less';
 import { isLogicalDatabase } from '@/util/database';
+import { IExecuteTaskResult } from '@/common/network/sql/preHandle';
 
 interface ISQLPageState {
   resultHeight: number;
@@ -360,7 +361,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
     const selectedSQL = this.editor.getSelectionContent();
     const sqlToExecute = selectedSQL || params.scriptText;
-    const range = await utils.getCurrentSelectRange(this.editor);
+    const range = await utils.getCurrentSelectRange(this.editor);   
     const result = await this.executeSQL(
       sqlToExecute,
       false,

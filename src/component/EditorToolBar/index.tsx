@@ -23,6 +23,7 @@ import { Component, ComponentType, ReactNode } from 'react';
 import { ContainerQuery } from 'react-container-query';
 import { IConStatus } from '../Toolbar/statefulIcon';
 import { ACTIONS, ACTION_GROUPS } from './config';
+
 interface IProps {
   ctx: any;
   actionGroupKey: string;
@@ -39,6 +40,9 @@ interface IProps {
       maxWidth: number;
     };
   };
+  databaseType?: string;
+  editorValue?: string;
+  defaultEditorValue?: string
 }
 interface IState {}
 interface ToolBarCommonAction<T> {
@@ -48,8 +52,9 @@ interface ToolBarCommonAction<T> {
   icon?: string | ComponentType;
   isShowText?: boolean;
   isVisible?: (ctx: T) => boolean;
-  statusFunc?: (ctx: T) => IConStatus;
-  action?: (ctx: T) => Promise<void>;
+  statusFunc?: (ctx: T, hasChangeEditorValue?: boolean) => IConStatus;
+  action?: (ctx: T, databaseType?: string, editorValue?: string) => Promise<void>;
+  disabled?: boolean;
 }
 interface ToolBarMenuAction<T> {
   name: string | (() => string);
@@ -58,6 +63,7 @@ interface ToolBarMenuAction<T> {
   isVisible?: (ctx: T) => boolean;
   statusFunc?: (ctx: T) => IConStatus;
   menu?: string[];
+  disabled?: boolean;
 }
 
 interface ToolBarCustomAction<T> {
@@ -103,7 +109,8 @@ export default class EditorToolBar extends Component<IProps, IState> {
       isShrinkGroupNumber?: number;
     },
   ) {
-    const { ctx } = this.props;
+    const { ctx, databaseType, editorValue, defaultEditorValue } = this.props;
+    const hasChangeEditorValue = editorValue !== defaultEditorValue
     let buttonsArr = [];
 
     if (!actionGroups) {
@@ -132,6 +139,7 @@ export default class EditorToolBar extends Component<IProps, IState> {
          */
         const { name, icon, menu, statusFunc } = actionItem;
         const status = statusFunc ? statusFunc(ctx) : IConStatus.INIT;
+
         return (
           <Toolbar.ButtonMenu
             key={actionKey}
@@ -162,7 +170,7 @@ export default class EditorToolBar extends Component<IProps, IState> {
          * string 模式，icon 在 toolbar button 中统一定义，这边不再传递具体的 icon 组件
          */
 
-        const status = statusFunc ? statusFunc(ctx) : IConStatus.INIT;
+        const status = statusFunc ? statusFunc(ctx, hasChangeEditorValue) : IConStatus.INIT;
         let realConfirmConfig = confirmConfig;
         if (typeof confirmConfig === 'function') {
           realConfirmConfig = confirmConfig();
@@ -186,7 +194,7 @@ export default class EditorToolBar extends Component<IProps, IState> {
             isShowText={isShowText || itemIsShowText}
             icon={icon}
             onClick={async () => {
-              await action(ctx);
+              await action(ctx, databaseType, editorValue);
             }}
           />
         );
@@ -235,6 +243,7 @@ export default class EditorToolBar extends Component<IProps, IState> {
   public render() {
     const { actionGroupKey, loading, rightExtra, query } = this.props;
     const actionGroup = ACTION_GROUPS[actionGroupKey];
+
     return (
       <Spin spinning={loading}>
         <ContainerQuery query={query}>

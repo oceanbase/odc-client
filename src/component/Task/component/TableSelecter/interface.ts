@@ -19,7 +19,6 @@ export interface TableSelecterRef {
       id: number;
       databaseId: number;
     }[];
-    supportExternalTable: boolean;
   }>;
   expandTable: (dbId: number) => void;
 }
@@ -39,5 +38,4 @@ export interface IDataBaseWithTable extends IDatabase {
   tableList: TableItemInDB[];
   hasGetTableList?: boolean;
   externalTablesList: TableItemInDB[];
-  supportExternalTable?: boolean;
 }

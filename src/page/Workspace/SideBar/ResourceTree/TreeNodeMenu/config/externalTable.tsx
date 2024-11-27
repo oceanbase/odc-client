@@ -16,7 +16,7 @@
 
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { dropObject } from '@/common/network/database';
-import { getTableInfo } from '@/common/network/table';
+import { getTableInfo, syncExternalTableFiles } from '@/common/network/table';
 import { actionTypes } from '@/component/Acess';
 import { copyObj } from '@/component/TemplateInsertModal';
 import { DbObjectType, DragInsertType, ResourceTreeNodeMenuKeys, TaskType } from '@/d.ts';
@@ -34,7 +34,7 @@ import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import tracert from '@/util/tracert';
-import { PlusOutlined, QuestionCircleFilled } from '@ant-design/icons';
+import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { hasTableChangePermission, hasTableExportPermission } from '../index';
@@ -42,7 +42,6 @@ import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
 import { isLogicalDatabase } from '@/util/database';
 import { DatabasePermissionType } from '@/d.ts/database';
-import { ReactComponent as SyncMetadataSvg } from '@/svgr/sync_metadata.svg';
 import request from '@/util/request';
 import DatabaseStore from '@/store/sessionManager/database';
 
@@ -50,8 +49,8 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
   [ResourceNodeType.ExternalTableRoot]: [
     {
       key: 'REFRESH',
-      text: '同步',
-      icon: SyncMetadataSvg,
+      text: '刷新',
+      icon: ReloadOutlined,
       actionType: actionTypes.read,
       async run(session, node) {
         if (isLogicalDatabase(session?.odcDatabase)) {
@@ -59,7 +58,7 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
           return;
         }
         await session.database.getTableList(true);
-        message.success('外表文件同步完成');
+        message.success('刷新成功');
       },
     },
   ],
@@ -83,7 +82,6 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
       key: ResourceTreeNodeMenuKeys.BROWSER_DATA,
       text: '查看外表数据',
       ellipsis: true,
-      hasDivider: true,
       isHide: (session) => {
         return isLogicalDatabase(session?.odcDatabase);
       },
@@ -112,7 +110,28 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
         );
       },
     },
-
+    {
+      key: ResourceTreeNodeMenuKeys.EXTERNAL_TABLE_SYNCHRONIZATION_TABLE,
+      text: '同步外表文件',
+      ellipsis: true,
+      hasDivider: true,
+      isHide: (session) => {
+        return isLogicalDatabase(session?.odcDatabase);
+      },
+      async run(session, node) {
+        const tableName = (node.data as ITableModel)?.info?.tableName;
+        const res = await syncExternalTableFiles(
+          session.sessionId,
+          session.database.dbName,
+          tableName,
+        );
+        if (res) {
+          message.success('同步成功');
+        } else {
+          message.error('同步失败，请稍后再试');
+        }
+      },
+    },
     {
       key: ResourceTreeNodeMenuKeys.DOWNLOAD,
       text: formatMessage({

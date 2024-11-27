@@ -817,7 +817,6 @@ const DDLResultSet: React.FC<IProps> = function (props) {
       </>
     );
   };
-
   return (
     <div
       style={{

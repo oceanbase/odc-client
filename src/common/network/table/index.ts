@@ -178,6 +178,25 @@ export async function generateUpdateTableDDL(
   return res?.data || { sql: '', tip: '' };
 }
 
+/** 同步外表文件 */
+export async function syncExternalTableFiles(
+  sessionId: string,
+  databaseName: string,
+  externalTableName: string,
+): Promise<boolean> {
+  const res = await request.post(
+    `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
+      databaseName,
+    )}/externalTables/${encodeObjName(Base64.encode(externalTableName))}/syncExternalTableFiles`,
+    {
+      params: {
+        ignoreError: true,
+      },
+    },
+  );
+  return res?.data;
+}
+
 export async function getTableListByDatabaseName(
   sessionId: string,
   databaseName?: string,
@@ -194,12 +213,9 @@ export async function getTableListByDatabaseName(
  */
 export async function getTableListWithoutSession(
   databaseId: number,
-  supportExternalTable?: Boolean,
+  type?: string,
 ): Promise<ITable[]> {
-  const params: { type?: string; databaseId: number } = { databaseId: databaseId };
-  if (supportExternalTable) {
-    params.type = DbObjectType.external_table;
-  }
+  const params: { type?: string; databaseId: number } = { databaseId: databaseId, type };
   const ret = await request.get(`/api/v2/databaseSchema/tables`, { params });
   return ret?.data?.contents || [];
 }

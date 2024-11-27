@@ -125,7 +125,7 @@ const LogicTableBaseInfo = ({ table }) => {
                     ),
                   },
                   scroll: {
-                    y: 200,
+                    y: 450,
                   },
                 }}
                 onLoad={async () => {}}

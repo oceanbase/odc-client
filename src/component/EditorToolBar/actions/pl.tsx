@@ -32,6 +32,7 @@ import { PLPage } from '@/page/Workspace/components/PLPage';
 import { DebugStatus } from '@/store/debug/type';
 import sqlStore from '@/store/sql';
 import { ToolBarActions } from '..';
+import { ConnectionMode } from '@/d.ts';
 
 const { confirm } = Modal;
 
@@ -51,9 +52,18 @@ const plActions: ToolBarActions = {
       defaultMessage: '确认修改',
     }),
     icon: CheckOutlined,
-    statusFunc: getStatus,
-    async action(ctx: any) {
-      await ctx.savePL();
+    statusFunc: (ctx: PLPage, hasChangeEditorValue) => {
+      /* 未更改, 不可修改 */
+      if (!hasChangeEditorValue) return IConStatus.DISABLE;
+      return getStatus(ctx);
+    },
+    async action(ctx: any, databaseType?: String, editorValue?: String) {
+      switch (databaseType) {
+        case (ConnectionMode.MYSQL, ConnectionMode.OB_MYSQL):
+          return await ctx.savePL(null, true, editorValue);
+        default:
+          return await ctx.savePL();
+      }
     },
   },
 
