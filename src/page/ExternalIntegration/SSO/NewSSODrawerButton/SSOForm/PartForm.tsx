@@ -1003,6 +1003,11 @@ export const SAMLPartForm: React.FC<{
           name={['ssoParameter', 'singlesignon']}
           label={'SSO 配置'}
           rules={[requiredRule]}
+          initialValue={{
+            url: null,
+            binding: null,
+            signRequest: null,
+          }}
         >
           <div style={{ padding: '8px 16px 6px 16px', background: '#f7f9fb', borderRadius: 2 }}>
             <Form.Item
