@@ -237,7 +237,6 @@ export default inject('userStore')(
           ['ssoParameter', 'acsEntityId'],
           ['ssoParameter', 'metadataUri'],
         ]);
-        console.log('value');
         if (!value) {
           return;
         }
@@ -256,6 +255,45 @@ export default inject('userStore')(
         } else {
           clone.ssoParameter.registrationId = editData?.ssoParameter?.registrationId;
         }
+
+        // const a = {
+        //   configuration:
+        //     '{"ldap":false,"mappingRule":{"extraInfo":null,"nestedAttributeField":null,"userAccountNameField":null,"userNickNameField":null,"userProfileViewType":null},"name":"SAML","oauth2OrOidc":false,"saml":true,"ssoParameter":{"acsBinding":"POST","acsLocation":"{baseUrl}/login/saml2/sso/{registrationId}","decryption":{"certificate":null},"entityId":"{baseUrl}/saml2/service-provider-metadata/{registrationId}","metadataUri":"https://odctestsaml.authing.cn/api/v2/saml-idp/672322db437a57d3142edfc1/metadata","name":"SAML","providerEntityId":null,"registrationId":"1-SAML","signing":{"certificate":"-----BEGIN CERTIFICATE-----\\\\nMIIDITCCAgmgAwIBAgIJAKoHfqzUOkELMA0GCSqGSIb3DQEBCwUAMFAxDTALBgNVBAMMBFRlc3QxDDAKBgNVBAoMA09EQzERMA8GA1UEBwwISGFuZ3pob3UxETAPBgNVBAgMCEhhbmd6aG91MQswCQYDVQQGEwJDTjAeFw0yNDExMDExMjIwMTRaFw0yNTExMDExMjIwMTRaMFAxDTALBgNVBAMMBFRlc3QxDDAKBgNVBAoMA09EQzERMA8GA1UEBwwISGFuZ3pob3UxETAPBgNVBAgMCEhhbmd6aG91MQswCQYDVQQGEwJDTjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANvIuezSjME9NKNlfcvyMRdn51/dHvuVT0OV9pJr04qT3VZArJuiibiLPS9I+CSu+4WRlvBrgmf6QSKt8Irm86dXTVU8t6o92SUsdBPslHG9lLfhKU4yQLbE1X3t0pQHJ3YSON7s9iJ2NtlFk47+bgS02eeAkffjYq1bD7YvIlkeLl9fFh9QTB0rLIMyBc7jftygjogLKQ6ZwLw5IxViMi64KAkFxkePJz8S5nQ0X4/cpM5p6GeWgk5WDxCOcUYlzoyVRx9HrwdFUKmPsyuRTPRKunuFwPuVEi2O2QqfqSqGQg6/yZDdX6scvh40HFamT7+34C5JYJn+8g2MHLc/MdMCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAMSaAF6TPp3nAh3T9E4ZVN+fXQZsxd8BuvgMl410oJiAAdnDQPPcXO7I+FwISFKBKl5n2W8TIMis3NUhO52eD+uLtVK+lGRTw0U9qtOfplirDfXRTGriWPobNQwTZJGOAukZNeC24KklM3EqhOmoiOD93qlg3REaBqDmlquAYimn/BmE+KsgALzbThvkCsTcs3Rth+Y0Io63xw8qNzgoZyhoqQhpz7lb05w9QLTWqIPAwi+H9+myIokjyKjLtUL5KS/oRZ54KgXzK++fqsU/hrukx47wg4gZjN0v6gsrvezi/BPxWDIfa4Trju4k8kRHHzybhmxhsjAHqOOJgW0mptQ==\\\\n-----END CERTIFICATE-----"},"singlesignon":{"binding":null,"signRequest":null,"url":null},"verification":{"certificate":null}},"type":"SAML"}',
+        // };
+        // const signingValue = await querySecretKey();
+        // if (value.type === ISSOType.SAML) {
+        //   const { acsLocation, metadataUri, acsEntityId } = value.ssoParameter;
+        //   const { registrationId } = clone.ssoParameter;
+        //   console.log(metadataUri);
+        //   clone.ldap = false;
+        //   clone.saml = true;
+        //   clone.oauth2OrOidc = false;
+        //   clone.ssoParameter = {
+        //     decryption: { certificate: null },
+        //     acsBinding: 'POST',
+        //     name: value.name,
+        //     acsLocation,
+        //     metadataUri,
+        //     registrationId,
+        //     acsEntityId,
+        //     providerEntityId: null,
+        //     singlesignon: form.getFieldValue(['ssoParameter', 'singlesignon']),
+        //     verification: { certificate: null },
+        //     signing: { certificate: signingValue },
+        //   };
+        // }
+        // console.log(SAMLCheckBoxConfig);
+        // clone.ssoParameter.acsBinding = "POST";
+        // clone.ssoParameter.decryption = {certificate:null};
+        // clone.ssoParameter.name = form.getFieldValue('name');
+        // clone.ssoParameter.signing = { certificate: signingValue };
+        // clone.ssoParameter.singlesignon = form.getFieldValue(['ssoParameter', 'singlesignon']);
+        // clone.ssoParameter.verification = { certificate: null };
+        // console.log(clone.ssoParameter);
+        // console.log(JSON.parse(a.configuration).ssoParameter);
+        // const  c = '{\"name\":\"CAS\",\"type\":\"OAUTH2\",\"ssoParameter\":{\"clientId\":\"20221109\",\"authUrl\":\"https://cas.example.org:8443/cas/oauth2.0/authorize\",\"userInfoUrl\":\"https://cas.example.org:8443/cas/oauth2.0/profile\",\"tokenUrl\":\"https://cas.example.org:8443/cas/oauth2.0/accessToken\",\"redirectUrl\":\"http://11.162.217.57:9299/login/oauth2/code/1-90175b3c3d6370a3df874483caf5bc2c?odc_back_url=http%3A%2F%2F11.162.217.57%3A9299%2F%23%2Fgateway%2FeyJhY3Rpb24iOiJ0ZXN0TG9naW4iLCJkYXRhIjp7fX0%3D\",\"scope\":[\"profile\"],\"jwkSetUri\":null,\"userNameAttribute\":null,\"clientAuthenticationMethod\":\"client_secret_basic\",\"authorizationGrantType\":\"authorization_code\",\"userInfoAuthenticationMethod\":\"header\",\"registrationId\":\"1-90175b3c3d6370a3df874483caf5bc2c\"},\"mappingRule\":{\"userProfileViewType\":\"NESTED\",\"nestedAttributeField\":\"attributes\"}}';
+        // console.log(JSON.parse(c).ssoParameter);
+        console.log(clone);
         const res = await testClientRegistration(clone, 'info');
         if (res?.testLoginUrl) {
           loginWindow.current = window.open(
@@ -273,6 +311,8 @@ export default inject('userStore')(
           channel.add(ChannelMap.ODC_SSO_TEST).listen(
             ChannelMap.ODC_SSO_TEST,
             (data) => {
+              console.log('success');
+              console.log(data);
               if (data?.isSuccess && !loginWindow.current?.closed) {
                 message.success(
                   formatMessage({
@@ -368,12 +408,11 @@ export default inject('userStore')(
         var md5Hex = md5(`${name || ''}`);
         const id = `${userStore?.organizationId}-${md5Hex}`;
         setRegistrationId(id);
-
         switch (form.getFieldValue('type')) {
           case ISSOType.SAML:
             form.setFieldsValue({
               ssoParameter: {
-                acsLocation: `${window.ODCApiHost || location.origin}/login/oauth2/code/${id}`,
+                acsLocation: `${window.ODCApiHost || location.origin}/login/saml2/sso/${id}`,
                 acsEntityId: `${
                   window.ODCApiHost || location.origin
                 }/saml2/service-provider-metadata/${id}`,
