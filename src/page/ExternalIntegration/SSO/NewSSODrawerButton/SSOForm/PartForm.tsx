@@ -33,11 +33,12 @@ import {
   Space,
   Switch,
   Typography,
+  Tooltip,
 } from 'antd';
 import React from 'react';
 import { requiredRule, SAMLCheckBoxConfigType } from '.';
 import copyToCB from 'copy-to-clipboard';
-import Icon, { CopyOutlined } from '@ant-design/icons';
+import { CopyOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import styles from './partForm.less';
 
 const { TextArea } = Input;
@@ -916,7 +917,12 @@ export const SAMLPartForm: React.FC<{
         name={['ssoParameter', 'acsLocation']}
         label="SP Endpoint"
         tooltip={'用户接受 SSO 服务响应'}
-        rules={[requiredRule]}
+        rules={[
+          {
+            required: true,
+            message: '请输入配置名称以生成 SP Endpoint',
+          },
+        ]}
       >
         <TextArea
           autoSize={{
@@ -930,8 +936,12 @@ export const SAMLPartForm: React.FC<{
       <Form.Item
         name={['ssoParameter', 'acsEntityId']}
         label="ACS EntityID"
-        tooltip={'123'}
-        rules={[requiredRule]}
+        rules={[
+          {
+            required: true,
+            message: '请输入配置名称以生成 ACS EntityID',
+          },
+        ]}
       >
         <TextArea
           autoSize={{
@@ -943,10 +953,15 @@ export const SAMLPartForm: React.FC<{
         />
       </Form.Item>
       <Form.Item
-        rules={[{ required: showExtraConfigForSAML ? false : true }]}
+        rules={[
+          {
+            required: showExtraConfigForSAML ? false : true,
+            message: '未配置时，需要补充高级选项中的 SSO 相关配置信息',
+          },
+        ]}
         name={['ssoParameter', 'metadataUri']}
         label="Metadata URI"
-        tooltip={'123'}
+        tooltip={'元数据 URL'}
       >
         <Input
           style={{
@@ -987,7 +1002,7 @@ export const SAMLPartForm: React.FC<{
         <Form.Item
           name={['ssoParameter', 'providerEntityId']}
           label="Provider EntityID"
-          tooltip={'123'}
+          tooltip={'服务提供商的唯一标识'}
           rules={[requiredRule]}
         >
           <TextArea
@@ -1003,17 +1018,13 @@ export const SAMLPartForm: React.FC<{
           name={['ssoParameter', 'singlesignon']}
           label={'SSO 配置'}
           rules={[requiredRule]}
-          initialValue={{
-            url: null,
-            binding: null,
-            signRequest: null,
-          }}
+          shouldUpdate={true}
         >
+          <p style={{ color: 'rgba(0, 0, 0, 0.45)' }}>未配置 Metadata URi 时，建议补充以下配置</p>
           <div style={{ padding: '8px 16px 6px 16px', background: '#f7f9fb', borderRadius: 2 }}>
             <Form.Item
               label="URL"
               name={['ssoParameter', 'singlesignon', 'url']}
-              tooltip={123}
               rules={[{ required: !metadataUriValue }]}
             >
               <Input
@@ -1026,8 +1037,7 @@ export const SAMLPartForm: React.FC<{
             <Form.Item
               name={['ssoParameter', 'singlesignon', 'binding']}
               label="绑定方法"
-              tooltip={123}
-              initialValue={'Post'}
+              initialValue={'POST'}
               rules={[{ required: !metadataUriValue }]}
             >
               <Select
@@ -1037,11 +1047,11 @@ export const SAMLPartForm: React.FC<{
                 options={[
                   {
                     label: 'Post',
-                    value: 'Post',
+                    value: 'POST',
                   },
                   {
                     label: 'Redirect',
-                    value: 'Redirect',
+                    value: 'REDIRECT',
                   },
                 ]}
               />
@@ -1049,8 +1059,7 @@ export const SAMLPartForm: React.FC<{
             <Form.Item
               name={['ssoParameter', 'singlesignon', 'signRequest']}
               label="登录请求"
-              tooltip={123}
-              initialValue={'True'}
+              initialValue={true}
               rules={[{ required: !metadataUriValue }]}
             >
               <Select
@@ -1060,11 +1069,11 @@ export const SAMLPartForm: React.FC<{
                 options={[
                   {
                     label: 'True',
-                    value: 'True',
+                    value: true,
                   },
                   {
                     label: 'False',
-                    value: 'False',
+                    value: false,
                   },
                 ]}
               />
@@ -1079,6 +1088,11 @@ export const SAMLPartForm: React.FC<{
               onChange={(e) => updateSAMLCheckBoxConfig('signing', e.target.checked)}
             >
               签名配置
+              <Tooltip title="用于保证 ODC 到 SSO 服务的请求不被篡改">
+                <QuestionCircleOutlined
+                  style={{ marginLeft: '6px', color: 'rgba(0, 0, 0, 0.45)' }}
+                />
+              </Tooltip>
             </Checkbox>
 
             <div
@@ -1111,6 +1125,11 @@ export const SAMLPartForm: React.FC<{
               onChange={(e) => updateSAMLCheckBoxConfig('verification', e.target.checked)}
             >
               认证配置
+              <Tooltip title="用于保证 SSO 服务到 ODC 的请求不被篡改">
+                <QuestionCircleOutlined
+                  style={{ marginLeft: '6px', color: 'rgba(0, 0, 0, 0.45)' }}
+                />
+              </Tooltip>
             </Checkbox>
 
             <TextArea
@@ -1128,6 +1147,9 @@ export const SAMLPartForm: React.FC<{
             onChange={(e) => updateSAMLCheckBoxConfig('decryption', e.target.checked)}
           >
             解密配置
+            <Tooltip title="用于保证 ODC 到 SSO 服务的请求解密">
+              <QuestionCircleOutlined style={{ marginLeft: '6px', color: 'rgba(0, 0, 0, 0.45)' }} />
+            </Tooltip>
           </Checkbox>
           <div
             className={styles.SAMLCheckBoxConfigDiv}
