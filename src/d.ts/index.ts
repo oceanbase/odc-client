@@ -3855,6 +3855,9 @@ export interface ISSO_SAML_CONFIG {
   secret: string;
   acsEntityId?: string;
   providerEntityId?: string;
+  decryption?: { certificate: string };
+  signing?: { certificate: string };
+  verification?: { certificate: string };
 }
 
 export interface ISSO_MAPPINGRULE {
