@@ -34,13 +34,23 @@ function walkSync(currentDirPath) {
     });
     return files;
 }
+let count = 0;
 async function codesign(src) {
     const cert = 'Developer ID Application: Beijing OceanBase Technology Co., Ltd. (QWQ3HBA8MF)'
     const cmd = `codesign --force --timestamp --options runtime --entitlements ./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist  --sign "${cert}" ${src}`;
+    if (count > 30) {
+        await new Promise((resolve )=> {
+            setTimeout(() => {
+                resolve(true)
+            }, 10000);
+        })
+        count = 0;
+    }
     try {
         console.log(
             execSync(cmd)?.toString()
         )
+        count++;
     } catch (e) {
         console.log('error: ', e)
         console.log('retry:', src)
