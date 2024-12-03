@@ -139,6 +139,42 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
           </Descriptions>
         );
       }
+      case ISSOType.SAML: {
+        return (
+          <Descriptions column={1} title="SAML">
+            <Descriptions.Item label="SP Endpoint">
+              {configJson?.ssoParameter?.acsLocation}
+            </Descriptions.Item>
+            <Descriptions.Item label="ACS EntityID">
+              {configJson?.ssoParameter?.acsEntityId}
+            </Descriptions.Item>
+            <Descriptions.Item label="Metadata URI">
+              {configJson?.ssoParameter?.metadataUri || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Provider EntityID">
+              {configJson?.ssoParameter?.providerEntityId || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="URL">
+              {configJson?.ssoParameter?.singlesignon?.url || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="绑定方法">
+              {configJson?.ssoParameter?.singlesignon?.binding || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="登录请求">
+              {configJson?.ssoParameter?.singlesignon?.signRequest ? '是' : '否'}
+            </Descriptions.Item>
+            <Descriptions.Item label="认证配置">
+              {configJson?.ssoParameter?.verification?.certificate || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="解密配置">
+              {configJson?.ssoParameter?.decryption.certificate || '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="签名配置">
+              {configJson?.ssoParameter?.signing?.certificate || '-'}
+            </Descriptions.Item>
+          </Descriptions>
+        );
+      }
       default: {
         return null;
       }
@@ -160,6 +196,13 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
         </Button>
       }
     >
+      <p
+        onClick={() => {
+          console.log(configJson.ssoParameter);
+        }}
+      >
+        11
+      </p>
       <Spin spinning={loading}>
         <Space direction="vertical">
           <Descriptions
