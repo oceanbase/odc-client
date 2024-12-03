@@ -47,7 +47,7 @@ async function codesign(src) {
         await new Promise((resolve) => {
             setTimeout(() => {
                 resolve(true)
-            }, 10000);
+            }, 30000);
         })
         console.log(
             execSync(cmd)?.toString()
