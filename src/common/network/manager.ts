@@ -763,6 +763,9 @@ export async function checkIntegrationExists(
 export async function testClientRegistration(
   config: ISSOConfig,
   type: 'info' | 'test',
+  params?: {
+    odcBackUrl?: string;
+  },
 ): Promise<{
   testLoginUrl: string;
   testId: string;
@@ -785,6 +788,7 @@ export async function testClientRegistration(
       enabled: true,
     },
     params: {
+      ...params,
       type,
     },
   });
