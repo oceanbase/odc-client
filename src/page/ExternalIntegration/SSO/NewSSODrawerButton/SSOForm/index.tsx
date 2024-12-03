@@ -267,9 +267,8 @@ export default inject('userStore')(
               certificate: SAMLCheckBoxConfig[key].checked ? SAMLCheckBoxConfig[key].value : null,
             };
           }
-          params.odcBackUrl = encodeURIComponent(
-            location.origin + '/' + '#/gateway/eyJhY3Rpb24iOiJ0ZXN0TG9naW4iLCJkYXRhIjp7fX0=',
-          );
+          params.odcBackUrl =
+            location.origin + '/' + '#/gateway/eyJhY3Rpb24iOiJ0ZXN0TG9naW4iLCJkYXRhIjp7fX0=';
         }
         const res = await testClientRegistration(clone, 'info', params);
         if (res?.testLoginUrl) {
