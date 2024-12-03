@@ -258,15 +258,20 @@ export default inject('userStore')(
         } else {
           clone.ssoParameter.registrationId = editData?.ssoParameter?.registrationId;
         }
-
+        let params: {
+          odcBackUrl?: string;
+        } = {};
         if (value.type === ISSOType.SAML) {
           for (let key in SAMLCheckBoxConfig) {
             (clone.ssoParameter as ISSO_SAML_CONFIG)[key] = {
               certificate: SAMLCheckBoxConfig[key].checked ? SAMLCheckBoxConfig[key].value : null,
             };
           }
+          params.odcBackUrl = encodeURIComponent(
+            location.origin + '/' + '#/gateway/eyJhY3Rpb24iOiJ0ZXN0TG9naW4iLCJkYXRhIjp7fX0=',
+          );
         }
-        const res = await testClientRegistration(clone, 'info');
+        const res = await testClientRegistration(clone, 'info', params);
         if (res?.testLoginUrl) {
           loginWindow.current = window.open(
             res?.testLoginUrl,
