@@ -1003,7 +1003,11 @@ export const SAMLPartForm: React.FC<{
           name={['ssoParameter', 'providerEntityId']}
           label="Provider EntityID"
           tooltip={'服务提供商的唯一标识'}
-          rules={[requiredRule]}
+          rules={[
+            {
+              required: showExtraConfigForSAML ? true : false,
+            },
+          ]}
         >
           <TextArea
             autoSize={{
