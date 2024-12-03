@@ -3858,6 +3858,12 @@ export interface ISSO_SAML_CONFIG {
   decryption?: { certificate: string };
   signing?: { certificate: string };
   verification?: { certificate: string };
+  metadataUri?: string;
+  singlesignon?: {
+    url?: string;
+    binding?: 'POST' | 'REDIRECT';
+    signRequest?: boolean;
+  };
 }
 
 export interface ISSO_MAPPINGRULE {
