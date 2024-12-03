@@ -31,6 +31,7 @@ import {
   RollbackType,
   SubTaskStatus,
   TaskDetail,
+  IResultSetExportTaskParams,
 } from '@/d.ts';
 import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
 import { IUnauthorizedDBResources, TablePermissionType } from '@/d.ts/table';
@@ -81,6 +82,7 @@ interface ResultSetExportData {
   databaseId?: number;
   tableName?: string;
   taskId?: number;
+  task?: TaskDetail<IResultSetExportTaskParams>;
 }
 
 interface ApplyPermissionData {}
@@ -157,7 +159,7 @@ interface IWorkSpaceExecuteSQLModalProps {
   onSave: any;
   status: EStatus;
   lintResultSet: ISQLLintReuslt[];
-  unauthorizedDBResources: IUnauthorizedDBResources[]
+  unauthorizedDBResources: IUnauthorizedDBResources[];
 }
 
 export class ModalStore {

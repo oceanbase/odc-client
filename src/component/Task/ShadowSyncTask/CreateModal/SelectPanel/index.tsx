@@ -251,6 +251,32 @@ const SelectPanel = forwardRef<any, IProps>(function (
       originTableNames: clone(new Set<string>(res?.tables?.map((item) => item.originTableName))),
     };
 
+    if (res?.tables?.length > 0) {
+      /** false：后缀、true：前缀 */
+      let prefixTemp = true;
+      let nameTemp;
+      // 源数据-表名
+      const originTableName = res?.tables[0]?.originTableName;
+      // 加过后缀/前缀的表名
+      const destTableName = res?.tables[0]?.destTableName;
+      // 后缀
+      if (destTableName?.startsWith(originTableName)) {
+        prefixTemp = false;
+      }
+      let arr = destTableName?.split(originTableName);
+      let initialNameArr = ['_test_', '_t'];
+      arr = arr?.map((item, index) => {
+        if (!item) {
+          return initialNameArr[index];
+        }
+        return item;
+      });
+      nameTemp = prefixTemp ? arr?.[0] : arr?.[1];
+      newDataObj.prefix = prefixTemp;
+      newDataObj.name = nameTemp;
+      form.setFieldValue('prefix', prefixTemp);
+      form.setFieldValue('name', nameTemp);
+    }
     if (!data.originTableNames.size) {
       newDataObj.originTableNames = new Set();
     }
