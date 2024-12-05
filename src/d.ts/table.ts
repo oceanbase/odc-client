@@ -33,6 +33,8 @@ export interface IServerTable {
       verticalColumnNames: string[];
     }>;
     partitionDefinitions?: Partial<IServerTablePartitionDefinition>[];
+    subpartition?: Partial<IServerTable['partition']>
+    subpartitionTemplated?: boolean
   };
   DDL: string;
   createTime: number;
@@ -161,6 +163,7 @@ export interface IServerTablePartitionDefinition {
   maxRows: number;
   minRows: number;
   ordinalPosition: number;
+  parentPartitionDefinition?: IServerTablePartitionDefinition
 }
 
 /**

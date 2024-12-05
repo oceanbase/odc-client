@@ -55,7 +55,6 @@ interface IProps {
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId, theme } = props;
 
-  const { taskId } = modalStore?.resultSetExportData || {};
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -63,8 +62,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const { database } = useDBSession(databaseId);
   const connection = database?.dataSource;
   const { resultSetExportData } = modalStore;
-  const [detailData, setDetailData] = useState<IResultSetExportTaskParams>(null);
-  const initSql = resultSetExportData?.sql || detailData?.sql;
+  const initSql = resultSetExportData?.sql;
 
   const handleSqlChange = (sql: string) => {
     form?.setFieldsValue({
@@ -153,26 +151,18 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
   useEffect(() => {
     if (resultSetExportData) {
-      const { sql, tableName, databaseId } = resultSetExportData;
+      const { sql, tableName, databaseId, task } = resultSetExportData;
       handleSqlChange(sql);
       form.setFieldsValue({
         tableName,
         databaseId,
       });
+      if (task) {
+        form.setFieldsValue(task.parameters);
+        form.setFieldValue('description', task.description);
+      }
     }
   }, [resultSetExportData]);
-
-  useEffect(() => {
-    if (taskId) {
-      getTaskDetailValue();
-    }
-  }, [taskId]);
-
-  const getTaskDetailValue = async () => {
-    const detailRes = (await getTaskDetail(taskId)) as TaskDetail<IResultSetExportTaskParams>;
-    setDetailData(detailRes.parameters);
-    form.setFieldsValue(detailRes.parameters);
-  };
 
   return (
     <Drawer

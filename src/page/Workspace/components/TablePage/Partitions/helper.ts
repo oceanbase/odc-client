@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IPartitionType } from '@/d.ts';
+import { ConnectionMode, IPartitionType } from '@/d.ts';
 import {
   ITableListColumnsPartition,
   ITableListPartition,
@@ -23,9 +23,60 @@ import {
   ITableRangePartition,
 } from '../../CreateTable/interface';
 
-export function getRowsByPartType(type: IPartitionType, data: ITableModel['partitions']) {
+export function getRowsByPartType(
+  type: IPartitionType,
+  data: ITableModel['partitions'],
+  connectionMode: ConnectionMode,
+) {
+  const formatMultiListValue = (value) => {
+    return value
+      .map((item) => {
+        return Object.entries(item)
+          .map(([ColumnName, value]) => {
+            return `${ColumnName}:${value}`;
+          })
+          .join(',');
+      })
+      .join(' | ');
+  };
+
+  const formatMultiRangeValue = (value) => {
+    return Object.entries(value)
+      .map(([ColumnName, value]) => {
+        return `${ColumnName}:${value}`;
+      })
+      .join(' | ');
+  };
+
   switch (type) {
+    case IPartitionType.HASH:
+    case IPartitionType.KEY:
+      return (data as ITableListPartition | ITableRangePartition)?.partitions?.map(
+        (p, position) => {
+          position = position + 1;
+          return {
+            name: p.name,
+            position,
+            key: position,
+            parentName: p?.parentName,
+          };
+        },
+      );
     case IPartitionType.LIST:
+      return (data as ITableListPartition | ITableRangePartition)?.partitions?.map(
+        (p, position) => {
+          position = position + 1;
+          return {
+            name: p.name,
+            position,
+            partValues:
+              connectionMode === ConnectionMode.OB_ORACLE ? formatMultiListValue(p.value) : p.value,
+            isNew: p.isNew,
+            key: position,
+            parentName: p?.parentName,
+          };
+        },
+      );
     case IPartitionType.RANGE: {
       return (data as ITableListPartition | ITableRangePartition)?.partitions?.map(
         (p, position) => {
@@ -33,9 +84,11 @@ export function getRowsByPartType(type: IPartitionType, data: ITableModel['parti
           return {
             name: p.name,
             position,
-            partValues: p.value,
+            partValues:
+              connectionMode === ConnectionMode.OB_ORACLE ? formatMultiRangeValue(p.value) : p.value,
             isNew: p.isNew,
-            key: p.ordinalPosition ?? p.key,
+            key: position,
+            parentName: p?.parentName,
           };
         },
       );
@@ -47,16 +100,9 @@ export function getRowsByPartType(type: IPartitionType, data: ITableModel['parti
           name: p.name,
           position,
           isNew: p.isNew,
-          partValues: p.value
-            .map((item) => {
-              return Object.entries(item)
-                .map(([ColumnName, value]) => {
-                  return `${ColumnName}:${value}`;
-                })
-                .join(',');
-            })
-            .join(' | '),
-          key: p.ordinalPosition ?? p.key,
+          partValues: formatMultiListValue(p.value),
+          key: position,
+          parentName: p?.parentName,
         };
       });
     case IPartitionType.RANGE_COLUMNS:
@@ -66,12 +112,9 @@ export function getRowsByPartType(type: IPartitionType, data: ITableModel['parti
           name: p.name,
           position,
           isNew: p.isNew,
-          partValues: Object.entries(p.value)
-            .map(([ColumnName, value]) => {
-              return `${ColumnName}:${value}`;
-            })
-            .join(' | '),
-          key: p.ordinalPosition ?? p.key,
+          partValues: formatMultiRangeValue(p.value),
+          key: position,
+          parentName: p?.parentName,
         };
       });
     default: {

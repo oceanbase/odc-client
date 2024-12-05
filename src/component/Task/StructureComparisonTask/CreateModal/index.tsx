@@ -151,6 +151,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
         id: 'src.component.Task.StructureComparisonTask.CreateModal.45DB3909',
         defaultMessage: '新建结构比对',
       })}
+      zIndex={1001}
       width={720}
       closable
       onClose={() => handleCancel(hasEdit)}

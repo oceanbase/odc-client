@@ -94,8 +94,10 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
         if (taskId) {
           const detailRes = (await getTaskDetail(taskId)) as TaskDetail<ExportFormData>;
           form.setFieldValue('exportDbObjects', detailRes?.parameters?.exportDbObjects);
+          form.setFieldValue('exportAllObjects', detailRes?.parameters?.exportAllObjects);
           onFormValueChange('exportDbObjects', {
             exportDbObjects: detailRes?.parameters?.exportDbObjects,
+            exportAllObjects: detailRes?.parameters?.exportAllObjects,
           });
         }
       };
