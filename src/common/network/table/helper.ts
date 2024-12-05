@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConnectionMode, IPartitionType } from '@/d.ts';
+import { ConnectionMode, ConnectType, IPartitionType } from '@/d.ts';
 import { ColumnStoreType, IServerTable } from '@/d.ts/table';
 import {
   ITableModel,
@@ -247,6 +247,7 @@ export function convertServerTableToTable(
     tableId: number;
     databaseId: number;
   },
+  dbMode?: ConnectionMode,
 ): Partial<ITableModel> {
   if (!data) {
     return null;
@@ -376,102 +377,230 @@ export function convertServerTableToTable(
   // partitions
   const { partition } = data;
   const partType = partition?.partitionOption?.type;
+  convertServerTablePartitionToTablePartition(
+    dbMode,
+    table,
+    partType,
+    partition,
+    partition?.subpartitionTemplated,
+    PartitionLevelEnum.partitions,
+  );
+  if (partition?.subpartition) {
+    convertServerTablePartitionToTablePartition(
+      dbMode,
+      table,
+      partition?.subpartition?.partitionOption?.type,
+      data?.partition?.subpartition,
+      data?.partition?.subpartitionTemplated,
+      PartitionLevelEnum.subpartitions,
+    );
+  }
+  return table;
+}
+
+export const enum PartitionLevelEnum {
+  partitions = 'partitions',
+  subpartitions = 'subpartitions',
+}
+
+export function convertServerTablePartitionToTablePartition(
+  dbMode,
+  table,
+  partType,
+  partition,
+  subpartitionTemplated,
+  /* 一级分区/ 二级分区 */
+  keyName: PartitionLevelEnum,
+) {
+  const handlePartitions = (partType, dbMode, partition) => {
+    switch (partType) {
+      case IPartitionType.HASH:
+      case IPartitionType.KEY: {
+        return partition?.partitionDefinitions?.map((item) => {
+          return Object.assign(
+            {
+              name: item.name,
+              ordinalPosition: item.ordinalPosition,
+            },
+            keyName === PartitionLevelEnum.subpartitions
+              ? {
+                  parentName: item?.parentPartitionDefinition?.name,
+                }
+              : {},
+          );
+        });
+      }
+      /* RANGE / RANGE_COLUMNS, LIST / LIST_COLUMNS 要在ob_mysql和ob_oracle之间做区分, 因为ob_mysql内LIST/RANGE只会有一个分区键, 而ob_oracle的LIST/RANGE支持多分区键, 因此需要[键:值]成对展示 */
+      case IPartitionType.RANGE: {
+        const getSinglePartitionKeyValue = (item) => item.maxValues?.join?.(', ');
+        const getMultiPartitionKeyValue = (columns, item) =>
+          columns.reduce((prev, current, index) => {
+            prev[current] = item.maxValues[index];
+            return prev;
+          }, {});
+        const columns = partition?.partitionOption?.columnNames;
+        return partition?.partitionDefinitions?.map((item) => {
+          return Object.assign(
+            {
+              name: item.name,
+              value:
+                dbMode === ConnectionMode.OB_ORACLE
+                  ? getMultiPartitionKeyValue(columns, item)
+                  : getSinglePartitionKeyValue(item),
+              ordinalPosition: item.ordinalPosition,
+            },
+            keyName === PartitionLevelEnum.subpartitions
+              ? {
+                  parentName: item?.parentPartitionDefinition?.name,
+                }
+              : {},
+          );
+        });
+      }
+      case IPartitionType.RANGE_COLUMNS: {
+        const columns = partition?.partitionOption?.columnNames;
+        return partition?.partitionDefinitions?.map((item) => {
+          return Object.assign(
+            {
+              name: item.name,
+              value: columns.reduce((prev, current, index) => {
+                prev[current] = item.maxValues[index];
+                return prev;
+              }, {}),
+              ordinalPosition: item.ordinalPosition,
+            },
+            keyName === PartitionLevelEnum.subpartitions
+              ? {
+                  parentName: item?.parentPartitionDefinition?.name,
+                }
+              : {},
+          );
+        });
+      }
+      case IPartitionType.LIST: {
+        const getSinglePartitionKeyValue = (item) =>
+          item.valuesList?.map((item) => item.join(',')).join(',');
+        const getMultiPartitionKeyValue = (columns, item) =>
+          item.valuesList.map((value) => {
+            return columns.reduce((prev, current, index) => {
+              prev[current] = value[index];
+              return prev;
+            }, {});
+          });
+        const columns = partition?.partitionOption?.columnNames;
+        return partition?.partitionDefinitions?.map((item) => {
+          return Object.assign(
+            {
+              name: item.name,
+              value:
+                dbMode === ConnectionMode.OB_ORACLE
+                  ? getMultiPartitionKeyValue(columns, item)
+                  : getSinglePartitionKeyValue(item),
+              ordinalPosition: item.ordinalPosition,
+            },
+            keyName === PartitionLevelEnum.subpartitions
+              ? {
+                  parentName: item?.parentPartitionDefinition?.name,
+                }
+              : {},
+          );
+        });
+      }
+      /**
+       * valuesList: [ [column1Value, column2value], [column1Value, column2Value] ]
+       * partitions value: [{column1: value, column2: value}, {...}]
+       */
+      case IPartitionType.LIST_COLUMNS: {
+        const columns = partition?.partitionOption?.columnNames;
+        return partition?.partitionDefinitions?.map((item) => {
+          return Object.assign(
+            {
+              name: item.name,
+              value: item.valuesList.map((value) => {
+                return columns.reduce((prev, current, index) => {
+                  prev[current] = value[index];
+                  return prev;
+                }, {});
+              }),
+              ordinalPosition: item.ordinalPosition,
+            },
+            keyName === PartitionLevelEnum.subpartitions
+              ? {
+                  parentName: item?.parentPartitionDefinition?.name,
+                }
+              : {},
+          );
+        });
+      }
+    }
+  };
+
+  const handleColumns = (partition)=> partition?.partitionOption?.columnNames?.map((item) => {
+    return {
+      columnName: item,
+    };
+  })
+
   switch (partType) {
     case IPartitionType.HASH: {
-      table.partitions = {
+      table[keyName] = {
         partType: partType,
         partNumber: partition?.partitionOption?.partitionsNum,
         expression: partition?.partitionOption?.expression,
+        columns: handleColumns(partition),
+        partitions: handlePartitions(partType, dbMode, partition),
+        subpartitionTemplated: subpartitionTemplated
       };
       break;
     }
     case IPartitionType.KEY: {
-      table.partitions = {
+      table[keyName] = {
         partType: partType,
         partNumber: partition?.partitionOption?.partitionsNum,
-        columns: partition?.partitionOption?.columnNames?.map((item) => {
-          return {
-            columnName: item,
-          };
-        }),
+        columns: handleColumns(partition),
+        expression: partition?.partitionOption?.expression,
+        partitions: handlePartitions(partType, dbMode, partition),
+        subpartitionTemplated: subpartitionTemplated
       };
       break;
     }
     case IPartitionType.RANGE: {
-      table.partitions = {
+      table[keyName] = {
         partType: partType,
         expression: partition?.partitionOption?.expression,
-        partitions: partition?.partitionDefinitions?.map((item) => {
-          return {
-            name: item.name,
-            value: item.maxValues?.join?.(', '),
-            ordinalPosition: item.ordinalPosition,
-          };
-        }),
+        columns: handleColumns(partition),
+        partitions: handlePartitions(partType, dbMode, partition),
+        subpartitionTemplated: subpartitionTemplated
       };
       break;
     }
     case IPartitionType.RANGE_COLUMNS: {
-      const columns = partition?.partitionOption?.columnNames;
-      table.partitions = {
+      table[keyName] = {
         partType: partType,
-        columns: partition?.partitionOption?.columnNames?.map((item) => {
-          return {
-            columnName: item,
-          };
-        }),
-        partitions: partition?.partitionDefinitions?.map((item) => {
-          return {
-            name: item.name,
-            value: columns.reduce((prev, current, index) => {
-              prev[current] = item.maxValues[index];
-              return prev;
-            }, {}),
-            ordinalPosition: item.ordinalPosition,
-          };
-        }),
+        columns: handleColumns(partition),
+        expression: partition?.partitionOption?.expression,
+        partitions: handlePartitions(partType, dbMode, partition),
+        subpartitionTemplated: subpartitionTemplated
       };
       break;
     }
     case IPartitionType.LIST: {
-      table.partitions = {
+      table[keyName] = {
         partType: partType,
         expression: partition?.partitionOption?.expression,
-        partitions: partition?.partitionDefinitions?.map((item) => {
-          return {
-            name: item.name,
-            value: item.valuesList?.map((item) => item.join(',')).join(','),
-            ordinalPosition: item.ordinalPosition,
-          };
-        }),
+        columns: handleColumns(partition),
+        partitions: handlePartitions(partType, dbMode, partition),
+        subpartitionTemplated: subpartitionTemplated
       };
       break;
     }
     case IPartitionType.LIST_COLUMNS: {
-      const columns = partition?.partitionOption?.columnNames;
-      table.partitions = {
+      table[keyName] = {
         partType: partType,
-        columns: partition?.partitionOption?.columnNames?.map((item) => {
-          return {
-            columnName: item,
-          };
-        }),
-        /**
-         * valuesList: [ [column1Value, column2value], [column1Value, column2Value] ]
-         * partitions value: [{column1: value, column2: value}, {...}]
-         */
-        partitions: partition?.partitionDefinitions?.map((item) => {
-          return {
-            name: item.name,
-            value: item.valuesList.map((value) => {
-              return columns.reduce((prev, current, index) => {
-                prev[current] = value[index];
-                return prev;
-              }, {});
-            }),
-            ordinalPosition: item.ordinalPosition,
-          };
-        }),
+        columns: handleColumns(partition),
+        expression: partition?.partitionOption?.expression,
+        partitions: handlePartitions(partType, dbMode, partition),
+        subpartitionTemplated: subpartitionTemplated
       };
       break;
     }

@@ -3604,6 +3604,7 @@ export interface IPartitionPlanTable {
       ordinalPosition: unknown;
       type: string;
       valuesList: unknown;
+      parentPartitionDefinition?: IPartitionPlanTable['partition']['partitionDefinitions']
     }[];
     partitionKeyTypes: {
       name: string;
@@ -3619,7 +3620,7 @@ export interface IPartitionPlanTable {
       verticalColumnNames: unknown;
     };
     schemaName: string;
-    subpartition: unknown;
+    subpartition: IPartitionPlanTable['partition'];
     subpartitionTemplated: boolean;
     tableName: string;
     warning: unknown;
