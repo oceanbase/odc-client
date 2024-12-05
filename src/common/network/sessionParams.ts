@@ -64,7 +64,10 @@ export async function getDatabaseSessionList(sessionId: string): Promise<IDataba
 }
 
 export async function killSessions(
-  sessionIds: string[],
+  sessionIdAndsvrIps: {
+    sessionId: string;
+    svrIp: string;
+  }[],
   datasourceId: number,
   killType: 'session' | 'query',
 ): Promise<
@@ -76,7 +79,7 @@ export async function killSessions(
 > {
   const res = await request.post(`/api/v2/datasource/sessions/killSession`, {
     data: {
-      sessionIds,
+      sessionIds: sessionIdAndsvrIps,
       datasourceId,
       killType,
     },
