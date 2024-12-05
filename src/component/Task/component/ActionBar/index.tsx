@@ -24,6 +24,7 @@ import {
   stopTask,
   stopDataArchiveSubTask,
   getDataArchiveSubTask,
+  getTaskDetail,
 } from '@/common/network/task';
 import Action from '@/component/Action';
 import { TaskTypeMap } from '@/component/Task/component/TaskTable';
@@ -48,6 +49,7 @@ import {
   TaskRecordParameters,
   TaskStatus,
   TaskType,
+  IResultSetExportTaskParams,
 } from '@/d.ts';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
@@ -235,8 +237,9 @@ const ActionBar: React.FC<IProps> = inject(
 
       switch (type) {
         case TaskType.ASYNC: {
+          const detailRes = (await getTaskDetail(task?.id)) as TaskDetail<IAsyncTaskParams>;
           props.modalStore.changeCreateAsyncTaskModal(true, {
-            task: task as TaskDetail<IAsyncTaskParams>,
+            task: detailRes,
           });
           return;
         }
@@ -287,9 +290,14 @@ const ActionBar: React.FC<IProps> = inject(
           return;
         }
         case TaskType.EXPORT_RESULT_SET: {
+          const detailRes = (await getTaskDetail(
+            task?.id,
+          )) as TaskDetail<IResultSetExportTaskParams>;
           modalStore.changeCreateResultSetExportTaskModal(true, {
             databaseId: task.database?.id,
             taskId: task?.id,
+            sql: detailRes.parameters.sql,
+            task: detailRes,
           });
           return;
         }
