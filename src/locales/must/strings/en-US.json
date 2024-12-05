@@ -3861,7 +3861,7 @@
   "odc.src.component.Task.DataArchiveTask.CreateModal.PleaseChoose": "Please select",
   "odc.src.component.Task.NoCurrentWorkOrderView": "No permission to view the current ticket",
   "odc.src.component.Task.AlterDdlTask.CreateModal.2WhenCreatingA": "2. When creating a ticket and selecting the source table cleanup strategy, it is recommended to retain the source table.",
-  "odc.src.component.Task.AlterDdlTask.CreateModal.3IfTheOB": "3. If the version of OceanBase Oracle Mode is less than 4.0.0 or the version of OceanBase MySQL Mode is less than 4.3.0, switching table names will lock the specified database account and close the corresponding session. During the table name switch, applications related to the locked account will not be able to access the database. Avoid executing this during peak business hours.",
+  "odc.src.component.Task.AlterDdlTask.CreateModal.3IfTheOB": "3. Before switching the table name, the specified database account will be locked, and the session corresponding to that account will be closed. During the table name switch, the locked account will prevent the application from accessing the database, so please do not execute this during peak business hours;",
   "src.component.Task.component.PartitionPolicyTable.F057FAAF": "Sequential Increment",
   "src.component.Task.StructureComparisonTask.DetailContent.E8DAF6BA": "Actions",
   "src.page.Datasource.Datasource.NewDatasourceDrawer.Form.Account.445C8BBC": "Default",
