@@ -351,14 +351,16 @@ function SessionManagementPage(props: IProps) {
         ) : null}
         <div className={styles.table}>
           <MiniTable
-            rowKey={'sessionId'}
+            rowKey={(row) => `${row.sessionId}-${row.svrIp}`}
             bordered={true}
             loading={listLoading}
             columns={columns}
             dataSource={filteredRows}
             loadData={(page) => {}}
             rowSelection={{
-              selectedRowKeys: selectedRows.map((r: IDatabaseSession) => r.sessionId),
+              selectedRowKeys: selectedRows.map(
+                (r: IDatabaseSession) => `${r.sessionId}-${r.svrIp}`,
+              ),
               onChange: (selectedRowKeys: string[], rows: IDatabaseSession[]) => {
                 setSelectedRows(rows);
               },
