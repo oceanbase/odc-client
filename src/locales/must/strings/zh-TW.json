@@ -3861,7 +3861,7 @@
   "odc.src.component.Task.DataArchiveTask.CreateModal.PleaseChoose": "請選擇",
   "odc.src.component.Task.NoCurrentWorkOrderView": "無當前工單查看許可權",
   "odc.src.component.Task.AlterDdlTask.CreateModal.2WhenCreatingA": "2. 建立工單選擇源表清理策略時建議選擇保留源表；",
-  "odc.src.component.Task.AlterDdlTask.CreateModal.3IfTheOB": "3. 若 OceanBase Oracle 模式版本小於 4.0.0 或 OceanBase MySQL 模式版本小於 4.3.0，表名切換之前會鎖定您指定的資料庫帳號，並關閉該帳號對應的會話。表名切換期間，鎖定帳號涉及應用將無法訪問資料庫，請勿在業務高峰期執行；",
+  "odc.src.component.Task.AlterDdlTask.CreateModal.3IfTheOB": "3. 表名切換之前會鎖定您指定的資料庫帳號，並關閉該帳號對應的會話。表名切換期間，鎖定帳號涉及應用將無法訪問資料庫，請勿在業務高峰期執行；",
   "src.component.Task.component.PartitionPolicyTable.F057FAAF": "順序遞增",
   "src.component.Task.StructureComparisonTask.DetailContent.E8DAF6BA": "操作",
   "src.page.Datasource.Datasource.NewDatasourceDrawer.Form.Account.445C8BBC": "默認",

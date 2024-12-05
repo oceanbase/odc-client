@@ -1746,6 +1746,7 @@ export interface IDatabaseSession {
   sessionId: number;
   sql: string;
   srcIp: string;
+  svrIp: string;
   status: string;
 }
 
