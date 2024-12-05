@@ -220,7 +220,6 @@ class DatabaseStore {
         this.externalTableTables = newExternalTable;
       });
     }
-
     if (idx > -1) {
       const newTables = [...this.tables];
       newTables[idx] = table;

@@ -77,8 +77,8 @@ export async function getTableInfo(
     )}/tables/${encodeObjName(Base64.encode(tableName))}`,
     { params },
   );
-
-  return convertServerTableToTable(res?.data);
+  const session = sessionManager.sessionMap.get(sessionId);
+  return convertServerTableToTable(res?.data, null, session?.connection?.dialectType);
 }
 
 export async function getLogicTableInfo(
