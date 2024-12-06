@@ -141,6 +141,7 @@ export default class DisplayTable extends React.Component<
       showSizeChanger = true,
       showQuickJumper = true,
       enableResize,
+      scroll,
       ...rest
     } = this.props;
     const { defaultPageSize, columnWidthMap } = this.state;
@@ -175,7 +176,7 @@ export default class DisplayTable extends React.Component<
             }
           }
           components={enableResize ? this.components : null}
-          scroll={{ x: 'max-content' }}
+          scroll={scroll ? scroll : { x: 'max-content' }}
         />
       </div>
     );

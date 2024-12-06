@@ -272,3 +272,10 @@ export async function addTablePermissions(params: {
   );
   return !!res?.data;
 }
+
+export async function batchDeleteProject(projectId: number[]): Promise<boolean> {
+  const res = await request.post('/api/v2/collaboration/projects/batchDelete', {
+    data: projectId,
+  });
+  return !!res?.data;
+}

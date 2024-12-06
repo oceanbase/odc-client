@@ -23,40 +23,39 @@ import Search from '@/component/Input/Search';
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import ApplyPermissionButton from '@/component/Task/ApplyPermission/CreateButton';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
-import { IProject } from '@/d.ts/project';
+import { IProject, ProjectTabType } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
 import { setDefaultProject } from '@/service/projectHistory';
 import { formatMessage } from '@/util/intl';
 import { useNavigate } from '@umijs/max';
-import { List, Space, Spin, Typography } from 'antd';
+import { List, Space, Spin, Typography, Button, message } from 'antd';
 import VirtualList from 'rc-virtual-list';
-import { useContext, useEffect, useRef, useState } from 'react';
-import ProjectContext from '../ProjectContext';
+import { useEffect, useRef, useState } from 'react';
 import CreateProjectDrawer from './CreateProject/Drawer';
 import styles from './index.less';
 import ListItem from './ListItem';
 import userStore from '@/store/login';
+import MoreBtn from './MoreBtn';
+import DeleteProjectModal from '@/page/Project/components/DeleteProjectModal.tsx';
+import type { SelectProject } from '@/page/Project/components/DeleteProjectModal.tsx';
 
-const { Title, Text } = Typography;
 const titleOptions: {
   label: string;
-  value: 'all' | 'deleted';
+  value: ProjectTabType;
 }[] = [
   {
     label: formatMessage({
       id: 'odc.Project.Project.AllProjects',
       defaultMessage: '全部项目',
     }),
-    //全部项目
-    value: 'all',
+    value: ProjectTabType.ALL,
   },
   {
     label: formatMessage({
       id: 'odc.Project.Project.ArchiveProject',
       defaultMessage: '归档项目',
     }),
-    //归档项目
-    value: 'deleted',
+    value: ProjectTabType.ARCHIVED,
   },
 ];
 
@@ -68,20 +67,20 @@ const Project = () => {
   );
   const [dataSource, setDataSource] = useState<IProject[]>([]);
   const [projectSearchName, setProjectSearchName] = useState(null);
-  const [projectType, setProjectType] = useState<'all' | 'deleted'>('all');
+  const [projectType, setProjectType] = useState<ProjectTabType>(ProjectTabType.ALL);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const context = useContext(ProjectContext);
-  const { project } = context;
-  const isProjectDeleted = projectType === 'deleted';
+  const projectTypeIsArchived = projectType === ProjectTabType.ARCHIVED;
 
+  const [openDeleteProjectModal, setOpenDeleteProjectModal] = useState(false);
+  const [selectProjectList, setSelectProjectList] = useState<SelectProject[]>([]);
   const sessionStorageKey = `projectSearch-${userStore?.organizationId}-${userStore?.user?.id}`;
 
   const appendData = async (currentPage, dataSource, projectType, projectSearchName) => {
     setLoading(true);
     try {
-      const isProjectDeleted = projectType === 'deleted';
-      const res = await listProjects(projectSearchName, currentPage + 1, 40, isProjectDeleted);
+      const projectTypeIsArchived = projectType === ProjectTabType.ARCHIVED;
+      const res = await listProjects(projectSearchName, currentPage + 1, 40, projectTypeIsArchived);
       if (res) {
         setCurrentPage(currentPage + 1);
         /**
@@ -123,7 +122,7 @@ const Project = () => {
         showDivider: true,
         defaultValue: projectType,
       }}
-      onTabChange={(v: 'all' | 'deleted') => {
+      onTabChange={(v: ProjectTabType) => {
         setProjectType(v);
         reload(v);
       }}
@@ -137,11 +136,11 @@ const Project = () => {
                 fallback={<span></span>}
                 {...createPermission(IManagerResourceType.project, actionTypes.create)}
               >
-                <CreateProjectDrawer disabled={isProjectDeleted} onCreate={() => reload()} />
+                <CreateProjectDrawer disabled={projectTypeIsArchived} onCreate={() => reload()} />
               </Acess>
               {!!dataSource?.length && (
                 <ApplyPermissionButton
-                  disabled={isProjectDeleted}
+                  disabled={projectTypeIsArchived}
                   label={
                     formatMessage({
                       id: 'odc.src.page.Project.Project.JoinTheProject',
@@ -149,6 +148,19 @@ const Project = () => {
                     }) /* 加入项目 */
                   }
                 />
+              )}
+              {projectTypeIsArchived && (
+                <Button
+                  onClick={() => {
+                    if (!selectProjectList.length) {
+                      message.info('请先选择项目');
+                      return;
+                    }
+                    setOpenDeleteProjectModal(true);
+                  }}
+                >
+                  删除项目
+                </Button>
               )}
             </Space>
             <Space size={12}>
@@ -200,13 +212,32 @@ const Project = () => {
               {(item) => (
                 <ListItem
                   onClick={(p) => {
-                    if (isProjectDeleted) {
-                      return;
-                    }
                     setDefaultProject(p.id);
                     navigate(`/project/${p.id}/${IPageType.Project_Database}`);
                   }}
+                  selectProjectList={selectProjectList}
+                  onSelectChange={(isSelected, values) => {
+                    if (isSelected) {
+                      setSelectProjectList([...selectProjectList, values]);
+                    } else {
+                      setSelectProjectList(
+                        selectProjectList.filter((item) => item.id !== values.id),
+                      );
+                    }
+                  }}
                   data={item}
+                  action={
+                    projectTypeIsArchived ? (
+                      <Space
+                        size={14}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
+                        <MoreBtn project={item} reload={reload} />
+                      </Space>
+                    ) : null
+                  }
                 />
               )}
             </VirtualList>
@@ -222,7 +253,7 @@ const Project = () => {
                           <Acess
                             fallback={
                               <ApplyPermissionButton
-                                disabled={isProjectDeleted}
+                                disabled={projectTypeIsArchived}
                                 type="primary"
                                 label={
                                   formatMessage({
@@ -235,7 +266,7 @@ const Project = () => {
                             {...createPermission(IManagerResourceType.project, actionTypes.create)}
                           >
                             <CreateProjectDrawer
-                              disabled={isProjectDeleted}
+                              disabled={projectTypeIsArchived}
                               onCreate={() => reload()}
                             />
                           </Acess>
@@ -249,6 +280,13 @@ const Project = () => {
           )}
         </div>
       </List>
+      <DeleteProjectModal
+        open={openDeleteProjectModal}
+        setOpen={setOpenDeleteProjectModal}
+        projectList={selectProjectList}
+        verifyValue={'delete'}
+        beforeDelete={reload}
+      />
     </PageContainer>
   );
 };

@@ -32,11 +32,13 @@ import { formatMessage } from '@/util/intl';
 import { useSetState } from 'ahooks';
 import { Button, Divider, Form, message, Modal, Select } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useContext } from 'react';
 import { DetailChannelDrawer, FromChannelDrawer } from './Channel';
 import { getPolicyColumns } from './columns';
 import styles from './index.less';
 import { EPolicyFormMode, TPolicyForm } from './interface';
+import ProjectContext from '@/page/Project/ProjectContext';
+import { isProjectArchived } from '@/page/Project/helper';
 
 const Policy: React.FC<{
   projectId: number;
@@ -53,7 +55,8 @@ const Policy: React.FC<{
     mode: EPolicyFormMode.SINGLE,
     policies: [],
   });
-
+  const { project } = useContext(ProjectContext);
+  const projectArchived = isProjectArchived(project);
   const loadPolicies = async (args: ITableLoadOptions) => {
     const { eventName, channels } = argsRef.current?.filters ?? {};
     const results = await getPoliciesList(projectId, {});
@@ -195,6 +198,7 @@ const Policy: React.FC<{
     handleUpdatePolicies,
     handleSwitchPoliciesStatus,
     hanleOpenChannelDetailDrawer,
+    hideColumns: projectArchived ? ['enabled', 'action'] : [],
   });
 
   const rowSelector: IRowSelecter<IPolicy> = {
@@ -283,7 +287,7 @@ const Policy: React.FC<{
           rowKey: 'policyMetadataId',
           pagination: pagination || false,
         }}
-        rowSelecter={rowSelector}
+        rowSelecter={projectArchived ? null : rowSelector}
       />
     </div>
   );

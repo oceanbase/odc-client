@@ -23,24 +23,33 @@ import styles from './index.less';
 import classNames from 'classnames';
 import { ResizeTitle } from '@/component/CommonTable/component/ResizeTitle';
 import { DEFAULT_COLUMN_WIDTH } from '@/component/CommonTable/const';
+import type { ColumnGroupType, ColumnType } from 'antd/es/table';
+
+type IColumnsType<RecordType = unknown> = ((
+  | ColumnGroupType<RecordType>
+  | ColumnType<RecordType>
+) & { hide?: boolean })[];
 
 interface IProps<T> extends TableProps<T> {
   isExpandedRowRender?: boolean;
   loadData: (page: TablePaginationConfig, filters: Record<string, FilterValue>) => void;
   // 是否启用 列宽可拖拽
   enableResize?: boolean;
+  columns: IColumnsType<T>;
 }
 
 export default function MiniTable<T extends object>({
   loadData,
   isExpandedRowRender = false,
   enableResize = false,
+  columns: PropColumns = [],
   ...restProps
 }: IProps<T>) {
   const [pageSize, setPageSize] = useState(0);
   const [columnWidthMap, setColumnWidthMap] = useState(null);
 
   const domRef = useRef<HTMLDivElement>();
+  const columns = PropColumns.filter((item) => !item.hide);
 
   useLayoutEffect(() => {
     if (domRef.current) {
@@ -114,7 +123,7 @@ export default function MiniTable<T extends object>({
         }
         columns={
           enableResize
-            ? restProps?.columns?.map((oriColumn) => {
+            ? columns?.map((oriColumn) => {
                 return {
                   ...oriColumn,
                   width:
@@ -127,7 +136,7 @@ export default function MiniTable<T extends object>({
                     } as React.HTMLAttributes<HTMLElement>),
                 };
               })
-            : restProps?.columns || []
+            : columns || []
         }
       />
     </div>
