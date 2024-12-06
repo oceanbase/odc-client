@@ -55,6 +55,7 @@ import Header from './Header';
 import styles from './index.less';
 import ParamContext, { IFilterParams } from './ParamContext';
 import StatusName from './StatusName';
+import { isProjectArchived } from '@/page/Project/helper';
 interface IProps {
   id: string;
   modalStore?: ModalStore;
@@ -63,7 +64,7 @@ interface IProps {
 const Database: React.FC<IProps> = ({ id, modalStore }) => {
   const statusMap = datasourceStatus.statusMap;
   const { project } = useContext(ProjectContext);
-
+  const projectArchived = isProjectArchived(project);
   const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState('');
   const [filterParams, setFilterParams] = useState<IFilterParams>({
@@ -150,14 +151,18 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
       default:
     }
   };
-  const renderNoPermissionDBWithTip = (name: React.ReactNode) => {
+  const renderNoPermissionDBWithTip = (name: React.ReactNode, showTip = true) => {
     return (
       <span className={styles.disable}>
         <Tooltip
-          title={formatMessage({
-            id: 'src.page.Project.Database.B4A5A6AC',
-            defaultMessage: '当前账号的项目成员角色没有该库的操作权限，请先申请库权限',
-          })}
+          title={
+            showTip
+              ? formatMessage({
+                  id: 'src.page.Project.Database.B4A5A6AC',
+                  defaultMessage: '当前账号的项目成员角色没有该库的操作权限，请先申请库权限',
+                })
+              : ''
+          }
         >
           {name}
         </Tooltip>
@@ -201,21 +206,48 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
     );
   }, [selectedRowKeys, data]);
 
+  const rowSelection = {
+    selectedRowKeys: selectedRowKeys,
+    preserveSelectedRowKeys: true,
+    onChange: (selectedRowKeys: React.Key[], selectedRows: IDatabase[]) => {
+      setSelectedRowKeys(selectedRowKeys);
+    },
+    getCheckboxProps: (record: IDatabase) => {
+      const hasChangeAuth = record.authorizedPermissionTypes?.includes(
+        DatabasePermissionType.CHANGE,
+      );
+      const hasQueryAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.QUERY);
+      const disabled =
+        !hasChangeAuth && !hasQueryAuth && !record?.authorizedPermissionTypes?.length;
+      const status = statusMap.get(record?.dataSource?.id) || record?.dataSource?.status;
+      const config = getDataSourceModeConfig(record?.dataSource?.type);
+
+      return {
+        disabled:
+          disabled ||
+          !record.existed ||
+          ![IConnectionStatus.ACTIVE, IConnectionStatus.TESTING]?.includes(status?.status) ||
+          !config?.features?.task?.includes(TaskType.MULTIPLE_ASYNC),
+        name: record.name,
+      };
+    },
+  };
+
+  const tablrCardTitle = (
+    <AddDataBaseButton
+      orderedDatabaseIds={selectedRowKeys?.length ? [selectedRowKeys as number[]] : [[undefined]]}
+      disabledMultiDBChanges={disabledMultiDBChanges}
+      clearSelectedRowKeys={clearSelectedRowKeys}
+      modalStore={modalStore}
+      onSuccess={() => reload()}
+      projectId={parseInt(id)}
+      onOpenLogicialDatabase={() => setOpenLogicialDatabase(true)}
+    />
+  );
+
   return (
     <TableCard
-      title={
-        <AddDataBaseButton
-          orderedDatabaseIds={
-            selectedRowKeys?.length ? [selectedRowKeys as number[]] : [[undefined]]
-          }
-          disabledMultiDBChanges={disabledMultiDBChanges}
-          clearSelectedRowKeys={clearSelectedRowKeys}
-          modalStore={modalStore}
-          onSuccess={() => reload()}
-          projectId={parseInt(id)}
-          onOpenLogicialDatabase={() => setOpenLogicialDatabase(true)}
-        />
-      }
+      title={projectArchived ? null : tablrCardTitle}
       extra={
         <ParamContext.Provider
           value={{
@@ -238,34 +270,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
     >
       <MiniTable<IDatabase>
         rowKey={'id'}
-        rowSelection={{
-          selectedRowKeys: selectedRowKeys,
-          preserveSelectedRowKeys: true,
-          onChange: (selectedRowKeys: React.Key[], selectedRows: IDatabase[]) => {
-            setSelectedRowKeys(selectedRowKeys);
-          },
-          getCheckboxProps: (record: IDatabase) => {
-            const hasChangeAuth = record.authorizedPermissionTypes?.includes(
-              DatabasePermissionType.CHANGE,
-            );
-            const hasQueryAuth = record.authorizedPermissionTypes?.includes(
-              DatabasePermissionType.QUERY,
-            );
-            const disabled =
-              !hasChangeAuth && !hasQueryAuth && !record?.authorizedPermissionTypes?.length;
-            const status = statusMap.get(record?.dataSource?.id) || record?.dataSource?.status;
-            const config = getDataSourceModeConfig(record?.dataSource?.type);
-
-            return {
-              disabled:
-                disabled ||
-                !record.existed ||
-                ![IConnectionStatus.ACTIVE, IConnectionStatus.TESTING]?.includes(status?.status) ||
-                !config?.features?.task?.includes(TaskType.MULTIPLE_ASYNC),
-              name: record.name,
-            };
-          },
-        }}
+        rowSelection={projectArchived ? null : rowSelection}
         scroll={{
           x: 1150,
         }}
@@ -289,7 +294,8 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                 DatabasePermissionType.QUERY,
               );
               const disabled =
-                !hasChangeAuth && !hasQueryAuth && !record?.authorizedPermissionTypes?.length;
+                (!hasChangeAuth && !hasQueryAuth && !record?.authorizedPermissionTypes?.length) ||
+                projectArchived;
               const style = getDataSourceStyleByConnectType(record?.dataSource?.type);
               if (!record.existed) {
                 return disabled ? (
@@ -301,7 +307,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                       defaultMessage: '当前数据库不存在',
                     })} /*当前数据库不存在*/
                   >
-                    {renderNoPermissionDBWithTip(name)}
+                    {renderNoPermissionDBWithTip(name, !projectArchived)}
                   </HelpDoc>
                 ) : (
                   <HelpDoc
@@ -317,7 +323,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                 );
               }
               return disabled ? (
-                renderNoPermissionDBWithTip(name)
+                renderNoPermissionDBWithTip(name, !projectArchived)
               ) : (
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   {record?.type === 'LOGICAL' && <LogicIcon />}
@@ -477,6 +483,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             dataIndex: 'actions',
             key: 'actions',
             width: 210,
+            hide: projectArchived,
             render(_, record) {
               const config = getDataSourceModeConfig(record?.dataSource?.type);
               const notSupportToResourceTree = !config?.features?.resourceTree;

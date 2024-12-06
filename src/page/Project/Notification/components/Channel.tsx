@@ -59,8 +59,10 @@ import {
 } from 'antd';
 import { useForm, useWatch } from 'antd/lib/form/Form';
 import classNames from 'classnames';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useContext } from 'react';
 import { getChannelColumns } from './columns';
+import ProjectContext from '@/page/Project/ProjectContext';
+import { isProjectArchived } from '@/page/Project/helper';
 import styles from './index.less';
 import {
   EChannelTypeMap,
@@ -80,6 +82,9 @@ const Channel: React.FC<{
   const [formDrawerOpen, setFormDrawerOpen] = useState<boolean>(false);
   const [channelsList, setChannelsList] =
     useState<IResponseData<Omit<IChannel<EChannelType>, 'channelConfig'>>>();
+  const { project } = useContext(ProjectContext);
+  const projectArchived = isProjectArchived(project);
+
   const loadChannels = async (args: ITableLoadOptions) => {
     const { filters, sorter, pagination, pageSize } = args ?? {};
     const { name, type } = filters ?? {};
@@ -168,6 +173,7 @@ const Channel: React.FC<{
     handleDelete,
     handleChannelEdit,
     hanleOpenChannelDetailDrawer,
+    hideColumns: projectArchived ? ['action'] : [],
   });
   return (
     <div className={styles.common}>
@@ -194,7 +200,10 @@ const Channel: React.FC<{
         showToolbar={true}
         onLoad={loadChannels}
         onChange={loadChannels}
-        operationContent={{ options: operationOptions }}
+        operationContent={{
+          options: projectArchived ? [] : operationOptions,
+          isNeedOccupyElement: projectArchived,
+        }}
         tableProps={{
           columns,
           dataSource: channelsList?.contents || [],

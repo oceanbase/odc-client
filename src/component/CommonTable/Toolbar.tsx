@@ -62,6 +62,7 @@ export const Toolbar: React.FC<IProps> = (props) => {
   } = props;
   return (
     <Space className={classNames(styles.toolBar, 'odc-commontable-toolbar')}>
+      {operationContent?.isNeedOccupyElement && <div></div>}
       {operationContent && <OperationContent {...operationContent} onClick={onOperationClick} />}
       {titleContent && <TitleContent {...titleContent} onTabChange={onTabChange} />}
       <Space split={isSplit ? '|' : null} size={16}>

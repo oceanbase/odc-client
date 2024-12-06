@@ -16,29 +16,45 @@
 
 import { IProject, ProjectRole } from '@/d.ts/project';
 import Icon from '@ant-design/icons';
-import { Space } from 'antd';
+import { Checkbox } from 'antd';
 import classNames from 'classnames';
 import React, { forwardRef } from 'react';
 import styles from './index.less';
-
+import type { SelectProject } from '@/page/Project/components/DeleteProjectModal.tsx';
 import { ReactComponent as ProjectSvg } from '@/svgr/project_space.svg';
 import { ReactComponent as UserSvg } from '@/svgr/user.svg';
 
 interface IProps {
   data: IProject;
   onClick: (p: IProject) => void;
+  action: React.ReactElement;
+  onSelectChange?: (isSelected: boolean, params: any) => void;
+  selectProjectList: SelectProject[];
 }
 
 export default forwardRef(function ListItem(
-  { data, onClick }: IProps,
+  { data, onClick, action, onSelectChange, selectProjectList }: IProps,
   ref: React.Ref<HTMLDivElement>,
 ) {
+  const onChange = (e) => {
+    onSelectChange(e.target.checked, {
+      id: data.id,
+      name: data.name,
+    });
+  };
+
   return (
-    <div
-      ref={ref}
-      className={classNames(styles.item, { [styles.itemDisable]: data?.archived })}
-      onClick={onClick.bind(this, data)}
-    >
+    <div ref={ref} className={classNames(styles.item)} onClick={onClick.bind(this, data)}>
+      {action && (
+        <div className={classNames(styles.block)} style={{ marginLeft: '8px' }}>
+          <Checkbox
+            onChange={onChange}
+            onClick={(e) => e.stopPropagation()}
+            checked={selectProjectList.some((item) => item.id === data.id)}
+          ></Checkbox>
+        </div>
+      )}
+
       <div className={classNames(styles.block, styles.status)}>
         <Icon component={ProjectSvg} style={{ color: 'var(--icon-blue-color)', fontSize: 16 }} />
       </div>
@@ -51,6 +67,7 @@ export default forwardRef(function ListItem(
           ?.map((a) => a.name)
           ?.join(', ') || '-'}
       </div>
+      {action && <div className={classNames(styles.block, styles.action)}>{action}</div>}
     </div>
   );
 });

@@ -1,11 +1,17 @@
 import { formatMessage } from '@/util/intl';
 import { Result } from 'antd';
 import styles from './index.less';
+import { ProjectTabType } from '@/d.ts/project';
 
-export default function ProjectEmpty({ type, renderActionButton }) {
+interface ProjectEmptyProps {
+  type: ProjectTabType;
+  renderActionButton: () => JSX.Element;
+}
+
+const ProjectEmpty: React.FC<ProjectEmptyProps> = ({ type, renderActionButton }) => {
   const renderTitle = (type) => {
     switch (type) {
-      case 'all':
+      case ProjectTabType.ALL:
         return (
           <div className={styles.title}>
             {formatMessage({
@@ -14,7 +20,7 @@ export default function ProjectEmpty({ type, renderActionButton }) {
             })}
           </div>
         );
-      case 'deleted':
+      case ProjectTabType.ARCHIVED:
         return (
           <div className={styles.title}>
             {formatMessage({
@@ -30,7 +36,7 @@ export default function ProjectEmpty({ type, renderActionButton }) {
 
   const renderSubTitle = (type) => {
     switch (type) {
-      case 'all':
+      case ProjectTabType.ALL:
         return (
           <div className={styles.subTitle}>
             <div>
@@ -48,7 +54,7 @@ export default function ProjectEmpty({ type, renderActionButton }) {
           </div>
         );
 
-      case 'deleted':
+      case ProjectTabType.ARCHIVED:
         return (
           <div className={styles.subTitle}>
             <div>
@@ -79,7 +85,9 @@ export default function ProjectEmpty({ type, renderActionButton }) {
         }
       />
 
-      {type === 'all' && renderActionButton()}
+      {type === ProjectTabType.ALL && renderActionButton()}
     </>
   );
-}
+};
+
+export default ProjectEmpty;

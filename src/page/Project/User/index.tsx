@@ -32,6 +32,7 @@ import ProjectContext from '../ProjectContext';
 import AddUserModal from './AddUserModal';
 import ManageModal from './ManageModal';
 import UpdateUserModal from './UpdateUserModal';
+import { isProjectArchived } from '@/page/Project/helper';
 export const projectRoleTextMap = {
   [ProjectRole.OWNER]: formatMessage({
     id: 'odc.User.AddUserModal.Administrator',
@@ -58,6 +59,7 @@ interface IProps {
 const User: React.FC<IProps> = ({ id, userStore }) => {
   const context = useContext(ProjectContext);
   const { project } = context;
+  const projectArchived = isProjectArchived(project);
   const isOwner = project?.currentUserResourceRoles?.some((item) => item === ProjectRole.OWNER);
   const isDBA = project?.currentUserResourceRoles?.some((item) => item === ProjectRole.DBA);
   const [addUserModalVisiable, setAddUserModalVisiable] = useState(false);
@@ -121,30 +123,31 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
     setManageModalVisiable(false);
   }
 
+  const TableCardTitle = (
+    <TooltipAction
+      title={
+        isOwner
+          ? ''
+          : formatMessage({
+              id: 'src.page.Project.User.0C0586E8',
+              defaultMessage: '暂无权限',
+            })
+      }
+    >
+      <Button type="primary" onClick={() => setAddUserModalVisiable(true)} disabled={!isOwner}>
+        {
+          formatMessage({
+            id: 'odc.Project.User.AddMembers',
+            defaultMessage: '添加成员',
+          }) /*添加成员*/
+        }
+      </Button>
+    </TooltipAction>
+  );
+
   return (
     <TableCard
-      title={
-        <TooltipAction
-          title={
-            isOwner
-              ? ''
-              : formatMessage({ id: 'src.page.Project.User.0C0586E8', defaultMessage: '暂无权限' })
-          }
-        >
-          <Button
-            type="primary"
-            onClick={() => setAddUserModalVisiable(true)}
-            disabled={!isOwner}
-          >
-            {
-              formatMessage({
-                id: 'odc.Project.User.AddMembers',
-                defaultMessage: '添加成员',
-              }) /*添加成员*/
-            }
-          </Button>
-        </TooltipAction>
-      }
+      title={projectArchived ? null : TableCardTitle}
       extra={
         <FilterIcon onClick={context.reloadProject}>
           <Reload />
@@ -209,8 +212,9 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
             //操作
             dataIndex: 'name',
             width: 135,
+            hide: projectArchived,
             render(_, record) {
-              const disabled = !isOwner
+              const disabled = !isOwner;
               const isMe = userStore?.user?.id === record.id;
               return (
                 <Action.Group size={3}>

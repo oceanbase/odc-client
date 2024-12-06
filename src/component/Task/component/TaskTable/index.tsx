@@ -50,11 +50,13 @@ import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import type { FixedType } from 'rc-table/lib/interface';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { getTaskGroupLabels, getTaskLabelByType, isCycleTaskPage } from '../../helper';
 import styles from '../../index.less';
 import TaskTools from '../ActionBar';
 import { listProjects } from '@/common/network/project';
+import ProjectContext from '@/page/Project/ProjectContext';
+import { isProjectArchived } from '@/page/Project/helper';
 import { useRequest } from 'ahooks';
 const { RangePicker } = DatePicker;
 const { Text, Link } = Typography;
@@ -226,7 +228,8 @@ const TaskTable: React.FC<IProps> = inject(
     const [hoverInNewTaskMenuBtn, setHoverInNewTaskMenuBtn] = useState(false);
     const [hoverInNewTaskMenu, setHoverInNewTaskMenu] = useState(false);
     const [listParams, setListParams] = useState(null);
-
+    const { project } = useContext(ProjectContext) || {};
+    const projectArchived = isProjectArchived(project);
     const loadParams = useRef(null);
     const { activePageKey } = pageStore;
     const columns = initColumns(listParams);
@@ -567,6 +570,66 @@ const TaskTable: React.FC<IProps> = inject(
       );
     };
 
+    const getOperationContentOption = () => {
+      if (projectArchived) return [];
+      if (isAll) {
+        return [
+          {
+            type: IOperationOptionType.custom,
+            render: () => (
+              <Popover
+                content={newTaskMenu}
+                placement="bottomLeft"
+                open={hoverInNewTaskMenuBtn || hoverInNewTaskMenu}
+              >
+                <Button
+                  type="primary"
+                  onMouseMove={() => setHoverInNewTaskMenu(true)}
+                  onMouseLeave={() => {
+                    setTimeout(() => {
+                      setHoverInNewTaskMenu(false);
+                    }, 500);
+                  }}
+                >
+                  {
+                    formatMessage({
+                      id: 'odc.component.TaskTable.NewWorkOrder',
+                      defaultMessage: '新建工单',
+                    }) /*新建工单*/
+                  }
+
+                  <DownOutlined />
+                </Button>
+              </Popover>
+            ),
+          },
+        ];
+      }
+      return [
+        {
+          type: IOperationOptionType.button,
+          content: [
+            TaskPageType.APPLY_PROJECT_PERMISSION,
+            TaskPageType.APPLY_DATABASE_PERMISSION,
+            TaskPageType.APPLY_TABLE_PERMISSION,
+          ].includes(taskTabType)
+            ? activeTaskLabel
+            : formatMessage(
+                {
+                  id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
+                  defaultMessage: '新建{activeTaskLabel}',
+                },
+                { activeTaskLabel },
+              ),
+          //`新建${activeTaskLabel}`
+          isPrimary: true,
+          onClick: () => {
+            props.onMenuClick(taskTabType);
+          },
+        },
+      ];
+    };
+
     return (
       <CommonTable
         ref={tableRef}
@@ -574,59 +637,8 @@ const TaskTable: React.FC<IProps> = inject(
         titleContent={null}
         enableResize
         operationContent={{
-          options: [
-            isAll
-              ? {
-                  type: IOperationOptionType.custom,
-                  render: () => (
-                    <Popover
-                      content={newTaskMenu}
-                      placement="bottomLeft"
-                      open={hoverInNewTaskMenuBtn || hoverInNewTaskMenu}
-                    >
-                      <Button
-                        type="primary"
-                        onMouseMove={() => setHoverInNewTaskMenu(true)}
-                        onMouseLeave={() => {
-                          setTimeout(() => {
-                            setHoverInNewTaskMenu(false);
-                          }, 500);
-                        }}
-                      >
-                        {
-                          formatMessage({
-                            id: 'odc.component.TaskTable.NewWorkOrder',
-                            defaultMessage: '新建工单',
-                          }) /*新建工单*/
-                        }
-
-                        <DownOutlined />
-                      </Button>
-                    </Popover>
-                  ),
-                }
-              : {
-                  type: IOperationOptionType.button,
-                  content: [
-                    TaskPageType.APPLY_PROJECT_PERMISSION,
-                    TaskPageType.APPLY_DATABASE_PERMISSION,
-                    TaskPageType.APPLY_TABLE_PERMISSION,
-                  ].includes(taskTabType)
-                    ? activeTaskLabel
-                    : formatMessage(
-                        {
-                          id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
-                          defaultMessage: '新建{activeTaskLabel}',
-                        },
-                        { activeTaskLabel },
-                      ),
-                  //`新建${activeTaskLabel}`
-                  isPrimary: true,
-                  onClick: () => {
-                    props.onMenuClick(taskTabType);
-                  },
-                },
-          ],
+          options: getOperationContentOption(),
+          isNeedOccupyElement: projectArchived,
         }}
         filterContent={{
           enabledSearch: false,

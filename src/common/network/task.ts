@@ -33,6 +33,7 @@ import {
   IPartitionPlanTable,
   IPartitionTablePreviewConfig,
   IResponseData,
+  UnfinishedTickets,
   ISubTaskRecords,
   ITaskResult,
   Operation,
@@ -153,6 +154,14 @@ export async function getTaskList<T>(params: {
     params,
   });
   return res?.data;
+}
+
+/**
+ * 查询未完成的任务列表
+ */
+export async function getUnfinishedTickets(projectId: number): Promise<UnfinishedTickets> {
+  const res = await request.get(`/api/v2/collaboration/projects/${projectId}/unfinishedTickets`);
+  return res.data;
 }
 
 /**

@@ -3941,7 +3941,7 @@ export interface AgainTaskRecord {
   id: string | number;
 }
 
-// 无锁结构变更任务进度状态
+/** 无锁结构变更任务进度状态 */
 export enum ProgressOfLocklessStructureChangeTaskStatusMap {
   CREATE_GHOST_TABLES = 'CREATE_GHOST_TABLES', //'创建影子表'
   CREATE_DATA_TASK = 'CREATE_DATA_TASK', //'创建数据迁移任务'
@@ -3951,3 +3951,30 @@ export enum ProgressOfLocklessStructureChangeTaskStatusMap {
   SWAP_TABLE = 'SWAP_TABLE', // '切换中'
   CLEAR_RESOURCE = 'CLEAR_RESOURCE', // '释放迁移任务资源'
 }
+
+interface UnfinishedTaskType {
+  approvable: boolean;
+  approveInstanceId: number;
+  candidateApprovers: {
+    id: number;
+    name: string;
+    accountName: string;
+  }[];
+  createTime: number;
+  creator: {
+    id: number;
+    name: string;
+    accountName: string;
+    roleNames: string[];
+  };
+  description: string;
+  id: number;
+  project: IProject;
+  status: TaskStatus;
+  type: TaskType;
+}
+
+export type UnfinishedTickets = {
+  unfinishedFlowInstances: UnfinishedTaskType[];
+  unfinishedSchedules: UnfinishedTaskType[];
+};
