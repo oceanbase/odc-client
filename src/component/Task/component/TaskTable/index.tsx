@@ -141,10 +141,7 @@ export const TaskTypeMap = {
     id: 'src.component.Task.component.TaskTable.E1E161BA',
     defaultMessage: '申请库权限',
   }), //'申请库权限'
-  [TaskType.APPLY_TABLE_PERMISSION]: formatMessage({
-    id: 'src.component.Task.component.TaskTable.3236150E',
-    defaultMessage: '申请表权限',
-  }),
+  [TaskType.APPLY_TABLE_PERMISSION]: '申请表/视图权限',
   [TaskType.STRUCTURE_COMPARISON]: formatMessage({
     id: 'src.component.Task.component.TaskTable.80E1D16A',
     defaultMessage: '结构比对',

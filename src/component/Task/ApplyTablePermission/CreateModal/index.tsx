@@ -218,10 +218,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     if (hasEdit) {
       Modal.confirm({
         zIndex: 1003,
-        title: formatMessage({
-          id: 'src.component.Task.ApplyTablePermission.CreateModal.11B637AA',
-          defaultMessage: '确认取消申请表权限吗？',
-        }),
+        title: '确认取消申请表/视图权限吗？',
         centered: true,
         onOk: () => {
           modalStore.changeApplyTablePermissionModal(false);
@@ -299,9 +296,9 @@ const CreateModal: React.FC<IProps> = (props) => {
     // 目前一个工单只会关联一个库
     const databaseId = tables?.[0]?.databaseId;
     if (projectId && databaseId) {
-      tableSelecterRef.current?.loadTables(databaseId).then(() => {
-        tableSelecterRef.current?.expandTable(databaseId);
-      });
+      await tableSelecterRef.current?.loadDatabases();
+      await tableSelecterRef.current?.loadTables(databaseId);
+      tableSelecterRef.current?.expandTable(databaseId);
     }
     form.setFieldsValue(formData);
   }, [applyTablePermissionData, form]);
@@ -328,8 +325,10 @@ const CreateModal: React.FC<IProps> = (props) => {
       };
       if (projectId && databaseId) {
         // 默认获取要申请权限的库下面的表，并且展开
-        tableSelecterRef.current?.loadTables(databaseId).then(() => {
-          tableSelecterRef.current?.expandTable(databaseId);
+        tableSelecterRef.current?.loadDatabases()?.then(() => {
+          tableSelecterRef.current?.loadTables(databaseId).then(() => {
+            tableSelecterRef.current?.expandTable(databaseId);
+          });
         });
       }
       // 默认选中要申请的表、权限类型
@@ -374,10 +373,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       destroyOnClose
       className={styles.createModal}
       width={816}
-      title={formatMessage({
-        id: 'src.component.Task.ApplyTablePermission.CreateModal.7DDD3557',
-        defaultMessage: '申请表权限',
-      })}
+      title={`申请表/视图权限`}
       footer={
         <Space>
           <Button
@@ -444,10 +440,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         </Form.Item>
         <Form.Item
           name="tables"
-          label={formatMessage({
-            id: 'src.component.Task.ApplyTablePermission.CreateModal.8A62AFC4',
-            defaultMessage: '表',
-          })}
+          label={`表/视图`}
           required
           rules={[
             {
