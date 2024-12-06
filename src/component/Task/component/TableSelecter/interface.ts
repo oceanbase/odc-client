@@ -8,20 +8,20 @@ export interface tableTreeEventDataNode extends EventDataNode<DataNode> {
 }
 
 export interface TableSelecterRef {
+  loadDatabases: ()=> Promise<void>
   loadTables: (dbId: number) => Promise<{
-    tables: {
-      name: string;
-      id: number;
-      databaseId: number;
-    }[];
-    externalTables: {
-      name: string;
-      id: number;
-      databaseId: number;
-    }[];
+    tables: LoadTableItems[];
+    externalTables: LoadTableItems[];
+    views: LoadTableItems[];
   }>;
   expandTable: (dbId: number) => void;
 }
+
+export type LoadTableItems = {
+  name: string;
+  id: number;
+  databaseId: number;
+};
 
 export type TableItemInDB = {
   name: string;
@@ -38,4 +38,5 @@ export interface IDataBaseWithTable extends IDatabase {
   tableList: TableItemInDB[];
   hasGetTableList?: boolean;
   externalTablesList: TableItemInDB[];
+  viewList: TableItemInDB[];
 }

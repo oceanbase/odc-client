@@ -45,10 +45,7 @@ const items: MenuItem[] = [
     key: EManagePermissionType.DATABASE,
   },
   {
-    label: formatMessage({
-      id: 'src.page.Project.User.ManageModal.81C0C3D0',
-      defaultMessage: '表权限',
-    }),
+    label: `表/视图权限`,
     key: EManagePermissionType.TABLE,
   },
 ];
@@ -92,7 +89,7 @@ const ManageModal: React.FC<IProps> = (props) => {
             items,
             selectedKey: [key],
             handleItemOnClick,
-            siderStyle: { flex: '0 0 80px' },
+            siderStyle: { flex: '0 0 100px' },
             contentStyle: { display: 'flex', flexDirection: 'column' },
           }}
           content={<Component key={key} projectId={projectId} userId={userId} isOwner={isOwner} />}
