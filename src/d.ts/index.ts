@@ -915,6 +915,9 @@ export enum IConnectionTestErrorType {
   CONNECT_TYPE_NOT_MATCH = 'ConnectionDatabaseTypeMismatched',
   INIT_SCRIPT_FAILED = 'ConnectionInitScriptFailed',
   OB_WEAK_READ_CONSISTENCY_REQUIRED = 'ObWeakReadConsistencyRequired',
+  ACCESS_DENIED = 'AccessDenied',
+  INVALID_ACCESSKEY_ID = 'InvalidAccessKeyId',
+  SIGNATURE_DOES_NOT_MATCH = 'SignatureDoesNotMatch',
 }
 
 export interface IConnectionProperty {
@@ -3378,6 +3381,16 @@ export enum ConnectType {
   DORIS = 'DORIS',
   PG = 'POSTGRESQL',
   ORACLE = 'ORACLE',
+  OSS = 'OSS',
+  COS = 'COS',
+  OBS = 'OBS',
+  S3A = 'S3A',
+}
+
+export enum DatasourceGroup {
+  OceanBaseDatabase = 'OceanBaseDatabase',
+  OtherDatabase = 'OtherDatabase',
+  FileSystem = 'FileSystem',
 }
 
 export enum DragInsertType {
@@ -3605,7 +3618,7 @@ export interface IPartitionPlanTable {
       ordinalPosition: unknown;
       type: string;
       valuesList: unknown;
-      parentPartitionDefinition?: IPartitionPlanTable['partition']['partitionDefinitions']
+      parentPartitionDefinition?: IPartitionPlanTable['partition']['partitionDefinitions'];
     }[];
     partitionKeyTypes: {
       name: string;

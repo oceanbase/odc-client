@@ -21,6 +21,7 @@ import {
   SchemaComparingResult,
   SQLLintMode,
   SQLSessionMode,
+  DatasourceGroup,
 } from '@/d.ts';
 import { DBType, BooleanOptionType } from '@/d.ts/database';
 import { ColumnStoreType } from '@/d.ts/table';
@@ -103,6 +104,16 @@ export const ConnectTypeText = {
   [ConnectType.DORIS]: 'Doris',
   [ConnectType.ORACLE]: 'Oracle',
   [ConnectType.PG]: 'PostgreSQL',
+  [ConnectType.OSS]: '阿里云 OSS',
+  [ConnectType.COS]: '腾讯云 COS',
+  [ConnectType.OBS]: '华为云 OBS',
+  [ConnectType.S3A]: 'AWS S3',
+};
+
+export const GruopTypeText = {
+  [DatasourceGroup.OceanBaseDatabase]: 'OceanBase 数据库',
+  [DatasourceGroup.OtherDatabase]: '其他数据库',
+  [DatasourceGroup.FileSystem]: '对象存储',
 };
 
 export const DBTypeText = {

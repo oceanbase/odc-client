@@ -42,7 +42,7 @@ interface IProps {
   };
   databaseType?: string;
   editorValue?: string;
-  defaultEditorValue?: string
+  defaultEditorValue?: string;
 }
 interface IState {}
 interface ToolBarCommonAction<T> {
@@ -110,7 +110,7 @@ export default class EditorToolBar extends Component<IProps, IState> {
     },
   ) {
     const { ctx, databaseType, editorValue, defaultEditorValue } = this.props;
-    const hasChangeEditorValue = editorValue !== defaultEditorValue
+    const hasChangeEditorValue = editorValue !== defaultEditorValue;
     let buttonsArr = [];
 
     if (!actionGroups) {

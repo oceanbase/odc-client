@@ -567,6 +567,9 @@ const CreateModal: React.FC<IProps> = (props) => {
               })}
               /*源端数据库*/ projectId={projectId}
               onChange={handleDBChange}
+              options={{
+                hideFileSystem: true,
+              }}
             />
 
             <DatabaseSelect

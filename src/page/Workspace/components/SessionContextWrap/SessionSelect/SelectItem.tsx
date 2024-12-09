@@ -43,6 +43,9 @@ interface IProps {
   datasourceMode?: boolean;
   projectMode?: boolean;
   onChange?: (value: number) => void;
+  options?: {
+    hideFileSystem?: boolean;
+  };
 }
 
 const SelectItem: React.FC<IProps> = ({
@@ -60,6 +63,7 @@ const SelectItem: React.FC<IProps> = ({
   isLogicalDatabase = false,
   datasourceMode = false,
   projectMode = isLogicalDatabase,
+  options,
 }) => {
   const [from, setFrom] = useState<'project' | 'datasource'>(
     datasourceMode || projectMode ? (datasourceMode ? 'datasource' : 'project') : 'datasource',
@@ -178,6 +182,7 @@ const SelectItem: React.FC<IProps> = ({
           filters={filters}
           width={width || DEFALT_WIDTH}
           taskType={taskType}
+          options={options}
         >
           <Select
             disabled={disabled}

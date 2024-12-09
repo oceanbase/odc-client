@@ -408,7 +408,7 @@ const WorkSpaceExecuteSQLModal: React.FC<{
     onSave,
     status = null,
     lintResultSet = null,
-    unauthorizedDBResources
+    unauthorizedDBResources,
   } = workSpaceExecuteSQLModalProps;
   return (
     <ExecuteSQLModal

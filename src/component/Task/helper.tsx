@@ -74,6 +74,9 @@ export const isCycleTaskPage = (type: TaskPageType) => {
   ].includes(type);
 };
 
+export const isSupportFileSystemTask = (type: TaskType) => {
+  return [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type);
+};
 export const isSupportChangeDetail = (type: TaskType) => {
   return [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type);
 };

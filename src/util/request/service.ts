@@ -139,6 +139,7 @@ service.interceptors.response.use(
     const { params } = config || {};
     const { responseURL: url } = request || {};
     const json = cloneDeep(data);
+
     if (json?.error) {
       json.errCode = json?.error?.code || json?.errCode;
       json.errMsg = json?.error?.message || json?.errMsg;

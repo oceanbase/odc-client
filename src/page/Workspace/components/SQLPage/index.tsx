@@ -361,7 +361,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
     const selectedSQL = this.editor.getSelectionContent();
     const sqlToExecute = selectedSQL || params.scriptText;
-    const range = await utils.getCurrentSelectRange(this.editor);   
+    const range = await utils.getCurrentSelectRange(this.editor);
     const result = await this.executeSQL(
       sqlToExecute,
       false,

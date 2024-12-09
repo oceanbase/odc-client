@@ -19,7 +19,7 @@ import { listDatabases } from '@/common/network/database';
 import ConnectionPopover from '@/component/ConnectionPopover';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
-import { hasPermission, TaskTypeMap } from '@/component/Task/helper';
+import { hasPermission, TaskTypeMap, isSupportFileSystemTask } from '@/component/Task/helper';
 import { EnvColorMap } from '@/constant';
 import { ConnectionMode, TaskType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
@@ -37,6 +37,7 @@ import { Badge, Input, Popover, Select, Space, Spin, Tooltip, Tree } from 'antd'
 import { DataNode } from 'antd/lib/tree';
 import { toInteger } from 'lodash';
 import { inject, observer } from 'mobx-react';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import SessionContext from '../../context';
 import { DEFALT_HEIGHT, DEFALT_WIDTH } from '../const';
@@ -96,6 +97,9 @@ interface IProps {
   projectId?: number;
   filters?: ISessionDropdownFiltersProps;
   dataSourceStatusStore?: DataSourceStatusStore;
+  options?: {
+    hideFileSystem?: boolean;
+  };
 }
 const SessionDropdown: React.FC<IProps> = function ({
   children,
@@ -105,6 +109,7 @@ const SessionDropdown: React.FC<IProps> = function ({
   dialectTypes,
   taskType,
   dataSourceStatusStore,
+  options,
 }) {
   const context = useContext(SessionContext);
   const { from, setFrom } = context;
@@ -299,7 +304,8 @@ const SessionDropdown: React.FC<IProps> = function ({
           ?.map((item) => {
             if (
               (datasourceId && toInteger(datasourceId) !== item.id) ||
-              (!datasourceId && item.temp)
+              (!datasourceId && item.temp) ||
+              (isConnectTypeBeFileSystemGroup(item.type) && options?.hideFileSystem)
             ) {
               return null;
             }
@@ -321,9 +327,12 @@ const SessionDropdown: React.FC<IProps> = function ({
                 ) {
                   return null;
                 }
-                const disabled = taskType
-                  ? !hasPermission(taskType, db.authorizedPermissionTypes)
-                  : !db.authorizedPermissionTypes?.length;
+                let disabled: boolean = false;
+                if (taskType) {
+                  disabled = !hasPermission(taskType, db.authorizedPermissionTypes);
+                } else {
+                  disabled = !db.authorizedPermissionTypes?.length;
+                }
                 return {
                   title: <DatabasesTitle taskType={taskType} db={db} disabled={disabled} />,
                   key: `db:${db.id}`,
@@ -362,11 +371,18 @@ const SessionDropdown: React.FC<IProps> = function ({
               !searchValue || item.name?.toLowerCase().includes(searchValue?.toLowerCase());
             const dbList = projects
               .get(item.id)
-              ?.databases?.filter((database) =>
-                hasDialectTypesFilter
-                  ? filters?.dialectTypes?.includes(database?.dataSource?.dialectType)
-                  : true,
-              )
+              ?.databases?.filter((database) => {
+                if (
+                  isConnectTypeBeFileSystemGroup(database.connectType) &&
+                  options?.hideFileSystem
+                ) {
+                  return false;
+                }
+                if (hasDialectTypesFilter) {
+                  return filters?.dialectTypes?.includes(database?.dataSource?.dialectType);
+                }
+                return true;
+              })
               ?.map((db) => {
                 if (
                   !isNameMatched &&
@@ -375,9 +391,12 @@ const SessionDropdown: React.FC<IProps> = function ({
                 ) {
                   return null;
                 }
-                const disabled = taskType
-                  ? !hasPermission(taskType, db.authorizedPermissionTypes)
-                  : !db.authorizedPermissionTypes?.length;
+                let disabled: boolean = false;
+                if (taskType) {
+                  disabled = !hasPermission(taskType, db.authorizedPermissionTypes);
+                } else {
+                  disabled = !db.authorizedPermissionTypes?.length;
+                }
                 return {
                   title: <DatabasesTitle taskType={taskType} db={db} disabled={disabled} />,
                   key: `db:${db.id}`,

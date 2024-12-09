@@ -116,7 +116,7 @@ interface IProcedureConfig {
 export interface IDataSourceModeConfig {
   priority?: number;
   connection: {
-    address: {
+    address?: {
       items: ('ip' | 'port' | 'cluster' | 'tenant' | 'sid' | 'catalogName')[];
     };
     account: boolean;
@@ -127,6 +127,8 @@ export interface IDataSourceModeConfig {
     jdbcDoc?: string;
     disableURLParse?: boolean;
     unionUser?: boolean;
+    cloudStorage?: boolean;
+    disableExtraConfig?: boolean;
   };
   features: {
     task: TaskType[];
@@ -148,13 +150,13 @@ export interface IDataSourceModeConfig {
       snapshot: boolean;
     };
   };
-  schema: {
+  schema?: {
     table: ICreateTableConfig;
     func: IFunctionConfig;
     proc: IProcedureConfig;
     innerSchema: string[];
   };
-  sql: {
+  sql?: {
     language: string;
     escapeChar: string;
     plParamMode?: 'text' | 'list';

@@ -8,7 +8,7 @@ export interface tableTreeEventDataNode extends EventDataNode<DataNode> {
 }
 
 export interface TableSelecterRef {
-  loadDatabases: ()=> Promise<void>
+  loadDatabases: () => Promise<void>;
   loadTables: (dbId: number) => Promise<{
     tables: LoadTableItems[];
     externalTables: LoadTableItems[];

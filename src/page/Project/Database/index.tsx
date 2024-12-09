@@ -51,6 +51,8 @@ import ProjectContext from '../ProjectContext';
 import AddDataBaseButton from './components/AddDataBaseButton';
 import ChangeOwnerModal from './components/ChangeOwnerModal';
 import { CreateLogicialDatabase, ManageLogicDatabase } from './components/LogicDatabase';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import AddObjectStorage from './components/AddObjectStorage';
 import Header from './Header';
 import styles from './index.less';
 import ParamContext, { IFilterParams } from './ParamContext';
@@ -80,6 +82,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
    */
   const [changeOwnerModalVisible, setChangeOwnerModalVisible] = useState(false);
   const [openLogicialDatabase, setOpenLogicialDatabase] = useState<boolean>(false);
+  const [openObjectStorage, setOpenObjectStorage] = useState<boolean>(false);
   const [openManageLogicDatabase, setOpenManageLogicDatabase] = useState<boolean>(false);
   const [database, setDatabase] = useState<IDatabase>(null);
   const params = useRef({
@@ -242,6 +245,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
       onSuccess={() => reload()}
       projectId={parseInt(id)}
       onOpenLogicialDatabase={() => setOpenLogicialDatabase(true)}
+      onOpenObjectStorage={() => setOpenObjectStorage(true)}
     />
   );
 
@@ -322,13 +326,18 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                   </HelpDoc>
                 );
               }
+
               return disabled ? (
                 renderNoPermissionDBWithTip(name, !projectArchived)
               ) : (
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   {record?.type === 'LOGICAL' && <LogicIcon />}
                   <Icon
-                    component={style?.icon?.component}
+                    component={
+                      isConnectTypeBeFileSystemGroup(record.connectType)
+                        ? style?.dbIcon?.component
+                        : style?.icon?.component
+                    }
                     style={{
                       color: style?.icon?.color,
                       fontSize: 16,
@@ -485,6 +494,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             width: 210,
             hide: projectArchived,
             render(_, record) {
+              if (isConnectTypeBeFileSystemGroup(record.connectType)) return null;
               const config = getDataSourceModeConfig(record?.dataSource?.type);
               const notSupportToResourceTree = !config?.features?.resourceTree;
               const disableTransfer =
@@ -894,6 +904,13 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           setDatabase(res?.data);
           setOpenManageLogicDatabase(true);
         }}
+      />
+
+      <AddObjectStorage
+        open={openObjectStorage}
+        setOpen={setOpenObjectStorage}
+        onSuccess={() => reload()}
+        projectId={parseInt(id)}
       />
 
       <ManageLogicDatabase

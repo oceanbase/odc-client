@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import { getAllConnectTypes, getDataSourceStyleByConnectType } from '@/common/datasource';
+import {
+  getAllConnectTypes,
+  getDataSourceStyleByConnectType,
+  getDataSourceGroupByConnectType,
+} from '@/common/datasource';
 import { batchImportPrivateConnection } from '@/common/network/connection';
 import BatchImportButton from '@/component/BatchImportButton';
-import { ConnectTypeText } from '@/constant/label';
-import { ConnectType, IConnectionType } from '@/d.ts';
+import { ConnectTypeText, GruopTypeText } from '@/constant/label';
+import { ConnectType, IConnectionType, DatasourceGroup } from '@/d.ts';
 import { IDatasource, IDataSourceType } from '@/d.ts/datasource';
 import { ReactComponent as ConIcon } from '@/svgr/icon_connection.svg';
 import { encryptConnection } from '@/util/connection';
@@ -34,9 +38,11 @@ import {
   Tooltip,
   Typography,
   UploadFile,
+  Divider,
 } from 'antd';
-import { ItemType } from 'antd/es/menu/hooks/useItems';
+import { MenuItemGroupType } from 'antd/es/menu/hooks/useItems';
 import { useMemo, useRef, useState } from 'react';
+import { ImportOutlined } from '@ant-design/icons';
 import NewDatasourceDrawer from '.';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
@@ -60,11 +66,17 @@ const NewDatasourceButton: React.FC<{
 }> = function NewDatasourceButton(props) {
   const [visible, setVisible] = useState(false);
   const [type, setType] = useState<ConnectType>(null);
-  const obConnectTypes = getAllConnectTypes(IDataSourceType.OceanBase);
-  const mysqlConnectTypes = getAllConnectTypes(IDataSourceType.MySQL);
-  const dorisConnectTypes = getAllConnectTypes(IDataSourceType.Doris);
-  const oracleConnectTypes = getAllConnectTypes(IDataSourceType.Oracle);
-  const pgConnectTypes = getAllConnectTypes(IDataSourceType.PG);
+  const connectTypes = [
+    ...(getAllConnectTypes(IDataSourceType.OceanBase) || []),
+    ...(getAllConnectTypes(IDataSourceType.MySQL) || []),
+    ...(getAllConnectTypes(IDataSourceType.Doris) || []),
+    ...(getAllConnectTypes(IDataSourceType.Oracle) || []),
+    ...(getAllConnectTypes(IDataSourceType.PG) || []),
+    ...(getAllConnectTypes(IDataSourceType.ALIYUNOSS) || []),
+    ...(getAllConnectTypes(IDataSourceType.QCLOUD) || []),
+    ...(getAllConnectTypes(IDataSourceType.HUAWEI) || []),
+    ...(getAllConnectTypes(IDataSourceType.AWSS3) || []),
+  ];
 
   const batchImportRef = useRef<{
     closeModal: () => void;
@@ -87,69 +99,19 @@ const NewDatasourceButton: React.FC<{
     }
   };
 
-  const results: ItemType[] = useMemo(() => {
-    let results: ItemType[] = obConnectTypes.map((item) => {
+  const results: MenuItemGroupType[] = useMemo(() => {
+    let results: MenuItemGroupType[] = Object.values(DatasourceGroup).map((item) => {
       return {
-        label: ConnectTypeText[item],
+        label: GruopTypeText[item],
         key: item,
-        icon: (
-          <Icon
-            component={getDataSourceStyleByConnectType(item)?.icon?.component}
-            style={{ color: getDataSourceStyleByConnectType(item)?.icon?.color, fontSize: '16px' }}
-          />
-        ),
+        type: 'group',
+        children: [],
       };
     });
-    if (mysqlConnectTypes?.length || oracleConnectTypes?.length) {
-      results.push({
-        type: 'divider',
-      });
-      if (mysqlConnectTypes?.length) {
-        results = results.concat(
-          mysqlConnectTypes.map((item) => {
-            return {
-              label: ConnectTypeText[item],
-              key: item,
-              icon: (
-                <Icon
-                  component={getDataSourceStyleByConnectType(item)?.icon?.component}
-                  style={{
-                    color: getDataSourceStyleByConnectType(item)?.icon?.color,
-                    fontSize: '16px',
-                  }}
-                />
-              ),
-            };
-          }),
-        );
-      }
-      if (oracleConnectTypes?.length) {
-        results = results.concat(
-          oracleConnectTypes.map((item) => {
-            return {
-              label: ConnectTypeText[item],
-              key: item,
-              icon: (
-                <Icon
-                  component={getDataSourceStyleByConnectType(item)?.icon?.component}
-                  style={{
-                    color: getDataSourceStyleByConnectType(item)?.icon?.color,
-                    fontSize: '16px',
-                  }}
-                />
-              ),
-            };
-          }),
-        );
-      }
-    }
-    if (dorisConnectTypes?.length) {
-      results.push({
-        type: 'divider',
-      });
-      results = results.concat(
-        dorisConnectTypes.map((item) => {
-          return {
+    results.forEach((at) => {
+      connectTypes.forEach((item) => {
+        if (getDataSourceGroupByConnectType(item) === at.key) {
+          at.children.push({
             label: ConnectTypeText[item],
             key: item,
             icon: (
@@ -161,45 +123,31 @@ const NewDatasourceButton: React.FC<{
                 }}
               />
             ),
-          };
-        }),
-      );
-    }
-    if (pgConnectTypes?.length) {
-      results.push({
-        type: 'divider',
+          });
+        }
       });
-      results = results.concat(
-        pgConnectTypes.map((item) => {
-          return {
-            label: ConnectTypeText[item],
-            key: item,
-            icon: (
-              <Icon
-                component={getDataSourceStyleByConnectType(item)?.icon?.component}
-                style={{
-                  color: getDataSourceStyleByConnectType(item)?.icon?.color,
-                  fontSize: '16px',
-                }}
-              />
-            ),
-          };
-        }),
-      );
-    }
-    if (!haveOCP()) {
-      results.push({
-        type: 'divider',
-      });
-      results = results.concat({
-        label: formatMessage({
-          id: 'odc.component.BatchImportButton.BatchImport',
-          defaultMessage: '批量导入',
-        }) /*批量导入*/,
-        key: 'batchImport',
-      });
-    }
+    });
     return results;
+  }, []);
+
+  const customDropdownContent = useMemo(() => {
+    if (haveOCP()) {
+      return null;
+    } else {
+      return (
+        <>
+          <Divider style={{ margin: 0 }} />
+          <Space style={{ padding: 8 }}>
+            <Button type="text" icon={<ImportOutlined />} onClick={batchImport}>
+              {formatMessage({
+                id: 'odc.component.BatchImportButton.BatchImport',
+                defaultMessage: '批量导入',
+              })}
+            </Button>
+          </Space>
+        </>
+      );
+    }
   }, []);
 
   function batchImport() {
@@ -228,20 +176,23 @@ const NewDatasourceButton: React.FC<{
     setType(key);
     setVisible(true);
   }
+
   return (
     <>
       <Dropdown
+        overlayClassName={styles['new-datasource-dropdown']}
         menu={{
           items: results,
           onClick(info) {
-            const key = info.key;
-            if (key === 'batchImport') {
-              batchImport();
-              return;
-            }
-            newDataSource(key);
+            newDataSource(info.key);
           },
         }}
+        dropdownRender={(menu) => (
+          <>
+            {menu}
+            {customDropdownContent}
+          </>
+        )}
       >
         {props.children || (
           <Button type="primary">
