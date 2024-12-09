@@ -126,7 +126,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
       render: (tableName, record) => {
         return (
           <Space size={5}>
-            {tableName}
+            <span title={tableName}>{tableName}</span>
             {(record?.containsCreateStrategy || record?.containsDropStrategy) && (
               <Tooltip
                 title={
