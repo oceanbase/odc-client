@@ -232,12 +232,7 @@ function SessionManagementPage(props: IProps) {
    */
   const kill = async (type: 'session' | 'query') => {
     const data = await killSessions(
-      selectedRows?.map((i) => {
-        return {
-          sessionId: i.sessionId?.toString(),
-          svrIp: i.svrIp,
-        };
-      }),
+      selectedRows?.map((i) => i.sessionId?.toString()),
       context.datasourceId,
       type,
     );
@@ -351,16 +346,14 @@ function SessionManagementPage(props: IProps) {
         ) : null}
         <div className={styles.table}>
           <MiniTable
-            rowKey={(row) => `${row.sessionId}-${row.svrIp}`}
+            rowKey={'sessionId'}
             bordered={true}
             loading={listLoading}
             columns={columns}
             dataSource={filteredRows}
             loadData={(page) => {}}
             rowSelection={{
-              selectedRowKeys: selectedRows.map(
-                (r: IDatabaseSession) => `${r.sessionId}-${r.svrIp}`,
-              ),
+              selectedRowKeys: selectedRows.map((r: IDatabaseSession) => r.sessionId),
               onChange: (selectedRowKeys: string[], rows: IDatabaseSession[]) => {
                 setSelectedRows(rows);
               },
