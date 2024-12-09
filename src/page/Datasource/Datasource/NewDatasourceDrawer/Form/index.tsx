@@ -23,22 +23,24 @@ import {
 import { testConnection } from '@/common/network/connection';
 import { listEnvironments } from '@/common/network/env';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import { ConnectTypeText } from '@/constant/label';
-import { AccountType, ConnectType, IConnectionTestErrorType } from '@/d.ts';
+import { AccountType, ConnectType, IConnectionTestErrorType, DatasourceGroup } from '@/d.ts';
 import { IDatasource, IDataSourceType } from '@/d.ts/datasource';
 import login from '@/store/login';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { useRequest } from 'ahooks';
-import { Form, FormInstance, Input, Select, Space, Typography } from 'antd';
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import { Form, FormInstance, Input, Select, Space, Typography, Alert, Button } from 'antd';
+import { forwardRef, useImperativeHandle, useState, useMemo } from 'react';
 import Account from './Account';
 import AddressItems from './AddressItems';
 import DatasourceFormContext from './context';
 import ExtraConfig from './ExtraConfig';
 import ParseURLItem from './ParseURLItem';
 import ProjectItem from './ProjectItem';
+import CloudStorageForm from './CloudStorageForm';
 const Option = Select.Option;
 export interface IFormRef {
   form: FormInstance<IDatasource>;
@@ -162,6 +164,32 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
     ? getAllConnectTypes(getDsByConnectType(type))
     : getAllConnectTypes(IDataSourceType.OceanBase);
   const dsc = getDataSourceModeConfig(type)?.connection;
+
+  const AlertMessage = useMemo(() => {
+    if (isConnectTypeBeFileSystemGroup(type)) {
+      return (
+        <Alert
+          message="对象存储仅支持数据归档"
+          type="info"
+          showIcon
+          style={{
+            marginBottom: '12px',
+          }}
+          action={
+            <Button
+              type="link"
+              onClick={() => {
+                // dev_ing
+              }}
+            >
+              查看详情
+            </Button>
+          }
+        />
+      );
+    }
+  }, [type]);
+
   return (
     <DatasourceFormContext.Provider
       value={{
@@ -174,6 +202,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         disableTheme,
       }}
     >
+      {AlertMessage}
       <Form
         initialValues={{
           type,
@@ -283,7 +312,6 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                     autoType={!isEdit}
                   />
                 )}
-
                 <AddressItems />
                 {dsc?.defaultSchema ? (
                   <Form.Item
@@ -308,6 +336,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                   </Form.Item>
                 ) : null}
                 <Account isEdit={isEdit} />
+                <CloudStorageForm isEdit={isEdit} />
                 <Form.Item
                   rules={[
                     {

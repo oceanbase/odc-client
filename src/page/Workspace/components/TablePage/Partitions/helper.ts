@@ -85,7 +85,9 @@ export function getRowsByPartType(
             name: p.name,
             position,
             partValues:
-              connectionMode === ConnectionMode.OB_ORACLE ? formatMultiRangeValue(p.value) : p.value,
+              connectionMode === ConnectionMode.OB_ORACLE
+                ? formatMultiRangeValue(p.value)
+                : p.value,
             isNew: p.isNew,
             key: position,
             parentName: p?.parentName,

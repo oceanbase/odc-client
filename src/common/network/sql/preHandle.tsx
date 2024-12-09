@@ -38,7 +38,7 @@ export interface ISQLExecuteTask {
   violatedRules: IRule[];
   unauthorizedDBResources: IUnauthorizedDBResources[];
   errorMessage?: string;
-  approvalRequired?: boolean
+  approvalRequired?: boolean;
 }
 
 /**
@@ -55,7 +55,7 @@ export interface IExecuteTaskResult {
   unauthorizedDBResources?: IUnauthorizedDBResources[];
   unauthorizedSql?: string;
   errorMessage?: string;
-  approvalRequired?: boolean
+  approvalRequired?: boolean;
 }
 
 export function executeSQLPreHandle(
@@ -63,7 +63,7 @@ export function executeSQLPreHandle(
   params: IExecuteSQLParams | IExecutePLForMysqlParams | string,
   needModal: boolean,
   sessionId: string,
-  handleUnauthInModal?: boolean
+  handleUnauthInModal?: boolean,
 ): {
   data: any;
   lintResultSet: ISQLLintReuslt[];
@@ -146,7 +146,7 @@ export function executeSQLPreHandle(
         sessionId,
         lintResultSet,
         unauthorizedDBResources,
-        status: unauthorizedDBResources?.length ? EStatus.DISABLED :lintStatus, 
+        status: unauthorizedDBResources?.length ? EStatus.DISABLED : lintStatus,
         onSave: () => {
           // 关闭SQL确认窗口打开新建数据库变更抽屉
           modal.updateWorkSpaceExecuteSQLModalProps();
@@ -167,7 +167,6 @@ export function executeSQLPreHandle(
   const requestId = taskInfo?.requestId;
   const sqls = taskInfo?.sqls;
   if (!requestId || !sqls?.length) {
-
     return {
       data: null,
       lintResultSet,

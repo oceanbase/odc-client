@@ -19,8 +19,12 @@ import type { ISqlExecuteResult, IExecutingInfo } from '@/d.ts';
 import { EStatus, ISqlExecuteResultStatus } from '@/d.ts';
 import request from '@/util/request';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
-import { executeSQLPreHandle, IExecuteSQLParams, IExecuteTaskResult, ISQLExecuteTask } from './preHandle';
-
+import {
+  executeSQLPreHandle,
+  IExecuteSQLParams,
+  IExecuteTaskResult,
+  ISQLExecuteTask,
+} from './preHandle';
 
 class Task {
   public result: ISqlExecuteResult[] = [];
@@ -175,7 +179,6 @@ export default async function executeSQL(
     data: serverParams,
   });
   const taskInfo: ISQLExecuteTask = res?.data;
-
 
   const {
     pass,

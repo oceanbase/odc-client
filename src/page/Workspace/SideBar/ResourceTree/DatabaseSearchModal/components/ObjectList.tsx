@@ -286,7 +286,7 @@ const ObjectList = ({
           style={{ padding: 0, height: 18, display: 'inline-block' }}
           onClick={(e) => applyTablePermission(e, object, type)}
         >
-            {`申请表/视图权限`}
+          {`申请表/视图权限`}
         </Button>
       );
     }

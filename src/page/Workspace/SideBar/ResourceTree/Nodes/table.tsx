@@ -163,23 +163,25 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
 
         const subpartitionsDataHelper = (key, partitions, name) => {
           if (!partitions) return [];
-          return partitions?.filter(_s=> _s?.parentName === name)?.map((s) => {
-            return {
-              title: s.name,
-              key: `${key}-${s.name}`,
-              isLeaf: true,
-              sessionId: dbSession?.sessionId,
-              icon: (
-                <Icon
-                  component={PartitionSvg}
-                  style={{
-                    color: '#3FA3FF',
-                  }}
-                />
-              ),
-              type: ResourceNodeType.TablePartition,
-            };
-          });
+          return partitions
+            ?.filter((_s) => _s?.parentName === name)
+            ?.map((s) => {
+              return {
+                title: s.name,
+                key: `${key}-${s.name}`,
+                isLeaf: true,
+                sessionId: dbSession?.sessionId,
+                icon: (
+                  <Icon
+                    component={PartitionSvg}
+                    style={{
+                      color: '#3FA3FF',
+                    }}
+                  />
+                ),
+                type: ResourceNodeType.TablePartition,
+              };
+            });
         };
 
         /**

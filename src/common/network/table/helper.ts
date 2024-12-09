@@ -535,11 +535,12 @@ export function convertServerTablePartitionToTablePartition(
     }
   };
 
-  const handleColumns = (partition)=> partition?.partitionOption?.columnNames?.map((item) => {
-    return {
-      columnName: item,
-    };
-  })
+  const handleColumns = (partition) =>
+    partition?.partitionOption?.columnNames?.map((item) => {
+      return {
+        columnName: item,
+      };
+    });
 
   switch (partType) {
     case IPartitionType.HASH: {
@@ -549,7 +550,7 @@ export function convertServerTablePartitionToTablePartition(
         expression: partition?.partitionOption?.expression,
         columns: handleColumns(partition),
         partitions: handlePartitions(partType, dbMode, partition),
-        subpartitionTemplated: subpartitionTemplated
+        subpartitionTemplated: subpartitionTemplated,
       };
       break;
     }
@@ -560,7 +561,7 @@ export function convertServerTablePartitionToTablePartition(
         columns: handleColumns(partition),
         expression: partition?.partitionOption?.expression,
         partitions: handlePartitions(partType, dbMode, partition),
-        subpartitionTemplated: subpartitionTemplated
+        subpartitionTemplated: subpartitionTemplated,
       };
       break;
     }
@@ -570,7 +571,7 @@ export function convertServerTablePartitionToTablePartition(
         expression: partition?.partitionOption?.expression,
         columns: handleColumns(partition),
         partitions: handlePartitions(partType, dbMode, partition),
-        subpartitionTemplated: subpartitionTemplated
+        subpartitionTemplated: subpartitionTemplated,
       };
       break;
     }
@@ -580,7 +581,7 @@ export function convertServerTablePartitionToTablePartition(
         columns: handleColumns(partition),
         expression: partition?.partitionOption?.expression,
         partitions: handlePartitions(partType, dbMode, partition),
-        subpartitionTemplated: subpartitionTemplated
+        subpartitionTemplated: subpartitionTemplated,
       };
       break;
     }
@@ -590,7 +591,7 @@ export function convertServerTablePartitionToTablePartition(
         expression: partition?.partitionOption?.expression,
         columns: handleColumns(partition),
         partitions: handlePartitions(partType, dbMode, partition),
-        subpartitionTemplated: subpartitionTemplated
+        subpartitionTemplated: subpartitionTemplated,
       };
       break;
     }
@@ -600,7 +601,7 @@ export function convertServerTablePartitionToTablePartition(
         columns: handleColumns(partition),
         expression: partition?.partitionOption?.expression,
         partitions: handlePartitions(partType, dbMode, partition),
-        subpartitionTemplated: subpartitionTemplated
+        subpartitionTemplated: subpartitionTemplated,
       };
       break;
     }

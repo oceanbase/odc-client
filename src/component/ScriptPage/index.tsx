@@ -80,7 +80,7 @@ export default class ScriptPage extends PureComponent<IProps> {
     templateName: '',
     offset: null,
     /// resultHeight: RESULT_HEIGHT
-    editorValue:  this.props?.editor?.defaultValue
+    editorValue: this.props?.editor?.defaultValue,
   };
 
   componentDidMount() {
@@ -94,7 +94,7 @@ export default class ScriptPage extends PureComponent<IProps> {
   }
 
   setStateForEditorValue = (value: string) => {
-    this.props?.ctx?.handleSQLChanged(value)
+    this.props?.ctx?.handleSQLChanged(value);
     this.setState({
       editorValue: value,
     });

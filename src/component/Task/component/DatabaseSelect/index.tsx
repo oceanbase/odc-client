@@ -31,6 +31,10 @@ interface IProps {
   width?: string;
   placeholder?: string;
   isLogicalDatabase?: boolean;
+  options?: {
+    /** 屏蔽对象存储类型 */
+    hideFileSystem?: boolean;
+  };
   onChange?: (v: number) => void;
 }
 const DatabaseSelect: React.FC<IProps> = (props) => {
@@ -49,6 +53,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     disabled = false,
     isLogicalDatabase = false,
     onChange,
+    options,
   } = props;
 
   return (
@@ -75,6 +80,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
         onChange={onChange}
         isLogicalDatabase={isLogicalDatabase}
         placeholder={placeholder}
+        options={options}
       />
     </Form.Item>
   );

@@ -263,7 +263,9 @@ const physicalDbColumns = [
         <>
           <Space size={2}>
             <DataBaseStatusIcon item={record} />
-            <Typography.Text ellipsis title={value} style={{maxWidth: 100}}>{value}</Typography.Text>
+            <Typography.Text ellipsis title={value} style={{ maxWidth: 100 }}>
+              {value}
+            </Typography.Text>
           </Space>
         </>
       );

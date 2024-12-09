@@ -23,22 +23,11 @@ import React, { useContext, useMemo, useState } from 'react';
 import DatasourceFormContext from '../context';
 import FormItemGroup from '../FormItemGroup';
 import UserInput from './UserInput';
+import ErrorTip from '../components/ErrorTip';
 
 interface IProps {
   isEdit: boolean;
 }
-
-export const ErrorTip: React.FC<{
-  errorMessage: string;
-}> = ({ errorMessage }) => {
-  return (
-    !!errorMessage && (
-      <div>
-        <Typography.Text type="danger">{errorMessage}</Typography.Text>
-      </div>
-    )
-  );
-};
 
 const PrivateAccount: React.FC<IProps> = function (props) {
   const { isEdit } = props;

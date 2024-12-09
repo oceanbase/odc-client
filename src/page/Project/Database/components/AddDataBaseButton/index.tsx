@@ -41,6 +41,8 @@ import {
   Dropdown,
 } from 'antd';
 import { useContext, useState } from 'react';
+import { IConnection } from '@/d.ts';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import settingStore from '@/store/setting';
 interface IProps {
   projectId: number;
@@ -49,6 +51,7 @@ interface IProps {
   onSuccess: () => void;
   clearSelectedRowKeys: () => void;
   onOpenLogicialDatabase: () => void;
+  onOpenObjectStorage: () => void;
   disabledMultiDBChanges?: boolean;
 }
 const AddDataBaseButton: React.FC<IProps> = ({
@@ -58,10 +61,14 @@ const AddDataBaseButton: React.FC<IProps> = ({
   onSuccess,
   clearSelectedRowKeys,
   onOpenLogicialDatabase,
+  onOpenObjectStorage,
   disabledMultiDBChanges,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const { project } = useContext(ProjectContext);
+  const [dataSourceListWithoutFileSystem, setDataSourceListWithoutFileSystem] = useState<
+    IConnection[]
+  >([]);
 
   const [form] = Form.useForm<{
     databaseIds: number[];
@@ -71,7 +78,13 @@ const AddDataBaseButton: React.FC<IProps> = ({
   const { run, loading: saveDatabaseLoading } = useRequest(updateDataBase, {
     manual: true,
   });
-  const { data: dataSourceList, loading: dataSourceListLoading } = useRequest(getConnectionList, {
+  const { loading: dataSourceListLoading } = useRequest(getConnectionList, {
+    onSuccess: (e) => {
+      // 过滤掉对象存储的数据源
+      setDataSourceListWithoutFileSystem(
+        e.contents.filter((item) => !isConnectTypeBeFileSystemGroup(item.type)),
+      );
+    },
     defaultParams: [
       {
         size: 99999,
@@ -119,6 +132,7 @@ const AddDataBaseButton: React.FC<IProps> = ({
       form.resetFields();
     }
   }
+
   const items: MenuProps['items'] = [
     {
       label: formatMessage({
@@ -126,9 +140,12 @@ const AddDataBaseButton: React.FC<IProps> = ({
         defaultMessage: '配置逻辑库',
       }),
       key: '1',
-      onClick: () => {
-        onOpenLogicialDatabase();
-      },
+      onClick: onOpenLogicialDatabase,
+    },
+    {
+      label: '添加对象存储',
+      key: '2',
+      onClick: onOpenObjectStorage,
     },
   ];
 
@@ -256,7 +273,7 @@ const AddDataBaseButton: React.FC<IProps> = ({
                     })
                   }
                 >
-                  {dataSourceList?.contents?.map((item) => {
+                  {dataSourceListWithoutFileSystem?.map((item) => {
                     const icon = getDataSourceStyleByConnectType(item.type);
                     const isDisabled = !!item?.projectId && projectId !== item?.projectId;
                     return (

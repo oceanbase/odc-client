@@ -131,9 +131,9 @@ const getColumns = (params: {
 
       filteredValue: filters?.dataSourceName || null,
       filters: [],
-      render(_){
-        return _ || '-'
-      }
+      render(_) {
+        return _ || '-';
+      },
     },
     {
       dataIndex: 'type',

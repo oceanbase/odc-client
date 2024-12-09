@@ -97,7 +97,6 @@ function generateConnectionParams(formData: Partial<IConnectionFormData>, isHide
  */
 export async function createConnection(formData: Partial<IDatasource>, isHiden?: boolean) {
   const params: Partial<IConnection> = generateConnectionParams(formData, isHiden);
-
   const requestParams = {
     wantCatchError: false,
     holdErrorTip: true,
@@ -326,7 +325,7 @@ export async function getSessionStatus(sessionId?: string): Promise<{
     obVersion: string;
   };
   session: ISessionStatus;
-  killCurrentQuerySupported: boolean
+  killCurrentQuerySupported: boolean;
 }> {
   const sid = generateSessionSid(sessionId);
   const res = await request.get(`/api/v2/datasource/sessions/${sessionId}/status`);
