@@ -232,12 +232,7 @@ function SessionManagementPage(props: IProps) {
    */
   const kill = async (type: 'session' | 'query') => {
     const data = await killSessions(
-      selectedRows?.map((i) => {
-        return {
-          sessionId: i.sessionId?.toString(),
-          svrIp: i.svrIp,
-        };
-      }),
+      selectedRows?.map((i) => i.sessionId?.toString()),
       context.datasourceId,
       type,
     );
