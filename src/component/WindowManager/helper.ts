@@ -26,10 +26,7 @@ const titleText = {
     id: 'workspace.header.session.management',
     defaultMessage: '会话管理',
   }),
-  [PageType.SESSION_PARAM]: formatMessage({
-    id: 'workspace.header.session.params',
-    defaultMessage: '会话属性',
-  }),
+  [PageType.SESSION_PARAM]: '全局变量',
   [PageType.RECYCLE_BIN]: formatMessage({
     id: 'workspace.header.recycle',
     defaultMessage: '回收站',
