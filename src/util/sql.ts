@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { PLType } from '@/constant/plType';
-import { ConnectType, ConnectionMode, DbObjectType, IFormatPLSchema, IPLParam } from '@/d.ts';
+import { ConnectionMode, ConnectType, DbObjectType, IFormatPLSchema, IPLParam } from '@/d.ts';
 import moment from 'moment';
 import { Oracle } from './dataType';
 import { getQuoteTableName } from './utils';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 /**
  * 把一段输入多行注释掉，并且在首行添加comment信息。
@@ -262,6 +262,23 @@ export async function splitSql(
   return doc?.statements?.map((stmt) => {
     return stmt.stop + (stmt.delimiter?.length || 0);
   });
+}
+
+export async function splitSqlForHighlight(
+  sql: string,
+  isOracle: boolean = false,
+  delimiter,
+): Promise<number[]> {
+  const { SQLDocument } = await import('@oceanbase-odc/ob-parser-js');
+  const doc = new SQLDocument({
+    text: sql,
+    delimiter: delimiter,
+  });
+  return doc?.statements
+    ?.filter((stmt) => !stmt.isDelimiter)
+    .map((stmt) => {
+      return stmt.stop + (stmt.delimiter?.length || 0);
+    });
 }
 
 export function getRealTableName(tableName: string, isOracle: boolean = true) {
