@@ -196,13 +196,6 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
         </Button>
       }
     >
-      <p
-        onClick={() => {
-          console.log(configJson.ssoParameter);
-        }}
-      >
-        11
-      </p>
       <Spin spinning={loading}>
         <Space direction="vertical">
           <Descriptions
