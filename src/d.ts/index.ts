@@ -3800,6 +3800,7 @@ export enum ISSOType {
   OIDC = 'OIDC',
   OAUTH2 = 'OAUTH2',
   LDAP = 'LDAP',
+  SAML = 'SAML',
 }
 
 export enum IClientAuthenticationMethod {
@@ -3861,6 +3862,24 @@ export interface ISSO_LDAP_CONFIG {
   redirectUrl: string;
 }
 
+export interface ISSO_SAML_CONFIG {
+  acsLocation?: string;
+  redirectUrl: string;
+  registrationId: string;
+  secret: string;
+  acsEntityId?: string;
+  providerEntityId?: string;
+  decryption?: { certificate: string };
+  signing?: { certificate: string };
+  verification?: { certificate: string };
+  metadataUri?: string;
+  singlesignon?: {
+    url?: string;
+    binding?: 'POST' | 'REDIRECT';
+    signRequest?: boolean;
+  };
+}
+
 export interface ISSO_MAPPINGRULE {
   userNickNameField: string;
   userProfileViewType: 'FLAT' | 'NESTED';
@@ -3888,6 +3907,12 @@ export type ISSOConfig =
       type: ISSOType.LDAP;
       ssoParameter: ISSO_LDAP_CONFIG;
       mappingRule: Omit<ISSO_MAPPINGRULE, 'userAccountNameField'>;
+    }
+  | {
+      name: string;
+      type: ISSOType.SAML;
+      ssoParameter: ISSO_SAML_CONFIG;
+      mappingRule: ISSO_MAPPINGRULE;
     };
 
 export interface IFormatPLSchema {
