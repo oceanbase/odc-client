@@ -18,6 +18,7 @@ import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { newScript, updateScript } from '@/common/network';
 import { executeSQL, runSQLLint } from '@/common/network/sql';
 import { executeTaskManager } from '@/common/network/sql/executeSQL';
+import { IExecuteTaskResult } from '@/common/network/sql/preHandle';
 import { batchGetDataModifySQL } from '@/common/network/table';
 import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
@@ -51,10 +52,11 @@ import SessionStore from '@/store/sessionManager/session';
 import setting, { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
 import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { isLogicalDatabase } from '@/util/database';
 import utils, { EHighLight } from '@/util/editor';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
-import { splitSql } from '@/util/sql';
+import { splitSqlForHighlight } from '@/util/sql';
 import { generateAndDownloadFile, getCurrentSQL } from '@/util/utils';
 import { message, Spin } from 'antd';
 import { debounce, isNil } from 'lodash';
@@ -68,8 +70,6 @@ import Trace from '../Trace';
 import ExecDetail from './ExecDetail';
 import ExecPlan from './ExecPlan';
 import styles from './index.less';
-import { isLogicalDatabase } from '@/util/database';
-import { IExecuteTaskResult } from '@/common/network/sql/preHandle';
 
 interface ISQLPageState {
   resultHeight: number;
@@ -1344,7 +1344,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     for (let i = 0; i < results?.length; i++) {
       const result = results[i];
       if (result.status !== ISqlExecuteResultStatus.SUCCESS) {
-        const sqlIndexs = await splitSql(
+        const sqlIndexs = await splitSqlForHighlight(
           this.editor.getValue(),
           session.connection?.dialectType === ConnectionMode.MYSQL,
           session?.params?.delimiter,
