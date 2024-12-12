@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getTestUserInfo, testClientRegistration } from '@/common/network/manager';
+import { getTestUserInfo, querySecretKey, testClientRegistration } from '@/common/network/manager';
 import HelpDoc from '@/component/helpDoc';
 import {
   IAuthorizationGrantType,
@@ -23,6 +23,7 @@ import {
   ISSOType,
   ISSO_LDAP_CONFIG,
   ISSO_MAPPINGRULE,
+  ISSO_SAML_CONFIG,
   IUserInfoAuthenticationMethod,
 } from '@/d.ts';
 import { UserStore } from '@/store/login';
@@ -48,7 +49,7 @@ import md5 from 'blueimp-md5';
 import { cloneDeep } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { LDAPPartForm, OAUTH2PartForm, OIDCPartForm } from './PartForm';
+import { LDAPPartForm, OAUTH2PartForm, OIDCPartForm, SAMLPartForm } from './PartForm';
 
 export const requiredRule = {
   required: true,
@@ -59,15 +60,34 @@ interface IProps {
   editData?: ISSOConfig;
   onTestInfoChanged: (testInfo: string) => void;
 }
+
 export enum ELDAPMode {
   LOGIN = 'LOGIN',
   TEST = 'TEST',
+}
+export enum SAMLType {
+  verification = 'verification',
+  signing = 'signing',
+  decryption = 'decryption',
 }
 export interface IFormRef {
   form: FormInstance<ISSOConfig>;
   registrationId: string;
   testInfo: string;
 }
+
+export interface SAMLCheckBoxConfigType {
+  verification: { checked: boolean; value: string };
+  signing: {
+    checked: boolean;
+    value: string;
+  };
+  decryption: {
+    checked: boolean;
+    value: string;
+  };
+}
+
 export default inject('userStore')(
   observer(
     forwardRef(function NewSSODrawerButton(
@@ -85,8 +105,20 @@ export default inject('userStore')(
       const channelStatusRef = useRef<boolean>(false);
       const timer = useRef<NodeJS.Timer>();
       const [showExtraConfig, setShowExtraConfig] = useState(!!isEdit);
+      const [showExtraConfigForSAML, setShowExtraConfigForSAML] = useState(!!isEdit);
       const [registrationId, setRegistrationId] = useState('');
       const [testInfo, _setTestInfo] = useState<string>();
+      const [SAMLCheckBoxConfig, setSAMLCheckBoxConfig] = useState<SAMLCheckBoxConfigType>({
+        verification: { checked: false, value: '' },
+        signing: {
+          checked: false,
+          value: '',
+        },
+        decryption: {
+          checked: false,
+          value: '',
+        },
+      });
 
       function setTestInfo(v: string) {
         _setTestInfo(v);
@@ -114,6 +146,7 @@ export default inject('userStore')(
         }
         setTestInfo(text);
       }
+
       // 重复发送消息，直到确认接收方正确接收到了数据。
       function sendDataUntilComfirmedReceive(
         value: {
@@ -165,6 +198,7 @@ export default inject('userStore')(
           loginWindow.current?.close();
         };
       }, []);
+
       async function testByType(type: ISSOType) {
         switch (type) {
           case ISSOType.LDAP: {
@@ -172,7 +206,8 @@ export default inject('userStore')(
             break;
           }
           case ISSOType.OIDC:
-          case ISSOType.OAUTH2: {
+          case ISSOType.OAUTH2:
+          case ISSOType.SAML: {
             test();
             break;
           }
@@ -198,6 +233,12 @@ export default inject('userStore')(
           ['ssoParameter', 'issueUrl'],
           ['mappingRule', 'userProfileViewType'],
           ['mappingRule', 'nestedAttributeField'],
+          ['ssoParameter', 'acsLocation'],
+          ['ssoParameter', 'acsEntityId'],
+          ['ssoParameter', 'metadataUri'],
+          ['ssoParameter', 'singlesignon', 'url'],
+          ['ssoParameter', 'singlesignon', 'binding'],
+          ['ssoParameter', 'singlesignon', 'signRequest'],
         ]);
         if (!value) {
           return;
@@ -217,7 +258,19 @@ export default inject('userStore')(
         } else {
           clone.ssoParameter.registrationId = editData?.ssoParameter?.registrationId;
         }
-        const res = await testClientRegistration(clone, 'info');
+        let params: {
+          odcBackUrl?: string;
+        } = {};
+        if (value.type === ISSOType.SAML) {
+          for (let key in SAMLCheckBoxConfig) {
+            (clone.ssoParameter as ISSO_SAML_CONFIG)[key] = {
+              certificate: SAMLCheckBoxConfig[key].checked ? SAMLCheckBoxConfig[key].value : null,
+            };
+          }
+          params.odcBackUrl =
+            location.origin + '/' + '#/gateway/eyJhY3Rpb24iOiJ0ZXN0TG9naW4iLCJkYXRhIjp7fX0=';
+        }
+        const res = await testClientRegistration(clone, 'info', params);
         if (res?.testLoginUrl) {
           loginWindow.current = window.open(
             res?.testLoginUrl,
@@ -234,6 +287,8 @@ export default inject('userStore')(
           channel.add(ChannelMap.ODC_SSO_TEST).listen(
             ChannelMap.ODC_SSO_TEST,
             (data) => {
+              console.log('success');
+              console.log(data);
               if (data?.isSuccess && !loginWindow.current?.closed) {
                 message.success(
                   formatMessage({
@@ -329,11 +384,32 @@ export default inject('userStore')(
         var md5Hex = md5(`${name || ''}`);
         const id = `${userStore?.organizationId}-${md5Hex}`;
         setRegistrationId(id);
-        form.setFieldsValue({
-          ssoParameter: {
-            redirectUrl: `${window.ODCApiHost || location.origin}/login/oauth2/code/${id}`,
-          },
-        });
+        switch (form.getFieldValue('type')) {
+          case ISSOType.SAML:
+            form.setFieldsValue({
+              ssoParameter: {
+                acsLocation: `${window.ODCApiHost || location.origin}/login/saml2/sso/${id}`,
+                acsEntityId: `${
+                  window.ODCApiHost || location.origin
+                }/saml2/service-provider-metadata/${id}`,
+              },
+            });
+            if (showExtraConfigForSAML) {
+              form.setFieldsValue({
+                ssoParameter: {
+                  providerEntityId: `${
+                    window.ODCApiHost || location.origin
+                  }/saml2/service-provider-metadata/${id}`,
+                },
+              });
+            }
+          default:
+            form.setFieldsValue({
+              ssoParameter: {
+                redirectUrl: `${window.ODCApiHost || location.origin}/login/oauth2/code/${id}`,
+              },
+            });
+        }
       }
       const getPartForm = (type: ISSOType) => {
         if (type === ISSOType.OAUTH2) {
@@ -346,6 +422,18 @@ export default inject('userStore')(
           );
         } else if (type === ISSOType.LDAP) {
           return <LDAPPartForm isEdit={isEdit} />;
+        } else if (type === ISSOType.SAML) {
+          return (
+            <SAMLPartForm
+              isEdit={isEdit}
+              showExtraConfigForSAML={showExtraConfigForSAML}
+              setShowExtraConfigForSAML={setShowExtraConfigForSAML}
+              updateSAMLCheckBoxConfig={updateSAMLCheckBoxConfig}
+              SAMLCheckBoxConfig={SAMLCheckBoxConfig}
+              registrationId={registrationId}
+              formConfig={form}
+            />
+          );
         } else {
           return <OIDCPartForm isEdit={isEdit} />;
         }
@@ -353,6 +441,49 @@ export default inject('userStore')(
       const redirectUrl = `${window.ODCApiHost || location.origin}/login/oauth2/code/${
         userStore?.organizationId
       }-test`;
+
+      const updateSAMLCheckBoxConfig = async (type: string, checked: boolean, value?: string) => {
+        if (checked) {
+          switch (type) {
+            case SAMLType.signing:
+              const signingValue = await querySecretKey();
+              setSAMLCheckBoxConfig({
+                ...SAMLCheckBoxConfig,
+                [type]: {
+                  checked,
+                  value: signingValue,
+                },
+              });
+              return;
+            case SAMLType.decryption:
+              const decryptionValue = await querySecretKey();
+              setSAMLCheckBoxConfig({
+                ...SAMLCheckBoxConfig,
+                [type]: {
+                  checked,
+                  value: decryptionValue,
+                },
+              });
+              return;
+            default:
+              setSAMLCheckBoxConfig({
+                ...SAMLCheckBoxConfig,
+                [type]: {
+                  checked,
+                  value: value || SAMLCheckBoxConfig[type]?.value,
+                },
+              });
+          }
+        }
+
+        setSAMLCheckBoxConfig({
+          ...SAMLCheckBoxConfig,
+          [type]: {
+            checked,
+            value: value || SAMLCheckBoxConfig[type]?.value,
+          },
+        });
+      };
 
       return (
         <Form
@@ -439,6 +570,10 @@ export default inject('userStore')(
                 {
                   label: 'LDAP',
                   value: ISSOType.LDAP,
+                },
+                {
+                  label: 'SAML',
+                  value: ISSOType.SAML,
                 },
               ]}
             />
