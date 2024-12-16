@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { SQLConsoleResourceType } from '@/common/datasource/interface';
 import { deleteConnection } from '@/common/network/connection';
 import Action from '@/component/Action';
@@ -30,7 +31,18 @@ import { DataSourceStatusStore } from '@/store/datasourceStatus';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { PlusOutlined } from '@ant-design/icons';
-import { Badge, Button, Dropdown, Input, message, Modal, Popover, Tree, TreeDataNode } from 'antd';
+import {
+  Badge,
+  Button,
+  Dropdown,
+  Input,
+  Menu,
+  message,
+  Modal,
+  Popover,
+  Tree,
+  TreeDataNode,
+} from 'antd';
 import classNames from 'classnames';
 import { throttle, toInteger, toNumber } from 'lodash';
 import { inject, observer } from 'mobx-react';
@@ -45,7 +57,6 @@ import {
 } from 'react';
 import ResourceLayout from '../../Layout';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 interface IProps {
   filters: {
@@ -55,6 +66,90 @@ interface IProps {
   dataSourceStatusStore?: DataSourceStatusStore;
   closeSelectPanel: () => void;
 }
+
+const CustomDropdown = ({
+  node,
+  login,
+  deleteDataSource,
+  setCopyDatasourceId,
+  setEditDatasourceId,
+  setAddDSVisiable,
+}) => {
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+    if (login.isPrivateSpace()) {
+      setDropdownVisible(true);
+    }
+  };
+
+  const handleMenuClick = (e, action) => {
+    e.domEvent?.stopPropagation();
+    setDropdownVisible(false);
+    action(e);
+  };
+
+  const menuItems = [
+    {
+      label: formatMessage({
+        id: 'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone',
+        defaultMessage: '克隆',
+      }),
+      key: 'clone',
+      onClick: (e) => handleMenuClick(e, () => setCopyDatasourceId(toInteger(node.key))),
+    },
+    {
+      label: formatMessage({
+        id: 'odc.ResourceTree.Datasource.Edit',
+        defaultMessage: '编辑',
+      }),
+      key: 'edit',
+      onClick: (e) =>
+        handleMenuClick(e, () => {
+          setEditDatasourceId(node.key);
+          setAddDSVisiable(true);
+        }),
+    },
+    {
+      label: formatMessage({
+        id: 'odc.ResourceTree.Datasource.Delete',
+        defaultMessage: '删除',
+      }),
+      key: 'delete',
+      onClick: (e) =>
+        handleMenuClick(e, () => {
+          const name = node.title;
+          deleteDataSource(name as string, node.key as string);
+        }),
+    },
+  ];
+
+  const menu = (
+    <Menu>
+      {menuItems.map((item) => (
+        <Menu.Item key={item.key} onClick={item.onClick}>
+          {item.label}
+        </Menu.Item>
+      ))}
+    </Menu>
+  );
+
+  return (
+    <Dropdown
+      overlay={menu}
+      trigger={['contextMenu']}
+      visible={dropdownVisible}
+      onVisibleChange={setDropdownVisible}
+      placement="bottomLeft"
+    >
+      <span onContextMenu={handleContextMenu} className={styles.fullWidthTitle}>
+        {node.title}
+      </span>
+    </Dropdown>
+  );
+};
+
 export default inject('dataSourceStatusStore')(
   observer(
     forwardRef<{ reload: () => void }, IProps>(function DatasourceTree(
@@ -220,6 +315,7 @@ export default inject('dataSourceStatusStore')(
                   </NewDatasourceButton>
                 ) : null}
               </div>
+
               <div className={styles.list} ref={treeWrapperRef}>
                 {datasource?.length ? (
                   <Tree
@@ -248,52 +344,14 @@ export default inject('dataSourceStatusStore')(
                                 justifyContent: 'space-between',
                               }}
                             >
-                              <Dropdown
-                                trigger={login.isPrivateSpace() ? ['contextMenu'] : []}
-                                menu={{
-                                  items: [
-                                    {
-                                      label: formatMessage({
-                                        id: 'odc.src.page.Workspace.SideBar.ResourceTree.SelectPanel.Datasource.Clone',
-                                        defaultMessage: '克隆',
-                                      }), //'克隆'
-                                      key: 'clone',
-                                      onClick: (e) => {
-                                        e.domEvent?.stopPropagation();
-                                        setCopyDatasourceId(toInteger(node.key));
-                                      },
-                                    },
-                                    {
-                                      label: formatMessage({
-                                        id: 'odc.ResourceTree.Datasource.Edit',
-                                        defaultMessage: '编辑',
-                                      }),
-                                      //编辑
-                                      key: 'edit',
-                                      onClick: (e) => {
-                                        e.domEvent?.stopPropagation();
-                                        setEditDatasourceId(node.key);
-                                        setAddDSVisiable(true);
-                                      },
-                                    },
-                                    {
-                                      label: formatMessage({
-                                        id: 'odc.ResourceTree.Datasource.Delete',
-                                        defaultMessage: '删除',
-                                      }),
-                                      //删除
-                                      key: 'delete',
-                                      onClick: (e) => {
-                                        e.domEvent?.stopPropagation();
-                                        const name = node.title;
-                                        deleteDataSource(name as string, node.key as string);
-                                      },
-                                    },
-                                  ],
-                                }}
-                              >
-                                <span className={styles.fullWidthTitle}>{node.title}</span>
-                              </Dropdown>
+                              <CustomDropdown
+                                node={node}
+                                login={login}
+                                deleteDataSource={deleteDataSource}
+                                setCopyDatasourceId={setCopyDatasourceId}
+                                setEditDatasourceId={setEditDatasourceId}
+                                setAddDSVisiable={setAddDSVisiable}
+                              />
                               <div
                                 className={classNames(styles.envTip, {
                                   [styles.envTipPersonal]: login.isPrivateSpace(),
@@ -306,6 +364,7 @@ export default inject('dataSourceStatusStore')(
                                   }
                                 />
                               </div>
+
                               {login.isPrivateSpace() && (
                                 <div className={styles.actions}>
                                   <Action.Group ellipsisIcon="vertical" size={0}>
@@ -325,6 +384,7 @@ export default inject('dataSourceStatusStore')(
                                 */
                                       }
                                     </Action.Link>
+
                                     <Action.Link
                                       onClick={() => {
                                         setEditDatasourceId(node.key);
@@ -337,6 +397,7 @@ export default inject('dataSourceStatusStore')(
                                         defaultMessage: '编辑',
                                       })}
                                     </Action.Link>
+
                                     <Action.Link
                                       onClick={() =>
                                         deleteDataSource(node.title as string, node.key as string)
@@ -378,6 +439,7 @@ export default inject('dataSourceStatusStore')(
                   <SQLConsoleEmpty type={SQLConsoleResourceType.DataSource} />
                 )}
               </div>
+
               <NewDatasourceDrawer
                 isEdit={!!editDatasourceId}
                 visible={addDSVisiable}
