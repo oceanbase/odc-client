@@ -41,6 +41,7 @@ import DetailModal from './DetailModal';
 import { isCycleTaskPage } from './helper';
 import styles from './index.less';
 import { TaskDetailContext } from './TaskDetailContext';
+
 interface IProps {
   taskStore?: TaskStore;
   modalStore?: ModalStore;
@@ -141,7 +142,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
     const params = {
       fuzzySearchKeyword: id ? id : undefined,
       taskType: isAllScope ? (isAll ? undefined : taskTabType) : undefined,
-      projectId: projectId || projectIdList,
+      projectId: projectId || projectIdList || undefined,
       status,
       startTime: executeDate?.[0]?.valueOf() ?? getPreTime(7),
       endTime: executeDate?.[1]?.valueOf() ?? getPreTime(0),
@@ -277,7 +278,6 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
     >
       <div className={styles.content}>
         <TaskTable
-          disableProjectCol={inProject || pageKey !== undefined}
           tableRef={tableRef}
           taskTabType={taskTabType}
           taskList={taskList}

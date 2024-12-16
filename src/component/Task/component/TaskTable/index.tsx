@@ -189,22 +189,13 @@ interface IProps {
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onChange?: (args: ITableLoadOptions) => void;
   onMenuClick?: (type: TaskPageType) => void;
-  disableProjectCol?: boolean;
 }
 const TaskTable: React.FC<IProps> = inject(
   'taskStore',
   'pageStore',
 )(
   observer((props) => {
-    const {
-      taskStore,
-      pageStore,
-      taskTabType,
-      tableRef,
-      taskList,
-      isMultiPage,
-      disableProjectCol,
-    } = props;
+    const { taskStore, pageStore, taskTabType, tableRef, taskList, isMultiPage } = props;
     const { taskPageScope } = taskStore;
     const taskStatusFilters = getStatusFilters(isCycleTaskPage(taskTabType) ? cycleStatus : status);
 
@@ -335,21 +326,19 @@ const TaskTable: React.FC<IProps> = inject(
             return TaskTypeMap[type === TaskType.ALTER_SCHEDULE ? record?.parameters?.type : type];
           },
         },
-        disableProjectCol
-          ? null
-          : {
-              dataIndex: 'project',
-              key: 'projectIdList',
-              title: '项目',
-              filters: projectOptions,
-              filteredValue: filters?.projectIdList || null,
-              ellipsis: true,
-              width: 80,
-              render(value, record) {
-                const { projectId, project } = record;
-                return project?.name || projectId || '-';
-              },
-            },
+        {
+          dataIndex: 'project',
+          key: 'projectIdList',
+          title: '项目',
+          filters: projectOptions,
+          filteredValue: filters?.projectIdList || null,
+          ellipsis: true,
+          width: 80,
+          render(value, record) {
+            const { projectId, project } = record;
+            return project?.name || projectId || '-';
+          },
+        },
         {
           dataIndex: 'description',
           key: 'description',
