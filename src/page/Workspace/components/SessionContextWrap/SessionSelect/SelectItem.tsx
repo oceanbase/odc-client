@@ -183,6 +183,7 @@ const SelectItem: React.FC<IProps> = ({
           width={width || DEFALT_WIDTH}
           taskType={taskType}
           options={options}
+          disabled={disabled}
         >
           <Select
             disabled={disabled}
