@@ -51,19 +51,16 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const loadEditData = async () => {
       const { task } = dataMockerData;
 
-      const {
-        parameters: { taskDetail },
-        database: { id: databaseId },
-        description,
-        executionStrategy,
-      } = task;
+      const { description, executionStrategy } = task;
+      const taskDetail = task?.parameters?.taskDetail ?? null;
+      const databaseId = task?.database?.id ?? null;
       const taskDetailObj: {
         tables: IServerMockTable;
       } = JSON.parse(taskDetail);
       const { tableName, whetherTruncate, totalCount, strategy, batchSize, columns } =
         taskDetailObj?.tables?.[0] ?? {};
       setRuleConfigList(
-        columns.map((item) => {
+        columns?.map((item) => {
           const { typeConfig } = item;
           return {
             ...item,
