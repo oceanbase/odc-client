@@ -1110,15 +1110,13 @@ const ActionBar: React.FC<IProps> = inject(
             if (isLogicalDbChangeTask(task?.type)) {
               tools = [viewBtn, editBtn];
             }
-            if ([TaskType.DATA_ARCHIVE].includes(task?.type)) {
-              tools = [reTryBtn, viewBtn];
-            }
-            if (
-              [TaskType.DATA_DELETE].includes(task?.type) &&
-              (task as ICycleTaskRecord<TaskRecordParameters>)?.triggerConfig?.triggerStrategy ===
-                TaskExecStrategy.START_NOW
-            ) {
-              tools = [viewBtn];
+            if ([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)) {
+              if((task as ICycleTaskRecord<TaskRecordParameters>)?.triggerConfig?.triggerStrategy ===
+              TaskExecStrategy.START_NOW){
+                tools = [reTryBtn, viewBtn];
+              }else{
+                tools = [reTryBtn, viewBtn, disableBtn];
+              }
             }
           } else {
             tools = [viewBtn];

@@ -231,6 +231,7 @@ const Columns: React.FC<IProps> = function ({ isExternalTable }) {
             onSelectChange={onSelectChange}
             gridRef={gridRef}
             onRowsChange={onRowsChange}
+            readonly={isExternalTable}
           />
         </TableCardLayout>
       </div>
