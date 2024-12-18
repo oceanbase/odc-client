@@ -364,7 +364,6 @@ export default inject('dataSourceStatusStore')(
                                   }
                                 />
                               </div>
-
                               {login.isPrivateSpace() && (
                                 <div className={styles.actions}>
                                   <Action.Group ellipsisIcon="vertical" size={0}>

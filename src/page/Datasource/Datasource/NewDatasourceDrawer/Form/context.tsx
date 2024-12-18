@@ -33,6 +33,14 @@ interface IDatasouceFormContext {
   originDatasource?: IDatasource;
   dataSourceConfig?: IDataSourceModeConfig['connection'];
   disableTheme?: boolean;
+  setTestResult?: React.Dispatch<
+    React.SetStateAction<{
+      active: boolean;
+      errorCode: IConnectionTestErrorType;
+      errorMessage: string;
+      type: ConnectType;
+    }>
+  >;
 }
 
 const DatasourceFormContext = React.createContext<IDatasouceFormContext>({

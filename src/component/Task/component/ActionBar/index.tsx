@@ -244,8 +244,9 @@ const ActionBar: React.FC<IProps> = inject(
           return;
         }
         case TaskType.DATAMOCK: {
+          const detailRes = (await getTaskDetail(task?.id)) as TaskDetail<IMockDataParams>;
           props.modalStore.changeDataMockerModal(true, {
-            task: task as TaskDetail<IMockDataParams>,
+            task: detailRes,
           });
           return;
         }
@@ -1111,10 +1112,12 @@ const ActionBar: React.FC<IProps> = inject(
               tools = [viewBtn, editBtn];
             }
             if ([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)) {
-              if((task as ICycleTaskRecord<TaskRecordParameters>)?.triggerConfig?.triggerStrategy ===
-              TaskExecStrategy.START_NOW){
+              if (
+                (task as ICycleTaskRecord<TaskRecordParameters>)?.triggerConfig?.triggerStrategy ===
+                TaskExecStrategy.START_NOW
+              ) {
                 tools = [reTryBtn, viewBtn];
-              }else{
+              } else {
                 tools = [reTryBtn, viewBtn, disableBtn];
               }
             }
@@ -1127,6 +1130,11 @@ const ActionBar: React.FC<IProps> = inject(
         case TaskStatus.TERMINATED: {
           if (isOperator) {
             tools = [viewBtn];
+            if (
+              [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE, TaskType.SQL_PLAN].includes(task?.type)
+            ) {
+              tools.push(deleteBtn);
+            }
           } else {
             tools = [viewBtn];
           }
@@ -1159,11 +1167,6 @@ const ActionBar: React.FC<IProps> = inject(
         case TaskStatus.CANCELLED: {
           if (isOperator) {
             tools = [viewBtn];
-            if (
-              [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE, TaskType.SQL_PLAN].includes(task?.type)
-            ) {
-              tools.push(deleteBtn);
-            }
           } else {
             tools = [viewBtn];
           }

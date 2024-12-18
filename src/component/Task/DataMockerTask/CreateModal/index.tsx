@@ -33,6 +33,8 @@ import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import DataMockerForm, { converFormToServerData } from './form';
 import { IMockFormData } from './type';
+import moment from 'moment';
+import { columnTypeToRuleMap, RuleItem } from './type';
 
 interface IProps extends Pick<DrawerProps, 'visible'> {
   modalStore?: ModalStore;
@@ -62,9 +64,17 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       setRuleConfigList(
         columns?.map((item) => {
           const { typeConfig } = item;
+          let range = [typeConfig.lowValue, typeConfig.highValue];
+          const ruleItem = columnTypeToRuleMap[task.database.dialectType][typeConfig?.columnType];
+          switch (ruleItem) {
+            case RuleItem.DATE: {
+              range = [moment(typeConfig.lowValue), moment(typeConfig.highValue)];
+              break;
+            }
+          }
           return {
             ...item,
-            range: [typeConfig.lowValue, typeConfig.highValue],
+            range,
           };
         }) || [],
       );

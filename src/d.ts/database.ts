@@ -17,7 +17,7 @@
 import { IDatasource } from './datasource';
 import { IEnvironment } from './environment';
 import { IProject } from './project';
-import { ConnectType, DbObjectType } from '@/d.ts';
+import { ConnectType, DbObjectType, ConnectionMode } from '@/d.ts';
 
 export enum DatabaseSyncStatus {
   FAILED = 'FAILED',
@@ -91,6 +91,7 @@ export interface IDatabase {
   tableCount: number;
   environment: IEnvironment;
   existed: boolean;
+  dialectType?: ConnectionMode;
   authorizedPermissionTypes?: DatabasePermissionType[];
   /**
    * 数据库管理员
