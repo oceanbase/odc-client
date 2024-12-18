@@ -168,6 +168,19 @@ const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false)
   return allTreeData;
 };
 
+const getObjectTypeFromPosition = (position: string): DbObjectType => {
+  switch (position) {
+    case '0':
+      return DbObjectType.table;
+    case '1':
+      return DbObjectType.external_table;
+    case '2':
+      return DbObjectType.view;
+    default:
+      return DbObjectType.table;
+  }
+};
+
 const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = (
   { projectId, value = [], onChange },
   ref,
@@ -563,10 +576,12 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
               tableId: table?.id,
             });
           });
+          setSelectedExpandKeys([databaseId, curNodeKey]);
         } else {
           tableList = tableList.filter((i) => {
             return !tableIds.has(i.tableId);
           });
+          setSelectedExpandKeys([toNumber(databaseId)]);
         }
         onChange(tableList);
       } else {
@@ -574,17 +589,17 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
           ? checkedKeys
           : checkedKeys.filter((key) => key !== curNodeKey);
         const newValue: TableItem[] = preCheckKeys.map(parseDataBaseIdAndTableNamebByKey);
-        const willExpandKeys: number[] = newValue.map(({ databaseId }) => databaseId);
+        const tableItem = parseDataBaseIdAndTableNamebByKey(curNodeKey as string);
+        const objectType = getObjectTypeFromPosition(node.pos.split('-')[2]);
         if (checked) {
-          const tableItem = parseDataBaseIdAndTableNamebByKey(curNodeKey as string);
           newValue.push(tableItem);
-          willExpandKeys.push(tableItem.databaseId);
         }
+        // 无论是选中还是取消选中，都保持当前层级展开
+        setSelectedExpandKeys([tableItem.databaseId, `${tableItem.databaseId}-${objectType}`]);
         onChange(newValue);
-        setSelectedExpandKeys(Array.from(new Set(willExpandKeys)));
       }
     },
-    [checkedKeys, onChange, handleLoadTables],
+    [checkedKeys, onChange, handleLoadTables, databaseWithTableList],
   );
 
   useImperativeHandle(
@@ -644,12 +659,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
           <ExportCard
             title={
               <Space size={4}>
-                <span>
-                  {formatMessage({
-                    id: 'src.component.Task.component.TableSelecter.E836E630',
-                    defaultMessage: '选择表',
-                  })}
-                </span>
+                <span>选择表/视图</span>
               </Space>
             }
             onSearch={setSourceSearchValue}

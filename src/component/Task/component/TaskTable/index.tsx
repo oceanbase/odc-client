@@ -475,7 +475,7 @@ const TaskTable: React.FC<IProps> = inject(
             id: 'odc.components.TaskManagePage.Operation',
             defaultMessage: '操作',
           }),
-          width: 145,
+          width: 150,
           render: (_, record) => (
             <TaskTools
               task={record}

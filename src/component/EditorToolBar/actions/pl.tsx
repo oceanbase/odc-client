@@ -16,6 +16,7 @@
 
 import { formatMessage } from '@/util/intl';
 import { message, Modal } from 'antd';
+import { debounce } from 'lodash';
 
 import {
   BugOutlined,
@@ -57,14 +58,14 @@ const plActions: ToolBarActions = {
       if (!hasChangeEditorValue) return IConStatus.DISABLE;
       return getStatus(ctx);
     },
-    async action(ctx: any, databaseType?: String, editorValue?: String) {
+    action: debounce(async (ctx: any, databaseType?: String, editorValue?: String) => {
       switch (databaseType) {
         case (ConnectionMode.MYSQL, ConnectionMode.OB_MYSQL):
           return await ctx.savePL(null, true, editorValue);
         default:
           return await ctx.savePL();
       }
-    },
+    }, 300)
   },
 
   PL_TRIGGER_TYPE_SAVE: {

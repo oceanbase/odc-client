@@ -94,7 +94,7 @@ export default class ScriptPage extends PureComponent<IProps> {
   }
 
   setStateForEditorValue = (value: string) => {
-    this.props?.ctx?.handleSQLChanged(value);
+    this.props?.editor?.onValueChange?.(value);
     this.setState({
       editorValue: value,
     });

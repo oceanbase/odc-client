@@ -386,6 +386,7 @@ class ProcedurePage extends Component<
                         <SQLCodePreviewer
                           readOnly
                           defaultValue={(procedure && procedure.ddl) || ''}
+                          key={procedure.ddl}
                           language={
                             getDataSourceModeConfig(session?.connection?.type)?.sql?.language
                           }
