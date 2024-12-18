@@ -850,11 +850,22 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     );
   };
   public handleSQLChanged = (sql: string) => {
-    const { pageKey, onUnsavedChange, page, params } = this.props;
+    const { pageKey, onUnsavedChange, page, params, pageStore } = this.props;
     if (this.state.debug || sql === params?.scriptText) {
       return;
     }
-    debounceUpdatePageScriptText(pageKey, sql);
+    if (sql === this.state.initialSQL) {
+      pageStore.updatePage(
+        pageKey,
+        {
+          isSaved: true,
+          startSaving: false,
+        },
+        { sql },
+      );
+    } else {
+      debounceUpdatePageScriptText(pageKey, sql);
+    }
     if (page.isSaved) {
       onUnsavedChange(pageKey);
     }
@@ -931,6 +942,9 @@ export class PLPage extends Component<IProps, ISQLPageState> {
       }, newPageState);
       
       this.editor?.setValue(newPageState.scriptText);
+      this.setState({
+        initialSQL: newPageState.scriptText,
+      });
     }
 
     if (!opts?.hideMessage) {
