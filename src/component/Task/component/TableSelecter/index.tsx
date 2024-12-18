@@ -24,6 +24,7 @@ import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { Badge, Empty, Popconfirm, Space, Spin, Tree, Typography } from 'antd';
 import { DataNode, EventDataNode, TreeProps } from 'antd/lib/tree';
 import classnames from 'classnames';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import { isNumber, toNumber } from 'lodash';
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import styles from './index.less';
@@ -199,16 +200,21 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
             ?.filter((item) => item.type !== 'LOGICAL')
             ?.map((item) => item?.dataSource?.id),
         );
-        const list: IDataBaseWithTable[] = res.contents.map((db) => {
-          return {
-            ...db,
-            tableList: [],
-            externalTablesList: [],
-            viewList: [],
-            isExternalTable: false,
-            showTable: true,
-          };
-        });
+        // 过滤掉对象存储的数据源
+        const list: IDataBaseWithTable[] = res.contents
+          .filter((item) => {
+            return !isConnectTypeBeFileSystemGroup(item.connectType);
+          })
+          .map((db) => {
+            return {
+              ...db,
+              tableList: [],
+              externalTablesList: [],
+              viewList: [],
+              isExternalTable: false,
+              showTable: true,
+            };
+          });
         setDataBaseWithTableList(list || []);
       }
     } catch (e) {

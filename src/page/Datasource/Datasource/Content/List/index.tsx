@@ -252,6 +252,7 @@ const List: React.FC<IProps> = forwardRef(function (
           connectionName={
             <ConnectionName openNewConnection={openNewConnection} connection={connection} />
           }
+          connectType={connection?.type}
           cluster={<div>{getClusterName(connection.clusterName)}</div>}
           tenant={<div>{getTenantName(connection.clusterName, connection.tenantName)}</div>}
           host={<div>{[connection.host, connection.port].filter(Boolean).join(':') || '-'}</div>}

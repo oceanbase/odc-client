@@ -20,11 +20,12 @@ import ExportCard from '@/component/ExportCard';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { EnvColorMap } from '@/constant';
 import { DBType } from '@/d.ts/database';
-import datasourceStatus from '@/store/datasourceStatus';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Badge, Checkbox, Empty, Popconfirm, Space, Spin, Tooltip, Tree, Typography } from 'antd';
 import { DataNode, TreeProps } from 'antd/lib/tree';
 import classnames from 'classnames';
+import datasourceStatus from '@/store/datasourceStatus';
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from './index.less';
 
@@ -107,6 +108,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
 
   const getAllTreeData = () => {
     const validDatabaseList = databaseList?.filter((item) => {
+      if (isConnectTypeBeFileSystemGroup(item.connectType)) return false;
       return !sourceSearchValue?.length
         ? true
         : item?.name?.toLowerCase().indexOf(sourceSearchValue?.toLowerCase()) !== -1;
