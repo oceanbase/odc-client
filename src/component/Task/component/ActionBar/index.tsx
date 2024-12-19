@@ -548,7 +548,7 @@ const ActionBar: React.FC<IProps> = inject(
         taskType: TaskType.ALTER_SCHEDULE,
         parameters: {
           taskId: task?.id,
-          operationType: TaskOperationType.TERMINATED,
+          operationType: TaskOperationType.TERMINATE,
         },
       });
       props?.onReload?.();

@@ -2991,7 +2991,7 @@ export enum TaskOperationType {
   CREATE = 'CREATE',
   UPDATE = 'UPDATE',
   PAUSE = 'PAUSE',
-  TERMINATED = 'TERMINATED',
+  TERMINATE = 'TERMINATE',
   RESUME = 'RESUME',
 }
 
