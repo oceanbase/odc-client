@@ -1,7 +1,5 @@
 import { ConnectType, TaskType } from '@/d.ts';
 import { IDataSourceModeConfig } from '../interface';
-import MySQLColumnExtra from '../oceanbase/MySQLColumnExtra';
-import { haveOCP } from '@/util/env';
 
 const CloudStorageConfig: IDataSourceModeConfig = {
   connection: {
@@ -22,7 +20,7 @@ const CloudStorageConfig: IDataSourceModeConfig = {
     sessionManage: false,
     sessionParams: false,
     sqlExplain: false,
-    resourceTree: false,
+    resourceTree: true,
     export: {
       fileLimit: false,
       snapshot: false,

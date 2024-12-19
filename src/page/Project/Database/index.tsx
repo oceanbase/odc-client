@@ -133,8 +133,8 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
       const hasLoginDatabaseAuth = res.contents?.some(
         (item) => !!item.authorizedPermissionTypes.length,
       );
-      if(hasLoginDatabaseAuth){
-        setHasLoginDatabaseAuth?.(hasLoginDatabaseAuth)
+      if (hasLoginDatabaseAuth) {
+        setHasLoginDatabaseAuth?.(hasLoginDatabaseAuth);
       }
     }
   };
@@ -501,6 +501,9 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             width: 210,
             hide: projectArchived,
             render(_, record) {
+              /**
+               * 对象存储不展示操作列
+               */
               if (isConnectTypeBeFileSystemGroup(record.connectType)) return null;
               const config = getDataSourceModeConfig(record?.dataSource?.type);
               const notSupportToResourceTree = !config?.features?.resourceTree;

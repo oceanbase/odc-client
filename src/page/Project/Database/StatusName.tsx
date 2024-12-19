@@ -22,6 +22,7 @@ import { Button } from 'antd';
 import { observer } from 'mobx-react';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import styles from './index.less';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 
 export default observer(function StatusName({
   item,
@@ -37,7 +38,8 @@ export default observer(function StatusName({
     return <a onClick={onClick}>{item?.name}</a>;
   }
   const config = getDataSourceModeConfig(item?.dataSource?.type);
-  const notSupport = !config?.features?.resourceTree;
+  const notSupport =
+    !config?.features?.resourceTree || isConnectTypeBeFileSystemGroup(item?.dataSource?.type);
 
   const renderNotSupportDBWithTip = (name: React.ReactNode) => {
     return <span className={styles.disable}>{name}</span>;

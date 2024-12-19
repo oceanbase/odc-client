@@ -30,6 +30,7 @@ import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import { DataSourceStatusStore } from '@/store/datasourceStatus';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   Badge,
@@ -198,6 +199,13 @@ export default inject('dataSourceStatusStore')(
           ?.map((item) => {
             const config = getDataSourceModeConfig(item?.type);
             /**
+             * 团队空间不展示对象存储数据源，
+             * 个人空间展示对象存储数据源并禁用
+             */
+            if (isConnectTypeBeFileSystemGroup(item?.type) && !login.isPrivateSpace()) {
+              return;
+            }
+            /**
              * feature filter
              */
             if (!config?.features?.resourceTree) {
@@ -233,6 +241,7 @@ export default inject('dataSourceStatusStore')(
               selectable: item.status?.status === IConnectionStatus.ACTIVE,
               key: item.id,
               icon: <StatusIcon item={item} />,
+              disabled: isConnectTypeBeFileSystemGroup(item?.type),
             };
           })
           .filter(Boolean);
@@ -299,7 +308,6 @@ export default inject('dataSourceStatusStore')(
                   }}
                   size="small"
                 />
-
                 {login.isPrivateSpace() ? (
                   <NewDatasourceButton onSuccess={() => context?.reloadDatasourceList()}>
                     <Button
