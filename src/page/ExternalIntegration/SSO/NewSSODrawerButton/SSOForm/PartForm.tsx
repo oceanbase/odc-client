@@ -1093,7 +1093,7 @@ export const SAMLPartForm: React.FC<{
               onChange={(e) => updateSAMLCheckBoxConfig('signing', e.target.checked)}
             >
               签名配置
-              <Tooltip title="用于保证 ODC 到 ODP 服务的请求不被篡改">
+              <Tooltip title="用于保证 ODC 到 IDP 服务的请求不被篡改">
                 <QuestionCircleOutlined
                   style={{ marginLeft: '6px', color: 'rgba(0, 0, 0, 0.45)' }}
                 />
@@ -1130,7 +1130,7 @@ export const SAMLPartForm: React.FC<{
               onChange={(e) => updateSAMLCheckBoxConfig('verification', e.target.checked)}
             >
               认证配置
-              <Tooltip title="用于保证 ODC 到 ODP 的请求不被篡改">
+              <Tooltip title="用于保证 IDP 到 ODC 的请求不被篡改">
                 <QuestionCircleOutlined
                   style={{ marginLeft: '6px', color: 'rgba(0, 0, 0, 0.45)' }}
                 />
@@ -1152,7 +1152,7 @@ export const SAMLPartForm: React.FC<{
             onChange={(e) => updateSAMLCheckBoxConfig('decryption', e.target.checked)}
           >
             解密配置
-            <Tooltip title="用于保证 ODC 到 ODP 服务的请求解密">
+            <Tooltip title="用于保证 IDP 到 ODC 服务的请求解密">
               <QuestionCircleOutlined style={{ marginLeft: '6px', color: 'rgba(0, 0, 0, 0.45)' }} />
             </Tooltip>
           </Checkbox>
