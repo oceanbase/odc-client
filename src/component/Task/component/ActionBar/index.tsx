@@ -80,6 +80,8 @@ interface IProps {
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onClose?: () => void;
   isTaskProjectOwner?: boolean;
+  delTaskList?: number[];
+  setDelTaskList?: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
 const ActionBar: React.FC<IProps> = inject(
@@ -99,6 +101,8 @@ const ActionBar: React.FC<IProps> = inject(
       disabledSubmit = false,
       result,
       isTaskProjectOwner,
+      delTaskList = [],
+      setDelTaskList,
     } = props;
     const isOwner = user?.id === task?.creator?.id;
     const isApprover = task?.approvable;
@@ -173,6 +177,7 @@ const ActionBar: React.FC<IProps> = inject(
         },
       });
       if (res) {
+        setDelTaskList?.([...delTaskList, id]);
         message.success('删除成功');
         props?.onReloadList?.();
       }
@@ -1201,7 +1206,8 @@ const ActionBar: React.FC<IProps> = inject(
 
     const renderTool = (tool, index) => {
       const ActionButton = isDetailModal ? Action.Button : Action.Link;
-      const disabled = activeBtnKey === tool?.key || tool?.disabled;
+      const disabled =
+        activeBtnKey === tool?.key || tool?.disabled || delTaskList?.includes(task.id);
       if (tool.confirmText) {
         return (
           <Popconfirm key={tool?.key || index} title={tool.confirmText} onConfirm={tool.action}>

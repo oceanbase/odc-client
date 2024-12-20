@@ -15,7 +15,7 @@ interface BatchSelectionPopoverProps {
 }
 
 const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
-  const { options, handleConfirm } = props;
+  const { options = [], handleConfirm } = props;
 
   const [checkedList, setCheckedList] = useState<CheckboxValueType[]>([]);
   const [searchValue, setSearchValue] = useState<string>(undefined);
