@@ -84,7 +84,12 @@ export default function Info() {
     } else {
       Modal.confirm({
         title: '确定要归档这个项目吗？',
-        content: '项目归档后将不可恢复，但仍保留相关数据，可前往归档项目中查看项目。',
+        content: (
+          <p>
+            项目归档后将不可恢复，但仍保留相关数据，<b>若有分区计划类型工单，则会停用该工单，</b>
+            可前往归档项目中查看项目。
+          </p>
+        ),
         okText: formatMessage({
           id: 'app.button.ok',
           defaultMessage: '确定',

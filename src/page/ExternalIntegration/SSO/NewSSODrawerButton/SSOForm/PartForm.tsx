@@ -20,6 +20,7 @@ import {
   IClientAuthenticationMethod,
   ISSOConfig,
   IUserInfoAuthenticationMethod,
+  SAMLType,
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import {
@@ -897,7 +898,7 @@ export const SAMLPartForm: React.FC<{
   isEdit: boolean;
   showExtraConfigForSAML: boolean;
   setShowExtraConfigForSAML: (show: boolean) => void;
-  updateSAMLCheckBoxConfig: (type: string, checked: boolean, value?: string) => void;
+  updateSAMLCheckBoxConfig: (type: SAMLType, checked: boolean, value?: string) => void;
   SAMLCheckBoxConfig: SAMLCheckBoxConfigType;
   registrationId: string;
   formConfig: FormInstance<ISSOConfig>;
@@ -1090,7 +1091,7 @@ export const SAMLPartForm: React.FC<{
           <div>
             <Checkbox
               checked={SAMLCheckBoxConfig.signing.checked}
-              onChange={(e) => updateSAMLCheckBoxConfig('signing', e.target.checked)}
+              onChange={(e) => updateSAMLCheckBoxConfig(SAMLType.signing, e.target.checked)}
             >
               签名配置
               <Tooltip title="用于保证 ODC 到 IDP 服务的请求不被篡改">
@@ -1127,7 +1128,7 @@ export const SAMLPartForm: React.FC<{
           <div>
             <Checkbox
               checked={SAMLCheckBoxConfig.verification.checked}
-              onChange={(e) => updateSAMLCheckBoxConfig('verification', e.target.checked)}
+              onChange={(e) => updateSAMLCheckBoxConfig(SAMLType.verification, e.target.checked)}
             >
               认证配置
               <Tooltip title="用于保证 IDP 到 ODC 的请求不被篡改">
@@ -1140,7 +1141,7 @@ export const SAMLPartForm: React.FC<{
             <TextArea
               rows={6}
               onChange={(e) => {
-                updateSAMLCheckBoxConfig('verification', true, e.target.value);
+                updateSAMLCheckBoxConfig(SAMLType.verification, true, e.target.value);
               }}
               style={{
                 display: SAMLCheckBoxConfig.verification.checked ? 'block' : 'none',
@@ -1149,7 +1150,7 @@ export const SAMLPartForm: React.FC<{
           </div>
           <Checkbox
             checked={SAMLCheckBoxConfig.decryption.checked}
-            onChange={(e) => updateSAMLCheckBoxConfig('decryption', e.target.checked)}
+            onChange={(e) => updateSAMLCheckBoxConfig(SAMLType.decryption, e.target.checked)}
           >
             解密配置
             <Tooltip title="用于保证 IDP 到 ODC 服务的请求解密">

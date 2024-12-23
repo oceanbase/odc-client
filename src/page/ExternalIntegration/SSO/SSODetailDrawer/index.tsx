@@ -163,14 +163,14 @@ export default function SSODetailDrawer({ visible, id, close }: IProps) {
             <Descriptions.Item label="登录请求">
               {configJson?.ssoParameter?.singlesignon?.signRequest ? '是' : '否'}
             </Descriptions.Item>
+            <Descriptions.Item label="签名配置">
+              {configJson?.ssoParameter?.signing?.certificate || '-'}
+            </Descriptions.Item>
             <Descriptions.Item label="认证配置">
               {configJson?.ssoParameter?.verification?.certificate || '-'}
             </Descriptions.Item>
             <Descriptions.Item label="解密配置">
               {configJson?.ssoParameter?.decryption.certificate || '-'}
-            </Descriptions.Item>
-            <Descriptions.Item label="签名配置">
-              {configJson?.ssoParameter?.signing?.certificate || '-'}
             </Descriptions.Item>
           </Descriptions>
         );
