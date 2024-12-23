@@ -389,8 +389,12 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
       }
       const newValue = remainKeys.map(parseDataBaseIdAndTableNamebByKey);
       onChange(newValue);
-      const willExpandKeys: number[] = newValue.map(({ databaseId }) => databaseId);
-      setSelectedExpandKeys(Array.from(new Set(willExpandKeys)));
+      const newDatabaseIds = newValue.map(({ databaseId }) => databaseId);
+      setSelectedExpandKeys((prevKeys) => {
+        const prevKeysSet = new Set(prevKeys);
+        newDatabaseIds.forEach(id => prevKeysSet.add(id));
+        return Array.from(prevKeysSet);
+      });
     },
     [checkedKeys, onChange, databaseWithTableList],
   );
