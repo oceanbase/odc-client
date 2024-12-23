@@ -3864,6 +3864,12 @@ export interface ISSO_LDAP_CONFIG {
   redirectUrl: string;
 }
 
+export enum SAMLType {
+  verification = 'verification',
+  signing = 'signing',
+  decryption = 'decryption',
+}
+
 export interface ISSO_SAML_CONFIG {
   acsLocation?: string;
   redirectUrl: string;
@@ -3871,9 +3877,9 @@ export interface ISSO_SAML_CONFIG {
   secret: string;
   acsEntityId?: string;
   providerEntityId?: string;
-  decryption?: { certificate: string };
-  signing?: { certificate: string };
-  verification?: { certificate: string };
+  [SAMLType.decryption]?: { certificate: string };
+  [SAMLType.signing]?: { certificate: string };
+  [SAMLType.verification]?: { certificate: string };
   metadataUri?: string;
   singlesignon?: {
     url?: string;

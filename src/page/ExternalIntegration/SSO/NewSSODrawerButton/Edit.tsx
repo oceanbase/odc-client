@@ -15,7 +15,7 @@
  */
 
 import { getIntegrationDetail, updateIntegration } from '@/common/network/manager';
-import { EncryptionAlgorithm, ISSOConfig, ISSOType } from '@/d.ts';
+import { EncryptionAlgorithm, ISSOConfig, ISSOType, ISSO_SAML_CONFIG, SAMLType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
 import { safeParseJson } from '@/util/utils';
@@ -63,6 +63,11 @@ export default function EditSSODrawer({ visible, id, close, onSave }: IProps) {
     const form = formRef?.current?.form;
     const value = await form.validateFields();
     const clone = { ...value };
+    if (configJson.type === ISSOType.SAML) {
+      for (let key in SAMLType) {
+        (clone.ssoParameter as ISSO_SAML_CONFIG)[key] = form.getFieldValue(['ssoParameter', key]);
+      }
+    }
     clone.ssoParameter.registrationId = configJson?.ssoParameter?.registrationId;
     clone.mappingRule.extraInfo = clone.mappingRule.extraInfo
       ?.map((info) => {
