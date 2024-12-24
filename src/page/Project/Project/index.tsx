@@ -132,13 +132,15 @@ const Project = () => {
         header={
           <div className={styles.header}>
             <Space size={12}>
-              <Acess
-                fallback={<span></span>}
-                {...createPermission(IManagerResourceType.project, actionTypes.create)}
-              >
-                <CreateProjectDrawer disabled={projectTypeIsArchived} onCreate={() => reload()} />
-              </Acess>
-              {!!dataSource?.length && (
+              {!projectTypeIsArchived && (
+                <Acess
+                  fallback={<span></span>}
+                  {...createPermission(IManagerResourceType.project, actionTypes.create)}
+                >
+                  <CreateProjectDrawer disabled={projectTypeIsArchived} onCreate={() => reload()} />
+                </Acess>
+              )}
+              {!!dataSource?.length && !projectTypeIsArchived && (
                 <ApplyPermissionButton
                   disabled={projectTypeIsArchived}
                   label={

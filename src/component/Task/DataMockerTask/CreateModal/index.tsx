@@ -33,6 +33,8 @@ import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import DataMockerForm, { converFormToServerData } from './form';
 import { IMockFormData } from './type';
+import moment from 'moment';
+import { columnTypeToRuleMap, RuleItem } from './type';
 
 interface IProps extends Pick<DrawerProps, 'visible'> {
   modalStore?: ModalStore;
@@ -51,23 +53,28 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const loadEditData = async () => {
       const { task } = dataMockerData;
 
-      const {
-        parameters: { taskDetail },
-        database: { id: databaseId },
-        description,
-        executionStrategy,
-      } = task;
+      const { description, executionStrategy } = task;
+      const taskDetail = task?.parameters?.taskDetail ?? null;
+      const databaseId = task?.database?.id ?? null;
       const taskDetailObj: {
         tables: IServerMockTable;
       } = JSON.parse(taskDetail);
       const { tableName, whetherTruncate, totalCount, strategy, batchSize, columns } =
         taskDetailObj?.tables?.[0] ?? {};
       setRuleConfigList(
-        columns.map((item) => {
+        columns?.map((item) => {
           const { typeConfig } = item;
+          let range = [typeConfig.lowValue, typeConfig.highValue];
+          const ruleItem = columnTypeToRuleMap[task.database.dialectType][typeConfig?.columnType];
+          switch (ruleItem) {
+            case RuleItem.DATE: {
+              range = [moment(typeConfig.lowValue), moment(typeConfig.highValue)];
+              break;
+            }
+          }
           return {
             ...item,
-            range: [typeConfig.lowValue, typeConfig.highValue],
+            range,
           };
         }) || [],
       );

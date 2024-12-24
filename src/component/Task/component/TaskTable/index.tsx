@@ -228,6 +228,7 @@ const TaskTable: React.FC<IProps> = inject(
     const [hoverInNewTaskMenuBtn, setHoverInNewTaskMenuBtn] = useState(false);
     const [hoverInNewTaskMenu, setHoverInNewTaskMenu] = useState(false);
     const [listParams, setListParams] = useState(null);
+    const [delTaskList, setDelTaskList] = useState<number[]>([]);
     const { project } = useContext(ProjectContext) || {};
     const projectArchived = isProjectArchived(project);
     const loadParams = useRef(null);
@@ -486,10 +487,12 @@ const TaskTable: React.FC<IProps> = inject(
             id: 'odc.components.TaskManagePage.Operation',
             defaultMessage: '操作',
           }),
-          width: 145,
+          width: 150,
           render: (_, record) => (
             <TaskTools
               task={record}
+              delTaskList={delTaskList}
+              setDelTaskList={setDelTaskList}
               onReloadList={props.onReloadList}
               onDetailVisible={props.onDetailVisible}
             />

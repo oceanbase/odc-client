@@ -43,6 +43,7 @@ import { ModalStore } from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { isPhysicalDatabase } from '@/util/database';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
@@ -125,6 +126,10 @@ const ResourceTree: React.FC<IProps> = function ({
     const root = databases
       ?.filter((db) => {
         const config = getDataSourceModeConfig(db?.dataSource?.type);
+        // 隐藏对象存储类型数据库
+        if (isConnectTypeBeFileSystemGroup(db?.dataSource?.type)) {
+          return false;
+        }
         /**
          * feature filter
          */

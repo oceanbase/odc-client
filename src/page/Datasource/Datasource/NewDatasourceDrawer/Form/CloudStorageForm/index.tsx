@@ -12,15 +12,9 @@ interface CloudStorageFormProps {
 }
 
 const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
-  const { dataSourceConfig, form } = useContext(DatasourceFormContext) || {};
+  const { dataSourceConfig, form, testResult, setTestResult } =
+    useContext(DatasourceFormContext) || {};
   const { isEdit } = props;
-  const [errorMessage, setErrorMessage] = useState<string>(undefined);
-  const [testResult, setTestResult] = useState<{
-    active: boolean;
-    errorCode: IConnectionTestErrorType;
-    errorMessage: string;
-    type: ConnectType;
-  }>();
   if (!dataSourceConfig?.cloudStorage) {
     return null;
   }
@@ -44,7 +38,6 @@ const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
       return;
     }
     if (!res?.data?.active) {
-      setErrorMessage(res?.data?.errorMessage);
       switch (res?.data?.errorCode) {
         case IConnectionTestErrorType.ACCESS_DENIED:
         case IConnectionTestErrorType.INVALID_ACCESSKEY_ID: {
@@ -66,17 +59,20 @@ const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
           break;
         }
       }
+    } else {
+      message.success('测试连接成功');
     }
     setTestResult(res?.data);
-    setErrorMessage('');
-    message.success('测试连接成功');
   };
 
   const passwordValidStatus = useMemo(() => {
     if (testResult?.active) {
       return 'success';
     } else if (
-      [IConnectionTestErrorType.SIGNATURE_DOES_NOT_MATCH].includes(testResult?.errorCode)
+      [
+        IConnectionTestErrorType.SIGNATURE_DOES_NOT_MATCH,
+        IConnectionTestErrorType.UNKNOWN,
+      ].includes(testResult?.errorCode)
     ) {
       return 'error';
     }
@@ -89,6 +85,7 @@ const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
       [
         IConnectionTestErrorType.ACCESS_DENIED,
         IConnectionTestErrorType.INVALID_ACCESSKEY_ID,
+        IConnectionTestErrorType.UNKNOWN,
       ].includes(testResult?.errorCode)
     ) {
       return 'error';
@@ -150,7 +147,7 @@ const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
         </Form.Item>
       </Space>
 
-      <ErrorTip errorMessage={errorMessage} />
+      <ErrorTip errorMessage={testResult?.errorMessage} />
       <Row>
         <Space size={12}>
           <Action.Link

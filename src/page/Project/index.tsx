@@ -38,15 +38,14 @@ import Icon from '@ant-design/icons';
 import Setting from './Setting';
 import Task from './Task';
 import User from './User';
-const ExtraContent = ({ projectId }) => {
-  const [disabled, setDisabled] = useState(false);
+const ExtraContent = ({ projectId, hasLoginDatabaseAuth, setHasLoginDatabaseAuth }) => {
 
   const getLoginDatabaseAuth = async () => {
     const res = await listDatabases(projectId, null, null, null, null, null, null, null, true);
-    const hasLoginDatabaseAuth = res.contents?.some(
+    const canLoginDatabase = res.contents?.some(
       (item) => !!item.authorizedPermissionTypes.length,
     );
-    setDisabled(!hasLoginDatabaseAuth);
+    setHasLoginDatabaseAuth(canLoginDatabase);
   };
 
   useEffect(() => {
@@ -59,7 +58,7 @@ const ExtraContent = ({ projectId }) => {
     <Space size={12}>
       <TooltipAction
         title={
-          disabled
+          !hasLoginDatabaseAuth
             ? formatMessage({ id: 'src.page.Project.653AB743', defaultMessage: '暂无权限' })
             : ''
         }
@@ -69,7 +68,7 @@ const ExtraContent = ({ projectId }) => {
             tracert.click('a3112.b64002.c330858.d367386');
             gotoSQLWorkspace(projectId);
           }}
-          disabled={disabled}
+          disabled={!hasLoginDatabaseAuth}
         >
           {formatMessage({ id: 'src.page.Project.8635398D', defaultMessage: 'SQL 控制台' })}
 
@@ -163,6 +162,8 @@ const Index: React.FC<IProps> = function () {
     history.push(`/project/${value}/${page}`);
   };
   const [project, setProject] = useState<IProject>(null);
+  const [hasLoginDatabaseAuth, setHasLoginDatabaseAuth] = useState(false);
+
   async function fetchProject(projectId: number) {
     const data = await getProject(projectId);
     if (data) {
@@ -267,7 +268,7 @@ const Index: React.FC<IProps> = function () {
       // 当前项目中拥有DBA或OWNER身份的用户拥有完整的Tabs，否则隐藏“敏感数据”入口。
       tabList={displayTabs}
       tabActiveKey={page}
-      tabBarExtraContent={<ExtraContent projectId={projectId} />}
+      tabBarExtraContent={<ExtraContent projectId={projectId}  hasLoginDatabaseAuth={hasLoginDatabaseAuth} setHasLoginDatabaseAuth={setHasLoginDatabaseAuth}/>}
       containerWrapStyle={
         [IPageType.Project_Notification].includes(page)
           ? {
@@ -292,6 +293,8 @@ const Index: React.FC<IProps> = function () {
           project,
           projectId,
           reloadProject,
+          hasLoginDatabaseAuth,
+          setHasLoginDatabaseAuth
         }}
       >
         <Component key={id} id={id} />

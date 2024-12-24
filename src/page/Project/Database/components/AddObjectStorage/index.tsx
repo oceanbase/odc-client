@@ -22,21 +22,28 @@ const AddObjectStorage: React.FC<AddObjectStorageProps> = (props) => {
   const [form] = Form.useForm();
   const [fileSystemDataSourceList, setFileSystemDataSourceList] = useState<IConnection[]>([]);
 
-  const { loading: dataSourceListLoading } = useRequest(getConnectionList, {
-    onSuccess: (e) => {
-      // 过滤出对象存储的数据源
-      setFileSystemDataSourceList(
-        e.contents.filter((item) => isConnectTypeBeFileSystemGroup(item.type)),
-      );
+  const { run: fetchConnectionList, loading: dataSourceListLoading } = useRequest(
+    getConnectionList,
+    {
+      onSuccess: (e) => {
+        // 过滤出对象存储的数据源
+        setFileSystemDataSourceList(
+          e.contents.filter((item) => isConnectTypeBeFileSystemGroup(item.type)),
+        );
+      },
     },
-    defaultParams: [
-      {
+  );
+
+  useEffect(() => {
+    if (open) {
+      fetchConnectionList({
         size: 99999,
         page: 1,
         type: [ConnectType.OSS, ConnectType.COS, ConnectType.OBS, ConnectType.S3A],
-      },
-    ],
-  });
+      });
+    }
+  }, [open]);
+
   const { run, loading: saveDatabaseLoading } = useRequest(updateDataBase, {
     manual: true,
   });

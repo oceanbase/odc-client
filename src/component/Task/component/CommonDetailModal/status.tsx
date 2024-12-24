@@ -12,7 +12,7 @@ const statusMap = {
   },
 
   [ScheduleChangeStatus.SUCCESS]: {
-    icon: <CheckCircleFilled style={{ color: '#52c41a' }} />,
+    icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
     text: formatMessage({
       id: 'odc.component.TaskDetailDrawer.status.Complete',
       defaultMessage: '完成',
@@ -20,7 +20,7 @@ const statusMap = {
   },
 
   [ScheduleChangeStatus.FAILED]: {
-    icon: <ExclamationCircleFilled style={{ color: '#f5222d' }} />,
+    icon: <ExclamationCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
     text: formatMessage({
       id: 'odc.component.TaskDetailDrawer.status.Failed',
       defaultMessage: '失败',
@@ -28,7 +28,7 @@ const statusMap = {
   },
 
   [ScheduleChangeStatus.APPROVING]: {
-    icon: <ExclamationCircleFilled style={{ color: '#F5222D' }} />,
+    icon: <ExclamationCircleFilled style={{ color: 'var(--icon-blue-color)' }} />,
     text: formatMessage({
       id: 'odc.component.TaskStatus.Approving',
       defaultMessage: '审批中',
