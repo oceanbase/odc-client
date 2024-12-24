@@ -2008,47 +2008,47 @@ export enum TaskPageType {
 }
 
 export enum TaskType {
-  /* 导入 */
+  /** 导入 */
   IMPORT = 'IMPORT',
-  /* 导出 */
+  /** 导出 */
   EXPORT = 'EXPORT',
-  /* 模拟数据 */
+  /** 模拟数据 */
   DATAMOCK = 'MOCKDATA',
-  /* 数据库变更 */
+  /** 数据库变更 */
   ASYNC = 'ASYNC',
-  /* 分区计划 */
+  /** 分区计划 */
   PARTITION_PLAN = 'PARTITION_PLAN',
-  /* sql 计划 */
+  /** sql 计划 */
   SQL_PLAN = 'SQL_PLAN',
-  /* 计划变更(调度任务) */
+  /** 计划变更(调度任务) */
   ALTER_SCHEDULE = 'ALTER_SCHEDULE',
-  /* 影子表同步 */
+  /** 影子表同步 */
   SHADOW = 'SHADOWTABLE_SYNC',
-  /* ? (疑似弃用) */
+  /** ? (疑似弃用) */
   DATA_SAVE = 'DATA_SAVE',
-  /* 权限申请 (疑似弃用) */
+  /** 权限申请 (疑似弃用) */
   PERMISSION_APPLY = 'PERMISSION_APPLY',
-  /* 数据归档 */
+  /** 数据归档 */
   DATA_ARCHIVE = 'DATA_ARCHIVE',
-  /* ? (疑似弃用) */
+  /**  (疑似弃用?) */
   MIGRATION = 'DATA_ARCHIVE',
-  /* 无锁结构变更 */
+  /** 无锁结构变更 */
   ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
-  /* 数据清理 */
+  /** 数据清理 */
   DATA_DELETE = 'DATA_DELETE',
-  /* 导出结果集 */
+  /** 导出结果集 */
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
-  /* 申请项目权限 */
+  /** 申请项目权限 */
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
-  /* 申请库权限 */
+  /** 申请库权限 */
   APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
-  /* 申请表/视图权限 */
+  /** 申请表/视图权限 */
   APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
-  /* 结构对比 */
+  /** 结构对比 */
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
-  /* 多库变更 */
+  /** 多库变更 */
   MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
-  /* 逻辑库变更 */
+  /** 逻辑库变更 */
   LOGICAL_DATABASE_CHANGE = 'LOGICAL_DATABASE_CHANGE',
 }
 
@@ -2790,6 +2790,7 @@ export interface IApplyDatabasePermissionTaskParams {
   types: DatabasePermissionType[];
   expireTime: number;
   applyReason: string;
+  validDuration: string;
 }
 
 export interface IApplyTablePermissionTaskParams {
@@ -2990,7 +2991,7 @@ export enum TaskOperationType {
   CREATE = 'CREATE',
   UPDATE = 'UPDATE',
   PAUSE = 'PAUSE',
-  TERMINATED = 'TERMINATED',
+  TERMINATE = 'TERMINATE',
   RESUME = 'RESUME',
 }
 
@@ -3070,6 +3071,7 @@ export enum TaskStatus {
   // 周期任务独有的状态
   PAUSE = 'PAUSE',
   ENABLED = 'ENABLED',
+  /** 已终止 */
   TERMINATED = 'TERMINATED',
   TIMEOUT = 'TIMEOUT',
   PRE_CHECK_FAILED = 'PRE_CHECK_FAILED',
@@ -3862,6 +3864,12 @@ export interface ISSO_LDAP_CONFIG {
   redirectUrl: string;
 }
 
+export enum SAMLType {
+  verification = 'verification',
+  signing = 'signing',
+  decryption = 'decryption',
+}
+
 export interface ISSO_SAML_CONFIG {
   acsLocation?: string;
   redirectUrl: string;
@@ -3869,9 +3877,9 @@ export interface ISSO_SAML_CONFIG {
   secret: string;
   acsEntityId?: string;
   providerEntityId?: string;
-  decryption?: { certificate: string };
-  signing?: { certificate: string };
-  verification?: { certificate: string };
+  [SAMLType.decryption]?: { certificate: string };
+  [SAMLType.signing]?: { certificate: string };
+  [SAMLType.verification]?: { certificate: string };
   metadataUri?: string;
   singlesignon?: {
     url?: string;

@@ -29,7 +29,7 @@ import { AccountType, ConnectType, IConnectionTestErrorType, DatasourceGroup } f
 import { IDatasource, IDataSourceType } from '@/d.ts/datasource';
 import login from '@/store/login';
 import { haveOCP } from '@/util/env';
-import { formatMessage } from '@/util/intl';
+import { formatMessage, getLocalDocs } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Form, FormInstance, Input, Select, Space, Typography, Alert, Button } from 'antd';
@@ -160,6 +160,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
     }
     setTestResult(res?.data);
   }
+
   const connectTypeList: ConnectType[] = type
     ? getAllConnectTypes(getDsByConnectType(type))
     : getAllConnectTypes(IDataSourceType.OceanBase);
@@ -176,14 +177,15 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             marginBottom: '12px',
           }}
           action={
-            <Button
-              type="link"
-              onClick={() => {
-                // dev_ing
+            <a
+              href={getLocalDocs('100.create-a-personal-connection.html')}
+              target={'_blank'}
+              onClick={(e) => {
+                e.stopPropagation();
               }}
             >
               查看详情
-            </Button>
+            </a>
           }
         />
       );
@@ -200,6 +202,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
         originDatasource,
         dataSourceConfig: dsc,
         disableTheme,
+        setTestResult,
       }}
     >
       {AlertMessage}

@@ -20,6 +20,7 @@ import {
   IClientAuthenticationMethod,
   ISSOConfig,
   IUserInfoAuthenticationMethod,
+  SAMLType,
 } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import {
@@ -897,7 +898,7 @@ export const SAMLPartForm: React.FC<{
   isEdit: boolean;
   showExtraConfigForSAML: boolean;
   setShowExtraConfigForSAML: (show: boolean) => void;
-  updateSAMLCheckBoxConfig: (type: string, checked: boolean, value?: string) => void;
+  updateSAMLCheckBoxConfig: (type: SAMLType, checked: boolean, value?: string) => void;
   SAMLCheckBoxConfig: SAMLCheckBoxConfigType;
   registrationId: string;
   formConfig: FormInstance<ISSOConfig>;
@@ -910,6 +911,7 @@ export const SAMLPartForm: React.FC<{
   formConfig,
 }) => {
   const metadataUriValue = Form.useWatch(['ssoParameter', 'metadataUri'], formConfig);
+  const providerEntityIdValue = Form.useWatch(['ssoParameter', 'providerEntityId'], formConfig);
   return (
     <>
       <Typography.Title level={5}>SAML 信息</Typography.Title>
@@ -1005,7 +1007,7 @@ export const SAMLPartForm: React.FC<{
           tooltip={'服务提供商的唯一标识'}
           rules={[
             {
-              required: showExtraConfigForSAML ? true : false,
+              required: isEdit ? providerEntityIdValue : showExtraConfigForSAML ? true : false,
             },
           ]}
         >
@@ -1089,10 +1091,10 @@ export const SAMLPartForm: React.FC<{
           <div>
             <Checkbox
               checked={SAMLCheckBoxConfig.signing.checked}
-              onChange={(e) => updateSAMLCheckBoxConfig('signing', e.target.checked)}
+              onChange={(e) => updateSAMLCheckBoxConfig(SAMLType.signing, e.target.checked)}
             >
               签名配置
-              <Tooltip title="用于保证 ODC 到 SSO 服务的请求不被篡改">
+              <Tooltip title="用于保证 ODC 到 IDP 服务的请求不被篡改">
                 <QuestionCircleOutlined
                   style={{ marginLeft: '6px', color: 'rgba(0, 0, 0, 0.45)' }}
                 />
@@ -1126,10 +1128,10 @@ export const SAMLPartForm: React.FC<{
           <div>
             <Checkbox
               checked={SAMLCheckBoxConfig.verification.checked}
-              onChange={(e) => updateSAMLCheckBoxConfig('verification', e.target.checked)}
+              onChange={(e) => updateSAMLCheckBoxConfig(SAMLType.verification, e.target.checked)}
             >
               认证配置
-              <Tooltip title="用于保证 SSO 服务到 ODC 的请求不被篡改">
+              <Tooltip title="用于保证 IDP 到 ODC 的请求不被篡改">
                 <QuestionCircleOutlined
                   style={{ marginLeft: '6px', color: 'rgba(0, 0, 0, 0.45)' }}
                 />
@@ -1139,7 +1141,7 @@ export const SAMLPartForm: React.FC<{
             <TextArea
               rows={6}
               onChange={(e) => {
-                updateSAMLCheckBoxConfig('verification', true, e.target.value);
+                updateSAMLCheckBoxConfig(SAMLType.verification, true, e.target.value);
               }}
               style={{
                 display: SAMLCheckBoxConfig.verification.checked ? 'block' : 'none',
@@ -1148,10 +1150,10 @@ export const SAMLPartForm: React.FC<{
           </div>
           <Checkbox
             checked={SAMLCheckBoxConfig.decryption.checked}
-            onChange={(e) => updateSAMLCheckBoxConfig('decryption', e.target.checked)}
+            onChange={(e) => updateSAMLCheckBoxConfig(SAMLType.decryption, e.target.checked)}
           >
             解密配置
-            <Tooltip title="用于保证 ODC 到 SSO 服务的请求解密">
+            <Tooltip title="用于保证 IDP 到 ODC 服务的请求解密">
               <QuestionCircleOutlined style={{ marginLeft: '6px', color: 'rgba(0, 0, 0, 0.45)' }} />
             </Tooltip>
           </Checkbox>

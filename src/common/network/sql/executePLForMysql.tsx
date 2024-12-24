@@ -35,7 +35,7 @@ export default async function executePLForMysql(
     status,
   } = executeSQLPreHandle(
     taskInfo,
-    { ...params, wrappedSql: data.wrappedSql },
+    { ...params, wrappedSql: data?.wrappedSql },
     needModal,
     sessionId,
     true,

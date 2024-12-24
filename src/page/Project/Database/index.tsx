@@ -58,6 +58,7 @@ import styles from './index.less';
 import ParamContext, { IFilterParams } from './ParamContext';
 import StatusName from './StatusName';
 import { isProjectArchived } from '@/page/Project/helper';
+
 interface IProps {
   id: string;
   modalStore?: ModalStore;
@@ -65,7 +66,7 @@ interface IProps {
 
 const Database: React.FC<IProps> = ({ id, modalStore }) => {
   const statusMap = datasourceStatus.statusMap;
-  const { project } = useContext(ProjectContext);
+  const { project, setHasLoginDatabaseAuth } = useContext(ProjectContext);
   const projectArchived = isProjectArchived(project);
   const [total, setTotal] = useState(0);
   const [searchValue, setSearchValue] = useState('');
@@ -129,6 +130,12 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
       );
       setData(res?.contents);
       setTotal(res?.page?.totalElements);
+      const hasLoginDatabaseAuth = res.contents?.some(
+        (item) => !!item.authorizedPermissionTypes.length,
+      );
+      if (hasLoginDatabaseAuth) {
+        setHasLoginDatabaseAuth?.(hasLoginDatabaseAuth);
+      }
     }
   };
   function reload(name: string = searchValue) {
@@ -494,6 +501,9 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             width: 210,
             hide: projectArchived,
             render(_, record) {
+              /**
+               * 对象存储不展示操作列
+               */
               if (isConnectTypeBeFileSystemGroup(record.connectType)) return null;
               const config = getDataSourceModeConfig(record?.dataSource?.type);
               const notSupportToResourceTree = !config?.features?.resourceTree;

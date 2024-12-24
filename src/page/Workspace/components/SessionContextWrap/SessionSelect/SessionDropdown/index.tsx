@@ -100,6 +100,7 @@ interface IProps {
   options?: {
     hideFileSystem?: boolean;
   };
+  disabled?: boolean;
 }
 const SessionDropdown: React.FC<IProps> = function ({
   children,
@@ -110,6 +111,7 @@ const SessionDropdown: React.FC<IProps> = function ({
   taskType,
   dataSourceStatusStore,
   options,
+  disabled= false
 }) {
   const context = useContext(SessionContext);
   const { from, setFrom } = context;
@@ -489,6 +491,7 @@ const SessionDropdown: React.FC<IProps> = function ({
       overlayClassName={styles.pop}
       overlayStyle={{ paddingTop: 2, width }}
       content={
+        disabled ? null :
         <Spin spinning={loading || fetchLoading}>
           <div className={styles.main} style={{ width: '100%' }}>
             <Space.Compact block>

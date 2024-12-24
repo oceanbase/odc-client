@@ -15,18 +15,22 @@
  */
 
 import { IProject } from '@/d.ts/project';
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 
 interface IProjectContext {
   project: IProject | null;
   projectId: number;
   reloadProject: () => void;
+  hasLoginDatabaseAuth: boolean
+  setHasLoginDatabaseAuth: Dispatch<SetStateAction<boolean>>
 }
 
 const ProjectContext = React.createContext<IProjectContext>({
   project: null,
   projectId: null,
   reloadProject: () => {},
+  hasLoginDatabaseAuth: false,
+  setHasLoginDatabaseAuth: ()=>{}
 });
 
 export default ProjectContext;

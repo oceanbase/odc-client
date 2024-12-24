@@ -245,6 +245,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           types,
           expireTime: getExpireTime(expireTime, customExpireTime, isCustomExpireTime),
           applyReason,
+          validDuration: expireTime,
         };
         const data = {
           taskType: TaskType.APPLY_DATABASE_PERMISSION,
@@ -280,6 +281,8 @@ const CreateModal: React.FC<IProps> = (props) => {
         databases,
         types,
         applyReason,
+        validDuration,
+        expireTime,
       },
       executionStrategy,
     } = task;
@@ -290,7 +293,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       databases: databases?.map((item) => item.id),
       types,
       applyReason,
+      expireTime: validDuration ? validDuration : defaultValue.expireTime,
+      customExpireTime: undefined,
     };
+    if (validDuration === 'custom') {
+      formData.customExpireTime = moment(expireTime);
+    }
     form.setFieldsValue(formData);
   };
 

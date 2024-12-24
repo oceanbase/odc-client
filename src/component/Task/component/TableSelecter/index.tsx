@@ -24,6 +24,7 @@ import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { Badge, Empty, Popconfirm, Space, Spin, Tree, Typography } from 'antd';
 import { DataNode, EventDataNode, TreeProps } from 'antd/lib/tree';
 import classnames from 'classnames';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import { isNumber, toNumber } from 'lodash';
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import styles from './index.less';
@@ -167,6 +168,19 @@ const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false)
   return allTreeData;
 };
 
+const getObjectTypeFromPosition = (position: string): DbObjectType => {
+  switch (position) {
+    case '0':
+      return DbObjectType.table;
+    case '1':
+      return DbObjectType.external_table;
+    case '2':
+      return DbObjectType.view;
+    default:
+      return DbObjectType.table;
+  }
+};
+
 const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = (
   { projectId, value = [], onChange },
   ref,
@@ -199,16 +213,21 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
             ?.filter((item) => item.type !== 'LOGICAL')
             ?.map((item) => item?.dataSource?.id),
         );
-        const list: IDataBaseWithTable[] = res.contents.map((db) => {
-          return {
-            ...db,
-            tableList: [],
-            externalTablesList: [],
-            viewList: [],
-            isExternalTable: false,
-            showTable: true,
-          };
-        });
+        // 过滤掉对象存储的数据源
+        const list: IDataBaseWithTable[] = res.contents
+          .filter((item) => {
+            return !isConnectTypeBeFileSystemGroup(item.connectType);
+          })
+          .map((db) => {
+            return {
+              ...db,
+              tableList: [],
+              externalTablesList: [],
+              viewList: [],
+              isExternalTable: false,
+              showTable: true,
+            };
+          });
         setDataBaseWithTableList(list || []);
       }
     } catch (e) {
@@ -370,8 +389,12 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
       }
       const newValue = remainKeys.map(parseDataBaseIdAndTableNamebByKey);
       onChange(newValue);
-      const willExpandKeys: number[] = newValue.map(({ databaseId }) => databaseId);
-      setSelectedExpandKeys(Array.from(new Set(willExpandKeys)));
+      const newDatabaseIds = newValue.map(({ databaseId }) => databaseId);
+      setSelectedExpandKeys((prevKeys) => {
+        const prevKeysSet = new Set(prevKeys);
+        newDatabaseIds.forEach(id => prevKeysSet.add(id));
+        return Array.from(prevKeysSet);
+      });
     },
     [checkedKeys, onChange, databaseWithTableList],
   );
@@ -557,10 +580,12 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
               tableId: table?.id,
             });
           });
+          setSelectedExpandKeys([databaseId, curNodeKey]);
         } else {
           tableList = tableList.filter((i) => {
             return !tableIds.has(i.tableId);
           });
+          setSelectedExpandKeys([toNumber(databaseId)]);
         }
         onChange(tableList);
       } else {
@@ -568,17 +593,17 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
           ? checkedKeys
           : checkedKeys.filter((key) => key !== curNodeKey);
         const newValue: TableItem[] = preCheckKeys.map(parseDataBaseIdAndTableNamebByKey);
-        const willExpandKeys: number[] = newValue.map(({ databaseId }) => databaseId);
+        const tableItem = parseDataBaseIdAndTableNamebByKey(curNodeKey as string);
+        const objectType = getObjectTypeFromPosition(node.pos.split('-')[2]);
         if (checked) {
-          const tableItem = parseDataBaseIdAndTableNamebByKey(curNodeKey as string);
           newValue.push(tableItem);
-          willExpandKeys.push(tableItem.databaseId);
         }
+        // 无论是选中还是取消选中，都保持当前层级展开
+        setSelectedExpandKeys([tableItem.databaseId, `${tableItem.databaseId}-${objectType}`]);
         onChange(newValue);
-        setSelectedExpandKeys(Array.from(new Set(willExpandKeys)));
       }
     },
-    [checkedKeys, onChange, handleLoadTables],
+    [checkedKeys, onChange, handleLoadTables, databaseWithTableList],
   );
 
   useImperativeHandle(
@@ -638,12 +663,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
           <ExportCard
             title={
               <Space size={4}>
-                <span>
-                  {formatMessage({
-                    id: 'src.component.Task.component.TableSelecter.E836E630',
-                    defaultMessage: '选择表',
-                  })}
-                </span>
+                <span>选择表/视图</span>
               </Space>
             }
             onSearch={setSourceSearchValue}

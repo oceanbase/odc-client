@@ -71,6 +71,9 @@ export interface ISupportFeature {
   enableShadowSync: boolean;
 
   enablePartitionPlan: boolean;
+  /**
+   * 外表
+   */
   enableExternalTable: boolean;
 
   /**

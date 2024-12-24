@@ -80,6 +80,8 @@ interface IProps {
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onClose?: () => void;
   isTaskProjectOwner?: boolean;
+  delTaskList?: number[];
+  setDelTaskList?: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
 const ActionBar: React.FC<IProps> = inject(
@@ -99,6 +101,8 @@ const ActionBar: React.FC<IProps> = inject(
       disabledSubmit = false,
       result,
       isTaskProjectOwner,
+      delTaskList = [],
+      setDelTaskList,
     } = props;
     const isOwner = user?.id === task?.creator?.id;
     const isApprover = task?.approvable;
@@ -173,6 +177,7 @@ const ActionBar: React.FC<IProps> = inject(
         },
       });
       if (res) {
+        setDelTaskList?.([...delTaskList, id]);
         message.success('删除成功');
         props?.onReloadList?.();
       }
@@ -244,8 +249,9 @@ const ActionBar: React.FC<IProps> = inject(
           return;
         }
         case TaskType.DATAMOCK: {
+          const detailRes = (await getTaskDetail(task?.id)) as TaskDetail<IMockDataParams>;
           props.modalStore.changeDataMockerModal(true, {
-            task: task as TaskDetail<IMockDataParams>,
+            task: detailRes,
           });
           return;
         }
@@ -547,7 +553,7 @@ const ActionBar: React.FC<IProps> = inject(
         taskType: TaskType.ALTER_SCHEDULE,
         parameters: {
           taskId: task?.id,
-          operationType: TaskOperationType.TERMINATED,
+          operationType: TaskOperationType.TERMINATE,
         },
       });
       props?.onReload?.();
@@ -1110,15 +1116,15 @@ const ActionBar: React.FC<IProps> = inject(
             if (isLogicalDbChangeTask(task?.type)) {
               tools = [viewBtn, editBtn];
             }
-            if ([TaskType.DATA_ARCHIVE].includes(task?.type)) {
-              tools = [reTryBtn, viewBtn];
-            }
-            if (
-              [TaskType.DATA_DELETE].includes(task?.type) &&
-              (task as ICycleTaskRecord<TaskRecordParameters>)?.triggerConfig?.triggerStrategy ===
+            if ([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)) {
+              if (
+                (task as ICycleTaskRecord<TaskRecordParameters>)?.triggerConfig?.triggerStrategy ===
                 TaskExecStrategy.START_NOW
-            ) {
-              tools = [viewBtn];
+              ) {
+                tools = [reTryBtn, viewBtn];
+              } else {
+                tools = [reTryBtn, viewBtn, disableBtn];
+              }
             }
           } else {
             tools = [viewBtn];
@@ -1129,6 +1135,11 @@ const ActionBar: React.FC<IProps> = inject(
         case TaskStatus.TERMINATED: {
           if (isOperator) {
             tools = [viewBtn];
+            if (
+              [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE, TaskType.SQL_PLAN].includes(task?.type)
+            ) {
+              tools.push(deleteBtn);
+            }
           } else {
             tools = [viewBtn];
           }
@@ -1161,11 +1172,6 @@ const ActionBar: React.FC<IProps> = inject(
         case TaskStatus.CANCELLED: {
           if (isOperator) {
             tools = [viewBtn];
-            if (
-              [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE, TaskType.SQL_PLAN].includes(task?.type)
-            ) {
-              tools.push(deleteBtn);
-            }
           } else {
             tools = [viewBtn];
           }
@@ -1200,7 +1206,8 @@ const ActionBar: React.FC<IProps> = inject(
 
     const renderTool = (tool, index) => {
       const ActionButton = isDetailModal ? Action.Button : Action.Link;
-      const disabled = activeBtnKey === tool?.key || tool?.disabled;
+      const disabled =
+        activeBtnKey === tool?.key || tool?.disabled || delTaskList?.includes(task.id);
       if (tool.confirmText) {
         return (
           <Popconfirm key={tool?.key || index} title={tool.confirmText} onConfirm={tool.action}>

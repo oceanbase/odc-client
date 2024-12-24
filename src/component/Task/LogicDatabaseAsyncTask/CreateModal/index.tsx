@@ -68,6 +68,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const databaseId = Form.useWatch('databaseId', form);
   const sqlContent = Form.useWatch('sqlContent', form);
+  const initialSQL = logicDatabaseInfo?.ddl
   const delimiter = Form.useWatch('delimiter', form);
   const [previewOpen, setPreviewOpen] = useState<boolean>(false);
   const loadEditData = async (task) => {
@@ -92,12 +93,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     form.setFieldsValue(formData);
   };
 
-  useEffect(() => {
-    if (logicDatabaseInfo?.ddl) {
-      form?.setFieldValue('sqlContent', logicDatabaseInfo?.ddl);
-      form?.setFieldValue('databaseId', logicDatabaseInfo?.databaseId);
-    }
-  }, [logicDatabaseInfo?.ddl]);
+
 
   const handleSqlChange = (type: 'sqlContent', sql: string) => {
     form?.setFieldsValue({
@@ -373,7 +369,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           >
             <CommonIDE
               ref={editorRef}
-              initialSQL={sqlContent}
+              initialSQL={initialSQL}
               language={'sql'}
               onEditorAfterCreatedCallback={onEditorAfterCreatedCallback}
               onSQLChange={(sql) => {

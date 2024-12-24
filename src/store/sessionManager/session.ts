@@ -478,11 +478,10 @@ class SessionStore {
       return;
     }
     this.lastIdentitiesLoadTime = now;
-    const data = await queryIdentities(
-      ['TABLE', 'VIEW', 'EXTERNAL_TABLE'],
-      this.sessionId,
-      this.database?.dbName,
-    );
+    const supportType = this.supportFeature.enableExternalTable
+      ? ['TABLE', 'VIEW', 'EXTERNAL_TABLE']
+      : ['TABLE', 'VIEW'];
+    const data = await queryIdentities(supportType, this.sessionId, this.database?.dbName);
     if (!data) {
       this.lastTableAndViewLoadTime = 0;
     }
