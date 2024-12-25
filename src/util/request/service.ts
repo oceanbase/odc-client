@@ -17,7 +17,7 @@ import qs from 'qs';
 
 //  https://www.axios-http.cn/docs/req_config
 const service: AxiosInstance = axios.create({
-  baseURL: window.ODCApiHost || '',
+  baseURL: odc.appConfig.network.baseUrl() || '',
   timeout: 1000 * 60 * 60 * 10, // 后端去除了queryTimeout，前端默认给一个超大的时间
   withCredentials: true,
   paramsSerializer: function (params) {

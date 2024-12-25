@@ -32,6 +32,7 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ResultContext from '../../../ResultContext';
 import HexEditor from '../HexEditor';
 import styles from './index.less';
+import odc from '@/plugins/odc';
 
 enum DISPLAY_MODE {
   TEXT,
@@ -322,7 +323,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
             sessionId={resultContext.sessionId}
             maxCount={1}
             action={
-              window.ODCApiHost +
+              odc.appConfig.network.baseUrl() +
               `/api/v2/datasource/sessions/${generateSessionSid(resultContext.sessionId)}/upload`
             }
             headers={{

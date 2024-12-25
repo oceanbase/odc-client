@@ -73,4 +73,9 @@ export default {
     preMount() {},
     unMount() {},
   },
+  network: {
+    baseUrl() {
+      return window.ODCApiHost || '';
+    },
+  },
 };
