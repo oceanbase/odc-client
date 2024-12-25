@@ -28,7 +28,7 @@ import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
-import { hasChangePermission, hasExportPermission } from '../index';
+import { hasTableChangePermission, hasTableExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
 
@@ -109,8 +109,8 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       key: ResourceTreeNodeMenuKeys.EXPORT_TABLE,
       text: formatMessage({ id: 'odc.TreeNodeMenu.config.view.Export', defaultMessage: '导出' }), //导出
       ellipsis: true,
-      disabled: (session) => {
-        return !hasExportPermission(session);
+      disabled: (session, node) => {
+        return !hasTableExportPermission(session, node)
       },
       isHide: (session) => {
         return !isSupportExport(session);
@@ -229,8 +229,8 @@ export const viewMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]
       text: [formatMessage({ id: 'odc.TreeNodeMenu.config.view.Delete', defaultMessage: '删除' })],
       ellipsis: true,
       actionType: actionTypes.delete,
-      disabled: (session) => {
-        return !hasChangePermission(session);
+      disabled: (session, node) => {
+        return !hasTableChangePermission(session, node)
       },
       run(session, node) {
         const view = node.data as IView;

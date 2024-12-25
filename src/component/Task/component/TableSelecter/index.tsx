@@ -112,6 +112,10 @@ const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false)
       ? []
       : [childrenForTable, childrenForExternalTable, childrenForView]?.filter(Boolean);
 
+    const getTotalCount = (tableList, externalTablesList, viewList) => {
+      return (tableList?.length || 0) + (externalTablesList?.length || 0) + (viewList?.length || 0);
+    };
+
     return {
       title: (
         <Space size={2}>
@@ -126,7 +130,9 @@ const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false)
             {dataSource?.name}
           </Text>
           <Text type="secondary" ellipsis>
-            {hasGetTableList && isSourceTree ? `(${tableList?.length})` : ''}
+            {hasGetTableList && isSourceTree
+              ? `(${getTotalCount(tableList, externalTablesList, viewList)})`
+              : ''}
           </Text>
           {isSourceTree ? envRender(environment) : null}
         </Space>
@@ -392,7 +398,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
       const newDatabaseIds = newValue.map(({ databaseId }) => databaseId);
       setSelectedExpandKeys((prevKeys) => {
         const prevKeysSet = new Set(prevKeys);
-        newDatabaseIds.forEach(id => prevKeysSet.add(id));
+        newDatabaseIds.forEach((id) => prevKeysSet.add(id));
         return Array.from(prevKeysSet);
       });
     },

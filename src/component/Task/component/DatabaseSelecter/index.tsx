@@ -26,7 +26,7 @@ import { Badge, Checkbox, Empty, Popconfirm, Space, Spin, Tooltip, Tree, Typogra
 import { DataNode, TreeProps } from 'antd/lib/tree';
 import classnames from 'classnames';
 import datasourceStatus from '@/store/datasourceStatus';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
 
 const { Text } = Typography;
@@ -218,7 +218,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
   }
 
   const handleSwitchSelectAll = () => {
-    onChange(checkAll ? [baseDatabase || null] : maxTreeDataKeys);
+    onChange(checkAll ? [] : maxTreeDataKeys);
   };
 
   const handleSearch = (value) => {
@@ -249,7 +249,9 @@ const DatabaseSelecter: React.FC<IProps> = function ({
   const allTreeData = getAllTreeData();
   const selectedTreeData = getCheckedTreeData();
   const allTreeDataCount = allTreeDataKeys?.length;
-  const selectedTreeDataCount = checkedKeys?.length;
+  const selectedTreeDataCount = useMemo(()=>{
+    return checkedKeys?.length
+  }, [checkedKeys]);
   const indeterminate = selectedTreeDataCount && selectedTreeDataCount < allTreeDataCount;
 
   return (
