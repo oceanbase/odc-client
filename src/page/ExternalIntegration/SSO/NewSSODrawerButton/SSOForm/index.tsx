@@ -124,6 +124,28 @@ export default inject('userStore')(
         },
         [form, registrationId, testInfo],
       );
+
+      useEffect(() => {
+        if (showExtraConfigForSAML && form.getFieldValue('name')) {
+          const name = form.getFieldValue('name');
+          const md5Hex = md5(`${name || ''}`);
+          const id = `${userStore?.organizationId}-${md5Hex}`;
+          form.setFieldsValue({
+            ssoParameter: {
+              providerEntityId: `${
+                window.ODCApiHost || location.origin
+              }/saml2/service-provider-metadata/${id}`,
+            },
+          });
+        } else {
+          form.setFieldsValue({
+            ssoParameter: {
+              providerEntityId: undefined,
+            },
+          });
+        }
+      }, [showExtraConfigForSAML]);
+
       async function fetchTestInfo(testId: string) {
         const data = await getTestUserInfo(testId);
         let text;
@@ -395,7 +417,7 @@ export default inject('userStore')(
                 acsLocation: `${window.ODCApiHost || location.origin}/login/saml2/sso/${id}`,
                 acsEntityId: `${
                   window.ODCApiHost || location.origin
-                }/saml2/service-provider-metadata/${id}`,
+                }/saml2/service-provider-metadata/${userStore?.organizationId}-test`,
               },
             });
             if (showExtraConfigForSAML) {
@@ -483,18 +505,18 @@ export default inject('userStore')(
                 certificate: value || SAMLCheckBoxConfig[type]?.value,
               });
           }
+        } else {
+          setSAMLCheckBoxConfig({
+            ...SAMLCheckBoxConfig,
+            [type]: {
+              checked,
+              value: value || SAMLCheckBoxConfig[type]?.value,
+            },
+          });
+          form.setFieldValue(['ssoParameter', type], {
+            certificate: null,
+          });
         }
-
-        setSAMLCheckBoxConfig({
-          ...SAMLCheckBoxConfig,
-          [type]: {
-            checked,
-            value: value || SAMLCheckBoxConfig[type]?.value,
-          },
-        });
-        form.setFieldValue(['ssoParameter', type], {
-          certificate: null,
-        });
       };
 
       return (
