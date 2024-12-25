@@ -61,7 +61,7 @@ export class ODC {
   public setResponseJsonResolve(handle: IResponseJsonResolver) {
     this.responseJsonResolver = handle;
   }
-  public appConfig: any = defaultConfig;
+  public appConfig: Partial<typeof defaultConfig> = defaultConfig;
 }
 
 export default new ODC();
