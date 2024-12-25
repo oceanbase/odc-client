@@ -38,6 +38,7 @@ function getLocale() {
 }
 
 function getEnvLocale() {
+  console.log('plugin', odc.appConfig.locale.getLocale());
   if (odc.appConfig.locale.getLocale) {
     return odc.appConfig.locale.getLocale();
   }
