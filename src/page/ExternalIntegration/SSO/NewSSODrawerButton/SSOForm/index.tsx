@@ -220,6 +220,7 @@ export default inject('userStore')(
             };
           }
           setSAMLCheckBoxConfig(initSAMLConfig as SAMLCheckBoxConfigType);
+          setShowExtraConfigForSAML(!!editData.ssoParameter.providerEntityId);
         }
       }, [editData]);
 
