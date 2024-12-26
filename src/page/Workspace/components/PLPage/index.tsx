@@ -980,7 +980,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
         return { success: false };
       }
 
-      return { success: !res?.approvalRequired };
+      return { success: !(res?.approvalRequired ?? true)}
     }
 
     const data = await executeSQL(

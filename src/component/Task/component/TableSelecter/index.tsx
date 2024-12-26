@@ -653,7 +653,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
 
   const { checkAll, allTreeDataCount, selectedTreeDataCount, indeterminate } = useMemo(() => {
     const allTreeDataCount = allTreeDataKeys?.length;
-    const selectedTreeDataCount = checkedKeys?.length;
+    const selectedTreeDataCount = [...new Set(checkedKeys)]?.length;
     return {
       allTreeDataCount,
       selectedTreeDataCount,
