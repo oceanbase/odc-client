@@ -221,6 +221,13 @@ export default inject('userStore')(
           }
           setSAMLCheckBoxConfig(initSAMLConfig as SAMLCheckBoxConfigType);
           setShowExtraConfigForSAML(!!editData.ssoParameter.providerEntityId);
+          form.setFieldsValue({
+            ssoParameter: {
+              testAcsEntityId: `${
+                window.ODCApiHost || location.origin
+              }/saml2/service-provider-metadata/${userStore?.organizationId}-test`,
+            },
+          });
         }
       }, [editData]);
 
@@ -294,6 +301,10 @@ export default inject('userStore')(
               certificate: SAMLCheckBoxConfig[key].checked ? SAMLCheckBoxConfig[key].value : null,
             };
           }
+          (clone.ssoParameter as ISSO_SAML_CONFIG).acsEntityId = form.getFieldValue([
+            'ssoParameter',
+            'testAcsEntityId',
+          ]);
           params.odcBackUrl =
             location.origin + '/' + '#/gateway/eyJhY3Rpb24iOiJ0ZXN0TG9naW4iLCJkYXRhIjp7fX0=';
         }
@@ -417,6 +428,13 @@ export default inject('userStore')(
               ssoParameter: {
                 acsLocation: `${window.ODCApiHost || location.origin}/login/saml2/sso/${id}`,
                 acsEntityId: `${
+                  window.ODCApiHost || location.origin
+                }/saml2/service-provider-metadata/${id}`,
+              },
+            });
+            form.setFieldsValue({
+              ssoParameter: {
+                testAcsEntityId: `${
                   window.ODCApiHost || location.origin
                 }/saml2/service-provider-metadata/${userStore?.organizationId}-test`,
               },

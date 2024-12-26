@@ -3881,6 +3881,7 @@ export interface ISSO_SAML_CONFIG {
   [SAMLType.signing]?: { certificate: string };
   [SAMLType.verification]?: { certificate: string };
   metadataUri?: string;
+  testAcsEntityId?: string;
   singlesignon?: {
     url?: string;
     binding?: 'POST' | 'REDIRECT';
