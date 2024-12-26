@@ -104,7 +104,11 @@ const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
           },
         ]}
       >
-        <Input autoComplete="off" disabled={isEdit} placeholder="请输入 Bucket 目录" />
+        <Input
+          autoComplete="off"
+          disabled={isEdit}
+          placeholder="请输入 Bucket 目录，如：bucketname/odc-sample"
+        />
       </Form.Item>
       <Form.Item
         label={'Endpoint'}
@@ -116,7 +120,11 @@ const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
           },
         ]}
       >
-        <Input autoComplete="off" disabled={isEdit} placeholder="请输入 Endpoint 地址" />
+        <Input
+          autoComplete="off"
+          disabled={isEdit}
+          placeholder="请输入 Endpoint 地址，如：oss-cn-hangzhou.aliyuncs.com"
+        />
       </Form.Item>
       <Space size={24}>
         <Form.Item

@@ -472,7 +472,7 @@ const UserDetail: React.FC<{
               showSizeChanger={false}
               showQuickJumper={false}
               pageSize={10}
-              scroll={null}
+              scroll={{ x: 688 }}
             />
           </Descriptions.Item>
         </Descriptions>
@@ -496,7 +496,7 @@ const UserDetail: React.FC<{
               )}
               dataSource={_systemOperationPermissions || []}
               disablePagination
-              scroll={null}
+              scroll={{ x: 688 }}
             />
           </Descriptions.Item>
         </Descriptions>
