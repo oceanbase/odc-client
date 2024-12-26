@@ -1140,6 +1140,7 @@ export const SAMLPartForm: React.FC<{
 
             <TextArea
               rows={6}
+              value={SAMLCheckBoxConfig.verification.value}
               onChange={(e) => {
                 updateSAMLCheckBoxConfig(SAMLType.verification, true, e.target.value);
               }}
