@@ -20,6 +20,7 @@ import type { IConnectionType } from '@/d.ts';
 import { haveOCP } from '@/util/env';
 import { action, observable } from 'mobx';
 import React from 'react';
+import login from './login';
 
 export interface ICluster {
   instanceName: string | React.ReactNode;
@@ -58,7 +59,7 @@ export class ClusterStore {
   @action
   public async loadClusterList(visibleScope?: IConnectionType) {
     if (haveOCP()) {
-      const result = await getOBCloudClusterList();
+      const result = await getOBCloudClusterList(login.organizationId);
       if (result) {
         let newTenantMap = { ...this.tenantListMap };
         this.clusterList = result.map((item) => {
@@ -78,7 +79,7 @@ export class ClusterStore {
               tenants.push({
                 tenantName: item.name,
                 tenantId: item.id,
-                tenantMode: ['MYSQL_TENANT', 'MYSQL_SERVERLESS'].includes(item.type)
+                tenantMode: !['ORACLE_TENANT', 'ORACLE_SERVERLESS'].includes(item.type)
                   ? 'MySQL'
                   : 'ORACLE',
               });
