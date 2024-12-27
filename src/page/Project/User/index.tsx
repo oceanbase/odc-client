@@ -200,8 +200,10 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
             //项目角色
             dataIndex: 'roles',
             width: 370,
-            render(v) {
-              return v?.map((item) => projectRoleTextMap[item] || item)?.join(' | ');
+            render(v: ProjectRole[]) {
+              return Array.from(new Set(v))
+                ?.map((item) => projectRoleTextMap[item] || item)
+                ?.join(' | ');
             },
           },
           {

@@ -346,9 +346,8 @@ const TaskTable: React.FC<IProps> = inject(
               filteredValue: filters?.projectIdList || null,
               ellipsis: true,
               width: 80,
-              render(value, record) {
-                const { projectId, project } = record;
-                return project?.name || projectId || '-';
+              render(project) {
+                return project?.name || '-';
               },
             },
         {
