@@ -1,13 +1,16 @@
 import { formatMessage } from '@/util/intl';
-import { Form, Space, Checkbox, FormInstance } from 'antd';
+import { Form, Space, Checkbox, FormInstance, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { SyncTableStructureEnum } from '@/d.ts';
 import { SyncTableStructureOptions } from '../../const';
+import { IDatabase } from '@/d.ts/database';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 
 interface IProps {
   form: FormInstance<any>;
+  targetDatabase?: IDatabase;
 }
-const SynchronizationItem: React.FC<IProps> = ({ form }) => {
+const SynchronizationItem: React.FC<IProps> = ({ form, targetDatabase }) => {
   const [initValue, setInitValue] = useState(null);
   const [syncTableStructure, setSyncTableStructure] = useState<boolean>(false);
 
@@ -30,23 +33,32 @@ const SynchronizationItem: React.FC<IProps> = ({ form }) => {
         }
         style={{ marginBottom: 8 }}
       >
-        <Checkbox
-          checked={syncTableStructure}
-          onChange={(e) => {
-            setSyncTableStructure(e.target.checked);
-            if (initValue && initValue.length === 0 && e.target.checked) {
-              form.setFieldValue('syncTableStructure', [
-                SyncTableStructureEnum.COLUMN,
-                SyncTableStructureEnum.CONSTRAINT,
-              ]);
-            }
-          }}
+        <Tooltip
+          title={
+            isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
+              ? '选择的目标数据库为对象存储类型时，不支持改配置'
+              : undefined
+          }
         >
-          {formatMessage({
-            id: 'src.component.Task.component.SynchronizationItem.3B43C19D',
-            defaultMessage: '开启目标表结构同步',
-          })}
-        </Checkbox>
+          <Checkbox
+            checked={syncTableStructure}
+            disabled={isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)}
+            onChange={(e) => {
+              setSyncTableStructure(e.target.checked);
+              if (initValue && initValue.length === 0 && e.target.checked) {
+                form.setFieldValue('syncTableStructure', [
+                  SyncTableStructureEnum.COLUMN,
+                  SyncTableStructureEnum.CONSTRAINT,
+                ]);
+              }
+            }}
+          >
+            {formatMessage({
+              id: 'src.component.Task.component.SynchronizationItem.3B43C19D',
+              defaultMessage: '开启目标表结构同步',
+            })}
+          </Checkbox>
+        </Tooltip>
       </Form.Item>
       {syncTableStructure && (
         <Space size={4} align="center">
