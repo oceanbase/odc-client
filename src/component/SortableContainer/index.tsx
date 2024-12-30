@@ -1,18 +1,10 @@
 import React from 'react';
-import {
-  DndContext,
-  closestCenter,
-  useSensors,
-  useSensor,
-  PointerSensor,
-  KeyboardSensor,
-} from '@dnd-kit/core';
+import { DndContext, closestCenter, useSensors, useSensor, PointerSensor } from '@dnd-kit/core';
 import {
   arrayMove,
   useSortable,
   SortableContext,
   verticalListSortingStrategy,
-  sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { DragEndEvent } from '@dnd-kit/core';
@@ -36,9 +28,6 @@ const SortableContainer: React.FC<SortableContainerProps> = React.memo((props) =
       activationConstraint: {
         distance: 5,
       },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
 

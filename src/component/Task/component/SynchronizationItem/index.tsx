@@ -36,7 +36,7 @@ const SynchronizationItem: React.FC<IProps> = ({ form, targetDatabase }) => {
         <Tooltip
           title={
             isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
-              ? '选择的目标数据库为对象存储类型时，不支持改配置'
+              ? '选择的目标数据库为对象存储类型时，不支持该配置'
               : undefined
           }
         >
