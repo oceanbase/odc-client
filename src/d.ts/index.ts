@@ -2393,6 +2393,7 @@ export interface TaskRecord<P> {
   description?: string;
   nodeList?: ITaskFlowNode[];
   progressPercentage: number;
+  project: IProject;
 }
 
 export interface ICycleSubTaskRecord {
