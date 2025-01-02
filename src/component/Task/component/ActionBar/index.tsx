@@ -840,7 +840,6 @@ const ActionBar: React.FC<IProps> = inject(
         action: downloadViewResult,
         type: 'button',
       };
-
       if (isDetailModal) {
         switch (status) {
           case TaskStatus.REJECTED:
@@ -867,6 +866,7 @@ const ActionBar: React.FC<IProps> = inject(
               if (task.type === TaskType.STRUCTURE_COMPARISON) {
                 tools.push(downloadSQLBtn, structrueComparisonBySQL);
               }
+              tools.push(stopBtn);
             }
             if (isApprover) {
               tools = [];
@@ -884,7 +884,10 @@ const ActionBar: React.FC<IProps> = inject(
                 }
               } else if (task.type === TaskType.DATAMOCK && settingStore.enableDataExport) {
                 tools.push(downloadBtn);
-              } else if (task.type === TaskType.EXPORT_RESULT_SET) {
+              } else if (
+                task.type === TaskType.EXPORT_RESULT_SET &&
+                settingStore.enableDataExport
+              ) {
                 tools.push(downloadBtn);
               } else if (
                 [TaskType.ASYNC, TaskType.MULTIPLE_ASYNC]?.includes(task.type) &&
@@ -1124,13 +1127,14 @@ const ActionBar: React.FC<IProps> = inject(
           tools = [viewBtn];
           setBtnByCreater(tools, reTryBtn);
           if (haveOperationPermission) {
-            if ([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)) {
-              if (
-                (task as ICycleTaskRecord<TaskRecordParameters>)?.triggerConfig?.triggerStrategy !==
-                TaskExecStrategy.START_NOW
-              ) {
-                tools.push(disableBtn);
-              }
+            if (
+              !(
+                [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type) &&
+                (task as ICycleTaskRecord<TaskRecordParameters>)?.triggerConfig?.triggerStrategy ===
+                  TaskExecStrategy.START_NOW
+              )
+            ) {
+              tools.push(disableBtn);
             }
           }
 
