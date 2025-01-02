@@ -69,11 +69,12 @@ interface IProps {
   projectId: number;
   userId: number;
   isOwner: boolean;
+  isDBA: boolean;
   onClose: () => void;
 }
 
 const ManageModal: React.FC<IProps> = (props) => {
-  const { isOwner, projectId, userId } = props;
+  const { isOwner, projectId, userId, isDBA } = props;
   const [dataSource, setDataSource] = useState<IResponseData<IDatabasePermission>>(null);
   const [authorizationType, setAuthorizationType] = useState(
     PermissionSourceType.TICKET_APPLICATION,
@@ -206,7 +207,7 @@ const ManageModal: React.FC<IProps> = (props) => {
           </Radio.Group>
           <HelpDoc isTip leftText doc="userManageTip" />
         </div>
-        {isOwner && (
+        {(isOwner || isDBA) && (
           <CreateAuth projectId={projectId} userId={userId} onSwitchUserTab={handleSwitchUserTab} />
         )}
       </div>

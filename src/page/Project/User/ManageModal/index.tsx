@@ -55,11 +55,12 @@ interface IProps {
   projectId: number;
   userId: number;
   isOwner: boolean;
+  isDBA: boolean;
   onClose: () => void;
 }
 
 const ManageModal: React.FC<IProps> = (props) => {
-  const { visible, onClose, projectId, userId, isOwner } = props;
+  const { visible, onClose, projectId, userId, isOwner, isDBA } = props;
   const [key, setKey] = useState<string>(items?.[0]?.key as string);
   const Component = contentMap?.[key]?.component;
 
@@ -92,7 +93,15 @@ const ManageModal: React.FC<IProps> = (props) => {
             siderStyle: { flex: '0 0 100px' },
             contentStyle: { display: 'flex', flexDirection: 'column' },
           }}
-          content={<Component key={key} projectId={projectId} userId={userId} isOwner={isOwner} />}
+          content={
+            <Component
+              key={key}
+              projectId={projectId}
+              userId={userId}
+              isOwner={isOwner}
+              isDBA={isDBA}
+            />
+          }
         />
       </div>
     </Drawer>
