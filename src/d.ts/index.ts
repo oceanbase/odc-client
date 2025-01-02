@@ -59,6 +59,7 @@ export interface IUserSummary {
   name: string;
   accountName: string;
   organizationId: number;
+  roles: { name: string; id: number; [key: string]: any }[];
 }
 
 export interface IOrganization {

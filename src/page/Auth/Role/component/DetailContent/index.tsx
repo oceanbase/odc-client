@@ -202,7 +202,7 @@ const getResourceColumns = (
       }),
       // 权限
       ellipsis: true,
-      width: 108,
+      width: 158,
       filters: actionOptions?.map(({ label, value }) => ({
         text: label,
         value,

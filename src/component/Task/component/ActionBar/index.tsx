@@ -945,9 +945,8 @@ const ActionBar: React.FC<IProps> = inject(
           }
           case TaskStatus.EXECUTION_ABNORMAL: {
             setBtnByCreater(tools, reTryBtn);
-            setBtnByCreater(tools, againBtn);
             if (haveOperationPermission) {
-              tools.push(stopBtn);
+              tools.push(stopBtn, againBtn);
             }
             if (isApprover) {
               tools = [];

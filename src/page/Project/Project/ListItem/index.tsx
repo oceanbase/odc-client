@@ -62,10 +62,11 @@ export default forwardRef(function ListItem(
       <div className={classNames(styles.block, styles.desc)}>{data.description || '-'}</div>
       <div className={classNames(styles.block, styles.users)}>
         <Icon style={{ color: 'var(--icon-color-disable)', marginRight: 5 }} component={UserSvg} />
-        {data.members
-          ?.filter((item) => item.role === ProjectRole.OWNER)
-          ?.map((a) => a.name)
-          ?.join(', ') || '-'}
+        {Array.from(
+          new Set(
+            data.members?.filter((item) => item.role === ProjectRole.OWNER)?.map((a) => a.name),
+          ),
+        )?.join(', ') || '-'}
       </div>
       {action && <div className={classNames(styles.block, styles.action)}>{action}</div>}
     </div>

@@ -120,6 +120,18 @@ export const resourceManagementActionOptions = [
       IManagerResourceType.user,
     ],
   },
+  {
+    label: '全局项目安全管理员',
+    value: ResourceManagementAction.sencrity_administrator,
+  },
+  {
+    label: '全局项目DBA',
+    value: ResourceManagementAction.dba,
+  },
+  {
+    label: '全局项目管理员',
+    value: ResourceManagementAction.owner,
+  },
 ];
 
 // 系统操作权限
