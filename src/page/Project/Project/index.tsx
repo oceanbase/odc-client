@@ -38,8 +38,9 @@ import userStore from '@/store/login';
 import MoreBtn from './MoreBtn';
 import DeleteProjectModal from '@/page/Project/components/DeleteProjectModal.tsx';
 import type { SelectProject } from '@/page/Project/components/DeleteProjectModal.tsx';
+import { useSearchParams } from '@umijs/max';
 
-const titleOptions: {
+export const titleOptions: {
   label: string;
   value: ProjectTabType;
 }[] = [
@@ -65,6 +66,7 @@ const Project = () => {
   const [selectedRows, setSelectedRows] = useState<Map<number, boolean>>(
     new Map<number, boolean>(),
   );
+  const [searchParams, setSearchParams] = useSearchParams();
   const [dataSource, setDataSource] = useState<IProject[]>([]);
   const [projectSearchName, setProjectSearchName] = useState(null);
   const [projectType, setProjectType] = useState<ProjectTabType>(ProjectTabType.ALL);
@@ -106,13 +108,33 @@ const Project = () => {
   useEffect(() => {
     // sessionStorage存在搜索值时，刷新页面请求时需带上搜索值
     const sessionStorageValue = sessionStorage.getItem(sessionStorageKey);
-    appendData(currentPage, dataSource, projectType, sessionStorageValue || projectSearchName);
+    const params = resolveParams();
+    appendData(
+      currentPage,
+      dataSource,
+      params.projectType || projectType,
+      sessionStorageValue || projectSearchName,
+    );
   }, []);
   const onScroll = (e: React.UIEvent<HTMLElement, UIEvent>) => {
     if (e.currentTarget.scrollHeight - e.currentTarget.scrollTop === domRef.current?.clientHeight) {
       appendData(currentPage, dataSource, projectType, projectSearchName);
     }
   };
+
+  function resolveParams() {
+    const archived = searchParams.get('archived');
+    const obj = {
+      projectType: ProjectTabType.ALL,
+    };
+    if (archived && archived === 'true') {
+      setProjectType(ProjectTabType.ARCHIVED);
+      obj.projectType = ProjectTabType.ARCHIVED;
+      searchParams.delete('archived');
+      setSearchParams(searchParams);
+    }
+    return obj;
+  }
 
   return (
     <PageContainer
@@ -126,6 +148,7 @@ const Project = () => {
         setProjectType(v);
         reload(v);
       }}
+      tabActiveKey={projectType}
     >
       <List
         className={styles.content}
