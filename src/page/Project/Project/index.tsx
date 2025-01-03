@@ -310,7 +310,7 @@ const Project = () => {
         setOpen={setOpenDeleteProjectModal}
         projectList={selectProjectList}
         verifyValue={'delete'}
-        beforeDelete={reload}
+        afterDelete={reload}
       />
     </PageContainer>
   );
