@@ -194,8 +194,8 @@ export default function Info() {
         setOpen={setOpenDeleteProjectModal}
         verifyValue="delete"
         projectList={[{ id: context?.project?.id, name: context?.project?.name }]}
-        beforeDelete={() => {
-          history.push('/project');
+        afterDelete={() => {
+          history.push('/project?archived=true');
         }}
       />
     </div>

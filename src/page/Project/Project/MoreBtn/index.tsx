@@ -57,7 +57,7 @@ const MoreBtn: React.FC<MoreBtnProps> = function (props) {
         setOpen={setOpenDeleteProjectModal}
         projectList={[{ id: project.id, name: project.name }]}
         verifyValue="delete"
-        beforeDelete={reload}
+        afterDelete={reload}
       ></DeleteProjectModal>
     </>
   );

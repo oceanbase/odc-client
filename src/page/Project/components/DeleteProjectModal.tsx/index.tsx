@@ -13,10 +13,10 @@ interface DeleteProjectModalIProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   projectList: SelectProject[];
   verifyValue: string;
-  beforeDelete?: () => void;
+  afterDelete?: () => void;
 }
 const DeleteProjectModal: React.FC<DeleteProjectModalIProps> = (props) => {
-  const { open, setOpen, projectList, verifyValue, beforeDelete } = props;
+  const { open, setOpen, projectList, verifyValue, afterDelete } = props;
   const [form] = Form.useForm<{
     verifyFields: string;
   }>();
@@ -42,7 +42,7 @@ const DeleteProjectModal: React.FC<DeleteProjectModalIProps> = (props) => {
           defaultMessage: '操作成功',
         }), //操作成功
       );
-      beforeDelete?.();
+      afterDelete?.();
       setOpen(false);
     } else {
       form.setFields([
@@ -77,7 +77,7 @@ const DeleteProjectModal: React.FC<DeleteProjectModalIProps> = (props) => {
           {projectList.map((item) => item.name).join('; ')}
         </Descriptions.Item>
       </Descriptions>
-      <Form form={form} layout="vertical">
+      <Form form={form} layout="vertical" requiredMark={false}>
         <Form.Item
           name="verifyFields"
           label={

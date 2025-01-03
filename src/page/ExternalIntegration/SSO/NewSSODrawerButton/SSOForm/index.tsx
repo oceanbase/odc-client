@@ -707,7 +707,12 @@ export default inject('userStore')(
                     ) //`测试连接需要单独的回调白名单，请手动添加 ${redirectUrl}`
                   }
                 >
-                  <Button onClick={() => testByType(type)} type="link" loading={loading}>
+                  <Button
+                    onClick={() => testByType(type)}
+                    type="link"
+                    loading={loading}
+                    style={{ padding: 0 }}
+                  >
                     {
                       formatMessage({
                         id: 'odc.NewSSODrawerButton.SSOForm.TestConnection',
