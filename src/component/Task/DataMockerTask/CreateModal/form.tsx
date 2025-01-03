@@ -117,12 +117,6 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                 columns: columns.map((column) => {
                   const dbMode = database?.dataSource?.dialectType;
                   const rule: any = getDefaultRule(column.dataType, dbMode);
-                  const aaa = getDefaultValue(
-                    dbMode,
-                    column.dataType,
-                    rule,
-                    _sizeMap[column.columnName],
-                  );
 
                   const newTypeConfig = ruleConfigList?.find(
                     (item) => item.columnName === column.columnName,
@@ -132,7 +126,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                     columnName: column.columnName,
                     columnType: column.dataType,
                     columnObj: column,
-                    rule,
+                    rule: newTypeConfig?.rule ?? rule,
                     typeConfig: newTypeConfig
                       ? {
                           range: newTypeConfig.range,

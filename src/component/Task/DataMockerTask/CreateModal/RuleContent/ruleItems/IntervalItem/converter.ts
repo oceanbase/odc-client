@@ -20,7 +20,7 @@ import { convertColumnType } from '@/util/utils';
 import { cloneDeep } from 'lodash';
 import { IntervalRuleType } from './index';
 
-const ruleTypeToGenerator = {
+export const ruleTypeToGenerator = {
   [IntervalRuleType.NORMAL]: MockGenerator.FIX_CHAR_GENERATOR,
   [IntervalRuleType.SKIP]: MockGenerator.SKIP_GENERATOR,
 };
