@@ -17,7 +17,7 @@
 /**
  * 这个组件主要是维护编辑态，以及处理数据类型,库类型与具体输入展示组件之间的关系
  */
-import { ConnectionMode, IColumnSizeMap, IColumnSizeValue, IServerMockColumn } from '@/d.ts';
+import { ConnectionMode, IColumnSizeMap, IColumnSizeValue, IServerMockColumn, MockGenerator } from '@/d.ts';
 import { convertColumnType } from '@/util/utils';
 import { CheckOutlined, CloseOutlined, EditOutlined } from '@ant-design/icons';
 import { Space } from 'antd';
@@ -31,12 +31,14 @@ import CharItem, { CharRuleType, isShowEmpty as isShowCharItemEmpty } from './ru
 import {
   convertFormDataToServerData as charConvertFormDataToServerData,
   convertServerDataToFormData as charConvertServerDataToFormData,
+  ruleTypeToGenerator as charRuleTypeToGenerator
 } from './ruleItems/CharItem/converter';
 import getCharDefaltValue from './ruleItems/CharItem/defaultValue';
 import DateItem, { DateRuleType, isShowEmpty as isShowDateItemEmpty } from './ruleItems/DateItem';
 import {
   convertFormDataToServerData as dateConvertFormDataToServerData,
   convertServerDataToFormData as dateConvertServerDataToFormData,
+  ruleTypeToGenerator as dateRuleTypeToGenerator
 } from './ruleItems/DateItem/converter';
 import getDateDefaltValue from './ruleItems/DateItem/defaultValue';
 import IntervalItem, {
@@ -46,6 +48,7 @@ import IntervalItem, {
 import {
   convertFormDataToServerData as intervalConvertFormDataToServerData,
   convertServerDataToFormData as intervalConvertServerDataToFormData,
+  ruleTypeToGenerator as intervalRuleTypeToGenerator
 } from './ruleItems/IntervalItem/converter';
 import getIntervalDefaltValue from './ruleItems/IntervalItem/defaultValue';
 import NumberItem, {
@@ -55,12 +58,14 @@ import NumberItem, {
 import {
   convertFormDataToServerData as numberConvertFormDataToServerData,
   convertServerDataToFormData as numberConvertServerDataToFormData,
+  ruleTypeToGenerator as numberRuleTypeToGenerator
 } from './ruleItems/NumberItem/converter';
 import getNumberDefaltValue from './ruleItems/NumberItem/defaultValue';
-import OtherItem, { isShowEmpty as isShowOtherItemEmpty } from './ruleItems/OtherItem';
+import OtherItem, { isShowEmpty as isShowOtherItemEmpty, OtherRuleType } from './ruleItems/OtherItem';
 import {
   convertFormDataToServerData as otherConvertFormDataToServerData,
   convertServerDataToFormData as otherConvertServerDataToFormData,
+  ruleTypeToGenerator as otherRuleTypeToGenerator
 } from './ruleItems/OtherItem/converter';
 import getOtherDefaultValue from './ruleItems/OtherItem/defaultValue';
 
@@ -289,6 +294,49 @@ export function getDefaultRule(columnType: string, dbMode: ConnectionMode) {
     }
   }
 }
+
+/**
+ * 根据 generator 获取对应的 ruleType
+ */
+function getRuleTypeByGenerator<T extends string>(
+  generatorMap: Record<T, MockGenerator>,
+  generator: MockGenerator,
+  defaultValue: T
+): T {
+  const ruleType = Object.entries(generatorMap).find(
+    ([_, gen]) => gen === generator
+  )?.[0] as T;
+  return ruleType || defaultValue;
+}
+
+/**
+ * 根据generator和columnType获取默认的rule
+ */
+export function getDefaultRuleByGenerator(generator: MockGenerator, columnType: string, dbMode: ConnectionMode) {
+  columnType = convertColumnType(columnType);
+  const ruleItem = columnTypeToRuleMap[dbMode][columnType];
+  const defaultRule = getDefaultRule(columnType, dbMode);
+
+  switch (ruleItem) {
+    case RuleItem.CHAR: {
+      return getRuleTypeByGenerator<CharRuleType>(charRuleTypeToGenerator, generator, defaultRule as CharRuleType);
+    }
+    case RuleItem.DATE: {
+      return getRuleTypeByGenerator<DateRuleType>(dateRuleTypeToGenerator, generator, defaultRule as DateRuleType);
+    }
+    case RuleItem.INTERVAL_YEAR_TO_MONTH:
+    case RuleItem.INTERVAL_DAY_TO_SECOND: {
+      return getRuleTypeByGenerator<IntervalRuleType>(intervalRuleTypeToGenerator, generator, defaultRule as IntervalRuleType);
+    }
+    case RuleItem.NUMBER: {
+      return getRuleTypeByGenerator<NumberRuleType>(numberRuleTypeToGenerator, generator, defaultRule as NumberRuleType);
+    }
+    default: {
+      return CharRuleType.NULL;
+    }
+  }
+}
+
 /**
  * 转换成服务器的数据
  */
