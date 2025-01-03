@@ -208,7 +208,6 @@ const Index: React.FC<IProps> = function () {
 
   const options = useMemo(() => {
     let options = [];
-    console.log(data?.contents);
     const isShowThisProject = project?.archived === isTitleASelectArchived;
     if (isShowThisProject) {
       options = [

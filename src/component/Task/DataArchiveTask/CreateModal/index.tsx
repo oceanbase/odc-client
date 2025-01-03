@@ -615,19 +615,19 @@ const CreateModal: React.FC<IProps> = (props) => {
             <VariableConfig form={form} />
           </Space>
           <Form.Item name="deleteAfterMigration" valuePropName="checked">
-            <Tooltip
-              title={
-                isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
-                  ? '选择的目标数据库为对象存储类型时，不支持该配置'
-                  : undefined
-              }
-              placement="topLeft"
+            <Checkbox
+              disabled={isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)}
+              onChange={(e) => {
+                form.setFieldValue('deleteAfterMigration', e.target.checked);
+              }}
             >
-              <Checkbox
-                disabled={isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)}
-                onChange={(e) => {
-                  form.setFieldValue('deleteAfterMigration', e.target.checked);
-                }}
+              <Tooltip
+                title={
+                  isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
+                    ? '选择的目标数据库为对象存储类型时，不支持该配置'
+                    : undefined
+                }
+                placement="topLeft"
               >
                 <Space>
                   {
@@ -647,8 +647,8 @@ const CreateModal: React.FC<IProps> = (props) => {
                     }
                   </span>
                 </Space>
-              </Checkbox>
-            </Tooltip>
+              </Tooltip>
+            </Checkbox>
           </Form.Item>
           <Form.Item
             label={formatMessage({
