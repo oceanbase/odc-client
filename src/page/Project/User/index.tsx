@@ -33,6 +33,9 @@ import AddUserModal from './AddUserModal';
 import ManageModal from './ManageModal';
 import UpdateUserModal from './UpdateUserModal';
 import { isProjectArchived } from '@/page/Project/helper';
+import { UserOperationKey, getOperatioFunc } from '@/d.ts/operation';
+import { renderTool } from '@/util/renderTool';
+
 export const projectRoleTextMap = {
   [ProjectRole.OWNER]: formatMessage({
     id: 'odc.User.AddUserModal.Administrator',
@@ -52,27 +55,6 @@ export const projectRoleTextMap = {
     defaultMessage: '参与者',
   }), //'参与者'
 };
-
-enum OperationKey {
-  MANAGE_PERMISSION = 'managePermission',
-  EDIT_ROLES = 'editRole',
-  REMOVE_ROLES = 'removeRole',
-}
-
-type getOperationDisableFunc = (
-  record: IProject['members'][0] & {
-    roles: ProjectRole[];
-    globalRoles: ProjectRole[];
-  },
-  isOwner: boolean,
-) => {
-  key: OperationKey;
-  action: () => void;
-  confirmText?: string;
-  text: string;
-  disable: boolean;
-  disableTooltip: () => string;
-}[];
 
 interface IProps {
   id: string;
@@ -151,12 +133,17 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
     setManageModalVisiable(false);
   }
 
-  const getOperationDisable: getOperationDisableFunc = (record, isOwner) => {
+  const getOperation: getOperatioFunc<
+    IProject['members'][0] & {
+      roles: ProjectRole[];
+      globalRoles: ProjectRole[];
+    }
+  > = (record) => {
     const isGlobalRolesUser = !!record.globalRoles.length;
     const isMe = userStore?.user?.id === record.id;
     return [
       {
-        key: OperationKey.MANAGE_PERMISSION,
+        key: UserOperationKey.MANAGE_PERMISSION,
         disable: !isOwner && !isMe,
         text: formatMessage({
           id: 'src.page.Project.User.3AE67EC2',
@@ -181,7 +168,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
           id: 'src.page.Project.User.D1A92D2A',
           defaultMessage: '编辑角色',
         }),
-        key: OperationKey.EDIT_ROLES,
+        key: UserOperationKey.EDIT_ROLES,
         disableTooltip: () => {
           if (!isOwner) {
             return formatMessage({
@@ -195,7 +182,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
       },
       {
         disable: !isOwner || isGlobalRolesUser,
-        key: OperationKey.REMOVE_ROLES,
+        key: UserOperationKey.REMOVE_ROLES,
         text: formatMessage({
           id: 'odc.Project.User.Remove',
           defaultMessage: '移除',
@@ -219,28 +206,6 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
         },
       },
     ];
-  };
-
-  const renderTool = (tool, index) => {
-    if (tool.confirmText) {
-      return (
-        <Popconfirm key={tool.key} title={tool.confirmText} onConfirm={tool.action}>
-          <Action.Link key={tool.key} disabled={tool.disable} tooltip={tool.disableTooltip()}>
-            {tool.text}
-          </Action.Link>
-        </Popconfirm>
-      );
-    }
-    return (
-      <Action.Link
-        key={tool.key}
-        disabled={tool.disable}
-        tooltip={tool.disableTooltip()}
-        onClick={tool.action}
-      >
-        {tool.text}
-      </Action.Link>
-    );
   };
 
   const TableCardTitle = (
@@ -341,7 +306,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
             width: 135,
             hide: projectArchived,
             render(_, record) {
-              const operation = getOperationDisable(record, isOwner);
+              const operation = getOperation(record);
               return (
                 <Action.Group size={3}>
                   {operation.map((item, index) => {

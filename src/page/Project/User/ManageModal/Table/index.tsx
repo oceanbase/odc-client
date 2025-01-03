@@ -212,6 +212,7 @@ const ManageModal: React.FC<IProps> = (props) => {
             dataSource={dataSource}
             params={params}
             isOwner={isOwner}
+            isDBA={isDBA}
             tableRef={tableRef}
             onLoad={loadData}
             onChange={handleChange}
@@ -223,6 +224,7 @@ const ManageModal: React.FC<IProps> = (props) => {
             dataSource={dataSource}
             params={params}
             isOwner={isOwner}
+            isDBA={isDBA}
             tableRef={tableRef}
             onLoad={loadData}
             onChange={handleChange}

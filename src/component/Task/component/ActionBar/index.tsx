@@ -408,13 +408,6 @@ const ActionBar: React.FC<IProps> = inject(
           });
           return;
         }
-        case TaskType.DATA_ARCHIVE: {
-          modalStore.changeDataArchiveModal(true, {
-            databaseId: task.database?.id,
-            taskId: task?.id,
-          });
-          return;
-        }
       }
     };
 

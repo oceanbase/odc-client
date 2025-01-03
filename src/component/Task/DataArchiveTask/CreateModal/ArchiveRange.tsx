@@ -233,14 +233,14 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             style={{ display: 'flex', flexDirection: 'column' }}
                             className={styles.multiInputBox}
                           >
-                            <Form.Item {...restField} name={[name, 'targetTableName']}>
-                              <Tooltip
-                                title={
-                                  isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
-                                    ? '选择的目标数据库为对象存储类型时，不支持该配置'
-                                    : undefined
-                                }
-                              >
+                            <Tooltip
+                              title={
+                                isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
+                                  ? '选择的目标数据库为对象存储类型时，不支持该配置'
+                                  : undefined
+                              }
+                            >
+                              <Form.Item {...restField} name={[name, 'targetTableName']}>
                                 <Input
                                   addonBefore={formatMessage({
                                     id: 'src.component.Task.DataArchiveTask.CreateModal.94BCB0E1',
@@ -265,8 +265,9 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                                     }) /*"请输入"*/
                                   }
                                 />
-                              </Tooltip>
-                            </Form.Item>
+                              </Form.Item>
+                            </Tooltip>
+
                             {enablePartition && (
                               <PartitionTextArea {...restField} name={[name, 'partitions']} />
                             )}

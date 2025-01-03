@@ -98,6 +98,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
           defaultMessage: '确认取消创建结构比对吗？',
         }), //'确认取消此 结构比对吗？'
         centered: true,
+        zIndex: 1002,
         onOk: () => {
           modalStore.changeStructureComparisonModal(false);
         },
