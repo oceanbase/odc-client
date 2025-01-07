@@ -24,6 +24,8 @@ import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useState } from 'react';
 import { PageLoadingContext } from './PageLoadingWrapper';
 import { toDefaultProjectPage } from '@/service/projectHistory';
+import OrganizationSelectModal from '@/component/OrganizationSelectModal';
+import odc from '@/plugins/odc';
 interface IProps {
   userStore: UserStore;
   settingStore: SettingStore;
@@ -36,10 +38,12 @@ enum STATUS_TYPE {
 }
 const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingStore }) {
   const [status, setStatus] = useState<STATUS_TYPE>(STATUS_TYPE.INIT);
+  const [defaultOrganizationHanlde, setDefaultOrganizationHanlde] =
+    useState<(id: number) => void>(null);
   const location = useLocation();
   const pageContext = useContext(PageLoadingContext);
-  async function checkLoginStatus() {
-    setStatus(STATUS_TYPE.LOADING);
+
+  function checkAutoLogin() {
     const query: {
       [key: string]: any;
     } = new URLSearchParams(location.search);
@@ -53,32 +57,61 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
         pathname: '/login',
         search: location.search,
       });
+      return false;
+    }
+    return true;
+  }
+  async function organizationErrorResolve() {
+    if (isClient()) {
+      /**
+       * 客户端，但是获取用户失败，这个时候其实是系统错误
+       */
+      message.error(
+        formatMessage({
+          id: 'odc.src.layout.UserWrapper.GetcurrentuserInitializationInformationFailed',
+          defaultMessage: '[getCurrentUser]初始化信息失败',
+        }), //[getCurrentUser]初始化信息失败
+      );
+
+      setStatus(STATUS_TYPE.ERROR);
+      return;
+    }
+    await login.gotoLoginPage();
+  }
+  async function userFrozenErrorResolve() {
+    history.replace('/exception/403');
+  }
+  async function checkAndInit() {
+    setStatus(STATUS_TYPE.LOADING);
+    const isPassed = checkAutoLogin();
+    if (!isPassed) {
       return;
     }
     await userStore.getOrganizations();
-    const isSuccess = await userStore.switchCurrentOrganization();
+    let getDefaultOrganization;
+    if (!odc.appConfig.login.setFirstOraganizationToDefault) {
+      getDefaultOrganization = async function () {
+        return new Promise((resolve) => {
+          setDefaultOrganizationHanlde(() => {
+            return (id: number) => {
+              resolve(id);
+              setDefaultOrganizationHanlde(null);
+            };
+          });
+        });
+      };
+    }
+    const isSuccess = await userStore.switchCurrentOrganization(null, getDefaultOrganization);
     const isLoginPage = location.pathname.indexOf('login') > -1;
     if (!userStore.organizations?.length || !isSuccess) {
-      if (isClient()) {
-        /**
-         * 客户端，但是获取用户失败，这个时候其实是系统错误
-         */
-        message.error(
-          formatMessage({
-            id: 'odc.src.layout.UserWrapper.GetcurrentuserInitializationInformationFailed',
-            defaultMessage: '[getCurrentUser]初始化信息失败',
-          }), //[getCurrentUser]初始化信息失败
-        );
-
-        setStatus(STATUS_TYPE.ERROR);
-        return;
-      }
-      await login.gotoLoginPage();
+      organizationErrorResolve();
+      return;
     } else if (userStore?.user?.enabled === false) {
       /**
        * 冻结用户
        */
-      history.replace('/exception/403');
+      userFrozenErrorResolve();
+      return;
     } else if (isLoginPage) {
       /**
        * 处于login页面并且已经登录，需要跳到对应的页面上
@@ -88,7 +121,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
     setStatus(STATUS_TYPE.DONE);
   }
   useEffect(() => {
-    checkLoginStatus();
+    checkAndInit();
   }, []);
   useEffect(() => {
     switch (status) {
@@ -134,7 +167,16 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
       );
     }
     default: {
-      return <></>;
+      return (
+        <>
+          <OrganizationSelectModal
+            open={!!defaultOrganizationHanlde}
+            onOk={async (id: number) => {
+              defaultOrganizationHanlde?.(id);
+            }}
+          />
+        </>
+      );
     }
   }
 };

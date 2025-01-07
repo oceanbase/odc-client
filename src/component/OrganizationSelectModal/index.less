@@ -1,0 +1,40 @@
+.organizationModal {
+  :global {
+    .ant-modal-header {
+      padding: 24px 24px 8px 24px;
+      border-bottom: none;
+    }
+    .ant-modal-body {
+      padding: 0px 16px 16px 24px;
+    }
+    .ant-modal-footer {
+      border-top: none;
+    }
+  }
+  .selectBox {
+    max-height: 216;
+    overflow: auto;
+    border: 1px solid #f0f0f0;
+    padding: 8px;
+    :global {
+      .ant-menu {
+        border-right: none;
+      }
+      .ant-menu-item {
+        &.ant-menu-item-selected {
+          color: var(--text-color-primary);
+        }
+        line-height: 28px;
+        height: 28px;
+        padding-left: 8px !important;
+        &:not(.ant-menu-item-selected):hover {
+          background-color: #f5f5f5;
+          color: var(--text-color-primary);
+        }
+        &::after {
+          content: none;
+        }
+      }
+    }
+  }
+}
