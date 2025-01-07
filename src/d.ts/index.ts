@@ -1595,6 +1595,7 @@ export enum DbObjectType {
   file = 'FILE',
   column = 'COLUMN',
   external_table = 'EXTERNAL_TABLE',
+  logical_table = 'LOGICAL_TABLE'
 }
 
 export interface IResultTimerStage {
