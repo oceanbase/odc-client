@@ -90,13 +90,7 @@ export const DbObjectTypeMap = {
     label: DbObjectTypeTextMap.TABLE,
     openPage: (object) => openTableViewPage,
     getOpenTab: (object, databaseId) => {
-      return [
-        object.name,
-        TopTab.PROPS,
-        PropsTab.DDL,
-        object?.database?.id,
-        object?.id
-      ];
+      return [object.name, TopTab.PROPS, PropsTab.DDL, object?.database?.id, object?.id];
     },
   },
   [DbObjectType.external_table]: {
