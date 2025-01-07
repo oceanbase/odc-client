@@ -127,6 +127,7 @@ const NewDatasourceButton: React.FC<{
         }
       });
     });
+    results = results.filter((item) => item.children.length > 0);
     return results;
   }, []);
 

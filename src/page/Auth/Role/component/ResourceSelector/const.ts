@@ -120,6 +120,27 @@ export const resourceManagementActionOptions = [
       IManagerResourceType.user,
     ],
   },
+  {
+    label: formatMessage({
+      id: 'src.page.Auth.Role.component.ResourceSelector.16CF9160',
+      defaultMessage: '全局项目安全管理员',
+    }),
+    value: ResourceManagementAction.sencrity_administrator,
+  },
+  {
+    label: formatMessage({
+      id: 'src.page.Auth.Role.component.ResourceSelector.9EA818BB',
+      defaultMessage: '全局项目DBA',
+    }),
+    value: ResourceManagementAction.dba,
+  },
+  {
+    label: formatMessage({
+      id: 'src.page.Auth.Role.component.ResourceSelector.41ADA396',
+      defaultMessage: '全局项目管理员',
+    }),
+    value: ResourceManagementAction.owner,
+  },
 ];
 
 // 系统操作权限

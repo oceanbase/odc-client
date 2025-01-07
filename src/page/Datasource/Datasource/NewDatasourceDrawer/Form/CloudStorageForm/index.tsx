@@ -119,8 +119,8 @@ const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
           autoComplete="off"
           disabled={isEdit}
           placeholder={formatMessage({
-            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.C9260DF9',
-            defaultMessage: '请输入 Bucket 目录',
+            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.228A503C',
+            defaultMessage: '请输入 Bucket 目录，如：bucketname/odc-sample',
           })}
         />
       </Form.Item>
@@ -141,8 +141,8 @@ const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
           autoComplete="off"
           disabled={isEdit}
           placeholder={formatMessage({
-            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.49C92B75',
-            defaultMessage: '请输入 Endpoint 地址',
+            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.1BFE2F75',
+            defaultMessage: '请输入 Endpoint 地址，如：oss-cn-hangzhou.aliyuncs.com',
           })}
         />
       </Form.Item>

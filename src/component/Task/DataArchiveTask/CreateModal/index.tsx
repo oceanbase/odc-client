@@ -20,6 +20,7 @@ import Crontab from '@/component/Crontab';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
 import FormItemPanel from '@/component/FormItemPanel';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
+import { IDatabase } from '@/d.ts/database';
 import {
   CreateTaskRecord,
   ICycleTaskTriggerConfig,
@@ -40,7 +41,7 @@ import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { hourToMilliSeconds, kbToMb, mbToKb, milliSecondsToHour } from '@/util/utils';
 import { FieldTimeOutlined } from '@ant-design/icons';
-import { Button, Checkbox, DatePicker, Drawer, Form, Modal, Radio, Space } from 'antd';
+import { Button, Checkbox, DatePicker, Drawer, Form, Modal, Radio, Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
@@ -51,6 +52,7 @@ import TaskdurationItem from '../../component/TaskdurationItem';
 import ThrottleFormItem from '../../component/ThrottleFormItem';
 import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import VariableConfig, { timeUnitOptions } from './VariableConfig';
 import ShardingStrategyItem from '../../component/ShardingStrategyItem';
 import { disabledDate, disabledTime } from '@/util/utils';
@@ -168,6 +170,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [crontab, setCrontab] = useState<ICrontab>(null);
   const [tables, setTables] = useState<ITable[]>();
   const [enablePartition, setEnablePartition] = useState<boolean>(false);
+  const [targetDatabase, setTargetDatabase] = useState<IDatabase>();
   const [form] = Form.useForm();
   const databaseId = Form.useWatch('databaseId', form);
   const { session: sourceDBSession, database: sourceDB } = useDBSession(databaseId);
@@ -498,6 +501,23 @@ const CreateModal: React.FC<IProps> = (props) => {
     }
   }, [dataArchiveTaskData?.databaseId]);
 
+  // 归档到对象存储类型的数据库时，不支持自动清理、指标目标表名、同步结构
+  useEffect(() => {
+    if (isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)) {
+      const tables = form.getFieldValue('tables');
+      tables?.forEach((element) => {
+        if (element?.hasOwnProperty('targetTableName')) {
+          delete element.targetTableName;
+        }
+      });
+      form.setFieldsValue({
+        deleteAfterMigration: undefined,
+        syncTableStructure: undefined,
+        tables,
+      });
+    }
+  }, [targetDatabase]);
+
   return (
     <Drawer
       destroyOnClose
@@ -578,34 +598,60 @@ const CreateModal: React.FC<IProps> = (props) => {
                 id: 'odc.DataArchiveTask.CreateModal.TargetDatabase',
                 defaultMessage: '目标数据库',
               })}
+              onChange={(_, database) => {
+                setTargetDatabase(database);
+              }}
               /*目标数据库*/ name="targetDataBaseId"
               projectId={projectId}
             />
           </Space>
           <Space direction="vertical" size={24} style={{ width: '100%' }}>
-            <ArchiveRange enabledTargetTable tables={tables} checkPartition={enablePartition} />
+            <ArchiveRange
+              enabledTargetTable
+              tables={tables}
+              checkPartition={enablePartition}
+              targetDatabase={targetDatabase}
+            />
+
             <VariableConfig form={form} />
           </Space>
           <Form.Item name="deleteAfterMigration" valuePropName="checked">
-            <Checkbox>
-              <Space>
-                {
-                  formatMessage({
-                    id: 'odc.DataArchiveTask.CreateModal.CleanUpArchivedDataFrom',
-                    defaultMessage: '清理源端已归档数据',
-                  }) /*清理源端已归档数据*/
+            <Checkbox
+              disabled={isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)}
+              onChange={(e) => {
+                form.setFieldValue('deleteAfterMigration', e.target.checked);
+              }}
+            >
+              <Tooltip
+                title={
+                  isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
+                    ? formatMessage({
+                        id: 'src.component.Task.DataArchiveTask.CreateModal.35705CA2',
+                        defaultMessage: '选择的目标数据库为对象存储类型时，不支持该配置',
+                      })
+                    : undefined
                 }
-
-                <span className={styles.desc}>
+                placement="topLeft"
+              >
+                <Space>
                   {
                     formatMessage({
-                      id: 'odc.DataArchiveTask.CreateModal.IfYouCleanUpThe',
-                      defaultMessage:
-                        '若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚',
-                    }) /*若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚*/
+                      id: 'odc.DataArchiveTask.CreateModal.CleanUpArchivedDataFrom',
+                      defaultMessage: '清理源端已归档数据',
+                    }) /*清理源端已归档数据*/
                   }
-                </span>
-              </Space>
+
+                  <span className={styles.desc}>
+                    {
+                      formatMessage({
+                        id: 'odc.DataArchiveTask.CreateModal.IfYouCleanUpThe',
+                        defaultMessage:
+                          '若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚',
+                      }) /*若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚*/
+                    }
+                  </span>
+                </Space>
+              </Tooltip>
             </Checkbox>
           </Form.Item>
           <Form.Item
@@ -691,7 +737,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             keepExpand
           >
             <TaskdurationItem form={form} />
-            <SynchronizationItem form={form} />
+            <SynchronizationItem form={form} targetDatabase={targetDatabase} />
             <Form.Item
               label={
                 formatMessage({

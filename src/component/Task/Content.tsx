@@ -292,9 +292,8 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
       return true;
     } else if (pageKey === TaskPageType.ALL && !userStore.isPrivateSpace()) {
       return false;
-    } else {
-      return pageKey !== undefined;
     }
+    return false;
   }, [inProject, pageKey, userStore.organizationId]);
 
   return (

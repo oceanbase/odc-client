@@ -93,6 +93,13 @@ const CreateModal: React.FC<IProps> = (props) => {
     form.setFieldsValue(formData);
   };
 
+  useEffect(() => {
+    if (logicDatabaseInfo?.ddl) {
+      form?.setFieldValue('sqlContent', logicDatabaseInfo?.ddl);
+      form?.setFieldValue('databaseId', logicDatabaseInfo?.databaseId);
+    }
+  }, [logicDatabaseInfo?.ddl]);
+
   const handleSqlChange = (type: 'sqlContent', sql: string) => {
     form?.setFieldsValue({
       [type]: sql,
