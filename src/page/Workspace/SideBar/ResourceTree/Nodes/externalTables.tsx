@@ -33,7 +33,10 @@ export function ExternalTableTreeData(dbSession: SessionStore, database: IDataba
   const dbName = database.name;
   const tables = dbSession?.database?.externalTableTables;
   const treeData: TreeDataNode = {
-    title: '外表',
+    title: formatMessage({
+      id: 'src.page.Workspace.SideBar.ResourceTree.Nodes.5EFA3A45',
+      defaultMessage: '外表',
+    }),
     key: `${database?.id}-${dbName}-externalTable`,
     type: ResourceNodeType.ExternalTableRoot,
     data: database,

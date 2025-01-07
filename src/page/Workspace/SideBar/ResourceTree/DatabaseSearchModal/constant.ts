@@ -87,7 +87,10 @@ export const DbObjectTypeMap = {
     },
   },
   [DbObjectType.external_table]: {
-    label: '外表',
+    label: formatMessage({
+      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.EABF882B',
+      defaultMessage: '外表',
+    }),
     openPage: (object) => openExternalTableTableViewPage,
     getOpenTab: (object, databaseId) => {
       const name = object?.name;

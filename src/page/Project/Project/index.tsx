@@ -155,13 +155,21 @@ const Project = () => {
                 <Button
                   onClick={() => {
                     if (!selectProjectList.length) {
-                      message.info('请先选择项目');
+                      message.info(
+                        formatMessage({
+                          id: 'src.page.Project.Project.5CDFAB27',
+                          defaultMessage: '请先选择项目',
+                        }),
+                      );
                       return;
                     }
                     setOpenDeleteProjectModal(true);
                   }}
                 >
-                  删除项目
+                  {formatMessage({
+                    id: 'src.page.Project.Project.FB11C8F8',
+                    defaultMessage: '删除项目',
+                  })}
                 </Button>
               )}
             </Space>

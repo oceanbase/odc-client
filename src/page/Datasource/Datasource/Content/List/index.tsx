@@ -92,7 +92,12 @@ const List: React.FC<IProps> = forwardRef(function (
 
   async function openNewConnection(connection: IConnection) {
     if (isConnectTypeBeFileSystemGroup(connection?.type)) {
-      message.info('对象存储数据源暂不支持查看详情');
+      message.info(
+        formatMessage({
+          id: 'src.page.Datasource.Datasource.Content.List.75724B17',
+          defaultMessage: '对象存储数据源暂不支持查看详情',
+        }),
+      );
       return;
     }
     history.push(`/datasource/${connection.id}/${IPageType.Datasource_info}`);

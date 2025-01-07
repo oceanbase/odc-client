@@ -285,7 +285,10 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         },
         {
           value: TaskPageType.APPLY_TABLE_PERMISSION,
-          label: `申请表/视图权限`,
+          label: formatMessage({
+            id: 'src.component.Task.7FE73181',
+            defaultMessage: '申请表/视图权限',
+          }),
           enabled: !isClient() && !isPersonal,
         },
       ],

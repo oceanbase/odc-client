@@ -286,7 +286,10 @@ const ObjectList = ({
           style={{ padding: 0, height: 18, display: 'inline-block' }}
           onClick={(e) => applyTablePermission(e, object, type)}
         >
-          {`申请表/视图权限`}
+          {formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.4DE0929F',
+            defaultMessage: '申请表/视图权限',
+          })}
         </Button>
       );
     }

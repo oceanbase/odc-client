@@ -178,7 +178,12 @@ const ActionBar: React.FC<IProps> = inject(
       });
       if (res) {
         setDelTaskList?.([...delTaskList, id]);
-        message.success('删除成功');
+        message.success(
+          formatMessage({
+            id: 'src.component.Task.component.ActionBar.9EDD0936',
+            defaultMessage: '删除成功',
+          }),
+        );
         props?.onReloadList?.();
       }
     };
@@ -1084,9 +1089,15 @@ const ActionBar: React.FC<IProps> = inject(
 
       const deleteBtn = {
         key: 'delete',
-        text: '删除',
+        text: formatMessage({
+          id: 'src.component.Task.component.ActionBar.E16B982C',
+          defaultMessage: '删除',
+        }),
         type: 'button',
-        confirmText: '你确定要删除这个任务吗？',
+        confirmText: formatMessage({
+          id: 'src.component.Task.component.ActionBar.72AF1732',
+          defaultMessage: '你确定要删除这个任务吗？',
+        }),
         action: deleteTask,
       };
       const isOperator = isOwner || isTaskProjectOwner;

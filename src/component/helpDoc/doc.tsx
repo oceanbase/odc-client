@@ -562,7 +562,14 @@ export default {
     </p>
   ),
 
-  projectDBA: <p>{'拥有项目内除成员管理、消息配置和项目设置外的所有权限'}</p>,
+  projectDBA: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.D367011B',
+        defaultMessage: '拥有项目内除成员管理、消息配置和项目设置外的所有权限',
+      })}
+    </p>
+  ),
 
   projectDev: (
     <p>

@@ -122,19 +122,28 @@ const TablePartitions: React.FC<IProps> = function ({}) {
   const subpartitionsColumns = [
     {
       key: 'parentName',
-      name: '一级分区名称',
+      name: formatMessage({
+        id: 'src.page.Workspace.components.TablePage.Partitions.30EACD95',
+        defaultMessage: '一级分区名称',
+      }),
       resizable: true,
       sortable: false,
     },
     {
       key: 'name',
-      name: '二级分区名称',
+      name: formatMessage({
+        id: 'src.page.Workspace.components.TablePage.Partitions.E6EE95C1',
+        defaultMessage: '二级分区名称',
+      }),
       resizable: true,
       sortable: false,
     },
     {
       key: 'position',
-      name: '顺序',
+      name: formatMessage({
+        id: 'src.page.Workspace.components.TablePage.Partitions.AD70BB60',
+        defaultMessage: '顺序',
+      }),
       resizable: true,
       sortable: false,
       width: 110,
@@ -329,10 +338,27 @@ const TablePartitions: React.FC<IProps> = function ({}) {
           >
             <div style={{ lineHeight: '40px', height: 40, padding: '0px 12px' }}>
               <Space size={'large'} align="center">
-                <Typography.Text strong>一级分区</Typography.Text>
-                <span>{`分区类型: ${partitionNameMap[partType]}`}</span>
+                <Typography.Text strong>
+                  {formatMessage({
+                    id: 'src.page.Workspace.components.TablePage.Partitions.3FB355F5',
+                    defaultMessage: '一级分区',
+                  })}
+                </Typography.Text>
                 <span>
-                  分区键:
+                  {formatMessage(
+                    {
+                      id: 'src.page.Workspace.components.TablePage.Partitions.189B7E31',
+                      defaultMessage: '分区类型: {partitionNameMapPartType}',
+                    },
+                    { partitionNameMapPartType: partitionNameMap[partType] },
+                  )}
+                </span>
+                <span>
+                  {formatMessage({
+                    id: 'src.page.Workspace.components.TablePage.Partitions.89FFF404',
+                    defaultMessage: '分区键:',
+                  })}
+
                   {(partitions as ITableListPartition)?.expression ||
                     (partitions as ITableListColumnsPartition)?.columns
                       ?.map((column) => column?.columnName)
@@ -349,23 +375,53 @@ const TablePartitions: React.FC<IProps> = function ({}) {
               initialRows={rows as any}
               onSelectChange={handleSelectCell}
             />
+
             {subpartitionsRows?.length > 0 ? (
               <>
                 <div style={{ lineHeight: '40px', height: 40, padding: '0px 12px' }}>
                   <Space size={'large'} align="center">
-                    <Typography.Text strong>二级分区</Typography.Text>
-                    <span>{`分区类型: ${partitionNameMap[subpartitionType]}`}</span>
+                    <Typography.Text strong>
+                      {formatMessage({
+                        id: 'src.page.Workspace.components.TablePage.Partitions.59AC9434',
+                        defaultMessage: '二级分区',
+                      })}
+                    </Typography.Text>
                     <span>
-                      分区键:
+                      {formatMessage(
+                        {
+                          id: 'src.page.Workspace.components.TablePage.Partitions.7DB0502E',
+                          defaultMessage: '分区类型: {partitionNameMapSubpartitionType}',
+                        },
+                        { partitionNameMapSubpartitionType: partitionNameMap[subpartitionType] },
+                      )}
+                    </span>
+                    <span>
+                      {formatMessage({
+                        id: 'src.page.Workspace.components.TablePage.Partitions.79A4B409',
+                        defaultMessage: '分区键:',
+                      })}
+
                       {(subpartitions as ITableListPartition)?.expression ||
                         (subpartitions as ITableListColumnsPartition)?.columns
                           ?.map((column) => column?.columnName)
                           ?.join(',') ||
                         '-'}
                     </span>
-                    <span>{`二级分区模板化: ${
-                      subpartitions?.subpartitionTemplated ? '是' : '否'
-                    }`}</span>
+                    <span>
+                      {formatMessage({
+                        id: 'src.page.Workspace.components.TablePage.Partitions.B3C734DB',
+                        defaultMessage: '二级分区模板化:',
+                      })}
+                      {subpartitions?.subpartitionTemplated
+                        ? formatMessage({
+                            id: 'src.page.Workspace.components.TablePage.Partitions.67A2BC68',
+                            defaultMessage: '是',
+                          })
+                        : formatMessage({
+                            id: 'src.page.Workspace.components.TablePage.Partitions.31C167AC',
+                            defaultMessage: '否',
+                          })}
+                    </span>
                   </Space>
                 </div>
                 <EditableTable

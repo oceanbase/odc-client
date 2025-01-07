@@ -47,7 +47,10 @@ const getColumns = (params: {
   return [
     {
       dataIndex: 'tableName',
-      title: '表/视图',
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.3EEF9DAF',
+        defaultMessage: '表/视图',
+      }),
       width: 140,
       ellipsis: true,
       filterDropdown: (props) => {

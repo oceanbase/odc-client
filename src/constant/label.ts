@@ -86,7 +86,10 @@ export const DbObjectTypeTextMap = {
   [DbObjectType.file]: formatMessage({ id: 'odc.src.constant.label.File', defaultMessage: '文件' }), //文件 //文件
   [DbObjectType.type]: formatMessage({ id: 'odc.src.constant.label.Type', defaultMessage: '类型' }), //类型
 
-  [DbObjectType.external_table]: '外表',
+  [DbObjectType.external_table]: formatMessage({
+    id: 'src.constant.76471609',
+    defaultMessage: '外表',
+  }),
 };
 
 export const ConnectTypeText = {
@@ -104,16 +107,25 @@ export const ConnectTypeText = {
   [ConnectType.DORIS]: 'Doris',
   [ConnectType.ORACLE]: 'Oracle',
   [ConnectType.PG]: 'PostgreSQL',
-  [ConnectType.OSS]: '阿里云 OSS',
-  [ConnectType.COS]: '腾讯云 COS',
-  [ConnectType.OBS]: '华为云 OBS',
+  [ConnectType.OSS]: formatMessage({ id: 'src.constant.547E5EFD', defaultMessage: '阿里云 OSS' }),
+  [ConnectType.COS]: formatMessage({ id: 'src.constant.D988A13A', defaultMessage: '腾讯云 COS' }),
+  [ConnectType.OBS]: formatMessage({ id: 'src.constant.8B363F77', defaultMessage: '华为云 OBS' }),
   [ConnectType.S3A]: 'AWS S3',
 };
 
 export const GruopTypeText = {
-  [DatasourceGroup.OceanBaseDatabase]: 'OceanBase 数据库',
-  [DatasourceGroup.OtherDatabase]: '其他数据库',
-  [DatasourceGroup.FileSystem]: '对象存储',
+  [DatasourceGroup.OceanBaseDatabase]: formatMessage({
+    id: 'src.constant.C3ABF489',
+    defaultMessage: 'OceanBase 数据库',
+  }),
+  [DatasourceGroup.OtherDatabase]: formatMessage({
+    id: 'src.constant.0FFFC32A',
+    defaultMessage: '其他数据库',
+  }),
+  [DatasourceGroup.FileSystem]: formatMessage({
+    id: 'src.constant.C4D73A01',
+    defaultMessage: '对象存储',
+  }),
 };
 
 export const DBTypeText = {

@@ -131,6 +131,7 @@ const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false)
           {isSourceTree ? envRender(environment) : null}
         </Space>
       ),
+
       key: id,
       icon: <DataBaseStatusIcon item={database} />,
       checkable: true,
@@ -153,6 +154,7 @@ const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false)
               <Text>{tableItem.name}</Text>
             </Space>
           ),
+
           key: generateKeyByDataBaseIdAndTableName({
             databaseId: id,
             tableName: tableItem.name,
@@ -392,7 +394,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
       const newDatabaseIds = newValue.map(({ databaseId }) => databaseId);
       setSelectedExpandKeys((prevKeys) => {
         const prevKeysSet = new Set(prevKeys);
-        newDatabaseIds.forEach(id => prevKeysSet.add(id));
+        newDatabaseIds.forEach((id) => prevKeysSet.add(id));
         return Array.from(prevKeysSet);
       });
     },
@@ -426,6 +428,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
         DbObjectType.external_table,
         DbObjectType.view,
       ];
+
       const res = await getTableListWithoutSession(db?.id, params.join(','));
       const listHelper = (type: DbObjectType) => {
         return res
@@ -663,7 +666,12 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
           <ExportCard
             title={
               <Space size={4}>
-                <span>选择表/视图</span>
+                <span>
+                  {formatMessage({
+                    id: 'src.component.Task.component.TableSelecter.DA18FE81',
+                    defaultMessage: '选择表/视图',
+                  })}
+                </span>
               </Space>
             }
             onSearch={setSourceSearchValue}

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React, { useEffect, useState } from 'react';
 import { Modal, Descriptions } from 'antd';
 import { getOperationDetail } from '@/common/network/task';
@@ -28,11 +29,30 @@ const ChangeDetail: React.FC<ChangeDetailProps> = (props) => {
   };
 
   return (
-    <Modal open={visible} footer={null} onCancel={onClose} title="变更详情" width={900}>
+    <Modal
+      open={visible}
+      footer={null}
+      onCancel={onClose}
+      title={formatMessage({
+        id: 'src.component.Task.component.CommonDetailModal.58B347B9',
+        defaultMessage: '变更详情',
+      })}
+      width={900}
+    >
       <div>
         <Descriptions column={2}>
-          <Descriptions.Item span={1}>变更前：</Descriptions.Item>
-          <Descriptions.Item span={1}>变更后：</Descriptions.Item>
+          <Descriptions.Item span={1}>
+            {formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.AF00DE0E',
+              defaultMessage: '变更前：',
+            })}
+          </Descriptions.Item>
+          <Descriptions.Item span={1}>
+            {formatMessage({
+              id: 'src.component.Task.component.CommonDetailModal.1CF173E7',
+              defaultMessage: '变更后：',
+            })}
+          </Descriptions.Item>
         </Descriptions>
         {data && (
           <div style={{ position: 'relative', height: '600px' }} className={styles.diffEditor}>

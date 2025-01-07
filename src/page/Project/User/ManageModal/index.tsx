@@ -45,7 +45,10 @@ const items: MenuItem[] = [
     key: EManagePermissionType.DATABASE,
   },
   {
-    label: `表/视图权限`,
+    label: formatMessage({
+      id: 'src.page.Project.User.ManageModal.AE2E1625',
+      defaultMessage: '表/视图权限',
+    }),
     key: EManagePermissionType.TABLE,
   },
 ];
