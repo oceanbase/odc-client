@@ -94,6 +94,12 @@ const DatabaseSelecter: React.FC<IProps> = function ({
     }
   }, [projectId, baseDatabase]);
 
+  useEffect(()=>{
+    if(checkedKeys?.length){
+      setShowSelectLogicDBTip(databaseList?.some(i=> checkedKeys?.includes(i?.id) && i?.type === DBType.LOGICAL))
+    }
+  }, [checkedKeys, databaseList])
+
   const getCheckedTreeData = () => {
     const validDatabaseList =
       databaseList
@@ -235,9 +241,6 @@ const DatabaseSelecter: React.FC<IProps> = function ({
       } else {
         list = checkedKeys?.filter((key) => key !== curNodeKey);
       }
-      setShowSelectLogicDBTip?.(
-        databaseList?.find((i) => list?.includes(i?.id) && i?.type === DBType.LOGICAL),
-      );
       onChange(list || []);
     },
     [checkedKeys, onChange, databaseList],
