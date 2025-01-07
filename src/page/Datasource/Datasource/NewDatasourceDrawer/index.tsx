@@ -223,7 +223,7 @@ export default function NewDatasourceDrawer({
           {isEdit &&
           !haveOCP() &&
           connectType !== ConnectType.ORACLE &&
-          !isConnectTypeBeFileSystemGroup(type) ? (
+          !isConnectTypeBeFileSystemGroup(originDatasource?.type) ? (
             <Button onClick={copyUri}>
               {
                 formatMessage({
