@@ -86,6 +86,19 @@ export const DbObjectTypeMap = {
       return [name, TopTab.PROPS, PropsTab.DDL, databaseId];
     },
   },
+  [DbObjectType.logical_table]: {
+    label: DbObjectTypeTextMap.TABLE,
+    openPage: (object) => openTableViewPage,
+    getOpenTab: (object, databaseId) => {
+      return [
+        object.name,
+        TopTab.PROPS,
+        PropsTab.DDL,
+        object?.database?.id,
+        object?.id
+      ];
+    },
+  },
   [DbObjectType.external_table]: {
     label: formatMessage({
       id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.EABF882B',
