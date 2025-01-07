@@ -129,7 +129,10 @@ const getConnectionColumns = (params: {
                 params?.onOpenDetail(record, true);
               }}
             >
-              审批记录
+              {formatMessage({
+                id: 'src.component.Task.component.CommonDetailModal.3D4F5474',
+                defaultMessage: '审批记录',
+              })}
             </Action.Link>
             {isSupportChangeDetail(params.taskType) && (
               <Action.Link
@@ -137,7 +140,10 @@ const getConnectionColumns = (params: {
                   params?.onOpenChangeDetail(record, true);
                 }}
               >
-                变更详情
+                {formatMessage({
+                  id: 'src.component.Task.component.CommonDetailModal.5C706BA6',
+                  defaultMessage: '变更详情',
+                })}
               </Action.Link>
             )}
           </>
@@ -204,6 +210,7 @@ const TaskOperationRecord: React.FC<IProps> = (props) => {
         disablePagination
         scroll={null}
       />
+
       <FlowModal
         visible={detailVisible}
         id={id}

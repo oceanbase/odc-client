@@ -37,7 +37,10 @@ const statusMap = {
 
   [ScheduleChangeStatus.CHANGING]: {
     icon: <LoadingOutlined style={{ color: '#F5222D' }} />,
-    text: '改变中',
+    text: formatMessage({
+      id: 'src.component.Task.component.CommonDetailModal.833A559A',
+      defaultMessage: '改变中',
+    }),
   },
 };
 

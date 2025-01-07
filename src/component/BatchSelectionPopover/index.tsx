@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button, Checkbox, Popover, Spin, Empty, Input, Space } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
@@ -73,7 +74,10 @@ const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
     return (
       <div className={`${styles.p12} ${styles.pb0}`}>
         <Input
-          placeholder={'搜索关键字'}
+          placeholder={formatMessage({
+            id: 'src.component.BatchSelectionPopover.9DC08FE8',
+            defaultMessage: '搜索关键字',
+          })}
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
@@ -95,7 +99,10 @@ const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
               setCheckedList(e.target.checked ? filterOptions?.map((item) => item?.value) : []);
             }}
           >
-            全选
+            {formatMessage({
+              id: 'src.component.BatchSelectionPopover.080F782E',
+              defaultMessage: '全选',
+            })}
           </Checkbox>
           <Button
             size="small"
@@ -105,7 +112,10 @@ const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
               setOpen(false);
             }}
           >
-            确定
+            {formatMessage({
+              id: 'src.component.BatchSelectionPopover.EDF3640E',
+              defaultMessage: '确定',
+            })}
           </Button>
         </div>
       </>
@@ -174,7 +184,10 @@ const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
             setOpen(true);
           }}
         >
-          批量添加
+          {formatMessage({
+            id: 'src.component.BatchSelectionPopover.F72B9B10',
+            defaultMessage: '批量添加',
+          })}
         </Button>
       </Popover>
     </>

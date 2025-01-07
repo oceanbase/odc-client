@@ -143,7 +143,10 @@ const AddDataBaseButton: React.FC<IProps> = ({
       onClick: onOpenLogicialDatabase,
     },
     {
-      label: '添加对象存储',
+      label: formatMessage({
+        id: 'src.page.Project.Database.components.AddDataBaseButton.201B0791',
+        defaultMessage: '添加对象存储',
+      }),
       key: '2',
       onClick: onOpenObjectStorage,
     },

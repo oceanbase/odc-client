@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Dropdown } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { EllipsisOutlined } from '@ant-design/icons';
@@ -22,7 +23,10 @@ const MoreBtn: React.FC<MoreBtnProps> = function (props) {
 
   const items: ItemType[] = [
     {
-      label: '删除项目',
+      label: formatMessage({
+        id: 'src.page.Project.Project.MoreBtn.CF5D6A1D',
+        defaultMessage: '删除项目',
+      }),
       key: Actions.REMOVE,
     },
   ];

@@ -87,7 +87,10 @@ const AddObjectStorage: React.FC<AddObjectStorageProps> = (props) => {
   return (
     <>
       <Modal
-        title="添加对象存储"
+        title={formatMessage({
+          id: 'src.page.Project.Database.components.AddObjectStorage.F4E4F8B8',
+          defaultMessage: '添加对象存储',
+        })}
         open={open}
         onOk={handlesubmit}
         onCancel={handleCancel}

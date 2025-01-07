@@ -60,7 +60,12 @@ const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
         }
       }
     } else {
-      message.success('测试连接成功');
+      message.success(
+        formatMessage({
+          id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.79FBC953',
+          defaultMessage: '测试连接成功',
+        }),
+      );
     }
     setTestResult(res?.data);
   };
@@ -95,32 +100,58 @@ const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
   return (
     <>
       <Form.Item
-        label={'文件 URL'}
+        label={formatMessage({
+          id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.7C7CBA83',
+          defaultMessage: '文件 URL',
+        })}
         name={'defaultSchema'}
-        tooltip={'访问对象文件的路径地址'}
+        tooltip={formatMessage({
+          id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.105ECDDE',
+          defaultMessage: '访问对象文件的路径地址',
+        })}
         rules={[
           {
             required: true,
           },
         ]}
       >
-        <Input autoComplete="off" disabled={isEdit} placeholder="请输入 Bucket 目录" />
+        <Input
+          autoComplete="off"
+          disabled={isEdit}
+          placeholder={formatMessage({
+            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.C9260DF9',
+            defaultMessage: '请输入 Bucket 目录',
+          })}
+        />
       </Form.Item>
       <Form.Item
         label={'Endpoint'}
         name={'host'}
-        tooltip={'对外服务的访问域名'}
+        tooltip={formatMessage({
+          id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.33995343',
+          defaultMessage: '对外服务的访问域名',
+        })}
         rules={[
           {
             required: true,
           },
         ]}
       >
-        <Input autoComplete="off" disabled={isEdit} placeholder="请输入 Endpoint 地址" />
+        <Input
+          autoComplete="off"
+          disabled={isEdit}
+          placeholder={formatMessage({
+            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.49C92B75',
+            defaultMessage: '请输入 Endpoint 地址',
+          })}
+        />
       </Form.Item>
       <Space size={24}>
         <Form.Item
-          label={'访问密钥 ID'}
+          label={formatMessage({
+            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.B04CC70F',
+            defaultMessage: '访问密钥 ID',
+          })}
           validateStatus={usernameValidStatus}
           hasFeedback={!!usernameValidStatus}
           name={'username'}
@@ -130,10 +161,20 @@ const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
             },
           ]}
         >
-          <Input autoComplete="off" style={{ width: 224 }} placeholder={'请输入'} />
+          <Input
+            autoComplete="off"
+            style={{ width: 224 }}
+            placeholder={formatMessage({
+              id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.990704A2',
+              defaultMessage: '请输入',
+            })}
+          />
         </Form.Item>
         <Form.Item
-          label={'访问密钥'}
+          label={formatMessage({
+            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.9E9AD5FC',
+            defaultMessage: '访问密钥',
+          })}
           name={'password'}
           validateStatus={passwordValidStatus}
           hasFeedback={!!passwordValidStatus}
@@ -143,7 +184,14 @@ const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
             },
           ]}
         >
-          <Input.Password autoComplete="off" style={{ width: 224 }} placeholder={'请输入'} />
+          <Input.Password
+            autoComplete="off"
+            style={{ width: 224 }}
+            placeholder={formatMessage({
+              id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.E1CB23D0',
+              defaultMessage: '请输入',
+            })}
+          />
         </Form.Item>
       </Space>
 
