@@ -228,6 +228,7 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
               DbObjectType.table,
               DragInsertType.NAME,
               session.sessionId,
+              true,
             );
           },
         },
@@ -251,6 +252,7 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
               DbObjectType.table,
               DragInsertType.SELECT,
               session.sessionId,
+              true,
             );
           },
         },

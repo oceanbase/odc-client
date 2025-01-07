@@ -243,7 +243,8 @@ const CreateModal: React.FC<IProps> = (props) => {
     if (triggerStrategy === TaskExecStrategy.START_AT) {
       formData.startAt = moment(startAt);
     }
-    form.setFieldsValue(formData);
+    await form.setFieldsValue(formData);
+    setTargetDatabase(jobParameters.targetDatabase);
   };
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
@@ -477,6 +478,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   useEffect(() => {
     if (!dataArchiveVisible) {
       handleReset();
+      setTargetDatabase(null);
     }
   }, [dataArchiveVisible]);
 
