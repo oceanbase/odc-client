@@ -254,9 +254,12 @@ export class UserStore {
   }
 
   @action
-  public async switchCurrentOrganization(id?: number) {
+  public async switchCurrentOrganization(
+    id?: number,
+    getDefaultOrganization?: () => Promise<number>,
+  ) {
     await setting.getUserConfig();
-    id = id || this.getDefaultOrganization()?.id;
+    id = id || (await this.getDefaultOrganization(getDefaultOrganization))?.id;
     if (!id) {
       return false;
     }
@@ -269,8 +272,11 @@ export class UserStore {
     return isSuccess;
   }
 
-  public getDefaultOrganization() {
-    const sessionOrganizationId = parseInt(sessionStorage.getItem(sessionKey));
+  public async getDefaultOrganization(getDefaultOrganization?: () => Promise<number>) {
+    let sessionOrganizationId = parseInt(sessionStorage.getItem(sessionKey));
+    if (!sessionOrganizationId && getDefaultOrganization) {
+      sessionOrganizationId = await getDefaultOrganization();
+    }
     const sessionOrganization = this.organizations?.find(
       (item) => item.id === sessionOrganizationId,
     );

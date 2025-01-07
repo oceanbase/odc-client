@@ -19,6 +19,7 @@ import type { IManagerUser } from '@/d.ts';
 export default {
   login: {
     menu: true,
+    setFirstOraganizationToDefault: true,
   },
   locale: {
     menu: true,
