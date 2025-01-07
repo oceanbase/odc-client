@@ -25,6 +25,7 @@ import { getSynonymList } from '@/common/network/synonym';
 import { getTableInfo, getLogicTableInfo } from '@/common/network/table';
 import { getType, getTypeList } from '@/common/network/type';
 import {
+  DbObjectType,
   IFunction,
   IPackage,
   IProcedure,
@@ -231,11 +232,27 @@ class DatabaseStore {
 
   @action
   public async getViewList() {
-    const sid = generateDatabaseSid(this.dbName, this.sessionId);
-    const ret = await request.get(`/api/v1/view/list/${sid}`);
+    const params: { databaseId: number; includePermittedAction: boolean; type?: string } = {
+      databaseId: this.databaseId,
+      includePermittedAction: true,
+      type: DbObjectType.view,
+    };
+    const res = await request.get(`/api/v2/databaseSchema/tables`, {
+      params,
+    });
     runInAction(() => {
       this.viewVersion = Date.now();
-      this.views = ret?.data || [];
+      this.views =
+        res?.data?.contents?.map((t) => {
+          return {
+            ...t,
+            viewName: t.name,
+            schemaName: t?.database?.name,
+            info: {
+              authorizedPermissionTypes: t.authorizedPermissionTypes,
+            },
+          };
+        }) || [];
     });
   }
 

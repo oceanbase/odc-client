@@ -1177,7 +1177,7 @@ export const SAMLPartForm: React.FC<{
               >
                 <CopyOutlined />
               </a>
-              {SAMLCheckBoxConfig.signing.value}
+              <div className={styles.SAMLConfigContent}>{SAMLCheckBoxConfig.signing.value}</div>
             </div>
           </div>
 
@@ -1205,6 +1205,7 @@ export const SAMLPartForm: React.FC<{
 
             <TextArea
               rows={6}
+              value={SAMLCheckBoxConfig.verification.value}
               onChange={(e) => {
                 updateSAMLCheckBoxConfig(SAMLType.verification, true, e.target.value);
               }}
@@ -1251,7 +1252,7 @@ export const SAMLPartForm: React.FC<{
             >
               <CopyOutlined />
             </a>
-            {SAMLCheckBoxConfig.decryption.value}
+            <div className={styles.SAMLConfigContent}>{SAMLCheckBoxConfig.decryption.value}</div>
           </div>
         </Space>
       </div>

@@ -28,6 +28,7 @@ import { Divider, Select, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import SessionContext from '../context';
 import { DEFALT_WIDTH } from './const';
+import { IDatabase } from '@/d.ts/database';
 import styles from './index.less';
 import SessionDropdown, { ISessionDropdownFiltersProps } from './SessionDropdown';
 
@@ -42,7 +43,7 @@ interface IProps {
   isLogicalDatabase?: boolean;
   datasourceMode?: boolean;
   projectMode?: boolean;
-  onChange?: (value: number) => void;
+  onChange?: (value: number, database?: IDatabase) => void;
   options?: {
     hideFileSystem?: boolean;
   };
@@ -171,8 +172,13 @@ const SelectItem: React.FC<IProps> = ({
         datasourceMode,
         projectMode,
         isLogicalDatabase,
-        selectSession(databaseId: number, datasourceId: number, from: 'project' | 'datasource') {
-          onChange(datasourceMode ? datasourceId : databaseId);
+        selectSession(
+          databaseId: number,
+          datasourceId: number,
+          from: 'project' | 'datasource',
+          database?: IDatabase,
+        ) {
+          onChange(datasourceMode ? datasourceId : databaseId, database);
         },
       }}
     >

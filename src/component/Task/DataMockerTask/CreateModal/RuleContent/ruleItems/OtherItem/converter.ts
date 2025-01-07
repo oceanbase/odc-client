@@ -20,7 +20,7 @@ import { convertColumnType } from '@/util/utils';
 import { cloneDeep } from 'lodash';
 import { OtherRuleType } from './index';
 
-const ruleTypeToGenerator = {
+export const ruleTypeToGenerator = {
   [OtherRuleType.NULL]: MockGenerator.NULL_GENERATOR,
   [OtherRuleType.SKIP]: MockGenerator.SKIP_GENERATOR,
 };

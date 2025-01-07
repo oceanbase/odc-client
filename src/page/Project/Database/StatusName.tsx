@@ -52,7 +52,7 @@ export default observer(function StatusName({
     return name;
   };
 
-  switch (status.status) {
+  switch (status?.status) {
     case IConnectionStatus.TESTING: {
       return (
         <Button type="link" loading>
@@ -64,7 +64,7 @@ export default observer(function StatusName({
       return <a onClick={!notSupport ? onClick : null}>{nameRender(item?.name)}</a>;
     }
     default: {
-      const errorMsg = status.errorMessage || 'datasource disconnected';
+      const errorMsg = status?.errorMessage || 'datasource disconnected';
       return (
         <HelpDoc isTip={false} title={errorMsg}>
           {nameRender(item?.name)}

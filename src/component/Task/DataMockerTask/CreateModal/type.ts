@@ -140,6 +140,7 @@ export const MockStrategyTextMap = {
 };
 
 export interface RuleConfigList {
+  rule?: CharRuleType | DateRuleType | IntervalRuleType | NumberRuleType | OtherRuleType;
   range: string[] | number[];
   columnName: string;
   typeConfig: {

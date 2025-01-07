@@ -59,6 +59,7 @@ export interface IUserSummary {
   name: string;
   accountName: string;
   organizationId: number;
+  roles: { name: string; id: number; [key: string]: any }[];
 }
 
 export interface IOrganization {
@@ -2393,6 +2394,7 @@ export interface TaskRecord<P> {
   description?: string;
   nodeList?: ITaskFlowNode[];
   progressPercentage: number;
+  project: IProject;
 }
 
 export interface ICycleSubTaskRecord {
@@ -3881,6 +3883,7 @@ export interface ISSO_SAML_CONFIG {
   [SAMLType.signing]?: { certificate: string };
   [SAMLType.verification]?: { certificate: string };
   metadataUri?: string;
+  testAcsEntityId?: string;
   singlesignon?: {
     url?: string;
     binding?: 'POST' | 'REDIRECT';

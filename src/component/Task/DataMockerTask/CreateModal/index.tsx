@@ -35,6 +35,7 @@ import DataMockerForm, { converFormToServerData } from './form';
 import { IMockFormData } from './type';
 import moment from 'moment';
 import { columnTypeToRuleMap, RuleItem } from './type';
+import { getDefaultRuleByGenerator } from './RuleContent';
 
 interface IProps extends Pick<DrawerProps, 'visible'> {
   modalStore?: ModalStore;
@@ -65,6 +66,11 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         columns?.map((item) => {
           const { typeConfig } = item;
           let range = [typeConfig.lowValue, typeConfig.highValue];
+          let rule = getDefaultRuleByGenerator(
+            typeConfig?.generator,
+            typeConfig?.columnType,
+            task.database.dialectType,
+          );
           const ruleItem = columnTypeToRuleMap[task.database.dialectType][typeConfig?.columnType];
           switch (ruleItem) {
             case RuleItem.DATE: {
@@ -75,6 +81,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           return {
             ...item,
             range,
+            rule,
           };
         }) || [],
       );

@@ -353,9 +353,8 @@ const TaskTable: React.FC<IProps> = inject(
               filteredValue: filters?.projectIdList || null,
               ellipsis: true,
               width: 80,
-              render(value, record) {
-                const { projectId, project } = record;
-                return project?.name || projectId || '-';
+              render(project) {
+                return project?.name || '-';
               },
             },
         {
@@ -382,29 +381,6 @@ const TaskTable: React.FC<IProps> = inject(
           //当前处理人
           ellipsis: true,
           width: 115,
-          filterDropdown: (props) => {
-            return (
-              <SearchFilter
-                {...props}
-                selectedKeys={filters?.candidateApprovers}
-                placeholder={formatMessage({
-                  id: 'odc.component.TaskTable.CurrentHandler',
-                  defaultMessage: '当前处理人',
-                })} /*当前处理人*/
-              />
-            );
-          },
-
-          filterIcon: (filtered) => (
-            <SearchOutlined
-              style={{
-                color: filtered ? 'var(--icon-color-focus)' : undefined,
-              }}
-            />
-          ),
-
-          filteredValue: filters?.candidateApprovers || null,
-          filters: [],
           render: (candidateApprovers) =>
             candidateApprovers?.map((item) => item.name)?.join(', ') || '-',
         },

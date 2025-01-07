@@ -23,7 +23,7 @@ import moment from 'moment';
 import { getOrderWithSign, getSignWithOrder, getTimeZone } from '../../util';
 import { DateRuleType } from './index';
 
-const ruleTypeToGenerator = {
+export const ruleTypeToGenerator = {
   [DateRuleType.NORMAL]: MockGenerator.FIX_DATE_GENERATOR,
   [DateRuleType.ORDER]: MockGenerator.STEP_DATE_GENERATOR,
   [DateRuleType.RANDOM]: MockGenerator.RANDOM_DATE_GENERATOR,

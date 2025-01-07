@@ -23,7 +23,7 @@ import moment from 'moment';
 import { getOrderWithSign, getSignWithOrder } from '../../util';
 import { NumberRuleType } from './index';
 
-const ruleTypeToGenerator = {
+export const ruleTypeToGenerator = {
   [NumberRuleType.NORMAL]: MockGenerator.FIX_GENERATOR,
   [NumberRuleType.ORDER]: MockGenerator.STEP_GENERATOR,
   [NumberRuleType.RANDOM]: MockGenerator.UNIFORM_GENERATOR,

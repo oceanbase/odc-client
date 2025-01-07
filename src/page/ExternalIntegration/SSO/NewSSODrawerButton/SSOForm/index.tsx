@@ -90,7 +90,7 @@ export default inject('userStore')(
       const userNickNameField = useWatch(['mappingRule', 'userNickNameField'], form);
       const loginWindow = useRef<Window>();
       const [SAMLModalConfirmOpen, setSAMLModalConfirmOpen] = useState(false);
-
+      const [loading, setLoading] = useState(false);
       const channelStatusRef = useRef<boolean>(false);
       const timer = useRef<NodeJS.Timer>();
       const [showExtraConfig, setShowExtraConfig] = useState(!!isEdit);
@@ -124,6 +124,28 @@ export default inject('userStore')(
         },
         [form, registrationId, testInfo],
       );
+
+      useEffect(() => {
+        if (showExtraConfigForSAML && form.getFieldValue('name')) {
+          const name = form.getFieldValue('name');
+          const md5Hex = md5(`${name || ''}`);
+          const id = `${userStore?.organizationId}-${md5Hex}`;
+          form.setFieldsValue({
+            ssoParameter: {
+              providerEntityId: `${
+                window.ODCApiHost || location.origin
+              }/saml2/service-provider-metadata/${id}`,
+            },
+          });
+        } else {
+          form.setFieldsValue({
+            ssoParameter: {
+              providerEntityId: undefined,
+            },
+          });
+        }
+      }, [showExtraConfigForSAML]);
+
       async function fetchTestInfo(testId: string) {
         const data = await getTestUserInfo(testId);
         let text;
@@ -198,6 +220,14 @@ export default inject('userStore')(
             };
           }
           setSAMLCheckBoxConfig(initSAMLConfig as SAMLCheckBoxConfigType);
+          setShowExtraConfigForSAML(!!editData.ssoParameter.providerEntityId);
+          form.setFieldsValue({
+            ssoParameter: {
+              testAcsEntityId: `${
+                window.ODCApiHost || location.origin
+              }/saml2/service-provider-metadata/${userStore?.organizationId}-test`,
+            },
+          });
         }
       }, [editData]);
 
@@ -271,9 +301,14 @@ export default inject('userStore')(
               certificate: SAMLCheckBoxConfig[key].checked ? SAMLCheckBoxConfig[key].value : null,
             };
           }
+          (clone.ssoParameter as ISSO_SAML_CONFIG).acsEntityId = form.getFieldValue([
+            'ssoParameter',
+            'testAcsEntityId',
+          ]);
           params.odcBackUrl =
             location.origin + '/' + '#/gateway/eyJhY3Rpb24iOiJ0ZXN0TG9naW4iLCJkYXRhIjp7fX0=';
         }
+        setLoading(true);
         const res = await testClientRegistration(clone, 'info', params);
         if (res?.testLoginUrl) {
           loginWindow.current = window.open(
@@ -288,11 +323,11 @@ export default inject('userStore')(
             width=1024,
             height=600`,
           );
+          setLoading(false);
+          channel.close(ChannelMap.ODC_SSO_TEST);
           channel.add(ChannelMap.ODC_SSO_TEST).listen(
             ChannelMap.ODC_SSO_TEST,
             (data) => {
-              console.log('success');
-              console.log(data);
               if (data?.isSuccess && !loginWindow.current?.closed) {
                 message.success(
                   formatMessage({
@@ -306,8 +341,11 @@ export default inject('userStore')(
             },
             true,
           );
+        } else {
+          setLoading(false);
         }
       }
+
       async function testLDAP() {
         channelStatusRef.current = false;
         setTestInfo('');
@@ -398,6 +436,13 @@ export default inject('userStore')(
                 }/saml2/service-provider-metadata/${id}`,
               },
             });
+            form.setFieldsValue({
+              ssoParameter: {
+                testAcsEntityId: `${
+                  window.ODCApiHost || location.origin
+                }/saml2/service-provider-metadata/${userStore?.organizationId}-test`,
+              },
+            });
             if (showExtraConfigForSAML) {
               form.setFieldsValue({
                 ssoParameter: {
@@ -483,18 +528,18 @@ export default inject('userStore')(
                 certificate: value || SAMLCheckBoxConfig[type]?.value,
               });
           }
+        } else {
+          setSAMLCheckBoxConfig({
+            ...SAMLCheckBoxConfig,
+            [type]: {
+              checked,
+              value: value || SAMLCheckBoxConfig[type]?.value,
+            },
+          });
+          form.setFieldValue(['ssoParameter', type], {
+            certificate: null,
+          });
         }
-
-        setSAMLCheckBoxConfig({
-          ...SAMLCheckBoxConfig,
-          [type]: {
-            checked,
-            value: value || SAMLCheckBoxConfig[type]?.value,
-          },
-        });
-        form.setFieldValue(['ssoParameter', type], {
-          certificate: null,
-        });
       };
 
       return (
@@ -662,14 +707,19 @@ export default inject('userStore')(
                     ) //`测试连接需要单独的回调白名单，请手动添加 ${redirectUrl}`
                   }
                 >
-                  <a onClick={() => testByType(type)}>
+                  <Button
+                    onClick={() => testByType(type)}
+                    type="link"
+                    loading={loading}
+                    style={{ padding: 0 }}
+                  >
                     {
                       formatMessage({
                         id: 'odc.NewSSODrawerButton.SSOForm.TestConnection',
                         defaultMessage: '测试连接',
                       }) /*测试连接*/
                     }
-                  </a>
+                  </Button>
                 </HelpDoc>
               </Form.Item>
             </Form.Item>

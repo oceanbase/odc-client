@@ -66,7 +66,7 @@ const SAMLModalConfirm: React.FC<SAMLModalConfirmProps> = (props) => {
           />
         </Form.Item>
         <Form.Item
-          name={['ssoParameter', 'acsEntityId']}
+          name={['ssoParameter', 'testAcsEntityId']}
           label="ACS EntityID"
           rules={[
             {
