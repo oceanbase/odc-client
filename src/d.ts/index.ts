@@ -1595,7 +1595,7 @@ export enum DbObjectType {
   file = 'FILE',
   column = 'COLUMN',
   external_table = 'EXTERNAL_TABLE',
-  logical_table = 'LOGICAL_TABLE'
+  logical_table = 'LOGICAL_TABLE',
 }
 
 export interface IResultTimerStage {
@@ -2529,6 +2529,7 @@ export interface IDataArchiveJobParameters {
     name: string;
     pattern: string;
   }[];
+  targetDatabase: IDatabase;
   timeoutMillis: number;
   syncTableStructure: SyncTableStructureEnum[];
 }
