@@ -781,7 +781,7 @@ export interface IConnection {
     clientKeyObjectId?: string;
     CACertObjectId?: string;
   };
-
+  region?: string;
   organizationId: number;
   creatorId: number; // userId
   creator: string;

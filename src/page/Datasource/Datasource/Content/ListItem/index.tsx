@@ -105,8 +105,8 @@ const ListItem: React.FC<IProps> = function ({
                 {
                   isConnectTypeBeFileSystemGroup(connectType) ? (
                     <>
-                      <span>endpoint:</span>
-                      <span>{host}</span>
+                      <span>文件URL:</span>
+                      <span>{host ?? '-'}</span>
                     </>
                   ) : (
                     formatMessage(

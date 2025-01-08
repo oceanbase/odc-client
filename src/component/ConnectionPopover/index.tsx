@@ -82,24 +82,8 @@ const ConnectionPopover: React.FC<{
             </div>
           </Tooltip>
           {renderConnectionMode()}
-          <div>
-            {formatMessage(
-              {
-                id: 'src.component.ConnectionPopover.7ABF5416',
-                defaultMessage: '连接串地址：{LogicalExpression0}',
-              },
-              { LogicalExpression0: connection.host ?? '-' },
-            )}
-          </div>
-          <div>
-            {formatMessage(
-              {
-                id: 'src.component.ConnectionPopover.D9CD3377',
-                defaultMessage: '文件URL： {LogicalExpression0}',
-              },
-              { LogicalExpression0: connection.defaultSchema ?? '-' },
-            )}
-          </div>
+          <div>{`文件URL：${connection.host ?? '-'}`}</div>
+          <div>{`地域：${connection.region ?? '-'}`}</div>
         </Space>
       </div>
     );
