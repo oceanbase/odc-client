@@ -548,15 +548,37 @@ const ActionBar: React.FC<IProps> = inject(
         databaseId = (task as ICycleTaskRecord<ILogicalDatabaseAsyncTaskParams>).jobParameters
           ?.databaseId;
       }
-      await createTask({
-        databaseId,
-        taskType: TaskType.ALTER_SCHEDULE,
-        parameters: {
-          taskId: task?.id,
-          operationType: TaskOperationType.TERMINATE,
+      const taskTypeName = TaskTypeMap[task?.type]
+      Modal.confirm({
+        title: `确认要终止此${taskTypeName}?`,
+        content: (
+          <>
+            <div>
+              {`任务终止后将不可恢复`}
+            </div>
+          </>
+        ),
+        cancelText: formatMessage({
+          id: 'odc.TaskManagePage.component.TaskTools.Cancel',
+          defaultMessage: '取消',
+        }), //取消
+        okText: formatMessage({
+          id: 'odc.TaskManagePage.component.TaskTools.Ok.2',
+          defaultMessage: '确定',
+        }), //确定
+        centered: true,
+        onOk: async () => {
+          await createTask({
+            databaseId,
+            taskType: TaskType.ALTER_SCHEDULE,
+            parameters: {
+              taskId: task?.id,
+              operationType: TaskOperationType.TERMINATE,
+            },
+          });
+          props?.onReload?.();
         },
       });
-      props?.onReload?.();
     };
 
     /** 去重数组 */
@@ -1138,7 +1160,7 @@ const ActionBar: React.FC<IProps> = inject(
                   TaskExecStrategy.START_NOW
               )
             ) {
-              tools.push(disableBtn);
+              tools.push(disableBtn, stopBtn, editBtn);
             }
           }
 
@@ -1163,7 +1185,7 @@ const ActionBar: React.FC<IProps> = inject(
           tools = [viewBtn];
           setBtnByCreater(tools, reTryBtn);
           if (haveOperationPermission) {
-            tools.push(editBtn, enableBtn);
+            tools.push(editBtn, enableBtn, stopBtn);
           }
           break;
         }
@@ -1182,6 +1204,9 @@ const ActionBar: React.FC<IProps> = inject(
         }
         case TaskStatus.CANCELLED: {
           tools = [viewBtn];
+          if (haveOperationPermission) {
+            tools.push(stopBtn);
+          }
           break;
         }
         default:
