@@ -7,6 +7,21 @@ import ErrorTip from '../components/ErrorTip';
 import { testConnection } from '@/common/network/connection';
 import { AccountType, IConnectionTestErrorType, ConnectType } from '@/d.ts';
 
+const placeholder = {
+  [ConnectType.OSS]: {
+    placeholder: 'oss://obcloud-samples/document',
+  },
+  [ConnectType.COS]: {
+    placeholder: 'cos://obcloud-samples/document',
+  },
+  [ConnectType.OBS]: {
+    placeholder: 'obs://obcloud-samples/document',
+  },
+  [ConnectType.S3A]: {
+    placeholder: 's3://obcloud-samples/document',
+  },
+};
+
 interface CloudStorageFormProps {
   isEdit: boolean;
 }
@@ -18,15 +33,15 @@ const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
   if (!dataSourceConfig?.cloudStorage) {
     return null;
   }
-
+  const Type = Form.useWatch('type', form);
   const handleTest = async () => {
     try {
-      await form.validateFields(['username', 'password', 'host', 'defaultSchema']);
+      await form.validateFields(['username', 'password', 'region', 'host']);
     } catch (error) {
       console.error('Validation failed:', error);
       return;
     }
-    const params = form.getFieldsValue(['username', 'password', 'host', 'type', 'defaultSchema']);
+    const params = form.getFieldsValue(['username', 'password', 'region', 'type', 'host']);
     const res = await testConnection(params, AccountType.MAIN, true);
     if (res?.errMsg) {
       setTestResult({
@@ -104,7 +119,7 @@ const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
           id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.7C7CBA83',
           defaultMessage: '文件 URL',
         })}
-        name={'defaultSchema'}
+        name={'host'}
         tooltip={formatMessage({
           id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.105ECDDE',
           defaultMessage: '访问对象文件的路径地址',
@@ -115,36 +130,19 @@ const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
           },
         ]}
       >
-        <Input
-          autoComplete="off"
-          disabled={isEdit}
-          placeholder={formatMessage({
-            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.228A503C',
-            defaultMessage: '请输入 Bucket 目录，如：bucketname/odc-sample',
-          })}
-        />
+        <Input autoComplete="off" disabled={isEdit} placeholder={placeholder[Type]?.placeholder} />
       </Form.Item>
       <Form.Item
-        label={'Endpoint'}
-        name={'host'}
-        tooltip={formatMessage({
-          id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.33995343',
-          defaultMessage: '对外服务的访问域名',
-        })}
+        label={'地域'}
+        name={'region'}
+        tooltip={'用于标识数据存储的具体地理位置区域'}
         rules={[
           {
             required: true,
           },
         ]}
       >
-        <Input
-          autoComplete="off"
-          disabled={isEdit}
-          placeholder={formatMessage({
-            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.1BFE2F75',
-            defaultMessage: '请输入 Endpoint 地址，如：oss-cn-hangzhou.aliyuncs.com',
-          })}
-        />
+        <Input autoComplete="off" disabled={isEdit} placeholder={'示例: cn-north-1'} />
       </Form.Item>
       <Space size={24}>
         <Form.Item
