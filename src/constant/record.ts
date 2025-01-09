@@ -708,6 +708,8 @@ export const AuditEventActionMap = {
     id: 'odc.Record.RecordPage.interface.CreateAProject',
     defaultMessage: '创建项目',
   }),
+  [AuditEventActionType.ARCHIVE_PROJECT]: '归档项目',
+  [AuditEventActionType.DELETE_PROJECT]: '删除项目',
   //创建项目
   // 审计事件操作
   [AuditEventActionType.CREATE_EXPORT_RESULT_SET_TASK]: formatMessage({

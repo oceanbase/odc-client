@@ -34,11 +34,13 @@ import { useEffect, useRef, useState } from 'react';
 import CreateProjectDrawer from './CreateProject/Drawer';
 import styles from './index.less';
 import ListItem from './ListItem';
-import userStore from '@/store/login';
+import { UserStore } from '@/store/login';
 import MoreBtn from './MoreBtn';
 import DeleteProjectModal from '@/page/Project/components/DeleteProjectModal.tsx';
 import type { SelectProject } from '@/page/Project/components/DeleteProjectModal.tsx';
 import { useSearchParams } from '@umijs/max';
+import { getSessionStorageKey } from '../helper';
+import { observer, inject } from 'mobx-react';
 
 export const titleOptions: {
   label: string;
@@ -59,13 +61,17 @@ export const titleOptions: {
     value: ProjectTabType.ARCHIVED,
   },
 ];
+interface IProps {
+  userStore: UserStore;
+}
 
-const Project = () => {
+const Project: React.FC<IProps> = (props) => {
   const domRef = useRef<HTMLDivElement>();
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedRows, setSelectedRows] = useState<Map<number, boolean>>(
     new Map<number, boolean>(),
   );
+  const { userStore } = props;
   const [searchParams, setSearchParams] = useSearchParams();
   const [dataSource, setDataSource] = useState<IProject[]>([]);
   const [projectSearchName, setProjectSearchName] = useState(null);
@@ -76,7 +82,7 @@ const Project = () => {
 
   const [openDeleteProjectModal, setOpenDeleteProjectModal] = useState(false);
   const [selectProjectList, setSelectProjectList] = useState<SelectProject[]>([]);
-  const sessionStorageKey = `projectSearch-${userStore?.organizationId}-${userStore?.user?.id}`;
+  const sessionStorageKey = getSessionStorageKey(userStore);
 
   const appendData = async (currentPage, dataSource, projectType, projectSearchName) => {
     setLoading(true);
@@ -146,7 +152,9 @@ const Project = () => {
       }}
       onTabChange={(v: ProjectTabType) => {
         setProjectType(v);
-        reload(v);
+        // 切换项目时，带上搜索值/固化值
+        const searchValues = projectSearchName || sessionStorage.getItem(sessionStorageKey);
+        reload(v, searchValues);
       }}
       tabActiveKey={projectType}
     >
@@ -323,4 +331,4 @@ const Project = () => {
     </PageContainer>
   );
 };
-export default Project;
+export default inject('userStore')(observer(Project));

@@ -52,7 +52,7 @@ import React, { useEffect, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import ThrottleFormItem from '../../component/ThrottleFormItem';
 import { OscMaxDataSizeLimit, OscMaxRowLimit } from '../../const';
-
+import { haveOCP } from '@/util/env';
 import styles from './index.less';
 import { isBoolean } from 'lodash';
 
@@ -233,7 +233,8 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
 
   useEffect(() => {
     if (!modalStore.createDDLAlterVisible) return;
-    settingStore.enableOSCLimiting &&
+    haveOCP() &&
+      settingStore.enableOSCLimiting &&
       queryOmsWorkerInstance().then((res) => {
         //接口返回正常 &&  hasUnconfiguredProject有值且为布尔类型的 false 时 禁用新建
         if (
