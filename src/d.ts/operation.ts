@@ -30,8 +30,12 @@ export enum DataBaseOperationKey {
   DELETE_LOGIN_DATABASE = 'logicalDatabaseDelete',
 }
 
+export enum ArchivedProjectOperationKey {
+  REMOVE = 'remove',
+}
+
 export type IOperation = {
-  key: UserOperationKey | DataBaseOperationKey;
+  key: UserOperationKey | DataBaseOperationKey | ArchivedProjectOperationKey;
   action: () => void;
   confirmText?: string;
   text: string;

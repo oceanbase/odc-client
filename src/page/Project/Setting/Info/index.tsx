@@ -15,10 +15,10 @@
  */
 
 import { setProjectAchived, updateProject } from '@/common/network/project';
-import { IProject } from '@/d.ts/project';
+import { IProject, ProjectRole } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';
 import { history } from '@umijs/max';
-import { Button, Form, Input, message, Popconfirm, Space, Modal } from 'antd';
+import { Button, Form, Input, message, Popconfirm, Space, Modal, Tooltip } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import ProjectContext from '../../ProjectContext';
 import { isProjectArchived } from '@/page/Project/helper';
@@ -32,6 +32,7 @@ export default function Info() {
   const [isModify, setIsModify] = useState(false);
   const projectArchived = isProjectArchived(context.project);
   const [openDeleteProjectModal, setOpenDeleteProjectModal] = useState(false);
+  const isProjectOwner = context?.project?.currentUserResourceRoles?.includes(ProjectRole.OWNER);
 
   useEffect(() => {
     if (context.project) {
@@ -198,14 +199,19 @@ export default function Info() {
             }) /*确认修改*/
           }
         </Button>
-
         {projectArchived ? (
-          <Button danger onClick={() => setOpenDeleteProjectModal(true)}>
-            {formatMessage({
-              id: 'src.page.Project.Setting.Info.FF3FCF6B',
-              defaultMessage: '删除项目',
-            })}
-          </Button>
+          <Tooltip title={!isProjectOwner ? '暂无权限，请联系管理员' : undefined}>
+            <Button
+              danger
+              onClick={() => setOpenDeleteProjectModal(true)}
+              disabled={!isProjectOwner}
+            >
+              {formatMessage({
+                id: 'src.page.Project.Setting.Info.FF3FCF6B',
+                defaultMessage: '删除项目',
+              })}
+            </Button>
+          </Tooltip>
         ) : (
           <Button danger onClick={handleProjectAchived}>
             {
