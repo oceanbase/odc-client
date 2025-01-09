@@ -568,6 +568,7 @@ const ActionBar: React.FC<IProps> = inject(
         }), //确定
         centered: true,
         onOk: async () => {
+          setActiveBtnKey('stop');
           await createTask({
             databaseId,
             taskType: TaskType.ALTER_SCHEDULE,

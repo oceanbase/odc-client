@@ -140,6 +140,9 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     TaskStatus.WAIT_FOR_CONFIRM,
     TaskStatus.CREATED,
     TaskStatus.APPROVED,
+    TaskStatus.ENABLED,
+    TaskStatus.PAUSE,
+    TaskStatus.CANCELLED,
   ].includes(task?.status);
   const clockRef = useRef(null);
   let taskContent = null;
