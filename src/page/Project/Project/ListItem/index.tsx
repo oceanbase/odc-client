@@ -16,9 +16,9 @@
 
 import { IProject, ProjectRole } from '@/d.ts/project';
 import Icon from '@ant-design/icons';
-import { Checkbox } from 'antd';
+import { Checkbox, Tooltip } from 'antd';
 import classNames from 'classnames';
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useMemo } from 'react';
 import styles from './index.less';
 import type { SelectProject } from '@/page/Project/components/DeleteProjectModal.tsx';
 import { ReactComponent as ProjectSvg } from '@/svgr/project_space.svg';
@@ -43,15 +43,25 @@ export default forwardRef(function ListItem(
     });
   };
 
+  const isDisabledCheckbox = useMemo(() => {
+    return !data?.currentUserResourceRoles?.includes(ProjectRole.OWNER);
+  }, [data?.currentUserResourceRoles]);
+
   return (
     <div ref={ref} className={classNames(styles.item)} onClick={onClick.bind(this, data)}>
       {action && (
-        <div className={classNames(styles.block)} style={{ marginLeft: '8px' }}>
-          <Checkbox
-            onChange={onChange}
-            onClick={(e) => e.stopPropagation()}
-            checked={selectProjectList.some((item) => item.id === data.id)}
-          ></Checkbox>
+        <div
+          className={classNames(styles.block)}
+          style={{ marginLeft: '8px' }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Tooltip title={isDisabledCheckbox ? '暂无权限，请联系管理员' : undefined}>
+            <Checkbox
+              onChange={onChange}
+              disabled={isDisabledCheckbox}
+              checked={selectProjectList.some((item) => item.id === data.id)}
+            ></Checkbox>
+          </Tooltip>
         </div>
       )}
 
