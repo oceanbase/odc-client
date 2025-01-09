@@ -39,6 +39,10 @@ import { ProjectTabType } from '@/d.ts/project';
 import Setting from './Setting';
 import Task from './Task';
 import User from './User';
+import { getSessionStorageKey } from './helper';
+import { observer, inject } from 'mobx-react';
+import { UserStore } from '@/store/login';
+
 const ExtraContent = ({ projectId, hasLoginDatabaseAuth, setHasLoginDatabaseAuth }) => {
   const getLoginDatabaseAuth = async () => {
     const res = await listDatabases(projectId, null, null, null, null, null, null, null, true);
@@ -76,7 +80,9 @@ const ExtraContent = ({ projectId, hasLoginDatabaseAuth, setHasLoginDatabaseAuth
     </Space>
   );
 };
-interface IProps {}
+interface IProps {
+  userStore: UserStore;
+}
 const Pages = {
   [IPageType.Project_Database]: {
     component: Database,
@@ -143,13 +149,14 @@ const tabs = [
   },
 ];
 
-const Index: React.FC<IProps> = function () {
+const Index: React.FC<IProps> = function (props) {
   const params = useParams<{
     id: string;
     page: IPageType;
   }>();
   const navigate = useNavigate();
   const { id, page } = params;
+  const { userStore } = props;
   const Component = Pages[page].component;
   const projectId = parseInt(id);
   const handleChange = (key: string) => {
@@ -159,6 +166,7 @@ const Index: React.FC<IProps> = function () {
     tracert.click('a3112.b64002.c330857.d367379');
     history.push(`/project/${value}/${page}`);
   };
+  const sessionStorageKey = getSessionStorageKey(userStore);
   const [project, setProject] = useState<IProject>(null);
   const [titleSelectType, setTitleSelectType] = useState<ProjectTabType>(ProjectTabType.ALL);
   const isTitleASelectArchived = titleSelectType === ProjectTabType.ARCHIVED;
@@ -251,7 +259,13 @@ const Index: React.FC<IProps> = function () {
       linkContnet.to = '/project?archived=true';
     }
     return (
-      <Link onClick={() => tracert.click('a3112.b64002.c330857.d367380')} to={linkContnet.to}>
+      <Link
+        onClick={() => {
+          tracert.click('a3112.b64002.c330857.d367380');
+          sessionStorage.setItem(sessionStorageKey, '');
+        }}
+        to={linkContnet.to}
+      >
         {linkContnet.text}
       </Link>
     );
@@ -349,4 +363,4 @@ const Index: React.FC<IProps> = function () {
     </PageContainer>
   );
 };
-export default Index;
+export default inject('userStore')(observer(Index));

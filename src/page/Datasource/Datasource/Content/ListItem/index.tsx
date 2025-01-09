@@ -100,6 +100,7 @@ const ListItem: React.FC<IProps> = function ({
         </Tooltip>
         {!haveOCP() && (
           <Tooltip
+            overlayClassName={styles.datasourceTooltip}
             title={
               <Space>
                 {

@@ -1,4 +1,5 @@
 import { IProject } from '@/d.ts/project';
+import { UserStore } from '@/store/login';
 
 /**
  * 已归档项目
@@ -13,4 +14,8 @@ import { IProject } from '@/d.ts/project';
  */
 export const isProjectArchived = (project: IProject) => {
   return !!project?.archived;
+};
+
+export const getSessionStorageKey = (userStore: UserStore) => {
+  return `projectSearch-${userStore?.organizationId}-${userStore?.user?.id}`;
 };
