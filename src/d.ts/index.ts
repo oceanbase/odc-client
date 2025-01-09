@@ -2193,6 +2193,9 @@ export interface ExportFormData {
   exportAllObjects?: boolean; // 导出整库
   exportFilePath?: string; // 桌面端导出路径
   taskId?: number;
+
+  transferDDL?: boolean;
+  transferData?: boolean;
 }
 
 export enum IMPORT_TYPE {
