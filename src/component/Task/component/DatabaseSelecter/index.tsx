@@ -96,7 +96,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
 
   useEffect(() => {
     if (checkedKeys?.length) {
-      setShowSelectLogicDBTip(
+      setShowSelectLogicDBTip?.(
         databaseList?.some((i) => checkedKeys?.includes(i?.id) && i?.type === DBType.LOGICAL),
       );
     }
