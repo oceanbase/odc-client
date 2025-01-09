@@ -17,7 +17,7 @@
 import { formatMessage } from '@/util/intl';
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 
-import { ExportFormData, TaskDetail } from '@/d.ts';
+import { EXPORT_CONTENT, ExportFormData, TaskDetail } from '@/d.ts';
 // compatible
 import { Form, message } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -90,15 +90,39 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
         getTaskDetailFoTaskId();
       }, [taskId]);
 
+      function getExportContent(transferDDL: boolean, transferData: boolean) {
+        if (transferDDL && transferData) {
+          return EXPORT_CONTENT.DATA_AND_STRUCT;
+        }
+        if (transferData) {
+          return EXPORT_CONTENT.DATA;
+        }
+        if (transferDDL) {
+          return EXPORT_CONTENT.STRUCT;
+        }
+        return EXPORT_CONTENT.DATA_AND_STRUCT;
+      }
+
       const getTaskDetailFoTaskId = async () => {
         if (taskId) {
           const detailRes = (await getTaskDetail(taskId)) as TaskDetail<ExportFormData>;
-          form.setFieldValue('exportDbObjects', detailRes?.parameters?.exportDbObjects);
-          form.setFieldValue('exportAllObjects', detailRes?.parameters?.exportAllObjects);
+          const exportContent = getExportContent(
+            detailRes?.parameters?.transferDDL,
+            detailRes?.parameters?.transferData,
+          );
+          const exportFileMaxSize =
+            detailRes?.parameters?.exportFileMaxSize === -1
+              ? formatMessage({
+                  id: 'odc.components.ExportDrawer.Unlimited',
+                  defaultMessage: '无限制',
+                })
+              : detailRes?.parameters?.exportFileMaxSize;
           onFormValueChange('exportDbObjects', {
-            exportDbObjects: detailRes?.parameters?.exportDbObjects,
-            exportAllObjects: detailRes?.parameters?.exportAllObjects,
+            ...detailRes?.parameters,
+            exportContent,
+            exportFileMaxSize,
           });
+          form.setFieldsValue({ ...detailRes?.parameters, exportContent, exportFileMaxSize });
         }
       };
 
