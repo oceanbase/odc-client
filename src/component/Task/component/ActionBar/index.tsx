@@ -302,6 +302,13 @@ const ActionBar: React.FC<IProps> = inject(
           });
           return;
         }
+        case TaskType.IMPORT: {
+          modalStore.changeImportModal(true, {
+            databaseId: task.database?.id,
+            taskId: task?.id,
+          });
+          return;
+        }
         case TaskType.EXPORT_RESULT_SET: {
           const detailRes = (await getTaskDetail(
             task?.id,
@@ -314,7 +321,13 @@ const ActionBar: React.FC<IProps> = inject(
           });
           return;
         }
-
+        case TaskType.ONLINE_SCHEMA_CHANGE: {
+          modalStore.changeCreateDDLAlterTaskModal(true, {
+            databaseId: task.database?.id,
+            taskId: task?.id,
+          });
+          return;
+        }
         default: {
           const { database, executionStrategy, executionTime, parameters, description } = task;
 

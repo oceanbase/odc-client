@@ -15,7 +15,7 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import React, { forwardRef, useContext, useImperativeHandle } from 'react';
+import React, { forwardRef, useContext, useEffect, useImperativeHandle } from 'react';
 
 import {
   CsvColumnMapping,
@@ -23,6 +23,7 @@ import {
   ImportFormData,
   IMPORT_CONTENT,
   IMPORT_TYPE,
+  TaskDetail
 } from '@/d.ts';
 // compatible
 import type { ModalStore } from '@/store/modal';
@@ -33,6 +34,7 @@ import ConfigPanel from './ConfigPanel';
 import FileSelecterPanel from './FileSelecterPanel';
 import FormConfigContext from './FormConfigContext';
 import FormContext from './FormContext';
+import { getTaskDetail } from '@/common/network/task';
 
 interface IImportFormProps {
   formType: 'fileSelecter' | 'config';
@@ -51,6 +53,7 @@ const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
     forwardRef(function (props, ref) {
       const { modalStore, formData, formType, projectId, onFormValueChange, onSessionChange } =
         props;
+      const { taskId } = formData;
       const [form] = useForm();
       const formConfigContext = useContext(FormConfigContext);
       const isSingleImport = !!modalStore.importModalData?.table;
@@ -73,6 +76,26 @@ const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
         }
         callback(false, values);
       }
+
+      useEffect(() => {
+        getTaskDetailFoTaskId();
+      }, [taskId]);
+
+      const getTaskDetailFoTaskId = async () => {
+        if (taskId) {
+          const detailRes = (await getTaskDetail(taskId)) as TaskDetail<ImportFormData>;
+          const importFileName = detailRes?.parameters?.importFileName?.map(_f=> {return{status: 'done', name: _f}})
+          const databaseId = detailRes?.database?.id
+          const executionStrategy = detailRes?.executionStrategy
+          form.setFieldsValue({ ...detailRes?.parameters, importFileName, databaseId, executionStrategy });
+          onFormValueChange({
+            ...detailRes?.parameters,
+            importFileName,
+            databaseId,
+            executionStrategy
+          });
+        }
+      };
 
       useImperativeHandle(ref, () => {
         return { valid };
