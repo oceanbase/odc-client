@@ -14,7 +14,7 @@ const CloudStorageConfig: IDataSourceModeConfig = {
     disableExtraConfig: true,
   },
   features: {
-    task: [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE],
+    task: [TaskType.DATA_ARCHIVE],
     obclient: false,
     recycleBin: false,
     sessionManage: false,
