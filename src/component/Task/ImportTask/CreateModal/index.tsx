@@ -388,6 +388,7 @@ class CreateModal extends React.Component<IProps, IState> {
     return {
       useSys: false,
       databaseId: this.props.modalStore.importModalData?.databaseId,
+      taskId: this.props.modalStore.exportModalData?.taskId,
       executionStrategy: this.defaultConfig?.executionStrategy ?? TaskExecStrategy.AUTO,
       fileType: this.defaultConfig?.fileType ?? IMPORT_TYPE.ZIP,
       encoding: this.defaultConfig?.encoding ?? IMPORT_ENCODING.UTF8,
@@ -416,11 +417,13 @@ class CreateModal extends React.Component<IProps, IState> {
   static getDerivedStateFromProps(props, state) {
     const nextDatabaseId = props.modalStore.importModalData?.databaseId;
     const preDatabaseId = state.formData.databaseId;
-    if (nextDatabaseId && nextDatabaseId !== preDatabaseId) {
+    const taskId = props.modalStore.importModalData?.taskId
+    if ((nextDatabaseId && nextDatabaseId !== preDatabaseId) || taskId) {
       return {
         formData: {
           ...state.formData,
           databaseId: nextDatabaseId,
+          taskId
         },
       };
     }

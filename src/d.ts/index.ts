@@ -2295,6 +2295,7 @@ export interface ImportFormData {
   columnDelimiter: string; // 文本识别符
 
   lineSeparator: string; // 换行符号
+  taskId?: number;
 }
 
 // 左侧结构树菜单所支持的key列表
@@ -2944,6 +2945,11 @@ export interface IAlterScheduleTaskParams {
   };
 
   triggerConfig: ICycleTaskTriggerConfig;
+  sqlContent?: string;
+  rateLimitConfig?: {
+    rowLimit: number;
+    dataSizeLimit: number;
+  };
 }
 
 export interface IDataArchiveTaskParams {

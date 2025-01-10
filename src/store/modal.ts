@@ -114,6 +114,7 @@ interface IExportModalData {
 interface IImportModalData {
   table?: Partial<ITable>;
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IDataArchiveTaskData {
@@ -133,10 +134,12 @@ interface ISQLPlanTaskData {
 
 interface IPartitionTaskData {
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IDDLAlterTaskData {
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IShadowSyncTaskData {
