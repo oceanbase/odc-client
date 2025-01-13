@@ -200,7 +200,16 @@ export default function Info() {
           }
         </Button>
         {projectArchived ? (
-          <Tooltip title={!isProjectOwner ? '暂无权限，请联系管理员' : undefined}>
+          <Tooltip
+            title={
+              !isProjectOwner
+                ? formatMessage({
+                    id: 'src.page.Project.Setting.Info.3C89D359',
+                    defaultMessage: '暂无权限，请联系管理员',
+                  })
+                : undefined
+            }
+          >
             <Button
               danger
               onClick={() => setOpenDeleteProjectModal(true)}

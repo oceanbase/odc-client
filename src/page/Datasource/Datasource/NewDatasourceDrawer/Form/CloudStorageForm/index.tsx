@@ -133,16 +133,29 @@ const CloudStorageForm: React.FC<CloudStorageFormProps> = (props) => {
         <Input autoComplete="off" disabled={isEdit} placeholder={placeholder[Type]?.placeholder} />
       </Form.Item>
       <Form.Item
-        label={'地域'}
+        label={formatMessage({
+          id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.CE7555C1',
+          defaultMessage: '地域',
+        })}
         name={'region'}
-        tooltip={'用于标识数据存储的具体地理位置区域'}
+        tooltip={formatMessage({
+          id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.47E5C6F0',
+          defaultMessage: '用于标识数据存储的具体地理位置区域',
+        })}
         rules={[
           {
             required: true,
           },
         ]}
       >
-        <Input autoComplete="off" disabled={isEdit} placeholder={'示例: cn-north-1'} />
+        <Input
+          autoComplete="off"
+          disabled={isEdit}
+          placeholder={formatMessage({
+            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.CloudStorageForm.FEA72F35',
+            defaultMessage: '示例: cn-north-1',
+          })}
+        />
       </Form.Item>
       <Space size={24}>
         <Form.Item

@@ -34,20 +34,29 @@ export const projectRoleMap = {
       defaultMessage: '管理员',
     }),
     //'管理员'
-    description: '拥有项目内的所有权限，可查看和管理项目的所有工单',
+    description: formatMessage({
+      id: 'src.component.Task.ApplyPermission.CreateModal.F649692E',
+      defaultMessage: '拥有项目内的所有权限，可查看和管理项目的所有工单',
+    }),
   },
   [ProjectRole.DEVELOPER]: {
     label: formatMessage({
       id: 'src.component.Task.ApplyPermission.CreateModal.AF13A500',
       defaultMessage: '开发者',
     }), //'开发者'
-    description:
-      '拥有项目内所有数据库权限，允许登录数据库、执行 SQL、提交工单，可以查看项目内所有工单并管理自己发起的工单',
+    description: formatMessage({
+      id: 'src.component.Task.ApplyPermission.CreateModal.20CEE7B9',
+      defaultMessage:
+        '拥有项目内所有数据库权限，允许登录数据库、执行 SQL、提交工单，可以查看项目内所有工单并管理自己发起的工单',
+    }),
   },
   [ProjectRole.DBA]: {
     label: 'DBA',
-    description:
-      '拥有项目内除成员管理、消息配置和项目设置外的所有权限，包括查看和管理项目的所有工单权限',
+    description: formatMessage({
+      id: 'src.component.Task.ApplyPermission.CreateModal.A9FCEF31',
+      defaultMessage:
+        '拥有项目内除成员管理、消息配置和项目设置外的所有权限，包括查看和管理项目的所有工单权限',
+    }),
   },
   [ProjectRole.SECURITY_ADMINISTRATOR]: {
     label: formatMessage({
@@ -66,8 +75,11 @@ export const projectRoleMap = {
       defaultMessage: '参与者',
     }),
     //'参与者'
-    description:
-      ' 允许查看项目基本信息，默认无项目内任何数据库权限，支持自助申请库权限和提交工单，可以查看项目内所有工单并管理自己发起的工单',
+    description: formatMessage({
+      id: 'src.component.Task.ApplyPermission.CreateModal.E3F621FF',
+      defaultMessage:
+        ' 允许查看项目基本信息，默认无项目内任何数据库权限，支持自助申请库权限和提交工单，可以查看项目内所有工单并管理自己发起的工单',
+    }),
   },
 };
 interface IProps {

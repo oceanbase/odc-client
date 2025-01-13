@@ -561,16 +561,26 @@ const ActionBar: React.FC<IProps> = inject(
         databaseId = (task as ICycleTaskRecord<ILogicalDatabaseAsyncTaskParams>).jobParameters
           ?.databaseId;
       }
-      const taskTypeName = TaskTypeMap[task?.type]
+      const taskTypeName = TaskTypeMap[task?.type];
       Modal.confirm({
-        title: `确认要终止此${taskTypeName}?`,
+        title: formatMessage(
+          {
+            id: 'src.component.Task.component.ActionBar.718054C5',
+            defaultMessage: '确认要终止此{taskTypeName}?',
+          },
+          { taskTypeName },
+        ),
         content: (
           <>
             <div>
-              {`任务终止后将不可恢复`}
+              {formatMessage({
+                id: 'src.component.Task.component.ActionBar.5E24502A',
+                defaultMessage: '任务终止后将不可恢复',
+              })}
             </div>
           </>
         ),
+
         cancelText: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.Cancel',
           defaultMessage: '取消',

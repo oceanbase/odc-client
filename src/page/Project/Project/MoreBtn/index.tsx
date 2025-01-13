@@ -28,7 +28,10 @@ const MoreBtn: React.FC<MoreBtnProps> = function (props) {
       disable: !project?.currentUserResourceRoles?.includes(ProjectRole.OWNER),
       disableTooltip: () => {
         if (!project?.currentUserResourceRoles?.includes(ProjectRole.OWNER)) {
-          return '暂无权限，请联系管理员';
+          return formatMessage({
+            id: 'src.page.Project.Project.MoreBtn.AF228484',
+            defaultMessage: '暂无权限，请联系管理员',
+          });
         } else {
           return '';
         }
