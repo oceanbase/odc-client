@@ -57,7 +57,7 @@ export function getRowsByPartType(
           return {
             name: p.name,
             position,
-            key: position,
+            key: p.ordinalPosition ?? p.key,
             parentName: p?.parentName,
           };
         },
@@ -72,7 +72,7 @@ export function getRowsByPartType(
             partValues:
               connectionMode === ConnectionMode.OB_ORACLE ? formatMultiListValue(p.value) : p.value,
             isNew: p.isNew,
-            key: position,
+            key: p.ordinalPosition ?? p.key,
             parentName: p?.parentName,
           };
         },
@@ -89,7 +89,7 @@ export function getRowsByPartType(
                 ? formatMultiRangeValue(p.value)
                 : p.value,
             isNew: p.isNew,
-            key: position,
+            key: p.ordinalPosition ?? p.key,
             parentName: p?.parentName,
           };
         },
@@ -103,7 +103,7 @@ export function getRowsByPartType(
           position,
           isNew: p.isNew,
           partValues: formatMultiListValue(p.value),
-          key: position,
+          key: p.ordinalPosition ?? p.key,
           parentName: p?.parentName,
         };
       });
@@ -115,7 +115,7 @@ export function getRowsByPartType(
           position,
           isNew: p.isNew,
           partValues: formatMultiRangeValue(p.value),
-          key: position,
+          key: p.ordinalPosition ?? p.key,
           parentName: p?.parentName,
         };
       });
