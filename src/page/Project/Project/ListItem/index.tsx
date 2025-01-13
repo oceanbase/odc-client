@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -55,7 +56,16 @@ export default forwardRef(function ListItem(
           style={{ marginLeft: '8px' }}
           onClick={(e) => e.stopPropagation()}
         >
-          <Tooltip title={isDisabledCheckbox ? '暂无权限，请联系管理员' : undefined}>
+          <Tooltip
+            title={
+              isDisabledCheckbox
+                ? formatMessage({
+                    id: 'src.page.Project.Project.ListItem.84183D4F',
+                    defaultMessage: '暂无权限，请联系管理员',
+                  })
+                : undefined
+            }
+          >
             <Checkbox
               onChange={onChange}
               disabled={isDisabledCheckbox}

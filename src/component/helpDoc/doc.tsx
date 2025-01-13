@@ -551,16 +551,32 @@ export default {
     </p>
   ),
 
-  projectOwner: <p>拥有项目内的所有权限，可查看和管理项目的所有工单</p>,
+  projectOwner: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.D5104F9F',
+        defaultMessage: '拥有项目内的所有权限，可查看和管理项目的所有工单',
+      })}
+    </p>
+  ),
 
   projectDBA: (
-    <p>拥有项目内除成员管理、消息配置和项目设置外的所有权限，包括查看和管理项目的所有工单权限</p>
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.632E5F54',
+        defaultMessage:
+          '拥有项目内除成员管理、消息配置和项目设置外的所有权限，包括查看和管理项目的所有工单权限',
+      })}
+    </p>
   ),
 
   projectDev: (
     <p>
-      拥有项目内所有数据库权限，允许登录数据库、执行
-      SQL、提交工单，可以查看项目内所有工单并管理自己发起的工单
+      {formatMessage({
+        id: 'src.component.helpDoc.D0EB1808',
+        defaultMessage:
+          '拥有项目内所有数据库权限，允许登录数据库、执行\n      SQL、提交工单，可以查看项目内所有工单并管理自己发起的工单',
+      })}
     </p>
   ),
 
@@ -577,7 +593,11 @@ export default {
 
   participant: (
     <p>
-      允许查看项目基本信息，默认无项目内任何数据库权限，支持自助申请库权限和提交工单，可以查看项目内所有工单并管理自己发起的工单
+      {formatMessage({
+        id: 'src.component.helpDoc.E5938015',
+        defaultMessage:
+          '允许查看项目基本信息，默认无项目内任何数据库权限，支持自助申请库权限和提交工单，可以查看项目内所有工单并管理自己发起的工单',
+      })}
     </p>
   ),
 
