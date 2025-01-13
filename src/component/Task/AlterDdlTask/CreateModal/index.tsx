@@ -27,7 +27,15 @@ import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
-import { IAlterScheduleTaskParams, IDatasourceUser, TaskDetail, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import {
+  IAlterScheduleTaskParams,
+  IDatasourceUser,
+  TaskDetail,
+  TaskExecStrategy,
+  TaskPageScope,
+  TaskPageType,
+  TaskType,
+} from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
@@ -52,7 +60,7 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import ThrottleFormItem from '../../component/ThrottleFormItem';
-import { OscMaxDataSizeLimit, OscMaxRowLimit } from '../../const';
+import { OscMaxDataSizeLimit, OscMaxRowLimit, OscMinRowLimit } from '../../const';
 import { haveOCP } from '@/util/env';
 import styles from './index.less';
 import { isBoolean } from 'lodash';
@@ -231,23 +239,24 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         databaseId,
       });
     }
-    if(ddlAlterData?.taskId){
-      loadTaskDetail()
+    if (ddlAlterData?.taskId) {
+      loadTaskDetail();
     }
   }, [ddlAlterData?.databaseId, ddlAlterData?.taskId]);
 
-
-  async function loadTaskDetail (){
-    const detailRes = (await getTaskDetail(ddlAlterData?.taskId)) as TaskDetail<IAlterScheduleTaskParams>;
+  async function loadTaskDetail() {
+    const detailRes = (await getTaskDetail(
+      ddlAlterData?.taskId,
+    )) as TaskDetail<IAlterScheduleTaskParams>;
     const rateLimitConfig = detailRes?.parameters?.rateLimitConfig;
-    
+
     form.setFieldsValue({
       ...detailRes?.parameters,
       executionStrategy: detailRes?.executionStrategy,
       rowLimit: rateLimitConfig?.rowLimit,
-      dataSizeLimit: rateLimitConfig?.dataSizeLimit
+      dataSizeLimit: rateLimitConfig?.dataSizeLimit,
     });
-    
+
     editorRef?.current?.editor?.setValue(detailRes?.parameters?.sqlContent);
   }
 
@@ -757,6 +766,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           {settingStore.enableOSCLimiting && (
             <ThrottleFormItem
               initialValue={initialValue}
+              minRowLimit={OscMinRowLimit}
               maxRowLimit={OscMaxRowLimit}
               maxDataSizeLimit={OscMaxDataSizeLimit}
             />

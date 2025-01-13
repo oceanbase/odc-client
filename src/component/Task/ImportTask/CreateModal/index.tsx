@@ -282,7 +282,7 @@ class CreateModal extends React.Component<IProps, IState> {
       columnDelimiter,
       lineSeparator,
       skipHeader,
-      fileName: importFileName?.[0].response.data?.fileName,
+      fileName: importFileName?.[0]?.response?.data?.fileName,
     });
     if (!fileInfo) {
       message.warning(
@@ -298,11 +298,10 @@ class CreateModal extends React.Component<IProps, IState> {
     }
     const tableName = this.state.formData.tableName;
     if (tableName) {
-      const columns = await getTableColumnList(
-        this.state.formData.tableName,
-        databaseName,
-        sessionId,
-      );
+      const columns =
+        databaseName && sessionId
+          ? await getTableColumnList(this.state.formData.tableName, databaseName, sessionId)
+          : [];
       this.setState({
         csvColumnMappings: fileInfo?.map((column, i) => {
           return {
@@ -417,13 +416,13 @@ class CreateModal extends React.Component<IProps, IState> {
   static getDerivedStateFromProps(props, state) {
     const nextDatabaseId = props.modalStore.importModalData?.databaseId;
     const preDatabaseId = state.formData.databaseId;
-    const taskId = props.modalStore.importModalData?.taskId
+    const taskId = props.modalStore.importModalData?.taskId;
     if ((nextDatabaseId && nextDatabaseId !== preDatabaseId) || taskId) {
       return {
         formData: {
           ...state.formData,
           databaseId: nextDatabaseId,
-          taskId
+          taskId,
         },
       };
     }
@@ -547,6 +546,7 @@ class CreateModal extends React.Component<IProps, IState> {
                 onChangeCsvColumnMappings={this.onChangeCsvColumnMappings}
                 resolveTableColumnsToCsv={this.resolveTableColumnsToCsv}
                 onSessionChange={this.handleSessionChange}
+                sessionData={this.state.sessionData}
               />
             </FormConfigContext.Provider>
           </CsvProvider.Provider>
