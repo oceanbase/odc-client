@@ -212,7 +212,7 @@ export function convertTableToServerTable(
         serverTable.partition.partitionDefinitions = partitions.partitions?.map((p) => {
           return {
             name: p.name,
-            valuesList: p.value?.split(',').map((item) => [item]),
+            valuesList: p.value?.split?.(',').map((item) => [item]),
             ordinalPosition: p.ordinalPosition,
           };
         });
@@ -227,7 +227,7 @@ export function convertTableToServerTable(
         serverTable.partition.partitionDefinitions = partitions.partitions?.map((p) => {
           return {
             name: p.name,
-            valuesList: p.value.map((valueItem) => {
+            valuesList: p.value?.map((valueItem) => {
               return partitions.columns?.map((item) => valueItem[item.columnName]);
             }),
             ordinalPosition: p.ordinalPosition,
