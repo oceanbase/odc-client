@@ -23,7 +23,7 @@ import {
   ImportFormData,
   IMPORT_CONTENT,
   IMPORT_TYPE,
-  TaskDetail
+  TaskDetail,
 } from '@/d.ts';
 // compatible
 import type { ModalStore } from '@/store/modal';
@@ -46,6 +46,10 @@ interface IImportFormProps {
   ref?: React.Ref<{ valid: (callback: (haveError, values) => void) => void }>;
   resolveTableColumnsToCsv: (tableName: string) => Promise<void>;
   onSessionChange: (value: { sessionId: string; databaseName: string }) => void;
+  sessionData: {
+    sessionId: string;
+    databaseName: string;
+  };
 }
 
 const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
@@ -81,21 +85,67 @@ const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
         getTaskDetailFoTaskId();
       }, [taskId]);
 
+      function getExportContent(transferDDL: boolean, transferData: boolean) {
+        if (transferDDL && transferData) {
+          return EXPORT_CONTENT.DATA_AND_STRUCT;
+        }
+        if (transferData) {
+          return EXPORT_CONTENT.DATA;
+        }
+        if (transferDDL) {
+          return EXPORT_CONTENT.STRUCT;
+        }
+        return EXPORT_CONTENT.DATA_AND_STRUCT;
+      }
+
       const getTaskDetailFoTaskId = async () => {
         if (taskId) {
           const detailRes = (await getTaskDetail(taskId)) as TaskDetail<ImportFormData>;
-          const importFileName = detailRes?.parameters?.importFileName?.map(_f=> {return{status: 'done', name: _f}})
-          const databaseId = detailRes?.database?.id
-          const executionStrategy = detailRes?.executionStrategy
-          form.setFieldsValue({ ...detailRes?.parameters, importFileName, databaseId, executionStrategy });
-          onFormValueChange({
+          // 文件对象转换
+          const importFileName = detailRes?.parameters?.importFileName?.map((_f) => {
+            return {
+              status: 'done',
+              name: _f,
+              response: {
+                data: {
+                  fileName: _f,
+                },
+              },
+            };
+          });
+          const databaseId = detailRes?.database?.id;
+          const executionStrategy = detailRes?.executionStrategy;
+          // importContent 转换
+          const importContent = getExportContent(
+            detailRes?.parameters?.transferDDL,
+            detailRes?.parameters?.transferData,
+          );
+          const formData = {
             ...detailRes?.parameters,
             importFileName,
             databaseId,
-            executionStrategy
+            executionStrategy,
+            importContent,
+            ...detailRes?.parameters?.csvConfig,
+            tableName: detailRes?.parameters?.exportDbObjects?.[0]?.objectName,
+          };
+          form.setFieldsValue({
+            ...formData,
+          });
+          onFormValueChange({
+            ...formData,
           });
         }
       };
+
+      useEffect(() => {
+        if (formType === 'config') {
+          const formValues = form.getFieldsValue();
+          if (formValues.tableName && props.sessionData?.sessionId) {
+            onValuesChange(formValues, {});
+          }
+        }
+      }, [formType, props.sessionData?.sessionId]);
 
       useImperativeHandle(ref, () => {
         return { valid };
@@ -122,6 +172,68 @@ const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
         }
       }
 
+      function onValuesChange(changedValues, allValues) {
+        const newValues: any = {};
+        if (typeof changedValues.replaceSchemaWhenExists !== 'undefined') {
+          /**
+           * 转换结构已存在的数据格式
+           */
+          newValues.truncateTableBeforeImport = changedValues.replaceSchemaWhenExists;
+        }
+        if ('databaseName' in changedValues) {
+          newValues.tableName = null;
+          props.resolveTableColumnsToCsv(null);
+        } else if ('tableName' in changedValues) {
+          props.resolveTableColumnsToCsv(changedValues.tableName);
+        }
+        if (
+          [
+            'columnSeparator',
+            'skipHeader',
+            'blankToNull',
+            'columnDelimiter',
+            'lineSeparator',
+            'importFileName',
+            'encoding',
+          ].find((key) => {
+            return key in changedValues;
+          })
+        ) {
+          /**
+           * 修改csv设置的时候，需要清空历史的映射数据，触发下一步的时候更新csv
+           */
+          props.onChangeCsvColumnMappings([]);
+        }
+        if (changedValues.importContent) {
+          if (changedValues.importContent === EXPORT_CONTENT.DATA) {
+            newValues.replaceSchemaWhenExists = false;
+          } else {
+            newValues.replaceSchemaWhenExists =
+              formConfigContext.dfaultConfig?.replaceSchemaWhenExists ?? false;
+          }
+          newValues.truncateTableBeforeImport =
+            formConfigContext.dfaultConfig?.truncateTableBeforeImport ?? false;
+        }
+        if (changedValues.fileType) {
+          newValues.importFileName = [];
+          /**
+           * CSV 格式只能导入数据，其他情况，单表默认为导入数据，批量为导入数据+结构
+           */
+          if (changedValues.fileType == IMPORT_TYPE.CSV) {
+            newValues.importContent = IMPORT_CONTENT.DATA;
+            props.onChangeCsvColumnMappings([]);
+          } else {
+            newValues.importContent = modalStore.importModalData?.table
+              ? IMPORT_CONTENT.DATA
+              : IMPORT_CONTENT.DATA_AND_STRUCT;
+          }
+        }
+        form.setFieldsValue(newValues);
+        onFormValueChange({
+          ...changedValues,
+          ...newValues,
+        });
+      }
       return (
         <Form
           form={form}
@@ -130,68 +242,7 @@ const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
           preserve={false}
           scrollToFirstError
           initialValues={formData}
-          onValuesChange={(changedValues, allValues) => {
-            const newValues: any = {};
-            if (typeof changedValues.replaceSchemaWhenExists !== 'undefined') {
-              /**
-               * 转换结构已存在的数据格式
-               */
-              newValues.truncateTableBeforeImport = changedValues.replaceSchemaWhenExists;
-            }
-            if ('databaseName' in changedValues) {
-              newValues.tableName = null;
-              props.resolveTableColumnsToCsv(null);
-            } else if ('tableName' in changedValues) {
-              props.resolveTableColumnsToCsv(changedValues.tableName);
-            }
-            if (
-              [
-                'columnSeparator',
-                'skipHeader',
-                'blankToNull',
-                'columnDelimiter',
-                'lineSeparator',
-                'importFileName',
-                'encoding',
-              ].find((key) => {
-                return key in changedValues;
-              })
-            ) {
-              /**
-               * 修改csv设置的时候，需要清空历史的映射数据，触发下一步的时候更新csv
-               */
-              props.onChangeCsvColumnMappings([]);
-            }
-            if (changedValues.importContent) {
-              if (changedValues.importContent === EXPORT_CONTENT.DATA) {
-                newValues.replaceSchemaWhenExists = false;
-              } else {
-                newValues.replaceSchemaWhenExists =
-                  formConfigContext.dfaultConfig?.replaceSchemaWhenExists ?? false;
-              }
-              newValues.truncateTableBeforeImport =
-                formConfigContext.dfaultConfig?.truncateTableBeforeImport ?? false;
-            }
-            if (changedValues.fileType) {
-              newValues.importFileName = [];
-              /**
-               * CSV 格式只能导入数据，其他情况，单表默认为导入数据，批量为导入数据+结构
-               */
-              if (changedValues.fileType == IMPORT_TYPE.CSV) {
-                newValues.importContent = IMPORT_CONTENT.DATA;
-                props.onChangeCsvColumnMappings([]);
-              } else {
-                newValues.importContent = modalStore.importModalData?.table
-                  ? IMPORT_CONTENT.DATA
-                  : IMPORT_CONTENT.DATA_AND_STRUCT;
-              }
-            }
-            form.setFieldsValue(newValues);
-            onFormValueChange({
-              ...changedValues,
-              ...newValues,
-            });
-          }}
+          onValuesChange={onValuesChange}
         >
           <FormContext.Provider
             value={{

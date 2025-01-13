@@ -2196,6 +2196,17 @@ export interface ExportFormData {
 
   transferDDL?: boolean;
   transferData?: boolean;
+  csvConfig?: ICSVConfig;
+}
+
+export interface ICSVConfig {
+  skipHeader: boolean;
+  blankToNull: boolean;
+  columnSeparator: string;
+  columnDelimiter: string;
+  lineSeparator: string;
+  fileName: string;
+  encoding: IMPORT_ENCODING;
 }
 
 export enum IMPORT_TYPE {
@@ -2296,6 +2307,10 @@ export interface ImportFormData {
 
   lineSeparator: string; // 换行符号
   taskId?: number;
+  transferDDL?: boolean;
+  transferData?: boolean;
+  csvConfig?: ICSVConfig;
+  exportDbObjects?: { dbObjectType: string; objectName: string }[];
 }
 
 // 左侧结构树菜单所支持的key列表

@@ -110,6 +110,7 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
             detailRes?.parameters?.transferDDL,
             detailRes?.parameters?.transferData,
           );
+          const withColumnTitle = !detailRes?.parameters?.csvConfig?.skipHeader;
           const exportFileMaxSize =
             detailRes?.parameters?.exportFileMaxSize === -1
               ? formatMessage({
@@ -119,10 +120,18 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
               : detailRes?.parameters?.exportFileMaxSize;
           onFormValueChange('exportDbObjects', {
             ...detailRes?.parameters,
+            ...detailRes?.parameters?.csvConfig,
             exportContent,
             exportFileMaxSize,
+            withColumnTitle,
           });
-          form.setFieldsValue({ ...detailRes?.parameters, exportContent, exportFileMaxSize });
+          form.setFieldsValue({
+            ...detailRes?.parameters,
+            exportContent,
+            exportFileMaxSize,
+            ...detailRes?.parameters?.csvConfig,
+            withColumnTitle,
+          });
         }
       };
 
