@@ -387,7 +387,7 @@ class SessionStore {
       this.params.queryLimit = data?.settings?.queryLimit;
       this.params.obVersion = data?.settings?.obVersion;
       this.params.defaultTableStoreFormat = data?.session?.defaultTableStoreFormat;
-      this.params.killCurrentQuerySupported = data?.killCurrentQuerySupported;
+      this.params.killCurrentQuerySupported = data?.session?.killCurrentQuerySupported;
       if (init) {
         this.params.tableColumnInfoVisible =
           setting.configurations['odc.sqlexecute.default.fetchColumnInfo'] === 'true';
@@ -410,6 +410,7 @@ class SessionStore {
           sqlId: null,
           activeQueries: null,
           defaultTableStoreFormat: null,
+          killCurrentQuerySupported: false,
         };
       }
     } catch (e) {
