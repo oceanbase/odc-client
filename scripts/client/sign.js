@@ -22,14 +22,14 @@ console.log(
     })?.toString()
 )
 function walkSync(currentDirPath) {
-    const files = [];
+    let files = [];
     fs.readdirSync(currentDirPath, { withFileTypes: true }).forEach(function (dirent) {
         var filePath = path.join(currentDirPath, dirent.name);
         if (dirent.isFile()) {
             files.push(filePath);
         } else if (dirent.isDirectory()) {
             const subFiles = walkSync(filePath);
-            files.push(...subFiles);
+            files = files.concat(subFiles)
         }
     });
     return files;
@@ -85,7 +85,6 @@ async function signAllFiles(srcPath) {
         const tempDir = path.resolve(temp, getUniqKey());
         zip.extractAllTo(tempDir, true);
         await signAllFiles(tempDir);
-        console.log('overwrite zip: ', file)
         fs.rmSync(file);
         if (file.endsWith('.jar')) {
             execSync(`jar   -cMf0 ${file}   -C ${tempDir} .`)
