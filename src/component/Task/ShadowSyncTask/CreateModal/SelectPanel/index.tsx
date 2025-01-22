@@ -15,12 +15,16 @@
  */
 
 import { getTableListByDatabaseName } from '@/common/network/table';
-import { getShadowSyncAnalysisResult, startShadowSyncAnalysis } from '@/common/network/task';
+import {
+  getShadowSyncAnalysisResult,
+  getTaskDetail,
+  startShadowSyncAnalysis,
+} from '@/common/network/task';
 import ExportCard from '@/component/ExportCard';
-import { ModalStore } from '@/store/modal';
 import HelpDoc from '@/component/helpDoc';
 import { DbObjsIcon } from '@/constant';
-import { TaskType } from '@/d.ts';
+import { ShadowSyncTaskParams, TaskDetail, TaskType } from '@/d.ts';
+import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { useUnmountedRef } from 'ahooks';
@@ -53,6 +57,9 @@ const SelectPanel = forwardRef<any, IProps>(function (
   const [form] = Form.useForm<IShaodwSyncData>();
   const loopRef = useRef<any>();
   const unmountedRef = useUnmountedRef();
+
+  const [selectDestTableNames, setSelectDestTableNames] = useState([]);
+
   const sourceDisplayTables = useMemo(() => {
     if (!sourceSearchValue) {
       return tables?.map((t) => ({ label: t.tableName, value: t.tableName }));
@@ -63,6 +70,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
       })
       ?.map((t) => ({ label: t.tableName, value: t.tableName }));
   }, [tables, sourceSearchValue]);
+
   const targetDisplayTables = useMemo(() => {
     let targetTables = [];
     if (!targetSearchValue) {
@@ -83,6 +91,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
     })?.length;
     return [_sourceSelectCount ?? 0, sourceDisplayTables?.length ?? 0];
   }, [sourceDisplayTables, data.originTableNames]);
+
   useImperativeHandle(
     ref,
     () => {
@@ -104,6 +113,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
             message.warning(
               formatMessage({
                 id: 'odc.CreateShadowSyncModal.SelectPanel.SelectASynchronizationObject',
+                defaultMessage: '请选择同步对象',
               }),
 
               //请选择同步对象
@@ -135,8 +145,12 @@ const SelectPanel = forwardRef<any, IProps>(function (
                   getResult();
                 }, 3000);
               } else {
+                if (selectDestTableNames.length) {
+                  setSelectDestTableNames([]);
+                }
                 setData({
                   ...data,
+                  originTableNames: new Set([]),
                   shadowAnalysisData: result,
                 });
 
@@ -160,7 +174,9 @@ const SelectPanel = forwardRef<any, IProps>(function (
     setTables(tables);
     setData({
       ...data,
-      originTableNames: new Set(),
+      originTableNames: selectDestTableNames.length
+        ? clone(new Set(selectDestTableNames))
+        : new Set(),
     });
 
     return tables;
@@ -176,8 +192,12 @@ const SelectPanel = forwardRef<any, IProps>(function (
 
   const TableIcon = DbObjsIcon.TABLE;
 
-  function handleSelect(event: CheckboxChangeEvent, index: number = -1) {
-    const checked = event.target.checked;
+  function handleSelect(
+    event: CheckboxChangeEvent,
+    index: number = -1,
+    requestTable?: { value: string }[],
+  ) {
+    const checked = requestTable ? true : event.target.checked;
     if (index !== -1) {
       // index不等于-1时，说明是VirtualList中的checkbox;
       if (checked) {
@@ -206,10 +226,68 @@ const SelectPanel = forwardRef<any, IProps>(function (
 
   useEffect(() => {
     const databaseId = shadowSyncData?.databaseId;
+    const taskId = shadowSyncData?.taskId;
+
     if (databaseId) {
       form.setFieldsValue({ databaseId });
+      setData({
+        ...data,
+        databaseId,
+      });
+    }
+
+    if (taskId) {
+      getTaskDetailValue(taskId, databaseId);
     }
   }, [shadowSyncData?.databaseId]);
+
+  const getTaskDetailValue = async (taskId: number, databaseId: number) => {
+    const detailRes = (await getTaskDetail(taskId)) as TaskDetail<ShadowSyncTaskParams>;
+
+    const res = await getShadowSyncAnalysisResult(detailRes.parameters.comparingTaskId.toString());
+
+    const newDataObj = {
+      ...data,
+      originTableNames: clone(new Set<string>(res?.tables?.map((item) => item.originTableName))),
+    };
+
+    if (res?.tables?.length > 0) {
+      /** false：后缀、true：前缀 */
+      let prefixTemp = true;
+      let nameTemp;
+      // 源数据-表名
+      const originTableName = res?.tables[0]?.originTableName;
+      // 加过后缀/前缀的表名
+      const destTableName = res?.tables[0]?.destTableName;
+      // 后缀
+      if (destTableName?.startsWith(originTableName)) {
+        prefixTemp = false;
+      }
+      let arr = destTableName?.split(originTableName);
+      let initialNameArr = ['_test_', '_t'];
+      arr = arr?.map((item, index) => {
+        if (!item) {
+          return initialNameArr[index];
+        }
+        return item;
+      });
+      nameTemp = prefixTemp ? arr?.[0] : arr?.[1];
+      newDataObj.prefix = prefixTemp;
+      newDataObj.name = nameTemp;
+      form.setFieldValue('prefix', prefixTemp);
+      form.setFieldValue('name', nameTemp);
+    }
+    if (!data.originTableNames.size) {
+      newDataObj.originTableNames = new Set();
+    }
+
+    if (databaseId) {
+      newDataObj.databaseId = databaseId;
+    }
+
+    setSelectDestTableNames(res?.tables?.map((item) => item.originTableName));
+    setData(newDataObj);
+  };
 
   return (
     <Form
@@ -233,10 +311,12 @@ const SelectPanel = forwardRef<any, IProps>(function (
       <Form.Item
         extra={formatMessage({
           id: 'odc.CreateShadowSyncModal.SelectPanel.OnlyTheStructureOfThe',
+          defaultMessage: '仅同步源表的结构，不同步数据',
         })}
         /*仅同步源表的结构，不同步数据*/ name="syncAll"
         label={formatMessage({
           id: 'odc.CreateShadowSyncModal.SelectPanel.SynchronizationRange',
+          defaultMessage: '同步范围',
         })}
 
         /*同步范围*/
@@ -253,6 +333,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
             {
               formatMessage({
                 id: 'odc.CreateShadowSyncModal.SelectPanel.PartialTable',
+                defaultMessage: '部分表',
               })
 
               /*部分表*/
@@ -262,6 +343,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
             {
               formatMessage({
                 id: 'odc.CreateShadowSyncModal.SelectPanel.AllTables',
+                defaultMessage: '全部表',
               })
 
               /*全部表*/
@@ -276,6 +358,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
             {
               formatMessage({
                 id: 'odc.CreateShadowSyncModal.SelectPanel.ShadowTableName',
+                defaultMessage: '影子表名',
               })
 
               /*影子表名*/
@@ -290,6 +373,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                 {
                   formatMessage({
                     id: 'odc.CreateShadowSyncModal.SelectPanel.AddSuffix',
+                    defaultMessage: '添加后缀',
                   })
 
                   /*添加后缀*/
@@ -299,6 +383,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                 {
                   formatMessage({
                     id: 'odc.CreateShadowSyncModal.SelectPanel.AddPrefix',
+                    defaultMessage: '添加前缀',
                   })
 
                   /*添加前缀*/
@@ -314,6 +399,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                 required: true,
                 message: formatMessage({
                   id: 'odc.CreateShadowSyncModal.SelectPanel.EnterAShadowTableName',
+                  defaultMessage: '请输入影子表名',
                 }),
 
                 //请输入影子表名
@@ -322,6 +408,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                 pattern: /^[\w]*$/,
                 message: formatMessage({
                   id: 'odc.CreateShadowSyncModal.SelectPanel.OnlyEnglishNumbersAndUnderscores',
+                  defaultMessage: '仅支持英文/数字/下划线',
                 }),
 
                 //仅支持英文/数字/下划线
@@ -330,6 +417,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                 max: 32,
                 message: formatMessage({
                   id: 'odc.CreateShadowSyncModal.SelectPanel.NoMoreThanCharacters',
+                  defaultMessage: '不超过 32 个字符',
                 }),
 
                 //不超过 32 个字符
@@ -350,6 +438,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
               shouldUpdate
               label={formatMessage({
                 id: 'odc.CreateShadowSyncModal.SelectPanel.SynchronizeObjects',
+                defaultMessage: '同步对象',
               })}
 
               /*同步对象*/
@@ -365,6 +454,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                     title={
                       formatMessage({
                         id: 'odc.CreateShadowSyncModal.SelectPanel.SelectSourceTable',
+                        defaultMessage: '选择源表',
                       }) +
                       //`选择源表`
                       `(${sourceSelectCount}/${sourceCount})`
@@ -376,22 +466,24 @@ const SelectPanel = forwardRef<any, IProps>(function (
                       rowHeight={22}
                       overscanRowCount={25}
                       rowCount={sourceDisplayTables?.length}
-                      rowRenderer={({ key, index, style: _style }) => (
-                        <Row key={key} style={{ height: 22, ..._style }}>
-                          <Checkbox
-                            checked={data.originTableNames.has(sourceDisplayTables[index]?.value)}
-                            key={sourceDisplayTables[index]?.value}
-                            onChange={(e: CheckboxChangeEvent) => handleSelect(e, index)}
-                          >
-                            <span
-                              style={{ whiteSpace: 'nowrap' }}
-                              title={sourceDisplayTables[index].label}
+                      rowRenderer={({ key, index, style: _style }) => {
+                        return (
+                          <Row key={key} style={{ height: 22, ..._style }}>
+                            <Checkbox
+                              checked={data.originTableNames.has(sourceDisplayTables[index]?.value)}
+                              key={sourceDisplayTables[index]?.value}
+                              onChange={(e: CheckboxChangeEvent) => handleSelect(e, index)}
                             >
-                              {sourceDisplayTables[index]?.label}
-                            </span>
-                          </Checkbox>
-                        </Row>
-                      )}
+                              <span
+                                style={{ whiteSpace: 'nowrap' }}
+                                title={sourceDisplayTables[index].label}
+                              >
+                                {sourceDisplayTables[index]?.label}
+                              </span>
+                            </Checkbox>
+                          </Row>
+                        );
+                      }}
                     />
                   </ExportCard>
                 </Col>
@@ -401,6 +493,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                     title={
                       formatMessage({
                         id: 'odc.CreateShadowSyncModal.SelectPanel.ShadowTable',
+                        defaultMessage: '影子表',
                       }) +
                       //`影子表`
                       `(${targetDisplayTables?.length ?? 0})`
@@ -419,6 +512,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                         {
                           formatMessage({
                             id: 'odc.CreateShadowSyncModal.SelectPanel.Clear',
+                            defaultMessage: '清空',
                           }) /*清空*/
                         }
                       </a>

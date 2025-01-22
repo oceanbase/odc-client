@@ -343,6 +343,7 @@ class CreateTriggerPage extends Component<IProps & { session: SessionStore }, IS
                   status={baseInfoStatus}
                   text={formatMessage({
                     id: 'odc.components.CreateTriggerPage.StepBasicInformation',
+                    defaultMessage: '第一步：基本信息',
                   })}
                   /*第一步：基本信息*/
                 />
@@ -368,6 +369,7 @@ class CreateTriggerPage extends Component<IProps & { session: SessionStore }, IS
                   status={advancedStatus}
                   text={formatMessage({
                     id: 'odc.components.CreateTriggerPage.StepAdvancedSettings',
+                    defaultMessage: '第二步：高级设置',
                   })}
                   /*第二步：高级设置*/
                 />
@@ -394,6 +396,7 @@ class CreateTriggerPage extends Component<IProps & { session: SessionStore }, IS
             {
               formatMessage({
                 id: 'odc.components.CreateTriggerPage.NextConfirmTheSqlStatement',
+                defaultMessage: '下一步：确认 SQL',
               }) /*下一步：确认SQL*/
             }
           </Button>

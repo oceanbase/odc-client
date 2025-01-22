@@ -22,7 +22,7 @@ const path = require('path');
 
 const platform = process.env.platform || 'mac';
 
-const baseUrl = "https://obodc-front.oss-cn-beijing.aliyuncs.com/";
+const baseUrl = "https://odc-front.oss-cn-beijing.aliyuncs.com/";
 
 exports.run = async function () {
   console.log('开始下载 Jre');

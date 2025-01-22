@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getProcedureByProName } from '@/common/network';
 import { dropObject } from '@/common/network/database';
 import { actionTypes } from '@/component/Acess';
 import { PLType } from '@/constant/plType';
-import { ConnectionMode, DbObjectType, IProcedure, PageType } from '@/d.ts';
+import { DbObjectType, IProcedure, PageType } from '@/d.ts';
 import { PropsTab, TopTab } from '@/page/Workspace/components/ProcedurePage';
 import {
   openBatchCompilePLPage,
@@ -33,10 +34,9 @@ import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import { message, Modal } from 'antd';
-import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
+import { hasChangePermission, hasExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
-import { getDataSourceModeConfig } from '@/common/datasource';
 import { isSupportExport, isSupportPLEdit } from './helper';
 
 export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
@@ -44,7 +44,10 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
     {
       key: 'BATCH_COMPILE',
       text: [
-        formatMessage({ id: 'odc.TreeNodeMenu.config.procedure.BatchCompilation' }), //批量编译
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.procedure.BatchCompilation',
+          defaultMessage: '批量编译',
+        }), //批量编译
       ],
       actionType: actionTypes.create,
       icon: BatchCompileSvg,
@@ -55,7 +58,10 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
         openBatchCompilePLPage(
           PageType.BATCH_COMPILE_PROCEDURE,
           DbObjectType.procedure,
-          formatMessage({ id: 'odc.components.ResourceTree.StoredProcedure' }),
+          formatMessage({
+            id: 'odc.components.ResourceTree.StoredProcedure',
+            defaultMessage: '存储过程',
+          }),
           session?.odcDatabase?.id,
           session?.database?.dbName,
         );
@@ -64,7 +70,10 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
     {
       key: 'CREATE',
       text: [
-        formatMessage({ id: 'odc.TreeNodeMenu.config.procedure.CreateAStoredProcedure' }), //新建存储过程
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.procedure.CreateAStoredProcedure',
+          defaultMessage: '新建存储过程',
+        }), //新建存储过程
       ],
       icon: PlusOutlined,
       actionType: actionTypes.create,
@@ -79,7 +88,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
     {
       key: 'REFRESH',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
+        formatMessage({ id: 'odc.ResourceTree.actions.Refresh', defaultMessage: '刷新' }), //刷新
       ],
       icon: ReloadOutlined,
       actionType: actionTypes.read,
@@ -95,6 +104,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.See',
+          defaultMessage: '查看',
         }),
       ],
 
@@ -114,13 +124,10 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
     {
       key: 'EDIT',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Editing' }), //编辑
+        formatMessage({ id: 'odc.ResourceTree.actions.Editing', defaultMessage: '编辑' }), //编辑
       ],
       ellipsis: true,
       actionType: actionTypes.update,
-      disabled: (session, node) => {
-        return !isSupportPLEdit(session);
-      },
       async run(session, node) {
         const proc: IProcedure = node.data;
         await openProcedureEditPageByProName(
@@ -134,7 +141,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
     {
       key: 'COMPILE',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Compile' }), //编译
+        formatMessage({ id: 'odc.ResourceTree.actions.Compile', defaultMessage: '编译' }), //编译
       ],
       ellipsis: true,
       isHide(session, node) {
@@ -156,6 +163,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.Debugging',
+          defaultMessage: '调试',
         }),
       ],
 
@@ -169,6 +177,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           message.info(
             formatMessage({
               id: 'odc.ResourceTree.config.treeNodesActions.InvalidObjectDebuggingIsNot',
+              defaultMessage: '无效对象，不支持调试',
             }),
           );
 
@@ -189,8 +198,10 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.Run',
+          defaultMessage: '运行',
         }),
       ],
+
       isHide(session, node) {
         return !getDataSourceModeConfig(session?.connection?.type)?.features?.plRun;
       },
@@ -216,7 +227,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
     {
       key: 'EXPORT',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Export' }), //导出
+        formatMessage({ id: 'odc.ResourceTree.actions.Export', defaultMessage: '导出' }), //导出
       ],
       ellipsis: true,
       disabled: (session) => {
@@ -237,7 +248,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
     {
       key: 'DOWNLOAD',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Download' }), //下载
+        formatMessage({ id: 'odc.ResourceTree.actions.Download', defaultMessage: '下载' }), //下载
       ],
       ellipsis: true,
       hasDivider: true,
@@ -259,7 +270,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
     {
       key: 'DELETE',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Delete' }), //删除
+        formatMessage({ id: 'odc.ResourceTree.actions.Delete', defaultMessage: '删除' }), //删除
       ],
       ellipsis: true,
       actionType: actionTypes.delete,
@@ -272,16 +283,18 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
           title: formatMessage(
             {
               id: 'workspace.window.createFunction.modal.delete',
+              defaultMessage: '是否确定删除函数 {name} ？',
             },
 
             {
               name: proc?.proName,
             },
           ),
-          okText: formatMessage({ id: 'app.button.ok' }),
+          okText: formatMessage({ id: 'app.button.ok', defaultMessage: '确定' }),
 
           cancelText: formatMessage({
             id: 'app.button.cancel',
+            defaultMessage: '取消',
           }),
 
           centered: true,
@@ -297,6 +310,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
             message.success(
               formatMessage({
                 id: 'workspace.window.createProcedure.modal.delete.success',
+                defaultMessage: '删除存储过程成功',
               }),
             );
 
@@ -318,7 +332,7 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
     {
       key: 'REFRESH',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
+        formatMessage({ id: 'odc.ResourceTree.actions.Refresh', defaultMessage: '刷新' }), //刷新
       ],
       ellipsis: true,
       actionType: actionTypes.create,

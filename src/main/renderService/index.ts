@@ -19,7 +19,6 @@
  */
 import { app, dialog, ipcMain, shell } from 'electron';
 import fs from 'fs';
-import path from 'path';
 import MainServer from '../server/main';
 import { default as clientLog } from '../utils/log';
 import feedbackImpl from './feedback';

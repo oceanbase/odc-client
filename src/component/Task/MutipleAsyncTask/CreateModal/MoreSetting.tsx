@@ -1,7 +1,23 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import FormItemPanel from '@/component/FormItemPanel';
 import { TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { Form, Space, AutoComplete, InputNumber, Radio } from 'antd';
+import { AutoComplete, Form, InputNumber, Radio, Space } from 'antd';
 import DescriptionInput from '../../component/DescriptionInput';
 import { ErrorStrategy } from './helper';
 import styles from './index.less';
@@ -114,7 +130,7 @@ const MoreSetting = () => {
         <Form.Item
           label={formatMessage({
             id: 'src.component.Task.MutipleAsyncTask.CreateModal.D82AF71B',
-            defaultMessage: 'SQL 执行处理',
+            defaultMessage: 'SQL 执行错误处理',
           })}
           name={['parameters', 'errorStrategy']}
           initialValue={ErrorStrategy.ABORT}

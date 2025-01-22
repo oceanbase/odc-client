@@ -33,6 +33,7 @@ export function apply(model) {
           severity: 4,
           message: formatMessage({
             id: 'odc.component.SQLCodeEditor.InvalidCharacterUAThis',
+            defaultMessage: '非法字符(\\u00a0)，该字符有可能造成运行报错',
           }), // 非法字符(\u00a0)，该字符有可能造成运行报错
         });
       }

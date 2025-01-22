@@ -49,6 +49,7 @@ export default function ({ column, onChange }: IProps) {
           <Form.Item
             label={formatMessage({
               id: 'odc.Columns.ColumnExtraInfo.Character.CharacterSet',
+              defaultMessage: '字符集',
             })} /*字符集*/
           >
             <Select
@@ -74,6 +75,7 @@ export default function ({ column, onChange }: IProps) {
           <Form.Item
             label={formatMessage({
               id: 'odc.Columns.ColumnExtraInfo.Character.SortingRules',
+              defaultMessage: '排序规则',
             })} /*排序规则*/
           >
             <Select

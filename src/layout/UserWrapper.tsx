@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import PageLoading from '@/component/PageLoading';
 import login, { UserStore } from '@/store/login';
 import { SettingStore } from '@/store/setting';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { Outlet, useLocation } from '@umijs/max';
+import { history, Outlet, useLocation } from '@umijs/max';
 import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useState } from 'react';
-import { history } from '@umijs/max';
 import { PageLoadingContext } from './PageLoadingWrapper';
+import { toDefaultProjectPage } from '@/service/projectHistory';
 interface IProps {
   userStore: UserStore;
   settingStore: SettingStore;
@@ -67,6 +66,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
         message.error(
           formatMessage({
             id: 'odc.src.layout.UserWrapper.GetcurrentuserInitializationInformationFailed',
+            defaultMessage: '[getCurrentUser]初始化信息失败',
           }), //[getCurrentUser]初始化信息失败
         );
 
@@ -83,7 +83,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
       /**
        * 处于login页面并且已经登录，需要跳到对应的页面上
        */
-      history.replace('/project');
+      await toDefaultProjectPage();
     }
     setStatus(STATUS_TYPE.DONE);
   }
@@ -100,6 +100,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
         pageContext?.setTask({
           tip: formatMessage({
             id: 'odc.src.layout.GetUserInformation',
+            defaultMessage: '正在获取用户信息',
           }), //'正在获取用户信息'
           showError: false,
         });
@@ -116,6 +117,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
         pageContext?.setTask({
           tip: formatMessage({
             id: 'odc.src.layout.UserStatusIsBeingChecked',
+            defaultMessage: '正在检查用户状态',
           }), //'正在检查用户状态'
           showError: false,
         });

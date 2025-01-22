@@ -121,6 +121,7 @@ const StructConfigPanel = forwardRef<any, IProps>(function (
           shouldUpdate
           label={formatMessage({
             id: 'odc.CreateShadowSyncModal.StructConfigPanel.StructuralAnalysis',
+            defaultMessage: '结构分析',
           })} /*结构分析*/
         >
           <StructAnalysisResult
@@ -134,12 +135,14 @@ const StructConfigPanel = forwardRef<any, IProps>(function (
           keepExpand
           label={formatMessage({
             id: 'odc.CreateShadowSyncModal.StructConfigPanel.TaskSettings',
+            defaultMessage: '任务设置',
           })} /*任务设置*/
         >
           <TaskTimer />
           <Form.Item
             label={formatMessage({
               id: 'odc.components.CreateAsyncTaskModal.TaskErrorHandling',
+              defaultMessage: '任务错误处理',
             })}
             /* 任务错误处理 */
             name="errorStrategy"
@@ -148,6 +151,7 @@ const StructConfigPanel = forwardRef<any, IProps>(function (
                 required: true,
                 message: formatMessage({
                   id: 'odc.components.CreateAsyncTaskModal.SelectTaskErrorHandling',
+                  defaultMessage: '请选择任务错误处理',
                 }),
 
                 // 请选择任务错误处理
@@ -159,6 +163,7 @@ const StructConfigPanel = forwardRef<any, IProps>(function (
                 {
                   formatMessage({
                     id: 'odc.components.CreateAsyncTaskModal.StopATask',
+                    defaultMessage: '停止任务',
                   })
 
                   /* 停止任务 */
@@ -168,6 +173,7 @@ const StructConfigPanel = forwardRef<any, IProps>(function (
                 {
                   formatMessage({
                     id: 'odc.components.CreateAsyncTaskModal.IgnoreErrorsContinueTasks',
+                    defaultMessage: '忽略错误继续任务',
                   })
 
                   /* 忽略错误继续任务 */

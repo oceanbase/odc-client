@@ -35,9 +35,11 @@ export function getTitle(addSensitiveColumnType: AddSensitiveColumnType) {
   return addSensitiveColumnType === AddSensitiveColumnType.Manual
     ? formatMessage({
         id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.ManuallyAddSensitiveColumns',
+        defaultMessage: '手动添加敏感列',
       }) //手动添加敏感列
     : formatMessage({
         id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.ScanToAddSensitiveColumns',
+        defaultMessage: '扫描添加敏感列',
       }); //扫描添加敏感列
 }
 const FormSensitiveColumnDrawer = ({
@@ -114,6 +116,7 @@ const FormSensitiveColumnDrawer = ({
       message.success(
         formatMessage({
           id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.New',
+          defaultMessage: '新建成功',
         }), //新建成功
       );
       onOk(async () => {
@@ -130,6 +133,7 @@ const FormSensitiveColumnDrawer = ({
       message.error(
         formatMessage({
           id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.FailedToCreate',
+          defaultMessage: '新建失败',
         }), //新建失败
       );
     }
@@ -175,6 +179,7 @@ const FormSensitiveColumnDrawer = ({
           {
             formatMessage({
               id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.Cancel',
+              defaultMessage: '取消',
             }) /*取消*/
           }
         </Button>
@@ -182,12 +187,14 @@ const FormSensitiveColumnDrawer = ({
           {
             formatMessage({
               id: 'odc.SensitiveColumn.components.FormSensitiveColumnDrawer.Submit',
+              defaultMessage: '提交',
             }) /*提交*/
           }
         </Button>
       </Space>
     </div>
   );
+
   return (
     <>
       <Drawer
@@ -214,6 +221,7 @@ const FormSensitiveColumnDrawer = ({
         title={
           formatMessage({
             id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ManagementRecognitionRules',
+            defaultMessage: '管理识别规则',
           }) //'管理识别规则'
         }
         width={720}

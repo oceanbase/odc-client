@@ -32,10 +32,19 @@ interface IProps {
   keepExpand?: boolean;
   noPaddingBottom?: boolean;
   onExpandChange?: (isExpand: boolean) => void;
+  customExtra?: React.ReactNode;
 }
 
 const FormItemPanel: React.FC<IProps> = function (props) {
-  const { overview, label, children, expandText, keepExpand, noPaddingBottom = false } = props;
+  const {
+    overview,
+    label,
+    children,
+    expandText,
+    keepExpand,
+    noPaddingBottom = false,
+    customExtra = null,
+  } = props;
   const [expand, setExpand] = useControllableValue<boolean>(props, {
     defaultValue: false,
     valuePropName: 'expand',
@@ -60,11 +69,17 @@ const FormItemPanel: React.FC<IProps> = function (props) {
               className={styles.expandBtn}
             >
               {
-                expandText || formatMessage({ id: 'odc.component.FormItemPanel.Superior' }) // 高级
+                expandText ||
+                  formatMessage({
+                    id: 'odc.component.FormItemPanel.Superior',
+                    defaultMessage: '高级',
+                  }) // 高级
               }
               {expand ? <UpOutlined style={iconStyle} /> : <DownOutlined style={iconStyle} />}
             </a>
-          ) : null}
+          ) : (
+            customExtra
+          )}
         </div>
       ) : null}
       <div

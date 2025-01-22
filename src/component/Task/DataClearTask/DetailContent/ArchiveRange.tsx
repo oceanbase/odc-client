@@ -22,13 +22,19 @@ import React from 'react';
 const columns = (needCheckBeforeDelete: boolean) => [
   {
     dataIndex: 'tableName',
-    title: formatMessage({ id: 'odc.DataClearTask.DetailContent.ArchiveRange.TableName' }), //表名
+    title: formatMessage({
+      id: 'odc.DataClearTask.DetailContent.ArchiveRange.TableName',
+      defaultMessage: '表名',
+    }), //表名
     ellipsis: true,
     width: 140,
   },
   {
     dataIndex: 'conditionExpression',
-    title: formatMessage({ id: 'odc.DataClearTask.DetailContent.ArchiveRange.FilterConditions' }), //过滤条件
+    title: formatMessage({
+      id: 'odc.DataClearTask.DetailContent.ArchiveRange.FilterConditions',
+      defaultMessage: '过滤条件',
+    }), //过滤条件
     ellipsis: true,
     render: (value) => {
       return <Tooltip title={value}>{value || '-'}</Tooltip>;

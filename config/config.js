@@ -2,7 +2,7 @@ import getVersion from './version';
 import defineConfig from './defineConfig';
 import theme from './theme';
 import routes from './routes';
-import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin' 
+import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin'
 import path from 'path';
 
 const version = getVersion();
@@ -69,7 +69,7 @@ const config = {
   title: false,
   favicons: [publicPath + 'img/favicon.png'],
   // ctoken: false,
-
+  clickToComponent: {},
   externals: {
     electron: 'commonjs electron',
   },

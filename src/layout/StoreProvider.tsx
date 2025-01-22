@@ -29,6 +29,7 @@ import snippetStore from '@/store/snippet';
 import sqlStore from '@/store/sql';
 import taskStore from '@/store/task';
 import datasourceStatus from '@/store/datasourceStatus';
+import guideCacheStore from '@/store/guideCache';
 
 export default function (props) {
   return (
@@ -46,6 +47,7 @@ export default function (props) {
       clusterStore={clusterStore}
       sessionManagerStore={sessionManagerStore}
       dataSourceStatusStore={datasourceStatus}
+      guideCacheStore={guideCacheStore}
     >
       {props.children}
     </Provider>

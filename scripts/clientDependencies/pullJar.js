@@ -19,6 +19,7 @@ const path =require('path')
 const jarUrl = `odc-build/${pkg.version}/jar/odc-slim.jar`;
 const pluginUrl = `odc-build/${pkg.version}/plugins`;
 const startersUrl = `odc-build/${pkg.version}/starters`;
+const modulesUrl = `odc-build/${pkg.version}/modules`;
 const { oss } = require('./util');
 const isSkipJar = process.env.ODC_BUILD_SKIP_JAR;
 
@@ -52,6 +53,23 @@ exports.run = async function () {
     const isSuccess = await oss.download(starter.name, 'libraries/java/starters', fileName);
     if (!isSuccess) {
       console.error('Download starters failed', fileName)
+      process.exit(-1);
+    }
+  }
+
+  /**
+   * modules
+   */
+
+  const modules = await oss.getOSSFolderFiles(modulesUrl)
+  for (let module of modules) {
+    const fileName = path.relative(modulesUrl, module.name);
+    if (!fileName) {
+      continue;
+    }
+    const isSuccess = await oss.download(module.name, 'libraries/java/modules', fileName);
+    if (!isSuccess) {
+      console.error('Download modules failed', fileName)
       process.exit(-1);
     }
   }

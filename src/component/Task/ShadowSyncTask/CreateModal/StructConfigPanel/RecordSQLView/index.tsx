@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { getShadowSyncAnalysisRecordResult } from '@/common/network/task';
 import MonacoEditor from '@/component/MonacoEditor';
 import SimpleTextItem from '@/component/SimpleTextItem';
@@ -23,7 +24,6 @@ import { useRequest } from 'ahooks';
 import { Drawer, Row, Space, Spin } from 'antd';
 import { forwardRef, useImperativeHandle, useState } from 'react';
 import { IShadowSyncAnalysisResult } from '../../interface';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 export interface IViewRef {
   open: (record: IShadowSyncAnalysisResult['tables'][number]) => void;
@@ -70,6 +70,7 @@ const RecordSQLView = forwardRef<any, { taskId: string; connectionMode: Connecti
       width={520}
       title={formatMessage({
         id: 'odc.StructConfigPanel.RecordSQLView.StructuralAnalysisDetails',
+        defaultMessage: '结构分析详情',
       })} /*结构分析详情*/
       open={visiable}
       onClose={() => {
@@ -84,6 +85,7 @@ const RecordSQLView = forwardRef<any, { taskId: string; connectionMode: Connecti
               <SimpleTextItem
                 label={formatMessage({
                   id: 'odc.StructConfigPanel.RecordSQLView.SourceTableStructure',
+                  defaultMessage: '源表结构',
                 })}
                 /*源表结构*/ content={record?.originTableName}
               />
@@ -107,6 +109,7 @@ const RecordSQLView = forwardRef<any, { taskId: string; connectionMode: Connecti
               <SimpleTextItem
                 label={formatMessage({
                   id: 'odc.StructConfigPanel.RecordSQLView.ShadowTableStructure',
+                  defaultMessage: '影子表结构',
                 })}
                 /*影子表结构*/ content={record?.destTableName}
               />
@@ -130,6 +133,7 @@ const RecordSQLView = forwardRef<any, { taskId: string; connectionMode: Connecti
               {
                 formatMessage({
                   id: 'odc.StructConfigPanel.RecordSQLView.StructureChangeSql',
+                  defaultMessage: '结构变更SQL',
                 }) /*结构变更SQL*/
               }
             </Row>

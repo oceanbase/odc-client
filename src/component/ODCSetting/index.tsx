@@ -15,18 +15,17 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { Button, Col, Form, Modal, Row, Space, Tabs, Typography, message } from 'antd';
+import { Button, Col, Form, message, Modal, Row, Space, Tabs, Typography } from 'antd';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import odcSetting, { IODCSetting, ODCSettingGroup, odcSettingMap } from './config';
 
-import styles from './index.less';
-import { inject, observer } from 'mobx-react';
-import modal, { ModalStore } from '@/store/modal';
+import { ModalStore } from '@/store/modal';
 import setting from '@/store/setting';
-import { IUserConfig } from '@/d.ts';
 import { getODCSetting, saveODCSetting } from '@/util/client';
 import { isClient } from '@/util/env';
 import { safeParseJson } from '@/util/utils';
+import { inject, observer } from 'mobx-react';
+import styles from './index.less';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -101,6 +100,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
 
       // 遍历所有子节点
       const children = dom.querySelectorAll<HTMLHeadingElement>('[data-name]'); // 假定子节点有共同的类名'child'
+      // console.log(children);
       let min = Number.MAX_SAFE_INTEGER;
       let key;
       children.forEach((child) => {
@@ -130,7 +130,10 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   function close(force: boolean = false) {
     if (changed && !force) {
       Modal.confirm({
-        title: formatMessage({ id: 'src.component.ODCSetting.983C51BC' }), //'确认要取消修改配置吗？'
+        title: formatMessage({
+          id: 'src.component.ODCSetting.983C51BC',
+          defaultMessage: '确认要取消修改配置吗？',
+        }), //'确认要取消修改配置吗？'
         onOk: () => {
           setChanged(false);
           modalStore.changeOdcSettingVisible(false);
@@ -179,6 +182,18 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
         }
       }
     });
+    if (
+      serverData['odc.editor.shortcut.executeStatement'] ===
+      serverData['odc.editor.shortcut.executeCurrentStatement']
+    ) {
+      message.warning(
+        formatMessage({
+          id: 'src.component.ODCSetting.CFC0C3E8',
+          defaultMessage: '快捷键冲突, 请重新输入。',
+        }),
+      );
+      return;
+    }
     /**
      * submit serverData
      */
@@ -190,19 +205,30 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       await saveODCSetting(JSON.stringify(localData));
     }
     if (isSuccess) {
-      message.success(formatMessage({ id: 'src.component.ODCSetting.E6DD81BF' /*'保存成功'*/ }));
+      message.success(
+        formatMessage({
+          id: 'src.component.ODCSetting.E6DD81BF' /*'保存成功'*/,
+          defaultMessage: '保存成功',
+        }),
+      );
       close(true);
     }
   }
 
   function reset() {
     Modal.confirm({
-      title: formatMessage({ id: 'src.component.ODCSetting.647A18AA' }), //'确定要恢复默认设置吗？'
+      title: formatMessage({
+        id: 'src.component.ODCSetting.647A18AA',
+        defaultMessage: '确定要恢复默认设置吗？',
+      }), //'确定要恢复默认设置吗？'
       onOk: async () => {
         const isSuccess = await setting.resetUserConfig();
         if (isSuccess) {
           message.success(
-            formatMessage({ id: 'src.component.ODCSetting.654799D1' /*'已恢复到默认配置'*/ }),
+            formatMessage({
+              id: 'src.component.ODCSetting.654799D1' /*'已恢复到默认配置'*/,
+              defaultMessage: '已恢复到默认配置',
+            }),
           );
           close(true);
         }
@@ -214,17 +240,28 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     return (
       <Space>
         <Button onClick={() => close()}>
-          {formatMessage({ id: 'src.component.ODCSetting.995A8948' /*取消*/ }) /* 取消 */}
+          {
+            formatMessage({
+              id: 'src.component.ODCSetting.995A8948' /*取消*/,
+              defaultMessage: '取消',
+            }) /* 取消 */
+          }
         </Button>
         <Button onClick={reset}>
           {
             formatMessage({
               id: 'src.component.ODCSetting.82931AF2' /*恢复默认设置*/,
+              defaultMessage: '恢复默认设置',
             }) /* 恢复默认设置 */
           }
         </Button>
         <Button type="primary" onClick={save}>
-          {formatMessage({ id: 'src.component.ODCSetting.AB9A3FA4' /*保存*/ }) /* 保存 */}
+          {
+            formatMessage({
+              id: 'src.component.ODCSetting.AB9A3FA4' /*保存*/,
+              defaultMessage: '保存',
+            }) /* 保存 */
+          }
         </Button>
       </Space>
     );
@@ -235,7 +272,12 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       width={760}
       open={modalStore.odcSettingVisible}
       onCancel={() => close()}
-      title={formatMessage({ id: 'src.component.ODCSetting.AEB0A2EF' }) /*"设置"*/}
+      title={
+        formatMessage({
+          id: 'src.component.ODCSetting.AEB0A2EF',
+          defaultMessage: '设置',
+        }) /*"设置"*/
+      }
       footer={footerRender()}
     >
       <div className={styles.box}>

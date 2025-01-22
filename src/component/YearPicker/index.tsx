@@ -47,6 +47,7 @@ export default class YearPicker extends Component<
         mode="year"
         placeholder={formatMessage({
           id: 'odc.component.YearPicker.SelectAYear',
+          defaultMessage: '请选择年份',
         })}
         format="YYYY"
         onOpenChange={(status) => {

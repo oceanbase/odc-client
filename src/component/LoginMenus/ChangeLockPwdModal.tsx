@@ -49,6 +49,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
       <Modal
         title={formatMessage({
           id: 'odc.component.LoginMenus.ChangeLockPwd.SetTheApplicationPassword',
+          defaultMessage: '设置应用密码',
         })}
         /* 设置应用密码 */
         open={props.visible}
@@ -66,6 +67,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
                       message.success(
                         formatMessage({
                           id: 'odc.component.LoginMenus.ChangeLockPwd.Deleted',
+                          defaultMessage: '删除成功！',
                         }),
 
                         // 删除成功！
@@ -74,8 +76,8 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
                     } else {
                       message.error(
                         formatMessage({
-                          id:
-                            'odc.component.LoginMenus.ChangeLockPwdModal.UnableToDeleteCheckWhether',
+                          id: 'odc.component.LoginMenus.ChangeLockPwdModal.UnableToDeleteCheckWhether',
+                          defaultMessage: '删除失败，请确认密码是否正确',
                         }),
                         // 删除失败，请确认密码是否正确
                       );
@@ -85,6 +87,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
                     message.error(
                       formatMessage({
                         id: 'odc.component.LoginMenus.ChangeLockPwd.SystemException',
+                        defaultMessage: '系统异常',
                       }),
 
                       // 系统异常
@@ -95,6 +98,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
                 {
                   formatMessage({
                     id: 'odc.component.LoginMenus.ChangeLockPwd.DeletePassword',
+                    defaultMessage: '删除密码',
                   })
 
                   /* 删除密码 */
@@ -109,8 +113,8 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
                 if (values.password !== values.confirmPassword) {
                   message.warning(
                     formatMessage({
-                      id:
-                        'odc.component.LoginMenus.ChangeLockPwdModal.TheTwoPasswordsAreInconsistent',
+                      id: 'odc.component.LoginMenus.ChangeLockPwdModal.TheTwoPasswordsAreInconsistent',
+                      defaultMessage: '两次密码输入不一致!',
                     }),
                     // 两次密码输入不一致!
                   );
@@ -126,6 +130,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
                     message.success(
                       formatMessage({
                         id: 'odc.component.LoginMenus.ChangeLockPwd.Modified',
+                        defaultMessage: '修改成功！',
                       }),
 
                       // 修改成功！
@@ -136,6 +141,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
                     message.error(
                       formatMessage({
                         id: 'odc.component.LoginMenus.ChangeLockPwdModal.UnableToModifyThePassword',
+                        defaultMessage: '修改失败，请确认密码是否正确',
                       }),
                       // 修改失败，请确认密码是否正确
                     );
@@ -145,6 +151,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
                   message.error(
                     formatMessage({
                       id: 'odc.component.LoginMenus.ChangeLockPwd.SystemException',
+                      defaultMessage: '系统异常',
                     }),
 
                     // 系统异常
@@ -155,6 +162,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
               {
                 formatMessage({
                   id: 'odc.component.LoginMenus.ChangeLockPwd.ChangePassword',
+                  defaultMessage: '修改密码',
                 })
 
                 /* 修改密码 */
@@ -169,6 +177,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
               label={
                 formatMessage({
                   id: 'odc.component.LoginMenus.ChangeLockPwdModal.OriginalPassword',
+                  defaultMessage: '原密码',
                 })
                 // 原密码
               }
@@ -178,6 +187,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
                   required: true,
                   message: formatMessage({
                     id: 'odc.component.LoginMenus.ChangeLockPwdModal.EnterTheOriginalPassword',
+                    defaultMessage: '请输入原密码',
                   }),
                   // 请输入原密码
                   // 请输入密码
@@ -188,6 +198,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
                 placeholder={
                   formatMessage({
                     id: 'odc.component.LoginMenus.ChangeLockPwdModal.EnterTheOriginalPassword',
+                    defaultMessage: '请输入原密码',
                   })
                   // 请输入原密码
                 } /* 请输入新密码 */
@@ -198,6 +209,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
           <Form.Item
             label={formatMessage({
               id: 'odc.component.LoginMenus.ChangeLockPwd.Password',
+              defaultMessage: '密码',
             })}
             /* 密码 */
             name="password"
@@ -206,6 +218,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
                 required: true,
                 message: formatMessage({
                   id: 'odc.component.LoginMenus.ChangeLockPwd.EnterAPassword',
+                  defaultMessage: '请输入密码',
                 }),
 
                 // 请输入密码
@@ -214,6 +227,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
                 pattern: SPACE_REGEX,
                 message: formatMessage({
                   id: 'odc.component.LoginMenus.ChangeLockPwdModal.ThePasswordCannotContainSpaces',
+                  defaultMessage: '密码不能包含空格',
                 }), //密码不能包含空格
               },
             ]}
@@ -221,6 +235,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
             <Input.Password
               placeholder={formatMessage({
                 id: 'odc.component.LoginMenus.ChangeLockPwd.EnterANewPassword',
+                defaultMessage: '请输入新密码',
               })}
 
               /* 请输入新密码 */
@@ -230,6 +245,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
             label={
               formatMessage({
                 id: 'odc.component.LoginMenus.ChangeLockPwdModal.ConfirmPassword',
+                defaultMessage: '确认密码',
               })
               // 确认密码
             }
@@ -239,6 +255,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
                 required: true,
                 message: formatMessage({
                   id: 'odc.component.LoginMenus.ChangeLockPwdModal.EnterThePasswordAgain',
+                  defaultMessage: '请再次输入密码',
                 }),
                 // 请再次输入密码
                 // 请输入密码
@@ -249,6 +266,7 @@ const ChangeLockPwd: React.FC<IProps> = function (props: IProps) {
               placeholder={
                 formatMessage({
                   id: 'odc.component.LoginMenus.ChangeLockPwdModal.EnterANewPasswordAgain',
+                  defaultMessage: '请再次输入新密码',
                 })
                 // 请再次输入新密码
               }
