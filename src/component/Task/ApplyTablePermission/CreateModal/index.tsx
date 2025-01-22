@@ -17,14 +17,16 @@ import { formatMessage } from '@/util/intl';
 
 import { listProjects } from '@/common/network/project';
 import { createTask } from '@/common/network/task';
-import TableSelecter, {
-  TableSelecterRef,
+import HelpDoc from '@/component/helpDoc';
+import TableSelecter from '@/component/Task/component/TableSelecter';
+import { TableSelecterRef } from '@/component/Task/component/TableSelecter/interface';
+import {
   flatTableByGroupedParams,
   groupTableByDataBase,
-} from '@/component/Task/component/TableSelecter';
-import HelpDoc from '@/component/helpDoc';
+} from '@/component/Task/component/TableSelecter/util';
 import { TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { TablePermissionType } from '@/d.ts/table';
+import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useRequest } from 'ahooks';
 import {
@@ -32,19 +34,18 @@ import {
   Checkbox,
   DatePicker,
   Drawer,
+  Empty,
   Form,
   Input,
+  message,
   Modal,
   Select,
   Space,
-  message,
-  Empty,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './index.less';
-import { openTasksPage } from '@/store/helper/page';
 
 const CheckboxGroup = Checkbox.Group;
 
@@ -216,9 +217,10 @@ const CreateModal: React.FC<IProps> = (props) => {
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
       Modal.confirm({
+        zIndex: 1003,
         title: formatMessage({
-          id: 'src.component.Task.ApplyTablePermission.CreateModal.11B637AA',
-          defaultMessage: '确认取消申请表权限吗？',
+          id: 'src.component.Task.ApplyTablePermission.CreateModal.7996D498',
+          defaultMessage: '确认取消申请表/视图权限吗？',
         }),
         centered: true,
         onOk: () => {
@@ -297,9 +299,9 @@ const CreateModal: React.FC<IProps> = (props) => {
     // 目前一个工单只会关联一个库
     const databaseId = tables?.[0]?.databaseId;
     if (projectId && databaseId) {
-      tableSelecterRef.current?.loadTables(databaseId).then(() => {
-        tableSelecterRef.current?.expandTable(databaseId);
-      });
+      await tableSelecterRef.current?.loadDatabases();
+      await tableSelecterRef.current?.loadTables(databaseId);
+      tableSelecterRef.current?.expandTable(databaseId);
     }
     form.setFieldsValue(formData);
   }, [applyTablePermissionData, form]);
@@ -317,15 +319,19 @@ const CreateModal: React.FC<IProps> = (props) => {
         projectId: projectId || props?.projectId,
         databaseId,
         // 格式化成TableSelecter value所需格式
-        tables: flatTableByGroupedParams([
-          { databaseId, tableList: [{ name: tableName, id: tableId }] },
-        ]),
+        tables: tableId
+          ? flatTableByGroupedParams([
+              { databaseId, tableList: [{ name: tableName, id: tableId }] },
+            ])
+          : [],
         types,
       };
       if (projectId && databaseId) {
         // 默认获取要申请权限的库下面的表，并且展开
-        tableSelecterRef.current?.loadTables(databaseId).then(() => {
-          tableSelecterRef.current?.expandTable(databaseId);
+        tableSelecterRef.current?.loadDatabases()?.then(() => {
+          tableSelecterRef.current?.loadTables(databaseId).then(() => {
+            tableSelecterRef.current?.expandTable(databaseId);
+          });
         });
       }
       // 默认选中要申请的表、权限类型
@@ -366,12 +372,13 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
   return (
     <Drawer
+      zIndex={1002}
       destroyOnClose
       className={styles.createModal}
       width={816}
       title={formatMessage({
-        id: 'src.component.Task.ApplyTablePermission.CreateModal.7DDD3557',
-        defaultMessage: '申请表权限',
+        id: 'src.component.Task.ApplyTablePermission.CreateModal.365A2D85',
+        defaultMessage: '申请表/视图权限',
       })}
       footer={
         <Space>
@@ -440,8 +447,8 @@ const CreateModal: React.FC<IProps> = (props) => {
         <Form.Item
           name="tables"
           label={formatMessage({
-            id: 'src.component.Task.ApplyTablePermission.CreateModal.8A62AFC4',
-            defaultMessage: '表',
+            id: 'src.component.Task.ApplyTablePermission.CreateModal.50184403',
+            defaultMessage: '表/视图',
           })}
           required
           rules={[

@@ -86,6 +86,7 @@ class CreateModal extends React.Component<IProps, IState> {
     {
       label: formatMessage({
         id: 'odc.components.ImportDrawer.UploadFiles',
+        defaultMessage: '上传文件',
       }),
       //上传文件
       key: 'fileSelecter',
@@ -93,6 +94,7 @@ class CreateModal extends React.Component<IProps, IState> {
     {
       label: formatMessage({
         id: 'odc.components.ImportDrawer.ImportSettings',
+        defaultMessage: '导入设置',
       }),
       //导入设置
       key: 'config',
@@ -107,6 +109,7 @@ class CreateModal extends React.Component<IProps, IState> {
     Modal.confirm({
       title: formatMessage({
         id: 'odc.components.ImportDrawer.AreYouSureYouWant',
+        defaultMessage: '是否确定取消导入？',
       }),
       centered: true,
       onOk: () => {
@@ -135,6 +138,7 @@ class CreateModal extends React.Component<IProps, IState> {
         errorIndex: -1,
         errorMsg: formatMessage({
           id: 'odc.components.ImportDrawer.SelectTheFieldsToBe',
+          defaultMessage: '请选择需要映射的字段',
         }),
       });
     } else {
@@ -148,6 +152,7 @@ class CreateModal extends React.Component<IProps, IState> {
             errorIndex: csvColumn.index,
             errorMsg: formatMessage({
               id: 'odc.components.ImportDrawer.NoMappingRelationshipSelected',
+              defaultMessage: '未选择映射关系',
             }),
           });
         } else {
@@ -167,6 +172,7 @@ class CreateModal extends React.Component<IProps, IState> {
                 errorIndex: c.index,
                 errorMsg: formatMessage({
                   id: 'odc.components.ImportDrawer.DuplicateMappingRelationships',
+                  defaultMessage: '映射关系存在重复',
                 }),
               };
             }),
@@ -234,12 +240,17 @@ class CreateModal extends React.Component<IProps, IState> {
             message.success(
               formatMessage({
                 id: 'src.component.Task.ImportTask.CreateModal.F0622C80' /*'工单创建成功'*/,
+                defaultMessage: '工单创建成功',
               }),
             );
             if (this.state.isSaveDefaultConfig) {
               this.saveCurrentConfig();
+              this.setDefaultConfig();
             }
             this.props.modalStore.changeImportModal(false);
+            this.setState({
+              isSaveDefaultConfig: false,
+            });
             openTasksPage(TaskPageType.IMPORT, TaskPageScope.CREATED_BY_CURRENT_USER);
           }
         } catch (e) {
@@ -271,25 +282,26 @@ class CreateModal extends React.Component<IProps, IState> {
       columnDelimiter,
       lineSeparator,
       skipHeader,
-      fileName: importFileName?.[0].response.data?.fileName,
+      fileName: importFileName?.[0]?.response?.data?.fileName,
     });
     if (!fileInfo) {
       message.warning(
         formatMessage({
           id: 'odc.components.ImportDrawer.AnErrorOccurredWhileParsing',
+          defaultMessage: '上传的 CSV 文件解析异常，请检查文件格式是否正确',
         }),
       );
       return formatMessage({
         id: 'odc.components.ImportDrawer.TheCsvFileTypeIs',
+        defaultMessage: 'CSV 文件类型有误',
       });
     }
     const tableName = this.state.formData.tableName;
     if (tableName) {
-      const columns = await getTableColumnList(
-        this.state.formData.tableName,
-        databaseName,
-        sessionId,
-      );
+      const columns =
+        databaseName && sessionId
+          ? await getTableColumnList(this.state.formData.tableName, databaseName, sessionId)
+          : [];
       this.setState({
         csvColumnMappings: fileInfo?.map((column, i) => {
           return {
@@ -375,8 +387,9 @@ class CreateModal extends React.Component<IProps, IState> {
     return {
       useSys: false,
       databaseId: this.props.modalStore.importModalData?.databaseId,
-      executionStrategy: TaskExecStrategy.AUTO,
-      fileType: IMPORT_TYPE.ZIP,
+      taskId: this.props.modalStore.exportModalData?.taskId,
+      executionStrategy: this.defaultConfig?.executionStrategy ?? TaskExecStrategy.AUTO,
+      fileType: this.defaultConfig?.fileType ?? IMPORT_TYPE.ZIP,
       encoding: this.defaultConfig?.encoding ?? IMPORT_ENCODING.UTF8,
       importFileName: null,
       importContent: IMPORT_CONTENT.DATA_AND_STRUCT,
@@ -403,11 +416,13 @@ class CreateModal extends React.Component<IProps, IState> {
   static getDerivedStateFromProps(props, state) {
     const nextDatabaseId = props.modalStore.importModalData?.databaseId;
     const preDatabaseId = state.formData.databaseId;
-    if (nextDatabaseId && nextDatabaseId !== preDatabaseId) {
+    const taskId = props.modalStore.importModalData?.taskId;
+    if ((nextDatabaseId && nextDatabaseId !== preDatabaseId) || taskId) {
       return {
         formData: {
           ...state.formData,
           databaseId: nextDatabaseId,
+          taskId,
         },
       };
     }
@@ -440,6 +455,7 @@ class CreateModal extends React.Component<IProps, IState> {
     const nextTip = isNextStepDisabled
       ? formatMessage({
           id: 'odc.components.ImportDrawer.PleaseUploadTheImportFile',
+          defaultMessage: '请上传导入文件',
         })
       : //请上传导入文件
         null;
@@ -449,9 +465,11 @@ class CreateModal extends React.Component<IProps, IState> {
           !isSingleImport
             ? formatMessage({
                 id: 'odc.components.ImportDrawer.CreateImport',
+                defaultMessage: '新建导入',
               }) //新建导入
             : formatMessage({
                 id: 'workspace.tree.table.importSingleTable',
+                defaultMessage: '单表导入',
               })
         }
         open={modalStore.importModalVisible}
@@ -472,6 +490,8 @@ class CreateModal extends React.Component<IProps, IState> {
                   {formatMessage(
                     {
                       id: 'odc.components.ImportDrawer.TheMaximumSizeOfData',
+                      defaultMessage:
+                        '数据最大不能超过 {size}，如需导入大量数据，请使用导数工具 OBLOADER',
                     },
                     {
                       size,
@@ -480,11 +500,12 @@ class CreateModal extends React.Component<IProps, IState> {
                   <a
                     style={{ marginLeft: 4 }}
                     target="__blank"
-                    href="https://www.oceanbase.com/docs/common-oceanbase-dumper-loader-1000000000381200"
+                    href="https://www.oceanbase.com/docs/common-oceanbase-dumper-loader-1000000001189497"
                   >
                     {
                       formatMessage({
                         id: 'src.component.Task.ImportTask.CreateModal.70AD4872' /*详情*/,
+                        defaultMessage: '详情',
                       }) /* 详情 */
                     }
                   </a>
@@ -525,6 +546,7 @@ class CreateModal extends React.Component<IProps, IState> {
                 onChangeCsvColumnMappings={this.onChangeCsvColumnMappings}
                 resolveTableColumnsToCsv={this.resolveTableColumnsToCsv}
                 onSessionChange={this.handleSessionChange}
+                sessionData={this.state.sessionData}
               />
             </FormConfigContext.Provider>
           </CsvProvider.Provider>
@@ -541,6 +563,7 @@ class CreateModal extends React.Component<IProps, IState> {
             {
               formatMessage({
                 id: 'odc.components.ImportDrawer.RetainTheCurrentConfiguration',
+                defaultMessage: '保留当前配置',
               }) /*保留当前配置*/
             }
 
@@ -555,6 +578,7 @@ class CreateModal extends React.Component<IProps, IState> {
             >
               {formatMessage({
                 id: 'app.button.cancel',
+                defaultMessage: '取消',
               })}
             </Button>
             {prevStep ? (
@@ -568,6 +592,7 @@ class CreateModal extends React.Component<IProps, IState> {
                 {
                   formatMessage({
                     id: 'odc.components.ImportDrawer.PreviousStep.1',
+                    defaultMessage: '上一步:',
                   })
                   /*上一步:*/
                 }
@@ -581,6 +606,7 @@ class CreateModal extends React.Component<IProps, IState> {
                   {
                     formatMessage({
                       id: 'odc.components.ImportDrawer.NextStep',
+                      defaultMessage: '下一步：',
                     })
                     /*下一步:*/
                   }
@@ -594,6 +620,7 @@ class CreateModal extends React.Component<IProps, IState> {
                 {
                   formatMessage({
                     id: 'odc.components.ImportDrawer.Submit',
+                    defaultMessage: '提交',
                   })
                   /*提交*/
                 }

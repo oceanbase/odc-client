@@ -49,8 +49,8 @@ const getConnectionColumns = () => {
     {
       dataIndex: 'tableName',
       title: formatMessage({
-        id: 'src.component.Task.ApplyTablePermission.DetailContent.658E0B9E',
-        defaultMessage: '表',
+        id: 'src.component.Task.ApplyTablePermission.DetailContent.9E20200F',
+        defaultMessage: '表/视图',
       }),
       ellipsis: true,
       width: 240,
@@ -107,8 +107,8 @@ const TaskContent: React.FC<IProps> = (props) => {
           })}
         >
           {formatMessage({
-            id: 'src.component.Task.ApplyTablePermission.DetailContent.6C1A740A',
-            defaultMessage: '申请表权限',
+            id: 'src.component.Task.ApplyTablePermission.DetailContent.A8093E8B',
+            defaultMessage: '申请表/视图权限',
           })}
         </Descriptions.Item>
       </Descriptions>
@@ -130,8 +130,8 @@ const TaskContent: React.FC<IProps> = (props) => {
       </Descriptions>
       <SimpleTextItem
         label={formatMessage({
-          id: 'src.component.Task.ApplyTablePermission.DetailContent.3FE43B61',
-          defaultMessage: '表',
+          id: 'src.component.Task.ApplyTablePermission.DetailContent.C384EA27',
+          defaultMessage: '表/视图',
         })}
         content={
           <DisplayTable

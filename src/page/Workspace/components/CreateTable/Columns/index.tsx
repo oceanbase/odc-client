@@ -33,7 +33,9 @@ import { removeGridParams } from '../helper';
 import { TableColumn } from '../interface';
 import TableCardLayout from '../TableCardLayout';
 import styles from './index.less';
-interface IProps {}
+interface IProps {
+  isExternalTable?: boolean;
+}
 
 export const defaultColumn: TableColumn = {
   name: '',
@@ -52,7 +54,7 @@ export const defaultColumn: TableColumn = {
   enumMembers: [],
 };
 
-const Columns: React.FC<IProps> = function ({}) {
+const Columns: React.FC<IProps> = function ({ isExternalTable }) {
   const tableContext = useContext(TableContext);
   const pageContext = useContext(TablePageContext);
   const session = tableContext.session;
@@ -62,6 +64,7 @@ const Columns: React.FC<IProps> = function ({}) {
   const gridColumns = useColumns({ session }, columns);
   const gridRef = useRef<DataGridRef>();
   const config = useTableConfig(session.connection.dialectType);
+  // const config = useTableConfig(session?.connection?.dialectType || 'OB_MYSQL');
   const [editColumns, setEditColumns] = useState(null);
   const displayColumns = editColumns || columns;
 
@@ -157,41 +160,52 @@ const Columns: React.FC<IProps> = function ({}) {
               }}
             >
               <Toolbar>
-                <Toolbar.Button
-                  text={formatMessage({ id: 'workspace.header.create' })}
-                  icon={PlusOutlined}
-                  onClick={() => {
-                    if (editMode) {
-                      setEditColumns(displayColumns.concat(defaultColumn));
-                    } else {
-                      tableContext.setColumns(tableContext.columns.concat(defaultColumn));
-                    }
-                  }}
-                />
+                {!isExternalTable && (
+                  <>
+                    <Toolbar.Button
+                      text={formatMessage({
+                        id: 'workspace.header.create',
+                        defaultMessage: '新建',
+                      })}
+                      icon={PlusOutlined}
+                      onClick={() => {
+                        if (editMode) {
+                          setEditColumns(displayColumns.concat(defaultColumn));
+                        } else {
+                          tableContext.setColumns(tableContext.columns.concat(defaultColumn));
+                        }
+                      }}
+                    />
 
-                <Toolbar.Button
-                  text={
-                    formatMessage({ id: 'odc.CreateTable.Columns.Delete' }) //删除
-                  }
-                  icon={DeleteOutlined}
-                  disabled={!selectedRowsIdx?.length}
-                  onClick={() => {
-                    let newRows = [...rows]?.filter((row, index) => {
-                      return !selectedRowsIdx?.includes(index);
-                    });
-                    if (editMode) {
-                      setEditColumns(removeGridParams(newRows));
-                    } else {
-                      tableContext.setColumns(removeGridParams(newRows));
-                    }
-                  }}
-                />
+                    <Toolbar.Button
+                      text={
+                        formatMessage({
+                          id: 'odc.CreateTable.Columns.Delete',
+                          defaultMessage: '删除',
+                        }) //删除
+                      }
+                      icon={DeleteOutlined}
+                      disabled={!selectedRowsIdx?.length}
+                      onClick={() => {
+                        let newRows = [...rows]?.filter((row, index) => {
+                          return !selectedRowsIdx?.includes(index);
+                        });
+                        if (editMode) {
+                          setEditColumns(removeGridParams(newRows));
+                        } else {
+                          tableContext.setColumns(removeGridParams(newRows));
+                        }
+                      }}
+                    />
+                  </>
+                )}
 
                 {pageContext?.editMode && (
                   <Toolbar.Button
                     icon={<SyncOutlined />}
                     text={formatMessage({
                       id: 'odc.components.ShowTableBaseInfoForm.Refresh',
+                      defaultMessage: '刷新',
                     })}
                     /* 刷新 */ onClick={pageContext.onRefresh}
                   />
@@ -217,6 +231,7 @@ const Columns: React.FC<IProps> = function ({}) {
             onSelectChange={onSelectChange}
             gridRef={gridRef}
             onRowsChange={onRowsChange}
+            readonly={isExternalTable}
           />
         </TableCardLayout>
       </div>

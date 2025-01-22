@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
 import { getDataSourceModeConfig } from '@/common/datasource';
+import { haveOCP } from '@/util/env';
+import { formatMessage } from '@/util/intl';
 import { Collapse, Form, Tabs } from 'antd';
 import React, { useContext } from 'react';
-import SysForm from '../SysForm';
 import DatasourceFormContext from '../context';
-import SSLItem from '../SSLItem';
-import styles from './index.less';
 import InitScriptItem from '../InitScriptItem';
 import JDBCParamsItem from '../JDBCParamsItem';
-import { haveOCP } from '@/util/env';
+import SSLItem from '../SSLItem';
+import SysForm from '../SysForm';
+import styles from './index.less';
 interface IProps {}
 const ExtraConfig: React.FC<IProps> = function () {
   const context = useContext(DatasourceFormContext);
   const sysAccountExist = context.isEdit && !!context.originDatasource?.sysTenantUsername;
   const sysItem = {
     label: formatMessage({
-      id:
-        'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ExtraConfig.SYSTenantAccount',
+      id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ExtraConfig.SYSTenantAccount',
+      defaultMessage: 'sys 租户账号',
     }), //'sys 租户账号'
     key: 'sys',
     forceRender: true,
@@ -48,8 +48,8 @@ const ExtraConfig: React.FC<IProps> = function () {
   };
   const initScriptItem = {
     label: formatMessage({
-      id:
-        'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ExtraConfig.ConnectTheInitializedScript',
+      id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ExtraConfig.ConnectTheInitializedScript',
+      defaultMessage: '连接初始化脚本',
     }), //'连接初始化脚本'
     key: 'script',
     forceRender: true,
@@ -58,11 +58,15 @@ const ExtraConfig: React.FC<IProps> = function () {
   const jdbcItem = {
     label: formatMessage({
       id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ExtraConfig.DriveAttribute',
+      defaultMessage: '驱动属性',
     }), //'驱动属性'
     key: 'jdbc',
     forceRender: true,
     children: <JDBCParamsItem />,
   };
+  if (context?.dataSourceConfig?.disableExtraConfig) {
+    return null;
+  }
   return (
     <Collapse className={styles.main} ghost>
       <Collapse.Panel
@@ -70,8 +74,8 @@ const ExtraConfig: React.FC<IProps> = function () {
         header={
           <span style={{ fontWeight: 'bold' }}>
             {formatMessage({
-              id:
-                'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ExtraConfig.AdvancedSettings',
+              id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ExtraConfig.AdvancedSettings',
+              defaultMessage: '高级设置',
             })}
           </span> /* 高级设置 */
         }

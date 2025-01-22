@@ -56,6 +56,7 @@ const TaskPopover: React.FC<{
             {
               formatMessage({
                 id: 'odc.component.TaskPopover.TaskCenter',
+                defaultMessage: '任务中心',
               }) /*任务中心*/
             }
           </HeaderBtn>

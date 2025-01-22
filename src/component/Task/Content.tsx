@@ -15,6 +15,7 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
+import { getTaskDetail } from '@/common/network/task';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import type {
   IAlterScheduleTaskParams,
@@ -27,22 +28,24 @@ import type {
 import { IConnectionType, ICycleTaskRecord, TaskPageType, TaskRecord, TaskType } from '@/d.ts';
 import { ModalStore } from '@/store/modal';
 import type { TaskStore } from '@/store/task';
+import tracert from '@/util/tracert';
 import { getPreTime } from '@/util/utils';
+import { useLocation } from '@umijs/max';
+import { useSetState } from 'ahooks';
+import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import type { Moment } from 'moment';
-import { useLocation } from '@umijs/max';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import TaskTable from './component/TaskTable';
 import DetailModal from './DetailModal';
 import { isCycleTaskPage } from './helper';
 import styles from './index.less';
-import tracert from '@/util/tracert';
-import { getTaskDetail } from '@/common/network/task';
-import { message } from 'antd';
-import { useSetState } from 'ahooks';
+import { UserStore } from '@/store/login';
 import { TaskDetailContext } from './TaskDetailContext';
+
 interface IProps {
   taskStore?: TaskStore;
+  userStore?: UserStore;
   modalStore?: ModalStore;
   pageKey?: TaskPageType;
   tabHeight?: number;
@@ -61,7 +64,15 @@ export interface IState {
   cycleTasks: IResponseData<ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>>;
 }
 const TaskManaerContent: React.FC<IProps> = (props) => {
-  const { pageKey, taskStore, modalStore, isMultiPage = false, inProject, projectId } = props;
+  const {
+    pageKey,
+    taskStore,
+    modalStore,
+    isMultiPage = false,
+    inProject,
+    projectId,
+    userStore,
+  } = props;
   const taskTabType = pageKey || taskStore?.taskPageType;
   const taskOpenRef = useRef<boolean>(null);
   const [state, setState] = useSetState<IState>({
@@ -105,6 +116,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
             }
           : null,
       ),
+    [TaskPageType.LOGICAL_DATABASE_CHANGE]: () => modalStore.changeLogicialDatabaseModal(true),
   };
   const loadList = async (args: ITableLoadOptions, executeDate: [Moment, Moment]) => {
     const { pageKey, taskStore } = props;
@@ -122,7 +134,8 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
   ) => {
     const { projectId } = props;
     const { filters, sorter, pagination, pageSize } = args ?? {};
-    const { status, executeTime, candidateApprovers, creator, connection, id } = filters ?? {};
+    const { status, executeTime, candidateApprovers, creator, connection, id, projectIdList } =
+      filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
     const connectionId = connection?.filter(
@@ -139,7 +152,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
     const params = {
       fuzzySearchKeyword: id ? id : undefined,
       taskType: isAllScope ? (isAll ? undefined : taskTabType) : undefined,
-      projectId,
+      projectId: projectId || projectIdList || undefined,
       status,
       startTime: executeDate?.[0]?.valueOf() ?? getPreTime(7),
       endTime: executeDate?.[1]?.valueOf() ?? getPreTime(0),
@@ -175,7 +188,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
   ) => {
     const { projectId } = props;
     const { filters, sorter, pagination, pageSize } = args ?? {};
-    const { status, executeTime, candidateApprovers, creator, id } = filters ?? {};
+    const { status, executeTime, candidateApprovers, creator, id, projectIdList } = filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
     const isAllScope = ![
@@ -189,7 +202,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
     const params = {
       id: id ? id : undefined,
       type: isAllScope ? (isAll ? undefined : taskTabType) : undefined,
-      projectId,
+      projectId: projectId || projectIdList,
       status,
       candidateApprovers,
       creator,
@@ -250,6 +263,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
         message.error(
           formatMessage({
             id: 'odc.src.component.Task.NoCurrentWorkOrderView',
+            defaultMessage: '无当前工单查看权限',
           }), //'无当前工单查看权限'
         );
         return;
@@ -265,6 +279,23 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
   useEffect(() => {
     openDefaultTask();
   }, []);
+
+  /**
+   * 隐藏项目列
+   * 隐藏：项目中工单、个人空间
+   * 显示：sql控制台
+   */
+  const disableProjectCol = useMemo(() => {
+    if (inProject) {
+      return true;
+    } else if (userStore.isPrivateSpace()) {
+      return true;
+    } else if (pageKey === TaskPageType.ALL && !userStore.isPrivateSpace()) {
+      return false;
+    }
+    return false;
+  }, [inProject, pageKey, userStore.organizationId]);
+
   return (
     <TaskDetailContext.Provider
       value={{
@@ -274,6 +305,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
     >
       <div className={styles.content}>
         <TaskTable
+          disableProjectCol={disableProjectCol}
           tableRef={tableRef}
           taskTabType={taskTabType}
           taskList={taskList}

@@ -60,6 +60,7 @@ export default function Item({
       message.success(
         formatMessage({
           id: 'odc.components.OBClientPage.ScriptManageModal.CopiedSuccessfully',
+          defaultMessage: '复制成功！',
         }),
         // `复制成功！`
       );
@@ -68,20 +69,27 @@ export default function Item({
       copyToCB(toString(path));
     } else {
       message.error(
-        formatMessage({ id: 'odc.components.ScriptManageModal.columns.ReplicationFailed' }), //复制失败
+        formatMessage({
+          id: 'odc.components.ScriptManageModal.columns.ReplicationFailed',
+          defaultMessage: '复制失败',
+        }), //复制失败
       );
     }
   }, []);
 
   const onDelete = (script: IScriptMeta) => {
     Modal.confirm({
-      title: formatMessage({ id: 'odc.ScriptFile.Item.OkDeleteScript' }), //确定删除脚本
+      title: formatMessage({
+        id: 'odc.ScriptFile.Item.OkDeleteScript',
+        defaultMessage: '确定删除脚本',
+      }), //确定删除脚本
       onOk() {
         return deleteScript([script?.id]).then((isSuccess) => {
           if (isSuccess) {
             message.success(
               formatMessage({
                 id: 'odc.components.ScriptManageModal.columns.Deleted',
+                defaultMessage: '删除成功',
               }),
               //删除成功
             );
@@ -123,7 +131,12 @@ export default function Item({
                 }}
                 key={'copy'}
               >
-                {formatMessage({ id: 'odc.ScriptFile.Item.CopyPath' }) /*复制路径*/}
+                {
+                  formatMessage({
+                    id: 'odc.ScriptFile.Item.CopyPath',
+                    defaultMessage: '复制路径',
+                  }) /*复制路径*/
+                }
               </Action.Link>
               {script?.contentLength >= maxScriptEditLength ? (
                 <Tooltip
@@ -131,6 +144,7 @@ export default function Item({
                     formatMessage(
                       {
                         id: 'odc.components.ScriptManageModal.columns.CurrentlyYouCannotEditFiles',
+                        defaultMessage: '暂不支持超过 {maxLimitText} 的文件编辑',
                       },
                       { maxLimitText: formatBytes(maxScriptEditLength) },
                     )
@@ -141,6 +155,7 @@ export default function Item({
                     {
                       formatMessage({
                         id: 'odc.components.ScriptManageModal.columns.Edit',
+                        defaultMessage: '编辑',
                       })
                       /*编辑*/
                     }
@@ -151,6 +166,7 @@ export default function Item({
                   {
                     formatMessage({
                       id: 'odc.components.ScriptManageModal.columns.Edit',
+                      defaultMessage: '编辑',
                     })
                     /*编辑*/
                   }
@@ -158,10 +174,20 @@ export default function Item({
               )}
 
               <Action.Link onClick={() => downloadScript(script.id)} key="download">
-                {formatMessage({ id: 'odc.ScriptFile.Item.Download' }) /*下载*/}
+                {
+                  formatMessage({
+                    id: 'odc.ScriptFile.Item.Download',
+                    defaultMessage: '下载',
+                  }) /*下载*/
+                }
               </Action.Link>
               <Action.Link onClick={() => onDelete(script)} key="delete">
-                {formatMessage({ id: 'odc.ScriptFile.Item.Delete' }) /*删除*/}
+                {
+                  formatMessage({
+                    id: 'odc.ScriptFile.Item.Delete',
+                    defaultMessage: '删除',
+                  }) /*删除*/
+                }
               </Action.Link>
             </Action.Group>
           ) : (

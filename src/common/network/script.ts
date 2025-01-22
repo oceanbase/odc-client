@@ -59,7 +59,7 @@ export async function newScript(
     return result?.contents;
   }
   const result = await request.post(`/api/v2/script/scripts/batchUpload`, {
-    body: formData,
+    data: formData,
   });
 
   return result?.data?.contents;
@@ -73,6 +73,7 @@ export async function downloadScript(scriptIds: ScriptId | ScriptId[]): Promise<
       formatMessage(
         {
           id: 'odc.common.network.script.YouCannotDownloadMoreThan',
+          defaultMessage: '不能同时下载超过 {MAXDOWNLOADCOUNT} 个文件',
         },
         { MAXDOWNLOADCOUNT: MAX_DOWNLOAD_COUNT },
       ), //`不能同时下载超过 ${MAX_DOWNLOAD_COUNT} 个文件`

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { RequestOptionsInit } from 'umi-request';
 import defaultConfig from './defaultConfig';
-
+import type { InternalAxiosRequestConfig } from 'axios';
 interface IODCErrorHandle {
   (
     errCode: string,
@@ -29,7 +28,7 @@ interface IODCErrorHandle {
 }
 
 interface IRequestParamsResolver {
-  (options: RequestOptionsInit, requestId): Record<string, any>;
+  (options: InternalAxiosRequestConfig, requestId): Record<string, any>;
 }
 
 interface IResponseJsonResolver {

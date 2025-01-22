@@ -21,10 +21,8 @@ import {
   getExpireTime,
   permissionOptions,
 } from '@/component/Task/ApplyTablePermission/CreateModal';
-import TableSelecter, {
-  groupTableByDataBase,
-  groupTableIdsByDataBase,
-} from '@/component/Task/component/TableSelecter';
+import TableSelecter from '@/component/Task/component/TableSelecter';
+import { groupTableIdsByDataBase } from '@/component/Task/component/TableSelecter/util';
 import { Button, Checkbox, DatePicker, Drawer, Form, Modal, Select, Space, message } from 'antd';
 import React, { useState } from 'react';
 import styles from './index.less';
@@ -121,8 +119,8 @@ const CreateModal: React.FC<IProps> = (props) => {
         type="primary"
       >
         {formatMessage({
-          id: 'src.page.Project.User.ManageModal.Table.CreateAuth.69B76107',
-          defaultMessage: '新增表授权',
+          id: 'src.page.Project.User.ManageModal.Table.CreateAuth.4B42194A',
+          defaultMessage: '新增表/视图授权',
         })}
       </Button>
       <Drawer

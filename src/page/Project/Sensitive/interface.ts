@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ConnectType } from '@/d.ts';
 import { ESensitiveColumnType } from '@/d.ts/sensitiveColumn';
 import { formatMessage } from '@/util/intl';
 export enum AddSensitiveColumnType {
@@ -23,6 +24,7 @@ export enum AddSensitiveColumnType {
 export interface SelectItemProps {
   label: string;
   value: string | number;
+  type?: ConnectType;
   disabled?: boolean;
 }
 
@@ -66,7 +68,7 @@ export interface CheckboxInputProps {
 }
 
 export const DetectRuleTypeMap = {
-  PATH: formatMessage({ id: 'odc.Project.Sensitive.interface.Path' }), //路径
-  REGEX: formatMessage({ id: 'odc.Project.Sensitive.interface.Regular' }), //正则
-  GROOVY: formatMessage({ id: 'odc.Project.Sensitive.interface.Script' }), //脚本
+  PATH: formatMessage({ id: 'odc.Project.Sensitive.interface.Path', defaultMessage: '路径' }), //路径
+  REGEX: formatMessage({ id: 'odc.Project.Sensitive.interface.Regular', defaultMessage: '正则' }), //正则
+  GROOVY: formatMessage({ id: 'odc.Project.Sensitive.interface.Script', defaultMessage: '脚本' }), //脚本
 };

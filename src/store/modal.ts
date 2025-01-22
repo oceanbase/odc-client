@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
+import { IDataSourceModeConfig } from '@/common/datasource/interface';
+import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import {
   DbObjectType,
   EStatus,
-  IAsyncTaskParams,
-  ITable,
-  RollbackType,
-  TaskDetail,
-  IMockDataParams,
   IApplyDatabasePermissionTaskParams,
   IApplyTablePermissionTaskParams,
-  SubTaskStatus,
+  IAsyncTaskParams,
+  ICycleTaskRecord,
+  ILogicalDatabaseAsyncTaskParams,
+  IMockDataParams,
   IMultipleAsyncTaskParams,
+  ITable,
+  RollbackType,
+  SubTaskStatus,
+  TaskDetail,
+  IResultSetExportTaskParams,
 } from '@/d.ts';
 import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
-import { TablePermissionType } from '@/d.ts/table';
+import { IUnauthorizedDBResources, TablePermissionType } from '@/d.ts/table';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
-import { IDataSourceModeConfig } from '@/common/datasource/interface';
-import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 
 interface ConnectionData {
   data: any;
@@ -78,6 +81,8 @@ interface ResultSetExportData {
   sql?: string;
   databaseId?: number;
   tableName?: string;
+  taskId?: number;
+  task?: TaskDetail<IResultSetExportTaskParams>;
 }
 
 interface ApplyPermissionData {}
@@ -103,17 +108,20 @@ interface IExportModalData {
   name?: string;
   databaseId?: number;
   exportPkgBody?: boolean;
+  taskId?: number;
 }
 
 interface IImportModalData {
   table?: Partial<ITable>;
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IDataArchiveTaskData {
   id?: number;
   type?: 'RETRY' | 'EDIT';
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IDataClearTaskData extends IDataArchiveTaskData {}
@@ -121,22 +129,27 @@ interface IDataClearTaskData extends IDataArchiveTaskData {}
 interface ISQLPlanTaskData {
   id?: number;
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IPartitionTaskData {
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IDDLAlterTaskData {
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IShadowSyncTaskData {
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IStructureComparisonTaskData {
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IWorkSpaceExecuteSQLModalProps {
@@ -149,6 +162,7 @@ interface IWorkSpaceExecuteSQLModalProps {
   onSave: any;
   status: EStatus;
   lintResultSet: ISQLLintReuslt[];
+  unauthorizedDBResources: IUnauthorizedDBResources[];
 }
 
 export class ModalStore {
@@ -165,7 +179,7 @@ export class ModalStore {
   public selectDatabaseVisible: boolean = false;
 
   @observable
-  public selectDatabaseModallData: {
+  public selectDatabaseModalData: {
     features?: keyof IDataSourceModeConfig['features'];
     datasourceId: number;
     onOk?: (datasourceId: number) => Promise<void>;
@@ -251,6 +265,17 @@ export class ModalStore {
       status: SubTaskStatus;
     }
   >();
+
+  @observable
+  public logicDatabaseVisible: boolean = false;
+
+  @observable
+  public logicDatabaseInfo: {
+    projectId?: number;
+    ddl?: string;
+    databaseId?: number;
+    task?: ICycleTaskRecord<ILogicalDatabaseAsyncTaskParams>;
+  } = null;
 
   @observable
   public dataClearVisible: boolean = false;
@@ -572,6 +597,12 @@ export class ModalStore {
   }
 
   @action
+  public changeLogicialDatabaseModal(isShow: boolean = true, data?: any) {
+    this.logicDatabaseVisible = isShow;
+    this.logicDatabaseInfo = isShow ? data : null;
+  }
+
+  @action
   public updateStructureComparisonDataMap(
     taskId?: number,
     structureComparisonData?: {
@@ -636,8 +667,8 @@ export class ModalStore {
     onOk?: (datasourceId: number) => Promise<void>,
   ) {
     this.selectDatabaseVisible = isShow;
-    this.selectDatabaseModallData = isShow
-      ? { ...this.selectDatabaseModallData, features, onOk }
+    this.selectDatabaseModalData = isShow
+      ? { ...this.selectDatabaseModalData, features, onOk }
       : null;
   }
 

@@ -41,7 +41,8 @@ const RangeInput: React.FC<IRangeInput> = (props) => {
     >
       <div className={styles.title}>
         {
-          addonBefore || formatMessage({ id: 'odc.RuleContent.RangeInput.Interval' }) // 区间
+          addonBefore ||
+            formatMessage({ id: 'odc.RuleContent.RangeInput.Interval', defaultMessage: '区间' }) // 区间
         }
       </div>
       <InputBigNumber

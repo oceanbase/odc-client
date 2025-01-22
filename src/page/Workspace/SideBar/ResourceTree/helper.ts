@@ -19,28 +19,41 @@ import { SessionManagerStore } from '@/store/sessionManager';
 import { EventDataNode } from 'antd/lib/tree';
 import { ITableModel } from '../../components/CreateTable/interface';
 import { ResourceNodeType, TreeDataNode } from './type';
+import { isLogicalDatabase } from '@/util/database';
 
 export async function loadNode(
   sessionManagerStore: SessionManagerStore,
   treeNode: EventDataNode<TreeDataNode>,
 ) {
   const { type, data, sessionId, packageName } = treeNode;
+  // 是否为外表
+  const isExternalTable = [
+    ResourceNodeType.ExternalTableRoot,
+    ResourceNodeType.ExternalTable,
+    ResourceNodeType.ExternalTableColumnRoot,
+  ].includes(type);
   switch (type) {
-    case ResourceNodeType.TableRoot: {
+    case ResourceNodeType.TableRoot:
+    case ResourceNodeType.ExternalTableRoot: {
       const dbSession = sessionManagerStore.sessionMap.get(sessionId);
       if (!dbSession) {
         break;
       }
-      await dbSession.database.getTableList();
+      if (isLogicalDatabase(dbSession?.odcDatabase)) {
+        await dbSession.database.getLogicTableList();
+        break;
+      }
+      await dbSession.database.getTableList(isExternalTable);
       break;
     }
-    case ResourceNodeType.Table: {
+    case ResourceNodeType.Table:
+    case ResourceNodeType.ExternalTable: {
       const tableInfo = (data as ITableModel).info;
       const dbSession = sessionManagerStore.sessionMap.get(sessionId);
       if (!dbSession) {
         break;
       }
-      await dbSession.database.loadTable(tableInfo);
+      await dbSession.database.loadTable(tableInfo, isExternalTable);
       break;
     }
     case ResourceNodeType.ViewRoot: {

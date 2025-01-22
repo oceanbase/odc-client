@@ -16,12 +16,12 @@
 
 import Toolbar from '@/component/Toolbar';
 import { formatMessage } from '@/util/intl';
+import { generateUniqKey } from '@/util/utils';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { TableForeignConstraint } from '../../interface';
 import TableCardLayout from '../../TableCardLayout';
 import TableContext from '../../TableContext';
-import { generateUniqKey } from '@/util/utils';
 
 import { listDatabases } from '@/common/network/database';
 import {
@@ -91,7 +91,7 @@ const ForeignConstraint: React.FC<IProps> = function ({ modified }) {
         <EditToolbar modified={modified}>
           <Toolbar>
             <Toolbar.Button
-              text={formatMessage({ id: 'workspace.header.create' })}
+              text={formatMessage({ id: 'workspace.header.create', defaultMessage: '新建' })}
               icon={PlusOutlined}
               onClick={() => {
                 const row = {
@@ -101,8 +101,12 @@ const ForeignConstraint: React.FC<IProps> = function ({ modified }) {
                 gridRef.current?.addRows([row]);
               }}
             />
+
             <Toolbar.Button
-              text={formatMessage({ id: 'odc.TableConstraint.Primary.Delete' })}
+              text={formatMessage({
+                id: 'odc.TableConstraint.Primary.Delete',
+                defaultMessage: '删除',
+              })}
               icon={DeleteOutlined}
               disabled={!selectedRowsIdx?.length}
               onClick={() => {

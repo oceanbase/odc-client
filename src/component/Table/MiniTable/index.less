@@ -10,11 +10,13 @@
               padding-bottom: 2px;
               background-color: var(--neutral-grey2-color);
               border-bottom: none;
+
               &::before {
                 display: none;
               }
             }
           }
+
           .ant-table-tbody {
             .ant-table-cell {
               height: 40px;
@@ -25,6 +27,17 @@
           }
         }
       }
+    }
+  }
+}
+
+.expandedRowRender {
+  :global {
+    .ant-table-cell {
+      height: 24px !important;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
   }
 }

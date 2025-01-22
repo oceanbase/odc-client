@@ -46,8 +46,8 @@ const items: MenuItem[] = [
   },
   {
     label: formatMessage({
-      id: 'src.page.Project.User.ManageModal.81C0C3D0',
-      defaultMessage: '表权限',
+      id: 'src.page.Project.User.ManageModal.AE2E1625',
+      defaultMessage: '表/视图权限',
     }),
     key: EManagePermissionType.TABLE,
   },
@@ -58,11 +58,12 @@ interface IProps {
   projectId: number;
   userId: number;
   isOwner: boolean;
+  isDBA: boolean;
   onClose: () => void;
 }
 
 const ManageModal: React.FC<IProps> = (props) => {
-  const { visible, onClose, projectId, userId, isOwner } = props;
+  const { visible, onClose, projectId, userId, isOwner, isDBA } = props;
   const [key, setKey] = useState<string>(items?.[0]?.key as string);
   const Component = contentMap?.[key]?.component;
 
@@ -92,10 +93,18 @@ const ManageModal: React.FC<IProps> = (props) => {
             items,
             selectedKey: [key],
             handleItemOnClick,
-            siderStyle: { flex: '0 0 80px' },
+            siderStyle: { flex: '0 0 100px' },
             contentStyle: { display: 'flex', flexDirection: 'column' },
           }}
-          content={<Component key={key} projectId={projectId} userId={userId} isOwner={isOwner} />}
+          content={
+            <Component
+              key={key}
+              projectId={projectId}
+              userId={userId}
+              isOwner={isOwner}
+              isDBA={isDBA}
+            />
+          }
         />
       </div>
     </Drawer>

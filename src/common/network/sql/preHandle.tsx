@@ -1,14 +1,85 @@
-import { EStatus } from '@/d.ts';
-import { IExecuteSQLParams, ISQLExecuteTask } from './executeSQL';
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import modal from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
-import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
+import { IRule } from '@/d.ts/rule';
+import { IUnauthorizedDBResources } from '@/d.ts/table';
+import type { ISqlExecuteResult } from '@/d.ts';
+import { EStatus } from '@/d.ts';
+
+export interface IExecuteSQLParams {
+  sql: string;
+  queryLimit?: number;
+  showTableColumnInfo?: boolean;
+  continueExecutionOnError?: boolean;
+  fullLinkTraceEnabled?: boolean;
+  tag?: string;
+  /**
+   * 是否拆分执行，传空的话像等于true
+   */
+  split?: boolean;
+  addROWID?: boolean;
+}
+
+export interface IExecutePLForMysqlParams extends IExecuteSQLParams {
+  wrappedSql?: string;
+}
+
+export interface ISQLExecuteTaskSQL {
+  sqlTuple: {
+    sqlId: string;
+    originalSql: string;
+    executedSql: string;
+  };
+  violatedRules: IRule[];
+}
+export interface ISQLExecuteTask {
+  requestId: string;
+  sqls: ISQLExecuteTaskSQL[];
+  violatedRules: IRule[];
+  unauthorizedDBResources: IUnauthorizedDBResources[];
+  errorMessage?: string;
+  approvalRequired?: boolean;
+}
+
+/**
+ * 包含拦截信息和执行结果
+ */
+export interface IExecuteTaskResult {
+  hasLintResults?: boolean;
+  invalid: boolean;
+  executeSuccess: boolean;
+  violatedRules: IRule[];
+  executeResult: ISqlExecuteResult[];
+  lintResultSet?: ISQLLintReuslt[];
+  status?: EStatus;
+  unauthorizedDBResources?: IUnauthorizedDBResources[];
+  unauthorizedSql?: string;
+  errorMessage?: string;
+  approvalRequired?: boolean;
+}
 
 export function executeSQLPreHandle(
   taskInfo: ISQLExecuteTask,
-  params: IExecuteSQLParams | string,
+  params: IExecuteSQLParams | IExecutePLForMysqlParams | string,
   needModal: boolean,
   sessionId: string,
+  handleUnauthInModal?: boolean,
 ): {
   data: any;
   lintResultSet: ISQLLintReuslt[];
@@ -30,7 +101,7 @@ export function executeSQLPreHandle(
   }, []);
   const unauthorizedDBResources = taskInfo?.unauthorizedDBResources;
   const violatedRules = rootViolatedRules?.concat(taskInfo?.sqls);
-  if (unauthorizedDBResources?.length) {
+  if (unauthorizedDBResources?.length && !handleUnauthInModal) {
     // 无权限库
     return {
       data: {
@@ -45,6 +116,7 @@ export function executeSQLPreHandle(
       pass: false,
     };
   }
+
   const lintResultSet = violatedRules?.reduce((pre, cur) => {
     if (Array.isArray(cur?.violatedRules) && cur?.violatedRules?.length > 0) {
       return pre.concat({
@@ -56,9 +128,9 @@ export function executeSQLPreHandle(
     }
   }, []);
   /**
-   * lintResultSet为空数组时，返回的status默认为submit
+   * lintResultSet为空数组时，返回的lintStatus默认为submit
    */
-  const status = getStatus(lintResultSet);
+  const lintStatus = getLintStatus(lintResultSet);
   // 没有requestId，即是被拦截了
   if (!taskInfo?.requestId) {
     // 一些场景下不需要弹出SQL确认弹窗
@@ -71,21 +143,26 @@ export function executeSQLPreHandle(
           executeResult: [],
           violatedRules,
           lintResultSet,
-          status,
+          status: lintStatus,
         },
-        status,
+        status: lintStatus,
         lintResultSet,
         pass: false,
       };
     }
+
     // 当status不为submit时
-    if (status !== EStatus.SUBMIT) {
+    if (lintStatus !== EStatus.SUBMIT || unauthorizedDBResources?.length) {
       modal.updateWorkSpaceExecuteSQLModalProps({
-        sql: (params as IExecuteSQLParams)?.sql || (params as string),
+        sql:
+          (params as IExecutePLForMysqlParams)?.wrappedSql ||
+          (params as IExecuteSQLParams)?.sql ||
+          (params as string),
         visible: true,
         sessionId,
         lintResultSet,
-        status,
+        unauthorizedDBResources,
+        status: unauthorizedDBResources?.length ? EStatus.DISABLED : lintStatus,
         onSave: () => {
           // 关闭SQL确认窗口打开新建数据库变更抽屉
           modal.updateWorkSpaceExecuteSQLModalProps();
@@ -109,19 +186,20 @@ export function executeSQLPreHandle(
     return {
       data: null,
       lintResultSet,
-      status,
+      status: lintStatus,
       pass: false,
     };
   }
+
   return {
     lintResultSet,
-    status,
+    status: lintStatus,
     data: null,
     pass: true,
   };
 }
 
-function getStatus(lintResultSet: ISQLLintReuslt[]) {
+function getLintStatus(lintResultSet: ISQLLintReuslt[]) {
   if (Array.isArray(lintResultSet) && lintResultSet?.length) {
     const violations = lintResultSet.reduce((pre, cur) => {
       if (cur?.violations?.length === 0) {

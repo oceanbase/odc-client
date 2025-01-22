@@ -62,7 +62,9 @@ class LoginModal extends Component<
       this.setState({
         showChangePasswordModal: false,
       });
-      message.success(formatMessage({ id: 'password.change.success' }));
+      message.success(
+        formatMessage({ id: 'password.change.success', defaultMessage: '修改密码成功' }),
+      );
     }
     this.setState({ changePasswordLoading: false });
   };
@@ -75,19 +77,15 @@ class LoginModal extends Component<
       this.setState({
         showRegisterModal: false,
       });
-      message.success(formatMessage({ id: 'register.success' }));
+      message.success(formatMessage({ id: 'register.success', defaultMessage: '注册用户成功' }));
     }
     this.setState({ registerLoading: false });
   };
 
   public render() {
     const { errMsg } = this.props;
-    const {
-      showChangePasswordModal,
-      showRegisterModal,
-      registerLoading,
-      changePasswordLoading,
-    } = this.state;
+    const { showChangePasswordModal, showRegisterModal, registerLoading, changePasswordLoading } =
+      this.state;
 
     return (
       <Form onFinish={this.handleSubmit} className={styles.form} name="loginForm">
@@ -95,16 +93,25 @@ class LoginModal extends Component<
           <div className={styles.title}>
             <img src={getLocalImg('login_logo.png')} />
           </div>
-          <div className={styles.subTitle}>{formatMessage({ id: 'login.subTitle' })}</div>
+          <div className={styles.subTitle}>
+            {formatMessage({
+              id: 'login.subTitle',
+              defaultMessage: '一款安全、高效的企业级数据库开发平台',
+            })}
+          </div>
         </div>
         {errMsg && (
           <Alert
             style={{ marginBottom: 8 }}
-            message={errMsg || formatMessage({ id: 'login.error' })}
+            message={
+              errMsg ||
+              formatMessage({ id: 'login.error', defaultMessage: '登录名或登录密码不正确' })
+            }
             type="error"
             showIcon={true}
           />
         )}
+
         <Form.Item
           name="email"
           rules={[
@@ -112,6 +119,7 @@ class LoginModal extends Component<
               required: true,
               message: formatMessage({
                 id: 'login.username.validation.required',
+                defaultMessage: '请输入账号',
               }),
             },
           ]}
@@ -121,7 +129,10 @@ class LoginModal extends Component<
               height: 40,
             }}
             prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-            placeholder={formatMessage({ id: 'login.username.placeholder' })}
+            placeholder={formatMessage({
+              id: 'login.username.placeholder',
+              defaultMessage: '请输入账号',
+            })}
           />
         </Form.Item>
         <Form.Item
@@ -131,6 +142,7 @@ class LoginModal extends Component<
               required: true,
               message: formatMessage({
                 id: 'login.password.validation.required',
+                defaultMessage: '请输入密码',
               }),
             },
           ]}
@@ -141,13 +153,16 @@ class LoginModal extends Component<
             }}
             prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
             type="password"
-            placeholder={formatMessage({ id: 'login.password.placeholder' })}
+            placeholder={formatMessage({
+              id: 'login.password.placeholder',
+              defaultMessage: '请输入密码',
+            })}
             autoComplete="new-password"
           />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" className={styles.submitButton}>
-            {formatMessage({ id: 'login.button' })}
+            {formatMessage({ id: 'login.button', defaultMessage: '登录' })}
           </Button>
         </Form.Item>
         <div className={styles.bottomButtons}>
@@ -155,14 +170,14 @@ class LoginModal extends Component<
             className={styles.bottomButton}
             onClick={() => this.setState({ showChangePasswordModal: true })}
           >
-            {formatMessage({ id: 'login.button.changePassword' })}
+            {formatMessage({ id: 'login.button.changePassword', defaultMessage: '修改密码' })}
           </a>
           <span className={styles.divider} />
           <a
             className={styles.bottomButton}
             onClick={() => this.setState({ showRegisterModal: true })}
           >
-            {formatMessage({ id: 'login.button.register' })}
+            {formatMessage({ id: 'login.button.register', defaultMessage: '注册账号' })}
           </a>
         </div>
         <ChangePasswordModal
@@ -171,6 +186,7 @@ class LoginModal extends Component<
           onCancel={() => this.setState({ showChangePasswordModal: false })}
           confirmLoading={changePasswordLoading}
         />
+
         <RegisterModal
           visible={showRegisterModal}
           onSave={this.handleRegister}
