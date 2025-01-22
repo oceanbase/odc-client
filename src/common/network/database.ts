@@ -147,7 +147,7 @@ export async function getDatabaseObject(
   projectId?: number,
   datasourceId?: number,
   databaseIds?: string | number,
-  types?: string,
+  types?: string | string[],
   searchKey?: string,
 ): Promise<{ data?: IDatabaseObject; errCode: string; errMsg: string }> {
   if (searchKey) {

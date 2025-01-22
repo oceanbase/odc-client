@@ -46,6 +46,7 @@ const TableSelector: React.FC<{
       children: Array<any>;
     }[]
   >([]);
+
   const handleCheck = (checkedKeys, e) => {
     const newValue = treeData
       ?.map((node) => {
@@ -69,6 +70,7 @@ const TableSelector: React.FC<{
       return node;
     })
     .filter(Boolean);
+
   const selectedTreeData = treeData
     ?.map((node) => {
       if (
@@ -117,6 +119,19 @@ const TableSelector: React.FC<{
       loadTableListByDatabaseName();
     }
   }, [sessionId, targetDatabaseId]);
+
+  useEffect(() => {
+    if (value?.length && treeData?.length) {
+      const selectValue = [];
+      value.forEach((item) => {
+        const findData = treeData.find((tree) => {
+          return tree.title === item;
+        });
+        selectValue.push(findData.key);
+      });
+      setCheckedKeys(selectValue);
+    }
+  }, [value, treeData]);
 
   return (
     <div className={styles.doubleExportCardContainer}>

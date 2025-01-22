@@ -153,6 +153,7 @@ export interface IChannel<T extends EChannelType> {
   /** @description 通道 描述 */
   description?: string;
 }
+export type IChannelColumnsKeys = keyof IChannel<EChannelType> | 'action';
 
 export interface ITestChannelResult {
   active: boolean;
@@ -174,6 +175,8 @@ export interface IPolicy {
   channels: IChannel<EChannelType>[];
   eventName: string;
 }
+export type IPolicyColumnsKeys = keyof IPolicy | 'action';
+
 export type TBatchUpdatePolicy = {
   id?: number;
   policyMetadataId?: number;

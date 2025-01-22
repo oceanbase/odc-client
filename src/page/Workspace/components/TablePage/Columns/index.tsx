@@ -19,9 +19,11 @@ import Columns from '../../CreateTable/Columns';
 import TableContext from '../../CreateTable/TableContext';
 import TablePageContext from '../context';
 
-interface IProps {}
+interface IProps {
+  isExternalTable: boolean;
+}
 
-const TableColumns: React.FC<IProps> = function ({}) {
+const TableColumns: React.FC<IProps> = function ({ isExternalTable }) {
   const tableContext = useContext(TablePageContext);
   const table = tableContext.table;
   return (
@@ -32,7 +34,7 @@ const TableColumns: React.FC<IProps> = function ({}) {
         setColumns: () => {},
       }}
     >
-      <Columns />
+      <Columns isExternalTable={isExternalTable} />
     </TableContext.Provider>
   );
 };

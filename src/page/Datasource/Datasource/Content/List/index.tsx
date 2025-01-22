@@ -15,8 +15,9 @@
  */
 
 import { getConnectionList } from '@/common/network/connection';
+import { getDataSourceGroupByConnectType } from '@/common/datasource';
 import { IConnection } from '@/d.ts';
-import { Space, Spin } from 'antd';
+import { Space, Spin, message } from 'antd';
 import React, {
   forwardRef,
   useContext,
@@ -33,7 +34,7 @@ import ListItem from '../ListItem';
 import LoadingItem from '../ListItem/Loading';
 import ConnectionName from './ConnectionNameItem';
 import MoreBtn from './MoreBtn';
-
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import { DataSourceEmpty } from '@/component/Empty/DataSourceEmpty';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { IPageType } from '@/d.ts/_index';
@@ -90,6 +91,15 @@ const List: React.FC<IProps> = forwardRef(function (
   }, []);
 
   async function openNewConnection(connection: IConnection) {
+    if (isConnectTypeBeFileSystemGroup(connection?.type)) {
+      message.info(
+        formatMessage({
+          id: 'src.page.Datasource.Datasource.Content.List.75724B17',
+          defaultMessage: '对象存储数据源暂不支持查看详情',
+        }),
+      );
+      return;
+    }
     history.push(`/datasource/${connection.id}/${IPageType.Datasource_info}`);
   }
 
@@ -247,6 +257,7 @@ const List: React.FC<IProps> = forwardRef(function (
           connectionName={
             <ConnectionName openNewConnection={openNewConnection} connection={connection} />
           }
+          connectType={connection?.type}
           cluster={<div>{getClusterName(connection.clusterName)}</div>}
           tenant={<div>{getTenantName(connection.clusterName, connection.tenantName)}</div>}
           host={<div>{[connection.host, connection.port].filter(Boolean).join(':') || '-'}</div>}

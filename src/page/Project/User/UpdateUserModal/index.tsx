@@ -27,6 +27,7 @@ interface IProps {
   close: () => void;
   onSuccess: () => void;
   roles: ProjectRole[];
+  globalRoles: ProjectRole[];
   projectId: number;
   userId: number;
   visible: boolean;
@@ -39,6 +40,7 @@ export default function UpdateUserModal({
   roles,
   projectId,
   userId,
+  globalRoles,
 }: IProps) {
   const [form] = Form.useForm<{
     roles: ProjectRole[];
@@ -61,10 +63,13 @@ export default function UpdateUserModal({
     const isSuccess = await updateProjectMember({
       projectId,
       userId,
-      members: roles?.map((role) => ({
-        id: userId,
-        role: role,
-      })),
+      // 角色中有全局角色时，上传接口过滤掉这个全局的角色
+      members: roles
+        ?.filter((item) => !globalRoles.includes(item))
+        ?.map((role) => ({
+          id: userId,
+          role: role,
+        })),
     });
     if (isSuccess) {
       message.success(
@@ -112,7 +117,7 @@ export default function UpdateUserModal({
                     }
                   </HelpDoc>
                 ),
-
+                disabled: globalRoles.includes(ProjectRole.OWNER),
                 value: ProjectRole.OWNER,
               },
               {
@@ -121,7 +126,7 @@ export default function UpdateUserModal({
                     DBA
                   </HelpDoc>
                 ),
-
+                disabled: globalRoles.includes(ProjectRole.DBA),
                 value: ProjectRole.DBA,
               },
               {
@@ -144,7 +149,7 @@ export default function UpdateUserModal({
                     {projectRoleTextMap[ProjectRole.SECURITY_ADMINISTRATOR]}
                   </HelpDoc>
                 ),
-
+                disabled: globalRoles.includes(ProjectRole.SECURITY_ADMINISTRATOR),
                 value: ProjectRole.SECURITY_ADMINISTRATOR,
               },
               {

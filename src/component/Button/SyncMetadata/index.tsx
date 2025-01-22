@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { syncObject } from '@/common/network/database';
 import { IManagerResourceType } from '@/d.ts';
 import { DBObjectSyncStatus, IDatabase } from '@/d.ts/database';
@@ -5,9 +21,9 @@ import { ReactComponent as SyncMetadataSvg } from '@/svgr/sync_metadata.svg';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { LoadingOutlined } from '@ant-design/icons';
-import { useRequest } from 'ahooks';
+import { useInterval, useRequest } from 'ahooks';
 import { Tooltip } from 'antd';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function Reload({
   size = '13px',
@@ -58,52 +74,53 @@ export default function Reload({
 
   const [lastSyncTime, setLastSyncTime] = useState();
   const [state, setState] = useState(statusMap.NOTSYNCED);
-  const [isManual, setIsManual] = useState(false);
+  const fetchDBTimer = useRef<number>();
 
-  const { run, cancel } = useRequest(
-    async () => {
-      if (
-        databaseList?.every((item) =>
-          [DBObjectSyncStatus.SYNCED, DBObjectSyncStatus.FAILED].includes(item.objectSyncStatus),
-        )
-      ) {
-        // 全部都是SYNCED或者FAILED, 就展示上次同步时间(取最小时间)
-        setLastSyncTime(getlastSyncTime(databaseList)?.objectLastSyncTime);
-        setState(statusMap.SYNCED);
-        cancel();
-        isManual && reloadDatabase();
-      } else if (
-        databaseList?.find((item) =>
-          [DBObjectSyncStatus.SYNCING, DBObjectSyncStatus.PENDING].includes(item.objectSyncStatus),
-        )
-      ) {
-        // 有状态为初始化同步中的, 就是 元数据同步中,请稍等
-        setState(statusMap.SYNCING);
-        setIsManual(true);
+  function updateState() {
+    if (
+      databaseList?.every((item) =>
+        [DBObjectSyncStatus.SYNCED, DBObjectSyncStatus.FAILED].includes(item.objectSyncStatus),
+      )
+    ) {
+      // 全部都是SYNCED或者FAILED, 就展示上次同步时间(取最小时间)
+      setLastSyncTime(getlastSyncTime(databaseList)?.objectLastSyncTime);
+      setState(statusMap.SYNCED);
+    } else if (
+      databaseList?.find((item) =>
+        [DBObjectSyncStatus.SYNCING, DBObjectSyncStatus.PENDING].includes(item.objectSyncStatus),
+      )
+    ) {
+      // 有状态为初始化同步中的, 就是 元数据同步中,请稍等
+      setState(statusMap.SYNCING);
+      fetchDBTimer.current = window.setTimeout(() => {
         reloadDatabase();
-      } else if (
-        databaseList?.find((item) =>
-          [DBObjectSyncStatus.INITIALIZED, null].includes(item.objectSyncStatus),
-        )
-      ) {
-        // 只要有一个是INITIALIZED, null, 就还没整体初始化过, 展示初始态
-        setState(statusMap.NOTSYNCED);
-        cancel();
+      }, 3000);
+    } else if (
+      databaseList?.find((item) =>
+        [DBObjectSyncStatus.INITIALIZED, null].includes(item.objectSyncStatus),
+      )
+    ) {
+      // 只要有一个是INITIALIZED, null, 就还没整体初始化过, 展示初始态
+      setState(statusMap.NOTSYNCED);
+    }
+  }
+  useEffect(() => {
+    if (databaseList) {
+      updateState();
+    }
+    return () => {
+      if (fetchDBTimer.current) {
+        clearTimeout(fetchDBTimer.current);
+        fetchDBTimer.current = null;
       }
-    },
-    {
-      pollingInterval: 3000,
-      pollingWhenHidden: false,
-    },
-  );
+    };
+  }, [databaseList]);
 
   async function _onClick() {
-    setIsManual(true);
-    setState(statusMap.SYNCING);
     if (resourceType && resourceId) {
+      setState(statusMap.SYNCING);
       await syncObject(resourceType, resourceId);
       await reloadDatabase();
-      await run();
     }
   }
 

@@ -234,6 +234,7 @@ export class TablePage extends Page {
     topTab: TableTopTab;
     propsTab: TablePropsTab;
     tableId: number;
+    isExternalTable: boolean;
   };
   constructor(
     databaseId: number,
@@ -241,6 +242,7 @@ export class TablePage extends Page {
     topTab: TableTopTab = TableTopTab.PROPS,
     propsTab: TablePropsTab = TablePropsTab.INFO,
     tableId: number,
+    isExternalTable?: boolean,
   ) {
     super();
     this.pageType = PageType.TABLE;
@@ -253,6 +255,7 @@ export class TablePage extends Page {
       topTab,
       propsTab,
       tableId,
+      isExternalTable,
     };
   }
 }

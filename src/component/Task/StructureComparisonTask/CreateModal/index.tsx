@@ -15,11 +15,13 @@
  */
 
 import { getDatabase } from '@/common/network/database';
-import { createStructureComparisonTask } from '@/common/network/task';
+import { createStructureComparisonTask, getTaskDetail } from '@/common/network/task';
 import FormItemPanel from '@/component/FormItemPanel';
 import {
   ConnectionMode,
   CreateStructureComparisonTaskRecord,
+  IStructureComparisonTaskParams,
+  TaskDetail,
   TaskExecStrategy,
   TaskPageType,
   TaskType,
@@ -44,12 +46,14 @@ interface IProps {
 
 const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) => {
   const { structureComparisonVisible, structureComparisonTaskData } = modalStore;
+
   const [form] = useForm<CreateStructureComparisonTaskRecord>();
   const taskExecStrategyMap = getTaskExecStrategyMap(TaskType.STRUCTURE_COMPARISON);
   const sourceDatabaseId = Form.useWatch(['parameters', 'sourceDatabaseId'], form);
   const targetDatabaseId = Form.useWatch(['parameters', 'targetDatabaseId'], form);
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
+
   async function handleSubmit() {
     const rawData = await form.validateFields().catch();
     setConfirmLoading(true);
@@ -94,6 +98,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
           defaultMessage: '确认取消创建结构比对吗？',
         }), //'确认取消此 结构比对吗？'
         centered: true,
+        zIndex: 1002,
         onOk: () => {
           modalStore.changeStructureComparisonModal(false);
         },
@@ -119,10 +124,26 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
 
   useEffect(() => {
     const databaseId = structureComparisonTaskData?.databaseId;
+    const taskId = structureComparisonTaskData?.taskId;
     if (databaseId) {
       form.setFieldValue(['parameters', 'sourceDatabaseId'], databaseId);
     }
-  }, [structureComparisonTaskData?.databaseId]);
+    if (taskId) {
+      getTaskDetailValue(taskId);
+    }
+  }, [structureComparisonTaskData?.databaseId, structureComparisonTaskData?.taskId]);
+
+  const getTaskDetailValue = async (taskId: number) => {
+    const detailRes = (await getTaskDetail(taskId)) as TaskDetail<IStructureComparisonTaskParams>;
+
+    form.setFieldValue(['parameters', 'targetDatabaseId'], detailRes?.relatedDatabase?.id);
+    form.setFieldValue('description', detailRes?.description);
+    form.setFieldValue('executionStrategy', detailRes?.executionStrategy);
+    form.setFieldValue(
+      ['parameters', 'tableNamesToBeCompared'],
+      detailRes?.parameters?.tableNamesToBeCompared,
+    );
+  };
 
   return (
     <Drawer
@@ -131,6 +152,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
         id: 'src.component.Task.StructureComparisonTask.CreateModal.45DB3909',
         defaultMessage: '新建结构比对',
       })}
+      zIndex={1001}
       width={720}
       closable
       onClose={() => handleCancel(hasEdit)}

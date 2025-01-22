@@ -27,8 +27,8 @@ const titleText = {
     defaultMessage: '会话管理',
   }),
   [PageType.SESSION_PARAM]: formatMessage({
-    id: 'workspace.header.session.params',
-    defaultMessage: '会话属性',
+    id: 'src.component.WindowManager.2A36DA18',
+    defaultMessage: '全局变量',
   }),
   [PageType.RECYCLE_BIN]: formatMessage({
     id: 'workspace.header.recycle',

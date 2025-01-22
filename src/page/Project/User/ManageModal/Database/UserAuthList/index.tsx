@@ -105,6 +105,9 @@ const getColumns = (params: {
 
       filteredValue: filters?.dataSourceName || null,
       filters: [],
+      render(_) {
+        return _ || '-';
+      },
     },
     {
       dataIndex: 'type',
@@ -172,6 +175,7 @@ interface IProps {
   dataSource: IResponseData<IDatabasePermission>;
   params: ITableLoadOptions;
   isOwner: boolean;
+  isDBA: boolean;
   tableRef: React.RefObject<ITableInstance>;
   onReclaim: (ids: number[]) => void;
   onLoad: (args: ITableLoadOptions) => Promise<any>;
@@ -179,7 +183,8 @@ interface IProps {
 }
 
 const UserAuthList: React.FC<IProps> = (props) => {
-  const { projectId, isOwner, dataSource, params, tableRef, onReclaim, onLoad, onChange } = props;
+  const { projectId, isOwner, isDBA, dataSource, params, tableRef, onReclaim, onLoad, onChange } =
+    props;
   const columns = getColumns({
     paramOptions: params,
     onReclaim: onReclaim,
@@ -194,12 +199,12 @@ const UserAuthList: React.FC<IProps> = (props) => {
         showToolbar={false}
         titleContent={null}
         rowSelecter={
-          isOwner
+          isOwner || isDBA
             ? {
                 options: [
                   {
                     okText: formatMessage({
-                      id: 'src.page.Project.User.ManageModal.UserAuthList.1491B8F7',
+                      id: 'src.page.Project.User.ManageModal.UserAuthList.1491B8F71',
                       defaultMessage: '批量回收',
                     }), //'批量回收'
                     onOk: onReclaim,
@@ -211,7 +216,9 @@ const UserAuthList: React.FC<IProps> = (props) => {
         onLoad={onLoad}
         onChange={onChange}
         tableProps={{
-          columns: columns?.filter((item) => (isOwner ? true : item?.dataIndex !== 'action')),
+          columns: columns?.filter((item) =>
+            isOwner || isDBA ? true : item?.dataIndex !== 'action',
+          ),
           dataSource: dataSource?.contents ?? [],
           rowKey: 'id',
           scroll: {

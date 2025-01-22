@@ -328,7 +328,6 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [settingStore.configurations['odc.database.default.enableGlobalObjectSearch']]);
-
   return (
     <>
       <WorkBenchLayout
@@ -409,6 +408,7 @@ const WorkSpaceExecuteSQLModal: React.FC<{
     onSave,
     status = null,
     lintResultSet = null,
+    unauthorizedDBResources,
   } = workSpaceExecuteSQLModalProps;
   return (
     <ExecuteSQLModal
@@ -416,6 +416,7 @@ const WorkSpaceExecuteSQLModal: React.FC<{
       sessionStore={sessionManager?.sessionMap?.get(sessionId)}
       readonly={true}
       lintResultSet={lintResultSet}
+      unauthorizedDBResources={unauthorizedDBResources}
       status={status}
       sql={sql}
       onSave={onSave}

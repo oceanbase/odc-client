@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import Dragable, { IDragable } from '@/component/Dragable';
+import React, { useEffect, useState } from 'react';
 import { formatMessage } from '@/util/intl';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { Col, Row, Space } from 'antd';
@@ -28,90 +27,76 @@ import ObjectName, { EnumObjectType } from '../ObjectName';
 // @ts-ignore
 import styles from './index.less';
 
-export interface IProps extends IDragable {
+export interface IProps {
   dataKey: string;
-  handleDelete: (idx: string | number) => void;
+  handleDelete: (key: string) => void;
   handleChange: (idx: any) => void;
-  isLast: boolean;
-  props?: any;
 }
 
-class Item extends PureComponent<IProps> {
-  render() {
-    const { index, isDragging, dataKey, connectDragSource, handleDelete } = this.props.props;
-    const isCustomer = dataKey.includes('odc.customer.column');
-    const params = parse(dataKey);
-    const { v, c, t, d, aliasName } = params;
-
-    return connectDragSource(
-      <div className="dragable-item">
-        <Row
-          className={classNames(
-            styles.column,
-            styles.dragable,
-            isDragging ? styles.dragging : null,
-          )}
-        >
-          <Col className={styles['dragable-item']} span={24}>
-            <Space>
-              <Icon component={DragSvg} className={styles.dragHandler} />
-              {!isCustomer ? (
-                c
-              ) : (
-                <EditableText
-                  hideArrow
-                  onChange={this.handleSetColumnName}
-                  placeholder={formatMessage({
-                    id: 'odc.component.ColumnSelector.Item.CustomFields',
-                    defaultMessage: '自定义字段',
-                  })} /* 自定义字段 */
-                />
-              )}
-
-              {!isCustomer && t ? (
-                <span>
-                  ({' '}
-                  <ObjectName
-                    title={`${d}.${t}${aliasName ? `<${aliasName}>` : ''}`}
-                    type={EnumObjectType.TABLE}
-                  />{' '}
-                  )
-                </span>
-              ) : null}
-              {!isCustomer && v ? (
-                <span>
-                  ({' '}
-                  <ObjectName
-                    title={`${d}.${v}${aliasName ? `<${aliasName}>` : ''}`}
-                    type={EnumObjectType.VIEW}
-                  />{' '}
-                  )
-                </span>
-              ) : null}
-              <EditableText
-                onChange={this.handleChangeAliasName}
-                placeholder={formatMessage({
-                  id: 'odc.component.ColumnSelector.Item.Alias',
-                  defaultMessage: '别名',
-                })} /* 别名 */
-              />
-            </Space>
-            <DeleteOutlined className={styles.close} onClick={() => handleDelete(index)} />
-          </Col>
-        </Row>
-      </div>,
-    );
-  }
-
-  handleChangeAliasName = (value) => {
-    const { dataKey, handleChange } = this.props.props;
+const Item: React.FC<IProps> = React.memo((props) => {
+  const { dataKey, handleDelete, handleChange } = props;
+  const isCustomer = dataKey.includes('odc.customer.column');
+  const params = parse(dataKey);
+  const { v, c, t, d, aliasName } = params;
+  const handleChangeAliasName = (value) => {
     handleChange({ dataKey, aliasName: value });
   };
 
-  handleSetColumnName = (value) => {
-    const { dataKey, handleChange } = this.props.props;
+  const handleSetColumnName = (value) => {
     handleChange({ dataKey, columnName: value });
   };
-}
+  return (
+    <div className="dragable-item">
+      <Row className={classNames(styles.column, styles.dragable)}>
+        <Col className={styles['dragable-item']} span={24}>
+          <Space>
+            <Icon component={DragSvg} className={styles.dragHandler} />
+            {!isCustomer ? (
+              c
+            ) : (
+              <EditableText
+                hideArrow
+                onChange={handleSetColumnName}
+                placeholder={formatMessage({
+                  id: 'odc.component.ColumnSelector.Item.CustomFields',
+                  defaultMessage: '自定义字段',
+                })} /* 自定义字段 */
+              />
+            )}
 
-export default Dragable<IProps>(Item, 'CREATE_VIEW_COLUMNS');
+            {!isCustomer && t ? (
+              <span>
+                ({' '}
+                <ObjectName
+                  title={`${d}.${t}${aliasName ? `<${aliasName}>` : ''}`}
+                  type={EnumObjectType.TABLE}
+                />{' '}
+                )
+              </span>
+            ) : null}
+            {!isCustomer && v ? (
+              <span>
+                ({' '}
+                <ObjectName
+                  title={`${d}.${v}${aliasName ? `<${aliasName}>` : ''}`}
+                  type={EnumObjectType.VIEW}
+                />{' '}
+                )
+              </span>
+            ) : null}
+            <EditableText
+              onChange={handleChangeAliasName}
+              placeholder={formatMessage({
+                id: 'odc.component.ColumnSelector.Item.Alias',
+                defaultMessage: '别名',
+              })} /* 别名 */
+            />
+          </Space>
+          <DeleteOutlined className={styles.close} onClick={() => handleDelete(dataKey)} />
+        </Col>
+      </Row>
+    </div>
+  );
+});
+
+export default Item;

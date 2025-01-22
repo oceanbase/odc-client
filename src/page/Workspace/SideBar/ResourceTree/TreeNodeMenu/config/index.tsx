@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { externalTableMenusConfig } from './externalTable';
 import { databaseMenusConfig } from './database';
 import { functionMenusConfig } from './function';
 import { packageMenusConfig } from './package';
@@ -38,4 +39,5 @@ export default {
   ...packageMenusConfig,
   ...packageBodyMenusConfig,
   ...databaseMenusConfig,
+  ...externalTableMenusConfig,
 };

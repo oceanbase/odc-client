@@ -100,5 +100,6 @@ export const SubTaskTypeMap = {
   },
 };
 
+export const OscMinRowLimit = 1;
 export const OscMaxRowLimit = 10000;
 export const OscMaxDataSizeLimit = 1000;

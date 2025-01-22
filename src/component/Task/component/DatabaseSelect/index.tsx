@@ -18,8 +18,10 @@ import { TaskType } from '@/d.ts';
 import SessionSelect from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SelectItem';
 import { ISessionDropdownFiltersProps } from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SessionDropdown';
 import { formatMessage } from '@/util/intl';
+import { IDatabase } from '@/d.ts/database';
 import { Form } from 'antd';
 import React from 'react';
+
 interface IProps {
   type: TaskType;
   label?: string;
@@ -31,7 +33,11 @@ interface IProps {
   width?: string;
   placeholder?: string;
   isLogicalDatabase?: boolean;
-  onChange?: (v: number) => void;
+  options?: {
+    /** 屏蔽对象存储类型 */
+    hideFileSystem?: boolean;
+  };
+  onChange?: (v: number, database?: IDatabase) => void;
 }
 const DatabaseSelect: React.FC<IProps> = (props) => {
   const {
@@ -49,6 +55,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     disabled = false,
     isLogicalDatabase = false,
     onChange,
+    options,
   } = props;
 
   return (
@@ -75,6 +82,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
         onChange={onChange}
         isLogicalDatabase={isLogicalDatabase}
         placeholder={placeholder}
+        options={options}
       />
     </Form.Item>
   );

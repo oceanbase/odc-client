@@ -112,9 +112,13 @@ const TaskContent: React.FC<IProps> = (props) => {
           marginTop: 4,
         }}
       />
+
       {parameters?.databases?.find((_db) => _db?.type === DBType.LOGICAL) && (
         <Alert
-          message="The database list includes logical databases, and upon approval, permissions for the associated physical databases will be granted by default."
+          message={formatMessage({
+            id: 'src.component.Task.ApplyDatabasePermission.DetailContent.F091144E',
+            defaultMessage: '数据库中包含逻辑库，审批通过后将默认获得其关联物理库的权限。',
+          })}
           type="info"
           showIcon
           style={{ margin: '4px 0px 8px 0px' }}

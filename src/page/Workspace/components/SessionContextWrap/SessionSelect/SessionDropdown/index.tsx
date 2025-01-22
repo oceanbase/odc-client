@@ -37,6 +37,7 @@ import { Badge, Input, Popover, Select, Space, Spin, Tooltip, Tree } from 'antd'
 import { DataNode } from 'antd/lib/tree';
 import { toInteger } from 'lodash';
 import { inject, observer } from 'mobx-react';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import SessionContext from '../../context';
 import { DEFALT_HEIGHT, DEFALT_WIDTH } from '../const';
@@ -96,6 +97,10 @@ interface IProps {
   projectId?: number;
   filters?: ISessionDropdownFiltersProps;
   dataSourceStatusStore?: DataSourceStatusStore;
+  options?: {
+    hideFileSystem?: boolean;
+  };
+  disabled?: boolean;
 }
 const SessionDropdown: React.FC<IProps> = function ({
   children,
@@ -105,6 +110,8 @@ const SessionDropdown: React.FC<IProps> = function ({
   dialectTypes,
   taskType,
   dataSourceStatusStore,
+  options,
+  disabled = false,
 }) {
   const context = useContext(SessionContext);
   const { from, setFrom } = context;
@@ -147,6 +154,7 @@ const SessionDropdown: React.FC<IProps> = function ({
   const dataGroup = useMemo(() => {
     const datasources: Map<number, { datasource: IDatasource; databases: IDatabase[] }> = new Map();
     const projects: Map<number, { project: IProject; databases: IDatabase[] }> = new Map();
+    const databases: Map<number, IDatabase> = new Map();
     const allProjects: IProject[] = [],
       allDatasources: IDatasource[] = [];
     data?.contents?.forEach((db) => {
@@ -196,6 +204,7 @@ const SessionDropdown: React.FC<IProps> = function ({
         }
         datasources.set(dataSource?.id, datasourceDatabases);
       }
+      databases.set(db.id, db);
     });
     let filterDataSources: IDatasource[];
     let filterProjects: IProject[];
@@ -213,6 +222,7 @@ const SessionDropdown: React.FC<IProps> = function ({
     return {
       datasources,
       projects,
+      databases,
       allDatasources: hasDialectTypesFilter ? filterDataSources : allDatasources,
       allProjects: hasProjectIdFilter ? filterProjects : allProjects,
     };
@@ -299,7 +309,8 @@ const SessionDropdown: React.FC<IProps> = function ({
           ?.map((item) => {
             if (
               (datasourceId && toInteger(datasourceId) !== item.id) ||
-              (!datasourceId && item.temp)
+              (!datasourceId && item.temp) ||
+              (isConnectTypeBeFileSystemGroup(item.type) && options?.hideFileSystem)
             ) {
               return null;
             }
@@ -321,9 +332,12 @@ const SessionDropdown: React.FC<IProps> = function ({
                 ) {
                   return null;
                 }
-                const disabled = taskType
-                  ? !hasPermission(taskType, db.authorizedPermissionTypes)
-                  : !db.authorizedPermissionTypes?.length;
+                let disabled: boolean = false;
+                if (taskType) {
+                  disabled = !hasPermission(taskType, db.authorizedPermissionTypes);
+                } else {
+                  disabled = !db.authorizedPermissionTypes?.length;
+                }
                 return {
                   title: <DatabasesTitle taskType={taskType} db={db} disabled={disabled} />,
                   key: `db:${db.id}`,
@@ -362,11 +376,18 @@ const SessionDropdown: React.FC<IProps> = function ({
               !searchValue || item.name?.toLowerCase().includes(searchValue?.toLowerCase());
             const dbList = projects
               .get(item.id)
-              ?.databases?.filter((database) =>
-                hasDialectTypesFilter
-                  ? filters?.dialectTypes?.includes(database?.dataSource?.dialectType)
-                  : true,
-              )
+              ?.databases?.filter((database) => {
+                if (
+                  isConnectTypeBeFileSystemGroup(database.connectType) &&
+                  options?.hideFileSystem
+                ) {
+                  return false;
+                }
+                if (hasDialectTypesFilter) {
+                  return filters?.dialectTypes?.includes(database?.dataSource?.dialectType);
+                }
+                return true;
+              })
               ?.map((db) => {
                 if (
                   !isNameMatched &&
@@ -375,9 +396,12 @@ const SessionDropdown: React.FC<IProps> = function ({
                 ) {
                   return null;
                 }
-                const disabled = taskType
-                  ? !hasPermission(taskType, db.authorizedPermissionTypes)
-                  : !db.authorizedPermissionTypes?.length;
+                let disabled: boolean = false;
+                if (taskType) {
+                  disabled = !hasPermission(taskType, db.authorizedPermissionTypes);
+                } else {
+                  disabled = !db.authorizedPermissionTypes?.length;
+                }
                 return {
                   title: <DatabasesTitle taskType={taskType} db={db} disabled={disabled} />,
                   key: `db:${db.id}`,
@@ -437,7 +461,7 @@ const SessionDropdown: React.FC<IProps> = function ({
           }
           setLoading(true);
           try {
-            await context.selectSession(dbId, dsId, from);
+            await context.selectSession(dbId, dsId, from, dataGroup.databases.get(dbId));
           } catch (e) {
             console.error(e);
           } finally {
@@ -470,67 +494,71 @@ const SessionDropdown: React.FC<IProps> = function ({
       overlayClassName={styles.pop}
       overlayStyle={{ paddingTop: 2, width }}
       content={
-        <Spin spinning={loading || fetchLoading}>
-          <div className={styles.main} style={{ width: '100%' }}>
-            <Space.Compact block>
-              {context?.datasourceMode || context?.projectMode || login.isPrivateSpace() ? null : (
-                <Select
-                  onChange={(v) => setFrom(v)}
-                  value={from}
-                  size="small"
-                  style={{
-                    width: '35%',
-                  }}
-                  options={[
-                    {
-                      label: formatMessage({
-                        id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.Project',
-                        defaultMessage: '按项目',
-                      }), //'按项目'
-                      value: 'project',
-                    },
-                    {
-                      label: formatMessage({
-                        id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DataSource',
-                        defaultMessage: '按数据源',
-                      }), //'按数据源'
-                      value: 'datasource',
-                    },
-                  ]}
-                />
-              )}
+        disabled ? null : (
+          <Spin spinning={loading || fetchLoading}>
+            <div className={styles.main} style={{ width: '100%' }}>
+              <Space.Compact block>
+                {context?.datasourceMode ||
+                context?.projectMode ||
+                login.isPrivateSpace() ? null : (
+                  <Select
+                    onChange={(v) => setFrom(v)}
+                    value={from}
+                    size="small"
+                    style={{
+                      width: '35%',
+                    }}
+                    options={[
+                      {
+                        label: formatMessage({
+                          id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.Project',
+                          defaultMessage: '按项目',
+                        }), //'按项目'
+                        value: 'project',
+                      },
+                      {
+                        label: formatMessage({
+                          id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DataSource',
+                          defaultMessage: '按数据源',
+                        }), //'按数据源'
+                        value: 'datasource',
+                      },
+                    ]}
+                  />
+                )}
 
-              <Input
-                size="small"
-                value={searchValue}
-                suffix={<SearchOutlined />}
-                placeholder={
-                  formatMessage({
-                    id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.SearchForTheKeyword',
-                    defaultMessage: '搜索关键字',
-                  }) /* 搜索关键字 */
-                }
-                onChange={(v) => setSearchValue(v.target.value)}
+                <Input
+                  size="small"
+                  value={searchValue}
+                  suffix={<SearchOutlined />}
+                  placeholder={
+                    formatMessage({
+                      id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.SearchForTheKeyword',
+                      defaultMessage: '搜索关键字',
+                    }) /* 搜索关键字 */
+                  }
+                  onChange={(v) => setSearchValue(v.target.value)}
+                  style={{
+                    width:
+                      context?.datasourceMode || context?.projectMode || login.isPrivateSpace()
+                        ? '100%'
+                        : '65%',
+                  }}
+                />
+              </Space.Compact>
+              <div
                 style={{
-                  width:
-                    context?.datasourceMode || context?.projectMode || login.isPrivateSpace()
-                      ? '100%'
-                      : '65%',
+                  height: DEFALT_HEIGHT,
+                  marginTop: 10,
+                  width: width || DEFALT_WIDTH,
+                  overflow: 'hidden',
                 }}
-              />
-            </Space.Compact>
-            <div
-              style={{
-                height: DEFALT_HEIGHT,
-                marginTop: 10,
-                width: width || DEFALT_WIDTH,
-                overflow: 'hidden',
-              }}
-            >
-              {TreeRender()}
+              >
+                {TreeRender()}
+              </div>
             </div>
-          </div>
-        </Spin>
+          </Spin>
+        )
       }
     >
       {children}

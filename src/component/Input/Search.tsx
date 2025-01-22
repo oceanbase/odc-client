@@ -18,9 +18,10 @@ import FilterIcon from '@/component/Button/FIlterIcon';
 import { SearchOutlined } from '@ant-design/icons';
 import { AutoComplete, Input } from 'antd';
 import type { BaseSelectRef } from 'rc-select';
-import React, { forwardRef, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 
 interface IProps {
+  defaultValue?: string;
   onSearch: (searchValue: string, searchType: string) => void;
   searchTypes: {
     label: string;
@@ -50,12 +51,23 @@ const RemoveSplitInput = forwardRef(function RemoveSplitInput({ value, ...rest }
   );
 });
 
-const Search: React.FC<IProps> = function ({ searchTypes, onSearch }) {
+const Search: React.FC<IProps> = function ({ searchTypes, onSearch, defaultValue }) {
   const [forceVisible, setForceVisible] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
   const [options, setOptions] = useState([]);
   const ref = useRef<BaseSelectRef>(null);
   const searchValueRef = useRef<string>(null);
+
+  useEffect(() => {
+    // 有传入默认值时 展示搜索框
+
+    if (defaultValue) {
+      searchValueRef.current = defaultValue;
+    } else {
+      searchValueRef.current = null;
+    }
+  }, [defaultValue]);
+
   function getOptions(value) {
     if (!value) {
       setOptions([]);
@@ -113,7 +125,7 @@ const Search: React.FC<IProps> = function ({ searchTypes, onSearch }) {
       onChange={(v) => {
         setIsEmpty(!v);
       }}
-      // defaultValue={searchValue?.value ? searchValue.value + splitKey + searchValue.type : null}
+      defaultValue={defaultValue + splitKey + searchTypes[0]?.value}
       defaultActiveFirstOption
       onSearch={getOptions}
       onSelect={(v, option) => {

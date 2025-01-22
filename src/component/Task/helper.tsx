@@ -73,6 +73,11 @@ export const isCycleTaskPage = (type: TaskPageType) => {
     TaskPageType.LOGICAL_DATABASE_CHANGE,
   ].includes(type);
 };
+
+export const isSupportChangeDetail = (type: TaskType) => {
+  return [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type);
+};
+
 interface ITaskGroupLabel {
   groupName: string;
   icon?: React.ReactNode;
@@ -184,7 +189,7 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         {
           value: TaskPageType.LOGICAL_DATABASE_CHANGE,
           label: formatMessage({ id: 'src.component.Task.A7954C70', defaultMessage: '逻辑库变更' }),
-          enabled: !login.isPrivateSpace() && settingStore?.enableLogicaldatabase
+          enabled: !login.isPrivateSpace() && settingStore?.enableLogicaldatabase,
         },
         {
           value: TaskPageType.SHADOW,
@@ -277,7 +282,10 @@ export const getTaskGroupLabels: () => ITaskGroupLabel[] = () => {
         },
         {
           value: TaskPageType.APPLY_TABLE_PERMISSION,
-          label: formatMessage({ id: 'src.component.Task.D7396534', defaultMessage: '申请表权限' }),
+          label: formatMessage({
+            id: 'src.component.Task.7FE73181',
+            defaultMessage: '申请表/视图权限',
+          }),
           enabled: !isClient() && !isPersonal,
         },
       ],
