@@ -208,7 +208,10 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                   }) /*添加*/
                 }
                 <Typography.Text style={{ marginLeft: 8 }} type="secondary">
-                  多个匹配条件需同时满足
+                  {formatMessage({
+                    id: 'src.page.Auth.Autoauth.component.FormModal.CD9C93B9',
+                    defaultMessage: '多个匹配条件需同时满足',
+                  })}
                 </Typography.Text>
               </Button>
             </Form.Item>

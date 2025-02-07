@@ -72,3 +72,19 @@
   flex-shrink: 0;
   justify-content: right;
 }
+
+.datasourceTooltip {
+  :global {
+    .ant-space {
+      display: flex;
+      align-items: start;
+      .ant-space-item:nth-child(1) {
+        white-space: nowrap;
+      }
+      .ant-space-item:nth-child(2) {
+        white-space: wrap;
+        word-break: break-all;
+      }
+    }
+  }
+}

@@ -34,12 +34,15 @@ import { useEffect, useRef, useState } from 'react';
 import CreateProjectDrawer from './CreateProject/Drawer';
 import styles from './index.less';
 import ListItem from './ListItem';
-import userStore from '@/store/login';
+import { UserStore } from '@/store/login';
 import MoreBtn from './MoreBtn';
 import DeleteProjectModal from '@/page/Project/components/DeleteProjectModal.tsx';
 import type { SelectProject } from '@/page/Project/components/DeleteProjectModal.tsx';
+import { useSearchParams } from '@umijs/max';
+import { getSessionStorageKey } from '../helper';
+import { observer, inject } from 'mobx-react';
 
-const titleOptions: {
+export const titleOptions: {
   label: string;
   value: ProjectTabType;
 }[] = [
@@ -58,13 +61,18 @@ const titleOptions: {
     value: ProjectTabType.ARCHIVED,
   },
 ];
+interface IProps {
+  userStore: UserStore;
+}
 
-const Project = () => {
+const Project: React.FC<IProps> = (props) => {
   const domRef = useRef<HTMLDivElement>();
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedRows, setSelectedRows] = useState<Map<number, boolean>>(
     new Map<number, boolean>(),
   );
+  const { userStore } = props;
+  const [searchParams, setSearchParams] = useSearchParams();
   const [dataSource, setDataSource] = useState<IProject[]>([]);
   const [projectSearchName, setProjectSearchName] = useState(null);
   const [projectType, setProjectType] = useState<ProjectTabType>(ProjectTabType.ALL);
@@ -74,7 +82,7 @@ const Project = () => {
 
   const [openDeleteProjectModal, setOpenDeleteProjectModal] = useState(false);
   const [selectProjectList, setSelectProjectList] = useState<SelectProject[]>([]);
-  const sessionStorageKey = `projectSearch-${userStore?.organizationId}-${userStore?.user?.id}`;
+  const sessionStorageKey = getSessionStorageKey(userStore);
 
   const appendData = async (currentPage, dataSource, projectType, projectSearchName) => {
     setLoading(true);
@@ -106,13 +114,33 @@ const Project = () => {
   useEffect(() => {
     // sessionStorage存在搜索值时，刷新页面请求时需带上搜索值
     const sessionStorageValue = sessionStorage.getItem(sessionStorageKey);
-    appendData(currentPage, dataSource, projectType, sessionStorageValue || projectSearchName);
+    const params = resolveParams();
+    appendData(
+      currentPage,
+      dataSource,
+      params.projectType || projectType,
+      sessionStorageValue || projectSearchName,
+    );
   }, []);
   const onScroll = (e: React.UIEvent<HTMLElement, UIEvent>) => {
     if (e.currentTarget.scrollHeight - e.currentTarget.scrollTop === domRef.current?.clientHeight) {
       appendData(currentPage, dataSource, projectType, projectSearchName);
     }
   };
+
+  function resolveParams() {
+    const archived = searchParams.get('archived');
+    const obj = {
+      projectType: ProjectTabType.ALL,
+    };
+    if (archived && archived === 'true') {
+      setProjectType(ProjectTabType.ARCHIVED);
+      obj.projectType = ProjectTabType.ARCHIVED;
+      searchParams.delete('archived');
+      setSearchParams(searchParams);
+    }
+    return obj;
+  }
 
   return (
     <PageContainer
@@ -124,8 +152,11 @@ const Project = () => {
       }}
       onTabChange={(v: ProjectTabType) => {
         setProjectType(v);
-        reload(v);
+        // 切换项目时，带上搜索值/固化值
+        const searchValues = projectSearchName || sessionStorage.getItem(sessionStorageKey);
+        reload(v, searchValues);
       }}
+      tabActiveKey={projectType}
     >
       <List
         className={styles.content}
@@ -155,13 +186,21 @@ const Project = () => {
                 <Button
                   onClick={() => {
                     if (!selectProjectList.length) {
-                      message.info('请先选择项目');
+                      message.info(
+                        formatMessage({
+                          id: 'src.page.Project.Project.5CDFAB27',
+                          defaultMessage: '请先选择项目',
+                        }),
+                      );
                       return;
                     }
                     setOpenDeleteProjectModal(true);
                   }}
                 >
-                  删除项目
+                  {formatMessage({
+                    id: 'src.page.Project.Project.FB11C8F8',
+                    defaultMessage: '删除项目',
+                  })}
                 </Button>
               )}
             </Space>
@@ -287,9 +326,9 @@ const Project = () => {
         setOpen={setOpenDeleteProjectModal}
         projectList={selectProjectList}
         verifyValue={'delete'}
-        beforeDelete={reload}
+        afterDelete={reload}
       />
     </PageContainer>
   );
 };
-export default Project;
+export default inject('userStore')(observer(Project));

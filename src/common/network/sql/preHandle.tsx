@@ -112,7 +112,7 @@ export function executeSQLPreHandle(
     }
   }, []);
   /**
-   * lintResultSet为空数组时，返回的status默认为submit
+   * lintResultSet为空数组时，返回的lintStatus默认为submit
    */
   const lintStatus = getLintStatus(lintResultSet);
   // 没有requestId，即是被拦截了
@@ -127,7 +127,7 @@ export function executeSQLPreHandle(
           executeResult: [],
           violatedRules,
           lintResultSet,
-          status,
+          status: lintStatus,
         },
         status: lintStatus,
         lintResultSet,
@@ -136,7 +136,7 @@ export function executeSQLPreHandle(
     }
 
     // 当status不为submit时
-    if (status !== EStatus.SUBMIT || unauthorizedDBResources?.length) {
+    if (lintStatus !== EStatus.SUBMIT || unauthorizedDBResources?.length) {
       modal.updateWorkSpaceExecuteSQLModalProps({
         sql:
           (params as IExecutePLForMysqlParams)?.wrappedSql ||

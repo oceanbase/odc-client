@@ -935,12 +935,16 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     /* 更新页面状态 */
     if (params?.plPageType === PLPageType.plEdit) {
       const newPageState = await this.getUpdatedPageState(plType, plName, plSchema, params);
-      await pageStore.updatePage(pageKey, {
-        title: page.title,
-        isSaved: true,
-        startSaving: false
-      }, newPageState);
-      
+      await pageStore.updatePage(
+        pageKey,
+        {
+          title: page.title,
+          isSaved: true,
+          startSaving: false,
+        },
+        newPageState,
+      );
+
       this.editor?.setValue(newPageState.scriptText);
       this.setState({
         initialSQL: newPageState.scriptText,
@@ -952,7 +956,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
         formatMessage({
           id: 'odc.components.PLPage.SavedSuccessfully',
           defaultMessage: '保存成功',
-        })
+        }),
       );
     }
 
@@ -960,7 +964,12 @@ export class PLPage extends Component<IProps, ISQLPageState> {
   }
 
   /* 执行保存PL */
-  private async executeSavePL(isMysql: boolean, editorValue: string, plName: string, plType: PLType) {
+  private async executeSavePL(
+    isMysql: boolean,
+    editorValue: string,
+    plName: string,
+    plType: PLType,
+  ) {
     if (isMysql) {
       const queryData = {
         sql: editorValue,
@@ -980,7 +989,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
         return { success: false };
       }
 
-      return { success: !res?.approvalRequired };
+      return { success: !(res?.approvalRequired ?? true) };
     }
 
     const data = await executeSQL(
@@ -1013,7 +1022,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
           ...params.plSchema,
           ddl: params.scriptText,
           params: plSchema.params,
-        }
+        },
       };
     }
 
@@ -1037,7 +1046,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
         ...params.plSchema,
         ddl,
         params: newParams || plSchema.params,
-      }
+      },
     };
   }
 

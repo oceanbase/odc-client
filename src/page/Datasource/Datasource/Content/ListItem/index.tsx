@@ -100,13 +100,19 @@ const ListItem: React.FC<IProps> = function ({
         </Tooltip>
         {!haveOCP() && (
           <Tooltip
+            overlayClassName={styles.datasourceTooltip}
             title={
               <Space>
                 {
                   isConnectTypeBeFileSystemGroup(connectType) ? (
                     <>
-                      <span>endpoint:</span>
-                      <span>{host}</span>
+                      <span>
+                        {formatMessage({
+                          id: 'src.page.Datasource.Datasource.Content.ListItem.0C5CA730',
+                          defaultMessage: '文件URL:',
+                        })}
+                      </span>
+                      <span>{host ?? '-'}</span>
                     </>
                   ) : (
                     formatMessage(
@@ -116,7 +122,8 @@ const ListItem: React.FC<IProps> = function ({
                       },
                       { host },
                     )
-                  ) /*主机:端口: {host}*/
+                  )
+                  /*主机:端口: {host}*/
                 }
               </Space>
             }

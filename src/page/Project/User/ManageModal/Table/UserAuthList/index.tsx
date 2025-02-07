@@ -44,7 +44,10 @@ const getColumns = (params: {
   return [
     {
       dataIndex: 'tableName',
-      title: '表/视图',
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.Table.UserAuthList.F4C863B4',
+        defaultMessage: '表/视图',
+      }),
       ellipsis: true,
       width: 140,
       filterDropdown: (props) => {
@@ -209,6 +212,7 @@ interface IProps {
   dataSource: IResponseData<ITablePermission>;
   params: ITableLoadOptions;
   isOwner: boolean;
+  isDBA: boolean;
   tableRef: React.RefObject<ITableInstance>;
   onReclaim: (ids: number[]) => void;
   onLoad: (args: ITableLoadOptions) => Promise<any>;
@@ -216,7 +220,7 @@ interface IProps {
 }
 
 const UserAuthList: React.FC<IProps> = (props) => {
-  const { isOwner, dataSource, params, tableRef, onReclaim, onLoad, onChange } = props;
+  const { isOwner, dataSource, params, tableRef, onReclaim, onLoad, onChange, isDBA } = props;
   const columns = getColumns({
     paramOptions: params,
     onReclaim: onReclaim,
@@ -234,7 +238,7 @@ const UserAuthList: React.FC<IProps> = (props) => {
         }}
         titleContent={null}
         rowSelecter={
-          isOwner
+          isOwner || isDBA
             ? {
                 options: [
                   {
@@ -257,7 +261,9 @@ const UserAuthList: React.FC<IProps> = (props) => {
         onLoad={onLoad}
         onChange={onChange}
         tableProps={{
-          columns: columns?.filter((item) => (isOwner ? true : item?.dataIndex !== 'action')),
+          columns: columns?.filter((item) =>
+            isOwner || isDBA ? true : item?.dataIndex !== 'action',
+          ),
           dataSource: dataSource?.contents ?? [],
           rowKey: 'id',
           scroll: {

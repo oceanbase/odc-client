@@ -66,7 +66,10 @@ const EditableText: React.FC<IProps> = React.memo((props) => {
       style={{ minWidth: '50px' }}
       placeholder={props.placeholder}
       onBlur={handleSubmit}
-      onPressEnter={handleSubmit}
+      onPressEnter={(e) => {
+        e.stopPropagation();
+        handleSubmit();
+      }}
       onChange={handleChange}
       value={state.value}
     />

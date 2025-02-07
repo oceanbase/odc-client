@@ -7,7 +7,7 @@ import { formatMessage } from '@/util/intl';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { DatabaseOwnerSelect } from '../DatabaseOwnerSelect';
-import { updateDataBase } from '@/common/network/database';
+import { updateDataBase, listDatabases } from '@/common/network/database';
 import { ConnectType, IConnection } from '@/d.ts';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 interface AddObjectStorageProps {
@@ -55,6 +55,14 @@ const AddObjectStorage: React.FC<AddObjectStorageProps> = (props) => {
     manual: true,
   });
 
+  const {
+    data: databases,
+    loading: databasesListLoading,
+    run: fetchDatabases,
+  } = useRequest(listDatabases, {
+    manual: true,
+  });
+
   const handlesubmit = async () => {
     const formData = await form.validateFields();
     if (!formData) {
@@ -62,9 +70,9 @@ const AddObjectStorage: React.FC<AddObjectStorageProps> = (props) => {
     }
     const params = {
       ownerIds: formData?.ownerIds,
-      databaseIds: [Number(form.getFieldValue('dataSourceId'))],
+      databaseIds: [Number(form.getFieldValue('databaseIds'))],
     };
-    console.log(params);
+
     const isSuccess = await run(params.databaseIds, projectId, params.ownerIds);
     if (isSuccess) {
       message.success(
@@ -82,12 +90,16 @@ const AddObjectStorage: React.FC<AddObjectStorageProps> = (props) => {
 
   const handleCancel = () => {
     setOpen(false);
+    form.resetFields();
   };
 
   return (
     <>
       <Modal
-        title="添加对象存储"
+        title={formatMessage({
+          id: 'src.page.Project.Database.components.AddObjectStorage.F4E4F8B8',
+          defaultMessage: '添加对象存储',
+        })}
         open={open}
         onOk={handlesubmit}
         onCancel={handleCancel}
@@ -100,6 +112,7 @@ const AddObjectStorage: React.FC<AddObjectStorageProps> = (props) => {
           onValuesChange={(changedValues) => {
             if (changedValues.hasOwnProperty('dataSourceId')) {
               fetchDataSource(changedValues?.dataSourceId);
+              fetchDatabases(null, changedValues?.dataSourceId, 1, 10, null, null, true, true);
             }
           }}
         >
@@ -186,6 +199,50 @@ const AddObjectStorage: React.FC<AddObjectStorageProps> = (props) => {
               </Form.Item>
             </Col>
           </Row>
+          <Form.Item
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+            name={'databaseIds'}
+            label={formatMessage({
+              id: 'odc.Database.AddDataBaseButton.Database',
+              defaultMessage: '数据库',
+            })} /*数据库*/
+          >
+            <Select
+              mode="multiple"
+              placeholder={formatMessage({
+                id: 'odc.Database.AddDataBaseButton.SelectAnUnassignedDatabase',
+                defaultMessage: '请选择未分配项目的数据库',
+              })}
+              /*请选择未分配项目的数据库*/ style={{
+                width: '100%',
+              }}
+              loading={databasesListLoading}
+              optionFilterProp="children"
+            >
+              {databases?.contents?.map((p) => {
+                if (!!p.project?.id) {
+                  return (
+                    <Select.Option disabled={true} key={p.id}>
+                      {p.name}
+                      {
+                        formatMessage({
+                          id: 'odc.Database.AddDataBaseButton.BoundProject',
+                          defaultMessage: '- 已绑定项目：',
+                        }) /*- 已绑定项目：*/
+                      }
+
+                      {p.project?.name}
+                    </Select.Option>
+                  );
+                }
+                return <Select.Option key={p.id}>{p.name}</Select.Option>;
+              })}
+            </Select>
+          </Form.Item>
           <DatabaseOwnerSelect
             hasDefaultSet={false}
             ownerIds={form.getFieldValue('ownerIds')}

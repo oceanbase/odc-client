@@ -548,7 +548,7 @@ export const LDAPPartForm: React.FC<{
                 defaultMessage:
                   '用户查询的过滤条件，可以基于用户的属性（如用户名、邮箱、部门等）来过滤搜索结果',
               }) /*"用户查询的过滤条件，可以基于用户的属性（如用户
-           名、邮箱、部门等）来过滤搜索结果"*/
+          名、邮箱、部门等）来过滤搜索结果"*/
             }
           >
             userSearchFilter
@@ -584,7 +584,7 @@ export const LDAPPartForm: React.FC<{
                 defaultMessage:
                   '指定在搜索用户（user）时使用的起始点或基准点，用于限定在哪个部分或组织单位下搜索用户对象',
               }) /*"指定在搜索用户（user）时使用的起始点或基准点，
-           用于限定在哪个部分或组织单位下搜索用户对象"*/
+          用于限定在哪个部分或组织单位下搜索用户对象"*/
             }
           >
             userSearchBase
@@ -914,15 +914,26 @@ export const SAMLPartForm: React.FC<{
   const providerEntityIdValue = Form.useWatch(['ssoParameter', 'providerEntityId'], formConfig);
   return (
     <>
-      <Typography.Title level={5}>SAML 信息</Typography.Title>
+      <Typography.Title level={5}>
+        {formatMessage({
+          id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.995D697E',
+          defaultMessage: 'SAML 信息',
+        })}
+      </Typography.Title>
       <Form.Item
         name={['ssoParameter', 'acsLocation']}
         label="SP Endpoint"
-        tooltip={'用户接受 SSO 服务响应'}
+        tooltip={formatMessage({
+          id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.28FAAB4B',
+          defaultMessage: '用户接受 SSO 服务响应',
+        })}
         rules={[
           {
             required: true,
-            message: '请输入配置名称以生成 SP Endpoint',
+            message: formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.1C7B19EE',
+              defaultMessage: '请输入配置名称以生成 SP Endpoint',
+            }),
           },
         ]}
       >
@@ -932,7 +943,10 @@ export const SAMLPartForm: React.FC<{
             maxRows: 3,
           }}
           disabled
-          placeholder={'自动生成，{baseUrl}/login/saml2/sso/{registrationId}'}
+          placeholder={formatMessage({
+            id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.8841571A',
+            defaultMessage: '自动生成，{baseUrl}/login/saml2/sso/{registrationId}',
+          })}
         />
       </Form.Item>
       <Form.Item
@@ -941,7 +955,10 @@ export const SAMLPartForm: React.FC<{
         rules={[
           {
             required: true,
-            message: '请输入配置名称以生成 ACS EntityID',
+            message: formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.8D6A20C0',
+              defaultMessage: '请输入配置名称以生成 ACS EntityID',
+            }),
           },
         ]}
       >
@@ -951,19 +968,28 @@ export const SAMLPartForm: React.FC<{
             maxRows: 3,
           }}
           disabled
-          placeholder={'自动生成，{baseUrl}/saml2/service-provider-metadata/{registrationId}'}
+          placeholder={formatMessage({
+            id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.CC5C7D3D',
+            defaultMessage: '自动生成，{baseUrl}/saml2/service-provider-metadata/{registrationId}',
+          })}
         />
       </Form.Item>
       <Form.Item
         rules={[
           {
             required: showExtraConfigForSAML ? false : true,
-            message: '未配置时，需要补充高级选项中的 SSO 相关配置信息',
+            message: formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.FB29759B',
+              defaultMessage: '未配置时，需要补充高级选项中的 SSO 相关配置信息',
+            }),
           },
         ]}
         name={['ssoParameter', 'metadataUri']}
         label="Metadata URI"
-        tooltip={'元数据 URL'}
+        tooltip={formatMessage({
+          id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.07BABB3C',
+          defaultMessage: '元数据 URL',
+        })}
       >
         <Input
           style={{
@@ -1004,7 +1030,10 @@ export const SAMLPartForm: React.FC<{
         <Form.Item
           name={['ssoParameter', 'providerEntityId']}
           label="Provider EntityID"
-          tooltip={'服务提供商的唯一标识'}
+          tooltip={formatMessage({
+            id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.AFC293F1',
+            defaultMessage: '服务提供商的唯一标识',
+          })}
           rules={[
             {
               required: isEdit ? providerEntityIdValue : showExtraConfigForSAML ? true : false,
@@ -1017,16 +1046,28 @@ export const SAMLPartForm: React.FC<{
               maxRows: 3,
             }}
             disabled
-            placeholder={'系统自动生成，{baseUrl}/saml2/service-provider-metadata/{registrationId}'}
+            placeholder={formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.AA5602CF',
+              defaultMessage:
+                '系统自动生成，{baseUrl}/saml2/service-provider-metadata/{registrationId}',
+            })}
           />
         </Form.Item>
         <Form.Item
           name={['ssoParameter', 'singlesignon']}
-          label={'SSO 配置'}
+          label={formatMessage({
+            id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.9B0937D9',
+            defaultMessage: 'SSO 配置',
+          })}
           rules={[requiredRule]}
           shouldUpdate={true}
         >
-          <p style={{ color: 'rgba(0, 0, 0, 0.45)' }}>未配置 Metadata URi 时，建议补充以下配置</p>
+          <p style={{ color: 'rgba(0, 0, 0, 0.45)' }}>
+            {formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.63A7B3A4',
+              defaultMessage: '未配置 Metadata URi 时，建议补充以下配置',
+            })}
+          </p>
           <div style={{ padding: '8px 16px 6px 16px', background: '#f7f9fb', borderRadius: 2 }}>
             <Form.Item
               label="URL"
@@ -1042,7 +1083,10 @@ export const SAMLPartForm: React.FC<{
             </Form.Item>
             <Form.Item
               name={['ssoParameter', 'singlesignon', 'binding']}
-              label="绑定方法"
+              label={formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.CDE05469',
+                defaultMessage: '绑定方法',
+              })}
               initialValue={'POST'}
               rules={[{ required: !metadataUriValue }]}
             >
@@ -1064,7 +1108,10 @@ export const SAMLPartForm: React.FC<{
             </Form.Item>
             <Form.Item
               name={['ssoParameter', 'singlesignon', 'signRequest']}
-              label="登录请求"
+              label={formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.31D71B2D',
+                defaultMessage: '登录请求',
+              })}
               initialValue={true}
               rules={[{ required: !metadataUriValue }]}
             >
@@ -1093,8 +1140,17 @@ export const SAMLPartForm: React.FC<{
               checked={SAMLCheckBoxConfig.signing.checked}
               onChange={(e) => updateSAMLCheckBoxConfig(SAMLType.signing, e.target.checked)}
             >
-              签名配置
-              <Tooltip title="用于保证 ODC 到 IDP 服务的请求不被篡改">
+              {formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.E1797DB0',
+                defaultMessage: '签名配置',
+              })}
+
+              <Tooltip
+                title={formatMessage({
+                  id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.3EB7CEBA',
+                  defaultMessage: '用于保证 ODC 到 IDP 服务的请求不被篡改',
+                })}
+              >
                 <QuestionCircleOutlined
                   style={{ marginLeft: '6px', color: 'rgba(0, 0, 0, 0.45)' }}
                 />
@@ -1121,7 +1177,7 @@ export const SAMLPartForm: React.FC<{
               >
                 <CopyOutlined />
               </a>
-              {SAMLCheckBoxConfig.signing.value}
+              <div className={styles.SAMLConfigContent}>{SAMLCheckBoxConfig.signing.value}</div>
             </div>
           </div>
 
@@ -1130,8 +1186,17 @@ export const SAMLPartForm: React.FC<{
               checked={SAMLCheckBoxConfig.verification.checked}
               onChange={(e) => updateSAMLCheckBoxConfig(SAMLType.verification, e.target.checked)}
             >
-              认证配置
-              <Tooltip title="用于保证 IDP 到 ODC 的请求不被篡改">
+              {formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.96DF4820',
+                defaultMessage: '认证配置',
+              })}
+
+              <Tooltip
+                title={formatMessage({
+                  id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.FAFB9D5D',
+                  defaultMessage: '用于保证 IDP 到 ODC 的请求不被篡改',
+                })}
+              >
                 <QuestionCircleOutlined
                   style={{ marginLeft: '6px', color: 'rgba(0, 0, 0, 0.45)' }}
                 />
@@ -1140,6 +1205,7 @@ export const SAMLPartForm: React.FC<{
 
             <TextArea
               rows={6}
+              value={SAMLCheckBoxConfig.verification.value}
               onChange={(e) => {
                 updateSAMLCheckBoxConfig(SAMLType.verification, true, e.target.value);
               }}
@@ -1152,8 +1218,17 @@ export const SAMLPartForm: React.FC<{
             checked={SAMLCheckBoxConfig.decryption.checked}
             onChange={(e) => updateSAMLCheckBoxConfig(SAMLType.decryption, e.target.checked)}
           >
-            解密配置
-            <Tooltip title="用于保证 IDP 到 ODC 服务的请求解密">
+            {formatMessage({
+              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.FAC80099',
+              defaultMessage: '解密配置',
+            })}
+
+            <Tooltip
+              title={formatMessage({
+                id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.387EEC11',
+                defaultMessage: '用于保证 IDP 到 ODC 服务的请求解密',
+              })}
+            >
               <QuestionCircleOutlined style={{ marginLeft: '6px', color: 'rgba(0, 0, 0, 0.45)' }} />
             </Tooltip>
           </Checkbox>
@@ -1177,7 +1252,7 @@ export const SAMLPartForm: React.FC<{
             >
               <CopyOutlined />
             </a>
-            {SAMLCheckBoxConfig.decryption.value}
+            <div className={styles.SAMLConfigContent}>{SAMLCheckBoxConfig.decryption.value}</div>
           </div>
         </Space>
       </div>

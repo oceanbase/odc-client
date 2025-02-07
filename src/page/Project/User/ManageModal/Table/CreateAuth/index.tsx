@@ -118,7 +118,10 @@ const CreateModal: React.FC<IProps> = (props) => {
         }}
         type="primary"
       >
-        新增表/视图授权
+        {formatMessage({
+          id: 'src.page.Project.User.ManageModal.Table.CreateAuth.4B42194A',
+          defaultMessage: '新增表/视图授权',
+        })}
       </Button>
       <Drawer
         destroyOnClose

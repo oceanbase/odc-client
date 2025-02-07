@@ -56,7 +56,10 @@ const getColumns = (
     },
     {
       dataIndex: 'tableName',
-      title: '表/视图',
+      title: formatMessage({
+        id: 'src.page.Workspace.components.DBPermissionTableContent.04E65667',
+        defaultMessage: '表/视图',
+      }),
       ellipsis: true,
     },
     {
@@ -101,8 +104,14 @@ const getColumns = (
                 defaultMessage: '无法申请数据库权限：数据库没有归属项目',
               }); /* 无法申请数据库权限：数据库没有归属项目 */
           tableTooltip = _.projectId
-            ? `无法申请表/视图权限：没有加入数据库所属项目`
-            : `无法申请表/视图权限：表所属数据库没有归属项目`;
+            ? formatMessage({
+                id: 'src.page.Workspace.components.DBPermissionTableContent.3F2FBE3A',
+                defaultMessage: '无法申请表/视图权限：没有加入数据库所属项目',
+              })
+            : formatMessage({
+                id: 'src.page.Workspace.components.DBPermissionTableContent.610249E6',
+                defaultMessage: '无法申请表/视图权限：表所属数据库没有归属项目',
+              });
         }
         return (
           <Action.Group size={2}>
@@ -134,7 +143,10 @@ const getColumns = (
                   );
                 }}
               >
-                {`申请表/视图权限`}
+                {formatMessage({
+                  id: 'src.page.Workspace.components.DBPermissionTableContent.66D27AFB',
+                  defaultMessage: '申请表/视图权限',
+                })}
               </Action.Link>
             }
           </Action.Group>

@@ -15,10 +15,10 @@
  */
 
 import { setProjectAchived, updateProject } from '@/common/network/project';
-import { IProject } from '@/d.ts/project';
+import { IProject, ProjectRole } from '@/d.ts/project';
 import { formatMessage } from '@/util/intl';
 import { history } from '@umijs/max';
-import { Button, Form, Input, message, Popconfirm, Space, Modal } from 'antd';
+import { Button, Form, Input, message, Popconfirm, Space, Modal, Tooltip } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import ProjectContext from '../../ProjectContext';
 import { isProjectArchived } from '@/page/Project/helper';
@@ -32,6 +32,7 @@ export default function Info() {
   const [isModify, setIsModify] = useState(false);
   const projectArchived = isProjectArchived(context.project);
   const [openDeleteProjectModal, setOpenDeleteProjectModal] = useState(false);
+  const isProjectOwner = context?.project?.currentUserResourceRoles?.includes(ProjectRole.OWNER);
 
   useEffect(() => {
     if (context.project) {
@@ -61,13 +62,22 @@ export default function Info() {
       res?.unfinishedFlowInstances?.length + res?.unfinishedSchedules?.length;
     if (tatolUnfinishedTicketsCount > 0) {
       Modal.error({
-        title: '项目存在未完成的工单，暂不支持归档',
+        title: formatMessage({
+          id: 'src.page.Project.Setting.Info.D4D805EF',
+          defaultMessage: '项目存在未完成的工单，暂不支持归档',
+        }),
         width: 500,
         content: (
           <>
-            <div
-              style={{ color: 'rgba(0, 0, 0, 0.45)' }}
-            >{`以下 ${tatolUnfinishedTicketsCount} 个工单未完成：`}</div>
+            <div style={{ color: 'rgba(0, 0, 0, 0.45)' }}>
+              {formatMessage(
+                {
+                  id: 'src.page.Project.Setting.Info.4EF2A2EA',
+                  defaultMessage: '以下 {tatolUnfinishedTicketsCount} 个工单未完成：',
+                },
+                { tatolUnfinishedTicketsCount },
+              )}
+            </div>
             {res?.unfinishedFlowInstances?.length > 0 && (
               <Space style={{ marginBottom: '12px' }}>
                 <TaskList dataSource={res?.unfinishedFlowInstances} />
@@ -83,13 +93,29 @@ export default function Info() {
       });
     } else {
       Modal.confirm({
-        title: '确定要归档这个项目吗？',
+        title: formatMessage({
+          id: 'src.page.Project.Setting.Info.38EA601D',
+          defaultMessage: '确定要归档这个项目吗？',
+        }),
         content: (
           <p>
-            项目归档后将不可恢复，但仍保留相关数据，<b>若有分区计划类型工单，则会停用该工单，</b>
-            可前往归档项目中查看项目。
+            {formatMessage({
+              id: 'src.page.Project.Setting.Info.D29E85EF',
+              defaultMessage: '项目归档后将不可恢复，但仍保留相关数据，',
+            })}
+            <b>
+              {formatMessage({
+                id: 'src.page.Project.Setting.Info.C657656B',
+                defaultMessage: '若有分区计划类型工单，则会停用该工单，',
+              })}
+            </b>
+            {formatMessage({
+              id: 'src.page.Project.Setting.Info.5666645F',
+              defaultMessage: '可前往归档项目中查看项目。',
+            })}
           </p>
         ),
+
         okText: formatMessage({
           id: 'app.button.ok',
           defaultMessage: '确定',
@@ -173,11 +199,28 @@ export default function Info() {
             }) /*确认修改*/
           }
         </Button>
-
         {projectArchived ? (
-          <Button danger onClick={() => setOpenDeleteProjectModal(true)}>
-            删除项目
-          </Button>
+          <Tooltip
+            title={
+              !isProjectOwner
+                ? formatMessage({
+                    id: 'src.page.Project.Setting.Info.3C89D359',
+                    defaultMessage: '暂无权限，请联系管理员',
+                  })
+                : undefined
+            }
+          >
+            <Button
+              danger
+              onClick={() => setOpenDeleteProjectModal(true)}
+              disabled={!isProjectOwner}
+            >
+              {formatMessage({
+                id: 'src.page.Project.Setting.Info.FF3FCF6B',
+                defaultMessage: '删除项目',
+              })}
+            </Button>
+          </Tooltip>
         ) : (
           <Button danger onClick={handleProjectAchived}>
             {
@@ -194,8 +237,8 @@ export default function Info() {
         setOpen={setOpenDeleteProjectModal}
         verifyValue="delete"
         projectList={[{ id: context?.project?.id, name: context?.project?.name }]}
-        beforeDelete={() => {
-          history.push('/project');
+        afterDelete={() => {
+          history.push('/project?archived=true');
         }}
       />
     </div>

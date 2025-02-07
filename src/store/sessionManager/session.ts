@@ -283,7 +283,10 @@ class SessionStore {
       support_synonym: 'enableSynonym',
       support_recycle_bin: 'enableRecycleBin',
       support_shadowtable: 'enableShadowSync',
-      support_partition_plan: 'enablePartitionPlan',
+      support_partition_plan: (allConfig) => {
+        this.supportFeature.enablePartitionPlan =
+          settingStore.enablePartitionPlan && allConfig['support_partition_plan'];
+      },
       support_column_group: 'enableColumnStore',
       support_async: (allConfig) => {
         this.supportFeature.enableAsync =
@@ -387,7 +390,7 @@ class SessionStore {
       this.params.queryLimit = data?.settings?.queryLimit;
       this.params.obVersion = data?.settings?.obVersion;
       this.params.defaultTableStoreFormat = data?.session?.defaultTableStoreFormat;
-      this.params.killCurrentQuerySupported = data?.killCurrentQuerySupported;
+      this.params.killCurrentQuerySupported = data?.session?.killCurrentQuerySupported;
       if (init) {
         this.params.tableColumnInfoVisible =
           setting.configurations['odc.sqlexecute.default.fetchColumnInfo'] === 'true';
@@ -410,6 +413,7 @@ class SessionStore {
           sqlId: null,
           activeQueries: null,
           defaultTableStoreFormat: null,
+          killCurrentQuerySupported: false,
         };
       }
     } catch (e) {

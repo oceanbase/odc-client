@@ -17,7 +17,7 @@
 import { ITable } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Form, Input, Radio, Select, Typography } from 'antd';
+import { Button, Checkbox, Form, Input, Radio, Select, Typography, Tooltip } from 'antd';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import ArchiveRangeTip from '../../component/ArchiveRangeTip';
@@ -26,15 +26,18 @@ import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 import { IArchiveRange } from './index';
 import styles from './index.less';
 import BatchSelectionPopover from '@/component/BatchSelectionPopover';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { IDatabase } from '@/d.ts/database';
 const { Text, Link } = Typography;
 
 interface IProps {
   tables: ITable[];
   enabledTargetTable?: boolean;
   checkPartition?: boolean;
+  targetDatabase?: IDatabase;
 }
 const ArchiveRange: React.FC<IProps> = (props) => {
-  const { tables, enabledTargetTable = false, checkPartition } = props;
+  const { tables, enabledTargetTable = false, checkPartition, targetDatabase } = props;
   const form = Form.useFormInstance();
   const [enablePartition, setEnablePartition] = useState<boolean>(checkPartition);
   const tablesOptions = tables?.map((item) => ({
@@ -230,20 +233,45 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             style={{ display: 'flex', flexDirection: 'column' }}
                             className={styles.multiInputBox}
                           >
-                            <Form.Item {...restField} name={[name, 'targetTableName']}>
-                              <Input
-                                addonBefore={formatMessage({
-                                  id: 'src.component.Task.DataArchiveTask.CreateModal.94BCB0E1',
-                                  defaultMessage: '目标表',
-                                })}
-                                placeholder={
-                                  formatMessage({
-                                    id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
-                                    defaultMessage: '请输入',
-                                  }) /*"请输入"*/
-                                }
-                              />
-                            </Form.Item>
+                            <Tooltip
+                              title={
+                                isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
+                                  ? formatMessage({
+                                      id: 'src.component.Task.DataArchiveTask.CreateModal.39BA9EFE',
+                                      defaultMessage:
+                                        '选择的目标数据库为对象存储类型时，不支持该配置',
+                                    })
+                                  : undefined
+                              }
+                            >
+                              <Form.Item {...restField} name={[name, 'targetTableName']}>
+                                <Input
+                                  addonBefore={formatMessage({
+                                    id: 'src.component.Task.DataArchiveTask.CreateModal.94BCB0E1',
+                                    defaultMessage: '目标表',
+                                  })}
+                                  disabled={isConnectTypeBeFileSystemGroup(
+                                    targetDatabase?.connectType,
+                                  )}
+                                  onChange={(e) => {
+                                    form.setFieldsValue({
+                                      tables: {
+                                        [name]: {
+                                          targetTableName: e.target.value,
+                                        },
+                                      },
+                                    });
+                                  }}
+                                  placeholder={
+                                    formatMessage({
+                                      id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
+                                      defaultMessage: '请输入',
+                                    }) /*"请输入"*/
+                                  }
+                                />
+                              </Form.Item>
+                            </Tooltip>
+
                             {enablePartition && (
                               <PartitionTextArea {...restField} name={[name, 'partitions']} />
                             )}

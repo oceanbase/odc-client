@@ -143,7 +143,10 @@ export const TaskTypeMap = {
     id: 'src.component.Task.component.TaskTable.E1E161BA',
     defaultMessage: '申请库权限',
   }), //'申请库权限'
-  [TaskType.APPLY_TABLE_PERMISSION]: '申请表/视图权限',
+  [TaskType.APPLY_TABLE_PERMISSION]: formatMessage({
+    id: 'src.component.Task.component.TaskTable.573E2A28',
+    defaultMessage: '申请表/视图权限',
+  }),
   [TaskType.STRUCTURE_COMPARISON]: formatMessage({
     id: 'src.component.Task.component.TaskTable.80E1D16A',
     defaultMessage: '结构比对',
@@ -317,6 +320,7 @@ const TaskTable: React.FC<IProps> = inject(
               }}
             />
           ),
+
           filteredValue: filters?.id || null,
           filters: [],
           ellipsis: true,
@@ -341,14 +345,16 @@ const TaskTable: React.FC<IProps> = inject(
           : {
               dataIndex: 'project',
               key: 'projectIdList',
-              title: '项目',
+              title: formatMessage({
+                id: 'src.component.Task.component.TaskTable.CDB513DC',
+                defaultMessage: '项目',
+              }),
               filters: projectOptions,
               filteredValue: filters?.projectIdList || null,
               ellipsis: true,
               width: 80,
-              render(value, record) {
-                const { projectId, project } = record;
-                return project?.name || projectId || '-';
+              render(project) {
+                return project?.name || '-';
               },
             },
         {

@@ -170,7 +170,10 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
     if (isConnectTypeBeFileSystemGroup(type)) {
       return (
         <Alert
-          message="对象存储仅支持数据归档"
+          message={formatMessage({
+            id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.C8E3BD0E',
+            defaultMessage: '对象存储仅支持数据归档',
+          })}
           type="info"
           showIcon
           style={{
@@ -184,7 +187,10 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                 e.stopPropagation();
               }}
             >
-              查看详情
+              {formatMessage({
+                id: 'src.page.Datasource.Datasource.NewDatasourceDrawer.Form.FE0F7CF3',
+                defaultMessage: '查看详情',
+              })}
             </a>
           }
         />

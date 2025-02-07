@@ -129,7 +129,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
                   dbName,
                   `${pkgKey}-${i}`,
                   ResourceNodeType.PackageHeadFunction,
-                  null,
+                  pkg,
                   i,
                 );
               })
@@ -141,7 +141,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
                     dbName,
                     `${pkgKey}-${i}`,
                     ResourceNodeType.PackageHeadProcedure,
-                    null,
+                    pkg,
                     i,
                   );
                 }),

@@ -19,6 +19,7 @@ import {
   createTask,
   getDatasourceUsers,
   getLockDatabaseUserRequired,
+  getTaskDetail,
   queryOmsWorkerInstance,
 } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
@@ -26,7 +27,15 @@ import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
-import { IDatasourceUser, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import {
+  IAlterScheduleTaskParams,
+  IDatasourceUser,
+  TaskDetail,
+  TaskExecStrategy,
+  TaskPageScope,
+  TaskPageType,
+  TaskType,
+} from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
@@ -48,11 +57,11 @@ import {
   Tooltip,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import ThrottleFormItem from '../../component/ThrottleFormItem';
-import { OscMaxDataSizeLimit, OscMaxRowLimit } from '../../const';
-
+import { OscMaxDataSizeLimit, OscMaxRowLimit, OscMinRowLimit } from '../../const';
+import { haveOCP } from '@/util/env';
 import styles from './index.less';
 import { isBoolean } from 'lodash';
 
@@ -81,6 +90,7 @@ export enum ClearStrategy {
 const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const { modalStore, settingStore, projectId, theme } = props;
   const { ddlAlterData } = modalStore;
+  const editorRef = useRef<CommonIDE>();
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -229,11 +239,31 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         databaseId,
       });
     }
-  }, [ddlAlterData?.databaseId]);
+    if (ddlAlterData?.taskId) {
+      loadTaskDetail();
+    }
+  }, [ddlAlterData?.databaseId, ddlAlterData?.taskId]);
+
+  async function loadTaskDetail() {
+    const detailRes = (await getTaskDetail(
+      ddlAlterData?.taskId,
+    )) as TaskDetail<IAlterScheduleTaskParams>;
+    const rateLimitConfig = detailRes?.parameters?.rateLimitConfig;
+
+    form.setFieldsValue({
+      ...detailRes?.parameters,
+      executionStrategy: detailRes?.executionStrategy,
+      rowLimit: rateLimitConfig?.rowLimit,
+      dataSizeLimit: rateLimitConfig?.dataSizeLimit,
+    });
+
+    editorRef?.current?.editor?.setValue(detailRes?.parameters?.sqlContent);
+  }
 
   useEffect(() => {
     if (!modalStore.createDDLAlterVisible) return;
-    settingStore.enableOSCLimiting &&
+    haveOCP() &&
+      settingStore.enableOSCLimiting &&
       queryOmsWorkerInstance().then((res) => {
         //接口返回正常 &&  hasUnconfiguredProject有值且为布尔类型的 false 时 禁用新建
         if (
@@ -495,7 +525,8 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             id: 'odc.AlterDdlTask.CreateModal.SqlContent',
             defaultMessage: 'SQL 内容',
           })}
-          /*SQL 内容*/ className={styles.sqlContent}
+          /*SQL 内容*/
+          className={styles.sqlContent}
           rules={[
             {
               required: true,
@@ -515,6 +546,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             }}
             language={getDataSourceModeConfig(connection?.type)?.sql?.language}
             onSQLChange={handleSqlChange}
+            ref={editorRef}
           />
         </Form.Item>
         <FormItemPanel
@@ -734,6 +766,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           {settingStore.enableOSCLimiting && (
             <ThrottleFormItem
               initialValue={initialValue}
+              minRowLimit={OscMinRowLimit}
               maxRowLimit={OscMaxRowLimit}
               maxDataSizeLimit={OscMaxDataSizeLimit}
             />
