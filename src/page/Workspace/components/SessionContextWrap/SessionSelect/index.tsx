@@ -20,7 +20,7 @@ import SessionContext from '../context';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
 import Icon, { AimOutlined, DownOutlined, LoadingOutlined } from '@ant-design/icons';
-import { Divider, Popover, Space, Spin } from 'antd';
+import { Divider, Popover, Space, Spin, Tooltip } from 'antd';
 import styles from './index.less';
 
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
@@ -118,23 +118,44 @@ export default function SessionSelect({
         size={1}
         split={<Divider type="vertical" />}
         style={{ color: 'var(--text-color-hint)' }}
+        className={styles.datasourceAndProjectItem}
       >
         {login.isPrivateSpace() ? null : (
-          <span>
-            {formatMessage({
-              id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.38EA55F4' /*项目：*/,
-              defaultMessage: '项目：',
-            })}
-            {context?.session?.odcDatabase?.project?.name}
+          <span className={styles.describeItem}>
+            <span>
+              {formatMessage({
+                id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.38EA55F4' /*项目：*/,
+                defaultMessage: '项目：',
+              })}
+            </span>
+            <Tooltip
+              title={context?.session?.odcDatabase?.project?.name}
+              placement="bottom"
+              overlayClassName={styles.tooltip}
+            >
+              <span className={styles.ellipsis}>
+                {context?.session?.odcDatabase?.project?.name}
+              </span>
+            </Tooltip>
           </span>
         )}
         {context?.session?.odcDatabase?.dataSource?.name && (
-          <span>
-            {formatMessage({
-              id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.CD007EC1' /*数据源：*/,
-              defaultMessage: '数据源：',
-            })}
-            {context?.session?.odcDatabase?.dataSource?.name}
+          <span className={styles.describeItem}>
+            <span>
+              {formatMessage({
+                id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.CD007EC1' /*数据源：*/,
+                defaultMessage: '数据源：',
+              })}
+            </span>
+            <Tooltip
+              title={context?.session?.odcDatabase?.dataSource?.name}
+              placement="bottom"
+              overlayClassName={styles.tooltip}
+            >
+              <span className={styles.ellipsis}>
+                {context?.session?.odcDatabase?.dataSource?.name}
+              </span>
+            </Tooltip>
           </span>
         )}
       </Space>
@@ -144,10 +165,10 @@ export default function SessionSelect({
       return (
         <>
           {renderEnv()}
-          <div className={classNames(styles.readonly)}>
+          <div className={classNames(styles.SessionInfo)}>
             {databaseItem}
             {supportLocation && <>{aimItem}</>}
-            {datasourceAndProjectItem}
+            <div className={styles.datasourceAndProjectItemBox}>{datasourceAndProjectItem}</div>
           </div>
         </>
       );
@@ -159,7 +180,7 @@ export default function SessionSelect({
           <div>{databaseItem}</div>
         </SessionDropdown>
         <div>{aimItem}</div>
-        <div>{datasourceAndProjectItem}</div>
+        <div className={styles.datasourceAndProjectItemBox}>{datasourceAndProjectItem}</div>
       </div>
     );
   }

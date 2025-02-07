@@ -45,7 +45,10 @@ const items: MenuItem[] = [
     key: EManagePermissionType.DATABASE,
   },
   {
-    label: `表/视图权限`,
+    label: formatMessage({
+      id: 'src.page.Project.User.ManageModal.AE2E1625',
+      defaultMessage: '表/视图权限',
+    }),
     key: EManagePermissionType.TABLE,
   },
 ];
@@ -55,11 +58,12 @@ interface IProps {
   projectId: number;
   userId: number;
   isOwner: boolean;
+  isDBA: boolean;
   onClose: () => void;
 }
 
 const ManageModal: React.FC<IProps> = (props) => {
-  const { visible, onClose, projectId, userId, isOwner } = props;
+  const { visible, onClose, projectId, userId, isOwner, isDBA } = props;
   const [key, setKey] = useState<string>(items?.[0]?.key as string);
   const Component = contentMap?.[key]?.component;
 
@@ -92,7 +96,15 @@ const ManageModal: React.FC<IProps> = (props) => {
             siderStyle: { flex: '0 0 100px' },
             contentStyle: { display: 'flex', flexDirection: 'column' },
           }}
-          content={<Component key={key} projectId={projectId} userId={userId} isOwner={isOwner} />}
+          content={
+            <Component
+              key={key}
+              projectId={projectId}
+              userId={userId}
+              isOwner={isOwner}
+              isDBA={isDBA}
+            />
+          }
         />
       </div>
     </Drawer>

@@ -85,6 +85,7 @@ const VariableConfigTable: React.FC<{
       dataSource={dataSource}
       scroll={null}
       disablePagination
+      enableResize
     />
   );
 };

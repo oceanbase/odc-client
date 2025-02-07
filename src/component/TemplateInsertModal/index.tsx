@@ -178,13 +178,18 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
 
 export default inject('settingStore', 'modalStore')(observer(TemplateInsertModal));
 
-async function getColumns(type: DbObjectType, name: string, sessionId: string) {
+async function getColumns(
+  type: DbObjectType,
+  name: string,
+  sessionId: string,
+  isExternalTable?: boolean,
+) {
   const dbSession = sessionManager.sessionMap.get(sessionId);
   const dbName = dbSession?.database?.dbName;
   switch (type) {
     case DbObjectType.table: {
       return (
-        (await getTableInfo(name, dbName, sessionId))?.columns
+        (await getTableInfo(name, dbName, sessionId, isExternalTable))?.columns
           ?.map((column) => {
             return getQuoteTableName(column.name, dbSession?.connection?.dialectType);
           })
@@ -211,6 +216,7 @@ export async function getCopyText(
   copyType: DragInsertType,
   isEscape: boolean = false,
   sessionId: string,
+  isExternalTable?: boolean,
 ) {
   const dbSession = sessionManager.sessionMap.get(sessionId);
   if (!dbSession) {
@@ -229,7 +235,7 @@ export async function getCopyText(
     case DragInsertType.SELECT: {
       return _escape(
         'SELECT ' +
-          (await getColumns(objType, name, sessionId)) +
+          (await getColumns(objType, name, sessionId, isExternalTable)) +
           ' FROM ' +
           getQuoteTableName(name, dbSession?.connection?.dialectType) +
           ';',
@@ -269,8 +275,9 @@ export async function copyObj(
   objType: DbObjectType,
   copyType: DragInsertType,
   sessionId: string,
+  isExternalTable?: boolean,
 ) {
-  const text = await getCopyText(name, objType, copyType, false, sessionId);
+  const text = await getCopyText(name, objType, copyType, false, sessionId, isExternalTable);
   copy(text);
   message.success(
     formatMessage({

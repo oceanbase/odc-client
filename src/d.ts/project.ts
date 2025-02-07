@@ -49,6 +49,7 @@ export interface IProject {
     name: string;
     role: ProjectRole;
     userEnabled: boolean;
+    derivedFromGlobalProjectRole: boolean;
   }[];
   currentUserResourceRoles: ProjectRole[];
   builtin: boolean;

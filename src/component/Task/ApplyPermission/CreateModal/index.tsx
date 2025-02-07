@@ -26,7 +26,7 @@ import { Button, Drawer, Form, Input, message, Modal, Select, Space, Tag, Typogr
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
-const { Text } = Typography;
+const { Paragraph } = Typography;
 export const projectRoleMap = {
   [ProjectRole.OWNER]: {
     label: formatMessage({
@@ -35,9 +35,9 @@ export const projectRoleMap = {
     }),
     //'管理员'
     description: formatMessage({
-      id: 'src.component.Task.ApplyPermission.CreateModal.92D261DD',
-      defaultMessage: '拥有项目内的所有权限',
-    }), //'拥有项目内的所有权限'
+      id: 'src.component.Task.ApplyPermission.CreateModal.F649692E',
+      defaultMessage: '拥有项目内的所有权限，可查看和管理项目的所有工单',
+    }),
   },
   [ProjectRole.DEVELOPER]: {
     label: formatMessage({
@@ -45,16 +45,18 @@ export const projectRoleMap = {
       defaultMessage: '开发者',
     }), //'开发者'
     description: formatMessage({
-      id: 'src.component.Task.ApplyPermission.CreateModal.012F2C58',
-      defaultMessage: '允许登录所有数据库、执行 SQL、提交工单，通常是开发人员',
-    }), //'允许登录所有数据库、执行 SQL、提交工单，通常是开发人员'
+      id: 'src.component.Task.ApplyPermission.CreateModal.20CEE7B9',
+      defaultMessage:
+        '拥有项目内所有数据库权限，允许登录数据库、执行 SQL、提交工单，可以查看项目内所有工单并管理自己发起的工单',
+    }),
   },
   [ProjectRole.DBA]: {
     label: 'DBA',
     description: formatMessage({
-      id: 'src.component.Task.ApplyPermission.CreateModal.211C9AC8',
-      defaultMessage: '在开发者的基础上，还可以管理敏感列、添加/转移数据库等',
-    }), //'在开发者的基础上，还可以管理敏感列、添加/转移数据库等'
+      id: 'src.component.Task.ApplyPermission.CreateModal.A9FCEF31',
+      defaultMessage:
+        '拥有项目内除成员管理、消息配置和项目设置外的所有权限，包括查看和管理项目的所有工单权限',
+    }),
   },
   [ProjectRole.SECURITY_ADMINISTRATOR]: {
     label: formatMessage({
@@ -74,9 +76,10 @@ export const projectRoleMap = {
     }),
     //'参与者'
     description: formatMessage({
-      id: 'src.component.Task.ApplyPermission.CreateModal.ED069A06',
-      defaultMessage: '允许查看项目基本信息，并自助申请库权限和提交工单',
-    }), //'允许查看项目基本信息，并自助申请库权限和提交工单'
+      id: 'src.component.Task.ApplyPermission.CreateModal.E3F621FF',
+      defaultMessage:
+        ' 允许查看项目基本信息，默认无项目内任何数据库权限，支持自助申请库权限和提交工单，可以查看项目内所有工单并管理自己发起的工单',
+    }),
   },
 };
 interface IProps {
@@ -95,9 +98,9 @@ const CreateModal: React.FC<IProps> = (props) => {
     const role = projectRoleMap?.[roleName];
     return {
       label: (
-        <div data-label={role?.label}>
+        <div data-label={role?.label} className={styles.rolesOptions}>
           <div>{role?.label}</div>
-          <Text type="secondary">{role?.description}</Text>
+          <Paragraph>{role?.description}</Paragraph>
         </div>
       ),
 

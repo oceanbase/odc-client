@@ -59,6 +59,7 @@ export interface IUserSummary {
   name: string;
   accountName: string;
   organizationId: number;
+  roles: { name: string; id: number; [key: string]: any }[];
 }
 
 export interface IOrganization {
@@ -601,6 +602,8 @@ export enum AuditEventActionType {
   UPDATE_DATASOURCE = 'UPDATE_DATASOURCE',
   // 项目管理
   CREATE_PROJECT = 'CREATE_PROJECT',
+  ARCHIVE_PROJECT = 'ARCHIVE_PROJECT',
+  DELETE_PROJECT = 'DELETE_PROJECT',
   // 导出结果集
   CREATE_EXPORT_RESULT_SET_TASK = 'CREATE_EXPORT_RESULT_SET_TASK',
   APPROVE_EXPORT_RESULT_SET_TASK = 'APPROVE_EXPORT_RESULT_SET_TASK',
@@ -780,7 +783,7 @@ export interface IConnection {
     clientKeyObjectId?: string;
     CACertObjectId?: string;
   };
-
+  region?: string;
   organizationId: number;
   creatorId: number; // userId
   creator: string;
@@ -1594,6 +1597,7 @@ export enum DbObjectType {
   file = 'FILE',
   column = 'COLUMN',
   external_table = 'EXTERNAL_TABLE',
+  logical_table = 'LOGICAL_TABLE',
 }
 
 export interface IResultTimerStage {
@@ -2189,6 +2193,20 @@ export interface ExportFormData {
   exportAllObjects?: boolean; // 导出整库
   exportFilePath?: string; // 桌面端导出路径
   taskId?: number;
+
+  transferDDL?: boolean;
+  transferData?: boolean;
+  csvConfig?: ICSVConfig;
+}
+
+export interface ICSVConfig {
+  skipHeader: boolean;
+  blankToNull: boolean;
+  columnSeparator: string;
+  columnDelimiter: string;
+  lineSeparator: string;
+  fileName: string;
+  encoding: IMPORT_ENCODING;
 }
 
 export enum IMPORT_TYPE {
@@ -2288,6 +2306,11 @@ export interface ImportFormData {
   columnDelimiter: string; // 文本识别符
 
   lineSeparator: string; // 换行符号
+  taskId?: number;
+  transferDDL?: boolean;
+  transferData?: boolean;
+  csvConfig?: ICSVConfig;
+  exportDbObjects?: { dbObjectType: string; objectName: string }[];
 }
 
 // 左侧结构树菜单所支持的key列表
@@ -2393,6 +2416,7 @@ export interface TaskRecord<P> {
   description?: string;
   nodeList?: ITaskFlowNode[];
   progressPercentage: number;
+  project: IProject;
 }
 
 export interface ICycleSubTaskRecord {
@@ -2526,6 +2550,7 @@ export interface IDataArchiveJobParameters {
     name: string;
     pattern: string;
   }[];
+  targetDatabase: IDatabase;
   timeoutMillis: number;
   syncTableStructure: SyncTableStructureEnum[];
 }
@@ -2935,6 +2960,11 @@ export interface IAlterScheduleTaskParams {
   };
 
   triggerConfig: ICycleTaskTriggerConfig;
+  sqlContent?: string;
+  rateLimitConfig?: {
+    rowLimit: number;
+    dataSizeLimit: number;
+  };
 }
 
 export interface IDataArchiveTaskParams {
@@ -3719,6 +3749,7 @@ export interface ISessionStatus {
   sqlId: string;
   activeQueries: string;
   defaultTableStoreFormat: DBDefaultStoreType;
+  killCurrentQuerySupported: boolean;
 }
 
 export interface IAutoAuthEvent {

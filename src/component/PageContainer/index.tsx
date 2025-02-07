@@ -15,15 +15,18 @@
  */
 
 import BigSelect from '@/component/BigSelect';
+import TabSelect from '@/component/TabSelect';
 import { Tabs } from 'antd';
 import classnames from 'classnames';
 import { CSSProperties, ReactNode } from 'react';
 import styles from './index.less';
+import { ProjectTabType } from '@/d.ts/project';
 
 export enum TitleType {
   TEXT = 'text',
   TAB = 'tab',
   SELECT = 'select',
+  TAB_SELECT = 'tab_select',
 }
 
 interface IPageContainerProps {
@@ -37,7 +40,14 @@ interface IPageContainerProps {
     defaultValue?: string | number;
     showDivider?: boolean;
     onChange?: (value: string) => void;
+    loading?: boolean;
+    SelectTab?: ProjectTabType;
+    onSelectTabChange?: (value: ProjectTabType) => void;
     onDropdownVisibleChange?: (v: boolean) => void;
+    SelectTabOptions?: {
+      label: string;
+      value: ProjectTabType;
+    }[];
   };
   containerWrapStyle?: CSSProperties;
   tabList?: { key: string; tab: ReactNode }[];
@@ -61,8 +71,19 @@ const PageContainer: React.FC<IPageContainerProps> = (props) => {
     onTabChange,
     containerWrapStyle = {},
   } = props;
-  const { title, type, options, defaultValue, showDivider, onChange, onDropdownVisibleChange } =
-    titleProps;
+  const {
+    title,
+    type,
+    options,
+    defaultValue,
+    showDivider,
+    onChange,
+    onDropdownVisibleChange,
+    SelectTab,
+    onSelectTabChange,
+    SelectTabOptions,
+    loading,
+  } = titleProps;
 
   return (
     <div className={styles['page-container']}>
@@ -95,6 +116,21 @@ const PageContainer: React.FC<IPageContainerProps> = (props) => {
             iconColor={iconColor}
             onChange={onChange}
             onDropdownVisibleChange={onDropdownVisibleChange}
+          />
+        )}
+        {type === TitleType.TAB_SELECT && (
+          <TabSelect
+            bottom={bigSelectBottom}
+            defaultValue={defaultValue}
+            onSelectTabChange={onSelectTabChange}
+            options={options}
+            icon={icon}
+            iconColor={iconColor}
+            onChange={onChange}
+            projectType={SelectTab}
+            tabOption={SelectTabOptions}
+            onDropdownVisibleChange={onDropdownVisibleChange}
+            loading={loading}
           />
         )}
       </div>

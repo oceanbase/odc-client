@@ -218,7 +218,10 @@ const CreateModal: React.FC<IProps> = (props) => {
     if (hasEdit) {
       Modal.confirm({
         zIndex: 1003,
-        title: '确认取消申请表/视图权限吗？',
+        title: formatMessage({
+          id: 'src.component.Task.ApplyTablePermission.CreateModal.7996D498',
+          defaultMessage: '确认取消申请表/视图权限吗？',
+        }),
         centered: true,
         onOk: () => {
           modalStore.changeApplyTablePermissionModal(false);
@@ -373,7 +376,10 @@ const CreateModal: React.FC<IProps> = (props) => {
       destroyOnClose
       className={styles.createModal}
       width={816}
-      title={`申请表/视图权限`}
+      title={formatMessage({
+        id: 'src.component.Task.ApplyTablePermission.CreateModal.365A2D85',
+        defaultMessage: '申请表/视图权限',
+      })}
       footer={
         <Space>
           <Button
@@ -440,7 +446,10 @@ const CreateModal: React.FC<IProps> = (props) => {
         </Form.Item>
         <Form.Item
           name="tables"
-          label={`表/视图`}
+          label={formatMessage({
+            id: 'src.component.Task.ApplyTablePermission.CreateModal.50184403',
+            defaultMessage: '表/视图',
+          })}
           required
           rules={[
             {

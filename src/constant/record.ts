@@ -171,8 +171,14 @@ export const AuditEventMetaMap = {
     id: 'src.page.Secure.Record.RecordPage.5B4CDCAF',
     defaultMessage: '库权限管理',
   }), //'库权限管理'
-  [AuditEventActionType.APPLY_TABLE_PERMISSION]: `申请表/视图权限`,
-  [AuditEventActionType.TABLE_PERMISSION_MANAGEMENT]: `表/视图权限管理`,
+  [AuditEventActionType.APPLY_TABLE_PERMISSION]: formatMessage({
+    id: 'src.constant.CFB6ECD2',
+    defaultMessage: '申请表/视图权限',
+  }),
+  [AuditEventActionType.TABLE_PERMISSION_MANAGEMENT]: formatMessage({
+    id: 'src.constant.C3495416',
+    defaultMessage: '表/视图权限管理',
+  }),
   [AuditEventType.AUTOMATION_RULE_MANAGEMENT]: formatMessage({
     id: 'src.page.Secure.Record.RecordPage.B7B36187',
     defaultMessage: '自动授权规则管理',
@@ -702,6 +708,14 @@ export const AuditEventActionMap = {
     id: 'odc.Record.RecordPage.interface.CreateAProject',
     defaultMessage: '创建项目',
   }),
+  [AuditEventActionType.ARCHIVE_PROJECT]: formatMessage({
+    id: 'src.constant.25970C7E',
+    defaultMessage: '归档项目',
+  }),
+  [AuditEventActionType.DELETE_PROJECT]: formatMessage({
+    id: 'src.constant.3E60E665',
+    defaultMessage: '删除项目',
+  }),
   //创建项目
   // 审计事件操作
   [AuditEventActionType.CREATE_EXPORT_RESULT_SET_TASK]: formatMessage({
@@ -789,14 +803,38 @@ export const AuditEventActionMap = {
     id: 'src.page.Secure.Record.RecordPage.BBF6BE0C',
     defaultMessage: '回收库权限',
   }), //'回收库权限管理'
-  [AuditEventActionType.APPLY_TABLE_PERMISSION]: `申请表/视图权限`,
-  [AuditEventActionType.CREATE_APPLY_TABLE_PERMISSION_TASK]: `创建申请表/视图权限`,
-  [AuditEventActionType.APPROVE_APPLY_TABLE_PERMISSION_TASK]: `同意申请表/视图权限`,
-  [AuditEventActionType.REJECT_APPLY_TABLE_PERMISSION_TASK]: `拒绝申请表/视图权限`,
-  [AuditEventActionType.STOP_APPLY_TABLE_PERMISSION_TASK]: `停止申请表/视图权限`,
-  [AuditEventActionType.TABLE_PERMISSION_MANAGEMENT]: `表/视图权限管理`,
-  [AuditEventActionType.GRANT_TABLE_PERMISSION]: `新增表/视图权限管理`,
-  [AuditEventActionType.REVOKE_TABLE_PERMISSION]: `回收表/视图权限管理`,
+  [AuditEventActionType.APPLY_TABLE_PERMISSION]: formatMessage({
+    id: 'src.constant.71D62B8C',
+    defaultMessage: '申请表/视图权限',
+  }),
+  [AuditEventActionType.CREATE_APPLY_TABLE_PERMISSION_TASK]: formatMessage({
+    id: 'src.constant.7E594AFE',
+    defaultMessage: '创建申请表/视图权限',
+  }),
+  [AuditEventActionType.APPROVE_APPLY_TABLE_PERMISSION_TASK]: formatMessage({
+    id: 'src.constant.34E5C626',
+    defaultMessage: '同意申请表/视图权限',
+  }),
+  [AuditEventActionType.REJECT_APPLY_TABLE_PERMISSION_TASK]: formatMessage({
+    id: 'src.constant.2DFACC51',
+    defaultMessage: '拒绝申请表/视图权限',
+  }),
+  [AuditEventActionType.STOP_APPLY_TABLE_PERMISSION_TASK]: formatMessage({
+    id: 'src.constant.CE89B9A5',
+    defaultMessage: '停止申请表/视图权限',
+  }),
+  [AuditEventActionType.TABLE_PERMISSION_MANAGEMENT]: formatMessage({
+    id: 'src.constant.9E69D9A7',
+    defaultMessage: '表/视图权限管理',
+  }),
+  [AuditEventActionType.GRANT_TABLE_PERMISSION]: formatMessage({
+    id: 'src.constant.072ADD11',
+    defaultMessage: '新增表/视图权限管理',
+  }),
+  [AuditEventActionType.REVOKE_TABLE_PERMISSION]: formatMessage({
+    id: 'src.constant.1A7AEA14',
+    defaultMessage: '回收表/视图权限管理',
+  }),
   // 自动授权规则
   [AuditEventActionType.CREATE_AUTOMATION_RULE]: formatMessage({
     id: 'src.page.Secure.Record.RecordPage.61D99657',

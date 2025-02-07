@@ -41,9 +41,16 @@ const DatabaseSearchModal = ({ modalStore }: IProps) => {
   }, [database]);
 
   const getType = () => {
-    if (activeKey === DbObjectType.database) return 'SCHEMA';
-    if (activeKey === SEARCH_OBJECT_FROM_ALL_DATABASE) return null;
-    return activeKey;
+    switch (activeKey) {
+      case DbObjectType.database:
+        return 'SCHEMA';
+      case SEARCH_OBJECT_FROM_ALL_DATABASE:
+        return null;
+      case DbObjectType.table:
+        return [DbObjectType.logical_table, DbObjectType.table];
+      default:
+        return activeKey;
+    }
   };
 
   const getObjectListData = async (value) => {

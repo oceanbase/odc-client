@@ -17,12 +17,10 @@
 import { DbObjectType, IFunction, IPackage } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
-
 import Icon, { InfoOutlined, NumberOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
-
+import { TopTab } from '@/page/Workspace/components/PackagePage';
 import { ReactComponent as ParameterSvg } from '@/svgr/Parameter.svg';
-
 import { IDatabase } from '@/d.ts/database';
 import { openFunctionViewPage, openPackageViewPage } from '@/store/helper/page';
 import { ReactComponent as FunctionSvg } from '@/svgr/menuFunc.svg';
@@ -126,7 +124,6 @@ export function FunctionTreeNodeData(
       }),
     };
   }
-
   return {
     title: func.funName,
     key: funcKey,
@@ -143,17 +140,27 @@ export function FunctionTreeNodeData(
         }}
       />
     ),
-
     doubleClick(session, node, databaseFrom) {
-      pkg
-        ? openPackageViewPage(pkg?.packageName, null, false, session?.database?.databaseId)
-        : openFunctionViewPage(
+      // 程序包中的子程序 双击直接打开所在的程序包详情
+      switch (menuKey) {
+        case ResourceNodeType.PackageHeadFunction: {
+          openPackageViewPage(pkg.packageName, TopTab.HEAD, false, session?.database?.databaseId);
+          break;
+        }
+        case ResourceNodeType.PackageBodyFunction: {
+          openPackageViewPage(pkg.packageName, TopTab.BODY, false, session?.database?.databaseId);
+          break;
+        }
+        default: {
+          openFunctionViewPage(
             func.funName,
             undefined,
             undefined,
             session?.database?.databaseId,
             null,
           );
+        }
+      }
     },
     sessionId: dbSession?.sessionId,
     packageName: packageName,

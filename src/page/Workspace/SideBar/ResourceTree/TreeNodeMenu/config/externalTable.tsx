@@ -49,7 +49,10 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
   [ResourceNodeType.ExternalTableRoot]: [
     {
       key: 'REFRESH',
-      text: '刷新',
+      text: formatMessage({
+        id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.31A318F4',
+        defaultMessage: '刷新',
+      }),
       icon: ReloadOutlined,
       actionType: actionTypes.read,
       async run(session, node) {
@@ -58,15 +61,24 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
           return;
         }
         await session.database.getTableList(true);
-        message.success('刷新成功');
+        message.success(
+          formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.69DBC559',
+            defaultMessage: '刷新成功',
+          }),
+        );
       },
     },
   ],
+
   [ResourceNodeType.ExternalTable]: [
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_SCHEMA,
       ellipsis: true,
-      text: '查看外表结构',
+      text: formatMessage({
+        id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.B3A660A1',
+        defaultMessage: '查看外表结构',
+      }),
 
       run(session, node) {
         openExternalTableTableViewPage(
@@ -80,7 +92,10 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
     },
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_DATA,
-      text: '查看外表数据',
+      text: formatMessage({
+        id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.BC718186',
+        defaultMessage: '查看外表数据',
+      }),
       ellipsis: true,
       isHide: (session) => {
         return isLogicalDatabase(session?.odcDatabase);
@@ -112,7 +127,10 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
     },
     {
       key: ResourceTreeNodeMenuKeys.EXTERNAL_TABLE_SYNCHRONIZATION_TABLE,
-      text: '同步外表文件',
+      text: formatMessage({
+        id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.E0BAFAF1',
+        defaultMessage: '同步外表文件',
+      }),
       ellipsis: true,
       hasDivider: true,
       isHide: (session) => {
@@ -126,9 +144,19 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
           tableName,
         );
         if (res) {
-          message.success('同步成功');
+          message.success(
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.9C33E64B',
+              defaultMessage: '同步成功',
+            }),
+          );
         } else {
-          message.error('同步失败，请稍后再试');
+          message.error(
+            formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.A2E0AD8B',
+              defaultMessage: '同步失败，请稍后再试',
+            }),
+          );
         }
       },
     },
@@ -200,6 +228,7 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
               DbObjectType.table,
               DragInsertType.NAME,
               session.sessionId,
+              true,
             );
           },
         },
@@ -223,6 +252,7 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
               DbObjectType.table,
               DragInsertType.SELECT,
               session.sessionId,
+              true,
             );
           },
         },
@@ -238,6 +268,7 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
           defaultMessage: '删除',
         }),
       ],
+
       actionType: actionTypes.delete,
       ellipsis: true,
       disabled: (session, node) => {
@@ -293,6 +324,7 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
           defaultMessage: '刷新',
         }),
       ],
+
       ellipsis: true,
       async run(session, node) {
         const table = node.data as ITableModel;

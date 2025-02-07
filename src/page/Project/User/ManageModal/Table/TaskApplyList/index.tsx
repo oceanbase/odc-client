@@ -47,7 +47,10 @@ const getColumns = (params: {
   return [
     {
       dataIndex: 'tableName',
-      title: '表/视图',
+      title: formatMessage({
+        id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.3EEF9DAF',
+        defaultMessage: '表/视图',
+      }),
       width: 140,
       ellipsis: true,
       filterDropdown: (props) => {
@@ -252,6 +255,7 @@ interface IProps {
   dataSource: IResponseData<ITablePermission>;
   params: ITableLoadOptions;
   isOwner: boolean;
+  isDBA: boolean;
   tableRef: React.RefObject<ITableInstance>;
   onReclaim: (ids: number[]) => void;
   onLoad: (args: ITableLoadOptions) => Promise<any>;
@@ -259,7 +263,8 @@ interface IProps {
 }
 
 const TaskApplyList: React.FC<IProps> = (props) => {
-  const { projectId, isOwner, dataSource, params, tableRef, onReclaim, onLoad, onChange } = props;
+  const { projectId, isOwner, isDBA, dataSource, params, tableRef, onReclaim, onLoad, onChange } =
+    props;
   const [detailId, setDetailId] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
 
@@ -287,7 +292,7 @@ const TaskApplyList: React.FC<IProps> = (props) => {
         }}
         titleContent={null}
         rowSelecter={
-          isOwner
+          isOwner || isDBA
             ? {
                 options: [
                   {
@@ -310,7 +315,9 @@ const TaskApplyList: React.FC<IProps> = (props) => {
         onLoad={onLoad}
         onChange={onChange}
         tableProps={{
-          columns: columns?.filter((item) => (isOwner ? true : item?.dataIndex !== 'action')),
+          columns: columns?.filter((item) =>
+            isOwner || isDBA ? true : item?.dataIndex !== 'action',
+          ),
           dataSource: dataSource?.contents ?? [],
           rowKey: 'id',
           scroll: {

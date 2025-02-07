@@ -18,8 +18,10 @@ import { TaskType } from '@/d.ts';
 import SessionSelect from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SelectItem';
 import { ISessionDropdownFiltersProps } from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SessionDropdown';
 import { formatMessage } from '@/util/intl';
+import { IDatabase } from '@/d.ts/database';
 import { Form } from 'antd';
 import React from 'react';
+
 interface IProps {
   type: TaskType;
   label?: string;
@@ -35,7 +37,7 @@ interface IProps {
     /** 屏蔽对象存储类型 */
     hideFileSystem?: boolean;
   };
-  onChange?: (v: number) => void;
+  onChange?: (v: number, database?: IDatabase) => void;
 }
 const DatabaseSelect: React.FC<IProps> = (props) => {
   const {

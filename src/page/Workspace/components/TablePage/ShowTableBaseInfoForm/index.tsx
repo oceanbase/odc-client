@@ -204,8 +204,19 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey, dbType, isExternalTa
               content: table?.info?.tableName,
             },
             {
-              label: '表类型',
-              content: isExternalTable ? '外表' : '表',
+              label: formatMessage({
+                id: 'src.page.Workspace.components.TablePage.ShowTableBaseInfoForm.52095769',
+                defaultMessage: '表类型',
+              }),
+              content: isExternalTable
+                ? formatMessage({
+                    id: 'src.page.Workspace.components.TablePage.ShowTableBaseInfoForm.3C463D88',
+                    defaultMessage: '外表',
+                  })
+                : formatMessage({
+                    id: 'src.page.Workspace.components.TablePage.ShowTableBaseInfoForm.B7A406C8',
+                    defaultMessage: '表',
+                  }),
             },
 
             {

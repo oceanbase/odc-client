@@ -25,6 +25,7 @@ interface IProps {
     rowLimit?: number;
     dataSizeLimit?: number;
   };
+  minRowLimit?: number;
   maxRowLimit?: number;
   maxDataSizeLimit?: number;
   isShowDataSizeLimit?: boolean;
@@ -32,6 +33,7 @@ interface IProps {
 const ThrottleFormItem: React.FC<IProps> = (props) => {
   const {
     initialValue,
+    minRowLimit = 0,
     maxRowLimit = setting.maxSingleTaskRowLimit,
     maxDataSizeLimit = setting.maxSingleTaskDataSizeLimit,
     isShowDataSizeLimit,
@@ -80,7 +82,7 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
                 },
               ]}
             >
-              <InputNumber min={0} precision={1} max={maxRowLimit} />
+              <InputNumber min={minRowLimit} precision={1} max={maxRowLimit} />
             </Form.Item>
             <span>Rows/s</span>
           </Space>

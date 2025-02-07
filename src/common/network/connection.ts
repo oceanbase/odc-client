@@ -35,7 +35,6 @@ import { decrypt, encrypt } from '@/util/utils';
 import { getDataSourceModeConfig } from '../datasource';
 import { generateSessionSid } from './pathUtil';
 import { executeSQL } from './sql';
-import { DBDefaultStoreType } from '@/d.ts/table';
 
 function generateConnectionParams(formData: Partial<IConnectionFormData>, isHiden?: boolean) {
   // 创建必须带上 userId
@@ -65,6 +64,7 @@ function generateConnectionParams(formData: Partial<IConnectionFormData>, isHide
     temp: isHiden,
     sessionInitScript: formData.sessionInitScript,
     catalogName: formData?.catalogName,
+    region: formData?.region,
   };
   const config = getDataSourceModeConfig(formData.type)?.connection;
   config?.address?.items?.forEach((item) => {

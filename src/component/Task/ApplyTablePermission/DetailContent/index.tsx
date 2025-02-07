@@ -48,7 +48,10 @@ const getConnectionColumns = () => {
     },
     {
       dataIndex: 'tableName',
-      title: '表/视图',
+      title: formatMessage({
+        id: 'src.component.Task.ApplyTablePermission.DetailContent.9E20200F',
+        defaultMessage: '表/视图',
+      }),
       ellipsis: true,
       width: 240,
     },
@@ -103,7 +106,10 @@ const TaskContent: React.FC<IProps> = (props) => {
             defaultMessage: '任务类型',
           })}
         >
-          {`申请表/视图权限`}
+          {formatMessage({
+            id: 'src.component.Task.ApplyTablePermission.DetailContent.A8093E8B',
+            defaultMessage: '申请表/视图权限',
+          })}
         </Descriptions.Item>
       </Descriptions>
       <Divider
@@ -123,7 +129,10 @@ const TaskContent: React.FC<IProps> = (props) => {
         </Descriptions.Item>
       </Descriptions>
       <SimpleTextItem
-        label={`表/视图`}
+        label={formatMessage({
+          id: 'src.component.Task.ApplyTablePermission.DetailContent.C384EA27',
+          defaultMessage: '表/视图',
+        })}
         content={
           <DisplayTable
             rowKey="tableName"

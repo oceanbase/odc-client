@@ -34,17 +34,19 @@ import ProjectContext from './ProjectContext';
 import Sensitive from './Sensitive';
 import { ReactComponent as NewOpenSvg } from '@/svgr/newopen.svg';
 import Icon from '@ant-design/icons';
-
+import { titleOptions } from '@/page/Project/Project';
+import { ProjectTabType } from '@/d.ts/project';
 import Setting from './Setting';
 import Task from './Task';
 import User from './User';
-const ExtraContent = ({ projectId, hasLoginDatabaseAuth, setHasLoginDatabaseAuth }) => {
+import { getSessionStorageKey } from './helper';
+import { observer, inject } from 'mobx-react';
+import { UserStore } from '@/store/login';
 
+const ExtraContent = ({ projectId, hasLoginDatabaseAuth, setHasLoginDatabaseAuth }) => {
   const getLoginDatabaseAuth = async () => {
     const res = await listDatabases(projectId, null, null, null, null, null, null, null, true);
-    const canLoginDatabase = res.contents?.some(
-      (item) => !!item.authorizedPermissionTypes.length,
-    );
+    const canLoginDatabase = res.contents?.some((item) => !!item.authorizedPermissionTypes.length);
     setHasLoginDatabaseAuth(canLoginDatabase);
   };
 
@@ -78,7 +80,9 @@ const ExtraContent = ({ projectId, hasLoginDatabaseAuth, setHasLoginDatabaseAuth
     </Space>
   );
 };
-interface IProps {}
+interface IProps {
+  userStore: UserStore;
+}
 const Pages = {
   [IPageType.Project_Database]: {
     component: Database,
@@ -145,13 +149,14 @@ const tabs = [
   },
 ];
 
-const Index: React.FC<IProps> = function () {
+const Index: React.FC<IProps> = function (props) {
   const params = useParams<{
     id: string;
     page: IPageType;
   }>();
   const navigate = useNavigate();
   const { id, page } = params;
+  const { userStore } = props;
   const Component = Pages[page].component;
   const projectId = parseInt(id);
   const handleChange = (key: string) => {
@@ -161,13 +166,18 @@ const Index: React.FC<IProps> = function () {
     tracert.click('a3112.b64002.c330857.d367379');
     history.push(`/project/${value}/${page}`);
   };
+  const sessionStorageKey = getSessionStorageKey(userStore);
   const [project, setProject] = useState<IProject>(null);
+  const [titleSelectType, setTitleSelectType] = useState<ProjectTabType>(ProjectTabType.ALL);
+  const isTitleASelectArchived = titleSelectType === ProjectTabType.ARCHIVED;
   const [hasLoginDatabaseAuth, setHasLoginDatabaseAuth] = useState(false);
 
   async function fetchProject(projectId: number) {
     const data = await getProject(projectId);
     if (data) {
       setProject(data);
+      setTitleSelectType(data?.archived ? ProjectTabType.ARCHIVED : ProjectTabType.ALL);
+      fetchProjectList(undefined, 1, 100, data?.archived, false);
     }
   }
   const reloadProject = useCallback(() => {
@@ -190,27 +200,77 @@ const Index: React.FC<IProps> = function () {
       }
     }
   }, [page]);
-  const { data } = useRequest(listProjects, {
-    defaultParams: [null, 1, 10],
+
+  const {
+    run: fetchProjectList,
+    data,
+    loading,
+  } = useRequest(listProjects, {
+    manual: true,
   });
-  const options = [
-    {
-      label: project?.name,
-      value: projectId,
-    },
-  ].concat(
-    data?.contents
-      ?.map((p) => {
-        if (p.id === projectId) {
-          return null;
-        }
-        return {
-          label: p.name,
-          value: p.id,
-        };
-      })
-      ?.filter(Boolean) || [],
-  );
+
+  const handleChangeSelectTab = async (value: ProjectTabType) => {
+    setTitleSelectType(value);
+    await fetchProjectList(undefined, 1, 100, value === ProjectTabType.ARCHIVED, false);
+  };
+
+  const options = useMemo(() => {
+    let options = [];
+    const isShowThisProject = project?.archived === isTitleASelectArchived;
+    if (isShowThisProject) {
+      options = [
+        {
+          label: project?.name,
+          value: projectId,
+        },
+      ];
+    }
+    return options.concat(
+      data?.contents
+        ?.map((p) => {
+          if (isShowThisProject && p.id === projectId) {
+            return null;
+          }
+          return {
+            label: p.name,
+            value: p.id,
+          };
+        })
+        ?.filter(Boolean) || [],
+    );
+  }, [data?.contents, titleSelectType, project]);
+
+  const SelectBottom = useMemo(() => {
+    const linkContnet = {
+      text: '',
+      to: '',
+    };
+    if (titleSelectType === ProjectTabType.ALL) {
+      linkContnet.text = formatMessage({
+        id: 'odc.page.Project.ViewAllProjects',
+        defaultMessage: '查看所有项目',
+      });
+      linkContnet.to = '/project';
+    } else {
+      linkContnet.text = formatMessage({
+        id: 'src.page.Project.6AEA99CC',
+        defaultMessage: '查看所有归档项目',
+      });
+      linkContnet.to = '/project?archived=true';
+    }
+    return (
+      <Link
+        onClick={() => {
+          tracert.click('a3112.b64002.c330857.d367380');
+          sessionStorage.setItem(sessionStorageKey, '');
+        }}
+        to={linkContnet.to}
+      >
+        {linkContnet.text}
+      </Link>
+    );
+  }, [titleSelectType]);
+
   const displayTabs = useMemo(() => {
     let roleTabConfig = {
       [ProjectRole.DBA]: [
@@ -257,18 +317,28 @@ const Index: React.FC<IProps> = function () {
   return (
     <PageContainer
       titleProps={{
-        type: TitleType.SELECT,
+        type: TitleType.TAB_SELECT,
         defaultValue: projectId,
         options: options,
         onChange: handleProjectChange,
         onDropdownVisibleChange(v) {
           v && tracert.expo('a3112.b64002.c330857');
         },
+        SelectTab: titleSelectType,
+        onSelectTabChange: handleChangeSelectTab,
+        SelectTabOptions: titleOptions,
+        loading: loading,
       }}
       // 当前项目中拥有DBA或OWNER身份的用户拥有完整的Tabs，否则隐藏“敏感数据”入口。
       tabList={displayTabs}
       tabActiveKey={page}
-      tabBarExtraContent={<ExtraContent projectId={projectId}  hasLoginDatabaseAuth={hasLoginDatabaseAuth} setHasLoginDatabaseAuth={setHasLoginDatabaseAuth}/>}
+      tabBarExtraContent={
+        <ExtraContent
+          projectId={projectId}
+          hasLoginDatabaseAuth={hasLoginDatabaseAuth}
+          setHasLoginDatabaseAuth={setHasLoginDatabaseAuth}
+        />
+      }
       containerWrapStyle={
         [IPageType.Project_Notification].includes(page)
           ? {
@@ -277,16 +347,7 @@ const Index: React.FC<IProps> = function () {
           : {}
       }
       onTabChange={handleChange}
-      bigSelectBottom={
-        <Link onClick={() => tracert.click('a3112.b64002.c330857.d367380')} to={'/project'}>
-          {
-            formatMessage({
-              id: 'odc.page.Project.ViewAllProjects',
-              defaultMessage: '查看所有项目',
-            }) /*查看所有项目*/
-          }
-        </Link>
-      }
+      bigSelectBottom={SelectBottom}
     >
       <ProjectContext.Provider
         value={{
@@ -294,7 +355,7 @@ const Index: React.FC<IProps> = function () {
           projectId,
           reloadProject,
           hasLoginDatabaseAuth,
-          setHasLoginDatabaseAuth
+          setHasLoginDatabaseAuth,
         }}
       >
         <Component key={id} id={id} />
@@ -302,4 +363,4 @@ const Index: React.FC<IProps> = function () {
     </PageContainer>
   );
 };
-export default Index;
+export default inject('userStore')(observer(Index));

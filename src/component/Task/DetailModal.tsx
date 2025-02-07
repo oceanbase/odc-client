@@ -121,7 +121,6 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   const [disabledSubmit, setDisabledSubmit] = useState(true);
   const [approvalVisible, setApprovalVisible] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState(false);
-  const [isTaskProjectOwner, setIsTaskProjectOwner] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string>(undefined);
   const hasFlow =
     !!task?.nodeList?.find(
@@ -141,23 +140,13 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     TaskStatus.WAIT_FOR_CONFIRM,
     TaskStatus.CREATED,
     TaskStatus.APPROVED,
+    TaskStatus.ENABLED,
+    TaskStatus.PAUSE,
+    TaskStatus.CANCELLED,
   ].includes(task?.status);
   const clockRef = useRef(null);
   let taskContent = null;
   let getItems = null;
-
-  const getTaskProjectOwner = async () => {
-    const projectId = task?.projectId;
-    if (!isNumber(projectId) || projectId <= 0) {
-      setIsTaskProjectOwner(false);
-      return;
-    }
-
-    const res = await getProjectWithErrorCatch(projectId);
-    const userRoleList =
-      res?.members?.filter((i) => i.id === userStore?.user?.id)?.map((j) => j.role) || [];
-    setIsTaskProjectOwner(userRoleList.includes(ProjectRole.OWNER));
-  };
 
   const getTask = async function () {
     const data = await getTaskDetail(detailId);
@@ -361,9 +350,6 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     if (visible && detailId && !task) {
       setLoading(true);
     }
-    if (task) {
-      getTaskProjectOwner();
-    }
   }, [task, visible, detailId]);
 
   const handleDetailTypeChange = (type: TaskDetailType) => {
@@ -507,7 +493,6 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
         onApprovalVisible={handleApprovalVisible}
         onDetailVisible={props.onDetailVisible}
         onClose={onClose}
-        isTaskProjectOwner={isTaskProjectOwner}
       />
     ) : null,
   };

@@ -19,7 +19,7 @@ import { listDatabases } from '@/common/network/database';
 import ConnectionPopover from '@/component/ConnectionPopover';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
-import { hasPermission, TaskTypeMap, isSupportFileSystemTask } from '@/component/Task/helper';
+import { hasPermission, TaskTypeMap } from '@/component/Task/helper';
 import { EnvColorMap } from '@/constant';
 import { ConnectionMode, TaskType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
@@ -111,7 +111,7 @@ const SessionDropdown: React.FC<IProps> = function ({
   taskType,
   dataSourceStatusStore,
   options,
-  disabled= false
+  disabled = false,
 }) {
   const context = useContext(SessionContext);
   const { from, setFrom } = context;
@@ -154,6 +154,7 @@ const SessionDropdown: React.FC<IProps> = function ({
   const dataGroup = useMemo(() => {
     const datasources: Map<number, { datasource: IDatasource; databases: IDatabase[] }> = new Map();
     const projects: Map<number, { project: IProject; databases: IDatabase[] }> = new Map();
+    const databases: Map<number, IDatabase> = new Map();
     const allProjects: IProject[] = [],
       allDatasources: IDatasource[] = [];
     data?.contents?.forEach((db) => {
@@ -203,6 +204,7 @@ const SessionDropdown: React.FC<IProps> = function ({
         }
         datasources.set(dataSource?.id, datasourceDatabases);
       }
+      databases.set(db.id, db);
     });
     let filterDataSources: IDatasource[];
     let filterProjects: IProject[];
@@ -220,6 +222,7 @@ const SessionDropdown: React.FC<IProps> = function ({
     return {
       datasources,
       projects,
+      databases,
       allDatasources: hasDialectTypesFilter ? filterDataSources : allDatasources,
       allProjects: hasProjectIdFilter ? filterProjects : allProjects,
     };
@@ -458,7 +461,7 @@ const SessionDropdown: React.FC<IProps> = function ({
           }
           setLoading(true);
           try {
-            await context.selectSession(dbId, dsId, from);
+            await context.selectSession(dbId, dsId, from, dataGroup.databases.get(dbId));
           } catch (e) {
             console.error(e);
           } finally {
@@ -491,68 +494,71 @@ const SessionDropdown: React.FC<IProps> = function ({
       overlayClassName={styles.pop}
       overlayStyle={{ paddingTop: 2, width }}
       content={
-        disabled ? null :
-        <Spin spinning={loading || fetchLoading}>
-          <div className={styles.main} style={{ width: '100%' }}>
-            <Space.Compact block>
-              {context?.datasourceMode || context?.projectMode || login.isPrivateSpace() ? null : (
-                <Select
-                  onChange={(v) => setFrom(v)}
-                  value={from}
-                  size="small"
-                  style={{
-                    width: '35%',
-                  }}
-                  options={[
-                    {
-                      label: formatMessage({
-                        id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.Project',
-                        defaultMessage: '按项目',
-                      }), //'按项目'
-                      value: 'project',
-                    },
-                    {
-                      label: formatMessage({
-                        id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DataSource',
-                        defaultMessage: '按数据源',
-                      }), //'按数据源'
-                      value: 'datasource',
-                    },
-                  ]}
-                />
-              )}
+        disabled ? null : (
+          <Spin spinning={loading || fetchLoading}>
+            <div className={styles.main} style={{ width: '100%' }}>
+              <Space.Compact block>
+                {context?.datasourceMode ||
+                context?.projectMode ||
+                login.isPrivateSpace() ? null : (
+                  <Select
+                    onChange={(v) => setFrom(v)}
+                    value={from}
+                    size="small"
+                    style={{
+                      width: '35%',
+                    }}
+                    options={[
+                      {
+                        label: formatMessage({
+                          id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.Project',
+                          defaultMessage: '按项目',
+                        }), //'按项目'
+                        value: 'project',
+                      },
+                      {
+                        label: formatMessage({
+                          id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DataSource',
+                          defaultMessage: '按数据源',
+                        }), //'按数据源'
+                        value: 'datasource',
+                      },
+                    ]}
+                  />
+                )}
 
-              <Input
-                size="small"
-                value={searchValue}
-                suffix={<SearchOutlined />}
-                placeholder={
-                  formatMessage({
-                    id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.SearchForTheKeyword',
-                    defaultMessage: '搜索关键字',
-                  }) /* 搜索关键字 */
-                }
-                onChange={(v) => setSearchValue(v.target.value)}
+                <Input
+                  size="small"
+                  value={searchValue}
+                  suffix={<SearchOutlined />}
+                  placeholder={
+                    formatMessage({
+                      id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.SearchForTheKeyword',
+                      defaultMessage: '搜索关键字',
+                    }) /* 搜索关键字 */
+                  }
+                  onChange={(v) => setSearchValue(v.target.value)}
+                  style={{
+                    width:
+                      context?.datasourceMode || context?.projectMode || login.isPrivateSpace()
+                        ? '100%'
+                        : '65%',
+                  }}
+                />
+              </Space.Compact>
+              <div
                 style={{
-                  width:
-                    context?.datasourceMode || context?.projectMode || login.isPrivateSpace()
-                      ? '100%'
-                      : '65%',
+                  height: DEFALT_HEIGHT,
+                  marginTop: 10,
+                  width: width || DEFALT_WIDTH,
+                  overflow: 'hidden',
                 }}
-              />
-            </Space.Compact>
-            <div
-              style={{
-                height: DEFALT_HEIGHT,
-                marginTop: 10,
-                width: width || DEFALT_WIDTH,
-                overflow: 'hidden',
-              }}
-            >
-              {TreeRender()}
+              >
+                {TreeRender()}
+              </div>
             </div>
-          </div>
-        </Spin>
+          </Spin>
+        )
       }
     >
       {children}
