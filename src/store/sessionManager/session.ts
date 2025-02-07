@@ -283,7 +283,10 @@ class SessionStore {
       support_synonym: 'enableSynonym',
       support_recycle_bin: 'enableRecycleBin',
       support_shadowtable: 'enableShadowSync',
-      support_partition_plan: 'enablePartitionPlan',
+      support_partition_plan: (allConfig) => {
+        this.supportFeature.enablePartitionPlan =
+          settingStore.enablePartitionPlan && allConfig['support_partition_plan'];
+      },
       support_column_group: 'enableColumnStore',
       support_async: (allConfig) => {
         this.supportFeature.enableAsync =
