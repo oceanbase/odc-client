@@ -79,7 +79,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
        * 冻结用户
        */
       history.replace('/exception/403');
-    } else if (isLoginPage) {
+    } else if (isLoginPage || location.pathname === '/project') {
       /**
        * 处于login页面并且已经登录，需要跳到对应的页面上
        */
