@@ -17,7 +17,7 @@
 import { getTaskDetail } from '@/common/network/task';
 import Action from '@/component/Action';
 import DisplayTable from '@/component/DisplayTable';
-import StatusLabel, { status } from '@/component/Task/component/Status';
+import { status } from '@/component/Task/component/Status';
 import { TaskOperationType, TaskRecord, TaskRecordParameters, Operation, TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
@@ -25,7 +25,6 @@ import { FilterOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 import FlowModal from './FlowModal';
 import ChangeDetail from './ChangeDetail';
-import { isSupportChangeDetail } from '@/component/Task/helper';
 import StatusItem from './status';
 import styles from './index.less';
 
@@ -74,10 +73,7 @@ const getConnectionColumns = (params: {
       ellipsis: true,
       width: 140,
       render: (id, record) => {
-        if (isSupportChangeDetail(params.taskType)) {
-          return <span>{operationTypeMap?.[record.type]}</span>;
-        }
-        return <span>{operationTypeMap?.[record.parameters?.operationType]}</span>;
+        return <span>{operationTypeMap?.[record.type]}</span>;
       },
     },
 
@@ -106,10 +102,7 @@ const getConnectionColumns = (params: {
         return value === record.status;
       },
       render: (status, record) => {
-        if (isSupportChangeDetail(params.taskType)) {
-          return <StatusItem status={status} />;
-        }
-        return <StatusLabel status={status} progress={Math.floor(record.progressPercentage)} />;
+        return <StatusItem status={status} />;
       },
     },
 
@@ -134,18 +127,16 @@ const getConnectionColumns = (params: {
                 defaultMessage: '审批记录',
               })}
             </Action.Link>
-            {isSupportChangeDetail(params.taskType) && (
-              <Action.Link
-                onClick={async () => {
-                  params?.onOpenChangeDetail(record, true);
-                }}
-              >
-                {formatMessage({
-                  id: 'src.component.Task.component.CommonDetailModal.5C706BA6',
-                  defaultMessage: '变更详情',
-                })}
-              </Action.Link>
-            )}
+            <Action.Link
+              onClick={async () => {
+                params?.onOpenChangeDetail(record, true);
+              }}
+            >
+              {formatMessage({
+                id: 'src.component.Task.component.CommonDetailModal.5C706BA6',
+                defaultMessage: '变更详情',
+              })}
+            </Action.Link>
           </>
         );
       },
@@ -154,7 +145,7 @@ const getConnectionColumns = (params: {
 };
 
 interface IProps {
-  opRecord: Operation[] | TaskRecord<any>[];
+  opRecord: Operation[];
   onReload: () => void;
   taskType: TaskType;
 }
@@ -172,11 +163,7 @@ const TaskOperationRecord: React.FC<IProps> = (props) => {
     task: Operation | TaskRecord<TaskRecordParameters>,
     visible: boolean = false,
   ) => {
-    if (isSupportChangeDetail(taskType)) {
-      setDetailId((task as Operation)?.flowInstanceId);
-    } else {
-      setDetailId(task?.id);
-    }
+    setDetailId((task as Operation)?.flowInstanceId);
     setDetailVisible(visible);
   };
 
