@@ -128,6 +128,7 @@ const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
             importContent,
             ...detailRes?.parameters?.csvConfig,
             tableName: detailRes?.parameters?.exportDbObjects?.[0]?.objectName,
+            description: detailRes?.description,
           };
           form.setFieldsValue({
             ...formData,

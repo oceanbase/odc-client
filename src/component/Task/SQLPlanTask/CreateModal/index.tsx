@@ -32,6 +32,7 @@ import {
   TaskPageType,
   TaskStatus,
   TaskType,
+  CycleTaskDetail,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import login from '@/store/login';
@@ -49,13 +50,16 @@ import {
   Modal,
   Radio,
   Space,
+  Spin,
 } from 'antd';
 import type { UploadFile } from 'antd/lib/upload/interface';
 import Cookies from 'js-cookie';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
+import { useRequest } from 'ahooks';
 import styles from './index.less';
+
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 
 interface IProps {
@@ -99,8 +103,11 @@ const CreateModal: React.FC<IProps> = (props) => {
   const taskId = sqlPlanData?.taskId;
   const isEdit = !!SQLPlanEditId || !!taskId;
   const isInitContent = isEdit ? isEdit && formData : true;
+  const { run: fetchCycleTaskDetail, loading } = useRequest(getCycleTaskDetail, { manual: true });
+
   const loadEditData = async (editId: number) => {
-    const data = await getCycleTaskDetail<ISqlPlayJobParameters>(editId);
+    const data = (await fetchCycleTaskDetail(editId)) as CycleTaskDetail<ISqlPlayJobParameters>;
+
     const {
       jobParameters,
       triggerConfig: { triggerStrategy, cronExpression, hours, days },
@@ -503,7 +510,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               /*取消*/
             }
           </Button>
-          <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
+          <Button type="primary" loading={confirmLoading || loading} onClick={handleSubmit}>
             {
               isEdit && SQLPlanEditId
                 ? formatMessage({
@@ -525,298 +532,300 @@ const CreateModal: React.FC<IProps> = (props) => {
         handleCancel(hasEdit);
       }}
     >
-      <Form
-        form={form}
-        name="basic"
-        layout="vertical"
-        requiredMark="optional"
-        initialValues={defaultValue}
-        onFieldsChange={handleFieldsChange}
-      >
-        <DatabaseSelect
-          disabled={isEdit && !!SQLPlanEditId}
-          type={TaskType.SQL_PLAN}
-          projectId={projectId}
-        />
-        <Form.Item
-          label={formatMessage({
-            id: 'odc.components.CreateSQLPlanTaskModal.SqlContent',
-            defaultMessage: 'SQL 内容',
-          })}
-          /*SQL 内容*/
-          name="sqlContentType"
-          rules={[
-            {
-              required: true,
-              message: formatMessage({
-                id: 'odc.components.CreateSQLPlanTaskModal.SelectSqlContent',
-                defaultMessage: '请选择 SQL 内容',
-              }),
-              //请选择 SQL 内容
-            },
-          ]}
+      <Spin spinning={loading}>
+        <Form
+          form={form}
+          name="basic"
+          layout="vertical"
+          requiredMark="optional"
+          initialValues={defaultValue}
+          onFieldsChange={handleFieldsChange}
         >
-          <Radio.Group onChange={handleContentTypeChange}>
-            <Radio.Button value={SQLContentType.TEXT}>
-              {
-                formatMessage({
-                  id: 'odc.components.CreateSQLPlanTaskModal.SqlEntry',
-                  defaultMessage: 'SQL 录入',
-                })
-                /*SQL录入*/
-              }
-            </Radio.Button>
-            <Radio.Button value={SQLContentType.FILE}>
-              {
-                formatMessage({
-                  id: 'odc.components.CreateSQLPlanTaskModal.UploadAnAttachment',
-                  defaultMessage: '上传附件',
-                })
-                /*上传附件*/
-              }
-            </Radio.Button>
-          </Radio.Group>
-        </Form.Item>
-        <Form.Item
-          name="sqlContent"
-          className={`${styles.sqlContent} ${
-            sqlContentType !== SQLContentType.TEXT && styles.hide
-          }`}
-          rules={[
-            {
-              required: sqlContentType === SQLContentType.TEXT,
-              message: formatMessage({
-                id: 'odc.components.CreateSQLPlanTaskModal.EnterTheSqlContent',
-                defaultMessage: '请填写 SQL 内容',
-              }),
-              //请填写 SQL 内容
-            },
-          ]}
-          style={{ height: '280px' }}
-        >
-          {isInitContent && (
-            <CommonIDE
-              initialSQL={formData?.sqlContent}
-              language={getDataSourceModeConfig(connection?.type)?.sql?.language}
-              editorProps={{
-                theme,
-              }}
-              onSQLChange={handleSqlChange}
-            />
-          )}
-        </Form.Item>
-        <Form.Item
-          name="sqlFiles"
-          className={sqlContentType !== SQLContentType.FILE && styles.hide}
-        >
-          {isInitContent && (
-            <ODCDragger {...draggerProps}>
-              <p className={styles.tip}>
-                {
-                  formatMessage({
-                    id: 'odc.components.CreateSQLPlanTaskModal.ClickOrDragMultipleFiles',
-                    defaultMessage: '点击或将多个文件拖拽到这里上传',
-                  })
-                  /*点击或将多个文件拖拽到这里上传*/
-                }
-              </p>
-              <p className={styles.desc}>
-                {
-                  formatMessage({
-                    id: 'odc.components.CreateSQLPlanTaskModal.TheFileCanBeUp',
-                    defaultMessage: '文件最多不超过 256 MB ，支持扩展名 .sql',
-                  })
-                  /*文件最多不超过 256MB ，支持扩展名 .sql*/
-                }
-              </p>
-            </ODCDragger>
-          )}
-        </Form.Item>
-        <Space size={24}>
+          <DatabaseSelect
+            disabled={isEdit && !!SQLPlanEditId}
+            type={TaskType.SQL_PLAN}
+            projectId={projectId}
+          />
           <Form.Item
-            name="delimiter"
             label={formatMessage({
-              id: 'odc.components.CreateSQLPlanTaskModal.Separator',
-              defaultMessage: '分隔符',
+              id: 'odc.components.CreateSQLPlanTaskModal.SqlContent',
+              defaultMessage: 'SQL 内容',
             })}
-            /*分隔符*/
-            required
+            /*SQL 内容*/
+            name="sqlContentType"
             rules={[
               {
                 required: true,
                 message: formatMessage({
-                  id: 'odc.components.CreateSQLPlanTaskModal.EnterADelimiter',
-                  defaultMessage: '请输入分隔符',
+                  id: 'odc.components.CreateSQLPlanTaskModal.SelectSqlContent',
+                  defaultMessage: '请选择 SQL 内容',
                 }),
-                //请输入分隔符
+                //请选择 SQL 内容
               },
             ]}
           >
-            <AutoComplete
-              style={{ width: 90 }}
-              options={[';', '/', '//', '$', '$$'].map((value) => {
-                return {
-                  value,
-                };
-              })}
-            />
+            <Radio.Group onChange={handleContentTypeChange}>
+              <Radio.Button value={SQLContentType.TEXT}>
+                {
+                  formatMessage({
+                    id: 'odc.components.CreateSQLPlanTaskModal.SqlEntry',
+                    defaultMessage: 'SQL 录入',
+                  })
+                  /*SQL录入*/
+                }
+              </Radio.Button>
+              <Radio.Button value={SQLContentType.FILE}>
+                {
+                  formatMessage({
+                    id: 'odc.components.CreateSQLPlanTaskModal.UploadAnAttachment',
+                    defaultMessage: '上传附件',
+                  })
+                  /*上传附件*/
+                }
+              </Radio.Button>
+            </Radio.Group>
           </Form.Item>
           <Form.Item
-            name="queryLimit"
-            label={formatMessage({
-              id: 'odc.components.CreateSQLPlanTaskModal.QueryResultLimits',
-              defaultMessage: '查询结果限制',
-            })}
-            /*查询结果限制*/
-            required
+            name="sqlContent"
+            className={`${styles.sqlContent} ${
+              sqlContentType !== SQLContentType.TEXT && styles.hide
+            }`}
             rules={[
               {
-                required: true,
+                required: sqlContentType === SQLContentType.TEXT,
                 message: formatMessage({
-                  id: 'odc.components.CreateSQLPlanTaskModal.PleaseEnterTheQueryResult',
-                  defaultMessage: '请输入查询结果限制',
+                  id: 'odc.components.CreateSQLPlanTaskModal.EnterTheSqlContent',
+                  defaultMessage: '请填写 SQL 内容',
                 }),
-                //请输入查询结果限制
+                //请填写 SQL 内容
               },
             ]}
+            style={{ height: '280px' }}
           >
-            <InputNumber min={1} max={10000 * 100} />
+            {isInitContent && (
+              <CommonIDE
+                initialSQL={formData?.sqlContent}
+                language={getDataSourceModeConfig(connection?.type)?.sql?.language}
+                editorProps={{
+                  theme,
+                }}
+                onSQLChange={handleSqlChange}
+              />
+            )}
           </Form.Item>
           <Form.Item
-            label={formatMessage({
-              id: 'odc.components.CreateSQLPlanTaskModal.ExecutionTimeout',
-              defaultMessage: '执行超时时间',
-            })}
-            /*执行超时时间*/ required
+            name="sqlFiles"
+            className={sqlContentType !== SQLContentType.FILE && styles.hide}
           >
+            {isInitContent && (
+              <ODCDragger {...draggerProps}>
+                <p className={styles.tip}>
+                  {
+                    formatMessage({
+                      id: 'odc.components.CreateSQLPlanTaskModal.ClickOrDragMultipleFiles',
+                      defaultMessage: '点击或将多个文件拖拽到这里上传',
+                    })
+                    /*点击或将多个文件拖拽到这里上传*/
+                  }
+                </p>
+                <p className={styles.desc}>
+                  {
+                    formatMessage({
+                      id: 'odc.components.CreateSQLPlanTaskModal.TheFileCanBeUp',
+                      defaultMessage: '文件最多不超过 256 MB ，支持扩展名 .sql',
+                    })
+                    /*文件最多不超过 256MB ，支持扩展名 .sql*/
+                  }
+                </p>
+              </ODCDragger>
+            )}
+          </Form.Item>
+          <Space size={24}>
             <Form.Item
+              name="delimiter"
               label={formatMessage({
-                id: 'odc.components.CreateSQLPlanTaskModal.Hours',
-                defaultMessage: '小时',
+                id: 'odc.components.CreateSQLPlanTaskModal.Separator',
+                defaultMessage: '分隔符',
               })}
-              /*小时*/
-              name="timeoutMillis"
+              /*分隔符*/
+              required
               rules={[
                 {
                   required: true,
                   message: formatMessage({
-                    id: 'odc.components.CreateSQLPlanTaskModal.EnterATimeoutPeriod',
-                    defaultMessage: '请输入超时时间',
+                    id: 'odc.components.CreateSQLPlanTaskModal.EnterADelimiter',
+                    defaultMessage: '请输入分隔符',
                   }),
-                  //请输入超时时间
-                },
-                {
-                  type: 'number',
-                  max: 480,
-                  message: formatMessage({
-                    id: 'odc.components.CreateSQLPlanTaskModal.UpToHours',
-                    defaultMessage: '最大不超过 480 小时',
-                  }),
-                  //最大不超过480小时
+                  //请输入分隔符
                 },
               ]}
-              noStyle
             >
-              <InputNumber min={0} />
+              <AutoComplete
+                style={{ width: 90 }}
+                options={[';', '/', '//', '$', '$$'].map((value) => {
+                  return {
+                    value,
+                  };
+                })}
+              />
             </Form.Item>
-            <span className={styles.hour}>
-              {
-                formatMessage({
+            <Form.Item
+              name="queryLimit"
+              label={formatMessage({
+                id: 'odc.components.CreateSQLPlanTaskModal.QueryResultLimits',
+                defaultMessage: '查询结果限制',
+              })}
+              /*查询结果限制*/
+              required
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage({
+                    id: 'odc.components.CreateSQLPlanTaskModal.PleaseEnterTheQueryResult',
+                    defaultMessage: '请输入查询结果限制',
+                  }),
+                  //请输入查询结果限制
+                },
+              ]}
+            >
+              <InputNumber min={1} max={10000 * 100} />
+            </Form.Item>
+            <Form.Item
+              label={formatMessage({
+                id: 'odc.components.CreateSQLPlanTaskModal.ExecutionTimeout',
+                defaultMessage: '执行超时时间',
+              })}
+              /*执行超时时间*/ required
+            >
+              <Form.Item
+                label={formatMessage({
                   id: 'odc.components.CreateSQLPlanTaskModal.Hours',
                   defaultMessage: '小时',
-                })
+                })}
                 /*小时*/
-              }
-            </span>
+                name="timeoutMillis"
+                rules={[
+                  {
+                    required: true,
+                    message: formatMessage({
+                      id: 'odc.components.CreateSQLPlanTaskModal.EnterATimeoutPeriod',
+                      defaultMessage: '请输入超时时间',
+                    }),
+                    //请输入超时时间
+                  },
+                  {
+                    type: 'number',
+                    max: 480,
+                    message: formatMessage({
+                      id: 'odc.components.CreateSQLPlanTaskModal.UpToHours',
+                      defaultMessage: '最大不超过 480 小时',
+                    }),
+                    //最大不超过480小时
+                  },
+                ]}
+                noStyle
+              >
+                <InputNumber min={0} />
+              </Form.Item>
+              <span className={styles.hour}>
+                {
+                  formatMessage({
+                    id: 'odc.components.CreateSQLPlanTaskModal.Hours',
+                    defaultMessage: '小时',
+                  })
+                  /*小时*/
+                }
+              </span>
+            </Form.Item>
+          </Space>
+          <Form.Item>
+            <Crontab ref={crontabRef} initialValue={crontab} onValueChange={handleCrontabChange} />
           </Form.Item>
-        </Space>
-        <Form.Item>
-          <Crontab ref={crontabRef} initialValue={crontab} onValueChange={handleCrontabChange} />
-        </Form.Item>
-        <FormItemPanel
-          label={formatMessage({
-            id: 'odc.components.CreateSQLPlanTaskModal.TaskSettings',
-            defaultMessage: '任务设置',
-          })}
-          /*任务设置*/ keepExpand
-        >
-          <Form.Item
+          <FormItemPanel
             label={formatMessage({
-              id: 'odc.components.CreateSQLPlanTaskModal.TaskErrorHandling',
-              defaultMessage: '任务错误处理',
+              id: 'odc.components.CreateSQLPlanTaskModal.TaskSettings',
+              defaultMessage: '任务设置',
             })}
-            /*任务错误处理*/
-            name="errorStrategy"
-            rules={[
-              {
-                required: true,
-                message: formatMessage({
-                  id: 'odc.components.CreateSQLPlanTaskModal.SelectTaskErrorHandling',
-                  defaultMessage: '请选择任务错误处理',
-                }),
-                //请选择任务错误处理
-              },
-            ]}
+            /*任务设置*/ keepExpand
           >
-            <Radio.Group>
-              <Radio value={ErrorStrategy.ABORT}>
+            <Form.Item
+              label={formatMessage({
+                id: 'odc.components.CreateSQLPlanTaskModal.TaskErrorHandling',
+                defaultMessage: '任务错误处理',
+              })}
+              /*任务错误处理*/
+              name="errorStrategy"
+              rules={[
                 {
-                  formatMessage({
-                    id: 'odc.components.CreateSQLPlanTaskModal.StopATask',
-                    defaultMessage: '停止任务',
-                  })
-                  /*停止任务*/
-                }
-              </Radio>
-              <Radio value={ErrorStrategy.CONTINUE}>
+                  required: true,
+                  message: formatMessage({
+                    id: 'odc.components.CreateSQLPlanTaskModal.SelectTaskErrorHandling',
+                    defaultMessage: '请选择任务错误处理',
+                  }),
+                  //请选择任务错误处理
+                },
+              ]}
+            >
+              <Radio.Group>
+                <Radio value={ErrorStrategy.ABORT}>
+                  {
+                    formatMessage({
+                      id: 'odc.components.CreateSQLPlanTaskModal.StopATask',
+                      defaultMessage: '停止任务',
+                    })
+                    /*停止任务*/
+                  }
+                </Radio>
+                <Radio value={ErrorStrategy.CONTINUE}>
+                  {
+                    formatMessage({
+                      id: 'odc.components.CreateSQLPlanTaskModal.IgnoreErrorsToContinueThe',
+                      defaultMessage: '忽略错误继续任务',
+                    })
+                    /*忽略错误继续任务*/
+                  }
+                </Radio>
+              </Radio.Group>
+            </Form.Item>
+            <Form.Item
+              label={formatMessage({
+                id: 'odc.components.CreateSQLPlanTaskModal.TaskExecutionDurationHypercycleProcessing',
+                defaultMessage: '任务执行时长超周期处理',
+              })} /*任务执行时长超周期处理*/
+              name="allowConcurrent"
+              rules={[
                 {
-                  formatMessage({
-                    id: 'odc.components.CreateSQLPlanTaskModal.IgnoreErrorsToContinueThe',
-                    defaultMessage: '忽略错误继续任务',
-                  })
-                  /*忽略错误继续任务*/
-                }
-              </Radio>
-            </Radio.Group>
-          </Form.Item>
-          <Form.Item
-            label={formatMessage({
-              id: 'odc.components.CreateSQLPlanTaskModal.TaskExecutionDurationHypercycleProcessing',
-              defaultMessage: '任务执行时长超周期处理',
-            })} /*任务执行时长超周期处理*/
-            name="allowConcurrent"
-            rules={[
-              {
-                required: true,
-                message: formatMessage({
-                  id: 'odc.components.CreateSQLPlanTaskModal.PleaseSelectTaskExecutionDuration',
-                  defaultMessage: '请选择任务执行时长超周期处理',
-                }), //请选择任务执行时长超周期处理
-              },
-            ]}
-          >
-            <Radio.Group>
-              <Radio value={false}>
-                {
-                  formatMessage({
-                    id: 'odc.components.CreateSQLPlanTaskModal.AfterTheCurrentTaskIs',
-                    defaultMessage: '待当前任务执行完毕在新周期发起任务',
-                  }) /*待当前任务执行完毕在新周期发起任务*/
-                }
-              </Radio>
-              <Radio value={true}>
-                {
-                  formatMessage({
-                    id: 'odc.components.CreateSQLPlanTaskModal.IgnoreTheCurrentTaskStatus',
-                    defaultMessage: '忽略当前任务状态，定期发起新任务',
-                  }) /*忽略当前任务状态，定期发起新任务*/
-                }
-              </Radio>
-            </Radio.Group>
-          </Form.Item>
-        </FormItemPanel>
-        <DescriptionInput />
-      </Form>
+                  required: true,
+                  message: formatMessage({
+                    id: 'odc.components.CreateSQLPlanTaskModal.PleaseSelectTaskExecutionDuration',
+                    defaultMessage: '请选择任务执行时长超周期处理',
+                  }), //请选择任务执行时长超周期处理
+                },
+              ]}
+            >
+              <Radio.Group>
+                <Radio value={false}>
+                  {
+                    formatMessage({
+                      id: 'odc.components.CreateSQLPlanTaskModal.AfterTheCurrentTaskIs',
+                      defaultMessage: '待当前任务执行完毕在新周期发起任务',
+                    }) /*待当前任务执行完毕在新周期发起任务*/
+                  }
+                </Radio>
+                <Radio value={true}>
+                  {
+                    formatMessage({
+                      id: 'odc.components.CreateSQLPlanTaskModal.IgnoreTheCurrentTaskStatus',
+                      defaultMessage: '忽略当前任务状态，定期发起新任务',
+                    }) /*忽略当前任务状态，定期发起新任务*/
+                  }
+                </Radio>
+              </Radio.Group>
+            </Form.Item>
+          </FormItemPanel>
+          <DescriptionInput />
+        </Form>
+      </Spin>
     </Drawer>
   );
 };
