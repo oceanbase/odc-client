@@ -348,7 +348,7 @@ export class SettingStore {
       res?.['odc.features.task.data-archive.enabled'] === 'true' && !isClient();
     this.enableDataClear = res?.['odc.features.task.data-delete.enabled'] === 'true' && !isClient();
     this.enableApplyDBAuth =
-      res?.['odc.features.task.apply-database-permission.enabledd'] === 'true' && !isPrivateSpace;
+      res?.['odc.features.task.apply-database-permission.enabled'] === 'true' && !isPrivateSpace;
     this.enableApplyProjectAuth =
       res?.['odc.features.task.apply-project-permission.enabled'] === 'true' && !isPrivateSpace;
     this.enableApplyTableAuth =
