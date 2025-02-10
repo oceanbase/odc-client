@@ -158,6 +158,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
       handleProgressDetailVisible,
     },
     task.status,
+    task.project.currentUserResourceRoles,
   );
 
   return (

@@ -55,7 +55,9 @@ import {
   Select,
   Space,
   Tooltip,
+  Spin,
 } from 'antd';
+import { useRequest } from 'ahooks';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
@@ -244,8 +246,12 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
     }
   }, [ddlAlterData?.databaseId, ddlAlterData?.taskId]);
 
+  const { run: fetchTaskDetail, loading } = useRequest(getTaskDetail, {
+    manual: true,
+  });
+
   async function loadTaskDetail() {
-    const detailRes = (await getTaskDetail(
+    const detailRes = (await fetchTaskDetail(
       ddlAlterData?.taskId,
     )) as TaskDetail<IAlterScheduleTaskParams>;
     const rateLimitConfig = detailRes?.parameters?.rateLimitConfig;
@@ -255,6 +261,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
       executionStrategy: detailRes?.executionStrategy,
       rowLimit: rateLimitConfig?.rowLimit,
       dataSizeLimit: rateLimitConfig?.dataSizeLimit,
+      description: detailRes?.description,
     });
 
     editorRef?.current?.editor?.setValue(detailRes?.parameters?.sqlContent);
@@ -313,7 +320,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           >
             <Button
               type="primary"
-              loading={confirmLoading}
+              loading={confirmLoading || loading}
               onClick={handleSubmit}
               disabled={!canCreateTask}
             >
@@ -332,60 +339,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         handleCancel(hasEdit);
       }}
     >
-      <Alert
-        style={{
-          marginBottom: 12,
-        }}
-        type="warning"
-        showIcon
-        message={
-          formatMessage({
-            id: 'odc.src.component.Task.AlterDdlTask.CreateModal.Notice',
-            defaultMessage: '注意',
-          }) /* 注意 */
-        }
-        description={
-          <div>
-            {
-              formatMessage({
-                id: 'odc.src.component.Task.AlterDdlTask.CreateModal.1BeforePerformingThe',
-                defaultMessage: '1. 执行无锁结构变更前请确保数据库服务器磁盘空间充足；',
-              }) /*
-          1、执行无锁结构变更前请确保数据库服务器磁盘空间充足；
-          */
-            }
-
-            <br />
-            {
-              formatMessage({
-                id: 'odc.src.component.Task.AlterDdlTask.CreateModal.2WhenCreatingA',
-                defaultMessage: '2. 创建工单选择源表清理策略时建议选择保留源表；',
-              }) /*
-          2、创建工单选择源表清理策略时建议选择保留源表；
-          */
-            }
-
-            {lockDatabaseUserRequired && (
-              <>
-                <br />
-                {
-                  formatMessage({
-                    id: 'odc.src.component.Task.AlterDdlTask.CreateModal.3IfTheOB',
-                    defaultMessage:
-                      '3. 若 OceanBase Oracle 模式版本小于 4.0.0 或 OceanBase MySQL 模式版本小于 4.3.0，表名切换之前会锁定您指定的数据库账号，并关闭该账号对应的会话。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行；',
-                  }) /*
-            3、若 OB Oracle 模式版本小于 4.0 或 OB MySQL 模式版本小于
-            4.3，表名切换之前会锁定您指定的数据库账号，并 kill 该账号对应的
-            session。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行；
-            */
-                }
-              </>
-            )}
-          </div>
-        }
-      />
-
-      {!canCreateTask && (
+      <Spin spinning={loading}>
         <Alert
           style={{
             marginBottom: 12,
@@ -400,380 +354,435 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           }
           description={
             <div>
-              {formatMessage({
-                id: 'src.component.Task.AlterDdlTask.CreateModal.336C0D2E',
-                defaultMessage: '依赖',
-              })}
-
-              <a
-                href={`${origin}/oms-v2/${regionId}/migration?pageNumber=1&type=MIGRATION`}
-                target="_blank"
-              >
-                {formatMessage({
-                  id: 'src.component.Task.AlterDdlTask.CreateModal.D2A9FCAE',
-                  defaultMessage: '数据迁移服务',
-                })}
-              </a>
-              {formatMessage({
-                id: 'src.component.Task.AlterDdlTask.CreateModal.7E1F9429',
-                defaultMessage: '完成数据拷贝，检查到您没有空闲的数据迁移资源。',
-              })}
+              {
+                formatMessage({
+                  id: 'odc.src.component.Task.AlterDdlTask.CreateModal.1BeforePerformingThe',
+                  defaultMessage: '1. 执行无锁结构变更前请确保数据库服务器磁盘空间充足；',
+                }) /*
+          1、执行无锁结构变更前请确保数据库服务器磁盘空间充足；
+          */
+              }
 
               <br />
-              {formatMessage({
-                id: 'src.component.Task.AlterDdlTask.CreateModal.6B29781E',
-                defaultMessage: '请进行',
-              })}
+              {
+                formatMessage({
+                  id: 'odc.src.component.Task.AlterDdlTask.CreateModal.2WhenCreatingA',
+                  defaultMessage: '2. 创建工单选择源表清理策略时建议选择保留源表；',
+                }) /*
+          2、创建工单选择源表清理策略时建议选择保留源表；
+          */
+              }
 
-              <a
-                href={`https://pre-valid-common-buy.aliyun.com/?commodityCode=oceanbase_omspost_public_cn&regionId=${regionId}`}
-                target="_blank"
-              >
-                {formatMessage({
-                  id: 'src.component.Task.AlterDdlTask.CreateModal.2C714DF6',
-                  defaultMessage: '购买',
-                })}
-              </a>
-              {formatMessage({
-                id: 'src.component.Task.AlterDdlTask.CreateModal.5EB376C2',
-                defaultMessage: '，重新配置任务。',
-              })}
+              {lockDatabaseUserRequired && (
+                <>
+                  <br />
+                  {
+                    formatMessage({
+                      id: 'odc.src.component.Task.AlterDdlTask.CreateModal.3IfTheOB',
+                      defaultMessage:
+                        '3. 若 OceanBase Oracle 模式版本小于 4.0.0 或 OceanBase MySQL 模式版本小于 4.3.0，表名切换之前会锁定您指定的数据库账号，并关闭该账号对应的会话。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行；',
+                    }) /*
+            3、若 OB Oracle 模式版本小于 4.0 或 OB MySQL 模式版本小于
+            4.3，表名切换之前会锁定您指定的数据库账号，并 kill 该账号对应的
+            session。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行；
+            */
+                  }
+                </>
+              )}
             </div>
           }
         />
-      )}
 
-      <Form
-        name="basic"
-        initialValues={{
-          executionStrategy: TaskExecStrategy.AUTO,
-        }}
-        layout="vertical"
-        requiredMark="optional"
-        form={form}
-        onFieldsChange={handleFieldsChange}
-      >
-        <Row gutter={14}>
-          <Col span={12}>
-            <DatabaseSelect
-              type={TaskType.ONLINE_SCHEMA_CHANGE}
-              projectId={projectId}
-              onChange={handleDatabaseChange}
-            />
-          </Col>
-          {lockDatabaseUserRequired && (
+        {!canCreateTask && (
+          <Alert
+            style={{
+              marginBottom: 12,
+            }}
+            type="warning"
+            showIcon
+            message={
+              formatMessage({
+                id: 'odc.src.component.Task.AlterDdlTask.CreateModal.Notice',
+                defaultMessage: '注意',
+              }) /* 注意 */
+            }
+            description={
+              <div>
+                {formatMessage({
+                  id: 'src.component.Task.AlterDdlTask.CreateModal.336C0D2E',
+                  defaultMessage: '依赖',
+                })}
+
+                <a
+                  href={`${origin}/oms-v2/${regionId}/migration?pageNumber=1&type=MIGRATION`}
+                  target="_blank"
+                >
+                  {formatMessage({
+                    id: 'src.component.Task.AlterDdlTask.CreateModal.D2A9FCAE',
+                    defaultMessage: '数据迁移服务',
+                  })}
+                </a>
+                {formatMessage({
+                  id: 'src.component.Task.AlterDdlTask.CreateModal.7E1F9429',
+                  defaultMessage: '完成数据拷贝，检查到您没有空闲的数据迁移资源。',
+                })}
+
+                <br />
+                {formatMessage({
+                  id: 'src.component.Task.AlterDdlTask.CreateModal.6B29781E',
+                  defaultMessage: '请进行',
+                })}
+
+                <a
+                  href={`https://pre-valid-common-buy.aliyun.com/?commodityCode=oceanbase_omspost_public_cn&regionId=${regionId}`}
+                  target="_blank"
+                >
+                  {formatMessage({
+                    id: 'src.component.Task.AlterDdlTask.CreateModal.2C714DF6',
+                    defaultMessage: '购买',
+                  })}
+                </a>
+                {formatMessage({
+                  id: 'src.component.Task.AlterDdlTask.CreateModal.5EB376C2',
+                  defaultMessage: '，重新配置任务。',
+                })}
+              </div>
+            }
+          />
+        )}
+
+        <Form
+          name="basic"
+          initialValues={{
+            executionStrategy: TaskExecStrategy.AUTO,
+          }}
+          layout="vertical"
+          requiredMark="optional"
+          form={form}
+          onFieldsChange={handleFieldsChange}
+        >
+          <Row gutter={14}>
             <Col span={12}>
-              <Form.Item
-                label={
-                  <HelpDoc leftText isTip doc="AlterDdlTaskLockUsersTip">
-                    {
-                      formatMessage({
-                        id: 'odc.src.component.Task.AlterDdlTask.CreateModal.LockUsers.1',
-                        defaultMessage: '锁定用户',
-                      }) /*
+              <DatabaseSelect
+                type={TaskType.ONLINE_SCHEMA_CHANGE}
+                projectId={projectId}
+                onChange={handleDatabaseChange}
+              />
+            </Col>
+            {lockDatabaseUserRequired && (
+              <Col span={12}>
+                <Form.Item
+                  label={
+                    <HelpDoc leftText isTip doc="AlterDdlTaskLockUsersTip">
+                      {
+                        formatMessage({
+                          id: 'odc.src.component.Task.AlterDdlTask.CreateModal.LockUsers.1',
+                          defaultMessage: '锁定用户',
+                        }) /*
                 锁定用户
                 */
+                      }
+                    </HelpDoc>
+                  }
+                  name="lockUsers"
+                  required
+                >
+                  <Select
+                    showSearch
+                    mode="multiple"
+                    filterOption={(input, option) =>
+                      (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                     }
-                  </HelpDoc>
-                }
-                name="lockUsers"
-                required
-              >
-                <Select
-                  showSearch
-                  mode="multiple"
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                  }
-                  placeholder={
-                    formatMessage({
-                      id: 'odc.src.component.Task.AlterDdlTask.CreateModal.PleaseChoose',
-                      defaultMessage: '请选择',
-                    }) /* 请选择 */
-                  }
-                  options={datasourceUserOptions}
-                />
-              </Form.Item>
-            </Col>
-          )}
-        </Row>
-        <Form.Item
-          label={formatMessage({
-            id: 'odc.AlterDdlTask.CreateModal.ChangeDefinition',
-            defaultMessage: '变更定义',
-          })}
-          /*变更定义*/ name="sqlType"
-          initialValue={SqlType.CREATE}
-          rules={[
-            {
-              required: true,
-              message: formatMessage({
-                id: 'odc.AlterDdlTask.CreateModal.SelectAChangeDefinition',
-                defaultMessage: '请选择变更定义',
-              }), //请选择变更定义
-            },
-          ]}
-        >
-          <Radio.Group>
-            <Radio value={SqlType.CREATE}>CREATE TABLE</Radio>
-            <Radio value={SqlType.ALTER}>ALTER TABLE</Radio>
-          </Radio.Group>
-        </Form.Item>
-        <Form.Item
-          name="sqlContent"
-          label={formatMessage({
-            id: 'odc.AlterDdlTask.CreateModal.SqlContent',
-            defaultMessage: 'SQL 内容',
-          })}
-          /*SQL 内容*/
-          className={styles.sqlContent}
-          rules={[
-            {
-              required: true,
-              message: formatMessage({
-                id: 'odc.AlterDdlTask.CreateModal.EnterTheSqlContent',
-                defaultMessage: '请填写 SQL 内容',
-              }), //请填写 SQL 内容
-            },
-          ]}
-          style={{
-            height: '280px',
-          }}
-        >
-          <CommonIDE
-            editorProps={{
-              theme,
-            }}
-            language={getDataSourceModeConfig(connection?.type)?.sql?.language}
-            onSQLChange={handleSqlChange}
-            ref={editorRef}
-          />
-        </Form.Item>
-        <FormItemPanel
-          label={
-            <HelpDoc leftText isTip doc="schemaChangeSwapTable">
+                    placeholder={
+                      formatMessage({
+                        id: 'odc.src.component.Task.AlterDdlTask.CreateModal.PleaseChoose',
+                        defaultMessage: '请选择',
+                      }) /* 请选择 */
+                    }
+                    options={datasourceUserOptions}
+                  />
+                </Form.Item>
+              </Col>
+            )}
+          </Row>
+          <Form.Item
+            label={formatMessage({
+              id: 'odc.AlterDdlTask.CreateModal.ChangeDefinition',
+              defaultMessage: '变更定义',
+            })}
+            /*变更定义*/ name="sqlType"
+            initialValue={SqlType.CREATE}
+            rules={[
               {
-                formatMessage({
-                  id: 'odc.AlterDdlTask.CreateModal.SwitchTableSettings',
-                  defaultMessage: '切换表设置',
-                }) /*切换表设置*/
-              }
-            </HelpDoc>
-          }
-          keepExpand
-        >
-          <Row>
-            <Col span={6}>
-              <Form.Item
-                label={
-                  <HelpDoc leftText isTip doc="schemaChangeSwapTableTimeout">
+                required: true,
+                message: formatMessage({
+                  id: 'odc.AlterDdlTask.CreateModal.SelectAChangeDefinition',
+                  defaultMessage: '请选择变更定义',
+                }), //请选择变更定义
+              },
+            ]}
+          >
+            <Radio.Group>
+              <Radio value={SqlType.CREATE}>CREATE TABLE</Radio>
+              <Radio value={SqlType.ALTER}>ALTER TABLE</Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item
+            name="sqlContent"
+            label={formatMessage({
+              id: 'odc.AlterDdlTask.CreateModal.SqlContent',
+              defaultMessage: 'SQL 内容',
+            })}
+            /*SQL 内容*/
+            className={styles.sqlContent}
+            rules={[
+              {
+                required: true,
+                message: formatMessage({
+                  id: 'odc.AlterDdlTask.CreateModal.EnterTheSqlContent',
+                  defaultMessage: '请填写 SQL 内容',
+                }), //请填写 SQL 内容
+              },
+            ]}
+            style={{
+              height: '280px',
+            }}
+          >
+            <CommonIDE
+              editorProps={{
+                theme,
+              }}
+              language={getDataSourceModeConfig(connection?.type)?.sql?.language}
+              onSQLChange={handleSqlChange}
+              ref={editorRef}
+            />
+          </Form.Item>
+          <FormItemPanel
+            label={
+              <HelpDoc leftText isTip doc="schemaChangeSwapTable">
+                {
+                  formatMessage({
+                    id: 'odc.AlterDdlTask.CreateModal.SwitchTableSettings',
+                    defaultMessage: '切换表设置',
+                  }) /*切换表设置*/
+                }
+              </HelpDoc>
+            }
+            keepExpand
+          >
+            <Row>
+              <Col span={6}>
+                <Form.Item
+                  label={
+                    <HelpDoc leftText isTip doc="schemaChangeSwapTableTimeout">
+                      {
+                        formatMessage({
+                          id: 'odc.AlterDdlTask.CreateModal.LockTableTimeout',
+                          defaultMessage: '锁表超时时间',
+                        }) /*锁表超时时间*/
+                      }
+                    </HelpDoc>
+                  }
+                  required
+                >
+                  <Form.Item
+                    label={formatMessage({
+                      id: 'odc.AlterDdlTask.CreateModal.Seconds',
+                      defaultMessage: '秒',
+                    })}
+                    /*秒*/ name="lockTableTimeOutSeconds"
+                    rules={[
+                      {
+                        required: true,
+                        message: formatMessage({
+                          id: 'odc.AlterDdlTask.CreateModal.EnterATimeoutPeriod',
+                          defaultMessage: '请输入超时时间',
+                        }), //请输入超时时间
+                      },
+                      {
+                        type: 'number',
+                        max: 3600,
+                        message: formatMessage({
+                          id: 'odc.AlterDdlTask.CreateModal.UpToSeconds',
+                          defaultMessage: '最大不超过 3600 秒',
+                        }), //最大不超过 3600 秒
+                      },
+                    ]}
+                    initialValue={5}
+                    noStyle
+                  >
+                    <InputNumber min={0} max={3600} />
+                  </Form.Item>
+                  <span className={styles.hour}>
                     {
                       formatMessage({
-                        id: 'odc.AlterDdlTask.CreateModal.LockTableTimeout',
-                        defaultMessage: '锁表超时时间',
-                      }) /*锁表超时时间*/
+                        id: 'odc.AlterDdlTask.CreateModal.Seconds',
+                        defaultMessage: '秒',
+                      }) /*秒*/
                     }
-                  </HelpDoc>
-                }
-                required
-              >
+                  </span>
+                </Form.Item>
+              </Col>
+              <Col span={6}>
                 <Form.Item
-                  label={formatMessage({
-                    id: 'odc.AlterDdlTask.CreateModal.Seconds',
-                    defaultMessage: '秒',
-                  })}
-                  /*秒*/ name="lockTableTimeOutSeconds"
+                  name="swapTableNameRetryTimes"
+                  label={
+                    <HelpDoc leftText isTip doc="schemaChangeSwapTableRetryTimes">
+                      {
+                        formatMessage({
+                          id: 'odc.AlterDdlTask.CreateModal.NumberOfFailedRetries',
+                          defaultMessage: '失败重试次数',
+                        }) /*失败重试次数*/
+                      }
+                    </HelpDoc>
+                  }
+                  initialValue={3}
+                  required
                   rules={[
                     {
                       required: true,
                       message: formatMessage({
-                        id: 'odc.AlterDdlTask.CreateModal.EnterATimeoutPeriod',
-                        defaultMessage: '请输入超时时间',
-                      }), //请输入超时时间
-                    },
-                    {
-                      type: 'number',
-                      max: 3600,
-                      message: formatMessage({
-                        id: 'odc.AlterDdlTask.CreateModal.UpToSeconds',
-                        defaultMessage: '最大不超过 3600 秒',
-                      }), //最大不超过 3600 秒
+                        id: 'odc.AlterDdlTask.CreateModal.PleaseEnterTheNumberOf',
+                        defaultMessage: '请输入失败重试次数',
+                      }), //请输入失败重试次数
                     },
                   ]}
-                  initialValue={5}
-                  noStyle
                 >
-                  <InputNumber min={0} max={3600} />
+                  <InputNumber min={0} max={10} />
                 </Form.Item>
-                <span className={styles.hour}>
+              </Col>
+            </Row>
+            <Form.Item
+              label={formatMessage({
+                id: 'odc.AlterDdlTask.CreateModal.SourceTableCleanupPolicyAfter',
+                defaultMessage: '完成后源表清理策略',
+              })}
+              /*完成后源表清理策略*/ name="originTableCleanStrategy"
+              initialValue={ClearStrategy.ORIGIN_TABLE_RENAME_AND_RESERVED}
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage({
+                    id: 'odc.AlterDdlTask.CreateModal.SelectACleanupPolicy',
+                    defaultMessage: '请选择清理策略',
+                  }), //请选择清理策略
+                },
+              ]}
+            >
+              <Radio.Group>
+                <Radio value={ClearStrategy.ORIGIN_TABLE_RENAME_AND_RESERVED}>
                   {
                     formatMessage({
-                      id: 'odc.AlterDdlTask.CreateModal.Seconds',
-                      defaultMessage: '秒',
-                    }) /*秒*/
+                      id: 'odc.AlterDdlTask.CreateModal.RenameNotProcessed',
+                      defaultMessage: '重命名不处理',
+                    }) /*重命名不处理*/
                   }
-                </span>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item
-                name="swapTableNameRetryTimes"
-                label={
-                  <HelpDoc leftText isTip doc="schemaChangeSwapTableRetryTimes">
-                    {
-                      formatMessage({
-                        id: 'odc.AlterDdlTask.CreateModal.NumberOfFailedRetries',
-                        defaultMessage: '失败重试次数',
-                      }) /*失败重试次数*/
-                    }
-                  </HelpDoc>
-                }
-                initialValue={3}
-                required
-                rules={[
+                </Radio>
+                <Radio value={ClearStrategy.ORIGIN_TABLE_DROP}>
                   {
-                    required: true,
-                    message: formatMessage({
-                      id: 'odc.AlterDdlTask.CreateModal.PleaseEnterTheNumberOf',
-                      defaultMessage: '请输入失败重试次数',
-                    }), //请输入失败重试次数
-                  },
-                ]}
-              >
-                <InputNumber min={0} max={10} />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Form.Item
+                    formatMessage({
+                      id: 'odc.AlterDdlTask.CreateModal.DeleteNow',
+                      defaultMessage: '立即删除',
+                    }) /*立即删除*/
+                  }
+                </Radio>
+              </Radio.Group>
+            </Form.Item>
+          </FormItemPanel>
+          <FormItemPanel
             label={formatMessage({
-              id: 'odc.AlterDdlTask.CreateModal.SourceTableCleanupPolicyAfter',
-              defaultMessage: '完成后源表清理策略',
+              id: 'odc.AlterDdlTask.CreateModal.TaskSettings',
+              defaultMessage: '任务设置',
             })}
-            /*完成后源表清理策略*/ name="originTableCleanStrategy"
-            initialValue={ClearStrategy.ORIGIN_TABLE_RENAME_AND_RESERVED}
-            rules={[
-              {
-                required: true,
-                message: formatMessage({
-                  id: 'odc.AlterDdlTask.CreateModal.SelectACleanupPolicy',
-                  defaultMessage: '请选择清理策略',
-                }), //请选择清理策略
-              },
-            ]}
+            /*任务设置*/ keepExpand
           >
-            <Radio.Group>
-              <Radio value={ClearStrategy.ORIGIN_TABLE_RENAME_AND_RESERVED}>
+            <TaskTimer />
+            <Form.Item
+              label={formatMessage({
+                id: 'odc.AlterDdlTask.CreateModal.TaskErrorHandling',
+                defaultMessage: '任务错误处理',
+              })}
+              /*任务错误处理*/ name="errorStrategy"
+              initialValue={ErrorStrategy.ABORT}
+              rules={[
                 {
-                  formatMessage({
-                    id: 'odc.AlterDdlTask.CreateModal.RenameNotProcessed',
-                    defaultMessage: '重命名不处理',
-                  }) /*重命名不处理*/
-                }
-              </Radio>
-              <Radio value={ClearStrategy.ORIGIN_TABLE_DROP}>
+                  required: true,
+                  message: formatMessage({
+                    id: 'odc.AlterDdlTask.CreateModal.SelectTaskErrorHandling',
+                    defaultMessage: '请选择任务错误处理',
+                  }), //请选择任务错误处理
+                },
+              ]}
+            >
+              <Radio.Group>
+                <Radio value={ErrorStrategy.ABORT}>
+                  {
+                    formatMessage({
+                      id: 'odc.AlterDdlTask.CreateModal.StopATask',
+                      defaultMessage: '停止任务',
+                    }) /*停止任务*/
+                  }
+                </Radio>
+                <Radio value={ErrorStrategy.CONTINUE}>
+                  {
+                    formatMessage({
+                      id: 'odc.AlterDdlTask.CreateModal.IgnoreErrorsToContinueThe',
+                      defaultMessage: '忽略错误继续任务',
+                    }) /*忽略错误继续任务*/
+                  }
+                </Radio>
+              </Radio.Group>
+            </Form.Item>
+            <Form.Item
+              label={
+                formatMessage({
+                  id: 'odc.src.component.Task.AlterDdlTask.CreateModal.TableNameSwitchingMethod',
+                  defaultMessage: '表名切换方式',
+                }) /* 表名切换方式 */
+              }
+              name="swapTableType"
+              initialValue={SwapTableType.AUTO}
+              rules={[
                 {
-                  formatMessage({
-                    id: 'odc.AlterDdlTask.CreateModal.DeleteNow',
-                    defaultMessage: '立即删除',
-                  }) /*立即删除*/
-                }
-              </Radio>
-            </Radio.Group>
-          </Form.Item>
-        </FormItemPanel>
-        <FormItemPanel
-          label={formatMessage({
-            id: 'odc.AlterDdlTask.CreateModal.TaskSettings',
-            defaultMessage: '任务设置',
-          })}
-          /*任务设置*/ keepExpand
-        >
-          <TaskTimer />
-          <Form.Item
-            label={formatMessage({
-              id: 'odc.AlterDdlTask.CreateModal.TaskErrorHandling',
-              defaultMessage: '任务错误处理',
-            })}
-            /*任务错误处理*/ name="errorStrategy"
-            initialValue={ErrorStrategy.ABORT}
-            rules={[
-              {
-                required: true,
-                message: formatMessage({
-                  id: 'odc.AlterDdlTask.CreateModal.SelectTaskErrorHandling',
-                  defaultMessage: '请选择任务错误处理',
-                }), //请选择任务错误处理
-              },
-            ]}
-          >
-            <Radio.Group>
-              <Radio value={ErrorStrategy.ABORT}>
-                {
-                  formatMessage({
-                    id: 'odc.AlterDdlTask.CreateModal.StopATask',
-                    defaultMessage: '停止任务',
-                  }) /*停止任务*/
-                }
-              </Radio>
-              <Radio value={ErrorStrategy.CONTINUE}>
-                {
-                  formatMessage({
-                    id: 'odc.AlterDdlTask.CreateModal.IgnoreErrorsToContinueThe',
-                    defaultMessage: '忽略错误继续任务',
-                  }) /*忽略错误继续任务*/
-                }
-              </Radio>
-            </Radio.Group>
-          </Form.Item>
-          <Form.Item
-            label={
-              formatMessage({
-                id: 'odc.src.component.Task.AlterDdlTask.CreateModal.TableNameSwitchingMethod',
-                defaultMessage: '表名切换方式',
-              }) /* 表名切换方式 */
-            }
-            name="swapTableType"
-            initialValue={SwapTableType.AUTO}
-            rules={[
-              {
-                required: true,
-                message: formatMessage({
-                  id: 'odc.src.component.Task.AlterDdlTask.CreateModal.PleaseSelectTheTableName',
-                  defaultMessage: '请选择表名切换方式',
-                }), //'请选择表名切换方式'
-              },
-            ]}
-          >
-            <Radio.Group>
-              <Radio value={SwapTableType.AUTO}>
-                {
-                  formatMessage({
-                    id: 'odc.src.component.Task.AlterDdlTask.CreateModal.AutomaticSwitch',
-                    defaultMessage: '自动切换',
-                  }) /* 自动切换 */
-                }
-              </Radio>
-              <Radio value={SwapTableType.MANUAL}>
-                {
-                  formatMessage({
-                    id: 'odc.src.component.Task.AlterDdlTask.CreateModal.ManualSwitch',
-                    defaultMessage: '手动切换',
-                  }) /* 手工切换 */
-                }
-              </Radio>
-            </Radio.Group>
-          </Form.Item>
-          {settingStore.enableOSCLimiting && (
-            <ThrottleFormItem
-              initialValue={initialValue}
-              minRowLimit={OscMinRowLimit}
-              maxRowLimit={OscMaxRowLimit}
-              maxDataSizeLimit={OscMaxDataSizeLimit}
-            />
-          )}
-        </FormItemPanel>
-        <DescriptionInput />
-      </Form>
+                  required: true,
+                  message: formatMessage({
+                    id: 'odc.src.component.Task.AlterDdlTask.CreateModal.PleaseSelectTheTableName',
+                    defaultMessage: '请选择表名切换方式',
+                  }), //'请选择表名切换方式'
+                },
+              ]}
+            >
+              <Radio.Group>
+                <Radio value={SwapTableType.AUTO}>
+                  {
+                    formatMessage({
+                      id: 'odc.src.component.Task.AlterDdlTask.CreateModal.AutomaticSwitch',
+                      defaultMessage: '自动切换',
+                    }) /* 自动切换 */
+                  }
+                </Radio>
+                <Radio value={SwapTableType.MANUAL}>
+                  {
+                    formatMessage({
+                      id: 'odc.src.component.Task.AlterDdlTask.CreateModal.ManualSwitch',
+                      defaultMessage: '手动切换',
+                    }) /* 手工切换 */
+                  }
+                </Radio>
+              </Radio.Group>
+            </Form.Item>
+            {settingStore.enableOSCLimiting && (
+              <ThrottleFormItem
+                initialValue={initialValue}
+                minRowLimit={OscMinRowLimit}
+                maxRowLimit={OscMaxRowLimit}
+                maxDataSizeLimit={OscMaxDataSizeLimit}
+              />
+            )}
+          </FormItemPanel>
+          <DescriptionInput />
+        </Form>
+      </Spin>
     </Drawer>
   );
 };
