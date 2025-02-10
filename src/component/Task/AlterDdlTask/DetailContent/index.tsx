@@ -30,6 +30,7 @@ import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 import { OscMaxDataSizeLimit, OscMaxRowLimit } from '../../const';
 import { ClearStrategy, SwapTableType } from '../CreateModal';
 import { ProjectRole } from '@/d.ts/project';
+import userStore from '@/store/login';
 
 const { Text } = Typography;
 interface IDDLAlterParamters {
@@ -131,16 +132,15 @@ export function getItems(
   sectionRender?: (task: TaskDetail<IDDLAlterParamters>) => void;
 }[] {
   const { parameters, id, status, project } = task;
-  const isProjectDBAorOwner = useMemo(() => {
-    return project.currentUserResourceRoles?.some((item) =>
-      [ProjectRole.DBA, ProjectRole.OWNER].includes(item),
+  const haveOperationPermission = useMemo(() => {
+    return (
+      project.currentUserResourceRoles?.some((item) =>
+        [ProjectRole.DBA, ProjectRole.OWNER].includes(item),
+      ) || userStore?.user?.id === task?.creator?.id
     );
   }, [project]);
 
-  const cantBeModified =
-    [TaskStatus.EXECUTION_SUCCEEDED, TaskStatus.EXECUTION_FAILED, TaskStatus.CANCELLED]?.includes(
-      status,
-    ) && isProjectDBAorOwner;
+  const cantBeModified = [TaskStatus.EXECUTING]?.includes(status) && haveOperationPermission;
   if (!task) {
     return [];
   }
