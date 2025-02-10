@@ -603,7 +603,8 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                   <Action.Link
                     onClick={() => {
                       window.open(
-                        odc.appConfig?.docs.url || getLocalDocs('320.set-partition-strategy.html'),
+                        odc.appConfig?.docs.url ||
+                          getLocalDocs('320.set-partitioning-strategies.html'),
                       );
                     }}
                   >
