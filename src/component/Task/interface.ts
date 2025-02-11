@@ -33,7 +33,7 @@ export interface ITaskDetailModalProps {
   detailId: number;
   task: TaskDetail<TaskRecordParameters>;
   subTasks: IResponseData<TaskRecord<IAsyncTaskParams>>;
-  opRecord: TaskRecord<any>[] | Operation[];
+  opRecord: Operation[];
   hasFlow: boolean;
   result: ITaskResult;
   log: ILog;
