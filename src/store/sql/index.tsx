@@ -17,7 +17,6 @@
 import { generateDatabaseSid } from '@/common/network/pathUtil';
 import { executeSQL, stopExec } from '@/common/network/sql';
 import { executePL } from '@/common/network/sql/executePL';
-import { IExecuteTaskResult } from '@/common/network/sql/executeSQL';
 import { PLType } from '@/constant/plType';
 import {
   ConnectionMode,
@@ -53,14 +52,17 @@ export enum PL_RUNNING_STATUS {
   // @ts-ignore
   COMPILE = formatMessage({
     id: 'odc.src.store.sql.Compile',
+    defaultMessage: '编译',
   }),
   // @ts-ignore
   EXEC = formatMessage({
     id: 'odc.src.store.sql.Run',
+    defaultMessage: '运行',
   }),
   // @ts-ignore
   DEBUG = formatMessage({
     id: 'odc.src.store.sql.Debugging',
+    defaultMessage: '调试',
   }),
 }
 export class SQLStore {
@@ -132,7 +134,10 @@ export class SQLStore {
       sessionManager.sessionMap.get(sessionId)?.initSessionStatus();
       if (data?.executeResult?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
-          formatMessage({ id: 'odc.src.store.sql.SubmittedSuccessfully' }), //提交成功
+          formatMessage({
+            id: 'odc.src.store.sql.SubmittedSuccessfully',
+            defaultMessage: '提交成功',
+          }), //提交成功
         );
       }
     } finally {
@@ -151,7 +156,7 @@ export class SQLStore {
       sessionManager.sessionMap.get(sessionId)?.initSessionStatus();
       if (data?.executeResult?.[0].status === ISqlExecuteResultStatus.SUCCESS) {
         message.success(
-          formatMessage({ id: 'odc.src.store.sql.RollbackSucceeded' }), //回滚成功
+          formatMessage({ id: 'odc.src.store.sql.RollbackSucceeded', defaultMessage: '回滚成功' }), //回滚成功
         );
       }
     } finally {
@@ -167,7 +172,10 @@ export class SQLStore {
 
       if (data) {
         message.success(
-          formatMessage({ id: 'odc.src.store.sql.StoppedSuccessfully' }), //停止成功
+          formatMessage({
+            id: 'odc.src.store.sql.StoppedSuccessfully',
+            defaultMessage: '停止成功',
+          }), //停止成功
         );
       }
     } finally {
@@ -261,7 +269,7 @@ export class SQLStore {
             originSql: i.sqlTuple.originalSql,
             executeSql: i.sqlTuple.executedSql,
             sqlId: i.sqlTuple.sqlId,
-            status: ISqlExecuteResultStatus.WAITING,
+            status: ISqlExecuteResultStatus.CREATED,
             timer: null,
             track: null,
             total: null,
@@ -290,6 +298,7 @@ export class SQLStore {
           }),
           ...this.records,
         ];
+
         this.initLog(pageKey, info);
       };
 
@@ -322,6 +331,7 @@ export class SQLStore {
     } catch (e) {
       throw e;
     } finally {
+      this.logLoading = false;
       this.runningPageKey.delete(pageKey);
       this.isRunningSection.delete(pageKey);
     }
@@ -469,6 +479,7 @@ export class SQLStore {
         return {
           status: 'FAIL',
           errorMessage: 'Request Abort',
+          unauthorizedDBResources: data?.unauthorizedDBResources,
         };
       } else if (
         data?.executeResult?.[0]?.status !== ISqlExecuteResultStatus.SUCCESS &&
@@ -542,6 +553,7 @@ export class SQLStore {
         message.error(
           formatMessage({
             id: 'workspace.window.sql.record.empty',
+            defaultMessage: '无法获得 SQL 执行记录',
           }),
         );
         return;
@@ -554,7 +566,8 @@ export class SQLStore {
           };
         }),
         ...this.records,
-      ]; // 在结果集中重新执行 SQL 肯定只有一条
+      ];
+      // 在结果集中重新执行 SQL 肯定只有一条
 
       resultSet[resultSetIndex] = {
         ...generateResultSetColumns(

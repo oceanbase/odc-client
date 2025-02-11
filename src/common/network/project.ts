@@ -15,14 +15,14 @@
  */
 
 import { IResponseData, IUserSummary } from '@/d.ts';
-import {
-  IProject,
-  ProjectRole,
-  PermissionSourceType,
-  IDatabasePermission,
-  ITablePermission,
-} from '@/d.ts/project';
 import { DatabasePermissionType } from '@/d.ts/database';
+import {
+  IDatabasePermission,
+  IProject,
+  ITablePermission,
+  PermissionSourceType,
+  ProjectRole,
+} from '@/d.ts/project';
 import request from '@/util/request';
 
 export async function listProjects(
@@ -270,5 +270,12 @@ export async function addTablePermissions(params: {
       data: params,
     },
   );
+  return !!res?.data;
+}
+
+export async function batchDeleteProject(projectId: number[]): Promise<boolean> {
+  const res = await request.post('/api/v2/collaboration/projects/batchDelete', {
+    data: projectId,
+  });
   return !!res?.data;
 }

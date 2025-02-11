@@ -41,6 +41,7 @@ class TableRenameModal extends Component<IProps> {
       message.error(
         formatMessage({
           id: 'odc.component.TableRenameModal.TheTableNameHasNot',
+          defaultMessage: '表名称未修改',
         }),
         // 表名称未修改
       );
@@ -65,7 +66,10 @@ class TableRenameModal extends Component<IProps> {
     return (
       <Modal
         destroyOnClose={true}
-        title={formatMessage({ id: 'workspace.tree.table.rename.modal.title' })}
+        title={formatMessage({
+          id: 'workspace.tree.table.rename.modal.title',
+          defaultMessage: '重命名',
+        })}
         open={visible}
         onOk={this.save}
         onCancel={onCancel}
@@ -79,9 +83,11 @@ class TableRenameModal extends Component<IProps> {
           <Form.Item
             extra={formatMessage({
               id: 'odc.component.TableRenameModal.TheContentInQuotationMarks',
+              defaultMessage: '引号中内容区分大小写',
             })} /*引号中内容区分大小写*/
             label={formatMessage({
               id: 'workspace.window.createTable.baseInfo.tableName',
+              defaultMessage: '表名称',
             })}
             name="tableName"
             rules={[
@@ -89,6 +95,7 @@ class TableRenameModal extends Component<IProps> {
                 required: true,
                 message: formatMessage({
                   id: 'workspace.window.createTable.baseInfo.tableName.validation',
+                  defaultMessage: '请填写表名称',
                 }),
               },
             ]}
@@ -96,6 +103,7 @@ class TableRenameModal extends Component<IProps> {
             <Input
               placeholder={formatMessage({
                 id: 'workspace.window.createTable.baseInfo.tableName.placeholder',
+                defaultMessage: '请填写表名称',
               })}
             />
           </Form.Item>

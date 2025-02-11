@@ -15,9 +15,9 @@
  */
 
 import { ConnectType, TaskType } from '@/d.ts';
+import { haveOCP } from '@/util/env';
 import { IDataSourceModeConfig } from '../interface';
 import MySQLColumnExtra from '../oceanbase/MySQLColumnExtra';
-import { haveOCP } from '@/util/env';
 
 const tableConfig = {
   enableTableCharsetsAndCollations: true,
@@ -77,12 +77,16 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
         TaskType.EXPORT,
         TaskType.EXPORT_RESULT_SET,
         TaskType.STRUCTURE_COMPARISON,
+        TaskType.MULTIPLE_ASYNC,
+        TaskType.LOGICAL_DATABASE_CHANGE,
       ],
       obclient: true,
       recycleBin: false,
       plRun: true,
       sessionManage: true,
       sqlExplain: true,
+      sessionParams: true,
+      resourceTree: true,
       export: {
         fileLimit: false,
         snapshot: false,

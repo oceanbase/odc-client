@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
+import { ErrorStrategy } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
 import { PLType } from '@/constant/plType';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import { IUnauthorizedDBResources, TablePermissionType } from '@/d.ts/table';
+import { EThemeConfigKey } from '@/store/setting';
 import { ButtonType } from 'antd/lib/button'; // ODCUser
 import { ReactNode } from 'react';
-import { IDatabase, DatabasePermissionType, IUnauthorizedDatabase } from './database';
-import { EComparisonScope } from './task';
-import { EThemeConfigKey } from '@/store/setting';
-import { SpaceType } from './_index';
-import { DBDefaultStoreType } from './table';
-import { ISQLExecuteTask } from '@/common/network/sql/executeSQL';
+import { DBType, DatabasePermissionType, IDatabase } from './database';
 import { IEnvironment } from './environment';
 import { IProject } from './project';
-import { ErrorStrategy } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
+import { DBDefaultStoreType } from './table';
+import { EComparisonScope } from './task';
+import { SpaceType } from './_index';
+import { ISQLExecuteTask } from '@/common/network/sql/preHandle';
 
 export interface IUser {
   email: string;
@@ -59,6 +59,7 @@ export interface IUserSummary {
   name: string;
   accountName: string;
   organizationId: number;
+  roles: { name: string; id: number; [key: string]: any }[];
 }
 
 export interface IOrganization {
@@ -137,6 +138,7 @@ export enum IManagerDetailTabs {
   ROLE = 'ROLE',
   TASK_FLOW = 'TASK_FLOW',
 }
+
 /**
  * ODC_CONNECTION
 ODC_PROJECT
@@ -600,6 +602,8 @@ export enum AuditEventActionType {
   UPDATE_DATASOURCE = 'UPDATE_DATASOURCE',
   // 项目管理
   CREATE_PROJECT = 'CREATE_PROJECT',
+  ARCHIVE_PROJECT = 'ARCHIVE_PROJECT',
+  DELETE_PROJECT = 'DELETE_PROJECT',
   // 导出结果集
   CREATE_EXPORT_RESULT_SET_TASK = 'CREATE_EXPORT_RESULT_SET_TASK',
   APPROVE_EXPORT_RESULT_SET_TASK = 'APPROVE_EXPORT_RESULT_SET_TASK',
@@ -673,6 +677,7 @@ export enum AuditEventDialectType {
   ORACLE = 'ORACLE',
   MYSQL = 'MYSQL',
   DORIS = 'DORIS',
+  PG = 'POSTGRESQL',
   UNKNOWN = 'UNKNOWN',
 }
 
@@ -732,10 +737,12 @@ export type ISQLScript = IScriptMeta;
 export enum ConnectionMode {
   MYSQL = 'MYSQL',
   DORIS = 'DORIS',
+  PG = 'POSTGRESQL',
   ORACLE = 'ORACLE',
   OB_MYSQL = 'OB_MYSQL',
   OB_ORACLE = 'OB_ORACLE',
   ALL = 'ALL',
+  UNKNOWN = 'UNKNOWN',
 }
 
 export enum IConnectionType {
@@ -776,7 +783,7 @@ export interface IConnection {
     clientKeyObjectId?: string;
     CACertObjectId?: string;
   };
-
+  region?: string;
   organizationId: number;
   creatorId: number; // userId
   creator: string;
@@ -822,6 +829,7 @@ export interface IConnection {
   serviceName?: string;
   userRole?: string;
   readonly projectName?: string;
+  catalogName?: string;
 }
 
 export interface IConnectionLabel {
@@ -910,6 +918,9 @@ export enum IConnectionTestErrorType {
   CONNECT_TYPE_NOT_MATCH = 'ConnectionDatabaseTypeMismatched',
   INIT_SCRIPT_FAILED = 'ConnectionInitScriptFailed',
   OB_WEAK_READ_CONSISTENCY_REQUIRED = 'ObWeakReadConsistencyRequired',
+  ACCESS_DENIED = 'AccessDenied',
+  INVALID_ACCESSKEY_ID = 'InvalidAccessKeyId',
+  SIGNATURE_DOES_NOT_MATCH = 'SignatureDoesNotMatch',
 }
 
 export interface IConnectionProperty {
@@ -1180,6 +1191,7 @@ export interface ITable {
   name?: string;
   organizationId?: number;
   updateTime?: number;
+  type?: DbObjectType;
 }
 
 interface IEditable {
@@ -1584,6 +1596,8 @@ export enum DbObjectType {
   table_group = 'TABLE_GROUP',
   file = 'FILE',
   column = 'COLUMN',
+  external_table = 'EXTERNAL_TABLE',
+  logical_table = 'LOGICAL_TABLE',
 }
 
 export interface IResultTimerStage {
@@ -1675,7 +1689,7 @@ export enum ISqlExecuteResultStatus {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
   CANCELED = 'CANCELED',
-  WAITING = 'WAITING',
+  CREATED = 'CREATED',
   RUNNING = 'RUNNING',
 }
 
@@ -1994,29 +2008,52 @@ export enum TaskPageType {
   APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
   MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
+  LOGICAL_DATABASE_CHANGE = 'LOGICAL_DATABASE_CHANGE',
 }
 
 export enum TaskType {
+  /** 导入 */
   IMPORT = 'IMPORT',
+  /** 导出 */
   EXPORT = 'EXPORT',
+  /** 模拟数据 */
   DATAMOCK = 'MOCKDATA',
+  /** 数据库变更 */
   ASYNC = 'ASYNC',
+  /** 分区计划 */
   PARTITION_PLAN = 'PARTITION_PLAN',
+  /** sql 计划 */
   SQL_PLAN = 'SQL_PLAN',
+  /** 计划变更(调度任务) */
   ALTER_SCHEDULE = 'ALTER_SCHEDULE',
+  /** 影子表同步 */
   SHADOW = 'SHADOWTABLE_SYNC',
+  /** ? (疑似弃用) */
   DATA_SAVE = 'DATA_SAVE',
+  /** 权限申请 (疑似弃用) */
   PERMISSION_APPLY = 'PERMISSION_APPLY',
+  /** 数据归档 */
   DATA_ARCHIVE = 'DATA_ARCHIVE',
+  /**  (疑似弃用?) */
   MIGRATION = 'DATA_ARCHIVE',
+  /** 无锁结构变更 */
   ONLINE_SCHEMA_CHANGE = 'ONLINE_SCHEMA_CHANGE',
+  /** 数据清理 */
   DATA_DELETE = 'DATA_DELETE',
+  /** 导出结果集 */
   EXPORT_RESULT_SET = 'EXPORT_RESULT_SET',
+  /** 申请项目权限 */
   APPLY_PROJECT_PERMISSION = 'APPLY_PROJECT_PERMISSION',
+  /** 申请库权限 */
   APPLY_DATABASE_PERMISSION = 'APPLY_DATABASE_PERMISSION',
+  /** 申请表/视图权限 */
   APPLY_TABLE_PERMISSION = 'APPLY_TABLE_PERMISSION',
+  /** 结构对比 */
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
+  /** 多库变更 */
   MULTIPLE_ASYNC = 'MULTIPLE_ASYNC',
+  /** 逻辑库变更 */
+  LOGICAL_DATABASE_CHANGE = 'LOGICAL_DATABASE_CHANGE',
 }
 
 export enum TaskJobType {
@@ -2155,12 +2192,28 @@ export interface ExportFormData {
   overwriteSysConfig?: boolean;
   exportAllObjects?: boolean; // 导出整库
   exportFilePath?: string; // 桌面端导出路径
+  taskId?: number;
+
+  transferDDL?: boolean;
+  transferData?: boolean;
+  csvConfig?: ICSVConfig;
+}
+
+export interface ICSVConfig {
+  skipHeader: boolean;
+  blankToNull: boolean;
+  columnSeparator: string;
+  columnDelimiter: string;
+  lineSeparator: string;
+  fileName: string;
+  encoding: IMPORT_ENCODING;
 }
 
 export enum IMPORT_TYPE {
   ZIP = 'ZIP',
   SQL = 'SQL',
   CSV = 'CSV',
+  DIR = 'DIR',
 }
 
 /**
@@ -2253,6 +2306,11 @@ export interface ImportFormData {
   columnDelimiter: string; // 文本识别符
 
   lineSeparator: string; // 换行符号
+  taskId?: number;
+  transferDDL?: boolean;
+  transferData?: boolean;
+  csvConfig?: ICSVConfig;
+  exportDbObjects?: { dbObjectType: string; objectName: string }[];
 }
 
 // 左侧结构树菜单所支持的key列表
@@ -2323,6 +2381,8 @@ export enum ResourceTreeNodeMenuKeys {
   CREATE_SYNONYM = 'CREATE_SYNONYM',
   DELETE_SYNONYM = 'DELETE_SYNONYM',
   REFRESH_SYNONYM = 'REFRESH_SYNONYM',
+  // EXTERNAL_TABLE
+  EXTERNAL_TABLE_SYNCHRONIZATION_TABLE = 'EXTERNAL_TABLE_SYNCHRONIZATION_TABLE',
 }
 
 export interface TaskRecord<P> {
@@ -2356,6 +2416,7 @@ export interface TaskRecord<P> {
   description?: string;
   nodeList?: ITaskFlowNode[];
   progressPercentage: number;
+  project: IProject;
 }
 
 export interface ICycleSubTaskRecord {
@@ -2400,7 +2461,8 @@ export type TaskRecordParameters =
   | IResultSetExportTaskParams
   | IApplyPermissionTaskParams
   | IApplyDatabasePermissionTaskParams
-  | IMultipleAsyncTaskParams;
+  | IMultipleAsyncTaskParams
+  | ILogicalDatabaseAsyncTaskParams;
 
 export interface ITaskResult {
   autoModifyTimeout?: boolean;
@@ -2423,6 +2485,26 @@ export interface ITaskResult {
     resultFileDownloadUrl: string;
     success: boolean;
   };
+}
+
+export interface Operation {
+  createTime: number;
+  flowInstanceId: number;
+  id: number;
+  newParameter: string;
+  previousParameters: string;
+  scheduleId: number;
+  status: ScheduleChangeStatus;
+  type: TaskOperationType;
+  updateTime: number;
+}
+
+export enum ScheduleChangeStatus {
+  PREPARING = 'PREPARING',
+  APPROVING = 'APPROVING',
+  CHANGING = 'CHANGING',
+  SUCCESS = 'SUCCESS',
+  FAILED = 'FAILED',
 }
 
 export enum MigrationInsertAction {
@@ -2468,6 +2550,7 @@ export interface IDataArchiveJobParameters {
     name: string;
     pattern: string;
   }[];
+  targetDatabase: IDatabase;
   timeoutMillis: number;
   syncTableStructure: SyncTableStructureEnum[];
 }
@@ -2545,6 +2628,17 @@ export interface ICycleSubTaskDetailRecord {
   status: SubTaskStatus;
   updateTime: number;
   executionDetails: string;
+}
+
+export interface ICycleTaskJobRecord<T> {
+  createTime: number;
+  executionDetails: T;
+  fireTime: number;
+  id: number;
+  parameters: any;
+  status: SubTaskStatus;
+  type: TaskType.LOGICAL_DATABASE_CHANGE;
+  updateTime: number;
 }
 
 export enum SubTaskType {
@@ -2686,6 +2780,13 @@ export interface IAsyncTaskParams {
   retryTimes: number;
 }
 
+export interface ILogicalDatabaseAsyncTaskParams {
+  sqlContent: string;
+  delimiter: string;
+  timeoutMillis: number;
+  databaseId: number;
+}
+
 export interface IApplyPermissionTaskParams {
   applyReason: string;
   project: {
@@ -2706,10 +2807,15 @@ export interface IApplyDatabasePermissionTaskParams {
   databases: {
     id: number;
     name?: string;
+    type?: DBType;
+    dataSourceId?: number;
+    dataSourceName?: string;
+    dialectType?: ConnectType;
   }[];
   types: DatabasePermissionType[];
   expireTime: number;
   applyReason: string;
+  validDuration: string;
 }
 
 export interface IApplyTablePermissionTaskParams {
@@ -2784,6 +2890,9 @@ export interface IResultSetExportTaskParams {
   fileName: string;
   maxRows: string;
 }
+export interface ShadowSyncTaskParams {
+  comparingTaskId: number;
+}
 
 export enum RollbackType {
   // 引用
@@ -2851,6 +2960,11 @@ export interface IAlterScheduleTaskParams {
   };
 
   triggerConfig: ICycleTaskTriggerConfig;
+  sqlContent?: string;
+  rateLimitConfig?: {
+    rowLimit: number;
+    dataSizeLimit: number;
+  };
 }
 
 export interface IDataArchiveTaskParams {
@@ -2907,7 +3021,7 @@ export enum TaskOperationType {
   CREATE = 'CREATE',
   UPDATE = 'UPDATE',
   PAUSE = 'PAUSE',
-  TERMINATION = 'TERMINATION',
+  TERMINATE = 'TERMINATE',
   RESUME = 'RESUME',
 }
 
@@ -2987,9 +3101,12 @@ export enum TaskStatus {
   // 周期任务独有的状态
   PAUSE = 'PAUSE',
   ENABLED = 'ENABLED',
-  TERMINATION = 'TERMINATION',
+  /** 已终止 */
+  TERMINATED = 'TERMINATED',
   TIMEOUT = 'TIMEOUT',
   PRE_CHECK_FAILED = 'PRE_CHECK_FAILED',
+  CREATING = 'CREATING',
+  EXECUTION_ABNORMAL = 'EXECUTION_ABNORMAL', // 执行异常
 }
 
 export enum SubTaskStatus {
@@ -2997,8 +3114,9 @@ export enum SubTaskStatus {
   RUNNING = 'RUNNING', // 运行中
   DONE = 'DONE', // 执行完成
   FAILED = 'FAILED', // 执行失败
-  CANCELED = 'CANCELED',
-} // 执行取消
+  CANCELED = 'CANCELED', // 执行取消
+  ABNORMAL = 'ABNORMAL', // 执行异常
+}
 
 export enum StatusNodeType {
   FLOW_TASK = 'FLOW_TASK',
@@ -3292,7 +3410,18 @@ export enum ConnectType {
   ODP_SHARDING_OB_MYSQL = 'ODP_SHARDING_OB_MYSQL',
   MYSQL = 'MYSQL',
   DORIS = 'DORIS',
+  PG = 'POSTGRESQL',
   ORACLE = 'ORACLE',
+  OSS = 'OSS',
+  COS = 'COS',
+  OBS = 'OBS',
+  S3A = 'S3A',
+}
+
+export enum DatasourceGroup {
+  OceanBaseDatabase = 'OceanBaseDatabase',
+  OtherDatabase = 'OtherDatabase',
+  FileSystem = 'FileSystem',
 }
 
 export enum DragInsertType {
@@ -3520,6 +3649,7 @@ export interface IPartitionPlanTable {
       ordinalPosition: unknown;
       type: string;
       valuesList: unknown;
+      parentPartitionDefinition?: IPartitionPlanTable['partition']['partitionDefinitions'];
     }[];
     partitionKeyTypes: {
       name: string;
@@ -3535,7 +3665,7 @@ export interface IPartitionPlanTable {
       verticalColumnNames: unknown;
     };
     schemaName: string;
-    subpartition: unknown;
+    subpartition: IPartitionPlanTable['partition'];
     subpartitionTemplated: boolean;
     tableName: string;
     warning: unknown;
@@ -3619,6 +3749,7 @@ export interface ISessionStatus {
   sqlId: string;
   activeQueries: string;
   defaultTableStoreFormat: DBDefaultStoreType;
+  killCurrentQuerySupported: boolean;
 }
 
 export interface IAutoAuthEvent {
@@ -3702,6 +3833,7 @@ export enum ISSOType {
   OIDC = 'OIDC',
   OAUTH2 = 'OAUTH2',
   LDAP = 'LDAP',
+  SAML = 'SAML',
 }
 
 export enum IClientAuthenticationMethod {
@@ -3763,6 +3895,31 @@ export interface ISSO_LDAP_CONFIG {
   redirectUrl: string;
 }
 
+export enum SAMLType {
+  verification = 'verification',
+  signing = 'signing',
+  decryption = 'decryption',
+}
+
+export interface ISSO_SAML_CONFIG {
+  acsLocation?: string;
+  redirectUrl: string;
+  registrationId: string;
+  secret: string;
+  acsEntityId?: string;
+  providerEntityId?: string;
+  [SAMLType.decryption]?: { certificate: string };
+  [SAMLType.signing]?: { certificate: string };
+  [SAMLType.verification]?: { certificate: string };
+  metadataUri?: string;
+  testAcsEntityId?: string;
+  singlesignon?: {
+    url?: string;
+    binding?: 'POST' | 'REDIRECT';
+    signRequest?: boolean;
+  };
+}
+
 export interface ISSO_MAPPINGRULE {
   userNickNameField: string;
   userProfileViewType: 'FLAT' | 'NESTED';
@@ -3790,6 +3947,12 @@ export type ISSOConfig =
       type: ISSOType.LDAP;
       ssoParameter: ISSO_LDAP_CONFIG;
       mappingRule: Omit<ISSO_MAPPINGRULE, 'userAccountNameField'>;
+    }
+  | {
+      name: string;
+      type: ISSOType.SAML;
+      ssoParameter: ISSO_SAML_CONFIG;
+      mappingRule: ISSO_MAPPINGRULE;
     };
 
 export interface IFormatPLSchema {
@@ -3813,6 +3976,7 @@ export interface IPLExecResult {
   };
   returnValue?: IPLOutParam;
   outParams?: IPLOutParam[];
+  unauthorizedDBResources?: IUnauthorizedDBResources[];
 }
 export interface IPLCompileResult {
   messages: string;
@@ -3849,3 +4013,45 @@ export enum EStatus {
   APPROVAL = 'approval',
   DISABLED = 'disabled',
 }
+
+export interface AgainTaskRecord {
+  id: string | number;
+}
+
+/** 无锁结构变更任务进度状态 */
+export enum ProgressOfLocklessStructureChangeTaskStatusMap {
+  CREATE_GHOST_TABLES = 'CREATE_GHOST_TABLES', //'创建影子表'
+  CREATE_DATA_TASK = 'CREATE_DATA_TASK', //'创建数据迁移任务'
+  MONITOR_DATA_TASK_TRANSFER_PRECHECK = 'MONITOR_DATA_TASK_TRANSFER_PRECHECK', //'数据迁移任务预检查'
+  MONITOR_DATA_TASK_FULL_TRANSFER = 'MONITOR_DATA_TASK_FULL_TRANSFER', //数据迁移任务迁移全量数据'
+  MONITOR_DATA_TASK_TRANSFER_APP_SWITCH_FALSE = 'MONITOR_DATA_TASK_TRANSFER_APP_SWITCH_FALSE', //'数据迁移任务迁移增量数据'
+  SWAP_TABLE = 'SWAP_TABLE', // '切换中'
+  CLEAR_RESOURCE = 'CLEAR_RESOURCE', // '释放迁移任务资源'
+}
+
+interface UnfinishedTaskType {
+  approvable: boolean;
+  approveInstanceId: number;
+  candidateApprovers: {
+    id: number;
+    name: string;
+    accountName: string;
+  }[];
+  createTime: number;
+  creator: {
+    id: number;
+    name: string;
+    accountName: string;
+    roleNames: string[];
+  };
+  description: string;
+  id: number;
+  project: IProject;
+  status: TaskStatus;
+  type: TaskType;
+}
+
+export type UnfinishedTickets = {
+  unfinishedFlowInstances: UnfinishedTaskType[];
+  unfinishedSchedules: UnfinishedTaskType[];
+};

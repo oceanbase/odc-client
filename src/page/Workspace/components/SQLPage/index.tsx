@@ -17,9 +17,12 @@
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { newScript, updateScript } from '@/common/network';
 import { executeSQL, runSQLLint } from '@/common/network/sql';
-import { executeTaskManager, IExecuteTaskResult } from '@/common/network/sql/executeSQL';
+import { executeTaskManager } from '@/common/network/sql/executeSQL';
+import { IExecuteTaskResult } from '@/common/network/sql/preHandle';
 import { batchGetDataModifySQL } from '@/common/network/table';
+import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
+import { getKeyCodeValue } from '@/component/Input/Keymap/keycodemap';
 import { IEditor } from '@/component/MonacoEditor';
 import SaveSQLModal from '@/component/SaveSQLModal';
 import ScriptPage from '@/component/ScriptPage';
@@ -38,6 +41,7 @@ import {
   ITableColumn,
   IUserConfig,
 } from '@/d.ts';
+import { IUnauthorizedDBResources } from '@/d.ts/table';
 import { debounceUpdatePageScriptText, ISQLPageParams, updatePage } from '@/store/helper/page';
 import { SQLPage as SQLPageModel } from '@/store/helper/page/pages';
 import type { UserStore } from '@/store/login';
@@ -45,17 +49,19 @@ import modal, { ModalStore } from '@/store/modal';
 import type { PageStore } from '@/store/page';
 import sessionManager, { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
+import setting, { SettingStore } from '@/store/setting';
 import type { SQLStore } from '@/store/sql';
 import { isConnectionModeBeMySQLType } from '@/util/connection';
+import { isLogicalDatabase } from '@/util/database';
 import utils, { EHighLight } from '@/util/editor';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
-import { splitSql } from '@/util/sql';
+import { splitSqlForHighlight } from '@/util/sql';
 import { generateAndDownloadFile, getCurrentSQL } from '@/util/utils';
 import { message, Spin } from 'antd';
-import { debounce, isNil, isString } from 'lodash';
+import { debounce, isNil } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import { IDisposable, KeyMod, KeyCode } from 'monaco-editor/esm/vs/editor/editor.api';
+import { IDisposable, KeyCode, KeyMod } from 'monaco-editor/esm/vs/editor/editor.api';
 import { Component, forwardRef } from 'react';
 import { wrapRow } from '../DDLResultSet/util';
 import SessionContextWrap from '../SessionContextWrap';
@@ -64,10 +70,6 @@ import Trace from '../Trace';
 import ExecDetail from './ExecDetail';
 import ExecPlan from './ExecPlan';
 import styles from './index.less';
-import setting, { SettingStore } from '@/store/setting';
-import { getKeyCodeValue } from '@/component/Input/Keymap/keycodemap';
-import { IUnauthorizedDBResources } from '@/d.ts/table';
-import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 
 interface ISQLPageState {
   resultHeight: number;
@@ -183,6 +185,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     onSetUnsavedModalTitle(
       formatMessage({
         id: 'workspace.window.sql.modal.close.title',
+        defaultMessage: '是否保存脚本？',
       }),
     );
 
@@ -190,6 +193,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       formatMessage(
         {
           id: 'workspace.window.sql.modal.close.content',
+          defaultMessage: '“{name}” 已经被修改，如不保存，修改将丢失',
         },
 
         {
@@ -244,7 +248,9 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       /**
        * 异步加载内置片段
        */
-      this.getSession()?.addBuiltinSnippets();
+      if (!isLogicalDatabase(this.getSession()?.odcDatabase)) {
+        this.getSession()?.addBuiltinSnippets();
+      }
     } else if (this.props.settingStore.configurations !== this.config) {
       this.bindEditorKeymap();
     }
@@ -317,6 +323,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         run: () => this.handleExecuteSelectedSQL(),
       }),
     ];
+
     this.config = setting.configurations;
   };
 
@@ -545,6 +552,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         formatMessage(
           {
             id: 'workspace.window.sql.modal.close.content',
+            defaultMessage: '“{name}” 已经被修改，如不保存，修改将丢失',
           },
 
           {
@@ -612,7 +620,10 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
          * 无规则
          */
         message.success(
-          formatMessage({ id: 'odc.components.SQLPage.SqlCheckPassed' }), //SQL 检查通过
+          formatMessage({
+            id: 'odc.components.SQLPage.SqlCheckPassed',
+            defaultMessage: 'SQL 检查通过',
+          }), //SQL 检查通过
         );
         this.setState({
           baseOffset: 0,
@@ -747,6 +758,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
             message.warning(
               formatMessage({
                 id: 'odc.TablePage.TableData.DoNotSubmitBlankLines',
+                defaultMessage: '请不要提交空行',
               }),
 
               // 请不要提交空行
@@ -777,7 +789,10 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         .filter(Boolean);
       if (!editRows?.length) {
         message.warning(
-          formatMessage({ id: 'odc.TablePage.TableData.NoContentToSubmit' }), // 无内容可提交
+          formatMessage({
+            id: 'odc.TablePage.TableData.NoContentToSubmit',
+            defaultMessage: '无内容可提交',
+          }), // 无内容可提交
         );
         return;
       }
@@ -803,7 +818,10 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
       if (!sql) {
         message.warning(
-          formatMessage({ id: 'odc.TablePage.TableData.NoContentToSubmit' }), // 无内容可提交
+          formatMessage({
+            id: 'odc.TablePage.TableData.NoContentToSubmit',
+            defaultMessage: '无内容可提交',
+          }), // 无内容可提交
         );
         return;
       }
@@ -888,18 +906,21 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         if (this.getSession()?.params?.autoCommit) {
           msg = formatMessage({
             id: 'odc.components.SQLPage.SubmittedSuccessfully',
+            defaultMessage: '提交成功',
           });
 
           // 提交成功
         } else if (!/commit;$/.test(this.state.updateDataDML)) {
           msg = formatMessage({
             id: 'odc.components.SQLPage.TheModificationIsSuccessfulAnd',
+            defaultMessage: '修改成功，手动提交后生效',
           });
 
           // 修改成功，手动提交后生效
         } else {
           msg = formatMessage({
             id: 'odc.components.SQLPage.SubmittedSuccessfully',
+            defaultMessage: '提交成功',
           });
 
           // 提交成功
@@ -1018,7 +1039,10 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     } else if (value?.length > MAX_LIMIT) {
       !this.outOfLimitTipHaveShow &&
         message.warning(
-          formatMessage({ id: 'odc.components.SQLPage.BecauseTheSqlIsToo' }), //由于 SQL 过长，编辑器将只支持预览
+          formatMessage({
+            id: 'odc.components.SQLPage.BecauseTheSqlIsToo',
+            defaultMessage: '由于 SQL 过长，编辑器将只支持预览',
+          }), //由于 SQL 过长，编辑器将只支持预览
         );
       this.outOfLimitTipHaveShow = true;
       console.log('MAX_LIMIT: ', MAX_LIMIT, 'size:', value.length);
@@ -1234,6 +1258,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
               }
               onChange={(sql) => this.setState({ updateDataDML: sql })}
             />,
+
             <Trace
               key={'trace' + this.getSession()?.sessionId}
               open={showTrace}
@@ -1319,7 +1344,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     for (let i = 0; i < results?.length; i++) {
       const result = results[i];
       if (result.status !== ISqlExecuteResultStatus.SUCCESS) {
-        const sqlIndexs = await splitSql(
+        const sqlIndexs = await splitSqlForHighlight(
           this.editor.getValue(),
           session.connection?.dialectType === ConnectionMode.MYSQL,
           session?.params?.delimiter,

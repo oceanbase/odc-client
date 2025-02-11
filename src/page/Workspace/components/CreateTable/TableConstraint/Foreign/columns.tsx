@@ -148,6 +148,7 @@ export function useColumns(
       key: 'name',
       name: formatMessage({
         id: 'odc.CreateTable.Columns.columns.Name',
+        defaultMessage: '名称',
       }),
       //名称
       resizable: true,
@@ -158,7 +159,10 @@ export function useColumns(
 
     {
       key: 'columns',
-      name: formatMessage({ id: 'odc.TableConstraint.Foreign.columns.Column' }), //列
+      name: formatMessage({
+        id: 'odc.TableConstraint.Foreign.columns.Column',
+        defaultMessage: '列',
+      }), //列
       resizable: true,
       minWidth: 150,
       filterable: false,
@@ -173,6 +177,7 @@ export function useColumns(
       key: 'schemaname',
       name: formatMessage({
         id: 'odc.TableConstraint.Foreign.columns.AssociatedSchema',
+        defaultMessage: '关联 Schema',
       }),
       //关联 Schema
       resizable: true,
@@ -185,6 +190,7 @@ export function useColumns(
       key: 'tableName',
       name: formatMessage({
         id: 'odc.TableConstraint.Foreign.columns.AssociatedTable',
+        defaultMessage: '关联表',
       }),
       //关联表
       resizable: true,
@@ -197,6 +203,7 @@ export function useColumns(
       key: 'parentColumns',
       name: formatMessage({
         id: 'odc.TableConstraint.Foreign.columns.AssociatedColumn',
+        defaultMessage: '关联列',
       }), //关联列
       resizable: true,
       editable: true,
@@ -206,7 +213,10 @@ export function useColumns(
 
     {
       key: 'onDelete',
-      name: formatMessage({ id: 'odc.TableConstraint.Foreign.columns.Delete' }), //删除
+      name: formatMessage({
+        id: 'odc.TableConstraint.Foreign.columns.Delete',
+        defaultMessage: '删除',
+      }), //删除
       resizable: true,
       editable: true,
       editor: onDeleteSelect,
@@ -215,7 +225,10 @@ export function useColumns(
 
     {
       key: 'onUpdate',
-      name: formatMessage({ id: 'odc.TableConstraint.Foreign.columns.Update' }), //更新
+      name: formatMessage({
+        id: 'odc.TableConstraint.Foreign.columns.Update',
+        defaultMessage: '更新',
+      }), //更新
       resizable: true,
       editable: true,
       editor: onUpdateSelect,

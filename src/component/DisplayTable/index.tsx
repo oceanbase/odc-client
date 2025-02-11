@@ -30,37 +30,8 @@ import {
 import { TableRowSelection } from 'antd/es/table/interface';
 import { Resizable } from 'react-resizable';
 import styles from './index.less';
-
-// @ts-ignore
-const ResizeableTitle = (props) => {
-  const { onResize, onClick, width, ...restProps } = props;
-  const [allowClick, setAllowClick] = useState(true);
-
-  if (!width) {
-    // @see https://github.com/ant-design/ant-design/issues/14647#issuecomment-606365370
-    return <th {...restProps} onClick={onClick} />;
-  }
-
-  return (
-    <Resizable
-      width={width}
-      height={0}
-      onResize={onResize}
-      {...{
-        onMouseDown: () => {
-          setAllowClick(true);
-        },
-        onClick: (e: any) => allowClick && onClick(e),
-      }}
-      onResizeStart={() => {
-        setAllowClick(false);
-      }}
-      draggableOpts={{ enableUserSelectHack: false }}
-    >
-      <th {...restProps} />
-    </Resizable>
-  );
-};
+import { DEFAULT_COLUMN_WIDTH } from '../CommonTable/const';
+import { ResizeTitle } from '@/component/CommonTable/component/ResizeTitle';
 
 /**
  * 包含：
@@ -90,20 +61,23 @@ export default class DisplayTable extends React.Component<
     showQuickJumper?: boolean;
     expandable?: ExpandableConfig<any>;
     onChange?: (pagination: any) => void;
+    enableResize?: boolean;
   },
   {
     defaultPageSize: number;
     columns: ColumnProps<unknown>[];
+    columnWidthMap?: { [key: string]: string };
   }
 > {
   public readonly state = {
     defaultPageSize: 10,
     columns: this.props.columns,
+    columnWidthMap: null,
   };
 
   public components = {
     header: {
-      cell: ResizeableTitle,
+      cell: ResizeTitle,
     },
   };
 
@@ -124,17 +98,36 @@ export default class DisplayTable extends React.Component<
     });
   }
 
-  public handleResize = (index: number) => (e: any, { size }: { size: { width: number } }) => {
-    this.setState(({ columns }) => {
-      const nextColumns = [...columns];
-      nextColumns[index] = {
-        ...nextColumns[index],
-        width: size.width,
-      };
+  public handleResize = (oriColumn) => {
+    return (e, { size }) => {
+      if (size?.width < oriColumn?.width) {
+        return;
+      }
 
-      return { columns: nextColumns };
-    });
+      this.setState(({ columnWidthMap }) => {
+        const newColumnWidthMap = {
+          ...columnWidthMap,
+          [oriColumn.key]: size?.width,
+        };
+        return { columnWidthMap: newColumnWidthMap };
+      });
+    };
   };
+
+  public getResizableColumns() {
+    const { columnWidthMap } = this.state;
+    return this.props?.columns?.map((oriColumn) => {
+      return {
+        ...oriColumn,
+        width: columnWidthMap?.[oriColumn?.key] || oriColumn.width || DEFAULT_COLUMN_WIDTH,
+        onHeaderCell: (column) =>
+          ({
+            width: columnWidthMap?.[oriColumn?.key] || oriColumn.width || DEFAULT_COLUMN_WIDTH,
+            onResize: this.handleResize(oriColumn),
+          } as React.HTMLAttributes<HTMLElement>),
+      };
+    });
+  }
 
   public render() {
     const {
@@ -147,25 +140,20 @@ export default class DisplayTable extends React.Component<
       className,
       showSizeChanger = true,
       showQuickJumper = true,
+      enableResize,
+      scroll,
       ...rest
     } = this.props;
-    const { defaultPageSize } = this.state;
+    const { defaultPageSize, columnWidthMap } = this.state;
 
-    // const resizableColumns = columns.map((col, index) => ({
-    //   ...col,
-    //   onHeaderCell: (column: ColumnProps<unknown>) => ({
-    //     width: column.width,
-    //     onResize: this.handleResize(index),
-    //   }),
-    // }));
+    const resizableColumns = this.getResizableColumns();
 
     return (
       <div className={`${styles.table} ${className}`}>
         <Table
           {...rest}
-          // columns={resizableColumns}
+          columns={enableResize ? resizableColumns : columns}
           dataSource={dataSource}
-          columns={columns}
           rowClassName={(record, i) => (i % 2 === 0 ? styles.even : styles.odd)}
           pagination={
             !disablePagination && {
@@ -179,6 +167,7 @@ export default class DisplayTable extends React.Component<
                     return formatMessage(
                       {
                         id: 'odc.component.DisplayTable.TotalTotal',
+                        defaultMessage: '共 {total} 条',
                       },
                       { total },
                     ); // `共 ${total} 条`
@@ -186,8 +175,8 @@ export default class DisplayTable extends React.Component<
                 : null,
             }
           }
-
-          // components={this.components}
+          components={enableResize ? this.components : null}
+          scroll={scroll ? scroll : { x: 'max-content' }}
         />
       </div>
     );

@@ -19,15 +19,14 @@ import { formatMessage } from '@/util/intl';
  * 样式与功能开关
  */
 
-import { getServerSystemInfo, getSystemConfig, getPublicKey } from '@/common/network/other';
+import { getPublicKey, getServerSystemInfo, getSystemConfig } from '@/common/network/other';
 import type { IUserConfig, ServerSystemInfo } from '@/d.ts';
 import odc from '@/plugins/odc';
 import { isClient } from '@/util/env';
 import request from '@/util/request';
-import { initTracert } from '@/util/tracert';
+import { isLinux, isWin64 } from '@/util/utils';
 import { message } from 'antd';
 import { action, observable } from 'mobx';
-import { isLinux, isWin64 } from '@/util/utils';
 import login from './login';
 
 export const themeKey = 'odc-theme';
@@ -96,6 +95,58 @@ export class SettingStore {
   @observable
   public enableDataExport: boolean = false;
 
+  /**
+   * 多库变更
+   */
+  @observable
+  public enableMultipleAsyncTask: boolean = false;
+
+  /**
+   * 影子表同步
+   */
+  @observable
+  public enableShadowTableSync: boolean = false;
+
+  /**
+   * 结构对比
+   */
+  public enableStructureCompare: boolean = false;
+
+  /**
+   * SQL 计划
+   */
+  public enableSQLPlan: boolean = false;
+
+  /**
+   * 分区计划
+   */
+  public enablePartitionPlan: boolean = false;
+
+  /**
+   * 数据归档
+   */
+  public enableDataArchive: boolean = false;
+
+  /**
+   * 数据清理
+   */
+  public enableDataClear: boolean = false;
+
+  /**
+   * 申请库权限
+   */
+  public enableApplyDBAuth: boolean = false;
+
+  /**
+   * 申请项目权限
+   */
+  public enableApplyProjectAuth: boolean = false;
+
+  /**
+   * 申请表权限
+   */
+  public enableApplyTableAuth: boolean = false;
+
   @observable
   public enableAsyncTask: boolean = false;
 
@@ -119,6 +170,9 @@ export class SettingStore {
 
   @observable
   public enableMockdata: boolean = false;
+
+  @observable
+  public enableLogicaldatabase: boolean = false;
 
   /**
    * 上传文件是否为oss，s3之类的云存储
@@ -251,12 +305,13 @@ export class SettingStore {
   public async getSystemConfig() {
     const res = await getSystemConfig();
     const isMacClient = isClient() && !isWin64() && !isLinux();
+    const isPrivateSpace = login.isPrivateSpace();
     const maxResultsetRows =
       parseInt(res?.['odc.session.sql-execute.max-result-set-rows']) || Number.MAX_SAFE_INTEGER;
     const maxSessionCount =
       parseInt(res?.['odc.session.sql-execute.max-single-session-count']) ||
       Number.MAX_SAFE_INTEGER;
-    this.enableDataExport = res?.['odc.data.export.enabled'] === 'true' ?? false;
+    this.enableDataExport = res?.['odc.data.export.enabled'] === 'true' || false;
     this.enableOBClient = res?.['odc.features.obclient.enabled'] === 'true' && !isMacClient;
     this.maxResultSetRows = maxResultsetRows === -1 ? Number.MAX_SAFE_INTEGER : maxResultsetRows;
     this.maxSessionCount = maxSessionCount === -1 ? Number.MAX_SAFE_INTEGER : maxSessionCount;
@@ -269,8 +324,9 @@ export class SettingStore {
     this.enableDBExport =
       res?.['odc.features.task.export.enabled'] === 'true' && this.enableDataExport;
     this.enableMockdata = res?.['odc.features.task.mockdata.enabled'] === 'true';
+    this.enableLogicaldatabase = res?.['odc.features.logicaldatabase.enabled'] === 'true';
     this.enableOSC = res?.['odc.features.task.osc.enabled'] === 'true';
-    if (login.isPrivateSpace()) {
+    if (isPrivateSpace) {
       this.enableOSC = res?.['odc.features.task.osc.individual.space.enabled'] === 'true';
     }
     this.enableOSCLimiting = res?.['odc.osc.rate-limit.enabled'] === 'true';
@@ -279,6 +335,24 @@ export class SettingStore {
       parseInt(res?.['odc.task.dlm.max-single-task-row-limit']) || Number.MAX_SAFE_INTEGER;
     this.maxSingleTaskDataSizeLimit =
       parseInt(res?.['odc.task.dlm.max-single-task-data-size-limit']) || Number.MAX_SAFE_INTEGER;
+
+    this.enableMultipleAsyncTask =
+      res?.['odc.features.task.multiple-async.enabled'] === 'true' && !isPrivateSpace;
+    this.enableShadowTableSync = res?.['odc.features.task.shadow-table-sync.enabled'] === 'true';
+    this.enableStructureCompare =
+      res?.['odc.features.task.structure-comparison.enabled'] === 'true';
+    this.enableSQLPlan = res?.['odc.features.task.sql-plan.enabled'] === 'true' && !isClient();
+    this.enablePartitionPlan =
+      res?.['odc.features.task.partition-plan.enabled'] === 'true' && !isClient();
+    this.enableDataArchive =
+      res?.['odc.features.task.data-archive.enabled'] === 'true' && !isClient();
+    this.enableDataClear = res?.['odc.features.task.data-delete.enabled'] === 'true' && !isClient();
+    this.enableApplyDBAuth =
+      res?.['odc.features.task.apply-database-permission.enabled'] === 'true' && !isPrivateSpace;
+    this.enableApplyProjectAuth =
+      res?.['odc.features.task.apply-project-permission.enabled'] === 'true' && !isPrivateSpace;
+    this.enableApplyTableAuth =
+      res?.['odc.features.task.apply-table-permission.enabled'] === 'true' && !isPrivateSpace;
   }
 
   @action
@@ -337,6 +411,7 @@ export class SettingStore {
       message.error(
         formatMessage({
           id: 'odc.src.store.setting.SystemInitializationFailedRefreshAnd',
+          defaultMessage: '系统初始化失败，请刷新重试！',
         }), // 系统初始化失败，请刷新重试！
       );
     }
@@ -349,8 +424,9 @@ export class SettingStore {
       throw new Error(
         formatMessage({
           id: 'odc.src.store.setting.SystemConfigurationQueryFailed',
-        }), // 系统配置查询失败
-      );
+          defaultMessage: '系统配置查询失败',
+        }),
+      ); // 系统配置查询失败
     }
     try {
       console.log('server buildTime:', new Date(info.buildTime));

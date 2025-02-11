@@ -28,7 +28,7 @@ const { Option } = Select;
 export const ALL_SELECTED_ID = 'ALL';
 
 const AllOption: IResourceOption = {
-  name: formatMessage({ id: 'odc.components.ResourceSelector2.All' }), //全部
+  name: formatMessage({ id: 'odc.components.ResourceSelector2.All', defaultMessage: '全部' }), //全部
   resourceId: ALL_SELECTED_ID,
 };
 
@@ -161,6 +161,7 @@ const ResourceItem: React.FC<{
             required: isRequired,
             message: formatMessage({
               id: 'odc.components.FormRoleModal.component.Select',
+              defaultMessage: '请选择',
             }),
 
             // 请选择
@@ -179,6 +180,7 @@ const ResourceItem: React.FC<{
               required: isRequired,
               message: formatMessage({
                 id: 'odc.components.FormRoleModal.component.Select',
+                defaultMessage: '请选择',
               }),
 
               // 请选择
@@ -212,9 +214,11 @@ const ResourceItem: React.FC<{
                               !isSelectAll
                                 ? formatMessage({
                                     id: 'odc.components.ResourceSelector2.All',
+                                    defaultMessage: '全部',
                                   }) //全部
                                 : formatMessage({
                                     id: 'odc.components.ResourceSelector2.CancelAll',
+                                    defaultMessage: '取消全部',
                                   }) //取消全部
                             }
                           </Button>
@@ -253,8 +257,9 @@ const ResourceItem: React.FC<{
                               formatMessage(
                                 {
                                   id: 'odc.components.ResourceSelector2.NameName',
+                                  defaultMessage: '姓名：{name}',
                                 },
-                                { name: name },
+                                { name },
                               )
                               /*姓名：{name}*/
                             }
@@ -263,6 +268,7 @@ const ResourceItem: React.FC<{
                             {
                               formatMessage({
                                 id: 'odc.components.ResourceSelector2.Account',
+                                defaultMessage: '账号：',
                               }) /*账号：*/
                             }
 
@@ -293,6 +299,7 @@ const ResourceItem: React.FC<{
               required: isRequired,
               message: formatMessage({
                 id: 'odc.components.FormRoleModal.component.Select',
+                defaultMessage: '请选择',
               }),
 
               // 请选择
@@ -519,6 +526,7 @@ export const ResourceSelector: React.FC<{
                 {
                   formatMessage({
                     id: 'odc.components.ResourceSelector2.Add',
+                    defaultMessage: '添加',
                   }) /*添加*/
                 }
               </Button>

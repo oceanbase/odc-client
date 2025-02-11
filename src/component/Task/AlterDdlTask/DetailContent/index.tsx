@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
+import { updateThrottleConfig } from '@/common/network/task';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import { getTaskExecStrategyMap } from '@/component/Task';
 import type { ITaskResult, TaskDetail } from '@/d.ts';
-import { TaskExecStrategy } from '@/d.ts';
-import { formatMessage } from '@/util/intl';
-import React from 'react';
-import { Typography, message } from 'antd';
-import { SimpleTextItem } from '../../component/SimpleTextItem';
-import { ClearStrategy, SwapTableType } from '../CreateModal';
-import ThrottleEditableCell from '../../component/ThrottleEditableCell';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
-import { updateThrottleConfig } from '@/common/network/task';
+import { TaskExecStrategy, TaskStatus } from '@/d.ts';
 import setting from '@/store/setting';
-import { getFormatDateTime, mbToB, bToMb } from '@/util/utils';
-import { TaskStatus } from '@/d.ts';
-import { OscMaxRowLimit, OscMaxDataSizeLimit } from '../../const';
+import { formatMessage } from '@/util/intl';
+import { bToMb, getFormatDateTime, mbToB } from '@/util/utils';
+import { message, Typography } from 'antd';
+import React, { useMemo } from 'react';
+import { SimpleTextItem } from '../../component/SimpleTextItem';
+import ThrottleEditableCell from '../../component/ThrottleEditableCell';
+import { OscMaxDataSizeLimit, OscMaxRowLimit } from '../../const';
+import { ClearStrategy, SwapTableType } from '../CreateModal';
+import { ProjectRole } from '@/d.ts/project';
+import userStore from '@/store/login';
 
 const { Text } = Typography;
 interface IDDLAlterParamters {
@@ -56,29 +56,35 @@ interface IDDLAlterParamters {
 const ErrorStrategyText = {
   ABORT: formatMessage({
     id: 'odc.AlterDdlTask.DetailContent.StopATask',
+    defaultMessage: '停止任务',
   }),
   //停止任务
   CONTINUE: formatMessage({
     id: 'odc.AlterDdlTask.DetailContent.IgnoreErrorsToContinueThe',
+    defaultMessage: '忽略错误继续任务',
   }), //忽略错误继续任务
 };
 
 const ClearStrategyMap = {
   [ClearStrategy.ORIGIN_TABLE_DROP]: formatMessage({
     id: 'odc.AlterDdlTask.DetailContent.DeleteNow',
+    defaultMessage: '立即删除',
   }),
   //立即删除
   [ClearStrategy.ORIGIN_TABLE_RENAME_AND_RESERVED]: formatMessage({
     id: 'odc.AlterDdlTask.DetailContent.RenameNotProcessed',
+    defaultMessage: '重命名不处理',
   }), //重命名不处理
 };
 
 const SwapTableTypeMap = {
   [SwapTableType.AUTO]: formatMessage({
     id: 'odc.src.component.Task.AlterDdlTask.DetailContent.AutomaticSwitch',
+    defaultMessage: '自动切换',
   }), //'自动切换'
   [SwapTableType.MANUAL]: formatMessage({
     id: 'odc.src.component.Task.AlterDdlTask.DetailContent.ManualSwitch',
+    defaultMessage: '手工切换',
   }), //'手工切换'
 };
 const SQLContentSection: React.FC<{
@@ -89,6 +95,7 @@ const SQLContentSection: React.FC<{
     <SimpleTextItem
       label={formatMessage({
         id: 'odc.AlterDdlTask.DetailContent.SqlContent',
+        defaultMessage: 'SQL 内容',
       })}
       /*SQL 内容*/ content={
         <div
@@ -124,12 +131,16 @@ export function getItems(
   textItems: [React.ReactNode, React.ReactNode, number?][];
   sectionRender?: (task: TaskDetail<IDDLAlterParamters>) => void;
 }[] {
-  const { parameters, id, status } = task;
-  const cantBeModified = [
-    TaskStatus.EXECUTION_SUCCEEDED,
-    TaskStatus.EXECUTION_FAILED,
-    TaskStatus.CANCELLED,
-  ]?.includes(status);
+  const { parameters, id, status, project } = task;
+  const haveOperationPermission = useMemo(() => {
+    return (
+      project.currentUserResourceRoles?.some((item) =>
+        [ProjectRole.DBA, ProjectRole.OWNER].includes(item),
+      ) || userStore?.user?.id === task?.creator?.id
+    );
+  }, [project]);
+
+  const cantBeModified = [TaskStatus.EXECUTING]?.includes(status) && haveOperationPermission;
   if (!task) {
     return [];
   }
@@ -139,6 +150,7 @@ export function getItems(
   const riskItem = [
     formatMessage({
       id: 'odc.AlterDdlTask.DetailContent.RiskLevel',
+      defaultMessage: '风险等级',
     }),
     //风险等级
     <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />,
@@ -147,6 +159,7 @@ export function getItems(
   const timerExecutionItem: [string, string] = [
     formatMessage({
       id: 'odc.AlterDdlTask.DetailContent.ExecutionTime',
+      defaultMessage: '执行时间',
     }),
     //执行时间
     getFormatDateTime(task?.executionTime),
@@ -163,6 +176,7 @@ export function getItems(
       message.success(
         formatMessage({
           id: 'odc.src.component.Task.DataClearTask.DetailContent.SuccessfullyModified.1',
+          defaultMessage: '修改成功！',
         }), //'修改成功！'
       );
       handleClose();
@@ -178,6 +192,7 @@ export function getItems(
       message.success(
         formatMessage({
           id: 'odc.src.component.Task.DataClearTask.DetailContent.SuccessfullyModified.1',
+          defaultMessage: '修改成功！',
         }), //'修改成功！'
       );
       handleClose();
@@ -191,6 +206,7 @@ export function getItems(
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.TaskNumber',
+            defaultMessage: '任务编号',
           }),
           //任务编号
           task.id,
@@ -199,15 +215,18 @@ export function getItems(
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.TaskType',
+            defaultMessage: '任务类型',
           }),
           //任务类型
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.LockFreeStructureChange',
+            defaultMessage: '无锁结构变更',
           }), //无锁结构变更
         ],
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.Library',
+            defaultMessage: '所属库',
           }),
           //所属库
           task?.database?.name || '-',
@@ -216,6 +235,7 @@ export function getItems(
         [
           formatMessage({
             id: 'odc.src.component.Task.AlterDdlTask.DetailContent.DataSource',
+            defaultMessage: '所属数据源',
           }),
           //'所属数据源'
           task?.database?.dataSource?.name || '-',
@@ -226,6 +246,7 @@ export function getItems(
           ? [
               formatMessage({
                 id: 'odc.src.component.Task.AlterDdlTask.DetailContent.LockUsers',
+                defaultMessage: '锁定用户',
               }), //'锁定用户'
               <Text
                 ellipsis={true}
@@ -241,6 +262,7 @@ export function getItems(
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.ChangeDefinition',
+            defaultMessage: '变更定义',
           }),
           //变更定义
           taskExecStrategyMap[task?.executionStrategy],
@@ -251,6 +273,7 @@ export function getItems(
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.LockTableTimeout',
+            defaultMessage: '锁表超时时间',
           }),
           //锁表超时时间
           `${parameters?.lockTableTimeOutSeconds}s`,
@@ -259,6 +282,7 @@ export function getItems(
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.NumberOfFailedRetries',
+            defaultMessage: '失败重试次数',
           }),
           //失败重试次数
           parameters?.swapTableNameRetryTimes,
@@ -267,6 +291,7 @@ export function getItems(
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.SourceTableCleanupPolicyAfter',
+            defaultMessage: '完成后源表清理策略',
           }),
           //完成后源表清理策略
           ClearStrategyMap[parameters?.originTableCleanStrategy],
@@ -275,6 +300,7 @@ export function getItems(
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.ExecutionMethod',
+            defaultMessage: '执行方式',
           }),
           //执行方式
           taskExecStrategyMap[task?.executionStrategy],
@@ -283,6 +309,7 @@ export function getItems(
         [
           formatMessage({
             id: 'odc.src.component.Task.AlterDdlTask.DetailContent.TableNameSwitchingMethod',
+            defaultMessage: '表名切换方式',
           }), //'表名切换方式'
           SwapTableTypeMap[task?.parameters?.swapTableType] ?? '-',
         ],
@@ -291,6 +318,7 @@ export function getItems(
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.TaskErrorHandling',
+            defaultMessage: '任务错误处理',
           }),
           //任务错误处理
           ErrorStrategyText[parameters.errorStrategy],
@@ -310,33 +338,15 @@ export function getItems(
                 max={OscMaxRowLimit}
                 defaultValue={parameters?.rateLimitConfig?.rowLimit}
                 onOk={handleRowLimit}
-                readlOnly={cantBeModified}
+                readlOnly={!cantBeModified}
               />,
-              1,
-            ]
-          : null,
-        setting.enableOSCLimiting
-          ? [
-              formatMessage({
-                id: 'src.component.Task.AlterDdlTask.DetailContent.45E8ACBB',
-                defaultMessage: '数据大小限流',
-              }),
-
-              <ThrottleEditableCell
-                suffix="MB/s"
-                min={0}
-                max={OscMaxDataSizeLimit}
-                defaultValue={bToMb(parameters?.rateLimitConfig?.dataSizeLimit)}
-                onOk={handleDataSizeLimit}
-                readlOnly={cantBeModified}
-              />,
-
               1,
             ]
           : null,
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.Description',
+            defaultMessage: '描述',
           }),
           //描述
           task?.description,
@@ -349,6 +359,7 @@ export function getItems(
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.Founder',
+            defaultMessage: '创建人',
           }),
           //创建人
           task?.creator?.name || '-',
@@ -358,6 +369,7 @@ export function getItems(
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.CreationTime',
+            defaultMessage: '创建时间',
           }),
           //创建时间
           getFormatDateTime(task.createTime),

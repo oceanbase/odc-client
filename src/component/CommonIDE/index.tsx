@@ -87,6 +87,8 @@ interface ICommonIDEProps {
    * 创建后监听事件
    */
   onEditorAfterCreatedCallback?: (editor: IEditor) => void;
+
+  placeholder?: string;
 }
 interface ICommonIDEState {
   resultHeight: number;
@@ -149,6 +151,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
       resultSets,
       toolbarActions,
       session,
+      placeholder,
     } = this.props;
 
     const { resultHeight } = this.state;
@@ -182,6 +185,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                   defaultValue={initialSQL}
                   onValueChange={this.onSQLChange}
                   onEditorCreated={this.onEditorCreated}
+                  placeholder={placeholder}
                   {...editorProps}
                 />
               </div>
@@ -194,6 +198,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                       key: ITabType.LOG as string,
                       label: formatMessage({
                         id: 'odc.component.CommonIDE.Result',
+                        defaultMessage: '运行结果',
                       }),
                       children: log,
                     },
@@ -204,9 +209,11 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                           key: `resultset-${set.uniqKey}`,
                           label: this.getResultSetTitle(
                             set.executeSql,
-                            `${formatMessage({
+                            formatMessage({
                               id: 'workspace.window.sql.result',
-                            })}${i + 1}`,
+                              defaultMessage: '结果',
+                            }) +
+                              (i + 1),
                           ),
                           children:
                             !!set.columns?.length &&
@@ -246,6 +253,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                 defaultValue={initialSQL}
                 onValueChange={this.onSQLChange}
                 onEditorCreated={this.onEditorCreated}
+                placeholder={placeholder}
                 {...editorProps}
               />
             </div>

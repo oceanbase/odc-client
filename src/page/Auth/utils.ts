@@ -22,12 +22,18 @@ export enum ResourceManagementAction {
   can_update = 'can_update',
   can_read = 'can_read',
   can_create = 'can_create',
+  sencrity_administrator = 'SECURITY_ADMINISTRATOR',
+  owner = 'OWNER',
+  dba = 'DBA',
 }
 
 export const resourceManagementActionMap = {
   [ResourceManagementAction.can_manage]: ['delete', 'read', 'update'],
   [ResourceManagementAction.can_update]: ['read', 'update'],
   [ResourceManagementAction.can_read]: ['read'],
+  [ResourceManagementAction.sencrity_administrator]: ['SECURITY_ADMINISTRATOR'],
+  [ResourceManagementAction.owner]: ['OWNER'],
+  [ResourceManagementAction.dba]: ['DBA'],
 };
 
 export const resourceAuthMap = {
@@ -75,7 +81,7 @@ export function hasManageAuth(auths: string[] = []) {
 export const getAuthLabelString = (auths: string[] = []) => {
   const labels = auths.includes('create')
     ? [
-        formatMessage({ id: 'odc.page.Auth.utils.CanBeCreated' }), //可新建
+        formatMessage({ id: 'odc.page.Auth.utils.CanBeCreated', defaultMessage: '可新建' }), //可新建
       ]
     : [];
   const otherLabel = resourceManagementActionOptions?.find((item) => {

@@ -18,7 +18,7 @@ import { formatMessage } from '@/util/intl';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 // compatible
-import { PASSWORD_REGEX } from '@/constant';
+import { PASSWORD_REGEX, PASSWORD_VALIDATE_MESSAGE } from '@/constant';
 import { IUser } from '@/d.ts';
 import { UserStore } from '@/store/login';
 import { Form, Input, Modal } from 'antd';
@@ -75,7 +75,7 @@ class RegisterModal extends Component<IProps> {
         centered={true}
         width={560}
         destroyOnClose={true}
-        title={formatMessage({ id: 'login.button.register' })}
+        title={formatMessage({ id: 'login.button.register', defaultMessage: '注册账号' })}
         open={visible}
         onOk={this.handleSubmit}
         onCancel={onCancel}
@@ -87,7 +87,7 @@ class RegisterModal extends Component<IProps> {
               console.log(getFieldError('account'));
               return (
                 <Form.Item
-                  label={formatMessage({ id: 'password.label.account' })}
+                  label={formatMessage({ id: 'password.label.account', defaultMessage: '账号' })}
                   name="account"
                   rules={[
                     {
@@ -95,6 +95,7 @@ class RegisterModal extends Component<IProps> {
                       whitespace: true,
                       message: formatMessage({
                         id: 'login.username.validation.required',
+                        defaultMessage: '请输入账号',
                       }),
                     },
                     {
@@ -102,16 +103,22 @@ class RegisterModal extends Component<IProps> {
                       max: 48,
                       message: formatMessage({
                         id: 'login.username.validation.length',
+                        defaultMessage: '不少于 4 个字符且不超过 14 个字符',
                       }),
                     },
                     {
                       pattern: /^[a-zA-Z0-9_\.\+\@\#\$\%]+$/,
-                      message: formatMessage({ id: 'login.account.valid' }),
+                      message: formatMessage({
+                        id: 'login.account.valid',
+                        defaultMessage:
+                          '支持英文、数字、下划线和特殊字符（._+@#$%）的组合，长度为 4~48 个字符',
+                      }),
                     },
                     {
                       validator: this.handleValidateAccount,
                       message: formatMessage({
                         id: 'password.label.account.validation',
+                        defaultMessage: '该账号已存在',
                       }),
                     },
                   ]}
@@ -119,6 +126,7 @@ class RegisterModal extends Component<IProps> {
                   <Input
                     placeholder={formatMessage({
                       id: 'login.common.placeholder',
+                      defaultMessage: '请输入',
                     })}
                   />
                 </Form.Item>
@@ -126,7 +134,7 @@ class RegisterModal extends Component<IProps> {
             }}
           </Form.Item>
           <Form.Item
-            label={formatMessage({ id: 'password.label' })}
+            label={formatMessage({ id: 'password.label', defaultMessage: '密码' })}
             name="password"
             dependencies={['confirmPassword']}
             rules={[
@@ -134,22 +142,26 @@ class RegisterModal extends Component<IProps> {
                 required: true,
                 message: formatMessage({
                   id: 'login.password.validation.required',
+                  defaultMessage: '请输入密码',
                 }),
               },
               {
                 pattern: PASSWORD_REGEX,
-                message: formatMessage({ id: 'login.password.valid' }),
+                message: PASSWORD_VALIDATE_MESSAGE,
               },
             ]}
           >
             <Input
               type="password"
-              placeholder={formatMessage({ id: 'login.common.placeholder' })}
+              placeholder={formatMessage({
+                id: 'login.common.placeholder',
+                defaultMessage: '请输入',
+              })}
               autoComplete="new-password"
             />
           </Form.Item>
           <Form.Item
-            label={formatMessage({ id: 'password.label.confirm1' })}
+            label={formatMessage({ id: 'password.label.confirm1', defaultMessage: '确认密码' })}
             name="confirmPassword"
             dependencies={['password']}
             rules={[
@@ -157,25 +169,31 @@ class RegisterModal extends Component<IProps> {
                 required: true,
                 message: formatMessage({
                   id: 'login.password.validation.required',
+                  defaultMessage: '请输入密码',
                 }),
               },
               {
                 validator: this.handleValidatePassword,
                 message: formatMessage({
                   id: 'password.label.confirm.validation',
+                  defaultMessage: '确认密码不一致',
                 }),
               },
               {
                 pattern: PASSWORD_REGEX,
                 message: formatMessage({
                   id: 'login.password.validation.strength',
+                  defaultMessage: '密码强度不符合要求',
                 }),
               },
             ]}
           >
             <Input
               type="password"
-              placeholder={formatMessage({ id: 'login.common.placeholder' })}
+              placeholder={formatMessage({
+                id: 'login.common.placeholder',
+                defaultMessage: '请输入',
+              })}
             />
           </Form.Item>
         </Form>

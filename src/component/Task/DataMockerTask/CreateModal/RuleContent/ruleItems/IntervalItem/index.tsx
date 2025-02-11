@@ -57,7 +57,7 @@ const IntervalItem: React.FC<IIntervalItemProps> = forwardRef<FormInstance, IInt
         case IntervalRuleType.NORMAL: {
           items = getTextItem([
             [
-              formatMessage({ id: 'odc.ruleItems.IntervalItem.Value' }), // 值
+              formatMessage({ id: 'odc.ruleItems.IntervalItem.Value', defaultMessage: '值' }), // 值
               value?.genParams?.fixText,
             ],
           ]);
@@ -80,6 +80,7 @@ const IntervalItem: React.FC<IIntervalItemProps> = forwardRef<FormInstance, IInt
               <Input
                 addonBefore={formatMessage({
                   id: 'odc.ruleItems.IntervalItem.Value',
+                  defaultMessage: '值',
                 })} /* 值 */
               />
             </Form.Item>
