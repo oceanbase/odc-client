@@ -24,12 +24,13 @@ import {
   TaskType,
 } from '@/d.ts';
 import { TaskStore } from '@/store/task';
+import { UserStore } from '@/store/login';
 import { isLogicalDatabase } from '@/util/database';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 import { flatArray } from '../../../MutipleAsyncTask/CreateModal/helper';
 import { TaskDetailContext } from '../../../TaskDetailContext';
 import { getColumnsByTaskType } from './colums';
@@ -37,9 +38,11 @@ import styles from './index.less';
 import TaskProgressDrawer from './TaskProgressDrawer';
 import TaskProgressHeader from './TaskProgressHeader';
 import ProgressDetailsModal from './ProgressDetailsModal';
+import { ProjectRole } from '@/d.ts/project';
 
 interface IProps {
   taskStore?: TaskStore;
+  userStore?: UserStore;
   task: TaskDetail<TaskRecordParameters>;
   theme?: string;
   onReload: () => void;
@@ -47,7 +50,7 @@ interface IProps {
 const TaskProgress: React.FC<IProps> = (props) => {
   // #region ------------------------- props or state -------------------------
   const { handleDetailVisible: _handleDetailVisible, setState } = useContext(TaskDetailContext);
-  const { task, theme, taskStore, onReload } = props;
+  const { task, theme, taskStore, onReload, userStore } = props;
   const [subTasks, setSubTasks] = useState([]);
   const [databases, setDatabases] = useState([]);
   const [detailId, setDetailId] = useState(null);
@@ -101,6 +104,14 @@ const TaskProgress: React.FC<IProps> = (props) => {
   const resultJson = JSON.parse(subTask?.resultJson ?? '{}');
   const parametersJson = JSON.parse(subTask?.parametersJson ?? '{}');
   const pendingExectionDatabases = databases?.filter((item) => !item?.status)?.length;
+  const haveOperationPermission = useMemo(() => {
+    return (
+      task.project.currentUserResourceRoles?.some((item) =>
+        [ProjectRole.DBA, ProjectRole.OWNER].includes(item),
+      ) || userStore?.user?.id === task?.creator?.id
+    );
+  }, [task]);
+
   // #endregion
 
   // #region ------------------------- function -------------------------
@@ -158,7 +169,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
       handleProgressDetailVisible,
     },
     task.status,
-    task.project.currentUserResourceRoles,
+    haveOperationPermission,
   );
 
   return (
@@ -192,4 +203,4 @@ const TaskProgress: React.FC<IProps> = (props) => {
     </>
   );
 };
-export default inject('taskStore')(observer(TaskProgress));
+export default inject('taskStore', 'userStore')(observer(TaskProgress));
