@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { INlsObject, ITable, ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
+import { DbObjectType, INlsObject, ITable, ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
 import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import sessionManager from '@/store/sessionManager';
 import setting from '@/store/setting';
@@ -64,14 +64,21 @@ export async function getTableInfo(
   tableName: string,
   databaseName: string,
   sessionId: string,
+  isExternalTable?: boolean,
 ): Promise<Partial<ITableModel>> {
+  const params: { type?: string } = {};
+  if (isExternalTable) {
+    params.type = 'EXTERNAL_TABLE';
+  }
+
   const res = await request.get(
     `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
       databaseName,
     )}/tables/${encodeObjName(Base64.encode(tableName))}`,
+    { params },
   );
-
-  return convertServerTableToTable(res?.data);
+  const session = sessionManager.sessionMap.get(sessionId);
+  return convertServerTableToTable(res?.data, null, session?.connection?.dialectType);
 }
 
 export async function getLogicTableInfo(
@@ -171,6 +178,25 @@ export async function generateUpdateTableDDL(
   return res?.data || { sql: '', tip: '' };
 }
 
+/** 同步外表文件 */
+export async function syncExternalTableFiles(
+  sessionId: string,
+  databaseName: string,
+  externalTableName: string,
+): Promise<boolean> {
+  const res = await request.post(
+    `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
+      databaseName,
+    )}/externalTables/${encodeObjName(Base64.encode(externalTableName))}/syncExternalTableFiles`,
+    {
+      params: {
+        ignoreError: true,
+      },
+    },
+  );
+  return res?.data;
+}
+
 export async function getTableListByDatabaseName(
   sessionId: string,
   databaseName?: string,
@@ -185,8 +211,11 @@ export async function getTableListByDatabaseName(
  * @param databaseId 数据库ID
  * @returns 数据库的表列表
  */
-export async function getTableListWithoutSession(databaseId: number): Promise<ITable[]> {
-  const params = { databaseId: databaseId };
+export async function getTableListWithoutSession(
+  databaseId: number,
+  type?: string,
+): Promise<ITable[]> {
+  const params: { type?: string; databaseId: number } = { databaseId: databaseId, type };
   const ret = await request.get(`/api/v2/databaseSchema/tables`, { params });
   return ret?.data?.contents || [];
 }

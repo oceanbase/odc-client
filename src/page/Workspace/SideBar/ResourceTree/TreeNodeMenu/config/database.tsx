@@ -299,6 +299,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           isHide(_, node) {
             const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
             return (
+              !setting.enableMultipleAsyncTask ||
               isLogicalDatabase(node.data) ||
               !config?.features?.task?.includes(TaskType.MULTIPLE_ASYNC)
             );
@@ -322,7 +323,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
-            return !isLogicalDatabase(node.data);
+            return !setting.enableLogicaldatabase || !isLogicalDatabase(node.data);
           },
           run(session, node, databaseFrom) {
             modal.changeLogicialDatabaseModal(true, {
@@ -369,7 +370,9 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           isHide(_, node) {
             const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
             return (
-              isLogicalDatabase(node.data) || !config?.features?.task?.includes(TaskType.SHADOW)
+              !setting.enableShadowTableSync ||
+              isLogicalDatabase(node.data) ||
+              !config?.features?.task?.includes(TaskType.SHADOW)
             );
           },
 
@@ -396,6 +399,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           isHide(_, node) {
             const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
             return (
+              !setting.enableStructureCompare ||
               isLogicalDatabase(node.data) ||
               !config?.features?.task?.includes(TaskType.STRUCTURE_COMPARISON)
             );
@@ -444,6 +448,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           isHide(_, node) {
             const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
             return (
+              !setting.enableSQLPlan ||
               isClient() ||
               isLogicalDatabase(node?.data) ||
               !config?.features?.task?.includes(TaskType.SQL_PLAN)
@@ -470,6 +475,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           isHide(_, node) {
             const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
             return (
+              !setting.enablePartitionPlan ||
               isClient() ||
               isLogicalDatabase(node.data) ||
               !config?.features?.task?.includes(TaskType.PARTITION_PLAN)
@@ -496,6 +502,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           isHide(_, node) {
             const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
             return (
+              !setting.enableDataArchive ||
               isClient() ||
               isLogicalDatabase(node.data) ||
               !config?.features?.task?.includes(TaskType.DATA_ARCHIVE)
@@ -522,6 +529,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           isHide(_, node) {
             const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
             return (
+              !setting.enableDataClear ||
               isClient() ||
               isLogicalDatabase(node.data) ||
               !config?.features?.task?.includes(TaskType.DATA_DELETE)
@@ -570,8 +578,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           isHide(_, node) {
             const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
             return (
-              isClient() ||
-              isPrivateSpace ||
+              !setting.enableApplyDBAuth ||
               !config?.features?.task?.includes(TaskType.APPLY_DATABASE_PERMISSION)
             );
           },

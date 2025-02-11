@@ -134,6 +134,7 @@ export const DbObjsIcon = {
   [DbObjectType.public_synonym]: SynonymSvg,
   [DbObjectType.file]: FileSvg,
   [DbObjectType.column]: FolderOpenFilled,
+  [DbObjectType.external_table]: TableOutlined,
 };
 /**
  * lineBackground: src/page/Workspace/components/SessionContextWrap/SessionSelect/index.tsx 中使用的背景，使用场景较为特殊，单独区分出来。

@@ -248,7 +248,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                                   id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseEnter',
                                   defaultMessage: '请输入',
                                 })}
-                                /*请输入*/ min={1}
+                                /*请输入*/ min={0}
                               />
                             </Form.Item>
                             <Form.Item

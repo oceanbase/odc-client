@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import Action from '@/component/Action';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
@@ -7,14 +23,14 @@ import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import Icon, { QuestionCircleOutlined } from '@ant-design/icons';
 import { Popover, Space, Tooltip, Typography } from 'antd';
-
-const { Link } = Typography;
+import { ProjectRole } from '@/d.ts/project';
 
 const getColumns = (params: {
   handleDetailVisible: (id: number) => void;
   onSwapTable: (id: number) => void;
   handleProgressDetailVisible: (id: number) => void;
   taskStatus: TaskStatus;
+  projectRoleList: ProjectRole[];
 }) => {
   // 查看进度 提示文本
   const viewProgressTooltip = (
@@ -91,7 +107,11 @@ const getColumns = (params: {
       </div>
     </div>
   );
-
+  const isProjectDBAorOwner = () => {
+    return params.projectRoleList?.some((item) =>
+      [ProjectRole.DBA, ProjectRole.OWNER].includes(item),
+    );
+  };
   return [
     {
       dataIndex: 'resultJson',
@@ -142,7 +162,7 @@ const getColumns = (params: {
                 defaultMessage: '查看结构',
               })}
             </Action.Link>
-            {resultJson?.manualSwapTableEnabled && isTaskExecuting && (
+            {resultJson?.manualSwapTableEnabled && isTaskExecuting && isProjectDBAorOwner && (
               <Action.Link
                 onClick={async () => {
                   params?.onSwapTable(record?.id);
@@ -333,6 +353,7 @@ export const getColumnsByTaskType = (
     handleProgressDetailVisible;
   },
   status: TaskStatus,
+  projectRole: ProjectRole[],
 ) => {
   switch (type) {
     case TaskType.MULTIPLE_ASYNC: {
@@ -346,6 +367,7 @@ export const getColumnsByTaskType = (
         onSwapTable: params?.handleSwapTable,
         handleProgressDetailVisible: params?.handleProgressDetailVisible,
         taskStatus: status,
+        projectRoleList: projectRole,
       });
     }
   }

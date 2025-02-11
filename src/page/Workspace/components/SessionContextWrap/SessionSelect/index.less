@@ -9,6 +9,11 @@
 .content {
   display: flex;
   align-items: center;
+  width: 100%;
+  .datasourceAndProjectItemBox {
+    flex: 1;
+    overflow: hidden;
+  }
 }
 
 .link {
@@ -25,6 +30,36 @@
   }
 }
 
+.SessionInfo {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  padding-right: 8px;
+  .datasourceAndProjectItemBox {
+    padding-left: 8px;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+  }
+}
+
 .ellipsis {
   .odc-text-ellipsis();
+}
+
+.datasourceAndProjectItem {
+  max-width: 100%;
+  :global {
+    .ant-space-item {
+      overflow: hidden;
+    }
+  }
+  .describeItem {
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+    > span:nth-child(1) {
+      white-space: nowrap;
+    }
+  }
 }

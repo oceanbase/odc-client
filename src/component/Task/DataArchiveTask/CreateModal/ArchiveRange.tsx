@@ -17,23 +17,28 @@
 import { ITable } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Form, Input, Radio, Select, Typography } from 'antd';
+import { Button, Checkbox, Form, Input, Radio, Select, Typography, Tooltip } from 'antd';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import ArchiveRangeTip from '../../component/ArchiveRangeTip';
 import { PartitionTextArea } from '../../component/PartitionTextArea';
+import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 import { IArchiveRange } from './index';
 import styles from './index.less';
-const { TextArea, Group } = Input;
+import BatchSelectionPopover from '@/component/BatchSelectionPopover';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { IDatabase } from '@/d.ts/database';
 const { Text, Link } = Typography;
 
 interface IProps {
   tables: ITable[];
   enabledTargetTable?: boolean;
   checkPartition?: boolean;
+  targetDatabase?: IDatabase;
 }
 const ArchiveRange: React.FC<IProps> = (props) => {
-  const { tables, enabledTargetTable = false, checkPartition } = props;
+  const { tables, enabledTargetTable = false, checkPartition, targetDatabase } = props;
+  const form = Form.useFormInstance();
   const [enablePartition, setEnablePartition] = useState<boolean>(checkPartition);
   const tablesOptions = tables?.map((item) => ({
     label: item.tableName,
@@ -43,6 +48,24 @@ const ArchiveRange: React.FC<IProps> = (props) => {
   useEffect(() => {
     setEnablePartition(checkPartition);
   }, [checkPartition]);
+
+  const handleConfirm = (
+    checkList: CheckboxValueType[],
+    add: (defaultValue?: any, insertIndex?: number) => void,
+    remove: (index: number | number[]) => void,
+  ) => {
+    if (checkList?.length === 0) return;
+    const filedList = form.getFieldValue('tables');
+    // 批量增加时，先移除空的fields
+    for (let i = 0; i < filedList.length; i++) {
+      if (!filedList[i]) {
+        remove(i);
+      }
+    }
+    checkList.forEach((item) => {
+      add({ tableName: item });
+    });
+  };
 
   return (
     <>
@@ -210,20 +233,45 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             style={{ display: 'flex', flexDirection: 'column' }}
                             className={styles.multiInputBox}
                           >
-                            <Form.Item {...restField} name={[name, 'targetTableName']}>
-                              <Input
-                                addonBefore={formatMessage({
-                                  id: 'src.component.Task.DataArchiveTask.CreateModal.94BCB0E1',
-                                  defaultMessage: '目标表',
-                                })}
-                                placeholder={
-                                  formatMessage({
-                                    id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
-                                    defaultMessage: '请输入',
-                                  }) /*"请输入"*/
-                                }
-                              />
-                            </Form.Item>
+                            <Tooltip
+                              title={
+                                isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
+                                  ? formatMessage({
+                                      id: 'src.component.Task.DataArchiveTask.CreateModal.39BA9EFE',
+                                      defaultMessage:
+                                        '选择的目标数据库为对象存储类型时，不支持该配置',
+                                    })
+                                  : undefined
+                              }
+                            >
+                              <Form.Item {...restField} name={[name, 'targetTableName']}>
+                                <Input
+                                  addonBefore={formatMessage({
+                                    id: 'src.component.Task.DataArchiveTask.CreateModal.94BCB0E1',
+                                    defaultMessage: '目标表',
+                                  })}
+                                  disabled={isConnectTypeBeFileSystemGroup(
+                                    targetDatabase?.connectType,
+                                  )}
+                                  onChange={(e) => {
+                                    form.setFieldsValue({
+                                      tables: {
+                                        [name]: {
+                                          targetTableName: e.target.value,
+                                        },
+                                      },
+                                    });
+                                  }}
+                                  placeholder={
+                                    formatMessage({
+                                      id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
+                                      defaultMessage: '请输入',
+                                    }) /*"请输入"*/
+                                  }
+                                />
+                              </Form.Item>
+                            </Tooltip>
+
                             {enablePartition && (
                               <PartitionTextArea {...restField} name={[name, 'partitions']} />
                             )}
@@ -245,14 +293,20 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                         marginBottom: 0,
                       }}
                     >
-                      <Button onClick={() => add()} block icon={<PlusOutlined />}>
-                        {
-                          formatMessage({
-                            id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Add',
-                            defaultMessage: '添加',
-                          }) /*添加*/
-                        }
-                      </Button>
+                      <div className={styles.operationContainer}>
+                        <Button onClick={() => add()} type="link" icon={<PlusOutlined />}>
+                          {
+                            formatMessage({
+                              id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Add',
+                              defaultMessage: '添加',
+                            }) /*添加*/
+                          }
+                        </Button>
+                        <BatchSelectionPopover
+                          options={tablesOptions}
+                          handleConfirm={(checkList) => handleConfirm(checkList, add, remove)}
+                        />
+                      </div>
                     </Form.Item>
                   </div>
                 )}

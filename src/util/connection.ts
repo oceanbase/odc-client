@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { ConnectionMode, ConnectType } from '@/d.ts';
+import { ConnectionMode, ConnectType, DatasourceGroup } from '@/d.ts';
 import { encrypt } from '@/util/utils';
+import { getDataSourceGroupByConnectType } from '@/common/datasource';
 
 const encryptKeys = ['password', 'sysTenantPassword', 'readonlyPassword', 'sysUserPassword'];
 
@@ -53,6 +54,11 @@ export function resolveUnionDbUser(unionDbUser: string): {
 export function isConnectTypeBeShardingType(connectType: ConnectType): boolean {
   const cloudList = [ConnectType.ODP_SHARDING_OB_MYSQL];
   return cloudList.includes(connectType);
+}
+
+/** 是否是对象存储类型 */
+export function isConnectTypeBeFileSystemGroup(connectType: ConnectType): boolean {
+  return getDataSourceGroupByConnectType(connectType) === DatasourceGroup.FileSystem;
 }
 
 export function encryptConnection<T>(connection: T) {

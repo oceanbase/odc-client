@@ -17,12 +17,10 @@
 import { DbObjectType, IPackage, IProcedure } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
-
 import Icon, { InfoOutlined } from '@ant-design/icons';
 import { ResourceNodeType, TreeDataNode } from '../type';
-
+import { TopTab } from '@/page/Workspace/components/PackagePage';
 import { ReactComponent as ParameterSvg } from '@/svgr/Parameter.svg';
-
 import { IDatabase } from '@/d.ts/database';
 import { openPackageViewPage, openProcedureViewPage } from '@/store/helper/page';
 import { ReactComponent as ProcedureSvg } from '@/svgr/menuProcedure.svg';
@@ -117,15 +115,26 @@ export function ProcedureTreeNodeData(
     ),
 
     doubleClick(session, node, databaseFrom) {
-      pkg
-        ? openPackageViewPage(pkg.packageName, null, false, session?.database?.databaseId)
-        : openProcedureViewPage(
+      // 程序包中的子程序 双击直接打开所在的程序包详情
+      switch (menuKey) {
+        case ResourceNodeType.PackageHeadProcedure: {
+          openPackageViewPage(pkg.packageName, TopTab.HEAD, false, session?.database?.databaseId);
+          break;
+        }
+        case ResourceNodeType.PackageBodyProcedure: {
+          openPackageViewPage(pkg.packageName, TopTab.BODY, false, session?.database?.databaseId);
+          break;
+        }
+        default: {
+          openProcedureViewPage(
             proc.proName,
             undefined,
             undefined,
             session?.database?.databaseId,
             null,
           );
+        }
+      }
     },
     sessionId: dbSession?.sessionId,
     packageName: packageName,

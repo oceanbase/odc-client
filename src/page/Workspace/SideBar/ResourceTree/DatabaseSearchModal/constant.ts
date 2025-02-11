@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { formatMessage } from '@/util/intl';
 import { DbObjectType, ConnectType, SynonymType } from '@/d.ts';
 import {
@@ -10,6 +26,7 @@ import {
   openSequenceViewPage,
   openSynonymViewPage,
   openViewViewPage,
+  openExternalTableTableViewPage,
 } from '@/store/helper/page';
 import { PropsTab, TopTab } from '@/page/Workspace/components/TablePage';
 import { TopTab as PackageTopTab } from '@/page/Workspace/components/PackagePage';
@@ -18,6 +35,7 @@ import { DbObjectTypeTextMap } from '@/constant/label';
 const mysqlObjectType = [
   DbObjectType.database,
   DbObjectType.table,
+  DbObjectType.external_table,
   DbObjectType.column,
   DbObjectType.function,
   DbObjectType.view,
@@ -35,6 +53,7 @@ const pgObjectType = [
 const oracleObjectType = [
   DbObjectType.database,
   DbObjectType.table,
+  DbObjectType.external_table,
   DbObjectType.column,
   DbObjectType.function,
   DbObjectType.view,
@@ -83,6 +102,24 @@ export const DbObjectTypeMap = {
       return [name, TopTab.PROPS, PropsTab.DDL, databaseId];
     },
   },
+  [DbObjectType.logical_table]: {
+    label: DbObjectTypeTextMap.TABLE,
+    openPage: (object) => openTableViewPage,
+    getOpenTab: (object, databaseId) => {
+      return [object.name, TopTab.PROPS, PropsTab.DDL, object?.database?.id, object?.id];
+    },
+  },
+  [DbObjectType.external_table]: {
+    label: formatMessage({
+      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.EABF882B',
+      defaultMessage: '外表',
+    }),
+    openPage: (object) => openExternalTableTableViewPage,
+    getOpenTab: (object, databaseId) => {
+      const name = object?.name;
+      return [name, TopTab.PROPS, PropsTab.DDL, databaseId];
+    },
+  },
   [DbObjectType.column]: {
     label: formatMessage({
       id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.35B21489',
@@ -92,6 +129,7 @@ export const DbObjectTypeMap = {
       const funcMap = {
         [DbObjectType.view]: openViewViewPage,
         [DbObjectType.table]: openTableViewPage,
+        [DbObjectType.external_table]: openExternalTableTableViewPage,
       };
       return funcMap[object?.dbObject?.type];
     },

@@ -16,6 +16,7 @@
 
 import SessionStore from '@/store/sessionManager/session';
 import React from 'react';
+import { IDatabase } from '@/d.ts/database';
 
 interface ISessionContext {
   session: SessionStore;
@@ -26,7 +27,12 @@ interface ISessionContext {
   isLogicalDatabase?: boolean;
   from?: 'project' | 'datasource';
   setFrom?: React.Dispatch<React.SetStateAction<'project' | 'datasource'>>;
-  selectSession: (databaseId: number, datasourceId: number, from: 'project' | 'datasource') => void;
+  selectSession: (
+    databaseId: number,
+    datasourceId: number,
+    from: 'project' | 'datasource',
+    database?: IDatabase,
+  ) => void;
 }
 
 const SessionContext = React.createContext<ISessionContext>({

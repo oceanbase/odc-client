@@ -590,7 +590,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
               }) /*"项目"*/
             }
           >
-            {task?.database?.project?.name || '-'}
+            {task?.project?.name || '-'}
           </Descriptions.Item>
           <Descriptions.Item
             span={2}

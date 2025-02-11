@@ -31,9 +31,10 @@ import {
   RollbackType,
   SubTaskStatus,
   TaskDetail,
+  IResultSetExportTaskParams,
 } from '@/d.ts';
 import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
-import { TablePermissionType } from '@/d.ts/table';
+import { IUnauthorizedDBResources, TablePermissionType } from '@/d.ts/table';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
 
@@ -80,6 +81,8 @@ interface ResultSetExportData {
   sql?: string;
   databaseId?: number;
   tableName?: string;
+  taskId?: number;
+  task?: TaskDetail<IResultSetExportTaskParams>;
 }
 
 interface ApplyPermissionData {}
@@ -105,17 +108,20 @@ interface IExportModalData {
   name?: string;
   databaseId?: number;
   exportPkgBody?: boolean;
+  taskId?: number;
 }
 
 interface IImportModalData {
   table?: Partial<ITable>;
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IDataArchiveTaskData {
   id?: number;
   type?: 'RETRY' | 'EDIT';
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IDataClearTaskData extends IDataArchiveTaskData {}
@@ -123,22 +129,27 @@ interface IDataClearTaskData extends IDataArchiveTaskData {}
 interface ISQLPlanTaskData {
   id?: number;
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IPartitionTaskData {
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IDDLAlterTaskData {
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IShadowSyncTaskData {
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IStructureComparisonTaskData {
   databaseId?: number;
+  taskId?: number;
 }
 
 interface IWorkSpaceExecuteSQLModalProps {
@@ -151,6 +162,7 @@ interface IWorkSpaceExecuteSQLModalProps {
   onSave: any;
   status: EStatus;
   lintResultSet: ISQLLintReuslt[];
+  unauthorizedDBResources: IUnauthorizedDBResources[];
 }
 
 export class ModalStore {

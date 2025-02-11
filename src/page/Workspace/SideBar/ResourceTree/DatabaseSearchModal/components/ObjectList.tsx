@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { DbObjsIcon } from '@/constant';
 import { ConnectionMode, DbObjectType } from '@/d.ts';
@@ -47,12 +63,23 @@ const ObjectList = ({
   const getTyepBlock = () => {
     const typeList = objectTypeConfig[dbType];
     const typeObjectTree = typeList?.map((i) => {
-      if (i === DbObjectType.column) {
-        return { key: i, data: objectlist?.dbColumns };
-      } else if (i === DbObjectType.database) {
-        return { key: i, data: objectlist?.databases };
-      } else {
-        return { key: i, data: objectlist?.dbObjects?.filter((obj) => obj.type === i) };
+      switch (i) {
+        case DbObjectType.column:
+          return { key: i, data: objectlist?.dbColumns };
+        case DbObjectType.database:
+          return { key: i, data: objectlist?.databases };
+        case DbObjectType.table:
+          return {
+            key: i,
+            data: objectlist?.dbObjects?.filter((obj) =>
+              [DbObjectType.table, DbObjectType.logical_table].includes(obj.type),
+            ),
+          };
+        default:
+          return {
+            key: i,
+            data: objectlist?.dbObjects?.filter((obj) => obj.type === i),
+          };
       }
     });
     return typeObjectTree;
@@ -111,6 +138,7 @@ const ObjectList = ({
 
       case DbObjectType.database: {
         const { dataSource } = item;
+        if (!dataSource) return;
         const { name: dataSourceName, dialectType } = dataSource;
         const dialectTypeIcon = getDataSourceStyleByConnectType(dialectType)?.icon;
         return (
@@ -123,6 +151,7 @@ const ObjectList = ({
       default: {
         const { database } = item;
         const { name: databaseName, dataSource } = database;
+        if (!dataSource) return;
         const { name: dataSourceName, dialectType } = dataSource;
         const dialectTypeIcon = getDataSourceStyleByConnectType(dialectType)?.icon;
         return (
@@ -203,7 +232,7 @@ const ObjectList = ({
                                     component={
                                       getDataSourceStyleByConnectType(
                                         object?.dataSource?.dialectType,
-                                      ).dbIcon?.component
+                                      )?.dbIcon?.component
                                     }
                                     style={{ fontSize: 14, marginRight: 4 }}
                                   />
@@ -254,7 +283,11 @@ const ObjectList = ({
 
   const applyTablePermission = (e, object, type) => {
     e.stopPropagation();
-    const dbObj = type === DbObjectType.table ? object : object?.dbObject;
+    const dbObj = [DbObjectType.table, DbObjectType.external_table, DbObjectType.view]?.includes(
+      type,
+    )
+      ? object
+      : object?.dbObject;
     const params = {
       projectId: dbObj?.database?.project?.id,
       databaseId: dbObj?.database?.id,
@@ -278,8 +311,19 @@ const ObjectList = ({
     if (activeDatabase?.id !== object.id) return;
     if (hasPermission(object)) return;
     const isTableColumn =
-      object?.dbObject?.type === DbObjectType.table || object?.type === DbObjectType.table;
-    if ([DbObjectType.column, DbObjectType.table].includes(type) && isTableColumn) {
+      [DbObjectType.table, DbObjectType.view, DbObjectType.external_table]?.includes(
+        object?.dbObject?.type,
+      ) ||
+      [DbObjectType.table, DbObjectType.view, DbObjectType.external_table]?.includes(object?.type);
+    if (
+      [
+        DbObjectType.column,
+        DbObjectType.table,
+        DbObjectType.view,
+        DbObjectType.external_table,
+      ].includes(type) &&
+      isTableColumn
+    ) {
       return (
         <Button
           type="link"
@@ -287,8 +331,8 @@ const ObjectList = ({
           onClick={(e) => applyTablePermission(e, object, type)}
         >
           {formatMessage({
-            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.E2C1F722',
-            defaultMessage: '申请表权限',
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.4DE0929F',
+            defaultMessage: '申请表/视图权限',
           })}
         </Button>
       );
@@ -356,6 +400,10 @@ const ObjectList = ({
     const type = object?.type || DbObjectType.column;
     e.stopPropagation();
     const databaseId = object?.dbObject?.database?.id || object?.database?.id;
+
+    if (type === DbObjectType.external_table) {
+      object.isExternalTable = true;
+    }
     DbObjectTypeMap?.[type]?.openPage(object)(
       ...DbObjectTypeMap?.[type]?.getOpenTab(object, databaseId),
     );

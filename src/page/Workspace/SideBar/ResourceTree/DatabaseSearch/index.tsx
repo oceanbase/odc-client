@@ -43,6 +43,7 @@ const DatabaseSearch: React.FC<IProps> = function ({ onChange, modalStore, setti
     ? [
         DbObjectType.database,
         DbObjectType.table,
+        DbObjectType.external_table,
         DbObjectType.view,
         DbObjectType.function,
         DbObjectType.procedure,

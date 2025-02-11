@@ -68,6 +68,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const databaseId = Form.useWatch('databaseId', form);
   const sqlContent = Form.useWatch('sqlContent', form);
+  const initialSQL = logicDatabaseInfo?.ddl;
   const delimiter = Form.useWatch('delimiter', form);
   const [previewOpen, setPreviewOpen] = useState<boolean>(false);
   const loadEditData = async (task) => {
@@ -298,6 +299,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             })}
             type={TaskType.ALTER_SCHEDULE}
           />
+
           <Form.Item
             label={formatMessage({
               id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.844AC838',
@@ -352,11 +354,6 @@ const CreateModal: React.FC<IProps> = (props) => {
               </Tooltip>
             </div>
           </Form.Item>
-          <Typography.Text type="secondary">
-            When using logical table expressions, you must enclose the expressions in backticks(`),
-            such as `db_[00-31].test_[00-31]`. Otherwise, the logical table topology will not be
-            recognized.
-          </Typography.Text>
           <Form.Item
             name="sqlContent"
             className={`${styles.sqlContent} ${
@@ -378,12 +375,17 @@ const CreateModal: React.FC<IProps> = (props) => {
           >
             <CommonIDE
               ref={editorRef}
-              initialSQL={sqlContent}
+              initialSQL={initialSQL}
               language={'sql'}
               onEditorAfterCreatedCallback={onEditorAfterCreatedCallback}
               onSQLChange={(sql) => {
                 handleSqlChange('sqlContent', sql);
               }}
+              placeholder={formatMessage({
+                id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.D4252811',
+                defaultMessage:
+                  '使用逻辑表表达式需要在表达式上加上`号，如：`db_[00-31]`.`test_[00-31]`,否则将无法识别逻辑表拓扑',
+              })}
             />
           </Form.Item>
           <div

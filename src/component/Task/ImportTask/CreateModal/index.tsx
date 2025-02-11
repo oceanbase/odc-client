@@ -245,8 +245,12 @@ class CreateModal extends React.Component<IProps, IState> {
             );
             if (this.state.isSaveDefaultConfig) {
               this.saveCurrentConfig();
+              this.setDefaultConfig();
             }
             this.props.modalStore.changeImportModal(false);
+            this.setState({
+              isSaveDefaultConfig: false,
+            });
             openTasksPage(TaskPageType.IMPORT, TaskPageScope.CREATED_BY_CURRENT_USER);
           }
         } catch (e) {
@@ -278,7 +282,7 @@ class CreateModal extends React.Component<IProps, IState> {
       columnDelimiter,
       lineSeparator,
       skipHeader,
-      fileName: importFileName?.[0].response.data?.fileName,
+      fileName: importFileName?.[0]?.response?.data?.fileName,
     });
     if (!fileInfo) {
       message.warning(
@@ -294,11 +298,10 @@ class CreateModal extends React.Component<IProps, IState> {
     }
     const tableName = this.state.formData.tableName;
     if (tableName) {
-      const columns = await getTableColumnList(
-        this.state.formData.tableName,
-        databaseName,
-        sessionId,
-      );
+      const columns =
+        databaseName && sessionId
+          ? await getTableColumnList(this.state.formData.tableName, databaseName, sessionId)
+          : [];
       this.setState({
         csvColumnMappings: fileInfo?.map((column, i) => {
           return {
@@ -384,8 +387,9 @@ class CreateModal extends React.Component<IProps, IState> {
     return {
       useSys: false,
       databaseId: this.props.modalStore.importModalData?.databaseId,
-      executionStrategy: TaskExecStrategy.AUTO,
-      fileType: IMPORT_TYPE.ZIP,
+      taskId: this.props.modalStore.exportModalData?.taskId,
+      executionStrategy: this.defaultConfig?.executionStrategy ?? TaskExecStrategy.AUTO,
+      fileType: this.defaultConfig?.fileType ?? IMPORT_TYPE.ZIP,
       encoding: this.defaultConfig?.encoding ?? IMPORT_ENCODING.UTF8,
       importFileName: null,
       importContent: IMPORT_CONTENT.DATA_AND_STRUCT,
@@ -412,11 +416,13 @@ class CreateModal extends React.Component<IProps, IState> {
   static getDerivedStateFromProps(props, state) {
     const nextDatabaseId = props.modalStore.importModalData?.databaseId;
     const preDatabaseId = state.formData.databaseId;
-    if (nextDatabaseId && nextDatabaseId !== preDatabaseId) {
+    const taskId = props.modalStore.importModalData?.taskId;
+    if ((nextDatabaseId && nextDatabaseId !== preDatabaseId) || taskId) {
       return {
         formData: {
           ...state.formData,
           databaseId: nextDatabaseId,
+          taskId,
         },
       };
     }
@@ -540,6 +546,7 @@ class CreateModal extends React.Component<IProps, IState> {
                 onChangeCsvColumnMappings={this.onChangeCsvColumnMappings}
                 resolveTableColumnsToCsv={this.resolveTableColumnsToCsv}
                 onSessionChange={this.handleSessionChange}
+                sessionData={this.state.sessionData}
               />
             </FormConfigContext.Provider>
           </CsvProvider.Provider>

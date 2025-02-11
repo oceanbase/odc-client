@@ -31,6 +31,7 @@ import { getModelService } from './plugins/ob-language/service';
 import logger from '@/util/logger';
 import { getFontSize } from './config';
 import { apply as themeApply } from './plugins/theme';
+import PlaceholderContentWidget from './PlaceholderContentWidget';
 export interface IEditor extends monaco.editor.IStandaloneCodeEditor {
   doFormat: () => void;
   getSelectionContent: () => string;
@@ -62,6 +63,8 @@ export interface IProps {
   readOnly?: boolean;
 
   onEditorCreated?: (editor: IEditor) => void;
+
+  placeholder?: string;
 }
 
 const MonacoEditor: React.FC<IProps> = function (props) {
@@ -76,6 +79,7 @@ const MonacoEditor: React.FC<IProps> = function (props) {
     sessionStore,
     onValueChange,
     onEditorCreated,
+    placeholder,
   } = props;
   const [innerValue, _setInnerValue] = useState<string>(defaultValue);
   const settingTheme =
@@ -177,6 +181,12 @@ const MonacoEditor: React.FC<IProps> = function (props) {
       },
       readOnly: readOnly,
     });
+
+    /* 初始化 PlaceholderContentWidget */
+    if (placeholder) {
+      new PlaceholderContentWidget(placeholder, editorRef.current);
+    }
+
     await initPlugin();
     editorRef.current.updateOptions({
       readOnly,

@@ -20,12 +20,13 @@ import ExportCard from '@/component/ExportCard';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { EnvColorMap } from '@/constant';
 import { DBType } from '@/d.ts/database';
-import datasourceStatus from '@/store/datasourceStatus';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Badge, Checkbox, Empty, Popconfirm, Space, Spin, Tooltip, Tree, Typography } from 'antd';
 import { DataNode, TreeProps } from 'antd/lib/tree';
 import classnames from 'classnames';
-import React, { useCallback, useEffect, useState } from 'react';
+import datasourceStatus from '@/store/datasourceStatus';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
 
 const { Text } = Typography;
@@ -93,6 +94,14 @@ const DatabaseSelecter: React.FC<IProps> = function ({
     }
   }, [projectId, baseDatabase]);
 
+  useEffect(() => {
+    if (checkedKeys?.length) {
+      setShowSelectLogicDBTip?.(
+        databaseList?.some((i) => checkedKeys?.includes(i?.id) && i?.type === DBType.LOGICAL),
+      );
+    }
+  }, [checkedKeys, databaseList]);
+
   const getCheckedTreeData = () => {
     const validDatabaseList =
       databaseList
@@ -107,6 +116,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
 
   const getAllTreeData = () => {
     const validDatabaseList = databaseList?.filter((item) => {
+      if (isConnectTypeBeFileSystemGroup(item.connectType)) return false;
       return !sourceSearchValue?.length
         ? true
         : item?.name?.toLowerCase().indexOf(sourceSearchValue?.toLowerCase()) !== -1;
@@ -174,8 +184,14 @@ const DatabaseSelecter: React.FC<IProps> = function ({
               }}
             >
               <div>
-                <Text style={{ wordBreak: 'keep-all', paddingRight: 4 }}>{item?.name}</Text>
-                <Text type="secondary" ellipsis>
+                <Text
+                  ellipsis
+                  style={{ wordBreak: 'keep-all', paddingRight: 4, maxWidth: 180 }}
+                  title={item?.name}
+                >
+                  {item?.name}
+                </Text>
+                <Text type="secondary" ellipsis style={{ maxWidth: 80 }}>
                   {item?.dataSource?.name}
                 </Text>
               </div>
@@ -210,7 +226,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
   }
 
   const handleSwitchSelectAll = () => {
-    onChange(checkAll ? [baseDatabase || null] : maxTreeDataKeys);
+    onChange(checkAll ? [] : maxTreeDataKeys);
   };
 
   const handleSearch = (value) => {
@@ -227,9 +243,6 @@ const DatabaseSelecter: React.FC<IProps> = function ({
       } else {
         list = checkedKeys?.filter((key) => key !== curNodeKey);
       }
-      setShowSelectLogicDBTip?.(
-        databaseList?.find((i) => list?.includes(i?.id) && i?.type === DBType.LOGICAL),
-      );
       onChange(list || []);
     },
     [checkedKeys, onChange, databaseList],
@@ -241,7 +254,9 @@ const DatabaseSelecter: React.FC<IProps> = function ({
   const allTreeData = getAllTreeData();
   const selectedTreeData = getCheckedTreeData();
   const allTreeDataCount = allTreeDataKeys?.length;
-  const selectedTreeDataCount = checkedKeys?.length;
+  const selectedTreeDataCount = useMemo(() => {
+    return checkedKeys?.length;
+  }, [checkedKeys]);
   const indeterminate = selectedTreeDataCount && selectedTreeDataCount < allTreeDataCount;
 
   return (

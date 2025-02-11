@@ -288,6 +288,10 @@ const AddressItems: React.FC<IProps> = function (props) {
       </div>
     );
   };
+
+  if (dataSourceConfig?.cloudStorage) {
+    return null;
+  }
   return (
     <>
       <div className="ant-form-item-label">

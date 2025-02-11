@@ -23,6 +23,7 @@ import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useState } from 'react';
 import { PageLoadingContext } from './PageLoadingWrapper';
+import { toDefaultProjectPage } from '@/service/projectHistory';
 interface IProps {
   userStore: UserStore;
   settingStore: SettingStore;
@@ -78,11 +79,11 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
        * 冻结用户
        */
       history.replace('/exception/403');
-    } else if (isLoginPage) {
+    } else if (isLoginPage || location.pathname === '/project' || location.pathname === '/') {
       /**
        * 处于login页面并且已经登录，需要跳到对应的页面上
        */
-      history.replace('/project');
+      await toDefaultProjectPage();
     }
     setStatus(STATUS_TYPE.DONE);
   }

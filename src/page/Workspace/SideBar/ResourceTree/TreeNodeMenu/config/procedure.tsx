@@ -128,9 +128,6 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       ],
       ellipsis: true,
       actionType: actionTypes.update,
-      disabled: (session, node) => {
-        return !isSupportPLEdit(session);
-      },
       async run(session, node) {
         const proc: IProcedure = node.data;
         await openProcedureEditPageByProName(

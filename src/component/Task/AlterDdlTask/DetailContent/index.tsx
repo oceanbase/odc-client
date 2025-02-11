@@ -24,11 +24,13 @@ import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { bToMb, getFormatDateTime, mbToB } from '@/util/utils';
 import { message, Typography } from 'antd';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 import { OscMaxDataSizeLimit, OscMaxRowLimit } from '../../const';
 import { ClearStrategy, SwapTableType } from '../CreateModal';
+import { ProjectRole } from '@/d.ts/project';
+import userStore from '@/store/login';
 
 const { Text } = Typography;
 interface IDDLAlterParamters {
@@ -129,12 +131,16 @@ export function getItems(
   textItems: [React.ReactNode, React.ReactNode, number?][];
   sectionRender?: (task: TaskDetail<IDDLAlterParamters>) => void;
 }[] {
-  const { parameters, id, status } = task;
-  const cantBeModified = [
-    TaskStatus.EXECUTION_SUCCEEDED,
-    TaskStatus.EXECUTION_FAILED,
-    TaskStatus.CANCELLED,
-  ]?.includes(status);
+  const { parameters, id, status, project } = task;
+  const haveOperationPermission = useMemo(() => {
+    return (
+      project.currentUserResourceRoles?.some((item) =>
+        [ProjectRole.DBA, ProjectRole.OWNER].includes(item),
+      ) || userStore?.user?.id === task?.creator?.id
+    );
+  }, [project]);
+
+  const cantBeModified = [TaskStatus.EXECUTING]?.includes(status) && haveOperationPermission;
   if (!task) {
     return [];
   }
@@ -332,7 +338,7 @@ export function getItems(
                 max={OscMaxRowLimit}
                 defaultValue={parameters?.rateLimitConfig?.rowLimit}
                 onOk={handleRowLimit}
-                readlOnly={cantBeModified}
+                readlOnly={!cantBeModified}
               />,
               1,
             ]
