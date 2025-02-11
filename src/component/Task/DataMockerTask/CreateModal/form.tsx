@@ -32,7 +32,7 @@ import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useStat
 import DatabaseSelect from '../../component/DatabaseSelect';
 import RuleConfigTable from './RuleConfigTable';
 import { convertFormToServerColumns, getDefaultRule, getDefaultValue } from './RuleContent';
-import { IMockFormData, MockStrategy, MockStrategyTextMap } from './type';
+import { IMockFormData, MockStrategy, MockStrategyTextMap, RuleConfigList } from './type';
 
 const { Option } = Select;
 
@@ -43,12 +43,13 @@ interface IDataMockerFormProps {
   dbId?: number;
   projectId: number;
   onDbModeChange: (mode: ConnectionMode) => void;
+  ruleConfigList?: RuleConfigList[];
 }
 
 const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
   observer(
     forwardRef((props, ref) => {
-      const { settingStore, tableName, dbId, projectId, onDbModeChange } = props;
+      const { settingStore, tableName, dbId, projectId, onDbModeChange, ruleConfigList } = props;
       const [form] = Form.useForm<IMockFormData>();
       /**
        * 字段长度信息表
@@ -92,6 +93,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
             setColumnSizeMap({});
             forceUpdate();
             let columns = await getTableColumnList(value, databaseName, session?.sessionId);
+
             if (columns?.length) {
               columns = columns.map((column) => {
                 /**
@@ -116,17 +118,21 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                   const dbMode = database?.dataSource?.dialectType;
                   const rule: any = getDefaultRule(column.dataType, dbMode);
 
+                  const newTypeConfig = ruleConfigList?.find(
+                    (item) => item.columnName === column.columnName,
+                  );
+
                   return {
                     columnName: column.columnName,
                     columnType: column.dataType,
                     columnObj: column,
-                    rule,
-                    typeConfig: getDefaultValue(
-                      dbMode,
-                      column.dataType,
-                      rule,
-                      _sizeMap[column.columnName],
-                    ),
+                    rule: newTypeConfig?.rule ?? rule,
+                    typeConfig: newTypeConfig
+                      ? {
+                          range: newTypeConfig.range,
+                          genParams: newTypeConfig.typeConfig.genParams,
+                        }
+                      : getDefaultValue(dbMode, column.dataType, rule, _sizeMap[column.columnName]),
                   };
                 }),
               });
@@ -186,6 +192,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                     required: true,
                     message: formatMessage({
                       id: 'odc.component.DataMockerDrawer.form.SelectATable',
+                      defaultMessage: '请选择表',
                     }),
 
                     // 请选择表
@@ -194,6 +201,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                 name="tableName"
                 label={formatMessage({
                   id: 'odc.component.DataMockerDrawer.form.Table',
+                  defaultMessage: '表',
                 })}
 
                 /* 表 */
@@ -201,6 +209,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                 <Select
                   placeholder={formatMessage({
                     id: 'odc.component.DataMockerDrawer.form.SelectATable',
+                    defaultMessage: '请选择表',
                   })}
                   /* 请选择表 */ showSearch
                 >
@@ -223,6 +232,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                     required: true,
                     message: formatMessage({
                       id: 'odc.component.DataMockerDrawer.form.EnterTheSimulatedDataVolume',
+                      defaultMessage: '请输入模拟数据量',
                     }),
 
                     // 请输入模拟数据量
@@ -236,6 +246,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                 name="totalCount"
                 label={formatMessage({
                   id: 'odc.component.DataMockerDrawer.form.SimulateTheGeneratedDataVolume',
+                  defaultMessage: '模拟生成数据量',
                 })}
 
                 /* 模拟生成数据量 */
@@ -250,6 +261,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                     required: true,
                     message: formatMessage({
                       id: 'odc.component.DataMockerDrawer.form.EnterTheBatchSize',
+                      defaultMessage: '请输入批处理大小',
                     }),
 
                     // 请输入批处理大小
@@ -258,6 +270,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                     max: 1000,
                     message: formatMessage({
                       id: 'odc.component.DataMockerDrawer.form.TheBatchSizeCannotExceed',
+                      defaultMessage: '批处理大小不能超过 1000',
                     }),
 
                     // 批处理大小不能超过 1000
@@ -268,6 +281,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                 name="batchSize"
                 label={formatMessage({
                   id: 'odc.component.DataMockerDrawer.form.BatchSize',
+                  defaultMessage: '批处理大小',
                 })}
 
                 /* 批处理大小 */
@@ -283,6 +297,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                 name="whetherTruncate"
                 label={formatMessage({
                   id: 'odc.component.DataMockerDrawer.form.InsertASimulatedDataEmptying',
+                  defaultMessage: '插入模拟数据清空表',
                 })}
 
                 /* 插入模拟数据清空表 */
@@ -292,6 +307,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                     {
                       formatMessage({
                         id: 'odc.component.DataMockerDrawer.form.No',
+                        defaultMessage: '否',
                       })
 
                       /* 否 */
@@ -301,6 +317,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                     {
                       formatMessage({
                         id: 'odc.component.DataMockerDrawer.form.Is',
+                        defaultMessage: '是',
                       })
 
                       /* 是 */
@@ -315,6 +332,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                 name="strategy"
                 label={formatMessage({
                   id: 'odc.component.DataMockerDrawer.form.DataConflictHandlingMethod',
+                  defaultMessage: '数据冲突处理方式',
                 })}
 
                 /* 数据冲突处理方式 */
@@ -341,6 +359,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
             name="columns"
             label={formatMessage({
               id: 'odc.component.DataMockerDrawer.form.RuleSettings',
+              defaultMessage: '规则设置',
             })}
 
             /* 规则设置 */
@@ -354,6 +373,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
           <FormItemPanel
             label={formatMessage({
               id: 'odc.component.DataMockerDrawer.form.TaskSettings',
+              defaultMessage: '任务设置',
             })}
             /*任务设置*/ keepExpand
           >

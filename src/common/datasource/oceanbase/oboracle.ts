@@ -15,10 +15,10 @@
  */
 
 import { ConnectType, TaskType } from '@/d.ts';
-import { IDataSourceModeConfig } from '../interface';
-import OracleColumnExtra from './OracleColumnExtra';
 import { TableForeignConstraintOnDeleteType } from '@/d.ts/table';
 import { haveOCP } from '@/util/env';
+import { IDataSourceModeConfig } from '../interface';
+import OracleColumnExtra from './OracleColumnExtra';
 
 const oracleTableConfig = {
   constraintEnableConfigurable: true,
@@ -60,10 +60,19 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
       ssl: true,
     },
     features: {
-      task: Object.values(TaskType).filter((type) => ![TaskType.SHADOW].includes(type)),
+      task: Object.values(TaskType).filter(
+        (type) =>
+          ![
+            TaskType.SHADOW,
+            TaskType.ONLINE_SCHEMA_CHANGE,
+            TaskType.LOGICAL_DATABASE_CHANGE,
+          ].includes(type),
+      ),
       obclient: true,
       recycleBin: true,
       sessionManage: true,
+      sessionParams: true,
+      resourceTree: true,
       sqlExplain: true,
       compile: true,
       plEdit: true,
@@ -100,14 +109,23 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
     },
     features: {
       task: Object.values(TaskType).filter(
-        (type) => ![TaskType.SHADOW, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type),
+        (type) =>
+          ![
+            TaskType.SHADOW,
+            TaskType.DATA_ARCHIVE,
+            TaskType.DATA_DELETE,
+            TaskType.LOGICAL_DATABASE_CHANGE,
+          ].includes(type),
       ),
       obclient: true,
       recycleBin: true,
       sqlExplain: true,
       compile: true,
       sessionManage: true,
+      sessionParams: true,
+      resourceTree: true,
       plEdit: true,
+      plRun: true,
       anonymousBlock: true,
       supportOBProxy: true,
       export: {

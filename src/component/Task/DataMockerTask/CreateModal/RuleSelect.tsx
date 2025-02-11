@@ -39,18 +39,21 @@ const ruleMap: {
       value: NumberRuleType.NORMAL,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.Value',
+        defaultMessage: '定值',
       }), // 定值
     },
     {
       value: NumberRuleType.ORDER,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.Order',
+        defaultMessage: '顺序',
       }), // 顺序
     },
     {
       value: NumberRuleType.RANDOM,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.Random',
+        defaultMessage: '随机',
       }), // 随机
     },
     {
@@ -69,66 +72,77 @@ const ruleMap: {
       value: CharRuleType.RANDOM_TEXT,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.RandomText',
+        defaultMessage: '随机文本',
       }), // 随机文本
     },
     {
       value: CharRuleType.REGEXP_TEXT,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.RegularText',
+        defaultMessage: '正则文本',
       }), // 正则文本
     },
     {
       value: CharRuleType.NORMAL_TEXT,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.FixedValueText',
+        defaultMessage: '定值文本',
       }), // 定值文本
     },
     {
       value: CharRuleType.RANDOM_BOOL,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.RandomBooleanValue',
+        defaultMessage: '随机布尔值',
       }), // 随机布尔值
     },
     {
       value: CharRuleType.NORMAL_BOOL,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.BooleanValue',
+        defaultMessage: '定值布尔值',
       }), // 定值布尔值
     },
     {
       value: CharRuleType.RANDOM_DATE,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.RandomDateValue',
+        defaultMessage: '随机日期值',
       }), // 随机日期值
     },
     {
       value: CharRuleType.NORMAL_DATE,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.FixedValueDateValue',
+        defaultMessage: '定值日期值',
       }), // 定值日期值
     },
     {
       value: CharRuleType.ORDER_DATE,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.SequentialDateValue',
+        defaultMessage: '顺序日期值',
       }), // 顺序日期值
     },
     {
       value: CharRuleType.RANDOM_NUMBER,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.RandomNumericValue',
+        defaultMessage: '随机数字值',
       }), // 随机数字值
     },
     {
       value: CharRuleType.NORMAL_NUMBER,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.NumericValue',
+        defaultMessage: '定值数字值',
       }), // 定值数字值
     },
     {
       value: CharRuleType.ORDER_NUMBER,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.SequentialNumericValue',
+        defaultMessage: '顺序数字值',
       }), // 顺序数字值
     },
     {
@@ -147,18 +161,21 @@ const ruleMap: {
       value: DateRuleType.RANDOM,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.RandomDateValue',
+        defaultMessage: '随机日期值',
       }), // 随机日期值
     },
     {
       value: DateRuleType.NORMAL,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.FixedValueDateValue',
+        defaultMessage: '定值日期值',
       }), // 定值日期值
     },
     {
       value: DateRuleType.ORDER,
       name: formatMessage({
         id: 'odc.component.DataMockerDrawer.RuleSelect.SequentialDateValue',
+        defaultMessage: '顺序日期值',
       }), // 顺序日期值
     },
     {

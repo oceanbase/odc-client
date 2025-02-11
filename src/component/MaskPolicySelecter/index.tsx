@@ -58,8 +58,9 @@ export const RuleContent: React.FC<IContentProps> = (props) => {
                   formatMessage(
                     {
                       id: 'odc.component.MaskPolicySelecter.DesensitizationRuleShownumber',
+                      defaultMessage: '脱敏规则{showNumber}:',
                     },
-                    { showNumber: showNumber },
+                    { showNumber },
                   ) //`脱敏规则${showNumber}: `
                 }
               </span>
@@ -69,6 +70,7 @@ export const RuleContent: React.FC<IContentProps> = (props) => {
                   formatMessage(
                     {
                       id: 'odc.component.MaskPolicySelecter.Masktypesmapitemtype',
+                      defaultMessage: '（{maskTypesMapItemType}）',
                     },
 
                     { maskTypesMapItemType: maskTypesMap[item.type] },

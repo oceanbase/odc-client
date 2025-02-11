@@ -20,6 +20,7 @@ import CreateProcedureModal from '@/component/CreateProcedureModal';
 import CreateSynonymModal from '@/component/CreateSynonymModal';
 import CreateTypeModal from '@/component/CreateTypeModal';
 import CreateModals from '@/component/Task/CreateModals';
+import ExecuteSqlDetailModal from '@/component/ExecuteSqlDetailModal';
 import { ModalStore } from '@/store/modal';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
@@ -44,6 +45,7 @@ const GlobalModals: React.FC<IProps> = function ({ modalStore }) {
       <CreateModals />
       <SelectDatabase />
       {modalStore.canDatabaseSearchModalOpen && <DatabaseSearchModal />}
+      <ExecuteSqlDetailModal />
     </>
   );
 };

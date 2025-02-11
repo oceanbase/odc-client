@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { BrowserWindow } from 'electron';
+import { app, BrowserWindow, dialog } from 'electron';
 import { PathnameStore } from '../../store';
+import log from '../../utils/log';
 import { downloadEvent, newWindowEvent } from './event';
 
 export function openMainWebWindow(mainWindow: BrowserWindow) {
@@ -27,11 +28,29 @@ export function openMainWebWindow(mainWindow: BrowserWindow) {
   if (process.platform !== 'darwin') {
     mainWindow.setMenu(null);
   }
-
   if (process.env.ODC_DEBUG_MODE === 'open' || process.env.NODE_ENV === 'development') {
     mainWindow!.webContents.openDevTools();
   }
-  mainWindow!.loadURL(PathnameStore.getUrl());
+
+  mainWindow.webContents?.on('did-fail-load', (e, code, desc, url, isMainFrame, frameProcId) => {
+    log.error('webcontent load failed', code, desc, url, isMainFrame, frameProcId);
+    log.error(e);
+  });
+  mainWindow.webContents.on('certificate-error', (e) => {
+    log.error('certificate-error', e);
+  });
+  mainWindow.webContents.on('render-process-gone', (e, details) => {
+    log.error('render-process-gone', details.reason, details.exitCode);
+    log.error(e);
+  });
+  mainWindow!.loadURL(PathnameStore.getUrl()).catch((e) => {
+    log.error('loadURL error', e);
+    dialog.showErrorBox(
+      `Open ODC Window Failed`,
+      `Please submit the log to the administrator（${app.getPath('userData')}/logs）`,
+    );
+    app.quit();
+  });
   PathnameStore.reset();
 
   return mainWindow;

@@ -19,13 +19,13 @@ import { getProject, listProjects } from '@/common/network/project';
 import { IDatabase } from '@/d.ts/database';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Form, message, Modal, Select } from 'antd';
+import { Form, message, Modal } from 'antd';
 import { isUndefined } from 'lodash';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ProjectSelect from './ProjectSelect';
 import { DB_OWNER_MAX_COUNT } from '@/page/Project/Database/const';
 import ProjectContext from '@/page/Project/ProjectContext';
-import { DatabaseOwnerSelect } from '@/page/Project/Database/components/DatabaseOwnerSelect.tsx';
+import { DatabaseOwnerSelect } from '@/page/Project/Database/components/DatabaseOwnerSelect';
 import { IProject } from '@/d.ts/project';
 
 interface IProps {
@@ -74,6 +74,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
       title={
         formatMessage({
           id: 'odc.src.page.Datasource.Info.ChangeProjectModal.ModifyTheProject',
+          defaultMessage: '修改所属项目',
         }) //'修改所属项目'
       }
       open={visible}
@@ -85,6 +86,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
           message.success(
             formatMessage({
               id: 'odc.Info.ChangeProjectModal.OperationSucceeded',
+              defaultMessage: '操作成功',
             }), //操作成功
           );
           onClose();
@@ -111,8 +113,10 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
           {
             formatMessage({
               id: 'odc.Info.ChangeProjectModal.DatabaseName',
+              defaultMessage: '数据库名称：',
             }) /*数据库名称：*/
           }
+
           {database?.name}
         </Form.Item>
         <Form.Item
@@ -124,6 +128,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
                   callback(
                     formatMessage({
                       id: 'odc.Info.ChangeProjectModal.PleaseSelectAProject',
+                      defaultMessage: '请选择项目',
                     }), //请选择项目
                   );
 
@@ -136,6 +141,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
           label={
             formatMessage({
               id: 'odc.src.page.Datasource.Info.ChangeProjectModal.Project',
+              defaultMessage: '项目',
             }) //'项目'
           }
           name={'project'}

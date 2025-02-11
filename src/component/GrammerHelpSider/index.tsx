@@ -23,7 +23,7 @@ import {
 } from '@/store/snippet';
 import { formatMessage } from '@/util/intl';
 import { CloseOutlined, DownOutlined, PlusOutlined } from '@ant-design/icons';
-import { Dropdown, Empty, Input, Layout, Menu, message, Modal } from 'antd';
+import { Dropdown, Empty, Input, Layout, message, Modal } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
 import SnippetCard from './component/SnippetCard';
@@ -75,6 +75,7 @@ class GrammerHelpSider extends Component<
             {
               formatMessage({
                 id: 'odc.component.GrammerHelpSider.YouCanDragCodeSnippets',
+                defaultMessage: '可将代码片段拖入编辑器使用',
               }) /*可将代码片段拖入编辑器使用*/
             }
           </span>
@@ -85,16 +86,19 @@ class GrammerHelpSider extends Component<
             <Search
               placeholder={formatMessage({
                 id: 'odc.component.GrammerHelpSider.SearchSyntaxHelp',
+                defaultMessage: '搜索代码片段',
               })}
               /*搜索代码片段*/
               onChange={this.handleSearchChange}
               onSearch={this.handleSearch}
             />
+
             <a style={{ whiteSpace: 'nowrap' }} onClick={this.handleCreateSnippet}>
               <PlusOutlined />
               {
                 formatMessage({
                   id: 'odc.component.GrammerHelpSider.New',
+                  defaultMessage: '新建',
                 }) /*新建*/
               }
             </a>
@@ -120,6 +124,7 @@ class GrammerHelpSider extends Component<
                 formatMessage(
                   {
                     id: 'odc.component.GrammerHelpSider.SnippetslacksInTotal',
+                    defaultMessage: '共 {snippetsLength} 条',
                   },
                   { snippetsLength: snippets.length },
                 ) /*共 {snippetsLength} 条*/
@@ -203,6 +208,7 @@ class GrammerHelpSider extends Component<
           title: formatMessage(
             {
               id: 'odc.component.GrammerHelpSider.AreYouSureYouWant',
+              defaultMessage: '是否确认删除代码片段 {snippetPrefix}？',
             },
             { snippetPrefix: snippet.prefix },
           ), //`确认删除代码片段：${snippet.prefix}?`
@@ -216,6 +222,7 @@ class GrammerHelpSider extends Component<
                 formatMessage(
                   {
                     id: 'odc.component.GrammerHelpSider.TheSyntaxSnippetSnippetprefixHas',
+                    defaultMessage: '代码片段 {snippetPrefix} 删除成功！',
                   },
                   { snippetPrefix: snippet.prefix },
                 ), //`代码片段 ${snippet.prefix} 删除成功！`

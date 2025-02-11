@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import { EXPORT_CONTENT, IConnection, TaskType } from '@/d.ts';
-import { useDBSession } from '@/store/sessionManager/hooks';
+import { EXPORT_CONTENT, TaskType } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import { formatMessage } from '@/util/intl';
 import { Form, Radio } from 'antd';
 import { FormInstance } from 'antd/es/form';
-import React, { useEffect } from 'react';
+import React from 'react';
 import DatabaseSelect from '../../../../component/DatabaseSelect';
 import ExportSelecter from '../ExportSelecter';
-import { useRequest } from 'ahooks';
-import { getDatabase } from '@/common/network/database';
-import { IDatabase } from '@/d.ts/database';
 
 const FormItem = Form.Item;
 
@@ -39,7 +36,6 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, database
   const databaseId = database?.id;
   const connectionId = connection?.id;
 
-
   const handleChange = () => {
     form.setFieldsValue({
       exportDbObjects: [],
@@ -52,12 +48,14 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, database
         name="exportContent"
         label={formatMessage({
           id: 'odc.ExportDrawer.ExportForm.ExportContent',
+          defaultMessage: '导出内容',
         })}
         rules={[
           {
             required: true,
             message: formatMessage({
               id: 'odc.ExportDrawer.ExportForm.SelectExportContent',
+              defaultMessage: '请选择导出内容',
             }),
           },
         ]}
@@ -77,16 +75,19 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, database
           <Radio.Button value={EXPORT_CONTENT.DATA_AND_STRUCT}>
             {formatMessage({
               id: 'odc.ExportDrawer.ExportForm.ExportDataStructure',
+              defaultMessage: '导出结构和数据',
             })}
           </Radio.Button>
           <Radio.Button value={EXPORT_CONTENT.DATA}>
             {formatMessage({
               id: 'odc.ExportDrawer.ExportForm.ExportDataOnly',
+              defaultMessage: '仅导出数据',
             })}
           </Radio.Button>
           <Radio.Button value={EXPORT_CONTENT.STRUCT}>
             {formatMessage({
               id: 'odc.ExportDrawer.ExportForm.ExportStructureOnly',
+              defaultMessage: '仅导出结构',
             })}
           </Radio.Button>
         </Radio.Group>
@@ -94,7 +95,10 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, database
       <DatabaseSelect type={TaskType.EXPORT} projectId={projectId} onChange={handleChange} />
       <FormItem
         label={
-          formatMessage({ id: 'odc.ExportForm.ObjSelecterPanel.ExportRange' }) //导出范围
+          formatMessage({
+            id: 'odc.ExportForm.ObjSelecterPanel.ExportRange',
+            defaultMessage: '导出范围',
+          }) //导出范围
         }
         name="exportAllObjects"
         required
@@ -104,6 +108,7 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, database
             {
               formatMessage({
                 id: 'odc.ExportForm.ObjSelecterPanel.PartialExport',
+                defaultMessage: '部分导出',
               })
               /*部分导出*/
             }
@@ -112,6 +117,7 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, database
             {
               formatMessage({
                 id: 'odc.ExportForm.ObjSelecterPanel.ExportTheEntireLibrary',
+                defaultMessage: '整库导出',
               })
               /*整库导出*/
             }
@@ -132,6 +138,7 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, database
                 name="exportDbObjects"
                 label={formatMessage({
                   id: 'odc.ExportForm.ObjSelecterPanel.ExportObjects',
+                  defaultMessage: '导出对象',
                 })}
                 /*导出对象*/
               >

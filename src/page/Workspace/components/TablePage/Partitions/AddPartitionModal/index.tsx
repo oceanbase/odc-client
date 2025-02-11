@@ -62,6 +62,7 @@ const AddPartitionModal = forwardRef<IRef, IProps>(function ({}, ref) {
       destroyOnClose
       title={formatMessage({
         id: 'odc.Partitions.AddPartitionModal.CreatePartition',
+        defaultMessage: '新建分区',
       })} /*新建分区*/
       onCancel={() => {
         callbackRef.current?.(null);

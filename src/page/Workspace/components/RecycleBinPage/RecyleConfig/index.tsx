@@ -48,6 +48,7 @@ const RecycleConfig: React.FC<IProps> = function ({ children }) {
             valuePropName="checked"
             label={formatMessage({
               id: 'odc.RecycleBinPage.RecyleConfig.EnableRecycleBin',
+              defaultMessage: '启用回收站',
             })} /*启用回收站*/
           >
             <Switch />
@@ -63,6 +64,7 @@ const RecycleConfig: React.FC<IProps> = function ({ children }) {
                     valuePropName="checked"
                     label={formatMessage({
                       id: 'odc.RecycleBinPage.RecyleConfig.SupportTruncateTable',
+                      defaultMessage: '支持 Truncate Table',
                     })} /*支持 Truncate Table*/
                   >
                     <Switch />
@@ -72,6 +74,7 @@ const RecycleConfig: React.FC<IProps> = function ({ children }) {
                     shouldUpdate
                     label={formatMessage({
                       id: 'odc.RecycleBinPage.RecyleConfig.RecycleBinRetentionTime',
+                      defaultMessage: '回收站保留时间',
                     })} /*回收站保留时间*/
                   >
                     <Input
@@ -79,6 +82,7 @@ const RecycleConfig: React.FC<IProps> = function ({ children }) {
                         objectExpireTime === '0s'
                           ? formatMessage({
                               id: 'odc.RecycleBinPage.RecyleConfig.Permanent',
+                              defaultMessage: '永久',
                             }) //永久
                           : objectExpireTime
                       }

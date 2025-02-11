@@ -763,6 +763,9 @@ export async function checkIntegrationExists(
 export async function testClientRegistration(
   config: ISSOConfig,
   type: 'info' | 'test',
+  params?: {
+    odcBackUrl?: string;
+  },
 ): Promise<{
   testLoginUrl: string;
   testId: string;
@@ -785,6 +788,7 @@ export async function testClientRegistration(
       enabled: true,
     },
     params: {
+      ...params,
       type,
     },
   });
@@ -798,4 +802,12 @@ export async function getTestUserInfo(testId: string): Promise<string> {
     },
   });
   return res?.data;
+}
+
+/**
+ * 生成密钥对
+ */
+export async function querySecretKey(): Promise<string> {
+  const result = await request.get(`/api/v2/sso/credential`);
+  return result?.data?.certificate || '';
 }

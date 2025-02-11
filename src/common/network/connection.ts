@@ -35,7 +35,6 @@ import { decrypt, encrypt } from '@/util/utils';
 import { getDataSourceModeConfig } from '../datasource';
 import { generateSessionSid } from './pathUtil';
 import { executeSQL } from './sql';
-import { DBDefaultStoreType } from '@/d.ts/table';
 
 function generateConnectionParams(formData: Partial<IConnectionFormData>, isHiden?: boolean) {
   // 创建必须带上 userId
@@ -64,6 +63,8 @@ function generateConnectionParams(formData: Partial<IConnectionFormData>, isHide
     jdbcUrlParameters: formData.jdbcUrlParameters || {},
     temp: isHiden,
     sessionInitScript: formData.sessionInitScript,
+    catalogName: formData?.catalogName,
+    region: formData?.region,
   };
   const config = getDataSourceModeConfig(formData.type)?.connection;
   config?.address?.items?.forEach((item) => {
@@ -96,7 +97,6 @@ function generateConnectionParams(formData: Partial<IConnectionFormData>, isHide
  */
 export async function createConnection(formData: Partial<IDatasource>, isHiden?: boolean) {
   const params: Partial<IConnection> = generateConnectionParams(formData, isHiden);
-
   const requestParams = {
     wantCatchError: false,
     holdErrorTip: true,
@@ -325,6 +325,7 @@ export async function getSessionStatus(sessionId?: string): Promise<{
     obVersion: string;
   };
   session: ISessionStatus;
+  killCurrentQuerySupported: boolean;
 }> {
   const sid = generateSessionSid(sessionId);
   const res = await request.get(`/api/v2/datasource/sessions/${sessionId}/status`);
@@ -403,10 +404,14 @@ export async function syncDatasource(dsId: number): Promise<boolean> {
 export async function getDataSourceManageDatabase(
   datasourceId: number,
   name?: string,
+  existed?: boolean,
+  belongsToProject?: boolean,
 ): Promise<IResponseData<IDatabase>> {
   const res = await request.get(`/api/v2/datasource/datasources/${datasourceId}/databases`, {
     params: {
       name,
+      existed,
+      belongsToProject,
     },
   });
   return res?.data;

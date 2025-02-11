@@ -27,12 +27,14 @@ import { TableTreeData } from './table';
 import { TriggerTreeData } from './trigger';
 import { TypeTreeData } from './type';
 import { ViewTreeData } from './view';
+import { ExternalTableTreeData } from './externalTables';
 
 import { ReactComponent as DatabaseSvg } from '@/svgr/database.svg';
 import { openNewSQLPage } from '@/store/helper/page';
 import { getDataSourceStyle, getDataSourceStyleByConnectType } from '@/common/datasource';
 import { DbObjectType } from '@/d.ts';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
+import { isLogicalDatabase, isPhysicalDatabase } from '@/util/database';
 
 export function DataBaseTreeData(
   dbSession: SessionStore,
@@ -44,22 +46,49 @@ export function DataBaseTreeData(
   const dbName = database.name;
 
   const tableTreeData = TableTreeData(dbSession, database);
-  const viewTreeData = dbSession?.supportFeature?.enableView && ViewTreeData(dbSession, database);
+
+  const externalTableTreeData =
+    dbSession?.supportFeature?.enableExternalTable &&
+    isPhysicalDatabase(dbSession?.odcDatabase) &&
+    ExternalTableTreeData(dbSession, database);
+
+  const viewTreeData =
+    dbSession?.supportFeature?.enableView &&
+    isPhysicalDatabase(dbSession?.odcDatabase) &&
+    ViewTreeData(dbSession, database);
+
   const functionTreeData =
-    dbSession?.supportFeature?.enableFunction && FunctionTreeData(dbSession, database);
+    dbSession?.supportFeature?.enableFunction &&
+    isPhysicalDatabase(dbSession?.odcDatabase) &&
+    FunctionTreeData(dbSession, database);
   const procedureTreeData =
-    dbSession?.supportFeature?.enableProcedure && ProcedureTreeData(dbSession, database);
+    dbSession?.supportFeature?.enableProcedure &&
+    isPhysicalDatabase(dbSession?.odcDatabase) &&
+    ProcedureTreeData(dbSession, database);
   const packageTreeData =
-    dbSession?.supportFeature?.enablePackage && PackageTreeData(dbSession, database);
+    dbSession?.supportFeature?.enablePackage &&
+    isPhysicalDatabase(dbSession?.odcDatabase) &&
+    PackageTreeData(dbSession, database);
   const triggerTreeData =
-    dbSession?.supportFeature?.enableTrigger && TriggerTreeData(dbSession, database);
-  const typeTreeData = dbSession?.supportFeature?.enableType && TypeTreeData(dbSession, database);
+    dbSession?.supportFeature?.enableTrigger &&
+    isPhysicalDatabase(dbSession?.odcDatabase) &&
+    TriggerTreeData(dbSession, database);
+  const typeTreeData =
+    dbSession?.supportFeature?.enableType &&
+    isPhysicalDatabase(dbSession?.odcDatabase) &&
+    TypeTreeData(dbSession, database);
   const sequenceTreeData =
-    dbSession?.supportFeature?.enableSequence && SequenceTreeData(dbSession, database);
+    dbSession?.supportFeature?.enableSequence &&
+    isPhysicalDatabase(dbSession?.odcDatabase) &&
+    SequenceTreeData(dbSession, database);
   const synonymTreeData =
-    dbSession?.supportFeature?.enableSynonym && SynonymTreeData(dbSession, database, false);
+    dbSession?.supportFeature?.enableSynonym &&
+    isPhysicalDatabase(dbSession?.odcDatabase) &&
+    SynonymTreeData(dbSession, database, false);
   const publicSynonymTreeData =
-    dbSession?.supportFeature?.enableSynonym && SynonymTreeData(dbSession, database, true);
+    dbSession?.supportFeature?.enableSynonym &&
+    isPhysicalDatabase(dbSession?.odcDatabase) &&
+    SynonymTreeData(dbSession, database, true);
 
   switch (searchValue?.type) {
     case DbObjectType.table: {
@@ -142,7 +171,16 @@ export function DataBaseTreeData(
         }));
       break;
     }
+    case DbObjectType.external_table: {
+      externalTableTreeData &&
+        //@ts-ignore
+        (externalTableTreeData.children = externalTableTreeData.children?.filter((item) => {
+          return item.title?.toString()?.toLowerCase()?.includes(searchValue.value?.toLowerCase());
+        }));
+      break;
+    }
   }
+
   return {
     title: dbName,
     key: database?.id,
@@ -153,6 +191,7 @@ export function DataBaseTreeData(
     tip: database?.dataSource?.name,
     env: database?.environment,
     doubleClick(session, node, databaseFrom) {
+      if (isLogicalDatabase(node?.data)) return;
       openNewSQLPage(database?.id);
     },
     cid,
@@ -164,6 +203,7 @@ export function DataBaseTreeData(
     children: dbSession
       ? [
           tableTreeData,
+          externalTableTreeData,
           viewTreeData,
           functionTreeData,
           procedureTreeData,

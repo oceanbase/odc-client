@@ -58,6 +58,7 @@ interface IProps {
   dialectTypes?: ConnectionMode[];
   showSessionSelect?: boolean;
   handleChangeSplitPane?: (size: number) => void;
+  databaseType?: string;
 }
 
 interface IPageState {
@@ -68,6 +69,7 @@ interface IPageState {
     line: number;
     column: number;
   };
+  editorValue?: string;
 }
 
 @inject('settingStore')
@@ -78,6 +80,7 @@ export default class ScriptPage extends PureComponent<IProps> {
     templateName: '',
     offset: null,
     /// resultHeight: RESULT_HEIGHT
+    editorValue: this.props?.editor?.defaultValue,
   };
 
   componentDidMount() {
@@ -89,6 +92,13 @@ export default class ScriptPage extends PureComponent<IProps> {
   getSession() {
     return this.props.session;
   }
+
+  setStateForEditorValue = (value: string) => {
+    this.props?.editor?.onValueChange?.(value);
+    this.setState({
+      editorValue: value,
+    });
+  };
 
   renderPanels = () => {
     const {
@@ -103,8 +113,13 @@ export default class ScriptPage extends PureComponent<IProps> {
       sessionSelectReadonly,
       dialectTypes,
       showSessionSelect = true,
+      databaseType,
     } = this.props;
     const isShowDebugStackBar = !!stackbar?.list?.length;
+    const { editorValue } = this.state;
+
+    const { defaultValue } = editor;
+
     return (
       <Layout
         style={{
@@ -114,9 +129,21 @@ export default class ScriptPage extends PureComponent<IProps> {
         }}
       >
         <Content style={{ position: 'relative' }}>
-          {toolbar && <EditorToolBar {...toolbar} ctx={ctx} />}
+          {toolbar && (
+            <EditorToolBar
+              {...toolbar}
+              ctx={ctx}
+              editorValue={editorValue}
+              defaultEditorValue={defaultValue}
+              databaseType={databaseType}
+            />
+          )}
           {showSessionSelect && (
-            <SessionSelect dialectTypes={dialectTypes} readonly={sessionSelectReadonly} />
+            <SessionSelect
+              dialectTypes={dialectTypes}
+              readonly={sessionSelectReadonly}
+              isIncludeLogicalDb={false}
+            />
           )}
 
           {isShowDebugStackBar ? (
@@ -176,6 +203,7 @@ export default class ScriptPage extends PureComponent<IProps> {
                   message.warn(
                     formatMessage({
                       id: 'src.component.ScriptPage.D0B6C37B' /*'该对象不属于当前数据库'*/,
+                      defaultMessage: '该对象不属于当前数据库',
                     }),
                   );
                   return;
@@ -205,7 +233,12 @@ export default class ScriptPage extends PureComponent<IProps> {
               }
             }}
           >
-            <MonacoEditor {...editor} language={language} sessionStore={this.props.session} />
+            <MonacoEditor
+              {...editor}
+              language={language}
+              sessionStore={this.props.session}
+              onValueChange={this.setStateForEditorValue}
+            />
           </DropWrapper>
           {this.props.Others}
         </Content>

@@ -49,4 +49,9 @@ export enum IDataSourceType {
   MySQL = 'mysql',
   Doris = 'doris',
   Oracle = 'oracle',
+  PG = 'postgresql',
+  ALIYUNOSS = 'ALIYUNOSS',
+  QCLOUD = 'QCLOUD',
+  HUAWEI = 'HUAWEI',
+  AWSS3 = 'AWSS3',
 }

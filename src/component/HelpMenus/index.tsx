@@ -19,7 +19,6 @@ import odc from '@/plugins/odc';
 import modal from '@/store/modal';
 import { isClient } from '@/util/env';
 import { formatMessage, getLocalDocs } from '@/util/intl';
-import { Menu } from 'antd';
 import type { DropDownProps } from 'antd/lib/dropdown';
 import classnames from 'classnames';
 import React from 'react';
@@ -49,6 +48,7 @@ export default class HelpMenus extends React.Component<
     !isClient() && {
       title: formatMessage({
         id: 'odc.component.HelpMenus.ProductFunctionIntroduction',
+        defaultMessage: '产品功能介绍',
       }), // 产品功能介绍
       key: 'versionInfo',
       action() {
@@ -59,6 +59,7 @@ export default class HelpMenus extends React.Component<
     {
       title: formatMessage({
         id: 'odc.component.GlobalHeader.BrowseHelpDocuments',
+        defaultMessage: '浏览帮助文档',
       }),
 
       key: 'pdf',
@@ -70,6 +71,7 @@ export default class HelpMenus extends React.Component<
     {
       title: formatMessage({
         id: 'odc.component.GlobalHeader.AboutDeveloperCenter',
+        defaultMessage: '关于开发者中心',
       }),
 
       key: 'about',
@@ -81,7 +83,10 @@ export default class HelpMenus extends React.Component<
     },
 
     {
-      title: formatMessage({ id: 'odc.component.GlobalHeader.Feedback' }),
+      title: formatMessage({
+        id: 'odc.component.GlobalHeader.Feedback',
+        defaultMessage: '意见反馈',
+      }),
       key: 'feedback',
       action(ctx: HelpMenus) {
         ctx.setState({
@@ -115,7 +120,14 @@ export default class HelpMenus extends React.Component<
       <>
         <DropdownMenu menu={this.getHelpMenus()} placement={placement || 'bottom'}>
           <div className={classnames(styles.helpNav)}>
-            <span>{formatMessage({ id: 'odc.component.HelpMenus.Help' }) /* 帮助 */}</span>
+            <span>
+              {
+                formatMessage({
+                  id: 'odc.component.HelpMenus.Help',
+                  defaultMessage: '帮助',
+                }) /* 帮助 */
+              }
+            </span>
           </div>
         </DropdownMenu>
 

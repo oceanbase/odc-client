@@ -19,7 +19,7 @@ import { openTasksPage } from '@/store/helper/page';
 import type { PageStore } from '@/store/page';
 import { TaskStore } from '@/store/task';
 import Icon from '@ant-design/icons';
-import { Space } from 'antd';
+import { Space, Tooltip, Typography } from 'antd';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect } from 'react';
@@ -32,11 +32,13 @@ interface IProps {
   pageStore?: PageStore;
   className?: string;
   isPage?: boolean;
+  inProject?: boolean;
 }
 
-const Sider: React.FC<IProps> = function ({ taskStore, pageStore, className, isPage }) {
+const Sider: React.FC<IProps> = function ({ taskStore, pageStore, className, isPage, inProject }) {
   const firstEnabledTask = getFirstEnabledTask();
   const pageKey = isPage ? pageStore?.activePageKey : taskStore?.taskPageType;
+  const { Text } = Typography;
 
   const handleClick = (value: TaskPageType) => {
     if (isPage) {
@@ -74,7 +76,9 @@ const Sider: React.FC<IProps> = function ({ taskStore, pageStore, className, isP
                   key={item.value}
                   onClick={() => handleClick(item.value)}
                 >
-                  {item.label}
+                  <Tooltip title={item.label} placement="right">
+                    <Text ellipsis>{item.label}</Text>
+                  </Tooltip>
                 </div>
               );
             })}

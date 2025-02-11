@@ -17,8 +17,8 @@
 import type { ODCErrorsCode } from '@/d.ts';
 import loginStore from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import { Modal } from 'antd';
 import { history } from '@umijs/max';
+import { Modal } from 'antd';
 
 const lockStore = {
   PermissionChanged: null,
@@ -37,9 +37,11 @@ const ErrorInfoMap = {
   PermissionChanged: {
     title: formatMessage({
       id: 'odc.component.ErrorConfirmModal.PermissionChange',
+      defaultMessage: '权限变更',
     }), // 权限变更
     content: formatMessage({
       id: 'odc.component.ErrorConfirmModal.ThePermissionHasChangedPlease',
+      defaultMessage: '权限发生变化，请重试',
     }), // 权限发生变化，请重试
     handleOk: () => {
       history.push(`/connections`);
@@ -49,9 +51,11 @@ const ErrorInfoMap = {
   LoginExpired: {
     title: formatMessage({
       id: 'odc.component.ErrorConfirmModal.LogonTimeout',
+      defaultMessage: '登录超时',
     }), // 登录超时
     content: formatMessage({
       id: 'odc.component.ErrorConfirmModal.LoginTimedOutPleaseLog',
+      defaultMessage: '登录超时，请重新登录',
     }), // 登录超时，请重新登录
     handleOk: () => {
       loginStore.gotoLoginPage();
@@ -72,7 +76,10 @@ export default function showErrorConfirmModal(errCode: ODCErrorsCode, errMsg?: s
     centered: true,
     title: data.title,
     content: errMsg || data.content,
-    okText: formatMessage({ id: 'odc.component.ErrorConfirmModal.Determine' }), // 确定
+    okText: formatMessage({
+      id: 'odc.component.ErrorConfirmModal.Determine',
+      defaultMessage: '确定',
+    }), // 确定
     zIndex: 1033,
     onOk: () => {
       data.handleOk();

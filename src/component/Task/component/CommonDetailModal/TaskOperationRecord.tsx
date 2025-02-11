@@ -17,13 +17,15 @@
 import { getTaskDetail } from '@/common/network/task';
 import Action from '@/component/Action';
 import DisplayTable from '@/component/DisplayTable';
-import StatusLabel, { status } from '@/component/Task/component/Status';
-import { TaskOperationType, TaskRecord, TaskRecordParameters } from '@/d.ts';
+import { status } from '@/component/Task/component/Status';
+import { TaskOperationType, TaskRecord, TaskRecordParameters, Operation, TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import { FilterOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 import FlowModal from './FlowModal';
+import ChangeDetail from './ChangeDetail';
+import StatusItem from './status';
 import styles from './index.less';
 
 const statusFilters = Object.keys(status).map((key) => {
@@ -36,34 +38,42 @@ const statusFilters = Object.keys(status).map((key) => {
 export const operationTypeMap = {
   [TaskOperationType.CREATE]: formatMessage({
     id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.CreateATask',
+    defaultMessage: '创建任务',
   }), //创建任务
   [TaskOperationType.UPDATE]: formatMessage({
     id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.EditTask',
+    defaultMessage: '编辑任务',
   }), //编辑任务
   [TaskOperationType.PAUSE]: formatMessage({
     id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.DisableATask',
+    defaultMessage: '停用任务',
   }), //停用任务
-  [TaskOperationType.TERMINATION]: formatMessage({
+  [TaskOperationType.TERMINATE]: formatMessage({
     id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.TerminateATask',
+    defaultMessage: '终止任务',
   }), //终止任务
   [TaskOperationType.RESUME]: formatMessage({
     id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.EnableTasks',
+    defaultMessage: '启用任务',
   }), //启用任务
 };
 
 const getConnectionColumns = (params: {
-  onOpenDetail: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
+  onOpenDetail: (task: TaskRecord<TaskRecordParameters> | Operation, visible: boolean) => void;
+  onOpenChangeDetail: (task: Operation, visible: boolean) => void;
+  taskType: TaskType;
 }) => {
   return [
     {
       dataIndex: 'id',
       title: formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.EventOperations',
+        defaultMessage: '事件操作',
       }), //事件操作
       ellipsis: true,
-      width: 280,
-      render: (id, _) => {
-        return <span>{operationTypeMap?.[_.parameters?.operationType]}</span>;
+      width: 140,
+      render: (id, record) => {
+        return <span>{operationTypeMap?.[record.type]}</span>;
       },
     },
 
@@ -71,6 +81,7 @@ const getConnectionColumns = (params: {
       dataIndex: 'createTime',
       title: formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.OperationTime',
+        defaultMessage: '操作时间',
       }), //操作时间
       ellipsis: true,
       width: 180,
@@ -81,6 +92,7 @@ const getConnectionColumns = (params: {
       dataIndex: 'status',
       title: formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.ApprovalStatus',
+        defaultMessage: '审批状态',
       }), //审批状态
       ellipsis: true,
       width: 140,
@@ -90,7 +102,7 @@ const getConnectionColumns = (params: {
         return value === record.status;
       },
       render: (status, record) => {
-        return <StatusLabel status={status} progress={Math.floor(record.progressPercentage)} />;
+        return <StatusItem status={status} />;
       },
     },
 
@@ -98,22 +110,34 @@ const getConnectionColumns = (params: {
       dataIndex: 'action',
       title: formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.Operation',
+        defaultMessage: '操作',
       }), //操作
       ellipsis: true,
       width: 92,
       render: (_, record) => {
         return (
-          <Action.Link
-            onClick={async () => {
-              params?.onOpenDetail(record, true);
-            }}
-          >
-            {
-              formatMessage({
-                id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.ViewApprovalRecords',
-              }) /*查看审批记录*/
-            }
-          </Action.Link>
+          <>
+            <Action.Link
+              onClick={async () => {
+                params?.onOpenDetail(record, true);
+              }}
+            >
+              {formatMessage({
+                id: 'src.component.Task.component.CommonDetailModal.3D4F5474',
+                defaultMessage: '审批记录',
+              })}
+            </Action.Link>
+            <Action.Link
+              onClick={async () => {
+                params?.onOpenChangeDetail(record, true);
+              }}
+            >
+              {formatMessage({
+                id: 'src.component.Task.component.CommonDetailModal.5C706BA6',
+                defaultMessage: '变更详情',
+              })}
+            </Action.Link>
+          </>
         );
       },
     },
@@ -121,23 +145,31 @@ const getConnectionColumns = (params: {
 };
 
 interface IProps {
-  opRecord: TaskRecord<any>[];
+  opRecord: Operation[];
   onReload: () => void;
+  taskType: TaskType;
 }
 
 const TaskOperationRecord: React.FC<IProps> = (props) => {
-  const { opRecord, onReload } = props;
+  const { opRecord, onReload, taskType } = props;
   const [detailId, setDetailId] = useState(null);
   const [subTask, setSubTask] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
+  const [changeDetailVisible, setChangeDetailVisible] = useState(false);
+  const [task, setTask] = useState<Operation>();
   const { id, parameters } = subTask ?? {};
 
   const handleDetailVisible = (
-    task: TaskRecord<TaskRecordParameters>,
+    task: Operation | TaskRecord<TaskRecordParameters>,
     visible: boolean = false,
   ) => {
-    setDetailId(task?.id);
+    setDetailId((task as Operation)?.flowInstanceId);
     setDetailVisible(visible);
+  };
+
+  const handleChangeDetailVisible = (task: Operation, visible: boolean = false) => {
+    setTask(task);
+    setChangeDetailVisible(visible);
   };
 
   const loadData = async () => {
@@ -158,6 +190,8 @@ const TaskOperationRecord: React.FC<IProps> = (props) => {
         rowKey="id"
         columns={getConnectionColumns({
           onOpenDetail: handleDetailVisible,
+          onOpenChangeDetail: handleChangeDetailVisible,
+          taskType: taskType,
         })}
         dataSource={opRecord}
         disablePagination
@@ -172,6 +206,13 @@ const TaskOperationRecord: React.FC<IProps> = (props) => {
           handleDetailVisible(null);
           onReload();
         }}
+      />
+
+      <ChangeDetail
+        visible={changeDetailVisible}
+        scheduleId={task?.scheduleId}
+        scheduleChangeLogId={task?.id}
+        onClose={() => setChangeDetailVisible(null)}
       />
     </>
   );

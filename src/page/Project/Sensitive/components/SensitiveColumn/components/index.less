@@ -149,16 +149,16 @@
         height: calc(100vh - 265px);
         overflow-y: auto;
         border: 1px solid var(--odc-border-color);
-        border-right: 0;
-        & + & {
-          border-right: 1px;
-        }
+        border-right-width: 0;
         .centerContainer {
           display: flex;
           align-items: center;
           justify-content: center;
           height: 100%;
         }
+      }
+      .content + .content {
+        border-right-width: 1px;
       }
     }
   }

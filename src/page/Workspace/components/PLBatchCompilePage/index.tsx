@@ -108,6 +108,7 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
     [DbObjectType.function]: {
       label: formatMessage({
         id: 'odc.components.PLBatchCompilePage.Function',
+        defaultMessage: '函数',
       }), //函数,
       dataSource: session?.database?.functions.map(({ funName, status, errorMessage }) => {
         return {
@@ -128,7 +129,7 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
     },
 
     [DbObjectType.package]: {
-      label: formatMessage({ id: 'odc.components.PLBatchCompilePage.Bag' }), //包
+      label: formatMessage({ id: 'odc.components.PLBatchCompilePage.Bag', defaultMessage: '包' }), //包
       dataSource: session?.database?.packages.map(({ packageName, status, errorMessage }) => {
         return {
           name: packageName,
@@ -161,6 +162,7 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
     [DbObjectType.procedure]: {
       label: formatMessage({
         id: 'odc.components.PLBatchCompilePage.StoredProcedure',
+        defaultMessage: '存储过程',
       }), //存储过程
       dataSource: session?.database?.procedures.map(({ proName, status, errorMessage }) => {
         return {
@@ -181,7 +183,10 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
     },
 
     [DbObjectType.trigger]: {
-      label: formatMessage({ id: 'odc.components.PLBatchCompilePage.Trigger' }), //触发器
+      label: formatMessage({
+        id: 'odc.components.PLBatchCompilePage.Trigger',
+        defaultMessage: '触发器',
+      }), //触发器
       dataSource: session?.database?.triggers.map(({ triggerName, status, errorMessage }) => {
         return {
           name: triggerName,
@@ -208,7 +213,10 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
     },
 
     [DbObjectType.type]: {
-      label: formatMessage({ id: 'odc.components.PLBatchCompilePage.Type' }), //类型
+      label: formatMessage({
+        id: 'odc.components.PLBatchCompilePage.Type',
+        defaultMessage: '类型',
+      }), //类型
       dataSource: session?.database?.types.map(({ typeName, status, errorMessage }) => {
         return {
           name: typeName,
@@ -304,10 +312,11 @@ const PLBatchCompilePage: React.FC<IProps> = (props) => {
     props.onSetUnsavedModalTitle(
       formatMessage({
         id: 'odc.components.PLBatchCompilePage.AreYouSureYouWant',
+        defaultMessage: '正在编译中，是否确定终止编译？',
       }), //正在编译中，确定终止编译吗？
     );
     props.onSetUnsavedModalSaveButtonText(
-      formatMessage({ id: 'odc.components.PLBatchCompilePage.Ok' }), //确定
+      formatMessage({ id: 'odc.components.PLBatchCompilePage.Ok', defaultMessage: '确定' }), //确定
     );
     props.onSetDisableUnsavedModalCloseUnsaveButton(true);
     props.onSetCloseImmediately(true);

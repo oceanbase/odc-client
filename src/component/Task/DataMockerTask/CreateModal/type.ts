@@ -127,11 +127,26 @@ export enum MockStrategy {
 export const MockStrategyTextMap = {
   [MockStrategy.IGNORE]: formatMessage({
     id: 'odc.component.DataMockerDrawer.type.Ignore',
+    defaultMessage: '忽略',
   }), // 忽略
   [MockStrategy.OVERWRITE]: formatMessage({
     id: 'odc.component.DataMockerDrawer.type.Cover',
+    defaultMessage: '覆盖',
   }), // 覆盖
   [MockStrategy.TERMINATE]: formatMessage({
     id: 'odc.component.DataMockerDrawer.type.Termination',
+    defaultMessage: '终止',
   }), // 终止
 };
+
+export interface RuleConfigList {
+  rule?: CharRuleType | DateRuleType | IntervalRuleType | NumberRuleType | OtherRuleType;
+  range: string[] | number[];
+  columnName: string;
+  typeConfig: {
+    columnType: string;
+    genParams: string | { caseOption: string };
+    highValue;
+    lowValue: number | string;
+  };
+}

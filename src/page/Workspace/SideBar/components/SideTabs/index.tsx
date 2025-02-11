@@ -84,7 +84,7 @@ export default function SideTabs(props: IProps) {
             );
           })}
         </Space>
-        <Action.Group size={selectTab.groupSize}>
+        <Action.Group size={selectTab?.groupSize}>
           {selectTab?.actions?.map((action) => {
             if ('render' in action) {
               return action.render();
@@ -100,12 +100,12 @@ export default function SideTabs(props: IProps) {
       <div className={styles.content}>
         {tabs
           .map((tab) => {
-            if (loadedKeys.current.has(tab.key) || selectTab.key === tab.key) {
+            if (loadedKeys.current.has(tab.key) || selectTab?.key === tab.key) {
               return (
                 <div
                   key={tab.key}
                   className={styles.component}
-                  style={{ zIndex: selectTab.key === tab.key ? 'unset' : -9999 }}
+                  style={{ zIndex: selectTab?.key === tab.key ? 'unset' : -9999 }}
                 >
                   {tab?.render?.()}
                 </div>
