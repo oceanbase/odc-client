@@ -41,6 +41,8 @@ import ExtraConfig from './ExtraConfig';
 import ParseURLItem from './ParseURLItem';
 import ProjectItem from './ProjectItem';
 import CloudStorageForm from './CloudStorageForm';
+import odc from '@/plugins/odc';
+
 const Option = Select.Option;
 export interface IFormRef {
   form: FormInstance<IDatasource>;
@@ -181,7 +183,9 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
           }}
           action={
             <a
-              href={getLocalDocs('100.create-a-personal-connection.html')}
+              href={
+                odc.appConfig?.docs.url || getLocalDocs('100.create-a-personal-connection.html')
+              }
               target={'_blank'}
               onClick={(e) => {
                 e.stopPropagation();
