@@ -84,7 +84,7 @@ interface IProps<RecordType> {
   // 取数回调（列表初始化以后，会自动调用一次 & 刷新也会调用）
   onLoad: (args: ITableLoadOptions) => Promise<any>;
   // 其他: antd table 支持的 props
-  tableProps: TableProps<RecordType>;
+  tableProps: TableProps<any>;
 }
 
 const CommonTable: <RecordType extends object = any>(
@@ -433,6 +433,7 @@ const CommonTable: <RecordType extends object = any>(
               `${tableProps?.rowClassName} ${i % 2 === 0 ? styles.even : styles.odd}`
             }
             dataSource={dataSource}
+            //@ts-ignore
             columns={
               enableResize
                 ? columns?.map((oriColumn) => {

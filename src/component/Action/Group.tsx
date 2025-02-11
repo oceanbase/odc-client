@@ -156,7 +156,7 @@ export default ({
               return {
                 key: (actionKey as string) ?? index.toString(),
                 style: { minWidth: 120 },
-                ...omit(action.props, 'disabled', 'children', 'onClick'),
+                ...omit(action.props, 'disabled', 'children', 'onClick', 'type'),
                 disabled: actionDisabled,
                 onClick: (info) => {
                   info.domEvent.stopPropagation();

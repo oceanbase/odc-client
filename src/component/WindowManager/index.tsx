@@ -189,7 +189,10 @@ const WindowManager: React.FC<IProps> = function (props) {
       >
         <Tooltip
           placement="bottom"
-          overlayClassName={styles.tabTooltip}
+          classNames={{
+            root: styles.tabTooltip,
+          }}
+          arrow={false}
           title={
             <div>
               <div>{pageTitle}</div>

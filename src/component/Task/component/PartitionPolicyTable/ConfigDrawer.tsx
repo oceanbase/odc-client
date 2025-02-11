@@ -123,7 +123,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       }
       open={visible}
       destroyOnClose
-      className={styles.configDrawer}
+      rootClassName={styles.configDrawer}
       width={520}
       onClose={handleClose}
       footer={
@@ -202,7 +202,6 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
           />
         </>
       )}
-
       {!!createKeyConfigs?.length && (
         <div style={{ marginTop: 8 }}>
           <SimpleTextItem
@@ -259,7 +258,6 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
           />
         </div>
       )}
-
       {dropKeyConfig && (
         <SimpleTextItem
           label={

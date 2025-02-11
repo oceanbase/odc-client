@@ -38,7 +38,7 @@ import {
   Space,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
 
@@ -57,12 +57,12 @@ export const getExpireTime = (expireTime, customExpireTime, isCustomExpireTime) 
     return customExpireTime?.valueOf();
   } else {
     const [offset, unit] = expireTime.split(',') ?? [];
-    return offset === 'never' ? moment(MAX_DATE)?.valueOf() : moment().add(offset, unit)?.valueOf();
+    return offset === 'never' ? dayjs(MAX_DATE)?.valueOf() : dayjs().add(offset, unit)?.valueOf();
   }
 };
 
 export const getExpireTimeLabel = (expireTime) => {
-  const label = moment(expireTime).format('YYYY-MM-DD');
+  const label = dayjs(expireTime).format('YYYY-MM-DD');
   return label === MAX_DATE_LABEL
     ? formatMessage({
         id: 'src.component.Task.ApplyDatabasePermission.CreateModal.B5C7760D',
@@ -195,7 +195,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const projectId = Form.useWatch('projectId', form);
 
   const disabledDate = (current) => {
-    return current && current < moment().subtract(1, 'days').endOf('day');
+    return current && current < dayjs().subtract(1, 'days').endOf('day');
   };
 
   useEffect(() => {
@@ -297,7 +297,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       customExpireTime: undefined,
     };
     if (validDuration === 'custom') {
-      formData.customExpireTime = moment(expireTime);
+      formData.customExpireTime = dayjs(expireTime);
     }
     form.setFieldsValue(formData);
   };
@@ -323,7 +323,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     <Drawer
       zIndex={1002}
       destroyOnClose
-      className={styles.createModal}
+      rootClassName={styles.createModal}
       width={816}
       title={
         formatMessage({

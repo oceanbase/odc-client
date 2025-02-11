@@ -186,7 +186,7 @@ const AddObjectStorage: React.FC<AddObjectStorageProps> = (props) => {
             </Col>
             <Col span={6}>
               <Form.Item
-                requiredMark={false}
+                required={false}
                 label={formatMessage({
                   id: 'odc.Database.AddDataBaseButton.Environment',
                   defaultMessage: '环境',

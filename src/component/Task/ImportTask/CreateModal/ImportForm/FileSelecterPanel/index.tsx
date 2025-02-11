@@ -416,7 +416,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
             }
             return (
               <FormItem
-                requiredMark={false}
+                required={false}
                 label={formatMessage({
                   id: 'odc.ImportForm.FileSelecterPanel.ImportObjectPreview',
                   defaultMessage: '导入对象预览',

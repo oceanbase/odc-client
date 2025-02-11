@@ -19,7 +19,7 @@ import { IServerMockColumn, MockGenerator } from '@/d.ts';
 import { convertColumnType } from '@/util/utils';
 import BigNumber from 'bignumber.js';
 import { cloneDeep, isNil } from 'lodash';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { getOrderWithSign, getSignWithOrder } from '../../util';
 import { NumberRuleType } from './index';
 
@@ -78,7 +78,7 @@ export function convertServerDataToFormData(formData: IServerMockColumn): IMockF
   let rule = generatorToRuleType(formData);
   formData = cloneDeep(formData);
   let genParams = formData?.typeConfig?.genParams;
-  let lowValue: string | number | moment.Moment = formData.typeConfig.lowValue;
+  let lowValue: string | number | dayjs.Dayjs = formData.typeConfig.lowValue;
   let highValue = formData.typeConfig.highValue;
   let range;
   let order;

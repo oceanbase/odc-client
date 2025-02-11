@@ -257,7 +257,7 @@ const EditTemplate: React.FC<{
             id: 'src.component.Task.MutipleAsyncTask.components.Template.EC8FF04A',
             defaultMessage: '数据库',
           })}
-          requiredMark
+          required={true}
           shouldUpdate={true}
         >
           <div className={styles.header}>

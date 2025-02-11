@@ -479,7 +479,7 @@ const FormModal: React.FC<IProps> = (props) => {
               defaultMessage: '新建角色',
             }) // 新建角色
       }
-      className={styles.userModal}
+      rootClassName={styles.userModal}
       footer={
         <Space>
           <Button onClick={handleCancel}>
@@ -526,7 +526,6 @@ const FormModal: React.FC<IProps> = (props) => {
           </Radio.Button>
         </Radio.Group>
       )}
-
       <FormContent
         initialValue={data}
         isEdit={isEdit}
@@ -539,7 +538,6 @@ const FormModal: React.FC<IProps> = (props) => {
         handleStatusChange={handleStatusChange}
         handlePermissionTypeChange={handlePermissionTypeChange}
       />
-
       {isEdit && (
         <RoleResource
           editId={editId}

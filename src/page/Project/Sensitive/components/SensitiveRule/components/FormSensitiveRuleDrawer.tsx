@@ -342,7 +342,7 @@ const FormSensitiveRuleDrawer = ({
           </Space>
         </div>
       }
-      className={styles.drawer}
+      rootClassName={styles.drawer}
     >
       <Form form={formRef} layout="vertical" requiredMark="optional">
         <Form.Item

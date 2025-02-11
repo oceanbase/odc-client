@@ -40,7 +40,7 @@ import {
   UploadFile,
   Divider,
 } from 'antd';
-import { MenuItemGroupType } from 'antd/es/menu/hooks/useItems';
+import { MenuItemGroupType } from 'antd/es/menu/interface';
 import { useMemo, useRef, useState } from 'react';
 import { ImportOutlined } from '@ant-design/icons';
 import NewDatasourceDrawer from '.';

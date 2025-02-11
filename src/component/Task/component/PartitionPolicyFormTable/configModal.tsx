@@ -431,7 +431,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       open={visible}
       destroyOnClose
       width={720}
-      className={styles.configDrawer}
+      rootClassName={styles.configDrawer}
       onClose={handleClose}
       footer={
         <Space style={{ float: 'right' }}>

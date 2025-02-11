@@ -28,7 +28,7 @@ import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { SearchOutlined } from '@ant-design/icons';
 import { Space, Switch } from 'antd';
-import { ColumnType } from 'antd/lib/table';
+import { ColumnType } from 'antd/es/table';
 import { EChannelTypeMap, EMessageStatusMap, EPolicyFormMode, TPolicyForm } from './interface';
 import { MessageStatus } from './MessageStatus';
 

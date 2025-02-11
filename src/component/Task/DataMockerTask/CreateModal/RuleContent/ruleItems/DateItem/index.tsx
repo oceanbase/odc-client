@@ -17,7 +17,7 @@
 import { formatMessage } from '@/util/intl';
 import { DatePicker, Form, InputNumber, Select, Space } from 'antd';
 import { FormInstance } from 'antd/es/form/Form';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import React, { forwardRef, useImperativeHandle } from 'react';
 import { disabledDateOfMock, getTextItem } from '../../util';
 import WrapItemWithTitle from '../../WrapItemWithTitle';
@@ -40,12 +40,12 @@ interface IDateItemProps {
     | {
         // 定值日期
         genParams: {
-          timestamp: typeof moment;
+          timestamp: typeof dayjs;
         };
       }
     | {
         // 随机日期
-        range: [typeof moment, typeof moment];
+        range: [typeof dayjs, typeof dayjs];
       }
     | {
         // 顺序日期
@@ -55,7 +55,7 @@ interface IDateItemProps {
         };
 
         order: 'asc' | 'desc';
-        lowValue: typeof moment;
+        lowValue: typeof dayjs;
       };
 
   ref: React.Ref<FormInstance>;

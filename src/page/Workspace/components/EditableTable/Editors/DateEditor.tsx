@@ -16,7 +16,7 @@
 
 import { EditorProps } from '@oceanbase-odc/ob-react-data-grid';
 import { DatePicker, TimePicker } from 'antd';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useCallback, useContext, useEffect, useRef } from 'react';
 
 import { getFormatNlsDateString } from '@/common/network/table';
@@ -39,19 +39,19 @@ function getmomentValue(v: number, picker: PickerMode) {
   }
   switch (picker) {
     case 'year': {
-      return moment(v, 'YYYY');
+      return dayjs(v, 'YYYY');
     }
     case 'time': {
-      return moment(v, 'HH:mm:ss');
+      return dayjs(v, 'HH:mm:ss');
     }
     case 'date':
     default: {
-      return moment(v);
+      return dayjs(v);
     }
   }
 }
 
-function getValueByMoment(v: moment.Moment, picker: PickerMode, showTime: boolean) {
+function getValueByMoment(v: dayjs.Dayjs, picker: PickerMode, showTime: boolean) {
   switch (picker) {
     case 'year': {
       return v?.format('YYYY');
@@ -93,7 +93,7 @@ export function CommonDateEditor<T>({
   }, [editorRef]);
 
   const innerOnChange = useCallback(
-    (value: moment.Moment) => {
+    (value: dayjs.Dayjs) => {
       const havePoint = !isNil(pointValue);
       let targetValue = getValueByMoment(value, picker, showTime);
       if (havePoint) {
@@ -107,7 +107,7 @@ export function CommonDateEditor<T>({
     [onRowChange, showTime, picker],
   );
   const innerOnPointChange = useCallback(
-    (value: moment.Moment) => {
+    (value: dayjs.Dayjs) => {
       const targetValue =
         getValueByMoment(value, picker, showTime) + '.' + (pointRef.current?.input?.value || 0);
       onRowChange({ ...row, [key]: targetValue }, false);
@@ -184,7 +184,7 @@ export function NlsEditor<T>({ row, onRowChange, column, width }: IProps<T>) {
   const { key } = column;
   const originValue: INlsObject = row[getNlsValueKey(key)] || {};
   const { formattedContent, nano, timeZoneId, timestamp } = originValue;
-  const momentValue = moment(timestamp || 0);
+  const momentValue = dayjs(timestamp || 0);
 
   const editorRef = useRef<any>(null);
   const pointRef = useRef<any>(null);
@@ -197,7 +197,7 @@ export function NlsEditor<T>({ row, onRowChange, column, width }: IProps<T>) {
   }, [editorRef]);
 
   const innerOnChange = useCallback(
-    (value: moment.Moment) => {
+    (value: dayjs.Dayjs) => {
       const havePoint = !isNil(nano);
       let targetValue = value?.format('YYYY-MM-DD HH:mm:ss');
       if (havePoint) {
@@ -237,7 +237,7 @@ export function NlsEditor<T>({ row, onRowChange, column, width }: IProps<T>) {
     [onRowChange, sessionId],
   );
   const innerOnPointChange = useCallback(
-    (value: moment.Moment) => {
+    (value: dayjs.Dayjs) => {
       let stringValue = value?.format('YYYY-MM-DD HH:mm:ss');
       const targetValue = stringValue + '.' + (pointRef.current?.input?.value || 0);
       async function updateValue() {
@@ -284,23 +284,6 @@ export function NlsEditor<T>({ row, onRowChange, column, width }: IProps<T>) {
           showTime={true}
           onChange={innerOnChange}
         />
-        {/* {!isNil(nano) && (
-            <InputBigNumber
-              addonBefore="."
-              style={{ width: 100 }}
-              onKeyDown={(e) => {
-                if (e.key === 'Tab' || e.key === 'Enter') {
-                  onRowChange(row, true);
-                  e.preventDefault();
-                }
-              }}
-              inputRef={pointRef}
-              value={nano}
-              onChange={(v) => {
-                innerOnPointChange(momentValue);
-              }}
-            />
-          )} */}
       </div>
     </AntdEditorWrap>
   );

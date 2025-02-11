@@ -3,7 +3,6 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Button, Checkbox, Popover, Spin, Empty, Input, Space } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
-import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 import styles from './index.less';
 import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
 
@@ -12,13 +11,13 @@ interface BatchSelectionPopoverProps {
     label: string;
     value: string;
   }[];
-  handleConfirm: (selectedList: CheckboxValueType[]) => void;
+  handleConfirm: (selectedList: any[]) => void;
 }
 
 const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
   const { options = [], handleConfirm } = props;
 
-  const [checkedList, setCheckedList] = useState<CheckboxValueType[]>([]);
+  const [checkedList, setCheckedList] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState<string>(undefined);
   const [open, setOpen] = useState(false);
 

@@ -196,7 +196,7 @@ const FormModal: React.FC<IProps> = (props) => {
               defaultMessage: '新建审批流程',
             }) //新建审批流程
       }
-      className={styles.taskModal}
+      rootClassName={styles.taskModal}
       footer={
         <Space>
           <Button

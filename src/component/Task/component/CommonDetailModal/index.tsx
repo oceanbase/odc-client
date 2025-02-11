@@ -222,7 +222,7 @@ const CommonTaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (p
         </div>
       }
       /* 任务详情 */ destroyOnClose
-      className={styles.detailDrawer}
+      rootClassName={styles.detailDrawer}
     >
       <div className={styles.header}>
         <Radio.Group

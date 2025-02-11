@@ -144,7 +144,7 @@ const StructDataFormItem: React.FC<IProps> = function (props) {
                     }
                   </HelpDoc>
                 }
-                requiredMark={false}
+                required={false}
                 name="replaceSchemaWhenExists"
               >
                 <Radio.Group>

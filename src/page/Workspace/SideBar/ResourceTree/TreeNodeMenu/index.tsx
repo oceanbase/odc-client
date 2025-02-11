@@ -20,7 +20,6 @@ import { DatabasePermissionType } from '@/d.ts/database';
 import SessionStore from '@/store/sessionManager/session';
 import Icon, { InfoCircleFilled, MoreOutlined } from '@ant-design/icons';
 import { Badge, Dropdown, Tooltip } from 'antd';
-import { ItemType } from 'antd/es/menu/hooks/useItems';
 import treeStyles from '../index.less';
 import { ResourceNodeType, TreeDataNode } from '../type';
 import MenuConfig from './config';
@@ -31,6 +30,7 @@ import classNames from 'classnames';
 import { ReactNode } from 'react';
 import { menuAccessWrap } from './config/database';
 import IconLoadingWrapper from './IconLoadingWrapper';
+import { ItemType } from 'antd/es/menu/interface';
 
 export const hasExportPermission = (dbSession: SessionStore) => {
   return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);

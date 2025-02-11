@@ -140,7 +140,7 @@ const CustomDropdown = ({
     <Dropdown
       overlay={menu}
       trigger={['contextMenu']}
-      visible={dropdownVisible}
+      open={dropdownVisible}
       onVisibleChange={setDropdownVisible}
       placement="bottomLeft"
     >

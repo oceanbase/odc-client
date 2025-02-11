@@ -18,7 +18,7 @@ import setting from '@/store/setting';
 import { formatMessage, getLocalImg } from '@/util/intl';
 import { GithubFilled } from '@ant-design/icons';
 import { Modal, Space } from 'antd';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { PureComponent } from 'react';
 import pkg from '../../../../../package.json';
 import styles from './index.less';
@@ -52,7 +52,7 @@ export default class ModalHelp extends PureComponent<{
           </p>
           <span>Server: {setting?.serverSystemInfo?.version}</span>
           <br />
-          <span>Release Date: {RELEASE_DATE ? moment(RELEASE_DATE).format('y-MM-DD') : ''}</span>
+          <span>Release Date: {RELEASE_DATE ? dayjs(RELEASE_DATE).format('y-MM-DD') : ''}</span>
         </div>
         <div className={styles.copyright}>
           <div>

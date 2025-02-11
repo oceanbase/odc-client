@@ -123,7 +123,7 @@ const ProjectItem: React.FC<IProps> = function () {
             defaultMessage: '项目',
           }) /* 项目 */
         }
-        requiredMark={false}
+        required={false}
         extra={
           formatMessage({
             id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.AfterBindingTheProject',

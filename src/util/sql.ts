@@ -17,7 +17,7 @@
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { PLType } from '@/constant/plType';
 import { ConnectionMode, ConnectType, DbObjectType, IFormatPLSchema, IPLParam } from '@/d.ts';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Oracle } from './dataType';
 import { getQuoteTableName } from './utils';
 
@@ -36,7 +36,7 @@ export function addComment(text = '', userMsg = '') {
     return '';
   }
   let lines = text.split('\n');
-  const timeStr = moment(new Date()).format('YYYY/MM/DD');
+  const timeStr = dayjs(new Date()).format('YYYY/MM/DD');
   lines = lines.map((line: string) => {
     return `* ${line}`;
   });

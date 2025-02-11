@@ -28,7 +28,7 @@ import getIntl, { formatMessage } from '@/util/intl';
 import BigNumber from 'bignumber.js';
 import { JSEncrypt } from 'jsencrypt';
 import { isNil } from 'lodash';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { isSqlEmpty } from './parser/sql';
 import { encodeIdentifiers, splitSql } from './sql';
 import type { RangePickerProps } from 'antd/es/date-picker';
@@ -211,16 +211,16 @@ export function convertDataTypeToDataShowType(dt: string = '', map: IDataType[])
 
   return (r && r.showType) || ColumnShowType.TEXT;
 } // export function convertTimestamp({ value }) {
-//   return value && moment(value).format('YYYY-MM-DD HH:mm:ss');
+//   return value && dayjs(value).format('YYYY-MM-DD HH:mm:ss');
 // }
 // export function convertYear({ value }) {
-//   return value && moment(value).format('YYYY');
+//   return value && dayjs(value).format('YYYY');
 // }
 // export function convertDate({ value }) {
-//   return value && moment(value).format('YYYY-MM-DD');
+//   return value && dayjs(value).format('YYYY-MM-DD');
 // }
 // export function convertDatetime({ value }) {
-//   return value && moment(value).format('YYYY-MM-DD HH:mm:ss');
+//   return value && dayjs(value).format('YYYY-MM-DD HH:mm:ss');
 // }
 // export function convertTime({ value }) {
 //   return value;
@@ -285,7 +285,7 @@ export function calcColumnWidth(columnName: string): number {
   return Math.max(columnName.length * 10 + 38, 120);
 }
 export function getFormatDateTime(time: number) {
-  return time > 0 ? moment(time).format('YYYY-MM-DD HH:mm:ss') : '';
+  return time > 0 ? dayjs(time).format('YYYY-MM-DD HH:mm:ss') : '';
 }
 /**
  * 获取国际化时间
@@ -639,7 +639,7 @@ export function groupByPropertyName(array: any[], property: string): Object {
 }
 
 export const disabledDate: RangePickerProps['disabledDate'] = (current) => {
-  return current && current < moment().subtract(1, 'days').endOf('day');
+  return current && current < dayjs().subtract(1, 'days').endOf('day');
 };
 
 const range = (start: number, end: number) => {
@@ -651,7 +651,7 @@ const range = (start: number, end: number) => {
 };
 
 export const disabledTime = (selectedDate) => {
-  const now = moment();
+  const now = dayjs();
   if (!selectedDate) {
     return {
       disabledHours: () => range(0, 24),
@@ -661,16 +661,16 @@ export const disabledTime = (selectedDate) => {
   }
   if (selectedDate && selectedDate.isSame(now, 'day')) {
     return {
-      disabledHours: () => Array.from({ length: now.hours() }, (_, i) => i),
+      disabledHours: () => Array.from({ length: now.hour() }, (_, i) => i),
       disabledMinutes: (selectedHour) => {
-        if (selectedHour === now.hours()) {
-          return Array.from({ length: now.minutes() }, (_, i) => i);
+        if (selectedHour === now.hour()) {
+          return Array.from({ length: now.minute() }, (_, i) => i);
         }
         return [];
       },
       disabledSeconds: (selectedHour, selectedMinute) => {
-        if (selectedHour === now.hours() && selectedMinute === now.minutes()) {
-          return Array.from({ length: now.seconds() }, (_, i) => i);
+        if (selectedHour === now.hour() && selectedMinute === now.minute()) {
+          return Array.from({ length: now.second() }, (_, i) => i);
         }
         return [];
       },

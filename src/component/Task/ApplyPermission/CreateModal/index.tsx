@@ -192,7 +192,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   return (
     <Drawer
       destroyOnClose
-      className={styles.applyPermission}
+      rootClassName={styles.applyPermission}
       width={520}
       title={
         formatMessage({

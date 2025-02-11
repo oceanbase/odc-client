@@ -106,9 +106,9 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
       }}
       value={userStore?.organizationId}
       suffixIcon={<SwapOutlined />}
-      dropdownMatchSelectWidth={144}
+      popupMatchSelectWidth={144}
       style={{ width: collapsed ? 30 : 144 }}
-      bordered={false}
+      variant="borderless"
       menuItemSelectedIcon={<CheckOutlined />}
       onChange={handleChange}
       options={userStore.organizations

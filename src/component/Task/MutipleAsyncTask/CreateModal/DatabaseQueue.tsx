@@ -289,7 +289,7 @@ const DatabaseQueue: React.FC<{
         id: 'src.component.Task.MutipleAsyncTask.CreateModal.A608B8E7',
         defaultMessage: '数据库',
       })}
-      requiredMark
+      required={true}
       shouldUpdate={true}
     >
       <div className={styles.header}>

@@ -134,7 +134,7 @@ const ObjSelecterPanel: React.FC<IProps> = function ({ form, projectId, database
           return (
             <>
               <FormItem
-                requiredMark={false}
+                required={false}
                 name="exportDbObjects"
                 label={formatMessage({
                   id: 'odc.ExportForm.ObjSelecterPanel.ExportObjects',

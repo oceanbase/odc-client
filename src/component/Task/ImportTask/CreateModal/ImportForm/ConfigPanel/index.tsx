@@ -190,7 +190,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({
               >
                 {!isSQLFileType && transferData && (
                   <FormItem
-                    requiredMark={false}
+                    required={false}
                     label={formatMessage({
                       id: 'odc.ImportDrawer.ImportForm.TaskErrorHandling',
                       defaultMessage: '任务错误处理',

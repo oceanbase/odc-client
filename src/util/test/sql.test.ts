@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { addComment, getPLScriptTemplate, removeComment, removeTableQuote } from '../sql';
 
 describe('test sql utils', () => {
   it('addComment', () => {
-    const date = moment(new Date()).format('YYYY/MM/DD');
+    const date = dayjs(new Date()).format('YYYY/MM/DD');
     expect(
       addComment(['select * from test;', 'select * from test2;'].join('\n'), 'userName'),
     ).toEqual(

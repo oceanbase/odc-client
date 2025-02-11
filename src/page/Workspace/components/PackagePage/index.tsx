@@ -29,7 +29,7 @@ import {
 import { Layout, Radio, Tabs } from 'antd';
 import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Component } from 'react';
 
 // @ts-ignore
@@ -342,7 +342,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                     defaultMessage: '创建时间：',
                                   })}
 
-                                  {moment(pkg.packageHead.basicInfo.createTime).format(
+                                  {dayjs(pkg.packageHead.basicInfo.createTime).format(
                                     'YYYY-MM-DD HH:mm',
                                   )}
                                 </p>
@@ -351,7 +351,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                     id: 'odc.components.PackagePage.LastModifiedTime',
                                     defaultMessage: '最近修改时间：',
                                   })}
-                                  {moment(pkg.packageHead.basicInfo.modifyTime).format(
+                                  {dayjs(pkg.packageHead.basicInfo.modifyTime).format(
                                     'YYYY-MM-DD HH:mm',
                                   )}{' '}
                                 </p>
@@ -509,7 +509,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                     defaultMessage: '创建时间：',
                                   })}
 
-                                  {moment(pkg.packageBody.basicInfo.createTime).format(
+                                  {dayjs(pkg.packageBody.basicInfo.createTime).format(
                                     'YYYY-MM-DD HH:mm',
                                   )}
                                 </p>
@@ -518,7 +518,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                     id: 'odc.components.PackagePage.LastModifiedTime',
                                     defaultMessage: '最近修改时间：',
                                   })}
-                                  {moment(pkg.packageBody.basicInfo.modifyTime).format(
+                                  {dayjs(pkg.packageBody.basicInfo.modifyTime).format(
                                     'YYYY-MM-DD HH:mm',
                                   )}{' '}
                                 </p>

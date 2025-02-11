@@ -80,7 +80,7 @@ const ODCDragger: React.FC<IProps> = React.memo(
       _.throttle((list: UploadFile[]) => {
         handleFileChange(list);
         if (clearSuccess) {
-          setFileList(list.filter((file) => file.status !== 'success'));
+          setFileList(list.filter((file) => file.status !== 'done'));
         } else {
           setFileList(list);
         }
@@ -92,7 +92,7 @@ const ODCDragger: React.FC<IProps> = React.memo(
       _.throttle((list: UploadFile[]) => {
         handleFileChange(list);
         if (clearSuccess) {
-          setFileList(list.filter((file) => file.status !== 'success'));
+          setFileList(list.filter((file) => file.status !== 'done'));
         } else {
           setFileList(list);
         }
@@ -113,6 +113,7 @@ const ODCDragger: React.FC<IProps> = React.memo(
 
     const params = {
       ...props,
+      ref: null,
       onChange(info) {
         const files = info.fileList;
         const uploadingListLen = files?.filter((file) => file.status === 'uploading')?.length;

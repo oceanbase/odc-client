@@ -24,7 +24,7 @@ import ApplyPermissionCreateModal from './CreateModal';
 interface IProps extends ButtonProps {
   label: React.ReactNode;
   modalStore?: ModalStore;
-  type?: 'link' | 'text' | 'ghost' | 'default' | 'primary' | 'dashed';
+  type?: 'link' | 'text' | 'default' | 'primary' | 'dashed';
 }
 
 const ApplyPermissionButton: React.FC<IProps> = inject('modalStore')(

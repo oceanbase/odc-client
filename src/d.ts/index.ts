@@ -2757,6 +2757,7 @@ export interface CreateTaskRecord {
 export interface CreateStructureComparisonTaskRecord {
   taskType: TaskType;
   executionStrategy: TaskExecStrategy;
+  description?: string;
   parameters: {
     comparisonScope: EComparisonScope;
     sourceDatabaseId: number;

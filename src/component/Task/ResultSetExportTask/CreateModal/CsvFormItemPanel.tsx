@@ -199,7 +199,7 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                   }) /* SQL 文件设置 */
                 }
                 shouldUpdate
-                requiredMark={true}
+                required={true}
               >
                 <div className={styles.inlineForm}>
                   <Row>

@@ -174,7 +174,7 @@ export default {
       duration = 5;
     }
     if (!supportRepeat && notificationCache.has(description)) {
-      notification.close(notificationCache.get(description));
+      notification.destroy(notificationCache.get(description));
     }
     notification.error({
       message: formatMessage({
@@ -206,9 +206,9 @@ export default {
     const key = generateUniqKey();
     const duration = Math.max(Math.min(20, description.length * 0.1), durationOption);
     if (!supportRepeat && notificationCache.has(description)) {
-      notification.close(notificationCache.get(description));
+      notification.destroy(notificationCache.get(description));
     }
-    notification.warn({
+    notification.warning({
       message: formatMessage({ id: 'odc.src.util.notification.Cue', defaultMessage: '提示' }), // 提示
       description: <Description description={description} requestId={requestId} />,
       duration,

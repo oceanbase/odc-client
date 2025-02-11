@@ -287,7 +287,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   return (
     <Drawer
       destroyOnClose
-      className={styles['ddl-alter']}
+      rootClassName={styles['ddl-alter']}
       width={720}
       title={formatMessage({
         id: 'odc.AlterDdlTask.CreateModal.NewLockFreeStructureChange',

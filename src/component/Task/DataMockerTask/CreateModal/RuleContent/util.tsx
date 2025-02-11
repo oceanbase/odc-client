@@ -16,7 +16,7 @@
 
 import BigNumber from 'bignumber.js';
 import { isArray, toString } from 'lodash';
-import moment, { isMoment } from 'moment';
+import dayjs, { isDayjs } from 'dayjs';
 
 /**
  * 获取 value 的显示值
@@ -28,7 +28,7 @@ function getValueText(value, options?: { showTime: boolean }) {
         return getValueText(v, options);
       })
       .join(' ~ ');
-  } else if (isMoment(value)) {
+  } else if (isDayjs(value)) {
     return value.format(options?.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD');
   }
   return toString(value);
@@ -37,7 +37,7 @@ function getValueText(value, options?: { showTime: boolean }) {
  * 获取列表显示文字
  */
 export function getTextItem(
-  items: [string, string | typeof moment | any[]][],
+  items: [string, string | typeof dayjs | any[]][],
   options?: { showTime: boolean },
 ) {
   return items
@@ -64,7 +64,7 @@ export function getOrderWithSign(sign: string | number) {
 /**
  * 部分日期因为时区偏差问题不能选择
  */
-export function disabledDateOfMock(currentDate: moment.Moment) {
+export function disabledDateOfMock(currentDate: dayjs.Dayjs) {
   return currentDate?.valueOf?.() < 0;
 }
 
@@ -72,9 +72,9 @@ export function disabledDateOfMock(currentDate: moment.Moment) {
  * 获取时间的时区
  * 例如：GMT+0800
  */
-export function getTimeZone(currentDate: moment.Moment) {
+export function getTimeZone(currentDate: dayjs.Dayjs) {
   const regexp = /GMT[+-]\d+/i;
-  if (isMoment(currentDate)) {
+  if (isDayjs(currentDate)) {
     return regexp.exec(currentDate.toString())?.[0];
   }
   return regexp.exec(new Date().toString())?.[0];

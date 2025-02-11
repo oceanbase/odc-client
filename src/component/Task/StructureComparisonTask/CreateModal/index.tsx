@@ -324,7 +324,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
             }) /*"描述"*/
           }
           name="description"
-          requiredMark="optional"
+          required={false}
           rules={[
             {
               max: 200,

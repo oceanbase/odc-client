@@ -480,7 +480,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   return (
     <Drawer
       destroyOnClose
-      className={styles['sql-plan']}
+      rootClassName={styles['sql-plan']}
       width={720}
       title={
         isEdit && SQLPlanEditId

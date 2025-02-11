@@ -402,7 +402,7 @@ class FormModal extends React.PureComponent<IProps, IState> {
                   defaultMessage: '新建用户',
                 }) // 新建用户
           }
-          className={styles.userModal}
+          rootClassName={styles.userModal}
           footer={
             <Space>
               <Button

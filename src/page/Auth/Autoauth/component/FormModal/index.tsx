@@ -361,7 +361,7 @@ const FormModal: React.FC<IProps> = (props) => {
                 defaultMessage: '新建规则',
               }) //新建规则
         }
-        className={styles.autoAuth}
+        rootClassName={styles.autoAuth}
         footer={
           <Space>
             <Button onClick={handleCancel}>
@@ -570,7 +570,6 @@ const FormModal: React.FC<IProps> = (props) => {
                           defaultMessage: '授予角色',
                         }) /*授予角色*/
                       }
-
                       <Tooltip
                         title={formatMessage({
                           id: 'odc.components.FormAutoAuthModal.GrantRoleRelatedConnectionAccess',
