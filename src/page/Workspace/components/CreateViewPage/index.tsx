@@ -364,8 +364,8 @@ const CreateViewPage: React.FC<IProps> = inject(
             className={styles.collapse}
             accordion
             activeKey={activeStepKey}
-            onChange={(stepkey: EnumStep) => {
-              const step = steps.find((step) => step.key === stepkey);
+            onChange={(stepkeys: EnumStep[]) => {
+              const step = steps.find((step) => stepkeys.includes(step.key));
               handleStepChanged(step);
             }}
           >

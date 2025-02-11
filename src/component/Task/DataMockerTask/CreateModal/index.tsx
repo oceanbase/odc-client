@@ -33,7 +33,7 @@ import { inject, observer } from 'mobx-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import DataMockerForm, { converFormToServerData } from './form';
 import { IMockFormData } from './type';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { columnTypeToRuleMap, RuleItem } from './type';
 import { getDefaultRuleByGenerator } from './RuleContent';
 
@@ -74,7 +74,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           const ruleItem = columnTypeToRuleMap[task.database.dialectType][typeConfig?.columnType];
           switch (ruleItem) {
             case RuleItem.DATE: {
-              range = [moment(typeConfig.lowValue), moment(typeConfig.highValue)];
+              range = [dayjs(typeConfig.lowValue), dayjs(typeConfig.highValue)];
               break;
             }
           }
@@ -134,7 +134,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         onClose={closeWithConfirm}
         destroyOnClose
         width={960}
-        className="o-adaptive-drawer"
+        rootClassName="o-adaptive-drawer"
         title={formatMessage({
           id: 'src.component.Task.DataMockerTask.CreateModal.2C3DF5A5',
           defaultMessage: '新建模拟数据',

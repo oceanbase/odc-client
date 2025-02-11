@@ -18,8 +18,8 @@ import { getAllConnectTypes } from '@/common/datasource';
 import { ConnectTypeText } from '@/constant/label';
 import { IDataSourceType } from '@/d.ts/datasource';
 import { formatMessage } from '@/util/intl';
+import { ItemType } from 'antd/lib/menu/interface';
 import { Dropdown } from 'antd';
-import { ItemType } from 'antd/lib/menu/hooks/useItems';
 import { useMemo } from 'react';
 interface IProps {}
 export default function AddDataSourceDropdown(props: IProps) {

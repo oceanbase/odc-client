@@ -27,7 +27,7 @@ import {
   QuestionCircleFilled,
 } from '@ant-design/icons';
 import { Dropdown, message, Modal } from 'antd';
-import { ItemType } from 'antd/es/menu/hooks/useItems';
+import { ItemType } from 'antd/es/menu/interface';
 import { inject, observer } from 'mobx-react';
 import React, { useContext } from 'react';
 import ParamContext from '../../../ParamContext';

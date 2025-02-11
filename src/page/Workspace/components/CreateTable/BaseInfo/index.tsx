@@ -245,7 +245,7 @@ const CreateTableBaseInfoForm: React.FC<IProps> = (props) => {
             defaultMessage: '描述',
           })}
           style={{ width: '100%' }}
-          requiredMark={'optional'}
+          required={false}
         >
           <Input.TextArea
             style={{ width: '100%' }}

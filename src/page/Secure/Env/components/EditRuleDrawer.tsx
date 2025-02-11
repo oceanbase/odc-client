@@ -133,7 +133,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         }) //编辑
       }
       width={480}
-      className={styles.modal}
+      rootClassName={styles.modal}
       onClose={onClose}
       destroyOnClose={true}
       footer={

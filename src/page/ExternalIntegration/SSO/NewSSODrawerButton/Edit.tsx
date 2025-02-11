@@ -65,7 +65,10 @@ export default function EditSSODrawer({ visible, id, close, onSave }: IProps) {
     const clone = { ...value };
     if (configJson.type === ISSOType.SAML) {
       for (let key in SAMLType) {
-        (clone.ssoParameter as ISSO_SAML_CONFIG)[key] = form.getFieldValue(['ssoParameter', key]);
+        (clone.ssoParameter as ISSO_SAML_CONFIG)[key] = form.getFieldValue([
+          'ssoParameter',
+          key as any,
+        ]);
       }
     }
     clone.ssoParameter.registrationId = configJson?.ssoParameter?.registrationId;

@@ -27,7 +27,7 @@ export default function DBTypeItem() {
   const typeSelect = (
     <Form.Item
       shouldUpdate
-      requiredMark={false}
+      required={false}
       label={formatMessage({
         id: 'odc.Form.DBTypeItem.DataSourceType',
         defaultMessage: '数据源类型',

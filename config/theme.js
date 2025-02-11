@@ -1,23 +1,4 @@
-/**
- * ODC主题相关，全局less变量定义
- */
-const antdTheme = {
-  'font-size-base': '12px',
-  'form-item-margin-bottom': '12px',
-  'form-component-max-height': '28px',
-  'layout-header-height': '40px',
-  'form-vertical-label-padding': '4px 0px 4px 0px',
-  'btn-height-base': '28px',
-  'padding-md': '12px',
-  'input-height-base': '29px',
-  'input-height-sm': '25px',
-  'pagination-item-size': '24px',
-  'border-radius-base': '2px',
-  'drawer-body-padding': '12px 24px 24px 24px',
-  'tree-bg': 'transparent',
-  'drawer-header-close-size': '47px',
-  'descriptions-title-margin-bottom': '12px'
-};
+
 
 const odcTheme = {
   // 字体颜色
@@ -34,6 +15,5 @@ const odcTheme = {
 };
 
 export default {
-  ...antdTheme,
   ...odcTheme,
 };

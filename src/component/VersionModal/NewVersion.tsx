@@ -85,7 +85,7 @@ const NewVersion: React.FC<IProps> = () => {
             {cardIdx === count - 1 ? (
               <Button
                 onClick={() => {
-                  notification.close(newVersionModalKey);
+                  notification.destroy(newVersionModalKey);
                 }}
                 type="primary"
               >

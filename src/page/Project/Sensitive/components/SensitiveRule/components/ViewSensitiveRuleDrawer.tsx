@@ -284,7 +284,7 @@ const ViewSensitiveRuleDrawer = ({
           </Button>
         </div>
       }
-      className={styles.drawer}
+      rootClassName={styles.drawer}
     >
       <Descriptions column={1}>
         <Descriptions.Item

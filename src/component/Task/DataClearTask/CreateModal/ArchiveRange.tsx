@@ -24,7 +24,6 @@ import ArchiveRangeTip from '../../component/ArchiveRangeTip';
 import { PartitionTextArea } from '../../component/PartitionTextArea';
 import { IArchiveRange } from './index';
 import BatchSelectionPopover from '@/component/BatchSelectionPopover';
-import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 import styles from './index.less';
 
 const { Text, Link } = Typography;
@@ -50,7 +49,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
   }, [checkPartition]);
 
   const handleConfirm = (
-    checkList: CheckboxValueType[],
+    checkList: any[],
     add: (defaultValue?: any, insertIndex?: number) => void,
     remove: (index: number | number[]) => void,
   ) => {

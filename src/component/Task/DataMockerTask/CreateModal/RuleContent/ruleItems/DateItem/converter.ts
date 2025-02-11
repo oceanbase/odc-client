@@ -19,7 +19,7 @@ import { IServerMockColumn, MockGenerator } from '@/d.ts';
 import { convertColumnType } from '@/util/utils';
 import BigNumber from 'bignumber.js';
 import { cloneDeep } from 'lodash';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { getOrderWithSign, getSignWithOrder, getTimeZone } from '../../util';
 import { DateRuleType } from './index';
 
@@ -49,8 +49,8 @@ export function convertFormDataToServerData(formData: IMockFormColumn): IServerM
 
   switch (formData.rule) {
     case DateRuleType.RANDOM: {
-      lowValue = (formData.typeConfig.range[0] as moment.Moment)?.valueOf?.();
-      highValue = (formData.typeConfig.range[1] as moment.Moment)?.valueOf?.();
+      lowValue = (formData.typeConfig.range[0] as dayjs.Dayjs)?.valueOf?.();
+      highValue = (formData.typeConfig.range[1] as dayjs.Dayjs)?.valueOf?.();
       if (!genParams) {
         genParams = {};
       }
@@ -58,7 +58,7 @@ export function convertFormDataToServerData(formData: IMockFormColumn): IServerM
       break;
     }
     case DateRuleType.ORDER: {
-      lowValue = (formData.typeConfig.lowValue as moment.Moment)?.valueOf?.();
+      lowValue = (formData.typeConfig.lowValue as dayjs.Dayjs)?.valueOf?.();
       genParams.step = getSignWithOrder(formData.typeConfig.order) * parseInt(genParams.step);
       genParams.timeUnit = 'DAYS';
       genParams.timezone = getTimeZone(formData.typeConfig.lowValue);
@@ -87,18 +87,18 @@ export function convertServerDataToFormData(formData: IServerMockColumn): IMockF
   let rule = generatorToRuleType(formData);
   formData = cloneDeep(formData);
   let genParams = formData?.typeConfig?.genParams;
-  let lowValue: string | number | moment.Moment = formData.typeConfig.lowValue;
+  let lowValue: string | number | dayjs.Dayjs = formData.typeConfig.lowValue;
   let highValue = formData.typeConfig.highValue;
   let range;
   let order;
 
   switch (rule) {
     case DateRuleType.RANDOM: {
-      range = [moment(lowValue), moment(highValue)];
+      range = [dayjs(lowValue), dayjs(highValue)];
       break;
     }
     case DateRuleType.ORDER: {
-      lowValue = moment(lowValue);
+      lowValue = dayjs(lowValue);
       order = getOrderWithSign(genParams.step);
       genParams.step =
         new BigNumber(genParams.step).comparedTo(0) === 1
@@ -107,7 +107,7 @@ export function convertServerDataToFormData(formData: IServerMockColumn): IMockF
       break;
     }
     case DateRuleType.NORMAL: {
-      genParams.timestamp = moment(genParams.timestamp);
+      genParams.timestamp = dayjs(genParams.timestamp);
       break;
     }
   }

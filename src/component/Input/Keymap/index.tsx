@@ -93,7 +93,6 @@ const KeymapInput: React.FC<IProps> = (props) => {
       onKeyDown={onKeyDown}
       tagRender={tagRender}
       open={false}
-      showArrow
       style={props.style}
       className={props.className}
       suffixIcon={

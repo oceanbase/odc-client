@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { DateRuleType } from './index';
 
 export default function (ruleType: DateRuleType) {
@@ -22,7 +22,7 @@ export default function (ruleType: DateRuleType) {
     case DateRuleType.NORMAL: {
       return {
         genParams: {
-          timestamp: moment('1980-01-01'),
+          timestamp: dayjs('1980-01-01'),
         },
       };
     }
@@ -33,12 +33,12 @@ export default function (ruleType: DateRuleType) {
           timeUnit: 'DAYS',
         },
         order: 'asc',
-        lowValue: moment('1980-01-01'),
+        lowValue: dayjs('1980-01-01'),
       };
     }
     case DateRuleType.RANDOM: {
       return {
-        range: [moment('1980-01-01'), moment('2060-01-01')],
+        range: [dayjs('1980-01-01'), dayjs('2060-01-01')],
       };
     }
     case DateRuleType.NULL: {

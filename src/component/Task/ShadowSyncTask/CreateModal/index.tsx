@@ -160,7 +160,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
   }
   return (
     <Drawer
-      className={styles.drawer}
+      rootClassName={styles.drawer}
       open={modalStore.addShadowSyncVisible}
       destroyOnClose
       onClose={() => close()}

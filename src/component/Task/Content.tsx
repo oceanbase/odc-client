@@ -34,7 +34,7 @@ import { useLocation } from '@umijs/max';
 import { useSetState } from 'ahooks';
 import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
-import type { Moment } from 'moment';
+import type { Dayjs } from 'dayjs';
 import React, { useEffect, useRef, useMemo } from 'react';
 import TaskTable from './component/TaskTable';
 import DetailModal from './DetailModal';
@@ -118,7 +118,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
       ),
     [TaskPageType.LOGICAL_DATABASE_CHANGE]: () => modalStore.changeLogicialDatabaseModal(true),
   };
-  const loadList = async (args: ITableLoadOptions, executeDate: [Moment, Moment]) => {
+  const loadList = async (args: ITableLoadOptions, executeDate: [Dayjs, Dayjs]) => {
     const { pageKey, taskStore } = props;
     const taskTabType = pageKey || taskStore?.taskPageType;
     if (isCycleTaskPage(taskTabType)) {
@@ -130,7 +130,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
   const loadTaskList = async (
     taskTabType,
     args: ITableLoadOptions,
-    executeDate: [Moment, Moment],
+    executeDate: [Dayjs, Dayjs],
   ) => {
     const { projectId } = props;
     const { filters, sorter, pagination, pageSize } = args ?? {};
@@ -184,7 +184,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
   const loadCycleTaskList = async (
     taskTabType,
     args: ITableLoadOptions,
-    executeDate: [Moment, Moment],
+    executeDate: [Dayjs, Dayjs],
   ) => {
     const { projectId } = props;
     const { filters, sorter, pagination, pageSize } = args ?? {};

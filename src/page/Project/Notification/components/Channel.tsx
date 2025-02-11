@@ -577,7 +577,7 @@ export const FromChannelDrawer: React.FC<{
             }) /*"通道名称"*/
           }
           name="name"
-          requiredMark="optional"
+          required={false}
           validateTrigger="onBlur"
           rules={[
             {
@@ -613,7 +613,7 @@ export const FromChannelDrawer: React.FC<{
             }) /*"通道类型"*/
           }
           name="type"
-          requiredMark="optional"
+          required={false}
           rules={[
             {
               required: true,
@@ -672,7 +672,7 @@ export const FromChannelDrawer: React.FC<{
                 </Space>
               }
               name={['channelConfig', 'webhook']}
-              requiredMark="optional"
+              required={false}
               validateTrigger="onBlur"
               rules={[
                 {
@@ -696,7 +696,7 @@ export const FromChannelDrawer: React.FC<{
                     }) /*"签名密钥"*/
                   }
                   name={['channelConfig', 'sign']}
-                  requiredMark="optional"
+                  required={false}
                 >
                   <Input
                     placeholder={
@@ -733,7 +733,7 @@ export const FromChannelDrawer: React.FC<{
                       defaultMessage: '代理',
                     }) /*"代理"*/
                   }
-                  requiredMark="optional"
+                  required={false}
                   name={['channelConfig', 'httpProxy']}
                 >
                   <Input
@@ -762,7 +762,7 @@ export const FromChannelDrawer: React.FC<{
                 </Form.Item>
                 <Form.Item
                   label="Header"
-                  requiredMark="optional"
+                  required={false}
                   name={['channelConfig', 'headersTemplate']}
                 >
                   <Input.TextArea
@@ -776,11 +776,7 @@ export const FromChannelDrawer: React.FC<{
                     rows={4}
                   />
                 </Form.Item>
-                <Form.Item
-                  label="Body"
-                  requiredMark="optional"
-                  name={['channelConfig', 'bodyTemplate']}
-                >
+                <Form.Item label="Body" required={false} name={['channelConfig', 'bodyTemplate']}>
                   <Input.TextArea
                     placeholder={
                       formatMessage({
@@ -799,8 +795,7 @@ export const FromChannelDrawer: React.FC<{
                       defaultMessage: 'Response校验',
                     }) /*"Response校验"*/
                   }
-                  required
-                  requiredMark="optional"
+                  required={false}
                 >
                   <Form.Item noStyle name={['channelConfig', 'responseValidation']}>
                     <Input.TextArea
@@ -826,7 +821,7 @@ export const FromChannelDrawer: React.FC<{
                   }) /*"指定用户"*/
                 }
                 name={['channelConfig', 'atMobiles']}
-                requiredMark="optional"
+                required={false}
               >
                 <Select
                   mode="tags"
@@ -853,7 +848,7 @@ export const FromChannelDrawer: React.FC<{
           >
             <Form.Item
               name={['channelConfig', 'language']}
-              requiredMark="optional"
+              required={false}
               rules={[
                 {
                   required: true,
@@ -874,7 +869,7 @@ export const FromChannelDrawer: React.FC<{
                 noStyle
                 shouldUpdate
                 name={['channelConfig', 'contentTemplate']}
-                requiredMark="optional"
+                required={false}
                 rules={[
                   {
                     required: true,
@@ -945,7 +940,7 @@ export const FromChannelDrawer: React.FC<{
               }) /*"描述"*/
             }
             name="description"
-            requiredMark="optional"
+            required={false}
           >
             <Input.TextArea
               maxLength={200}

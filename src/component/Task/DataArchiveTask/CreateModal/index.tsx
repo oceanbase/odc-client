@@ -56,7 +56,7 @@ import {
   Spin,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import SQLPreviewModal from '../../component/SQLPreviewModal';
@@ -256,7 +256,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       setCrontab(crontab);
     }
     if (triggerStrategy === TaskExecStrategy.START_AT) {
-      formData.startAt = moment(startAt);
+      formData.startAt = dayjs(startAt);
     }
     await form.setFieldsValue(formData);
     setTargetDatabase(jobParameters.targetDatabase);
@@ -538,7 +538,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   return (
     <Drawer
       destroyOnClose
-      className={styles['data-archive']}
+      rootClassName={styles['data-archive']}
       width={760}
       title={
         isEdit
@@ -785,7 +785,6 @@ const CreateModal: React.FC<IProps> = (props) => {
           <></>
         )}
       </Spin>
-
       <SQLPreviewModal
         sql={previewSql}
         visible={previewModalVisible}

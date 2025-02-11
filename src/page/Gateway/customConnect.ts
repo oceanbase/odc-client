@@ -31,7 +31,7 @@ import { generateUniqKey } from '@/util/utils';
 import { history } from '@umijs/max';
 import { message } from 'antd';
 import { Base64 } from 'js-base64';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 async function getDefaultSchema(dsId: number, userName: string) {
   const res = await listDatabases(null, dsId, 1, 999);
@@ -83,7 +83,7 @@ function resolveRemoteData(data: IRemoteCustomConnectionData) {
 
   const sessionName = `${data.username}@${data.tenantName}#${data.clusterName}-${data.host}:${
     data.port
-  }_${moment().format('MMDDHHmmss')}-${generateUniqKey()}`;
+  }_${dayjs().format('MMDDHHmmss')}-${generateUniqKey()}`;
   data.name = sessionName;
   return data;
 }

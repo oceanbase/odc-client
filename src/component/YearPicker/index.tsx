@@ -17,17 +17,17 @@
 import { formatMessage } from '@/util/intl';
 import { DatePicker } from 'antd';
 import locale from 'antd/lib/date-picker/locale/zh_CN';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Component } from 'react';
 
 export default class YearPicker extends Component<
   {
-    defaultValue: moment.Moment;
+    defaultValue: dayjs.Dayjs;
     onChange: (year: string) => void;
   },
   {
     isopen: boolean;
-    time: moment.Moment;
+    time: dayjs.Dayjs;
   }
 > {
   public readonly state = {

@@ -60,7 +60,7 @@ const FlowModal: React.FC<IProps> = function (props) {
         defaultMessage: '审批记录',
       })}
       /*审批记录*/ destroyOnClose
-      className={styles.flowDrawer}
+      rootClassName={styles.flowDrawer}
       footer={
         task?.approvable && (
           <Space>

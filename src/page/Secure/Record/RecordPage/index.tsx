@@ -26,8 +26,8 @@ import { formatMessage } from '@/util/intl';
 import { getPreTime } from '@/util/utils';
 import { ExportOutlined } from '@ant-design/icons';
 import { Button, DatePicker } from 'antd';
-import type { Moment } from 'moment';
-import moment from 'moment';
+import type { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import FormRecordExportModal from '../../components/FormRecordExportModal';
 import { SecureContext } from '../../context';
@@ -44,7 +44,7 @@ const RecordPage: React.FC<any> = () => {
   const [detailId, setDetailId] = useState(null);
   const [auditList, setAuditList] = useState(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
-  const [executeDate, setExecuteDate] = useState<[Moment, Moment]>([, moment()]);
+  const [executeDate, setExecuteDate] = useState<[Dayjs, Dayjs]>([, dayjs()]);
   const [recordExportVisible, setRecordExportVisible] = useState(false);
   const [startIndex, setStartIndex] = useState(0);
   const userMap = users?.contents?.reduce((total, { name, accountName }) => {
@@ -123,7 +123,7 @@ const RecordPage: React.FC<any> = () => {
     tableRef.current.reload();
   };
 
-  const handleExecuteDateChange = (value: [Moment, Moment]) => {
+  const handleExecuteDateChange = (value: [Dayjs, Dayjs]) => {
     setExecuteDate(value);
   };
 

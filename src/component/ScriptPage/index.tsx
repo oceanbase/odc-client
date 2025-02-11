@@ -200,7 +200,7 @@ export default class ScriptPage extends PureComponent<IProps> {
                   return;
                 }
                 if (snippetStore.snippetDragging.databaseId !== session.database.databaseId) {
-                  message.warn(
+                  message.warning(
                     formatMessage({
                       id: 'src.component.ScriptPage.D0B6C37B' /*'该对象不属于当前数据库'*/,
                       defaultMessage: '该对象不属于当前数据库',

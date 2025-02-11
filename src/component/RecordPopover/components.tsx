@@ -26,7 +26,7 @@ import { RecordContent } from '@/page/Secure/components/RecordPage/component';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { Button, DatePicker } from 'antd';
-import type { Moment } from 'moment';
+import type { Dayjs } from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { getPageColumns } from './column';
 
@@ -35,11 +35,11 @@ const { RangePicker } = DatePicker;
 export const RecordTable: React.FC<{
   tableRef: React.RefObject<ITableInstance>;
   executeTime: string | number;
-  executeDate: [Moment, Moment];
+  executeDate: [Dayjs, Dayjs];
   records: IResponseData<IAudit>;
   loadData: (args: ITableLoadOptions) => Promise<void>;
   handleTableChange: (args: ITableLoadOptions) => void;
-  handleExecuteDateChange: (args: [Moment, Moment]) => void;
+  handleExecuteDateChange: (args: [Dayjs, Dayjs]) => void;
 }> = (props) => {
   const {
     records,

@@ -119,7 +119,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       </Button>
       <Drawer
         destroyOnClose
-        className={styles.createModal}
+        rootClassName={styles.createModal}
         width={816}
         title={
           formatMessage({

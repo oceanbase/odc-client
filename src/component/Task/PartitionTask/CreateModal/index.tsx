@@ -52,7 +52,7 @@ import {
 } from 'antd';
 import { DrawerProps } from 'antd/es/drawer';
 import { inject, observer } from 'mobx-react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import PartitionPolicyFormTable from '../../component/PartitionPolicyFormTable';
@@ -135,7 +135,7 @@ const getCreatedTableConfigs: (tableConfigs: IPartitionTableConfig[]) => ITableC
           ? START_DATE.CURRENT_DATE
           : START_DATE.CUSTOM_DATE,
         baseTimestampMillis: generateParameter?.baseTimestampMillis
-          ? moment(generateParameter?.baseTimestampMillis)
+          ? dayjs(generateParameter?.baseTimestampMillis)
           : undefined,
       };
     });

@@ -74,7 +74,7 @@ const CommonDetailModal: React.FC<IProps> = (props) => {
       width={width}
       title={title}
       destroyOnClose
-      className={styles.detailDrawer}
+      rootClassName={styles.detailDrawer}
       footer={footer}
       onClose={() => {
         onClose();

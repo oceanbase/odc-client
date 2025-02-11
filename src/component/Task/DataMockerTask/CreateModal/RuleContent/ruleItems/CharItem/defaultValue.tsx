@@ -16,7 +16,7 @@
 
 import { getColumnMaxValue } from '@/util/column';
 import BigNumber from 'bignumber.js';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { CharRuleType } from './index';
 
 export default function (ruleType: CharRuleType, maxLength?: string | number) {
@@ -53,13 +53,13 @@ export default function (ruleType: CharRuleType, maxLength?: string | number) {
     case CharRuleType.NORMAL_DATE: {
       return {
         genParams: {
-          timestamp: moment('1980-01-01'),
+          timestamp: dayjs('1980-01-01'),
         },
       };
     }
     case CharRuleType.RANDOM_DATE: {
       return {
-        range: [moment('1980-01-01'), moment('2060-01-01')],
+        range: [dayjs('1980-01-01'), dayjs('2060-01-01')],
       };
     }
     case CharRuleType.ORDER_DATE: {
@@ -68,7 +68,7 @@ export default function (ruleType: CharRuleType, maxLength?: string | number) {
           step: 1,
           timeUnit: 'DAYS',
         },
-        lowValue: moment('1980-01-01'),
+        lowValue: dayjs('1980-01-01'),
         order: 'asc',
       };
     }

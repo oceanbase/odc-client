@@ -232,7 +232,7 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
             : formatMessage({ id: 'odc.component.FormModal.Create', defaultMessage: '新建' })) + //新建
           `${title}`
         }
-        className={styles.interceptor}
+        rootClassName={styles.interceptor}
         footer={
           <Space>
             <Button onClick={handleCancel}>

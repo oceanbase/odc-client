@@ -222,7 +222,7 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
           </Space>
         </div>
       }
-      className={styles.manualForm}
+      rootClassName={styles.manualForm}
     >
       <div className={styles.manualFormContent}>
         <Form layout="vertical" form={formRef} className={styles.form}>

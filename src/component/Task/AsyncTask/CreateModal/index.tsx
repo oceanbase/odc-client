@@ -493,7 +493,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   return (
     <Drawer
       destroyOnClose
-      className={styles.asyncTask}
+      rootClassName={styles.asyncTask}
       width={905}
       title={formatMessage({
         id: 'src.component.Task.AsyncTask.CreateModal.6EEFAEA6',

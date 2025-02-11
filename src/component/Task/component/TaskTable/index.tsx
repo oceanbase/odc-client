@@ -47,8 +47,8 @@ import { DownOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Tooltip, Popover, Space, Typography } from 'antd';
 import { flatten } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import type { Moment } from 'moment';
-import moment from 'moment';
+import type { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import type { FixedType } from 'rc-table/lib/interface';
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import { getTaskGroupLabels, getTaskLabelByType, isCycleTaskPage } from '../../helper';
@@ -187,7 +187,7 @@ interface IProps {
   >;
 
   isMultiPage?: boolean;
-  getTaskList: (args: ITableLoadOptions, executeDate: [Moment, Moment]) => Promise<any>;
+  getTaskList: (args: ITableLoadOptions, executeDate: [Dayjs, Dayjs]) => Promise<any>;
   onReloadList: () => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onChange?: (args: ITableLoadOptions) => void;
@@ -223,9 +223,9 @@ const TaskTable: React.FC<IProps> = inject(
     const [executeTime, setExecuteTime] = useState(() => {
       return JSON.parse(localStorage?.getItem(TASK_EXECUTE_TIME_KEY)) ?? 7;
     });
-    const [executeDate, setExecuteDate] = useState<[Moment, Moment]>(() => {
+    const [executeDate, setExecuteDate] = useState<[Dayjs, Dayjs]>(() => {
       const [start, end] = JSON.parse(localStorage?.getItem(TASK_EXECUTE_DATE_KEY)) ?? [null, null];
-      return !start || !end ? null : [moment(start), moment(end)];
+      return !start || !end ? null : [dayjs(start), dayjs(end)];
     });
     const [loading, setLoading] = useState(false);
     const [hoverInNewTaskMenuBtn, setHoverInNewTaskMenuBtn] = useState(false);
@@ -651,7 +651,7 @@ const TaskTable: React.FC<IProps> = inject(
                       format: 'HH:mm:ss',
                     }}
                     disabledDate={(current) => {
-                      return current > moment();
+                      return current > dayjs();
                     }}
                     format="YYYY-MM-DD HH:mm:ss"
                     onChange={(value) => {

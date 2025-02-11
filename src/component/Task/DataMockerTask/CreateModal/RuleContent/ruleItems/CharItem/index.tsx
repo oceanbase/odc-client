@@ -19,7 +19,7 @@ import { getColumnMaxValue } from '@/util/column';
 import { formatMessage } from '@/util/intl';
 import { DatePicker, Form, Input, InputNumber, Select, Space } from 'antd';
 import { FormInstance } from 'antd/es/form/Form';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import React, { forwardRef, useImperativeHandle } from 'react';
 import RangeInput from '../../RangeInput';
 import { disabledDateOfMock, getTextItem } from '../../util';
@@ -71,7 +71,7 @@ interface ICharItemProps {
       }
     | {
         // 随机日期
-        range: [typeof moment, typeof moment];
+        range: [typeof dayjs, typeof dayjs];
       }
     | {
         // 随机数字
@@ -80,7 +80,7 @@ interface ICharItemProps {
     | {
         // 定值日期
         genParams: {
-          timestamp: typeof moment;
+          timestamp: typeof dayjs;
         };
       }
     | {
@@ -91,7 +91,7 @@ interface ICharItemProps {
         };
 
         order: 'asc' | 'desc';
-        lowValue: typeof moment;
+        lowValue: typeof dayjs;
       }
     | {
         // 定值数字

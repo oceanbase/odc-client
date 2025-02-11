@@ -167,7 +167,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   return (
     <Drawer
       destroyOnClose
-      className={styles.drawer}
+      rootClassName={styles.drawer}
       width={520}
       title={
         formatMessage({

@@ -50,7 +50,7 @@ const ViewRiskLevelDrawer: React.FC<{
           defaultMessage: '查看风险等级',
         }) //查看风险等级
       }
-      className={styles.riskLevelDrawer}
+      rootClassName={styles.riskLevelDrawer}
     >
       <Descriptions column={1}>
         <Descriptions.Item

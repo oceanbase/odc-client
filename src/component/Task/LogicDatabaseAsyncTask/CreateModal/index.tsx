@@ -42,7 +42,7 @@ import {
   Typography,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
@@ -88,7 +88,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       triggerStrategy,
     };
     if (triggerStrategy === TaskExecStrategy.START_AT) {
-      formData.startAt = moment(startAt);
+      formData.startAt = dayjs(startAt);
     }
     form.setFieldsValue(formData);
   };
@@ -240,7 +240,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     <>
       <Drawer
         destroyOnClose
-        className={styles.asyncTask}
+        rootClassName={styles.asyncTask}
         width={905}
         title={formatMessage({
           id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.6CD30B75',

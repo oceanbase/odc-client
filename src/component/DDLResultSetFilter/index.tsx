@@ -19,7 +19,6 @@ import { Button, Checkbox, Input, Popover } from 'antd';
 import { Component } from 'react';
 // @ts-ignore
 import { formatMessage } from '@/util/intl';
-import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import styles from './index.less';
 
 export default class DDLResultSetFilter extends Component<
@@ -76,7 +75,7 @@ export default class DDLResultSetFilter extends Component<
     });
   };
 
-  public handleCheckboxChange = (selectedValues: CheckboxValueType[]) => {
+  public handleCheckboxChange = (selectedValues: any[]) => {
     this.setState({
       selectedValues: selectedValues as string[],
     });

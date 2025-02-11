@@ -71,7 +71,7 @@ const ExecPlan: React.FC<IProps> = function (props) {
       onClose={onClose}
       open={visible}
       width={960}
-      className={styles.explainDrawer}
+      rootClassName={styles.explainDrawer}
       bodyStyle={{
         paddingBottom: 50,
       }}

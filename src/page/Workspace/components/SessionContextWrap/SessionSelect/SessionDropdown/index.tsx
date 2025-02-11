@@ -504,7 +504,6 @@ const SessionDropdown: React.FC<IProps> = function ({
                   <Select
                     onChange={(v) => setFrom(v)}
                     value={from}
-                    size="small"
                     style={{
                       width: '35%',
                     }}
@@ -528,7 +527,6 @@ const SessionDropdown: React.FC<IProps> = function ({
                 )}
 
                 <Input
-                  size="small"
                   value={searchValue}
                   suffix={<SearchOutlined />}
                   placeholder={

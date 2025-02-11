@@ -232,7 +232,7 @@ const ExecDetail: React.FC<IProps> = function (props) {
       destroyOnClose={true}
       width="96vw"
       open={visible}
-      className={styles.explainDrawer}
+      rootClassName={styles.explainDrawer}
       bodyStyle={{
         position: 'absolute',
         top: 55,
