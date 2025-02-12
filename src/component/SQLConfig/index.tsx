@@ -221,7 +221,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
         overlayStyle={{
           width: 170,
         }}
-        placement="bottom"
+        placement="bottomLeft"
         title=""
         content={session ? renderContent() : null}
         open={visible}

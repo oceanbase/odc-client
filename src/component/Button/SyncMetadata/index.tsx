@@ -122,7 +122,9 @@ export default function Reload({
   return (
     <Tooltip
       placement="bottom"
-      overlayStyle={{ maxWidth: 340 }}
+      styles={{
+        root: { maxWidth: 340 },
+      }}
       title={state?.message(getLocalFormatDateTime(lastSyncTime))}
     >
       <span

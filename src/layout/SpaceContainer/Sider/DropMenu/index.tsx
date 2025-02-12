@@ -28,7 +28,10 @@ interface IProps {
 const DropMenu: React.FC<IProps> = function ({ children, menu, small, onOpenChange }) {
   return (
     <Popover
-      overlayClassName={classNames(styles.dropmenu, { [styles.small]: small })}
+      arrow={false}
+      classNames={{
+        root: classNames(styles.dropmenu, { [styles.small]: small }),
+      }}
       content={menu}
       trigger={['hover']}
       zIndex={1000}

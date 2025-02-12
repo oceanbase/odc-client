@@ -13,5 +13,13 @@ export const theme: ThemeConfig = {
     },
     Input: {},
     Tooltip: {},
+    Menu: {
+      itemBorderRadius: 0,
+      horizontalItemBorderRadius: 0,
+      subMenuItemBorderRadius: 0,
+    },
+    Modal: {
+      contentBg: 'var(--background-primary-color)',
+    },
   },
 };

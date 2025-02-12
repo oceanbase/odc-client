@@ -306,7 +306,6 @@ export default inject('dataSourceStatusStore')(
                     flexGrow: 1,
                     flexShrink: 1,
                   }}
-                  size="small"
                 />
                 {login.isPrivateSpace() ? (
                   <NewDatasourceButton onSuccess={() => context?.reloadDatasourceList()}>

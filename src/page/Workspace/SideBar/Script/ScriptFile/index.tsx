@@ -73,7 +73,6 @@ export default inject('userStore')(
               id: 'odc.Script.ScriptFile.SearchScript',
               defaultMessage: '搜索脚本',
             })}
-            /*搜索脚本*/ size="small"
           />
         </div>
         <div className={styles.list}>
