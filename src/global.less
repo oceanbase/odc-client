@@ -4,7 +4,7 @@
 @import '~xterm/css/xterm.css';
 @import (reference) './style/theme/white.less';
 @import (reference) './style/theme/dark.less';
-@import './style/theme/antd.dark.less';
+// @import './style/theme/antd.dark.less';
 /* @import '~antd/dist/antd.less'; */
 
 @font-face {
@@ -28,6 +28,14 @@ body,
   position: relative;
   height: calc(100vh - 50px);
   font-size: 12px;
+}
+
+.ant-input-group-wrapper {
+  .ant-input-affix-wrapper {
+    .ant-input {
+      height: 20px;
+    }
+  }
 }
 
 #root {
@@ -60,32 +68,8 @@ body {
 
   color: var(--text-color-secondary);
   background-color: var(--background-normal-color);
-  .ant-drawer-header,
-  .ant-drawer-content {
-    background-color: var(--background-primary-color);
-  }
-  .ant-drawer-mask {
-    background-color: var(--mask-color);
-  }
-
-  .has-error :not(.ant-input-disabled):not(.ant-input-borderless).ant-input {
-    background-color: transparent;
-  }
-
-  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):focus-within {
-    box-shadow: none;
-  }
-
-  .ant-drawer .ant-table thead > tr > th {
-    background-color: var(--table-header-background-color);
-  }
-
-  .ant-layout {
-    background-color: var(--background-normal-color);
-  }
-
-  .ant-layout-header {
-    background-color: var(--navigation-background-color);
+  .ant-layout-content {
+    color: var(--text-color-secondary);
   }
 
   ::-webkit-scrollbar {
@@ -205,7 +189,11 @@ ol {
   background: #3f3f3f;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.1);
 }
-
+.ant-menu-vertical {
+  .ant-menu-item {
+    width: 100%;
+  }
+}
 .ant-page-header-title-view-title {
   color: #fff;
   font-size: 16px;
@@ -370,15 +358,6 @@ ol {
   }
 }
 
-.ant-form-item-with-help {
-  margin-bottom: 12px;
-}
-
-.ant-form-item-explain,
-.ant-form-item-extra {
-  margin-top: 3px;
-}
-
 // tabs antd4 兼容 antd3
 .ant-tabs .ant-tabs-content > .ant-tabs-tabpane {
   position: absolute;
@@ -394,11 +373,6 @@ ol {
     z-index: unset;
     opacity: unset;
   }
-}
-
-// antd input line-height bug
-.ant-input {
-  line-height: 19px;
 }
 
 // pl-debug
@@ -467,10 +441,6 @@ ol {
   position: absolute;
   width: 100%;
   height: 100vh;
-}
-
-.ant-input-search input {
-  height: inherit;
 }
 
 // tab 左右布局的样式，例如表详情

@@ -79,7 +79,6 @@ export default forwardRef(function ProjectTree(
                 defaultMessage: '搜索项目名称',
               })} /*搜索项目名称*/
               style={{ width: '100%' }}
-              size="small"
             />
           </div>
           <div className={styles.list}>

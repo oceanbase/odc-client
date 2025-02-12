@@ -78,7 +78,6 @@ export default inject('snippetStore')(
                 id: 'odc.Script.Snippet.SearchForCodeSnippets',
                 defaultMessage: '搜索代码片段',
               })} /*搜索代码片段*/
-              size="small"
             />
           </div>
           <div className={styles.list}>
