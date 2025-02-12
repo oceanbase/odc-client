@@ -31,18 +31,6 @@ export function TextEditor<T>({ row, onRowChange, column, left, top, width }: Ed
   const [modalTextValue, setModalTextValue] = useState(null);
   const [isShowTextModal, setIsShowTextModal] = useState(false);
 
-  useEffect(() => {
-    if (editorRef.current) {
-      setTimeout(() => {
-        editorRef.current?.focus();
-        editorRef.current?.resizableTextArea.textArea.setSelectionRange(
-          Number.MAX_SAFE_INTEGER,
-          Number.MAX_SAFE_INTEGER,
-        );
-      }, 100);
-    }
-  }, [editorRef]);
-
   const innerOnChange = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => {
       onRowChange({ ...row, [key]: e.target.value });
@@ -55,6 +43,15 @@ export function TextEditor<T>({ row, onRowChange, column, left, top, width }: Ed
       <div>
         <Input.TextArea
           ref={editorRef}
+          autoFocus
+          onFocus={() => {
+            setTimeout(() => {
+              editorRef.current?.resizableTextArea.textArea.setSelectionRange(
+                Number.MAX_SAFE_INTEGER,
+                Number.MAX_SAFE_INTEGER,
+              );
+            }, 100);
+          }}
           onKeyDown={(e) => {
             if (e.key === 'Tab') {
               onRowChange(row, true);
@@ -95,6 +92,7 @@ export function TextEditor<T>({ row, onRowChange, column, left, top, width }: Ed
           }}
         >
           <Input.TextArea
+            autoFocus
             autoSize={{ minRows: 15, maxRows: 15 }}
             value={modalTextValue}
             onKeyDown={(e) => {

@@ -45,13 +45,6 @@ export function SelectEditor<T>({
     realValue = realValue?.split(',');
   }
   const editorRef = useRef<any>(null);
-  useEffect(() => {
-    if (editorRef.current) {
-      setTimeout(() => {
-        editorRef.current?.focus();
-      }, 100);
-    }
-  }, [editorRef]);
   const innerOnChange = useCallback(
     (value: string | string[]) => {
       console.log('onchange event');
@@ -68,6 +61,7 @@ export function SelectEditor<T>({
       <Select
         ref={editorRef}
         open={open}
+        autoFocus
         showSearch
         loading={loading}
         onFocus={() => {
@@ -76,9 +70,9 @@ export function SelectEditor<T>({
           }, 150);
         }}
         mode={multiple ? 'multiple' : undefined}
-        bordered={false}
+        variant="borderless"
         listHeight={170}
-        style={{ width: Math.max(width, 180) }}
+        style={{ width: Math.max(width, 180), height: 23 }}
         value={realValue}
         onChange={innerOnChange}
         optionFilterProp="children"

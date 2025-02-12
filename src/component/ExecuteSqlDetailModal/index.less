@@ -4,13 +4,18 @@
   top: 40px;
   padding-bottom: 0;
   min-width: 880px;
-  overflow-x: scroll;
+  overflow-x: auto;
   margin: 0 40px;
+
   :global {
     .ant-modal-content {
-      height: 100%;
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      right: 0px;
+      bottom: 0px;
       .ant-modal-body {
-        height: calc(100% - 47px);
+        height: calc(100% - 30px);
         padding: 16px;
         overflow: auto;
       }
