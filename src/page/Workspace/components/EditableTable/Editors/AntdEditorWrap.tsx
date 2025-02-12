@@ -19,6 +19,7 @@ import { Popover } from 'antd';
 export default function AntdEditorWrap(props) {
   return (
     <Popover
+      arrow={false}
       classNames={{
         root: 'rdg-antd-editor',
       }}

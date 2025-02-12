@@ -118,6 +118,7 @@ export function CommonDateEditor<T>({
     <AntdEditorWrap>
       {picker === 'time' ? (
         <TimePicker
+          autoFocus
           ref={editorRef}
           /**
            * 不要开启这个配置，交互行为会不顺畅

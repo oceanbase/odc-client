@@ -44,18 +44,6 @@ export function CaseTextEditor<T>({
   const [modalTextValue, setModalTextValue] = useState(null);
   const [isShowTextModal, setIsShowTextModal] = useState(false);
 
-  useEffect(() => {
-    if (editorRef.current) {
-      setTimeout(() => {
-        editorRef.current?.focus();
-        editorRef.current?.resizableTextArea.textArea.setSelectionRange(
-          Number.MAX_SAFE_INTEGER,
-          Number.MAX_SAFE_INTEGER,
-        );
-      }, 100);
-    }
-  }, [editorRef]);
-
   const innerOnChange = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => {
       onRowChange({ ...row, [key]: e.target.value });
@@ -67,6 +55,15 @@ export function CaseTextEditor<T>({
     <AntdEditorWrap>
       <div>
         <CaseTextArea
+          autoFocus
+          onFocus={() => {
+            setTimeout(() => {
+              editorRef.current?.resizableTextArea.textArea.setSelectionRange(
+                Number.MAX_SAFE_INTEGER,
+                Number.MAX_SAFE_INTEGER,
+              );
+            }, 100);
+          }}
           ref={editorRef}
           caseSensitive={caseSensitive}
           escapes={escapes}
