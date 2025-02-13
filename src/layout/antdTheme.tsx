@@ -4,6 +4,7 @@ export const theme: ThemeConfig = {
   token: {
     fontSize: 12,
     controlHeight: 28,
+    borderRadius: 2,
   },
   components: {
     Tree: {
