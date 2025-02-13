@@ -14,11 +14,24 @@
  * limitations under the License.
  */
 
-import Loading from './component/Loading';
+import { Spin } from 'antd/es';
+// import Loading from './component/Loading';
 export default function () {
   return (
-    <>
-      <Loading />
-    </>
+    <div
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'var(--background-secondry-color)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Spin />
+    </div>
   );
 }
