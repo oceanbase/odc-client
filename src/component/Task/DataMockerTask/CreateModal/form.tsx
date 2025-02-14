@@ -124,7 +124,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                   );
                   let NumberOrder = null;
                   if (
-                    newTypeConfig?.typeConfig?.genParams.hasOwnProperty('step') &&
+                    newTypeConfig?.typeConfig?.genParams?.hasOwnProperty('step') &&
                     newTypeConfig?.rule === NumberRuleType.ORDER
                   ) {
                     // 倒序时，页面展现的是正数，实际上调用接口时会转换为负数，再次发起需要转换回来
