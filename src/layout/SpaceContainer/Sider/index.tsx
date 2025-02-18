@@ -21,6 +21,7 @@ import odc from '@/plugins/odc';
 import { TaskStore } from '@/store/task';
 import { ReactComponent as LinkOutlined } from '@/svgr/icon_connection.svg';
 import { ReactComponent as TaskSvg } from '@/svgr/icon_task.svg';
+import { ReactComponent as NewOpenSvg } from '@/svgr/newopen.svg';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
@@ -29,6 +30,7 @@ import Icon, {
   BulbOutlined,
   CaretLeftOutlined,
   CaretRightOutlined,
+  CodeOutlined,
   ControlOutlined,
   ForkOutlined,
   TeamOutlined,
@@ -47,6 +49,7 @@ import MenuItem from './MenuItem';
 import MineItem from './MineItem';
 import SettingItem from './SettingItem';
 import SpaceSelect from './SpaceSelect';
+import { gotoSQLWorkspace } from '@/util/route';
 
 interface IProps {
   taskStore?: TaskStore;
@@ -92,12 +95,7 @@ const Sider: React.FC<IProps> = function (props) {
           </>
         )}
 
-        <Space
-          size={mentItemGap}
-          direction="vertical"
-          className={styles.menu1}
-          style={{ width: '100%' }}
-        >
+        <Space size={mentItemGap} direction="vertical" style={{ width: '100%' }}>
           <Link to={`/${IPageType.Project}`}>
             <MenuItem
               key={IPageType.Project}
@@ -211,6 +209,25 @@ const Sider: React.FC<IProps> = function (props) {
             </Acess>
           ) : null}
         </Space>
+        <Divider style={{ margin: '6px 0' }} />
+        <MenuItem
+          onClick={() => {
+            gotoSQLWorkspace();
+          }}
+          key={'newsqlconsole'}
+          selected={false}
+          icon={CodeOutlined}
+          collapsed={collapsed}
+          label={
+            <span>
+              {formatMessage({ id: 'src.page.Project.8635398D', defaultMessage: 'SQL 控制台' })}
+              <Icon
+                style={{ marginLeft: 8, color: 'var(--icon-color-disable)' }}
+                component={NewOpenSvg}
+              />
+            </span>
+          }
+        />
       </div>
       <Space size={mentItemGap} direction="vertical" className={styles.bottom}>
         <SettingItem collapsed={collapsed} />
