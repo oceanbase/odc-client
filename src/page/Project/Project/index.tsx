@@ -171,7 +171,7 @@ const Project: React.FC<IProps> = (props) => {
                   <CreateProjectDrawer disabled={projectTypeIsArchived} onCreate={() => reload()} />
                 </Acess>
               )}
-              {!!dataSource?.length && !projectTypeIsArchived && (
+              {!projectTypeIsArchived && (
                 <ApplyPermissionButton
                   disabled={projectTypeIsArchived}
                   label={
