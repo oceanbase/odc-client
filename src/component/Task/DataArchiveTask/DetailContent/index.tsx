@@ -40,6 +40,7 @@ import styles from '../../index.less';
 import { InsertActionOptions } from '../CreateModal';
 import ArchiveRange from './ArchiveRange';
 import { shardingStrategyOptions } from '../../component/ShardingStrategyItem';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -185,7 +186,6 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
 
       <Descriptions column={2}>
         <Descriptions.Item
-          span={2}
           label={formatMessage({
             id: 'odc.DataArchiveTask.DetailContent.CleanUpArchivedDataFrom',
             defaultMessage: '清理源端已归档的数据',
@@ -203,6 +203,21 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
                 }) //否
           }
         </Descriptions.Item>
+        {isConnectTypeBeFileSystemGroup(jobParameters.targetDatabase.connectType) && (
+          <Descriptions.Item label={'任务完成后删除归档过程中产生的临时表'}>
+            {
+              jobParameters?.deleteTemporaryTable
+                ? formatMessage({
+                    id: 'odc.DataArchiveTask.DetailContent.Yes',
+                    defaultMessage: '是',
+                  }) //是
+                : formatMessage({
+                    id: 'odc.DataArchiveTask.DetailContent.No',
+                    defaultMessage: '否',
+                  }) //否
+            }
+          </Descriptions.Item>
+        )}
       </Descriptions>
       <Descriptions column={2}>
         <Descriptions.Item

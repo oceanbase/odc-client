@@ -22,6 +22,7 @@ import FormItemPanel from '@/component/FormItemPanel';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import { IDatabase } from '@/d.ts/database';
 import { useRequest } from 'ahooks';
+import HelpDoc from '@/component/helpDoc';
 import {
   CreateTaskRecord,
   ICycleTaskTriggerConfig,
@@ -201,6 +202,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const { dataArchiveVisible, dataArchiveTaskData } = modalStore;
   const dataArchiveEditId = dataArchiveTaskData?.id;
   const isEdit = !!dataArchiveEditId && dataArchiveTaskData?.type === 'EDIT';
+  const [isdeleteAfterMigration, setIsdeleteAfterMigration] = useState(false);
   const loadEditData = async (editId: number) => {
     const data = (await fetchCycleTaskDetail(editId)) as CycleTaskDetail<IDataArchiveJobParameters>;
     const {
@@ -213,6 +215,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       targetDataBaseId,
       sourceDatabaseId,
       deleteAfterMigration,
+      deleteTemporaryTable,
       migrationInsertAction,
       shardingStrategy,
       rateLimit,
@@ -222,12 +225,14 @@ const CreateModal: React.FC<IProps> = (props) => {
       syncTableStructure,
     } = jobParameters;
     setEnablePartition(!!tables?.find((i) => i?.partitions?.length));
+    setIsdeleteAfterMigration(deleteAfterMigration);
     const formData = {
       databaseId: sourceDatabaseId,
       targetDataBaseId: targetDataBaseId,
       rowLimit: rateLimit?.rowLimit,
       dataSizeLimit: kbToMb(rateLimit?.dataSizeLimit),
       deleteAfterMigration,
+      deleteTemporaryTable,
       migrationInsertAction,
       shardingStrategy,
       tables: tables?.map((i) => {
@@ -351,6 +356,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           variables,
           tables: _tables,
           deleteAfterMigration,
+          deleteTemporaryTable,
           triggerStrategy,
           migrationInsertAction,
           shardingStrategy,
@@ -388,6 +394,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                   })
                 : _tables,
             deleteAfterMigration,
+            deleteTemporaryTable,
             migrationInsertAction,
             shardingStrategy,
             syncTableStructure,
@@ -518,20 +525,15 @@ const CreateModal: React.FC<IProps> = (props) => {
     }
   }, [dataArchiveTaskData?.databaseId]);
 
-  // 归档到对象存储类型的数据库时，不支持自动清理、指标目标表名、同步结构
+  /**
+   * 归档到对象存储类型的数据库时，不支持同步结构
+   * 仅目标端为对象存储时支持 删除归档过程中产生的临时表
+   */
   useEffect(() => {
     if (isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)) {
-      const tables = form.getFieldValue('tables');
-      tables?.forEach((element) => {
-        if (element?.hasOwnProperty('targetTableName')) {
-          delete element.targetTableName;
-        }
-      });
-      form.setFieldsValue({
-        deleteAfterMigration: undefined,
-        syncTableStructure: undefined,
-        tables,
-      });
+      form.setFieldValue('syncTableStructure', undefined);
+    } else {
+      form.setFieldValue('deleteTemporaryTable', undefined);
     }
   }, [targetDatabase]);
 
@@ -635,43 +637,43 @@ const CreateModal: React.FC<IProps> = (props) => {
             </Space>
             <Form.Item name="deleteAfterMigration" valuePropName="checked">
               <Checkbox
-                disabled={isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)}
                 onChange={(e) => {
-                  form.setFieldValue('deleteAfterMigration', e.target.checked);
+                  setIsdeleteAfterMigration(e.target.checked);
                 }}
               >
-                <Tooltip
-                  title={
-                    isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
-                      ? formatMessage({
-                          id: 'src.component.Task.DataArchiveTask.CreateModal.35705CA2',
-                          defaultMessage: '选择的目标数据库为对象存储类型时，不支持该配置',
-                        })
-                      : undefined
+                <Space>
+                  {
+                    formatMessage({
+                      id: 'odc.DataArchiveTask.CreateModal.CleanUpArchivedDataFrom',
+                      defaultMessage: '清理源端已归档数据',
+                    }) /*清理源端已归档数据*/
                   }
-                  placement="topLeft"
-                >
-                  <Space>
-                    {
-                      formatMessage({
-                        id: 'odc.DataArchiveTask.CreateModal.CleanUpArchivedDataFrom',
-                        defaultMessage: '清理源端已归档数据',
-                      }) /*清理源端已归档数据*/
-                    }
 
-                    <span className={styles.desc}>
-                      {
-                        formatMessage({
-                          id: 'odc.DataArchiveTask.CreateModal.IfYouCleanUpThe',
-                          defaultMessage:
-                            '若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚',
-                        }) /*若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚*/
-                      }
-                    </span>
-                  </Space>
-                </Tooltip>
+                  <span className={styles.desc}>
+                    {
+                      isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
+                        ? '若您进行清理，默认立即清理且不做备份；'
+                        : formatMessage({
+                            id: 'odc.DataArchiveTask.CreateModal.IfYouCleanUpThe',
+                            defaultMessage:
+                              '若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚',
+                          }) /*若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚*/
+                    }
+                  </span>
+                </Space>
               </Checkbox>
             </Form.Item>
+            {isdeleteAfterMigration &&
+              isConnectTypeBeFileSystemGroup(targetDatabase?.connectType) && (
+                <Form.Item name="deleteTemporaryTable" valuePropName="checked">
+                  <Checkbox>
+                    <Space>
+                      任务完成后删除归档过程中产生的临时表
+                      <span className={styles.desc}>勾选后已归档的任务不支持回滚</span>
+                    </Space>
+                  </Checkbox>
+                </Form.Item>
+              )}
             <Form.Item
               label={formatMessage({
                 id: 'odc.DataArchiveTask.CreateModal.ExecutionMethod',
