@@ -611,7 +611,6 @@ export default {
       }
     </p>
   ),
-
   dataArchiveVariablesDoc: <p>{dataArchiveVariablesDoc}</p>,
   dataClearVariablesDoc: <p>{dataClearVariablesDoc}</p>,
   schemaChangeSwapTable: (
