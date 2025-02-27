@@ -381,11 +381,9 @@ const CreateModal: React.FC<IProps> = (props) => {
               onSQLChange={(sql) => {
                 handleSqlChange('sqlContent', sql);
               }}
-              placeholder={formatMessage({
-                id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.D4252811',
-                defaultMessage:
-                  '使用逻辑表表达式需要在表达式上加上`号，如：`db_[00-31]`.`test_[00-31]`,否则将无法识别逻辑表拓扑',
-              })}
+              placeholder={
+                '使用逻辑表表达式需要在表达式上加上`号，如：`db_[00-31].test_[00-31]`,否则将无法识别逻辑表拓扑'
+              }
             />
           </Form.Item>
           <div
