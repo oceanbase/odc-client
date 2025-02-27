@@ -418,7 +418,7 @@ export default {
       }
     </p>
   ),
-
+  TemporaryTableNameRules: <p>{'命名方式采用bak_odc_{taskId}_{tableName}形式'}</p>,
   expirePeriod: (
     <p>
       {
