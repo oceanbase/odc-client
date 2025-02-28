@@ -5578,7 +5578,7 @@
   "src.component.ConnectionPopover.986CE021": "文件 URL：{LogicalExpression0}",
   "src.component.ConnectionPopover.4A02B634": "地域：{LogicalExpression0}",
   "src.component.helpDoc.9DB2EA45": "命名方式采用bak_odc_{taskId}_{tableName}形式",
-  "src.component.Task.LogicDatabaseAsyncTask.CreateModal.56CD71B9": "使用逻辑表表达式需要在表达式上加上`号，如：`db_[00-31].test_[00-31]`,否则将无法识别逻辑表拓扑",
+  "src.component.Task.LogicDatabaseAsyncTask.CreateModal.56CD71B9": "使用逻辑表表达式需要在表达式上加上`号，如：`db_[00-31].test_[00-31]`，否则将无法识别逻辑表拓扑",
   "src.component.Task.DataArchiveTask.DetailContent.F3FBB17A": "任务完成后删除归档过程中产生的临时表",
   "src.component.Task.DataArchiveTask.CreateModal.5A19F0AB": "若您进行清理，默认立即清理且不做备份",
   "src.component.Task.DataArchiveTask.CreateModal.3D6F0B7D": "任务完成后删除归档过程中产生的临时表",
