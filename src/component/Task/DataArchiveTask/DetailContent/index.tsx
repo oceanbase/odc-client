@@ -204,7 +204,12 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           }
         </Descriptions.Item>
         {isConnectTypeBeFileSystemGroup(jobParameters.targetDatabase.connectType) && (
-          <Descriptions.Item label={'任务完成后删除归档过程中产生的临时表'}>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Task.DataArchiveTask.DetailContent.F3FBB17A',
+              defaultMessage: '任务完成后删除归档过程中产生的临时表',
+            })}
+          >
             {
               jobParameters?.deleteTemporaryTable
                 ? formatMessage({
