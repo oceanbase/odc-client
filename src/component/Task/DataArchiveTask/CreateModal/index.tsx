@@ -652,7 +652,10 @@ const CreateModal: React.FC<IProps> = (props) => {
                   <span className={styles.desc}>
                     {
                       isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
-                        ? '若您进行清理，默认立即清理且不做备份'
+                        ? formatMessage({
+                            id: 'src.component.Task.DataArchiveTask.CreateModal.5A19F0AB',
+                            defaultMessage: '若您进行清理，默认立即清理且不做备份',
+                          })
                         : formatMessage({
                             id: 'odc.DataArchiveTask.CreateModal.IfYouCleanUpThe',
                             defaultMessage:
@@ -669,9 +672,17 @@ const CreateModal: React.FC<IProps> = (props) => {
                   <Checkbox>
                     <div>
                       <span style={{ marginRight: '6px' }}>
-                        任务完成后删除归档过程中产生的临时表
+                        {formatMessage({
+                          id: 'src.component.Task.DataArchiveTask.CreateModal.3D6F0B7D',
+                          defaultMessage: '任务完成后删除归档过程中产生的临时表',
+                        })}
                       </span>
-                      <span className={styles.desc}>勾选后已归档的任务不支持回滚</span>
+                      <span className={styles.desc}>
+                        {formatMessage({
+                          id: 'src.component.Task.DataArchiveTask.CreateModal.85B377FF',
+                          defaultMessage: '勾选后已归档的任务不支持回滚',
+                        })}
+                      </span>
                       <HelpDoc doc="TemporaryTableNameRules" />
                     </div>
                   </Checkbox>

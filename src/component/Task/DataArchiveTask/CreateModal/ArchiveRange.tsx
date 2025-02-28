@@ -237,7 +237,10 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                               <Input
                                 addonBefore={
                                   isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
-                                    ? '目标文件'
+                                    ? formatMessage({
+                                        id: 'src.component.Task.DataArchiveTask.CreateModal.79D75776',
+                                        defaultMessage: '目标文件',
+                                      })
                                     : formatMessage({
                                         id: 'src.component.Task.DataArchiveTask.CreateModal.94BCB0E1',
                                         defaultMessage: '目标表',
