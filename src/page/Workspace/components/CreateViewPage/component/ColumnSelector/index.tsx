@@ -20,7 +20,7 @@ import { Button, Checkbox, Empty, Spin, Transfer, Tree } from 'antd';
 import update from 'immutability-helper';
 import { parse } from 'query-string';
 import styles from './index.less';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { fieldIconMap } from '@/constant';
 import { ColumnShowType } from '@/d.ts';
 import { isEqual, uniqueId } from 'lodash';
@@ -399,10 +399,29 @@ const TreeSelector: React.FC<IProps> = React.memo((props) => {
     }
     return r;
   };
+  /**
+   * treeData 打平成 { key, value }
+   */
+  const dataSource = useMemo(() => {
+    const { treeData } = state;
+    const result = [];
+    function flatten(data) {
+      data.forEach((item) => {
+        const { children, title, key, type } = item;
+        result.push({ key, value: title });
+        if (children) {
+          flatten(children);
+        }
+      });
+    }
+    flatten(treeData);
+    return result;
+  }, [state.treeData]);
 
   return (
     <div>
       <Transfer
+        dataSource={dataSource}
         targetKeys={state.targetKeys}
         showSearch={!state.loading}
         showSelectAll
