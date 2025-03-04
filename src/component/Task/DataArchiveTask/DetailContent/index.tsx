@@ -203,7 +203,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
                 }) //否
           }
         </Descriptions.Item>
-        {isConnectTypeBeFileSystemGroup(jobParameters.targetDatabase.connectType) && (
+        {isConnectTypeBeFileSystemGroup(jobParameters?.targetDatabase?.connectType) && (
           <Descriptions.Item
             label={formatMessage({
               id: 'src.component.Task.DataArchiveTask.DetailContent.F3FBB17A',
