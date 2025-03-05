@@ -33,7 +33,12 @@ import {
   TaskRecord,
   TaskRecordParameters,
   TaskType,
+  CycleTaskDetail,
+  IDataArchiveJobParameters,
+  IDataClearJobParameters,
+  ISqlPlayJobParameters,
 } from '@/d.ts';
+
 import { ISchemaChangeRecord, SchemaChangeRecordStatus } from '@/d.ts/logicalDatabase';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
@@ -249,8 +254,9 @@ const getLogicalDatabaseAsyncColumns = (params: {
 };
 
 const getConnectionColumns = (params: {
-  taskType: TaskType;
-  taskId: number;
+  task: CycleTaskDetail<
+    IDataArchiveJobParameters | IDataClearJobParameters | ISqlPlayJobParameters
+  >;
   showLog: boolean;
   onReloadList: () => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
@@ -261,8 +267,7 @@ const getConnectionColumns = (params: {
   handleLogicalDatabaseAsyncModalOpen;
 }) => {
   const {
-    taskType,
-    taskId,
+    task,
     showLog,
     onReloadList,
     onDetailVisible,
@@ -272,6 +277,12 @@ const getConnectionColumns = (params: {
     handleLogicalDatabaseTaskSkip,
     handleLogicalDatabaseAsyncModalOpen,
   } = params;
+  const { id: taskId, type: taskType } = task;
+  let showRollback = true;
+  if (task.type === TaskType.DATA_ARCHIVE) {
+    showRollback = !(task as CycleTaskDetail<IDataArchiveJobParameters>).jobParameters
+      .deleteTemporaryTable;
+  }
   if (isLogicalDbChangeTask(taskType)) {
     return getLogicalDatabaseAsyncColumns({
       handleLogicalDatabaseTaskStop,
@@ -359,7 +370,7 @@ const getConnectionColumns = (params: {
           <TaskTools
             taskId={taskId}
             record={record}
-            showRollback={record?.jobGroup === SubTaskType.DATA_ARCHIVE}
+            showRollback={record?.jobGroup === SubTaskType.DATA_ARCHIVE && showRollback}
             showLog={showLog}
             onReloadList={onReloadList}
             onDetailVisible={onDetailVisible}
@@ -494,8 +505,7 @@ const TaskExecuteRecord: React.FC<IProps> = (props) => {
         tableProps={{
           className: styles.subTaskTable,
           columns: getConnectionColumns({
-            taskType: task?.type,
-            taskId,
+            task,
             showLog,
             onReloadList: onReload,
             onDetailVisible: handleDetailVisible,

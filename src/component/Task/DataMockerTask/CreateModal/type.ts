@@ -145,7 +145,7 @@ export interface RuleConfigList {
   columnName: string;
   typeConfig: {
     columnType: string;
-    genParams: string | { caseOption: string };
+    genParams: { caseOption: string; step?: string };
     highValue;
     lowValue: number | string;
   };

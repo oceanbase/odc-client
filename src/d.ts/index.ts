@@ -2526,6 +2526,7 @@ export enum SyncTableStructureEnum {
 
 export interface IDataArchiveJobParameters {
   deleteAfterMigration: boolean;
+  deleteTemporaryTable?: boolean;
   name: string;
   sourceDatabaseId: number;
   sourceDatabaseName?: string;

@@ -5576,5 +5576,12 @@
   "src.component.Task.ApplyPermission.CreateModal.A9FCEF31": "Has all project permissions except member management, message configuration, and project settings. Includes permission to view and manage all project tickets.",
   "src.component.Task.ApplyPermission.CreateModal.E3F621FF": "Has access to view basic project information. No default database permissions, but can request database access and submit tickets. Can view all tickets in the project and manage self-submitted tickets.",
   "src.component.ConnectionPopover.986CE021": "File URL: {LogicalExpression0}",
-  "src.component.ConnectionPopover.4A02B634": "Region: {LogicalExpression0}"
+  "src.component.ConnectionPopover.4A02B634": "Region: {LogicalExpression0}",
+  "src.component.helpDoc.9DB2EA45": "Naming format: bak_odc_{taskId}_{tableName}",
+  "src.component.Task.LogicDatabaseAsyncTask.CreateModal.56CD71B9": "Logical table expressions must be enclosed in backticks (`), e.g., `db_[00-31].test_[00-31]`. Otherwise, the logical table topology cannot be recognized.",
+  "src.component.Task.DataArchiveTask.DetailContent.F3FBB17A": "Remove temporary tables created during archiving after task completion.",
+  "src.component.Task.DataArchiveTask.CreateModal.5A19F0AB": "Cleanup will be performed immediately without backup by default.",
+  "src.component.Task.DataArchiveTask.CreateModal.3D6F0B7D": "Remove temporary tables created during archiving after task completion.",
+  "src.component.Task.DataArchiveTask.CreateModal.85B377FF": "Rollback is not available for archived tasks when selected.",
+  "src.component.Task.DataArchiveTask.CreateModal.79D75776": "Target File"
 }

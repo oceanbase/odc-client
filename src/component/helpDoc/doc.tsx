@@ -419,6 +419,14 @@ export default {
     </p>
   ),
 
+  TemporaryTableNameRules: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.9DB2EA45',
+        defaultMessage: '命名方式采用bak_odc_{taskId}_{tableName}形式',
+      })}
+    </p>
+  ),
   expirePeriod: (
     <p>
       {

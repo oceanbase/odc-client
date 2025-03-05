@@ -5576,5 +5576,12 @@
   "src.component.Task.ApplyPermission.CreateModal.A9FCEF31": "擁有項目內除成員管理、消息配置和項目設置外的所有權限,包括查看和管理項目的所有工單權限",
   "src.component.Task.ApplyPermission.CreateModal.E3F621FF": "允許查看項目基本信息,默認無項目內任何數據庫權限,支持自助申請庫權限和提交工單,可以查看項目內所有工單並管理自己發起的工單",
   "src.component.ConnectionPopover.986CE021": "文件 URL:{LogicalExpression0}",
-  "src.component.ConnectionPopover.4A02B634": "地域:{LogicalExpression0}"
+  "src.component.ConnectionPopover.4A02B634": "地域:{LogicalExpression0}",
+  "src.component.helpDoc.9DB2EA45": "命名方式採用bak_odc_{taskId}_{tableName}形式",
+  "src.component.Task.LogicDatabaseAsyncTask.CreateModal.56CD71B9": "使用邏輯表表達式需要在表達式上加上`號，如：`db_[00-31].test_[00-31]`，否則將無法辨識邏輯表拓撲",
+  "src.component.Task.DataArchiveTask.DetailContent.F3FBB17A": "任務完成後刪除歸檔過程中產生的臨時表",
+  "src.component.Task.DataArchiveTask.CreateModal.5A19F0AB": "若您進行清理，預設立即清理且不做備份",
+  "src.component.Task.DataArchiveTask.CreateModal.3D6F0B7D": "任務完成後刪除歸檔過程中產生的臨時表",
+  "src.component.Task.DataArchiveTask.CreateModal.85B377FF": "勾選後已歸檔的任務不支援回滾",
+  "src.component.Task.DataArchiveTask.CreateModal.79D75776": "目標文件"
 }
