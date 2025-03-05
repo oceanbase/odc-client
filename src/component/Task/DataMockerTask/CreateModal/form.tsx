@@ -33,6 +33,7 @@ import DatabaseSelect from '../../component/DatabaseSelect';
 import RuleConfigTable from './RuleConfigTable';
 import { convertFormToServerColumns, getDefaultRule, getDefaultValue } from './RuleContent';
 import { IMockFormData, MockStrategy, MockStrategyTextMap, RuleConfigList } from './type';
+import { NumberRuleType } from './RuleContent/ruleItems/NumberItem';
 
 const { Option } = Select;
 
@@ -121,7 +122,21 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                   const newTypeConfig = ruleConfigList?.find(
                     (item) => item.columnName === column.columnName,
                   );
-
+                  let NumberOrder = null;
+                  if (
+                    newTypeConfig?.typeConfig?.genParams?.hasOwnProperty('step') &&
+                    newTypeConfig?.rule === NumberRuleType.ORDER
+                  ) {
+                    // 倒序时，页面展现的是正数，实际上调用接口时会转换为负数，再次发起需要转换回来
+                    if (Number(newTypeConfig?.typeConfig?.genParams?.step) < 0) {
+                      NumberOrder = 'desc';
+                      newTypeConfig.typeConfig.genParams.step = String(
+                        -Number(newTypeConfig?.typeConfig?.genParams.step),
+                      );
+                    } else {
+                      NumberOrder = 'asc';
+                    }
+                  }
                   return {
                     columnName: column.columnName,
                     columnType: column.dataType,
@@ -131,6 +146,9 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                       ? {
                           range: newTypeConfig.range,
                           genParams: newTypeConfig.typeConfig.genParams,
+                          lowValue: newTypeConfig.range[0],
+                          highVAlue: newTypeConfig.range[1],
+                          order: NumberOrder ?? null,
                         }
                       : getDefaultValue(dbMode, column.dataType, rule, _sizeMap[column.columnName]),
                   };

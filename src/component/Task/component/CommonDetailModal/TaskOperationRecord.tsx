@@ -117,16 +117,19 @@ const getConnectionColumns = (params: {
       render: (_, record) => {
         return (
           <>
-            <Action.Link
-              onClick={async () => {
-                params?.onOpenDetail(record, true);
-              }}
-            >
-              {formatMessage({
-                id: 'src.component.Task.component.CommonDetailModal.3D4F5474',
-                defaultMessage: '审批记录',
-              })}
-            </Action.Link>
+            {/* 无需审批的事件（例如个人空间内的一些工单）操作隐藏掉审批记录入口 */}
+            {record.flowInstanceId ? (
+              <Action.Link
+                onClick={async () => {
+                  params?.onOpenDetail(record, true);
+                }}
+              >
+                {formatMessage({
+                  id: 'src.component.Task.component.CommonDetailModal.3D4F5474',
+                  defaultMessage: '审批记录',
+                })}
+              </Action.Link>
+            ) : undefined}
             <Action.Link
               onClick={async () => {
                 params?.onOpenChangeDetail(record, true);
