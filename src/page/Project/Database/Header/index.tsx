@@ -4,9 +4,9 @@ import React, { useContext } from 'react';
 import ParamContext from '../ParamContext';
 import Filter from './Filter';
 import FilterIcon from '@/page/Datasource/Datasource/Header/FIlterIcon';
-
 import styles from './index.less';
 import Search from './Search';
+import Group from './Group';
 
 interface IProps {}
 
@@ -17,6 +17,7 @@ const Header: React.FC<IProps> = function () {
     <Space size={5} className={styles.right}>
       <Search />
       <Filter />
+      <Group />
       <FilterIcon
         onClick={() => {
           context.reload?.();

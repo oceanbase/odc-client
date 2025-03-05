@@ -32,10 +32,11 @@ type IColumnsType<RecordType = unknown> = ((
 
 interface IProps<T> extends TableProps<T> {
   isExpandedRowRender?: boolean;
-  loadData: (page: TablePaginationConfig, filters: Record<string, FilterValue>) => void;
+  loadData?: (page: TablePaginationConfig, filters: Record<string, FilterValue>) => void;
   // 是否启用 列宽可拖拽
   enableResize?: boolean;
   columns: IColumnsType<T>;
+  isScroll?: boolean;
 }
 
 export default function MiniTable<T extends object>({
@@ -43,9 +44,11 @@ export default function MiniTable<T extends object>({
   isExpandedRowRender = false,
   enableResize = false,
   columns: PropColumns = [],
+  isScroll = false,
   ...restProps
 }: IProps<T>) {
   const [pageSize, setPageSize] = useState(0);
+  const [scrollHeight, setScrollHeight] = useState(0);
   const [columnWidthMap, setColumnWidthMap] = useState(null);
 
   const domRef = useRef<HTMLDivElement>();
@@ -59,6 +62,9 @@ export default function MiniTable<T extends object>({
         setPageSize(Math.floor(height / 40));
       }
       const height = domRef.current.clientHeight - 24 - 60;
+      if (isScroll) {
+        setScrollHeight(domRef.current.clientHeight - 60);
+      }
       setPageSize(Math.floor(height / 40));
       const obsever = new ResizeObserver(() => {
         resize();
@@ -120,6 +126,13 @@ export default function MiniTable<T extends object>({
                 },
               }
             : undefined
+        }
+        scroll={
+          isScroll
+            ? {
+                y: scrollHeight,
+              }
+            : null
         }
         columns={
           enableResize
