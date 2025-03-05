@@ -1,50 +1,144 @@
-import { formatMessage } from '@/util/intl';
+import { AutoComplete, Input } from 'antd';
+import React, { forwardRef, useContext, useRef, useState } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
-import { Input } from 'antd';
-import React, { useContext, useState } from 'react';
+import { formatMessage } from '@/util/intl';
+import type { BaseSelectRef } from 'rc-select';
+import FilterIcon from '@/component/Button/FIlterIcon';
 import ParamContext from '../ParamContext';
-import FilterIcon from '@/page/Datasource/Datasource/Header/FIlterIcon';
 
 interface IProps {}
 
+export enum SearchType {
+  DATABASE = 'DATABASE',
+  DATASOURCE = 'DATASOURCE',
+  CLUSTER = 'CLUSTER',
+}
+
+export const SearchTypeText = {
+  [SearchType.DATABASE]: formatMessage({
+    id: 'src.component.ODCSetting.config.9EC92943',
+    defaultMessage: '数据库',
+  }), //'数据库'
+  [SearchType.DATASOURCE]: formatMessage({
+    id: 'odc.component.RecordPopover.column.DataSource',
+    defaultMessage: '数据源',
+  }), //数据源
+  [SearchType.CLUSTER]: formatMessage({
+    id: 'odc.Connecion.ConnectionList.ParamContext.Cluster',
+    defaultMessage: '集群',
+  }), //集群
+};
+const splitKey = '_$$$odc$$$_';
+
+const RemoveSplitInput = forwardRef(function RemoveSplitInput({ value, ...rest }: any, ref) {
+  let type;
+  if (value) {
+    const arr = value.split(splitKey);
+    value = arr?.[0];
+    type = arr?.[1];
+  }
+  return (
+    <Input
+      ref={ref}
+      value={value}
+      prefix={<SearchOutlined />}
+      suffix={
+        <span style={{ paddingRight: 15, color: 'var(--text-color-hint)' }}>
+          {SearchTypeText[type]}
+        </span>
+      }
+      {...rest}
+    />
+  );
+});
+
 const Search: React.FC<IProps> = function () {
+  const [options, setOptions] = useState([]);
+  const [forceVisible, setForceVisible] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
   const context = useContext(ParamContext);
-  const [active, setIsActive] = useState(false);
+  const { searchValue, setSearchvalue } = context;
 
-  const changeInput = (e) => {
-    context?.setSearchValue(e.target.value);
-  };
+  const ref = useRef<BaseSelectRef>(null);
 
-  const handleBlur = () => {
-    if (!context?.searchValue) {
-      setIsActive(false);
+  function getOptions(value) {
+    if (!value) {
+      setOptions([]);
+      return;
     }
-  };
+    setOptions(
+      [SearchType.DATABASE, SearchType.DATASOURCE, SearchType.CLUSTER]?.map((v) => {
+        return {
+          value: value + splitKey + v,
+          label: (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div
+                style={{
+                  flex: 1,
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {value}
+              </div>
+              <div style={{ flexShrink: 0, flexGrow: 0, color: 'var(--text-color-hint)' }}>
+                {SearchTypeText[v]}
+              </div>
+            </div>
+          ),
+        };
+      }),
+    );
+    return;
+  }
 
-  if (!active) {
+  if (!searchValue?.value && !forceVisible) {
     return (
       <FilterIcon
         onClick={() => {
-          setIsActive(true);
+          setForceVisible(true);
         }}
       >
         <SearchOutlined />
       </FilterIcon>
     );
   }
+
   return (
-    <Input.Search
-      prefix={<SearchOutlined />}
-      placeholder={formatMessage({
-        id: 'src.page.Project.Database.Header.9B30F6BB',
-        defaultMessage: '搜索数据库',
-      })}
-      onChange={changeInput}
-      onBlur={handleBlur}
-      onSearch={(v) => {
-        context?.reload();
+    <AutoComplete
+      ref={ref}
+      options={options}
+      autoFocus={forceVisible}
+      onBlur={(e) => {
+        setForceVisible(false);
+        if (isEmpty) {
+          setSearchvalue(null, null);
+        }
       }}
-    />
+      onChange={(v) => {
+        setIsEmpty(!v);
+      }}
+      defaultValue={searchValue?.value ? searchValue.value + splitKey + searchValue.type : null}
+      defaultActiveFirstOption
+      onSearch={getOptions}
+      onSelect={(v, option) => {
+        const arr = v?.split(splitKey);
+        if (arr.length) {
+          console.log(arr[0], arr[1] as any);
+          setSearchvalue(arr[0], arr[1] as any);
+          ref.current?.blur();
+        }
+      }}
+      allowClear
+      onClear={() => {
+        if (searchValue?.value) {
+          setSearchvalue(null, null);
+        }
+      }}
+    >
+      <RemoveSplitInput />
+    </AutoComplete>
   );
 };
 

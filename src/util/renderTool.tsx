@@ -24,7 +24,7 @@ export const renderTool = (tool: IOperation, index) => {
       tooltip={tool?.disableTooltip()}
       onClick={tool?.action}
     >
-      {tool?.text}
+      <span style={{ whiteSpace: 'nowrap' }}>{tool?.text}</span>
     </Action.Link>
   );
 };

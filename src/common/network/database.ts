@@ -39,6 +39,10 @@ export async function listDatabases(
   includesPermittedAction?: boolean,
   type?: DBType[],
   connectType?: ConnectType[],
+  dataSourceName?: string,
+  cluster?: string,
+  host?: string,
+  tenant?: string,
 ): Promise<IResponseData<IDatabase>> {
   const res = await request.get(`/api/v2/database/databases`, {
     params: {
@@ -53,6 +57,10 @@ export async function listDatabases(
       includesPermittedAction,
       type: type,
       connectType: connectType,
+      dataSourceName,
+      cluster,
+      host,
+      tenant,
     },
   });
 
