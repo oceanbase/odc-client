@@ -133,15 +133,19 @@ const AddDataBaseButton: React.FC<IProps> = ({
     }
   }
 
-  const items: MenuProps['items'] = [
-    {
-      label: formatMessage({
-        id: 'src.page.Project.Database.components.AddDataBaseButton.BCE1BC95',
-        defaultMessage: '配置逻辑库',
-      }),
-      key: '1',
-      onClick: onOpenLogicialDatabase,
-    },
+  let items: MenuProps['items'] = [
+    ...(settingStore?.enableLogicaldatabase
+      ? [
+          {
+            label: formatMessage({
+              id: 'src.page.Project.Database.components.AddDataBaseButton.BCE1BC95',
+              defaultMessage: '配置逻辑库',
+            }),
+            key: '1',
+            onClick: onOpenLogicialDatabase,
+          },
+        ]
+      : []),
     {
       label: formatMessage({
         id: 'src.page.Project.Database.components.AddDataBaseButton.201B0791',
@@ -151,7 +155,6 @@ const AddDataBaseButton: React.FC<IProps> = ({
       onClick: onOpenObjectStorage,
     },
   ];
-
   return (
     <>
       <Space size={12}>
@@ -165,27 +168,18 @@ const AddDataBaseButton: React.FC<IProps> = ({
               : ''
           }
         >
-          {!settingStore?.enableLogicaldatabase ? (
-            <Button type="primary" onClick={() => setOpen(true)} disabled={disabledAction}>
-              {formatMessage({
-                id: 'src.page.Project.Database.components.AddDataBaseButton.EE4B77AC',
-                defaultMessage: '添加数据库',
-              })}
-            </Button>
-          ) : (
-            <Dropdown.Button
-              type="primary"
-              icon={<DownOutlined />}
-              menu={{ items }}
-              onClick={() => setOpen(true)}
-              disabled={disabledAction}
-            >
-              {formatMessage({
-                id: 'src.page.Project.Database.components.AddDataBaseButton.EE4B77AC',
-                defaultMessage: '添加数据库',
-              })}
-            </Dropdown.Button>
-          )}
+          <Dropdown.Button
+            type="primary"
+            icon={<DownOutlined />}
+            menu={{ items }}
+            onClick={() => setOpen(true)}
+            disabled={disabledAction}
+          >
+            {formatMessage({
+              id: 'src.page.Project.Database.components.AddDataBaseButton.EE4B77AC',
+              defaultMessage: '添加数据库',
+            })}
+          </Dropdown.Button>
         </TooltipAction>
         <Tooltip
           title={

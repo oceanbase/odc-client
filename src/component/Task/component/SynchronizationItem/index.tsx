@@ -14,10 +14,12 @@ const SynchronizationItem: React.FC<IProps> = ({ form, targetDatabase }) => {
   const [initValue, setInitValue] = useState(null);
   const [syncTableStructure, setSyncTableStructure] = useState<boolean>(false);
 
+  const tempSyncTableStructure = Form.useWatch('syncTableStructure');
+
   useEffect(() => {
     setSyncTableStructure(Boolean(form.getFieldValue('syncTableStructure')?.length));
     setInitValue(form.getFieldValue('syncTableStructure'));
-  }, [form.getFieldValue('syncTableStructure')]);
+  }, [tempSyncTableStructure]);
 
   return (
     <>

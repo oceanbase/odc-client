@@ -233,44 +233,27 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             style={{ display: 'flex', flexDirection: 'column' }}
                             className={styles.multiInputBox}
                           >
-                            <Tooltip
-                              title={
-                                isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
-                                  ? formatMessage({
-                                      id: 'src.component.Task.DataArchiveTask.CreateModal.39BA9EFE',
-                                      defaultMessage:
-                                        '选择的目标数据库为对象存储类型时，不支持该配置',
-                                    })
-                                  : undefined
-                              }
-                            >
-                              <Form.Item {...restField} name={[name, 'targetTableName']}>
-                                <Input
-                                  addonBefore={formatMessage({
-                                    id: 'src.component.Task.DataArchiveTask.CreateModal.94BCB0E1',
-                                    defaultMessage: '目标表',
-                                  })}
-                                  disabled={isConnectTypeBeFileSystemGroup(
-                                    targetDatabase?.connectType,
-                                  )}
-                                  onChange={(e) => {
-                                    form.setFieldsValue({
-                                      tables: {
-                                        [name]: {
-                                          targetTableName: e.target.value,
-                                        },
-                                      },
-                                    });
-                                  }}
-                                  placeholder={
-                                    formatMessage({
-                                      id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
-                                      defaultMessage: '请输入',
-                                    }) /*"请输入"*/
-                                  }
-                                />
-                              </Form.Item>
-                            </Tooltip>
+                            <Form.Item {...restField} name={[name, 'targetTableName']}>
+                              <Input
+                                addonBefore={
+                                  isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
+                                    ? formatMessage({
+                                        id: 'src.component.Task.DataArchiveTask.CreateModal.79D75776',
+                                        defaultMessage: '目标文件',
+                                      })
+                                    : formatMessage({
+                                        id: 'src.component.Task.DataArchiveTask.CreateModal.94BCB0E1',
+                                        defaultMessage: '目标表',
+                                      })
+                                }
+                                placeholder={
+                                  formatMessage({
+                                    id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
+                                    defaultMessage: '请输入',
+                                  }) /*"请输入"*/
+                                }
+                              />
+                            </Form.Item>
 
                             {enablePartition && (
                               <PartitionTextArea {...restField} name={[name, 'partitions']} />

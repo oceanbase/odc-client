@@ -338,7 +338,7 @@ export class SettingStore {
 
     this.enableMultipleAsyncTask =
       res?.['odc.features.task.multiple-async.enabled'] === 'true' && !isPrivateSpace;
-    this.enableShadowTableSync = res?.['odc.features.task.shadow-table-sync.enabled'] === 'true';
+    this.enableShadowTableSync = res?.['odc.features.task.shadowtable-sync.enabled'] === 'true';
     this.enableStructureCompare =
       res?.['odc.features.task.structure-comparison.enabled'] === 'true';
     this.enableSQLPlan = res?.['odc.features.task.sql-plan.enabled'] === 'true' && !isClient();
