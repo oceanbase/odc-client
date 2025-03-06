@@ -13,40 +13,77 @@
  * limitations under the License.
  */
 
-import { updateDataBaseOwner } from '@/common/network/database';
+import { listDatabases, updateDataBaseOwner } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Form, message, Modal } from 'antd';
+import { Form, message, Modal, Select } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import { DatabaseOwnerSelect } from '../DatabaseOwnerSelect';
 import styles from './index.less';
+import login from '@/store/login';
 
 interface IProps {
   visible: boolean;
   database: IDatabase;
+  databaseList?: number[];
   close: () => void;
   onSuccess: () => void;
+  projectId: number;
 }
 
-export default function ChangeOwnerModal({ visible, database, close, onSuccess }: IProps) {
+export default function ChangeOwnerModal({
+  visible,
+  database,
+  databaseList,
+  close,
+  onSuccess,
+  projectId,
+}: IProps) {
   const [notSetAdmin, setNotSetAdmin] = useState(true);
   const { run: startUpdateDataBase, loading: saveOwnerLoading } = useRequest(updateDataBaseOwner, {
     manual: true,
   });
+  const [databaseOptions, setDatabaseOptions] = useState<{ label: string; value: number }[]>();
+  const [form] = Form.useForm<{ ownerIds: number[]; databaseList: number[] }>();
 
-  const [form] = Form.useForm<{ ownerIds: number[] }>();
+  const loadData = async () => {
+    const res = await listDatabases(
+      projectId,
+      null,
+      1,
+      99999,
+      null,
+      null,
+      login.isPrivateSpace(),
+      true,
+      true,
+    );
+    if (res) {
+      setDatabaseOptions(
+        res?.contents?.map((i) => {
+          return {
+            label: i.name,
+            value: i.id,
+          };
+        }),
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (visible) {
+      loadData();
+    }
+  }, [visible]);
 
   /**
    * 提交按钮点击
    */
   const handleSubmitForm = useCallback(async () => {
     const value = await form.validateFields();
-    const isSuccess = await startUpdateDataBase(
-      [database?.id],
-      database?.project?.id,
-      value.ownerIds,
-    );
+    const databaseList = value?.databaseList || [database?.id];
+    const isSuccess = await startUpdateDataBase(databaseList, projectId, value.ownerIds);
     if (isSuccess) {
       message.success(
         formatMessage({
@@ -70,6 +107,9 @@ export default function ChangeOwnerModal({ visible, database, close, onSuccess }
       const owner_ids = database?.owners?.map(({ id }) => id) || [];
       setFormOwnerIds(owner_ids);
       setNotSetAdmin(!owner_ids.length);
+      form.setFieldsValue({
+        databaseList: databaseList || undefined,
+      });
     }
   }, [database?.owners, form, visible]);
 
@@ -90,16 +130,28 @@ export default function ChangeOwnerModal({ visible, database, close, onSuccess }
       destroyOnClose
     >
       <Form requiredMark="optional" form={form} layout="vertical" className={styles.roleForm}>
-        <Form.Item>
-          {
-            formatMessage({
-              id: 'odc.Info.ChangeOwnerModal.DatabaseName',
-              defaultMessage: '数据库名称：',
-            }) /*数据库名称*/
-          }
+        {!database ? (
+          <Form.Item label="数据库" name="databaseList">
+            <Select
+              mode="multiple"
+              allowClear
+              style={{ width: '100%' }}
+              placeholder="请选择数据库"
+              options={databaseOptions}
+            />
+          </Form.Item>
+        ) : (
+          <Form.Item>
+            {
+              formatMessage({
+                id: 'odc.Info.ChangeOwnerModal.DatabaseName',
+                defaultMessage: '数据库名称：',
+              }) /*数据库名称*/
+            }
 
-          {database?.name}
-        </Form.Item>
+            {database?.name}
+          </Form.Item>
+        )}
         <DatabaseOwnerSelect
           notSetAdmin={notSetAdmin}
           setNotSetAdmin={setNotSetAdmin}
