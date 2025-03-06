@@ -18,7 +18,7 @@ import { SubTaskType, TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
 import { DatabasePermissionType } from '@/d.ts/database';
 import login from '@/store/login';
 import settingStore from '@/store/setting';
-import { haveOCP, isClient } from '@/util/env';
+import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { flatten } from 'lodash';
 export { TaskTypeMap } from '@/component/Task/component/TaskTable';
@@ -72,10 +72,6 @@ export const isCycleTaskPage = (type: TaskPageType) => {
     TaskPageType.DATA_DELETE,
     TaskPageType.LOGICAL_DATABASE_CHANGE,
   ].includes(type);
-};
-
-export const isSupportChangeDetail = (type: TaskType) => {
-  return [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(type);
 };
 
 interface ITaskGroupLabel {

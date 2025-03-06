@@ -112,7 +112,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
        */
       userFrozenErrorResolve();
       return;
-    } else if (isLoginPage || location.pathname === '/project') {
+    } else if (isLoginPage || location.pathname === '/project' || location.pathname === '/') {
       /**
        * 处于login页面并且已经登录，需要跳到对应的页面上
        */

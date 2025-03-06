@@ -190,6 +190,7 @@ const FormResourceSelector: React.FC<{
                     id: 'odc.components.FormResourceSelector.ResourceManagementPermissions',
                     defaultMessage: '资源管理权限',
                   }),
+                  forceRender: true,
                   children: (
                     <>
                       <Form.Item
