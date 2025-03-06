@@ -26,14 +26,31 @@ import styles from './index.less';
 const { Option } = Select;
 
 export const ALL_SELECTED_ID = 'ALL';
+export const ALL_I_HAVE_CREATED_ID = 'ALL_I_HAVE_CREATED_ID';
+export const ALL_SELECTED_VALUE = '*';
+export const ALL_I_HAVE_CREATED_VALUE = 'CREATOR';
 
-const AllOption: IResourceOption = {
-  name: formatMessage({ id: 'odc.components.ResourceSelector2.All', defaultMessage: '全部' }), //全部
+export const AllOption: IResourceOption = {
+  name: '全部',
   resourceId: ALL_SELECTED_ID,
+};
+
+export const AllIHaveCreatedOption: IResourceOption = {
+  name: '我创建的',
+  resourceId: ALL_I_HAVE_CREATED_ID,
 };
 
 export const isSelectedAll = (id: number | string) => {
   return id === ALL_SELECTED_ID;
+};
+
+export const isSelectedAllThatIHaveCreated = (id: number | string) => {
+  return id === ALL_I_HAVE_CREATED_ID;
+};
+
+export const staticSelectedMap = {
+  [ALL_SELECTED_ID]: ALL_SELECTED_VALUE,
+  [ALL_I_HAVE_CREATED_ID]: ALL_I_HAVE_CREATED_VALUE,
 };
 
 export interface IResourceOption {
@@ -77,11 +94,16 @@ const ResourceItem: React.FC<{
     index: number;
     type: IManagerResourceType;
   };
+  allICreatedSelecteField: {
+    index: number;
+    type: IManagerResourceType;
+  };
 
   onRemove: (name: number) => void;
   onTypeChange: (index: number, type: IManagerResourceType) => void;
   onFieldChange: (type: IManagerResourceType) => void;
   onSelectAllFields: (type: IManagerResourceType, index: number, selected: boolean) => void;
+  onSelectAllICreatedFields: (type: IManagerResourceType, index: number, selected: boolean) => void;
 }> = ({
   name: fieldName,
   parentName,
@@ -95,16 +117,21 @@ const ResourceItem: React.FC<{
   typeOptions,
   actionOptions,
   allSelecteField,
+  allICreatedSelecteField,
   onRemove,
   onTypeChange,
   onFieldChange,
   onSelectAllFields,
+  onSelectAllICreatedFields,
 }) => {
   const [type, setType] = useState(() => {
     return values?.[fieldName]?.resourceType ?? '';
   });
   const [isSelectAll, setIsSelectAll] = useState(() => {
     return isSelectedAll(values?.[fieldName]?.resourceId);
+  });
+  const [isSelectedAllIHaveCreated, setIsSelectedAllIHaveCreated] = useState(() => {
+    return isSelectedAllThatIHaveCreated(values?.[fieldName]?.resourceId);
   });
   const [open, setOpen] = useState(false);
   const enableSelectAll = !(
@@ -113,7 +140,11 @@ const ResourceItem: React.FC<{
 
   const fieldOptions = optionsMap?.[type] ?? [];
   const disableSelectAll = allSelecteField?.type === type && allSelecteField?.index !== fieldName;
-  const allFieldOptions = fieldOptions?.length ? fieldOptions.concat([AllOption]) : fieldOptions;
+  const disableSelectAllICreated =
+    allICreatedSelecteField?.type === type && allICreatedSelecteField?.index !== fieldName;
+  const allFieldOptions = fieldOptions?.length
+    ? fieldOptions.concat([AllOption, AllIHaveCreatedOption])
+    : fieldOptions;
   const hasEnableKeys = actionOptions.some((item) => item?.enableKeys?.length);
   const enabledActionOptions = !hasEnableKeys
     ? actionOptions
@@ -125,6 +156,8 @@ const ResourceItem: React.FC<{
   const handleTypeChange = (value) => {
     setType(value);
     onTypeChange(fieldName, value as IManagerResourceType);
+    setIsSelectedAllIHaveCreated(false);
+    setIsSelectAll(false);
   };
 
   const handleRemove = () => {
@@ -134,7 +167,15 @@ const ResourceItem: React.FC<{
 
   const handleSelectAllFields = () => {
     setIsSelectAll(!isSelectAll);
+    setIsSelectedAllIHaveCreated(false);
     onSelectAllFields(type as IManagerResourceType, fieldName, !isSelectAll);
+    setOpen(false);
+  };
+
+  const handleSelectAllIHaveCreatedFields = () => {
+    setIsSelectedAllIHaveCreated(!isSelectedAllIHaveCreated);
+    setIsSelectAll(false);
+    onSelectAllICreatedFields(type as IManagerResourceType, fieldName, !isSelectedAllIHaveCreated);
     setOpen(false);
   };
 
@@ -222,6 +263,13 @@ const ResourceItem: React.FC<{
                                   }) //取消全部
                             }
                           </Button>
+                          <Button
+                            type="link"
+                            disabled={disableSelectAllICreated}
+                            onClick={handleSelectAllIHaveCreatedFields}
+                          >
+                            {!isSelectedAllIHaveCreated ? '我创建的' : '取消我创建的'}
+                          </Button>
                         </>
                       )}
                     </>
@@ -233,11 +281,15 @@ const ResourceItem: React.FC<{
               const { name, resourceId, resourceType, selected } = item;
               return (
                 <Option
-                  className={isSelectedAll(resourceId) ? styles.hide : null}
+                  className={
+                    isSelectedAll(resourceId) || isSelectedAllThatIHaveCreated(resourceId)
+                      ? styles.hide
+                      : null
+                  }
                   value={resourceId}
                   title={name}
                   key={`${resourceType}${resourceId}`}
-                  disabled={isSelectAll || selected}
+                  disabled={isSelectAll || selected || isSelectedAllIHaveCreated}
                 >
                   {resourceType === IManagerResourceType.resource ? (
                     <Popover
@@ -363,6 +415,10 @@ export const ResourceSelector: React.FC<{
     index: number;
     type: IManagerResourceType;
   }>(null);
+  const [allICreatedSelecteField, setAllICreatedSelecteField] = useState<{
+    index: number;
+    type: IManagerResourceType;
+  }>(null);
   const handleFilteredOption = (
     selectedPublicResource: {
       actions: string;
@@ -449,12 +505,34 @@ export const ResourceSelector: React.FC<{
     handleFieldChange(value);
   };
 
-  // 选择全部 & 取消全部
-  const handleSelectAllFields = (type: IManagerResourceType, index: number, selected: boolean) => {
+  const selectionTypeConfig = {
+    all: {
+      getResourceId: (selected: boolean) => (selected ? ALL_SELECTED_ID : ''),
+      setState: (selected: boolean, type: IManagerResourceType, index: number) =>
+        setAllSelecteField(selected ? { type, index } : null),
+    },
+    created: {
+      getResourceId: (selected: boolean) => (selected ? ALL_I_HAVE_CREATED_ID : ''),
+      setState: (selected: boolean, type: IManagerResourceType, index: number) =>
+        setAllICreatedSelecteField(selected ? { type, index } : null),
+    },
+  };
+
+  const handleSelectFields = (
+    type: IManagerResourceType,
+    index: number,
+    selected: boolean,
+    selectionType: 'all' | 'created',
+  ) => {
     const resourcePermissions = formRef.current.getFieldValue(name);
+
+    const config = selectionTypeConfig[selectionType];
+
+    const resourceIdValue = config.getResourceId(selected);
+
     const resetValue = {
       ...resourcePermissions[index],
-      resourceId: selected ? ALL_SELECTED_ID : '',
+      resourceId: resourceIdValue,
     };
 
     resourcePermissions[index] = {
@@ -465,20 +543,15 @@ export const ResourceSelector: React.FC<{
       ...item,
       selected,
     }));
+
     formRef.current.setFields([
       {
         name: [name, index, 'resourceId'],
         errors: [],
       },
     ]);
-    setAllSelecteField(
-      selected
-        ? {
-            type,
-            index,
-          }
-        : null,
-    );
+
+    config.setState(selected, type, index);
 
     onFieldChange(name, [...resourcePermissions]);
     onOptionsChange?.({
@@ -514,10 +587,12 @@ export const ResourceSelector: React.FC<{
                 showField={showField}
                 showRemove={required ? fields?.length !== 1 : true}
                 allSelecteField={allSelecteField}
+                allICreatedSelecteField={allICreatedSelecteField}
                 onRemove={remove}
                 onTypeChange={handleTypeChange}
                 onFieldChange={handleFieldChange}
-                onSelectAllFields={handleSelectAllFields}
+                onSelectAllFields={(...args) => handleSelectFields(...args, 'all')}
+                onSelectAllICreatedFields={(...args) => handleSelectFields(...args, 'created')}
               />
             ))}
 

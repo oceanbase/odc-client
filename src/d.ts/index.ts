@@ -49,7 +49,7 @@ export interface IUser {
 }
 
 export interface IPermission {
-  resourceId: number;
+  resourceId: number | string;
   resourceType: string;
   actions: string[];
 }
