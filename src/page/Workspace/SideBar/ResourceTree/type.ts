@@ -83,6 +83,13 @@ export enum ResourceNodeType {
   PackageHeadProcedure,
   PackageBodyFunction,
   PackageBodyProcedure,
+  GroupNodeProject,
+  GroupNodeDataSource,
+  GroupNodeConnectType,
+  GroupNodeEnviponment,
+  GroupNodeCluster,
+  GroupNodeTenant,
+  SecondGroupNodeDataSource,
 }
 
 interface ExtraData {
@@ -98,11 +105,8 @@ interface ExtraData {
   warning?: string;
   tip?: string;
   env?: IEnvironment;
-  doubleClick?: (
-    session: SessionStore,
-    node: TreeDataNode,
-    databaseFrom: 'datasource' | 'project',
-  ) => void;
+  onClick?: (node: TreeDataNode) => void;
+  doubleClick?: (session: SessionStore, node: TreeDataNode) => void;
 }
 
 export type TreeDataNode = DataNode & ExtraData;

@@ -33,6 +33,7 @@ import {
   TaskDetail,
   IResultSetExportTaskParams,
 } from '@/d.ts';
+import { SearchStatus } from '@/page/Workspace/SideBar/ResourceTree/DatabaseSearchModal/constant';
 import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
 import { IUnauthorizedDBResources, TablePermissionType } from '@/d.ts/table';
 import tracert from '@/util/tracert';
@@ -70,6 +71,14 @@ interface AsyncData {
    */
   rules?: ISQLLintReuslt[];
   activePageKey?: string;
+}
+
+interface GolbalSearchData {
+  databaseId?: number;
+  projectId?: number;
+  dataSourceId?: number;
+  initSearchKey?: string;
+  initStatus: SearchStatus;
 }
 
 export interface IMultipleAsyncTaskData {
@@ -168,12 +177,6 @@ interface IWorkSpaceExecuteSQLModalProps {
 export class ModalStore {
   @observable
   public databaseSearchModalVisible: boolean = false;
-
-  @observable
-  public canDatabaseSearchModalOpen: boolean = false;
-
-  @observable
-  public databaseSearchsSetExpandedKeysFunction: (id: string | number) => void = null;
 
   @observable
   public selectDatabaseVisible: boolean = false;
@@ -303,6 +306,9 @@ export class ModalStore {
 
   @observable
   public asyncTaskData: AsyncData = null;
+
+  @observable
+  public golbalSearchData: GolbalSearchData = null;
 
   @observable
   public multipleAsyncTaskData: IMultipleAsyncTaskData = null;
@@ -673,18 +679,9 @@ export class ModalStore {
   }
 
   @action
-  public changeDatabaseSearchModalVisible(isShow: boolean = true) {
+  public changeDatabaseSearchModalVisible(isShow: boolean = true, data?: GolbalSearchData) {
     this.databaseSearchModalVisible = isShow;
-  }
-
-  @action
-  public changeDatabaseSearchModalData(
-    data: boolean = true,
-    setExpandedKeys?: (id: string | number) => void,
-  ) {
-    this.canDatabaseSearchModalOpen = data;
-    this.databaseSearchsSetExpandedKeysFunction =
-      setExpandedKeys || this.databaseSearchsSetExpandedKeysFunction;
+    this.golbalSearchData = isShow ? data : null;
   }
 
   @action clear() {
@@ -712,7 +709,6 @@ export class ModalStore {
     this.odcSettingVisible = false;
     this.selectDatabaseVisible = false;
     this.databaseSearchModalVisible = false;
-    this.canDatabaseSearchModalOpen = false;
     this.executeSqlDetailModalVisible = false;
     this.executeSqlDetailData = null;
   }

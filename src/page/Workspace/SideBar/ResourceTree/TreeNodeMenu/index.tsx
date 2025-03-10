@@ -27,11 +27,17 @@ import styles from './index.less';
 import { IMenuItemConfig, IProps } from './type';
 import { EnvColorMap } from '@/constant';
 import classNames from 'classnames';
-import { ReactNode } from 'react';
+import { ReactNode, useContext } from 'react';
 import { menuAccessWrap } from './config/database';
 import IconLoadingWrapper from './IconLoadingWrapper';
 import { ItemType } from 'antd/es/menu/interface';
-
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import { SearchOutlined } from '@ant-design/icons';
+import {
+  isSupportQuickOpenGlobalSearchNodes,
+  isGroupNode,
+} from '@/page/Workspace/SideBar/ResourceTree/const';
+import { openGlobalSearch } from '@/page/Workspace/SideBar/ResourceTree/const';
 export const hasExportPermission = (dbSession: SessionStore) => {
   return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
 };
@@ -48,7 +54,8 @@ export const hasTableChangePermission = (dbSession: SessionStore, node: TreeData
 
 const TreeNodeMenu = (props: IProps) => {
   const { type = '', dbSession, databaseFrom, node, showTip, pollingDatabase } = props;
-
+  const treeContext = useContext(ResourceTreeContext);
+  const { setCurrentObject } = treeContext || {};
   // menuKey 用来定制menu
   const menuKey = node?.menuKey;
 
@@ -58,6 +65,10 @@ const TreeNodeMenu = (props: IProps) => {
    */
   const isSessionValid = type === ResourceNodeType.Database || dbSession;
 
+  const isShowGlobalSearchEntrance = isSupportQuickOpenGlobalSearchNodes(
+    type as ResourceNodeType,
+    node.key,
+  );
   /**
    * 只有dbobjecttype的情况下才可以拖动，因为编辑器需要type才能做出对应的响应
    * 不可拖动
@@ -69,9 +80,15 @@ const TreeNodeMenu = (props: IProps) => {
         if (!dbSession && type !== ResourceNodeType.Database) {
           return;
         }
-        node.doubleClick?.(dbSession, node, databaseFrom);
+        node.doubleClick?.(dbSession, node);
       }}
       className={classNames('ant-tree-title', styles.fullWidthTitle)}
+      onClick={() => {
+        setCurrentObject?.({
+          value: node.key,
+          type: node.type,
+        });
+      }}
     >
       {node.title}
       {node.warning ? (
@@ -82,6 +99,17 @@ const TreeNodeMenu = (props: IProps) => {
       {node.tip && showTip ? (
         <span style={{ color: 'var(--text-color-placeholder)', paddingLeft: 5 }}>{node.tip}</span>
       ) : null}
+      {isGroupNode(type) && isShowGlobalSearchEntrance ? (
+        <SearchOutlined
+          className={treeStyles.menuActions}
+          onClick={(e) => {
+            openGlobalSearch(node);
+            e.stopPropagation();
+          }}
+        />
+      ) : (
+        ''
+      )}
     </span>
   );
 
@@ -188,6 +216,16 @@ const TreeNodeMenu = (props: IProps) => {
     let ellipsisItemsProp: ItemType[] = getMenuItems(ellipsisItems);
     return (
       <div className={treeStyles.menuActions}>
+        {isShowGlobalSearchEntrance ? (
+          <SearchOutlined
+            onClick={(e) => {
+              openGlobalSearch(node);
+              e.stopPropagation();
+            }}
+          />
+        ) : (
+          ''
+        )}
         {menuItems
           .map((item) => {
             const isHideItem = item.isHide ? item.isHide(dbSession, node) : false;

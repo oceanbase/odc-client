@@ -17,6 +17,7 @@
 import { formatMessage } from '@/util/intl';
 import React, { useContext, useEffect } from 'react';
 import SessionContext from '../context';
+import { DatabaseGroup } from '@/d.ts/database';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
 import Icon, { AimOutlined, DownOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -35,6 +36,8 @@ import login from '@/store/login';
 import tracert from '@/util/tracert';
 import classNames from 'classnames';
 import SessionDropdown from './SessionDropdown';
+import { getShouldExpandedGroupKeys } from '@/page/Workspace/SideBar/ResourceTree/const';
+import { ResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/type';
 
 export default function SessionSelect({
   readonly,
@@ -60,7 +63,20 @@ export default function SessionSelect({
     const databaseId = context?.session?.odcDatabase?.id;
     activityContext.setActiveKey(ActivityBarItemType.Database);
     resourceTreeContext.setSelectDatasourceId(datasourceId);
-    resourceTreeContext.setCurrentDatabaseId(databaseId);
+    resourceTreeContext.setCurrentObject({ value: databaseId, type: ResourceNodeType.Database });
+    let shouldExpandedGroupKeys;
+    if (resourceTreeContext.groupMode !== DatabaseGroup.none) {
+      shouldExpandedGroupKeys = getShouldExpandedGroupKeys({
+        key: databaseId,
+        type: ResourceNodeType.Database,
+        groupMode: resourceTreeContext.groupMode,
+        databaseList: resourceTreeContext.databaseList,
+      });
+    } else {
+      // 此时这里只需要定位，不需要展开,赋值undefined 使 shouldExpandedKeys.length 不为0 触发定位即可
+      shouldExpandedGroupKeys = [undefined];
+    }
+    resourceTreeContext.setShouldExpandedKeys(shouldExpandedGroupKeys);
     e.stopPropagation();
     e.preventDefault();
   }

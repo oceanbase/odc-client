@@ -21,8 +21,6 @@ import notification from '@/util/notification';
 import request from '@/util/request';
 import { getDropSQL } from '@/util/sql';
 import { executeSQL } from './sql';
-import { syncDatasource } from './connection';
-import login from '@/store/login';
 
 export async function listDatabases(
   projectId?: number,
@@ -182,5 +180,14 @@ export async function syncObject(
       resourceId,
     },
   });
+  return res;
+}
+
+export async function syncAll(): Promise<{
+  data?: boolean;
+  errCode: string;
+  errMsg: string;
+}> {
+  const res = await request.post(`api/v2/database/object/syncAll`);
   return res;
 }

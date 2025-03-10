@@ -87,17 +87,17 @@ class DatabaseStore {
    * 这里的 version 目前使用时间戳来标识
    */
 
-  public tableVersion: number = 0;
-  public externalTableTableVersion: number = 0;
-  public viewVersion: number = 0;
-  public functionVersion: number = 0;
-  public procedureVersion: number = 0;
-  public sequenceVersion: number = 0;
-  public packageVersion: number = 0;
-  public triggerVersion: number = 0;
-  public synonymVersion: number = 0;
-  public publicSynonymVersion: number = 0;
-  public typeVersion: number = 0;
+  // public tableVersion: number = 0;
+  // public externalTableTableVersion: number = 0;
+  // public viewVersion: number = 0;
+  // public functionVersion: number = 0;
+  // public procedureVersion: number = 0;
+  // public sequenceVersion: number = 0;
+  // public packageVersion: number = 0;
+  // public triggerVersion: number = 0;
+  // public synonymVersion: number = 0;
+  // public publicSynonymVersion: number = 0;
+  // public typeVersion: number = 0;
 
   public readonly sessionId: string = null;
 
@@ -157,9 +157,6 @@ class DatabaseStore {
         })) || [];
 
       isExternalTable ? (this.externalTableTables = tablesValue) : (this.tables = tablesValue);
-
-      this.tableVersion = Date.now();
-      this.externalTableTableVersion = Date.now();
     });
   }
 
@@ -186,7 +183,6 @@ class DatabaseStore {
             databaseId: this?.databaseId,
           },
         })) || [];
-      this.tableVersion = Date.now();
     });
   }
 
@@ -241,7 +237,6 @@ class DatabaseStore {
       params,
     });
     runInAction(() => {
-      this.viewVersion = Date.now();
       this.views =
         res?.data?.contents?.map((t) => {
           return {
@@ -280,7 +275,6 @@ class DatabaseStore {
       },
     });
     runInAction(() => {
-      this.functionVersion = Date.now();
       this.functions = ret?.data || [];
     });
   }
@@ -308,7 +302,6 @@ class DatabaseStore {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
     const ret = await request.get(`/api/v1/procedure/list/${sid}`);
     runInAction(() => {
-      this.procedureVersion = Date.now();
       this.procedures = ret?.data || [];
     });
   }
@@ -336,7 +329,6 @@ class DatabaseStore {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
     const res = await request.get(`/api/v1/trigger/list/${sid}`);
     runInAction(() => {
-      this.triggerVersion = Date.now();
       this.triggers = res?.data || [];
     });
   }
@@ -345,7 +337,6 @@ class DatabaseStore {
   public async getSequenceList() {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
     const ret = (await request.get(`/api/v1/sequence/list/${sid}`)) || {};
-    this.sequenceVersion = Date.now();
     this.sequences = ret?.data || [];
   }
 
@@ -353,7 +344,6 @@ class DatabaseStore {
   public async getTypeList() {
     const types = await getTypeList(this.dbName, this.sessionId);
 
-    this.typeVersion = Date.now();
     this.types = types || [];
   }
 
@@ -377,7 +367,6 @@ class DatabaseStore {
   public async getPackageList() {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
     const ret = await request.get(`/api/v1/package/list/${sid}`);
-    this.packageVersion = Date.now();
     this.packages = ret?.data || [];
   }
 
@@ -463,7 +452,6 @@ class DatabaseStore {
   @action
   public async getSynonymList() {
     const synonym = await getSynonymList(SynonymType.COMMON, this.dbName, this.sessionId);
-    this.synonymVersion = Date.now();
 
     this.synonyms = synonym || [];
   }
@@ -471,7 +459,6 @@ class DatabaseStore {
   @action
   public async getPublicSynonymList() {
     const synonym = await getSynonymList(SynonymType.PUBLIC, this.dbName, this.sessionId);
-    this.publicSynonymVersion = Date.now();
 
     this.publicSynonyms = synonym || [];
   }

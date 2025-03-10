@@ -34,16 +34,19 @@ import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
 import { history, useLocation, useParams, useSearchParams } from '@umijs/max';
 import { message, Modal } from 'antd';
-import { toInteger } from 'lodash';
+import { isString, toInteger } from 'lodash';
+import { isGroupNode } from '@/page/Workspace/SideBar/ResourceTree/const';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useState } from 'react';
 import ActivityBar from './ActivityBar/ index';
-import ResourceTreeContext, { ResourceTreeTab } from './context/ResourceTreeContext';
+import ResourceTreeContext from './context/ResourceTreeContext';
 import WorkspaceStore from './context/WorkspaceStore';
 import GlobalModals from './GlobalModals';
 import WorkBenchLayout from './Layout';
 import SideBar from './SideBar';
 import { isLogicalDatabase } from '@/util/database';
+import { DatabaseGroup } from '@/d.ts/database';
+import { ResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/type';
 
 let _closeMsg = '';
 export function changeCloseMsg(t: any) {
@@ -78,9 +81,13 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     const isLogicalDatabase = params.get('isLogicalDatabase') === 'true';
     const isCreateTable = params.get('isCreateTable') === 'true';
     if (projectId) {
-      resourceTreeContext?.setSelectTabKey(ResourceTreeTab.project);
       resourceTreeContext?.setSelectProjectId(projectId);
-      databaseId && resourceTreeContext?.setCurrentDatabaseId(databaseId);
+      resourceTreeContext?.setGroupMode(DatabaseGroup.project);
+      databaseId &&
+        resourceTreeContext?.setCurrentObject({
+          value: databaseId,
+          type: ResourceNodeType.Database,
+        });
       if (!isLogicalDatabase) {
         databaseId && openNewSQLPage(databaseId, 'project');
       }
@@ -88,8 +95,8 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
         openCreateTablePage(databaseId);
       }
     } else if (datasourceId) {
-      resourceTreeContext?.setSelectTabKey(ResourceTreeTab.datasource);
       resourceTreeContext?.setSelectDatasourceId(datasourceId);
+      resourceTreeContext?.setGroupMode(DatabaseGroup.dataSource);
       databaseId && openNewSQLPage(databaseId, 'datasource');
     } else {
       return;
@@ -109,11 +116,20 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   };
 
   const handleOpenPage = async () => {
-    const db = resourceTreeContext.currentDatabaseId;
+    const { value, type } = resourceTreeContext.currentObject || {};
+    let dbId;
+    if (!isGroupNode(type)) {
+      if (type === ResourceNodeType.Database) {
+        dbId = value;
+      }
+      if (isString(value)) {
+        dbId = Number(value.split('-')?.[0]);
+      }
+    }
     const isLogicalDb = isLogicalDatabase(
-      resourceTreeContext?.databaseList?.find((_db) => _db?.id === db),
+      resourceTreeContext?.databaseList?.find((_db) => _db?.id === dbId),
     );
-    openNewSQLPage(isLogicalDb ? null : db);
+    openNewSQLPage(isLogicalDb ? null : dbId);
   };
 
   const openPageAfterTargetPage = async (targetPage: IPage) => {

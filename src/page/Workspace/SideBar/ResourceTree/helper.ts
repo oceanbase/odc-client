@@ -20,6 +20,8 @@ import { EventDataNode } from 'antd/lib/tree';
 import { ITableModel } from '../../components/CreateTable/interface';
 import { ResourceNodeType, TreeDataNode } from './type';
 import { isLogicalDatabase } from '@/util/database';
+import { IDatabase, DatabaseGroup } from '@/d.ts/database';
+import { ConnectType } from '@/d.ts';
 
 export async function loadNode(
   sessionManagerStore: SessionManagerStore,
@@ -33,6 +35,15 @@ export async function loadNode(
     ResourceNodeType.ExternalTableColumnRoot,
   ].includes(type);
   switch (type) {
+    case ResourceNodeType.GroupNodeProject:
+    case ResourceNodeType.GroupNodeCluster:
+    case ResourceNodeType.GroupNodeConnectType:
+    case ResourceNodeType.GroupNodeEnviponment:
+    case ResourceNodeType.GroupNodeTenant:
+    case ResourceNodeType.GroupNodeDataSource:
+    case ResourceNodeType.SecondGroupNodeDataSource: {
+      break;
+    }
     case ResourceNodeType.TableRoot:
     case ResourceNodeType.ExternalTableRoot: {
       const dbSession = sessionManagerStore.sessionMap.get(sessionId);
@@ -192,3 +203,77 @@ export async function loadNode(
     }
   }
 }
+
+export type GroupResult = {
+  [DatabaseGroup.project]: { mapId: number; groupName: string };
+  [DatabaseGroup.environment]: { mapId: number; groupName: string };
+  [DatabaseGroup.dataSource]: { mapId: number; groupName: string };
+  [DatabaseGroup.connectType]: { mapId: ConnectType; groupName: string };
+  [DatabaseGroup.cluster]: { mapId: string; groupName: string };
+  [DatabaseGroup.tenant]: { mapId: string; groupName: string };
+  [DatabaseGroup.none]: undefined;
+};
+export type secondGroupType = Map<number, GroupWithDatabases[DatabaseGroup.dataSource]>;
+
+export type GroupWithDatabases = {
+  [K in keyof GroupResult as K extends DatabaseGroup.none ? never : K]: GroupResult[K] & {
+    databases: IDatabase[];
+  };
+};
+export type GroupWithSecondGroup = {
+  [K in keyof GroupResult as K extends DatabaseGroup.none ? never : K]: GroupResult[K] & {
+    secondGroup: secondGroupType;
+  };
+};
+
+/** 获取 db 分组信息 */
+export const getMapIdByDB = <T extends DatabaseGroup>(db: IDatabase, type: T): GroupResult[T] => {
+  if (!db || !type) return;
+  const { environment, dataSource, connectType, project } = db;
+  const { clusterName, tenantName } = dataSource || {};
+  let mapId, groupName;
+  switch (type) {
+    case DatabaseGroup.project: {
+      mapId = project?.id;
+      groupName = project?.name;
+      break;
+    }
+    case DatabaseGroup.environment: {
+      mapId = environment?.id;
+      groupName = environment?.name;
+      break;
+    }
+    case DatabaseGroup.dataSource: {
+      mapId = dataSource?.id;
+      groupName = dataSource?.name;
+      if (db.type === 'LOGICAL') {
+        // 逻辑库特殊处理
+        mapId = 0;
+        groupName = '逻辑库';
+      }
+      break;
+    }
+    case DatabaseGroup.connectType: {
+      mapId = connectType;
+      groupName = connectType;
+      break;
+    }
+    case DatabaseGroup.cluster: {
+      mapId = clusterName || '无集群';
+      groupName = clusterName || '无集群';
+      break;
+    }
+    case DatabaseGroup.tenant: {
+      mapId = tenantName && clusterName ? `${tenantName}@${clusterName}` : '无租户';
+      groupName = tenantName && clusterName ? `${tenantName}@${clusterName}` : '无租户';
+      break;
+    }
+    case DatabaseGroup.none: {
+      return undefined;
+    }
+  }
+  return {
+    mapId,
+    groupName,
+  } as GroupResult[T];
+};

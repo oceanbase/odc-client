@@ -14,47 +14,30 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
+import { DBType, DatabaseGroup } from '@/d.ts/database';
+import { DataBaseTreeData } from '../Nodes/database';
+import { TreeDataNode } from '../type';
 import ResourceTree from '..';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import { useRequest } from 'ahooks';
-import { listDatabases } from '@/common/network/database';
-import TreeTitle from './Title';
 import datasourceStatus from '@/store/datasourceStatus';
-import { DBType, IDatabase } from '@/d.ts/database';
+import useGroupData from './useGroupData';
 
-interface IProps {
-  openSelectPanel?: () => void;
-}
-
-const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
-  const {
-    selectDatasourceId,
-    selectProjectId,
-    projectList,
-    datasourceList,
-    databaseList,
-    reloadDatabaseList,
-    setCurrentDatabaseId,
-    pollingDatabase,
-  } = useContext(ResourceTreeContext);
-  const [databases, setDatabases] = useState<IDatabase[]>([]);
-  const selectProject = projectList?.find((p) => p.id == selectProjectId);
-  const selectDatasource = datasourceList?.find((d) => d.id == selectDatasourceId);
+const DatabaseTree = function () {
+  const { databaseList, reloadDatabaseList, pollingDatabase, groupMode } =
+    useContext(ResourceTreeContext);
+  const { DatabaseGroupMap } = useGroupData(databaseList);
 
   async function reloadDatabase() {
     await reloadDatabaseList();
   }
 
   useEffect(() => {
-    if (selectDatasourceId || selectProjectId) {
-      reloadDatabase();
-    }
-  }, [selectDatasourceId, selectProjectId]);
+    reloadDatabase();
+  }, []);
 
   useEffect(() => {
     if (databaseList?.length) {
-      setDatabases(databaseList?.filter((item) => !!item?.authorizedPermissionTypes?.length));
       const ids: Set<number> = new Set();
       databaseList.forEach((d) => {
         if (d.type !== DBType.LOGICAL) {
@@ -63,44 +46,32 @@ const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
       });
       datasourceStatus.asyncUpdateStatus(Array.from(ids));
     } else {
-      setDatabases([]);
     }
   }, [databaseList]);
 
-  function onTitleClick() {
-    openSelectPanel();
-    setCurrentDatabaseId(null);
-  }
+  /**
+   * 全部数据库节点数据，做缓存处理
+   */
+  const allDatabaseDataNodeMap = useMemo(() => {
+    const DatabaseNodeMap = new Map<number, TreeDataNode>();
+    const databases = DatabaseGroupMap[DatabaseGroup.none];
+    databases?.forEach((db) => {
+      DatabaseNodeMap.set(db.id, DataBaseTreeData(undefined, db, db.id, true));
+    });
+    return DatabaseNodeMap;
+  }, [databaseList]);
 
-  function ProjectRender() {
-    return (
-      <ResourceTree
-        stateId={'project-' + selectProjectId}
-        reloadDatabase={() => reloadDatabase()}
-        databaseFrom={'project'}
-        title={<TreeTitle project={selectProject} />}
-        databases={databases}
-        onTitleClick={onTitleClick}
-        enableFilter
-        showTip
-        pollingDatabase={pollingDatabase}
-      />
-    );
-  }
-  function DatasourceRender() {
-    return (
-      <ResourceTree
-        stateId={'datasource-' + selectDatasourceId}
-        reloadDatabase={() => reloadDatabase()}
-        databaseFrom={'datasource'}
-        title={<TreeTitle datasource={selectDatasource} />}
-        databases={databases}
-        onTitleClick={onTitleClick}
-        pollingDatabase={pollingDatabase}
-      />
-    );
-  }
-  return selectDatasourceId ? DatasourceRender() : ProjectRender();
+  return (
+    <ResourceTree
+      stateId={'resourceTree'}
+      reloadDatabase={() => reloadDatabase()}
+      databaseFrom={'datasource'}
+      databases={[...(DatabaseGroupMap[groupMode]?.values() || [])]}
+      allDatabasesMap={DatabaseGroupMap[DatabaseGroup.none]}
+      pollingDatabase={pollingDatabase}
+      DatabaseDataNodeMap={allDatabaseDataNodeMap}
+    />
+  );
 };
 
 export default DatabaseTree;

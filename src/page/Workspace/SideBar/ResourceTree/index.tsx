@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { IDatabase } from '@/d.ts/database';
+import { IDatabase, DatabaseGroup } from '@/d.ts/database';
 import { SessionManagerStore } from '@/store/sessionManager';
-import { Input, Space, Tree } from 'antd';
-import { DataNode } from 'antd/lib/tree';
+import { Space, Tree, Spin, Input } from 'antd';
 import { EventDataNode } from 'antd/lib/tree';
 import { throttle } from 'lodash';
 import { inject, observer } from 'mobx-react';
@@ -28,72 +27,99 @@ import { DataBaseTreeData } from './Nodes/database';
 import TreeNodeMenu from './TreeNodeMenu';
 import { ResourceNodeType, TreeDataNode } from './type';
 import tracert from '@/util/tracert';
-import { useUpdate } from 'ahooks';
-import Icon, { SwapOutlined } from '@ant-design/icons';
 import Reload from '@/component/Button/Reload';
 import DatasourceFilter from './DatasourceFilter';
-import { ConnectType, DbObjectType } from '@/d.ts';
-import useTreeState from './useTreeState';
-import DatabaseSearch from './DatabaseSearch';
-import { useParams } from '@umijs/max';
+import { ConnectType } from '@/d.ts';
+import useTreeState from './hooks/useTreeState';
 import ResourceTreeContext from '../../context/ResourceTreeContext';
 import SyncMetadata from '@/component/Button/SyncMetadata';
-import { IManagerResourceType } from '@/d.ts';
 import { ModalStore } from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { isPhysicalDatabase } from '@/util/database';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import Group from './DatabaseGroup';
+import DatabaseSearch from './DatabaseSearch';
+import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
+import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
+import { GroupNodeToResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/const';
+import {
+  getGroupKey,
+  getSecondGroupKey,
+  getShouldExpandedGroupKeys,
+  TreeDataSecondGroupKey,
+  TreeDataGroupKey,
+} from './const';
+import useDataSourceDrawer from './hooks/useDataSourceDrawer';
+import DataSourceNodeMenu from '@/page/Workspace/SideBar/ResourceTree/TreeNodeMenu/dataSource';
+import { isString } from 'lodash';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
   modalStore?: ModalStore;
   settingStore?: SettingStore;
-  databases: IDatabase[];
+  databases: any[];
   reloadDatabase: () => void;
   pollingDatabase: () => void;
-  title: React.ReactNode;
   databaseFrom: 'datasource' | 'project';
   showTip?: boolean;
   enableFilter?: boolean;
   stateId?: string;
-  onTitleClick?: () => void;
+  allDatabasesMap: Map<number, IDatabase>;
+  DatabaseDataNodeMap: Map<number, TreeDataNode>;
 }
 
 const ResourceTree: React.FC<IProps> = function ({
   sessionManagerStore,
-  modalStore,
   settingStore,
   databases,
-  title,
   databaseFrom,
-  onTitleClick,
   reloadDatabase,
   pollingDatabase,
   showTip = false,
   enableFilter,
   stateId,
+  allDatabasesMap,
+  DatabaseDataNodeMap,
 }) {
   const { expandedKeys, loadedKeys, sessionIds, setSessionId, onExpand, onLoad, setExpandedKeys } =
     useTreeState(stateId);
+  const {
+    addDSVisiable,
+    setAddDSVisiable,
+    editDatasourceId,
+    setEditDatasourceId,
+    copyDatasourceId,
+    setCopyDatasourceId,
+    deleteDataSource,
+  } = useDataSourceDrawer();
   const treeContext = useContext(ResourceTreeContext);
-  const { tabKey } = useParams<{ tabKey: string }>();
-  const update = useUpdate();
+  const {
+    groupMode,
+    selectProjectId,
+    selectDatasourceId,
+    shouldExpandedKeys,
+    setShouldExpandedKeys,
+    setGroupMode,
+    datasourceList,
+    currentObject,
+    reloadDatasourceList,
+    databaseList,
+  } = treeContext;
   const [wrapperHeight, setWrapperHeight] = useState(0);
-  const [searchValue, setSearchValue] = useState<{
-    type: DbObjectType;
-    value: string;
-  }>(null);
-
+  const clockRef = useRef(null);
   const [envs, setEnvs] = useState<number[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [connectTypes, setConnectTypes] = useState<ConnectType[]>([]);
   const treeWrapperRef = useRef<HTMLDivElement>();
   const treeRef = useRef(null);
-
+  const [searchValue, setSearchValue] = useState<string>(null);
   useEffect(() => {
     tracert.expo('a3112.b41896.c330992');
-  }, []);
-  useEffect(() => {
+    // 从外部跳转至sqlworkspace的定位
+    if (groupMode === DatabaseGroup.project && selectProjectId) {
+      setExpandedKeys([getGroupKey(selectProjectId, groupMode)]);
+    }
+    if (groupMode === DatabaseGroup.dataSource && selectDatasourceId) {
+      setExpandedKeys([getGroupKey(selectDatasourceId, groupMode)]);
+    }
     const resizeHeight = throttle(() => {
       setWrapperHeight(treeWrapperRef?.current?.offsetHeight);
     }, 500);
@@ -104,61 +130,184 @@ const ResourceTree: React.FC<IProps> = function ({
     };
   }, []);
 
-  useEffect(() => {
-    modalStore.changeDatabaseSearchModalData(true, setDatabaseSelected);
-  }, [databases]);
+  const positionResourceByKey = (key, duration = 10) => {
+    if (!key) return;
+    if (clockRef?.current) {
+      clearTimeout(clockRef?.current);
+    }
+    return new Promise<void>((resolve) => {
+      clockRef.current = setTimeout(() => {
+        treeRef?.current?.scrollTo({ key, align: 'top', offset: 100 });
+        clockRef.current = null;
+        resolve();
+      }, duration);
+    });
+  };
 
-  const setDatabaseSelected = (key) => {
-    setExpandedKeys([key]);
-    treeContext.setCurrentDatabaseId(key);
+  // 切换分组类型
+  useEffect(() => {
+    if (currentObject) {
+      const { value: key, type } = currentObject;
+      if (groupMode !== DatabaseGroup.none) {
+        const shouldExpandedGroupKeys = getShouldExpandedGroupKeys({
+          key,
+          type,
+          groupMode,
+          databaseList,
+        });
+        setTimeout(() => {
+          setExpandedKeys(Array.from(new Set([...expandedKeys, ...shouldExpandedGroupKeys])));
+        });
+      }
+      positionResourceByKey(key, 500);
+      return;
+    }
+  }, [groupMode]);
+
+  /**
+   * 递归逐级定位，先等待上一次定位完成后继续定位
+   */
+  const startPosition = async (index) => {
+    if (!shouldExpandedKeys?.[index]) {
+      positionResourceByKey(currentObject.value, 300).then(() => {
+        setLoading(false);
+        setShouldExpandedKeys([]);
+      });
+      return;
+    }
+    let duration = 900;
+    if (loadedKeys.includes(shouldExpandedKeys?.[index])) {
+      // 已加载的节点只需等待页面加载时间，不需要考虑网络请求时间
+      duration = 500;
+    }
+    if (isString(shouldExpandedKeys?.[index])) {
+      const type = (shouldExpandedKeys?.[index] as string).split('-')?.[0];
+      if (type === TreeDataGroupKey || type === TreeDataSecondGroupKey) {
+        // 是分组节点只需等待页面加载时间，不需要考虑网络请求时间
+        duration = 500;
+      }
+    }
+    positionResourceByKey(shouldExpandedKeys?.[index], duration).then(() => {
+      startPosition(index + 1);
+    });
   };
 
   useEffect(() => {
-    //滚动到指定高度
-    const key = treeContext?.currentDatabaseId;
-    const findIndex = databases.findIndex((i) => i.id === key);
-    setTimeout(() => {
-      treeRef?.current?.scrollTo({ top: findIndex * 28 });
-    });
-  }, [treeContext?.currentDatabaseId, databases]);
-
-  const treeData: TreeDataNode[] = (() => {
-    const root = databases
-      ?.filter((db) => {
-        const config = getDataSourceModeConfig(db?.dataSource?.type);
-        // 隐藏对象存储类型数据库
-        if (isConnectTypeBeFileSystemGroup(db?.dataSource?.type)) {
-          return false;
-        }
-        /**
-         * feature filter
-         */
-        if (!config?.features?.resourceTree && isPhysicalDatabase(db)) {
-          return;
-        }
-        if (
-          searchValue?.type === DbObjectType.database &&
-          !db.name.toLowerCase()?.includes(searchValue?.value?.toLowerCase())
-        ) {
-          /**
-           * search filter
-           */
-          return false;
-        }
-        return (
-          db.existed &&
-          !(envs?.length && !envs.includes(db.environment?.id)) &&
-          !(connectTypes?.length && !connectTypes.includes(db.dataSource?.type))
-        );
-      })
-      ?.map((database) => {
-        const dbId = database.id;
-        const dbSessionId = sessionIds[dbId];
-        const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
-        return DataBaseTreeData(dbSession, database, database?.id, true, searchValue);
+    if (shouldExpandedKeys?.length && currentObject) {
+      setTimeout(() => {
+        setExpandedKeys(Array.from(new Set([...expandedKeys, ...shouldExpandedKeys])));
+        setLoading(true);
+        startPosition(0);
       });
-    return root || [];
-  })();
+    }
+  }, [shouldExpandedKeys]);
+
+  const treeData = useMemo(() => {
+    switch (groupMode) {
+      case DatabaseGroup.none: {
+        return databases
+          ?.filter((db: IDatabase) => {
+            return (
+              !(envs?.length && !envs.includes(db.environment?.id)) &&
+              !(connectTypes?.length && !connectTypes.includes(db.dataSource?.type))
+            );
+          })
+          ?.map((database: IDatabase) => {
+            if (loadedKeys.includes(database.id)) {
+              const dbId = database.id;
+              const dbSessionId = sessionIds[dbId];
+              const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
+              DatabaseDataNodeMap.set(
+                database.id,
+                DataBaseTreeData(dbSession, database, database?.id, true),
+              );
+            }
+            return DatabaseDataNodeMap.get(database.id);
+          });
+      }
+      case DatabaseGroup.project:
+      case DatabaseGroup.dataSource:
+      case DatabaseGroup.tenant: {
+        return databases.map((groupItem) => {
+          const groupKey = getGroupKey(groupItem.mapId, groupMode);
+          let data, icon;
+          if (groupMode === DatabaseGroup.dataSource) {
+            data = datasourceList.find((d) => d.id === groupItem.mapId);
+            icon = data && <StatusIcon item={data} />;
+          }
+          return {
+            title: groupItem.groupName,
+            key: groupKey,
+            type: GroupNodeToResourceNodeType[groupMode],
+            data: data ?? null,
+            icon: icon ?? null,
+            children: groupItem.databases
+              ?.filter((db: IDatabase) => {
+                return (
+                  !(envs?.length && !envs.includes(db.environment?.id)) &&
+                  !(connectTypes?.length && !connectTypes.includes(db.dataSource?.type))
+                );
+              })
+              ?.map((database: IDatabase) => {
+                if (loadedKeys.includes(database.id)) {
+                  const dbId = database.id;
+                  const dbSessionId = sessionIds[dbId];
+                  const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
+                  DatabaseDataNodeMap.set(
+                    database.id,
+                    DataBaseTreeData(dbSession, database, database?.id, true),
+                  );
+                }
+                return DatabaseDataNodeMap.get(database.id);
+              }),
+          };
+        });
+      }
+      case DatabaseGroup.cluster:
+      case DatabaseGroup.environment:
+      case DatabaseGroup.connectType: {
+        return databases.map((groupItem) => {
+          const groupKey = getGroupKey(groupItem.mapId, groupMode);
+          return {
+            title: groupItem.groupName,
+            key: groupKey,
+            type: GroupNodeToResourceNodeType[groupMode],
+            children: [...groupItem.secondGroup.values()]?.map((sItem) => {
+              const sencondGroupKey = getSecondGroupKey(groupItem.mapId, sItem.mapId, groupMode);
+              const data = datasourceList.find((d) => d.id === sItem.mapId);
+              const icon = data && <StatusIcon item={data} />;
+              return {
+                title: sItem.groupName,
+                key: sencondGroupKey,
+                type: ResourceNodeType.SecondGroupNodeDataSource,
+                data: data ?? null,
+                icon: icon ?? null,
+                children: sItem.databases
+                  ?.filter((db: IDatabase) => {
+                    return (
+                      !(envs?.length && !envs.includes(db.environment?.id)) &&
+                      !(connectTypes?.length && !connectTypes.includes(db.dataSource?.type))
+                    );
+                  })
+                  ?.map((database: IDatabase) => {
+                    if (loadedKeys.includes(database.id)) {
+                      const dbId = database.id;
+                      const dbSessionId = sessionIds[dbId];
+                      const dbSession = sessionManagerStore.sessionMap.get(dbSessionId);
+                      DatabaseDataNodeMap.set(
+                        database.id,
+                        DataBaseTreeData(dbSession, database, database?.id, true),
+                      );
+                    }
+                    return DatabaseDataNodeMap.get(database.id);
+                  }),
+              };
+            }),
+          };
+        });
+      }
+    }
+  }, [databases, loadedKeys, envs, connectTypes]);
 
   const loadData = useCallback(
     async (treeNode: EventDataNode<any> & TreeDataNode) => {
@@ -171,7 +320,6 @@ const ResourceTree: React.FC<IProps> = function ({
             (await sessionManagerStore.createSession(null, data?.id, true));
           if (dbSession && dbSession !== 'NotFound') {
             setSessionId(dbId, dbSession?.sessionId);
-            update();
           } else {
             throw new Error("load database's session failed");
             return;
@@ -188,9 +336,24 @@ const ResourceTree: React.FC<IProps> = function ({
 
   const renderNode = useCallback(
     (node: TreeDataNode): React.ReactNode => {
-      const { type, sessionId, key, dbObjectType } = node;
+      const { type, sessionId } = node;
       const dbSession = sessionManagerStore.sessionMap.get(sessionId);
-
+      if (
+        [ResourceNodeType.GroupNodeDataSource, ResourceNodeType.SecondGroupNodeDataSource].includes(
+          type,
+        )
+      ) {
+        return (
+          <DataSourceNodeMenu
+            node={node}
+            setCopyDatasourceId={setCopyDatasourceId}
+            deleteDataSource={deleteDataSource}
+            setAddDSVisiable={setAddDSVisiable}
+            setEditDatasourceId={setEditDatasourceId}
+            copyDatasourceId={copyDatasourceId}
+          />
+        );
+      }
       return (
         <TreeNodeMenu
           showTip={showTip}
@@ -206,94 +369,112 @@ const ResourceTree: React.FC<IProps> = function ({
   );
 
   return (
-    <div className={styles.resourceTree}>
-      <div className={styles.title}>
-        {tabKey ? (
-          <Space size={2} className={styles.label}>
-            {title}
-          </Space>
-        ) : (
-          <Space size={4} onClick={() => onTitleClick?.()} className={styles.label}>
-            {title}
-            <Icon style={{ verticalAlign: 'middle' }} component={SwapOutlined} />
-          </Space>
-        )}
-        <span className={styles.titleAction}>
-          <Space size={8} style={{ lineHeight: 1.5 }}>
-            {enableFilter ? (
-              <DatasourceFilter
-                key="ResourceTreeDatasourceFilter"
-                envs={envs}
-                types={connectTypes}
-                onClear={() => {
-                  setEnvs([]);
-                  setConnectTypes([]);
+    <>
+      <div className={styles.resourceTree}>
+        <div className={styles.title}>
+          <span
+            className={styles.titleText}
+            onClick={() => {
+              console.log(databases);
+              console.log(treeData);
+              console.log(expandedKeys);
+              console.log(loadedKeys);
+              console.log(shouldExpandedKeys);
+              console.log(currentObject);
+            }}
+          >
+            数据库
+          </span>
+          <span className={styles.titleAction}>
+            <Space size={8} style={{ lineHeight: 1.5 }}>
+              {enableFilter ? (
+                <DatasourceFilter
+                  key="ResourceTreeDatasourceFilter"
+                  envs={envs}
+                  types={connectTypes}
+                  onClear={() => {
+                    setEnvs([]);
+                    setConnectTypes([]);
+                  }}
+                  onEnvsChange={(v) => {
+                    setEnvs(v);
+                  }}
+                  onTypesChange={(v) => {
+                    setConnectTypes(v);
+                  }}
+                />
+              ) : null}
+              <Group setGroupMode={setGroupMode} groupMode={groupMode} />
+              {settingStore.configurations['odc.database.default.enableGlobalObjectSearch'] ===
+              'true' ? (
+                <SyncMetadata
+                  reloadDatabase={reloadDatabase}
+                  databaseList={[...allDatabasesMap.values()]}
+                />
+              ) : null}
+              <Reload
+                key="ResourceTreeReload"
+                onClick={() => {
+                  return reloadDatabase();
                 }}
-                onEnvsChange={(v) => {
-                  setEnvs(v);
-                }}
-                onTypesChange={(v) => {
-                  setConnectTypes(v);
-                }}
+                style={{ display: 'flex' }}
               />
-            ) : null}
-            {settingStore.configurations['odc.database.default.enableGlobalObjectSearch'] ===
-            'true' ? (
-              <SyncMetadata
-                resourceType={
-                  databaseFrom === 'project'
-                    ? IManagerResourceType.project
-                    : IManagerResourceType.resource
-                }
-                resourceId={Number(stateId?.split('-')?.[1])}
-                reloadDatabase={reloadDatabase}
-                databaseList={databases}
-              />
-            ) : null}
-            <Reload
-              key="ResourceTreeReload"
-              onClick={() => {
-                return reloadDatabase();
+            </Space>
+          </span>
+        </div>
+        <div className={styles.search}>
+          <DatabaseSearch searchValue={searchValue} setSearchValue={setSearchValue} />
+        </div>
+        <div ref={treeWrapperRef} className={styles.tree}>
+          <Spin spinning={loading}>
+            <Tree
+              ref={treeRef}
+              expandAction="click"
+              showIcon
+              onExpand={(_, info) => {
+                onExpand(_, info);
+                //@ts-ignore
+                tracert.click('a3112.b41896.c330992.d367628', { resourceType: info?.node?.type });
               }}
-              style={{ display: 'flex' }}
+              treeData={treeData}
+              titleRender={renderNode}
+              loadData={loadData}
+              expandedKeys={expandedKeys}
+              loadedKeys={loadedKeys}
+              onLoad={onLoad}
+              height={wrapperHeight}
+              selectable={true}
+              selectedKeys={[currentObject?.value].filter(Boolean)}
             />
-          </Space>
-        </span>
+          </Spin>
+        </div>
       </div>
-      <div className={styles.search}>
-        <DatabaseSearch
-          onChange={(type, value) => {
-            !type
-              ? setSearchValue(null)
-              : setSearchValue({
-                  type,
-                  value,
-                });
-          }}
-        />
-      </div>
-      <div ref={treeWrapperRef} className={styles.tree}>
-        <Tree
-          ref={treeRef}
-          expandAction="click"
-          showIcon
-          onExpand={(_, info) => {
-            onExpand(_, info);
-            //@ts-ignore
-            tracert.click('a3112.b41896.c330992.d367628', { resourceType: info?.node?.type });
-          }}
-          treeData={treeData}
-          titleRender={renderNode}
-          loadData={loadData}
-          expandedKeys={expandedKeys}
-          loadedKeys={loadedKeys}
-          onLoad={onLoad}
-          height={wrapperHeight}
-          selectable={true}
-          selectedKeys={[treeContext.currentDatabaseId].filter(Boolean)}
-        />
-      </div>
-    </div>
+      <NewDatasourceDrawer
+        isEdit={!!editDatasourceId}
+        visible={addDSVisiable}
+        id={editDatasourceId}
+        close={() => {
+          setEditDatasourceId(null);
+          setAddDSVisiable(false);
+        }}
+        onSuccess={() => {
+          reloadDatasourceList?.();
+        }}
+      />
+
+      <NewDatasourceDrawer
+        isEdit={false}
+        isCopy={true}
+        id={copyDatasourceId}
+        visible={!!copyDatasourceId}
+        close={() => {
+          setCopyDatasourceId(null);
+        }}
+        onSuccess={() => {
+          reloadDatasourceList?.();
+        }}
+      />
+    </>
   );
 };
 
