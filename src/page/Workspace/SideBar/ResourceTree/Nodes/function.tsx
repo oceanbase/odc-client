@@ -36,9 +36,7 @@ export function FunctionTreeNodeData(
   pkg?: Partial<IPackage>,
   index?: number,
 ): TreeDataNode {
-  const funcKey = `${dbSession?.database?.databaseId}-${
-    packageName ? '' : dbSession?.database?.functionVersion
-  }-${packageName}-${dbName}-function-${func.funName}-index:${index}`;
+  const funcKey = `${dbSession?.database?.databaseId}-${dbName}-function-pkg-${func.funName}-index:${index}`;
   let paramRoot: TreeDataNode;
   let returnroot: TreeDataNode;
   let variableRoot: TreeDataNode;
@@ -140,7 +138,7 @@ export function FunctionTreeNodeData(
         }}
       />
     ),
-    doubleClick(session, node, databaseFrom) {
+    doubleClick(session, node) {
       // 程序包中的子程序 双击直接打开所在的程序包详情
       switch (menuKey) {
         case ResourceNodeType.PackageHeadFunction: {
@@ -182,7 +180,7 @@ export function FunctionTreeData(
       id: 'odc.ResourceTree.Nodes.function.Function',
       defaultMessage: '函数',
     }), //函数
-    key: `${database.id}-${packageName}-pkg-${dbName}-function`,
+    key: `${database.id}-${dbName}-function-pkg`,
     type: ResourceNodeType.FunctionRoot,
     data: database,
     sessionId: dbSession?.sessionId,

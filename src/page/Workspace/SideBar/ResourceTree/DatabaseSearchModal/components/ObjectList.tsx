@@ -1,13 +1,15 @@
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { DbObjsIcon } from '@/constant';
-import { ConnectionMode, DbObjectType } from '@/d.ts';
-import { IDatabase, IDatabaseObject } from '@/d.ts/database';
-import { openNewSQLPage } from '@/store/helper/page';
+import { DbObjectType } from '@/d.ts';
+import { IDatabase } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { Button, Divider, Empty, Spin, Tabs, Tooltip } from 'antd';
-import { useState } from 'react';
+import { useContext } from 'react';
+import { inject, observer } from 'mobx-react';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import GlobalSearchContext from '@/page/Workspace/context/GlobalSearchContext';
 import {
   DbObjectTypeMap,
   MAX_OBJECT_LENGTH,
@@ -16,34 +18,31 @@ import {
 } from '../constant';
 import styles from '../index.less';
 interface Iprops {
-  database: IDatabase;
-  objectlist: IDatabaseObject;
-  setDatabase: React.Dispatch<React.SetStateAction<IDatabase>>;
-  setSearchKey: React.Dispatch<React.SetStateAction<string>>;
-  activeKey: string;
-  setActiveKey: React.Dispatch<React.SetStateAction<string>>;
-  modalStore: ModalStore;
-  loading: boolean;
-  selectProjectId: number;
-  currentDataSourceType: ConnectionMode;
+  modalStore?: ModalStore;
 }
 
-const ObjectList = ({
-  database,
-  setDatabase,
-  objectlist,
-  activeKey,
-  setActiveKey,
-  setSearchKey,
-  modalStore,
-  loading,
-  selectProjectId,
-  currentDataSourceType,
-}: Iprops) => {
-  const [activeDatabase, setActiveDatabase] = useState<IDatabase>();
+const ObjectList = ({ modalStore }: Iprops) => {
+  const globalSearchContext = useContext(GlobalSearchContext);
+  const {
+    database,
+    setDatabase,
+    activeKey,
+    setActiveKey,
+    dataSource,
+    objectlist,
+    datasourceList,
+    objectloading,
+    actions,
+  } = globalSearchContext;
+  const { positionResourceTree, applyTablePermission, openTree, openSql, applyDbPermission } =
+    actions;
+  const currentDataSourceType = datasourceList?.find(
+    (item) => item.id === dataSource?.id,
+  )?.dialectType;
   const ALL_TAB_MAX_LENGTH = 3;
   const dbType =
     currentDataSourceType || database?.dataSource?.dialectType || SEARCH_OBJECT_FROM_ALL_DATABASE;
+  const context = useContext(ResourceTreeContext);
   const getTyepBlock = () => {
     const typeList = objectTypeConfig[dbType];
     const typeObjectTree = typeList?.map((i) => {
@@ -156,7 +155,7 @@ const ObjectList = ({
 
   const renderAllTab = () => {
     return (
-      <Spin spinning={loading}>
+      <Spin spinning={objectloading}>
         {!objectlist?.dbColumns?.length &&
         !objectlist?.dbObjects?.length &&
         !objectlist?.databases?.length ? (
@@ -189,7 +188,7 @@ const ObjectList = ({
                         <Button
                           className={styles.objectTypeItemMore}
                           type="link"
-                          onClick={() => setActiveKey(i.key)}
+                          onClick={() => setActiveKey?.(i.key)}
                         >
                           {formatMessage({
                             id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.5DDBC7F0',
@@ -204,11 +203,34 @@ const ObjectList = ({
                           return (
                             <div
                               className={styles.objectTypeItem}
-                              onClick={(e) =>
-                                isDatabase ? openSql(e, object) : openTree(e, object)
-                              }
-                              onMouseEnter={() => setActiveDatabase(object)}
-                              onMouseLeave={() => setActiveDatabase(null)}
+                              onClick={(e) => {
+                                let params = {
+                                  type: undefined,
+                                  database: undefined,
+                                  name: undefined,
+                                  objectName: undefined,
+                                };
+                                params.type = i?.key as DbObjectType;
+                                switch (i?.key) {
+                                  case DbObjectType.database: {
+                                    params.database = object as IDatabase;
+                                    break;
+                                  }
+                                  case DbObjectType.column: {
+                                    params.database = object.dbObject.database as IDatabase;
+                                    params.name = object.name;
+                                    params.objectName = object.dbObject.name;
+                                    break;
+                                  }
+                                  default: {
+                                    params.name = object.name;
+                                    params.database = object.database as IDatabase;
+                                    break;
+                                  }
+                                }
+                                positionResourceTree?.(params);
+                                isDatabase ? openSql?.(e, object) : openTree?.(e, object);
+                              }}
                             >
                               <div style={{ overflow: 'hidden', display: 'flex', width: '100%' }}>
                                 {isDatabase ? (
@@ -244,7 +266,7 @@ const ObjectList = ({
                                   {getSubTitle(object, i?.key)}
                                 </span>
                               </div>
-                              {isDatabase ? selectDbBtn(object) : permissionBtn(object, i.key)}
+                              {isDatabase ? PositioninButton(object) : permissionBtn(object, i.key)}
                             </div>
                           );
                         }
@@ -265,25 +287,6 @@ const ObjectList = ({
     );
   };
 
-  const applyTablePermission = (e, object, type) => {
-    e.stopPropagation();
-    const dbObj = [DbObjectType.table, DbObjectType.external_table, DbObjectType.view]?.includes(
-      type,
-    )
-      ? object
-      : object?.dbObject;
-    const params = {
-      projectId: dbObj?.database?.project?.id,
-      databaseId: dbObj?.database?.id,
-      tableName: dbObj?.name,
-      tableId: dbObj?.id,
-    };
-    modalStore.changeApplyTablePermissionModal(true, {
-      ...params,
-    });
-    modalStore.changeDatabaseSearchModalVisible(false);
-  };
-
   const hasPermission = (object) => {
     return (
       object?.database?.authorizedPermissionTypes?.length ||
@@ -292,7 +295,6 @@ const ObjectList = ({
   };
 
   const permissionBtn = (object, type: DbObjectType) => {
-    if (activeDatabase?.id !== object.id) return;
     if (hasPermission(object)) return;
     const isTableColumn =
       [DbObjectType.table, DbObjectType.view, DbObjectType.external_table]?.includes(
@@ -312,7 +314,8 @@ const ObjectList = ({
         <Button
           type="link"
           style={{ padding: 0, height: 18, display: 'inline-block' }}
-          onClick={(e) => applyTablePermission(e, object, type)}
+          onClick={(e) => applyTablePermission?.(e, object, type)}
+          className={styles.itemButton}
         >
           {formatMessage({
             id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.4DE0929F',
@@ -325,7 +328,8 @@ const ObjectList = ({
       <Button
         type="link"
         style={{ padding: 0, height: 18 }}
-        onClick={(e) => applyDbPermission(e, object)}
+        onClick={(e) => applyDbPermission?.(e, object)}
+        className={styles.itemButton}
       >
         {formatMessage({
           id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.DB7526F7',
@@ -335,27 +339,16 @@ const ObjectList = ({
     );
   };
 
-  const applyDbPermission = (e, db) => {
-    e.stopPropagation();
-    const dbObj = db?.dbObject?.database || db?.database || db;
-    modalStore.changeApplyDatabasePermissionModal(true, {
-      projectId: dbObj?.project?.id,
-      databaseId: dbObj?.id,
-    });
-    modalStore.changeDatabaseSearchModalVisible(false);
-  };
-
-  const selectDbBtn = (object) => {
-    if (activeDatabase?.id !== object.id) return null;
+  const PositioninButton = (object) => {
     if (!!object?.authorizedPermissionTypes?.length) {
       return (
         <Button
           type="link"
           style={{ padding: 0, height: 18, display: 'inline-block' }}
+          className={styles.itemButton}
           onClick={(e) => {
             e.stopPropagation();
-            setDatabase(object);
-            setSearchKey('');
+            setDatabase?.(object);
           }}
         >
           {formatMessage({
@@ -369,7 +362,8 @@ const ObjectList = ({
       <Button
         type="link"
         style={{ padding: 0, height: 18 }}
-        onClick={(e) => applyDbPermission(e, object)}
+        className={styles.itemButton}
+        onClick={(e) => applyDbPermission?.(e, object)}
       >
         {formatMessage({
           id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.64F32480',
@@ -379,34 +373,12 @@ const ObjectList = ({
     );
   };
 
-  const openTree = (e, object) => {
-    if (!hasPermission(object)) return;
-    const type = object?.type || DbObjectType.column;
-    e.stopPropagation();
-    const databaseId = object?.dbObject?.database?.id || object?.database?.id;
-
-    if (type === DbObjectType.external_table) {
-      object.isExternalTable = true;
-    }
-    DbObjectTypeMap?.[type]?.openPage(object)(
-      ...DbObjectTypeMap?.[type]?.getOpenTab(object, databaseId),
-    );
-    modalStore?.changeDatabaseSearchModalVisible(false);
-    modalStore?.databaseSearchsSetExpandedKeysFunction?.(databaseId);
-  };
-
-  const openSql = (e, db) => {
-    e.stopPropagation();
-    modalStore?.databaseSearchsSetExpandedKeysFunction?.(db.id);
-    modalStore?.changeDatabaseSearchModalVisible(false);
-    db.id && openNewSQLPage(db.id, selectProjectId ? 'project' : 'datasource');
-  };
-
   const renderObjectTypeTabs = (type) => {
     const currentObjectList = typeObjectTree?.find((i) => i.key === type);
     const isDatabasetab = currentObjectList.key === DbObjectType.database;
+    const isColumntab = currentObjectList.key === DbObjectType.column;
     return (
-      <Spin spinning={loading}>
+      <Spin spinning={objectloading}>
         {!currentObjectList?.data?.length ? (
           <div className={styles.objectlistBoxEmpty}>
             <Empty
@@ -433,10 +405,26 @@ const ObjectList = ({
                 <div
                   className={styles.objectItem}
                   onClick={(e) => {
-                    isDatabasetab ? openSql(e, object) : openTree(e, object);
+                    let params = {
+                      type: undefined,
+                      database: undefined,
+                      name: undefined,
+                      objectName: undefined,
+                    };
+                    params.type = currentObjectList.key as DbObjectType;
+                    if (isDatabasetab) {
+                      params.database = object as IDatabase;
+                    } else if (isColumntab) {
+                      params.database = object.dbObject.database as IDatabase;
+                      params.name = object.name;
+                      params.objectName = object.dbObject.name;
+                    } else {
+                      params.name = object.name;
+                      params.database = object.database as IDatabase;
+                    }
+                    positionResourceTree?.(params);
+                    isDatabasetab ? openSql?.(e, object) : openTree?.(e, object);
                   }}
-                  onMouseEnter={() => setActiveDatabase(object)}
-                  onMouseLeave={() => setActiveDatabase(null)}
                 >
                   <div style={{ overflow: 'hidden', display: 'flex', width: '100%' }}>
                     {isDatabasetab ? (
@@ -468,7 +456,7 @@ const ObjectList = ({
                     </span>
                   </div>
                   {isDatabasetab
-                    ? selectDbBtn(object)
+                    ? PositioninButton(object)
                     : permissionBtn(object, currentObjectList.key)}
                 </div>
               );
@@ -517,7 +505,7 @@ const ObjectList = ({
   );
 
   const handleChange = (key) => {
-    setActiveKey(key);
+    setActiveKey?.(key);
   };
 
   return (
@@ -531,4 +519,4 @@ const ObjectList = ({
   );
 };
 
-export default ObjectList;
+export default inject('modalStore', 'userStore')(observer(ObjectList));

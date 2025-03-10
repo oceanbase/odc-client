@@ -1,26 +1,11 @@
-/*
- * Copyright 2023 OceanBase
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { TreeProps } from 'antd';
-import { useContext, useEffect, useState } from 'react';
-import TreeStateStore from './TreeStateStore';
-import { TreeDataNode } from './type';
+import { useContext, useState } from 'react';
+import TreeStateStore from '../TreeStateStore';
+import { TreeDataNode } from '../type';
 import { EventDataNode } from 'antd/lib/tree';
 import sessionManager from '@/store/sessionManager';
-import ResourceTreeContext from '../../context/ResourceTreeContext';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import { isGroupNode } from '@/page/Workspace/SideBar/ResourceTree/const';
 
 export default function useTreeState(id: string) {
   const { cache } = useContext(TreeStateStore);
@@ -40,19 +25,16 @@ export default function useTreeState(id: string) {
   const [expandedKeys, setExpandedKeys] = useState<(string | number)[]>(state.expandedKeys);
   const [loadedKeys, setLoadedKeys] = useState<(string | number)[]>(state.loadedKeys);
   const onExpand: TreeProps['onExpand'] = function (expandedKeys, { expanded, node }) {
-    const { sessionId, cid } = node as TreeDataNode & EventDataNode<any>;
-    if (sessionId) {
-      const session = sessionManager.sessionMap.get(sessionId);
-      if (session) {
-        treeContext.setCurrentDatabaseId(session?.odcDatabase?.id);
-      }
-    } else if (cid) {
-      treeContext.setCurrentDatabaseId(cid);
+    // @ts-ignore
+    if (isGroupNode(node.type)) {
+      setExpandedKeys(expandedKeys);
     }
-    if (expanded && !loadedKeys?.includes(node.key)) {
+    const { sessionId, cid } = node as TreeDataNode & EventDataNode<any>;
+    if (expanded && !loadedKeys?.includes(node.key) && !node.children?.length) {
       /**
        * 只允许在onload内部修改expandedKeys
        * 触发onload可以保证node是加载成功的，并且在loadedkeys中，避免请求失败无限循环
+       * 增加children判断，node.children不为空或者空数组的情况下，antd5 Tree不会再触发onload（antd4会）
        */
       return;
     }
@@ -60,7 +42,7 @@ export default function useTreeState(id: string) {
     setExpandedKeys(expandedKeys);
   };
   const onLoad: TreeProps['onLoad'] = function (loadedKeys, { event, node }) {
-    const newExpandedKeys = [...expandedKeys, node.key];
+    const newExpandedKeys = Array.from(new Set([...expandedKeys, node.key]));
     cache[id] = Object.assign({}, cache[id], {
       loadedKeys: [...loadedKeys],
       expandedKeys: newExpandedKeys,
@@ -68,12 +50,6 @@ export default function useTreeState(id: string) {
     setLoadedKeys(loadedKeys);
     setExpandedKeys(newExpandedKeys);
   };
-
-  useEffect(()=>{
-    if(treeContext.selectDatasourceId){
-      setLoadedKeys([]);
-    }
-  }, [treeContext.selectDatasourceId])
 
   return {
     onExpand,

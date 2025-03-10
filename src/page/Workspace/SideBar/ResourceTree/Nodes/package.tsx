@@ -48,7 +48,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
   };
   if (packages) {
     treeData.children = packages.map((pkg) => {
-      const pkgKey = `${database.id}-${dbSession?.database?.packageVersion}-${dbName}-package-${pkg.packageName}`;
+      const pkgKey = `${database.id}-${dbName}-package-${pkg.packageName}`;
 
       const { packageHead, packageBody } = pkg;
 
@@ -263,7 +263,7 @@ export function PackageTreeData(dbSession: SessionStore, database: IDatabase): T
           />
         ),
 
-        doubleClick(session, node, databaseFrom) {
+        doubleClick(session, node) {
           openPackageViewPage(pkg.packageName, undefined, undefined, session?.database?.databaseId);
         },
         sessionId: dbSession?.sessionId,

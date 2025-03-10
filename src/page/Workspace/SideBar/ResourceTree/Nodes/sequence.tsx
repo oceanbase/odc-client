@@ -40,7 +40,7 @@ export function SequenceTreeData(dbSession: SessionStore, database: IDatabase): 
   };
   if (sequences) {
     treeData.children = sequences.map((sequence) => {
-      const key = `${database.id}-${dbSession?.database?.sequenceVersion}-${dbName}-sequence-${sequence.name}`;
+      const key = `${database.id}-${dbName}-sequence-${sequence.name}`;
       return {
         title: sequence.name,
         key,
@@ -56,7 +56,7 @@ export function SequenceTreeData(dbSession: SessionStore, database: IDatabase): 
           />
         ),
 
-        doubleClick(session, node, databaseFrom) {
+        doubleClick(session, node) {
           openSequenceViewPage(sequence.name, undefined, session?.database?.databaseId);
         },
         sessionId: dbSession?.sessionId,

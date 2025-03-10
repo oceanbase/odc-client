@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityBarItemType } from '../ActivityBar/type';
 import ActivityBarContext from './ActivityBarContext';
-import ResourceTreeContext, { ResourceTreeTab } from './ResourceTreeContext';
+import ResourceTreeContext from './ResourceTreeContext';
 import tracert from '@/util/tracert';
 import { IDatasource } from '@/d.ts/datasource';
 import { IProject } from '@/d.ts/project';
@@ -30,21 +30,38 @@ import { toInteger } from 'lodash';
 import datasourceStatus from '@/store/datasourceStatus';
 import { listDatabases } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
-import { DBObjectSyncStatus } from '@/d.ts/database';
+import { DBObjectSyncStatus, DatabaseGroup } from '@/d.ts/database';
+import { ResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/type';
 
 export default function WorkspaceStore({ children }) {
   const [activityBarKey, setActivityBarKey] = useState(ActivityBarItemType.Database);
   const { datasourceId } = useParams<{ datasourceId: string }>();
-  const [selectTabKey, _setSelectTabKey] = useState<ResourceTreeTab>(ResourceTreeTab.datasource);
-  const [currentDatabaseId, setCurrentDatabaseId] = useState<number>(null);
-  function setSelectTabKey(v: ResourceTreeTab) {
-    tracert.click(
-      v === ResourceTreeTab.datasource
-        ? 'a3112.b41896.c330988.d367622'
-        : 'a3112.b41896.c330988.d367621',
-    );
-    _setSelectTabKey(v);
-  }
+  const [currentObject, setCurrentObject] = useState<{
+    value: React.Key;
+    type: ResourceNodeType;
+  }>(undefined);
+  const [shouldExpandedKeys, setShouldExpandedKeys] = useState<React.Key[]>([]);
+  const [groupMode, _setGroupMode] = useState(
+    login.isPrivateSpace() ? DatabaseGroup.dataSource : DatabaseGroup.project,
+  );
+
+  const setGroupMode = (type: DatabaseGroup) => {
+    localStorage.setItem('resourceTreeGroupMode', type);
+    _setGroupMode(type);
+  };
+
+  useEffect(() => {
+    const type = localStorage.getItem('resourceTreeGroupMode');
+    if (type && type !== 'null' && type !== 'undefined') {
+      if (
+        login.isPrivateSpace() &&
+        [DatabaseGroup.project, DatabaseGroup.none].includes(type as DatabaseGroup)
+      ) {
+        return;
+      }
+      _setGroupMode(type as DatabaseGroup);
+    }
+  }, []);
 
   const [selectProjectId, _setSelectProjectId] = useState<number>(null);
   const [selectDatasourceId, _setSelectDatasourceId] = useState<number>(
@@ -89,45 +106,39 @@ export default function WorkspaceStore({ children }) {
   }, []);
 
   const reloadDatabaseList = useCallback(async () => {
-    if (selectProjectId || selectDatasourceId) {
-      const data = await fetchDatabases(
-        selectProjectId,
-        selectDatasourceId,
-        1,
-        99999,
-        null,
-        null,
-        null,
-        true,
-        true,
-      );
-      setDatabaseList(data?.contents || []);
-      return data?.contents;
-    }
-  }, [selectProjectId, selectDatasourceId]);
+    const data = await fetchDatabases(
+      null,
+      null,
+      1,
+      99999,
+      null,
+      null,
+      login.isPrivateSpace(),
+      true,
+      true,
+    );
+    setDatabaseList(data?.contents || []);
+    return data?.contents;
+  }, []);
 
   const { run: pollingDatabase, cancel } = useRequest(
     async () => {
       const databaseList = await reloadDatabaseList();
-      if (
-        !databaseList?.find((item) =>
-          [DBObjectSyncStatus.SYNCING, DBObjectSyncStatus.PENDING].includes(item.objectSyncStatus),
-        )
-      ) {
+      const arr = [DBObjectSyncStatus.SYNCING, DBObjectSyncStatus.PENDING];
+      if (!databaseList?.find((item) => arr.includes(item.objectSyncStatus))) {
         cancel();
       }
     },
     {
-      pollingInterval: 3000,
+      pollingInterval: 30000,
       pollingWhenHidden: false,
+      manual: true,
     },
   );
 
   return (
     <ResourceTreeContext.Provider
       value={{
-        selectTabKey,
-        setSelectTabKey,
         selectProjectId,
         selectDatasourceId,
         setSelectDatasourceId,
@@ -136,11 +147,15 @@ export default function WorkspaceStore({ children }) {
         reloadDatasourceList,
         projectList,
         reloadProjectList,
-        currentDatabaseId,
-        setCurrentDatabaseId,
+        setCurrentObject,
+        shouldExpandedKeys,
+        setShouldExpandedKeys,
+        currentObject,
         databaseList,
         reloadDatabaseList,
         pollingDatabase,
+        groupMode,
+        setGroupMode,
       }}
     >
       <ActivityBarContext.Provider

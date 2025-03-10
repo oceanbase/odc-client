@@ -59,11 +59,6 @@ export const objectTypeConfig = {
   SEARCH_OBJECT_FROM_ALL_DATABASE: oracleObjectType,
 };
 
-export enum SearchTypeMap {
-  DATABASE = 'DATABASE',
-  OBJECT = 'OBJECT',
-}
-
 export const SEARCH_OBJECT_FROM_ALL_DATABASE = 'SEARCH_OBJECT_FROM_ALL_DATABASE';
 
 export const MAX_OBJECT_LENGTH = 200;
@@ -182,3 +177,53 @@ export const DbObjectTypeMap = {
     },
   },
 };
+
+export enum SearchStatus {
+  /** 默认 */
+  defalut = 'defalut',
+
+  /** 搜索数据库 */
+  forDatabase = 'forDatabase',
+  /**搜索数据源 */
+  forDataSource = 'forDataSource',
+  /** 搜索项目 */
+  forProject = 'forProject',
+
+  /** 数据库下搜索对象 */
+  databaseforObject = 'databaseforObject',
+  /** 项目下搜索对象 */
+  projectforObject = 'projectforObject',
+  /** 数据源下搜索对象 */
+  dataSourceforObject = 'dataSourceforObject',
+
+  /** 数据源&&数据库 下搜索 */
+  dataSourceWithDatabaseforObject = 'dataSourceWithDatabaseforObject',
+  /** 项目&&数据库 下搜索 */
+  projectWithDatabaseforObject = 'projectWithDatabaseforObject',
+}
+
+export const SearchOptionTypeTextMap = {
+  [SearchStatus.forDatabase]: formatMessage({
+    id: 'odc.src.d.ts.Database',
+    defaultMessage: '数据库',
+  }),
+  [SearchStatus.forProject]: formatMessage({
+    id: 'odc.SpaceContainer.Sider.Project',
+    defaultMessage: '项目',
+  }) /*项目*/,
+  [SearchStatus.forDataSource]: formatMessage({
+    id: 'odc.component.RecordPopover.column.DataSource',
+    defaultMessage: '数据源',
+  }),
+};
+
+/** 个人空间支持的搜索类型 */
+export const privateSpaceSupportSearchOptionList = [
+  SearchStatus.forDatabase,
+  SearchStatus.forDataSource,
+];
+export const publicSpaceSupportSearchOptionList = [
+  SearchStatus.forDatabase,
+  SearchStatus.forProject,
+  SearchStatus.forDataSource,
+];

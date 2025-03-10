@@ -43,7 +43,7 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
   };
   if (types) {
     treeData.children = types.map((type) => {
-      const pkgKey = `${database.id}-${dbSession?.database?.typeVersion}-${dbName}-type-${type.typeName}`;
+      const pkgKey = `${database.id}-${dbName}-type-${type.typeName}`;
 
       const { typeDetail } = type;
       const functions = typeDetail?.functions;
@@ -138,7 +138,7 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
           />
         ),
 
-        doubleClick(session, node, databaseFrom) {
+        doubleClick(session, node) {
           openTypeViewPage(type.typeName, undefined, session?.database?.databaseId);
         },
         sessionId: dbSession?.sessionId,

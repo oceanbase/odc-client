@@ -1,146 +1,268 @@
-import { useState, useContext, useEffect } from 'react';
-import { Modal } from 'antd';
+import { useState, useContext, useEffect, useCallback, useMemo } from 'react';
+import { Modal, Spin } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { ModalStore } from '@/store/modal';
 import Search from './components/Search';
 import styles from './index.less';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import { getDatabaseObject } from '@/common/network/database';
-import { SearchTypeMap, SEARCH_OBJECT_FROM_ALL_DATABASE } from './constant';
+import {
+  SEARCH_OBJECT_FROM_ALL_DATABASE,
+  privateSpaceSupportSearchOptionList,
+  publicSpaceSupportSearchOptionList,
+} from './constant';
 import ObjectList from './components/ObjectList';
-import DatabaseList from './components/DatabaseList';
-import { IDatabase, IDatabaseObject } from '@/d.ts/database';
+import { UserStore } from '@/store/login';
+import List from './components/List';
 import classNames from 'classnames';
 import { DbObjectType } from '@/d.ts';
-
+import { SearchOptionTypeTextMap, SearchStatus } from './constant';
+import useSearchStatus from './hooks/useSearchStatus';
+import useGlobalSearchData from './hooks/useData';
+import useActions from '@/page/Workspace/SideBar/ResourceTree/DatabaseSearchModal/hooks/useActions';
+import { openNewSQLPage } from '@/store/helper/page';
+import { formatMessage } from '@/util/intl';
+import GlobalSearchContext from '@/page/Workspace/context/GlobalSearchContext';
 interface IProps {
   modalStore?: ModalStore;
+  userStore?: UserStore;
 }
 
-const DatabaseSearchModal = ({ modalStore }: IProps) => {
-  const [database, setDatabase] = useState<IDatabase>();
-  const [searchKey, setSearchKey] = useState<string>('');
-  const [objectlist, setObjectlist] = useState<IDatabaseObject>();
+const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
+  const {
+    status,
+    reset,
+    next,
+    back,
+    searchKey,
+    setSearchKey,
+    database,
+    setDatabase,
+    project,
+    dataSource,
+    update,
+    setDataSource,
+    setProject,
+  } = useSearchStatus(SearchStatus.defalut);
   const [activeKey, setActiveKey] = useState(SEARCH_OBJECT_FROM_ALL_DATABASE);
-  const [loading, setLoading] = useState<boolean>(false);
-  const { selectDatasourceId, selectProjectId, databaseList, datasourceList } =
-    useContext(ResourceTreeContext);
-  const currentDataSourceType = datasourceList?.find(
-    (item) => item.id === selectDatasourceId,
-  )?.dialectType;
+  const {
+    initStatus,
+    dataSourceId: initDataSourceId,
+    projectId: initProjectId,
+    databaseId: initDatabaseId,
+    initSearchKey,
+  } = modalStore.golbalSearchData || {};
+
+  const {
+    objectlist,
+    datasourceList,
+    projectList,
+    databaseList,
+    loadDatabaseObject,
+    loadDatabaseList,
+    projectLoading,
+    dataSourceLoading,
+    databaseLoading,
+    objectloading,
+  } = useGlobalSearchData({ project, database, dataSource, activeKey, modalStore, reset });
+  const actions = useActions({ modalStore, project });
+  const { positionResourceTree, positionProjectOrDataSource } = actions || {};
+
+  const reloadDatabaseList = () => {
+    loadDatabaseList();
+  };
+
   const handleCancel = () => {
     modalStore.changeDatabaseSearchModalVisible(false);
   };
 
   useEffect(() => {
-    getObjectListData(searchKey);
+    if (!databaseLoading && !dataSourceLoading && !projectLoading) {
+      if (initStatus) {
+        update(initStatus);
+        setSearchKey(initSearchKey);
+        setDatabase(databaseList.find((item) => item.id === initDatabaseId));
+        setDataSource(datasourceList.find((item) => item.id === initDataSourceId));
+        setProject(projectList.find((item) => item.id === initProjectId));
+      }
+    }
+  }, [databaseList, projectList, datasourceList]);
+
+  useEffect(() => {
+    loadDatabaseObject(searchKey);
   }, [activeKey]);
 
   useEffect(() => {
     setActiveKey(SEARCH_OBJECT_FROM_ALL_DATABASE);
   }, [database]);
 
-  const getType = () => {
-    switch (activeKey) {
-      case DbObjectType.database:
-        return 'SCHEMA';
-      case SEARCH_OBJECT_FROM_ALL_DATABASE:
-        return null;
-      case DbObjectType.table:
-        return [DbObjectType.logical_table, DbObjectType.table];
-      default:
-        return activeKey;
-    }
-  };
-
-  const getObjectListData = async (value) => {
-    const databaseIds = database?.id;
-    const type = getType();
-    setLoading(true);
-    const res = await getDatabaseObject(
-      selectProjectId,
-      selectDatasourceId,
-      databaseIds,
-      type,
-      value,
+  const searchContent = useMemo(() => {
+    const options = userStore?.isPrivateSpace()
+      ? privateSpaceSupportSearchOptionList
+      : publicSpaceSupportSearchOptionList;
+    return (
+      <div className={styles.content}>
+        {options.map((type) => {
+          return (
+            <div
+              className={styles.databaseItem}
+              onClick={() => {
+                next({ searchStatus: type });
+              }}
+            >{`搜索${SearchOptionTypeTextMap?.[type]}"${searchKey}"`}</div>
+          );
+        })}
+      </div>
     );
-    setObjectlist(res?.data);
-    setLoading(false);
-  };
+  }, [searchKey, status]);
 
-  const onChangeInput = async (type: SearchTypeMap, value: string) => {
-    setSearchKey(value);
-    getObjectListData(value);
-    switch (type) {
-      case SearchTypeMap.OBJECT: {
-        // setSelectDatabaseState(false);
-        break;
-      }
-      case SearchTypeMap.DATABASE: {
-        // setSelectDatabaseState(true);
-      }
-    }
-  };
-
-  const contentRender = () => {
-    if (!searchKey) {
-      return (
-        <DatabaseList
-          database={database}
-          setDatabase={setDatabase}
-          databaseList={databaseList}
-          searchKey={searchKey}
-          setSearchKey={setSearchKey}
-          modalStore={modalStore}
-          objectlist={objectlist}
-        />
+  const PositioninContent = useMemo(() => {
+    let positionText: string;
+    let action: () => void;
+    if (
+      [
+        SearchStatus.databaseforObject,
+        SearchStatus.projectWithDatabaseforObject,
+        SearchStatus.dataSourceWithDatabaseforObject,
+      ].includes(status)
+    ) {
+      positionText = formatMessage(
+        {
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.FA5E6855',
+          defaultMessage: '定位到数据库 "${database?.name}"',
+        },
+        { databaseName: database?.name },
       );
+      action = () => {
+        positionResourceTree?.({
+          type: DbObjectType.database,
+          database: database,
+        });
+        database.id && openNewSQLPage(database.id, project ? 'project' : 'datasource');
+      };
+    }
+    if ([SearchStatus.projectforObject].includes(status)) {
+      positionText = `定位到项目${project?.name}`;
+      action = () => {
+        positionProjectOrDataSource?.({
+          status,
+          object: project,
+        });
+      };
+    }
+    if ([SearchStatus.dataSourceforObject].includes(status)) {
+      positionText = `定位到数据源${dataSource?.name}`;
+      action = () => {
+        positionProjectOrDataSource?.({
+          status,
+          object: dataSource,
+        });
+      };
     }
     return (
-      <ObjectList
-        database={database}
-        setDatabase={setDatabase}
-        objectlist={objectlist}
-        activeKey={activeKey}
-        setActiveKey={setActiveKey}
-        setSearchKey={setSearchKey}
-        modalStore={modalStore}
-        loading={loading}
-        selectProjectId={selectProjectId}
-        currentDataSourceType={currentDataSourceType}
-      />
+      <div className={styles.positioninContent}>
+        <div className={styles.databaseItem} onClick={action}>
+          {positionText}
+        </div>
+      </div>
+    );
+  }, [database, project, dataSource, status]);
+
+  const contentRender = () => {
+    let shouldShowList: boolean;
+    let shouldShowSearchContent: boolean;
+    let shouldShowObjectList: boolean;
+    let shouldShowtPositioninContent: boolean;
+    if (!searchKey) {
+      shouldShowList = [
+        SearchStatus.defalut,
+        SearchStatus.forDataSource,
+        SearchStatus.forProject,
+        SearchStatus.forDatabase,
+        SearchStatus.projectforObject,
+        SearchStatus.dataSourceforObject,
+      ].includes(status);
+      shouldShowSearchContent = false;
+      shouldShowObjectList = false;
+      shouldShowtPositioninContent = [
+        SearchStatus.projectforObject,
+        SearchStatus.dataSourceforObject,
+        SearchStatus.databaseforObject,
+        SearchStatus.projectWithDatabaseforObject,
+        SearchStatus.dataSourceWithDatabaseforObject,
+      ].includes(status);
+    } else {
+      shouldShowList = [
+        SearchStatus.forDataSource,
+        SearchStatus.forProject,
+        SearchStatus.forDatabase,
+      ].includes(status);
+      shouldShowObjectList = [
+        SearchStatus.databaseforObject,
+        SearchStatus.dataSourceforObject,
+        SearchStatus.projectforObject,
+        SearchStatus.dataSourceWithDatabaseforObject,
+        SearchStatus.projectWithDatabaseforObject,
+      ].includes(status);
+      shouldShowSearchContent = [SearchStatus.defalut].includes(status);
+      shouldShowtPositioninContent = false;
+    }
+
+    return (
+      <div style={{ minHeight: '360px' }} className={styles.content}>
+        {shouldShowSearchContent && searchContent}
+        {shouldShowtPositioninContent && PositioninContent}
+        {shouldShowList && <List />}
+        {shouldShowObjectList && <ObjectList />}
+      </div>
     );
   };
 
   return (
-    <Modal
-      closeIcon={null}
-      width={540}
-      title={
-        <Search
-          database={database}
-          visible={modalStore.databaseSearchModalVisible && modalStore.canDatabaseSearchModalOpen}
-          onChangeInput={onChangeInput}
-          searchKey={searchKey}
-          loading={loading}
-          setDatabase={setDatabase}
-          setSearchKey={setSearchKey}
-        />
-      }
-      open={modalStore.databaseSearchModalVisible && modalStore.canDatabaseSearchModalOpen}
-      onOk={handleCancel}
-      onCancel={handleCancel}
-      maskClosable={true}
-      closable={false}
-      className={classNames(styles.databaseSearchModal, {
-        [styles.withPanel]: searchKey,
-      })}
-      destroyOnClose={true}
-      footer={null}
+    <GlobalSearchContext.Provider
+      value={{
+        database,
+        setDatabase,
+        project,
+        dataSource,
+        searchKey,
+        objectlist,
+        setSearchKey,
+        back,
+        next,
+        update,
+        status,
+        databaseList,
+        projectList,
+        datasourceList,
+        reloadDatabaseList,
+        activeKey,
+        setActiveKey,
+        databaseLoading,
+        objectloading,
+        actions,
+        loadDatabaseObject,
+      }}
     >
-      {contentRender()}
-    </Modal>
+      <Modal
+        closeIcon={null}
+        width={540}
+        title={<Search />}
+        open={modalStore.databaseSearchModalVisible}
+        onOk={handleCancel}
+        onCancel={handleCancel}
+        maskClosable={true}
+        closable={false}
+        className={classNames(styles.databaseSearchModal, {
+          [styles.withPanel]: searchKey,
+        })}
+        destroyOnClose={true}
+        footer={null}
+      >
+        <Spin spinning={databaseLoading || dataSourceLoading || projectLoading || objectloading}>
+          {contentRender()}
+        </Spin>
+      </Modal>
+    </GlobalSearchContext.Provider>
   );
 };
 
-export default inject('modalStore')(observer(DatabaseSearchModal));
+export default inject('modalStore', 'userStore')(observer(DatabaseSearchModal));

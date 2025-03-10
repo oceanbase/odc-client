@@ -36,9 +36,7 @@ export function ProcedureTreeNodeData(
   pkg?: Partial<IPackage>,
   index?: number,
 ): TreeDataNode {
-  const funcKey = `${dbSession?.database?.databaseId}-${
-    packageName ? '' : dbSession?.database?.procedureVersion
-  }-${packageName}-${dbName}-procedure-${proc.proName}-index:${index}`;
+  const funcKey = `${dbSession?.database?.databaseId}-${dbName}-procedure-${packageName}-${proc.proName}-index:${index}`;
   let paramRoot: TreeDataNode;
   let variableRoot: TreeDataNode;
 
@@ -114,7 +112,7 @@ export function ProcedureTreeNodeData(
       />
     ),
 
-    doubleClick(session, node, databaseFrom) {
+    doubleClick(session, node) {
       // 程序包中的子程序 双击直接打开所在的程序包详情
       switch (menuKey) {
         case ResourceNodeType.PackageHeadProcedure: {
@@ -156,7 +154,7 @@ export function ProcedureTreeData(
       id: 'odc.ResourceTree.Nodes.procedure.StoredProcedure',
       defaultMessage: '存储过程',
     }), //存储过程
-    key: `${database.id}-${packageName}-${dbName}-procedure`,
+    key: `${database.id}-${dbName}-procedure`,
     type: ResourceNodeType.ProcedureRoot,
     data: database,
     sessionId: dbSession?.sessionId,

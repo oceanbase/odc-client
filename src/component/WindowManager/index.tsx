@@ -30,7 +30,10 @@ import DefaultPage from './DefaultPage';
 import DraggableTabs from './DraggableTabs';
 import { getPageTitleText } from './helper';
 import styles from './index.less';
+import { isGroupNode } from '@/page/Workspace/SideBar/ResourceTree/const';
 import { isLogicalDatabase } from '@/util/database';
+import { isString } from 'lodash';
+import { ResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/type';
 
 interface IProps {
   pages: IPage[];
@@ -349,14 +352,20 @@ const WindowManager: React.FC<IProps> = function (props) {
                     key: 'newPL',
                     onClick(e) {
                       e.domEvent.stopPropagation();
-                      const db = treeContext.currentDatabaseId;
+                      const { value, type } = treeContext.currentObject || {};
+                      let dbId;
+                      if (!isGroupNode(type)) {
+                        if (type === ResourceNodeType.Database) {
+                          dbId = value;
+                        }
+                        if (isString(value)) {
+                          dbId = Number(value.split('-')?.[0]);
+                        }
+                      }
                       const isLogicalDb = isLogicalDatabase(
-                        treeContext?.databaseList?.find((_db) => _db?.id === db),
+                        treeContext?.databaseList?.find((_db) => _db?.id === dbId),
                       );
-                      openNewDefaultPLPage(
-                        undefined,
-                        isLogicalDb ? null : treeContext?.currentDatabaseId,
-                      );
+                      openNewDefaultPLPage(undefined, isLogicalDb ? null : dbId);
                     },
                   },
                 ],

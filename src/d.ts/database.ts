@@ -133,3 +133,20 @@ export enum PreviewLogicalTableTopologiesErrorEnum {
   LogicalTableExpressionRangeStartGreaterThanEnd = 'LogicalTableExpressionRangeStartGreaterThanEnd',
   LogicalTableExpressionNotValidIntegerRange = 'LogicalTableExpressionNotValidIntegerRange',
 }
+
+export enum DatabaseGroup {
+  /** 不分组 */
+  none = 'NONE',
+  /** 项目 */
+  project = 'PROJECT',
+  /** 按类型 */
+  connectType = 'CONNECTTYPE',
+  /** 按环境 */
+  environment = 'ENVIRONMENT',
+  /** 按数据源 */
+  dataSource = 'DATASOURCE',
+  /** 按集群 */
+  cluster = 'CLUSTER',
+  /** 按租户 */
+  tenant = 'Tenant',
+}

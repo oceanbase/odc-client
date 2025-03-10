@@ -1,4 +1,4 @@
-import { syncObject } from '@/common/network/database';
+import { syncObject, syncAll } from '@/common/network/database';
 import { IManagerResourceType } from '@/d.ts';
 import { DBObjectSyncStatus, IDatabase } from '@/d.ts/database';
 import { ReactComponent as SyncMetadataSvg } from '@/svgr/sync_metadata.svg';
@@ -11,14 +11,10 @@ import { useEffect, useRef, useState } from 'react';
 
 export default function Reload({
   size = '13px',
-  resourceType,
-  resourceId,
   databaseList,
   reloadDatabase,
 }: {
   size?: string;
-  resourceType?: IManagerResourceType;
-  resourceId?: number;
   databaseList?: IDatabase[];
   reloadDatabase?: () => void;
 }) {
@@ -78,7 +74,7 @@ export default function Reload({
       setState(statusMap.SYNCING);
       fetchDBTimer.current = window.setTimeout(() => {
         reloadDatabase();
-      }, 3000);
+      }, 30000);
     } else if (
       databaseList?.find((item) =>
         [DBObjectSyncStatus.INITIALIZED, null].includes(item.objectSyncStatus),
@@ -101,11 +97,9 @@ export default function Reload({
   }, [databaseList]);
 
   async function _onClick() {
-    if (resourceType && resourceId) {
-      setState(statusMap.SYNCING);
-      await syncObject(resourceType, resourceId);
-      await reloadDatabase();
-    }
+    setState(statusMap.SYNCING);
+    await syncAll();
+    await reloadDatabase();
   }
 
   const getlastSyncTime = (data) => {

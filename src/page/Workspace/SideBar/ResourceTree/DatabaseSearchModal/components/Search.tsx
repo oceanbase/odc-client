@@ -1,110 +1,158 @@
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
-import { IDatabase } from '@/d.ts/database';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import { formatMessage } from '@/util/intl';
-import { CloseCircleFilled, LoadingOutlined, SearchOutlined } from '@ant-design/icons';
+import { CloseCircleFilled, LoadingOutlined } from '@ant-design/icons';
 import { Input, Tooltip } from 'antd';
 import { InputRef } from 'antd/lib/input';
-import React, { useContext, useEffect, useRef } from 'react';
-import { SearchTypeMap } from '../constant';
+import { useEffect, useMemo, useRef, useContext } from 'react';
 import styles from '../index.less';
+import Icon from '@ant-design/icons';
+import { ReactComponent as ProjectSvg } from '@/svgr/project_space.svg';
+import { SearchStatus } from '../constant';
+import { inject, observer } from 'mobx-react';
+import { UserStore } from '@/store/login';
+import GlobalSearchContext from '@/page/Workspace/context/GlobalSearchContext';
+import { ModalStore } from '@/store/modal';
 
 interface Iprops {
-  database: IDatabase;
-  visible: boolean;
-  onChangeInput: (SearchTypeMap: SearchTypeMap, value: string) => void;
-  searchKey: string;
-  loading: boolean;
-  setDatabase: React.Dispatch<React.SetStateAction<IDatabase>>;
-  setSearchKey: React.Dispatch<React.SetStateAction<string>>;
+  userStore?: UserStore;
+  modalStore?: ModalStore;
 }
-const Search = ({
-  database,
-  visible,
-  onChangeInput,
-  searchKey,
-  loading,
-  setDatabase,
-  setSearchKey,
-}: Iprops) => {
-  const { selectDatasourceId, selectProjectId, projectList, datasourceList } =
-    useContext(ResourceTreeContext);
-
-  const selectProject = projectList?.find((p) => p.id == selectProjectId);
-  const selectDatasource = datasourceList?.find((d) => d.id == selectDatasourceId);
-
+const Search = ({ userStore, modalStore }: Iprops) => {
   const inputRef = useRef<InputRef>(null);
-
+  const globalSearchContext = useContext(GlobalSearchContext);
+  const {
+    database,
+    searchKey,
+    objectloading,
+    dataSource,
+    project,
+    back,
+    status,
+    setSearchKey,
+    loadDatabaseObject,
+  } = globalSearchContext;
   useEffect(() => {
-    if (visible && inputRef.current) {
+    if (modalStore.databaseSearchModalVisible && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [visible, searchKey, database]);
+  }, [modalStore.databaseSearchModalVisible, searchKey, database]);
 
-  const getDataBase = () => {
-    const divider = () =>
-      database && (
+  const getSearchTag = () => {
+    if (!database && !dataSource && !project) {
+      return null;
+    }
+    let databaseTag, dataSourceTag, projectTag;
+    const divider = (
+      <>
+        <span className={styles.selectDivider}></span>
+        <span style={{ color: 'var(--icon-color-disable)', paddingRight: 4 }}>/</span>
+      </>
+    );
+    if (database) {
+      databaseTag = (
         <>
-          <span className={styles.selectDivider}></span>
-          <span style={{ color: 'var(--icon-color-disable)', paddingRight: 4 }}>/</span>
+          <span className={styles.selectedDatabase}>
+            <DataBaseStatusIcon item={database} />
+            <Tooltip
+              title={`${database?.name}(${database?.dataSource?.name})`}
+              placement="top"
+              overlayStyle={{ maxWidth: 280 }}
+            >
+              <span className={styles.selectTitle}>{database?.name}</span>
+            </Tooltip>
+          </span>
+          {divider}
         </>
       );
-
-    if (database) {
-      return (
-        <span
-          className={styles.selectedDatabase}
-          onClick={() => {
-            setDatabase(null);
-            onChangeInput(SearchTypeMap.DATABASE, null);
-          }}
-        >
-          <DataBaseStatusIcon item={database} />
-          <Tooltip
-            title={`${database?.name}(${database?.dataSource?.name})`}
-            placement="top"
-            overlayStyle={{ maxWidth: 280 }}
-          >
-            <span className={styles.selectTitle}>{database?.name}</span>
-            {divider()}
-          </Tooltip>
-        </span>
+    }
+    if (dataSource) {
+      dataSourceTag = (
+        <>
+          <span className={styles.selectedDatabase}>
+            <Tooltip title={dataSource?.name} placement="top" overlayStyle={{ maxWidth: 280 }}>
+              <span className={styles.selectTitle}>{dataSource?.name}</span>
+            </Tooltip>
+          </span>
+          {divider}
+        </>
       );
     }
-    return null;
+    if (project) {
+      projectTag = (
+        <>
+          <span className={styles.selectedDatabase}>
+            <Icon
+              component={ProjectSvg}
+              style={{ color: 'var(--icon-blue-color)', fontSize: 16 }}
+            />
+            <Tooltip title={project?.name} placement="top" overlayStyle={{ maxWidth: 280 }}>
+              <span className={styles.selectTitle}>{project?.name}</span>
+            </Tooltip>
+          </span>
+          {divider}
+        </>
+      );
+    }
+    return (
+      <>
+        {dataSourceTag}
+        {projectTag}
+        {databaseTag}
+      </>
+    );
   };
 
-  const handleChangeDatabaseSearch = (e) => {
-    onChangeInput(SearchTypeMap.DATABASE, e.target.value);
-  };
-  const handleChangeObjectSearch = (e) => {
-    onChangeInput(SearchTypeMap.OBJECT, e.target.value);
+  const handleChangeSearch = (e) => {
+    if (
+      [
+        SearchStatus.databaseforObject,
+        SearchStatus.dataSourceforObject,
+        SearchStatus.projectforObject,
+        SearchStatus.dataSourceWithDatabaseforObject,
+        SearchStatus.projectWithDatabaseforObject,
+      ].includes(status)
+    ) {
+      loadDatabaseObject?.(e.target.value);
+    }
+    setSearchKey?.(e.target.value);
   };
 
-  const getObjectInput = () => {
-    if (!database) {
-      return (
-        <Input
-          size="small"
-          ref={inputRef}
-          placeholder={formatMessage({
+  const inputPlaceholder = useMemo(() => {
+    let text;
+    switch (status) {
+      case SearchStatus.defalut: {
+        if (userStore?.isPrivateSpace()) {
+          text = '支持搜索数据源、数据库，也可继续搜索表、列、视图等';
+        } else {
+          text = '支持搜索项目、数据源、数据库，也可继续搜索表、列、视图等';
+        }
+        break;
+      }
+      default: {
+        if (database) {
+          text = formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.EF45DCA4',
+            defaultMessage: '搜索表、外表、字段、视图等',
+          });
+        } else {
+          text = formatMessage({
             id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.EBF92A7F',
             defaultMessage: '搜索数据库、表、外表、字段、视图等',
-          })}
-          onChange={handleChangeDatabaseSearch}
-          value={searchKey}
-        />
-      );
+          });
+        }
+        break;
+      }
     }
+    return text;
+  }, [status, database]);
+
+  const getObjectInput = () => {
     return (
       <Input
         size="small"
         ref={inputRef}
-        placeholder={formatMessage({
-          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.EF45DCA4',
-          defaultMessage: '搜索表、外表、字段、视图等',
-        })}
-        onChange={handleChangeObjectSearch}
+        placeholder={inputPlaceholder}
+        onChange={handleChangeSearch}
         value={searchKey}
       />
     );
@@ -114,29 +162,25 @@ const Search = ({
     const props = {
       style: { color: 'var(--icon-color-normal-2)' },
     };
-    if (loading) {
+    if (objectloading) {
       return <LoadingOutlined {...props} />;
     }
-    if (searchKey || database) {
-      return (
-        <CloseCircleFilled
-          {...props}
-          onClick={() => {
-            setSearchKey('');
-            onChangeInput(SearchTypeMap.DATABASE, '');
-            setDatabase(null);
-          }}
-        />
-      );
-    }
-    return <SearchOutlined {...props} />;
+    if (status === SearchStatus.defalut && !searchKey) return undefined;
+    return (
+      <CloseCircleFilled
+        {...props}
+        onClick={() => {
+          back?.();
+        }}
+      />
+    );
   };
 
   return (
     <div>
       <span className={styles.title}>
         <span className={styles.selectInfo}>
-          {getDataBase()}
+          {getSearchTag()}
           <span className={styles.selectInput}>{getObjectInput()}</span>
         </span>
         <span className={styles.searchIcon}>{getIcon()}</span>
@@ -145,4 +189,4 @@ const Search = ({
   );
 };
 
-export default Search;
+export default inject('userStore', 'modalStore')(observer(Search));

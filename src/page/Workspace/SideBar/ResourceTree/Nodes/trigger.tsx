@@ -69,11 +69,11 @@ export function TriggerTreeData(dbSession: SessionStore, database: IDatabase): T
         </Tooltip>
       );
 
-      const key = `${database.id}-${dbSession?.database?.triggerVersion}-${dbName}-trigger-${trigger.triggerName}`;
+      const key = `${database.id}-${dbName}-trigger-${trigger.triggerName}`;
       return {
         title: trigger.triggerName,
         key,
-        doubleClick(session, node, databaseFrom) {
+        doubleClick(session, node) {
           openTriggerViewPage(
             trigger.triggerName,
             undefined,

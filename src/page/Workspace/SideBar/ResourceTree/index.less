@@ -31,6 +31,9 @@
         color: var(--text-color-link);
       }
     }
+    .titleText {
+      font-weight: 600;
+    }
     .titleAction {
       margin-left: 4px;
       flex-shrink: 0;
@@ -136,7 +139,26 @@
           background-color: transparent;
         }
         &:hover {
+          :local(.actions) {
+            display: flex;
+            justify-content: center;
+          }
           background-color: unset;
+          :local(.envTip.envTipPersonal) {
+            display: none;
+          }
+        }
+        :local(.envTip) {
+          :global {
+            .ant-badge-status-dot {
+              border-radius: 0;
+            }
+          }
+        }
+        :local(.actions) {
+          display: none;
+          flex: 0;
+          flex-basis: 25px;
         }
       }
     }
