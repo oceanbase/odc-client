@@ -38,9 +38,8 @@ export async function listDatabases(
   type?: DBType[],
   connectType?: ConnectType[],
   dataSourceName?: string,
-  cluster?: string,
-  host?: string,
-  tenant?: string,
+  clusterName?: string,
+  tenantName?: string,
 ): Promise<IResponseData<IDatabase>> {
   const res = await request.get(`/api/v2/database/databases`, {
     params: {
@@ -56,9 +55,8 @@ export async function listDatabases(
       type: type,
       connectType: connectType,
       dataSourceName,
-      cluster,
-      host,
-      tenant,
+      clusterName,
+      tenantName,
     },
   });
 
