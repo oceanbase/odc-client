@@ -43,7 +43,8 @@ export default function convertValueToSQLString(
     }
     case 'CHAR':
     case 'VARCHAR':
-    case 'VARCHAR2': {
+    case 'VARCHAR2':
+    case 'NVARCHAR2': {
       return OracleString(value);
     }
     case 'INTERVAL_YEAR_TO_MONTH':
