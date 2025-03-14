@@ -1,8 +1,7 @@
 import React, { useContext } from 'react';
 import { Dropdown } from 'antd';
 import type { MenuProps } from 'antd';
-import { ControlOutlined } from '@ant-design/icons';
-import { DatabaseGroup } from '../const';
+import { DatabaseGroup } from '@/d.ts/database';
 import ParamContext from '../ParamContext';
 import { ReactComponent as GroupSvg } from '@/svgr/group.svg';
 import Icon from '@ant-design/icons';
@@ -15,20 +14,24 @@ const items: MenuProps['items'] = [
     label: '不分组',
   },
   {
-    key: DatabaseGroup.type,
-    label: '按类型分组',
-  },
-  {
-    key: DatabaseGroup.environment,
-    label: '按环境分组',
-  },
-  {
     key: DatabaseGroup.dataSource,
     label: '按数据源分组',
   },
   {
+    key: DatabaseGroup.connectType,
+    label: '按类型分组',
+  },
+  {
     key: DatabaseGroup.cluster,
     label: '按集群分组',
+  },
+  {
+    key: DatabaseGroup.tenant,
+    label: '按租户分组',
+  },
+  {
+    key: DatabaseGroup.environment,
+    label: '按环境分组',
   },
 ];
 const Group: React.FC<IProps> = function () {

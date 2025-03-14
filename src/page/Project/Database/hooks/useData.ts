@@ -9,13 +9,14 @@ import tracert from '@/util/tracert';
 import { useRequest } from 'ahooks';
 import { listEnvironments } from '@/common/network/env';
 import { ConnectType } from '@/d.ts';
-import { DatabaseGroup } from '../const';
+import { DatabaseGroup } from '@/d.ts/database';
 import { getGroupMapId, GroupKey, isGroupColumn } from '../help';
 import { ProjectRole } from '@/d.ts/project';
+import { getMapIdByDB } from '@/page/Workspace/SideBar/ResourceTree/helper';
 
 const useData = (id) => {
   const { project, setHasLoginDatabaseAuth } = useContext(ProjectContext);
-  const [groupMode, setGroupMode] = useState(DatabaseGroup.none);
+  const [groupMode, setGroupMode] = useState(DatabaseGroup.dataSource);
   const [filterParams, setFilterParams] = useState<IFilterParams>({
     environmentId: null,
     connectType: null,
@@ -63,6 +64,7 @@ const useData = (id) => {
       connectType,
       searchValue.type === SearchType.DATASOURCE ? searchValue.value : null,
       searchValue.type === SearchType.CLUSTER ? searchValue.value : null,
+      searchValue.type === SearchType.TENANT ? searchValue.value : null,
     );
     if (res) {
       datasourceStatus.asyncUpdateStatus(
@@ -90,12 +92,14 @@ const useData = (id) => {
       new Map();
     const datasourceGruop: Map<number, { groupName: string; databases: IDatabase[] }> = new Map();
     const clusterGroup: Map<string, { groupName: string; databases: IDatabase[] }> = new Map();
+    const tenantGroup: Map<string, { groupName: string; databases: IDatabase[] }> = new Map();
     data?.forEach((db) => {
       const { environment, dataSource, connectType } = db;
-      const { clusterName } = dataSource || {};
+      // 环境分组
       if (environment) {
-        const environmentDatabases = environmentGroup.get(environment.id) || {
-          groupName: environment.name,
+        const { mapId, groupName } = getMapIdByDB(db, DatabaseGroup.environment);
+        const environmentDatabases = environmentGroup.get(mapId) || {
+          groupName,
           databases: [],
         };
         if (db.type === 'LOGICAL') {
@@ -103,11 +107,13 @@ const useData = (id) => {
         } else {
           environmentDatabases.databases.push(db);
         }
-        environmentGroup.set(environment.id, environmentDatabases);
+        environmentGroup.set(mapId, environmentDatabases);
       }
-      if (dataSource) {
-        const datasourceDatabases = datasourceGruop.get(dataSource?.id) || {
-          groupName: dataSource.name,
+      // 数据源分组
+      if (db.type === 'LOGICAL' || dataSource) {
+        const { mapId, groupName } = getMapIdByDB(db, DatabaseGroup.dataSource);
+        const datasourceDatabases = datasourceGruop.get(mapId) || {
+          groupName,
           databases: [],
         };
         if (db.type === 'LOGICAL') {
@@ -115,11 +121,13 @@ const useData = (id) => {
         } else {
           datasourceDatabases.databases.push(db);
         }
-        datasourceGruop.set(dataSource?.id, datasourceDatabases);
+        datasourceGruop.set(mapId, datasourceDatabases);
       }
+      // 类型分组
       if (connectType) {
-        const connectTypeDatabases = connectTypeGruop.get(connectType) || {
-          groupName: connectType,
+        const { mapId, groupName } = getMapIdByDB(db, DatabaseGroup.connectType);
+        const connectTypeDatabases = connectTypeGruop.get(mapId) || {
+          groupName,
           databases: [],
         };
         if (db.type === 'LOGICAL') {
@@ -127,12 +135,13 @@ const useData = (id) => {
         } else {
           connectTypeDatabases.databases.push(db);
         }
-        connectTypeGruop.set(connectType, connectTypeDatabases);
+        connectTypeGruop.set(mapId, connectTypeDatabases);
       }
-      const clusterNameTemp = clusterName || '无集群';
-      if (clusterNameTemp) {
-        const clusterDatabases = clusterGroup.get(clusterNameTemp) || {
-          groupName: clusterNameTemp,
+      // 集群分组
+      {
+        const { mapId, groupName } = getMapIdByDB(db, DatabaseGroup.cluster);
+        const clusterDatabases = clusterGroup.get(mapId) || {
+          groupName,
           databases: [],
         };
         if (db.type === 'LOGICAL') {
@@ -140,7 +149,21 @@ const useData = (id) => {
         } else {
           clusterDatabases.databases.push(db);
         }
-        clusterGroup.set(clusterNameTemp, clusterDatabases);
+        clusterGroup.set(mapId, clusterDatabases);
+      }
+      // 租户分组
+      {
+        const { mapId, groupName } = getMapIdByDB(db, DatabaseGroup.tenant);
+        const tenantDatabases = tenantGroup.get(mapId) || {
+          groupName,
+          databases: [],
+        };
+        if (db.type === 'LOGICAL') {
+          tenantDatabases.databases.unshift(db);
+        } else {
+          tenantDatabases.databases.push(db);
+        }
+        tenantGroup.set(mapId, tenantDatabases);
       }
     });
 
@@ -149,14 +172,16 @@ const useData = (id) => {
       datasourceGruop,
       connectTypeGruop,
       clusterGroup,
+      tenantGroup,
     };
   }, [data]);
 
   const DatabaseGroupMap = {
-    [DatabaseGroup.type]: dataGroup.connectTypeGruop,
+    [DatabaseGroup.connectType]: dataGroup.connectTypeGruop,
     [DatabaseGroup.environment]: dataGroup.environmentGroup,
     [DatabaseGroup.dataSource]: dataGroup.datasourceGruop,
     [DatabaseGroup.cluster]: dataGroup.clusterGroup,
+    [DatabaseGroup.tenant]: dataGroup.tenantGroup,
   };
 
   const treeData = useMemo(() => {
@@ -164,11 +189,14 @@ const useData = (id) => {
       return data;
     } else {
       const treeData = [];
-      const metaArr = Array.from(DatabaseGroupMap[groupMode]?.values());
+      const metaArr: {
+        groupName: string;
+        databases: IDatabase[];
+      }[] = Array.from(DatabaseGroupMap[groupMode]?.values());
       for (let i = 0; i < metaArr?.length; i++) {
         treeData.push({
           name: metaArr[i].groupName,
-          id: `${GroupKey}_${groupMode}_${getGroupMapId(metaArr[i].databases[0], groupMode)}`,
+          id: `${GroupKey}_${groupMode}_${i}`,
           groudMapId: getGroupMapId(metaArr[i].databases[0], groupMode),
           children: metaArr[i].databases,
         });

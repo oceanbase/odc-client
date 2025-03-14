@@ -31,6 +31,12 @@ interface IGlobalSearchContext {
   databaseLoading?: boolean;
   objectloading?: boolean;
   loadDatabaseObject?: (value: any) => Promise<void>;
+  fetchSyncAll?: () => Promise<{
+    data?: boolean;
+    errCode: string;
+    errMsg: string;
+  }>;
+  syncAllLoading?: boolean;
   actions?: {
     openSql: (e: React.MouseEvent<any>, db: IDatabase) => void;
     applyPermission: (e: React.MouseEvent<any>, db: IDatabase) => void;

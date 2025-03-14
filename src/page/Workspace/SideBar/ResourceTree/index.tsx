@@ -15,8 +15,9 @@
  */
 
 import { IDatabase, DatabaseGroup } from '@/d.ts/database';
+import { UserStore } from '@/store/login';
 import { SessionManagerStore } from '@/store/sessionManager';
-import { Space, Tree, Spin, Input } from 'antd';
+import { Space, Tree, Spin, Button } from 'antd';
 import { EventDataNode } from 'antd/lib/tree';
 import { throttle } from 'lodash';
 import { inject, observer } from 'mobx-react';
@@ -37,6 +38,8 @@ import { ModalStore } from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
 import Group from './DatabaseGroup';
 import DatabaseSearch from './DatabaseSearch';
+import { PlusOutlined } from '@ant-design/icons';
+import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawer/NewButton';
 import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
 import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
 import { GroupNodeToResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/const';
@@ -54,6 +57,7 @@ import { isString } from 'lodash';
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
   modalStore?: ModalStore;
+  userStore?: UserStore;
   settingStore?: SettingStore;
   databases: any[];
   reloadDatabase: () => void;
@@ -78,6 +82,7 @@ const ResourceTree: React.FC<IProps> = function ({
   stateId,
   allDatabasesMap,
   DatabaseDataNodeMap,
+  userStore,
 }) {
   const { expandedKeys, loadedKeys, sessionIds, setSessionId, onExpand, onLoad, setExpandedKeys } =
     useTreeState(stateId);
@@ -424,6 +429,16 @@ const ResourceTree: React.FC<IProps> = function ({
         </div>
         <div className={styles.search}>
           <DatabaseSearch searchValue={searchValue} setSearchValue={setSearchValue} />
+          {userStore.isPrivateSpace() ? (
+            <NewDatasourceButton onSuccess={() => reloadDatasourceList()}>
+              <Button
+                size="small"
+                type="primary"
+                className={styles.newDataSourceButton}
+                icon={<PlusOutlined />}
+              />
+            </NewDatasourceButton>
+          ) : null}
         </div>
         <div ref={treeWrapperRef} className={styles.tree}>
           <Spin spinning={loading}>
@@ -478,4 +493,9 @@ const ResourceTree: React.FC<IProps> = function ({
   );
 };
 
-export default inject('sessionManagerStore', 'modalStore', 'settingStore')(observer(ResourceTree));
+export default inject(
+  'sessionManagerStore',
+  'userStore',
+  'modalStore',
+  'settingStore',
+)(observer(ResourceTree));

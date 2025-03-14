@@ -15,16 +15,16 @@ import { getDataSourceModeConfig } from '@/common/datasource';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import { isPhysicalDatabase } from '@/util/database';
 import { isLogicalDatabase } from '@/util/database';
+import { syncAll } from '@/common/network/database';
 
 const useGlobalSearchData = (params: {
   project: IProject;
   dataSource: IConnection;
   database: IDatabase;
   modalStore: ModalStore;
-  reset: () => void;
   activeKey: string;
 }) => {
-  const { project, dataSource, database, modalStore, reset, activeKey } = params;
+  const { project, dataSource, database, modalStore, activeKey } = params;
   const [datasourceList, setDatasourceList] = useState<IDatasource[]>([]);
   const [projectList, setProjectList] = useState<IProject[]>([]);
   const [databaseList, setDatabaseList] = useState<IDatabase[]>([]);
@@ -61,6 +61,10 @@ const useGlobalSearchData = (params: {
   });
 
   const { run: fetchObject, loading: objectloading } = useRequest(getDatabaseObject, {
+    manual: true,
+  });
+
+  const { loading: syncAllLoading, run: fetchSyncAll } = useRequest(syncAll, {
     manual: true,
   });
 
@@ -122,8 +126,6 @@ const useGlobalSearchData = (params: {
       loadDatabaseList();
       loadDatasourceList();
       !login.isPrivateSpace() && loadProjectList();
-    } else {
-      reset();
     }
   }, [modalStore.databaseSearchModalVisible]);
 
@@ -136,10 +138,12 @@ const useGlobalSearchData = (params: {
     loadDatasourceList,
     loadProjectList,
     loadDatabaseObject,
+    fetchSyncAll,
     projectLoading,
     dataSourceLoading,
     databaseLoading,
     objectloading,
+    syncAllLoading,
   };
 };
 

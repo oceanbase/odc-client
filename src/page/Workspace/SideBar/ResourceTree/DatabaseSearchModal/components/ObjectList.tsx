@@ -4,10 +4,10 @@ import { DbObjectType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
-import Icon from '@ant-design/icons';
-import { Button, Divider, Empty, Spin, Tabs, Tooltip } from 'antd';
-import { useContext } from 'react';
+import { Button, Divider, Empty, Spin, Tabs, Tooltip, message } from 'antd';
+import { useContext, useMemo } from 'react';
 import { inject, observer } from 'mobx-react';
+import Icon, { LoadingOutlined } from '@ant-design/icons';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import GlobalSearchContext from '@/page/Workspace/context/GlobalSearchContext';
 import {
@@ -33,6 +33,8 @@ const ObjectList = ({ modalStore }: Iprops) => {
     datasourceList,
     objectloading,
     actions,
+    syncAllLoading,
+    fetchSyncAll,
   } = globalSearchContext;
   const { positionResourceTree, applyTablePermission, openTree, openSql, applyDbPermission } =
     actions;
@@ -80,15 +82,44 @@ const ObjectList = ({ modalStore }: Iprops) => {
     );
   };
 
-  const commonIcon = (component) => {
-    if (!component) return;
-    return (
-      <Icon
-        component={component}
-        style={{ fontSize: 14, filter: 'grayscale(1) opacity(0.6)', marginRight: 2 }}
-      />
-    );
-  };
+  const emptyContent = useMemo(() => {
+    let content;
+    if (syncAllLoading) {
+      content = (
+        <div className={styles.asyncingContent}>
+          <LoadingOutlined className={styles.asycLoading} />
+          <div className={styles.asyncText}>同步元数据中...</div>
+        </div>
+      );
+    } else {
+      content = (
+        <Empty
+          className={styles.asyncingContent}
+          description={
+            <div>
+              <p>暂无数据</p>
+              <p>
+                请尝试
+                <a
+                  onClick={async () => {
+                    const data = await fetchSyncAll?.();
+                    if (data?.data) {
+                      message.success('同步成功');
+                    }
+                  }}
+                >
+                  同步数据库
+                </a>
+                ，或联系管理员
+              </p>
+            </div>
+          }
+        />
+      );
+    }
+
+    return content;
+  }, [syncAllLoading]);
 
   const getSubTitle = (item, type) => {
     if (!item) return;
@@ -159,14 +190,7 @@ const ObjectList = ({ modalStore }: Iprops) => {
         {!objectlist?.dbColumns?.length &&
         !objectlist?.dbObjects?.length &&
         !objectlist?.databases?.length ? (
-          <div className={styles.objectlistBoxEmpty}>
-            <Empty
-              description={formatMessage({
-                id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.939E5208',
-                defaultMessage: '如果检索不到已存在的数据库对象，请先同步元数据',
-              })}
-            />
-          </div>
+          emptyContent
         ) : (
           <div className={styles.objectlistBox}>
             {typeObjectTree?.map((i) => {
@@ -380,24 +404,7 @@ const ObjectList = ({ modalStore }: Iprops) => {
     return (
       <Spin spinning={objectloading}>
         {!currentObjectList?.data?.length ? (
-          <div className={styles.objectlistBoxEmpty}>
-            <Empty
-              description={
-                <>
-                  <div>
-                    {formatMessage({
-                      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.6656C471',
-                      defaultMessage: '暂无数据',
-                    })}
-                  </div>
-                  {formatMessage({
-                    id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.657DE57E',
-                    defaultMessage: '如果检索不到已存在的数据库对象，请先同步元数据',
-                  })}
-                </>
-              }
-            />
-          </div>
+          emptyContent
         ) : (
           <div className={styles.objectlistBox}>
             {currentObjectList?.data?.map((object) => {

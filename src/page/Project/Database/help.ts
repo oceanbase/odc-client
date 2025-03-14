@@ -1,4 +1,4 @@
-import { DatabaseGroup } from './const';
+import { DatabaseGroup } from '@/d.ts/database';
 import { DataBaseOperationKey, getOperatioFunc } from '@/d.ts/operation';
 import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
 import { getDataSourceModeConfig } from '@/common/datasource';
@@ -23,6 +23,8 @@ const getGroupMapId = (record: IDatabase, groupMode) => {
   if (!record) {
     return undefined;
   }
+  const { dataSource } = record;
+  const { clusterName, tenantName } = dataSource || {};
   switch (groupMode) {
     case DatabaseGroup.dataSource: {
       return record?.dataSource?.id;
@@ -33,8 +35,11 @@ const getGroupMapId = (record: IDatabase, groupMode) => {
     case DatabaseGroup.cluster: {
       return record?.dataSource?.clusterName || '无集群';
     }
-    case DatabaseGroup.type: {
+    case DatabaseGroup.connectType: {
       return record?.connectType;
+    }
+    case DatabaseGroup.tenant: {
+      return tenantName && clusterName ? `${tenantName}@${clusterName}` : '无租户';
     }
   }
 };

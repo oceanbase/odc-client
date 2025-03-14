@@ -3,7 +3,7 @@ import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { IDatabase } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
-import { Button, Empty, Space, Tooltip } from 'antd';
+import { Button, Empty, Space, Tooltip, message } from 'antd';
 import React, { useMemo, useContext } from 'react';
 import styles from '../index.less';
 import { SearchStatus } from '../constant';
@@ -13,8 +13,6 @@ import { ReactComponent as ProjectSvg } from '@/svgr/project_space.svg';
 import { DbObjectType } from '@/d.ts';
 import Icon from '@ant-design/icons';
 import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
-import { syncAll } from '@/common/network/database';
-import { useRequest } from 'ahooks';
 import { LoadingOutlined } from '@ant-design/icons';
 import GlobalSearchContext from '@/page/Workspace/context/GlobalSearchContext';
 import { inject, observer } from 'mobx-react';
@@ -24,9 +22,6 @@ interface Iprops {
 }
 
 const List = ({ modalStore }: Iprops) => {
-  const { loading: syncAllLoading, run: fetchSyncAll } = useRequest(syncAll, {
-    manual: true,
-  });
   const globalSearchContext = useContext(GlobalSearchContext);
   const {
     databaseList,
@@ -40,6 +35,8 @@ const List = ({ modalStore }: Iprops) => {
     actions,
     reloadDatabaseList,
     databaseLoading,
+    fetchSyncAll,
+    syncAllLoading,
   } = globalSearchContext;
   const { positionResourceTree, positionProjectOrDataSource, openSql, applyPermission } = actions;
   const options = useMemo(() => {
@@ -154,9 +151,8 @@ const List = ({ modalStore }: Iprops) => {
   };
 
   const emptyContent = useMemo(() => {
-    // 展示数据库时
     let content;
-    if (status === SearchStatus.defalut && !searchKey && !options?.length && !databaseLoading) {
+    if (!options?.length && !databaseLoading) {
       if (syncAllLoading) {
         content = (
           <div className={styles.asyncingContent}>
@@ -175,9 +171,9 @@ const List = ({ modalStore }: Iprops) => {
                   请尝试
                   <a
                     onClick={async () => {
-                      const data = await fetchSyncAll();
-                      if (data) {
-                        reloadDatabaseList?.();
+                      const data = await fetchSyncAll?.();
+                      if (data?.data) {
+                        message.success('同步成功');
                       }
                     }}
                   >
@@ -192,7 +188,7 @@ const List = ({ modalStore }: Iprops) => {
       }
     }
     return content;
-  }, [options, status]);
+  }, [options, status, syncAllLoading]);
 
   const renderDatabaseItemButton = (db: IDatabase) => {
     if (!db?.authorizedPermissionTypes?.length) {

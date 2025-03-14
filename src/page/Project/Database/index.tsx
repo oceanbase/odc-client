@@ -54,7 +54,7 @@ import ParamContext, { IFilterParams } from './ParamContext';
 import StatusName from './StatusName';
 import { isProjectArchived } from '@/page/Project/helper';
 import { renderTool } from '@/util/renderTool';
-import { DatabaseGroup } from './const';
+import { DatabaseGroup } from '@/d.ts/database';
 import { CaretDownOutlined, CaretRightOutlined } from '@ant-design/icons';
 
 import { getOperation, GroupKey, isGroupColumn } from './help';
@@ -201,7 +201,13 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
         isScroll
         expandable={{
           indentSize: 20,
-          defaultExpandedRowKeys: [`${GroupKey}_0`],
+          defaultExpandedRowKeys: [
+            `${GroupKey}_${DatabaseGroup.cluster}_0`,
+            `${GroupKey}_${DatabaseGroup.dataSource}_0`,
+            `${GroupKey}_${DatabaseGroup.connectType}_0`,
+            `${GroupKey}_${DatabaseGroup.tenant}_0`,
+            `${GroupKey}_${DatabaseGroup.environment}_0`,
+          ],
           fixed: true,
           expandIcon: ({ expanded, onExpand, record }) => {
             if (!isGroupColumn(record.id)) {
