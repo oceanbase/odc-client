@@ -12,6 +12,7 @@ import { inject, observer } from 'mobx-react';
 import { UserStore } from '@/store/login';
 import GlobalSearchContext from '@/page/Workspace/context/GlobalSearchContext';
 import { ModalStore } from '@/store/modal';
+import { SearchOutlined } from '@ant-design/icons';
 
 interface Iprops {
   userStore?: UserStore;
@@ -39,7 +40,7 @@ const Search = ({ userStore, modalStore }: Iprops) => {
 
   const getSearchTag = () => {
     if (!database && !dataSource && !project) {
-      return null;
+      return <SearchOutlined style={{ marginRight: '6px', position: 'relative', top: '2px' }} />;
     }
     let databaseTag, dataSourceTag, projectTag;
     const divider = (

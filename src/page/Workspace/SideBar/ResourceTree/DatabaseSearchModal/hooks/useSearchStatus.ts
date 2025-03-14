@@ -159,11 +159,6 @@ const useSearchStatus = (initSearchStatus: SearchStatus) => {
   };
 
   const reset = () => {
-    setStatus(SearchStatus.defalut);
-    setDatabase(undefined);
-    setProject(undefined);
-    setSearchKey('');
-    setDataSource(undefined);
     setCacheSearchKeyList([]);
   };
 

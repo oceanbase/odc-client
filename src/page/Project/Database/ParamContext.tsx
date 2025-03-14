@@ -2,7 +2,7 @@ import { ConnectType } from '@/d.ts';
 import { DBType } from '@/d.ts/database';
 import React from 'react';
 import { IEnvironment } from '@/d.ts/environment';
-import { DatabaseGroup } from './const';
+import { DatabaseGroup } from '@/d.ts/database';
 import { SearchType } from './Header/Search';
 export interface IFilterParams {
   environmentId: number[];

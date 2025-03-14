@@ -22,6 +22,7 @@ import { ResourceNodeType, TreeDataNode } from './type';
 import { isLogicalDatabase } from '@/util/database';
 import { IDatabase, DatabaseGroup } from '@/d.ts/database';
 import { ConnectType } from '@/d.ts';
+import { ConnectTypeText } from '@/constant/label';
 
 export async function loadNode(
   sessionManagerStore: SessionManagerStore,
@@ -255,7 +256,7 @@ export const getMapIdByDB = <T extends DatabaseGroup>(db: IDatabase, type: T): G
     }
     case DatabaseGroup.connectType: {
       mapId = connectType;
-      groupName = connectType;
+      groupName = ConnectTypeText[connectType];
       break;
     }
     case DatabaseGroup.cluster: {

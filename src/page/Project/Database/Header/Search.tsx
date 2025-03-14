@@ -12,6 +12,7 @@ export enum SearchType {
   DATABASE = 'DATABASE',
   DATASOURCE = 'DATASOURCE',
   CLUSTER = 'CLUSTER',
+  TENANT = 'TENANT',
 }
 
 export const SearchTypeText = {
@@ -27,6 +28,10 @@ export const SearchTypeText = {
     id: 'odc.Connecion.ConnectionList.ParamContext.Cluster',
     defaultMessage: '集群',
   }), //集群
+  [SearchType.TENANT]: formatMessage({
+    id: 'odc.Connecion.ConnectionList.ParamContext.Tenant',
+    defaultMessage: '租户',
+  }), //租户
 };
 const splitKey = '_$$$odc$$$_';
 
@@ -67,28 +72,32 @@ const Search: React.FC<IProps> = function () {
       return;
     }
     setOptions(
-      [SearchType.DATABASE, SearchType.DATASOURCE, SearchType.CLUSTER]?.map((v) => {
-        return {
-          value: value + splitKey + v,
-          label: (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      [SearchType.DATABASE, SearchType.DATASOURCE, SearchType.CLUSTER, SearchType.TENANT]?.map(
+        (v) => {
+          return {
+            value: value + splitKey + v,
+            label: (
               <div
-                style={{
-                  flex: 1,
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis',
-                }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
               >
-                {value}
+                <div
+                  style={{
+                    flex: 1,
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {value}
+                </div>
+                <div style={{ flexShrink: 0, flexGrow: 0, color: 'var(--text-color-hint)' }}>
+                  {SearchTypeText[v]}
+                </div>
               </div>
-              <div style={{ flexShrink: 0, flexGrow: 0, color: 'var(--text-color-hint)' }}>
-                {SearchTypeText[v]}
-              </div>
-            </div>
-          ),
-        };
-      }),
+            ),
+          };
+        },
+      ),
     );
     return;
   }
@@ -112,9 +121,6 @@ const Search: React.FC<IProps> = function () {
       autoFocus={forceVisible}
       onBlur={(e) => {
         setForceVisible(false);
-        if (isEmpty) {
-          setSearchvalue(null, null);
-        }
       }}
       onChange={(v) => {
         setIsEmpty(!v);
@@ -125,7 +131,6 @@ const Search: React.FC<IProps> = function () {
       onSelect={(v, option) => {
         const arr = v?.split(splitKey);
         if (arr.length) {
-          console.log(arr[0], arr[1] as any);
           setSearchvalue(arr[0], arr[1] as any);
           ref.current?.blur();
         }
@@ -134,6 +139,7 @@ const Search: React.FC<IProps> = function () {
       onClear={() => {
         if (searchValue?.value) {
           setSearchvalue(null, null);
+          setForceVisible(true);
         }
       }}
     >

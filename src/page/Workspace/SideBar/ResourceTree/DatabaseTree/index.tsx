@@ -63,6 +63,7 @@ const DatabaseTree = function () {
 
   return (
     <ResourceTree
+      showTip={[DatabaseGroup.none, DatabaseGroup.project].includes(groupMode)}
       stateId={'resourceTree'}
       reloadDatabase={() => reloadDatabase()}
       databaseFrom={'datasource'}

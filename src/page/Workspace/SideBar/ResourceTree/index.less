@@ -42,7 +42,43 @@
   }
   .search {
     flex: 0;
-    padding: 0px 12px 4px 12px;
+    display: flex;
+    padding: 0px 6px 4px 6px;
+    align-items: center;
+    .newDataSourceButton {
+      flex-shrink: 0;
+      flex-grow: 0;
+      margin-left: 4px;
+      height: 23px;
+      width: 23px;
+    }
+    .searchInput {
+      flex: 1;
+      height: 25px;
+      :global {
+        .ant-input-wrapper {
+          height: 100%;
+          .ant-input-affix-wrapper {
+            height: 100%;
+          }
+          .ant-input-group-addon {
+            height: 100%;
+
+            .ant-btn {
+              height: 100%;
+            }
+          }
+        }
+      }
+    }
+    .shortCut {
+      color: var(--text-color-hint);
+      background-color: var(--hover-color2);
+      padding: 0px 2px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      font-size: 10px;
+    }
   }
   .tree {
     flex: 1;

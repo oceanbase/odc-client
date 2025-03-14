@@ -35,7 +35,6 @@ const useGroupData = (databaseList: IDatabase[]) => {
       })
       .forEach((db) => {
         const { environment, dataSource, connectType, project } = db;
-        const { clusterName, tenantName } = dataSource || {};
         allDatabases.set(db.id, db);
         // 项目分组
         if (project) {

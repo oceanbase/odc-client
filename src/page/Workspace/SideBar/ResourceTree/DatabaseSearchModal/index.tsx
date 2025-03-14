@@ -58,11 +58,13 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
     databaseList,
     loadDatabaseObject,
     loadDatabaseList,
+    fetchSyncAll,
     projectLoading,
     dataSourceLoading,
     databaseLoading,
     objectloading,
-  } = useGlobalSearchData({ project, database, dataSource, activeKey, modalStore, reset });
+    syncAllLoading,
+  } = useGlobalSearchData({ project, database, dataSource, activeKey, modalStore });
   const actions = useActions({ modalStore, project });
   const { positionResourceTree, positionProjectOrDataSource } = actions || {};
 
@@ -77,6 +79,7 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
   useEffect(() => {
     if (!databaseLoading && !dataSourceLoading && !projectLoading) {
       if (initStatus) {
+        reset();
         update(initStatus);
         setSearchKey(initSearchKey);
         setDatabase(databaseList.find((item) => item.id === initDatabaseId));
@@ -207,7 +210,7 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
     }
 
     return (
-      <div style={{ minHeight: '360px' }} className={styles.content}>
+      <div style={{ minHeight: '364px' }} className={styles.content}>
         {shouldShowSearchContent && searchContent}
         {shouldShowtPositioninContent && PositioninContent}
         {shouldShowList && <List />}
@@ -240,6 +243,8 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
         objectloading,
         actions,
         loadDatabaseObject,
+        fetchSyncAll,
+        syncAllLoading,
       }}
     >
       <Modal
