@@ -16,7 +16,7 @@
 
 import { ITable } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, SettingOutlined, SettingFilled } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, Radio, Select, Typography, Tooltip } from 'antd';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
@@ -27,6 +27,9 @@ import styles from './index.less';
 import BatchSelectionPopover from '@/component/BatchSelectionPopover';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import { IDatabase } from '@/d.ts/database';
+import JoinTableConfigModal from '../../component/JoinTableConfigsModal';
+import useJoinTableConfig from '../../component/JoinTableConfigsModal/useJoinTableConfig';
+
 const { Text, Link } = Typography;
 
 interface IProps {
@@ -43,6 +46,8 @@ const ArchiveRange: React.FC<IProps> = (props) => {
     label: item.tableName,
     value: item.tableName,
   }));
+
+  const { visible, currentIndex, open, close, handleSubmit } = useJoinTableConfig(form);
 
   useEffect(() => {
     setEnablePartition(checkPartition);
@@ -225,6 +230,26 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                               id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.EnterAFilterCondition',
                               defaultMessage: '请输入过滤条件',
                             })} /*请输入过滤条件*/
+                            addonAfter={
+                              <>
+                                <JoinTableConfigModal
+                                  visible={visible && currentIndex === index}
+                                  initialValues={form.getFieldValue(['tables', index])}
+                                  onCancel={close}
+                                  onOk={handleSubmit}
+                                />
+                                <Tooltip title="过滤条件设置（如关联表）">
+                                  <div onClick={() => open(index)} style={{ cursor: 'pointer' }}>
+                                    {form.getFieldValue(['tables', name, 'joinTableConfigs'])
+                                      ?.length ? (
+                                      <SettingFilled style={{ color: '#1890ff' }} />
+                                    ) : (
+                                      <SettingOutlined />
+                                    )}
+                                  </div>
+                                </Tooltip>
+                              </>
+                            }
                           />
                         </Form.Item>
                         {enabledTargetTable && (

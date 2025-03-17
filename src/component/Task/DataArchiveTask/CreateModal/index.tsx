@@ -70,6 +70,8 @@ import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import VariableConfig, { timeUnitOptions } from './VariableConfig';
 import ShardingStrategyItem from '../../component/ShardingStrategyItem';
 import { disabledDate, disabledTime } from '@/util/utils';
+import DirtyRowAction from '../../component/DirtyRowAction';
+import MaxAllowedDirtyRowCount from '../../component/MaxAllowedDirtyRowCount';
 
 export enum IArchiveRange {
   PORTION = 'portion',
@@ -223,6 +225,8 @@ const CreateModal: React.FC<IProps> = (props) => {
       variables,
       timeoutMillis,
       syncTableStructure,
+      dirtyRowAction,
+      maxAllowedDirtyRowCount,
     } = jobParameters;
     setEnablePartition(!!tables?.find((i) => i?.partitions?.length));
     setIsdeleteAfterMigration(deleteAfterMigration);
@@ -246,6 +250,8 @@ const CreateModal: React.FC<IProps> = (props) => {
       description,
       timeoutMillis: milliSecondsToHour(timeoutMillis),
       syncTableStructure,
+      dirtyRowAction,
+      maxAllowedDirtyRowCount,
     };
 
     if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
@@ -366,6 +372,8 @@ const CreateModal: React.FC<IProps> = (props) => {
           dataSizeLimit,
           timeoutMillis,
           syncTableStructure,
+          dirtyRowAction,
+          maxAllowedDirtyRowCount,
         } = values;
         _tables?.map((i) => {
           i.partitions = Array.isArray(i.partitions)
@@ -398,6 +406,8 @@ const CreateModal: React.FC<IProps> = (props) => {
             migrationInsertAction,
             shardingStrategy,
             syncTableStructure,
+            dirtyRowAction,
+            maxAllowedDirtyRowCount,
             timeoutMillis: hourToMilliSeconds(timeoutMillis),
             rateLimit: {
               rowLimit,
@@ -635,37 +645,6 @@ const CreateModal: React.FC<IProps> = (props) => {
 
               <VariableConfig form={form} />
             </Space>
-            <Form.Item name="deleteAfterMigration" valuePropName="checked">
-              <Checkbox
-                onChange={(e) => {
-                  setIsdeleteAfterMigration(e.target.checked);
-                }}
-              >
-                <Space>
-                  {
-                    formatMessage({
-                      id: 'odc.DataArchiveTask.CreateModal.CleanUpArchivedDataFrom',
-                      defaultMessage: '清理源端已归档数据',
-                    }) /*清理源端已归档数据*/
-                  }
-
-                  <span className={styles.desc}>
-                    {
-                      isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
-                        ? formatMessage({
-                            id: 'src.component.Task.DataArchiveTask.CreateModal.5A19F0AB',
-                            defaultMessage: '若您进行清理，默认立即清理且不做备份',
-                          })
-                        : formatMessage({
-                            id: 'odc.DataArchiveTask.CreateModal.IfYouCleanUpThe',
-                            defaultMessage:
-                              '若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚',
-                          }) /*若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚*/
-                    }
-                  </span>
-                </Space>
-              </Checkbox>
-            </Form.Item>
             {isdeleteAfterMigration &&
               isConnectTypeBeFileSystemGroup(targetDatabase?.connectType) && (
                 <Form.Item name="deleteTemporaryTable" valuePropName="checked">
@@ -770,6 +749,44 @@ const CreateModal: React.FC<IProps> = (props) => {
               }
               keepExpand
             >
+              <Form.Item
+                name="deleteAfterMigration"
+                valuePropName="checked"
+                style={{ marginBottom: 18 }}
+                extra={
+                  <span>
+                    {
+                      isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
+                        ? formatMessage({
+                            id: 'src.component.Task.DataArchiveTask.CreateModal.5A19F0AB',
+                            defaultMessage: '若您进行清理，默认立即清理且不做备份',
+                          })
+                        : formatMessage({
+                            id: 'odc.DataArchiveTask.CreateModal.IfYouCleanUpThe',
+                            defaultMessage:
+                              '若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚',
+                          }) /*若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚*/
+                    }
+                  </span>
+                }
+              >
+                <Checkbox
+                  onChange={(e) => {
+                    setIsdeleteAfterMigration(e.target.checked);
+                  }}
+                >
+                  <Space>
+                    {
+                      formatMessage({
+                        id: 'odc.DataArchiveTask.CreateModal.CleanUpArchivedDataFrom',
+                        defaultMessage: '清理源端已归档数据',
+                      }) /*清理源端已归档数据*/
+                    }
+                  </Space>
+                </Checkbox>
+              </Form.Item>
+              <DirtyRowAction dependentField="deleteAfterMigration" />
+              <MaxAllowedDirtyRowCount />
               <TaskdurationItem form={form} />
               <SynchronizationItem form={form} targetDatabase={targetDatabase} />
               <Form.Item

@@ -41,6 +41,10 @@ import { InsertActionOptions } from '../CreateModal';
 import ArchiveRange from './ArchiveRange';
 import { shardingStrategyOptions } from '../../component/ShardingStrategyItem';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import {
+  DirtyRowActionEnum,
+  DirtyRowActionLabelMap,
+} from '@/component/ExecuteSqlDetailModal/constant';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -184,7 +188,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         direction="column"
       />
 
-      <Descriptions column={2}>
+      <Descriptions column={2} style={{ paddingBottom: 12 }}>
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.DataArchiveTask.DetailContent.CleanUpArchivedDataFrom',
@@ -223,6 +227,16 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
             }
           </Descriptions.Item>
         )}
+        {jobParameters?.deleteAfterMigration ? (
+          <Descriptions.Item label={'源端目标端数据不一致处理'}>
+            {DirtyRowActionLabelMap[jobParameters?.dirtyRowAction]}
+          </Descriptions.Item>
+        ) : null}
+        {jobParameters?.dirtyRowAction === DirtyRowActionEnum.SKIP ? (
+          <Descriptions.Item label={'跳过不清理数据'}>
+            {`${jobParameters?.maxAllowedDirtyRowCount} 行`}
+          </Descriptions.Item>
+        ) : null}
       </Descriptions>
       <Descriptions column={2}>
         <Descriptions.Item

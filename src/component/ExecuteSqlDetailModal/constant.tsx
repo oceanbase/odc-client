@@ -116,3 +116,15 @@ export const planTabLabel = formatMessage({
 });
 
 export const planTabOption = [{ value: PLAN_PAGE_TYPE.PLAN_DETAIL, label: planTabLabel }];
+
+export enum DirtyRowActionEnum {
+  SKIP = 'SKIP',
+  REMIGRATE = 'REMIGRATE',
+  RAISE_ERROR = 'RAISE_ERROR',
+}
+
+export const DirtyRowActionLabelMap = {
+  [DirtyRowActionEnum.SKIP]: '跳过清理',
+  [DirtyRowActionEnum.REMIGRATE]: '清理并更新目标库',
+  [DirtyRowActionEnum.RAISE_ERROR]: '任务失败',
+};

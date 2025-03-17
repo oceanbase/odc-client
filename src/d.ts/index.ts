@@ -28,6 +28,7 @@ import { DBDefaultStoreType } from './table';
 import { EComparisonScope } from './task';
 import { SpaceType } from './_index';
 import { ISQLExecuteTask } from '@/common/network/sql/preHandle';
+import { DirtyRowActionEnum } from '@/component/ExecuteSqlDetailModal/constant';
 
 export interface IUser {
   email: string;
@@ -2524,6 +2525,14 @@ export enum SyncTableStructureEnum {
   PARTITION = 'PARTITION',
 }
 
+export interface IDLMJobParametersTables {
+  conditionExpression: string;
+  tableName: string;
+  partitions?: [] | string;
+  targetTableName?: string;
+  joinTableConfigs?: IJoinTableConfigs[];
+}
+
 export interface IDataArchiveJobParameters {
   deleteAfterMigration: boolean;
   deleteTemporaryTable?: boolean;
@@ -2541,12 +2550,7 @@ export interface IDataArchiveJobParameters {
     rowLimit?: number;
     dataSizeLimit?: number;
   };
-  tables: {
-    conditionExpression: string;
-    tableName: string;
-    partitions: [] | string;
-    targetTableName: string;
-  }[];
+  tables: IDLMJobParametersTables[];
   variables: {
     name: string;
     pattern: string;
@@ -2554,6 +2558,8 @@ export interface IDataArchiveJobParameters {
   targetDatabase: IDatabase;
   timeoutMillis: number;
   syncTableStructure: SyncTableStructureEnum[];
+  dirtyRowAction: DirtyRowActionEnum;
+  maxAllowedDirtyRowCount: number;
 }
 
 export interface IDataClearJobParameters {
@@ -2566,12 +2572,7 @@ export interface IDataClearJobParameters {
     rowLimit?: number;
     dataSizeLimit?: number;
   };
-  tables: {
-    conditionExpression: string;
-    tableName: string;
-    partitions?: string | [];
-    targetTableName: string;
-  }[];
+  tables: IDLMJobParametersTables[];
   variables: {
     name: string;
     pattern: string;
@@ -2583,6 +2584,8 @@ export interface IDataClearJobParameters {
   sourceDataSourceName?: string;
   targetDataSourceName?: string;
   shardingStrategy?: ShardingStrategy;
+  dirtyRowAction: DirtyRowActionEnum;
+  maxAllowedDirtyRowCount: number;
 }
 
 export interface ISqlPlayJobParameters {
@@ -2700,16 +2703,17 @@ export interface IDataArchiveTaskRecord {
       name: string;
       sourceDatabaseId: number;
       targetDataBaseId: number;
-      tables: {
-        conditionExpression: string;
-        tableName: string;
-      }[];
+      tables: IDLMJobParametersTables[];
       variables: {
         name: string;
         pattern: string;
       }[];
     };
   };
+}
+export interface IJoinTableConfigs {
+  tableName: string;
+  joinCondition: string;
 }
 
 export interface IAsyncTaskResultSet {
@@ -2982,10 +2986,7 @@ export interface IDataArchiveTaskParams {
     name: string;
     sourceDatabaseId: number;
     targetDataBaseId: number;
-    tables: {
-      conditionExpression: string;
-      tableName: string;
-    }[];
+    tables: IDLMJobParametersTables[];
     variables: {
       name: string;
       pattern: string;
