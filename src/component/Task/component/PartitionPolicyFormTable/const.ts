@@ -14,7 +14,41 @@
  * limitations under the License.
  */
 
+import { PARTITION_KEY_INVOKER } from '@/d.ts';
+
 export enum START_DATE {
   CURRENT_DATE = 'CURRENT_DATE',
   CUSTOM_DATE = 'CUSTOM_DATE',
 }
+
+export enum INCREAMENT_FIELD_TYPE {
+  NUMBER = 'NUMBER',
+  TIME_STRING = 'TIME_STRING',
+  TIMESTAMP = 'TIMESTAMP',
+}
+
+export const increamentFieldTypeLabelMap = {
+  [INCREAMENT_FIELD_TYPE.NUMBER]: '数值',
+  [INCREAMENT_FIELD_TYPE.TIME_STRING]: '日期时间',
+  [INCREAMENT_FIELD_TYPE.TIMESTAMP]: '时间戳',
+};
+
+export const getPartitionKeyInvokerByIncrementFieldType = (
+  partitionKeyInvoker: PARTITION_KEY_INVOKER,
+  incrementFieldType: INCREAMENT_FIELD_TYPE,
+) => {
+  if (!incrementFieldType) {
+    return partitionKeyInvoker;
+  }
+  switch (incrementFieldType) {
+    case INCREAMENT_FIELD_TYPE.NUMBER: {
+      return PARTITION_KEY_INVOKER.NUMBER_INCREASING_GENERATOR;
+    }
+    case INCREAMENT_FIELD_TYPE.TIME_STRING: {
+      return PARTITION_KEY_INVOKER.TIME_STRING_INCREASING_GENERATOR;
+    }
+    case INCREAMENT_FIELD_TYPE.TIMESTAMP: {
+      return PARTITION_KEY_INVOKER.TIME_STRING_INCREASING_GENERATOR;
+    }
+  }
+};

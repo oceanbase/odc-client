@@ -19,11 +19,11 @@ import { formatMessage } from '@/util/intl';
 import type { FormInstance } from 'antd';
 import { Form, Select, Typography } from 'antd';
 import VirtualList from 'rc-virtual-list';
-import React from 'react';
+import React, { useState } from 'react';
 import RuleFormItem from '../RuleFormItem';
 import styles from './index.less';
 
-const TABLE_ROW_HEIGHT = 72;
+const TABLE_ROW_HEIGHT = 100;
 
 const columns = [
   {
@@ -81,9 +81,6 @@ const Row: React.FC<ITableRowProps> = (props) => {
   const { form, field } = props;
   const column = form.getFieldValue(['option', 'partitionKeyConfigs', field.name]) ?? {};
   const isDate = !!column?.type?.localizedMessage;
-  const _TypeOptions = TypeOptions?.filter((item) =>
-    isDate ? true : item.value === PARTITION_KEY_INVOKER.CUSTOM_GENERATOR,
-  );
   const dataTypeName = column?.type?.localizedMessage || column?.type?.dataTypeName;
 
   const handleChange = (name: number) => {
@@ -115,7 +112,7 @@ const Row: React.FC<ITableRowProps> = (props) => {
             style={{ marginBottom: 0 }}
           >
             <Select
-              options={_TypeOptions}
+              options={TypeOptions}
               style={{ width: 90 }}
               onChange={() => {
                 handleChange(field.name);
@@ -126,7 +123,12 @@ const Row: React.FC<ITableRowProps> = (props) => {
       </div>
       <div className={styles.td}>
         <div className={styles.ruleFormItem}>
-          <RuleFormItem field={field} precision={column?.type?.precision} />
+          <RuleFormItem
+            dataTypeName={dataTypeName}
+            isDate={isDate}
+            field={field}
+            precision={column?.type?.precision}
+          />
         </div>
       </div>
     </div>

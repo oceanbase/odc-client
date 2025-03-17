@@ -160,7 +160,7 @@ export default ({
                 disabled: actionDisabled,
                 onClick: (info) => {
                   info.domEvent.stopPropagation();
-                  action.props.onClick?.();
+                  action.props.onClick?.(info as any);
                 },
                 label: (
                   <Tooltip title={action.props.tooltip}>

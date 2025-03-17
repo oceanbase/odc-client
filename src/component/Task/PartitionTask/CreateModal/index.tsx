@@ -56,7 +56,11 @@ import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import PartitionPolicyFormTable from '../../component/PartitionPolicyFormTable';
-import { START_DATE } from '../../component/PartitionPolicyFormTable/const';
+import {
+  getPartitionKeyInvokerByIncrementFieldType,
+  INCREAMENT_FIELD_TYPE,
+  START_DATE,
+} from '../../component/PartitionPolicyFormTable/const';
 import styles from './index.less';
 
 const { Paragraph, Text } = Typography;
@@ -109,6 +113,8 @@ export interface ITableConfig {
       interval?: string;
       intervalPrecision?: number;
       intervalGenerateExpr?: string;
+      incrementFieldType?: INCREAMENT_FIELD_TYPE;
+      incrementFieldTypeInDate?: string;
     }[];
   };
 }
@@ -343,6 +349,8 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                   interval,
                   intervalPrecision,
                   intervalGenerateExpr,
+                  incrementFieldType,
+                  incrementFieldTypeInDate,
                 } = item;
 
                 if (partitionKeyInvoker === PARTITION_KEY_INVOKER.CUSTOM_GENERATOR) {
@@ -360,16 +368,39 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     },
                   };
                 } else {
+                  const tempPartitionKeyInvoker = getPartitionKeyInvokerByIncrementFieldType(
+                    partitionKeyInvoker,
+                    incrementFieldType,
+                  );
                   const currentTimeParameter = {
-                    fromCurrentTime: fromCurrentTime === START_DATE.CURRENT_DATE,
+                    fromCurrentTime: fromCurrentTime === START_DATE.CURRENT_DATE, // true ? 如何判定 啥时候是true啥时候是false
                     baseTimestampMillis: baseTimestampMillis?.valueOf(),
+                    fieldType: incrementFieldType,
+                    // 数值
+                    numberInterval: intervalGenerateExpr,
+                    // 时间日期
+                    timeFormat: incrementFieldTypeInDate,
                   };
                   if (fromCurrentTime !== START_DATE.CUSTOM_DATE) {
                     delete currentTimeParameter.baseTimestampMillis;
                   }
+                  if (
+                    [INCREAMENT_FIELD_TYPE.NUMBER, INCREAMENT_FIELD_TYPE.TIMESTAMP]?.includes(
+                      incrementFieldType,
+                    )
+                  ) {
+                    delete currentTimeParameter.timeFormat;
+                  }
+                  if (
+                    [INCREAMENT_FIELD_TYPE.TIME_STRING, INCREAMENT_FIELD_TYPE.TIMESTAMP]?.includes(
+                      incrementFieldType,
+                    )
+                  ) {
+                    delete currentTimeParameter.numberInterval;
+                  }
                   return {
                     partitionKey,
-                    partitionKeyInvoker,
+                    partitionKeyInvoker: tempPartitionKeyInvoker,
                     strategy: TaskPartitionStrategy.CREATE,
                     partitionKeyInvokerParameters: {
                       generateCount,

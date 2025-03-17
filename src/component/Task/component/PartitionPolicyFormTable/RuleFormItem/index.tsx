@@ -19,6 +19,7 @@ import { PARTITION_KEY_INVOKER } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { CloseCircleFilled } from '@ant-design/icons';
 import {
+  AutoComplete,
   DatePicker,
   Form,
   Input,
@@ -31,7 +32,7 @@ import {
 } from 'antd';
 import React from 'react';
 import { intervalPrecisionOptions } from '../configModal';
-import { START_DATE } from '../const';
+import { START_DATE, INCREAMENT_FIELD_TYPE, increamentFieldTypeLabelMap } from '../const';
 import styles from '../index.less';
 
 const { Text } = Typography;
@@ -61,18 +62,60 @@ const startDateOptionValues = [
   },
 ];
 
-const startDateOptions = startDateOptionValues.map(({ label, value, description }) => {
-  return {
-    label: (
-      <div>
-        <div>{label}</div>
-        <Text type="secondary">{description}</Text>
-      </div>
-    ),
+const incrementFieldTypeOptionsValues = [
+  {
+    label: increamentFieldTypeLabelMap[INCREAMENT_FIELD_TYPE.NUMBER],
+    value: INCREAMENT_FIELD_TYPE.NUMBER,
+    description: '仅代表数值数据，如：001、002',
+  },
+  {
+    label: increamentFieldTypeLabelMap[INCREAMENT_FIELD_TYPE.TIME_STRING],
+    value: INCREAMENT_FIELD_TYPE.TIME_STRING,
+    description: '类型为数值但实际含义为日期时间，如: 20250207',
+  },
+  {
+    label: increamentFieldTypeLabelMap[INCREAMENT_FIELD_TYPE.TIMESTAMP],
+    value: INCREAMENT_FIELD_TYPE.TIMESTAMP,
+    description: '类型为数值但实际含义为时间戳，如: 1609459200',
+  },
+];
 
-    value,
-  };
-});
+const incrementByDateOptionsInNumber = ['yyyy', 'yyyyMM', 'yyyyMMdd'].map((item) => ({
+  label: item,
+  value: item,
+}));
+
+const incrementByDateOptionsInChar = [
+  'yyyy',
+  'yyyy年',
+  'yyyyMM',
+  'yyyy-MM',
+  'yyyy年MM月',
+  'yyyyMMdd',
+  'yyyy-MM-dd',
+  'yyyy年MM月dd日',
+].map((item) => ({
+  label: item,
+  value: item,
+}));
+
+const getOptionsByValueList = (valueList) => {
+  return valueList.map(({ label, value, description }) => {
+    return {
+      label: (
+        <div>
+          <div>{label}</div>
+          <Text type="secondary">{description}</Text>
+        </div>
+      ),
+
+      value,
+      text: label,
+    };
+  });
+};
+const startDateOptions = getOptionsByValueList(startDateOptionValues);
+const fieldTypeOptions = getOptionsByValueList(incrementFieldTypeOptionsValues);
 
 const EmptyHelp = () => null;
 
@@ -99,11 +142,12 @@ const getFieldProps: (
 interface TableFormProps {
   field: any;
   precision: number;
+  isDate: boolean;
+  dataTypeName: string;
 }
 
 const RuleFormItem: React.FC<TableFormProps> = (props) => {
-  const { field, precision } = props;
-
+  const { field, precision, isDate, dataTypeName } = props;
   return (
     <Form.Item shouldUpdate={true} className={styles.noMarginBottom}>
       {({ getFieldValue, getFieldError }) => {
@@ -118,6 +162,12 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
           'partitionKeyConfigs',
           field.name,
           'fromCurrentTime',
+        ]);
+        const incrementFieldType = getFieldValue([
+          'option',
+          'partitionKeyConfigs',
+          field.name,
+          'incrementFieldType',
         ]);
         const generateExprError = getFieldError([
           'option',
@@ -142,14 +192,132 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
           (item) => item.value <= precision,
         );
 
-        return (
-          <Space
-            style={{ width: '374px', verticalAlign: 'middle' }}
-            size={2}
-            direction="vertical"
-            align="start"
-          >
-            {isCustom ? (
+        const intervalFormItemRenderByIncrementFieldType = (type: INCREAMENT_FIELD_TYPE) => {
+          switch (type) {
+            case INCREAMENT_FIELD_TYPE.NUMBER: {
+              return (
+                <Input.Group compact style={{ width: '374px', display: 'inline-flex', height: 29 }}>
+                  <Tag className={styles.suffix}>
+                    <HelpDoc leftText isTip title={'将使用已有分区最大值作为分区起始值，以此递增'}>
+                      {
+                        formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.9F9223B3' /*间隔*/,
+                          defaultMessage: '间隔',
+                        }) /* 间隔 */
+                      }
+                    </HelpDoc>
+                  </Tag>
+                  <Form.Item
+                    {...field}
+                    name={[field.name, 'intervalGenerateExpr']}
+                    className={styles.noMarginBottom}
+                    style={{ flexGrow: 2 }}
+                    rules={[
+                      {
+                        required: true,
+                        message: formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.8368A05F',
+                          defaultMessage: '请输入',
+                        }), //'请输入'
+                      },
+                    ]}
+                  >
+                    <InputNumber
+                      min={0}
+                      style={{ width: 300 }}
+                      {...getFieldProps(intervalError, 'prefix')}
+                    />
+                  </Form.Item>
+                </Input.Group>
+              );
+            }
+            case INCREAMENT_FIELD_TYPE.TIME_STRING:
+            case INCREAMENT_FIELD_TYPE.TIMESTAMP: {
+              return (
+                <Form.Item
+                  required
+                  {...field}
+                  name={[field.name, 'interval']}
+                  className={styles.noMarginBottom}
+                  rules={[
+                    {
+                      required: true,
+                      message: formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.2F986FD8',
+                        defaultMessage: '请输入',
+                      }), //'请输入'
+                    },
+                  ]}
+                  help={EmptyHelp}
+                >
+                  <InputNumber
+                    min={0}
+                    addonBefore={
+                      formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.5FE030CF',
+                        defaultMessage: '间隔',
+                      }) /*"间隔"*/
+                    }
+                    addonAfter={
+                      <Form.Item {...field} name={[field.name, 'intervalPrecision']} noStyle>
+                        <Select options={intervalPrecisionOptions} style={{ width: 60 }} />
+                      </Form.Item>
+                    }
+                    style={{ width: 243 }}
+                    {...getFieldProps(intervalError, 'prefix')}
+                  />
+                </Form.Item>
+              );
+            }
+            default:
+              return '';
+          }
+        };
+
+        const incrementFieldTypeForm = (
+          <Input.Group compact>
+            <Tag className={styles.suffix}>含义</Tag>
+            <Form.Item
+              name={[field.name, 'incrementFieldType']}
+              rules={[{ required: true, message: '请选择' }]}
+              style={{ margin: 0 }}
+            >
+              <Select
+                options={fieldTypeOptions}
+                style={{
+                  width: incrementFieldType !== INCREAMENT_FIELD_TYPE.TIME_STRING ? 320 : 160,
+                }}
+                optionLabelProp="text"
+              />
+            </Form.Item>
+            {incrementFieldType === INCREAMENT_FIELD_TYPE.TIME_STRING && (
+              <Form.Item
+                {...field}
+                name={[field.name, 'incrementFieldTypeInDate']}
+                className={styles.noMarginBottom}
+                rules={[{ required: true, message: '请输入格式' }]}
+              >
+                <AutoComplete
+                  options={
+                    dataTypeName?.toLowerCase()?.includes('number')
+                      ? incrementByDateOptionsInNumber
+                      : incrementByDateOptionsInChar
+                  }
+                  style={{ width: 160 }}
+                  placeholder="输入或选择格式"
+                  filterOption={(inputValue, option) =>
+                    option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                  }
+                />
+              </Form.Item>
+            )}
+          </Input.Group>
+        );
+
+        const FormRender = () => {
+          // 创建方式: 自定义
+          if (isCustom) {
+            return (
               <>
                 <Form.Item
                   {...field}
@@ -225,7 +393,11 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                   </Form.Item>
                 </Input.Group>
               </>
-            ) : (
+            );
+          }
+          // 创建方式: 顺序递增, 且为时间类型
+          if (isDate) {
+            return (
               <>
                 <Input.Group compact>
                   <Tag className={styles.suffix}>
@@ -242,7 +414,7 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                     className={styles.noMarginBottom}
                   >
                     <Select
-                      optionLabelProp="label"
+                      optionLabelProp="text"
                       options={startDateOptions}
                       dropdownMatchSelectWidth={224}
                       style={{ width: 135 }}
@@ -305,7 +477,61 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                   />
                 </Form.Item>
               </>
-            )}
+            );
+          }
+          // 创建方式: 顺序递增, 其他非时间类型
+          if (!incrementFieldType) {
+            return incrementFieldTypeForm;
+          }
+          return (
+            <>
+              {incrementFieldTypeForm}
+              {incrementFieldType !== INCREAMENT_FIELD_TYPE.NUMBER ? (
+                <Input.Group compact>
+                  <Tag className={styles.suffix}>
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.C6AB94A8' /*起始*/,
+                        defaultMessage: '起始',
+                      }) /* 起始 */
+                    }
+                  </Tag>
+                  <Form.Item
+                    {...field}
+                    name={[field.name, 'fromCurrentTime']}
+                    className={styles.noMarginBottom}
+                  >
+                    <Select
+                      optionLabelProp="text"
+                      options={startDateOptions}
+                      dropdownMatchSelectWidth={224}
+                      style={{ width: 135 }}
+                    />
+                  </Form.Item>
+                  {fromCurrentTime === START_DATE.CUSTOM_DATE && (
+                    <Form.Item
+                      {...field}
+                      name={[field.name, 'baseTimestampMillis']}
+                      className={styles.noMarginBottom}
+                    >
+                      <DatePicker showTime {...getFieldProps(intervalGenerateExprError)} />
+                    </Form.Item>
+                  )}
+                </Input.Group>
+              ) : null}
+              {intervalFormItemRenderByIncrementFieldType(incrementFieldType)}
+            </>
+          );
+        };
+
+        return (
+          <Space
+            style={{ width: '374px', verticalAlign: 'middle' }}
+            size={4}
+            direction="vertical"
+            align="start"
+          >
+            {FormRender()}
           </Space>
         );
       }}
