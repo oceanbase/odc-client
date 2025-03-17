@@ -103,3 +103,18 @@ export const SubTaskTypeMap = {
 export const OscMinRowLimit = 1;
 export const OscMaxRowLimit = 10000;
 export const OscMaxDataSizeLimit = 1000;
+
+export const conditionExpressionColumns = [
+  {
+    dataIndex: 'tableName',
+    key: 'tableName',
+    title: '关联表',
+    ellipsis: true,
+  },
+  {
+    dataIndex: 'joinCondition',
+    key: 'joinCondition',
+    title: '关联条件',
+    ellipsis: true,
+  },
+];

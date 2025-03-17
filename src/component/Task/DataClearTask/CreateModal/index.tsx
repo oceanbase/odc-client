@@ -56,6 +56,8 @@ import VariableConfig from './VariableConfig';
 import ShardingStrategyItem from '../../component/ShardingStrategyItem';
 import { disabledDate, disabledTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
+import DirtyRowAction from '../../component/DirtyRowAction';
+import MaxAllowedDirtyRowCount from '../../component/MaxAllowedDirtyRowCount';
 
 export enum IArchiveRange {
   PORTION = 'portion',
@@ -169,6 +171,8 @@ const CreateModal: React.FC<IProps> = (props) => {
       needCheckBeforeDelete,
       targetDatabaseId,
       timeoutMillis,
+      dirtyRowAction,
+      maxAllowedDirtyRowCount,
     } = jobParameters;
     setEnablePartition(!!tables?.find((i) => i?.partitions?.length));
     const formData = {
@@ -189,6 +193,8 @@ const CreateModal: React.FC<IProps> = (props) => {
       needCheckBeforeDelete,
       targetDatabaseId,
       timeoutMillis: milliSecondsToHour(timeoutMillis),
+      dirtyRowAction,
+      maxAllowedDirtyRowCount,
     };
 
     if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
@@ -307,6 +313,8 @@ const CreateModal: React.FC<IProps> = (props) => {
           timeoutMillis,
           needCheckBeforeDelete,
           targetDatabaseId,
+          dirtyRowAction,
+          maxAllowedDirtyRowCount,
         } = values;
         _tables?.map((i) => {
           i.partitions = Array.isArray(i.partitions)
@@ -342,6 +350,8 @@ const CreateModal: React.FC<IProps> = (props) => {
             },
             needCheckBeforeDelete,
             targetDatabaseId: targetDatabaseId,
+            dirtyRowAction,
+            maxAllowedDirtyRowCount,
           },
           triggerConfig: {
             triggerStrategy,
@@ -523,44 +533,17 @@ const CreateModal: React.FC<IProps> = (props) => {
             initialValues={defaultValue}
             onFieldsChange={handleFieldsChange}
           >
-            <Form.Item name="needCheckBeforeDelete" valuePropName="checked">
-              <Checkbox>
-                {formatMessage({
-                  id: 'src.component.Task.DataClearTask.CreateModal.70A4982D',
-                  defaultMessage: '清理前是否需要校验',
-                })}
-              </Checkbox>
-            </Form.Item>
-            <Space align="start">
-              <DatabaseSelect
-                type={TaskType.DATA_DELETE}
-                label={formatMessage({
-                  id: 'odc.DataClearTask.CreateModal.SourceDatabase',
-                  defaultMessage: '源端数据库',
-                })}
-                /*源端数据库*/ projectId={projectId}
-                onChange={handleDBChange}
-              />
-
-              <Form.Item noStyle shouldUpdate>
-                {({ getFieldValue }) => {
-                  const needCheckBeforeDelete = getFieldValue('needCheckBeforeDelete');
-                  return (
-                    needCheckBeforeDelete && (
-                      <DatabaseSelect
-                        type={TaskType.DATA_DELETE}
-                        label={formatMessage({
-                          id: 'odc.DataArchiveTask.CreateModal.TargetDatabase',
-                          defaultMessage: '目标数据库',
-                        })} /*目标数据库*/
-                        name="targetDatabaseId"
-                        projectId={projectId}
-                      />
-                    )
-                  );
-                }}
-              </Form.Item>
-            </Space>
+            {/* <Space align="start"> */}
+            <DatabaseSelect
+              type={TaskType.DATA_DELETE}
+              label={formatMessage({
+                id: 'odc.DataClearTask.CreateModal.SourceDatabase',
+                defaultMessage: '源端数据库',
+              })}
+              /*源端数据库*/ projectId={projectId}
+              onChange={handleDBChange}
+            />
+            {/* </Space> */}
             <Space direction="vertical" size={24} style={{ width: '100%' }}>
               <Form.Item noStyle shouldUpdate>
                 {({ getFieldValue }) => {
@@ -651,6 +634,35 @@ const CreateModal: React.FC<IProps> = (props) => {
               }
               keepExpand
             >
+              <Form.Item name="needCheckBeforeDelete" valuePropName="checked">
+                <Checkbox>
+                  {formatMessage({
+                    id: 'src.component.Task.DataClearTask.CreateModal.70A4982D',
+                    defaultMessage: '清理前是否需要校验',
+                  })}
+                </Checkbox>
+              </Form.Item>
+              <Form.Item noStyle shouldUpdate>
+                {({ getFieldValue }) => {
+                  const needCheckBeforeDelete = getFieldValue('needCheckBeforeDelete');
+                  return (
+                    needCheckBeforeDelete && (
+                      <DatabaseSelect
+                        type={TaskType.DATA_DELETE}
+                        label={formatMessage({
+                          id: 'odc.DataArchiveTask.CreateModal.TargetDatabase',
+                          defaultMessage: '目标数据库',
+                        })} /*目标数据库*/
+                        name="targetDatabaseId"
+                        projectId={projectId}
+                        placeholder="仅支持选择同一项目内数据库"
+                      />
+                    )
+                  );
+                }}
+              </Form.Item>
+              <DirtyRowAction dependentField="needCheckBeforeDelete" />
+              <MaxAllowedDirtyRowCount />
               <TaskdurationItem form={form} />
               <ShardingStrategyItem />
               <ThrottleFormItem isShowDataSizeLimit={true} />

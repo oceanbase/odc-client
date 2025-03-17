@@ -109,7 +109,7 @@ const TreeSelector: React.FC<IProps> = React.memo((props) => {
           autoExpandParent={autoExpandParent}
           checkable
           checkStrictly
-          style={{ height: '186px', overflowY: 'auto', overflowX: 'auto' }}
+          style={{ height: '1fr', overflowY: 'auto', overflowX: 'auto' }}
           checkedKeys={selectedKeys}
           onExpand={(expandedKeys) => {
             setState({

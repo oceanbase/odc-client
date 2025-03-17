@@ -16,8 +16,8 @@
 
 import { ITable } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Form, Input, Radio, Select, Typography } from 'antd';
+import { PlusOutlined, SettingOutlined, SettingFilled } from '@ant-design/icons';
+import { Tooltip, Button, Checkbox, Form, Input, Radio, Select, Typography } from 'antd';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import ArchiveRangeTip from '../../component/ArchiveRangeTip';
@@ -25,6 +25,8 @@ import { PartitionTextArea } from '../../component/PartitionTextArea';
 import { IArchiveRange } from './index';
 import BatchSelectionPopover from '@/component/BatchSelectionPopover';
 import styles from './index.less';
+import JoinTableConfigModal from '../../component/JoinTableConfigsModal';
+import useJoinTableConfig from '../../component/JoinTableConfigsModal/useJoinTableConfig';
 
 const { Text, Link } = Typography;
 
@@ -43,6 +45,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
   }));
 
   const hasAdvancedOptionCol = enablePartition || needCheckBeforeDelete;
+  const { visible, currentIndex, open, close, handleSubmit } = useJoinTableConfig(form);
 
   useEffect(() => {
     setEnablePartition(checkPartition);
@@ -227,6 +230,26 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                               id: 'odc.DataClearTask.CreateModal.ArchiveRange.EnterACleanupCondition',
                               defaultMessage: '请输入清理条件',
                             })} /*请输入清理条件*/
+                            addonAfter={
+                              <>
+                                <JoinTableConfigModal
+                                  visible={visible && currentIndex === index}
+                                  initialValues={form.getFieldValue(['tables', index])}
+                                  onCancel={close}
+                                  onOk={handleSubmit}
+                                />
+                                <Tooltip title="过滤条件设置（如关联表）">
+                                  <div onClick={() => open(index)} style={{ cursor: 'pointer' }}>
+                                    {form.getFieldValue(['tables', name, 'joinTableConfigs'])
+                                      ?.length ? (
+                                      <SettingFilled style={{ color: '#1890ff' }} />
+                                    ) : (
+                                      <SettingOutlined />
+                                    )}
+                                  </div>
+                                </Tooltip>
+                              </>
+                            }
                           />
                         </Form.Item>
                         {(needCheckBeforeDelete || enablePartition) && (

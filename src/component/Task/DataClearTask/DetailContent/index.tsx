@@ -38,6 +38,10 @@ import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 import styles from '../../index.less';
 import ArchiveRange from './ArchiveRange';
 import { shardingStrategyOptions } from '../../component/ShardingStrategyItem';
+import {
+  DirtyRowActionEnum,
+  DirtyRowActionLabelMap,
+} from '@/component/ExecuteSqlDetailModal/constant';
 
 const { Panel } = Collapse;
 const { Text } = Typography;
@@ -252,7 +256,16 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             </Collapse>
           </Descriptions.Item>
         )}
-
+        {jobParameters?.needCheckBeforeDelete ? (
+          <Descriptions.Item label={'源端目标端数据不一致处理'}>
+            {DirtyRowActionLabelMap[jobParameters?.dirtyRowAction]}
+          </Descriptions.Item>
+        ) : null}
+        {jobParameters?.dirtyRowAction === DirtyRowActionEnum.SKIP ? (
+          <Descriptions.Item label={'跳过不清理数据'}>
+            {`${jobParameters?.maxAllowedDirtyRowCount} 行`}
+          </Descriptions.Item>
+        ) : null}
         <Descriptions.Item
           label={formatMessage({
             id: 'src.component.Task.DataClearTask.DetailContent.E977DA21',

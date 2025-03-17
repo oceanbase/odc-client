@@ -31,20 +31,20 @@
   .tables {
     display: grid;
     grid-gap: 0px;
-    grid-template-columns: 160px 186px 1fr;
+    grid-template-columns: 160px 1fr 1fr;
     align-items: baseline;
     &.delete {
-      grid-template-columns: 160px 186px 1fr 35px;
+      grid-template-columns: 160px 1fr 1fr 35px;
     }
     &.title {
       background-color: var(--neutral-grey2-color);
-      border: 1px solid var(--neutral-grey4-color);
+      border: 1px solid var(---table-border-color);
       border-bottom: 0;
     }
   }
   .tableTitle {
     padding: 3px 8px;
-    border-right: 1px solid var(--neutral-grey4-color);
+    border-right: 1px solid var(---table-border-color);
     display: inline-flex;
     gap: 4px;
   }
@@ -81,14 +81,14 @@
 .infoBlock {
   .tables {
     display: grid;
-    grid-template-columns: 160px 186px 1fr;
+    grid-template-columns: 160px 1fr 1fr;
     width: 100%;
-    border: 1px solid var(--neutral-grey4-color);
+    border: 1px solid var(---table-border-color);
     border-bottom: 0;
     align-items: center;
     :global {
       .ant-form-item {
-        border-right: 1px solid var(--neutral-grey4-color);
+        border-right: 1px solid var(---table-border-color);
         margin-bottom: 0;
         height: 100%;
         display: grid;

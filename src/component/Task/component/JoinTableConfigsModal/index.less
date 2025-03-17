@@ -1,0 +1,81 @@
+.container {
+  padding-bottom: 16px;
+}
+
+.tables {
+  display: grid;
+  grid-template-columns: 1fr 50% 40px;
+  align-items: center;
+  padding: 0;
+  border: 1px solid var(--table-border-color);
+  border-top: 0px;
+  &.header {
+    background-color: var(--neutral-grey2-color);
+    border: 1px solid var(--table-border-color);
+    font-weight: 500;
+    padding: 0;
+    margin-bottom: 0;
+  }
+
+  .ant-form-item {
+    margin-bottom: 0;
+  }
+  .column {
+    padding: 3px 8px;
+    border-right: 1px solid var(--table-border-color);
+    display: inline-flex;
+    gap: 4px;
+  }
+  :global {
+    .ant-form-item {
+      border-right: 1px solid var(--table-border-color);
+      margin-bottom: 0;
+      height: 100%;
+      display: grid;
+      padding: 0;
+      place-items: center;
+      .ant-form-item-row {
+        padding: 8px;
+        width: 100%;
+      }
+    }
+  }
+}
+
+.deleteBtn {
+  padding: 0;
+  text-align: center;
+  width: 40px;
+}
+
+.tableName {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  padding: 4px 0;
+}
+
+.ant-input {
+  &:hover,
+  &:focus {
+    border-color: var(--table-border-color);
+  }
+}
+
+.ant-btn-dashed {
+  border-color: var(--table-border-color);
+  color: var(--neutral-grey9-color);
+}
+
+.operationContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  border: 1px solid var(--odc-border-color);
+  border-top: 0px;
+  button {
+    margin-right: 6px;
+  }
+  button:last-child {
+    margin-right: 0px;
+  }
+}

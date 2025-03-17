@@ -16,8 +16,9 @@
 
 import DisplayTable from '@/component/DisplayTable';
 import { formatMessage } from '@/util/intl';
-import { Tooltip } from 'antd';
+import { Flex, Popover, Tooltip, Typography } from 'antd';
 import React from 'react';
+import { conditionExpressionColumns } from '../../const';
 
 const columns = [
   {
@@ -39,8 +40,38 @@ const columns = [
     }), //过滤条件
     ellipsis: true,
     width: 200,
-    render: (value) => {
-      return <Tooltip title={value}>{value ?? '-'}</Tooltip>;
+    render: (value, record) => {
+      return (
+        <Flex justify="space-between">
+          <Tooltip title={value}>
+            <span
+              style={{
+                maxWidth: 160,
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {value ?? '-'}
+            </span>
+          </Tooltip>
+          {record?.joinTableConfigs?.length ? (
+            <Popover
+              content={
+                <DisplayTable
+                  dataSource={record?.joinTableConfigs}
+                  columns={conditionExpressionColumns}
+                  disablePagination
+                ></DisplayTable>
+              }
+            >
+              <Typography.Link>关联表</Typography.Link>
+            </Popover>
+          ) : (
+            <></>
+          )}
+        </Flex>
+      );
     },
   },
   {
