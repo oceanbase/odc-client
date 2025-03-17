@@ -487,10 +487,7 @@ export default inject(
 )(
   observer(function (props: IProps) {
     return (
-      <SessionContextWrap
-        defaultDatabaseId={props?.modalStore?.createSynonymModalData?.databaseId}
-        defaultMode="datasource"
-      >
+      <SessionContextWrap defaultDatabaseId={props?.modalStore?.createSynonymModalData?.databaseId}>
         {({ session }) => {
           return <CreateSynonymModal {...props} session={session} />;
         }}

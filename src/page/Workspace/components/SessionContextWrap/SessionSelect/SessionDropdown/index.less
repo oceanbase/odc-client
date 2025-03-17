@@ -1,19 +1,48 @@
 .main {
-  width: 250px;
-  height: 256px;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-.tree {
-  .textoverflow {
-    max-width: 230px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+  .header {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    .search {
+      width: 100%;
+    }
+    .groupIcon {
+      margin-left: 12px;
+    }
   }
+}
+.footer {
+  border-top: 1px solid var(--hover-color2);
+}
+.sessionSelectPopover {
+  :global {
+    .ant-popover-inner {
+      padding: 0 !important;
+    }
+  }
+}
+
+.tree {
+  .databaseItem {
+    display: flex;
+    .textoverflow {
+      max-width: 130px !important;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .dataSourceInfo {
+      color: var(--icon-color-disable);
+      margin-left: 8px;
+    }
+  }
+
   :global {
     .ant-tree-treenode {
       width: 100%;
+      .ant-tree-switcher {
+        margin-inline-end: 0px !important;
+      }
     }
     .ant-tree-switcher-noop {
       display: none;

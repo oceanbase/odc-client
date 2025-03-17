@@ -20,7 +20,7 @@ const CloudStorageConfig: IDataSourceModeConfig = {
     sessionManage: false,
     sessionParams: false,
     sqlExplain: false,
-    resourceTree: true,
+    resourceTree: false,
     export: {
       fileLimit: false,
       snapshot: false,

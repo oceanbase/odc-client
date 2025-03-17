@@ -37,6 +37,7 @@ interface IProps {
   taskType?: TaskType;
   width?: number | string;
   projectId?: number;
+  dataSourceId?: number;
   filters?: ISessionDropdownFiltersProps;
   placeholder?: string;
   disabled?: boolean;
@@ -44,15 +45,13 @@ interface IProps {
   datasourceMode?: boolean;
   projectMode?: boolean;
   onChange?: (value: number, database?: IDatabase) => void;
-  options?: {
-    hideFileSystem?: boolean;
-  };
 }
 
 const SelectItem: React.FC<IProps> = ({
   value,
   taskType,
   projectId,
+  dataSourceId,
   filters = null,
   width,
   placeholder = formatMessage({
@@ -64,11 +63,7 @@ const SelectItem: React.FC<IProps> = ({
   isLogicalDatabase = false,
   datasourceMode = false,
   projectMode = isLogicalDatabase,
-  options,
 }) => {
-  const [from, setFrom] = useState<'project' | 'datasource'>(
-    datasourceMode || projectMode ? (datasourceMode ? 'datasource' : 'project') : 'datasource',
-  );
   const { data: database, run: runDatabase } = useRequest(getDatabase, {
     manual: true,
   });
@@ -167,17 +162,10 @@ const SelectItem: React.FC<IProps> = ({
       value={{
         session: null,
         databaseId: value,
-        from,
-        setFrom,
         datasourceMode,
         projectMode,
         isLogicalDatabase,
-        selectSession(
-          databaseId: number,
-          datasourceId: number,
-          from: 'project' | 'datasource',
-          database?: IDatabase,
-        ) {
+        selectSession(databaseId: number, datasourceId: number, database?: IDatabase) {
           onChange(datasourceMode ? datasourceId : databaseId, database);
         },
       }}
@@ -185,10 +173,10 @@ const SelectItem: React.FC<IProps> = ({
       <Space style={{ width: '100%' }} direction="vertical">
         <SessionDropdown
           projectId={projectId}
+          dataSourceId={dataSourceId}
           filters={filters}
           width={width || DEFALT_WIDTH}
           taskType={taskType}
-          options={options}
           disabled={disabled}
         >
           <Select

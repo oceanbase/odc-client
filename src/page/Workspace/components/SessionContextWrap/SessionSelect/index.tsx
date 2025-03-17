@@ -192,7 +192,10 @@ export default function SessionSelect({
     return (
       <div className={styles.content}>
         {renderEnv()}
-        <SessionDropdown filters={{ feature, isIncludeLogicalDb }}>
+        <SessionDropdown
+          filters={{ feature, isIncludeLogicalDb, hideFileSystem: true }}
+          groupMode={resourceTreeContext.groupMode}
+        >
           <div>{databaseItem}</div>
         </SessionDropdown>
         <div>{aimItem}</div>
@@ -211,7 +214,10 @@ export default function SessionSelect({
           }}
           className={styles.line}
         >
-          <SessionDropdown>
+          <SessionDropdown
+            filters={{ hideFileSystem: true }}
+            groupMode={resourceTreeContext.groupMode}
+          >
             <a>
               {
                 formatMessage({

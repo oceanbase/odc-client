@@ -139,7 +139,7 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
           type: DbObjectType.database,
           database: database,
         });
-        database.id && openNewSQLPage(database.id, project ? 'project' : 'datasource');
+        database.id && openNewSQLPage(database.id);
       };
     }
     if ([SearchStatus.projectforObject].includes(status)) {

@@ -25,14 +25,7 @@ interface ISessionContext {
   projectMode?: boolean;
   datasourceMode?: boolean;
   isLogicalDatabase?: boolean;
-  from?: 'project' | 'datasource';
-  setFrom?: React.Dispatch<React.SetStateAction<'project' | 'datasource'>>;
-  selectSession: (
-    databaseId: number,
-    datasourceId: number,
-    from: 'project' | 'datasource',
-    database?: IDatabase,
-  ) => void;
+  selectSession: (databaseId: number, datasourceId: number, database?: IDatabase) => void;
 }
 
 const SessionContext = React.createContext<ISessionContext>({

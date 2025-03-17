@@ -53,7 +53,7 @@ export const hasTableChangePermission = (dbSession: SessionStore, node: TreeData
 };
 
 const TreeNodeMenu = (props: IProps) => {
-  const { type = '', dbSession, databaseFrom, node, showTip, pollingDatabase } = props;
+  const { type = '', dbSession, node, showTip, pollingDatabase } = props;
   const treeContext = useContext(ResourceTreeContext);
   const { setCurrentObject } = treeContext || {};
   // menuKey 用来定制menu
@@ -145,7 +145,7 @@ const TreeNodeMenu = (props: IProps) => {
       return;
     }
     const { run } = item;
-    run?.(dbSession, node, databaseFrom, pollingDatabase);
+    run?.(dbSession, node, pollingDatabase);
   }
 
   let clickMap = {};

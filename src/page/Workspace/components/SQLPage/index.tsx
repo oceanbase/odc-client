@@ -1447,11 +1447,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
 export default forwardRef(function (props: IProps, ref: React.ForwardedRef<SQLPage>) {
   return (
-    <SessionContextWrap
-      defaultDatabaseId={props.params?.cid}
-      defaultMode={props.params?.databaseFrom}
-      warnIfNotFound={false}
-    >
+    <SessionContextWrap defaultDatabaseId={props.params?.cid} warnIfNotFound={false}>
       {({ session }) => {
         return <SQLPage sessionId={session?.sessionId} {...props} ref={ref} />;
       }}

@@ -607,7 +607,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 })}
                 /*源端数据库*/ projectId={projectId}
                 onChange={handleDBChange}
-                options={{
+                filters={{
                   hideFileSystem: true,
                 }}
               />

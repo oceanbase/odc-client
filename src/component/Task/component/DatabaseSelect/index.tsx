@@ -23,20 +23,17 @@ import { Form } from 'antd';
 import React from 'react';
 
 interface IProps {
-  type: TaskType;
+  type?: TaskType;
   label?: string;
   disabled?: boolean;
   name?: string | string[];
   projectId?: number;
+  dataSourceId?: number;
   filters?: ISessionDropdownFiltersProps;
   extra?: string;
   width?: string;
   placeholder?: string;
   isLogicalDatabase?: boolean;
-  options?: {
-    /** 屏蔽对象存储类型 */
-    hideFileSystem?: boolean;
-  };
   onChange?: (v: number, database?: IDatabase) => void;
 }
 const DatabaseSelect: React.FC<IProps> = (props) => {
@@ -49,13 +46,13 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     //数据库
     name = 'databaseId',
     projectId,
+    dataSourceId,
     filters = null,
     width,
     placeholder,
     disabled = false,
     isLogicalDatabase = false,
     onChange,
-    options,
   } = props;
 
   return (
@@ -75,6 +72,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     >
       <SessionSelect
         disabled={disabled}
+        dataSourceId={dataSourceId}
         projectId={projectId}
         filters={filters}
         taskType={type}
@@ -82,7 +80,6 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
         onChange={onChange}
         isLogicalDatabase={isLogicalDatabase}
         placeholder={placeholder}
-        options={options}
       />
     </Form.Item>
   );

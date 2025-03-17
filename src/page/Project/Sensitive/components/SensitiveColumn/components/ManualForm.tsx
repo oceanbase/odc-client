@@ -29,6 +29,7 @@ import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
 import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
 import { formatMessage } from '@/util/intl';
 import { convertDataTypeToDataShowType } from '@/util/utils';
+import MultipleDatabaseSelect from '@/component/Task/component/MultipleDatabaseSelect/index';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -78,80 +79,24 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
   const projectContext = useContext(ProjectContext);
   const { project } = projectContext;
   const { maskingAlgorithms, maskingAlgorithmOptions, projectId } = sensitiveContext;
-  const [databases, setDatabases] = useState<IDatabase[]>([]);
   const [databaseIds, setDatabaseIds] = useState<number[]>([]);
   const [checkedKeys, setCheckedKeys] = useState<string[]>([]);
 
-  const databaseOptions = databases?.map(({ name, id, environment, dataSource, project }) => ({
-    label: (
-      <Popover
-        showArrow={false}
-        overlayClassName={styles.popover}
-        data-label={name}
-        placement="right"
-        content={
-          <Space direction="vertical">
-            <Space>
-              <RiskLevelLabel color={environment?.style} content={environment?.name} />
-              <Text strong>{name}</Text>
-            </Space>
-            <Text type="secondary">
-              {
-                formatMessage({
-                  id: 'odc.src.component.Task.component.DatabaseSelect.DataSource',
-                  defaultMessage: '所属数据源:',
-                }) /* 所属数据源:  */
-              }
-
-              {dataSource?.name ?? '-'}
-            </Text>
-            <Text type="secondary">
-              {
-                formatMessage({
-                  id: 'odc.src.component.Task.component.DatabaseSelect.ItSNotPlayed',
-                  defaultMessage: '所属项目:',
-                }) /* 所属项目:  */
-              }
-
-              {project?.name ?? '-'}
-            </Text>
-          </Space>
-        }
-      >
-        <Space
-          size={2}
-          data-label={name}
-          style={{
-            display: 'flex',
-          }}
-        >
-          <RiskLevelLabel color={environment?.style} content={environment?.name} />
-          <span>{name}</span>
-        </Space>
-      </Popover>
-    ),
-
-    value: id,
-  }));
-  const initDatabases = async () => {
-    const rawData = await listDatabases(projectId, null, null, null, null, null, null, true);
-    setDatabases(rawData?.contents);
-  };
-  const handleDatabaseSelect = async (value: number) => {
-    if (value === -1) {
-      setDatabaseIds(databaseOptions?.map((option) => option.value as number));
-      return;
-    }
-    if (!databaseIds?.includes(value)) {
-      setDatabaseIds(databaseIds.concat(value));
-    }
-  };
   const handleDatabaseClear = () => {
     setDatabaseIds([]);
   };
-  const handleDatabaseDeselect = debounce(async (value: number) => {
-    setDatabaseIds(databaseIds.filter((id) => id !== value));
-  }, 500);
+
+  const handleDatabaseSelect = async (Ids) => {
+    await formRef.setFieldsValue({
+      database: Ids,
+    });
+    setDatabaseIds(Ids);
+  };
+
+  const handleDatabaseChange = debounce((Ids) => {
+    setDatabaseIds(Ids);
+  }, 300);
+
   const submit = () => {
     _formRef.current?.submit(setModalOpen, callback);
   };
@@ -178,9 +123,6 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
     });
   };
 
-  useEffect(() => {
-    initDatabases();
-  }, []);
   return (
     <Drawer
       width={800}
@@ -226,41 +168,21 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
     >
       <div className={styles.manualFormContent}>
         <Form layout="vertical" form={formRef} className={styles.form}>
-          <Form.Item
+          <MultipleDatabaseSelect
+            name="database"
             label={
               formatMessage({
-                id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.Database',
+                id: 'odc.SensitiveColumn.components.SacnRule.Database',
                 defaultMessage: '数据库',
-              }) /* 数据库 */
+              }) //数据库
             }
-            name="database"
-            style={{
-              marginBottom: '4px',
-            }}
-          >
-            <Select
-              className={styles.select}
-              mode="multiple"
-              maxTagCount="responsive"
-              placeholder={
-                formatMessage({
-                  id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.PleaseChoose.1',
-                  defaultMessage: '请选择',
-                }) /* 请选择 */
-              }
-              filterOption={(input, option) =>
-                (option?.label?.props?.['data-label'] ?? '')
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-              options={databaseOptions}
-              onSelect={handleDatabaseSelect}
-              onDeselect={handleDatabaseDeselect}
-              onClear={handleDatabaseClear}
-              optionLabelProp="label"
-              allowClear={true}
-            />
-          </Form.Item>
+            projectId={projectId}
+            filters={{ hideFileSystem: true }}
+            onSelect={handleDatabaseSelect}
+            onChange={handleDatabaseChange}
+            onClear={handleDatabaseClear}
+            selectWidth={320}
+          />
           <div className={styles.currentProject}>
             {
               formatMessage({

@@ -81,10 +81,10 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         }), //打开 SQL 窗口
       ],
       ellipsis: true,
-      run(session, node, databaseFrom) {
+      run(session, node) {
         const database: IDatabase = node.data;
         tracert.click('a3112.b41896.c330992.d367627');
-        openNewSQLPage(node.cid, databaseFrom);
+        openNewSQLPage(node.cid);
       },
       isHide: (_, node) => {
         return isLogicalDatabase(node?.data);
@@ -106,9 +106,9 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         );
       },
       ellipsis: true,
-      run(session, node, databaseFrom) {
+      run(session, node) {
         const database: IDatabase = node.data;
-        openNewDefaultPLPage(null, node.cid, database?.name, databaseFrom);
+        openNewDefaultPLPage(null, node.cid, database?.name);
       },
     },
     {
@@ -163,7 +163,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
             const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
             return !setting.enableDBExport || !config?.features?.task?.includes(TaskType.EXPORT);
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeExportModal(true, {
               databaseId: database?.id,
@@ -188,7 +188,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !config?.features?.task?.includes(TaskType.EXPORT_RESULT_SET)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeCreateResultSetExportTaskModal(true, {
               databaseId: database?.id,
@@ -227,7 +227,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !config?.features?.task?.includes(TaskType.IMPORT)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeImportModal(true, {
               databaseId: database?.id,
@@ -253,7 +253,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !config?.features?.task?.includes(TaskType.DATAMOCK)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeDataMockerModal(true, {
               databaseId: database?.id,
@@ -279,7 +279,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !config?.features?.task?.includes(TaskType.ASYNC)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeCreateAsyncTaskModal(true, {
               databaseId: database?.id,
@@ -325,7 +325,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           isHide(_, node) {
             return !setting.enableLogicaldatabase || !isLogicalDatabase(node.data);
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             modal.changeLogicialDatabaseModal(true, {
               projectId: node?.data?.odcDatabase?.project?.id,
               databaseId: node?.data?.id,
@@ -351,7 +351,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !config?.features?.task?.includes(TaskType.ONLINE_SCHEMA_CHANGE)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeCreateDDLAlterTaskModal(true, {
               databaseId: database?.id,
@@ -378,7 +378,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
 
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeShadowSyncVisible(true, {
               databaseId: database?.id,
@@ -404,7 +404,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !config?.features?.task?.includes(TaskType.STRUCTURE_COMPARISON)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeStructureComparisonModal(true, {
               databaseId: database?.id,
@@ -454,7 +454,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !config?.features?.task?.includes(TaskType.SQL_PLAN)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeCreateSQLPlanTaskModal(true, {
               databaseId: database?.id,
@@ -481,7 +481,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !config?.features?.task?.includes(TaskType.PARTITION_PLAN)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changePartitionModal(true, {
               databaseId: database?.id,
@@ -508,7 +508,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !config?.features?.task?.includes(TaskType.DATA_ARCHIVE)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeDataArchiveModal(true, {
               databaseId: database?.id,
@@ -535,7 +535,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !config?.features?.task?.includes(TaskType.DATA_DELETE)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeDataClearModal(true, {
               databaseId: database?.id,
@@ -627,7 +627,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           isLogicalDatabase(node.data)
         );
       },
-      run(session, node, databaseFrom, pollingDatabase) {
+      run(session, node, pollingDatabase) {
         const database: IDatabase = node.data;
         message.loading({
           content: formatMessage({

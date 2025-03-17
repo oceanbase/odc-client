@@ -322,10 +322,10 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       disabled: (session) => {
         return !hasChangePermission(session);
       },
-      run(session, node, databaseFrom) {
+      run(session, node) {
         packageMenusConfig[ResourceNodeType.Package]
           .find((item) => item.key === 'DELETE')
-          ?.run?.(session, node, databaseFrom);
+          ?.run?.(session, node);
       },
     },
     {
