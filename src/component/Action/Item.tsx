@@ -23,7 +23,7 @@ export interface BaseProps {
   /** 是否显示 */
   visible?: boolean;
   disabled?: boolean;
-  onClick?: () => Promise<void> | void;
+  onClick?: (e: React.MouseEvent<any>) => Promise<void> | void;
   children?: React.ReactElement | string;
   type?: 'default' | 'primary';
   className?: string;
@@ -68,7 +68,7 @@ export class ActionButton extends React.PureComponent<BaseProps> {
             if (enableLoading) {
               this.setState({ loading: true });
 
-              const handle = onClick?.();
+              const handle = onClick?.(_);
 
               if ((handle as Promise<void>).then) {
                 (handle as Promise<void>).then(() => {
@@ -111,7 +111,7 @@ export class ActionLink extends React.PureComponent<BaseProps> {
         onClick={(_) => {
           _.stopPropagation();
           _.preventDefault();
-          const handle = onClick?.();
+          const handle = onClick?.(_);
 
           if (enableLoading && (handle as Promise<void>)?.then) {
             this.setState({ loading: true, disabled: true });

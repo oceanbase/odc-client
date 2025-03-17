@@ -21,6 +21,7 @@ import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Tooltip } from 'antd';
 import React from 'react';
 import styles from './index.less';
+import { increamentFieldTypeLabelMap } from '../PartitionPolicyFormTable/const';
 
 const getFromCurrentTimeLabel = (fromCurrentTime: boolean, baseTimestampMillis: number) => {
   const labels = [
@@ -67,6 +68,10 @@ const columns = [
       const interval = record?.partitionKeyInvokerParameters?.generateParameter?.interval;
       const intervalPrecision =
         record?.partitionKeyInvokerParameters?.generateParameter?.intervalPrecision;
+      const incrementFieldType =
+        record?.partitionKeyInvokerParameters?.generateParameter?.fieldType;
+      const incrementFieldTimeFormat =
+        record?.partitionKeyInvokerParameters?.generateParameter?.timeFormat;
       return (
         <Descriptions className={styles.rules} column={1} size="small">
           <Descriptions.Item
@@ -87,8 +92,15 @@ const columns = [
                   defaultMessage: '顺序递增',
                 })}
           </Descriptions.Item>
+          {!!incrementFieldType ? (
+            <Descriptions.Item label={'含义'}>
+              {increamentFieldTypeLabelMap[incrementFieldType]}
+              {incrementFieldTimeFormat ? `(${incrementFieldTimeFormat})` : null}
+            </Descriptions.Item>
+          ) : null}
           {[
             PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
+            PARTITION_KEY_INVOKER.TIME_STRING_INCREASING_GENERATOR,
             PARTITION_KEY_INVOKER.HISTORICAL_PARTITION_PLAN_CREATE_GENERATOR,
           ].includes(record?.partitionKeyInvoker) ? (
             <Descriptions.Item
@@ -120,7 +132,6 @@ const columns = [
               </Tooltip>
             </Descriptions.Item>
           )}
-
           {!!intervalGenerateExpr && (
             <Descriptions.Item
               label={
@@ -133,7 +144,6 @@ const columns = [
               {intervalGenerateExpr}
             </Descriptions.Item>
           )}
-
           {!!interval && (
             <Descriptions.Item
               label={

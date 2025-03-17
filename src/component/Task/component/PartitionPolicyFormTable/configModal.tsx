@@ -41,7 +41,11 @@ import {
 import React, { useEffect, useState } from 'react';
 import { TaskPartitionStrategyMap } from '../../const';
 import { ITableConfig } from '../../PartitionTask/CreateModal';
-import { START_DATE } from './const';
+import {
+  getPartitionKeyInvokerByIncrementFieldType,
+  INCREAMENT_FIELD_TYPE,
+  START_DATE,
+} from './const';
 import EditTable from './EditTable';
 import styles from './index.less';
 import PreviewSQLModal from './PreviewSQLModal';
@@ -282,7 +286,10 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               interval,
               intervalPrecision,
               intervalGenerateExpr,
+              incrementFieldType,
+              incrementFieldTypeInDate,
             } = item;
+            // 创建方式: 自定义
             if (partitionKeyInvoker === PARTITION_KEY_INVOKER.CUSTOM_GENERATOR) {
               return {
                 partitionKey,
@@ -298,16 +305,42 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 },
               };
             } else {
+              // 创建方式: 顺序递增
+              // 时间类型
+              // 非时间类型
+              const tempPartitionKeyInvoker = getPartitionKeyInvokerByIncrementFieldType(
+                partitionKeyInvoker,
+                incrementFieldType,
+              );
               const currentTimeParameter = {
                 fromCurrentTime: fromCurrentTime === START_DATE.CURRENT_DATE,
                 baseTimestampMillis: baseTimestampMillis?.valueOf(),
+                fieldType: incrementFieldType,
+                // 数值
+                numberInterval: intervalGenerateExpr,
+                // 时间日期
+                timeFormat: incrementFieldTypeInDate,
               };
               if (fromCurrentTime !== START_DATE.CUSTOM_DATE) {
                 delete currentTimeParameter.baseTimestampMillis;
               }
+              if (
+                [INCREAMENT_FIELD_TYPE.NUMBER, INCREAMENT_FIELD_TYPE.TIMESTAMP]?.includes(
+                  incrementFieldType,
+                )
+              ) {
+                delete currentTimeParameter.timeFormat;
+              }
+              if (
+                [INCREAMENT_FIELD_TYPE.TIME_STRING, INCREAMENT_FIELD_TYPE.TIMESTAMP]?.includes(
+                  incrementFieldType,
+                )
+              ) {
+                delete currentTimeParameter.numberInterval;
+              }
               return {
                 partitionKey,
-                partitionKeyInvoker,
+                partitionKeyInvoker: tempPartitionKeyInvoker,
                 strategy: 'CREATE',
                 partitionKeyInvokerParameters: {
                   generateCount,

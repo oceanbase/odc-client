@@ -245,18 +245,13 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
         ...item,
         option: {
           partitionKeyConfigs: res?.contents?.map((type, index) => {
-            const isDateType = !!type?.localizedMessage;
-            const defaultKeyConfig = isDateType
-              ? {
-                  fromCurrentTime: START_DATE.CURRENT_DATE,
-                  intervalPrecision: defaultIntervalPrecision,
-                }
-              : {};
+            const defaultKeyConfig = {
+              fromCurrentTime: START_DATE.CURRENT_DATE,
+              intervalPrecision: defaultIntervalPrecision,
+            };
             const name = item.option?.partitionKeyConfigs?.[index]?.name;
             return {
-              partitionKeyInvoker: isDateType
-                ? PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR
-                : PARTITION_KEY_INVOKER.CUSTOM_GENERATOR,
+              partitionKeyInvoker: PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
               ...defaultKeyConfig,
               name,
               ...partitionConfig?.option?.partitionKeyConfigs?.[index],
