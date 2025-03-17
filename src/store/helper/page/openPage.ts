@@ -123,8 +123,8 @@ export function openPackageViewPage(
   const pkgPage = new PackageViewPage(databaseId, packageName, topTab, propsTab);
   page.openPage(pkgPage);
 }
-export async function openNewSQLPage(cid: number, databaseFrom?: 'datasource' | 'project') {
-  const sqlPage = new SQLPage(cid, null, false, databaseFrom);
+export async function openNewSQLPage(cid: number) {
+  const sqlPage = new SQLPage(cid, null, false);
   page.openPage(sqlPage);
 }
 /** 根据scriptID打开sql或者pl的page */
@@ -159,9 +159,8 @@ export async function openNewDefaultPLPage(
   value?: { sql: string; params: any },
   cid?: number,
   dbName?: string,
-  databaseFrom?: 'project' | 'datasource',
 ) {
-  let plPage = new AnonymousPage(cid, databaseFrom, value?.sql);
+  let plPage = new AnonymousPage(cid, value?.sql);
   page.openPage(plPage);
 }
 

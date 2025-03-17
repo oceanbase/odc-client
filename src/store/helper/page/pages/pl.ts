@@ -113,7 +113,6 @@ export class AnonymousPage extends PLPage {
     plSchema: {
       params: any[];
     };
-    databaseFrom: 'datasource' | 'project';
     pageIndex: number;
   };
   static getTitleByParams(params: AnonymousPage['pageParams']) {
@@ -136,7 +135,7 @@ export class AnonymousPage extends PLPage {
       }
     }
   }
-  constructor(databaseId: number, databaseFrom: 'project' | 'datasource', sql: string) {
+  constructor(databaseId: number, sql: string) {
     super(PLType.ANONYMOUSBLOCK, databaseId);
     const pageIndex = this.findCurrentNum();
     this.pageKey = `pl-new-${generateUniqKey()}`;
@@ -150,7 +149,6 @@ export class AnonymousPage extends PLPage {
       plSchema: {
         params: [],
       },
-      databaseFrom,
       pageIndex,
     };
   }

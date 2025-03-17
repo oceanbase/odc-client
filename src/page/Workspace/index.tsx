@@ -89,7 +89,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
           type: ResourceNodeType.Database,
         });
       if (!isLogicalDatabase) {
-        databaseId && openNewSQLPage(databaseId, 'project');
+        databaseId && openNewSQLPage(databaseId);
       }
       if (isCreateTable) {
         openCreateTablePage(databaseId);
@@ -97,7 +97,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     } else if (datasourceId) {
       resourceTreeContext?.setSelectDatasourceId(datasourceId);
       resourceTreeContext?.setGroupMode(DatabaseGroup.dataSource);
-      databaseId && openNewSQLPage(databaseId, 'datasource');
+      databaseId && openNewSQLPage(databaseId);
     } else {
       return;
     }
@@ -259,7 +259,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   };
 
   const onCopySQLPage = (page: IPage) => {
-    openNewSQLPage(page?.params?.cid, page?.params?.databaseFrom);
+    openNewSQLPage(page?.params?.cid);
   };
   useEffect(() => {
     // clear expired tab data

@@ -38,12 +38,7 @@ export interface IMenuItemConfig {
   children?: IMenuItemConfig[];
   ellipsis?: boolean;
   icon?: IconComponentProps['component'];
-  run?: (
-    session: SessionStore,
-    node: TreeDataNode,
-    databaseFrom: 'datasource' | 'project',
-    pollingDatabase?: () => void,
-  ) => void;
+  run?: (session: SessionStore, node: TreeDataNode, pollingDatabase?: () => void) => void;
   // 所需权限点list
   needAccessTypeList?: DatabasePermissionType[];
 }
@@ -53,7 +48,6 @@ export interface IProps {
   options?: IOptions;
   dbSession: SessionStore;
   node: TreeDataNode;
-  databaseFrom: 'datasource' | 'project';
   showTip?: boolean;
   pollingDatabase?: () => void;
 }

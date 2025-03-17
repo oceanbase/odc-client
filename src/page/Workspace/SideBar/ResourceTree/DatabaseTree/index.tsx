@@ -15,18 +15,29 @@
  */
 
 import { useContext, useEffect, useMemo } from 'react';
-import { DBType, DatabaseGroup } from '@/d.ts/database';
+import { IDatabase, DBType, DatabaseGroup } from '@/d.ts/database';
 import { DataBaseTreeData } from '../Nodes/database';
 import { TreeDataNode } from '../type';
 import ResourceTree from '..';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import datasourceStatus from '@/store/datasourceStatus';
 import useGroupData from './useGroupData';
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { isPhysicalDatabase } from '@/util/database';
 
 const DatabaseTree = function () {
   const { databaseList, reloadDatabaseList, pollingDatabase, groupMode } =
     useContext(ResourceTreeContext);
-  const { DatabaseGroupMap } = useGroupData(databaseList);
+  const { DatabaseGroupMap } = useGroupData({
+    databaseList,
+    filter: (db: IDatabase) => {
+      const config = getDataSourceModeConfig(db?.dataSource?.type);
+      if (!config?.features?.resourceTree && isPhysicalDatabase(db)) {
+        return false;
+      }
+      return db.existed;
+    },
+  });
 
   async function reloadDatabase() {
     await reloadDatabaseList();
@@ -66,7 +77,6 @@ const DatabaseTree = function () {
       showTip={[DatabaseGroup.none, DatabaseGroup.project].includes(groupMode)}
       stateId={'resourceTree'}
       reloadDatabase={() => reloadDatabase()}
-      databaseFrom={'datasource'}
       databases={[...(DatabaseGroupMap[groupMode]?.values() || [])]}
       allDatabasesMap={DatabaseGroupMap[DatabaseGroup.none]}
       pollingDatabase={pollingDatabase}

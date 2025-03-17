@@ -25,7 +25,7 @@ const useActions = (params: { modalStore: ModalStore; project: IProject }) => {
   const openSql = (e, db) => {
     e.stopPropagation();
     modalStore?.changeDatabaseSearchModalVisible(false);
-    db.id && openNewSQLPage(db.id, project ? 'project' : 'datasource');
+    db.id && openNewSQLPage(db.id);
   };
 
   /** 申请库权限 */

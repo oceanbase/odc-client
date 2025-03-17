@@ -215,7 +215,6 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
               defaultMessage: '请选择',
             })}
           />
-
           <DatabaseSelect
             name={['parameters', 'targetDatabaseId']}
             width={'336px'}
@@ -227,10 +226,9 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
                 defaultMessage: '目标端数据库',
               }) /*"目标端数据库"*/
             }
-            projectId={projectId}
+            projectId={database?.data?.project?.id}
             filters={{
               dialectTypes: [database?.data?.dataSource?.dialectType],
-              projectId: database?.data?.project?.id,
             }}
             placeholder={formatMessage({
               id: 'src.component.Task.StructureComparisonTask.CreateModal.CBAA34FD',

@@ -21,7 +21,7 @@ import { ITableModel } from '../../components/CreateTable/interface';
 import { ResourceNodeType, TreeDataNode } from './type';
 import { isLogicalDatabase } from '@/util/database';
 import { IDatabase, DatabaseGroup } from '@/d.ts/database';
-import { ConnectType } from '@/d.ts';
+import { ConnectType, IConnection } from '@/d.ts';
 import { ConnectTypeText } from '@/constant/label';
 
 export async function loadNode(
@@ -219,6 +219,7 @@ export type secondGroupType = Map<number, GroupWithDatabases[DatabaseGroup.dataS
 export type GroupWithDatabases = {
   [K in keyof GroupResult as K extends DatabaseGroup.none ? never : K]: GroupResult[K] & {
     databases: IDatabase[];
+    dataSource?: IConnection;
   };
 };
 export type GroupWithSecondGroup = {

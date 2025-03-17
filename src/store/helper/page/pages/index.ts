@@ -83,7 +83,6 @@ export class SQLPage extends Page {
     scriptId?: ScriptId;
     cid: number;
     fromTask?: boolean;
-    databaseFrom: 'datasource' | 'project';
     pageIndex?: number;
     dbName?: string;
   } & Partial<IScriptMeta>;
@@ -112,12 +111,7 @@ export class SQLPage extends Page {
       }
     }
   }
-  constructor(
-    databaseId: number,
-    script?: IScript,
-    fromTask: boolean = false,
-    databaseFrom: 'project' | 'datasource' = 'datasource',
-  ) {
+  constructor(databaseId: number, script?: IScript, fromTask: boolean = false) {
     super();
     this.pageType = PageType.SQL;
     if (script) {
@@ -127,7 +121,6 @@ export class SQLPage extends Page {
         ...script?.scriptMeta,
         scriptText: script.content,
         scriptId: script.scriptMeta?.id,
-        databaseFrom,
         cid: databaseId,
       };
     } else {
@@ -138,7 +131,6 @@ export class SQLPage extends Page {
         pageIndex: pageIndex,
         scriptText: '',
         cid: databaseId,
-        databaseFrom,
         fromTask,
       };
     }
@@ -149,7 +141,6 @@ export class TutorialPage extends Page {
     docId: string;
     scriptText: string;
     cid: number;
-    databaseFrom: 'datasource';
   };
   constructor(docId: string, databaseId: number) {
     super();
@@ -160,7 +151,6 @@ export class TutorialPage extends Page {
       docId,
       cid: databaseId,
       scriptText: '',
-      databaseFrom: 'datasource',
     };
   }
 }
@@ -229,7 +219,6 @@ export class RecycleBinPage extends Page {
 export class TablePage extends Page {
   public pageParams: {
     databaseId: number;
-    databaseFrom: 'datasource';
     tableName: string;
     topTab: TableTopTab;
     propsTab: TablePropsTab;
@@ -250,7 +239,6 @@ export class TablePage extends Page {
     this.pageTitle = tableName;
     this.pageParams = {
       databaseId,
-      databaseFrom: 'datasource',
       tableName,
       topTab,
       propsTab,

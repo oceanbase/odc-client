@@ -1,18 +1,3 @@
-/*
- * Copyright 2023 OceanBase
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { IDataSourceModeConfig } from '@/common/datasource/interface';
 import { listDatabases } from '@/common/network/database';
@@ -23,26 +8,37 @@ import { hasPermission, TaskTypeMap } from '@/component/Task/helper';
 import { EnvColorMap } from '@/constant';
 import { ConnectionMode, TaskType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
-import { IDatasource } from '@/d.ts/datasource';
-import { IProject } from '@/d.ts/project';
 import { DataSourceStatusStore } from '@/store/datasourceStatus';
-import login from '@/store/login';
 import { ReactComponent as PjSvg } from '@/svgr/project_space.svg';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
-import Icon, { SearchOutlined } from '@ant-design/icons';
+import Icon from '@ant-design/icons';
 import { useParams } from '@umijs/max';
 import { useRequest } from 'ahooks';
-import { Badge, Input, Popover, Select, Space, Spin, Tooltip, Tree } from 'antd';
+import { Badge, Popover, Spin, Tooltip, Tree, Button } from 'antd';
 import { DataNode } from 'antd/lib/tree';
 import { toInteger } from 'lodash';
+import { UserStore } from '@/store/login';
 import { inject, observer } from 'mobx-react';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import SessionContext from '../../context';
 import { DEFALT_HEIGHT, DEFALT_WIDTH } from '../const';
 import styles from './index.less';
-
+import Search, { SearchType } from './search';
+import Group from '@/page/Workspace/SideBar/ResourceTree/DatabaseGroup';
+import { DatabaseGroup } from '@/d.ts/database';
+import useGroupData from '@/page/Workspace/SideBar/ResourceTree/DatabaseTree/useGroupData';
+import { SelectItemProps } from '@/page/Project/Sensitive/interface';
+import {
+  NodeType,
+  isGroupNode,
+  GroupNodeToNodeType,
+  filterGroupKey,
+  getGroupKey,
+  getSecondGroupKey,
+  getShouldExpandedGroupKeys,
+} from './helper';
 interface IDatabasesTitleProps {
   db: IDatabase;
   taskType: TaskType;
@@ -75,7 +71,10 @@ const DatabasesTitle: React.FC<IDatabasesTitleProps> = (props) => {
           placement={'right'}
           content={<ConnectionPopover connection={db?.dataSource} database={db} />}
         >
-          <div className={styles.textoverflow}>{db.name}</div>
+          <div className={styles.databaseItem}>
+            <span className={styles.textoverflow}>{db.name}</span>
+            <span className={styles.dataSourceInfo}>{db?.dataSource?.name}</span>
+          </div>
         </Popover>
       )}
 
@@ -83,385 +82,436 @@ const DatabasesTitle: React.FC<IDatabasesTitleProps> = (props) => {
     </>
   );
 };
+
 export interface ISessionDropdownFiltersProps {
-  projectId?: number;
   dialectTypes?: ConnectionMode[];
-  dataSourceId?: number;
   feature?: keyof IDataSourceModeConfig['features'];
   isIncludeLogicalDb?: boolean;
+  hideFileSystem?: boolean;
 }
+
+export interface ISessionDropdownCheckModeConfigProps {
+  setOptions: React.Dispatch<React.SetStateAction<SelectItemProps[]>>;
+  checkedKeys: React.Key[];
+  setCheckedKeys?: React.Dispatch<React.SetStateAction<React.Key[]>>;
+  onSelect: (value: React.Key[]) => void;
+}
+
 interface IProps {
-  dialectTypes?: ConnectionMode[];
   width?: number | string;
   taskType?: TaskType;
   projectId?: number;
+  dataSourceId?: number;
   filters?: ISessionDropdownFiltersProps;
   dataSourceStatusStore?: DataSourceStatusStore;
-  options?: {
-    hideFileSystem?: boolean;
-  };
   disabled?: boolean;
+  userStore?: UserStore;
+  checkModeConfig?: ISessionDropdownCheckModeConfigProps;
+  groupMode?: DatabaseGroup;
 }
-const SessionDropdown: React.FC<IProps> = function ({
-  children,
-  width,
-  projectId,
-  filters = null,
-  dialectTypes,
-  taskType,
-  dataSourceStatusStore,
-  options,
-  disabled = false,
-}) {
+
+const SessionDropdown: React.FC<IProps> = (props) => {
+  const {
+    children,
+    width,
+    projectId,
+    dataSourceId,
+    filters = null,
+    taskType,
+    dataSourceStatusStore,
+    disabled = false,
+    userStore,
+    groupMode: initGroupMode,
+    checkModeConfig = null,
+  } = props;
+  const { onSelect, checkedKeys, setCheckedKeys, setOptions } = checkModeConfig || {};
   const context = useContext(SessionContext);
-  const { from, setFrom } = context;
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [canCheckedDbKeys, setCanCheckedDbKeys] = useState<number[]>([]);
+  const [groupMode, _setGroupMode] = useState(
+    userStore.isPrivateSpace() ? DatabaseGroup.dataSource : DatabaseGroup.project,
+  );
+  const setGroupMode = (type: DatabaseGroup) => {
+    localStorage.setItem('sessionDropdownGroupMode', type);
+    _setGroupMode(type);
+  };
+  const [currentObject, setCurrentObject] = useState<{
+    value: React.Key;
+    type: NodeType;
+  }>(undefined);
+  const clockRef = useRef(null);
   const treeRef = useRef(null);
   const { datasourceId } = useParams<{
     datasourceId: string;
   }>();
-  const [searchValue, setSearchValue] = useState<string>('');
+  const [searchValue, setSearchValue] = useState<{ value: string; type: SearchType }>({
+    value: null,
+    type: null,
+  });
   const [expandedKeys, setExpandedKeys] = useState<Key[]>([]);
-
   const hasDialectTypesFilter =
     filters?.dialectTypes && Array.isArray(filters?.dialectTypes) && filters?.dialectTypes?.length;
-  const hasProjectIdFilter = !!filters?.projectId;
   const hasFeature = !!filters?.feature;
   const isIncludeLogicalDb = !!filters?.isIncludeLogicalDb;
+
   const {
     data,
     run,
     loading: fetchLoading,
   } = useRequest(listDatabases, {
     manual: true,
+    onSuccess: (dataList) => {
+      if (!checkModeConfig) return;
+      const options =
+        dataList?.contents?.map((content) => ({
+          label: content.name,
+          value: content.id,
+        })) || [];
+      setOptions(options);
+    },
   });
+
+  const { DatabaseGroupMap, allDatasources } = useGroupData({
+    databaseList: data?.contents,
+    filter: (database: IDatabase) => {
+      if (!context?.isLogicalDatabase && database.type === 'LOGICAL' && !isIncludeLogicalDb) {
+        return false;
+      }
+      if (
+        context?.isLogicalDatabase
+          ? database.type !== 'LOGICAL'
+          : database.type !== 'PHYSICAL' && !isIncludeLogicalDb
+      ) {
+        return false;
+      }
+      const support =
+        !taskType ||
+        database.type === 'LOGICAL' ||
+        getDataSourceModeConfig(database.dataSource?.type)?.features?.task?.includes(taskType);
+      if (!support) {
+        return false;
+      }
+      if (
+        hasDialectTypesFilter &&
+        !filters?.dialectTypes?.includes(database?.dataSource?.dialectType)
+      ) {
+        return false;
+      }
+      if (isConnectTypeBeFileSystemGroup(database?.dataSource?.type) && filters?.hideFileSystem) {
+        return false;
+      }
+      if (
+        hasFeature &&
+        !getDataSourceModeConfig(database?.dataSource?.type)?.features[filters?.feature]
+      ) {
+        return false;
+      }
+      if (
+        (datasourceId && toInteger(datasourceId) !== database?.dataSource?.id) ||
+        (!datasourceId && database?.dataSource?.temp)
+      ) {
+        return null;
+      }
+      return true;
+    },
+  });
+
   useEffect(() => {
     if (isOpen) {
       run(
         projectId,
-        datasourceId && toInteger(datasourceId),
+        datasourceId ? toInteger(datasourceId) : dataSourceId,
         1,
         99999,
+        searchValue.value,
         null,
-        null,
-        login.isPrivateSpace(),
+        userStore.isPrivateSpace(),
         true,
         true,
+        null,
+        null,
+        searchValue.type === SearchType.DATASOURCE ? searchValue.value : null,
+        searchValue.type === SearchType.CLUSTER ? searchValue.value : null,
+        searchValue.type === SearchType.TENANT ? searchValue.value : null,
       );
+    }
+  }, [isOpen, searchValue]);
+
+  useEffect(() => {
+    if (allDatasources.length) {
+      dataSourceStatusStore.asyncUpdateStatus(allDatasources?.map((a) => a.id));
+    }
+  }, [allDatasources]);
+
+  const positionTreeByKey = (key, duration = 10) => {
+    if (!key) return;
+    if (clockRef?.current) {
+      clearTimeout(clockRef?.current);
+    }
+    return new Promise<void>((resolve) => {
+      clockRef.current = setTimeout(() => {
+        treeRef?.current?.scrollTo({ key, align: 'top', offset: 100 });
+        clockRef.current = null;
+        resolve();
+      }, duration);
+    });
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      if (initGroupMode) {
+        _setGroupMode(initGroupMode);
+      } else {
+        const type = localStorage.getItem('sessionDropdownGroupMode');
+        if (type && type !== 'null' && type !== 'undefined') {
+          if (
+            userStore.isPrivateSpace() &&
+            [DatabaseGroup.project, DatabaseGroup.none].includes(type as DatabaseGroup)
+          ) {
+            return;
+          }
+          _setGroupMode(type as DatabaseGroup);
+        }
+      }
     }
   }, [isOpen]);
-  const dataGroup = useMemo(() => {
-    const datasources: Map<number, { datasource: IDatasource; databases: IDatabase[] }> = new Map();
-    const projects: Map<number, { project: IProject; databases: IDatabase[] }> = new Map();
-    const databases: Map<number, IDatabase> = new Map();
-    const allProjects: IProject[] = [],
-      allDatasources: IDatasource[] = [];
-    data?.contents?.forEach((db) => {
-      let { project, dataSource } = db;
-      if (!context?.isLogicalDatabase && db.type === 'LOGICAL' && !isIncludeLogicalDb) {
-        return;
-      }
-      if (
-        context?.isLogicalDatabase
-          ? db.type !== 'LOGICAL'
-          : db.type !== 'PHYSICAL' && !isIncludeLogicalDb
-      ) {
-        return;
-      }
-      if (dataSource) {
-        // 插入项目ID用于下方筛选
-        dataSource.projectId = project?.id;
-      }
-      const support =
-        !taskType ||
-        db.type === 'LOGICAL' ||
-        getDataSourceModeConfig(db.dataSource?.type)?.features?.task?.includes(taskType);
-      if (!support) {
-        return;
-      }
-      if (project) {
-        const projectDatabases = projects.get(project?.id) || {
-          project: project,
-          databases: [],
-        };
-        projectDatabases.databases.push(db);
-        if (!projects.has(project?.id)) {
-          allProjects.push(project);
-        }
-        projects.set(project?.id, projectDatabases);
-      }
-      if (dataSource) {
-        const datasourceDatabases = datasources.get(dataSource?.id) || {
-          datasource: dataSource,
-          databases: [],
-        };
-        if (db.type === 'PHYSICAL') {
-          datasourceDatabases.databases.push(db);
-        }
-        if (!datasources.has(dataSource?.id)) {
-          allDatasources.push(dataSource);
-        }
-        datasources.set(dataSource?.id, datasourceDatabases);
-      }
-      databases.set(db.id, db);
-    });
-    let filterDataSources: IDatasource[];
-    let filterProjects: IProject[];
-    if (hasProjectIdFilter) {
-      filterProjects = allProjects?.filter((project) => filters?.projectId === project?.id);
-      filterDataSources = allDatasources?.filter(
-        (datasource) => datasource?.projectId === filters?.projectId,
-      );
-    }
-    if (hasDialectTypesFilter) {
-      filterDataSources = allDatasources?.filter((datasource) =>
-        filters?.dialectTypes?.includes(datasource?.dialectType),
-      );
-    }
-    return {
-      datasources,
-      projects,
-      databases,
-      allDatasources: hasDialectTypesFilter ? filterDataSources : allDatasources,
-      allProjects: hasProjectIdFilter ? filterProjects : allProjects,
-    };
-  }, [data?.contents]);
 
   useEffect(() => {
-    const databaseId = context?.databaseId;
-    const db = data?.contents.find((db) => db.id === databaseId);
-    if (db && db?.dataSource && from === 'datasource') {
-      setExpandedKeys([db?.dataSource.id]);
-      setTimeout(() => {
-        treeRef?.current?.scrollTo({ key: `db:${databaseId}` });
-      }, 500);
-    } else {
-      setExpandedKeys([db?.project?.id]);
-      setTimeout(() => {
-        treeRef?.current?.scrollTo({ key: `db:${databaseId}` });
-      }, 500);
+    if (currentObject) {
+      const { value: key, type } = currentObject;
+      if (groupMode !== DatabaseGroup.none) {
+        const shouldExpandedGroupKeys = getShouldExpandedGroupKeys({
+          key,
+          type,
+          groupMode,
+          databaseList: data?.contents,
+        });
+        setTimeout(() => {
+          setExpandedKeys(Array.from(new Set([...expandedKeys, ...shouldExpandedGroupKeys])));
+        });
+      }
+      positionTreeByKey(key, 300);
     }
-  }, [data?.contents]);
+  }, [groupMode]);
 
   useEffect(() => {
-    if (dataGroup?.allDatasources) {
-      dataSourceStatusStore.asyncUpdateStatus(dataGroup?.allDatasources?.map((a) => a.id));
+    if (context.databaseId) {
+      if (checkModeConfig) return;
+      const shouldExpandedGroupKeys = getShouldExpandedGroupKeys({
+        key: context.databaseId,
+        type: NodeType.Database,
+        groupMode,
+        databaseList: data?.contents,
+      });
+      setTimeout(() => {
+        setExpandedKeys(Array.from(new Set([...expandedKeys, ...shouldExpandedGroupKeys])));
+      });
+      positionTreeByKey(context.databaseId, 300).then(() => {
+        setCurrentObject({ value: context.databaseId, type: NodeType.Database });
+      });
     }
-  }, [dataGroup?.allDatasources]);
+  }, [data?.contents]);
 
   function onOpen(open: boolean) {
     if (!open) {
       setIsOpen(open);
       return;
     }
-    setFrom(context?.from);
     tracert.click('a3112.b41896.c330994.d367631');
     setIsOpen(open);
   }
-  async function reloadTree() {
-    setExpandedKeys([]);
-  }
-  useEffect(() => {
-    reloadTree();
-  }, [from]);
-  function treeData(): DataNode[] {
-    const { allDatasources, allProjects, projects, datasources } = dataGroup;
-    if (context?.datasourceMode) {
-      return allDatasources
-        ?.map((item) => {
-          if (
-            (datasourceId && toInteger(datasourceId) !== item.id) ||
-            (!datasourceId && item.temp)
-          ) {
-            return null;
-          }
-          if (searchValue && !item.name?.toLowerCase().includes(searchValue?.toLowerCase())) {
-            return null;
-          }
-          if (hasFeature && !getDataSourceModeConfig(item.type)?.features[filters?.feature]) {
-            return null;
-          }
-          return !hasFeature || getDataSourceModeConfig(item.type)?.features[filters?.feature]
-            ? {
-                title: (
-                  <Popover
-                    showArrow={false}
-                    placement={'right'}
-                    content={<ConnectionPopover connection={item} />}
-                  >
-                    <div className={styles.textoverflow}>{item.name}</div>
-                  </Popover>
-                ),
 
-                icon: <StatusIcon item={item} />,
-                key: item.id,
-                selectable: true,
-                isLeaf: true,
-              }
-            : null;
+  const treeData: DataNode[] = useMemo(() => {
+    let _treeData = [];
+    const _canCheckedDbKeys: number[] = [];
+    if (context.datasourceMode) {
+      _treeData = [...(DatabaseGroupMap[DatabaseGroup.dataSource]?.values() || [])]
+        ?.map((item) => {
+          const { dataSource } = item;
+          if (!dataSource) {
+            return null;
+          }
+          return {
+            title: (
+              <Popover
+                showArrow={false}
+                placement={'right'}
+                content={<ConnectionPopover connection={item?.dataSource} />}
+              >
+                <div className={styles.textoverflow}>{item?.dataSource?.name}</div>
+              </Popover>
+            ),
+            icon: <StatusIcon item={item?.dataSource} />,
+            key: item?.dataSource?.id,
+            selectable: true,
+            isLeaf: true,
+            type: NodeType.Connection,
+          };
         })
         .filter(Boolean);
     }
-    switch (from) {
-      case 'datasource': {
-        return allDatasources
-          ?.map((item) => {
-            if (
-              (datasourceId && toInteger(datasourceId) !== item.id) ||
-              (!datasourceId && item.temp) ||
-              (isConnectTypeBeFileSystemGroup(item.type) && options?.hideFileSystem)
-            ) {
-              return null;
+    switch (groupMode) {
+      case DatabaseGroup.none: {
+        _treeData = [...(DatabaseGroupMap[groupMode]?.values() || [])]
+          ?.map((database: IDatabase) => {
+            let dbDisabled: boolean = false;
+            if (taskType) {
+              dbDisabled = !hasPermission(taskType, database.authorizedPermissionTypes);
+            } else {
+              dbDisabled = !database.authorizedPermissionTypes?.length;
             }
-            const isNameMatched =
-              !searchValue || item.name?.toLowerCase().includes(searchValue?.toLowerCase());
-            const dbList = datasources
-              .get(item.id)
-              ?.databases?.filter((database) =>
-                hasProjectIdFilter ? filters?.projectId === database?.project?.id : true,
-              )
-              ?.map((db) => {
-                /**
-                 * 父节点没匹配到，变更为搜索数据库
-                 */
-                if (
-                  !isNameMatched &&
-                  searchValue &&
-                  !db.name?.toLowerCase().includes(searchValue?.toLowerCase())
-                ) {
-                  return null;
-                }
-                let disabled: boolean = false;
-                if (taskType) {
-                  disabled = !hasPermission(taskType, db.authorizedPermissionTypes);
-                } else {
-                  disabled = !db.authorizedPermissionTypes?.length;
-                }
-                return {
-                  title: <DatabasesTitle taskType={taskType} db={db} disabled={disabled} />,
-                  key: `db:${db.id}`,
-                  selectable: true,
-                  isLeaf: true,
-                  icon: <DataBaseStatusIcon item={db} />,
-                  disabled,
-                };
-              })
-              .filter(Boolean)
-              .sort((a, b) => {
-                if (a.disabled === b.disabled) return 0;
-                return a.disabled ? 1 : -1;
-              });
-            if (!isNameMatched && !dbList?.length) {
-              /**
-               * 父节点没匹配到，并且也不存在子节点，则不展示
-               */
-              return null;
-            }
+            !dbDisabled && _canCheckedDbKeys.push(database.id);
             return {
-              title: item.name,
-              icon: <StatusIcon item={item} />,
-              key: item.id,
-              selectable: false,
-              isLeaf: false,
-              children: dbList,
+              title: <DatabasesTitle taskType={taskType} db={database} disabled={dbDisabled} />,
+              key: database.id,
+              selectable: true,
+              isLeaf: true,
+              icon: <DataBaseStatusIcon item={database} />,
+              data: database,
+              disabled: dbDisabled,
+              type: NodeType.Database,
             };
           })
-          .filter(Boolean);
+          .sort((a, b) => {
+            if (a.disabled === b.disabled) return 0;
+            return a.disabled ? 1 : -1;
+          });
+        break;
       }
-      case 'project': {
-        return allProjects
-          ?.map((item) => {
-            const isNameMatched =
-              !searchValue || item.name?.toLowerCase().includes(searchValue?.toLowerCase());
-            const dbList = projects
-              .get(item.id)
-              ?.databases?.filter((database) => {
-                if (
-                  isConnectTypeBeFileSystemGroup(database.connectType) &&
-                  options?.hideFileSystem
-                ) {
-                  return false;
-                }
-                if (hasDialectTypesFilter) {
-                  return filters?.dialectTypes?.includes(database?.dataSource?.dialectType);
-                }
-                return true;
-              })
-              ?.map((db) => {
-                if (
-                  !isNameMatched &&
-                  searchValue &&
-                  !db.name?.toLowerCase().includes(searchValue?.toLowerCase())
-                ) {
-                  return null;
-                }
-                let disabled: boolean = false;
+      case DatabaseGroup.project:
+      case DatabaseGroup.dataSource:
+      case DatabaseGroup.tenant: {
+        _treeData = [...(DatabaseGroupMap[groupMode]?.values() || [])].map((groupItem) => {
+          let ds, icon;
+          if (groupMode === DatabaseGroup.dataSource) {
+            ds = data?.contents?.find((db: IDatabase) => db?.dataSource?.id === groupItem.mapId);
+            icon = ds && <StatusIcon item={ds?.dataSource} />;
+          } else if (groupMode === DatabaseGroup.project) {
+            icon = (
+              <Icon
+                component={PjSvg}
+                style={{
+                  fontSize: 14,
+                }}
+              />
+            );
+          }
+          const groupKey = getGroupKey(groupItem.mapId, groupMode);
+          return {
+            title: groupItem.groupName,
+            key: groupKey,
+            icon: icon ?? null,
+            type: GroupNodeToNodeType[groupMode],
+            children: groupItem.databases
+              ?.map((database) => {
+                let dbDisabled: boolean = false;
                 if (taskType) {
-                  disabled = !hasPermission(taskType, db.authorizedPermissionTypes);
+                  dbDisabled = !hasPermission(taskType, database.authorizedPermissionTypes);
                 } else {
-                  disabled = !db.authorizedPermissionTypes?.length;
+                  dbDisabled = !database.authorizedPermissionTypes?.length;
                 }
+                !dbDisabled && _canCheckedDbKeys.push(database.id);
                 return {
-                  title: <DatabasesTitle taskType={taskType} db={db} disabled={disabled} />,
-                  key: `db:${db.id}`,
+                  title: <DatabasesTitle taskType={taskType} db={database} disabled={dbDisabled} />,
+                  key: database.id,
                   selectable: true,
                   isLeaf: true,
-                  icon: <DataBaseStatusIcon item={db} />,
-                  disabled,
+                  icon: <DataBaseStatusIcon item={database} />,
+                  data: database,
+                  type: NodeType.Database,
+                  disabled: dbDisabled,
                 };
               })
-              .filter(Boolean)
               .sort((a, b) => {
                 if (a.disabled === b.disabled) return 0;
                 return a.disabled ? 1 : -1;
-              });
-            if (!isNameMatched && !dbList?.length) {
-              /**
-               * 父节点没匹配到，并且也不存在子节点，则不展示
-               */
-              return null;
-            }
-            return {
-              title: item.name,
-              icon: (
-                <Icon
-                  component={PjSvg}
-                  style={{
-                    fontSize: 14,
-                  }}
-                />
-              ),
-
-              key: item.id,
-              selectable: false,
-              isLeaf: false,
-              children: dbList,
-            };
-          })
-          .filter(Boolean);
+              }),
+          };
+        });
+        break;
+      }
+      case DatabaseGroup.cluster:
+      case DatabaseGroup.environment:
+      case DatabaseGroup.connectType: {
+        _treeData = [...(DatabaseGroupMap[groupMode]?.values() || [])].map((groupItem) => {
+          const groupKey = getGroupKey(groupItem.mapId, groupMode);
+          return {
+            title: groupItem.groupName,
+            key: groupKey,
+            type: GroupNodeToNodeType[groupMode],
+            children: [...(groupItem.secondGroup.values() || [])].map((sItem) => {
+              const sencondGroupKey = getSecondGroupKey(groupItem.mapId, sItem.mapId, groupMode);
+              const ds = data?.contents?.find(
+                (db: IDatabase) => db?.dataSource?.id === sItem.mapId,
+              );
+              const icon = ds && <StatusIcon item={ds?.dataSource} />;
+              return {
+                title: sItem.groupName,
+                key: sencondGroupKey,
+                icon: icon ?? null,
+                type: NodeType.SecondGroupNodeDataSource,
+                children: sItem.databases
+                  ?.map((database) => {
+                    let dbDisabled: boolean = false;
+                    if (taskType) {
+                      dbDisabled = !hasPermission(taskType, database.authorizedPermissionTypes);
+                    } else {
+                      dbDisabled = !database.authorizedPermissionTypes?.length;
+                    }
+                    !dbDisabled && _canCheckedDbKeys.push(database.id);
+                    return {
+                      title: (
+                        <DatabasesTitle taskType={taskType} db={database} disabled={dbDisabled} />
+                      ),
+                      key: database.id,
+                      selectable: true,
+                      isLeaf: true,
+                      icon: <DataBaseStatusIcon item={database} />,
+                      data: database,
+                      type: NodeType.Database,
+                      disabled: dbDisabled,
+                    };
+                  })
+                  .sort((a, b) => {
+                    if (a.disabled === b.disabled) return 0;
+                    return a.disabled ? 1 : -1;
+                  }),
+              };
+            }),
+          };
+        });
+        break;
       }
     }
-  }
+    setCanCheckedDbKeys(_canCheckedDbKeys);
+    return _treeData;
+  }, [groupMode, data, context.datasourceMode]);
 
   function TreeRender() {
     return (
       <Tree
         ref={treeRef}
-        expandAction="click"
         className={styles.tree}
-        key={from}
+        expandAction="click"
+        key={groupMode}
+        height={215}
         onSelect={async (_, info) => {
           const key = info.node?.key?.toString();
-          let dbId, dsId;
+          //@ts-ignore
+          if (isGroupNode(info?.node?.type) || checkModeConfig) return;
+          //@ts-ignore
+          setCurrentObject({ value: info.node?.key, type: info.node?.type });
+          let dbId: number, dsId: number;
           if (context.datasourceMode) {
             dsId = toInteger(key);
           } else {
-            dbId = toInteger(key?.replace('db:', ''));
+            dbId = toInteger(key);
           }
           setLoading(true);
           try {
-            await context.selectSession(dbId, dsId, from, dataGroup.databases.get(dbId));
+            //@ts-ignore
+            await context.selectSession(dbId, dsId, undefined, info?.node?.data);
           } catch (e) {
             console.error(e);
           } finally {
@@ -469,18 +519,55 @@ const SessionDropdown: React.FC<IProps> = function ({
           }
           setIsOpen(false);
         }}
-        selectedKeys={[
-          context?.datasourceMode ? context?.datasourceId : `db:${context?.databaseId}`,
-        ].filter(Boolean)}
-        height={215}
+        selectedKeys={[currentObject?.value].filter(Boolean)}
         expandedKeys={expandedKeys}
         onExpand={(expandedKeys) => {
           setExpandedKeys(expandedKeys);
         }}
         showIcon
         blockNode={true}
-        treeData={treeData()}
+        treeData={treeData}
+        checkedKeys={checkedKeys}
+        onCheck={(checkedKeysValue) => {
+          const KeyList = filterGroupKey(checkedKeysValue as React.Key[]);
+          setCheckedKeys(KeyList);
+          onSelect?.(KeyList);
+        }}
+        checkable={!!checkModeConfig}
       />
+    );
+  }
+
+  function footerRender() {
+    if (!checkModeConfig || !treeData?.length) return;
+    return (
+      <div className={styles.footer}>
+        {checkedKeys.length !== canCheckedDbKeys.length && (
+          <Button
+            type="link"
+            onClick={() => {
+              const KeyList = filterGroupKey(
+                Array.from(new Set([...expandedKeys, ...canCheckedDbKeys])),
+              );
+              setCheckedKeys(KeyList);
+              onSelect?.(KeyList);
+            }}
+          >
+            全选
+          </Button>
+        )}
+        {checkedKeys.length === canCheckedDbKeys.length && (
+          <Button
+            type="link"
+            onClick={() => {
+              setCheckedKeys([]);
+              onSelect?.([]);
+            }}
+          >
+            取消全选
+          </Button>
+        )}
+      </div>
     );
   }
 
@@ -488,73 +575,38 @@ const SessionDropdown: React.FC<IProps> = function ({
     <Popover
       trigger={['click']}
       placement="bottom"
+      overlayClassName={styles.sessionSelectPopover}
       open={isOpen}
       showArrow={false}
       onOpenChange={onOpen}
-      overlayClassName={styles.pop}
       overlayStyle={{ paddingTop: 2, width }}
       content={
         disabled ? null : (
           <Spin spinning={loading || fetchLoading}>
-            <div className={styles.main} style={{ width: '100%' }}>
-              <Space.Compact block>
-                {context?.datasourceMode ||
-                context?.projectMode ||
-                login.isPrivateSpace() ? null : (
-                  <Select
-                    onChange={(v) => setFrom(v)}
-                    value={from}
-                    style={{
-                      width: '35%',
-                    }}
-                    options={[
-                      {
-                        label: formatMessage({
-                          id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.Project',
-                          defaultMessage: '按项目',
-                        }), //'按项目'
-                        value: 'project',
-                      },
-                      {
-                        label: formatMessage({
-                          id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DataSource',
-                          defaultMessage: '按数据源',
-                        }), //'按数据源'
-                        value: 'datasource',
-                      },
-                    ]}
-                  />
-                )}
-
-                <Input
-                  value={searchValue}
-                  suffix={<SearchOutlined />}
-                  placeholder={
-                    formatMessage({
-                      id: 'odc.src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.SearchForTheKeyword',
-                      defaultMessage: '搜索关键字',
-                    }) /* 搜索关键字 */
-                  }
-                  onChange={(v) => setSearchValue(v.target.value)}
-                  style={{
-                    width:
-                      context?.datasourceMode || context?.projectMode || login.isPrivateSpace()
-                        ? '100%'
-                        : '65%',
+            <div className={styles.main}>
+              <div className={styles.header} style={{ width: width || DEFALT_WIDTH }}>
+                <Search
+                  searchValue={searchValue}
+                  setSearchvalue={(v, type) => {
+                    setSearchValue({ value: v, type });
                   }}
                 />
-              </Space.Compact>
+                <span className={styles.groupIcon}>
+                  <Group setGroupMode={setGroupMode} groupMode={groupMode} />
+                </span>
+              </div>
               <div
                 style={{
                   height: DEFALT_HEIGHT,
-                  marginTop: 10,
                   width: width || DEFALT_WIDTH,
                   overflow: 'hidden',
+                  padding: '0px 4px 12px 12px',
                 }}
               >
                 {TreeRender()}
               </div>
             </div>
+            {footerRender()}
           </Spin>
         )
       }
@@ -563,4 +615,4 @@ const SessionDropdown: React.FC<IProps> = function ({
     </Popover>
   );
 };
-export default inject('dataSourceStatusStore')(observer(SessionDropdown));
+export default inject('dataSourceStatusStore', 'userStore')(observer(SessionDropdown));
