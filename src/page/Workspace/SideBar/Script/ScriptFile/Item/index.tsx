@@ -39,8 +39,10 @@ interface IProps {
   uploading?: boolean;
   errorMsg?: string;
   onClick?: () => void;
+  onDoubleClick?: () => void;
   removeUploadFile?: () => void;
   editFile?: () => void;
+  activeFile?: boolean;
 }
 
 export default function Item({
@@ -51,6 +53,8 @@ export default function Item({
   name,
   script,
   onClick,
+  onDoubleClick,
+  activeFile,
 }: IProps) {
   const isSuccess = !uploading && !errorMsg;
 
@@ -107,9 +111,11 @@ export default function Item({
     <Tooltip title={errorMsg}>
       <div
         onClick={onClick}
+        onDoubleClick={onDoubleClick}
         className={classNames(styles.item, {
           [styles.error]: !!errorMsg,
           [styles.uploading]: uploading,
+          [styles.active]: !!activeFile,
         })}
       >
         <div className={styles.icon}>
@@ -121,7 +127,13 @@ export default function Item({
             }}
           />
         </div>
-        <div className={styles.label}>{name}</div>
+        <div
+          className={classNames(styles.label, {
+            [styles.active]: !!activeFile,
+          })}
+        >
+          {name}
+        </div>
         <div className={styles.action}>
           {isSuccess ? (
             <Action.Group ellipsisIcon="vertical" size={0}>
