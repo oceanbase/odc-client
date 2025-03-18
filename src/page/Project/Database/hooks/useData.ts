@@ -13,10 +13,11 @@ import { DatabaseGroup } from '@/d.ts/database';
 import { getGroupMapId, GroupKey, isGroupColumn } from '../help';
 import { ProjectRole } from '@/d.ts/project';
 import { getMapIdByDB } from '@/page/Workspace/SideBar/ResourceTree/helper';
+import userStore from '@/store/login';
 
 const useData = (id) => {
   const { project, setHasLoginDatabaseAuth } = useContext(ProjectContext);
-  const [groupMode, setGroupMode] = useState(DatabaseGroup.dataSource);
+  const [groupMode, setGroupMode] = useState(DatabaseGroup.none);
   const [filterParams, setFilterParams] = useState<IFilterParams>({
     environmentId: null,
     connectType: null,
@@ -224,6 +225,14 @@ const useData = (id) => {
     [ProjectRole.OWNER].includes(role),
   );
 
+  const haveOperationPermission = useMemo(() => {
+    return (
+      project?.currentUserResourceRoles?.some((item) =>
+        [ProjectRole.DBA, ProjectRole.OWNER].includes(item),
+      ) || project?.creator?.id === userStore?.user?.id
+    );
+  }, [project?.currentUserResourceRoles]);
+
   const clearSelectedRowKeys = () => {
     setSelectedRowKeys([]);
   };
@@ -286,6 +295,7 @@ const useData = (id) => {
     disabledMultiDBChanges,
     isOwner,
     clearSelectedRowKeys,
+    haveOperationPermission,
   };
 };
 

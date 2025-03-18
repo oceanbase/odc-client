@@ -102,7 +102,12 @@ export default function SessionSelect({
       <Popover
         overlayClassName={styles.pop}
         placement="bottomLeft"
-        content={<ConnectionPopover connection={context?.session?.connection} />}
+        content={
+          <ConnectionPopover
+            connection={context?.session?.connection}
+            database={context?.session?.odcDatabase}
+          />
+        }
       >
         {fromDataSource ? (
           <Space style={{ lineHeight: '22px' }} className={styles.link} size={4}>

@@ -27,7 +27,7 @@ import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 import { Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React from 'react';
+import React, { useMemo } from 'react';
 import RiskLevelLabel from '../RiskLevelLabel';
 import styles from './index.less';
 
@@ -46,6 +46,33 @@ const ConnectionPopover: React.FC<{
 
   const DBIcon = getDataSourceStyleByConnectType(connection?.type || database?.connectType)?.icon;
 
+  const databaseRemarkDescription = useMemo(() => {
+    return (
+      <div style={{ display: 'flex' }}>
+        备注：
+        <div style={{ width: '260px', wordBreak: 'break-word' }}>{database?.remark ?? '-'}</div>
+      </div>
+    );
+  }, [database]);
+
+  const dataSourceDescription = useMemo(() => {
+    return (
+      <div style={{ display: 'flex' }}>
+        数据源：
+        <div>{connection?.name || database?.dataSource?.name || '-'}</div>
+      </div>
+    );
+  }, [connection, database]);
+
+  const projectDescription = useMemo(() => {
+    return (
+      <div style={{ display: 'flex' }}>
+        项目：
+        <div>{database?.project?.name || connection?.projectName || '-'}</div>
+      </div>
+    );
+  }, [database, connection]);
+
   if (isFileSyetem) {
     return (
       <div
@@ -55,7 +82,7 @@ const ConnectionPopover: React.FC<{
         style={{ lineHeight: '20px' }}
       >
         <Space direction="vertical">
-          <Tooltip title={connection.name}>
+          <Tooltip title={connection?.name}>
             <div
               style={{
                 marginBottom: 4,
@@ -77,7 +104,7 @@ const ConnectionPopover: React.FC<{
                   component={DBIcon?.component}
                   style={{ fontSize: 22, marginRight: 4, color: DBIcon?.color }}
                 />{' '}
-                {connection.name}
+                {connection?.name}
               </div>
             </div>
           </Tooltip>
@@ -88,7 +115,7 @@ const ConnectionPopover: React.FC<{
                 id: 'src.component.ConnectionPopover.986CE021',
                 defaultMessage: '文件URL：{LogicalExpression0}',
               },
-              { LogicalExpression0: connection.host ?? '-' },
+              { LogicalExpression0: connection?.host ?? '-' },
             )}
           </div>
           <div>
@@ -97,9 +124,10 @@ const ConnectionPopover: React.FC<{
                 id: 'src.component.ConnectionPopover.4A02B634',
                 defaultMessage: '地域：{LogicalExpression0}',
               },
-              { LogicalExpression0: connection.region ?? '-' },
+              { LogicalExpression0: connection?.region ?? '-' },
             )}
           </div>
+          {databaseRemarkDescription}
         </Space>
       </div>
     );
@@ -171,6 +199,7 @@ const ConnectionPopover: React.FC<{
               { ConnectTypeTextDatabaseConnectType: ConnectTypeText[database?.connectType] },
             )}
           </div>
+          {databaseRemarkDescription}
         </Space>
       </div>
     );
@@ -218,7 +247,7 @@ const ConnectionPopover: React.FC<{
 
             /*实例ID/租户ID:*/
           }
-          {connection?.clusterName}/{connection.tenantName}
+          {connection?.clusterName}/{connection?.tenantName}
         </div>
       );
     }
@@ -255,7 +284,7 @@ const ConnectionPopover: React.FC<{
       }}
     >
       <Space direction="vertical">
-        <Tooltip title={connection.name}>
+        <Tooltip title={connection?.name}>
           <div
             style={{
               marginBottom: 4,
@@ -270,17 +299,19 @@ const ConnectionPopover: React.FC<{
           >
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <RiskLevelLabel
-                content={connection?.environmentName}
-                color={connection?.environmentStyle?.toLowerCase()}
+                content={connection?.environmentName || database?.environment?.name}
+                color={
+                  connection?.environmentStyle?.toLowerCase() ||
+                  database?.environment?.style?.toLowerCase()
+                }
               />
-              <Icon
-                component={DBIcon?.component}
-                style={{ fontSize: 22, marginRight: 4, color: DBIcon?.color }}
-              />{' '}
-              {connection.name}
+              <DataBaseStatusIcon item={database} />
+              <span style={{ marginLeft: '6px' }}>{database?.name}</span>
             </div>
           </div>
         </Tooltip>
+        {dataSourceDescription}
+        {projectDescription}
         {renderConnectionMode()}
         {haveOCP() ? null : (
           <div>
@@ -292,7 +323,7 @@ const ConnectionPopover: React.FC<{
 
               /*主机名/端口：*/
             }
-            {connection.host}:{connection.port}
+            {connection?.host}:{connection?.port}
           </div>
         )}
 
@@ -305,12 +336,13 @@ const ConnectionPopover: React.FC<{
                 defaultMessage: '数据库用户名：{connectionDbUser}',
               },
 
-              { connectionDbUser: connection.username ?? '-' },
+              { connectionDbUser: connection?.username ?? '-' },
             )
 
             /*数据库用户名：{connectionDbUser}*/
           }
         </div>
+        {databaseRemarkDescription}
       </Space>
     </div>
   );

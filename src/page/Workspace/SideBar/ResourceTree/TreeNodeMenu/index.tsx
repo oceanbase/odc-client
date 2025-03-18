@@ -19,7 +19,8 @@ import snippet from '@/store/snippet';
 import { DatabasePermissionType } from '@/d.ts/database';
 import SessionStore from '@/store/sessionManager/session';
 import Icon, { InfoCircleFilled, MoreOutlined } from '@ant-design/icons';
-import { Badge, Dropdown, Tooltip } from 'antd';
+import { Badge, Dropdown, Tooltip, Popover } from 'antd';
+import ConnectionPopover from '@/component/ConnectionPopover';
 import treeStyles from '../index.less';
 import { ResourceNodeType, TreeDataNode } from '../type';
 import MenuConfig from './config';
@@ -286,23 +287,33 @@ const TreeNodeMenu = (props: IProps) => {
 
   return (
     <>
-      <Dropdown
-        menu={{
-          style: {
-            minWidth: '160px',
-          },
-          items: allItemsProp,
-          onClick: (info) => {
-            info?.domEvent?.stopPropagation();
-            onMenuClick(clickMap[info.key]);
-          },
-        }}
-        trigger={['contextMenu']}
+      <Popover
+        showArrow={false}
+        placement="right"
+        content={
+          node.type === ResourceNodeType.Database ? (
+            <ConnectionPopover database={node?.data} connection={node?.data?.dataSource} />
+          ) : undefined
+        }
       >
-        {nodeChild}
-      </Dropdown>
-      {actionsRender()}
-      {envRender()}
+        <Dropdown
+          menu={{
+            style: {
+              minWidth: '160px',
+            },
+            items: allItemsProp,
+            onClick: (info) => {
+              info?.domEvent?.stopPropagation();
+              onMenuClick(clickMap[info.key]);
+            },
+          }}
+          trigger={['contextMenu']}
+        >
+          {nodeChild}
+        </Dropdown>
+        {actionsRender()}
+        {envRender()}
+      </Popover>
     </>
   );
 };
