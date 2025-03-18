@@ -58,7 +58,9 @@ service.interceptors.request.use((config) => {
     Math.random().toString(36).substring(2).toUpperCase() +
     Math.random().toString(36).substring(2).toUpperCase();
   const extraParams = odc.requestParamsResolver?.(config, requestId) || {};
-
+  if ((config.params as any)?.download) {
+    config.responseType = 'blob';
+  }
   return {
     ...config,
     params: {
@@ -80,10 +82,9 @@ service.interceptors.response.use(
   async (response) => {
     const { status, config, data: originalData } = response;
     const { params } = config || {};
-
     try {
       if ((params as any)?.download) {
-        const downloadResponse = new Response(JSON.stringify(originalData), {
+        const downloadResponse = new Response(originalData, {
           status: response?.status,
           statusText: response?.statusText,
           // @ts-ignore
