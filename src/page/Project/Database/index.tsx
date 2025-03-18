@@ -15,7 +15,7 @@
  */
 
 import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
-import { getDatabase } from '@/common/network/database';
+import { getDatabase, batchUpdateRemarks } from '@/common/network/database';
 import Action from '@/component/Action';
 import HelpDoc from '@/component/helpDoc';
 import LogicIcon from '@/component/logicIcon';
@@ -38,7 +38,7 @@ import { gotoSQLWorkspace } from '@/util/route';
 import tracert from '@/util/tracert';
 import { getLocalFormatDateTime } from '@/util/utils';
 import Icon from '@ant-design/icons';
-import { Space, Tooltip, Typography } from 'antd';
+import { Space, Tooltip, Typography, message } from 'antd';
 import { toInteger } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import React, { useContext } from 'react';
@@ -98,6 +98,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
     disabledMultiDBChanges,
     isOwner,
     clearSelectedRowKeys,
+    haveOperationPermission,
   } = useData(id);
 
   const getCheckbox = (record: IDatabase) => {
@@ -323,32 +324,6 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
           },
           {
             title: formatMessage({
-              id: 'src.page.Project.Database.A31E6BDF',
-              defaultMessage: '管理员',
-            }),
-            //项目角色
-            dataIndex: 'owners',
-            key: 'owners',
-            ellipsis: true,
-            width: 160,
-            render(v, record) {
-              if (isGroupColumn(record.id)) {
-                return undefined;
-              }
-              return v?.length > 0 ? (
-                v.map(({ name }) => name)?.join(' | ')
-              ) : (
-                <span style={{ color: 'var(--text-color-hint)' }}>
-                  {formatMessage({
-                    id: 'odc.Project.Database.OwnerEmptyText',
-                    defaultMessage: '未设置',
-                  })}
-                </span>
-              );
-            },
-          },
-          {
-            title: formatMessage({
               id: 'odc.Project.Database.DataSource',
               defaultMessage: '所属数据源',
             }),
@@ -407,6 +382,70 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                 />
               );
             },
+          },
+          {
+            title: formatMessage({
+              id: 'src.page.Project.Database.A31E6BDF',
+              defaultMessage: '管理员',
+            }),
+            //项目角色
+            dataIndex: 'owners',
+            key: 'owners',
+            ellipsis: true,
+            width: 160,
+            render(v, record) {
+              if (isGroupColumn(record.id)) {
+                return undefined;
+              }
+              return v?.length > 0 ? (
+                v.map(({ name }) => name)?.join(' | ')
+              ) : (
+                <span style={{ color: 'var(--text-color-hint)' }}>
+                  {formatMessage({
+                    id: 'odc.Project.Database.OwnerEmptyText',
+                    defaultMessage: '未设置',
+                  })}
+                </span>
+              );
+            },
+          },
+          {
+            title: '备注',
+            dataIndex: 'remark',
+            ellipsis: {
+              showTitle: true,
+            },
+            width: 160,
+            render(value, record) {
+              if (isGroupColumn(record.id)) {
+                return undefined;
+              }
+              return value ?? '-';
+            },
+            onCell: haveOperationPermission
+              ? (record) => ({
+                  record,
+                  editable: true,
+                  dataIndex: 'remark',
+                  title: '备注',
+                  width: '160',
+                  handleSave: async (value, callback) => {
+                    if (value.remark && value.remark !== record.remark) {
+                      const isSuccess = await batchUpdateRemarks([record?.id], value.remark);
+                      if (isSuccess) {
+                        message.success(
+                          formatMessage({
+                            id: 'src.component.ODCSetting.E6DD81BF' /*'保存成功'*/,
+                            defaultMessage: '保存成功',
+                          }),
+                        );
+                        callback?.();
+                        reload?.();
+                      }
+                    }
+                  },
+                })
+              : undefined,
           },
           {
             title: formatMessage({
@@ -495,6 +534,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
         dataSource={treeData}
         pagination={false}
         enableResize
+        enableEditTable
       />
       <ChangeProjectModal
         visible={visible}

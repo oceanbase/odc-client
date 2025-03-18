@@ -33,7 +33,7 @@ export default observer(function DataBaseStatusIcon({
   item: IDatabase;
   showStatusTooltip?: boolean;
 }) {
-  const datasource = item.dataSource;
+  const datasource = item?.dataSource;
   const statusInfo = datasourceStatus.statusMap.get(datasource?.id) || datasource?.status;
   let status = isLogicalDatabase(item) ? IConnectionStatus.ACTIVE : statusInfo?.status;
   const icon = getDataSourceStyleByConnectType(datasource?.type || item?.connectType)?.dbIcon;

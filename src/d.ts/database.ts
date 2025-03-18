@@ -103,6 +103,7 @@ export interface IDatabase {
   type: DBType;
   connectType?: ConnectType;
   alias?: string;
+  remark?: string;
 }
 
 /**

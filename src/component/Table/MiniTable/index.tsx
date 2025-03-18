@@ -22,6 +22,7 @@ import { FilterValue } from 'antd/lib/table/interface';
 import styles from './index.less';
 import classNames from 'classnames';
 import { ResizeTitle } from '@/component/CommonTable/component/ResizeTitle';
+import { EditableRow, EditableCell } from '@/component/CommonTable/component/EditTableRow';
 import { DEFAULT_COLUMN_WIDTH } from '@/component/CommonTable/const';
 import type { ColumnGroupType, ColumnType } from 'antd/es/table';
 
@@ -35,6 +36,7 @@ interface IProps<T> extends TableProps<T> {
   loadData?: (page: TablePaginationConfig, filters: Record<string, FilterValue>) => void;
   // 是否启用 列宽可拖拽
   enableResize?: boolean;
+  enableEditTable?: boolean;
   columns: IColumnsType<T>;
   isScroll?: boolean;
 }
@@ -43,6 +45,7 @@ export default function MiniTable<T extends object>({
   loadData,
   isExpandedRowRender = false,
   enableResize = false,
+  enableEditTable = false,
   columns: PropColumns = [],
   isScroll = false,
   ...restProps
@@ -118,15 +121,23 @@ export default function MiniTable<T extends object>({
           [styles.expandedRowRender]: isExpandedRowRender,
         })}
         {...cloneProps}
-        components={
-          enableResize
+        components={{
+          ...(enableResize
             ? {
                 header: {
                   cell: ResizeTitle,
                 },
               }
-            : undefined
-        }
+            : {}),
+          ...(enableEditTable
+            ? {
+                body: {
+                  row: EditableRow,
+                  cell: EditableCell,
+                },
+              }
+            : {}),
+        }}
         scroll={
           isScroll
             ? {

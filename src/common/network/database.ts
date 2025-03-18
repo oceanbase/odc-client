@@ -93,6 +93,16 @@ export async function updateDataBase(
   return res?.data;
 }
 
+export async function batchUpdateRemarks(databaseIds: number[], databaseRemark: string) {
+  const res = await request.post(`/api/v2/database/databases/batchUpdateRemarks`, {
+    data: {
+      databaseIds,
+      databaseRemark,
+    },
+  });
+  return res?.data;
+}
+
 export async function updateDataBaseOwner(
   databaseIds: number[],
   projectId: number,
