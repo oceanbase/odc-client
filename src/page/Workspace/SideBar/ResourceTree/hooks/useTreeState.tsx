@@ -29,7 +29,6 @@ export default function useTreeState(id: string) {
     if (isGroupNode(node.type)) {
       setExpandedKeys(expandedKeys);
     }
-    const { sessionId, cid } = node as TreeDataNode & EventDataNode<any>;
     if (expanded && !loadedKeys?.includes(node.key) && !node.children?.length) {
       /**
        * 只允许在onload内部修改expandedKeys

@@ -16,7 +16,7 @@
 
 import DragWrapper from '@/component/Dragable/component/DragWrapper';
 import snippet from '@/store/snippet';
-import { DatabasePermissionType } from '@/d.ts/database';
+import { DatabasePermissionType, DatabaseGroup } from '@/d.ts/database';
 import SessionStore from '@/store/sessionManager/session';
 import Icon, { InfoCircleFilled, MoreOutlined } from '@ant-design/icons';
 import { Badge, Dropdown, Tooltip, Popover } from 'antd';
@@ -28,7 +28,7 @@ import styles from './index.less';
 import { IMenuItemConfig, IProps } from './type';
 import { EnvColorMap } from '@/constant';
 import classNames from 'classnames';
-import { ReactNode, useContext } from 'react';
+import { ReactNode, useContext, useMemo } from 'react';
 import { menuAccessWrap } from './config/database';
 import IconLoadingWrapper from './IconLoadingWrapper';
 import { ItemType } from 'antd/es/menu/interface';
@@ -54,9 +54,14 @@ export const hasTableChangePermission = (dbSession: SessionStore, node: TreeData
 };
 
 const TreeNodeMenu = (props: IProps) => {
-  const { type = '', dbSession, node, showTip, pollingDatabase } = props;
+  const { type = '', dbSession, node, pollingDatabase } = props;
   const treeContext = useContext(ResourceTreeContext);
-  const { setCurrentObject } = treeContext || {};
+  const { setCurrentObject, groupMode } = treeContext || {};
+
+  const showTip = useMemo(() => {
+    return ![DatabaseGroup.dataSource].includes(groupMode);
+  }, [groupMode]);
+
   // menuKey 用来定制menu
   const menuKey = node?.menuKey;
 

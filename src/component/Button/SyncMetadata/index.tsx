@@ -1,22 +1,20 @@
-import { syncObject, syncAll } from '@/common/network/database';
-import { IManagerResourceType } from '@/d.ts';
+import { syncAll } from '@/common/network/database';
 import { DBObjectSyncStatus, IDatabase } from '@/d.ts/database';
 import { ReactComponent as SyncMetadataSvg } from '@/svgr/sync_metadata.svg';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { LoadingOutlined } from '@ant-design/icons';
-import { useInterval, useRequest } from 'ahooks';
 import { Tooltip } from 'antd';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useContext } from 'react';
 
 export default function Reload({
   size = '13px',
   databaseList,
-  reloadDatabase,
+  reload,
 }: {
   size?: string;
   databaseList?: IDatabase[];
-  reloadDatabase?: () => void;
+  reload?: () => void;
 }) {
   const statusMap = {
     NOTSYNCED: {
@@ -73,7 +71,7 @@ export default function Reload({
       // 有状态为初始化同步中的, 就是 元数据同步中,请稍等
       setState(statusMap.SYNCING);
       fetchDBTimer.current = window.setTimeout(() => {
-        reloadDatabase();
+        reload();
       }, 30000);
     } else if (
       databaseList?.find((item) =>
@@ -99,7 +97,7 @@ export default function Reload({
   async function _onClick() {
     setState(statusMap.SYNCING);
     await syncAll();
-    await reloadDatabase();
+    await reload();
   }
 
   const getlastSyncTime = (data) => {

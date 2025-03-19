@@ -32,7 +32,7 @@ import Reload from '@/component/Button/Reload';
 import DatasourceFilter from './DatasourceFilter';
 import { ConnectType } from '@/d.ts';
 import useTreeState from './hooks/useTreeState';
-import ResourceTreeContext from '../../context/ResourceTreeContext';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import SyncMetadata from '@/component/Button/SyncMetadata';
 import { ModalStore } from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
@@ -43,6 +43,7 @@ import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawe
 import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
 import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
 import { GroupNodeToResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/const';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import {
   getGroupKey,
   getSecondGroupKey,
@@ -60,9 +61,8 @@ interface IProps {
   userStore?: UserStore;
   settingStore?: SettingStore;
   databases: any[];
-  reloadDatabase: () => void;
+  reload: () => void;
   pollingDatabase: () => void;
-  showTip?: boolean;
   enableFilter?: boolean;
   stateId?: string;
   allDatabasesMap: Map<number, IDatabase>;
@@ -73,9 +73,8 @@ const ResourceTree: React.FC<IProps> = function ({
   sessionManagerStore,
   settingStore,
   databases,
-  reloadDatabase,
+  reload,
   pollingDatabase,
-  showTip = false,
   enableFilter,
   stateId,
   allDatabasesMap,
@@ -244,6 +243,10 @@ const ResourceTree: React.FC<IProps> = function ({
             type: GroupNodeToResourceNodeType[groupMode],
             data: data ?? null,
             icon: icon ?? null,
+            isLeaf: groupItem.databases.length ? false : true,
+            // 团队空间不展示对象存储数据源，个人空间会展示对象存储数据源并禁用
+            disabled:
+              groupMode === DatabaseGroup.dataSource && isConnectTypeBeFileSystemGroup(data?.type),
             children: groupItem.databases
               ?.filter((db: IDatabase) => {
                 return (
@@ -359,7 +362,6 @@ const ResourceTree: React.FC<IProps> = function ({
       }
       return (
         <TreeNodeMenu
-          showTip={showTip}
           node={node}
           dbSession={dbSession}
           type={type}
@@ -409,15 +411,12 @@ const ResourceTree: React.FC<IProps> = function ({
               <Group setGroupMode={setGroupMode} groupMode={groupMode} />
               {settingStore.configurations['odc.database.default.enableGlobalObjectSearch'] ===
               'true' ? (
-                <SyncMetadata
-                  reloadDatabase={reloadDatabase}
-                  databaseList={[...allDatabasesMap.values()]}
-                />
+                <SyncMetadata reload={reload} databaseList={[...allDatabasesMap.values()]} />
               ) : null}
               <Reload
                 key="ResourceTreeReload"
                 onClick={() => {
-                  return reloadDatabase();
+                  reload();
                 }}
                 style={{ display: 'flex' }}
               />

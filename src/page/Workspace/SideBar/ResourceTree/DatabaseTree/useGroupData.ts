@@ -5,10 +5,11 @@ import { ConnectType, IConnection } from '@/d.ts';
 
 interface IProps {
   databaseList: IDatabase[];
+  datasourceList?: IConnection[];
   filter?: (db: IDatabase) => boolean;
 }
 const useGroupData = (props: IProps) => {
-  const { databaseList, filter } = props;
+  const { databaseList, datasourceList, filter } = props;
   const dataGroup = useMemo(() => {
     const environmentGroup: Map<number, GroupWithSecondGroup[DatabaseGroup.environment]> =
       new Map();
@@ -21,7 +22,16 @@ const useGroupData = (props: IProps) => {
     const allDatabases: Map<number, IDatabase> = new Map();
     const filteredList = filter ? databaseList?.filter(filter) : databaseList;
     const allDatasources: IConnection[] = [];
-
+    if (datasourceList) {
+      datasourceList.forEach((item) => {
+        datasourceGruop.set(item.id, {
+          databases: [],
+          dataSource: item,
+          groupName: item?.name,
+          mapId: item?.id,
+        });
+      });
+    }
     filteredList?.forEach((db) => {
       const { environment, dataSource, connectType, project } = db;
       allDatabases.set(db.id, db);
@@ -172,7 +182,7 @@ const useGroupData = (props: IProps) => {
       tenantGroup,
       allDatasources,
     };
-  }, [databaseList, filter]);
+  }, [databaseList, filter, datasourceList]);
 
   const DatabaseGroupMap = {
     [DatabaseGroup.none]: dataGroup.allDatabases,
