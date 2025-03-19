@@ -270,9 +270,6 @@ export const getMapIdByDB = <T extends DatabaseGroup>(db: IDatabase, type: T): G
       groupName = tenantName && clusterName ? `${tenantName}@${clusterName}` : '无租户';
       break;
     }
-    case DatabaseGroup.none: {
-      return undefined;
-    }
   }
   return {
     mapId,

@@ -32,7 +32,7 @@ export default async function (response: Response, originalHref: string) {
         // @see https://stackoverflow.com/questions/23054475/javascript-regex-for-extracting-filename-from-content-disposition-header/23054920
         const matches = header.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
         if (matches && matches[1]) {
-          a.download = matches[1];
+          a.download = decodeURIComponent(matches[1]);
           a.href = blobUrl;
           a.click();
         }

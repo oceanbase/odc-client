@@ -19,6 +19,7 @@ import { IDatabase, DBType, DatabaseGroup } from '@/d.ts/database';
 import { DataBaseTreeData } from '../Nodes/database';
 import { TreeDataNode } from '../type';
 import ResourceTree from '..';
+import login from '@/store/login';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import datasourceStatus from '@/store/datasourceStatus';
 import useGroupData from './useGroupData';
@@ -26,10 +27,17 @@ import { getDataSourceModeConfig } from '@/common/datasource';
 import { isPhysicalDatabase } from '@/util/database';
 
 const DatabaseTree = function () {
-  const { databaseList, reloadDatabaseList, pollingDatabase, groupMode } =
-    useContext(ResourceTreeContext);
+  const {
+    databaseList,
+    reloadDatabaseList,
+    pollingDatabase,
+    groupMode,
+    reloadDatasourceList,
+    datasourceList,
+  } = useContext(ResourceTreeContext);
   const { DatabaseGroupMap } = useGroupData({
     databaseList,
+    datasourceList: login.isPrivateSpace() ? datasourceList : [],
     filter: (db: IDatabase) => {
       const config = getDataSourceModeConfig(db?.dataSource?.type);
       if (!config?.features?.resourceTree && isPhysicalDatabase(db)) {
@@ -39,12 +47,13 @@ const DatabaseTree = function () {
     },
   });
 
-  async function reloadDatabase() {
+  async function reload() {
     await reloadDatabaseList();
+    await reloadDatasourceList();
   }
 
   useEffect(() => {
-    reloadDatabase();
+    reload();
   }, []);
 
   useEffect(() => {
@@ -74,9 +83,8 @@ const DatabaseTree = function () {
 
   return (
     <ResourceTree
-      showTip={[DatabaseGroup.none, DatabaseGroup.project].includes(groupMode)}
       stateId={'resourceTree'}
-      reloadDatabase={() => reloadDatabase()}
+      reload={() => reload()}
       databases={[...(DatabaseGroupMap[groupMode]?.values() || [])]}
       allDatabasesMap={DatabaseGroupMap[DatabaseGroup.none]}
       pollingDatabase={pollingDatabase}

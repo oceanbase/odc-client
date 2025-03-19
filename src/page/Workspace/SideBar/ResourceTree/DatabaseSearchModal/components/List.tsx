@@ -232,6 +232,13 @@ const List = ({ modalStore }: Iprops) => {
               </div>
             </Tooltip>
           )}
+          {status !== SearchStatus.defalut && (
+            <Tooltip title={db?.remark} placement="topLeft">
+              <div className={styles.subInfo}>
+                <span className={styles.dataSouceName}>{db?.remark}</span>
+              </div>
+            </Tooltip>
+          )}
         </div>
         {renderDatabaseItemButton(db)}
       </div>

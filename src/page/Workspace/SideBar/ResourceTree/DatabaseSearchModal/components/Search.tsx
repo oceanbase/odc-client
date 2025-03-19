@@ -13,6 +13,7 @@ import { UserStore } from '@/store/login';
 import GlobalSearchContext from '@/page/Workspace/context/GlobalSearchContext';
 import { ModalStore } from '@/store/modal';
 import { SearchOutlined } from '@ant-design/icons';
+import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
 
 interface Iprops {
   userStore?: UserStore;
@@ -39,16 +40,14 @@ const Search = ({ userStore, modalStore }: Iprops) => {
   }, [modalStore.databaseSearchModalVisible, searchKey, database]);
 
   const getSearchTag = () => {
-    if (!database && !dataSource && !project) {
-      return <SearchOutlined style={{ marginRight: '6px', position: 'relative', top: '2px' }} />;
-    }
-    let databaseTag, dataSourceTag, projectTag;
+    let databaseTag, dataSourceTag, projectTag, searchTag;
     const divider = (
       <>
         <span className={styles.selectDivider}></span>
         <span style={{ color: 'var(--icon-color-disable)', paddingRight: 4 }}>/</span>
       </>
     );
+    searchTag = <SearchOutlined style={{ marginRight: '6px', position: 'relative', top: '2px' }} />;
     if (database) {
       databaseTag = (
         <>
@@ -70,6 +69,7 @@ const Search = ({ userStore, modalStore }: Iprops) => {
       dataSourceTag = (
         <>
           <span className={styles.selectedDatabase}>
+            <StatusIcon item={dataSource} />
             <Tooltip title={dataSource?.name} placement="top" overlayStyle={{ maxWidth: 280 }}>
               <span className={styles.selectTitle}>{dataSource?.name}</span>
             </Tooltip>
@@ -96,6 +96,7 @@ const Search = ({ userStore, modalStore }: Iprops) => {
     }
     return (
       <>
+        {searchTag}
         {dataSourceTag}
         {projectTag}
         {databaseTag}

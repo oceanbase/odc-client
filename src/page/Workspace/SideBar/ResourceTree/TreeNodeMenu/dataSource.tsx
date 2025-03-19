@@ -14,6 +14,7 @@ import { inject, observer } from 'mobx-react';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import { SearchOutlined } from '@ant-design/icons';
 import { openGlobalSearch } from '@/page/Workspace/SideBar/ResourceTree/const';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 const CustomDropdown = ({
   node,
   login,
@@ -94,10 +95,12 @@ const CustomDropdown = ({
         onContextMenu={handleContextMenu}
         className={styles.fullWidthTitle}
         onClick={() => {
-          setCurrentObject?.({
-            value: node.key,
-            type: node.type,
-          });
+          if (!node?.disabled) {
+            setCurrentObject?.({
+              value: node.key,
+              type: node.type,
+            });
+          }
         }}
       >
         {node.title}
@@ -163,20 +166,22 @@ const DataSourceNodeMenu = (props: IProps) => {
           </div>
           {dataSource && (
             <div className={treeStyles.menuActions} style={{ marginRight: '6px' }}>
-              <SearchOutlined
-                className={treeStyles.menuActions}
-                style={
-                  userStore.isPrivateSpace()
-                    ? {
-                        marginRight: '12px',
-                      }
-                    : {}
-                }
-                onClick={(e) => {
-                  openGlobalSearch(node);
-                  e.stopPropagation();
-                }}
-              />
+              {!isConnectTypeBeFileSystemGroup(dataSource.type) && (
+                <SearchOutlined
+                  className={treeStyles.menuActions}
+                  style={
+                    userStore.isPrivateSpace()
+                      ? {
+                          marginRight: '12px',
+                        }
+                      : {}
+                  }
+                  onClick={(e) => {
+                    openGlobalSearch(node);
+                    e.stopPropagation();
+                  }}
+                />
+              )}
               {userStore.isPrivateSpace() && (
                 <Action.Group ellipsisIcon="vertical" size={0}>
                   <Action.Link
@@ -198,7 +203,7 @@ const DataSourceNodeMenu = (props: IProps) => {
 
                   <Action.Link
                     onClick={() => {
-                      setEditDatasourceId(node.key);
+                      setEditDatasourceId(dataSource.id);
                       setAddDSVisiable(true);
                     }}
                     key={'edit'}
