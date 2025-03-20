@@ -30,6 +30,11 @@ export interface ICluster {
   type: 'CLUSTER' | 'MYSQL_TENANT' | 'ORACLE_TENANT' | 'MYSQL_SERVERLESS' | 'ORACLE_SERVERLESS';
   status: 'ONLINE' | 'OTHERS';
 }
+export const ClusterTypeList = [
+  'CLUSTER',
+  'DEDICATED',
+  'K8s_DEDICATED'
+]
 
 export interface ITenant {
   tenantName: string | React.ReactNode;
@@ -64,7 +69,9 @@ export class ClusterStore {
         let newTenantMap = { ...this.tenantListMap };
         this.clusterList = result.map((item) => {
           switch (item.type) {
-            case 'CLUSTER': {
+            case 'CLUSTER':
+            case 'DEDICATED':
+            case 'K8s_DEDICATED': {
               newTenantMap[item.id] = item.tenants?.map((tenant) => {
                 return {
                   tenantName: tenant.name,
