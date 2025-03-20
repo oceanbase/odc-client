@@ -63,6 +63,7 @@ const Search: React.FC<IProps> = function () {
   const [isEmpty, setIsEmpty] = useState(false);
   const context = useContext(ParamContext);
   const { searchValue, setSearchvalue } = context;
+  const [value, setValue] = useState('');
 
   const ref = useRef<BaseSelectRef>(null);
 
@@ -120,11 +121,18 @@ const Search: React.FC<IProps> = function () {
       options={options}
       autoFocus={forceVisible}
       onBlur={(e) => {
-        setForceVisible(false);
+        if (!searchValue.value && !value) {
+          setForceVisible(false);
+        }
+        if (isEmpty && searchValue.value) {
+          setSearchvalue(null, null);
+        }
       }}
       onChange={(v) => {
+        setValue(v);
         setIsEmpty(!v);
       }}
+      value={value}
       defaultValue={searchValue?.value ? searchValue.value + splitKey + searchValue.type : null}
       defaultActiveFirstOption
       onSearch={getOptions}

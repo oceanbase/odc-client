@@ -157,14 +157,18 @@ const Index: React.FC<IProps> = function (props) {
   const navigate = useNavigate();
   const { id, page } = params;
   const { userStore } = props;
-  const Component = Pages[page].component;
+  const Component = Pages[page]?.component;
   const projectId = parseInt(id);
   const handleChange = (key: string) => {
-    history.push(`/project/${id}/${key}`);
+    if (key) {
+      history.push(`/project/${id}/${key}`);
+    }
   };
   const handleProjectChange = (value: string) => {
     tracert.click('a3112.b64002.c330857.d367379');
-    history.push(`/project/${value}/${page}`);
+    if (page) {
+      history.push(`/project/${value}/${page}`);
+    }
   };
   const sessionStorageKey = getSessionStorageKey(userStore);
   const [project, setProject] = useState<IProject>(null);

@@ -29,6 +29,7 @@ import TreeNodeMenu from './TreeNodeMenu';
 import { ResourceNodeType, TreeDataNode } from './type';
 import tracert from '@/util/tracert';
 import Reload from '@/component/Button/Reload';
+import datasourceStatus from '@/store/datasourceStatus';
 import DatasourceFilter from './DatasourceFilter';
 import { ConnectType } from '@/d.ts';
 import useTreeState from './hooks/useTreeState';
@@ -239,6 +240,7 @@ const ResourceTree: React.FC<IProps> = function ({
           }
           return {
             title: groupItem.groupName,
+            tip: groupItem.tip,
             key: groupKey,
             type: GroupNodeToResourceNodeType[groupMode],
             data: data ?? null,
@@ -313,7 +315,7 @@ const ResourceTree: React.FC<IProps> = function ({
         });
       }
     }
-  }, [databases, loadedKeys, envs, connectTypes]);
+  }, [databases, loadedKeys, envs, connectTypes, datasourceStatus.statusMap]);
 
   const loadData = useCallback(
     async (treeNode: EventDataNode<any> & TreeDataNode) => {

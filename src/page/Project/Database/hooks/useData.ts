@@ -154,9 +154,10 @@ const useData = (id) => {
       }
       // 租户分组
       {
-        const { mapId, groupName } = getMapIdByDB(db, DatabaseGroup.tenant);
+        const { mapId, groupName, tip } = getMapIdByDB(db, DatabaseGroup.tenant);
         const tenantDatabases = tenantGroup.get(mapId) || {
           groupName,
+          tip,
           databases: [],
         };
         if (db.type === 'LOGICAL') {
@@ -193,11 +194,13 @@ const useData = (id) => {
       const metaArr: {
         groupName: string;
         databases: IDatabase[];
+        tip?: string;
       }[] = Array.from(DatabaseGroupMap[groupMode]?.values());
       for (let i = 0; i < metaArr?.length; i++) {
         treeData.push({
           name: metaArr[i].groupName,
           id: `${GroupKey}_${groupMode}_${i}`,
+          tip: metaArr[i].tip,
           groudMapId: getGroupMapId(metaArr[i].databases[0], groupMode),
           children: metaArr[i].databases,
         });
@@ -235,6 +238,7 @@ const useData = (id) => {
 
   const clearSelectedRowKeys = () => {
     setSelectedRowKeys([]);
+    setSelectedTempRowKeys([]);
   };
 
   useEffect(() => {

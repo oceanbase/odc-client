@@ -55,7 +55,7 @@ const TabSelect: React.FC<ITabSelectProps> = (props) => {
         listHeight={170}
         loading={loading}
         dropdownRender={(menu) => (
-          <div className={styles.selectContent}>
+          <div className={styles.selectContentTabSelect}>
             <Tabs
               activeKey={projectType}
               className={styles['page-container-title-tab']}

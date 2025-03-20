@@ -326,7 +326,10 @@ const Project: React.FC<IProps> = (props) => {
         setOpen={setOpenDeleteProjectModal}
         projectList={selectProjectList}
         verifyValue={'delete'}
-        afterDelete={reload}
+        afterDelete={() => {
+          reload();
+          setSelectProjectList([]);
+        }}
       />
     </PageContainer>
   );
