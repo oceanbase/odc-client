@@ -328,6 +328,13 @@ const ActionBar: React.FC<IProps> = inject(
           });
           return;
         }
+        case TaskType.PARTITION_PLAN: {
+          modalStore.changePartitionModal(true, {
+            databaseId: task.database?.id,
+            taskId: task?.id,
+          });
+          return;
+        }
         default: {
           const { database, executionStrategy, executionTime, parameters, description } = task;
 
@@ -1215,7 +1222,13 @@ const ActionBar: React.FC<IProps> = inject(
         }
         case TaskStatus.COMPLETED: {
           tools = [viewBtn];
-          if ([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)) {
+          if (
+            [
+              TaskType.DATA_ARCHIVE,
+              TaskType.DATA_DELETE,
+              TaskType.LOGICAL_DATABASE_CHANGE,
+            ].includes(task?.type)
+          ) {
             setBtnByCreater(tools, reTryBtn);
           }
           if (

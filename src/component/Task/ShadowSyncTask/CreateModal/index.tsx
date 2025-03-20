@@ -19,12 +19,12 @@ import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
 import { Button, Drawer, Modal, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorStrategy, IShaodwSyncData } from './interface';
 import SelectPanel from './SelectPanel';
 import StructConfigPanel from './StructConfigPanel';
 
-import { createTask } from '@/common/network/task';
+import { createTask, getTaskDetail } from '@/common/network/task';
 import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import styles from './index.less';
@@ -129,6 +129,24 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
       handleReset();
     }
   }
+
+  async function loadEditData() {
+    const res = await getTaskDetail(modalStore?.shadowSyncData?.taskId);
+    setData({
+      ...data,
+      ...res?.parameters,
+      executionStrategy: res.executionStrategy,
+      executionTime: res.executionTime,
+      databaseId: modalStore?.shadowSyncData?.databaseId,
+    });
+  }
+
+  useEffect(() => {
+    if (modalStore?.shadowSyncData?.taskId) {
+      loadEditData();
+    }
+  }, [modalStore?.shadowSyncData?.taskId]);
+
   async function submit() {
     const taskId = data.shadowAnalysisData?.id;
     if (!taskId) {

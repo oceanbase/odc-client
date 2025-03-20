@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import { createTask, getPartitionPlanTables } from '@/common/network/task';
+import { createTask, getPartitionPlanTables, getTaskDetail } from '@/common/network/task';
 import Crontab from '@/component/Crontab';
-import { CrontabDateType, ICrontab } from '@/component/Crontab/interface';
+import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
 import FormItemPanel from '@/component/FormItemPanel';
 import {
   IPartitionPlanKeyType,
+  IPartitionPlanParams,
   IPartitionTableConfig,
   PARTITION_KEY_INVOKER,
   PARTITION_NAME_INVOKER,
+  TaskDetail,
   TaskErrorStrategy,
   TaskExecStrategy,
   TaskPageScope,
@@ -34,7 +36,7 @@ import { openTasksPage } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
-import { hourToMilliSeconds } from '@/util/utils';
+import { hourToMilliSeconds, milliSecondsToHour } from '@/util/utils';
 import {
   Alert,
   Button,
@@ -47,6 +49,7 @@ import {
   Modal,
   Radio,
   Space,
+  Spin,
   Tooltip,
   Typography,
 } from 'antd';
@@ -62,6 +65,7 @@ import {
   START_DATE,
 } from '../../component/PartitionPolicyFormTable/const';
 import styles from './index.less';
+import { useRequest } from 'ahooks';
 
 const { Paragraph, Text } = Typography;
 
@@ -197,9 +201,16 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       resetFields: () => void;
     }>();
 
+    const { run: fetchPartitionPlanTables, loading: fetchPartitionPlanTablesLoading } = useRequest(
+      getPartitionPlanTables,
+      {
+        manual: true,
+      },
+    );
+
     const loadData = async () => {
       if (sessionId && databaseId) {
-        const res = await getPartitionPlanTables(sessionId, databaseId);
+        const res = await fetchPartitionPlanTables(sessionId, databaseId);
         const hasPartitionPlan = res?.contents?.some(
           (item) => item?.containsCreateStrategy || item?.containsDropStrategy,
         );
@@ -512,24 +523,72 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       });
       setTableConfigs(newConfigs);
     };
+
     useEffect(() => {
       if (tableConfigs?.length) {
         const disabledSubmit = tableConfigs?.some((item) => !item.strategies);
         setDisabledSubmit(disabledSubmit);
       }
     }, [tableConfigs]);
+
     useEffect(() => {
       loadData();
     }, [databaseId, sessionId]);
 
     useEffect(() => {
       const databaseId = partitionData?.databaseId;
+      const taskId = partitionData?.taskId;
       if (databaseId) {
         form.setFieldsValue({
           databaseId,
         });
       }
-    }, [partitionData?.databaseId]);
+      if (taskId) {
+        loadEditData(taskId);
+      }
+    }, [partitionData?.databaseId, partitionData?.taskId]);
+
+    const { run: fetchTaskDetail, loading } = useRequest(getTaskDetail, {
+      manual: true,
+    });
+
+    const loadEditData = async (editId: number) => {
+      const detailRes = (await fetchTaskDetail(editId)) as TaskDetail<IPartitionPlanParams>;
+      const { parameters } = detailRes ?? {};
+      const { creationTrigger, droppingTrigger } = parameters ?? {};
+      const formData = {
+        description: detailRes?.description,
+        ...parameters,
+        isCustomStrategy: !!detailRes?.parameters?.droppingTrigger,
+        timeoutMillis: milliSecondsToHour(detailRes?.parameters.timeoutMillis),
+      };
+      await form.setFieldsValue(formData);
+      if (creationTrigger) {
+        const { triggerStrategy, cronExpression, hours, days } = creationTrigger ?? {};
+        crontabRef.current?.setValue({
+          mode:
+            triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
+          dateType: triggerStrategy as any,
+          cronString: cronExpression,
+          hour: hours,
+          dayOfMonth: days,
+          dayOfWeek: days,
+        });
+      }
+      if (droppingTrigger) {
+        const { triggerStrategy, cronExpression, hours, days } = droppingTrigger ?? {};
+        crontabDropRef.current?.setValue({
+          mode:
+            triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
+          dateType: triggerStrategy as any,
+          cronString: cronExpression,
+          hour: hours,
+          dayOfMonth: days,
+          dayOfWeek: days,
+        });
+      }
+    };
+
     return (
       <Drawer
         open={partitionVisible}
@@ -581,221 +640,225 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           </Space>
         }
       >
-        <Form
-          form={form}
-          layout="vertical"
-          requiredMark="optional"
-          initialValues={{
-            errorStrategy: TaskErrorStrategy.ABORT,
-            timeoutMillis: 2,
-          }}
-        >
-          <DatabaseSelect projectId={projectId} type={TaskType.PARTITION_PLAN} />
-          {hasPartitionPlan && (
-            <Alert
-              message={
-                formatMessage({
-                  id: 'src.component.Task.PartitionTask.CreateModal.518BD6F7',
-                  defaultMessage: '当前数据库已存在一个分区计划，审批通过后覆盖原有分区计划',
-                }) /*"当前数据库已存在一个分区计划，审批通过后覆盖原有分区计划"*/
-              }
-              type="warning"
-              style={{ marginBottom: '8px' }}
-              showIcon
-            />
-          )}
-
-          <Form.Item
-            label={
-              formatMessage({
-                id: 'src.component.Task.PartitionTask.CreateModal.3383DFA3',
-                defaultMessage: '分区策略',
-              }) /*"分区策略"*/
-            }
-            required
-            className={styles.tableWrapper}
+        <Spin spinning={loading}>
+          <Form
+            form={form}
+            layout="vertical"
+            requiredMark="optional"
+            initialValues={{
+              errorStrategy: TaskErrorStrategy.ABORT,
+              timeoutMillis: 2,
+            }}
           >
-            <PartitionPolicyFormTable
-              theme={theme}
-              databaseId={databaseId}
-              sessionId={sessionId}
-              tableConfigs={tableConfigs}
-              createdTableConfigs={createdTableConfigs}
-              onPlansConfigChange={handlePlansConfigChange}
-              onLoad={loadData}
-            />
-          </Form.Item>
-          <Divider />
-          <Form.Item>
-            <Crontab
-              ref={crontabRef}
-              title={
-                formatMessage({
-                  id: 'src.component.Task.PartitionTask.CreateModal.FE8DED05',
-                  defaultMessage: '创建策略执行周期',
-                }) /*"创建策略执行周期"*/
-              }
-              initialValue={crontab}
-              onValueChange={(value) => {
-                handleCrontabChange(value);
-              }}
-            />
-          </Form.Item>
-          <Form.Item name="isCustomStrategy" valuePropName="checked">
-            <Checkbox>
-              <span>
-                {
+            <DatabaseSelect projectId={projectId} type={TaskType.PARTITION_PLAN} />
+            {hasPartitionPlan && (
+              <Alert
+                message={
                   formatMessage({
-                    id: 'src.component.Task.PartitionTask.CreateModal.BE341FCE' /*自定义删除策略执行周期*/,
-                    defaultMessage: '自定义删除策略执行周期',
-                  }) /* 自定义删除策略执行周期 */
+                    id: 'src.component.Task.PartitionTask.CreateModal.518BD6F7',
+                    defaultMessage: '当前数据库已存在一个分区计划，审批通过后覆盖原有分区计划',
+                  }) /*"当前数据库已存在一个分区计划，审批通过后覆盖原有分区计划"*/
                 }
-              </span>
-              {!isCustomStrategy && (
-                <Paragraph>
-                  <Text type="secondary">
-                    {
-                      formatMessage({
-                        id: 'src.component.Task.PartitionTask.CreateModal.5DEF5FCE' /*未勾选时，删除策略执行周期将与创建一致*/,
-                        defaultMessage: '未勾选时，删除策略执行周期将与创建一致',
-                      }) /* 未勾选时，删除策略执行周期将与创建一致 */
-                    }
-                  </Text>
-                </Paragraph>
-              )}
-            </Checkbox>
-          </Form.Item>
-          {isCustomStrategy && (
+                type="warning"
+                style={{ marginBottom: '8px' }}
+                showIcon
+              />
+            )}
+
+            <Spin spinning={fetchPartitionPlanTablesLoading}>
+              <Form.Item
+                label={
+                  formatMessage({
+                    id: 'src.component.Task.PartitionTask.CreateModal.3383DFA3',
+                    defaultMessage: '分区策略',
+                  }) /*"分区策略"*/
+                }
+                required
+                className={styles.tableWrapper}
+              >
+                <PartitionPolicyFormTable
+                  theme={theme}
+                  databaseId={databaseId}
+                  sessionId={sessionId}
+                  tableConfigs={tableConfigs}
+                  createdTableConfigs={createdTableConfigs}
+                  onPlansConfigChange={handlePlansConfigChange}
+                  onLoad={loadData}
+                />
+              </Form.Item>
+            </Spin>
+            <Divider />
             <Form.Item>
               <Crontab
-                ref={crontabDropRef}
+                ref={crontabRef}
                 title={
                   formatMessage({
-                    id: 'src.component.Task.PartitionTask.CreateModal.4E5BCFE8',
-                    defaultMessage: '删除策略执行周期',
-                  }) /*"删除策略执行周期"*/
+                    id: 'src.component.Task.PartitionTask.CreateModal.FE8DED05',
+                    defaultMessage: '创建策略执行周期',
+                  }) /*"创建策略执行周期"*/
                 }
                 initialValue={crontab}
                 onValueChange={(value) => {
-                  handleCrontabChange(value, true);
+                  handleCrontabChange(value);
                 }}
               />
             </Form.Item>
-          )}
+            <Form.Item name="isCustomStrategy" valuePropName="checked">
+              <Checkbox>
+                <span>
+                  {
+                    formatMessage({
+                      id: 'src.component.Task.PartitionTask.CreateModal.BE341FCE' /*自定义删除策略执行周期*/,
+                      defaultMessage: '自定义删除策略执行周期',
+                    }) /* 自定义删除策略执行周期 */
+                  }
+                </span>
+                {!isCustomStrategy && (
+                  <Paragraph>
+                    <Text type="secondary">
+                      {
+                        formatMessage({
+                          id: 'src.component.Task.PartitionTask.CreateModal.5DEF5FCE' /*未勾选时，删除策略执行周期将与创建一致*/,
+                          defaultMessage: '未勾选时，删除策略执行周期将与创建一致',
+                        }) /* 未勾选时，删除策略执行周期将与创建一致 */
+                      }
+                    </Text>
+                  </Paragraph>
+                )}
+              </Checkbox>
+            </Form.Item>
+            {isCustomStrategy && (
+              <Form.Item>
+                <Crontab
+                  ref={crontabDropRef}
+                  title={
+                    formatMessage({
+                      id: 'src.component.Task.PartitionTask.CreateModal.4E5BCFE8',
+                      defaultMessage: '删除策略执行周期',
+                    }) /*"删除策略执行周期"*/
+                  }
+                  initialValue={crontab}
+                  onValueChange={(value) => {
+                    handleCrontabChange(value, true);
+                  }}
+                />
+              </Form.Item>
+            )}
 
-          <FormItemPanel
-            label={
-              formatMessage({
-                id: 'src.component.Task.PartitionTask.CreateModal.5E1CE4EC',
-                defaultMessage: '任务设置',
-              }) /*"任务设置"*/
-            }
-            keepExpand
-          >
+            <FormItemPanel
+              label={
+                formatMessage({
+                  id: 'src.component.Task.PartitionTask.CreateModal.5E1CE4EC',
+                  defaultMessage: '任务设置',
+                }) /*"任务设置"*/
+              }
+              keepExpand
+            >
+              <Form.Item
+                label={
+                  formatMessage({
+                    id: 'src.component.Task.PartitionTask.CreateModal.0B2DB017',
+                    defaultMessage: '任务错误处理',
+                  }) /*"任务错误处理"*/
+                }
+                name="errorStrategy"
+                rules={[
+                  {
+                    required: true,
+                    message: formatMessage({
+                      id: 'src.component.Task.PartitionTask.CreateModal.6C651A64',
+                      defaultMessage: '请选择任务错误处理',
+                    }), //'请选择任务错误处理'
+                  },
+                ]}
+              >
+                <Radio.Group>
+                  <Radio value={TaskErrorStrategy.ABORT}>
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.PartitionTask.CreateModal.A8B04845' /*停止任务*/,
+                        defaultMessage: '停止任务',
+                      }) /* 停止任务 */
+                    }
+                  </Radio>
+                  <Radio value={TaskErrorStrategy.CONTINUE}>
+                    {
+                      formatMessage({
+                        id: 'src.component.Task.PartitionTask.CreateModal.E454F701' /*忽略错误继续任务*/,
+                        defaultMessage: '忽略错误继续任务',
+                      }) /* 忽略错误继续任务 */
+                    }
+                  </Radio>
+                </Radio.Group>
+              </Form.Item>
+            </FormItemPanel>
             <Form.Item
               label={
                 formatMessage({
-                  id: 'src.component.Task.PartitionTask.CreateModal.0B2DB017',
-                  defaultMessage: '任务错误处理',
-                }) /*"任务错误处理"*/
+                  id: 'src.component.Task.PartitionTask.CreateModal.59540029',
+                  defaultMessage: '执行超时时间',
+                }) /*"执行超时时间"*/
               }
-              name="errorStrategy"
-              rules={[
-                {
-                  required: true,
-                  message: formatMessage({
-                    id: 'src.component.Task.PartitionTask.CreateModal.6C651A64',
-                    defaultMessage: '请选择任务错误处理',
-                  }), //'请选择任务错误处理'
-                },
-              ]}
+              required
             >
-              <Radio.Group>
-                <Radio value={TaskErrorStrategy.ABORT}>
+              <Form.Item
+                label={
+                  formatMessage({
+                    id: 'src.component.Task.PartitionTask.CreateModal.0A49F493',
+                    defaultMessage: '小时',
+                  }) /*"小时"*/
+                }
+                name="timeoutMillis"
+                rules={[
                   {
-                    formatMessage({
-                      id: 'src.component.Task.PartitionTask.CreateModal.A8B04845' /*停止任务*/,
-                      defaultMessage: '停止任务',
-                    }) /* 停止任务 */
-                  }
-                </Radio>
-                <Radio value={TaskErrorStrategy.CONTINUE}>
+                    required: true,
+                    message: formatMessage({
+                      id: 'src.component.Task.PartitionTask.CreateModal.05B817DF',
+                      defaultMessage: '请输入超时时间',
+                    }), //'请输入超时时间'
+                  },
                   {
-                    formatMessage({
-                      id: 'src.component.Task.PartitionTask.CreateModal.E454F701' /*忽略错误继续任务*/,
-                      defaultMessage: '忽略错误继续任务',
-                    }) /* 忽略错误继续任务 */
-                  }
-                </Radio>
-              </Radio.Group>
+                    type: 'number',
+                    max: 480,
+                    message: formatMessage({
+                      id: 'src.component.Task.PartitionTask.CreateModal.25D1BD6D',
+                      defaultMessage: '最大不超过480小时',
+                    }), //'最大不超过480小时'
+                  },
+                ]}
+                noStyle
+              >
+                <InputNumber min={0} precision={1} />
+              </Form.Item>
+              <span style={{ marginLeft: '5px' }}>
+                {
+                  formatMessage({
+                    id: 'src.component.Task.PartitionTask.CreateModal.53678847' /*小时*/,
+                    defaultMessage: '小时',
+                  }) /* 小时 */
+                }
+              </span>
             </Form.Item>
-          </FormItemPanel>
-          <Form.Item
-            label={
-              formatMessage({
-                id: 'src.component.Task.PartitionTask.CreateModal.59540029',
-                defaultMessage: '执行超时时间',
-              }) /*"执行超时时间"*/
-            }
-            required
-          >
             <Form.Item
-              label={
-                formatMessage({
-                  id: 'src.component.Task.PartitionTask.CreateModal.0A49F493',
-                  defaultMessage: '小时',
-                }) /*"小时"*/
-              }
-              name="timeoutMillis"
-              rules={[
-                {
-                  required: true,
-                  message: formatMessage({
-                    id: 'src.component.Task.PartitionTask.CreateModal.05B817DF',
-                    defaultMessage: '请输入超时时间',
-                  }), //'请输入超时时间'
-                },
-                {
-                  type: 'number',
-                  max: 480,
-                  message: formatMessage({
-                    id: 'src.component.Task.PartitionTask.CreateModal.25D1BD6D',
-                    defaultMessage: '最大不超过480小时',
-                  }), //'最大不超过480小时'
-                },
-              ]}
-              noStyle
+              name="description"
+              label={formatMessage({
+                id: 'odc.components.PartitionDrawer.Remarks',
+                defaultMessage: '备注',
+              })} /*备注*/
             >
-              <InputNumber min={0} precision={1} />
+              <Input.TextArea
+                rows={5}
+                placeholder={
+                  formatMessage({
+                    id: 'src.component.Task.PartitionTask.CreateModal.026392ED',
+                    defaultMessage:
+                      '请输入描述，不超过200个字符；未输入时，系统会根据对象和工单类型自动生成描述信息',
+                  }) /*"请输入描述，200字以内；未输入时，系统会根据对象和工单类型自动生成描述信息"*/
+                }
+              />
             </Form.Item>
-            <span style={{ marginLeft: '5px' }}>
-              {
-                formatMessage({
-                  id: 'src.component.Task.PartitionTask.CreateModal.53678847' /*小时*/,
-                  defaultMessage: '小时',
-                }) /* 小时 */
-              }
-            </span>
-          </Form.Item>
-          <Form.Item
-            name="description"
-            label={formatMessage({
-              id: 'odc.components.PartitionDrawer.Remarks',
-              defaultMessage: '备注',
-            })} /*备注*/
-          >
-            <Input.TextArea
-              rows={5}
-              placeholder={
-                formatMessage({
-                  id: 'src.component.Task.PartitionTask.CreateModal.026392ED',
-                  defaultMessage:
-                    '请输入描述，不超过200个字符；未输入时，系统会根据对象和工单类型自动生成描述信息',
-                }) /*"请输入描述，200字以内；未输入时，系统会根据对象和工单类型自动生成描述信息"*/
-              }
-            />
-          </Form.Item>
-        </Form>
+          </Form>
+        </Spin>
       </Drawer>
     );
   }),
