@@ -614,8 +614,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       executeOrPreCheckSql: value,
       sqlChanged: false,
     });
-    if (result) {
-      if (!result.length) {
+    if (result?.checkResults) {
+      if (!result.checkResults.length) {
         /**
          * 无规则
          */
@@ -633,7 +633,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
       this.setState(
         {
-          lintResultSet: result,
+          lintResultSet: result?.checkResults,
         },
         () => this.props.sqlStore.setActiveTab(this.props.pageKey, sqlLintTabKey),
       );

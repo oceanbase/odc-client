@@ -356,7 +356,7 @@ export async function runSQLLint(
   sessionId: string,
   delimiter: string,
   scriptContent: string,
-): Promise<ISQLLintReuslt[]> {
+): Promise<{ checkResults: ISQLLintReuslt[]; affectedRows: number }> {
   const res = await request.post(
     `/api/v2/datasource/sessions/${generateSessionSid(sessionId)}/sqlCheck`,
     {
@@ -366,7 +366,7 @@ export async function runSQLLint(
       },
     },
   );
-  return res?.data?.contents;
+  return res?.data;
 }
 export async function runMultipleSQLLint(
   data: {
