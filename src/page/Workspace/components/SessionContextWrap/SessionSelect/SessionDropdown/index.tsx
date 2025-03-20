@@ -149,6 +149,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
     value: null,
     type: null,
   });
+  const [searchValueByDataSource, setSearchValueByDataSource] = useState('');
   const [expandedKeys, setExpandedKeys] = useState<Key[]>([]);
   const hasDialectTypesFilter =
     filters?.dialectTypes && Array.isArray(filters?.dialectTypes) && filters?.dialectTypes?.length;
@@ -325,32 +326,6 @@ const SessionDropdown: React.FC<IProps> = (props) => {
   const treeData: DataNode[] = useMemo(() => {
     let _treeData = [];
     const _canCheckedDbKeys: number[] = [];
-    if (context.datasourceMode) {
-      _treeData = [...(DatabaseGroupMap[DatabaseGroup.dataSource]?.values() || [])]
-        ?.map((item) => {
-          const { dataSource } = item;
-          if (!dataSource) {
-            return null;
-          }
-          return {
-            title: (
-              <Popover
-                showArrow={false}
-                placement={'right'}
-                content={<ConnectionPopover connection={item?.dataSource} />}
-              >
-                <div className={styles.textoverflow}>{item?.dataSource?.name}</div>
-              </Popover>
-            ),
-            icon: <StatusIcon item={item?.dataSource} />,
-            key: item?.dataSource?.id,
-            selectable: true,
-            isLeaf: true,
-            type: NodeType.Connection,
-          };
-        })
-        .filter(Boolean);
-    }
     switch (groupMode) {
       case DatabaseGroup.none: {
         _treeData = [...(DatabaseGroupMap[groupMode]?.values() || [])]
@@ -486,7 +461,42 @@ const SessionDropdown: React.FC<IProps> = (props) => {
     }
     setCanCheckedDbKeys(_canCheckedDbKeys);
     return _treeData;
-  }, [groupMode, data, context.datasourceMode]);
+  }, [groupMode, data]);
+
+  const dataSourceData: DataNode[] = useMemo(() => {
+    let _treeData = [];
+    _treeData = [...(DatabaseGroupMap[DatabaseGroup.dataSource]?.values() || [])]
+      ?.map((item) => {
+        const { dataSource } = item;
+        if (!dataSource) {
+          return null;
+        }
+        if (
+          searchValueByDataSource &&
+          !dataSource?.name?.toLowerCase().includes(searchValueByDataSource?.toLowerCase())
+        ) {
+          return null;
+        }
+        return {
+          title: (
+            <Popover
+              showArrow={false}
+              placement={'right'}
+              content={<ConnectionPopover connection={dataSource} />}
+            >
+              <div className={styles.textoverflow}>{dataSource?.name}</div>
+            </Popover>
+          ),
+          icon: <StatusIcon item={dataSource} />,
+          key: dataSource?.id,
+          selectable: true,
+          isLeaf: true,
+          type: NodeType.Connection,
+        };
+      })
+      .filter(Boolean);
+    return _treeData;
+  }, [data, searchValueByDataSource]);
 
   function TreeRender() {
     return (
@@ -526,7 +536,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
         }}
         showIcon
         blockNode={true}
-        treeData={treeData}
+        treeData={context.datasourceMode ? dataSourceData : treeData}
         checkedKeys={checkedKeys}
         onCheck={(checkedKeysValue) => {
           const KeyList = filterGroupKey(checkedKeysValue as React.Key[]);
@@ -587,13 +597,17 @@ const SessionDropdown: React.FC<IProps> = (props) => {
               <div className={styles.header} style={{ width: width || DEFALT_WIDTH }}>
                 <Search
                   searchValue={searchValue}
+                  searchValueByDataSource={searchValueByDataSource}
+                  setSearchValueByDataSource={setSearchValueByDataSource}
                   setSearchvalue={(v, type) => {
                     setSearchValue({ value: v, type });
                   }}
                 />
-                <span className={styles.groupIcon}>
-                  <Group setGroupMode={setGroupMode} groupMode={groupMode} />
-                </span>
+                {!context.datasourceMode && (
+                  <span className={styles.groupIcon}>
+                    <Group setGroupMode={setGroupMode} groupMode={groupMode} />
+                  </span>
+                )}
               </div>
               <div
                 style={{

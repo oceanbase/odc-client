@@ -98,6 +98,7 @@ const getShouldExpandedGroupKeys = (params: {
     }
   }
   const db = databaseList.find((item) => item.id === dbId);
+  if (!db) return [];
   const { mapId } = getMapIdByDB(db, groupMode);
   const { mapId: secondMapId } = getMapIdByDB(db, DatabaseGroup.dataSource);
   shouldExpandedKeys.push(

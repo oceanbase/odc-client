@@ -1,14 +1,16 @@
 import { AutoComplete, Input } from 'antd';
-import FilterIcon from '@/component/Button/FIlterIcon';
 import React, { forwardRef, useContext, useRef, useState } from 'react';
 import type { BaseSelectRef } from 'rc-select';
 import { formatMessage } from '@/util/intl';
 import { SearchOutlined } from '@ant-design/icons';
 import styles from './index.less';
+import SessionContext from '@/page/Workspace/components/SessionContextWrap/context';
 
 interface IProps {
   searchValue: { value: string; type: SearchType };
   setSearchvalue: (v: string, type: SearchType) => void;
+  searchValueByDataSource: string;
+  setSearchValueByDataSource: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export enum SearchType {
@@ -60,11 +62,24 @@ const RemoveSplitInput = forwardRef(function RemoveSplitInput({ value, ...rest }
 });
 
 const Search: React.FC<IProps> = function (props) {
-  const { searchValue, setSearchvalue } = props;
+  const { searchValue, setSearchvalue, searchValueByDataSource, setSearchValueByDataSource } =
+    props;
   const [options, setOptions] = useState([]);
   const [isEmpty, setIsEmpty] = useState(false);
-
   const ref = useRef<BaseSelectRef>(null);
+  const context = useContext(SessionContext);
+
+  if (context.datasourceMode) {
+    return (
+      <Input
+        value={searchValueByDataSource}
+        suffix={<SearchOutlined />}
+        onChange={(e) => {
+          setSearchValueByDataSource(e.target.value);
+        }}
+      />
+    );
+  }
 
   function getOptions(value) {
     if (!value) {
@@ -122,7 +137,6 @@ const Search: React.FC<IProps> = function (props) {
       onSelect={(v, option) => {
         const arr = v?.split(splitKey);
         if (arr.length) {
-          console.log(arr[0], arr[1] as any);
           setSearchvalue(arr[0], arr[1] as any);
           ref.current?.blur();
         }

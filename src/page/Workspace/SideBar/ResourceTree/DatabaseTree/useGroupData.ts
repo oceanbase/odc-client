@@ -156,12 +156,13 @@ const useGroupData = (props: IProps) => {
       }
       // 租户分组
       {
-        const { mapId, groupName } = getMapIdByDB(db, DatabaseGroup.tenant);
+        const { mapId, groupName, tip } = getMapIdByDB(db, DatabaseGroup.tenant);
         const tenantDatabases: GroupWithDatabases[DatabaseGroup.tenant] = tenantGroup.get(
           mapId,
         ) || {
           groupName,
           mapId,
+          tip,
           databases: [],
         };
         if (db.type === 'LOGICAL') {

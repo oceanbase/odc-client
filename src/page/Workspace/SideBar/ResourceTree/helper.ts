@@ -211,7 +211,7 @@ export type GroupResult = {
   [DatabaseGroup.dataSource]: { mapId: number; groupName: string };
   [DatabaseGroup.connectType]: { mapId: ConnectType; groupName: string };
   [DatabaseGroup.cluster]: { mapId: string; groupName: string };
-  [DatabaseGroup.tenant]: { mapId: string; groupName: string };
+  [DatabaseGroup.tenant]: { mapId: string; groupName: string; tip?: string };
   [DatabaseGroup.none]: undefined;
 };
 export type secondGroupType = Map<number, GroupWithDatabases[DatabaseGroup.dataSource]>;
@@ -233,7 +233,7 @@ export const getMapIdByDB = <T extends DatabaseGroup>(db: IDatabase, type: T): G
   if (!db || !type) return;
   const { environment, dataSource, connectType, project } = db;
   const { clusterName, tenantName } = dataSource || {};
-  let mapId, groupName;
+  let mapId, groupName, tip;
   switch (type) {
     case DatabaseGroup.project: {
       mapId = project?.id;
@@ -267,12 +267,14 @@ export const getMapIdByDB = <T extends DatabaseGroup>(db: IDatabase, type: T): G
     }
     case DatabaseGroup.tenant: {
       mapId = tenantName && clusterName ? `${tenantName}@${clusterName}` : '无租户';
-      groupName = tenantName && clusterName ? `${tenantName}@${clusterName}` : '无租户';
+      groupName = tenantName ? tenantName : '无租户';
+      tip = clusterName;
       break;
     }
   }
   return {
     mapId,
     groupName,
+    tip,
   } as GroupResult[T];
 };

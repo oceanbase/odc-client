@@ -242,7 +242,12 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             width: 250,
             render: (name, record) => {
               if (isGroupColumn(record.id)) {
-                return <span style={{ whiteSpace: 'nowrap', fontWeight: '600' }}>{name}</span>;
+                return (
+                  <span className={styles.groupColumnCell}>
+                    {name}
+                    <span className={styles.tip}>{(record as any)?.tip}</span>
+                  </span>
+                );
               }
               const hasChangeAuth = record.authorizedPermissionTypes?.includes(
                 DatabasePermissionType.CHANGE,
