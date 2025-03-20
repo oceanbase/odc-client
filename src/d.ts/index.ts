@@ -1820,7 +1820,7 @@ export interface IInEdges {
 }
 
 export interface ISQLExecuteDetail {
-  affectedRows: number;
+  affectedRows?: number;
   execTime: number;
   hitPlanCache: true;
   physicalRead: number;
@@ -2387,6 +2387,7 @@ export enum ResourceTreeNodeMenuKeys {
 }
 
 export interface TaskRecord<P> {
+  affectedRows: number;
   projectId: number;
   id: number;
   type: TaskType;
@@ -2466,6 +2467,7 @@ export type TaskRecordParameters =
   | ILogicalDatabaseAsyncTaskParams;
 
 export interface ITaskResult {
+  affectedRows?: number;
   autoModifyTimeout?: boolean;
   containQuery: boolean;
   errorRecordsFilePath: string;

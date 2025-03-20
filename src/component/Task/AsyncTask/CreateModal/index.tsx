@@ -108,6 +108,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [preCheckLoading, setPreLoading] = useState<boolean>(false);
   const [hasPreCheck, setHasPreCheck] = useState<boolean>(false);
   const [lintResultSet, setLintResultSet] = useState<ISQLLintReuslt[]>([]);
+  const [affectedRows, setAffectedRows] = useState<number>();
   const connection = database?.dataSource;
   const sqlFileRef = useRef<{
     setValue: (value: UploadFile[]) => void;
@@ -305,6 +306,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     rollbackSqlFileRef.current?.resetFields();
     setHasEdit(false);
     setLintResultSet([]);
+    setAffectedRows(undefined);
     setHasPreCheck(false);
   };
   const handleCancel = (hasEdit: boolean) => {
@@ -450,6 +452,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     const { sqlContent, delimiter, databaseId } = await form?.getFieldsValue();
     if (databaseId && sqlContent && session?.sessionId) {
       setLintResultSet([]);
+      setAffectedRows(undefined);
       setPreLoading(true);
       setHasPreCheck(false);
       const result = await runSQLLint(session?.sessionId, delimiter, sqlContent);
@@ -457,7 +460,8 @@ const CreateModal: React.FC<IProps> = (props) => {
       setSqlChanged(false);
       setHasPreCheck(true);
       setPreLoading(false);
-      setLintResultSet(result);
+      setLintResultSet(result.checkResults);
+      setAffectedRows(result.affectedRows);
     }
   };
   const onEditorAfterCreatedCallback = (editor: IEditor) => {
@@ -711,25 +715,36 @@ const CreateModal: React.FC<IProps> = (props) => {
           </Button>
         </Tooltip>
         {hasPreCheck && (
-          <Alert
-            closable
-            message={
-              formatMessage(
-                {
-                  id: 'odc.src.component.Task.AsyncTask.CreateModal.ThePreExaminationIs',
-                  defaultMessage: '预检查完成，{lintResultSetLength} 处语句违反 SQL 开发规范。',
-                },
-                {
-                  lintResultSetLength: lintResultSet?.length || 0,
-                },
-              ) //`预检查完成，${lintResultSet.length} 处语句违反 SQL 开发规范。`
-            }
-            type={lintResultSet?.length === 0 ? 'success' : 'warning'}
-            showIcon
-            style={{
-              marginBottom: '8px',
-            }}
-          />
+          <>
+            <Alert
+              closable
+              message={
+                formatMessage(
+                  {
+                    id: 'odc.src.component.Task.AsyncTask.CreateModal.ThePreExaminationIs',
+                    defaultMessage: '预检查完成，{lintResultSetLength} 处语句违反 SQL 开发规范。',
+                  },
+                  {
+                    lintResultSetLength: lintResultSet?.length || 0,
+                  },
+                ) //`预检查完成，${lintResultSet.length} 处语句违反 SQL 开发规范。`
+              }
+              type={lintResultSet?.length === 0 ? 'success' : 'warning'}
+              showIcon
+              style={{
+                marginBottom: '8px',
+              }}
+            />
+            <Alert
+              closable
+              message={`DML语句预估影响行数：${affectedRows || '-'}`}
+              type={lintResultSet?.length === 0 ? 'success' : 'warning'}
+              showIcon
+              style={{
+                marginBottom: '8px',
+              }}
+            />
+          </>
         )}
 
         {lintResultSet?.length > 0 && (

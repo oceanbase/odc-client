@@ -19,10 +19,10 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import { getTaskExecStrategyMap } from '@/component/Task';
 import type { IAsyncTaskParams, ITaskResult, TaskDetail } from '@/d.ts';
-import { TaskExecStrategy } from '@/d.ts';
+import { TaskExecStrategy, TaskFlowNodeType, TaskNodeStatus } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Descriptions, Divider, Space, Tooltip } from 'antd';
 import DatabaseLabel from '../../component/DatabaseLabel';
 import { DownloadFileAction } from '../../component/DownloadFileAction';
@@ -53,6 +53,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
   const executionTimeout = milliSecondsToHour(parameters.timeoutMillis);
   const riskLevel = task?.riskLevel;
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
+  const node = task.nodeList.find((item) => item.taskType === 'PRE_CHECK');
   return (
     <>
       <Descriptions column={2}>
@@ -109,6 +110,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
         </Descriptions.Item>
         {hasFlow && (
           <Descriptions.Item
+            span={2}
             label={
               formatMessage({
                 id: 'odc.src.component.Task.AsyncTask.DetailContent.RiskLevel',
@@ -119,6 +121,13 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />
           </Descriptions.Item>
         )}
+        <Descriptions.Item span={4} label="DML语句预估影响行数：">
+          {node?.status === TaskNodeStatus.EXECUTING ? (
+            <LoadingOutlined />
+          ) : (
+            task?.affectedRows || '-'
+          )}
+        </Descriptions.Item>
       </Descriptions>
       <SimpleTextItem
         label={formatMessage({
