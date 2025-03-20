@@ -68,7 +68,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const databaseId = Form.useWatch('databaseId', form);
   const sqlContent = Form.useWatch('sqlContent', form);
-  const initialSQL = logicDatabaseInfo?.ddl;
+  const initialSQL = logicDatabaseInfo?.ddl || task?.jobParameters?.sqlContent;
   const delimiter = Form.useWatch('delimiter', form);
   const [previewOpen, setPreviewOpen] = useState<boolean>(false);
   const loadEditData = async (task) => {
