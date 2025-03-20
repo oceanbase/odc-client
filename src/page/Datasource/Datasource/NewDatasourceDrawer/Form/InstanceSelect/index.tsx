@@ -15,7 +15,7 @@
  */
 
 import { ConnectType } from '@/d.ts';
-import { ClusterStore } from '@/store/cluster';
+import { ClusterStore, ClusterTypeList } from '@/store/cluster';
 import { formatMessage } from '@/util/intl';
 import { Cascader, Form, Input, Space, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -69,7 +69,7 @@ const InstanceSelect: React.FC<IProps> = function ({ clusterStore, disabled }) {
       .forEach((cluster) => {
         const tenants = tenantListMap[cluster.instanceId];
 
-        if (cluster.type !== 'CLUSTER') {
+        if (!ClusterTypeList.includes(cluster.type)) {
           const tenantMode = tenantListMap[cluster?.instanceId]?.find(
             (t) => t.tenantId === cluster?.instanceId,
           )?.tenantMode;
