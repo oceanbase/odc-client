@@ -28,6 +28,7 @@ import classnames from 'classnames';
 import datasourceStatus from '@/store/datasourceStatus';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
+import { ApplyDatabaseAuthEmpty } from '@/component/Empty/ApplyDatabaseAuthEmpty';
 
 const { Text } = Typography;
 
@@ -296,15 +297,19 @@ const DatabaseSelecter: React.FC<IProps> = function ({
               }
               onSearch={handleSearch}
             >
-              <Tree
-                showIcon
-                checkable
-                height={300}
-                className={styles.allTree}
-                treeData={allTreeData}
-                checkedKeys={checkedKeys}
-                onCheck={handleChosenDataBase}
-              />
+              {allTreeData?.length > 0 ? (
+                <Tree
+                  showIcon
+                  checkable
+                  height={300}
+                  className={styles.allTree}
+                  treeData={allTreeData}
+                  checkedKeys={checkedKeys}
+                  onCheck={handleChosenDataBase}
+                />
+              ) : (
+                <ApplyDatabaseAuthEmpty description={projectId ? undefined : '暂无数据'} />
+              )}
             </ExportCard>
           </Spin>
         </div>
@@ -376,7 +381,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                 }}
               />
             ) : (
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              <ApplyDatabaseAuthEmpty description="暂无数据" />
             )}
           </ExportCard>
         </div>

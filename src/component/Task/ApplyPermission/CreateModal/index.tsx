@@ -26,6 +26,7 @@ import { Button, Drawer, Form, Input, message, Modal, Select, Space, Tag, Typogr
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
+import ProjectSelectEmpty from '@/component/Empty/ProjectSelectEmpty';
 const { Paragraph } = Typography;
 export const projectRoleMap = {
   [ProjectRole.OWNER]: {
@@ -267,6 +268,8 @@ const CreateModal: React.FC<IProps> = (props) => {
               width: 240,
             }}
             options={projectOptions}
+            dropdownStyle={{ padding: 0 }}
+            dropdownRender={projectOptions?.length <= 0 ? () => <ProjectSelectEmpty /> : undefined}
             placeholder={
               formatMessage({
                 id: 'odc.src.component.Task.ApplyPermission.CreateModal.PleaseChoose.1',

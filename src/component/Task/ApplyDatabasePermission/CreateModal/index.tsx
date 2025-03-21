@@ -41,6 +41,7 @@ import { inject, observer } from 'mobx-react';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
+import ProjectSelectEmpty from '@/component/Empty/ProjectSelectEmpty';
 
 const CheckboxGroup = Checkbox.Group;
 
@@ -394,7 +395,9 @@ const CreateModal: React.FC<IProps> = (props) => {
           <Select
             showSearch
             style={{ width: 336 }}
+            dropdownStyle={{ padding: 0 }}
             options={projectOptions}
+            dropdownRender={projectOptions?.length <= 0 ? () => <ProjectSelectEmpty /> : undefined}
             placeholder={
               formatMessage({
                 id: 'src.component.Task.ApplyDatabasePermission.CreateModal.AA89519C',

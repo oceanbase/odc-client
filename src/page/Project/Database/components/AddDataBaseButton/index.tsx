@@ -44,6 +44,7 @@ import { useContext, useState } from 'react';
 import { IConnection } from '@/d.ts';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import settingStore from '@/store/setting';
+import DatasourceSelectEmpty from '@/component/Empty/DatasourceSelectEmpty';
 interface IProps {
   projectId: number;
   orderedDatabaseIds: number[][];
@@ -260,6 +261,12 @@ const AddDataBaseButton: React.FC<IProps> = ({
                   style={{
                     width: 'calc(100% - 10px)',
                   }}
+                  dropdownStyle={{ padding: 0 }}
+                  dropdownRender={
+                    dataSourceListWithoutFileSystem.length > 0
+                      ? undefined
+                      : () => <DatasourceSelectEmpty />
+                  }
                   placeholder={formatMessage({
                     id: 'odc.Database.AddDataBaseButton.PleaseSelect',
                     defaultMessage: '请选择',

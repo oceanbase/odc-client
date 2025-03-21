@@ -55,6 +55,7 @@ import {
 import useDataSourceDrawer from './hooks/useDataSourceDrawer';
 import DataSourceNodeMenu from '@/page/Workspace/SideBar/ResourceTree/TreeNodeMenu/dataSource';
 import { isString } from 'lodash';
+import DatabaseSelectEmpty from '@/component/Empty/DatabaseSelectEmpty';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
@@ -440,25 +441,29 @@ const ResourceTree: React.FC<IProps> = function ({
         </div>
         <div ref={treeWrapperRef} className={styles.tree}>
           <Spin spinning={loading}>
-            <Tree
-              ref={treeRef}
-              expandAction="click"
-              showIcon
-              onExpand={(_, info) => {
-                onExpand(_, info);
-                //@ts-ignore
-                tracert.click('a3112.b41896.c330992.d367628', { resourceType: info?.node?.type });
-              }}
-              treeData={treeData}
-              titleRender={renderNode}
-              loadData={loadData}
-              expandedKeys={expandedKeys}
-              loadedKeys={loadedKeys}
-              onLoad={onLoad}
-              height={wrapperHeight}
-              selectable={true}
-              selectedKeys={[currentObject?.value].filter(Boolean)}
-            />
+            {treeData.length > 0 ? (
+              <Tree
+                ref={treeRef}
+                expandAction="click"
+                showIcon
+                onExpand={(_, info) => {
+                  onExpand(_, info);
+                  //@ts-ignore
+                  tracert.click('a3112.b41896.c330992.d367628', { resourceType: info?.node?.type });
+                }}
+                treeData={treeData}
+                titleRender={renderNode}
+                loadData={loadData}
+                expandedKeys={expandedKeys}
+                loadedKeys={loadedKeys}
+                onLoad={onLoad}
+                height={wrapperHeight}
+                selectable={true}
+                selectedKeys={[currentObject?.value].filter(Boolean)}
+              />
+            ) : (
+              <DatabaseSelectEmpty showIcon />
+            )}
           </Spin>
         </div>
       </div>

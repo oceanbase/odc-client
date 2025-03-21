@@ -29,7 +29,7 @@ export function DataSourceEmpty({ extra }) {
             </div>
           </div>
         }
-        {...createPermission(IManagerResourceType.project, actionTypes.create)}
+        {...createPermission(IManagerResourceType.resource, actionTypes.create)}
       >
         <div className={styles.subTitle}>
           <div>
