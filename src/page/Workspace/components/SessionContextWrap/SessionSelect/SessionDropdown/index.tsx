@@ -39,6 +39,8 @@ import {
   getSecondGroupKey,
   getShouldExpandedGroupKeys,
 } from './helper';
+import DatasourceSelectEmpty from '@/component/Empty/DatasourceSelectEmpty';
+import DatabaseSelectEmpty from '@/component/Empty/DatabaseSelectEmpty';
 interface IDatabasesTitleProps {
   db: IDatabase;
   taskType: TaskType;
@@ -593,33 +595,40 @@ const SessionDropdown: React.FC<IProps> = (props) => {
       content={
         disabled ? null : (
           <Spin spinning={loading || fetchLoading}>
-            <div className={styles.main}>
-              <div className={styles.header} style={{ width: width || DEFALT_WIDTH }}>
-                <Search
-                  searchValue={searchValue}
-                  searchValueByDataSource={searchValueByDataSource}
-                  setSearchValueByDataSource={setSearchValueByDataSource}
-                  setSearchvalue={(v, type) => {
-                    setSearchValue({ value: v, type });
+            {treeData.length > 0 ? (
+              <div className={styles.main}>
+                <div className={styles.header} style={{ width: width || DEFALT_WIDTH }}>
+                  <Search
+                    searchValue={searchValue}
+                    searchValueByDataSource={searchValueByDataSource}
+                    setSearchValueByDataSource={setSearchValueByDataSource}
+                    setSearchvalue={(v, type) => {
+                      setSearchValue({ value: v, type });
+                    }}
+                  />
+                  {!context.datasourceMode && (
+                    <span className={styles.groupIcon}>
+                      <Group setGroupMode={setGroupMode} groupMode={groupMode} />
+                    </span>
+                  )}
+                </div>
+                <div
+                  style={{
+                    height: DEFALT_HEIGHT,
+                    width: width || DEFALT_WIDTH,
+                    overflow: 'hidden',
+                    padding: '0px 4px 12px 12px',
                   }}
-                />
-                {!context.datasourceMode && (
-                  <span className={styles.groupIcon}>
-                    <Group setGroupMode={setGroupMode} groupMode={groupMode} />
-                  </span>
-                )}
+                >
+                  {TreeRender()}
+                </div>
               </div>
-              <div
-                style={{
-                  height: DEFALT_HEIGHT,
-                  width: width || DEFALT_WIDTH,
-                  overflow: 'hidden',
-                  padding: '0px 4px 12px 12px',
-                }}
-              >
-                {TreeRender()}
-              </div>
-            </div>
+            ) : context.datasourceMode ? (
+              <DatasourceSelectEmpty />
+            ) : (
+              <DatabaseSelectEmpty />
+            )}
+
             {footerRender()}
           </Spin>
         )

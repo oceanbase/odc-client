@@ -1,0 +1,31 @@
+import { Empty } from 'antd';
+import styles from './index.less';
+import { ExportOutlined } from '@ant-design/icons';
+import { useNavigate } from '@umijs/max';
+
+interface IProps {
+  showIcon?: boolean;
+}
+export default ({ showIcon }: IProps) => {
+  const nav = useNavigate();
+
+  return (
+    <div className={styles.databaseSelectEmptyhWrapper}>
+      <Empty
+        className={styles.empty}
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        description={
+          <div className={styles.description}>
+            <div className={styles.title}>暂无数据库</div>
+            <div className={styles.subDescription}>
+              仅支持选择项目内的数据库，请先确认已加入项目、且项目内存在数据库。
+              <span className={styles.action} onClick={() => window.open('/#/project')}>
+                管理项目{showIcon && <ExportOutlined />}
+              </span>
+            </div>
+          </div>
+        }
+      />
+    </div>
+  );
+};
