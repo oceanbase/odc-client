@@ -678,3 +678,11 @@ export const disabledTime = (selectedDate) => {
   }
   return {};
 };
+
+export const stringSeparatorToCRLF = (separator: string) => {
+  return separator?.replace(/\\r/g, '\r')?.replace(/\\n/g, '\n');
+};
+
+export const CRLFToSeparatorString = (separator: string) => {
+  return separator?.replace(/\r/g, '\\r').replace(/\n/g, '\\n');
+};

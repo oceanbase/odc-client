@@ -28,7 +28,7 @@ import {
   TaskType,
 } from '@/d.ts';
 import request from '@/util/request';
-import { encrypt } from '@/util/utils';
+import { encrypt, stringSeparatorToCRLF } from '@/util/utils';
 import { isNil } from 'lodash';
 
 export async function getExportObjects(
@@ -88,7 +88,7 @@ export async function createBatchExportTask(formData: ExportFormData) {
             blankToNull: formData.blankToNull,
             columnSeparator: formData.columnSeparator,
             columnDelimiter: formData.columnDelimiter,
-            lineSeparator: formData.lineSeparator,
+            lineSeparator: stringSeparatorToCRLF(formData.lineSeparator),
             encoding: formData.encoding,
           }
         : null,
@@ -181,7 +181,7 @@ export async function createBatchImportTask(
         blankToNull: formData.blankToNull,
         columnSeparator: formData.columnSeparator,
         columnDelimiter: formData.columnDelimiter,
-        lineSeparator: formData.lineSeparator,
+        lineSeparator: stringSeparatorToCRLF(formData.lineSeparator),
         fileName: serverParams.importFileName?.[0],
         encoding: serverParams.encoding,
       },
@@ -221,6 +221,7 @@ export async function getCsvFileInfo(params: {
   const ret = await request.post(`/api/v2/dataTransfer/getCsvFileInfo`, {
     data: {
       ...params,
+      lineSeparator: stringSeparatorToCRLF(params.lineSeparator),
     },
   });
   return ret?.data;

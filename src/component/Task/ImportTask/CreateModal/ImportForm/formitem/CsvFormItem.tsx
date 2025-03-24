@@ -17,6 +17,7 @@
 import HelpDoc from '@/component/helpDoc';
 import { IMPORT_TYPE } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
+import { CRLFToSeparatorString } from '@/util/utils';
 import { AutoComplete, Checkbox, Col, Form, Row, Select } from 'antd';
 import React from 'react';
 const { Option } = Select;
@@ -158,15 +159,18 @@ const CsvFormItem: React.FC<IProps> = function (props) {
                         }),
                       },
                     ]}
+                    getValueProps={(value) => ({
+                      value: CRLFToSeparatorString(value),
+                    })}
                   >
                     <Select>
-                      <Option key="\\n" value="\\n">
+                      <Option key="\n" value="\n">
                         \n
                       </Option>
-                      <Option key="\\r" value="\\r">
+                      <Option key="\r" value="\r">
                         \r
                       </Option>
-                      <Option key="\\r\\n" value="\\r\\n">
+                      <Option key="\r\n" value="\r\n">
                         \r\n
                       </Option>
                     </Select>

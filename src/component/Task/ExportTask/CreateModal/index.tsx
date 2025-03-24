@@ -276,7 +276,7 @@ class CreateModal extends React.Component<IProps, IState> {
         }),
       //无限制
       columnDelimiter: this.defaultConfig?.columnDelimiter ?? '"',
-      lineSeparator: this.defaultConfig?.lineSeparator ?? '\\r\\n',
+      lineSeparator: this.defaultConfig?.lineSeparator ?? '\r\n',
       useSys: false,
       exportAllObjects: this.defaultConfig?.exportAllObjects ?? false,
       exportDbObjects: [],

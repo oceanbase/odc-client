@@ -222,7 +222,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             isTransferEmptyString: true,
             columnSeparator: ',',
             columnDelimiter: '"',
-            lineSeparator: '\\r\\n',
+            lineSeparator: '\r\n',
           },
         }}
         layout="vertical"

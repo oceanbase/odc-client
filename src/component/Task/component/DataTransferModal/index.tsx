@@ -20,7 +20,7 @@ import { getTaskExecStrategyMap } from '@/component/Task';
 import { FILE_DATA_TYPE, IMPORT_TYPE, TaskExecStrategy } from '@/d.ts';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { CRLFToSeparatorString, getLocalFormatDateTime } from '@/util/utils';
 import { Alert, Col, Divider, Row, Space, Tooltip } from 'antd';
 import React from 'react';
 import CsvTable from './csvTables';
@@ -170,7 +170,7 @@ class TaskContent extends React.Component<any, any> {
         formatMessage({
           id: 'odc.component.TaskDetailDrawer.TaskInfo.LineBreakSymbol',
           defaultMessage: '换行符号：',
-        }) + taskConfig?.csvConfig?.lineSeparator,
+        }) + CRLFToSeparatorString(taskConfig?.csvConfig?.lineSeparator),
       );
     }
     const fileFormatView = (
