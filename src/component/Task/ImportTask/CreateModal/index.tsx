@@ -401,7 +401,7 @@ class CreateModal extends React.Component<IProps, IState> {
       blankToNull: this.defaultConfig?.blankToNull ?? true,
       columnSeparator: this.defaultConfig?.columnSeparator ?? ',',
       columnDelimiter: this.defaultConfig?.columnDelimiter ?? '"',
-      lineSeparator: this.defaultConfig?.lineSeparator ?? '\\r\\n',
+      lineSeparator: this.defaultConfig?.lineSeparator ?? '\r\n',
       dataTransferFormat: FILE_DATA_TYPE.CSV,
       stopWhenError: this.defaultConfig?.stopWhenError ?? false,
       tableName: this.props.modalStore.importModalData?.table?.tableName,

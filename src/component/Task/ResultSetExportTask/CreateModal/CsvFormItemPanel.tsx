@@ -20,6 +20,7 @@ import { formatMessage } from '@/util/intl';
 import { AutoComplete, Checkbox, Col, Form, Input, Row, Select } from 'antd';
 import React from 'react';
 import styles from './index.less';
+import { CRLFToSeparatorString } from '@/util/utils';
 const { Option } = Select;
 const FormItem = Form.Item;
 interface IProps {}
@@ -170,15 +171,18 @@ export const CsvFormItemPanel: React.FC<IProps> = (props) => {
                             }), //'请填写换行符号'
                           },
                         ]}
+                        getValueProps={(value) => ({
+                          value: CRLFToSeparatorString(value),
+                        })}
                       >
                         <Select>
-                          <Option key="\\n" value="\\n">
+                          <Option key="\n" value="\n">
                             \n
                           </Option>
-                          <Option key="\\r" value="\\r">
+                          <Option key="\r" value="\r">
                             \r
                           </Option>
-                          <Option key="\\r\\n" value="\\r\\n">
+                          <Option key="\r\n" value="\r\n">
                             \r\n
                           </Option>
                         </Select>

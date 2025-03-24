@@ -21,7 +21,7 @@ import { SQLContent } from '@/component/SQLContent';
 import { getTaskExecStrategyMap } from '@/component/Task';
 import type { IResultSetExportTaskParams, ITaskResult, TaskDetail } from '@/d.ts';
 import { IExportResultSetFileType, TaskExecStrategy } from '@/d.ts';
-import { getFormatDateTime } from '@/util/utils';
+import { CRLFToSeparatorString, getFormatDateTime } from '@/util/utils';
 import { Divider } from 'antd';
 import DatabaseLabel from '../../component/DatabaseLabel';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
@@ -222,7 +222,7 @@ export const getItems = (
                       defaultMessage: '换行符号',
                     }) /* 换行符号 */
                   }
-                  content={parameters?.csvFormat?.lineSeparator}
+                  content={CRLFToSeparatorString(parameters?.csvFormat?.lineSeparator)}
                 />
               </>
             )}

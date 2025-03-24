@@ -27,6 +27,7 @@ import { formatMessage } from '@/util/intl';
 import { AutoComplete, Checkbox, Col, Form, FormInstance, InputNumber, Row, Select } from 'antd';
 import React, { useContext } from 'react';
 import FormContext from '../FormContext';
+import { CRLFToSeparatorString } from '@/util/utils';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -439,15 +440,18 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
                                 }),
                               },
                             ]}
+                            getValueProps={(value) => ({
+                              value: CRLFToSeparatorString(value),
+                            })}
                           >
                             <Select>
-                              <Option key="\\n" value="\\n">
+                              <Option key="\n" value="\n">
                                 \n
                               </Option>
-                              <Option key="\\r" value="\\r">
+                              <Option key="\r" value="\r">
                                 \r
                               </Option>
-                              <Option key="\\r\\n" value="\\r\\n">
+                              <Option key="\r\n" value="\r\n">
                                 \r\n
                               </Option>
                             </Select>
