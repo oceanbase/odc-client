@@ -22,6 +22,7 @@ module.exports = [
                 "@/layout/OrganizationListenWrap"
               ],
               routes: [
+                { path: '/console', component: '@/page/Console' },
                 { path: '/project', component: '@/page/Project/Project', spmBPos: 'b64002' },
                 { path: '/project/:id/:page', component: '@/page/Project', spmBPos: 'b64003' },
                 { path: '/datasource', component: '@/page/Datasource/Datasource', spmBPos: 'b64004' },
@@ -30,7 +31,7 @@ module.exports = [
                 { path: '/auth/:page', component: '@/page/Auth', spmBPos: 'b64007' },
                 { path: '/secure/:page', component: '@/page/Secure', spmBPos: 'b64008' },
                 { path: '/externalIntegration/:page', component: '@/page/ExternalIntegration', spmBPos: 'b64009' },
-                { path: '/', redirect: '/project'},
+                { path: '/', redirect: '/console'},
               ],
             },
             {

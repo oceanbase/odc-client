@@ -33,6 +33,7 @@ import Icon, {
   CodeOutlined,
   ControlOutlined,
   ForkOutlined,
+  HomeOutlined,
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
@@ -96,6 +97,15 @@ const Sider: React.FC<IProps> = function (props) {
         )}
 
         <Space size={mentItemGap} direction="vertical" style={{ width: '100%' }}>
+          <Link to={`/${IPageType.Console}`}>
+            <MenuItem
+              key={IPageType.Console}
+              selected={selected === IPageType.Console}
+              icon={HomeOutlined}
+              collapsed={collapsed}
+              label="工作台"
+            />
+          </Link>
           <Link to={`/${IPageType.Project}`}>
             <MenuItem
               key={IPageType.Project}

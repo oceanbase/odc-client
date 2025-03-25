@@ -32,6 +32,7 @@ import { ReactNode, useContext, useMemo } from 'react';
 import { menuAccessWrap } from './config/database';
 import IconLoadingWrapper from './IconLoadingWrapper';
 import { ItemType } from 'antd/es/menu/interface';
+
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import { SearchOutlined } from '@ant-design/icons';
 import {
@@ -39,6 +40,8 @@ import {
   isGroupNode,
 } from '@/page/Workspace/SideBar/ResourceTree/const';
 import { openGlobalSearch } from '@/page/Workspace/SideBar/ResourceTree/const';
+import login from '@/store/login';
+
 export const hasExportPermission = (dbSession: SessionStore) => {
   return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
 };

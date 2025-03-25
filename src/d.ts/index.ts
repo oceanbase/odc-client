@@ -2625,6 +2625,33 @@ export interface ICycleTaskRecord<T> {
   description?: string;
 }
 
+export interface ICycleTaskStatParam {
+  currentOrganizationId: number;
+  types: string[];
+  startTime?: number;
+  endTime?: number;
+}
+
+export interface IDatabaseHistoriesParam {
+  currentOrganizationId: number;
+  limit;
+  startTime?: number;
+  endTime?: number;
+}
+
+export interface ICycleTaskStatRecord {
+  type: string;
+  successEnabledCount: number;
+  taskStat: {
+    type: string;
+    successExecutionCount: number;
+    failedExecutionCount: number;
+    waitingExecutionCount: number;
+    executingCount: number;
+    otherCount: number;
+  };
+}
+
 export interface ICycleSubTaskDetailRecord {
   createTime: number;
   id: number;

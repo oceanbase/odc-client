@@ -145,9 +145,13 @@ class SessionStore {
     this.odcDatabase = database || this.odcDatabase;
   }
 
-  static async createInstance(datasource: IDatasource, database: IDatabase) {
+  static async createInstance(
+    datasource: IDatasource,
+    database: IDatabase,
+    recordDbAccessHistory?: boolean,
+  ) {
     const session = new SessionStore(datasource, database);
-    if (await session.init()) {
+    if (await session.init(recordDbAccessHistory)) {
       return session;
     }
     return null;
@@ -167,7 +171,7 @@ class SessionStore {
    *
    * 数据库创建：需要初始化 DB 与事务信息。
    */
-  async init(): Promise<boolean> {
+  async init(recordDbAccessHistory: boolean): Promise<boolean> {
     try {
       if (!this.odcDatabase) {
         /**
@@ -186,7 +190,7 @@ class SessionStore {
         /**
          * 数据库模式
          */
-        const data = await newSessionByDataBase(this.odcDatabase?.id, true);
+        const data = await newSessionByDataBase(this.odcDatabase?.id, true, recordDbAccessHistory);
         if (!data) {
           return false;
         }

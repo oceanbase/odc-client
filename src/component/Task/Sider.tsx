@@ -26,6 +26,7 @@ import React, { useEffect } from 'react';
 import { getFirstEnabledTask, getTaskGroupLabels } from './helper';
 
 import styles from './index.less';
+import useUrlAction, { URL_ACTION } from '@/util/hooks/useUrlAction';
 
 interface IProps {
   taskStore?: TaskStore;
@@ -39,6 +40,8 @@ const Sider: React.FC<IProps> = function ({ taskStore, pageStore, className, isP
   const firstEnabledTask = getFirstEnabledTask();
   const pageKey = isPage ? pageStore?.activePageKey : taskStore?.taskPageType;
   const { Text } = Typography;
+
+  const { runTask } = useUrlAction();
 
   const handleClick = (value: TaskPageType) => {
     if (isPage) {
@@ -89,7 +92,14 @@ const Sider: React.FC<IProps> = function ({ taskStore, pageStore, className, isP
   }
 
   useEffect(() => {
-    taskStore.changeTaskPageType(firstEnabledTask?.value);
+    const res = runTask({
+      callback: (task) => {
+        openTasksPage(task as TaskPageType);
+        taskStore.changeTaskPageType(task as TaskPageType);
+      },
+    });
+
+    if (!res) taskStore.changeTaskPageType(firstEnabledTask?.value);
     return () => {
       taskStore.changeTaskPageType(firstEnabledTask?.value);
       taskStore.changeTaskPageScope(null);

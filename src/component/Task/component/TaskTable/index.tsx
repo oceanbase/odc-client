@@ -58,6 +58,7 @@ import { listProjects } from '@/common/network/project';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { isProjectArchived } from '@/page/Project/helper';
 import { useRequest } from 'ahooks';
+import useUrlAction, { URL_ACTION } from '@/util/hooks/useUrlAction';
 const { RangePicker } = DatePicker;
 const { Text, Link } = Typography;
 
@@ -237,6 +238,7 @@ const TaskTable: React.FC<IProps> = inject(
     const loadParams = useRef(null);
     const { activePageKey } = pageStore;
     const columns = initColumns(listParams);
+    const { runAction } = useUrlAction();
     const { loop: loadData, destory } = useLoop((count) => {
       return async (args: ITableLoadOptions) => {
         const _executeTime = args?.filters?.executeTime ?? executeTime;
@@ -265,6 +267,11 @@ const TaskTable: React.FC<IProps> = inject(
         setLoading(false);
       };
     }, 6000);
+
+    useEffect(() => {
+      runAction({ actionType: URL_ACTION.newTask, callback: () => setHoverInNewTaskMenu(true) });
+    }, []);
+
     useEffect(() => {
       loadData(loadParams.current);
     }, [executeDate]);

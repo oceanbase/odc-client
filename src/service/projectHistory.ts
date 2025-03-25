@@ -50,12 +50,5 @@ export function setDefaultProject(projectId: number) {
 }
 
 export async function toDefaultProjectPage() {
-  const projectId = getDefaultProject();
-  if (!projectId) {
-    history.push('/project');
-  } else {
-    const project = await getProjectWithErrorCatch(projectId);
-    const isProjectAvailable = project && !project?.archived;
-    isProjectAvailable ? history.push(`/project/${projectId}/database`) : history.push('/project');
-  }
+  history.push('/console');
 }

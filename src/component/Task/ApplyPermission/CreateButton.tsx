@@ -18,8 +18,9 @@ import { ModalStore } from '@/store/modal';
 import { Button, Space } from 'antd';
 import type { ButtonProps } from 'antd/lib/button';
 import { inject, observer } from 'mobx-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import ApplyPermissionCreateModal from './CreateModal';
+import useUrlAction, { URL_ACTION } from '@/util/hooks/useUrlAction';
 
 interface IProps extends ButtonProps {
   label: React.ReactNode;
@@ -34,6 +35,11 @@ const ApplyPermissionButton: React.FC<IProps> = inject('modalStore')(
     const handleApplyPermission = () => {
       modalStore.changeApplyPermissionModal(true);
     };
+
+    const { runAction } = useUrlAction();
+    useEffect(() => {
+      runAction({ actionType: URL_ACTION.newApply, callback: handleApplyPermission });
+    }, []);
 
     return (
       <>

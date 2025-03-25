@@ -280,6 +280,7 @@ export async function changeDelimiter(v, sessionId: string, dbName: string): Pro
 export async function newSessionByDataBase(
   databaseId: number,
   holdErrorTip?: boolean,
+  recordDbAccessHistory?: boolean,
 ): Promise<{
   sessionId: string;
   dataTypeUnits: IDataType[];
@@ -293,6 +294,7 @@ export async function newSessionByDataBase(
   const { data } = await request.post(`/api/v2/datasource/databases/${databaseId}/sessions`, {
     params: {
       holdErrorTip,
+      recordDbAccessHistory,
     },
   });
   return data;
