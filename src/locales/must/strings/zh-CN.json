@@ -2418,7 +2418,7 @@
   "odc.components.SQLResultSet.ExecuteHistory.OdcParsesSql": "ODC 解析 SQL",
   "odc.ExportForm.ConfigPanel.Unlimited": "无限制",
   "odc.ExportForm.ConfigPanel.MergeTheExportResultsInto": "导出结果合并为一个 SQL 文件",
-  "odc.components.FormUserModal.TheNameCannotExceedCharacters.2": "姓名不超过 64 个字符",
+  "odc.components.FormUserModal.TheNameCannotExceedCharacters.2": "姓名不超过 128 个字符",
   "odc.src.util.notification.RequestId": "请求 ID：",
   "odc.component.RAMAuthAlertInfo.TheCurrentOperationMayConflict": "当前操作可能会和 RAM 鉴权中指定的权限范围冲突，请注意风险（用户实际权限取权限合集）。",
   "odc.ImportForm.formitem.CsvFormItem.SkipTheFirstRow": "跳过首行",
