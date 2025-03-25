@@ -257,6 +257,7 @@ export class UserStore {
   public async switchCurrentOrganization(
     id?: number,
     getDefaultOrganization?: () => Promise<number>,
+    beforeOrganizationSwitch?: () => void,
   ) {
     await setting.getUserConfig();
     id = id || (await this.getDefaultOrganization(getDefaultOrganization))?.id;
@@ -264,6 +265,7 @@ export class UserStore {
       return false;
     }
     this.isSwitchingOrganization = true;
+    beforeOrganizationSwitch?.();
     this.organizationId = id;
     sessionStorage.setItem(sessionKey, id?.toString());
     this.isUserFetched = false;
