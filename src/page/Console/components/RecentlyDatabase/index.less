@@ -1,0 +1,51 @@
+.recentlyTable {
+  margin-top: 16px;
+  overflow: auto;
+  cursor: default;
+  .action,
+  .disabledAction {
+    cursor: pointer;
+    font-size: 12px;
+    color: #1890ff;
+    line-height: 20px;
+  }
+  .disabledAction {
+    filter: grayscale(1);
+    color: #00000040;
+  }
+
+  // .tableRowdisabled {
+  //   filter: grayscale(1);
+  //   pointer-events: none;
+  //   // font-size: 12px;
+  //   color: #00000040;
+  //   // line-height: 20px;;
+  //   .environment {
+  //     filter: grayscale(0);
+  //   }
+  // }
+
+  .activeStatus {
+    width: 16px;
+    height: 16px;
+  }
+  .ant-table-row:nth-child(n) {
+    height: 40px;
+    max-height: 40px;
+  }
+}
+.databaseEmpty {
+  height: 268px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  :global {
+    .ant-empty-description {
+      font-size: 12px;
+      color: #00000073;
+      line-height: 20px;
+      text-align: center;
+    }
+  }
+}

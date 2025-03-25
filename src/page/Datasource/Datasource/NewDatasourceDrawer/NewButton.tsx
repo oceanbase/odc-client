@@ -41,13 +41,15 @@ import {
   Divider,
 } from 'antd';
 import { MenuItemGroupType } from 'antd/es/menu/interface';
-import { useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ImportOutlined } from '@ant-design/icons';
 import NewDatasourceDrawer from '.';
+import { useLocation, useNavigate } from '@umijs/max';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
 import { haveOCP } from '@/util/env';
 import styles from './index.less';
+import useUrlAction, { URL_ACTION } from '@/util/hooks/useUrlAction';
 
 const getResultByFiles = (files: UploadFile[]) => {
   const res = [];
@@ -64,8 +66,10 @@ const NewDatasourceButton: React.FC<{
   onSuccess: () => void;
   disableTheme?: boolean;
 }> = function NewDatasourceButton(props) {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [type, setType] = useState<ConnectType>(null);
+  const { runAction } = useUrlAction();
   const connectTypes = [
     ...(getAllConnectTypes(IDataSourceType.OceanBase) || []),
     ...(getAllConnectTypes(IDataSourceType.MySQL) || []),
@@ -77,6 +81,14 @@ const NewDatasourceButton: React.FC<{
     ...(getAllConnectTypes(IDataSourceType.HUAWEI) || []),
     ...(getAllConnectTypes(IDataSourceType.AWSS3) || []),
   ];
+
+  useEffect(() => {
+    runAction({ actionType: URL_ACTION.newDatasource, callback: () => setDropdownOpen(true) });
+  }, []);
+
+  const handleDropdownVisibleChange = (open: boolean) => {
+    setDropdownOpen(open);
+  };
 
   const batchImportRef = useRef<{
     closeModal: () => void;
@@ -181,6 +193,7 @@ const NewDatasourceButton: React.FC<{
   return (
     <>
       <Dropdown
+        open={dropdownOpen}
         overlayClassName={styles['new-datasource-dropdown']}
         menu={{
           items: results,
@@ -188,6 +201,7 @@ const NewDatasourceButton: React.FC<{
             newDataSource(info.key);
           },
         }}
+        onOpenChange={handleDropdownVisibleChange}
         dropdownRender={(menu) => (
           <>
             {menu}

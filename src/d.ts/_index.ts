@@ -27,6 +27,7 @@ export enum IPageType {
   History = 'history',
   // Task = 'task',
   // 新的
+  Console = 'console',
   Project = 'project',
   Project_Database = 'database',
   Project_User = 'user',

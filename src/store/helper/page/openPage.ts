@@ -88,6 +88,7 @@ import {
 import { CreateTablePage, CreateTriggerPage, CreateViewPage, SQLConfirmPage } from './pages/create';
 import { AnonymousPage, PackageBodyPage, PackageHeadPage, PLEditPage } from './pages/pl';
 import { findPageByScriptIdAndType } from './util';
+import login from '@/store/login';
 
 export function openPackageHeadPage(packageName: string, sql: string, databaseId: number) {
   page.openPage(new PackageHeadPage(databaseId, packageName, sql));

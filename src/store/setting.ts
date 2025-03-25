@@ -374,6 +374,13 @@ export class SettingStore {
   }
 
   @action
+  public async updateOneUserConfig(params: { key: string; value: string | boolean }) {
+    const res = await request.put(`/api/v2/config/users/me/configurations/${params.key}`, {
+      data: params,
+    });
+  }
+
+  @action
   public async resetUserConfig() {
     const res = await request.get('/api/v2/config/users/default/configurations');
     const data = res?.data?.contents;

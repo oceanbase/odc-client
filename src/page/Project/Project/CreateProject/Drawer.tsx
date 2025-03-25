@@ -17,11 +17,12 @@
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import { Button, Drawer, FormInstance, message, Space } from 'antd';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import CreateProject, { ICreateProjectFormData } from '.';
 
 import { createProject as createProjectService } from '@/common/network/project';
 import { ProjectRole } from '@/d.ts/project';
+import useUrlAction, { URL_ACTION } from '@/util/hooks/useUrlAction';
 
 interface IProps {
   onCreate?: () => void;
@@ -34,6 +35,14 @@ export default function CreateProjectDrawer(props: IProps) {
   const { run, loading, cancel } = useRequest(createProjectService, {
     manual: true,
   });
+  const { runAction } = useUrlAction();
+
+  useEffect(() => {
+    runAction({
+      actionType: URL_ACTION.newProject,
+      callback: () => (props.disabled ? null : setOpen(true)),
+    });
+  }, []);
   async function onSubmit() {
     const data = await createProject?.current?.form?.validateFields();
     if (data) {

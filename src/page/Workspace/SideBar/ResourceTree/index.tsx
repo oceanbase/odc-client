@@ -326,7 +326,7 @@ const ResourceTree: React.FC<IProps> = function ({
           const dbId = (data as IDatabase).id;
           const dbSession =
             sessionManagerStore.sessionMap.get(sessionIds[dbId]) ||
-            (await sessionManagerStore.createSession(null, data?.id, true));
+            (await sessionManagerStore.createSession(null, data?.id, true, true));
           if (dbSession && dbSession !== 'NotFound') {
             setSessionId(dbId, dbSession?.sessionId);
           } else {

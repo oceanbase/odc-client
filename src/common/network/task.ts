@@ -43,6 +43,8 @@ import {
   TaskRecordParameters,
   TaskStatus,
   TaskType,
+  ICycleTaskStatRecord,
+  ICycleTaskStatParam,
 } from '@/d.ts';
 import { ISchemaChangeRecord } from '@/d.ts/logicalDatabase';
 import { IProject } from '@/d.ts/project';
@@ -51,6 +53,7 @@ import setting from '@/store/setting';
 import request from '@/util/request';
 import { downloadFile } from '@/util/utils';
 import { generateFunctionSid } from './pathUtil';
+import { IDatabase } from '@/d.ts/database';
 
 /**
  * 根据函数获取ddl sql
@@ -186,6 +189,28 @@ export async function getCycleTaskList<T>(params: {
     params,
   });
   return res?.data;
+}
+
+/**
+ * 查询周期任务状态
+ */
+export async function getScheduleStat<T>(
+  params: ICycleTaskStatParam,
+): Promise<ICycleTaskStatRecord[]> {
+  const res = await request.get('/api/v2/schedule/schedules/stats', {
+    params,
+  });
+  return res?.data?.contents;
+}
+
+export async function getDatabasesHistories(params: {
+  currentOrganizationId: number;
+  limit: number;
+}): Promise<IDatabase[]> {
+  const res = await request.get('/api/v2/database/databaseAccessHistories', {
+    params,
+  });
+  return res?.data?.contents;
 }
 
 /**
