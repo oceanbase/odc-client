@@ -629,11 +629,11 @@ class FormModal extends React.PureComponent<IProps, IState> {
                                 //请输姓名
                               },
                               {
-                                max: 64,
+                                max: 128,
                                 message: formatMessage({
                                   id: 'odc.components.FormUserModal.TheNameCannotExceedCharacters.2',
-                                  defaultMessage: '姓名不超过 64 个字符',
-                                }), //姓名不超过 64 个字符
+                                  defaultMessage: '姓名不超过 128 个字符',
+                                }), //姓名不超过 128 个字符
                               },
                               {
                                 validator: validTrimEmptyWithWarn(
