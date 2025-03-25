@@ -68,7 +68,7 @@ export class ClusterStore {
             case 'CLUSTER':
             case 'DEDICATED':
             case 'K8s_DEDICATED':
-            case ' UNKNOWN': {
+            case 'UNKNOWN': {
               newTenantMap[item.id] = item.tenants?.map((tenant) => {
                 return {
                   tenantName: tenant.name,
