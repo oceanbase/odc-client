@@ -595,7 +595,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
       content={
         disabled ? null : (
           <Spin spinning={loading || fetchLoading}>
-            {treeData.length > 0 ? (
+            {treeData?.length > 0 ? (
               <div className={styles.main}>
                 <div className={styles.header} style={{ width: width || DEFALT_WIDTH }}>
                   <Search

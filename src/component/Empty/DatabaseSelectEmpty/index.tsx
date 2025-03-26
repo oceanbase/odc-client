@@ -2,6 +2,7 @@ import { Empty } from 'antd';
 import styles from './index.less';
 import { ExportOutlined } from '@ant-design/icons';
 import { useNavigate } from '@umijs/max';
+import login from '@/store/login';
 
 interface IProps {
   showIcon?: boolean;
@@ -17,12 +18,16 @@ export default ({ showIcon }: IProps) => {
         description={
           <div className={styles.description}>
             <div className={styles.title}>暂无数据库</div>
-            <div className={styles.subDescription}>
-              仅支持选择项目内的数据库，请先确认已加入项目、且项目内存在数据库。
-              <span className={styles.action} onClick={() => window.open('/#/project')}>
-                管理项目{showIcon && <ExportOutlined />}
-              </span>
-            </div>
+            {login.isPrivateSpace() ? (
+              <></>
+            ) : (
+              <div className={styles.subDescription}>
+                仅支持选择项目内的数据库，请先确认已加入项目、且项目内存在数据库。
+                <span className={styles.action} onClick={() => window.open('/#/project')}>
+                  管理项目{showIcon && <ExportOutlined />}
+                </span>
+              </div>
+            )}
           </div>
         }
       />
