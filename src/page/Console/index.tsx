@@ -5,7 +5,7 @@ import { Button, Card, Col, Divider, Popconfirm, QRCode, Radio, Row, Spin, Typog
 import { ReactComponent as DownloadSvg } from '@/svgr/download-fill.svg';
 import { ReactComponent as GithubSvg } from '@/svgr/github.svg';
 import { ReactComponent as SendSvg } from '@/svgr/send-fill.svg';
-import { getLocalImg } from '@/util/intl';
+import { getImg } from '@/util/intl';
 
 import Icon, { ExperimentOutlined } from '@ant-design/icons';
 import LabelWithIcon from './components/LabelWithIcon';
@@ -284,7 +284,7 @@ const Console = () => {
                       <div className={styles.rightWrapper}>
                         <img
                           style={{ width: 550, height: 278 }}
-                          src={getLocalImg(
+                          src={getImg(
                             currentQuickStartStep > -1
                               ? `/guide/${currentQuickStartRole}-${currentQuickStartStep}.png`
                               : '/guide/default.png',
