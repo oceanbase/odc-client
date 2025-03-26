@@ -56,6 +56,11 @@ export function getLocalImg(fileName) {
   return window.publicPath + `img/${local}/${fileName}`;
 }
 
+export function getImg(fileName) {
+  //@ts-ignore
+  return window.publicPath + `img/${fileName}`;
+}
+
 export function getLocalDocs(hash?: string) {
   let local: string = getEnvLocale();
   local = local.toLowerCase();
