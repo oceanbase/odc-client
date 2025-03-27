@@ -323,7 +323,7 @@ const BlobViewModal: React.FC<IProps> = (props) => {
             sessionId={resultContext.sessionId}
             maxCount={1}
             action={
-              odc.appConfig.network.baseUrl() +
+              odc.appConfig.network?.baseUrl?.() +
               `/api/v2/datasource/sessions/${generateSessionSid(resultContext.sessionId)}/upload`
             }
             headers={{

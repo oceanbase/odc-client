@@ -207,7 +207,7 @@ export async function createBatchImportTask(
 }
 
 export function getImportUploadUrl() {
-  return odc.appConfig.network.baseUrl?.() + `/api/v2/dataTransfer/upload`;
+  return odc.appConfig.network?.baseUrl?.() + `/api/v2/dataTransfer/upload`;
 }
 
 export async function getCsvFileInfo(params: {
