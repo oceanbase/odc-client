@@ -1,7 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useMount, useRequest } from 'ahooks';
 import modal from '@/store/modal';
-import { Button, Card, Col, Divider, Popconfirm, QRCode, Radio, Row, Spin, Typography } from 'antd';
+import {
+  Button,
+  Card,
+  Col,
+  Divider,
+  Popconfirm,
+  Popover,
+  QRCode,
+  Radio,
+  Row,
+  Spin,
+  Typography,
+} from 'antd';
 import { ReactComponent as DownloadSvg } from '@/svgr/download-fill.svg';
 import { ReactComponent as GithubSvg } from '@/svgr/github.svg';
 import { ReactComponent as SendSvg } from '@/svgr/send-fill.svg';
