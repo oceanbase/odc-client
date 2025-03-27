@@ -31,12 +31,18 @@ export const ALL_SELECTED_VALUE = '*';
 export const ALL_I_HAVE_CREATED_VALUE = 'CREATOR';
 
 export const AllOption: IResourceOption = {
-  name: '全部',
+  name: formatMessage({
+    id: 'src.component.Manage.ResourceSelector.87EC2FC6',
+    defaultMessage: '全部',
+  }),
   resourceId: ALL_SELECTED_ID,
 };
 
 export const AllIHaveCreatedOption: IResourceOption = {
-  name: '我创建的',
+  name: formatMessage({
+    id: 'src.component.Manage.ResourceSelector.DCB7A4BF',
+    defaultMessage: '我创建的',
+  }),
   resourceId: ALL_I_HAVE_CREATED_ID,
 };
 
@@ -268,7 +274,15 @@ const ResourceItem: React.FC<{
                             disabled={disableSelectAllICreated}
                             onClick={handleSelectAllIHaveCreatedFields}
                           >
-                            {!isSelectedAllIHaveCreated ? '我创建的' : '取消我创建的'}
+                            {!isSelectedAllIHaveCreated
+                              ? formatMessage({
+                                  id: 'src.component.Manage.ResourceSelector.8CA96C98',
+                                  defaultMessage: '我创建的',
+                                })
+                              : formatMessage({
+                                  id: 'src.component.Manage.ResourceSelector.EEEF9C96',
+                                  defaultMessage: '取消我创建的',
+                                })}
                           </Button>
                         </>
                       )}

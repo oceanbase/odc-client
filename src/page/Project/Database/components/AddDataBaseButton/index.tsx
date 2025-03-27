@@ -207,9 +207,13 @@ const AddDataBaseButton: React.FC<IProps> = ({
       onClick: () => {
         onOpenDatabaseAdmin?.();
       },
-      label: '设置库管理员',
+      label: formatMessage({
+        id: 'src.page.Project.Database.components.AddDataBaseButton.438E94A5',
+        defaultMessage: '设置库管理员',
+      }),
     },
   ];
+
   return (
     <>
       <Space size={12}>
@@ -238,7 +242,11 @@ const AddDataBaseButton: React.FC<IProps> = ({
         </TooltipAction>
         <Dropdown menu={{ items: batchOperationItems }} placement="bottomLeft">
           <Button>
-            批量操作
+            {formatMessage({
+              id: 'src.page.Project.Database.components.AddDataBaseButton.85804FB2',
+              defaultMessage: '批量操作',
+            })}
+
             <DownOutlined />
           </Button>
         </Dropdown>
