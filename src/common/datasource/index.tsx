@@ -43,6 +43,7 @@ import { ReactComponent as OBSSvg } from '@/svgr/OBS.svg';
 import { ReactComponent as DBOBSSvg } from '@/svgr/obs_file.svg';
 import { ReactComponent as S3Svg } from '@/svgr/S3.svg';
 import { ReactComponent as DBS3Svg } from '@/svgr/S3_file.svg';
+import odc from '@/plugins/odc';
 
 export const _types: Map<
   IDataSourceType,
@@ -158,6 +159,9 @@ function register(
 ) {
   const connectTypes: ConnectType[] = Object.entries(items)
     .map(([key, value]) => {
+      if (odc.datasourceSupport && !odc.datasourceSupport?.(key as ConnectType, value)) {
+        return null;
+      }
       if (value?.disable) {
         return null;
       }
