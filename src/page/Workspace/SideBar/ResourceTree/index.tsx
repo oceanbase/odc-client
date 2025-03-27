@@ -20,6 +20,7 @@ import { SessionManagerStore } from '@/store/sessionManager';
 import { Space, Tree, Spin, Button } from 'antd';
 import { EventDataNode } from 'antd/lib/tree';
 import { throttle } from 'lodash';
+import { useUpdate } from 'ahooks';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { loadNode } from './helper';
@@ -114,6 +115,7 @@ const ResourceTree: React.FC<IProps> = function ({
   const [connectTypes, setConnectTypes] = useState<ConnectType[]>([]);
   const treeWrapperRef = useRef<HTMLDivElement>();
   const treeRef = useRef(null);
+  const update = useUpdate();
   const [searchValue, setSearchValue] = useState<string>(null);
   useEffect(() => {
     tracert.expo('a3112.b41896.c330992');
@@ -206,7 +208,7 @@ const ResourceTree: React.FC<IProps> = function ({
     }
   }, [shouldExpandedKeys]);
 
-  const treeData = useMemo(() => {
+  const treeData = (() => {
     switch (groupMode) {
       case DatabaseGroup.none: {
         return databases
@@ -316,7 +318,7 @@ const ResourceTree: React.FC<IProps> = function ({
         });
       }
     }
-  }, [databases, loadedKeys, envs, connectTypes, datasourceStatus.statusMap]);
+  })();
 
   const loadData = useCallback(
     async (treeNode: EventDataNode<any> & TreeDataNode) => {
@@ -329,6 +331,7 @@ const ResourceTree: React.FC<IProps> = function ({
             (await sessionManagerStore.createSession(null, data?.id, true, true));
           if (dbSession && dbSession !== 'NotFound') {
             setSessionId(dbId, dbSession?.sessionId);
+            update();
           } else {
             throw new Error("load database's session failed");
             return;
