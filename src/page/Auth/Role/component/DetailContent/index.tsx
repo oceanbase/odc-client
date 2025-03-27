@@ -31,6 +31,12 @@ import { ResourceContext } from '../../../context';
 import styles from '../../index.less';
 import { permissionMap, resourceManagementTypeOptions } from '../ResourceSelector/const';
 import resourceActions from '../ResourceSelector/resourceActions';
+import {
+  ALL_I_HAVE_CREATED_VALUE,
+  ALL_SELECTED_VALUE,
+  AllIHaveCreatedOption,
+  AllOption,
+} from '@/component/Manage/ResourceSelector';
 const defaultSystemOperationPermission = [
   {
     label: formatMessage({
@@ -386,22 +392,21 @@ const UserDetail: React.FC<{
     }
   };
 
-  const getResourceName = (type: IManagerResourceType, resourceId: number) => {
+  const getResourceLabel = (info, resourceId: string | number) => {
+    // 后端实现：resourceId为*，表示对所有资源都有权限, resourceId为CREATOR，表示对我创建的有权限
+    if (resourceId === ALL_I_HAVE_CREATED_VALUE) return AllIHaveCreatedOption.name;
+    if (resourceId === ALL_SELECTED_VALUE) return AllOption.name;
+    return info?.name;
+  };
+
+  const getResourceName = (type: IManagerResourceType, resourceId: number | string) => {
     const resourceMap = {
       [IManagerResourceType.resource]: resource,
       [IManagerResourceType.role]: roles,
       [IManagerResourceType.user]: users,
     };
     const info = resourceMap[type]?.find((item) => item.id === resourceId);
-    // 后端实现：resourceId为null，表示对所有资源都有权限
-    return resourceId
-      ? info?.name
-      : formatMessage({
-          id: 'odc.components.RolePage.component.AllPublicResources',
-          defaultMessage: '所有公共资源',
-        });
-
-    // 所有公共资源
+    return getResourceLabel(info, resourceId);
   };
 
   return (

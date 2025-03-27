@@ -269,7 +269,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                   }}
                 />
 
-                {ConnectTypeText[type] || ''}
+                {ConnectTypeText(type) || ''}
               </Space>
             </Typography.Paragraph>
           </Typography>
@@ -305,7 +305,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             {connectTypeList?.map((item) => {
               return (
                 <Option key={item} value={item}>
-                  {ConnectTypeText[item]}
+                  {ConnectTypeText(item)}
                 </Option>
               );
             })}

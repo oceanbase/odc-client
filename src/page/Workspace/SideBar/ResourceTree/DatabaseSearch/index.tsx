@@ -81,7 +81,7 @@ const DatabaseSearch: React.FC<IProps> = function ({ onChange, modalStore, setti
                   color: 'var(--text-color-hint)',
                 }}
               >
-                {DbObjectTypeTextMap[type]}
+                {DbObjectTypeTextMap(type)}
               </div>
             </div>
           ),
@@ -164,7 +164,7 @@ const DatabaseSearch: React.FC<IProps> = function ({ onChange, modalStore, setti
                 color: 'var(--text-color-placeholder)',
               }}
             >
-              {DbObjectTypeTextMap[dbType] || ''}
+              {DbObjectTypeTextMap(dbType as DbObjectType) || ''}
             </span>
             {getShortcut()}
             <SearchOutlined />

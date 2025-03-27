@@ -76,10 +76,10 @@ export const DbObjectTypeMap = {
     }),
   },
   [DbObjectType.database]: {
-    label: DbObjectTypeTextMap.DATABASE,
+    label: DbObjectTypeTextMap(DbObjectType.database),
   },
   [DbObjectType.table]: {
-    label: DbObjectTypeTextMap.TABLE,
+    label: DbObjectTypeTextMap(DbObjectType.table),
     openPage: (object) => openTableViewPage,
     getOpenTab: (object, databaseId) => {
       const name = object?.name;
@@ -87,7 +87,7 @@ export const DbObjectTypeMap = {
     },
   },
   [DbObjectType.logical_table]: {
-    label: DbObjectTypeTextMap.TABLE,
+    label: DbObjectTypeTextMap(DbObjectType.table),
     openPage: (object) => openTableViewPage,
     getOpenTab: (object, databaseId) => {
       return [object.name, TopTab.PROPS, PropsTab.DDL, object?.database?.id, object?.id];
@@ -122,7 +122,7 @@ export const DbObjectTypeMap = {
     },
   },
   [DbObjectType.view]: {
-    label: DbObjectTypeTextMap.VIEW,
+    label: DbObjectTypeTextMap(DbObjectType.view),
     openPage: (object) => openViewViewPage,
     getOpenTab: (object, databaseId) => {
       const databaseName = object?.dbObject?.database?.name || object?.database?.name;
@@ -130,35 +130,35 @@ export const DbObjectTypeMap = {
     },
   },
   [DbObjectType.function]: {
-    label: DbObjectTypeTextMap.FUNCTION,
+    label: DbObjectTypeTextMap(DbObjectType.function),
     openPage: (object) => openFunctionViewPage,
     getOpenTab: (object, databaseId) => {
       return [object?.name, TopTab.PROPS, PropsTab.INFO, databaseId];
     },
   },
   [DbObjectType.procedure]: {
-    label: DbObjectTypeTextMap.PROCEDURE,
+    label: DbObjectTypeTextMap(DbObjectType.procedure),
     openPage: (object) => openProcedureViewPage,
     getOpenTab: (object, databaseId) => {
       return [object?.name, TopTab.PROPS, PropsTab.INFO, databaseId];
     },
   },
   [DbObjectType.package]: {
-    label: DbObjectTypeTextMap.PACKAGE,
+    label: DbObjectTypeTextMap(DbObjectType.package),
     openPage: (object) => openPackageViewPage,
     getOpenTab: (object, databaseId) => {
       return [object?.name, PackageTopTab.HEAD, PropsTab.DDL, databaseId];
     },
   },
   [DbObjectType.trigger]: {
-    label: DbObjectTypeTextMap.TRIGGER,
+    label: DbObjectTypeTextMap(DbObjectType.trigger),
     openPage: (object) => openTriggerViewPage,
     getOpenTab: (object, databaseId) => {
       return [object?.name, undefined, true, undefined, databaseId];
     },
   },
   [DbObjectType.type]: {
-    label: DbObjectTypeTextMap.TYPE,
+    label: DbObjectTypeTextMap(DbObjectType.type),
     openPage: (object) => openTypeViewPage,
     getOpenTab: (object, databaseId) => {
       const databaseName = object?.dbObject?.database?.name || object?.database?.name;
@@ -166,7 +166,7 @@ export const DbObjectTypeMap = {
     },
   },
   [DbObjectType.sequence]: {
-    label: DbObjectTypeTextMap.SEQUENCE,
+    label: DbObjectTypeTextMap(DbObjectType.sequence),
     openPage: (object) => openSequenceViewPage,
     getOpenTab: (object, databaseId) => {
       const databaseName = object?.dbObject?.database?.name || object?.database?.name;
@@ -174,7 +174,7 @@ export const DbObjectTypeMap = {
     },
   },
   [DbObjectType.synonym]: {
-    label: DbObjectTypeTextMap.SYNONYM,
+    label: DbObjectTypeTextMap(DbObjectType.synonym),
     openPage: (object) => openSynonymViewPage,
     getOpenTab: (object, databaseId) => {
       const databaseName = object?.dbObject?.database?.name || object?.database?.name;

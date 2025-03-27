@@ -66,7 +66,10 @@ export function getLocalDocs(hash?: string) {
   return window.publicPath + 'help-doc/' + local + '/index.html' + (hash ? `#/${hash}` : '');
 }
 
+let isInitialized = false;
+
 export async function initIntl() {
+  if (isInitialized) return;
   let locale: string = getEnvLocale();
   let messages: Record<string, string> = {};
   switch (locale) {
@@ -92,9 +95,14 @@ export async function initIntl() {
     locale,
     messages,
   });
+  isInitialized = true;
   return true;
 }
 export function formatMessage(...args) {
+  if (!isInitialized) {
+    console.warn('Intl not ready, return default message');
+    return args[0]?.defaultMessage || '';
+  }
   return intl?.formatMessage(...args);
 }
 
