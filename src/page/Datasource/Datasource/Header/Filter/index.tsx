@@ -41,7 +41,7 @@ const Filter: React.FC<IProps> = function ({}) {
   const { connectType } = context;
   let selectedNames = [];
   connectType?.forEach((c) => {
-    selectedNames.push(ConnectTypeText[c]);
+    selectedNames.push(ConnectTypeText(c));
   });
   if (selectedNames.length) {
     displayDom = (
@@ -101,7 +101,7 @@ const Filter: React.FC<IProps> = function ({}) {
                 value={context?.connectType}
                 options={[]
                   .concat(getAllConnectTypes())
-                  .map((v) => ({ label: ConnectTypeText[v], value: v }))}
+                  .map((v) => ({ label: ConnectTypeText(v), value: v }))}
                 onChange={(v) => {
                   context.setConnectType(v as ConnectType[]);
                 }}

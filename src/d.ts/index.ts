@@ -49,7 +49,7 @@ export interface IUser {
 }
 
 export interface IPermission {
-  resourceId: number;
+  resourceId: number | string;
   resourceType: string;
   actions: string[];
 }
@@ -208,6 +208,7 @@ export interface IManagerUser {
   password: string;
   builtIn: boolean; // 是否是内置用户
   roleIds: number[];
+  roles?: IManagerRole[];
   enabled: boolean;
   description: string;
   creatorName: string;

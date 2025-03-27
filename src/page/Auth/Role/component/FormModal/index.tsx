@@ -15,7 +15,14 @@
  */
 
 import { createRole, getRoleDetail, updateRole } from '@/common/network/manager';
-import { ALL_SELECTED_ID, isSelectedAll } from '@/component/Manage/ResourceSelector';
+import {
+  ALL_I_HAVE_CREATED_ID,
+  ALL_I_HAVE_CREATED_VALUE,
+  ALL_SELECTED_ID,
+  ALL_SELECTED_VALUE,
+  isSelectedAll,
+  isSelectedAllThatIHaveCreated,
+} from '@/component/Manage/ResourceSelector';
 import { EnableRoleSystemPermission } from '@/constant';
 import type { IManagerRole } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
@@ -134,7 +141,7 @@ const FormModal: React.FC<IProps> = (props) => {
   ) => {
     return values?.map(({ actions, resourceId, ...rest }) => ({
       ...rest,
-      resourceId: isNull(resourceId) ? ALL_SELECTED_ID : resourceId,
+      resourceId: getResourceIdByResponseKey(resourceId),
       actions: resourceActions.getActionStringValue(actions, permissionType),
     }));
   };
@@ -272,6 +279,18 @@ const FormModal: React.FC<IProps> = (props) => {
     });
   };
 
+  function getResourceIdByResponseKey(responseKey) {
+    if (responseKey === ALL_SELECTED_VALUE) return ALL_SELECTED_ID;
+    if (responseKey === ALL_I_HAVE_CREATED_VALUE) return ALL_I_HAVE_CREATED_ID;
+    return responseKey;
+  }
+
+  function getResourceIdById(resourceId) {
+    if (isSelectedAllThatIHaveCreated(resourceId)) return ALL_I_HAVE_CREATED_VALUE;
+    if (isSelectedAll(resourceId)) return ALL_SELECTED_VALUE;
+    return resourceId;
+  }
+
   const handleUnifyData = (
     data: {
       resourceType: string;
@@ -279,6 +298,7 @@ const FormModal: React.FC<IProps> = (props) => {
       actions?: string;
     }[],
     actionMap: any,
+    type: 'systemOperationPermissions' | 'resourceManagementPermissions',
   ) => {
     const values = data?.filter((item) =>
       Object.values(item)?.every((item) => item || isNull(item)),
@@ -286,7 +306,7 @@ const FormModal: React.FC<IProps> = (props) => {
     return values?.map(({ resourceId, actions, ...reset }) => {
       return {
         ...reset,
-        resourceId: isSelectedAll(resourceId) ? null : resourceId,
+        resourceId: type === 'resourceManagementPermissions' ? getResourceIdById(resourceId) : '*',
         actions: actionMap?.[actions],
       };
     });
@@ -337,10 +357,12 @@ const FormModal: React.FC<IProps> = (props) => {
         formData.resourceManagementPermissions = handleUnifyData(
           resourceManagementPermissions,
           resourceManagementActionMap,
+          'resourceManagementPermissions',
         );
         formData.systemOperationPermissions = handleUnifyData(
           systemOperationPermissions,
           systemActionMap,
+          'systemOperationPermissions',
         );
         if (createAbleResource?.length) {
           createAbleResource
@@ -350,7 +372,7 @@ const FormModal: React.FC<IProps> = (props) => {
             ?.forEach((type) => {
               formData.resourceManagementPermissions?.push({
                 resourceType: type,
-                resourceId: null,
+                resourceId: ALL_SELECTED_VALUE,
                 actions: ['create'],
               });
             });

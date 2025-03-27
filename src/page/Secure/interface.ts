@@ -15,11 +15,14 @@
  */
 
 import { formatMessage } from '@/util/intl';
-export const RiskLevelMap = {
-  0: formatMessage({ id: 'odc.page.Secure.interface.DefaultRisk', defaultMessage: '默认风险' }), //默认风险
-  1: formatMessage({ id: 'odc.page.Secure.interface.LowRisk', defaultMessage: '低风险' }), //低风险
-  2: formatMessage({ id: 'odc.page.Secure.interface.MediumRisk', defaultMessage: '中风险' }), //中风险
-  3: formatMessage({ id: 'odc.page.Secure.interface.HighRisk', defaultMessage: '高风险' }), //高风险
+export const RiskLevelMap = (level: number) => {
+  const textMap = {
+    0: formatMessage({ id: 'odc.page.Secure.interface.DefaultRisk', defaultMessage: '默认风险' }), //默认风险
+    1: formatMessage({ id: 'odc.page.Secure.interface.LowRisk', defaultMessage: '低风险' }), //低风险
+    2: formatMessage({ id: 'odc.page.Secure.interface.MediumRisk', defaultMessage: '中风险' }), //中风险
+    3: formatMessage({ id: 'odc.page.Secure.interface.HighRisk', defaultMessage: '高风险' }), //高风险
+  };
+  return textMap?.[level];
 };
 
 export enum RiskLevelEnum {

@@ -120,19 +120,18 @@ class UserPage extends React.PureComponent<IProps, IState> {
 
       {
         title: formatMessage({ id: 'odc.components.UserPage.Role', defaultMessage: '角色' }), // 角色
-        dataIndex: 'roleIds',
+        dataIndex: 'roles',
         ellipsis: true,
         width: 200,
-        key: 'roleIds',
+        key: 'roles',
         filters: [{ name: <EmptyLabel />, id: 0 }].concat(roles ?? []).map(({ name, id }) => {
           return {
             text: name,
             value: id,
           };
         }),
-        render: (roleIds) => {
-          const relatedRoles = useRoleListByIds(roles, roleIds);
-          return <RoleList roles={relatedRoles} isShowIcon />;
+        render: (roles) => {
+          return <RoleList roles={roles} isShowIcon />;
         },
       },
 
@@ -638,7 +637,13 @@ class UserPage extends React.PureComponent<IProps, IState> {
             </Space>
           }
           onClose={this.handleCloseDetailModal}
-          getDetail={getUserDetail}
+          getDetail={async (id: number) => {
+            const user = await getUserDetail(id);
+            return {
+              ...user,
+              roles: users?.contents?.find((i) => i?.id === id)?.roles,
+            };
+          }}
           renderContent={(key, data) => (
             <DetailContent
               activeKey={key}
