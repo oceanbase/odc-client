@@ -3,6 +3,7 @@ import { IDataSourceModeConfig } from '../interface';
 import { haveOCP } from '@/util/env';
 
 const CloudStorageConfig: IDataSourceModeConfig = {
+  isFileSystem: true,
   connection: {
     address: {
       items: ['ip'],
@@ -43,10 +44,4 @@ const HUAWEI: Record<ConnectType.OBS, IDataSourceModeConfig> = {
 const QCLOUD: Record<ConnectType.COS, IDataSourceModeConfig> = {
   [ConnectType.COS]: CloudStorageConfig,
 };
-if (haveOCP()) {
-  delete ALIYUN[ConnectType.OSS];
-  delete AWSS3[ConnectType.S3A];
-  delete HUAWEI[ConnectType.OBS];
-  delete QCLOUD[ConnectType.COS];
-}
 export default { ALIYUN, AWSS3, HUAWEI, QCLOUD };
