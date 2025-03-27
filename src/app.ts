@@ -59,8 +59,8 @@ export const qiankun = {
 };
 
 export async function render(oldRender: () => void) {
-  await initIntl();
   registerPlugins();
+  await initIntl();
   await initMetaStore();
   oldRender();
 }
