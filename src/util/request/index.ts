@@ -22,7 +22,7 @@ function getRequest() {
 }
 
 export function getODCServerHost() {
-  return odc.appConfig.network.baseUrl() || '';
+  return odc.appConfig.network?.baseUrl?.() || '';
 }
 
 export default {

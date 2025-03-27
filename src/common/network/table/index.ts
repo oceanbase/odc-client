@@ -383,7 +383,7 @@ export async function getDataObjectDownloadUrl(
     return donwloadUrl;
   } else {
     return (
-      odc.appConfig.network.baseUrl() +
+      odc.appConfig.network?.baseUrl?.() +
       `/api/v2/datasource/sessions/${generateDatabaseSid(
         dbName,
         sessionId,
