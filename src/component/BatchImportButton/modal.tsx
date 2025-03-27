@@ -159,7 +159,9 @@ const BatchImportModal: React.FC<IProps> = (props) => {
             {description}
             <Button
               type="link"
-              href={(odc.appConfig.network.baseUrl() || '') + templatePath + '?lang=' + getLocale()}
+              href={
+                (odc.appConfig.network?.baseUrl?.() || '') + templatePath + '?lang=' + getLocale()
+              }
               download={true}
             >
               {
