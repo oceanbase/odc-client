@@ -100,4 +100,4 @@ export const odcServerLoginUrl = '/api/v1/sso-login';
 export const odcServerLogoutUrl = '/api/v1/sso-logout';
 
 export const uploadSSLFileUrl =
-  odc.appConfig.network.baseUrl() + `/api/v2/objectstorage/ssl/files/batchUpload`;
+  odc.appConfig.network?.baseUrl?.() + `/api/v2/objectstorage/ssl/files/batchUpload`;

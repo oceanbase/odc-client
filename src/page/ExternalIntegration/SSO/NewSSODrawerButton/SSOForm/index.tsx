@@ -432,10 +432,10 @@ export default inject('userStore')(
             form.setFieldsValue({
               ssoParameter: {
                 acsLocation: `${
-                  odc.appConfig.network.baseUrl() || location.origin
+                  odc.appConfig.network?.baseUrl?.() || location.origin
                 }/login/saml2/sso/${id}`,
                 acsEntityId: `${
-                  odc.appConfig.network.baseUrl() || location.origin
+                  odc.appConfig.network?.baseUrl?.() || location.origin
                 }/saml2/service-provider-metadata/${id}`,
               },
             });
@@ -450,7 +450,7 @@ export default inject('userStore')(
               form.setFieldsValue({
                 ssoParameter: {
                   providerEntityId: `${
-                    odc.appConfig.network.baseUrl() || location.origin
+                    odc.appConfig.network?.baseUrl?.() || location.origin
                   }/saml2/service-provider-metadata/${id}`,
                 },
               });
@@ -459,7 +459,7 @@ export default inject('userStore')(
             form.setFieldsValue({
               ssoParameter: {
                 redirectUrl: `${
-                  odc.appConfig.network.baseUrl() || location.origin
+                  odc.appConfig.network?.baseUrl?.() || location.origin
                 }/login/oauth2/code/${id}`,
               },
             });
@@ -493,7 +493,7 @@ export default inject('userStore')(
         }
       };
       const redirectUrl = `${
-        odc.appConfig.network.baseUrl() || location.origin
+        odc.appConfig.network?.baseUrl?.() || location.origin
       }/login/oauth2/code/${userStore?.organizationId}-test`;
 
       const updateSAMLCheckBoxConfig = async (type: SAMLType, checked: boolean, value?: string) => {
