@@ -27,6 +27,7 @@ import {
   IMPORT_TYPE,
   TaskType,
 } from '@/d.ts';
+import odc from '@/plugins/odc';
 import request from '@/util/request';
 import { encrypt } from '@/util/utils';
 import { isNil } from 'lodash';
@@ -206,7 +207,7 @@ export async function createBatchImportTask(
 }
 
 export function getImportUploadUrl() {
-  return window.ODCApiHost + `/api/v2/dataTransfer/upload`;
+  return odc.appConfig.network.baseUrl?.() + `/api/v2/dataTransfer/upload`;
 }
 
 export async function getCsvFileInfo(params: {
