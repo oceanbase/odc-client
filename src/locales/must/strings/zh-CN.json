@@ -5583,5 +5583,16 @@
   "src.component.Task.DataArchiveTask.CreateModal.5A19F0AB": "若您进行清理，默认立即清理且不做备份",
   "src.component.Task.DataArchiveTask.CreateModal.3D6F0B7D": "任务完成后删除归档过程中产生的临时表",
   "src.component.Task.DataArchiveTask.CreateModal.85B377FF": "勾选后已归档的任务不支持回滚",
-  "src.component.Task.DataArchiveTask.CreateModal.79D75776": "目标文件"
+  "src.component.Task.DataArchiveTask.CreateModal.79D75776": "目标文件",
+  "src.page.Project.Database.components.ChangeOwnerModal.99FD4EBF": "数据库",
+  "src.page.Project.Database.components.ChangeOwnerModal.E92E5B77": "请选择数据库",
+  "src.page.Project.Database.components.AddDataBaseButton.438E94A5": "设置库管理员",
+  "src.page.Project.Database.components.AddDataBaseButton.85804FB2": "批量操作",
+  "src.component.OrganizationSelectModal.EDDC445E": "请先选择一个默认空间",
+  "src.component.OrganizationSelectModal.21D23DE2": "选择后，也可在左侧导航切换",
+  "src.component.OrganizationSelectModal.F08D9948": "确定",
+  "src.component.Manage.ResourceSelector.87EC2FC6": "全部",
+  "src.component.Manage.ResourceSelector.DCB7A4BF": "我创建的",
+  "src.component.Manage.ResourceSelector.8CA96C98": "我创建的",
+  "src.component.Manage.ResourceSelector.EEEF9C96": "取消我创建的"
 }

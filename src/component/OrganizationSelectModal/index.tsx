@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import login from '@/store/login';
 import { observer } from 'mobx-react';
 import { Button, Menu, Modal, Space, Typography } from 'antd';
@@ -21,9 +22,17 @@ export default observer(function OrganizationSelectModal({ open, onOk }: IProps)
       closable={false}
       title={
         <div>
-          <Typography.Title level={5}>请先选择一个默认空间</Typography.Title>
+          <Typography.Title level={5}>
+            {formatMessage({
+              id: 'src.component.OrganizationSelectModal.EDDC445E',
+              defaultMessage: '请先选择一个默认空间',
+            })}
+          </Typography.Title>
           <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-            选择后，也可在左侧导航切换
+            {formatMessage({
+              id: 'src.component.OrganizationSelectModal.21D23DE2',
+              defaultMessage: '选择后，也可在左侧导航切换',
+            })}
           </Typography.Text>
         </div>
       }
@@ -35,7 +44,10 @@ export default observer(function OrganizationSelectModal({ open, onOk }: IProps)
             onOk(toNumber(selectedKey));
           }}
         >
-          确定
+          {formatMessage({
+            id: 'src.component.OrganizationSelectModal.F08D9948',
+            defaultMessage: '确定',
+          })}
         </Button>
       }
     >

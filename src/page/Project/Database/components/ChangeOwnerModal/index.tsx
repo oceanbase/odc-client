@@ -132,7 +132,10 @@ export default function ChangeOwnerModal({
       <Form requiredMark="optional" form={form} layout="vertical" className={styles.roleForm}>
         {!database ? (
           <Form.Item
-            label="数据库"
+            label={formatMessage({
+              id: 'src.page.Project.Database.components.ChangeOwnerModal.99FD4EBF',
+              defaultMessage: '数据库',
+            })}
             name="databaseList"
             rules={[
               {
@@ -148,7 +151,10 @@ export default function ChangeOwnerModal({
               mode="multiple"
               allowClear
               style={{ width: '100%' }}
-              placeholder="请选择数据库"
+              placeholder={formatMessage({
+                id: 'src.page.Project.Database.components.ChangeOwnerModal.E92E5B77',
+                defaultMessage: '请选择数据库',
+              })}
               options={databaseOptions}
             />
           </Form.Item>
