@@ -98,7 +98,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         enabled,
       };
       propertyMetadatas.forEach((pm, index) => {
-        newInitData[`activeKey${index}`] = properties[pm.name];
+        newInitData[`activeKey${index}`] = properties?.[pm.name];
         if (pm?.name === SqlInterceptorKey) {
           options.unshift({
             label: formatMessage({
@@ -202,7 +202,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         initialValues={{
           level: 0,
           appliedDialectTypes: [],
-          activeKey: rule?.properties[rule?.metadata?.name],
+          activeKey: rule?.properties?.[rule?.metadata?.name],
         }}
       >
         <Form.Item

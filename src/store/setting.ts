@@ -242,6 +242,8 @@ export class SettingStore {
 
   @observable
   public configurations: Partial<IUserConfig> = null;
+  @observable
+  public spaceConfigurations: Partial<IUserConfig> = null;
 
   @observable
   public headerStyle: any = {
@@ -291,13 +293,27 @@ export class SettingStore {
   public async getUserConfig() {
     const res = await request.get('/api/v2/config/users/me/configurations');
     if (res?.data) {
-      this.configurations = res?.data?.contents?.reduce((data, item) => {
+      const config = res?.data?.contents?.reduce((data, item) => {
         data[item.key] = item.value;
         return data;
       }, {});
+      this.configurations = config;
       this.theme = themeConfig[this.configurations['odc.appearance.scheme']];
     } else {
       this.configurations = {};
+    }
+  }
+  @action
+  public async getSpaceConfig() {
+    const res = await request.get('/api/v2/config/organization/configurations');
+    if (res?.data) {
+      const config = res?.data?.contents?.reduce((data, item) => {
+        data[item.key] = item.value;
+        return data;
+      }, {});
+      this.spaceConfigurations = config;
+    } else {
+      this.spaceConfigurations = {};
     }
   }
 
@@ -374,6 +390,39 @@ export class SettingStore {
   }
 
   @action
+  public async updateSpaceConfig(newData: IUserConfig) {
+    const serverData = Object.keys(newData).map((key) => {
+      return {
+        key,
+        value: newData[key],
+      };
+    });
+    const res = await request.patch('/api/v2/config/organization/configurations', {
+      data: serverData,
+    });
+    const data = res?.data?.contents;
+    if (data) {
+      await this.getSpaceConfig();
+    }
+    return !!data;
+  }
+
+  @action
+  public async resetSpaceConfig() {
+    const res = await request.get('/api/v2/config/organization/default/configurations');
+    const data = res?.data?.contents;
+    if (data) {
+      const res = await request.patch('/api/v2/config/organization/configurations', {
+        data,
+      });
+      const userConfig = res?.data?.contents;
+      if (userConfig) {
+        await this.getUserConfig();
+      }
+    }
+    return !!data;
+  }
+
   public async updateOneUserConfig(params: { key: string; value: string | boolean }) {
     const res = await request.put(`/api/v2/config/users/me/configurations/${params.key}`, {
       data: params,

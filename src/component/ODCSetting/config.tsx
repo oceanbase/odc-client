@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import databaseSettings from './config/database';
-import editorSettings from './config/editor';
-import perferenceSettings from './config/preference';
-import performanceSettings from './config/performance';
-import accountSettings from './config/account';
+import databaseSettings from './config/user/database';
+import editorSettings from './config/user/editor';
+import perferenceSettings from './config/user/preference';
+import performanceSettings from './config/user/performance';
+import accountSettings from './config/user/account';
 import type { FormRule } from 'antd';
+import sqlQuerySetting from './config/group/sqlQuery';
+import taskSetting from './config/group/task';
+import securitySetting from './config/group/security';
+import personalTaskSetting from './config/personal/personalTask';
+import personalSqlQuerySetting from './config/personal/personalSqlQuery';
 
 export interface ODCSettingGroup {
   label: string;
@@ -31,7 +36,7 @@ export interface IODCSetting<T = any> {
   key: string;
   tip?: string;
   group: ODCSettingGroup;
-  secondGroup: ODCSettingGroup;
+  secondGroup?: ODCSettingGroup;
   /**
    * 渲染宽度
    */
@@ -53,9 +58,24 @@ const odcSetting: IODCSetting[] = []
   .concat(performanceSettings)
   .concat(accountSettings);
 
+const odcGroupSetting: IODCSetting[] = []
+  .concat(sqlQuerySetting)
+  .concat(taskSetting)
+  .concat(securitySetting);
+
+const odcPersonSetting: IODCSetting[] = []
+  .concat(personalSqlQuerySetting)
+  .concat(personalTaskSetting);
+
 const odcSettingMap: Record<string, IODCSetting> = {};
 odcSetting.forEach((setting) => {
   odcSettingMap[setting.key] = setting;
 });
-export { odcSettingMap };
+odcPersonSetting.forEach((setting) => {
+  odcSettingMap[setting.key] = setting;
+});
+odcGroupSetting.forEach((setting) => {
+  odcSettingMap[setting.key] = setting;
+});
+export { odcSettingMap, odcGroupSetting, odcPersonSetting };
 export default odcSetting;

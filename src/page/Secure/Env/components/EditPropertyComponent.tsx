@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import SQLConfigContext from '@/component/SQLConfig/SQLConfigContext';
 import { ComponentType, PropertyMetadata } from '@/d.ts/rule';
+import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
+import { useContext } from '@@node_modules/@types/react';
 import { Form, Input, InputNumber, Radio, Select } from 'antd';
 interface EditPropertyComponentMapProps {
   propertyMetadata: PropertyMetadata;
@@ -34,6 +37,7 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
   const name = `activeKey${index}`;
   const option = `options${index}`;
   const { componentType = '', candidates = [], defaultValue, type } = propertyMetadata;
+
   switch (componentType) {
     case ComponentType.INPUT_STRING: {
       return (
@@ -65,12 +69,22 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
                 { label },
               ), //`请输入${label}`
             },
+            {
+              validator: (_, value) => {
+                const max = setting.spaceConfigurations['odc.sqlexecute.default.maxQueryLimit'];
+                if (value !== undefined && value > max) {
+                  return Promise.reject(`不超过查询条数上限 ${max}`);
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
           tooltip={description}
         >
           <InputNumber
             defaultValue={defaultValue}
             min={0}
+            max={setting?.configurations?.['odc.sqlexecute.default.maxQueryLimit']}
             placeholder={
               formatMessage({
                 id: 'odc.src.page.Secure.Env.components.PleaseEnter.1',

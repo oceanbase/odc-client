@@ -17,9 +17,9 @@
 import KeymapInput from '@/component/Input/Keymap';
 import { validForEditorKeymap } from '@/component/Input/Keymap/helper';
 import { formatMessage } from '@/util/intl';
-import { IODCSetting, ODCSettingGroup } from '../config';
-import RadioItem from '../Item/RadioItem';
-import SelectItem from '../Item/SelectItem';
+import { IODCSetting, ODCSettingGroup } from '../../config';
+import RadioItem from '../../Item/RadioItem';
+import SelectItem from '../../Item/SelectItem';
 
 const editorGroup: ODCSettingGroup = {
   label: formatMessage({

@@ -17,10 +17,11 @@
 import { DragInsertTypeText } from '@/constant/label';
 import { AutoCommitMode, DragInsertType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { IODCSetting, ODCSettingGroup } from '../config';
-import InputItem from '../Item/InputItem';
-import RadioItem from '../Item/RadioItem';
-import SelectItem from '../Item/SelectItem';
+import { IODCSetting, ODCSettingGroup } from '../../config';
+import InputItem from '../../Item/InputItem';
+import RadioItem from '../../Item/RadioItem';
+import SelectItem from '../../Item/SelectItem';
+import { validForqueryQueryNumber } from '../../validators';
 
 const databaseGroup: ODCSettingGroup = {
   label: formatMessage({
@@ -39,6 +40,10 @@ const databaseResultsetGroup: ODCSettingGroup = {
     defaultMessage: '结果集',
   }), //'结果集'
   key: 'databaseResultset',
+};
+const sqlQueryGroup: ODCSettingGroup = {
+  label: 'SQL 查询',
+  key: 'sqlQuery',
 };
 const databaseSQLExecuteGroup: ODCSettingGroup = {
   label: formatMessage({
@@ -191,19 +196,6 @@ const databaseSettings: IODCSetting[] = [
   },
   {
     label: formatMessage({
-      id: 'src.component.ODCSetting.config.B86084FC',
-      defaultMessage: '查询条数限制',
-    }), //'查询条数限制'
-    key: 'odc.sqlexecute.default.queryLimit',
-    group: databaseGroup,
-    secondGroup: databaseResultsetGroup,
-    storeType: 'server',
-    render: (value, onChange) => {
-      return <InputItem value={value} onChange={onChange} />;
-    },
-  },
-  {
-    label: formatMessage({
       id: 'src.component.ODCSetting.config.90CA6EA7',
       defaultMessage: '开启全链路诊断',
     }), //'开启全链路诊断'
@@ -334,40 +326,6 @@ const databaseSettings: IODCSetting[] = [
               value: item,
             };
           })}
-          value={value}
-          onChange={onChange}
-        />
-      );
-    },
-  },
-  {
-    label: formatMessage({
-      id: 'src.component.ODCSetting.config.BD183B7D',
-      defaultMessage: '启用全局对象检索',
-    }),
-    key: 'odc.database.default.enableGlobalObjectSearch',
-    group: databaseGroup,
-    secondGroup: databaseObjectGroup,
-    storeType: 'server',
-    render: (value, onChange) => {
-      return (
-        <RadioItem
-          options={[
-            {
-              label: formatMessage({
-                id: 'src.component.ODCSetting.config.DB70BE72',
-                defaultMessage: '是',
-              }), //'是'
-              value: 'true',
-            },
-            {
-              label: formatMessage({
-                id: 'src.component.ODCSetting.config.B0184654',
-                defaultMessage: '否',
-              }), //'否'
-              value: 'false',
-            },
-          ]}
           value={value}
           onChange={onChange}
         />

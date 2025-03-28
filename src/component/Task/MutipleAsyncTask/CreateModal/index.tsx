@@ -46,6 +46,7 @@ import styles from './index.less';
 import MoreSetting from './MoreSetting';
 import { MultipleAsyncContext } from './MultipleAsyncContext';
 import ProjectSelect from './ProjectSelect';
+import setting from '@/store/setting';
 
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 
@@ -452,12 +453,16 @@ const CreateModal: React.FC<IProps> = (props) => {
             ? parameters?.orderedDatabaseIds
             : [[undefined]],
           delimiter: parameters?.delimiter,
-          queryLimit: parameters?.queryLimit,
+          queryLimit:
+            parameters?.queryLimit ||
+            setting.spaceConfigurations['odc.sqlexecute.default.queryLimit'],
           timeoutMillis: parameters?.timeoutMillis / 1000 / 60 / 60,
           errorStrategy: parameters?.errorStrategy,
           autoErrorStrategy: parameters?.autoErrorStrategy,
           manualTimeoutMillis: parameters?.timeoutMillis / 1000 / 60 / 60,
-          generateRollbackPlan: parameters?.generateRollbackPlan,
+          generateRollbackPlan:
+            parameters?.generateRollbackPlan ||
+            setting.spaceConfigurations['odc.task.default.rollbackPlanEnabled'] === 'true',
         },
         description,
       });
