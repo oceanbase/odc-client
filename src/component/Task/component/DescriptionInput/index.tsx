@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { Form, Input } from 'antd';
 
@@ -37,11 +38,7 @@ const DescriptionInput = () => {
     >
       <Input.TextArea
         rows={6}
-        placeholder={formatMessage({
-          id: 'odc.component.DescriptionInput.EnterADescriptionLessThan',
-          defaultMessage:
-            '请输入描述，200字以内；未输入时，系统会根据对象和工单类型自动生成描述信息',
-        })} /*请输入描述，200字以内；未输入时，系统会根据对象和工单类型自动生成描述信息*/
+        placeholder={setting.configurations['odc.task.default.taskDescriptionPrompt']}
       />
     </Form.Item>
   );

@@ -15,8 +15,8 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { IODCSetting, ODCSettingGroup } from '../config';
-import TextAreaItem from '../Item/TextItem';
+import { IODCSetting, ODCSettingGroup } from '../../config';
+import TextAreaItem from '../../Item/TextItem';
 
 const performanceGroup: ODCSettingGroup = {
   label: formatMessage({ id: 'src.component.ODCSetting.config.353C6B46', defaultMessage: '性能' }), //'性能'

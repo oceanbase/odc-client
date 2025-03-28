@@ -89,6 +89,7 @@ class SessionStore {
   @observable
   public params: {
     autoCommit: boolean;
+    maxQueryLimit: number;
     delimiter: string;
     queryLimit: number;
     delimiterLoading: boolean;
@@ -104,6 +105,7 @@ class SessionStore {
   } = {
     autoCommit: true,
     delimiter: DEFAULT_DELIMITER,
+    maxQueryLimit: Number.MAX_SAFE_INTEGER,
     delimiterLoading: false,
     queryLimit: DEFAULT_QUERY_LIMIT,
     obVersion: '',
@@ -390,6 +392,7 @@ class SessionStore {
     try {
       const data = await getSessionStatus(this.sessionId);
       this.params.autoCommit = data?.settings?.autocommit;
+      this.params.maxQueryLimit = data?.settings?.maxQueryLimit;
       this.params.delimiter = data?.settings?.delimiter || DEFAULT_DELIMITER;
       this.params.queryLimit = data?.settings?.queryLimit;
       this.params.obVersion = data?.settings?.obVersion;

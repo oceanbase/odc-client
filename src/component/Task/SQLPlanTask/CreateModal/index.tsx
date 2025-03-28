@@ -55,10 +55,11 @@ import {
 import type { UploadFile } from 'antd/lib/upload/interface';
 import Cookies from 'js-cookie';
 import { inject, observer } from 'mobx-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import { useRequest } from 'ahooks';
 import styles from './index.less';
+import setting from '@/store/setting';
 
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 
@@ -76,10 +77,13 @@ enum ErrorStrategy {
 const defaultValue = {
   sqlContentType: SQLContentType.TEXT,
   delimiter: ';',
-  queryLimit: 1000,
   timeoutMillis: 48,
   errorStrategy: ErrorStrategy.ABORT,
   allowConcurrent: false,
+};
+
+const getDefaultQueryLimit = () => {
+  return setting.spaceConfigurations['odc.sqlexecute.default.queryLimit'];
 };
 
 const CreateModal: React.FC<IProps> = (props) => {
@@ -671,6 +675,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             </Form.Item>
             <Form.Item
               name="queryLimit"
+              initialValue={getDefaultQueryLimit()}
               label={formatMessage({
                 id: 'odc.components.CreateSQLPlanTaskModal.QueryResultLimits',
                 defaultMessage: '查询结果限制',

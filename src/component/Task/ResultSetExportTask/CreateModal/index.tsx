@@ -44,6 +44,7 @@ import React, { useEffect, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import { CsvFormItemPanel } from './CsvFormItemPanel';
 import styles from './index.less';
+import setting from '@/store/setting';
 const { Text } = Typography;
 const { Option } = Select;
 interface IProps {
@@ -216,7 +217,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           tableName: null,
           fileFormat: EXPORT_TYPE.CSV,
           fileEncoding: IMPORT_ENCODING.UTF8,
-          maxRows: 1000,
+          maxRows: setting.spaceConfigurations['odc.sqlexecute.default.queryLimit'],
           csvFormat: {
             isContainColumnHeader: true,
             isTransferEmptyString: true,

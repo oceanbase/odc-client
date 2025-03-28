@@ -20,15 +20,23 @@ import { useState } from 'react';
 export default function TextAreaItem(props: {
   value: string;
   onChange: (value: string) => Promise<void>;
+  config?: {
+    showCount?: boolean;
+    maxLength?: number;
+    placehoder?: string;
+  };
 }) {
   const [loading, setLoading] = useState(false);
   return (
     <Input.TextArea
       autoSize={{ minRows: 3, maxRows: 8 }}
       allowClear
+      showCount={props?.config?.showCount || false}
+      maxLength={props?.config?.maxLength}
       style={{ width: '400px' }}
       key={props.value}
       defaultValue={props.value}
+      placeholder={props?.config?.placehoder}
       disabled={loading}
       onBlur={async (e) => {
         const value = e.target.value;

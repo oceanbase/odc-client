@@ -102,6 +102,10 @@ export interface IUserConfig {
   'odc.account.defaultOrganizationType': SpaceType;
   'odc.account.userBehaviorAnalysisEnabled': 'true' | 'false';
   'odc.database.default.enableGlobalObjectSearch': 'true' | 'false';
+  'odc.sqlexecute.default.secretKey': string;
+  'odc.sqlexecute.default.queryNumber': string;
+  'odc.task.default.rollbackPlan': 'true' | 'false';
+  'odc.task.default.taskDescriptionPrompt': string;
 }
 
 // 系统配置

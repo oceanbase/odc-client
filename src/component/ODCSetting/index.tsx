@@ -15,9 +15,28 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { Button, Col, Form, message, Modal, Row, Space, Tabs, Typography } from 'antd';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import odcSetting, { IODCSetting, ODCSettingGroup, odcSettingMap } from './config';
+import {
+  Button,
+  Col,
+  Form,
+  FormInstance,
+  Input,
+  message,
+  Modal,
+  Radio,
+  Row,
+  Space,
+  Tabs,
+  Typography,
+} from 'antd';
+import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import odcSetting, {
+  IODCSetting,
+  odcGroupSetting,
+  odcPersonSetting,
+  ODCSettingGroup,
+  odcSettingMap,
+} from './config';
 
 import { ModalStore } from '@/store/modal';
 import setting from '@/store/setting';
@@ -26,56 +45,145 @@ import { isClient } from '@/util/env';
 import { safeParseJson } from '@/util/utils';
 import { inject, observer } from 'mobx-react';
 import styles from './index.less';
+import odc from '@/plugins/odc';
+import login from '@/store/login';
 
 interface IProps {
   modalStore?: ModalStore;
 }
 
+const { Search } = Input;
+
+enum ESpaceType {
+  USER = 'user',
+  GROUP = 'group',
+  PERSONAL = 'personal',
+}
+
+const settingMap = {
+  [ESpaceType.USER]: odcSetting,
+  [ESpaceType.GROUP]: odcGroupSetting,
+  [ESpaceType.PERSONAL]: odcPersonSetting,
+};
+
+type TSetting = Map<
+  string,
+  ODCSettingGroup & {
+    secondGroup: Map<
+      string,
+      ODCSettingGroup & {
+        settings: IODCSetting[];
+      }
+    >;
+  } & {
+    settings: IODCSetting[];
+  }
+>;
+
 const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   const [formRef] = Form.useForm();
+  const [spaceFormRef] = Form.useForm();
   const [changed, setChanged] = useState(false);
   const formBoxRef = React.createRef<HTMLDivElement>();
   const scrollSwitcher = useRef<Boolean>(true);
-  const data = useMemo(() => {
-    const result = new Map<
-      string,
-      ODCSettingGroup & {
-        secondGroup: Map<
-          string,
-          ODCSettingGroup & {
-            settings: IODCSetting[];
+  const [spaceType, setSpaceType] = useState(ESpaceType.USER);
+  const isAdmin = odc.appConfig.manage.user.isAdmin(login.user);
+  const [searchValue, setSearchValue] = useState('');
+
+  const getData = useCallback(
+    (type: ESpaceType) => {
+      const result = new Map<
+        string,
+        ODCSettingGroup & {
+          secondGroup: Map<
+            string,
+            ODCSettingGroup & {
+              settings: IODCSetting[];
+            }
+          >;
+        } & {
+          settings: IODCSetting[];
+        }
+      >();
+      settingMap[type].forEach((setting) => {
+        const { group, secondGroup, key, render, storeType, disabledInClient } = setting;
+        if (!isClient() && storeType === 'local') {
+          return;
+        }
+        if (isClient() && disabledInClient) {
+          return;
+        }
+        if (!result.has(group.key)) {
+          result.set(group.key, {
+            ...group,
+            secondGroup: new Map(),
+            settings: [],
+          });
+        }
+        const groupItem = result.get(group.key);
+        if (groupItem.secondGroup && secondGroup) {
+          if (!groupItem.secondGroup.has(secondGroup.key)) {
+            groupItem.secondGroup.set(secondGroup.key, {
+              ...secondGroup,
+              settings: [],
+            });
           }
-        >;
-      }
-    >();
-    odcSetting.forEach((setting) => {
-      const { group, secondGroup, key, render, storeType, disabledInClient } = setting;
-      if (!isClient() && storeType === 'local') {
-        return;
-      }
-      if (isClient() && disabledInClient) {
-        return;
-      }
-      if (!result.has(group.key)) {
-        result.set(group.key, {
-          ...group,
-          secondGroup: new Map(),
-        });
-      }
-      const groupItem = result.get(group.key);
-      if (!groupItem.secondGroup.has(secondGroup.key)) {
-        groupItem.secondGroup.set(secondGroup.key, {
-          ...secondGroup,
-          settings: [],
-        });
-      }
-      const secondGroupItem = groupItem.secondGroup.get(secondGroup.key);
-      secondGroupItem.settings.push(setting);
+          const secondGroupItem = groupItem.secondGroup.get(secondGroup.key);
+          secondGroupItem.settings.push(setting);
+        } else {
+          groupItem.settings.push(setting);
+        }
+      });
+      return result;
+    },
+    [odcSetting],
+  );
+
+  const userData = useMemo(() => {
+    return getData(ESpaceType.USER);
+  }, []);
+
+  const spaceUserData = useMemo(() => {
+    return getData(isAdmin ? ESpaceType.GROUP : ESpaceType.PERSONAL);
+  }, []);
+
+  const data = useMemo(() => {
+    return spaceType === ESpaceType.USER ? userData : spaceUserData;
+  }, [spaceType]);
+
+  const dataKeys = useMemo(() => {
+    const secondKeys = [];
+
+    const keys = Array.from(data.values()).map((g) => {
+      const secondGroupItems = [...g.secondGroup.values()].map((item) => ({
+        key: item.key,
+        label: item.label,
+        parentKey: g.key,
+      }));
+      secondKeys.push(...secondGroupItems);
+      return {
+        label: g.label,
+        key: g.key,
+      };
     });
-    return result;
-  }, [odcSetting]);
+    return [...keys, ...secondKeys];
+  }, [data]);
 
   const [activeKey, setActiveKey] = useState(data.keys().next().value);
+
+  const initState = useCallback(() => {
+    const initKey = data.keys().next().value;
+    if (searchValue) {
+      const foundKey = searchKeys();
+      if (foundKey) return;
+    }
+    scrollToKey(initKey);
+    setActiveKey(initKey);
+  }, [data]);
+
+  useEffect(() => {
+    initState();
+  }, [spaceType]);
 
   function scrollToKey(key: string) {
     scrollSwitcher.current = false;
@@ -152,6 +260,9 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       data = { ...data, ...clientData };
     }
     formRef.setFieldsValue(data);
+
+    let spaceData = setting.spaceConfigurations || {};
+    spaceFormRef.setFieldsValue(spaceData);
   }
 
   useEffect(() => {
@@ -167,17 +278,33 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
 
   async function save() {
     const values = await formRef.validateFields();
+    const spaceValues = await spaceFormRef.validateFields();
     const serverData: Record<string, string> = {},
       localData = {};
+    const spaceServerData: Record<string, string> = {};
     Object.keys(values).forEach((key) => {
       const info = odcSettingMap[key];
       switch (info.storeType) {
         case 'server': {
-          serverData[key] = values[key];
+          serverData[key] = values[key] || '';
           break;
         }
         case 'local': {
           localData[key] = values[key];
+          break;
+        }
+      }
+    });
+
+    Object.keys(spaceValues).forEach((key) => {
+      const info = odcSettingMap[key];
+      switch (info.storeType) {
+        case 'server': {
+          spaceServerData[key] = spaceValues[key];
+          break;
+        }
+        case 'local': {
+          localData[key] = spaceValues[key];
           break;
         }
       }
@@ -197,14 +324,17 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     /**
      * submit serverData
      */
+    // 暂时删除密钥 key
+    delete spaceServerData['odc.sqlexecute.default.secretKey'];
     const isSuccess = await setting.updateUserConfig(serverData as any);
+    const isSpaceSaved = await setting.updateSpaceConfig(spaceServerData as any);
     /**
      * submit localData
      */
     if (isClient()) {
       await saveODCSetting(JSON.stringify(localData));
     }
-    if (isSuccess) {
+    if (isSuccess && isSpaceSaved) {
       message.success(
         formatMessage({
           id: 'src.component.ODCSetting.E6DD81BF' /*'保存成功'*/,
@@ -223,7 +353,8 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       }), //'确定要恢复默认设置吗？'
       onOk: async () => {
         const isSuccess = await setting.resetUserConfig();
-        if (isSuccess) {
+        const isSpaceReset = await setting.resetSpaceConfig();
+        if (isSuccess && isSpaceReset) {
           message.success(
             formatMessage({
               id: 'src.component.ODCSetting.654799D1' /*'已恢复到默认配置'*/,
@@ -234,6 +365,164 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
         }
       },
     });
+  }
+
+  function formRender({
+    currentRef,
+    data,
+    hidden,
+  }: {
+    currentRef: FormInstance<any>;
+    data: TSetting;
+    hidden: boolean;
+  }) {
+    return (
+      <Form
+        form={currentRef}
+        layout="vertical"
+        onValuesChange={() => setChanged(true)}
+        hidden={hidden}
+      >
+        {Array.from(data.values()).map((groupData) => {
+          return (
+            <React.Fragment key={groupData.key}>
+              <Typography.Title data-name={groupData.key} level={5}>
+                {groupData?.label}
+              </Typography.Title>
+              {groupData?.secondGroup.size > 0 ? (
+                Array.from(groupData?.secondGroup?.values()).map((group, index) => {
+                  return (
+                    <React.Fragment key={group.key}>
+                      <Space
+                        style={{ width: '100%', paddingLeft: 8, marginTop: 12 }}
+                        direction="vertical"
+                      >
+                        {!!group.label && (
+                          <Typography.Text data-name={group.key} strong>
+                            {group.label}
+                          </Typography.Text>
+                        )}
+                        <Row style={{ paddingLeft: 12 }} gutter={20}>
+                          {group.settings.map((set, index) => {
+                            if (set.hidden) {
+                              return null;
+                            }
+                            return (
+                              <Col key={index} span={set.span || 10}>
+                                <Form.Item
+                                  label={
+                                    <Space direction="vertical" size={2}>
+                                      <Typography.Text>{set.label}</Typography.Text>
+                                      {!!set.tip && (
+                                        <Typography.Text type="secondary">
+                                          {set.tip}
+                                        </Typography.Text>
+                                      )}
+                                    </Space>
+                                  }
+                                  name={set.key}
+                                  key={set.key}
+                                  rules={set.rules}
+                                >
+                                  {set.render(null, async () => {})}
+                                </Form.Item>
+                              </Col>
+                            );
+                          })}
+                        </Row>
+                      </Space>
+                      {groupData?.secondGroup.size == index + 1 ? (
+                        <div style={{ margin: '0px 0px 24px 0px' }} />
+                      ) : null}
+                    </React.Fragment>
+                  );
+                })
+              ) : (
+                <Space
+                  style={{ width: '100%', paddingLeft: 8, marginTop: 9 }}
+                  direction="vertical"
+                  size={'small'}
+                >
+                  {groupData.settings.map((set, index) => {
+                    if (set.hidden) {
+                      return null;
+                    }
+                    return (
+                      <Form.Item
+                        style={{ marginBottom: 12 }}
+                        label={
+                          <Space direction="vertical" size={2}>
+                            <Typography.Text>{set.label}</Typography.Text>
+                            {!!set.tip && (
+                              <Typography.Text type="secondary">{set.tip}</Typography.Text>
+                            )}
+                          </Space>
+                        }
+                        name={set.key}
+                        key={set.key}
+                        rules={set.rules}
+                      >
+                        {set.render(null, async () => {})}
+                      </Form.Item>
+                    );
+                  })}{' '}
+                </Space>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </Form>
+    );
+  }
+
+  const handleSearch = (value) => {
+    setSearchValue(value);
+  };
+
+  const searchKeys = useCallback(() => {
+    const filtered = dataKeys.filter((item) =>
+      item.label.toLowerCase().includes(searchValue.toLowerCase()),
+    );
+    if (filtered.length > 0) {
+      setActiveKey(filtered[0].parentKey || filtered[0].key);
+      scrollToKey(filtered[0].key);
+      return true;
+    }
+    return false;
+  }, [dataKeys]);
+
+  const handleEnterPress = (e) => {
+    if (e.key === 'Enter') {
+      const filtered = dataKeys.filter((item) =>
+        item.label.toLowerCase().includes(searchValue.toLowerCase()),
+      );
+      if (filtered.length > 0) {
+        setActiveKey(filtered[0].parentKey || filtered[0].key);
+        scrollToKey(filtered[0].key);
+      }
+    }
+  };
+
+  function tabRender({ data }: { data: TSetting }) {
+    return (
+      <Tabs
+        tabBarGutter={0}
+        size="small"
+        moreIcon={false}
+        tabPosition="right"
+        items={Array.from(data.values()).map((g) => {
+          return {
+            label: g.label,
+            key: g.key,
+          };
+        })}
+        activeKey={activeKey}
+        onChange={(key) => {
+          setActiveKey(key);
+          scrollToKey(key);
+        }}
+      />
+    );
   }
 
   function footerRender() {
@@ -269,7 +558,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   return (
     <Modal
       wrapClassName={styles.modal}
-      width={760}
+      width={700}
       open={modalStore.odcSettingVisible}
       onCancel={() => close()}
       title={
@@ -280,81 +569,49 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       }
       footer={footerRender()}
     >
+      <div className={styles.settingHeader}>
+        <Radio.Group
+          className={styles.tabs}
+          defaultValue={ESpaceType.USER}
+          onChange={(e) => setSpaceType(e.target.value)}
+        >
+          <Radio.Button className={styles.user} value={ESpaceType.USER}>
+            用户
+          </Radio.Button>
+          {login.isPrivateSpace() ? (
+            <Radio.Button className={styles.space} value={ESpaceType.PERSONAL}>
+              个人空间
+            </Radio.Button>
+          ) : isAdmin ? (
+            <Radio.Button className={styles.space} value={ESpaceType.GROUP}>
+              团队空间
+            </Radio.Button>
+          ) : null}
+        </Radio.Group>
+        <Search
+          className={styles.search}
+          placeholder="搜索设置项"
+          onChange={(e) => handleSearch(e.target.value)}
+          onSearch={handleSearch}
+          onPressEnter={handleEnterPress}
+          value={searchValue}
+        />
+      </div>
       <div className={styles.box}>
         <div ref={formBoxRef} className={styles.content}>
-          <Form form={formRef} layout="vertical" onValuesChange={() => setChanged(true)}>
-            {Array.from(data.values()).map((groupData) => {
-              return (
-                <React.Fragment key={groupData.key}>
-                  <Typography.Title data-name={groupData.key} level={5}>
-                    {groupData?.label}
-                  </Typography.Title>
-                  {Array.from(groupData?.secondGroup?.values()).map((group, index) => {
-                    return (
-                      <React.Fragment key={group.key}>
-                        <Space
-                          style={{ width: '100%', paddingLeft: 8, marginTop: 12 }}
-                          direction="vertical"
-                        >
-                          {!!group.label && <Typography.Text strong>{group.label}</Typography.Text>}
-                          <Row style={{ paddingLeft: 12 }} gutter={20}>
-                            {group.settings.map((set, index) => {
-                              if (set.hidden) {
-                                return null;
-                              }
-                              return (
-                                <Col key={index} span={set.span || 10}>
-                                  <Form.Item
-                                    label={
-                                      <Space direction="vertical" size={2}>
-                                        <Typography.Text>{set.label}</Typography.Text>
-                                        {!!set.tip && (
-                                          <Typography.Text type="secondary">
-                                            {set.tip}
-                                          </Typography.Text>
-                                        )}
-                                      </Space>
-                                    }
-                                    name={set.key}
-                                    key={set.key}
-                                    rules={set.rules}
-                                  >
-                                    {set.render(null, async () => {})}
-                                  </Form.Item>
-                                </Col>
-                              );
-                            })}
-                          </Row>
-                        </Space>
-                        {groupData?.secondGroup.size == index + 1 ? (
-                          <div style={{ margin: '0px 0px 24px 0px' }} />
-                        ) : null}
-                      </React.Fragment>
-                    );
-                  })}
-                </React.Fragment>
-              );
-            })}
-          </Form>
+          {formRender({
+            currentRef: formRef,
+            data: userData,
+            hidden: spaceType !== ESpaceType.USER,
+          })}
+          {formRender({
+            currentRef: spaceFormRef,
+            data: spaceUserData,
+            hidden: spaceType === ESpaceType.USER,
+          })}
         </div>
         <div className={styles.menu}>
-          <Tabs
-            tabBarGutter={0}
-            size="small"
-            moreIcon={false}
-            tabPosition="right"
-            items={Array.from(data.values()).map((g) => {
-              return {
-                label: g.label,
-                key: g.key,
-              };
-            })}
-            activeKey={activeKey}
-            onChange={(key) => {
-              setActiveKey(key);
-              scrollToKey(key);
-            }}
-          />
+          {tabRender({ data: spaceType === ESpaceType.USER ? userData : spaceUserData })}
         </div>
       </div>
     </Modal>

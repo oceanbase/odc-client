@@ -63,6 +63,7 @@ import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '../../component/DatabaseSelect';
 import styles from './index.less';
+import setting from '@/store/setting';
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 interface IProps {
   sqlStore?: SQLStore;
@@ -542,7 +543,8 @@ const CreateModal: React.FC<IProps> = (props) => {
           executionStrategy: TaskExecStrategy.MANUAL,
           databaseId: asyncTaskData?.databaseId,
           retryTimes: 0,
-          generateRollbackPlan: true,
+          generateRollbackPlan:
+            setting.spaceConfigurations['odc.task.default.rollbackPlanEnabled'] === 'true',
         }}
         layout="vertical"
         requiredMark="optional"
@@ -913,7 +915,9 @@ const CreateModal: React.FC<IProps> = (props) => {
             id: 'odc.components.CreateAsyncTaskModal.QueryResultLimits',
             defaultMessage: '查询结果限制',
           })}
-          /* 查询结果限制 */ initialValue={1000}
+          /* 查询结果限制 */ initialValue={
+            setting.spaceConfigurations['odc.sqlexecute.default.queryLimit']
+          }
           required
           rules={[
             {

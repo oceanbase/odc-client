@@ -255,7 +255,7 @@ export class UserStore {
 
   @action
   public async switchCurrentOrganization(id?: number) {
-    await setting.getUserConfig();
+    await Promise.all([setting.getUserConfig(), setting.getSpaceConfig()]);
     id = id || this.getDefaultOrganization()?.id;
     if (!id) {
       return false;

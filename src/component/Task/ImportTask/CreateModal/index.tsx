@@ -40,6 +40,7 @@ import CsvProvider from './ImportForm/CsvProvider';
 import FormConfigContext from './ImportForm/FormConfigContext';
 import { MAX_FILE_SIZE } from './ImportForm/helper';
 import styles from './index.less';
+import setting from '@/store/setting';
 export interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
@@ -396,7 +397,8 @@ class CreateModal extends React.Component<IProps, IState> {
       batchCommitNum: this.defaultConfig?.batchCommitNum ?? 100,
       truncateTableBeforeImport: this.defaultConfig?.truncateTableBeforeImport ?? false,
       skippedDataType: this.defaultConfig?.skippedDataType ?? [],
-      replaceSchemaWhenExists: this.defaultConfig?.replaceSchemaWhenExists ?? false,
+      replaceSchemaWhenExists:
+        setting.configurations['odc.task.default.importTaskStructureReplacementEnabled'] === 'true',
       skipHeader: this.defaultConfig?.skipHeader ?? false,
       blankToNull: this.defaultConfig?.blankToNull ?? true,
       columnSeparator: this.defaultConfig?.columnSeparator ?? ',',

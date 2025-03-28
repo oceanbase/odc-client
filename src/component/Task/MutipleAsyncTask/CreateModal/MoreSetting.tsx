@@ -5,6 +5,7 @@ import { AutoComplete, Form, InputNumber, Radio, Space } from 'antd';
 import DescriptionInput from '../../component/DescriptionInput';
 import { ErrorStrategy } from './helper';
 import styles from './index.less';
+import setting from '@/store/setting';
 
 const MoreSetting = () => {
   const form = Form.useFormInstance();
@@ -54,7 +55,7 @@ const MoreSetting = () => {
               id: 'src.component.Task.MutipleAsyncTask.CreateModal.34D62304',
               defaultMessage: '查询结果限制',
             })}
-            initialValue={1000}
+            initialValue={setting.spaceConfigurations['odc.sqlexecute.default.queryLimit']}
             required
             rules={[
               {

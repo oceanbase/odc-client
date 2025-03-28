@@ -325,6 +325,7 @@ export async function getSessionStatus(sessionId?: string): Promise<{
     delimiter: string;
     queryLimit: number;
     obVersion: string;
+    maxQueryLimit: number;
   };
   session: ISessionStatus;
   killCurrentQuerySupported: boolean;

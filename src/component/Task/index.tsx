@@ -23,6 +23,7 @@ import Content from './Content';
 import CreateModals from './CreateModals';
 import styles from './index.less';
 import Sider from './Sider';
+
 export const getTaskExecStrategyMap = (type: TaskType) => {
   switch (type) {
     case TaskType.DATA_ARCHIVE:
@@ -89,6 +90,44 @@ export const getTaskExecStrategyMap = (type: TaskType) => {
         }), //定时执行
       };
   }
+};
+export const getTaskExecStrategyTextMap = {
+  [TaskExecStrategy.TIMER]: formatMessage({
+    id: 'odc.src.component.Task.CycleExecution',
+    defaultMessage: '周期执行',
+  }), //'周期执行'
+  [TaskExecStrategy.CRON]: formatMessage({
+    id: 'odc.src.component.Task.CycleExecution.1',
+    defaultMessage: '周期执行',
+  }), //'周期执行'
+  [TaskExecStrategy.DAY]: formatMessage({
+    id: 'odc.src.component.Task.CycleExecution.2',
+    defaultMessage: '周期执行',
+  }), //'周期执行'
+  [TaskExecStrategy.MONTH]: formatMessage({
+    id: 'odc.src.component.Task.CycleExecution.3',
+    defaultMessage: '周期执行',
+  }), //'周期执行'
+  [TaskExecStrategy.WEEK]: formatMessage({
+    id: 'odc.src.component.Task.CycleExecution.4',
+    defaultMessage: '周期执行',
+  }), //'周期执行'
+  [TaskExecStrategy.START_NOW]: formatMessage({
+    id: 'odc.src.component.Task.ExecuteImmediately',
+    defaultMessage: '立即执行',
+  }), //'立即执行'
+  [TaskExecStrategy.START_AT]: formatMessage({
+    id: 'odc.src.component.Task.TimedExecution',
+    defaultMessage: '定时执行',
+  }), //'定时执行'
+  [TaskExecStrategy.AUTO]: formatMessage({
+    id: 'src.component.Task.9B79BD20',
+    defaultMessage: '自动执行',
+  }), //'自动执行'
+  [TaskExecStrategy.MANUAL]: formatMessage({
+    id: 'src.component.Task.0B2B1D60',
+    defaultMessage: '手动执行',
+  }), //'手动执行'
 };
 
 interface IProps {
