@@ -54,6 +54,7 @@ export const ConsoleTextConfig = {
       EDatabaseTableColumnKey.Operation,
     ],
     columnDataIndex: ['name', ['dataSource', 'name'], 'project', 'environmentId', 'operation'],
+    columnWidth: [204, 208, 160, 100, 208],
   },
   aboutUs: {
     helps: ['下载新版', '产品动态', '反馈建议'],
