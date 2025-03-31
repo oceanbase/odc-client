@@ -1,17 +1,12 @@
-import { useContext, useState } from 'react';
-import { Table, MenuProps, Tag, Tooltip, Empty, Spin } from 'antd';
+import { useContext } from 'react';
+import { Table, Tooltip, Empty, Spin } from 'antd';
 import { useMount, useRequest } from 'ahooks';
 import { ConsoleTextConfig, EDatabaseTableColumnKey } from '../../const';
 import Icon from '@ant-design/icons';
 import LabelWithIcon from '../LabelWithIcon';
-import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
-import { formatMessage } from '@/util/intl';
-import { IDatabaseHistoriesParam, TaskPageType, TaskType } from '@/d.ts';
-import setting from '@/store/setting';
-import { DataBaseOperationKey } from '@/d.ts/operation';
-import { ProjectRole } from '@/d.ts/project';
-import { DatabasePermissionType } from '@/d.ts/database';
+import { IDatabaseHistoriesParam, TaskType } from '@/d.ts';
 import Action from '@/component/Action';
 import AsyncTaskCreateModal from '@/component/Task/AsyncTask';
 import ExportTaskCreateModal from '@/component/Task/ExportTask';
@@ -28,6 +23,9 @@ import login from '@/store/login';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import ApplyPermission from '@/component/Task/ApplyPermission';
 import ApplyDatabasePermission from '@/component/Task/ApplyDatabasePermission';
+import { getRecentlyDatabaseOperation } from './help';
+import LogicDatabaseAsyncTask from '@/component/Task/LogicDatabaseAsyncTask';
+import LogicIcon from '@/component/logicIcon';
 
 interface IProps {
   id?: string;
@@ -42,7 +40,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
   } = useRequest((params: IDatabaseHistoriesParam) => getDatabasesHistories(params), {
     manual: true,
   });
-  const { columnNames, columnKeys, columnDataIndex } = ConsoleTextConfig.recently;
+  const { columnNames, columnKeys, columnDataIndex, columnWidth } = ConsoleTextConfig.recently;
   const { project } = useContext(ProjectContext);
 
   useMount(() => {
@@ -51,27 +49,6 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
       limit: 10,
     });
   });
-
-  const handleMenuClick = (type: TaskPageType, databaseId: number) => {
-    switch (type) {
-      case TaskPageType.IMPORT:
-        modalStore.changeImportModal(true, {
-          databaseId,
-        });
-        break;
-      case TaskPageType.EXPORT:
-        modalStore.changeExportModal(true, {
-          databaseId,
-        });
-        break;
-      case TaskPageType.ASYNC:
-        modalStore.changeCreateAsyncTaskModal(true, {
-          databaseId,
-        });
-        break;
-      default:
-    }
-  };
 
   const handleApply = (type: TaskType) => {
     switch (type) {
@@ -83,145 +60,6 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
         break;
       default:
     }
-  };
-
-  const getOrdinaryDatabaseOperation = (record) => {
-    const hasExportAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
-    const hasChangeAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
-    const config = getDataSourceModeConfig(record?.dataSource?.type);
-    const hasDBAuth = !!record.authorizedPermissionTypes?.length;
-    const hasProjectAuth = record?.project?.currentUserResourceRoles;
-    const notSupportToResourceTree = !config?.features?.resourceTree;
-    const curRoles = project?.currentUserResourceRoles || [];
-    const isOwnerOrDBA = curRoles.some((role) =>
-      [ProjectRole.OWNER, ProjectRole.DBA].includes(role),
-    );
-    const disableTransfer =
-      !!record?.dataSource?.projectId && !config?.schema?.innerSchema?.includes(record?.name);
-    const existed = record.existed;
-    const isFileSyetem = isConnectTypeBeFileSystemGroup(record.connectType);
-
-    const ordinaryActions = [
-      {
-        key: DataBaseOperationKey.EXPORT,
-        action: () => {
-          handleMenuClick(TaskPageType.EXPORT, record.id);
-        },
-        text: formatMessage({
-          id: 'odc.Project.Database.Export',
-          defaultMessage: '导出',
-        }),
-        visible:
-          config?.features?.task?.includes(TaskType.EXPORT) && setting.enableDBExport && existed,
-        disable: !hasExportAuth || isFileSyetem || !hasProjectAuth,
-        disableTooltip: () => {
-          if (isFileSyetem) {
-            return formatMessage({
-              id: 'src.page.Project.Database.AD9F468B',
-              defaultMessage: '该数据源类型不支持',
-            });
-          } else if (!hasExportAuth) {
-            return formatMessage({
-              id: 'src.page.Project.Database.A74B21AE',
-              defaultMessage: '暂无导出权限，请先申请数据库权限',
-            });
-          } else {
-            return '';
-          }
-        },
-      },
-      {
-        key: DataBaseOperationKey.IMPORT,
-        action: () => {
-          handleMenuClick(TaskPageType.IMPORT, record.id);
-        },
-        text: formatMessage({
-          id: 'odc.Project.Database.Import',
-          defaultMessage: '导入',
-        }),
-        visible:
-          config?.features?.task?.includes(TaskType.IMPORT) && setting.enableDBImport && existed,
-        disable: !hasChangeAuth || isFileSyetem || !hasProjectAuth,
-        disableTooltip: () => {
-          if (isFileSyetem) {
-            return formatMessage({
-              id: 'src.page.Project.Database.3B98A160',
-              defaultMessage: '该数据源类型不支持',
-            });
-          } else if (!hasChangeAuth) {
-            return formatMessage({
-              id: 'src.page.Project.Database.EA72923D',
-              defaultMessage: '暂无变更权限，请先申请数据库权限',
-            });
-          } else {
-            return '';
-          }
-        },
-      },
-      {
-        key: DataBaseOperationKey.DDL,
-        action: () => {
-          handleMenuClick(TaskPageType.ASYNC, record.id);
-        },
-        text: formatMessage({
-          id: 'odc.Project.Database.DatabaseChanges',
-          defaultMessage: '数据库变更',
-        }),
-        visible: config?.features?.task?.includes(TaskType.ASYNC) && existed,
-        disable: !hasChangeAuth || isFileSyetem || !hasProjectAuth,
-        disableTooltip: () => {
-          if (isFileSyetem) {
-            return formatMessage({
-              id: 'src.page.Project.Database.9628B84B',
-              defaultMessage: '该数据源类型不支持',
-            });
-          } else if (!hasChangeAuth) {
-            return formatMessage({
-              id: 'src.page.Project.Database.EA72923D',
-              defaultMessage: '暂无变更权限，请先申请数据库权限',
-            });
-          } else {
-            return '';
-          }
-        },
-      },
-      {
-        key: DataBaseOperationKey.LOGIN,
-        action: () => {
-          gotoSQLWorkspace(
-            parseInt(id),
-            record?.dataSource?.id,
-            record?.id,
-            null,
-            '',
-            isLogicalDatabase(record),
-          );
-        },
-        text: formatMessage({
-          id: 'odc.Project.Database.LogOnToTheDatabase',
-          defaultMessage: '登录数据库',
-        }),
-        visible: existed,
-        disable: !hasDBAuth || notSupportToResourceTree || isFileSyetem || !hasProjectAuth,
-        disableTooltip: () => {
-          if (isFileSyetem) {
-            return formatMessage({
-              id: 'src.page.Project.Database.737317DB',
-              defaultMessage: '该数据源类型不支持',
-            });
-          } else if (!hasDBAuth) {
-            return formatMessage({
-              id: 'src.page.Project.Database.6EC9F229',
-              defaultMessage: '暂无权限',
-            });
-          } else {
-            return '';
-          }
-        },
-      },
-    ];
-
-    return ordinaryActions;
   };
 
   const renderTooltipContent = ({ type, record }) => {
@@ -267,13 +105,15 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
       title: columnName,
       dataIndex: columnDataIndex[index],
       key: key,
+      ellipsis: true,
+      width: columnWidth[index],
       render: (value, record) => {
         const hasProjectAuth = record?.project?.currentUserResourceRoles;
         const hasDBAuth = !!record?.authorizedPermissionTypes?.length;
         const actionStyle = hasProjectAuth ? styles.action : styles.disabledAction;
         switch (key) {
           case EDatabaseTableColumnKey.Operation:
-            const operation = getOrdinaryDatabaseOperation(record);
+            const operation = getRecentlyDatabaseOperation({ record, project });
             return (
               <div
                 className={actionStyle}
@@ -312,18 +152,24 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
                     </span>
                   }
                   icon={
-                    <Icon
-                      component={
-                        isConnectTypeBeFileSystemGroup(record.connectType)
-                          ? databaseStyle?.dbIcon?.component
-                          : databaseStyle?.icon?.component
-                      }
-                      style={{
-                        color: databaseStyle?.icon?.color,
-                        fontSize: 16,
-                        marginRight: 4,
-                      }}
-                    />
+                    record?.type === 'LOGICAL' ? (
+                      <div className={styles.logicIcon}>
+                        <LogicIcon />
+                      </div>
+                    ) : (
+                      <Icon
+                        component={
+                          isConnectTypeBeFileSystemGroup(record.connectType)
+                            ? databaseStyle?.dbIcon?.component
+                            : databaseStyle?.icon?.component
+                        }
+                        style={{
+                          color: databaseStyle?.icon?.color,
+                          fontSize: 16,
+                          marginRight: 4,
+                        }}
+                      />
+                    )
                   }
                 />
               </div>
@@ -413,6 +259,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
       <AsyncTaskCreateModal theme="white" />
       <ApplyPermission />
       <ApplyDatabasePermission />
+      <LogicDatabaseAsyncTask theme="white" />
     </Spin>
   );
 };
