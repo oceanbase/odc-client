@@ -41,7 +41,6 @@ export function showVersionModal(modalStore: ModalStore, id: number, settingStor
     const isNewUser = localLoginHistoy.isNewUser();
     if (isNewUser) {
       localLoginHistoy.registerUser();
-      settingStore.enableVersionTip && modalStore.changeVersionModalVisible(true);
     }
   }
 }

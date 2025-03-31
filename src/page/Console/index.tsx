@@ -70,7 +70,7 @@ const Console = () => {
 
   useEffect(() => {
     const enable = setting.configurations['odc.user.guidePromptEnabled'];
-    const guidePromptEnabled = enable === 'true';
+    const guidePromptEnabled = enable !== 'true';
     const hasData = data?.length > 0;
 
     if (guidePromptEnabled) {
@@ -197,7 +197,7 @@ const Console = () => {
                       onConfirm={() => {
                         setting.updateOneUserConfig({
                           key: 'odc.user.guidePromptEnabled',
-                          value: true,
+                          value: false,
                         });
                         runGetScheduleStat({
                           currentOrganizationId: login.organizationId,
