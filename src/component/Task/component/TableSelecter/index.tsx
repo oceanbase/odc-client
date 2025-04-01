@@ -43,6 +43,7 @@ import {
   tableTreeEventDataNode,
 } from './interface';
 import { DbObjectTypeTextMap } from '@/constant/label';
+import { ApplyDatabaseAuthEmpty } from '@/component/Empty/ApplyDatabaseAuthEmpty';
 
 type IProps = {
   projectId: number;
@@ -682,21 +683,25 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
             }
             onSearch={setSourceSearchValue}
           >
-            <Tree
-              blockNode
-              checkable
-              showIcon
-              height={300}
-              className={styles.allTree}
-              treeData={allTreeData}
-              checkedKeys={checkedKeys}
-              onCheck={handleChosenTable}
-              expandedKeys={sourceTreeExpandKeys}
-              onExpand={(keys, a) => {
-                setSourceTreeExpandKeys(keys as number[]);
-              }}
-              loadData={({ key }: EventDataNode<DataNode>) => handleLoadTables(key as number)}
-            />
+            {allTreeData?.length > 0 ? (
+              <Tree
+                blockNode
+                checkable
+                showIcon
+                height={300}
+                className={styles.allTree}
+                treeData={allTreeData}
+                checkedKeys={checkedKeys}
+                onCheck={handleChosenTable}
+                expandedKeys={sourceTreeExpandKeys}
+                onExpand={(keys, a) => {
+                  setSourceTreeExpandKeys(keys as number[]);
+                }}
+                loadData={({ key }: EventDataNode<DataNode>) => handleLoadTables(key as number)}
+              />
+            ) : (
+              <ApplyDatabaseAuthEmpty description={projectId ? undefined : '暂无数据'} />
+            )}
           </ExportCard>
         </Spin>
       </div>
@@ -764,7 +769,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
               }}
             />
           ) : (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            <ApplyDatabaseAuthEmpty description="暂无数据" />
           )}
         </ExportCard>
       </div>
