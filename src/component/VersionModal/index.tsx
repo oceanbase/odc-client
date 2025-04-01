@@ -83,6 +83,7 @@ const VersionModal: React.FC<IProps> = (props) => {
       onCancel={onCancel}
       footer={null}
       width={720}
+      height={560}
       wrapClassName={styles.modal}
     >
       <div className={styles.box}>
