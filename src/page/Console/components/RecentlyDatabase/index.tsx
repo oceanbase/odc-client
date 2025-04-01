@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Table, Tooltip, Empty, Spin } from 'antd';
 import { useMount, useRequest } from 'ahooks';
 import { ConsoleTextConfig, EDatabaseTableColumnKey } from '../../const';
@@ -41,7 +41,6 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
     manual: true,
   });
   const { columnNames, columnKeys, columnDataIndex, columnWidth } = ConsoleTextConfig.recently;
-  const { project } = useContext(ProjectContext);
 
   useMount(() => {
     runGetDatabasesHistories({
@@ -50,13 +49,13 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
     });
   });
 
-  const handleApply = (type: TaskType) => {
+  const handleApply = (type: TaskType, projectId) => {
     switch (type) {
       case TaskType.APPLY_DATABASE_PERMISSION:
-        modalStore.changeApplyDatabasePermissionModal(true);
+        modalStore.changeApplyDatabasePermissionModal(true, { projectId });
         break;
       case TaskType.APPLY_PROJECT_PERMISSION:
-        modalStore.changeApplyPermissionModal(true);
+        modalStore.changeApplyPermissionModal(true, { projectId });
         break;
       default:
     }
@@ -73,7 +72,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
               rel="noopener noreferrer"
               style={{ color: '#40a9ff' }}
               onClick={() => {
-                handleApply(TaskType.APPLY_PROJECT_PERMISSION);
+                handleApply(TaskType.APPLY_PROJECT_PERMISSION, record?.project?.id);
               }}
             >
               申请项目权限
@@ -88,7 +87,9 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
               target="_blank"
               rel="noopener noreferrer"
               style={{ color: '#40a9ff' }}
-              onClick={() => handleApply(TaskType.APPLY_DATABASE_PERMISSION)}
+              onClick={() => {
+                handleApply(TaskType.APPLY_DATABASE_PERMISSION, record?.project?.id);
+              }}
             >
               申请库权限
             </a>
@@ -113,7 +114,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
         const actionStyle = hasProjectAuth ? styles.action : styles.disabledAction;
         switch (key) {
           case EDatabaseTableColumnKey.Operation:
-            const operation = getRecentlyDatabaseOperation({ record, project });
+            const operation = getRecentlyDatabaseOperation({ record, project: record?.project });
             return (
               <div
                 className={actionStyle}
@@ -177,7 +178,17 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
           case EDatabaseTableColumnKey.DataSource:
             const style = getDataSourceStyleByConnectType(record.dataSource?.type);
             if (!value) {
-              return <div>-</div>;
+              return (
+                <Tooltip
+                  overlayInnerStyle={{ whiteSpace: 'nowrap', width: 'fit-content' }}
+                  title={renderTooltipContent({
+                    type: hasProjectAuth ? (hasDBAuth ? '' : 'database') : 'project',
+                    record,
+                  })}
+                >
+                  <span>-</span>
+                </Tooltip>
+              );
             }
 
             return (
