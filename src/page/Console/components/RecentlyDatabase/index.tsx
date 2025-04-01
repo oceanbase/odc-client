@@ -23,6 +23,7 @@ import login from '@/store/login';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import ApplyPermission from '@/component/Task/ApplyPermission';
 import ApplyDatabasePermission from '@/component/Task/ApplyDatabasePermission';
+import RecentlyDatabaseEmpty from '@/component/Empty/RecentlyDatabaseEmpty';
 import { getRecentlyDatabaseOperation } from './help';
 import LogicDatabaseAsyncTask from '@/component/Task/LogicDatabaseAsyncTask';
 import LogicIcon from '@/component/logicIcon';
@@ -259,11 +260,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
           pagination={false}
         />
       ) : (
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          className={styles.databaseEmpty}
-          description={'暂无最近访问的数据库'}
-        />
+        <RecentlyDatabaseEmpty />
       )}
       <ExportTaskCreateModal />
       <ImportTaskCreateModal />

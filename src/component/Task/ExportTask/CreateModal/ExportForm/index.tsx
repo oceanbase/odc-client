@@ -129,6 +129,7 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
             ...detailRes?.parameters,
             exportContent,
             exportFileMaxSize,
+            description: detailRes?.description,
             ...detailRes?.parameters?.csvConfig,
             withColumnTitle,
           });

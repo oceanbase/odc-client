@@ -6,14 +6,16 @@ import login from '@/store/login';
 
 interface IProps {
   showIcon?: boolean;
+  height?: number;
 }
-export default ({ showIcon }: IProps) => {
+export default ({ showIcon, height = 280 }: IProps) => {
   const nav = useNavigate();
 
   return (
     <div className={styles.databaseSelectEmptyhWrapper}>
       <Empty
         className={styles.empty}
+        style={{ height }}
         image={Empty.PRESENTED_IMAGE_SIMPLE}
         description={
           <div className={styles.description}>

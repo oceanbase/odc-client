@@ -1,15 +1,15 @@
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { formatMessage } from '@/util/intl';
 import { toInteger } from 'lodash';
 import { Badge, Button, Dropdown, Menu, Popover, Modal, message } from 'antd';
 import styles from './index.less';
 import treeStyles from '../index.less';
 import ConnectionPopover from '@/component/ConnectionPopover';
-import { deleteConnection } from '@/common/network/connection';
 import classNames from 'classnames';
 import { EnvColorMap } from '@/constant';
 import { UserStore } from '@/store/login';
 import Action from '@/component/Action';
+import { IConnection } from '@/d.ts';
 import { inject, observer } from 'mobx-react';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import { SearchOutlined } from '@ant-design/icons';
@@ -46,7 +46,7 @@ const CustomDropdown = ({
             defaultMessage: '克隆',
           }),
           key: 'clone',
-          onClick: (e) => handleMenuClick(e, () => setCopyDatasourceId(toInteger(node.data.id))),
+          onClick: (e) => handleMenuClick(e, () => setCopyDatasourceId(node.data.id)),
         },
         {
           label: formatMessage({
@@ -112,7 +112,7 @@ const CustomDropdown = ({
 interface IProps {
   node: any;
   userStore?: UserStore;
-  deleteDataSource: (name: string, key: string) => void;
+  deleteDataSource: (name: string, key: number) => void;
   copyDatasourceId: number;
   setCopyDatasourceId: any;
   setEditDatasourceId: React.Dispatch<React.SetStateAction<number>>;
@@ -186,7 +186,7 @@ const DataSourceNodeMenu = (props: IProps) => {
                 <Action.Group ellipsisIcon="vertical" size={0}>
                   <Action.Link
                     onClick={() => {
-                      setCopyDatasourceId(toInteger(node.key));
+                      setCopyDatasourceId(dataSource.id);
                     }}
                     key={'clone'}
                   >
@@ -215,7 +215,7 @@ const DataSourceNodeMenu = (props: IProps) => {
                   </Action.Link>
 
                   <Action.Link
-                    onClick={() => deleteDataSource(node.title as string, node.key as string)}
+                    onClick={() => deleteDataSource(node.title as string, dataSource.id)}
                     key={'delete'}
                   >
                     {formatMessage({

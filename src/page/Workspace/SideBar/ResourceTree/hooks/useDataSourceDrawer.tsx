@@ -15,7 +15,7 @@ const useDataSourceDrawer = () => {
     return context.setSelectDatasourceId(keys?.[0]);
   }
 
-  const deleteDataSource = (name: string, key: string) => {
+  const deleteDataSource = (name: string, key: number) => {
     Modal.confirm({
       title: formatMessage(
         {
@@ -25,7 +25,7 @@ const useDataSourceDrawer = () => {
         { name },
       ),
       async onOk() {
-        const isSuccess = await deleteConnection(key as any);
+        const isSuccess = await deleteConnection(key?.toString());
         if (isSuccess) {
           message.success(
             formatMessage({
@@ -34,7 +34,7 @@ const useDataSourceDrawer = () => {
             }), //删除成功
           );
 
-          if (selectKeys.includes(toInteger(key))) {
+          if (selectKeys.includes(key)) {
             setSelectKeys([]);
           }
           context?.reloadDatasourceList();

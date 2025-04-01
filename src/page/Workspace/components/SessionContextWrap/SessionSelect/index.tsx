@@ -106,6 +106,7 @@ export default function SessionSelect({
           <ConnectionPopover
             connection={context?.session?.connection}
             database={context?.session?.odcDatabase}
+            showRemark
           />
         }
       >

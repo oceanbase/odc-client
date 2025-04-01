@@ -206,11 +206,11 @@ export async function loadNode(
 }
 
 export type GroupResult = {
-  [DatabaseGroup.project]: { mapId: number; groupName: string };
-  [DatabaseGroup.environment]: { mapId: number; groupName: string };
-  [DatabaseGroup.dataSource]: { mapId: number; groupName: string };
-  [DatabaseGroup.connectType]: { mapId: ConnectType; groupName: string };
-  [DatabaseGroup.cluster]: { mapId: string; groupName: string };
+  [DatabaseGroup.project]: { mapId: number; groupName: string; tip?: string };
+  [DatabaseGroup.environment]: { mapId: number; groupName: string; tip?: string };
+  [DatabaseGroup.dataSource]: { mapId: number; groupName: string; tip?: string };
+  [DatabaseGroup.connectType]: { mapId: ConnectType; groupName: string; tip?: string };
+  [DatabaseGroup.cluster]: { mapId: string; groupName: string; tip?: string };
   [DatabaseGroup.tenant]: { mapId: string; groupName: string; tip?: string };
   [DatabaseGroup.none]: undefined;
 };

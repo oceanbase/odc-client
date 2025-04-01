@@ -2,20 +2,14 @@ import { getDataSourceModeConfig } from '@/common/datasource';
 import { IDataSourceModeConfig } from '@/common/datasource/interface';
 import { listDatabases } from '@/common/network/database';
 import ConnectionPopover from '@/component/ConnectionPopover';
-import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
-import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
-import { hasPermission, TaskTypeMap } from '@/component/Task/helper';
-import { EnvColorMap } from '@/constant';
-import { ConnectionMode, TaskType } from '@/d.ts';
+import { ConnectionMode, TaskType, IDatabaseHistoriesParam } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import { DataSourceStatusStore } from '@/store/datasourceStatus';
-import { ReactComponent as PjSvg } from '@/svgr/project_space.svg';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
-import Icon from '@ant-design/icons';
 import { useParams } from '@umijs/max';
 import { useRequest } from 'ahooks';
-import { Badge, Popover, Spin, Tooltip, Tree, Button } from 'antd';
+import { Badge, Popover, Spin, Tooltip, Tree, Button, Radio } from 'antd';
 import { DataNode } from 'antd/lib/tree';
 import { toInteger } from 'lodash';
 import { UserStore } from '@/store/login';
@@ -25,11 +19,15 @@ import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 're
 import SessionContext from '../../context';
 import { DEFALT_HEIGHT, DEFALT_WIDTH } from '../const';
 import styles from './index.less';
-import Search, { SearchType } from './search';
+import Search, { SearchType } from './components/Search';
 import Group from '@/page/Workspace/SideBar/ResourceTree/DatabaseGroup';
 import { DatabaseGroup } from '@/d.ts/database';
 import useGroupData from '@/page/Workspace/SideBar/ResourceTree/DatabaseTree/useGroupData';
 import { SelectItemProps } from '@/page/Project/Sensitive/interface';
+import DatabaseSelectTab from './components/Tab';
+import { GroupNodeTitle } from './components/DatabasesTitle';
+import RecentlyDatabaseEmpty from '@/component/Empty/RecentlyDatabaseEmpty';
+import { getDatabasesHistories } from '@/common/network/task';
 import {
   NodeType,
   isGroupNode,
@@ -38,53 +36,18 @@ import {
   getGroupKey,
   getSecondGroupKey,
   getShouldExpandedGroupKeys,
+  getIcon,
+  DatabaseGroupArr,
+  hasSecondGroup,
 } from './helper';
 import DatasourceSelectEmpty from '@/component/Empty/DatasourceSelectEmpty';
 import DatabaseSelectEmpty from '@/component/Empty/DatabaseSelectEmpty';
-interface IDatabasesTitleProps {
+import renderDatabaseNode from './renderDatabaseNode';
+export interface IDatabasesTitleProps {
   db: IDatabase;
   taskType: TaskType;
   disabled: boolean;
 }
-
-const DatabasesTitle: React.FC<IDatabasesTitleProps> = (props) => {
-  const { taskType, db, disabled } = props;
-  const task = TaskTypeMap?.[taskType] || '';
-  return (
-    <>
-      {disabled ? (
-        <Tooltip
-          placement={'right'}
-          title={
-            formatMessage(
-              {
-                id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.DC4CF38C',
-                defaultMessage: '暂无{task}权限，请先申请库权限',
-              },
-              { task },
-            ) /*`暂无${task}权限，请先申请库权限`*/
-          }
-        >
-          <div className={styles.textoverflow}>{db.name}</div>
-        </Tooltip>
-      ) : (
-        <Popover
-          showArrow={false}
-          placement={'right'}
-          content={<ConnectionPopover connection={db?.dataSource} database={db} />}
-        >
-          <div className={styles.databaseItem}>
-            <span className={styles.textoverflow}>{db.name}</span>
-            <span className={styles.dataSourceInfo}>{db?.dataSource?.name}</span>
-          </div>
-        </Popover>
-      )}
-
-      <Badge color={EnvColorMap[db?.environment?.style?.toUpperCase()]?.tipColor} />
-    </>
-  );
-};
-
 export interface ISessionDropdownFiltersProps {
   dialectTypes?: ConnectionMode[];
   feature?: keyof IDataSourceModeConfig['features'];
@@ -98,7 +61,10 @@ export interface ISessionDropdownCheckModeConfigProps {
   setCheckedKeys?: React.Dispatch<React.SetStateAction<React.Key[]>>;
   onSelect: (value: React.Key[]) => void;
 }
-
+export enum TabsType {
+  all = 'all',
+  recentlyUsed = 'recentlyUsed',
+}
 interface IProps {
   width?: number | string;
   taskType?: TaskType;
@@ -131,6 +97,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [canCheckedDbKeys, setCanCheckedDbKeys] = useState<number[]>([]);
+  const [tab, setTab] = useState<TabsType>(TabsType.all);
   const [groupMode, _setGroupMode] = useState(
     userStore.isPrivateSpace() ? DatabaseGroup.dataSource : DatabaseGroup.project,
   );
@@ -173,6 +140,14 @@ const SessionDropdown: React.FC<IProps> = (props) => {
         })) || [];
       setOptions(options);
     },
+  });
+
+  const {
+    data: databasesHistory,
+    run: runGetDatabasesHistories,
+    loading: databaseHistoryLoading,
+  } = useRequest((params: IDatabaseHistoriesParam) => getDatabasesHistories(params), {
+    manual: true,
   });
 
   const { DatabaseGroupMap, allDatasources } = useGroupData({
@@ -238,11 +213,17 @@ const SessionDropdown: React.FC<IProps> = (props) => {
         searchValue.type === SearchType.CLUSTER ? searchValue.value : null,
         searchValue.type === SearchType.TENANT ? searchValue.value : null,
       );
+      if (!context.datasourceMode) {
+        runGetDatabasesHistories({
+          currentOrganizationId: userStore.organizationId,
+          limit: 10,
+        });
+      }
     }
   }, [isOpen, searchValue]);
 
   useEffect(() => {
-    if (allDatasources.length) {
+    if (allDatasources?.length) {
       dataSourceStatusStore.asyncUpdateStatus(allDatasources?.map((a) => a.id));
     }
   }, [allDatasources]);
@@ -314,7 +295,26 @@ const SessionDropdown: React.FC<IProps> = (props) => {
         setCurrentObject({ value: context.databaseId, type: NodeType.Database });
       });
     }
+    initDefaultExpandedKeys();
   }, [data?.contents]);
+
+  const initDefaultExpandedKeys = () => {
+    const defaultExpandedKeys = [];
+    if (data?.contents?.length && !context.datasourceMode && !context.databaseId) {
+      DatabaseGroupArr.forEach((item) => {
+        if (item !== DatabaseGroup.none) {
+          const group = DatabaseGroupMap?.[item]?.entries()?.next()?.value?.[1];
+          group?.mapId && defaultExpandedKeys.push(getGroupKey(group?.mapId, item));
+          if (hasSecondGroup(item)) {
+            const secondGroup = group?.secondGroup?.entries()?.next()?.value?.[1];
+            secondGroup?.mapId &&
+              defaultExpandedKeys.push(getSecondGroupKey(group?.mapId, secondGroup?.mapId, item));
+          }
+        }
+      });
+    }
+    setExpandedKeys(Array.from(new Set([...expandedKeys, ...defaultExpandedKeys])));
+  };
 
   function onOpen(open: boolean) {
     if (!open) {
@@ -328,177 +328,124 @@ const SessionDropdown: React.FC<IProps> = (props) => {
   const treeData: DataNode[] = useMemo(() => {
     let _treeData = [];
     const _canCheckedDbKeys: number[] = [];
-    switch (groupMode) {
-      case DatabaseGroup.none: {
-        _treeData = [...(DatabaseGroupMap[groupMode]?.values() || [])]
-          ?.map((database: IDatabase) => {
-            let dbDisabled: boolean = false;
-            if (taskType) {
-              dbDisabled = !hasPermission(taskType, database.authorizedPermissionTypes);
-            } else {
-              dbDisabled = !database.authorizedPermissionTypes?.length;
-            }
-            !dbDisabled && _canCheckedDbKeys.push(database.id);
-            return {
-              title: <DatabasesTitle taskType={taskType} db={database} disabled={dbDisabled} />,
-              key: database.id,
-              selectable: true,
-              isLeaf: true,
-              icon: <DataBaseStatusIcon item={database} />,
-              data: database,
-              disabled: dbDisabled,
-              type: NodeType.Database,
-            };
-          })
-          .sort((a, b) => {
-            if (a.disabled === b.disabled) return 0;
-            return a.disabled ? 1 : -1;
-          });
-        break;
-      }
-      case DatabaseGroup.project:
-      case DatabaseGroup.dataSource:
-      case DatabaseGroup.tenant: {
-        _treeData = [...(DatabaseGroupMap[groupMode]?.values() || [])].map((groupItem) => {
-          let ds, icon;
-          if (groupMode === DatabaseGroup.dataSource) {
-            ds = data?.contents?.find((db: IDatabase) => db?.dataSource?.id === groupItem.mapId);
-            icon = ds && <StatusIcon item={ds?.dataSource} />;
-          } else if (groupMode === DatabaseGroup.project) {
-            icon = (
-              <Icon
-                component={PjSvg}
-                style={{
-                  fontSize: 14,
-                }}
-              />
-            );
+    if (context.datasourceMode) {
+      _treeData = [...(DatabaseGroupMap[DatabaseGroup.dataSource]?.values() || [])]
+        ?.map((item) => {
+          const { dataSource } = item;
+          if (!dataSource) {
+            return null;
           }
-          const groupKey = getGroupKey(groupItem.mapId, groupMode);
+          if (
+            searchValueByDataSource &&
+            !dataSource?.name?.toLowerCase().includes(searchValueByDataSource?.toLowerCase())
+          ) {
+            return null;
+          }
           return {
-            title: groupItem.groupName,
-            key: groupKey,
-            icon: icon ?? null,
-            type: GroupNodeToNodeType[groupMode],
-            children: groupItem.databases
-              ?.map((database) => {
-                let dbDisabled: boolean = false;
-                if (taskType) {
-                  dbDisabled = !hasPermission(taskType, database.authorizedPermissionTypes);
-                } else {
-                  dbDisabled = !database.authorizedPermissionTypes?.length;
-                }
-                !dbDisabled && _canCheckedDbKeys.push(database.id);
-                return {
-                  title: <DatabasesTitle taskType={taskType} db={database} disabled={dbDisabled} />,
-                  key: database.id,
-                  selectable: true,
-                  isLeaf: true,
-                  icon: <DataBaseStatusIcon item={database} />,
-                  data: database,
-                  type: NodeType.Database,
-                  disabled: dbDisabled,
-                };
-              })
-              .sort((a, b) => {
-                if (a.disabled === b.disabled) return 0;
-                return a.disabled ? 1 : -1;
+            title: (
+              <Popover
+                showArrow={false}
+                placement={'right'}
+                content={<ConnectionPopover connection={dataSource} />}
+              >
+                <div className={styles.textoverflow}>{dataSource?.name}</div>
+              </Popover>
+            ),
+            icon: getIcon({ type: NodeType.Connection, dataSource }),
+            key: dataSource?.id,
+            selectable: true,
+            isLeaf: true,
+            type: NodeType.Connection,
+          };
+        })
+        .filter(Boolean);
+    } else if (tab === TabsType.recentlyUsed) {
+      _treeData = databasesHistory?.map((database) => renderDatabaseNode({ taskType, database }));
+    } else {
+      switch (groupMode) {
+        case DatabaseGroup.none: {
+          _treeData = [...(DatabaseGroupMap[groupMode]?.values() || [])]
+            ?.map((database: IDatabase) =>
+              renderDatabaseNode({ taskType, database, canCheckedDbKeys: _canCheckedDbKeys }),
+            )
+            ?.sort((a, b) => {
+              if (a.disabled === b.disabled) return 0;
+              return a.disabled ? 1 : -1;
+            });
+          break;
+        }
+        case DatabaseGroup.project:
+        case DatabaseGroup.dataSource:
+        case DatabaseGroup.tenant: {
+          _treeData = [...(DatabaseGroupMap[groupMode]?.values() || [])].map((groupItem) => {
+            const groupKey = getGroupKey(groupItem.mapId, groupMode);
+            return {
+              title: <GroupNodeTitle item={groupItem} tip={groupItem?.tip} />,
+              key: groupKey,
+              icon: getIcon({
+                type: GroupNodeToNodeType[groupMode],
+                dataSource: data?.contents?.find(
+                  (db: IDatabase) => db?.dataSource?.id === groupItem.mapId,
+                )?.dataSource,
               }),
-          };
-        });
-        break;
-      }
-      case DatabaseGroup.cluster:
-      case DatabaseGroup.environment:
-      case DatabaseGroup.connectType: {
-        _treeData = [...(DatabaseGroupMap[groupMode]?.values() || [])].map((groupItem) => {
-          const groupKey = getGroupKey(groupItem.mapId, groupMode);
-          return {
-            title: groupItem.groupName,
-            key: groupKey,
-            type: GroupNodeToNodeType[groupMode],
-            children: [...(groupItem.secondGroup.values() || [])].map((sItem) => {
-              const sencondGroupKey = getSecondGroupKey(groupItem.mapId, sItem.mapId, groupMode);
-              const ds = data?.contents?.find(
-                (db: IDatabase) => db?.dataSource?.id === sItem.mapId,
-              );
-              const icon = ds && <StatusIcon item={ds?.dataSource} />;
-              return {
-                title: sItem.groupName,
-                key: sencondGroupKey,
-                icon: icon ?? null,
-                type: NodeType.SecondGroupNodeDataSource,
-                children: sItem.databases
-                  ?.map((database) => {
-                    let dbDisabled: boolean = false;
-                    if (taskType) {
-                      dbDisabled = !hasPermission(taskType, database.authorizedPermissionTypes);
-                    } else {
-                      dbDisabled = !database.authorizedPermissionTypes?.length;
-                    }
-                    !dbDisabled && _canCheckedDbKeys.push(database.id);
-                    return {
-                      title: (
-                        <DatabasesTitle taskType={taskType} db={database} disabled={dbDisabled} />
-                      ),
-                      key: database.id,
-                      selectable: true,
-                      isLeaf: true,
-                      icon: <DataBaseStatusIcon item={database} />,
-                      data: database,
-                      type: NodeType.Database,
-                      disabled: dbDisabled,
-                    };
-                  })
-                  .sort((a, b) => {
-                    if (a.disabled === b.disabled) return 0;
-                    return a.disabled ? 1 : -1;
+              type: GroupNodeToNodeType[groupMode],
+              children: groupItem.databases
+                ?.map((database) =>
+                  renderDatabaseNode({ taskType, database, canCheckedDbKeys: _canCheckedDbKeys }),
+                )
+                ?.sort((a, b) => {
+                  if (a.disabled === b.disabled) return 0;
+                  return a.disabled ? 1 : -1;
+                }),
+            };
+          });
+          break;
+        }
+        case DatabaseGroup.cluster:
+        case DatabaseGroup.environment:
+        case DatabaseGroup.connectType: {
+          _treeData = [...(DatabaseGroupMap[groupMode]?.values() || [])].map((groupItem) => {
+            const groupKey = getGroupKey(groupItem.mapId, groupMode);
+            return {
+              title: <GroupNodeTitle item={groupItem} />,
+              key: groupKey,
+              type: GroupNodeToNodeType[groupMode],
+              children: [...(groupItem.secondGroup.values() || [])].map((sItem) => {
+                const sencondGroupKey = getSecondGroupKey(groupItem.mapId, sItem.mapId, groupMode);
+                return {
+                  title: sItem.groupName,
+                  key: sencondGroupKey,
+                  icon: getIcon({
+                    type: NodeType.SecondGroupNodeDataSource,
+                    dataSource: data?.contents?.find(
+                      (db: IDatabase) => db?.dataSource?.id === sItem.mapId,
+                    )?.dataSource,
                   }),
-              };
-            }),
-          };
-        });
-        break;
+                  type: NodeType.SecondGroupNodeDataSource,
+                  children: sItem.databases
+                    ?.map((database) =>
+                      renderDatabaseNode({
+                        taskType,
+                        database,
+                        canCheckedDbKeys: _canCheckedDbKeys,
+                      }),
+                    )
+                    ?.sort((a, b) => {
+                      if (a.disabled === b.disabled) return 0;
+                      return a.disabled ? 1 : -1;
+                    }),
+                };
+              }),
+            };
+          });
+          break;
+        }
       }
     }
+    _treeData = _treeData || [];
     setCanCheckedDbKeys(_canCheckedDbKeys);
     return _treeData;
-  }, [groupMode, data]);
-
-  const dataSourceData: DataNode[] = useMemo(() => {
-    let _treeData = [];
-    _treeData = [...(DatabaseGroupMap[DatabaseGroup.dataSource]?.values() || [])]
-      ?.map((item) => {
-        const { dataSource } = item;
-        if (!dataSource) {
-          return null;
-        }
-        if (
-          searchValueByDataSource &&
-          !dataSource?.name?.toLowerCase().includes(searchValueByDataSource?.toLowerCase())
-        ) {
-          return null;
-        }
-        return {
-          title: (
-            <Popover
-              showArrow={false}
-              placement={'right'}
-              content={<ConnectionPopover connection={dataSource} />}
-            >
-              <div className={styles.textoverflow}>{dataSource?.name}</div>
-            </Popover>
-          ),
-          icon: <StatusIcon item={dataSource} />,
-          key: dataSource?.id,
-          selectable: true,
-          isLeaf: true,
-          type: NodeType.Connection,
-        };
-      })
-      .filter(Boolean);
-    return _treeData;
-  }, [data, searchValueByDataSource]);
+  }, [groupMode, data, searchValueByDataSource, tab]);
 
   function TreeRender() {
     return (
@@ -506,7 +453,6 @@ const SessionDropdown: React.FC<IProps> = (props) => {
         ref={treeRef}
         className={styles.tree}
         expandAction="click"
-        key={groupMode}
         height={215}
         onSelect={async (_, info) => {
           const key = info.node?.key?.toString();
@@ -533,12 +479,12 @@ const SessionDropdown: React.FC<IProps> = (props) => {
         }}
         selectedKeys={[currentObject?.value].filter(Boolean)}
         expandedKeys={expandedKeys}
-        onExpand={(expandedKeys) => {
-          setExpandedKeys(expandedKeys);
+        onExpand={(Keys) => {
+          setExpandedKeys(Keys);
         }}
         showIcon
         blockNode={true}
-        treeData={context.datasourceMode ? dataSourceData : treeData}
+        treeData={treeData}
         checkedKeys={checkedKeys}
         onCheck={(checkedKeysValue) => {
           const KeyList = filterGroupKey(checkedKeysValue as React.Key[]);
@@ -554,7 +500,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
     if (!checkModeConfig || !treeData?.length) return;
     return (
       <div className={styles.footer}>
-        {checkedKeys.length !== canCheckedDbKeys.length && (
+        {checkedKeys.length !== canCheckedDbKeys?.length && (
           <Button
             type="link"
             onClick={() => {
@@ -568,7 +514,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
             全选
           </Button>
         )}
-        {checkedKeys.length === canCheckedDbKeys.length && (
+        {checkedKeys?.length === canCheckedDbKeys?.length && (
           <Button
             type="link"
             onClick={() => {
@@ -583,6 +529,16 @@ const SessionDropdown: React.FC<IProps> = (props) => {
     );
   }
 
+  const empty = useMemo(() => {
+    if (context.datasourceMode) {
+      return <DatasourceSelectEmpty height={186} />;
+    } else if (tab === TabsType.recentlyUsed) {
+      return <RecentlyDatabaseEmpty height={156} />;
+    } else {
+      return <DatabaseSelectEmpty height={220} />;
+    }
+  }, [context.datasourceMode, tab]);
+
   return (
     <Popover
       trigger={['click']}
@@ -594,10 +550,11 @@ const SessionDropdown: React.FC<IProps> = (props) => {
       overlayStyle={{ paddingTop: 2, width }}
       content={
         disabled ? null : (
-          <Spin spinning={loading || fetchLoading}>
-            {treeData?.length > 0 ? (
-              <div className={styles.main}>
-                <div className={styles.header} style={{ width: width || DEFALT_WIDTH }}>
+          <Spin spinning={loading || fetchLoading || databaseHistoryLoading}>
+            <div className={styles.main}>
+              <div className={styles.header} style={{ width: width || DEFALT_WIDTH }}>
+                {!context.datasourceMode && <DatabaseSelectTab tab={tab} setTab={setTab} />}
+                {tab === TabsType.all && (
                   <Search
                     searchValue={searchValue}
                     searchValueByDataSource={searchValueByDataSource}
@@ -606,28 +563,20 @@ const SessionDropdown: React.FC<IProps> = (props) => {
                       setSearchValue({ value: v, type });
                     }}
                   />
-                  {!context.datasourceMode && (
-                    <span className={styles.groupIcon}>
-                      <Group setGroupMode={setGroupMode} groupMode={groupMode} />
-                    </span>
-                  )}
-                </div>
-                <div
-                  style={{
-                    height: DEFALT_HEIGHT,
-                    width: width || DEFALT_WIDTH,
-                    overflow: 'hidden',
-                    padding: '0px 4px 12px 12px',
-                  }}
-                >
-                  {TreeRender()}
-                </div>
+                )}
+                {!context.datasourceMode && tab === TabsType.all && (
+                  <span className={styles.groupIcon}>
+                    <Group setGroupMode={setGroupMode} groupMode={groupMode} />
+                  </span>
+                )}
               </div>
-            ) : context.datasourceMode ? (
-              <DatasourceSelectEmpty />
-            ) : (
-              <DatabaseSelectEmpty />
-            )}
+              <div
+                style={{ height: DEFALT_HEIGHT, width: width || DEFALT_WIDTH }}
+                className={styles.treeContainer}
+              >
+                {treeData?.length > 0 ? TreeRender() : empty}
+              </div>
+            </div>
 
             {footerRender()}
           </Spin>
