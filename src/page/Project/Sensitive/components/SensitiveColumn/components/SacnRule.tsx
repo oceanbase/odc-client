@@ -28,6 +28,7 @@ import { useWatch } from 'antd/es/form/Form';
 import { useContext, useEffect, useState } from 'react';
 import SensitiveContext from '../../../SensitiveContext';
 import MultipleDatabaseSelect from '@/component/Task/component/MultipleDatabaseSelect/index';
+import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 
 const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const context = useContext(ProjectContext);
@@ -43,11 +44,13 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
       projectId: sensitiveContext.projectId,
     });
     setRawData(rawData);
-    const resData = rawData?.contents?.map((content) => ({
-      label: content.name,
-      value: content.id,
-      type: content.type,
-    }));
+    const resData = rawData?.contents
+      ?.filter((item) => !isConnectTypeBeFileSystemGroup(item.type))
+      ?.map((content) => ({
+        label: content.name,
+        value: content.id,
+        type: content.type,
+      }));
     setDataSourceOptions(resData);
   };
 
@@ -155,7 +158,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
         >
           {dataSourceOptions.map((option, index) => {
             const icon = getDataSourceStyleByConnectType(option.type);
-            const connection = rawData?.contents?.[index];
+            const connection = rawData?.contents?.find((item) => item.id === option.value);
             return (
               <Select.Option key={index} value={option.value}>
                 <Popover

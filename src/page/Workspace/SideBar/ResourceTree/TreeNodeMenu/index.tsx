@@ -300,7 +300,11 @@ const TreeNodeMenu = (props: IProps) => {
         placement="right"
         content={
           node.type === ResourceNodeType.Database ? (
-            <ConnectionPopover database={node?.data} connection={node?.data?.dataSource} />
+            <ConnectionPopover
+              database={node?.data}
+              connection={node?.data?.dataSource}
+              showRemark
+            />
           ) : undefined
         }
       >

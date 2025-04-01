@@ -4,7 +4,11 @@ import { SettingOutlined } from '@@node_modules/@ant-design/icons/lib';
 import { Acess, actionTypes, createPermission } from '@/component/Acess';
 import { IManagerResourceType } from '@/d.ts';
 
-export default () => {
+interface IProps {
+  height?: number;
+}
+
+export default ({ height = 160 }: IProps) => {
   return (
     <Acess
       fallback={
@@ -19,6 +23,7 @@ export default () => {
       <div className={styles.datasourceSelectEmptyhWrapper}>
         <Empty
           className={styles.empty}
+          style={{ height }}
           image={Empty.PRESENTED_IMAGE_SIMPLE}
           description="暂无数据源"
         />

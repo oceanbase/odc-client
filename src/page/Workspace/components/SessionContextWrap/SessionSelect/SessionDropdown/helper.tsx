@@ -1,6 +1,11 @@
 import { IDatabase, DatabaseGroup } from '@/d.ts/database';
 import { getMapIdByDB } from '@/page/Workspace/SideBar/ResourceTree/helper';
+import { IConnection } from '@/d.ts';
 import { isString } from 'lodash';
+import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
+import { ReactComponent as PjSvg } from '@/svgr/project_space.svg';
+import Icon from '@ant-design/icons';
 
 const TreeDataGroupKey = 'Group';
 const TreeDataSecondGroupKey = 'SecondGroup';
@@ -40,6 +45,22 @@ const GroupNodeToNodeType = {
   [DatabaseGroup.cluster]: NodeType.GroupNodeCluster,
   [DatabaseGroup.environment]: NodeType.GroupNodeEnviponment,
   [DatabaseGroup.connectType]: NodeType.GroupNodeConnectType,
+};
+
+const DatabaseGroupArr = [
+  DatabaseGroup.project,
+  DatabaseGroup.dataSource,
+  DatabaseGroup.tenant,
+  DatabaseGroup.cluster,
+  DatabaseGroup.environment,
+  DatabaseGroup.connectType,
+  DatabaseGroup.none,
+];
+
+const hasSecondGroup = (group: DatabaseGroup) => {
+  return [DatabaseGroup.cluster, DatabaseGroup.environment, DatabaseGroup.connectType].includes(
+    group,
+  );
 };
 
 const getShouldExpandedGroupKeys = (params: {
@@ -98,12 +119,44 @@ const filterGroupKey = (keyList: React.Key[]) => {
   });
 };
 
+const getIcon = (params: { type: NodeType; dataSource?: IConnection; database?: IDatabase }) => {
+  const { type, dataSource, database } = params;
+  let icon;
+  switch (type) {
+    case NodeType.Connection:
+    case NodeType.GroupNodeDataSource:
+    case NodeType.SecondGroupNodeDataSource: {
+      icon = dataSource && <StatusIcon item={dataSource} />;
+      break;
+    }
+    case NodeType.Database: {
+      icon = database && <DataBaseStatusIcon item={database} />;
+      break;
+    }
+    case NodeType.GroupNodeProject: {
+      icon = (
+        <Icon
+          component={PjSvg}
+          style={{
+            fontSize: 14,
+          }}
+        />
+      );
+      break;
+    }
+  }
+  return icon ?? null;
+};
+
 export {
   filterGroupKey,
   NodeType,
   isGroupNode,
   GroupNodeToNodeType,
+  DatabaseGroupArr,
+  hasSecondGroup,
   getGroupKey,
   getSecondGroupKey,
   getShouldExpandedGroupKeys,
+  getIcon,
 };

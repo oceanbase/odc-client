@@ -35,9 +35,10 @@ const ConnectionPopover: React.FC<{
   connection: Partial<IConnection>;
   database?: IDatabase;
   showType?: boolean;
+  showRemark?: boolean;
   clusterStore?: ClusterStore;
 }> = (props) => {
-  const { connection, clusterStore, showType = true, database } = props;
+  const { connection, clusterStore, showType = true, showRemark = false, database } = props;
   const isLogicDb = isLogicalDatabase(database);
   const isFileSyetem = isConnectTypeBeFileSystemGroup(connection?.type);
   if (!connection && !isLogicDb) {
@@ -127,7 +128,6 @@ const ConnectionPopover: React.FC<{
               { LogicalExpression0: connection?.region ?? '-' },
             )}
           </div>
-          {databaseRemarkDescription}
         </Space>
       </div>
     );
@@ -199,7 +199,7 @@ const ConnectionPopover: React.FC<{
               { ConnectTypeTextDatabaseConnectType: ConnectTypeText[database?.connectType] },
             )}
           </div>
-          {databaseRemarkDescription}
+          {showRemark && databaseRemarkDescription}
         </Space>
       </div>
     );
@@ -284,14 +284,14 @@ const ConnectionPopover: React.FC<{
       }}
     >
       <Space direction="vertical">
-        <Tooltip title={connection?.name}>
+        <Tooltip title={database?.name}>
           <div
             style={{
               marginBottom: 4,
               fontFamily: 'PingFangSC-Semibold',
               color: 'var(--text-color-primary)',
               fontWeight: 'bold',
-              maxWidth: '240px',
+              maxWidth: '280px',
               overflow: 'hidden',
               whiteSpace: 'nowrap',
               textOverflow: 'ellipsis',
@@ -306,7 +306,9 @@ const ConnectionPopover: React.FC<{
                 }
               />
               <DataBaseStatusIcon item={database} />
-              <span style={{ marginLeft: '6px' }}>{database?.name}</span>
+              <span style={{ marginLeft: '6px', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                {database?.name}
+              </span>
             </div>
           </div>
         </Tooltip>
@@ -342,7 +344,7 @@ const ConnectionPopover: React.FC<{
             /*数据库用户名：{connectionDbUser}*/
           }
         </div>
-        {databaseRemarkDescription}
+        {showRemark && databaseRemarkDescription}
       </Space>
     </div>
   );
