@@ -13,6 +13,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { flatArray } from './helper';
 import styles from './index.less';
+import DatabaseSelectEmpty from '@/component/Empty/DatabaseSelectEmpty';
 
 export type DatabaseOption = {
   label: string;
@@ -342,16 +343,7 @@ const InnerSelect: React.FC<{
                     {renderOptions?.map((item) => renderItem(item, setSearchValue))}
                   </div>
                 ) : (
-                  <div
-                    style={{
-                      width: '390px',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                  </div>
+                  <DatabaseSelectEmpty />
                 )
               }
             >
