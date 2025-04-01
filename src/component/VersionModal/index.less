@@ -7,11 +7,20 @@
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
-  width: 200px;
+  width: 152px;
   height: 100%;
   overflow: auto;
+  background: #f7f9fb;
   .menuContent {
+    background-color: #f7f9fb;
     min-height: calc(100% - 52px);
+    :global {
+      .ant-menu-item {
+        width: 144px;
+        margin-right: 8px;
+        margin-left: 0;
+      }
+    }
   }
 }
 .content {
@@ -27,15 +36,25 @@
   .contentText {
     flex-grow: 1;
     width: 100%;
-    padding: 20px 80px 20px 20px;
+    padding: 16px;
     overflow: auto;
-    background: var(--background-normal-color);
+    background-color: #fff;
+    .paragraph {
+      font-size: 12px;
+      color: #000000d9;
+      line-height: 20px;
+      opacity: 0.85;
+    }
   }
 }
 
 .modal {
   :global {
     .ant-modal {
+      .ant-modal-content {
+        padding: 0;
+        border-left: 8px solid var(--background-normal-color);
+      }
       .ant-modal-body {
         padding: 0;
       }

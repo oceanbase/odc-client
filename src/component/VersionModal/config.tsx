@@ -18,6 +18,7 @@ import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { Typography } from 'antd';
 import type { VersionMenuType } from './index';
+import styles from './index.less';
 
 const { Text } = Typography;
 const { Paragraph } = Typography;
@@ -31,32 +32,32 @@ const webVersionInfo: VersionMenuType[] = [
     title: '协同开发',
     content: (
       <div>
-        <Paragraph>三步开启团队协同机制。</Paragraph>
-        <Paragraph>
+        <Paragraph className={styles.paragraph}>三步开启团队协同机制。</Paragraph>
+        <Paragraph className={styles.paragraph}>
           第一步：系统管理员角色创建项目，录入数据源并将数据源绑定项目。普通用户申请加入项目成为项目成员并申请指定库的权限。
         </Paragraph>
-        <Paragraph>
+        <Paragraph className={styles.paragraph}>
           第二步：项目成员进入项目选定数据库进行开发，请求内容先经过 SQL 窗口规范再经过 SQL
           检查规范校验，校验都通过之后再判定请求是否可以直接执行。
         </Paragraph>
-        <Paragraph>
+        <Paragraph className={styles.paragraph}>
           第三步：若请求需要先走审批才能执行，需要先确定变更所命中的风险等级，再根据风险等级对应的审批流设置走审批流程，审批完成后请求才会进入执行阶段。
         </Paragraph>
       </div>
     ),
 
-    img: 'user.jpg',
+    img: 'user.png',
   },
 
   {
     title: 'SQL 开发',
     content: (
       <div>
-        <Paragraph>
+        <Paragraph className={styles.paragraph}>
           项目成员进入项目后可对有权限的数据库进行 SQL 开发。SQL 开发主要包括数据库对象管理、SQL
           编辑与执行、结果集查看与编辑、执行详情与诊断、导入导出五个方面。
         </Paragraph>
-        <Paragraph>
+        <Paragraph className={styles.paragraph}>
           在 SQL 编辑与执行模块，ODC 提供了代码片段能力，通过该功能可快速复用高频片段，提高 SQL
           开发效率，同时在结果集查看与编辑模块提供类 EXCEL
           的操作交互，支持冻结行、通过快捷键多选行和多选列等操作。此外在执行详情与诊断模块，提供了完善的
@@ -65,14 +66,14 @@ const webVersionInfo: VersionMenuType[] = [
       </div>
     ),
 
-    img: 'flow.jpg',
+    img: 'sql.png',
   },
 
   {
     title: '数据安全合规',
     content: (
       <div>
-        <Paragraph>
+        <Paragraph className={styles.paragraph}>
           <div>数据安全合规主要表现在两个方面，一个是敏感数据脱敏另一个是用户行为记录。</div>
           <div>
             敏感数据脱敏：针对项目内的敏感字段，项目负责人可对其配置脱敏规则，配置完成后，项目内的成员再访问就是脱敏后的效果，以保障敏感数据安全。
@@ -85,14 +86,14 @@ const webVersionInfo: VersionMenuType[] = [
       </div>
     ),
 
-    img: 'safe.jpg',
+    img: 'security.png',
   },
 
   {
     title: '历史库',
     content: (
       <div>
-        <Paragraph>
+        <Paragraph className={styles.paragraph}>
           <div>
             项目成员发起数据归档作业，配置提交作业后，进入作业调度阶段。ODC
             会根据您的配置定时发起数据归档任务。ODC 的归档能力具有以下特性：
@@ -105,7 +106,7 @@ const webVersionInfo: VersionMenuType[] = [
             支持回滚：任务完成后，发现异常可一键将数据从历史库恢复到在线库，以降低变更风险。
           </div>
         </Paragraph>
-        <Paragraph>
+        <Paragraph className={styles.paragraph}>
           <div>功能价值：</div>
           <div>
             使用归档功能将在线库中的冷数据迁移到成本更低的历史库中，不仅可以降低成本，同时也能提高在线库的性能和运维效率。
@@ -114,20 +115,20 @@ const webVersionInfo: VersionMenuType[] = [
       </div>
     ),
 
-    img: 'archive.jpg',
+    img: 'history.png',
   },
 
   {
     title: '个性化开发',
     content: (
       <div>
-        <Paragraph>
+        <Paragraph className={styles.paragraph}>
           您进入导航栏「设置」模块，可根据自己的开发习惯调整配置项，目前涵盖了数据库设置、执行设置、对象设置、编辑器设置及外观等设置项。通过这些设置项可调整编辑器字体大小、运行快捷键、调整主题颜色、样式等。
         </Paragraph>
       </div>
     ),
 
-    img: 'inject.jpg',
+    img: 'personal.png',
   },
 ].filter(Boolean);
 
