@@ -417,7 +417,7 @@ export class SettingStore {
       });
       const userConfig = res?.data?.contents;
       if (userConfig) {
-        await this.getUserConfig();
+        await this.getSpaceConfig();
       }
     }
     return !!data;
