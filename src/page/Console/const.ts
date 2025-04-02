@@ -69,24 +69,24 @@ export const ConsoleTextConfig = {
   bestPractice: {
     articles: [
       {
-        title: '“慢”调斯理：OceanBase AP 实时 SQL 诊断能力解析',
-        url: 'https://open.oceanbase.com/blog/13170408448',
+        title: 'OceanBase AP 实时 SQL 诊断能力解析',
+        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687235',
       },
       {
-        title: '数据库历史库，成本与性能不可以兼得吗？',
-        url: 'https://open.oceanbase.com/blog/12198675456',
+        title: '优化管理数据库历史库',
+        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687236',
       },
       {
-        title: 'ODC SQL 检查自动识别生产环境高危变更',
-        url: 'https://open.oceanbase.com/blog/10649375568',
+        title: 'ODC SQL 检查自动识别高危操作',
+        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687237',
       },
       {
-        title: '千人团队的数据库开发工具如何快速集成企业级的账号体系？',
-        url: 'https://open.oceanbase.com/blog/10912223568',
+        title: '快速集成 ODC 的企业级账号体系',
+        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687238',
       },
       {
-        title: 'ODC 代码自动补全竟暗藏运维神器！',
-        url: 'https://open.oceanbase.com/blog/10641782355',
+        title: '企业级管控协同：守护数据库的每一次变更',
+        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687239',
       },
     ],
   },

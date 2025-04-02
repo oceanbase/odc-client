@@ -355,7 +355,9 @@ const Console = () => {
                   最佳实践
                   <span
                     className={styles.showMore}
-                    onClick={() => window.open('https://open.oceanbase.com/blog/13170408448')}
+                    onClick={() =>
+                      window.open('https://www.oceanbase.com/docs/common-odc-1000000002687235')
+                    }
                   >
                     {'更多 >'}
                   </span>
