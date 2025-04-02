@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import { getDataSourceStyleByConnectType, isFileSystemSupport } from '@/common/datasource';
 import { getConnectionDetail, getConnectionList } from '@/common/network/connection';
 import { listDatabases, updateDataBase } from '@/common/network/database';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
@@ -148,14 +148,18 @@ const AddDataBaseButton: React.FC<IProps> = ({
           },
         ]
       : []),
-    {
-      label: formatMessage({
-        id: 'src.page.Project.Database.components.AddDataBaseButton.201B0791',
-        defaultMessage: '添加对象存储',
-      }),
-      key: '2',
-      onClick: onOpenObjectStorage,
-    },
+    ...(isFileSystemSupport()
+      ? [
+          {
+            label: formatMessage({
+              id: 'src.page.Project.Database.components.AddDataBaseButton.201B0791',
+              defaultMessage: '添加对象存储',
+            }),
+            key: '2',
+            onClick: onOpenObjectStorage,
+          },
+        ]
+      : []),
   ];
 
   const batchOperationItems: MenuProps['items'] = [
@@ -343,7 +347,7 @@ const AddDataBaseButton: React.FC<IProps> = ({
             </Col>
             <Col span={6}>
               <Form.Item
-                requiredMark={false}
+                required={false}
                 label={formatMessage({
                   id: 'odc.Database.AddDataBaseButton.Environment',
                   defaultMessage: '环境',
