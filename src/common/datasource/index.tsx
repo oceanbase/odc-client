@@ -269,6 +269,15 @@ function getDefaultConnectType(ds: IDataSourceType) {
   return _types.get(ds)?.defaultConnectType;
 }
 
+function isFileSystemSupport() {
+  for (const [dsType, dsConfig] of _types) {
+    if (Object.values(dsConfig.config)?.some((item) => item?.isFileSystem)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export {
   getAllConnectTypes,
   getDataSourceModeConfig,
@@ -281,4 +290,5 @@ export {
   getAllDBTypes,
   getIsDBAvailableInDataSourceTypes,
   getIsDBBelongsToProjectsInDataSourceTypes,
+  isFileSystemSupport,
 };
