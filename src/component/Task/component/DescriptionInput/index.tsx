@@ -38,7 +38,7 @@ const DescriptionInput = () => {
     >
       <Input.TextArea
         rows={6}
-        placeholder={setting.configurations['odc.task.default.taskDescriptionPrompt']}
+        placeholder={setting.spaceConfigurations['odc.task.default.taskDescriptionPrompt']}
       />
     </Form.Item>
   );

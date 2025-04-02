@@ -84,7 +84,7 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
           <InputNumber
             defaultValue={defaultValue}
             min={0}
-            max={setting?.configurations?.['odc.sqlexecute.default.maxQueryLimit']}
+            max={setting?.spaceConfigurations?.['odc.sqlexecute.default.maxQueryLimit']}
             placeholder={
               formatMessage({
                 id: 'odc.src.page.Secure.Env.components.PleaseEnter.1',
