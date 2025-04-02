@@ -395,7 +395,7 @@ const UserDetail: React.FC<{
   const getResourceLabel = (info, resourceId: string | number) => {
     // 后端实现：resourceId为*，表示对所有资源都有权限, resourceId为CREATOR，表示对我创建的有权限
     if (resourceId === ALL_I_HAVE_CREATED_VALUE) return AllIHaveCreatedOption.name;
-    if (resourceId === ALL_SELECTED_VALUE) return AllOption.name;
+    if (resourceId === ALL_SELECTED_VALUE()) return AllOption.name;
     return info?.name;
   };
 
