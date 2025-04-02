@@ -413,6 +413,42 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
         });
         tableViewIndex++;
       }
+      for (const key in databaseColumn?.materializedView2Columns) {
+        const leaves = databaseColumn?.materializedView2Columns?.[key]?.map(
+          (materializedViewColumn, _index) => ({
+            title: materializedViewColumn.name,
+            key: `0-${index}-${tableViewIndex}-${_index}`,
+            icon: (
+              <span className={styles.icon}>
+                <Icon
+                  component={
+                    fieldIconMap[
+                      convertDataTypeToDataShowType(
+                        materializedViewColumn?.typeName,
+                        databaseColumn?.dataTypeUnits,
+                      )
+                    ]
+                  }
+                />
+              </span>
+            ),
+            type: ESensitiveColumnType.VIEW_COLUMN,
+          }),
+        );
+        views.push({
+          title: key,
+          key: `0-${index}-${tableViewIndex}`,
+          icon: (
+            <span className={styles.icon}>
+              <Icon component={ViewSvg} />
+            </span>
+          ),
+
+          children: leaves,
+          type: ESensitiveColumnType.VIEW_COLUMN,
+        });
+        tableViewIndex++;
+      }
       treeData.push({
         title: databaseColumn?.databaseName,
         key: `0-${index}`,
@@ -540,6 +576,27 @@ const SelectedSensitiveColumn = forwardRef<any, any>(function (
         checkedColumns = checkedColumns + leaves?.length;
         if (leaves?.length > 0) {
           tables.push({
+            title: key,
+            key: `0-${index}-${tableViewIndex}`,
+            children: leaves,
+            type: ESensitiveColumnType.TABLE_COLUMN,
+          });
+        }
+        tableViewIndex++;
+      }
+      for (const key in databaseColumn?.materializedView2Columns) {
+        const leaves = databaseColumn?.materializedView2Columns?.[key]
+          ?.map((materializedViewColumn, _index) => ({
+            title: materializedViewColumn?.name,
+            key: `0-${index}-${tableViewIndex}-${_index}`,
+            type: ESensitiveColumnType.TABLE_COLUMN,
+            columnType: materializedViewColumn?.typeName,
+            dataTypeUnits: databaseColumn?.dataTypeUnits,
+          }))
+          ?.filter((leaf) => checkedKeys?.includes(leaf?.key));
+        checkedColumns = checkedColumns + leaves?.length;
+        if (leaves?.length > 0) {
+          views.push({
             title: key,
             key: `0-${index}-${tableViewIndex}`,
             children: leaves,

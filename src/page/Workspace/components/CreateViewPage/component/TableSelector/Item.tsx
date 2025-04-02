@@ -24,7 +24,7 @@ import ObjectName, { EnumObjectType } from '../ObjectName';
 import { ReactComponent as DragSvg } from '@/svgr/DragItem.svg';
 import EditableText from '../EditableText';
 import { formatMessage } from '@/util/intl';
-
+import { CaseEditableText } from '@/component/Input/Case';
 const { Option } = Select;
 
 interface IProps {
@@ -32,6 +32,10 @@ interface IProps {
   handleDelete: (key: string) => void;
   handleChange: (idx: any) => void;
   isLast: boolean;
+  useCaseInput?: boolean;
+  caseSensitive?: boolean;
+  escapes?: string;
+  joinKeywords?: string[];
 }
 
 const JOIN_KEYWORDS = [
@@ -51,11 +55,21 @@ const JOIN_KEYWORDS = [
   'full outer join',
 ];
 const Item: React.FC<IProps> = React.memo((props) => {
-  const { dataKey, isLast, handleDelete, handleChange } = props;
+  const {
+    dataKey,
+    isLast,
+    handleDelete,
+    handleChange,
+    useCaseInput = false,
+    caseSensitive,
+    escapes,
+    joinKeywords: propJoinKeywords,
+  } = props;
+  const joinKeywords = propJoinKeywords || JOIN_KEYWORDS;
   const params = parse(dataKey);
   const { d, v, t, uid } = params;
 
-  const handleChangeAliasName = (value) => {
+  const handleChangeAliasName = (value: string) => {
     handleChange({ dataKey, aliasName: value });
   };
 
@@ -72,23 +86,35 @@ const Item: React.FC<IProps> = React.memo((props) => {
             {t ? <ObjectName title={t} type={EnumObjectType.TABLE} /> : null}
             {v ? <ObjectName title={v} type={EnumObjectType.VIEW} /> : null}
             <span className={styles.groupName}>({d})</span>
-            <EditableText
-              onChange={handleChangeAliasName}
-              placeholder={formatMessage({
-                id: 'odc.component.TableSelector.Item.Alias',
-                defaultMessage: '别名',
-              })} /* 别名 */
-            />
+            {useCaseInput ? (
+              <CaseEditableText
+                onChange={handleChangeAliasName}
+                caseSensitive={caseSensitive}
+                escapes={escapes}
+                placeholder={formatMessage({
+                  id: 'odc.component.ColumnSelector.Item.Alias',
+                  defaultMessage: '别名',
+                })} /* 别名 */
+              />
+            ) : (
+              <EditableText
+                onChange={handleChangeAliasName}
+                placeholder={formatMessage({
+                  id: 'odc.component.TableSelector.Item.Alias',
+                  defaultMessage: '别名',
+                })} /* 别名 */
+              />
+            )}
 
             {!isLast && (
               <Select
-                defaultValue={JOIN_KEYWORDS[0]}
+                defaultValue={joinKeywords[0]}
                 dropdownStyle={{ minWidth: '150px' }}
                 onChange={handleChangeOperation}
                 bordered={false}
                 style={{ marginLeft: '-8px' }}
               >
-                {JOIN_KEYWORDS.map((keyword) => (
+                {joinKeywords?.map((keyword) => (
                   <Option key={keyword} value={keyword}>
                     {keyword.toUpperCase()}
                   </Option>

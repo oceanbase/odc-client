@@ -26,6 +26,7 @@ import { tableMenusConfig } from './table';
 import { triggerMenusConfig } from './trigger';
 import { typeMenusConfig } from './type';
 import { viewMenusConfig } from './view';
+import { materializedViewConfig } from './materializedView';
 
 export default {
   ...tableMenusConfig,
@@ -40,4 +41,5 @@ export default {
   ...packageBodyMenusConfig,
   ...databaseMenusConfig,
   ...externalTableMenusConfig,
+  ...materializedViewConfig,
 };

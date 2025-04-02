@@ -39,4 +39,5 @@ export interface IDataBaseWithTable extends IDatabase {
   hasGetTableList?: boolean;
   externalTablesList: TableItemInDB[];
   viewList: TableItemInDB[];
+  materializedViewList: TableItemInDB[];
 }

@@ -90,6 +90,17 @@ export enum ResourceNodeType {
   GroupNodeCluster,
   GroupNodeTenant,
   SecondGroupNodeDataSource,
+  /** 物化视图 */
+  MaterializedViewRoot,
+  MaterializedView,
+  MaterializedViewColumnRoot,
+  MaterializedViewColumn,
+  MaterializedViewIndexRoot,
+  MaterializedViewIndex,
+  MaterializedViewPartitionRoot,
+  MaterializedViewPartition,
+  MaterializedViewConstraintRoot,
+  MaterializedViewConstraint,
 }
 
 interface ExtraData {

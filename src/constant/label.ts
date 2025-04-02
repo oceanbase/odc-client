@@ -22,6 +22,8 @@ import {
   SQLLintMode,
   SQLSessionMode,
   DatasourceGroup,
+  RefreshMethod,
+  RefreshScheduleUnit,
 } from '@/d.ts';
 import { DBType, BooleanOptionType } from '@/d.ts/database';
 import { ColumnStoreType } from '@/d.ts/table';
@@ -90,6 +92,7 @@ export const DbObjectTypeTextMap = {
     id: 'src.constant.76471609',
     defaultMessage: '外表',
   }),
+  [DbObjectType.materialized_view]: '物化视图',
 };
 
 export const ConnectTypeText = {
@@ -225,4 +228,21 @@ export const SQLSessionModeText = {
 export const columnGroupsText = {
   [ColumnStoreType.COLUMN]: formatMessage({ id: 'src.constant.CE5A59D0', defaultMessage: '列存' }),
   [ColumnStoreType.ROW]: formatMessage({ id: 'src.constant.481BAC23', defaultMessage: '行存' }),
+};
+
+export const refreshMethodText = {
+  [RefreshMethod.REFRESH_FAST]: '增量刷新',
+  [RefreshMethod.REFRESH_FORCE]: '混合刷新',
+  [RefreshMethod.REFRESH_COMPLETE]: '全量刷新',
+  [RefreshMethod.NEVER_REFRESH]: '不需要刷新',
+};
+
+export const refreshScheduleUnitText = {
+  [RefreshScheduleUnit.SECOND]: '秒',
+  [RefreshScheduleUnit.MINUTE]: '分',
+  [RefreshScheduleUnit.HOUR]: '时',
+  [RefreshScheduleUnit.DAY]: '天',
+  [RefreshScheduleUnit.WEEK]: '周',
+  [RefreshScheduleUnit.MONTH]: '月',
+  [RefreshScheduleUnit.YEAR]: '年',
 };

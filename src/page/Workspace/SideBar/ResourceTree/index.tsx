@@ -181,7 +181,7 @@ const ResourceTree: React.FC<IProps> = function ({
       });
       return;
     }
-    let duration = 900;
+    let duration = 1100;
     if (loadedKeys.includes(shouldExpandedKeys?.[index])) {
       // 已加载的节点只需等待页面加载时间，不需要考虑网络请求时间
       duration = 500;

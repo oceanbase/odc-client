@@ -200,4 +200,84 @@ const CaseTextArea = forwardRef<TextAreaRef, ICaseTextAreaProps>(function CaseTe
   );
 });
 
-export { onChangeCaseWrap, CaseTextArea };
+interface CaseEditableTextProps {
+  placeholder?: string;
+  onChange: (values: any) => void;
+  caseSensitive?: boolean;
+  escapes?: string;
+}
+const CaseEditableText: React.FC<CaseEditableTextProps> = React.memo((props) => {
+  const { placeholder, onChange, caseSensitive, escapes } = props;
+  const [editable, setEditable] = useState(false);
+  const [value, setValue] = useState('');
+  const [onChangeValue, setOnChangeValue] = useState<any>();
+  const inputRef = useRef<InputRef>();
+
+  useEffect(() => {
+    if (onChangeValue !== value) {
+      if (value?.toUpperCase() !== value && value && !caseSensitive) {
+        setValue(`${escapes}${value}${escapes}`);
+        setOnChangeValue(value);
+      } else {
+        setValue(value);
+        setOnChangeValue(value);
+      }
+    }
+  }, [value]);
+
+  const changeToEditable = () => {
+    setEditable(true);
+  };
+
+  const handleSubmit = () => {
+    if (editable) {
+      setEditable(false);
+      onChange(value);
+    }
+  };
+
+  const handleChange = useMemo(
+    () => onChangeCaseWrap({ caseSensitive, escapes }),
+    [caseSensitive, escapes],
+  );
+
+  if (!editable) {
+    return <a onClick={changeToEditable}>&lt;{value || placeholder}&gt;</a>;
+  }
+
+  return (
+    <Input
+      autoFocus={true}
+      size="small"
+      style={{ minWidth: '50px' }}
+      placeholder={placeholder}
+      onBlur={handleSubmit}
+      onPressEnter={(e) => {
+        e.stopPropagation();
+        handleSubmit();
+      }}
+      onChange={(e) => {
+        const start = e.target.selectionStart,
+          end = e.target.selectionEnd;
+        const { displayValue, onChangeValue } = handleChange(e);
+        setValue(displayValue);
+        if (typeof onChangeValue === 'string') {
+          setOnChangeValue(onChangeValue);
+        } else {
+          setOnChangeValue(onChangeValue?.target?.value);
+        }
+        if (e.target.value !== displayValue) {
+          Promise.resolve().then(() => {
+            inputRef.current?.setSelectionRange(start, end);
+          });
+        }
+        if (typeof onChangeValue !== 'string') {
+          onChange?.(onChangeValue?.target?.value);
+        }
+      }}
+      value={value}
+    />
+  );
+});
+
+export { onChangeCaseWrap, CaseTextArea, CaseEditableText };

@@ -207,7 +207,7 @@ const ObjectList = ({ modalStore }: Iprops) => {
                         alignItems: 'center',
                       }}
                     >
-                      <div className={styles.objectTypeTitle}>{DbObjectTypeMap[i.key].label}</div>
+                      <div className={styles.objectTypeTitle}>{DbObjectTypeMap[i.key]?.label}</div>
                       {i.data.length > ALL_TAB_MAX_LENGTH ? (
                         <Button
                           className={styles.objectTypeItemMore}

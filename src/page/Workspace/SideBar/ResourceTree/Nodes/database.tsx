@@ -27,11 +27,11 @@ import { TableTreeData } from './table';
 import { TriggerTreeData } from './trigger';
 import { TypeTreeData } from './type';
 import { ViewTreeData } from './view';
+import { MaterializedViewTreeData } from './materializedView';
 import { ExternalTableTreeData } from './externalTables';
 
 import { ReactComponent as DatabaseSvg } from '@/svgr/database.svg';
 import { openNewSQLPage } from '@/store/helper/page';
-import { DbObjectType } from '@/d.ts';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { isLogicalDatabase, isPhysicalDatabase } from '@/util/database';
 
@@ -87,6 +87,10 @@ export function DataBaseTreeData(
     dbSession?.supportFeature?.enableSynonym &&
     isPhysicalDatabase(dbSession?.odcDatabase) &&
     SynonymTreeData(dbSession, database, true);
+  const materializedViewTreeData =
+    dbSession?.supportFeature?.enableMaterializedView &&
+    isPhysicalDatabase(dbSession?.odcDatabase) &&
+    MaterializedViewTreeData(dbSession, database);
 
   return {
     title: dbName,
@@ -120,6 +124,7 @@ export function DataBaseTreeData(
           sequenceTreeData,
           synonymTreeData,
           publicSynonymTreeData,
+          materializedViewTreeData,
         ].filter(Boolean)
       : null,
   };

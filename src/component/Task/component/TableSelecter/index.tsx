@@ -97,6 +97,7 @@ const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false)
       externalTablesList,
       viewList,
       hasGetTableList,
+      materializedViewList,
       environment,
     } = database;
 
@@ -108,13 +109,27 @@ const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false)
       DbObjectType.external_table,
     );
     const childrenForView = treeChildrenHelper(viewList, DbObjectType.view);
+    const childrenForMaterializedView = treeChildrenHelper(
+      materializedViewList,
+      DbObjectType.materialized_view,
+    );
 
     children = !hasGetTableList
       ? []
-      : [childrenForTable, childrenForExternalTable, childrenForView]?.filter(Boolean);
+      : [
+          childrenForTable,
+          childrenForExternalTable,
+          childrenForView,
+          childrenForMaterializedView,
+        ]?.filter(Boolean);
 
-    const getTotalCount = (tableList, externalTablesList, viewList) => {
-      return (tableList?.length || 0) + (externalTablesList?.length || 0) + (viewList?.length || 0);
+    const getTotalCount = (tableList, externalTablesList, viewList, materializedViewList) => {
+      return (
+        (tableList?.length || 0) +
+        (externalTablesList?.length || 0) +
+        (viewList?.length || 0) +
+        (materializedViewList?.length || 0)
+      );
     };
 
     return {
@@ -132,7 +147,7 @@ const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false)
           </Text>
           <Text type="secondary" ellipsis>
             {hasGetTableList && isSourceTree
-              ? `(${getTotalCount(tableList, externalTablesList, viewList)})`
+              ? `(${getTotalCount(tableList, externalTablesList, viewList, materializedViewList)})`
               : ''}
           </Text>
           {isSourceTree ? envRender(environment) : null}
@@ -185,6 +200,8 @@ const getObjectTypeFromPosition = (position: string): DbObjectType => {
       return DbObjectType.external_table;
     case '2':
       return DbObjectType.view;
+    case '3':
+      return DbObjectType.materialized_view;
     default:
       return DbObjectType.table;
   }
@@ -233,6 +250,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
               tableList: [],
               externalTablesList: [],
               viewList: [],
+              materializedViewList: [],
               isExternalTable: false,
               showTable: true,
             };
@@ -261,7 +279,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
     }
     const filtedDataSource = [];
     for (const datasource of databaseWithTableList) {
-      let { tableList, name, externalTablesList, viewList } = datasource;
+      let { tableList, name, externalTablesList, viewList, materializedViewList } = datasource;
       if (name?.toLowerCase().includes(sourceSearchValue?.toLowerCase())) {
         filtedDataSource.push(datasource);
       } else {
@@ -270,12 +288,16 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
           item?.name?.includes(sourceSearchValue),
         );
         const targetViewList = viewList?.filter((item) => item?.name?.includes(sourceSearchValue));
+        const targetmaterializedViewList = materializedViewList?.filter((item) =>
+          item?.name?.includes(sourceSearchValue),
+        );
         if (targetTableList.length > 0) {
           filtedDataSource.push({
             ...datasource,
             tableList: targetTableList,
             externalTablesList: targetExternalTableList,
             viewList: targetViewList,
+            materializedViewList: targetmaterializedViewList,
           });
         }
       }
@@ -297,6 +319,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
           name: databaseName,
           externalTablesList,
           viewList,
+          materializedViewList,
         } = datasource;
 
         function checkedTableNamesHelper(list: TableItemInDB[]) {
@@ -314,8 +337,14 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
         const checkedTableNames = checkedTableNamesHelper(tableList);
         const externalTableTableNames = checkedTableNamesHelper(externalTablesList);
         const viewNames = checkedTableNamesHelper(viewList);
+        const materializedViewNames = checkedTableNamesHelper(materializedViewList);
 
-        if (!checkedTableNames?.length && !externalTableTableNames?.length && !viewNames?.length) {
+        if (
+          !checkedTableNames?.length &&
+          !externalTableTableNames?.length &&
+          !viewNames?.length &&
+          !materializedViewNames?.length
+        ) {
           continue;
         }
 
@@ -325,6 +354,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
             tableList: checkedTableNames,
             externalTablesList: externalTableTableNames,
             viewList: viewNames,
+            materializedViewList: materializedViewNames,
           });
         } else {
           const searchedTableListHelper = (nameList: TableItemInDB[]) => {
@@ -333,17 +363,20 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
           const searchedTableList = searchedTableListHelper(checkedTableNames);
           const searchedExternalTableTableList = searchedTableListHelper(externalTableTableNames);
           const searchedViewList = searchedTableListHelper(viewNames);
+          const searchedMaterializedViewList = searchedTableListHelper(materializedViewNames);
 
           if (
             searchedTableList.length > 0 ||
             searchedExternalTableTableList.length > 0 ||
-            searchedViewList.length > 0
+            searchedViewList.length > 0 ||
+            searchedMaterializedViewList?.length > 0
           ) {
             filtedDataSource.push({
               ...datasource,
               tableList: searchedTableList,
               externalTablesList: searchedExternalTableTableList,
               viewList: searchedViewList,
+              materializedViewList: searchedMaterializedViewList,
             });
           }
         }
@@ -368,6 +401,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
           .concat(db.tableList || [])
           .concat(db.externalTablesList || [])
           .concat(db.viewList || [])
+          .concat(db.externalTablesList || [])
           ?.map((t) => t.id);
         remainKeys = checkedKeys.filter(
           (key) => !tableIds.includes(parseDataBaseIdAndTableNamebByKey(key)?.tableId),
@@ -387,6 +421,9 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
         }
         if (type == DbObjectType.view) {
           tables = db?.viewList;
+        }
+        if (type == DbObjectType.materialized_view) {
+          tables = db?.materializedViewList;
         }
         const tableIds = new Set(tables?.map((table) => table.id));
         remainKeys = checkedKeys.filter((key) => {
@@ -417,11 +454,13 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
     tables: LoadTableItems[];
     externalTables: LoadTableItems[];
     views: LoadTableItems[];
+    materializedViews: LoadTableItems[];
   }> => {
     const db = databaseWithTableList?.find((_db) => _db.id === databaseId);
     let tables: LoadTableItems[];
     let externalTables: LoadTableItems[];
     let views: LoadTableItems[];
+    let materializedViews: LoadTableItems[];
     if (isLogicalDatabase(db)) {
       const res = await logicalDatabaseDetail(databaseId);
       tables = res?.data?.logicalTables?.map((table) => ({
@@ -434,6 +473,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
         DbObjectType.table,
         DbObjectType.external_table,
         DbObjectType.view,
+        DbObjectType.materialized_view,
       ];
 
       const res = await getTableListWithoutSession(db?.id, params.join(','));
@@ -449,11 +489,13 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
       tables = listHelper(DbObjectType.table);
       externalTables = listHelper(DbObjectType.external_table);
       views = listHelper(DbObjectType.view);
+      materializedViews = listHelper(DbObjectType.materialized_view);
     }
     return {
       tables,
       externalTables,
       views,
+      materializedViews,
     };
   };
 
@@ -463,7 +505,8 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
   const handleLoadTables = useCallback(
     async (databaseId: number) => {
       if (typeof databaseId === 'string') return;
-      let { tables, externalTables, views } = (await getTableList(databaseId)) || {};
+      let { tables, externalTables, views, materializedViews } =
+        (await getTableList(databaseId)) || {};
 
       setDataBaseWithTableList((prevData) => {
         for (const item of prevData ?? []) {
@@ -472,6 +515,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
             item.hasGetTableList = true;
             item.externalTablesList = externalTables;
             item.viewList = views;
+            item.materializedViewList = materializedViews;
             return [...prevData];
           }
         }
@@ -480,6 +524,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
         tables,
         externalTables,
         views,
+        materializedViews,
       };
     },
     [databaseWithTableList],
@@ -515,7 +560,9 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
         if (checked) {
           setSelecting(true);
           try {
-            const { tables, externalTables, views } = await handleLoadTables(curNodeKey);
+            const { tables, externalTables, views, materializedViews } = await handleLoadTables(
+              curNodeKey,
+            );
             const tableList = [...checkedKeys.map(parseDataBaseIdAndTableNamebByKey)];
             tables?.forEach((table) => {
               tableList.push({
@@ -538,6 +585,13 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
                 tableId: table?.id,
               });
             });
+            materializedViews?.forEach((table) => {
+              tableList.push({
+                databaseId: table?.databaseId,
+                tableName: table?.name,
+                tableId: table?.id,
+              });
+            });
             onChange(tableList);
             setSelectedExpandKeys(tableList.map((i) => i.databaseId));
           } finally {
@@ -552,6 +606,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
             .concat(db.tableList || [])
             .concat(db.externalTablesList || [])
             .concat(db.viewList || [])
+            .concat(db.materializedViewList || [])
             ?.map((t) => t.id);
           const tableList = [...checkedKeys.map(parseDataBaseIdAndTableNamebByKey)].filter((i) => {
             return !targetDBTablesId.includes(i.tableId);
@@ -571,11 +626,16 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
         let tables = db?.tableList;
         let externalTables = db?.externalTablesList;
         let views = db?.viewList;
+        let materializedViews = db?.materializedViewList;
         let tableIds = new Set(tables.map((table) => table?.id));
 
         if (type == DbObjectType.external_table) {
           tables = db?.externalTablesList;
           tableIds = new Set(externalTables?.map((table) => table?.id));
+        }
+        if (type == DbObjectType.materialized_view) {
+          tables = db?.materializedViewList;
+          tableIds = new Set(materializedViews?.map((table) => table?.id));
         }
         if (type == DbObjectType.view) {
           tables = db?.viewList;

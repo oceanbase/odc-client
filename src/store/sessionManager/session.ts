@@ -74,6 +74,14 @@ class SessionStore {
     };
   } = {};
 
+  @observable.shallow
+  public allTableAndMaterializedViews: {
+    [dbName: string]: {
+      tables: string[];
+      mvs: string[];
+    };
+  } = {};
+
   /**
    * 这个里面包含系统视图，后续还有可能包含其余的对象
    */
@@ -81,6 +89,7 @@ class SessionStore {
   public allIdentities: {
     [dbName: string]: {
       external_table: string[];
+      materialized_view: string[];
       tables: string[];
       views: string[];
     };
@@ -326,6 +335,7 @@ class SessionStore {
         this.supportFeature.enablePLDebug = allConfig['support_pl_debug'];
       },
       support_external_table: 'enableExternalTable',
+      support_materialized_view: 'enableMaterializedView',
     };
     const allConfig = {};
     data?.forEach((item) => {
@@ -384,6 +394,42 @@ class SessionStore {
         this.allTableAndView[item.databaseName] = { ...dbObj };
       });
       return this.allTableAndView;
+    });
+  }
+
+  @action
+  public async queryTablesAndMaterializedViews(name: string = '', force: boolean = false) {
+    const res = await request.get(
+      `/api/v2/connect/sessions/${this.sessionId}/listMaterializedViewBases`,
+      {
+        params: {
+          name,
+        },
+      },
+    );
+    const tables = {};
+    const mvs = {};
+    const { tables: srcTables = [], mvs: srcMvs = [] } = res?.data;
+    return runInAction(() => {
+      srcTables.forEach((item) => {
+        tables[item.databaseName] = item.tables;
+        const dbObj = this.allTableAndMaterializedViews[item.databaseName] || {
+          tables: [],
+          mvs: [],
+        };
+        dbObj.tables = item.tables;
+        this.allTableAndMaterializedViews[item.databaseName] = { ...dbObj };
+      });
+      srcMvs.forEach((item) => {
+        mvs[item.databaseName] = item.mvs;
+        const dbObj = this.allTableAndMaterializedViews[item.databaseName] || {
+          tables: [],
+          mvs: [],
+        };
+        dbObj.mvs = item.mvs;
+        this.allTableAndMaterializedViews[item.databaseName] = { ...dbObj };
+      });
+      return this.allTableAndMaterializedViews;
     });
   }
 
@@ -489,9 +535,9 @@ class SessionStore {
       return;
     }
     this.lastIdentitiesLoadTime = now;
-    const supportType = this.supportFeature.enableExternalTable
-      ? ['TABLE', 'VIEW', 'EXTERNAL_TABLE']
-      : ['TABLE', 'VIEW'];
+    let supportType = ['TABLE', 'VIEW'];
+    this.supportFeature.enableExternalTable && supportType.push('EXTERNAL_TABLE');
+    this.supportFeature.enableMaterializedView && supportType.push('MATERIALIZED_VIEW');
     const data = await queryIdentities(supportType, this.sessionId, this.database?.dbName);
     if (!data) {
       this.lastTableAndViewLoadTime = 0;
@@ -499,7 +545,12 @@ class SessionStore {
     runInAction(() => {
       data?.forEach((item) => {
         const { schemaName, identities } = item;
-        this.allIdentities[schemaName] = { tables: [], views: [], external_table: [] };
+        this.allIdentities[schemaName] = {
+          tables: [],
+          views: [],
+          external_table: [],
+          materialized_view: [],
+        };
         identities.forEach((identity) => {
           const { type, name } = identity;
 
@@ -514,6 +565,10 @@ class SessionStore {
             }
             case 'EXTERNAL_TABLE': {
               this.allIdentities[schemaName].external_table.push(name);
+              return;
+            }
+            case 'MATERIALIZED_VIEW': {
+              this.allIdentities[schemaName].materialized_view.push(name);
               return;
             }
           }

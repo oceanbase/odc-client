@@ -29,6 +29,7 @@ import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import copy from 'copy-to-clipboard';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
+import { getMaterializedView } from '@/common/network/materializedView/index';
 
 export const CLOSE_INSERT_PROMPT_KEY = 'CLOSE_INSERT_PROMPT';
 
@@ -201,6 +202,21 @@ async function getColumns(
         (await getView(name, sessionId, dbName))?.columns
           ?.map((column) => {
             return getQuoteTableName(column.columnName, dbSession?.connection?.dialectType);
+          })
+          .join(', ') || ''
+      );
+    }
+    case DbObjectType.materialized_view: {
+      return (
+        (
+          await getMaterializedView({
+            materializedViewName: name,
+            sessionId,
+            dbName,
+          })
+        )?.columns
+          ?.map((column) => {
+            return getQuoteTableName(column.name, dbSession?.connection?.dialectType);
           })
           .join(', ') || ''
       );

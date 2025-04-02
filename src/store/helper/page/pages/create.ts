@@ -60,6 +60,22 @@ export class CreateViewPage extends Page {
   }
 }
 
+export class CreateMaterializedViewPage extends Page {
+  public pageParams: {
+    databaseId: number;
+  };
+
+  constructor(databaseId: number) {
+    super();
+    this.pageKey = `createMaterializedViewPage-${generateUniqKey()}`;
+    this.pageTitle = '新建物化视图';
+    this.pageType = PageType.CREATE_MATERIALIZED_VIEW;
+    this.pageParams = {
+      databaseId,
+    };
+  }
+}
+
 export class SQLConfirmPage extends Page {
   public pageParams: {
     databaseId: number;
