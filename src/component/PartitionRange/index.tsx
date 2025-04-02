@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import { Component } from 'react';
-
+import { useCallback } from 'react';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-// compatible
-
 import { Button, Form, Input, Table } from 'antd';
 import update from 'immutability-helper';
 import PartitionValueInput from './PartitionValueInput';
@@ -43,159 +40,148 @@ interface IProps {
 
 let dragIdxGenerator = 1;
 
-export default class PartitionRange extends Component<IProps> {
-  public handleAdd = (e) => {
-    const { value, onChange, partitionType } = this.props;
-    if (value && onChange) {
-      const update = [...value].concat({
-        dragIdx: dragIdxGenerator++,
-        name: '',
-        value: partitionType === 'LIST_COLUMNS' ? [{}] : '',
-      });
-
-      onChange(update);
-    }
-  };
-
-  public handleDelete = (idx: number) => {
-    const { value, onChange } = this.props;
-    if (value && onChange) {
-      value.splice(idx, 1);
-      onChange(value);
-    }
-  };
-
-  public handleEdit = (idx: number, rule: Partial<ISinglePartitionRule>) => {
-    const { value, onChange } = this.props;
-    if (value && onChange) {
-      // 替换 idx 的值
-      value.splice(idx, 1, {
-        ...value[idx],
-        ...rule,
-      });
-
-      onChange(value);
-    }
-  };
-
-  private handlePartitionNameChange = (index, value) => {
-    this.handleEdit(index, { name: value });
-  };
-
-  public handleMove = (dragIndex: number, hoverIndex: number) => {
-    const { value, onChange } = this.props;
-    if (value) {
-      const dragParam = value[dragIndex];
-      if (onChange) {
-        const updateValue = update(value, {
-          $splice: [
-            [dragIndex, 1],
-            [hoverIndex, 0, dragParam],
-          ],
-        });
-
-        onChange(updateValue);
+const PartitionRange: React.FC<IProps> = ({
+  partitionType,
+  selectColums,
+  partitionValuePlaceholder,
+  partitionValueLabel,
+  value,
+  onChange,
+}) => {
+  const handleAdd = useCallback(
+    (e) => {
+      if (value && onChange) {
+        const newItem = {
+          dragIdx: dragIdxGenerator++,
+          name: '',
+          value: partitionType === 'LIST_COLUMNS' ? [{}] : '',
+        };
+        const updatedList = [...value, newItem];
+        onChange(updatedList);
       }
-    }
-  };
+    },
+    [value, onChange, partitionType],
+  );
 
-  public render() {
-    const { value, partitionType, selectColums } = this.props;
-    const self = this;
-    const dataSource = [...value];
-    let labelPlus = '';
-    if (partitionType === 'LIST_COLUMNS') {
-      labelPlus = ` ${selectColums.map((item) => item.columnName).join(':')}`;
-    }
-    const columns = [
-      {
-        title: formatMessage({
-          id: 'odc.component.PartitionRange.PartitionName',
-          defaultMessage: '分区名称',
-        }),
-        dataIndex: 'name',
-        key: 'name',
-        width: '242px',
-        render(val, record, index) {
-          const errorMessage = record.error && record.error.name;
-          return (
-            <Form.Item
-              name={['partitions', index, 'name']}
-              validateStatus={errorMessage ? 'error' : null}
-              help={errorMessage || ''}
-            >
-              <Input
-                onChange={(e) => {
-                  self.handlePartitionNameChange(index, e.target.value);
-                }}
-                placeholder={formatMessage({
-                  id: 'odc.component.PartitionRange.Enter',
-                  defaultMessage: '请输入',
-                })}
-                autoFocus={true}
-              />
-            </Form.Item>
-          );
-        },
-      },
+  const handleDelete = useCallback(
+    (idx: number) => {
+      if (value && onChange) {
+        const newList = [...value];
+        newList.splice(idx, 1);
+        onChange(newList);
+      }
+    },
+    [value, onChange],
+  );
 
-      {
-        title: this.props.partitionValueLabel + labelPlus,
-        dataIndex: 'value',
-        key: 'value',
-        render(val, record, index) {
-          return (
-            <div className={styles.partitionValueWrap}>
-              <PartitionValueInput
-                error={record.error && record.error.value}
-                index={index}
-                partitionType={self.props.partitionType}
-                selectColums={self.props.selectColums}
-                value={val}
-                placeholder={self.props.partitionValuePlaceholder}
-                handleEdit={self.handleEdit}
-              />
+  const handleEdit = useCallback(
+    (idx: number, rule: Partial<ISinglePartitionRule>) => {
+      if (value && onChange) {
+        const newList = [...value];
+        newList.splice(idx, 1, {
+          ...newList[idx],
+          ...rule,
+        });
+        onChange(newList);
+      }
+    },
+    [value, onChange],
+  );
 
-              {dataSource.length > 1 ? (
-                <DeleteOutlined
-                  style={{
-                    lineHeight: '32px',
-                  }}
-                  className="btn-partition-delete"
-                  onClick={() => {
-                    self.handleDelete(index);
-                  }}
-                />
-              ) : null}
-            </div>
-          );
-        },
-      },
-    ];
+  const handlePartitionNameChange = useCallback(
+    (index, val) => {
+      handleEdit(index, { name: val });
+    },
+    [handleEdit],
+  );
 
-    return (
-      <>
-        <Table
-          columns={columns}
-          dataSource={dataSource}
-          tableLayout="fixed"
-          className={styles.table}
-          bordered
-          pagination={false}
-        />
-
-        <Button
-          className={styles.btnAdd}
-          icon={<PlusOutlined />}
-          size="small"
-          onClick={this.handleAdd}
-        >
-          {formatMessage({
-            id: 'workspace.window.createTable.partition.button.add',
-            defaultMessage: '添加分区',
-          })}
-        </Button>
-      </>
-    );
+  const dataSource = value ? [...value] : [];
+  let labelPlus = '';
+  if (partitionType === 'LIST_COLUMNS') {
+    labelPlus = ` ${selectColums?.map((item) => item.columnName).join(':')}`;
   }
-}
+  const columns = [
+    {
+      title: formatMessage({
+        id: 'odc.component.PartitionRange.PartitionName',
+        defaultMessage: '分区名称',
+      }),
+      dataIndex: 'name',
+      key: 'name',
+      width: '242px',
+      render: (val, record, index) => {
+        const errorMessage = record.error && record.error.name;
+        return (
+          <Form.Item
+            name={['partitions', index, 'name']}
+            validateStatus={errorMessage ? 'error' : null}
+            help={errorMessage || ''}
+          >
+            <Input
+              onChange={(e) => {
+                handlePartitionNameChange(index, e.target.value);
+              }}
+              placeholder={formatMessage({
+                id: 'odc.component.PartitionRange.Enter',
+                defaultMessage: '请输入',
+              })}
+              autoFocus={true}
+            />
+          </Form.Item>
+        );
+      },
+    },
+    {
+      title: partitionValueLabel + labelPlus,
+      dataIndex: 'value',
+      key: 'value',
+      render: (val, record, index) => {
+        return (
+          <div className={styles.partitionValueWrap}>
+            <PartitionValueInput
+              error={record.error && record.error.value}
+              index={index}
+              partitionType={partitionType}
+              selectColums={selectColums}
+              value={val}
+              placeholder={partitionValuePlaceholder}
+              handleEdit={handleEdit}
+            />
+            {dataSource.length > 1 ? (
+              <DeleteOutlined
+                style={{
+                  lineHeight: '32px',
+                }}
+                className="btn-partition-delete"
+                onClick={() => {
+                  handleDelete(index);
+                }}
+              />
+            ) : null}
+          </div>
+        );
+      },
+    },
+  ];
+
+  return (
+    <>
+      <Table
+        columns={columns}
+        dataSource={dataSource}
+        tableLayout="fixed"
+        className={styles.table}
+        bordered
+        pagination={false}
+      />
+      <Button className={styles.btnAdd} icon={<PlusOutlined />} size="small" onClick={handleAdd}>
+        {formatMessage({
+          id: 'workspace.window.createTable.partition.button.add',
+          defaultMessage: '添加分区',
+        })}
+      </Button>
+    </>
+  );
+};
+
+export default PartitionRange;
