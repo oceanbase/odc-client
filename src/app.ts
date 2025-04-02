@@ -24,6 +24,7 @@ import logger from './util/logger';
 import { getRoute } from './util/tracert/userRoutes';
 import { initIntl } from './util/intl';
 import { initSentry } from './util/sentry';
+import { initDatasource } from './common/datasource';
 if (isClient()) {
   import('@sentry/electron').then((_Sentry) => {
     _Sentry.init({
@@ -62,6 +63,7 @@ export async function render(oldRender: () => void) {
   registerPlugins();
   await initIntl();
   await initMetaStore();
+  await initDatasource();
   oldRender();
 }
 
