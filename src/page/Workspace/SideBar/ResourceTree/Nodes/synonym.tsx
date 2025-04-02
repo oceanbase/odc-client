@@ -45,7 +45,7 @@ export function SynonymTreeData(
   };
   if (synonyms) {
     treeData.children = synonyms.map((synonym) => {
-      const key = `${database.id}-${dbName}-sequence-${isPublic}-${synonym.synonymName}`;
+      const key = `${database.id}-${dbName}-synonym-${isPublic}-${synonym.synonymName}`;
       return {
         title: synonym.synonymName,
         key,

@@ -175,7 +175,7 @@ const ResourceTree: React.FC<IProps> = function ({
    */
   const startPosition = async (index) => {
     if (!shouldExpandedKeys?.[index]) {
-      positionResourceByKey(currentObject.value, 300).then(() => {
+      positionResourceByKey(currentObject.value, 300)?.then(() => {
         setLoading(false);
         setShouldExpandedKeys([]);
       });
@@ -199,7 +199,7 @@ const ResourceTree: React.FC<IProps> = function ({
   };
 
   useEffect(() => {
-    if (shouldExpandedKeys?.length && currentObject) {
+    if (shouldExpandedKeys?.length && currentObject.value) {
       setTimeout(() => {
         setExpandedKeys(Array.from(new Set([...expandedKeys, ...shouldExpandedKeys])));
         setLoading(true);
@@ -460,7 +460,8 @@ const ResourceTree: React.FC<IProps> = function ({
                 expandedKeys={expandedKeys}
                 loadedKeys={loadedKeys}
                 onLoad={onLoad}
-                height={wrapperHeight}
+                // 需要初始一个height值，否则初始时wrapperHeight为0，会先渲染全量数据
+                height={wrapperHeight || 1000}
                 selectable={true}
                 selectedKeys={[currentObject?.value].filter(Boolean)}
               />

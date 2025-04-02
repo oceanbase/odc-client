@@ -1,11 +1,13 @@
 import { ResourceNodeType } from './type';
 import { IDatabase, DatabaseGroup } from '@/d.ts/database';
-import { DbObjectType } from '@/d.ts';
+import { DbObjectType, PageType, IPage, SynonymType } from '@/d.ts';
 import { getMapIdByDB } from './helper';
 import { isString } from 'lodash';
 import modalStore from '@/store/modal';
 import { SearchStatus } from '@/page/Workspace/SideBar/ResourceTree/DatabaseSearchModal/constant';
 import { TreeDataNode } from '@/page/Workspace/SideBar/ResourceTree/type';
+import React, { useContext, useEffect } from 'react';
+
 const isSupportQuickOpenGlobalSearchNodes = (type: ResourceNodeType, key) => {
   let isSupport = false;
   switch (type) {
@@ -131,7 +133,7 @@ const getShouldExpandedKeysByObject = (params: {
   let shouldExpandedKeys: React.Key[] = [];
   let currentKey: React.Key;
   let currentResourceNodeType: ResourceNodeType;
-  if (groupMode !== DatabaseGroup.none) {
+  if (groupMode !== DatabaseGroup.none && db) {
     const { mapId } = getMapIdByDB(db, groupMode);
     const { mapId: secondMapId } = getMapIdByDB(db, DatabaseGroup.dataSource);
     shouldExpandedKeys.push(
@@ -218,7 +220,7 @@ const getShouldExpandedKeysByObject = (params: {
     }
     case DbObjectType.synonym: {
       shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-synonym-false`);
-      currentKey = `${db.id}-${db.name}-sequence-false-${name}`;
+      currentKey = `${db.id}-${db.name}-synonym-false-${name}`;
       currentResourceNodeType = ResourceNodeType.Synonym;
       break;
     }
@@ -226,7 +228,7 @@ const getShouldExpandedKeysByObject = (params: {
   if ([DatabaseGroup.project, DatabaseGroup.dataSource, DatabaseGroup.tenant].includes(groupMode)) {
     shouldExpandedKeys = shouldExpandedKeys.filter((item) => {
       if (isString(item)) {
-        return !item.includes(TreeDataSecondGroupKey);
+        return !item?.includes(TreeDataSecondGroupKey);
       }
       return true;
     });
@@ -236,6 +238,216 @@ const getShouldExpandedKeysByObject = (params: {
     currentKey,
     currentResourceNodeType,
   };
+};
+
+/** 根据page信息定位至数据源 */
+const getDataSourceShouldExpandedKeysByPage = (params: { datasourceId: number }) => {
+  const { datasourceId } = params;
+  let shouldExpandedKeys: React.Key[] = [];
+  let currentKey: React.Key;
+  let currentResourceNodeType: ResourceNodeType;
+  // 此时这里只需要定位，不需要展开,赋值undefined 使 shouldExpandedKeys.length 不为0 触发定位即可
+  shouldExpandedKeys.push(undefined);
+  currentKey = getGroupKey(datasourceId, DatabaseGroup.dataSource);
+  currentResourceNodeType = ResourceNodeType.GroupNodeDataSource;
+  return {
+    shouldExpandedKeys,
+    currentKey,
+    currentResourceNodeType,
+  };
+};
+
+const getObjectShouldExpandedKeysByPage = (params: {
+  page: IPage;
+  db: IDatabase;
+  groupMode: DatabaseGroup;
+}) => {
+  const { page, db, groupMode } = params;
+  let shouldExpandedKeys: React.Key[] = [];
+  let currentKey: React.Key;
+  let currentResourceNodeType: ResourceNodeType;
+  if (groupMode !== DatabaseGroup.none && db) {
+    const { mapId } = getMapIdByDB(db, groupMode);
+    const { mapId: secondMapId } = getMapIdByDB(db, DatabaseGroup.dataSource);
+    shouldExpandedKeys.push(
+      getGroupKey(mapId, groupMode),
+      getSecondGroupKey(mapId, secondMapId, groupMode),
+    );
+  }
+  switch (page.type) {
+    case PageType.SQL:
+    case PageType.PL: {
+      if (groupMode === DatabaseGroup.none) {
+        // 此时这里只需要定位，不需要展开,赋值undefined 使 shouldExpandedKeys.length 不为0 触发定位即可
+        shouldExpandedKeys.push(undefined);
+      }
+      currentKey = db.id;
+      currentResourceNodeType = ResourceNodeType.Database;
+      break;
+    }
+    case PageType.CREATE_TABLE: {
+      shouldExpandedKeys.push(db.id);
+      currentKey = `${db.id}-${db.name}-table`;
+      currentResourceNodeType = ResourceNodeType.TableRoot;
+      break;
+    }
+    case PageType.TABLE: {
+      shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-table`);
+      currentKey = `${db.id}-${db.name}-table-${page?.params?.tableName}`;
+      currentResourceNodeType = ResourceNodeType.Table;
+      break;
+    }
+    case PageType.VIEW: {
+      shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-view`);
+      currentKey = `${db.id}-${db.name}-view-${page?.params?.viewName}`;
+      currentResourceNodeType = ResourceNodeType.View;
+      break;
+    }
+    case PageType.CREATE_VIEW: {
+      shouldExpandedKeys.push(db.id);
+      currentKey = `${db.id}-${db.name}-view`;
+      currentResourceNodeType = ResourceNodeType.ViewRoot;
+      break;
+    }
+    case PageType.FUNCTION:
+    case PageType.BATCH_COMPILE_FUNCTION:
+    case PageType.CREATE_FUNCTION: {
+      shouldExpandedKeys.push(db.id);
+      currentKey = `${db.id}-${db.name}-function-pkg`;
+      currentResourceNodeType = ResourceNodeType.FunctionRoot;
+      break;
+    }
+    case PageType.PROCEDURE:
+    case PageType.BATCH_COMPILE_PROCEDURE:
+    case PageType.CREATE_PROCEDURE: {
+      shouldExpandedKeys.push(db.id);
+      currentKey = `${db.id}-${db.name}-procedure`;
+      currentResourceNodeType = ResourceNodeType.ProcedureRoot;
+      break;
+    }
+    case PageType.CREATE_MATERIALIZED_VIEW: {
+      shouldExpandedKeys.push(db.id);
+      currentKey = `${db.id}-${db.name}-materializedView`;
+      currentResourceNodeType = ResourceNodeType.MaterializedViewRoot;
+      break;
+    }
+    case PageType.MATERIALIZED_VIEW: {
+      shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-materializedView`);
+      currentKey = `${db.id}-${db.name}-materializedView-${page?.params?.name}`;
+      currentResourceNodeType = ResourceNodeType.MaterializedView;
+      break;
+    }
+    case PageType.SEQUENCE: {
+      shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-sequence`);
+      currentKey = `${db.id}-${db.name}-sequence-${page?.params?.sequenceName}`;
+      currentResourceNodeType = ResourceNodeType.Sequence;
+      break;
+    }
+    case PageType.CREATE_SEQUENCE: {
+      shouldExpandedKeys.push(db.id);
+      currentKey = `${db.id}-${db.name}-sequence`;
+      currentResourceNodeType = ResourceNodeType.SequenceRoot;
+      break;
+    }
+    case PageType.PACKAGE: {
+      shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-package`);
+      currentKey = `${db.id}-${db.name}-package-${page?.params?.packageName}`;
+      currentResourceNodeType = ResourceNodeType.Package;
+      break;
+    }
+    case PageType.CREATE_PACKAGE:
+    case PageType.BATCH_COMPILE_PACKAGE: {
+      shouldExpandedKeys.push(db.id);
+      currentKey = `${db.id}-${db.name}-package`;
+      currentResourceNodeType = ResourceNodeType.PackageRoot;
+      break;
+    }
+    case PageType.TRIGGER: {
+      shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-trigger`);
+      currentKey = `${db.id}-${db.name}-trigger-${page?.params?.triggerName}`;
+      currentResourceNodeType = ResourceNodeType.Trigger;
+      break;
+    }
+    case PageType.CREATE_TRIGGER:
+    case PageType.BATCH_COMPILE_TRIGGER:
+    case PageType.CREATE_TRIGGER_SQL: {
+      shouldExpandedKeys.push(db.id);
+      currentKey = `${db.id}-${db.name}-trigger`;
+      currentResourceNodeType = ResourceNodeType.TriggerRoot;
+      break;
+    }
+    case PageType.TYPE: {
+      shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-type`);
+      currentKey = `${db.id}-${db.name}-type-${page?.params?.typeName}`;
+      currentResourceNodeType = ResourceNodeType.Type;
+      break;
+    }
+    case PageType.CREATE_TYPE:
+    case PageType.BATCH_COMPILE_TYPE: {
+      shouldExpandedKeys.push(db.id);
+      currentKey = `${db.id}-${db.name}-type`;
+      currentResourceNodeType = ResourceNodeType.TypeRoot;
+      break;
+    }
+    case PageType.SYNONYM: {
+      if (page?.params?.synonymType === SynonymType.PUBLIC) {
+        shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-synonym-true`);
+        currentKey = `${db.id}-${db.name}-synonym-true-${page?.params?.synonymName}`;
+        currentResourceNodeType = ResourceNodeType.PublicSynonym;
+      } else if (page?.params?.synonymType === SynonymType.COMMON) {
+        shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-synonym-false`);
+        currentKey = `${db.id}-${db.name}-synonym-false-${page?.params?.synonymName}`;
+        currentResourceNodeType = ResourceNodeType.Synonym;
+      }
+      break;
+    }
+    case PageType.CREATE_SYNONYM: {
+      if (page?.params?.synonymType === SynonymType.PUBLIC) {
+        shouldExpandedKeys.push(db.id);
+        currentKey = `${db.id}-${db.name}-synonym-true`;
+        currentResourceNodeType = ResourceNodeType.PublicSynonymRoot;
+      } else if (page?.params?.synonymType === SynonymType.COMMON) {
+        shouldExpandedKeys.push(db.id);
+        currentKey = `${db.id}-${db.name}-synonym-false`;
+        currentResourceNodeType = ResourceNodeType.SynonymRoot;
+      }
+      break;
+    }
+  }
+  if ([DatabaseGroup.project, DatabaseGroup.dataSource, DatabaseGroup.tenant].includes(groupMode)) {
+    shouldExpandedKeys = shouldExpandedKeys.filter((item) => {
+      if (isString(item)) {
+        return !item?.includes(TreeDataSecondGroupKey);
+      }
+      return true;
+    });
+  }
+  return {
+    shouldExpandedKeys,
+    currentKey,
+    currentResourceNodeType,
+  };
+};
+
+const getShouldExpandedKeysByPage = (params: {
+  page: IPage;
+  db: IDatabase;
+  groupMode: DatabaseGroup;
+  datasourceId: number;
+  databaseList: IDatabase[];
+  setGroupMode: (group: DatabaseGroup) => void;
+}) => {
+  const { page, datasourceId, setGroupMode } = params;
+  // 定位到数据源的情况
+  if (
+    [PageType.SESSION_PARAM, PageType.SESSION_MANAGEMENT, PageType.RECYCLE_BIN].includes(page.type)
+  ) {
+    setGroupMode(DatabaseGroup.dataSource);
+    return getDataSourceShouldExpandedKeysByPage({ datasourceId });
+  } else {
+    // 定位到具体对象的情况
+    return getObjectShouldExpandedKeysByPage(params);
+  }
 };
 
 const openGlobalSearch = (node: TreeDataNode) => {
@@ -284,6 +496,7 @@ export {
   getShouldExpandedGroupKeys,
   getShouldExpandedKeysByObject,
   isSupportQuickOpenGlobalSearchNodes,
+  getShouldExpandedKeysByPage,
   isGroupNode,
   GroupNodeToResourceNodeType,
   openGlobalSearch,

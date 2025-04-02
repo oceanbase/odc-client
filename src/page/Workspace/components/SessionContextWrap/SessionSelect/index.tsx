@@ -36,21 +36,21 @@ import login from '@/store/login';
 import tracert from '@/util/tracert';
 import classNames from 'classnames';
 import SessionDropdown from './SessionDropdown';
-import { getShouldExpandedGroupKeys } from '@/page/Workspace/SideBar/ResourceTree/const';
-import { ResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/type';
+import { getShouldExpandedKeysByPage } from '@/page/Workspace/SideBar/ResourceTree/const';
+import { inject, observer } from 'mobx-react';
+import type { PageStore } from '@/store/page';
 
-export default function SessionSelect({
-  readonly,
-  feature,
-  supportLocation,
-  isIncludeLogicalDb = true,
-}: {
+interface IProps {
   readonly?: boolean;
   dialectTypes?: ConnectionMode[];
   feature?: keyof IDataSourceModeConfig['features'];
   supportLocation?: boolean;
   isIncludeLogicalDb?: boolean;
-}) {
+  pageStore?: PageStore;
+}
+
+const SessionSelect: React.FC<IProps> = (props) => {
+  const { readonly, feature, supportLocation, isIncludeLogicalDb = true, pageStore } = props;
   const context = useContext(SessionContext);
   const resourceTreeContext = useContext(ResourceTreeContext);
   const activityContext = useContext(ActivityBarContext);
@@ -60,23 +60,23 @@ export default function SessionSelect({
 
   function focusDataBase(e: React.MouseEvent) {
     const datasourceId = context?.session?.odcDatabase?.dataSource?.id || context?.datasourceId;
-    const databaseId = context?.session?.odcDatabase?.id;
     activityContext.setActiveKey(ActivityBarItemType.Database);
+    const obj = getShouldExpandedKeysByPage({
+      page: pageStore.activePage,
+      db: context?.session?.odcDatabase,
+      groupMode: resourceTreeContext.groupMode,
+      datasourceId,
+      databaseList: resourceTreeContext.databaseList,
+      setGroupMode: (group: DatabaseGroup) => {
+        resourceTreeContext.setGroupMode(group);
+      },
+    });
     resourceTreeContext.setSelectDatasourceId(datasourceId);
-    resourceTreeContext.setCurrentObject({ value: databaseId, type: ResourceNodeType.Database });
-    let shouldExpandedGroupKeys;
-    if (resourceTreeContext.groupMode !== DatabaseGroup.none) {
-      shouldExpandedGroupKeys = getShouldExpandedGroupKeys({
-        key: databaseId,
-        type: ResourceNodeType.Database,
-        groupMode: resourceTreeContext.groupMode,
-        databaseList: resourceTreeContext.databaseList,
-      });
-    } else {
-      // 此时这里只需要定位，不需要展开,赋值undefined 使 shouldExpandedKeys.length 不为0 触发定位即可
-      shouldExpandedGroupKeys = [undefined];
-    }
-    resourceTreeContext.setShouldExpandedKeys(shouldExpandedGroupKeys);
+    resourceTreeContext.setShouldExpandedKeys(obj?.shouldExpandedKeys || []);
+    resourceTreeContext.setCurrentObject({
+      value: obj?.currentKey,
+      type: obj?.currentResourceNodeType,
+    });
     e.stopPropagation();
     e.preventDefault();
   }
@@ -255,4 +255,6 @@ export default function SessionSelect({
       )}
     </>
   );
-}
+};
+
+export default inject('pageStore')(observer(SessionSelect));

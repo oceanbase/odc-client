@@ -22,7 +22,6 @@ import tracert from '@/util/tracert';
 import { Spin } from 'antd';
 import DatabaseTree from './DatabaseTree';
 import TreeStateStore, { ITreeStateCache } from './TreeStateStore';
-import { useParams } from '@umijs/max';
 import { ModalStore } from '@/store/modal';
 
 export default inject(
@@ -45,6 +44,7 @@ export default inject(
     async function initData() {
       await resourcetreeContext.reloadDatabaseList();
       resourcetreeContext.reloadDatasourceList();
+      resourcetreeContext.reloadProjectList();
       setLoading(false);
       pollingDatabase();
     }

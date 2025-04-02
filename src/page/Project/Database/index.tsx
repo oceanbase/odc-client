@@ -118,6 +118,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
   };
 
   const rowSelection = {
+    columnWidth: 48,
     selectedRowKeys: selectedTempRowKeys,
     preserveSelectedRowKeys: true,
     checkStrictly: false,
@@ -199,6 +200,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
         rowKey={'id'}
         rowSelection={!projectArchived ? rowSelection : null}
         loading={loading || fetchEnvLoading}
+        virtual
         isScroll
         expandable={{
           indentSize: 20,
@@ -536,6 +538,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             },
           },
         ]}
+        scroll={{ x: 1400 }}
         dataSource={treeData}
         pagination={false}
         enableResize

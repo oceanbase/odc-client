@@ -142,6 +142,7 @@ export default function MiniTable<T extends object>({
           isScroll
             ? {
                 y: scrollHeight,
+                x: cloneProps.scroll.x || 1400,
               }
             : null
         }

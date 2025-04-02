@@ -1,21 +1,18 @@
-import { listDatabases } from '@/common/network/database';
 import { useRequest } from 'ahooks';
-import { listProjects } from '@/common/network/project';
-import { getDataSourceGroupByProject } from '@/common/network/connection';
 import { getDatabaseObject } from '@/common/network/database';
-import login from '@/store/login';
-import { useCallback, useState, useEffect, useMemo } from 'react';
-import { IDatasource } from '@/d.ts/datasource';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { IProject } from '@/d.ts/project';
 import { IDatabase, IDatabaseObject } from '@/d.ts/database';
 import { IConnection, DbObjectType } from '@/d.ts';
 import { ModalStore } from '@/store/modal';
 import { SEARCH_OBJECT_FROM_ALL_DATABASE } from '../constant';
+import { listDatabases } from '@/common/network/database';
+import { isLogicalDatabase } from '@/util/database';
+import { syncAll } from '@/common/network/database';
+import login from '@/store/login';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import { isPhysicalDatabase } from '@/util/database';
-import { isLogicalDatabase } from '@/util/database';
-import { syncAll } from '@/common/network/database';
 
 const useGlobalSearchData = (params: {
   project: IProject;
@@ -25,46 +22,10 @@ const useGlobalSearchData = (params: {
   activeKey: string;
 }) => {
   const { project, dataSource, database, modalStore, activeKey } = params;
-  const [datasourceList, setDatasourceList] = useState<IDatasource[]>([]);
-  const [projectList, setProjectList] = useState<IProject[]>([]);
-  const [databaseList, setDatabaseList] = useState<IDatabase[]>([]);
   const [objectlist, setObjectlist] = useState<IDatabaseObject>();
-
-  const { loading: projectLoading, run: fetchProject } = useRequest(listProjects, {
-    defaultParams: [null, 1, 9999, false],
-    manual: true,
-  });
-
-  const objectQueryType = useMemo(() => {
-    switch (activeKey) {
-      case DbObjectType.database:
-        return 'SCHEMA';
-      case SEARCH_OBJECT_FROM_ALL_DATABASE:
-        return null;
-      case DbObjectType.table:
-        return [DbObjectType.logical_table, DbObjectType.table];
-      default:
-        return activeKey;
-    }
-  }, [activeKey]);
-
-  const { loading: dataSourceLoading, run: fetchDatasource } = useRequest(
-    getDataSourceGroupByProject,
-    {
-      defaultParams: [],
-      manual: true,
-    },
-  );
+  const [databaseList, setDatabaseList] = useState<IDatabase[]>([]);
 
   const { run: fetchDatabases, loading: databaseLoading } = useRequest(listDatabases, {
-    manual: true,
-  });
-
-  const { run: fetchObject, loading: objectloading } = useRequest(getDatabaseObject, {
-    manual: true,
-  });
-
-  const { loading: syncAllLoading, run: fetchSyncAll } = useRequest(syncAll, {
     manual: true,
   });
 
@@ -97,15 +58,32 @@ const useGlobalSearchData = (params: {
     setDatabaseList(databases || []);
   }, []);
 
-  const loadDatasourceList = useCallback(async () => {
-    const data = await fetchDatasource();
-    setDatasourceList(data?.contents || []);
-  }, []);
+  useEffect(() => {
+    if (modalStore.databaseSearchModalVisible) {
+      loadDatabaseList();
+    }
+  }, [modalStore.databaseSearchModalVisible]);
 
-  const loadProjectList = useCallback(async () => {
-    const data = await fetchProject(null, 1, 99999, false);
-    setProjectList(data?.contents || []);
-  }, []);
+  const objectQueryType = useMemo(() => {
+    switch (activeKey) {
+      case DbObjectType.database:
+        return 'SCHEMA';
+      case SEARCH_OBJECT_FROM_ALL_DATABASE:
+        return null;
+      case DbObjectType.table:
+        return [DbObjectType.logical_table, DbObjectType.table];
+      default:
+        return activeKey;
+    }
+  }, [activeKey]);
+
+  const { run: fetchObject, loading: objectloading } = useRequest(getDatabaseObject, {
+    manual: true,
+  });
+
+  const { loading: syncAllLoading, run: fetchSyncAll } = useRequest(syncAll, {
+    manual: true,
+  });
 
   const loadDatabaseObject = async (value) => {
     let dataSourceId;
@@ -121,29 +99,14 @@ const useGlobalSearchData = (params: {
     setObjectlist(res?.data);
   };
 
-  useEffect(() => {
-    if (modalStore.databaseSearchModalVisible) {
-      loadDatabaseList();
-      loadDatasourceList();
-      !login.isPrivateSpace() && loadProjectList();
-    }
-  }, [modalStore.databaseSearchModalVisible]);
-
   return {
     objectlist,
-    datasourceList,
-    projectList,
-    databaseList,
-    loadDatabaseList,
-    loadDatasourceList,
-    loadProjectList,
     loadDatabaseObject,
     fetchSyncAll,
-    projectLoading,
-    dataSourceLoading,
-    databaseLoading,
     objectloading,
     syncAllLoading,
+    databaseLoading,
+    databaseList,
   };
 };
 
