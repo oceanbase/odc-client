@@ -41,6 +41,10 @@ interface IDataSourceSupport {
   (type: ConnectType, config: IDataSourceModeConfig): boolean;
 }
 
+interface ICreatedByMeRolesSupport {
+  (): boolean;
+}
+
 export class ODC {
   public ODCErrorHandle: Set<IODCErrorHandle> = new Set();
 
@@ -58,6 +62,8 @@ export class ODC {
 
   public datasourceSupport: IDataSourceSupport;
 
+  public createdByMeRolesSupport: ICreatedByMeRolesSupport;
+
   public addErrorHandle(handle: IODCErrorHandle) {
     this.ODCErrorHandle.add(handle);
   }
@@ -71,6 +77,9 @@ export class ODC {
   }
   public setDataSourceSupport(handle: IDataSourceSupport) {
     this.datasourceSupport = handle;
+  }
+  public setCreatedByMeRolesSupport(handle: ICreatedByMeRolesSupport) {
+    this.createdByMeRolesSupport = handle;
   }
   public appConfig: Partial<typeof defaultConfig> = defaultConfig;
 }
