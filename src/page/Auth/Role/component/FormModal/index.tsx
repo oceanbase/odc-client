@@ -280,14 +280,17 @@ const FormModal: React.FC<IProps> = (props) => {
   };
 
   function getResourceIdByResponseKey(responseKey) {
-    if (responseKey === ALL_SELECTED_VALUE) return ALL_SELECTED_ID;
+    if (isNull(responseKey) || responseKey === ALL_SELECTED_VALUE()) return ALL_SELECTED_ID;
     if (responseKey === ALL_I_HAVE_CREATED_VALUE) return ALL_I_HAVE_CREATED_ID;
     return responseKey;
   }
 
-  function getResourceIdById(resourceId) {
+  function getResourceIdById(type, resourceId) {
+    if (type === 'systemOperationPermissions') {
+      return ALL_SELECTED_VALUE();
+    }
     if (isSelectedAllThatIHaveCreated(resourceId)) return ALL_I_HAVE_CREATED_VALUE;
-    if (isSelectedAll(resourceId)) return ALL_SELECTED_VALUE;
+    if (isSelectedAll(resourceId)) return ALL_SELECTED_VALUE();
     return resourceId;
   }
 
@@ -306,7 +309,7 @@ const FormModal: React.FC<IProps> = (props) => {
     return values?.map(({ resourceId, actions, ...reset }) => {
       return {
         ...reset,
-        resourceId: type === 'resourceManagementPermissions' ? getResourceIdById(resourceId) : '*',
+        resourceId: getResourceIdById(type, resourceId),
         actions: actionMap?.[actions],
       };
     });
@@ -372,7 +375,7 @@ const FormModal: React.FC<IProps> = (props) => {
             ?.forEach((type) => {
               formData.resourceManagementPermissions?.push({
                 resourceType: type,
-                resourceId: ALL_SELECTED_VALUE,
+                resourceId: ALL_SELECTED_VALUE(),
                 actions: ['create'],
               });
             });
