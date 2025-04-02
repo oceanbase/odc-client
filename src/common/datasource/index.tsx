@@ -190,16 +190,18 @@ function register(
   _types.set(dataSourceType, obj);
 }
 
-register(IDataSourceType.OceanBase, obOracle);
-register(IDataSourceType.OceanBase, obMySQL);
-register(IDataSourceType.MySQL, MySQL);
-register(IDataSourceType.Doris, Doris);
-register(IDataSourceType.Oracle, oracle);
-register(IDataSourceType.PG, PG);
-register(IDataSourceType.ALIYUNOSS, FileSystem.ALIYUN);
-register(IDataSourceType.AWSS3, FileSystem.AWSS3);
-register(IDataSourceType.HUAWEI, FileSystem.HUAWEI);
-register(IDataSourceType.QCLOUD, FileSystem.QCLOUD);
+function initDatasource() {
+  register(IDataSourceType.OceanBase, obOracle);
+  register(IDataSourceType.OceanBase, obMySQL);
+  register(IDataSourceType.MySQL, MySQL);
+  register(IDataSourceType.Doris, Doris);
+  register(IDataSourceType.Oracle, oracle);
+  register(IDataSourceType.PG, PG);
+  register(IDataSourceType.ALIYUNOSS, FileSystem.ALIYUN);
+  register(IDataSourceType.AWSS3, FileSystem.AWSS3);
+  register(IDataSourceType.HUAWEI, FileSystem.HUAWEI);
+  register(IDataSourceType.QCLOUD, FileSystem.QCLOUD);
+}
 
 function getAllConnectTypes(ds?: IDataSourceType): ConnectType[] {
   if (!ds) {
@@ -279,6 +281,7 @@ function isFileSystemSupport() {
 }
 
 export {
+  initDatasource,
   getAllConnectTypes,
   getDataSourceModeConfig,
   getDataSourceModeConfigByConnectionMode,
