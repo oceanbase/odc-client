@@ -53,10 +53,6 @@ const DatabaseTree = function () {
   }
 
   useEffect(() => {
-    reload();
-  }, []);
-
-  useEffect(() => {
     if (databaseList?.length) {
       const ids: Set<number> = new Set();
       databaseList.forEach((d) => {

@@ -3,8 +3,8 @@ import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { IDatabase } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
-import { Button, Empty, Space, Tooltip, message } from 'antd';
-import React, { useMemo, useContext } from 'react';
+import { Button, Empty, Tooltip, message } from 'antd';
+import React, { useMemo, useContext, useRef } from 'react';
 import styles from '../index.less';
 import { SearchStatus } from '../constant';
 import { IProject } from '@/d.ts/project';
@@ -16,6 +16,7 @@ import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
 import { LoadingOutlined } from '@ant-design/icons';
 import GlobalSearchContext from '@/page/Workspace/context/GlobalSearchContext';
 import { inject, observer } from 'mobx-react';
+import VirtualList from 'rc-virtual-list';
 
 interface Iprops {
   modalStore?: ModalStore;
@@ -33,54 +34,79 @@ const List = ({ modalStore }: Iprops) => {
     project,
     dataSource,
     actions,
-    reloadDatabaseList,
     databaseLoading,
     fetchSyncAll,
     syncAllLoading,
   } = globalSearchContext;
   const { positionResourceTree, positionProjectOrDataSource, openSql, applyPermission } = actions;
+  const listRef = useRef<HTMLDivElement>();
   const options = useMemo(() => {
     let options: IDatabase[] | IProject[] | IConnection[] = [];
     switch (status) {
       case SearchStatus.forDataSource: {
-        options = datasourceList?.filter((datasource) => {
-          return datasource?.name?.toLowerCase().includes(searchKey?.toLowerCase() || '');
-        });
+        options = datasourceList
+          ?.filter((datasource) => {
+            return datasource?.name?.toLowerCase().includes(searchKey?.toLowerCase() || '');
+          })
+          ?.map((datasource) => ({
+            ...datasource,
+            key: `ds-${datasource?.id}`,
+          }));
         break;
       }
       case SearchStatus.forProject: {
-        options = projectList?.filter((project) => {
-          return project?.name?.toLowerCase().includes(searchKey?.toLowerCase() || '');
-        });
+        options = projectList
+          ?.filter((project) => {
+            return project?.name?.toLowerCase().includes(searchKey?.toLowerCase() || '');
+          })
+          ?.map((project) => ({
+            ...project,
+            key: `p-${project?.id}`,
+          }));
         break;
       }
       case SearchStatus.projectforObject: {
-        options = databaseList?.filter((db) => {
-          return (
-            db?.name?.toLowerCase().includes(searchKey?.toLowerCase() || '') &&
-            db?.project?.id === project?.id
-          );
-        });
+        options = databaseList
+          ?.filter((db) => {
+            return (
+              db?.name?.toLowerCase().includes(searchKey?.toLowerCase() || '') &&
+              db?.project?.id === project?.id
+            );
+          })
+          ?.map((db) => ({
+            ...db,
+            key: `db-${db?.id}`,
+          }));
         break;
       }
       case SearchStatus.dataSourceforObject: {
-        options = databaseList?.filter((db) => {
-          return (
-            db?.name?.toLowerCase().includes(searchKey?.toLowerCase() || '') &&
-            db?.dataSource?.id === dataSource?.id
-          );
-        });
+        options = databaseList
+          ?.filter((db) => {
+            return (
+              db?.name?.toLowerCase().includes(searchKey?.toLowerCase() || '') &&
+              db?.dataSource?.id === dataSource?.id
+            );
+          })
+          ?.map((db) => ({
+            ...db,
+            key: `db-${db?.id}`,
+          }));
         break;
       }
       default: {
-        options = databaseList?.filter((db) => {
-          return db?.name?.toLowerCase().includes(searchKey?.toLowerCase() || '');
-        });
+        options = databaseList
+          ?.filter((db) => {
+            return db?.name?.toLowerCase().includes(searchKey?.toLowerCase() || '');
+          })
+          ?.map((db) => ({
+            ...db,
+            key: `db-${db?.id}`,
+          }));
         break;
       }
     }
     return options;
-  }, [searchKey, status, projectList, databaseList, datasourceList]);
+  }, [searchKey, status, projectList, databaseList, datasourceList, project, dataSource]);
 
   const getDataSourceIcon = (type) => {
     const DBIcon = getDataSourceStyleByConnectType(type)?.icon;
@@ -277,7 +303,7 @@ const List = ({ modalStore }: Iprops) => {
     );
   };
 
-  const renderItem = (item) => {
+  const renderItem = (item: IConnection | IProject | IDatabase) => {
     switch (status) {
       case SearchStatus.forDataSource: {
         return renderDataSourceItem(item as IConnection);
@@ -308,7 +334,18 @@ const List = ({ modalStore }: Iprops) => {
   return (
     <div className={styles.content} style={{ maxHeight: '100%' }}>
       <div className={styles.searchInfo}>{searchInfo}</div>
-      {options?.length ? options.map((item) => renderItem(item)) : null}
+      {options?.length ? (
+        <div style={{ height: '100%' }} ref={listRef}>
+          <VirtualList
+            data={options}
+            itemHeight={28}
+            height={listRef.current?.clientHeight || 300}
+            itemKey="key"
+          >
+            {(item: IConnection | IProject | IDatabase) => renderItem(item)}
+          </VirtualList>
+        </div>
+      ) : null}
       {emptyContent}
     </div>
   );

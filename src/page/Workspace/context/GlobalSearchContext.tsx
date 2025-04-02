@@ -2,7 +2,7 @@ import { IProject } from '@/d.ts/project';
 import React from 'react';
 import { SearchStatus } from '@/page/Workspace/SideBar/ResourceTree/DatabaseSearchModal/constant';
 import { DbObjectType, IConnection } from '@/d.ts';
-import { DBType, IDatabase, IDatabaseObject } from '@/d.ts/database';
+import { IDatabase, IDatabaseObject } from '@/d.ts/database';
 
 interface IGlobalSearchContext {
   database: IDatabase;
@@ -25,12 +25,11 @@ interface IGlobalSearchContext {
   databaseList: IDatabase[];
   projectList: IProject[];
   datasourceList: IConnection[];
-  reloadDatabaseList?: () => void;
   activeKey?: string;
   setActiveKey?: React.Dispatch<React.SetStateAction<string>>;
-  databaseLoading?: boolean;
   objectloading?: boolean;
   loadDatabaseObject?: (value: any) => Promise<void>;
+  databaseLoading?: boolean;
   fetchSyncAll?: () => Promise<{
     data?: boolean;
     errCode: string;

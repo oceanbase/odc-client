@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect, useCallback, useMemo } from 'react';
+import { useState, useContext, useEffect, useMemo } from 'react';
 import { Modal, Spin } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { ModalStore } from '@/store/modal';
@@ -21,6 +21,8 @@ import useActions from '@/page/Workspace/SideBar/ResourceTree/DatabaseSearchModa
 import { openNewSQLPage } from '@/store/helper/page';
 import { formatMessage } from '@/util/intl';
 import GlobalSearchContext from '@/page/Workspace/context/GlobalSearchContext';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+
 interface IProps {
   modalStore?: ModalStore;
   userStore?: UserStore;
@@ -53,39 +55,30 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
 
   const {
     objectlist,
-    datasourceList,
-    projectList,
-    databaseList,
     loadDatabaseObject,
-    loadDatabaseList,
     fetchSyncAll,
-    projectLoading,
-    dataSourceLoading,
-    databaseLoading,
     objectloading,
     syncAllLoading,
+    databaseList,
+    databaseLoading,
   } = useGlobalSearchData({ project, database, dataSource, activeKey, modalStore });
+  const treeContext = useContext(ResourceTreeContext);
+  const { projectList, datasourceList } = treeContext;
   const actions = useActions({ modalStore, project });
   const { positionResourceTree, positionProjectOrDataSource } = actions || {};
-
-  const reloadDatabaseList = () => {
-    loadDatabaseList();
-  };
 
   const handleCancel = () => {
     modalStore.changeDatabaseSearchModalVisible(false);
   };
 
   useEffect(() => {
-    if (!databaseLoading && !dataSourceLoading && !projectLoading) {
-      if (initStatus) {
-        reset();
-        update(initStatus);
-        setSearchKey(initSearchKey);
-        setDatabase(databaseList.find((item) => item.id === initDatabaseId));
-        setDataSource(datasourceList.find((item) => item.id === initDataSourceId));
-        setProject(projectList.find((item) => item.id === initProjectId));
-      }
+    if (initStatus) {
+      reset();
+      update(initStatus);
+      setSearchKey(initSearchKey);
+      setDatabase(databaseList.find((item) => item.id === initDatabaseId));
+      setDataSource(datasourceList.find((item) => item.id === initDataSourceId));
+      setProject(projectList.find((item) => item.id === initProjectId));
     }
   }, [databaseList, projectList, datasourceList]);
 
@@ -236,7 +229,6 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
         databaseList,
         projectList,
         datasourceList,
-        reloadDatabaseList,
         activeKey,
         setActiveKey,
         databaseLoading,
@@ -262,9 +254,7 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
         destroyOnClose={true}
         footer={null}
       >
-        <Spin spinning={databaseLoading || dataSourceLoading || projectLoading || objectloading}>
-          {contentRender()}
-        </Spin>
+        <Spin spinning={objectloading || databaseLoading}>{contentRender()}</Spin>
       </Modal>
     </GlobalSearchContext.Provider>
   );

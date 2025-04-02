@@ -1,8 +1,5 @@
-import VirtualList from 'rc-virtual-list';
-import { List } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './index.less';
-import classNames from 'classnames';
 import DisplayTable from '@/component/DisplayTable';
 import { formatMessage } from '@/util/intl';
 import { TaskTypeMap } from '@/component/Task/component/TaskTable';
