@@ -9,8 +9,6 @@ interface IProps {
   height?: number;
 }
 export default ({ showIcon, height = 280 }: IProps) => {
-  const nav = useNavigate();
-
   return (
     <div className={styles.databaseSelectEmptyhWrapper}>
       <Empty
