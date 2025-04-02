@@ -25,13 +25,13 @@ import { fieldIconMap } from '@/constant';
 import { ColumnShowType } from '@/d.ts';
 import { isEqual, uniqueId } from 'lodash';
 import { ICON_DATABASE, ICON_TABLE, ICON_VIEW } from '../ObjectName';
-const { TreeNode, DirectoryTree } = Tree;
 import Icon, { PlusOutlined } from '@ant-design/icons';
 import { convertDataTypeToDataShowType } from '@/util/utils';
 import ColumnItem from './Item';
 import { getTableColumnList } from '@/common/network/table';
 import { getView } from '@/common/network/view';
 import SortableContainer, { DraggableItem } from '@/component/SortableContainer';
+const { TreeNode, DirectoryTree } = Tree;
 
 interface IProps {
   session: SessionStore;

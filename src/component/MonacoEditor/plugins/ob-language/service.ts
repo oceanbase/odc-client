@@ -41,7 +41,12 @@ export function getModelService(
       }
       const db =
         sessionFunc()?.allIdentities[dbName] || sessionFunc()?.allIdentities[dbName?.toUpperCase()];
-      if (db?.tables?.length || db?.views?.length || db?.external_table?.length) {
+      if (
+        db?.tables?.length ||
+        db?.views?.length ||
+        db?.external_table?.length ||
+        db?.materialized_view?.length
+      ) {
         sessionFunc()?.queryIdentities();
       } else {
         await sessionFunc()?.queryIdentities();
@@ -51,7 +56,7 @@ export function getModelService(
       if (!dbObj) {
         return [];
       }
-      return [...dbObj.tables, ...dbObj.views, ...dbObj.external_table];
+      return [...dbObj.tables, ...dbObj.views, ...dbObj.external_table, ...dbObj.materialized_view];
     },
     async getTableColumns(tableName: string, dbName?: string) {
       const realTableName = getRealNameInDatabase(
@@ -79,7 +84,12 @@ export function getModelService(
         /**
          * schemaStore.queryIdentities(); 不能是阻塞的，编辑器对于函数的超时时间有严格的要求，不能超过 300ms，调用这个接口肯定会超过这个时间。
          */
-        if (db?.tables?.length || db?.views?.length || db?.external_table?.length) {
+        if (
+          db?.tables?.length ||
+          db?.views?.length ||
+          db?.external_table?.length ||
+          db?.materialized_view?.length
+        ) {
           sessionFunc()?.queryIdentities();
         } else {
           await sessionFunc()?.queryIdentities();

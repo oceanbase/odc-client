@@ -36,14 +36,14 @@ import {
   IType,
   IView,
   SynonymType,
+  IMaterializedView,
 } from '@/d.ts';
+import { getMaterializedView } from '@/common/network/materializedView/index';
 import { ITableModel, TableInfo } from '@/page/Workspace/components/CreateTable/interface';
 import { formatMessage } from '@/util/intl';
 import request from '@/util/request';
 import { action, observable, runInAction } from 'mobx';
 import { DBType } from '@/d.ts/database';
-import { logicalDatabaseDetail } from '@/common/network/logicalDatabase';
-import { message } from 'antd';
 
 class DatabaseStore {
   static a() {
@@ -57,6 +57,9 @@ class DatabaseStore {
 
   @observable.shallow
   public views: Array<Partial<IView>> = [];
+
+  @observable.shallow
+  public materializedView: Array<Partial<IMaterializedView>> = [];
 
   @observable.shallow
   public functions: Array<Partial<IFunction>> = [];
@@ -155,7 +158,6 @@ class DatabaseStore {
             tableId: table.id,
           },
         })) || [];
-
       isExternalTable ? (this.externalTableTables = tablesValue) : (this.tables = tablesValue);
     });
   }
@@ -264,6 +266,50 @@ class DatabaseStore {
         this.views = newViews;
       });
     }
+  }
+
+  @action
+  public async loadMaterializedView(materializedViewInfo) {
+    const { name: materializedViewName } = materializedViewInfo;
+    const newMvView = await getMaterializedView({
+      materializedViewName,
+      sessionId: this.sessionId,
+      dbName: this.dbName,
+    });
+    if (newMvView.info) {
+      newMvView.info.authorizedPermissionTypes = materializedViewInfo.authorizedPermissionTypes;
+    }
+    const idx = this.materializedView.findIndex((t) => t?.info?.name === materializedViewName);
+    if (idx > -1) {
+      const newMvViews = [...this.materializedView];
+      newMvViews[idx] = newMvView;
+      runInAction(() => {
+        this.materializedView = newMvViews;
+      });
+    }
+  }
+
+  @action
+  public async getMaterializedViewList() {
+    const res = await request.get(
+      `/api/v2/connect/sessions/${this.sessionId}/databases/${this.databaseId}/materializedViews`,
+      {
+        params: {
+          materializedViews: true,
+          includePermittedAction: true,
+        },
+      },
+    );
+    runInAction(() => {
+      this.materializedView =
+        res?.data?.contents?.map((t) => {
+          return {
+            info: {
+              ...t,
+            },
+          };
+        }) || [];
+    });
   }
 
   @action

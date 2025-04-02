@@ -329,6 +329,7 @@ export function getDropSQL(
     [DbObjectType.synonym]: 'SYNONYM',
     [DbObjectType.public_synonym]: 'PUBLIC SYNONYM',
     [DbObjectType.trigger]: 'TRIGGER',
+    [DbObjectType.materialized_view]: 'MATERIALIZED VIEW',
   };
   const objTypeKeyword: string = objTypeKeywords[objType];
   if (!objTypeKeyword) {

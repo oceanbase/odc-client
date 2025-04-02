@@ -151,6 +151,12 @@ const getShouldExpandedKeysByObject = (params: {
       currentResourceNodeType = ResourceNodeType.Table;
       break;
     }
+    case DbObjectType.materialized_view: {
+      shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-materializedView`);
+      currentKey = `${db.id}-${db.name}-materializedView-${name}`;
+      currentResourceNodeType = ResourceNodeType.MaterializedView;
+      break;
+    }
     case DbObjectType.external_table: {
       shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-externalTable`);
       currentKey = `${db.id}-${db.name}-externalTable-${name}`;

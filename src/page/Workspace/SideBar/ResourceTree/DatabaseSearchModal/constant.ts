@@ -11,6 +11,7 @@ import {
   openSynonymViewPage,
   openViewViewPage,
   openExternalTableTableViewPage,
+  openMaterializedViewViewPage,
 } from '@/store/helper/page';
 import { PropsTab, TopTab } from '@/page/Workspace/components/TablePage';
 import { TopTab as PackageTopTab } from '@/page/Workspace/components/PackagePage';
@@ -24,6 +25,7 @@ const mysqlObjectType = [
   DbObjectType.function,
   DbObjectType.view,
   DbObjectType.procedure,
+  DbObjectType.materialized_view,
 ];
 
 const pgObjectType = [
@@ -47,6 +49,7 @@ const oracleObjectType = [
   DbObjectType.type,
   DbObjectType.sequence,
   DbObjectType.synonym,
+  DbObjectType.materialized_view,
 ];
 
 export const objectTypeConfig = {
@@ -174,6 +177,14 @@ export const DbObjectTypeMap = {
     getOpenTab: (object, databaseId) => {
       const databaseName = object?.dbObject?.database?.name || object?.database?.name;
       return [object?.name, SynonymType.COMMON, databaseId, databaseName];
+    },
+  },
+  [DbObjectType.materialized_view]: {
+    label: DbObjectTypeTextMap.MATERIALIZED_VIEW,
+    openPage: (object) => openMaterializedViewViewPage,
+    getOpenTab: (object, databaseId) => {
+      const databaseName = object?.dbObject?.database?.name || object?.database?.name;
+      return [object?.name, TopTab.PROPS, PropsTab.DDL, databaseId, databaseName];
     },
   },
 };

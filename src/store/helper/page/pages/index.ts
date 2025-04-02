@@ -47,6 +47,10 @@ import {
   PropsTab as ViewPropsTab,
   TopTab as ViewTopTab,
 } from '@/page/Workspace/components/ViewPage';
+import {
+  PropsTab as MaterializedViewPropsTab,
+  TopTab as MaterializedViewTopTab,
+} from '@/page/Workspace/components/MaterializedViewPage';
 import page from '@/store/page';
 import { formatMessage } from '@/util/intl';
 import { generateUniqKey } from '@/util/utils';
@@ -272,6 +276,36 @@ export class ViewPage extends Page {
     };
   }
 }
+
+export class MaterializedViewPage extends Page {
+  public pageParams: {
+    databaseId: number;
+    materializedViewName: string;
+    topTab: MaterializedViewTopTab;
+    propsTab: MaterializedViewPropsTab;
+    dbName: string;
+  };
+  constructor(
+    databaseId: number,
+    materializedViewName: string,
+    topTab: MaterializedViewTopTab = MaterializedViewTopTab.PROPS,
+    propsTab: MaterializedViewPropsTab = MaterializedViewPropsTab.INFO,
+    dbName: string,
+  ) {
+    super();
+    this.pageType = PageType.MATERIALIZED_VIEW;
+    this.pageKey = `materializedViewPage-viewName:${materializedViewName}-dbid:${databaseId}`;
+    this.pageTitle = materializedViewName;
+    this.pageParams = {
+      databaseId,
+      materializedViewName,
+      topTab,
+      propsTab,
+      dbName,
+    };
+  }
+}
+
 export class FunctionPage extends Page {
   public pageParams: {
     databaseId: number;

@@ -91,6 +91,7 @@ import styles from './index.less';
 import ResultContext from './ResultContext';
 import StatusBar from './StatusBar';
 import { copyToSQL, getColumnNameByColumnKey } from './util';
+import Sync from './Sync';
 
 // @ts-ignore
 const ToolbarButton = Toolbar.Button;
@@ -119,6 +120,8 @@ interface IProps {
    */
   isTableData?: boolean;
   isViewData?: boolean;
+  isMvViewData?: boolean;
+  isShowLimit?: boolean;
   /**
    * 编辑态
    */
@@ -162,7 +165,7 @@ interface IProps {
     autoCommit: boolean,
     columnList?: Partial<ITableColumn>[],
   ) => void;
-  onExport: (limit: number) => void;
+  onExport?: (limit: number) => void;
   onShowExecuteDetail?: () => void;
   onShowTrace?: () => void;
   onUpdateEditing?: (editing: boolean) => void;
@@ -178,6 +181,8 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   const {
     isTableData,
     isViewData,
+    isMvViewData,
+    isShowLimit,
     session,
     rows: originRows,
     columns,
@@ -397,7 +402,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     gridRef.current?.scrollToRow(0);
   }, [gridRef]);
   const handleExport = useCallback(() => {
-    onExport(limit || 1000);
+    onExport?.(limit || 1000);
   }, [onExport, limit]);
   const handleEditPropertyInCell = useCallback(
     (newRows) => {
@@ -1149,7 +1154,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
           </div>
           <div className={styles.toolsRight}>
             <span className={styles.limit}>
-              {isTableData || isViewData ? (
+              {isTableData || isViewData || isMvViewData || isShowLimit ? (
                 <>
                   {formatMessage({
                     id: 'workspace.window.sql.limit',
@@ -1255,7 +1260,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 setShowColumnMode(true);
               }}
             />
-
+            {isMvViewData && <Sync session={session} />}
             {/**
              * 只有非编辑态并且注册了刷新函数，才能显示刷新
              */}
@@ -1304,7 +1309,6 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             enableFrozenRow={true}
             pasteFormatter={pasteFormatter}
           />
-
           <ColumnModeModal
             visible={showColumnMode}
             onClose={() => {

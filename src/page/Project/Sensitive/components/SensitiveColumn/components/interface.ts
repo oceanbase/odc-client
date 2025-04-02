@@ -53,6 +53,9 @@ export type DatabaseColumn = {
   externalTable2Columns: {
     [key in string | number]: any[];
   };
+  materializedView2Columns: {
+    [key in string | number]: any[];
+  };
 };
 export interface ManualFormProps {
   modalOpen: boolean;

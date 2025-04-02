@@ -29,7 +29,13 @@ import { EComparisonScope } from './task';
 import { SpaceType } from './_index';
 import { ISQLExecuteTask } from '@/common/network/sql/preHandle';
 import { DirtyRowActionEnum } from '@/component/ExecuteSqlDetailModal/constant';
-
+import {
+  TableIndex,
+  TableColumn,
+  TablePartition,
+  TablePrimaryConstraint,
+} from '@/page/Workspace/components/CreateTable/interface';
+import { IColumnStoreServerType } from '@/d.ts/table';
 export interface IUser {
   email: string;
   desc: string;
@@ -983,6 +989,9 @@ export enum PageType {
   BATCH_COMPILE_TRIGGER = 'BATCH_COMPILE_TRIGGER',
   BATCH_COMPILE_TYPE = 'BATCH_COMPILE_TYPE',
   TUTORIAL = 'TUTORIAL',
+  /** 物化视图 */
+  MATERIALIZED_VIEW = 'MATERIALIZED_VIEW',
+  CREATE_MATERIALIZED_VIEW = 'CREATE_MATERIALIZED_VIEW',
 }
 
 export interface IPage {
@@ -1415,6 +1424,81 @@ export interface IView {
   viewName: string;
 }
 
+export enum RefreshMethod {
+  REFRESH_FAST = 'REFRESH_FAST',
+  REFRESH_FORCE = 'REFRESH_FORCE',
+  REFRESH_COMPLETE = 'REFRESH_COMPLETE',
+  NEVER_REFRESH = 'NEVER_REFRESH',
+}
+
+// 物化视图
+export interface IMaterializedView {
+  info?: MaterializedViewInfo;
+  primaryConstraints?: TablePrimaryConstraint[];
+  columns?: TableColumn[];
+  indexes?: TableIndex[];
+  partitions?: Partial<TablePartition>;
+  subpartitions?: TablePartition;
+}
+
+export interface MaterializedViewRecord {
+  additionalExecutions: string;
+  elapsedTime: number;
+  endTime: number;
+  finalNumRows: number;
+  initialNumRows: number;
+  logPurgeTime: number;
+  logSetupTime: number;
+  mvName: string;
+  mvOwner: string;
+  refreshId: number;
+  refreshMethod: string;
+  refreshOptimizations: string;
+  startTime: number;
+}
+
+export interface RefreshSchedule {
+  startStrategy: 'START_NOW' | 'START_AT';
+  startWidth: string;
+  interval: number;
+  unit: RefreshScheduleUnit;
+  startExpression: string;
+  nextExpression: string;
+}
+
+export enum RefreshScheduleUnit {
+  SECOND = 'SECOND',
+  MINUTE = 'MINUTE',
+  HOUR = 'HOUR',
+  DAY = 'DAY',
+  WEEK = ' WEEK',
+  MONTH = 'MONTH',
+  YEAR = 'YEAR',
+}
+
+export enum SyncMethods {
+  REFRESH_FAST = 'REFRESH_FAST',
+  REFRESH_FORCE = 'REFRESH_FORCE',
+  REFRESH_COMPLETE = 'REFRESH_COMPLETE',
+}
+
+export interface MaterializedViewInfo {
+  columnGroups: IColumnStoreServerType[];
+  authorizedPermissionTypes?: TablePermissionType[];
+  ddl?: string;
+  subpartitions?: TablePartition;
+  enableQueryComputation?: boolean;
+  enableQueryRewrite?: boolean;
+  name: string;
+  parallelismDegree?: number;
+  schemaName?: string;
+  refreshMethod?: RefreshMethod;
+  refreshSchedule?: RefreshSchedule;
+  lastRefreshType: SyncMethods;
+  lastRefreshStartTime: number;
+  lastRefreshEndTime: number;
+}
+
 // 程序包
 
 export interface IPackage {
@@ -1603,6 +1687,7 @@ export enum DbObjectType {
   column = 'COLUMN',
   external_table = 'EXTERNAL_TABLE',
   logical_table = 'LOGICAL_TABLE',
+  materialized_view = 'MATERIALIZED_VIEW',
 }
 
 export interface IResultTimerStage {
@@ -2388,6 +2473,8 @@ export enum ResourceTreeNodeMenuKeys {
   REFRESH_SYNONYM = 'REFRESH_SYNONYM',
   // EXTERNAL_TABLE
   EXTERNAL_TABLE_SYNCHRONIZATION_TABLE = 'EXTERNAL_TABLE_SYNCHRONIZATION_TABLE',
+  //
+  CREATE_MATERIALIZED_VIEW = 'CREATE_MATERIALIZED_VIEW',
 }
 
 export interface TaskRecord<P> {

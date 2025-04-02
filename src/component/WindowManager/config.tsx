@@ -27,6 +27,7 @@ import SQLPage from '@/page/Workspace/components/SQLPage';
 import TablePage from '@/page/Workspace/components/TablePage';
 
 import ViewPage from '@/page/Workspace/components/ViewPage';
+import MaterializedViewPage from '@/page/Workspace/components/MaterializedViewPage';
 import withConfirmModal from './factory';
 // @ts-ignore
 import { ReactComponent as ConsoleSQLSvg } from '@/svgr/Console-SQL.svg';
@@ -71,6 +72,7 @@ import TaskManaerPage from '@/page/Workspace/components/TaskPage';
 import TriggerPage from '@/page/Workspace/components/TriggerPage';
 import TutorialPage from '@/page/Workspace/components/TutorialPage';
 import TypePage from '@/page/Workspace/components/TypePage';
+import CreateMaterializedViewPage from '@/page/Workspace/components/CreateMaterializedView';
 
 /** 页面类型 */
 export const pageMap = {
@@ -148,6 +150,20 @@ export const pageMap = {
     component: withConfirmModal(ViewPage),
     icon: <Icon component={ViewSvg} />,
     color: 'var(--icon-color-1)',
+  },
+
+  // 物化视图创建页
+  [PageType.CREATE_MATERIALIZED_VIEW]: {
+    component: withConfirmModal(CreateMaterializedViewPage),
+    icon: <Icon component={ViewSvg} />,
+    color: 'var(--icon-color-5)',
+  },
+
+  /** 物化视图详情页 */
+  [PageType.MATERIALIZED_VIEW]: {
+    component: withConfirmModal(MaterializedViewPage),
+    icon: <Icon component={ViewSvg} />,
+    color: 'var(--icon-color-5)',
   },
 
   // 函数创建页

@@ -108,6 +108,7 @@ const ExportSelecter: React.FC<IProps> = function ({
           DbObjectType.synonym,
           DbObjectType.public_synonym,
           DbObjectType.type,
+          DbObjectType.materialized_view,
         ];
 
     if (!onlyTable && dialectType !== ConnectionMode.MYSQL) {

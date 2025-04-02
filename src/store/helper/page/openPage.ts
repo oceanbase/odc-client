@@ -55,6 +55,10 @@ import {
   PropsTab as ViewPropsTab,
   TopTab as ViewTopTab,
 } from '@/page/Workspace/components/ViewPage';
+import {
+  PropsTab as MaterializedViewPropsTab,
+  TopTab as MaterializedViewTopTab,
+} from '@/page/Workspace/components/MaterializedViewPage';
 import { formatMessage } from '@/util/intl';
 
 import { getDataSourceModeConfig } from '@/common/datasource';
@@ -84,8 +88,15 @@ import {
   TutorialPage,
   TypePage,
   ViewPage,
+  MaterializedViewPage,
 } from './pages';
-import { CreateTablePage, CreateTriggerPage, CreateViewPage, SQLConfirmPage } from './pages/create';
+import {
+  CreateMaterializedViewPage,
+  CreateTablePage,
+  CreateTriggerPage,
+  CreateViewPage,
+  SQLConfirmPage,
+} from './pages/create';
 import { AnonymousPage, PackageBodyPage, PackageHeadPage, PLEditPage } from './pages/pl';
 import { findPageByScriptIdAndType } from './util';
 import login from '@/store/login';
@@ -245,6 +256,11 @@ export function openCreateViewPage(dbId: number) {
   page.openPage(new CreateViewPage(dbId));
 }
 
+/** 创建物化视图页面 */
+export function openCreateMaterializedViewPage(dbId: number) {
+  page.openPage(new CreateMaterializedViewPage(dbId));
+}
+
 /**
  * 视图详情页面
  */
@@ -258,6 +274,18 @@ export function openViewViewPage(
 ) {
   page.openPage(new ViewPage(dbId, viewName, topTab, propsTab));
 }
+
+/** 物化视图页面 */
+export function openMaterializedViewViewPage(
+  materializedViewName: string,
+  topTab: MaterializedViewTopTab = MaterializedViewTopTab.PROPS,
+  propsTab: MaterializedViewPropsTab = MaterializedViewPropsTab.INFO,
+  dbId: number,
+  dbName: string,
+) {
+  page.openPage(new MaterializedViewPage(dbId, materializedViewName, topTab, propsTab, dbName));
+}
+
 /** 创建函数页面 */
 
 export function openCreateFunctionPage(sql: string, databaseId: number, dbName: string) {

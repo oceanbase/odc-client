@@ -21,7 +21,7 @@ import { ITableModel } from '../../components/CreateTable/interface';
 import { ResourceNodeType, TreeDataNode } from './type';
 import { isLogicalDatabase } from '@/util/database';
 import { IDatabase, DatabaseGroup } from '@/d.ts/database';
-import { ConnectType, IConnection } from '@/d.ts';
+import { ConnectType, IConnection, IMaterializedView } from '@/d.ts';
 import { ConnectTypeText } from '@/constant/label';
 
 export async function loadNode(
@@ -200,6 +200,23 @@ export async function loadNode(
         break;
       }
       await dbSession.database.loadType(typeName);
+      break;
+    }
+    case ResourceNodeType.MaterializedViewRoot: {
+      const dbSession = sessionManagerStore.sessionMap.get(sessionId);
+      if (!dbSession) {
+        break;
+      }
+      await dbSession.database.getMaterializedViewList();
+      break;
+    }
+    case ResourceNodeType.MaterializedView: {
+      const materializedViewInfo = (data as IMaterializedView)?.info;
+      const dbSession = sessionManagerStore.sessionMap.get(sessionId);
+      if (!dbSession) {
+        break;
+      }
+      await dbSession.database.loadMaterializedView(materializedViewInfo);
       break;
     }
   }
