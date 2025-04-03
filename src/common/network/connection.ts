@@ -35,6 +35,7 @@ import { decrypt, encrypt } from '@/util/utils';
 import { getDataSourceModeConfig } from '../datasource';
 import { generateSessionSid } from './pathUtil';
 import { executeSQL } from './sql';
+import login from '@/store/login';
 
 function generateConnectionParams(formData: Partial<IConnectionFormData>, isHiden?: boolean) {
   // 创建必须带上 userId
@@ -294,7 +295,7 @@ export async function newSessionByDataBase(
   const { data } = await request.post(`/api/v2/datasource/databases/${databaseId}/sessions`, {
     params: {
       holdErrorTip,
-      recordDbAccessHistory,
+      recordDbAccessHistory: login.isPrivateSpace() ? undefined : recordDbAccessHistory,
     },
   });
   return data;
