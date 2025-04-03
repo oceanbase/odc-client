@@ -116,43 +116,41 @@ const Console = () => {
   const renderScheduleCard = useCallback(() => {
     const { status, statusColor } = ConsoleTextConfig.schdules;
     return (
-      <Spin spinning={scheduleLoading}>
-        <Card className={styles.card}>
-          <div className={styles.consoleCardTitle}>
-            <span className={styles.title}>定时任务概览</span>
-            <span className={styles.subTitle}>(近 7 天)</span>
-          </div>
-          <div className={styles.legend}>
-            {status.map((item, index) => {
-              return (
-                <LabelWithIcon
-                  icon={
-                    <span
-                      className={styles.icon}
-                      style={{
-                        backgroundColor: statusColor[index],
-                      }}
-                    />
-                  }
-                  label={<span className={styles.label}>{item}</span>}
-                  gap={8}
-                />
-              );
-            })}
-          </div>
-          <div className={styles.scheduleItems}>
-            {schdules?.scheduleTitle.map((title, index) => {
-              return (
-                <ScheduleItem
-                  title={title}
-                  progress={res[schdules.scheduleType[index]]}
-                  type={schdules.scheduleType[index]}
-                />
-              );
-            })}
-          </div>
-        </Card>
-      </Spin>
+      <Card className={styles.card}>
+        <div className={styles.consoleCardTitle}>
+          <span className={styles.title}>定时任务概览</span>
+          <span className={styles.subTitle}>(近 7 天)</span>
+        </div>
+        <div className={styles.legend}>
+          {status.map((item, index) => {
+            return (
+              <LabelWithIcon
+                icon={
+                  <span
+                    className={styles.icon}
+                    style={{
+                      backgroundColor: statusColor[index],
+                    }}
+                  />
+                }
+                label={<span className={styles.label}>{item}</span>}
+                gap={8}
+              />
+            );
+          })}
+        </div>
+        <div className={styles.scheduleItems}>
+          {schdules?.scheduleTitle.map((title, index) => {
+            return (
+              <ScheduleItem
+                title={title}
+                progress={res[schdules.scheduleType[index]]}
+                type={schdules.scheduleType[index]}
+              />
+            );
+          })}
+        </div>
+      </Card>
     );
   }, [res]);
   return (
@@ -164,151 +162,153 @@ const Console = () => {
           <div className={styles.subTitle}>开源的数据库开发和数据库管控协同工具</div>
         </div>
         <div className={styles.content}>
-          {topAreaLayout.guide || topAreaLayout.schedule ? (
-            <Row className={styles.top}>
-              <Col
-                span={topAreaLayout.schedule}
-                className={styles.schedules}
-                style={{ paddingRight: paddingCal(topAreaLayout.schedule) }}
-              >
-                {renderScheduleCard()}
-              </Col>
-              <Col
-                span={topAreaLayout.guide}
-                className={styles.quickStart}
-                style={{ paddingLeft: paddingCal(topAreaLayout.guide) }}
-              >
-                <Card className={styles.card}>
-                  <div className={styles.consoleCardTitle}>
-                    快速上手
-                    <Popconfirm
-                      placement="bottom"
-                      title={
-                        <>
-                          {' '}
-                          <div>
-                            <Typography.Text>确认要隐藏快速上手内容吗？</Typography.Text>
-                          </div>
-                          <div>
-                            <Typography.Text>你也可以在帮助中重新查看。</Typography.Text>
-                          </div>
-                        </>
-                      }
-                      onConfirm={() => {
-                        setting.updateOneUserConfig({
-                          key: 'odc.user.guidePromptEnabled',
-                          value: false,
-                        });
-                        runGetScheduleStat({
-                          currentOrganizationId: login.organizationId,
-                          types: ['DATA_ARCHIVE', 'SQL_PLAN', 'DATA_DELETE', 'PARTITION_PLAN'],
-                          startTime: Date.now() - 1000 * 60 * 60 * 24 * 7,
-                          endTime: Date.now(),
-                        });
-                      }}
-                    >
-                      <span className={styles.hide}>不再提示</span>
-                    </Popconfirm>
-                  </div>
-                  <div className={styles.quickStartContent}>
-                    <div className={styles.leftWrapper}>
-                      <Radio.Group
-                        className={styles.tabs}
-                        onChange={(e) => {
-                          setCurrentQuickStartRole(e.target.value);
+          <Spin spinning={scheduleLoading} className={styles.topAreaFilter}>
+            {topAreaLayout.guide || topAreaLayout.schedule ? (
+              <Row className={styles.top}>
+                <Col
+                  span={topAreaLayout.schedule}
+                  className={styles.schedules}
+                  style={{ paddingRight: paddingCal(topAreaLayout.schedule) }}
+                >
+                  {renderScheduleCard()}
+                </Col>
+                <Col
+                  span={topAreaLayout.guide}
+                  className={styles.quickStart}
+                  style={{ paddingLeft: paddingCal(topAreaLayout.guide) }}
+                >
+                  <Card className={styles.card}>
+                    <div className={styles.consoleCardTitle}>
+                      快速上手
+                      <Popconfirm
+                        placement="bottom"
+                        title={
+                          <>
+                            {' '}
+                            <div>
+                              <Typography.Text>确认要隐藏快速上手内容吗？</Typography.Text>
+                            </div>
+                            <div>
+                              <Typography.Text>你也可以在帮助中重新查看。</Typography.Text>
+                            </div>
+                          </>
+                        }
+                        onConfirm={() => {
+                          setting.updateOneUserConfig({
+                            key: 'odc.user.guidePromptEnabled',
+                            value: false,
+                          });
+                          runGetScheduleStat({
+                            currentOrganizationId: login.organizationId,
+                            types: ['DATA_ARCHIVE', 'SQL_PLAN', 'DATA_DELETE', 'PARTITION_PLAN'],
+                            startTime: Date.now() - 1000 * 60 * 60 * 24 * 7,
+                            endTime: Date.now(),
+                          });
                         }}
-                        value={currentQuickStartRole}
-                        style={{ marginBottom: 8 }}
                       >
-                        {quickStart.role.map((item, index) => {
-                          return <Radio.Button value={index}>{item}</Radio.Button>;
-                        })}
-                      </Radio.Group>
-                      <div className={styles.descriptions}>
-                        <Typography.Paragraph
-                          type="secondary"
-                          ellipsis={{
-                            rows: 2,
+                        <span className={styles.hide}>不再提示</span>
+                      </Popconfirm>
+                    </div>
+                    <div className={styles.quickStartContent}>
+                      <div className={styles.leftWrapper}>
+                        <Radio.Group
+                          className={styles.tabs}
+                          onChange={(e) => {
+                            setCurrentQuickStartRole(e.target.value);
+                          }}
+                          value={currentQuickStartRole}
+                          style={{ marginBottom: 8 }}
+                        >
+                          {quickStart.role.map((item, index) => {
+                            return <Radio.Button value={index}>{item}</Radio.Button>;
+                          })}
+                        </Radio.Group>
+                        <div className={styles.descriptions}>
+                          <Typography.Paragraph
+                            type="secondary"
+                            ellipsis={{
+                              rows: 2,
+                            }}
+                          >
+                            {quickStart.descriptions[currentQuickStartRole]}
+                          </Typography.Paragraph>
+                        </div>
+                        <div
+                          className={styles.steps}
+                          onMouseLeave={() => {
+                            setCurrentQuickStartStep(-1);
                           }}
                         >
-                          {quickStart.descriptions[currentQuickStartRole]}
-                        </Typography.Paragraph>
-                      </div>
-                      <div
-                        className={styles.steps}
-                        onMouseLeave={() => {
-                          setCurrentQuickStartStep(-1);
-                        }}
-                      >
-                        {quickStart.steps[currentQuickStartRole].map((step, index) => {
-                          return (
-                            <div
-                              className={styles.stepItem}
-                              onMouseEnter={() => {
-                                setCurrentQuickStartStep(index);
-                              }}
-                              onClick={() =>
-                                quickStartMenu?.[`${currentQuickStartRole}_${index}`]?.()
-                              }
-                            >
-                              <LabelWithIcon
-                                gap={8}
-                                icon={
-                                  step && (
+                          {quickStart.steps[currentQuickStartRole].map((step, index) => {
+                            return (
+                              <div
+                                className={styles.stepItem}
+                                onMouseEnter={() => {
+                                  setCurrentQuickStartStep(index);
+                                }}
+                                onClick={() =>
+                                  quickStartMenu?.[`${currentQuickStartRole}_${index}`]?.()
+                                }
+                              >
+                                <LabelWithIcon
+                                  gap={8}
+                                  icon={
+                                    step && (
+                                      <span
+                                        className={`${styles.stepIcon} ${
+                                          currentQuickStartStep === index ? styles.active : ''
+                                        }`}
+                                      >
+                                        {index + 1}
+                                      </span>
+                                    )
+                                  }
+                                  label={
                                     <span
-                                      className={`${styles.stepIcon} ${
+                                      className={`${styles.stepLabel} ${
                                         currentQuickStartStep === index ? styles.active : ''
                                       }`}
                                     >
-                                      {index + 1}
+                                      {step}
                                     </span>
-                                  )
-                                }
-                                label={
-                                  <span
-                                    className={`${styles.stepLabel} ${
-                                      currentQuickStartStep === index ? styles.active : ''
-                                    }`}
-                                  >
-                                    {step}
-                                  </span>
-                                }
-                              />
-                            </div>
-                          );
-                        })}
-                      </div>
-                      <Divider variant="dashed" style={{ margin: '20px 0' }} />
-                      <LabelWithIcon
-                        gap={8}
-                        icon={<ExperimentOutlined />}
-                        label={
-                          <span
-                            className={`${styles.articleTitleTypograpy} ${styles.moreFunctionIntro}`}
-                            onClick={() => modal.changeVersionModalVisible(true)}
-                          >
-                            更多功能介绍
-                          </span>
-                        }
-                      />
-                    </div>
-                    {topAreaLayout.guide === gridConfig.all && (
-                      <div className={styles.rightWrapper}>
-                        <img
-                          style={{ width: 550, height: 278 }}
-                          src={getImg(
-                            currentQuickStartStep > -1
-                              ? `/guide/${currentQuickStartRole}-${currentQuickStartStep}.png`
-                              : `/guide/default-${currentQuickStartRole}.png`,
-                          )}
+                                  }
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <Divider variant="dashed" style={{ margin: '20px 0' }} />
+                        <LabelWithIcon
+                          gap={8}
+                          icon={<ExperimentOutlined />}
+                          label={
+                            <span
+                              className={`${styles.articleTitleTypograpy} ${styles.moreFunctionIntro}`}
+                              onClick={() => modal.changeVersionModalVisible(true)}
+                            >
+                              更多功能介绍
+                            </span>
+                          }
                         />
                       </div>
-                    )}
-                  </div>
-                </Card>
-              </Col>
-            </Row>
-          ) : null}
+                      {topAreaLayout.guide === gridConfig.all && (
+                        <div className={styles.rightWrapper}>
+                          <img
+                            style={{ width: 550, height: 278 }}
+                            src={getImg(
+                              currentQuickStartStep > -1
+                                ? `/guide/${currentQuickStartRole}-${currentQuickStartStep}.png`
+                                : `/guide/default-${currentQuickStartRole}.png`,
+                            )}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                </Col>
+              </Row>
+            ) : null}
+          </Spin>
           <Row className={styles.bottom}>
             <Col span={18} className={styles.recently}>
               <Card className={styles.card}>
