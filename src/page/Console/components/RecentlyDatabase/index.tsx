@@ -67,7 +67,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
       case 'project':
         return (
           <div>
-            {`'未加入项目【'${record?.project?.name || '-'}】请先`}
+            {`未加入项目【${record?.project?.name || '-'}】请先`}
             <a
               target="_blank"
               rel="noopener noreferrer"
@@ -260,7 +260,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
           pagination={false}
         />
       ) : (
-        <RecentlyDatabaseEmpty />
+        <RecentlyDatabaseEmpty height={391} />
       )}
       <ExportTaskCreateModal />
       <ImportTaskCreateModal />

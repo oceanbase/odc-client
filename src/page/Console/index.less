@@ -233,7 +233,7 @@
         }
         :global {
           .ant-card-body {
-            min-height: 395px;
+            min-height: 521px;
           }
         }
       }
@@ -241,8 +241,16 @@
       .docWrapper {
         padding-left: 8px;
 
-        .card {
-          height: 174px;
+        .aboutUs {
+          :global {
+            .ant-card-body {
+              padding: 16px;
+            }
+          }
+        }
+
+        .practice {
+          height: 335px;
           :global {
             .ant-card-body {
               padding: 16px;
@@ -250,7 +258,6 @@
           }
           &:nth-child(2) {
             margin-top: 16px;
-            height: 206px;
           }
           .consoleCardTitle {
             display: flex;
@@ -294,7 +301,7 @@
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          margin-top: 8px;
+          margin-top: 14px;
           font-size: 12px;
           color: #000000;
           line-height: 20px;
@@ -304,7 +311,6 @@
             cursor: pointer;
             font-size: 12px;
             color: #1890ff;
-            line-height: 20px;
           }
           &:nth-child(2) {
             margin-top: 16px;

@@ -1,4 +1,5 @@
 import { TaskPageType } from '@/d.ts';
+import { title } from 'process';
 
 export enum EQuickStartRole {
   Admin,
@@ -87,6 +88,18 @@ export const ConsoleTextConfig = {
       {
         title: '企业级管控协同：守护数据库的每一次变更',
         url: 'https://www.oceanbase.com/docs/common-odc-1000000002687239',
+      },
+      {
+        title: '通过 ODC 实现分库分表的管理和变更',
+        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687240',
+      },
+      {
+        title: '数据脱敏管控实践',
+        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687241',
+      },
+      {
+        title: 'SQL 开发常用小技巧',
+        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687242',
       },
     ],
   },

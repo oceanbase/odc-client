@@ -314,7 +314,7 @@ const Console = () => {
               </Card>
             </Col>
             <Col span={6} className={styles.docWrapper}>
-              <Card className={styles.card}>
+              <Card className={styles.aboutUs}>
                 <div className={styles.consoleCardTitle}>关于我们</div>
                 <div className={styles.aboutUsContent}>
                   <div className={styles.docsWrapper}>
@@ -347,7 +347,7 @@ const Console = () => {
                   />
                 </div>
               </Card>
-              <Card className={styles.card}>
+              <Card className={styles.practice}>
                 <div className={styles.consoleCardTitle}>
                   最佳实践
                   <span
