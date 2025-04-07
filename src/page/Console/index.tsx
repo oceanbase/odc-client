@@ -198,12 +198,9 @@ const Console = () => {
                             key: 'odc.user.guidePromptEnabled',
                             value: false,
                           });
-                          runGetScheduleStat({
-                            currentOrganizationId: login.organizationId,
-                            types: ['DATA_ARCHIVE', 'SQL_PLAN', 'DATA_DELETE', 'PARTITION_PLAN'],
-                            startTime: Date.now() - 1000 * 60 * 60 * 24 * 7,
-                            endTime: Date.now(),
-                          });
+                          setTopAreaLayout(
+                            data?.length > 0 ? areaLayout.schedules : areaLayout.hideTop,
+                          );
                         }}
                       >
                         <span className={styles.hide}>不再提示</span>
