@@ -121,7 +121,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />
           </Descriptions.Item>
         )}
-        <Descriptions.Item span={4} label="DML语句预估影响行数：">
+        <Descriptions.Item span={4} label="DML语句预估影响行数">
           {node?.status === TaskNodeStatus.EXECUTING ? (
             <LoadingOutlined />
           ) : (
