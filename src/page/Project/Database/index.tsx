@@ -437,8 +437,11 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                   title: '备注',
                   width: '160',
                   handleSave: async (value, callback) => {
-                    if (value.remark && value.remark !== record.remark) {
-                      const isSuccess = await batchUpdateRemarks([record?.id], value.remark);
+                    if (value?.remark?.trim() !== record?.remark) {
+                      const isSuccess = await batchUpdateRemarks(
+                        [record?.id],
+                        value?.remark?.trim(),
+                      );
                       if (isSuccess) {
                         message.success(
                           formatMessage({
@@ -446,9 +449,9 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                             defaultMessage: '保存成功',
                           }),
                         );
-                        callback?.();
                         reload?.();
                       }
+                      callback?.();
                     }
                   },
                 })

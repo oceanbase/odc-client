@@ -295,3 +295,38 @@ export const getMapIdByDB = <T extends DatabaseGroup>(db: IDatabase, type: T): G
     tip,
   } as GroupResult[T];
 };
+
+export const getMapIdByDataSource = <T extends DatabaseGroup>(
+  dataSource: IConnection,
+  groupType: T,
+): GroupResult[T] => {
+  const { id, name, environmentId, environmentName, type, clusterName, tenantName } = dataSource;
+  let mapId, groupName, tip;
+  switch (groupType) {
+    case DatabaseGroup.dataSource: {
+      mapId = id;
+      groupName = name;
+      break;
+    }
+    case DatabaseGroup.environment: {
+      mapId = environmentId;
+      groupName = environmentName;
+      break;
+    }
+    case DatabaseGroup.connectType: {
+      mapId = type;
+      groupName = ConnectTypeText[type];
+      break;
+    }
+    case DatabaseGroup.cluster: {
+      mapId = clusterName || '无集群';
+      groupName = clusterName || '无集群';
+      break;
+    }
+  }
+  return {
+    mapId,
+    groupName,
+    tip,
+  } as GroupResult[T];
+};

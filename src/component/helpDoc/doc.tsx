@@ -427,6 +427,9 @@ export default {
       })}
     </p>
   ),
+
+  CreateMaterializedViewSelectStartWith: <p>刷新开始时间必须大于创建物化视图时的时间</p>,
+
   expirePeriod: (
     <p>
       {

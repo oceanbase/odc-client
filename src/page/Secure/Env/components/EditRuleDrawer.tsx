@@ -223,20 +223,20 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
               const sdt2 = rule?.metadata?.supportedDialectTypes[2 * index + 1];
               const inRange = 2 * index + 1 < rule?.metadata?.supportedDialectTypes?.length; // inRange 为false，已经超出数组长度，不渲染多余的空checkbox
               return (
-                <Row>
-                  <Col span={12}>
+                <div style={{ display: 'flex', width: '100%' }}>
+                  <div style={{ flex: 1 }}>
                     <Checkbox value={sdt1} key={2 * index}>
                       {sdt1}
                     </Checkbox>
-                  </Col>
+                  </div>
                   {inRange && (
-                    <Col span={12}>
+                    <div style={{ flex: 1 }}>
                       <Checkbox value={sdt2} key={2 * index + 1}>
                         {sdt2}
                       </Checkbox>
-                    </Col>
+                    </div>
                   )}
-                </Row>
+                </div>
               );
             })}
           </Checkbox.Group>

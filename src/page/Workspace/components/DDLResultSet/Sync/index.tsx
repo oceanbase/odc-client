@@ -60,6 +60,7 @@ const Sync: React.FC<IProps> = (props) => {
           <p className={styles.parallelismDegreeLabel}>设置并行度</p>
           <InputNumber
             min={1}
+            max={Number.MAX_SAFE_INTEGER}
             value={parallelismDegree}
             onChange={(e) => setParallelismDegree(e)}
           />

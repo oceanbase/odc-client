@@ -1,5 +1,10 @@
 import { useMemo } from 'react';
-import { getMapIdByDB, GroupWithDatabases, GroupWithSecondGroup } from '../helper';
+import {
+  getMapIdByDB,
+  GroupWithDatabases,
+  GroupWithSecondGroup,
+  getMapIdByDataSource,
+} from '../helper';
 import { IDatabase, DatabaseGroup } from '@/d.ts/database';
 import { ConnectType, IConnection } from '@/d.ts';
 
@@ -22,16 +27,6 @@ const useGroupData = (props: IProps) => {
     const allDatabases: Map<number, IDatabase> = new Map();
     const filteredList = filter ? databaseList?.filter(filter) : databaseList;
     const allDatasources: IConnection[] = [];
-    if (datasourceList) {
-      datasourceList.forEach((item) => {
-        datasourceGruop.set(item.id, {
-          databases: [],
-          dataSource: item,
-          groupName: item?.name,
-          mapId: item?.id,
-        });
-      });
-    }
     filteredList?.forEach((db) => {
       const { environment, dataSource, connectType, project } = db;
       allDatabases.set(db.id, db);
@@ -171,6 +166,87 @@ const useGroupData = (props: IProps) => {
           tenantDatabases.databases.push(db);
         }
         tenantGroup.set(mapId, tenantDatabases);
+      }
+    });
+    datasourceList?.forEach((item) => {
+      // 数据源
+      {
+        const { mapId, groupName } = getMapIdByDataSource(item, DatabaseGroup.dataSource);
+        const datasourceDatabases: GroupWithDatabases[DatabaseGroup.dataSource] =
+          datasourceGruop.get(mapId) || {
+            dataSource: item,
+            groupName,
+            databases: [],
+            mapId,
+          };
+        datasourceGruop.set(mapId, datasourceDatabases);
+      }
+      // 环境
+      {
+        const { mapId, groupName } = getMapIdByDataSource(item, DatabaseGroup.environment);
+        const environmentDatabases: GroupWithSecondGroup[DatabaseGroup.environment] =
+          environmentGroup.get(mapId) || {
+            groupName,
+            mapId,
+            secondGroup: new Map(),
+          };
+        const { mapId: secondGroupMapId, groupName: secondGroupgroupName } = getMapIdByDataSource(
+          item,
+          DatabaseGroup.dataSource,
+        );
+        const secondGroupDatabase: GroupWithDatabases[DatabaseGroup.dataSource] =
+          environmentDatabases.secondGroup.get(secondGroupMapId) || {
+            databases: [],
+            groupName: secondGroupgroupName,
+            mapId: secondGroupMapId,
+          };
+        environmentDatabases.secondGroup.set(secondGroupMapId, secondGroupDatabase);
+        environmentGroup.set(mapId, environmentDatabases);
+      }
+      // 类型
+      {
+        const { mapId, groupName } = getMapIdByDataSource(item, DatabaseGroup.connectType);
+        const connectTypeDatabases: GroupWithSecondGroup[DatabaseGroup.connectType] =
+          connectTypeGruop.get(mapId) || {
+            groupName,
+            mapId,
+            secondGroup: new Map(),
+          };
+        const { mapId: secondGroupMapId, groupName: secondGroupgroupName } = getMapIdByDataSource(
+          item,
+          DatabaseGroup.dataSource,
+        );
+        const secondGroupDatabase: GroupWithDatabases[DatabaseGroup.dataSource] =
+          connectTypeDatabases.secondGroup.get(secondGroupMapId) || {
+            databases: [],
+            groupName: secondGroupgroupName,
+            mapId: secondGroupMapId,
+          };
+        connectTypeDatabases.secondGroup.set(secondGroupMapId, secondGroupDatabase);
+        connectTypeGruop.set(mapId, connectTypeDatabases);
+      }
+      // 集群
+      {
+        const { mapId, groupName } = getMapIdByDataSource(item, DatabaseGroup.cluster);
+        const clusterDatabases: GroupWithSecondGroup[DatabaseGroup.cluster] = clusterGroup.get(
+          mapId,
+        ) || {
+          groupName,
+          mapId,
+          secondGroup: new Map(),
+        };
+        const { mapId: secondGroupMapId, groupName: secondGroupgroupName } = getMapIdByDataSource(
+          item,
+          DatabaseGroup.dataSource,
+        );
+        const secondGroupDatabase: GroupWithDatabases[DatabaseGroup.dataSource] =
+          clusterDatabases.secondGroup.get(secondGroupMapId) || {
+            databases: [],
+            groupName: secondGroupgroupName,
+            mapId: secondGroupMapId,
+          };
+        clusterDatabases.secondGroup.set(secondGroupMapId, secondGroupDatabase);
+        clusterGroup.set(mapId, clusterDatabases);
       }
     });
     return {

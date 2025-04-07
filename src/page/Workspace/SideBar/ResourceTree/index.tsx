@@ -293,6 +293,7 @@ const ResourceTree: React.FC<IProps> = function ({
                 type: ResourceNodeType.SecondGroupNodeDataSource,
                 data: data ?? null,
                 icon: icon ?? null,
+                isLeaf: sItem.databases.length ? false : true,
                 children: sItem.databases
                   ?.filter((db: IDatabase) => {
                     return (
@@ -382,19 +383,7 @@ const ResourceTree: React.FC<IProps> = function ({
     <>
       <div className={styles.resourceTree}>
         <div className={styles.title}>
-          <span
-            className={styles.titleText}
-            onClick={() => {
-              console.log(databases);
-              console.log(treeData);
-              console.log(expandedKeys);
-              console.log(loadedKeys);
-              console.log(shouldExpandedKeys);
-              console.log(currentObject);
-            }}
-          >
-            数据库
-          </span>
+          <span className={styles.titleText}>数据库</span>
           <span className={styles.titleAction}>
             <Space size={8} style={{ lineHeight: 1.5 }}>
               {enableFilter ? (

@@ -2,6 +2,18 @@
   :global {
     .ant-table.ant-table-small {
       > .ant-table-container {
+        > .ant-table-tbody-virtual {
+          .ant-table-tbody-virtual-holder {
+            .ant-table-row {
+              .ant-table-cell {
+                height: 40px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+              }
+            }
+          }
+        }
         > .ant-table-content {
           .ant-table-thead {
             .ant-table-cell {

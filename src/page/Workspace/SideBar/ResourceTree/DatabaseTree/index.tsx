@@ -37,6 +37,7 @@ const DatabaseTree = function () {
   } = useContext(ResourceTreeContext);
   const { DatabaseGroupMap } = useGroupData({
     databaseList,
+    // 个人空间展示全量的数据源
     datasourceList: login.isPrivateSpace() ? datasourceList : [],
     filter: (db: IDatabase) => {
       const config = getDataSourceModeConfig(db?.dataSource?.type);
