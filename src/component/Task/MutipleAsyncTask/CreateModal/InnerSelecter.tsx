@@ -196,7 +196,7 @@ const InnerSelect: React.FC<{
       <Popover
         showArrow={false}
         placement={'right'}
-        content={<ConnectionPopover connection={item?.dataSource} />}
+        content={<ConnectionPopover connection={item?.dataSource} showRemark />}
       >
         <div
           title={item?.label}

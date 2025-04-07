@@ -125,27 +125,6 @@ export default inject('userStore')(
         [form, registrationId, testInfo],
       );
 
-      useEffect(() => {
-        if (showExtraConfigForSAML && form.getFieldValue('name')) {
-          const name = form.getFieldValue('name');
-          const md5Hex = md5(`${name || ''}`);
-          const id = `${userStore?.organizationId}-${md5Hex}`;
-          form.setFieldsValue({
-            ssoParameter: {
-              providerEntityId: `${
-                window.ODCApiHost || location.origin
-              }/saml2/service-provider-metadata/${id}`,
-            },
-          });
-        } else {
-          form.setFieldsValue({
-            ssoParameter: {
-              providerEntityId: undefined,
-            },
-          });
-        }
-      }, [showExtraConfigForSAML]);
-
       async function fetchTestInfo(testId: string) {
         const data = await getTestUserInfo(testId);
         let text;
@@ -443,15 +422,6 @@ export default inject('userStore')(
                 }/saml2/service-provider-metadata/${userStore?.organizationId}-test`,
               },
             });
-            if (showExtraConfigForSAML) {
-              form.setFieldsValue({
-                ssoParameter: {
-                  providerEntityId: `${
-                    window.ODCApiHost || location.origin
-                  }/saml2/service-provider-metadata/${id}`,
-                },
-              });
-            }
           default:
             form.setFieldsValue({
               ssoParameter: {

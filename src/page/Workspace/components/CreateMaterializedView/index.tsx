@@ -12,7 +12,13 @@ import { CreateMaterializedViewPage } from '@/store/helper/page/pages/create';
 import modal, { ModalStore } from '@/store/modal';
 import { generateCreateMaterializedViewSql } from '@/common/network/materializedView/index';
 import styles from './index.less';
-import { MaterializedViewTabType, MaterializedViewInfo, MvColumns, MviewUnits } from './interface';
+import {
+  MaterializedViewTabType,
+  MaterializedViewInfo,
+  MvColumns,
+  MviewUnits,
+  StartStrategy,
+} from './interface';
 import notification from '@/util/notification';
 import BaseInfo from './BaseInfo';
 import Columns from './Columns';
@@ -80,6 +86,15 @@ const CreateMaterializedView: React.FC<IProps> = (props) => {
     let _isComplete = false;
     _isComplete = !!info.name;
     const aliasNameSet = new Set();
+    if (
+      info?.refreshSchedule?.startStrategy === StartStrategy.START_AT &&
+      !info?.refreshSchedule?.startWith
+    ) {
+      _isComplete = _isComplete && false;
+    }
+    if (info?.refreshSchedule?.startStrategy && !info?.refreshSchedule?.interval) {
+      _isComplete = _isComplete && false;
+    }
     // 若选择了列，必须填别名且是不重复的别名
     columns?.forEach((item) => {
       _isComplete = _isComplete && !!item?.aliasName;

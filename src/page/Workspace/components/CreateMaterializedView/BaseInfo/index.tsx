@@ -10,7 +10,7 @@ import { RefreshMethod, RefreshScheduleUnit, ConnectType } from '@/d.ts';
 import { StartStrategy } from '../interface';
 import { useDataSourceConfig } from '../config';
 import { CaseInput } from '@/component/Input/Case';
-import dayjs from 'dayjs';
+import HelpDoc from '@/component/helpDoc';
 
 interface IProps {
   isEdit?: boolean;
@@ -51,7 +51,7 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
     if (startStrategy === StartStrategy.START_AT) {
       info.refreshSchedule = {
         startStrategy,
-        startWith: dayjs(),
+        startWith: undefined,
         interval: info.refreshSchedule.interval || 1,
         unit: info.refreshSchedule.unit || RefreshScheduleUnit.MINUTE,
       };
@@ -146,7 +146,7 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
         />
       </Form.Item>
       <Form.Item name="parallelismDegree" label="刷新并行度">
-        <InputNumber min={1} style={{ width: 200 }} />
+        <InputNumber min={1} max={Number.MAX_SAFE_INTEGER} style={{ width: 200 }} />
       </Form.Item>
       <div style={{ display: 'flex' }}>
         <Form.Item
@@ -179,9 +179,13 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
         {startStrategy === StartStrategy.START_AT && (
           <Form.Item
             name={['refreshSchedule', 'startWith']}
-            label="刷新开始时间"
-            initialValue={dayjs()}
+            label={
+              <>
+                刷新开始时间 <HelpDoc doc="CreateMaterializedViewSelectStartWith" />
+              </>
+            }
             style={{ marginRight: '40px' }}
+            required
           >
             <DatePicker showTime onChange={(e) => {}} />
           </Form.Item>
@@ -195,6 +199,7 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
               style={{
                 display: 'inline',
               }}
+              required
             >
               <InputNumber min={1} className={styles.interval} />
             </Form.Item>
