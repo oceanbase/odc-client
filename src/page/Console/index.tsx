@@ -162,7 +162,12 @@ const Console = () => {
           <div className={styles.subTitle}>开源的数据库开发和数据库管控协同工具</div>
         </div>
         <div className={styles.content}>
-          <Spin spinning={scheduleLoading} className={styles.topAreaFilter}>
+          <Spin
+            spinning={
+              scheduleLoading && setting.configurations['odc.user.guidePromptEnabled'] === 'true'
+            }
+            className={styles.topAreaFilter}
+          >
             {topAreaLayout.guide || topAreaLayout.schedule ? (
               <Row className={styles.top}>
                 <Col
