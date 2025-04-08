@@ -5,10 +5,11 @@ import styles from './index.less';
 import { ConsoleTextConfig } from '../../const';
 interface IProps {
   size?: number;
+  padding?: number;
 }
 
-const QrCodeWithIcon = ({ size = 80 }: IProps) => {
-  const renderContent = (qrSize: number, iconClassName: string) => (
+const QrCodeWithIcon = ({ size = 75 }: IProps) => {
+  const renderContent = (qrSize: number, padding: number, iconClassName: string) => (
     <div className={styles.container}>
       <div className={styles.iconContainer}>
         <DingSvg className={iconClassName} />
@@ -17,15 +18,16 @@ const QrCodeWithIcon = ({ size = 80 }: IProps) => {
         <QRCode
           value={ConsoleTextConfig.aboutUs.QRUrl}
           size={qrSize}
-          style={{ padding: 0, margin: 0 }}
+          className={styles.qrCode}
+          style={{ padding }}
         />
       </div>
     </div>
   );
 
   return (
-    <Popover placement="left" content={renderContent(160, styles.circleIconPopover)}>
-      {renderContent(size, styles.circleIcon)}
+    <Popover placement="left" content={renderContent(160, 0, styles.circleIconPopover)}>
+      {renderContent(size, 5, styles.circleIcon)}
     </Popover>
   );
 };

@@ -113,6 +113,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
         const hasProjectAuth = record?.project?.currentUserResourceRoles;
         const hasDBAuth = !!record?.authorizedPermissionTypes?.length;
         const actionStyle = hasProjectAuth ? styles.action : styles.disabledAction;
+        const normalStyle = hasProjectAuth ? '' : styles.disabledAction;
         switch (key) {
           case EDatabaseTableColumnKey.Operation:
             const operation = getRecentlyDatabaseOperation({ record, project: record?.project });
@@ -193,7 +194,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
             }
 
             return (
-              <div className={actionStyle}>
+              <div className={normalStyle}>
                 <LabelWithIcon
                   gap={6}
                   label={
@@ -226,7 +227,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
               <div
                 className={actionStyle}
                 onClick={() => {
-                  window.open(`/project/${value.id}`);
+                  window.open(`/#/project/${value.id}/database`);
                 }}
               >
                 {value?.name || '-'}

@@ -1,11 +1,11 @@
 .scheduleItem {
   display: flex;
+  align-items: center;
   flex-direction: column;
 
   margin-top: 20px;
   width: 160px;
   height: 248px;
-  margin-right: 28px;
   &:nth-child(1) {
     margin-right: 0;
   }
@@ -32,18 +32,18 @@
       }
     }
     .ringChart {
-      width: 160px;
-      padding-left: 26px;
-      padding-right: 26px;
-      margin-top: 24px;
-      margin-bottom: 16px;
+      display: flex;
+      justify-content: center;
+      margin-top: 8px;
+      min-height: 140px;
+      align-items: center;
     }
   }
   .counters {
     display: inline-flex;
     flex-direction: row;
-    justify-content: center;
-    gap: 24px;
+    justify-content: space-around;
+    width: 100%;
   }
 }
 

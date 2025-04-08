@@ -23,8 +23,6 @@ import { Form, message, Modal } from 'antd';
 import { isUndefined } from 'lodash';
 import { useEffect, useState } from 'react';
 import ProjectSelect from './ProjectSelect';
-import { DB_OWNER_MAX_COUNT } from '@/page/Project/Database/const';
-import ProjectContext from '@/page/Project/ProjectContext';
 import { DatabaseOwnerSelect } from '@/page/Project/Database/components/DatabaseOwnerSelect';
 import { IProject } from '@/d.ts/project';
 

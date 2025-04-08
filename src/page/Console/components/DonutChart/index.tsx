@@ -144,7 +144,7 @@ const PieChart = ({ progress }) => {
     }
   }, [progress, total, status, statusType, statusColor]);
 
-  return <div ref={chartRef} className="chart-container" style={{ width: 108, height: 108 }} />;
+  return <div ref={chartRef} className="chart-wrapper" />;
 };
 
 export default PieChart;

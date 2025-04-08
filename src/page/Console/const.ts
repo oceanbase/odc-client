@@ -106,8 +106,8 @@ export const ConsoleTextConfig = {
 };
 
 export const gridConfig = {
-  left: 15,
-  right: 9,
+  left: 16,
+  right: 8,
   all: 24,
   hide: 0,
 };
