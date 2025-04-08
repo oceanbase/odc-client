@@ -559,6 +559,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     <Modal
       wrapClassName={styles.modal}
       width={700}
+      destroyOnClose
       open={modalStore.odcSettingVisible}
       onCancel={() => close()}
       title={
