@@ -72,7 +72,6 @@ const Console = () => {
     const enable = setting.configurations['odc.user.guidePromptEnabled'];
     const guidePromptEnabled = enable !== 'true';
     const hasData = data?.length > 0;
-
     if (guidePromptEnabled) {
       setTopAreaLayout(hasData ? areaLayout.schedules : areaLayout.hideTop);
     } else {
