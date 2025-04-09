@@ -17,9 +17,9 @@
 import Toolbar from '@/component/Toolbar';
 import { IDatabaseSession } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { sortNumber, sortString } from '@/util/utils';
+import { groupBySessionId, sortNumber, sortString } from '@/util/utils';
 import { SyncOutlined } from '@ant-design/icons';
-import { Input, Layout, message, Space, Spin, Tooltip } from 'antd';
+import { Input, Layout, message, Space, Spin, Tooltip, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { useContext, useEffect, useState } from 'react';
 // @ts-ignore
@@ -105,6 +105,9 @@ function SessionManagementPage(props: IProps) {
       width: 105,
       sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortNumber(a.sessionId, b.sessionId),
       sortDirections: ['descend', 'ascend'],
+      render: (value) => {
+        return <Tooltip title={value}>{value}</Tooltip>;
+      },
     },
 
     {
@@ -143,6 +146,9 @@ function SessionManagementPage(props: IProps) {
       width: 120,
       sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortString(a.database, b.database),
       sortDirections: ['descend', 'ascend'],
+      render: (value) => {
+        return <Tooltip title={value}>{value}</Tooltip>;
+      },
     },
 
     {
@@ -346,14 +352,18 @@ function SessionManagementPage(props: IProps) {
         ) : null}
         <div className={styles.table}>
           <MiniTable
-            rowKey={'sessionId'}
+            rowKey={(record) => `${record.sessionId}_${record.svrIp}`}
             bordered={true}
             loading={listLoading}
             columns={columns}
-            dataSource={filteredRows}
+            indentSize={0}
+            dataSource={groupBySessionId(filteredRows)}
             loadData={(page) => {}}
             rowSelection={{
-              selectedRowKeys: selectedRows.map((r: IDatabaseSession) => r.sessionId),
+              checkStrictly: false,
+              selectedRowKeys: selectedRows.map(
+                (r: IDatabaseSession) => `${r.sessionId}_${r.svrIp}`,
+              ),
               onChange: (selectedRowKeys: string[], rows: IDatabaseSession[]) => {
                 setSelectedRows(rows);
               },

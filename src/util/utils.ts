@@ -686,3 +686,39 @@ export const stringSeparatorToCRLF = (separator: string) => {
 export const CRLFToSeparatorString = (separator: string) => {
   return separator?.replace(/\r/g, '\\r').replace(/\n/g, '\\n');
 };
+
+export function groupBySessionId(filteredRows) {
+  const sessionMap = new Map();
+
+  filteredRows.forEach((row) => {
+    const sessionId = row?.sessionId;
+
+    if (!sessionMap.has(sessionId)) {
+      sessionMap.set(sessionId, {
+        ...row,
+        children: [],
+      });
+    } else {
+      const existingEntry = sessionMap.get(sessionId);
+
+      if (row.status === 'ACTIVE' && existingEntry.status !== 'ACTIVE') {
+        sessionMap.set(sessionId, {
+          ...row,
+          children: [existingEntry, ...existingEntry.children],
+        });
+        delete existingEntry.children;
+      } else {
+        existingEntry?.children?.push(row);
+      }
+    }
+  });
+
+  const cleanedSessions = Array.from(sessionMap.values()).map((entry) => {
+    if (entry.children && entry.children.length === 0) {
+      delete entry.children;
+    }
+    return entry;
+  });
+
+  return cleanedSessions;
+}
