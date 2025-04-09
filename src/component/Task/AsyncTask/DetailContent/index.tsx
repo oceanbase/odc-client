@@ -124,6 +124,8 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
         <Descriptions.Item span={4} label="DML语句预估影响行数">
           {node?.status === TaskNodeStatus.EXECUTING ? (
             <LoadingOutlined />
+          ) : task?.affectedRows === -1 ? (
+            '该 SQL 语句不支持'
           ) : (
             task?.affectedRows || '-'
           )}
