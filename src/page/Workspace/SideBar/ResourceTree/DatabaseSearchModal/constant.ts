@@ -124,21 +124,21 @@ export const DbObjectTypeMap = {
     openPage: (object) => openViewViewPage,
     getOpenTab: (object, databaseId) => {
       const databaseName = object?.dbObject?.database?.name || object?.database?.name;
-      return [object?.name, TopTab.PROPS, PropsTab.INFO, databaseId, databaseName];
+      return [object?.name, TopTab.PROPS, PropsTab.DDL, databaseId, databaseName];
     },
   },
   [DbObjectType.function]: {
     label: DbObjectTypeTextMap.FUNCTION,
     openPage: (object) => openFunctionViewPage,
     getOpenTab: (object, databaseId) => {
-      return [object?.name, TopTab.PROPS, PropsTab.INFO, databaseId];
+      return [object?.name, TopTab.PROPS, PropsTab.DDL, databaseId];
     },
   },
   [DbObjectType.procedure]: {
     label: DbObjectTypeTextMap.PROCEDURE,
     openPage: (object) => openProcedureViewPage,
     getOpenTab: (object, databaseId) => {
-      return [object?.name, TopTab.PROPS, PropsTab.INFO, databaseId];
+      return [object?.name, TopTab.PROPS, PropsTab.DDL, databaseId];
     },
   },
   [DbObjectType.package]: {

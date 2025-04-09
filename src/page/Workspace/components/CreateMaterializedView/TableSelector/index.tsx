@@ -25,7 +25,6 @@ const TableSelector = () => {
   const [keywords, setKeyWords] = useState<string>('');
   const [autoExpandParent, setAutoExpandParent] = useState<boolean>(true);
   const [targetKeys, setTargetKeys] = useState([]);
-  const [selectedKeys, setSelectedKeys] = useState([]);
   const [selectMap, setSelectMap] = useState({});
   const datasourceConfig = useDataSourceConfig(session?.connection?.type);
 
@@ -213,22 +212,7 @@ const TableSelector = () => {
   };
 
   const handleTreeSearch = (_, keywords) => {
-    const expandedKeys = [];
-    if (keywords) {
-      treeData.forEach((node) => {
-        const { children = [] } = node;
-        const isMatch = children.find((item) => {
-          const upperKeywords = keywords?.toUpperCase();
-          const upperItemKey = (item.key as string)?.toUpperCase();
-          return upperItemKey.indexOf(upperKeywords) > -1 || selectedKeys.includes(item.key);
-        });
-        if (isMatch) {
-          expandedKeys.push(node.key);
-        }
-      });
-    }
     setKeyWords(keywords);
-    setExpandedKeys(expandedKeys);
   };
 
   const handleItemChange = (data) => {
@@ -301,7 +285,10 @@ const TableSelector = () => {
 
   return (
     <div style={{ padding: '12px' }}>
-      <p>选择基表</p>
+      <p>
+        选择基表
+        <span style={{ color: 'var(--icon-color-normal-2)' }}>（可选）</span>
+      </p>
       <Transfer
         showSearch={!loading}
         targetKeys={targetKeys}
@@ -313,11 +300,11 @@ const TableSelector = () => {
         }}
         onChange={handleTransfer}
         onSearch={handleTreeSearch}
+        filterOption={() => true}
         oneWay
       >
         {({ direction, onItemSelect, selectedKeys }) => {
           if (direction === 'left') {
-            setSelectedKeys(selectedKeys);
             return renderSourcePanel(onItemSelect, selectedKeys);
           }
           if (direction === 'right') {

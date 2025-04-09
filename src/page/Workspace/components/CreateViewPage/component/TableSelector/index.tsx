@@ -17,7 +17,6 @@
 import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
 import { Button, Empty, Spin, Transfer, Tree } from 'antd';
-import update from 'immutability-helper';
 import { uniqueId } from 'lodash';
 import { parse } from 'query-string';
 import styles from './index.less';
@@ -25,7 +24,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import TableItem from './Item';
 import { ICON_DATABASE, ICON_TABLE, ICON_VIEW } from '../ObjectName';
 import SortableContainer, { DraggableItem } from '@/component/SortableContainer';
-import type { UniqueIdentifier } from '@dnd-kit/core';
 
 const { TreeNode, DirectoryTree } = Tree;
 
@@ -46,7 +44,7 @@ interface IState {
 
 const TreeSelector: React.FC<IProps> = React.memo((props) => {
   const selectedKeys = [];
-  const [state, setState] = useState({
+  const [state, setState] = useState<IState>({
     targetKeys: [],
     treeData: [],
     expandedKeys: [],
@@ -55,7 +53,6 @@ const TreeSelector: React.FC<IProps> = React.memo((props) => {
     keywords: '',
     loading: true,
   });
-  const [currentMoveingKey, setCurrentMoveingKey] = useState<UniqueIdentifier>();
   useEffect(() => {
     loadTreeData(true);
   }, []);
@@ -313,6 +310,7 @@ const TreeSelector: React.FC<IProps> = React.memo((props) => {
         }}
         onChange={handleTransfer}
         onSearch={handleTreeSearch}
+        filterOption={() => true}
         oneWay
       >
         {({ direction, onItemSelect, selectedKeys }) => {

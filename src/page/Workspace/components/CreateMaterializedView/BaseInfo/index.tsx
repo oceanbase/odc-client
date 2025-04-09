@@ -71,12 +71,26 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
     });
   }, [startStrategy]);
 
+  useEffect(() => {
+    if (info.refreshMethod === RefreshMethod.NEVER_REFRESH) {
+      info.refreshSchedule = {
+        startStrategy: false,
+      };
+      form.setFieldValue(['refreshSchedule', 'startStrategy'], false);
+      setStartStrategy(false);
+      setTimeout(() => {
+        setInfo(info);
+      });
+    }
+  }, [info.refreshMethod]);
+
   return (
     <Form
       className={styles.createMaterializedViewBaseInfoForm}
       form={form}
       initialValues={null}
       layout="vertical"
+      requiredMark="optional"
       onValuesChange={async () => {
         const values = await form.getFieldsValue();
         setInfo(values);
@@ -106,6 +120,7 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
           id: 'src.page.Workspace.components.CreateTable.BaseInfo.3907128F',
           defaultMessage: '存储模式',
         })}
+        required
       >
         <Select
           mode="multiple"
@@ -131,6 +146,7 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
             message: '请选择刷新方式',
           },
         ]}
+        required
       >
         <Select
           style={{ width: 200 }}
@@ -145,14 +161,17 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
           }))}
         />
       </Form.Item>
-      <Form.Item name="parallelismDegree" label="刷新并行度">
-        <InputNumber min={1} max={Number.MAX_SAFE_INTEGER} style={{ width: 200 }} />
-      </Form.Item>
+      {info.refreshMethod !== RefreshMethod.NEVER_REFRESH && (
+        <Form.Item name="parallelismDegree" label="刷新并行度">
+          <InputNumber min={1} max={Number.MAX_SAFE_INTEGER} style={{ width: 200 }} />
+        </Form.Item>
+      )}
       <div style={{ display: 'flex' }}>
         <Form.Item
           name={['refreshSchedule', 'startStrategy']}
           label="自动刷新"
           style={{ marginRight: '40px' }}
+          required
         >
           <Select
             value={startStrategy}
@@ -164,10 +183,12 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
               {
                 label: '立即开启',
                 value: StartStrategy.START_NOW,
+                disabled: info.refreshMethod === RefreshMethod.NEVER_REFRESH,
               },
               {
                 label: '指定开启时间',
                 value: StartStrategy.START_AT,
+                disabled: info.refreshMethod === RefreshMethod.NEVER_REFRESH,
               },
               {
                 label: '不开启',
@@ -223,7 +244,7 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
           </>
         )}
       </div>
-      <Form.Item name="enableQueryRewrite" label="查词改写">
+      <Form.Item name="enableQueryRewrite" label="查词改写" required>
         <Select
           style={{ width: 200 }}
           options={[
@@ -238,7 +259,7 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
           ]}
         />
       </Form.Item>
-      <Form.Item name="enableQueryComputation" label="实时">
+      <Form.Item name="enableQueryComputation" label="实时" required>
         <Select
           style={{ width: 200 }}
           options={[

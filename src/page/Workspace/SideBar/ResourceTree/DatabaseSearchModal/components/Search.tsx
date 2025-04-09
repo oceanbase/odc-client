@@ -47,7 +47,16 @@ const Search = ({ userStore, modalStore }: Iprops) => {
         <span style={{ color: 'var(--icon-color-disable)', paddingRight: 4 }}>/</span>
       </>
     );
-    searchTag = <SearchOutlined style={{ marginRight: '6px', position: 'relative', top: '2px' }} />;
+    searchTag = (
+      <SearchOutlined
+        style={{
+          marginRight: '6px',
+          position: 'relative',
+          top: '2px',
+          color: 'var(--icon-color-normal)',
+        }}
+      />
+    );
     if (database) {
       databaseTag = (
         <>
@@ -132,15 +141,9 @@ const Search = ({ userStore, modalStore }: Iprops) => {
       }
       default: {
         if (database) {
-          text = formatMessage({
-            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.EF45DCA4',
-            defaultMessage: '搜索表、外表、字段、视图等',
-          });
+          text = '搜索表、列、视图等';
         } else {
-          text = formatMessage({
-            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.EBF92A7F',
-            defaultMessage: '搜索数据库、表、外表、字段、视图等',
-          });
+          text = '搜索数据库、表、列、视图等';
         }
         break;
       }

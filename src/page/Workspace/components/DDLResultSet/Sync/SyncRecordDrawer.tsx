@@ -76,6 +76,10 @@ const SyncRecordDrawer: React.FC<IProps> = (props) => {
         content: materializedView?.info?.name,
       },
       {
+        label: '所属数据库',
+        content: materializedView?.info?.schemaName,
+      },
+      {
         label: '存储模式',
         content: materializedView?.info?.columnGroups
           ?.map((item) => {

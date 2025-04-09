@@ -55,7 +55,6 @@ interface IProps {}
 const MvViewIndexes: React.FC<IProps> = () => {
   const [editIndexes, setEditIndexes] = useState(null);
   const gridRef = useRef<DataGridRef>();
-  const [selectedRowsIdx, setSelectedRowIdx] = useState<number[]>([]);
   const { materializedView, session, onRefresh, showExecuteModal } = useContext(
     MaterializedViewPageContext,
   );
@@ -86,11 +85,6 @@ const MvViewIndexes: React.FC<IProps> = () => {
           }}
           onOk={async () => {
             const newData = cloneDeep(editIndexes);
-            console.log({
-              ...materializedView,
-              indexes: newData,
-            });
-            console.log(materializedView);
             const { sql: updateTableDML, tip } = await generateUpdateMaterializedViewDDL({
               newData: {
                 ...materializedView,
@@ -163,13 +157,6 @@ const MvViewIndexes: React.FC<IProps> = () => {
         enableRowRecord={true}
         enableColumnRecord={false}
         enableSortRow={false}
-        onSelectChange={(keys) => {
-          setSelectedRowIdx(
-            keys.map((key) => {
-              return rows.findIndex((row) => row.key === key);
-            }),
-          );
-        }}
         gridRef={gridRef}
         onRowsChange={(rows) => {
           const newRows: any[] = clone(rows);
