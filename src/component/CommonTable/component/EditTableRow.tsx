@@ -1,5 +1,7 @@
 import { Form, GetRef, InputRef, Input, Tooltip } from 'antd';
 import React, { useEffect, useRef, useState, useContext } from 'react';
+import styles from '../index.less';
+
 type FormInstance<T> = GetRef<typeof Form<T>>;
 const EditableContext = React.createContext<FormInstance<any> | null>(null);
 
@@ -76,11 +78,11 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
           },
         ]}
       >
-        <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+        <Input ref={inputRef} onPressEnter={save} onBlur={save} size="small" />
       </Form.Item>
     ) : (
       <Tooltip title={children} placement="topLeft">
-        <div style={{ textOverflow: 'ellipsis', width, overflow: 'hidden' }} onClick={toggleEdit}>
+        <div className={styles.editbaleCellValueWarp} style={{ width }} onClick={toggleEdit}>
           {children}
         </div>
       </Tooltip>

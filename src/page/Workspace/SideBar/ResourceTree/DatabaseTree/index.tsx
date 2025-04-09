@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useContext, useEffect, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { IDatabase, DBType, DatabaseGroup } from '@/d.ts/database';
 import { DataBaseTreeData } from '../Nodes/database';
 import { TreeDataNode } from '../type';
@@ -25,6 +25,7 @@ import datasourceStatus from '@/store/datasourceStatus';
 import useGroupData from './useGroupData';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { isPhysicalDatabase } from '@/util/database';
+import { getGroupKey, getSecondGroupKey } from '../const';
 
 const DatabaseTree = function () {
   const {
@@ -47,7 +48,7 @@ const DatabaseTree = function () {
       return db.existed;
     },
   });
-
+  const [defaultExpandedKeys, setDefaultExpandedKeys] = useState<React.Key[]>([]);
   async function reload() {
     await reloadDatabaseList();
     await reloadDatasourceList();
@@ -78,6 +79,32 @@ const DatabaseTree = function () {
     return DatabaseNodeMap;
   }, [databaseList]);
 
+  useEffect(() => {
+    initDefaultExpandedKeys();
+  }, [databaseList]);
+
+  const initDefaultExpandedKeys = () => {
+    const defaultExpandedKeys = [];
+    [
+      DatabaseGroup.project,
+      DatabaseGroup.dataSource,
+      DatabaseGroup.tenant,
+      DatabaseGroup.cluster,
+      DatabaseGroup.environment,
+      DatabaseGroup.connectType,
+    ].forEach((item) => {
+      const group = DatabaseGroupMap?.[item]?.entries()?.next()?.value?.[1];
+      defaultExpandedKeys.push(getGroupKey(group?.mapId, item));
+      if (
+        [DatabaseGroup.cluster, DatabaseGroup.environment, DatabaseGroup.connectType].includes(item)
+      ) {
+        const secondGroup = group?.secondGroup?.entries()?.next()?.value?.[1];
+        defaultExpandedKeys.push(getSecondGroupKey(group?.mapId, secondGroup?.mapId, item));
+      }
+    });
+    setDefaultExpandedKeys(defaultExpandedKeys);
+  };
+
   return (
     <ResourceTree
       stateId={'resourceTree'}
@@ -85,6 +112,7 @@ const DatabaseTree = function () {
       databases={[...(DatabaseGroupMap[groupMode]?.values() || [])]}
       allDatabasesMap={DatabaseGroupMap[DatabaseGroup.none]}
       pollingDatabase={pollingDatabase}
+      defaultExpandedKeys={defaultExpandedKeys}
       DatabaseDataNodeMap={allDatabaseDataNodeMap}
     />
   );

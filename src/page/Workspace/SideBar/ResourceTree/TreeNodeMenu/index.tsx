@@ -323,9 +323,9 @@ const TreeNodeMenu = (props: IProps) => {
         >
           {nodeChild}
         </Dropdown>
-        {actionsRender()}
-        {envRender()}
       </Popover>
+      {actionsRender()}
+      {envRender()}
     </>
   );
 };

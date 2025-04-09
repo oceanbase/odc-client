@@ -29,11 +29,10 @@ import LogicDatabaseAsyncTask from '@/component/Task/LogicDatabaseAsyncTask';
 import LogicIcon from '@/component/logicIcon';
 
 interface IProps {
-  id?: string;
   modalStore?: ModalStore;
 }
 
-const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
+const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
   const {
     data: databaseList,
     run: runGetDatabasesHistories,
@@ -142,7 +141,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ id, modalStore }) => {
                     <span
                       onClick={() => {
                         gotoSQLWorkspace(
-                          parseInt(id),
+                          record?.project?.id,
                           record?.dataSource?.id,
                           record?.id,
                           null,

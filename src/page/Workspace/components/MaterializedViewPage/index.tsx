@@ -69,7 +69,6 @@ const MaterializedViewPage = inject(
     const [propsTab, setPropsTab] = useState(PropsTab.INFO);
     const [dataLoading, setDataLoading] = useState<boolean>(false);
     const [resultSet, setResultSet] = useState<IResultSet>();
-    const [limitToExport, setLimitToExport] = useState<number>();
     const executeRef = useRef<{
       showExecuteModal: (
         sql: any,
@@ -311,7 +310,6 @@ const MaterializedViewPage = inject(
                             reloadMaterializedViewData(materializedView?.info?.name, limit)
                           }
                           onExport={(limitToExport) => {
-                            setLimitToExport(limitToExport);
                             showExportResuleSetModal();
                           }}
                         />

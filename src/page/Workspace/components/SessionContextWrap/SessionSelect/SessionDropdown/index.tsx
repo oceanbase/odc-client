@@ -553,7 +553,9 @@ const SessionDropdown: React.FC<IProps> = (props) => {
           <Spin spinning={loading || fetchLoading || databaseHistoryLoading}>
             <div className={styles.main}>
               <div className={styles.header} style={{ width: width || DEFALT_WIDTH }}>
-                {!context.datasourceMode && <DatabaseSelectTab tab={tab} setTab={setTab} />}
+                {!context.datasourceMode && !checkModeConfig && (
+                  <DatabaseSelectTab tab={tab} setTab={setTab} />
+                )}
                 {tab === TabsType.all && (
                   <Search
                     searchValue={searchValue}

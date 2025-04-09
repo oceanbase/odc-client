@@ -70,6 +70,7 @@ interface IProps {
   stateId?: string;
   allDatabasesMap: Map<number, IDatabase>;
   DatabaseDataNodeMap: Map<number, TreeDataNode>;
+  defaultExpandedKeys: React.Key[];
 }
 
 const ResourceTree: React.FC<IProps> = function ({
@@ -83,6 +84,7 @@ const ResourceTree: React.FC<IProps> = function ({
   allDatabasesMap,
   DatabaseDataNodeMap,
   userStore,
+  defaultExpandedKeys,
 }) {
   const { expandedKeys, loadedKeys, sessionIds, setSessionId, onExpand, onLoad, setExpandedKeys } =
     useTreeState(stateId);
@@ -135,6 +137,13 @@ const ResourceTree: React.FC<IProps> = function ({
       window.removeEventListener('resize', resizeHeight);
     };
   }, []);
+
+  useEffect(() => {
+    if (defaultExpandedKeys?.length && !currentObject) {
+      // 如果没有选中的对象，则默认展开第一项
+      setExpandedKeys(Array.from(new Set([...expandedKeys, ...defaultExpandedKeys])));
+    }
+  }, [defaultExpandedKeys]);
 
   const positionResourceByKey = (key, duration = 10) => {
     if (!key) return;

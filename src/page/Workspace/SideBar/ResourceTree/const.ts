@@ -333,7 +333,7 @@ const getObjectShouldExpandedKeysByPage = (params: {
     }
     case PageType.MATERIALIZED_VIEW: {
       shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-materializedView`);
-      currentKey = `${db.id}-${db.name}-materializedView-${page?.params?.name}`;
+      currentKey = `${db.id}-${db.name}-materializedView-${page?.params?.materializedViewName}`;
       currentResourceNodeType = ResourceNodeType.MaterializedView;
       break;
     }

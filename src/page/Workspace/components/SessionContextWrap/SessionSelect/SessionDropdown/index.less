@@ -59,11 +59,27 @@
       }
     }
 
+    .databaseIconContainer {
+      margin-left: 7px;
+      margin-right: 2px;
+      display: flex;
+      height: 100%;
+      align-items: center;
+    }
+
     :global {
       .ant-tree-treenode {
         width: 100%;
         .ant-tree-switcher {
           margin-inline-end: 0px !important;
+        }
+        .ant-tree-checkbox {
+          margin-right: 0;
+        }
+      }
+      .ant-tree-treenode-leaf {
+        .ant-tree-checkbox {
+          margin-left: 25px;
         }
       }
       .ant-tree-switcher-noop {

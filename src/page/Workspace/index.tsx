@@ -80,14 +80,14 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     const datasourceId = toInteger(params.get('datasourceId'));
     const isLogicalDatabase = params.get('isLogicalDatabase') === 'true';
     const isCreateTable = params.get('isCreateTable') === 'true';
+    databaseId &&
+      resourceTreeContext?.setCurrentObject({
+        value: databaseId,
+        type: ResourceNodeType.Database,
+      });
     if (projectId) {
       resourceTreeContext?.setSelectProjectId(projectId);
       resourceTreeContext?.setGroupMode(DatabaseGroup.project);
-      databaseId &&
-        resourceTreeContext?.setCurrentObject({
-          value: databaseId,
-          type: ResourceNodeType.Database,
-        });
       if (!isLogicalDatabase) {
         databaseId && openNewSQLPage(databaseId);
       }

@@ -4,10 +4,7 @@ export function useColumns() {
   const columns = [
     {
       key: 'name',
-      name: formatMessage({
-        id: 'workspace.window.createTable.column.name',
-        defaultMessage: '字段名称',
-      }),
+      name: '列名称',
       resizable: true,
     },
 
@@ -23,10 +20,7 @@ export function useColumns() {
 
     {
       key: 'comment',
-      name: formatMessage({
-        id: 'workspace.window.createTable.column.comment',
-        defaultMessage: '字段注释',
-      }),
+      name: '列注释',
       resizable: true,
       filterable: false,
     },

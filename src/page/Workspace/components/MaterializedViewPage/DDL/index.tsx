@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import MaterializedViewPageContext from '../context';
 import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import { IEditor } from '@/component/MonacoEditor';
@@ -15,7 +15,7 @@ interface IProps {}
 const MvViewDDL: React.FC<IProps> = () => {
   const { materializedView, session, onRefresh } = useContext(MaterializedViewPageContext);
   const editorRef = useRef<IEditor>();
-  const [formated, setFormated] = useState(false);
+  const [formated, setFormated] = useState(true);
   const handleFormat = () => {
     if (!formated) {
       editorRef.current?.doFormat();
@@ -83,6 +83,7 @@ const MvViewDDL: React.FC<IProps> = () => {
           language={getDataSourceModeConfig(session?.connection?.type)?.sql?.language}
           onEditorCreated={(editor: IEditor) => {
             editorRef.current = editor;
+            editorRef.current?.doFormat();
           }}
         />
       </div>

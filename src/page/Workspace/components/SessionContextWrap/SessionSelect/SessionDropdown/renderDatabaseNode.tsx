@@ -3,6 +3,7 @@ import { TaskType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import DatabasesTitle from './components/DatabasesTitle';
 import { getIcon, NodeType } from './helper';
+import styles from './index.less';
 
 const renderDatabaseNode = (parmas: {
   taskType: TaskType;
@@ -23,7 +24,11 @@ const renderDatabaseNode = (parmas: {
     key: database.id,
     selectable: true,
     isLeaf: true,
-    icon: getIcon({ type: NodeType.Database, database }),
+    icon: (
+      <div className={styles.databaseIconContainer}>
+        {getIcon({ type: NodeType.Database, database })}
+      </div>
+    ),
     data: database,
     disabled: dbDisabled,
     type: NodeType.Database,

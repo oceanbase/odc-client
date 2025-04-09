@@ -4,13 +4,14 @@ import sessionManager, { SessionManagerStore } from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
-import { Button, Card, Space, Tabs, message } from 'antd';
+import { Button, Card, Space, Tabs, message, Typography } from 'antd';
 import React, { useContext, useMemo, useState } from 'react';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import SessionContext from '../SessionContextWrap/context';
 import { CreateMaterializedViewPage } from '@/store/helper/page/pages/create';
 import modal, { ModalStore } from '@/store/modal';
 import { generateCreateMaterializedViewSql } from '@/common/network/materializedView/index';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import styles from './index.less';
 import {
   MaterializedViewTabType,
@@ -136,6 +137,14 @@ const CreateMaterializedView: React.FC<IProps> = (props) => {
     <Card
       className={styles.card}
       bordered={false}
+      title={
+        <Typography.Text style={{ fontSize: 12 }} type="secondary">
+          <Space>
+            <InfoCircleOutlined />
+            基本信息为必填项，其他选填
+          </Space>
+        </Typography.Text>
+      }
       extra={
         <Space>
           <Button type="primary" disabled={!isComplete} loading={loading} onClick={handleSubmit}>

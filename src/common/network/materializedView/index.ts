@@ -88,7 +88,7 @@ export async function generateUpdateMaterializedViewDDL(params: {
   const res = await request.post(
     `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
       dbName,
-    )}/tables/generateUpdateTableDDL`,
+    )}/materializedViews/generateUpdateMViewDDL`,
     {
       data: {
         previous: convertCreateMaterializedViewData(oldData, session?.connection?.dialectType),

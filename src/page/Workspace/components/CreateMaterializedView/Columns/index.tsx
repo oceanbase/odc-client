@@ -19,12 +19,10 @@ const Columns = () => {
   const mviewContext = useContext(MViewContext);
   const { viewUnits, session, setColumns, activetab } = mviewContext;
   const [treeData, setTreeData] = useState<DataNode[]>();
-  const [expandedKeys, setExpandedKeys] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [keywords, setKeyWords] = useState<string>('');
   const [autoExpandParent, setAutoExpandParent] = useState<boolean>(true);
   const [targetKeys, setTargetKeys] = useState([]);
-  const [selectedKeys, setSelectedKeys] = useState([]);
   const datasourceConfig = useDataSourceConfig(session?.connection?.type);
   const [selectMap, setSelectMap] = useState<{
     [key: string]: {
@@ -191,22 +189,7 @@ const Columns = () => {
   };
 
   const handleTreeSearch = (_, keywords) => {
-    const expandedKeys = [];
-    if (keywords) {
-      treeData.forEach((node) => {
-        const { children = [] } = node;
-        const isMatch = children.find((item) => {
-          const upperKeywords = keywords.toUpperCase();
-          const upperItemKey = (item.key as string).toUpperCase();
-          return upperItemKey.indexOf(upperKeywords) > -1 || selectedKeys.includes(item.key);
-        });
-        if (isMatch) {
-          expandedKeys.push(node.key);
-        }
-      });
-    }
     setKeyWords(keywords);
-    setExpandedKeys(expandedKeys);
   };
 
   const handleSelectAll = (e, onItemSelectAll) => {
@@ -308,7 +291,6 @@ const Columns = () => {
           height={425}
           checkedKeys={selectedKeys}
           onExpand={(expandedKeys) => {
-            setExpandedKeys(expandedKeys);
             setAutoExpandParent(false);
           }}
           onCheck={(_, item) => {
@@ -360,12 +342,16 @@ const Columns = () => {
 
   return (
     <div style={{ padding: '12px' }}>
-      <p>选择列</p>
+      <p>
+        选择列
+        <span style={{ color: 'var(--icon-color-normal-2)' }}>（可选）</span>
+      </p>
       <Transfer
         showSelectAll
         showSearch={!loading}
         targetKeys={targetKeys}
         dataSource={dataSource}
+        filterOption={() => true}
         className={styles['mv-tree-column-transfer']}
         titles={[
           null,

@@ -46,6 +46,10 @@ const RemoveSplitInput = forwardRef(function RemoveSplitInput({ value, ...rest }
     <Input
       ref={ref}
       value={value}
+      placeholder={formatMessage({
+        id: 'src.component.BatchSelectionPopover.9DC08FE8',
+        defaultMessage: '搜索关键字',
+      })}
       prefix={<SearchOutlined />}
       suffix={
         <span style={{ paddingRight: 15, color: 'var(--text-color-hint)' }}>
