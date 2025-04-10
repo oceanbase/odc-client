@@ -36,6 +36,7 @@ const perferenceSettings: IODCSetting[] = [
       defaultMessage: '主题',
     }), //'主题'
     key: 'odc.appearance.scheme',
+    locationKey: 'appearancescheme',
     group: preferenceGroup,
     secondGroup: preferenceDefaultGroup,
     storeType: 'server',
@@ -77,6 +78,7 @@ const perferenceSettings: IODCSetting[] = [
       defaultMessage: '语言',
     }), //'语言'
     key: 'odc.appearance.language',
+    locationKey: 'appearancelanguage',
     group: preferenceGroup,
     secondGroup: preferenceDefaultGroup,
     storeType: 'server',

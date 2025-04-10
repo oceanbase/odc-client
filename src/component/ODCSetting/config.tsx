@@ -34,6 +34,7 @@ export interface ODCSettingGroup {
 export interface IODCSetting<T = any> {
   label: string;
   key: string;
+  locationKey?: string;
   tip?: string;
   group: ODCSettingGroup;
   secondGroup?: ODCSettingGroup;

@@ -25,6 +25,7 @@ const personalTaskSetting: IODCSetting[] = [
   {
     label: '数据库变更默认生成备份回滚方案',
     key: 'odc.task.default.rollbackPlanEnabled',
+    locationKey: 'rollbackPlanEnabled',
     group: taskGroup,
     storeType: 'server',
     render: (value, onChange) => {

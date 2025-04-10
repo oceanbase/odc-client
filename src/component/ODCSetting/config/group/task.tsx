@@ -88,6 +88,7 @@ const taskSetting: IODCSetting[] = [
   {
     label: '导入工单允许结构替换',
     key: 'odc.task.default.importTaskStructureReplacementEnabled',
+    locationKey: 'importTaskStructureReplacementEnabled',
     group: taskGroup,
     storeType: 'server',
     render: (value, onChange) => {
@@ -112,6 +113,7 @@ const taskSetting: IODCSetting[] = [
   {
     label: '数据库变更默认生成备份回滚方案',
     key: 'odc.task.default.rollbackPlanEnabled',
+    locationKey: 'rollbackPlanEnabled',
     group: taskGroup,
     storeType: 'server',
     render: (value, onChange) => {
@@ -136,6 +138,7 @@ const taskSetting: IODCSetting[] = [
   {
     label: '任务描述提示文案',
     key: 'odc.task.default.taskDescriptionPrompt',
+    locationKey: 'taskDescriptionPrompt',
     group: taskGroup,
     storeType: 'server',
     render: (value, onChange) => {
