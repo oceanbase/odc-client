@@ -30,7 +30,7 @@ const securitySetting: IODCSetting[] = [
     rules: [
       {
         validator(rule, value, callback) {
-          if (/^[a-zA-Z0-9]{32}$/.test(value)) {
+          if (/^[a-zA-Z0-9]{32}$/.test(value) || !value) {
             return Promise.resolve();
           }
           return Promise.reject();
