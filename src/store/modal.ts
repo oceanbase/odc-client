@@ -592,7 +592,7 @@ export class ModalStore {
     data?: IStructureComparisonTaskData,
   ) {
     this.structureComparisonVisible = isShow;
-    isShow && this.structureComparisonDataMap.clear();
+    isShow && !data?.taskId && this.structureComparisonDataMap.clear();
     this.structureComparisonTaskData = isShow ? data : null;
   }
 

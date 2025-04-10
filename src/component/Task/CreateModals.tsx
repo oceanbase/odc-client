@@ -58,7 +58,7 @@ const CreateModals: React.FC<IProps> = (props) => {
       <ApplyTablePermissionCreateModal projectId={projectId} />
       <StructureComparisonTask projectId={projectId} />
       <MutipleAsyncTask projectId={projectId} theme={theme} />
-      <LogicDatabaseAsyncTask projectId={projectId} />
+      <LogicDatabaseAsyncTask projectId={projectId} theme={theme} />
     </>
   );
 };

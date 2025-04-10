@@ -209,7 +209,7 @@ const AddressItems: React.FC<IProps> = function (props) {
                         <div style={{ width: '30%' }}>
                           <Select
                             value={type}
-                            style={{ width: '100%' }}
+                            style={{ width: '100%', height: 28 }}
                             size="small"
                             options={[
                               {

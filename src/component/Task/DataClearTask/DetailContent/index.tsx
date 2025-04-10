@@ -263,7 +263,7 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
         ) : null}
         {jobParameters?.dirtyRowAction === DirtyRowActionEnum.SKIP ? (
           <Descriptions.Item label={'跳过不清理数据'}>
-            {`${jobParameters?.maxAllowedDirtyRowCount} 行`}
+            {`${jobParameters?.maxAllowedDirtyRowCount || 0} 行`}
           </Descriptions.Item>
         ) : null}
         <Descriptions.Item

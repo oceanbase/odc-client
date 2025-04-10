@@ -386,6 +386,7 @@ class FunctionPage extends Component<
                         <SQLCodePreviewer
                           readOnly
                           defaultValue={(func && func.ddl) || ''}
+                          value={(func && func.ddl) || ''}
                           language={
                             getDataSourceModeConfig(session?.connection?.type)?.sql?.language
                           }

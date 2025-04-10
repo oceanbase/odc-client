@@ -109,6 +109,8 @@ const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
               response: {
                 data: {
                   fileName: _f,
+                  containsData: true,
+                  format: detailRes?.parameters?.dataTransferFormat,
                 },
               },
             };

@@ -53,6 +53,13 @@ const SQLConfig: React.FC<IProps> = function (props) {
   }, [queryLimit]);
 
   const handleSetQueryLimit = async (e) => {
+    /**
+     * 判断是否允许无限制，假如不允许，禁止删除
+     */
+    if (maxQueryLimit !== Number.MAX_SAFE_INTEGER && !queryLimitValue) {
+      setQueryLimitValue(session?.params.queryLimit);
+      return;
+    }
     if (e.target.value > maxQueryLimit) {
       setShowMaxLimit(true);
     } else {
@@ -137,15 +144,6 @@ const SQLConfig: React.FC<IProps> = function (props) {
               })}
               /*无限制*/
               onChange={(v) => {
-                if (!v) {
-                  /**
-                   * 判断是否允许无限制，假如不允许，禁止删除
-                   */
-                  if (maxQueryLimit !== Number.MAX_SAFE_INTEGER) {
-                    setQueryLimitValue(1);
-                    return;
-                  }
-                }
                 setQueryLimitValue(parseInt(v) || undefined);
               }}
               onBlur={handleSetQueryLimit}

@@ -617,7 +617,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     defaultMessage: '请输入',
                   }) /*"请输入"*/
                 }
-                min={0}
+                min={1}
                 style={{ width: 100 }}
               />
             </Form.Item>

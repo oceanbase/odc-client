@@ -78,6 +78,8 @@ const validPartitionKeyInvokers = [
   PARTITION_KEY_INVOKER.CUSTOM_GENERATOR,
   PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
   PARTITION_KEY_INVOKER.KEEP_MOST_LATEST_GENERATOR,
+  PARTITION_KEY_INVOKER.TIME_STRING_INCREASING_GENERATOR,
+  PARTITION_KEY_INVOKER.NUMBER_INCREASING_GENERATOR,
 ];
 
 export enum IPartitionPlanInspectTriggerStrategy {
@@ -119,6 +121,9 @@ export interface ITableConfig {
       intervalGenerateExpr?: string;
       incrementFieldType?: INCREAMENT_FIELD_TYPE;
       incrementFieldTypeInDate?: string;
+      fieldType?: INCREAMENT_FIELD_TYPE;
+      timeFormat?: string;
+      numberInterval?: string;
     }[];
   };
 }
@@ -290,6 +295,8 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       setDisabledSubmit(true);
       setHasPartitionPlan(false);
       setTableConfigs([]);
+      setCreatedOriginTableConfigs([]);
+      setCreatedTableConfigs([]);
       modalStore.changePartitionModal(false);
     }, [modalStore]);
     const closeWithConfirm = useCallback(() => {
@@ -327,7 +334,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             const createdOriginTableConfig = createdOriginTableConfigs?.find(
               (item) => item.tableName === config.tableName,
             );
-            if (!config?.__isCreate) {
+            if (!config?.__isCreate && createdOriginTableConfig) {
               return createdOriginTableConfig ? createdOriginTableConfig : null;
             }
             const {
@@ -384,7 +391,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     incrementFieldType,
                   );
                   const currentTimeParameter = {
-                    fromCurrentTime: fromCurrentTime === START_DATE.CURRENT_DATE, // true ? 如何判定 啥时候是true啥时候是false
+                    fromCurrentTime: fromCurrentTime === START_DATE.CURRENT_DATE,
                     baseTimestampMillis: baseTimestampMillis?.valueOf(),
                     fieldType: incrementFieldType,
                     // 数值
@@ -587,6 +594,32 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
           dayOfWeek: days,
         });
       }
+      const configs = parameters?.partitionTableConfigs?.map((config, index) => ({
+        ...config,
+        __id: index,
+        containsCreateStrategy: config.partitionKeyConfigs?.some(
+          (c) => c.strategy === TaskPartitionStrategy.CREATE,
+        ),
+        containsDropStrategy: config.partitionKeyConfigs?.some(
+          (c) => c.strategy === TaskPartitionStrategy.DROP,
+        ),
+        option: {
+          partitionKeyConfigs: config.partitionKeyConfigs?.map((item) => ({
+            ...item,
+          })),
+        },
+        strategies: [
+          ...(config.partitionKeyConfigs?.some((c) => c.strategy === TaskPartitionStrategy.CREATE)
+            ? [TaskPartitionStrategy.CREATE]
+            : []),
+          ...(config.partitionKeyConfigs?.some((c) => c.strategy === TaskPartitionStrategy.DROP)
+            ? [TaskPartitionStrategy.DROP]
+            : []),
+        ],
+      }));
+      setCreatedTableConfigs(getCreatedTableConfigs(configs));
+      setCreatedOriginTableConfigs(configs);
+      setTableConfigs(getCreatedTableConfigs(configs));
     };
 
     return (

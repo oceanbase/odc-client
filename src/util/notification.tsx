@@ -71,7 +71,7 @@ function Description(props: DescriptionProps) {
       return;
     }
     Modal.info({
-      zIndex: 1011,
+      zIndex: 9999,
       title: formatMessage({ id: 'odc.src.util.notification.Details', defaultMessage: '详情' }), // 详情
       content: <div>{description}</div>,
       onCancel: () => {

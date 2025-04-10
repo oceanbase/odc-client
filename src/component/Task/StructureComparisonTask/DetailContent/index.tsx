@@ -127,6 +127,7 @@ const CompareTable: React.FC<{
       }), //'比对结果'
       key: 'operationType',
       dataIndex: 'operationType',
+      filterMultiple: false,
       filters: [
         {
           text: EOperationTypeMap?.[EOperationType.CREATE],

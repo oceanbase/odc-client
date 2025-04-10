@@ -229,10 +229,10 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
    * 获取项目下所有的数据库
    */
   const loadDatabases = useCallback(async () => {
+    if (!projectId) return;
     setIsLoading(true);
     try {
       const res = await listDatabases(projectId, null, null, null, null, null, null, true, true);
-
       if (res?.contents) {
         datasourceStatus.asyncUpdateStatus(
           res?.contents
@@ -457,6 +457,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
     materializedViews: LoadTableItems[];
   }> => {
     const db = databaseWithTableList?.find((_db) => _db.id === databaseId);
+    if (!db) return;
     let tables: LoadTableItems[];
     let externalTables: LoadTableItems[];
     let views: LoadTableItems[];

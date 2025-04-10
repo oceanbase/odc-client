@@ -68,6 +68,8 @@ const columns = [
       const interval = record?.partitionKeyInvokerParameters?.generateParameter?.interval;
       const intervalPrecision =
         record?.partitionKeyInvokerParameters?.generateParameter?.intervalPrecision;
+      const numberInterval =
+        record?.partitionKeyInvokerParameters?.generateParameter?.numberInterval;
       const incrementFieldType =
         record?.partitionKeyInvokerParameters?.generateParameter?.fieldType;
       const incrementFieldTimeFormat =
@@ -98,11 +100,8 @@ const columns = [
               {incrementFieldTimeFormat ? `(${incrementFieldTimeFormat})` : null}
             </Descriptions.Item>
           ) : null}
-          {[
-            PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
-            PARTITION_KEY_INVOKER.TIME_STRING_INCREASING_GENERATOR,
-            PARTITION_KEY_INVOKER.HISTORICAL_PARTITION_PLAN_CREATE_GENERATOR,
-          ].includes(record?.partitionKeyInvoker) ? (
+          {!!record?.partitionKeyInvokerParameters?.generateParameter?.baseTimestampMillis ||
+          !!record?.partitionKeyInvokerParameters?.generateParameter?.fromCurrentTime ? (
             <Descriptions.Item
               label={
                 formatMessage({
@@ -116,7 +115,8 @@ const columns = [
                 record?.partitionKeyInvokerParameters?.generateParameter?.baseTimestampMillis,
               )}
             </Descriptions.Item>
-          ) : (
+          ) : null}
+          {!!record?.partitionKeyInvokerParameters?.generateParameter?.generateExpr ? (
             <Descriptions.Item
               label={
                 formatMessage({
@@ -131,7 +131,7 @@ const columns = [
                 {record?.partitionKeyInvokerParameters?.generateParameter?.generateExpr}
               </Tooltip>
             </Descriptions.Item>
-          )}
+          ) : null}
           {!!intervalGenerateExpr && (
             <Descriptions.Item
               label={
@@ -143,6 +143,9 @@ const columns = [
             >
               {intervalGenerateExpr}
             </Descriptions.Item>
+          )}
+          {!!numberInterval && (
+            <Descriptions.Item label={'间隔(数值)'}>{numberInterval}</Descriptions.Item>
           )}
           {!!interval && (
             <Descriptions.Item

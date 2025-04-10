@@ -52,7 +52,7 @@ export default class ModalHelp extends PureComponent<{
           </p>
           <span>Server: {setting?.serverSystemInfo?.version}</span>
           <br />
-          <span>Release Date: {RELEASE_DATE ? dayjs(RELEASE_DATE).format('y-MM-DD') : ''}</span>
+          <span>Release Date: {RELEASE_DATE ? dayjs(RELEASE_DATE).format('YYYY-MM-DD') : ''}</span>
         </div>
         <div className={styles.copyright}>
           <div>
