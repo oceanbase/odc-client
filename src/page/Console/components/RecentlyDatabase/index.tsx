@@ -109,7 +109,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
       ellipsis: true,
       width: columnWidth[index],
       render: (value, record) => {
-        const hasProjectAuth = record?.project?.currentUserResourceRoles;
+        const hasProjectAuth = record?.project?.currentUserResourceRoles?.length > 0;
         const hasDBAuth = !!record?.authorizedPermissionTypes?.length;
         const actionStyle = hasProjectAuth ? styles.action : styles.disabledAction;
         const normalStyle = hasProjectAuth ? '' : styles.disabledAction;
