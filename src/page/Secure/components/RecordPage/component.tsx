@@ -80,6 +80,8 @@ export const RecordContent: React.FC<{
   const {
     type,
     action,
+    typeName,
+    actionName,
     connectionName,
     connectionDialectType,
     connectionHost,
@@ -102,7 +104,7 @@ export const RecordContent: React.FC<{
           defaultMessage: '事件类型',
         })} /*事件类型*/
       >
-        {AuditEventMetaMap[type]}
+        {typeName || AuditEventMetaMap[type]}
       </Descriptions.Item>
       <Descriptions.Item
         label={formatMessage({
@@ -110,7 +112,7 @@ export const RecordContent: React.FC<{
           defaultMessage: '事件操作',
         })} /*事件操作*/
       >
-        {AuditEventActionMap[action]}
+        {actionName || AuditEventActionMap[action]}
       </Descriptions.Item>
       {connectionName && (
         <Descriptions.Item>
