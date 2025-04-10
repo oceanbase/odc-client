@@ -115,6 +115,7 @@ const items: Record<ConnectType.CLOUD_OB_ORACLE | ConnectType.OB_ORACLE, IDataSo
             TaskType.DATA_ARCHIVE,
             TaskType.DATA_DELETE,
             TaskType.LOGICAL_DATABASE_CHANGE,
+            TaskType.ONLINE_SCHEMA_CHANGE,
           ].includes(type),
       ),
       obclient: true,

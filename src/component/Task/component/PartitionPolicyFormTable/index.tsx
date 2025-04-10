@@ -31,7 +31,7 @@ import React, { useRef, useState } from 'react';
 import { ITableConfig } from '../../PartitionTask/CreateModal';
 import { getStrategyLabel } from '../PartitionPolicyTable';
 import ConfigDrawer, { NameRuleType } from './configModal';
-import { START_DATE } from './const';
+import { revertPartitionKeyInvokerByIncrementFieldType, START_DATE } from './const';
 import styles from './index.less';
 
 const defaultIntervalPrecision = 3;
@@ -209,28 +209,10 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     const isInit = activeConfigs?.some((item) => !item?.__isCreate);
     let partitionConfig = activeConfigs?.[0];
     if (!!createdTableConfig && isInit) {
-      const isOnlyDropStrategie =
-        partitionConfig?.strategies?.length === 1 &&
-        partitionConfig?.strategies?.includes(TaskPartitionStrategy.DROP);
-      if (isOnlyDropStrategie) {
+      const isLengthEqual =
+        createdTableConfig?.option?.partitionKeyConfigs?.length === res?.contents?.length;
+      if (isLengthEqual) {
         partitionConfig = createdTableConfig;
-      } else {
-        const isLengthEqual =
-          createdTableConfig?.option?.partitionKeyConfigs?.length === res?.contents?.length;
-        const isValidOriginPartitionKeyConfigs = isLengthEqual
-          ? res?.contents?.every((item, index) => {
-              const partitionKeyInvokers = [PARTITION_KEY_INVOKER.CUSTOM_GENERATOR];
-              if (item?.localizedMessage) {
-                partitionKeyInvokers.push(PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR);
-              }
-              return partitionKeyInvokers.includes(
-                createdTableConfig?.option?.partitionKeyConfigs?.[index]?.partitionKeyInvoker,
-              );
-            })
-          : false;
-        if (isValidOriginPartitionKeyConfigs) {
-          partitionConfig = createdTableConfig;
-        }
       }
     }
     console.log('createdTableConfig', !!createdTableConfig, isInit);
@@ -251,11 +233,23 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
             };
             const name = item.option?.partitionKeyConfigs?.[index]?.name;
             return {
-              partitionKeyInvoker: PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
+              partitionKeyInvoker:
+                revertPartitionKeyInvokerByIncrementFieldType(
+                  createdTableConfig?.option?.partitionKeyConfigs?.[index]?.partitionKeyInvoker,
+                  createdTableConfig?.option?.partitionKeyConfigs?.[index]?.fieldType,
+                ) || PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
               ...defaultKeyConfig,
               name,
               ...partitionConfig?.option?.partitionKeyConfigs?.[index],
               type,
+              fromCurrentTime: START_DATE.CURRENT_DATE,
+              intervalPrecision: defaultIntervalPrecision,
+              incrementFieldType:
+                createdTableConfig?.option?.partitionKeyConfigs?.[index]?.fieldType,
+              incrementFieldTypeInDate:
+                createdTableConfig?.option?.partitionKeyConfigs?.[index]?.timeFormat,
+              intervalGenerateExpr:
+                createdTableConfig?.option?.partitionKeyConfigs?.[index]?.numberInterval,
             };
           }),
         },

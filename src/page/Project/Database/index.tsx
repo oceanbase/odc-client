@@ -590,7 +590,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
       <ExportTaskCreateModal />
       <ImportTaskCreateModal />
       <AsyncTaskCreateModal theme="white" />
-      <MutipleAsyncTask />
+      <MutipleAsyncTask theme="white" />
       <LogicDatabaseAsyncTask theme="white" />
     </TableCard>
   );

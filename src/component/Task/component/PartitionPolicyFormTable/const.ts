@@ -52,3 +52,13 @@ export const getPartitionKeyInvokerByIncrementFieldType = (
     }
   }
 };
+
+export const revertPartitionKeyInvokerByIncrementFieldType = (
+  partitionKeyInvoker: PARTITION_KEY_INVOKER,
+  incrementFieldType: INCREAMENT_FIELD_TYPE,
+) => {
+  if (!incrementFieldType) {
+    return partitionKeyInvoker;
+  }
+  return PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR;
+};

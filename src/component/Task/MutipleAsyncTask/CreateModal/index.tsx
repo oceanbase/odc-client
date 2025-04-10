@@ -653,6 +653,9 @@ const CreateModal: React.FC<IProps> = (props) => {
                       getDataSourceModeConfig(defaultDatasource?.type || ConnectType.OB_MYSQL)?.sql
                         ?.language
                     }
+                    editorProps={{
+                      theme,
+                    }}
                     onEditorAfterCreatedCallback={onEditorAfterCreatedCallback}
                     onSQLChange={(sql) => {
                       handleSqlChange('sqlContent', sql);

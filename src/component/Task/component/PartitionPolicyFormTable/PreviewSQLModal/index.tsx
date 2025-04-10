@@ -83,7 +83,7 @@ const PreviewSQLModal: React.FC<IProps> = (props) => {
       />
 
       <div className={styles.wrapper}>
-        <SQLCodePreviewer readOnly language="sql" value={sql} theme={vsTheme} />
+        <SQLCodePreviewer readOnly language="sql" value={sql} theme={vsTheme} defaultValue={sql} />
       </div>
     </Modal>
   );

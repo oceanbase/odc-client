@@ -77,9 +77,7 @@ const useData = (id) => {
       const hasLoginDatabaseAuth = res.contents?.some(
         (item) => !!item.authorizedPermissionTypes.length,
       );
-      if (hasLoginDatabaseAuth) {
-        setHasLoginDatabaseAuth?.(hasLoginDatabaseAuth);
-      }
+      setHasLoginDatabaseAuth?.(hasLoginDatabaseAuth);
     }
   };
 

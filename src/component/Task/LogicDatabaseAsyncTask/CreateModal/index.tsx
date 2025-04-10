@@ -381,6 +381,9 @@ const CreateModal: React.FC<IProps> = (props) => {
               onSQLChange={(sql) => {
                 handleSqlChange('sqlContent', sql);
               }}
+              editorProps={{
+                theme,
+              }}
               placeholder={formatMessage({
                 id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.56CD71B9',
                 defaultMessage:

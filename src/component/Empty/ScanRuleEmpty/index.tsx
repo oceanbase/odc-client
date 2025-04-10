@@ -18,7 +18,7 @@ export default function ScanRuleEmpty({ showActionButton }) {
           }}
         />
       }
-      {...createPermission(IManagerResourceType.project, actionTypes.create)}
+      {...createPermission(IManagerResourceType.risk_detect, actionTypes.create)}
     >
       <div className={styles.scanRuleEmptyWrapper}>
         <Empty

@@ -298,3 +298,23 @@ export function getFirstEnabledTask() {
 export function getTaskLabelByType(type: TaskPageType) {
   return getTaskLabels()?.find((item) => item.value === type)?.label;
 }
+
+export const conditionExpressionColumns = [
+  {
+    dataIndex: 'tableName',
+    key: 'tableName',
+    title: '关联表',
+    ellipsis: true,
+  },
+  {
+    dataIndex: 'joinCondition',
+    key: 'joinCondition',
+    title: '关联条件',
+    ellipsis: false,
+    render: (value) => {
+      return (
+        <span style={{ textWrap: 'wrap', wordBreak: 'break-all', maxWidth: 300 }}>{value}</span>
+      );
+    },
+  },
+];

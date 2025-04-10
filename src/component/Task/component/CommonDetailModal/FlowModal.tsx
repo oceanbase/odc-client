@@ -96,6 +96,7 @@ const FlowModal: React.FC<IProps> = function (props) {
           </Space>
         )
       }
+      zIndex={1000}
     >
       <Space>
         <span>

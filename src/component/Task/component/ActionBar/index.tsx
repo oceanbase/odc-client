@@ -1196,7 +1196,7 @@ const ActionBar: React.FC<IProps> = inject(
           }
 
           if (haveOperationPermission && isLogicalDbChangeTask(task?.type)) {
-            tools = [viewBtn, editBtn];
+            tools = [viewBtn, editBtn, reTryBtn];
           }
           break;
         }

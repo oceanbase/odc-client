@@ -28,6 +28,7 @@ import { getExpireTimeLabel, permissionOptionsMap } from '../';
 import styles from './index.less';
 import { DBType, IDatabase } from '@/d.ts/database';
 import DatabaseIcon from '@/component/StatusIcon/DatabaseIcon';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 
 const getConnectionColumns = () => {
   return [
@@ -73,9 +74,10 @@ const getConnectionColumns = () => {
 
 interface IProps {
   task: TaskDetail<IApplyDatabasePermissionTaskParams>;
+  hasFlow: boolean;
 }
 const TaskContent: React.FC<IProps> = (props) => {
-  const { task } = props;
+  const { task, hasFlow } = props;
   const parameters = task?.parameters;
 
   return (
@@ -106,6 +108,16 @@ const TaskContent: React.FC<IProps> = (props) => {
             }) /* 申请库权限 */
           }
         </Descriptions.Item>
+        {hasFlow && (
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'odc.DataArchiveTask.DetailContent.RiskLevel',
+              defaultMessage: '风险等级',
+            })} /*风险等级*/
+          >
+            <RiskLevelLabel level={task?.riskLevel?.level} color={task?.riskLevel?.style} />
+          </Descriptions.Item>
+        )}
       </Descriptions>
       <Divider
         style={{

@@ -435,6 +435,12 @@ const CreateModal: React.FC<IProps> = (props) => {
               )}
             </div>
           }
+          rules={[
+            {
+              required: true,
+              message: '请选择数据库',
+            },
+          ]}
         >
           <DatabaseSelecter
             projectId={projectId}

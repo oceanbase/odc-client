@@ -226,7 +226,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
                 if (nextStep) {
                   setStepIdx(stepIdx + 1);
                 } else {
-                  submit();
+                  await submit();
                 }
               } catch (e) {
                 console.error(e);

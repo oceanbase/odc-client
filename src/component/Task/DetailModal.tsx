@@ -423,7 +423,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       break;
     }
     case TaskType.APPLY_DATABASE_PERMISSION: {
-      taskContent = <ApplyDatabasePermissionTaskContent task={task as any} />;
+      taskContent = <ApplyDatabasePermissionTaskContent task={task as any} hasFlow={hasFlow} />;
       break;
     }
     case TaskType.APPLY_TABLE_PERMISSION: {

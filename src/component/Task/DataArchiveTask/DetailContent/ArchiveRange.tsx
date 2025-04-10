@@ -18,7 +18,7 @@ import DisplayTable from '@/component/DisplayTable';
 import { formatMessage } from '@/util/intl';
 import { Flex, Popover, Tooltip, Typography } from 'antd';
 import React from 'react';
-import { conditionExpressionColumns } from '../../const';
+import { conditionExpressionColumns } from '../../helper';
 
 const columns = [
   {
