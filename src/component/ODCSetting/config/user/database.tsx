@@ -18,10 +18,8 @@ import { DragInsertTypeText } from '@/constant/label';
 import { AutoCommitMode, DragInsertType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { IODCSetting, ODCSettingGroup } from '../../config';
-import InputItem from '../../Item/InputItem';
 import RadioItem from '../../Item/RadioItem';
 import SelectItem from '../../Item/SelectItem';
-import { validForqueryQueryNumber } from '../../validators';
 
 const databaseGroup: ODCSettingGroup = {
   label: formatMessage({
