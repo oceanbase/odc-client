@@ -33,11 +33,7 @@ const ScheduleItem = ({ title, progress, type }) => {
                 navigate(target);
               }}
             >
-              已启用{' '}
-              <span className={styles.count}>
-                {successEnabledCount >= 0 ? successEnabledCount : '-'}
-              </span>{' '}
-              个
+              已启用 <span className={styles.count}>{successEnabledCount || 0}</span> 个
             </span>
           }
           gap={4}
