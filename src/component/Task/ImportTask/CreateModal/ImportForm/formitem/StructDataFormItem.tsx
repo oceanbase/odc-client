@@ -148,20 +148,21 @@ const StructDataFormItem: React.FC<IProps> = function (props) {
                 required={false}
                 name="replaceSchemaWhenExists"
               >
-                <Radio.Group
-                  disabled={
-                    setting?.spaceConfigurations[
-                      'odc.task.default.importTaskStructureReplacementEnabled'
-                    ] === 'false'
-                  }
-                >
+                <Radio.Group>
                   <Radio value={false}>
                     {formatMessage({
                       id: 'odc.ImportDrawer.ImportForm.Skip',
                       defaultMessage: '跳过',
                     })}
                   </Radio>
-                  <Radio value>
+                  <Radio
+                    value
+                    disabled={
+                      setting?.spaceConfigurations[
+                        'odc.task.default.importTaskStructureReplacementEnabled'
+                      ] === 'false'
+                    }
+                  >
                     {formatMessage({
                       id: 'odc.ImportDrawer.ImportForm.Replacement',
                       defaultMessage: '替换',

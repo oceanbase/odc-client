@@ -26,6 +26,7 @@ const personalSqlQuerySetting: IODCSetting[] = [
   {
     label: '查询条数上限',
     key: 'odc.sqlexecute.default.maxQueryLimit',
+    locationKey: 'maxQueryLimit',
     group: databaseGroup,
     secondGroup: null,
     storeType: 'server',
@@ -43,6 +44,7 @@ const personalSqlQuerySetting: IODCSetting[] = [
   {
     label: '查询条数默认值',
     key: 'odc.sqlexecute.default.queryLimit',
+    locationKey: 'queryLimit',
     group: databaseGroup,
     storeType: 'server',
     rules: [

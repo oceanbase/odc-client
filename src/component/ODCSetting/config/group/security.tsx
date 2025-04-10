@@ -25,7 +25,18 @@ const securitySetting: IODCSetting[] = [
   {
     label: '数据源密钥',
     key: 'odc.sqlexecute.default.secretKey',
+    locationKey: 'secretKey',
     group: securityGroup,
+    rules: [
+      {
+        validator(rule, value, callback) {
+          if (/^[a-zA-Z0-9]{32}$/.test(value)) {
+            return Promise.resolve();
+          }
+          return Promise.reject();
+        },
+      },
+    ],
     storeType: 'server',
     render: (value, onChange) => {
       return <PassWordItem value={value || ''} onChange={onChange} />;

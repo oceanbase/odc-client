@@ -39,6 +39,7 @@ const performanceSettings: IODCSetting[] = [
       defaultMessage: 'JVM 参数',
     }), //'Jvm 参数'
     key: 'client.jvm.params',
+    locationKey: 'jvmparams',
     tip: restartTip,
     group: performanceGroup,
     secondGroup: performanceDefaultGroup,
@@ -54,6 +55,7 @@ const performanceSettings: IODCSetting[] = [
       defaultMessage: 'ODC 参数',
     }), //'ODC 参数'
     key: 'client.start.params',
+    locationKey: 'startparams',
     tip: restartTip,
     group: performanceGroup,
     secondGroup: performanceDefaultGroup,
@@ -66,6 +68,7 @@ const performanceSettings: IODCSetting[] = [
   {
     label: 'Electron Params',
     key: 'client.electron.params',
+    locationKey: 'electronparams',
     tip: restartTip,
     group: performanceGroup,
     secondGroup: performanceDefaultGroup,

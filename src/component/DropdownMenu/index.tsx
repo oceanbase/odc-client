@@ -18,6 +18,7 @@ import { Dropdown, MenuProps } from 'antd';
 import { DropDownProps } from 'antd/lib/dropdown';
 import React from 'react';
 import HeaderBtn from '../HeaderBtn';
+import styles from './index.less';
 
 interface IProps {
   menu: MenuProps;
@@ -31,7 +32,11 @@ class DropdownMenu extends React.PureComponent<IProps> {
   render() {
     const { menu, children, className } = this.props;
     return (
-      <Dropdown menu={menu} getPopupContainer={() => this.menuRef?.current}>
+      <Dropdown
+        menu={menu}
+        getPopupContainer={() => this.menuRef?.current}
+        overlayClassName={styles.dropdown}
+      >
         <HeaderBtn ref={this.menuRef} className={className}>
           {children}
         </HeaderBtn>

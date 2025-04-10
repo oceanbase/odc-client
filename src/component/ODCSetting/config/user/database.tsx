@@ -62,6 +62,7 @@ const databaseSettings: IODCSetting[] = [
       defaultMessage: 'MySQL 提交模式',
     }), //'MYSQL 提交模式'
     key: 'odc.sqlexecute.default.mysqlAutoCommitMode',
+    locationKey: 'mysqlAutoCommitMode',
     group: databaseGroup,
     secondGroup: databaseSessionGroup,
     storeType: 'server',
@@ -96,6 +97,7 @@ const databaseSettings: IODCSetting[] = [
       defaultMessage: 'Oracle 提交模式',
     }), //'Oracle 提交模式'
     key: 'odc.sqlexecute.default.oracleAutoCommitMode',
+    locationKey: 'oracleAutoCommitMode',
     group: databaseGroup,
     secondGroup: databaseSessionGroup,
     storeType: 'server',
@@ -130,6 +132,7 @@ const databaseSettings: IODCSetting[] = [
       defaultMessage: '获取结果集列信息',
     }), //'获取结果集列信息'
     key: 'odc.sqlexecute.default.fetchColumnInfo',
+    locationKey: 'fetchColumnInfo',
     group: databaseGroup,
     secondGroup: databaseResultsetGroup,
     storeType: 'server',
@@ -164,6 +167,7 @@ const databaseSettings: IODCSetting[] = [
       defaultMessage: '获取 Row ID',
     }), //'获取 RowId'
     key: 'odc.sqlexecute.default.addInternalRowId',
+    locationKey: 'addInternalRowId',
     group: databaseGroup,
     secondGroup: databaseResultsetGroup,
     storeType: 'server',
@@ -198,6 +202,7 @@ const databaseSettings: IODCSetting[] = [
       defaultMessage: '开启全链路诊断',
     }), //'开启全链路诊断'
     key: 'odc.sqlexecute.default.fullLinkTraceEnabled',
+    locationKey: 'fullLinkTraceEnabled',
     group: databaseGroup,
     secondGroup: databaseSQLExecuteGroup,
     storeType: 'server',
@@ -232,6 +237,7 @@ const databaseSettings: IODCSetting[] = [
       defaultMessage: '报错继续执行',
     }), //'报错继续执行'
     key: 'odc.sqlexecute.default.continueExecutionOnError',
+    locationKey: 'continueExecutionOnError',
     group: databaseGroup,
     secondGroup: databaseSQLExecuteGroup,
     storeType: 'server',
@@ -266,6 +272,7 @@ const databaseSettings: IODCSetting[] = [
       defaultMessage: 'Delimiter 设置',
     }), //'Delimiter 设置'
     key: 'odc.sqlexecute.default.delimiter',
+    locationKey: 'delimiter',
     group: databaseGroup,
     secondGroup: databaseSQLExecuteGroup,
     storeType: 'server',
@@ -306,6 +313,7 @@ const databaseSettings: IODCSetting[] = [
       defaultMessage: '对象拖放生成语句类型',
     }), //'对象拖放生成语句类型'
     key: 'odc.sqlexecute.default.objectDraggingOption',
+    locationKey: 'objectDraggingOption',
     group: databaseGroup,
     secondGroup: databaseObjectGroup,
     storeType: 'server',

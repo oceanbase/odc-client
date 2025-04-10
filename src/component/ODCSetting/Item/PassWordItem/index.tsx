@@ -59,6 +59,7 @@ const PasswordInput = (props: { value: string; onChange: (value: string) => Prom
     for (let i = 0; i < 32; i++) {
       newPassword += characters.charAt(Math.floor(Math.random() * characters.length));
     }
+    setShowPassword(true);
     setPassword(newPassword);
     setHasError(false);
   };

@@ -39,6 +39,7 @@ const accountSettings: IODCSetting[] = [
       defaultMessage: '默认空间',
     }), //'默认空间'
     key: 'odc.account.defaultOrganizationType',
+    locationKey: 'defaultOrganizationType',
     group: accountGroup,
     secondGroup: accountSpaceGroup,
     storeType: 'server',
@@ -74,6 +75,7 @@ const accountSettings: IODCSetting[] = [
       defaultMessage: '用户行为分析',
     }), //'用户行为分析'
     key: 'odc.account.userBehaviorAnalysisEnabled',
+    locationKey: 'userBehaviorAnalysisEnabled',
     group: accountGroup,
     secondGroup: accountPrivacyGroup,
     disabledInClient: true,

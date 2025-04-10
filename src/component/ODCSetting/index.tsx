@@ -144,7 +144,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   }, []);
 
   const spaceUserData = useMemo(() => {
-    return getData(isAdmin ? ESpaceType.GROUP : ESpaceType.PERSONAL);
+    return getData(login.isPrivateSpace() ? ESpaceType.PERSONAL : ESpaceType.GROUP);
   }, []);
 
   const data = useMemo(() => {
@@ -153,20 +153,39 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
 
   const dataKeys = useMemo(() => {
     const secondKeys = [];
+    const thirdKeys = [];
 
     const keys = Array.from(data.values()).map((g) => {
-      const secondGroupItems = [...g.secondGroup.values()].map((item) => ({
-        key: item.key,
-        label: item.label,
-        parentKey: g.key,
-      }));
+      if (g?.settings) {
+        const thirdGroupItems = g.settings.map((setting) => ({
+          key: setting.locationKey,
+          label: setting.label,
+          parentKey: g.key,
+        }));
+        thirdKeys.push(...thirdGroupItems);
+      }
+      const secondGroupItems = [...g.secondGroup.values()].map((item) => {
+        if (item?.settings) {
+          const thirdGroupItems = item.settings.map((setting) => ({
+            key: setting.locationKey,
+            label: setting.label,
+            parentKey: g.key,
+          }));
+          thirdKeys.push(...thirdGroupItems);
+        }
+        return {
+          key: item.key,
+          label: item.label,
+          parentKey: g.key,
+        };
+      });
       secondKeys.push(...secondGroupItems);
       return {
         label: g.label,
         key: g.key,
       };
     });
-    return [...keys, ...secondKeys];
+    return [...keys, ...secondKeys, ...thirdKeys];
   }, [data]);
 
   const [activeKey, setActiveKey] = useState(data.keys().next().value);
@@ -279,6 +298,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   async function save() {
     const values = await formRef.validateFields();
     const spaceValues = await spaceFormRef.validateFields();
+    console.log(111, spaceValues['odc.sqlexecute.default.secretKey']);
     const serverData: Record<string, string> = {},
       localData = {};
     const spaceServerData: Record<string, string> = {};
@@ -413,7 +433,9 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                                 <Form.Item
                                   label={
                                     <Space direction="vertical" size={2}>
-                                      <Typography.Text>{set.label}</Typography.Text>
+                                      <Typography.Text data-name={set.locationKey}>
+                                        {set.label}
+                                      </Typography.Text>
                                       {!!set.tip && (
                                         <Typography.Text type="secondary">
                                           {set.tip}
@@ -453,7 +475,9 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                         style={{ marginBottom: 12 }}
                         label={
                           <Space direction="vertical" size={2}>
-                            <Typography.Text>{set.label}</Typography.Text>
+                            <Typography.Text data-name={set.locationKey}>
+                              {set.label}
+                            </Typography.Text>
                             {!!set.tip && (
                               <Typography.Text type="secondary">{set.tip}</Typography.Text>
                             )}
