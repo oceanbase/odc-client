@@ -42,7 +42,7 @@ import { ModalStore } from '@/store/modal';
 import setting from '@/store/setting';
 import { getODCSetting, saveODCSetting } from '@/util/client';
 import { isClient } from '@/util/env';
-import { safeParseJson } from '@/util/utils';
+import { encrypt, safeParseJson } from '@/util/utils';
 import { inject, observer } from 'mobx-react';
 import styles from './index.less';
 import odc from '@/plugins/odc';
@@ -321,11 +321,12 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       );
       return;
     }
+    spaceServerData['odc.sqlexecute.default.secretKey'] = encrypt(
+      spaceServerData['odc.sqlexecute.default.secretKey'],
+    );
     /**
      * submit serverData
      */
-    // 暂时删除密钥 key
-    delete spaceServerData['odc.sqlexecute.default.secretKey'];
     const isSuccess = await setting.updateUserConfig(serverData as any);
     const isSpaceSaved = await setting.updateSpaceConfig(spaceServerData as any);
     /**

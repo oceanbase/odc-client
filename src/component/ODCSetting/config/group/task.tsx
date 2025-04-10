@@ -13,14 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AutoCommitMode, TaskExecStrategy, TaskType } from '@/d.ts';
-import { formatMessage } from '@/util/intl';
 import { IODCSetting, ODCSettingGroup } from '../../config';
-import InputItem from '../../Item/InputItem';
 import RadioItem from '../../Item/RadioItem';
 import TextAreaItem from '../../Item/TextItem';
-import SelectItem from '../../Item/SelectItem';
-import { getTaskExecStrategyTextMap } from '@/component/Task';
 
 const taskGroup: ODCSettingGroup = {
   label: '工单任务',

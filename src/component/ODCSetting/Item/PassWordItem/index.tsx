@@ -15,9 +15,11 @@
  */
 
 import React, { useState } from 'react';
-import { Input, Typography, Button, Form, message } from 'antd';
-import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
+import { Input, Typography, Button, message } from 'antd';
+import { CopyOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import styles from './index.less';
+import copy from 'copy-to-clipboard';
+import CopyOperation from './CopyOpertaion';
 
 const { Text } = Typography;
 
@@ -51,6 +53,16 @@ const PasswordInput = (props: { value: string; onChange: (value: string) => Prom
     setHasError(false); // 清除错误状态
   };
 
+  const generateRandomPassword = () => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let newPassword = '';
+    for (let i = 0; i < 32; i++) {
+      newPassword += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    setPassword(newPassword);
+    setHasError(false);
+  };
+
   return (
     <>
       {!editing ? (
@@ -71,7 +83,7 @@ const PasswordInput = (props: { value: string; onChange: (value: string) => Prom
       ) : (
         <>
           {/* 编辑状态：显示输入框和操作按钮 */}
-          <div>
+          <div style={{ display: 'flex' }}>
             <Input.Password
               value={password}
               onChange={handlePasswordChange}
@@ -96,16 +108,20 @@ const PasswordInput = (props: { value: string; onChange: (value: string) => Prom
               }}
               status={hasError ? 'error' : ''}
             />
+            <Button style={{ marginLeft: 8 }} onClick={generateRandomPassword}>
+              生成密钥
+            </Button>
           </div>
           {hasError && (
             <Text type="danger" style={{ marginTop: 8, display: 'block' }}>
               输入32位英文和数字组合
             </Text>
           )}
-          <div style={{ marginTop: 8 }}>
-            <Button type="link" style={{ padding: 0 }} onClick={handleCancelEdit}>
+          <div className={styles.scondOperations}>
+            <Button type="link" style={{ padding: 0, marginRight: 8 }} onClick={handleCancelEdit}>
               取消修改
             </Button>
+            {password && <CopyOperation password={password} />}
           </div>
         </>
       )}
