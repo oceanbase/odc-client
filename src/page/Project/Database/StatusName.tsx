@@ -66,7 +66,7 @@ export default observer(function StatusName({
     default: {
       const errorMsg = status?.errorMessage || 'datasource disconnected';
       return (
-        <HelpDoc isTip={false} title={errorMsg}>
+        <HelpDoc isTip={false} title={errorMsg} leftText>
           {nameRender(item?.name)}
         </HelpDoc>
       );

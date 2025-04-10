@@ -155,6 +155,7 @@ export default inject('userStore')(
         <div className={styles.search}>
           <Input.Search
             onSearch={(v) => setSearchVaue(v)}
+            onBlur={(e) => setSearchVaue(e.target.value)}
             placeholder={formatMessage({
               id: 'odc.Script.ScriptFile.SearchScript',
               defaultMessage: '搜索脚本',

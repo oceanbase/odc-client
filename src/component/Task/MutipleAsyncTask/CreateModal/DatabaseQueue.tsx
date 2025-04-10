@@ -89,6 +89,7 @@ export const DatabaseQueueSelect: React.FC<{
               ),
               expired: checkDbExpiredByDataSourceStatus(statusInfo?.status),
               connectType: item?.connectType,
+              database: item,
             };
           }),
       );

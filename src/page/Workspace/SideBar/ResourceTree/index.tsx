@@ -57,6 +57,8 @@ import useDataSourceDrawer from './hooks/useDataSourceDrawer';
 import DataSourceNodeMenu from '@/page/Workspace/SideBar/ResourceTree/TreeNodeMenu/dataSource';
 import { isString } from 'lodash';
 import DatabaseSelectEmpty from '@/component/Empty/DatabaseSelectEmpty';
+import { ReactComponent as ProjectSvg } from '@/svgr/project_space.svg';
+import Icon from '@ant-design/icons';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
@@ -137,6 +139,17 @@ const ResourceTree: React.FC<IProps> = function ({
       window.removeEventListener('resize', resizeHeight);
     };
   }, []);
+
+  useEffect(() => {
+    selectProjectId &&
+      setExpandedKeys(
+        Array.from(new Set([...expandedKeys, getGroupKey(selectProjectId, groupMode)])),
+      );
+    selectDatasourceId &&
+      setExpandedKeys(
+        Array.from(new Set([...expandedKeys, getGroupKey(selectDatasourceId, groupMode)])),
+      );
+  }, [selectProjectId, selectDatasourceId]);
 
   useEffect(() => {
     if (defaultExpandedKeys?.length && !currentObject) {
@@ -249,6 +262,8 @@ const ResourceTree: React.FC<IProps> = function ({
           if (groupMode === DatabaseGroup.dataSource) {
             data = datasourceList.find((d) => d.id === groupItem.mapId);
             icon = data && <StatusIcon item={data} />;
+          } else if (groupMode === DatabaseGroup.project) {
+            icon = <Icon component={ProjectSvg} />;
           }
           return {
             title: groupItem.groupName,
@@ -258,9 +273,6 @@ const ResourceTree: React.FC<IProps> = function ({
             data: data ?? null,
             icon: icon ?? null,
             isLeaf: groupItem.databases.length ? false : true,
-            // 团队空间不展示对象存储数据源，个人空间会展示对象存储数据源并禁用
-            disabled:
-              groupMode === DatabaseGroup.dataSource && isConnectTypeBeFileSystemGroup(data?.type),
             children: groupItem.databases
               ?.filter((db: IDatabase) => {
                 return (

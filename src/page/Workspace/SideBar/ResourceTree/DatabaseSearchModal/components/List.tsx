@@ -3,7 +3,7 @@ import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { IDatabase } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
-import { Button, Empty, Tooltip, message } from 'antd';
+import { Button, Empty, Tooltip, message, Popover } from 'antd';
 import React, { useMemo, useContext, useRef } from 'react';
 import styles from '../index.less';
 import { SearchStatus } from '../constant';
@@ -17,6 +17,8 @@ import { LoadingOutlined } from '@ant-design/icons';
 import GlobalSearchContext from '@/page/Workspace/context/GlobalSearchContext';
 import { inject, observer } from 'mobx-react';
 import VirtualList from 'rc-virtual-list';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import ConnectionPopover from '@/component/ConnectionPopover';
 
 interface Iprops {
   modalStore?: ModalStore;
@@ -24,6 +26,7 @@ interface Iprops {
 
 const List = ({ modalStore }: Iprops) => {
   const globalSearchContext = useContext(GlobalSearchContext);
+  const { reloadDatabaseList } = useContext(ResourceTreeContext);
   const {
     databaseList,
     searchKey,
@@ -183,7 +186,6 @@ const List = ({ modalStore }: Iprops) => {
         content = (
           <div className={styles.asyncingContent}>
             <LoadingOutlined className={styles.asycLoading} />
-            <div className={styles.asyncText}>同步元数据中...</div>
           </div>
         );
       } else {
@@ -199,7 +201,8 @@ const List = ({ modalStore }: Iprops) => {
                     onClick={async () => {
                       const data = await fetchSyncAll?.();
                       if (data?.data) {
-                        message.success('同步成功');
+                        message.success('同步发起成功');
+                        reloadDatabaseList?.();
                       }
                     }}
                   >
@@ -237,37 +240,30 @@ const List = ({ modalStore }: Iprops) => {
 
   const renderDatabaseItem = (db: IDatabase) => {
     return (
-      <div
-        key={'database' + db.id}
-        onClick={(e) => {
-          handlePosition(e, db);
-          openSql?.(e, db);
-        }}
-        className={styles.databaseItem}
+      <Popover
+        showArrow={false}
+        placement={'left'}
+        content={<ConnectionPopover showRemark database={db} connection={db?.dataSource} />}
       >
-        <div className={styles.nameContent}>
-          <DataBaseStatusIcon item={db} />
-          <Tooltip title={db?.name}>
+        <div
+          key={'database' + db.id}
+          onClick={(e) => {
+            handlePosition(e, db);
+            openSql?.(e, db);
+          }}
+          className={styles.databaseItem}
+        >
+          <div className={styles.nameContent}>
+            <DataBaseStatusIcon item={db} />
             <span className={styles.nameInfo}>{db?.name}</span>
-          </Tooltip>
-          {status === SearchStatus.defalut && (
-            <Tooltip title={db?.dataSource?.name} placement="topLeft">
-              <div className={styles.subInfo}>
-                {getDataSourceIcon(db?.dataSource?.dialectType)}
-                <span className={styles.dataSouceName}>{db?.dataSource?.name}</span>
-              </div>
-            </Tooltip>
-          )}
-          {status !== SearchStatus.defalut && (
-            <Tooltip title={db?.remark} placement="topLeft">
-              <div className={styles.subInfo}>
-                <span className={styles.dataSouceName}>{db?.remark}</span>
-              </div>
-            </Tooltip>
-          )}
+            <div className={styles.subInfo}>
+              {getDataSourceIcon(db?.dataSource?.dialectType)}
+              <span className={styles.dataSouceName}>{db?.dataSource?.name}</span>
+            </div>
+          </div>
+          {renderDatabaseItemButton(db)}
         </div>
-        {renderDatabaseItemButton(db)}
-      </div>
+      </Popover>
     );
   };
 
@@ -289,17 +285,23 @@ const List = ({ modalStore }: Iprops) => {
 
   const renderDataSourceItem = (connection: IConnection) => {
     return (
-      <div
-        key={'dataSource' + connection.id}
-        className={styles.databaseItem}
-        onClick={(e) => handlePosition(e, connection)}
+      <Popover
+        showArrow={false}
+        placement={'left'}
+        content={<ConnectionPopover connection={connection} />}
       >
-        <div className={styles.nameContent}>
-          <StatusIcon item={connection} />
-          <div style={{ padding: '0 4px' }}>{connection?.name}</div>
+        <div
+          key={'dataSource' + connection.id}
+          className={styles.databaseItem}
+          onClick={(e) => handlePosition(e, connection)}
+        >
+          <div className={styles.nameContent}>
+            <StatusIcon item={connection} />
+            <div style={{ padding: '0 4px' }}>{connection?.name}</div>
+          </div>
+          {ContinueSearchButton(connection)}
         </div>
-        {ContinueSearchButton(connection)}
-      </div>
+      </Popover>
     );
   };
 

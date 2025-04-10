@@ -127,6 +127,7 @@ const convertCreateMaterializedViewData = (data, dbMode?: ConnectionMode) => {
   // constraint
   materializedView.constraints = [];
   data.primaryConstraints?.forEach((constraint) => {
+    if (!constraint?.columns?.length) return;
     materializedView.constraints.push({
       name: constraint.name,
       type: 'PRIMARY_KEY',
