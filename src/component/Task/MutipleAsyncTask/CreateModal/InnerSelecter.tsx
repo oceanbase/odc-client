@@ -14,6 +14,7 @@ import { useDrag, useDrop } from 'react-dnd';
 import { flatArray } from './helper';
 import styles from './index.less';
 import DatabaseSelectEmpty from '@/component/Empty/DatabaseSelectEmpty';
+import { IDatabase } from '@/d.ts/database';
 
 export type DatabaseOption = {
   label: string;
@@ -24,6 +25,7 @@ export type DatabaseOption = {
   unauthorized: boolean;
   expired: boolean;
   connectType: ConnectType;
+  database?: IDatabase;
 };
 const InnerSelect: React.FC<{
   rootName: (number | string)[];
@@ -196,7 +198,9 @@ const InnerSelect: React.FC<{
       <Popover
         showArrow={false}
         placement={'right'}
-        content={<ConnectionPopover connection={item?.dataSource} showRemark />}
+        content={
+          <ConnectionPopover connection={item?.dataSource} showRemark database={item?.database} />
+        }
       >
         <div
           title={item?.label}

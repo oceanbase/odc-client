@@ -54,7 +54,7 @@ import ParamContext, { IFilterParams } from './ParamContext';
 import StatusName from './StatusName';
 import { isProjectArchived } from '@/page/Project/helper';
 import { renderTool } from '@/util/renderTool';
-import { DatabaseGroup } from '@/d.ts/database';
+import { DatabaseGroup, DBType } from '@/d.ts/database';
 import { CaretDownOutlined, CaretRightOutlined } from '@ant-design/icons';
 
 import { getOperation, GroupKey, isGroupColumn } from './help';
@@ -138,7 +138,12 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
     },
   };
 
-  const renderNoPermissionDBWithTip = (name: React.ReactNode, showTip = true) => {
+  const renderNoPermissionDBWithTip = (
+    name: React.ReactNode,
+    showTip = true,
+    databaseStyle,
+    type: DBType,
+  ) => {
     return (
       <span className={styles.disable}>
         <Tooltip
@@ -151,6 +156,18 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
               : ''
           }
         >
+          {type === 'LOGICAL' ? (
+            <LogicIcon />
+          ) : (
+            <Icon
+              component={databaseStyle?.dbIcon?.component}
+              style={{
+                color: databaseStyle?.icon?.color,
+                fontSize: 16,
+                marginRight: 4,
+              }}
+            />
+          )}
           {name}
         </Tooltip>
       </span>
@@ -260,51 +277,74 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
               const disabled =
                 (!hasChangeAuth && !hasQueryAuth && !record?.authorizedPermissionTypes?.length) ||
                 projectArchived;
-              const style = getDataSourceStyleByConnectType(record?.dataSource?.type);
+              const databaseStyle = getDataSourceStyleByConnectType(record?.dataSource?.type);
               if (!record.existed) {
                 return disabled ? (
-                  <HelpDoc
-                    leftText
-                    isTip={false}
-                    title={formatMessage({
-                      id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
-                      defaultMessage: '当前数据库不存在',
-                    })} /*当前数据库不存在*/
-                  >
-                    {renderNoPermissionDBWithTip(name, !projectArchived)}
-                  </HelpDoc>
+                  <>
+                    <Icon
+                      component={databaseStyle?.dbIcon?.component}
+                      style={{
+                        color: databaseStyle?.icon?.color,
+                        fontSize: 16,
+                        marginRight: 4,
+                      }}
+                    />
+                    <HelpDoc
+                      leftText
+                      isTip={false}
+                      title={formatMessage({
+                        id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
+                        defaultMessage: '当前数据库不存在',
+                      })} /*当前数据库不存在*/
+                    >
+                      {renderNoPermissionDBWithTip(
+                        name,
+                        !projectArchived,
+                        databaseStyle,
+                        record?.type,
+                      )}
+                    </HelpDoc>
+                  </>
                 ) : (
-                  <HelpDoc
-                    leftText
-                    isTip={false}
-                    title={formatMessage({
-                      id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
-                      defaultMessage: '当前数据库不存在',
-                    })} /*当前数据库不存在*/
-                  >
-                    {name}
-                  </HelpDoc>
+                  <>
+                    <Icon
+                      component={databaseStyle?.dbIcon?.component}
+                      style={{
+                        color: databaseStyle?.icon?.color,
+                        fontSize: 16,
+                        marginRight: 4,
+                      }}
+                    />
+                    <HelpDoc
+                      leftText
+                      isTip={false}
+                      title={formatMessage({
+                        id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
+                        defaultMessage: '当前数据库不存在',
+                      })} /*当前数据库不存在*/
+                    >
+                      {name}
+                    </HelpDoc>
+                  </>
                 );
               }
 
               return disabled ? (
-                renderNoPermissionDBWithTip(name, !projectArchived)
+                renderNoPermissionDBWithTip(name, !projectArchived, databaseStyle, record?.type)
               ) : (
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  {record?.type === 'LOGICAL' && <LogicIcon />}
-                  <Icon
-                    component={
-                      isConnectTypeBeFileSystemGroup(record.connectType)
-                        ? style?.dbIcon?.component
-                        : style?.icon?.component
-                    }
-                    style={{
-                      color: style?.icon?.color,
-                      fontSize: 16,
-                      marginRight: 4,
-                    }}
-                  />
-
+                  {record?.type === 'LOGICAL' ? (
+                    <LogicIcon />
+                  ) : (
+                    <Icon
+                      component={databaseStyle?.dbIcon?.component}
+                      style={{
+                        color: databaseStyle?.icon?.color,
+                        fontSize: 16,
+                        marginRight: 4,
+                      }}
+                    />
+                  )}
                   <Space>
                     <StatusName
                       item={record}

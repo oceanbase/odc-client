@@ -122,6 +122,8 @@ const Columns = () => {
     setLoading(false);
     setTreeData(treeData);
     setTargetKeys([]);
+    setSelectMap({});
+    setColumns([]);
   };
 
   const dataSource = useMemo(() => {

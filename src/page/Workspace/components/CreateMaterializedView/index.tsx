@@ -70,7 +70,7 @@ const CreateMaterializedView: React.FC<IProps> = (props) => {
   const [lintResultSet, setLintResultSet] = useState<ISQLLintReuslt[]>([]);
   const [hasExecuted, setHasExecuted] = useState<boolean>(false);
 
-  const { loading, run: runGenerateCreateTableDDL } = useRequest(
+  const { loading, run: runCreateMaterializedViewDDL } = useRequest(
     generateCreateMaterializedViewSql,
     {
       manual: true,
@@ -122,7 +122,7 @@ const CreateMaterializedView: React.FC<IProps> = (props) => {
     if (!data.info?.refreshSchedule?.startStrategy) {
       data.info.refreshSchedule = undefined;
     }
-    const sql = await runGenerateCreateTableDDL({
+    const sql = await runCreateMaterializedViewDDL({
       materializedViewName: info.name,
       sessionId: session.sessionId,
       dbName: session.database.dbName,

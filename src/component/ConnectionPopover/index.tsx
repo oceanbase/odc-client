@@ -50,7 +50,7 @@ const ConnectionPopover: React.FC<{
   const databaseRemarkDescription = useMemo(() => {
     return (
       <div style={{ display: 'flex' }}>
-        备注：
+        <span style={{ whiteSpace: 'nowrap' }}>备注：</span>
         <div style={{ width: '260px', wordBreak: 'break-word' }}>{database?.remark ?? '-'}</div>
       </div>
     );
@@ -90,7 +90,7 @@ const ConnectionPopover: React.FC<{
                 fontFamily: 'PingFangSC-Semibold',
                 color: 'var(--text-color-primary)',
                 fontWeight: 'bold',
-                maxWidth: '240px',
+                width: '240px',
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
@@ -149,7 +149,7 @@ const ConnectionPopover: React.FC<{
                 fontFamily: 'PingFangSC-Semibold',
                 color: 'var(--text-color-primary)',
                 fontWeight: 'bold',
-                maxWidth: '240px',
+                width: '240px',
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
@@ -281,6 +281,7 @@ const ConnectionPopover: React.FC<{
       style={{
         lineHeight: '20px',
         // padding: 12,
+        maxWidth: '280px',
       }}
     >
       <Space direction="vertical">
@@ -291,7 +292,7 @@ const ConnectionPopover: React.FC<{
               fontFamily: 'PingFangSC-Semibold',
               color: 'var(--text-color-primary)',
               fontWeight: 'bold',
-              maxWidth: '280px',
+              width: '280px',
               overflow: 'hidden',
               whiteSpace: 'nowrap',
               textOverflow: 'ellipsis',

@@ -8,7 +8,6 @@ const useKeyBoardSensor = () => {
   const [shiftPressed, setShiftPressed] = useState<boolean>(false);
 
   const handleKeyDown = (event: KeyboardEvent) => {
-    event.preventDefault();
     if (event.ctrlKey || event.metaKey) {
       setCrtlorCommandPressed(true);
     }
@@ -18,7 +17,6 @@ const useKeyBoardSensor = () => {
   };
 
   const handleKeyUp = (event: KeyboardEvent) => {
-    event.preventDefault();
     if (!event.ctrlKey && !event.metaKey) {
       setCrtlorCommandPressed(false);
     }

@@ -36,6 +36,7 @@ import ChangeProjectModal from './ChangeProjectModal';
 import NewDataBaseButton from './NewDataBaseButton';
 import Header from './Header';
 import ParamContext, { IFilterParams } from './ParamContext';
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 
 interface IProps {
   id: string;
@@ -168,21 +169,44 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             //数据库名称
             dataIndex: 'name',
             render: (name, record) => {
+              const databaseStyle = getDataSourceStyleByConnectType(record?.dataSource?.type);
               if (!record.existed) {
                 return (
-                  <HelpDoc
-                    leftText
-                    isTip={false}
-                    title={formatMessage({
-                      id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
-                      defaultMessage: '当前数据库不存在',
-                    })} /*当前数据库不存在*/
-                  >
-                    {name}
-                  </HelpDoc>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Icon
+                      component={databaseStyle?.dbIcon?.component}
+                      style={{
+                        color: databaseStyle?.icon?.color,
+                        fontSize: 16,
+                        marginRight: 4,
+                      }}
+                    />
+                    <HelpDoc
+                      leftText
+                      isTip={false}
+                      title={formatMessage({
+                        id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
+                        defaultMessage: '当前数据库不存在',
+                      })} /*当前数据库不存在*/
+                    >
+                      {name}
+                    </HelpDoc>
+                  </div>
                 );
               }
-              return name;
+              return (
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <Icon
+                    component={databaseStyle?.dbIcon?.component}
+                    style={{
+                      color: databaseStyle?.icon?.color,
+                      fontSize: 16,
+                      marginRight: 4,
+                    }}
+                  />
+                  {name}
+                </div>
+              );
             },
           },
           {

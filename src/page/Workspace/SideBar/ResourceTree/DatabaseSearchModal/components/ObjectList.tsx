@@ -4,12 +4,13 @@ import { DbObjectType } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
-import { Button, Divider, Empty, Spin, Tabs, Tooltip, message } from 'antd';
+import { Button, Divider, Empty, Spin, Tabs, Tooltip, message, Popover } from 'antd';
 import { useContext, useMemo } from 'react';
 import { inject, observer } from 'mobx-react';
 import Icon, { LoadingOutlined } from '@ant-design/icons';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import GlobalSearchContext from '@/page/Workspace/context/GlobalSearchContext';
+import ConnectionPopover from '@/component/ConnectionPopover';
 import {
   DbObjectTypeMap,
   MAX_OBJECT_LENGTH,
@@ -44,7 +45,7 @@ const ObjectList = ({ modalStore }: Iprops) => {
   const ALL_TAB_MAX_LENGTH = 3;
   const dbType =
     currentDataSourceType || database?.dataSource?.dialectType || SEARCH_OBJECT_FROM_ALL_DATABASE;
-  const context = useContext(ResourceTreeContext);
+  const { reloadDatabaseList } = useContext(ResourceTreeContext);
   const getTyepBlock = () => {
     const typeList = objectTypeConfig[dbType];
     const typeObjectTree = typeList?.map((i) => {
@@ -88,7 +89,6 @@ const ObjectList = ({ modalStore }: Iprops) => {
       content = (
         <div className={styles.asyncingContent}>
           <LoadingOutlined className={styles.asycLoading} />
-          <div className={styles.asyncText}>同步元数据中...</div>
         </div>
       );
     } else {
@@ -104,7 +104,8 @@ const ObjectList = ({ modalStore }: Iprops) => {
                   onClick={async () => {
                     const data = await fetchSyncAll?.();
                     if (data?.data) {
-                      message.success('同步成功');
+                      message.success('同步发起成功');
+                      reloadDatabaseList?.();
                     }
                   }}
                 >
@@ -225,73 +226,89 @@ const ObjectList = ({ modalStore }: Iprops) => {
                       {i.data.map((object, index) => {
                         if (index < ALL_TAB_MAX_LENGTH) {
                           return (
-                            <div
-                              className={styles.objectTypeItem}
-                              onClick={(e) => {
-                                let params = {
-                                  type: undefined,
-                                  database: undefined,
-                                  name: undefined,
-                                  objectName: undefined,
-                                };
-                                params.type = i?.key as DbObjectType;
-                                switch (i?.key) {
-                                  case DbObjectType.database: {
-                                    params.database = object as IDatabase;
-                                    break;
-                                  }
-                                  case DbObjectType.column: {
-                                    params.database = object.dbObject.database as IDatabase;
-                                    params.name = object.name;
-                                    params.objectName = object.dbObject.name;
-                                    break;
-                                  }
-                                  default: {
-                                    params.name = object.name;
-                                    params.database = object.database as IDatabase;
-                                    break;
-                                  }
-                                }
-                                positionResourceTree?.(params);
-                                isDatabase ? openSql?.(e, object) : openTree?.(e, object);
-                              }}
+                            <Popover
+                              showArrow={false}
+                              placement={'left'}
+                              content={
+                                isDatabase ? (
+                                  <ConnectionPopover
+                                    connection={object?.dataSource}
+                                    showRemark
+                                    database={object}
+                                  />
+                                ) : null
+                              }
                             >
-                              <div style={{ overflow: 'hidden', display: 'flex', width: '100%' }}>
-                                {isDatabase ? (
-                                  <Icon
-                                    component={
-                                      getDataSourceStyleByConnectType(
-                                        object?.dataSource?.dialectType,
-                                      )?.dbIcon?.component
+                              <div
+                                className={styles.objectTypeItem}
+                                onClick={(e) => {
+                                  let params = {
+                                    type: undefined,
+                                    database: undefined,
+                                    name: undefined,
+                                    objectName: undefined,
+                                  };
+                                  params.type = i?.key as DbObjectType;
+                                  switch (i?.key) {
+                                    case DbObjectType.database: {
+                                      params.database = object as IDatabase;
+                                      break;
                                     }
-                                    style={{ fontSize: 14, marginRight: 4 }}
-                                  />
-                                ) : (
-                                  <Icon
-                                    component={DbObjsIcon[i?.key]}
-                                    style={{
-                                      color: 'var(--brand-blue6-color)',
-                                      paddingRight: 4,
-                                      fontSize: 14,
-                                    }}
-                                  />
-                                )}
+                                    case DbObjectType.column: {
+                                      params.database = object.dbObject.database as IDatabase;
+                                      params.name = object.name;
+                                      params.objectName = object.dbObject.name;
+                                      break;
+                                    }
+                                    default: {
+                                      params.name = object.name;
+                                      params.database = object.database as IDatabase;
+                                      break;
+                                    }
+                                  }
+                                  positionResourceTree?.(params);
+                                  isDatabase ? openSql?.(e, object) : openTree?.(e, object);
+                                }}
+                              >
+                                <div style={{ overflow: 'hidden', display: 'flex', width: '100%' }}>
+                                  {isDatabase ? (
+                                    <Icon
+                                      component={
+                                        getDataSourceStyleByConnectType(
+                                          object?.dataSource?.dialectType,
+                                        )?.dbIcon?.component
+                                      }
+                                      style={{ fontSize: 14, marginRight: 4 }}
+                                    />
+                                  ) : (
+                                    <Icon
+                                      component={DbObjsIcon[i?.key]}
+                                      style={{
+                                        color: 'var(--brand-blue6-color)',
+                                        paddingRight: 4,
+                                        fontSize: 14,
+                                      }}
+                                    />
+                                  )}
 
-                                <span style={{ paddingRight: 4 }}>{object?.name}</span>
-                                <span
-                                  style={{
-                                    color: 'var(--icon-color-disable)',
-                                    overflow: 'hidden',
-                                    whiteSpace: 'nowrap',
-                                    display: 'flex',
-                                    alignContent: 'center',
-                                  }}
-                                >
-                                  {getSubTitle(object, i?.key)}
-                                </span>
+                                  <span style={{ paddingRight: 4 }}>{object?.name}</span>
+                                  <span
+                                    style={{
+                                      color: 'var(--icon-color-disable)',
+                                      overflow: 'hidden',
+                                      whiteSpace: 'nowrap',
+                                      display: 'flex',
+                                      alignContent: 'center',
+                                    }}
+                                  >
+                                    {getSubTitle(object, i?.key)}
+                                  </span>
+                                </div>
+                                {isDatabase
+                                  ? PositioninButton(object)
+                                  : permissionBtn(object, i.key)}
                               </div>
-                              {isDatabase ? PositioninButton(object) : permissionBtn(object, i.key)}
-                            </div>
+                            </Popover>
                           );
                         }
                       })}
@@ -409,63 +426,81 @@ const ObjectList = ({ modalStore }: Iprops) => {
           <div className={styles.objectlistBox}>
             {currentObjectList?.data?.map((object) => {
               return (
-                <div
-                  className={styles.objectItem}
-                  onClick={(e) => {
-                    let params = {
-                      type: undefined,
-                      database: undefined,
-                      name: undefined,
-                      objectName: undefined,
-                    };
-                    params.type = currentObjectList.key as DbObjectType;
-                    if (isDatabasetab) {
-                      params.database = object as IDatabase;
-                    } else if (isColumntab) {
-                      params.database = object.dbObject.database as IDatabase;
-                      params.name = object.name;
-                      params.objectName = object.dbObject.name;
-                    } else {
-                      params.name = object.name;
-                      params.database = object.database as IDatabase;
-                    }
-                    positionResourceTree?.(params);
-                    isDatabasetab ? openSql?.(e, object) : openTree?.(e, object);
-                  }}
+                <Popover
+                  showArrow={false}
+                  placement={'left'}
+                  content={
+                    isDatabasetab ? (
+                      <ConnectionPopover
+                        connection={object?.dataSource}
+                        showRemark
+                        database={object}
+                      />
+                    ) : null
+                  }
                 >
-                  <div style={{ overflow: 'hidden', display: 'flex', width: '100%' }}>
-                    {isDatabasetab ? (
-                      <Icon
-                        component={
-                          getDataSourceStyleByConnectType(object?.dataSource?.dialectType)?.dbIcon
-                            ?.component
-                        }
-                        style={{ fontSize: 14, marginRight: 4 }}
-                      />
-                    ) : (
-                      <Icon
-                        component={DbObjsIcon[type]}
-                        style={{ color: 'var(--brand-blue6-color)', paddingRight: 4, fontSize: 14 }}
-                      />
-                    )}
+                  <div
+                    className={styles.objectItem}
+                    onClick={(e) => {
+                      let params = {
+                        type: undefined,
+                        database: undefined,
+                        name: undefined,
+                        objectName: undefined,
+                      };
+                      params.type = currentObjectList.key as DbObjectType;
+                      if (isDatabasetab) {
+                        params.database = object as IDatabase;
+                      } else if (isColumntab) {
+                        params.database = object.dbObject.database as IDatabase;
+                        params.name = object.name;
+                        params.objectName = object.dbObject.name;
+                      } else {
+                        params.name = object.name;
+                        params.database = object.database as IDatabase;
+                      }
+                      positionResourceTree?.(params);
+                      isDatabasetab ? openSql?.(e, object) : openTree?.(e, object);
+                    }}
+                  >
+                    <div style={{ overflow: 'hidden', display: 'flex', width: '100%' }}>
+                      {isDatabasetab ? (
+                        <Icon
+                          component={
+                            getDataSourceStyleByConnectType(object?.dataSource?.dialectType)?.dbIcon
+                              ?.component
+                          }
+                          style={{ fontSize: 14, marginRight: 4 }}
+                        />
+                      ) : (
+                        <Icon
+                          component={DbObjsIcon[type]}
+                          style={{
+                            color: 'var(--brand-blue6-color)',
+                            paddingRight: 4,
+                            fontSize: 14,
+                          }}
+                        />
+                      )}
 
-                    <span style={{ paddingRight: 4 }}>{object?.name}</span>
-                    <span
-                      style={{
-                        color: 'var(--icon-color-disable)',
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        display: 'flex',
-                        alignContent: 'center',
-                      }}
-                    >
-                      {getSubTitle(object, type)}
-                    </span>
+                      <span style={{ paddingRight: 4 }}>{object?.name}</span>
+                      <span
+                        style={{
+                          color: 'var(--icon-color-disable)',
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                          display: 'flex',
+                          alignContent: 'center',
+                        }}
+                      >
+                        {getSubTitle(object, type)}
+                      </span>
+                    </div>
+                    {isDatabasetab
+                      ? PositioninButton(object)
+                      : permissionBtn(object, currentObjectList.key)}
                   </div>
-                  {isDatabasetab
-                    ? PositioninButton(object)
-                    : permissionBtn(object, currentObjectList.key)}
-                </div>
+                </Popover>
               );
             })}
             {currentObjectList?.data?.length === MAX_OBJECT_LENGTH && (
