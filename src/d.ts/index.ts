@@ -690,7 +690,9 @@ export enum AuditEventResult {
 export interface IAudit {
   id: number;
   type: AuditEventType;
+  typeName: string;
   action: AuditEventActionType;
+  actionName: string;
   connectionId: number;
   connectionName: string;
   connectionHost: string;
@@ -715,7 +717,9 @@ export interface IAuditEvent {
   id: number;
   methodSignature: string;
   type: AuditEventType;
+  typeName: string;
   action: AuditEventActionType;
+  actionName: string;
   sidExtractExpression: string;
   inConnection: boolean;
   enabled: boolean;
