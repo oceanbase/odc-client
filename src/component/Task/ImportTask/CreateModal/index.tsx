@@ -397,9 +397,7 @@ class CreateModal extends React.Component<IProps, IState> {
       batchCommitNum: this.defaultConfig?.batchCommitNum ?? 100,
       truncateTableBeforeImport: this.defaultConfig?.truncateTableBeforeImport ?? false,
       skippedDataType: this.defaultConfig?.skippedDataType ?? [],
-      replaceSchemaWhenExists:
-        setting.spaceConfigurations['odc.task.default.importTaskStructureReplacementEnabled'] ===
-        'true',
+      replaceSchemaWhenExists: this.defaultConfig?.replaceSchemaWhenExists ?? false,
       skipHeader: this.defaultConfig?.skipHeader ?? false,
       blankToNull: this.defaultConfig?.blankToNull ?? true,
       columnSeparator: this.defaultConfig?.columnSeparator ?? ',',

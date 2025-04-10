@@ -18,6 +18,7 @@ import DataTypeSelect from '@/component/DataTypeSelect';
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import { FILE_DATA_TYPE, IDataType, IMPORT_CONTENT, IMPORT_TYPE } from '@/d.ts';
+import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { Checkbox, Col, Form, InputNumber, Radio, Row } from 'antd';
 import React from 'react';
@@ -147,7 +148,13 @@ const StructDataFormItem: React.FC<IProps> = function (props) {
                 required={false}
                 name="replaceSchemaWhenExists"
               >
-                <Radio.Group>
+                <Radio.Group
+                  disabled={
+                    setting?.spaceConfigurations[
+                      'odc.task.default.importTaskStructureReplacementEnabled'
+                    ] === 'false'
+                  }
+                >
                   <Radio value={false}>
                     {formatMessage({
                       id: 'odc.ImportDrawer.ImportForm.Skip',
