@@ -48,6 +48,7 @@ import type {
 import { CommonTableMode } from './interface';
 import { TableInfo } from './TableInfo';
 import { Toolbar } from './Toolbar';
+import { TaskStatus } from '@/d.ts';
 
 interface IProps<RecordType> {
   // 表格支持的2种模式
@@ -309,8 +310,23 @@ const CommonTable: <RecordType extends object = any>(
       pageSize,
     },
   ) {
+    const finalFilters =
+      args.filters ||
+      filters ||
+      columns.reduce((acc, column) => {
+        if (column.defaultFilteredValue) {
+          acc[column.key || (column as any).dataIndex] = column.defaultFilteredValue;
+        }
+        return acc;
+      }, {});
+
+    const loadArgs = {
+      ...args,
+      filters: finalFilters,
+    };
+
     setLoading(true);
-    await onLoad?.(args);
+    await onLoad?.(loadArgs);
     setLoading(false);
   }
 
@@ -329,9 +345,10 @@ const CommonTable: <RecordType extends object = any>(
 
   function getFilteredColumns() {
     return columns.map((item) => {
-      if (item?.filteredValue) {
-        item.filteredValue = filters[(item as any).key || (item as any).dataIndex];
-      }
+      const key = item?.key || (item as any)?.dataIndex;
+      const defaultFilteredValue = item?.defaultFilteredValue || null;
+
+      item.filteredValue = filters?.[key] || defaultFilteredValue || null;
       return item;
     });
   }
@@ -351,6 +368,24 @@ const CommonTable: <RecordType extends object = any>(
       });
     };
   }
+
+  useEffect(() => {
+    const defaultFilters = columns.reduce((acc, column) => {
+      if (column.defaultFilteredValue) {
+        acc[column.key || (column as any).dataIndex] = column.defaultFilteredValue;
+      }
+      return acc;
+    }, {});
+
+    handleReload({
+      filters: defaultFilters,
+      searchValue: '',
+      cascaderValue: [],
+      sorter: null,
+      pagination: null,
+      pageSize,
+    });
+  }, []);
 
   return (
     <div

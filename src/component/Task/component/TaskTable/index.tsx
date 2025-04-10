@@ -59,6 +59,7 @@ import ProjectContext from '@/page/Project/ProjectContext';
 import { isProjectArchived } from '@/page/Project/helper';
 import { useRequest } from 'ahooks';
 import useUrlAction, { URL_ACTION } from '@/util/hooks/useUrlAction';
+import { useLocation } from '@umijs/max';
 const { RangePicker } = DatePicker;
 const { Text, Link } = Typography;
 
@@ -219,6 +220,9 @@ const TaskTable: React.FC<IProps> = inject(
       text: name,
       value: id?.toString(),
     }));
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const urlStatus = searchParams.get('status');
 
     const currentTask = taskList;
     const [executeTime, setExecuteTime] = useState(() => {
@@ -289,6 +293,7 @@ const TaskTable: React.FC<IProps> = inject(
         });
       }
     }, [taskPageScope, taskTabType, activePageKey]);
+
     useEffect(() => {
       if (executeTime) {
         localStorage.setItem(TASK_EXECUTE_TIME_KEY, JSON.stringify(executeTime));
@@ -296,7 +301,6 @@ const TaskTable: React.FC<IProps> = inject(
     }, [executeTime]);
     function initColumns(listParams: { filters: ITableFilter; sorter: ITableSorter }) {
       const { filters, sorter } = listParams ?? {};
-
       const columns = [
         {
           dataIndex: 'id',
@@ -460,6 +464,10 @@ const TaskTable: React.FC<IProps> = inject(
           //状态
           width: 120,
           filters: taskStatusFilters,
+          defaultFilteredValue: urlStatus ? [urlStatus] : [],
+          onFilter: (value, record) => {
+            return record.status == value;
+          },
           filteredValue: filters?.status || null,
           render: (status, record) => (
             <StatusLabel
