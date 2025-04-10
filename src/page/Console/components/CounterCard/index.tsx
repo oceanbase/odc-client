@@ -15,7 +15,7 @@ const CounterCard = ({ title, counter, status }: IProps) => {
             className={styles.counter}
             style={{ color: counter > 0 && status === 'failed' ? '#ff4d4f' : undefined }}
           >
-            {counter >= 0 ? counter : '-'}
+            {counter || 0}
           </div>
         }
         label={<div className={styles.title}>{title || '-'}</div>}
