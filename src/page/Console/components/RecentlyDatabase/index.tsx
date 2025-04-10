@@ -160,11 +160,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
                       </div>
                     ) : (
                       <Icon
-                        component={
-                          isConnectTypeBeFileSystemGroup(record.connectType)
-                            ? databaseStyle?.dbIcon?.component
-                            : databaseStyle?.icon?.component
-                        }
+                        component={databaseStyle?.dbIcon?.component}
                         style={{
                           color: databaseStyle?.icon?.color,
                           fontSize: 16,
