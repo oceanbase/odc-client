@@ -244,7 +244,7 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
           </>
         )}
       </div>
-      <Form.Item name="enableQueryRewrite" label="查词改写" required>
+      <Form.Item name="enableQueryRewrite" label="查询改写" required>
         <Select
           style={{ width: 200 }}
           options={[

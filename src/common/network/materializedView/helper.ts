@@ -1,8 +1,9 @@
 import { TableIndexScope, TableIndexType } from '@/page/Workspace/components/CreateTable/interface';
-import { ColumnStoreType, IServerTable } from '@/d.ts/table';
+import { ColumnStoreType } from '@/d.ts/table';
 import { convertServerTablePartitionToTablePartition, PartitionLevelEnum } from '../table/helper';
-import { ConnectionMode, ConnectType, IPartitionType, IMaterializedView } from '@/d.ts';
+import { ConnectionMode, IPartitionType, IMaterializedView } from '@/d.ts';
 import { getQuoteTableName } from '@/util/utils';
+import { isBoolean } from 'lodash';
 
 const convertMaterializedViewToTable = (data, dbMode?: ConnectionMode) => {
   if (!data) return;
@@ -39,7 +40,11 @@ const convertMaterializedViewToTable = (data, dbMode?: ConnectionMode) => {
     return {
       name: index.name,
       type: index.type as TableIndexType,
-      scope: index.global ? TableIndexScope.GLOBAL : TableIndexScope.LOCAL,
+      scope: isBoolean(index.global)
+        ? index.global
+          ? TableIndexScope.GLOBAL
+          : TableIndexScope.LOCAL
+        : '-',
       visible: index.visible,
       columns: index.columnNames,
       method: index.algorithm as any,
@@ -119,7 +124,7 @@ const convertCreateMaterializedViewData = (data, dbMode?: ConnectionMode) => {
   materializedView.createColumns = (data?.columns || []).map((col) => ({
     columnName: col.columnName,
     dbName: col.dbName,
-    aliasName: col.aliasName,
+    aliasName: col.aliasName ? col.aliasName : col.columnName,
     tableName: col.tableName || col.viewName,
     tableAliasName: col.tableOrViewAliasName,
   }));

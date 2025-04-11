@@ -3,7 +3,7 @@ import { encodeObjName } from '@/util/utils';
 import { Base64 } from 'js-base64';
 import sessionManager from '@/store/sessionManager';
 import { convertMaterializedViewToTable, convertCreateMaterializedViewData } from './helper';
-import { IMaterializedView, MaterializedViewRecord, SyncMethods } from '@/d.ts';
+import { IMaterializedView, MaterializedViewRecord, RefreshMethod } from '@/d.ts';
 import notification from '@/util/notification';
 import { formatMessage } from '@/util/intl';
 
@@ -43,7 +43,7 @@ export async function syncMaterializedView(params: {
   dbName: string;
   sessionId: string;
   materializedViewName: string;
-  method: SyncMethods;
+  method: RefreshMethod;
   parallelismDegree: number;
 }): Promise<boolean> {
   const { materializedViewName: mvName, dbName, method, sessionId, parallelismDegree } = params;

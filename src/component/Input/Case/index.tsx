@@ -229,13 +229,6 @@ const CaseEditableText: React.FC<CaseEditableTextProps> = React.memo((props) => 
     setEditable(true);
   };
 
-  const handleSubmit = () => {
-    if (editable) {
-      setEditable(false);
-      onChange(value);
-    }
-  };
-
   const handleChange = useMemo(
     () => onChangeCaseWrap({ caseSensitive, escapes }),
     [caseSensitive, escapes],
@@ -251,11 +244,8 @@ const CaseEditableText: React.FC<CaseEditableTextProps> = React.memo((props) => 
       size="small"
       style={{ minWidth: '50px' }}
       placeholder={placeholder}
-      onBlur={handleSubmit}
-      onPressEnter={(e) => {
-        e.stopPropagation();
-        handleSubmit();
-      }}
+      onBlur={() => setEditable(false)}
+      onPressEnter={(e) => setEditable(false)}
       onChange={(e) => {
         const start = e.target.selectionStart,
           end = e.target.selectionEnd;

@@ -4,7 +4,7 @@ import { synchronizeText, refreshMethodAllowsSyncMethods } from './constants';
 import SessionStore from '@/store/sessionManager/session';
 import { MenuItemGroupType } from 'antd/es/menu/interface';
 import Toolbar from '@/component/Toolbar';
-import { SyncMethods } from '@/d.ts';
+import { RefreshMethod } from '@/d.ts';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { ReactComponent as SyncMetadataSvg } from '@/svgr/sync_metadata.svg';
 import { syncMaterializedView } from '@/common/network/materializedView/index';
@@ -33,11 +33,11 @@ const Sync: React.FC<IProps> = (props) => {
       {
         key: 'group',
         type: 'group',
-        label: '选择同步方式',
+        label: '选择刷新方式',
         children: [
-          SyncMethods.REFRESH_FAST,
-          SyncMethods.REFRESH_COMPLETE,
-          SyncMethods.REFRESH_FORCE,
+          RefreshMethod.REFRESH_FAST,
+          RefreshMethod.REFRESH_COMPLETE,
+          RefreshMethod.REFRESH_FORCE,
         ].map((item) => ({
           label: (
             <Tooltip title={synchronizeText?.[item]?.tip}>{synchronizeText?.[item]?.label}</Tooltip>
@@ -71,13 +71,13 @@ const Sync: React.FC<IProps> = (props) => {
             setOpenSyncRecordDrawer(true);
           }}
         >
-          查看同步记录 &gt;
+          查看刷新记录 &gt;
         </Button>
       </>
     );
   }, [session.odcDatabase.connectType]);
 
-  const handleSyncMaterializedView = async (method: SyncMethods) => {
+  const handleSyncMaterializedView = async (method: RefreshMethod) => {
     setSyncing(true);
     const res = await syncMaterializedView({
       dbName: session?.database?.dbName,
@@ -87,7 +87,7 @@ const Sync: React.FC<IProps> = (props) => {
       materializedViewName: pageStore?.activePage?.params?.materializedViewName,
     });
     if (res) {
-      message.success('同步数据成功');
+      message.success('刷新数据成功');
     }
     setSyncing(false);
   };
@@ -106,7 +106,7 @@ const Sync: React.FC<IProps> = (props) => {
               title: `确认要${synchronizeText?.[info.key]?.label}吗`,
               icon: <ExclamationCircleFilled />,
               content: synchronizeText?.[info.key]?.descriptions,
-              onOk: () => handleSyncMaterializedView(info.key as SyncMethods),
+              onOk: () => handleSyncMaterializedView(info.key as RefreshMethod),
               onCancel() {},
             });
           },

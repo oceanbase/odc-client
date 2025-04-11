@@ -231,9 +231,9 @@ export const columnGroupsText = {
 };
 
 export const refreshMethodText = {
-  [RefreshMethod.REFRESH_FAST]: '增量刷新',
-  [RefreshMethod.REFRESH_FORCE]: '混合刷新',
-  [RefreshMethod.REFRESH_COMPLETE]: '全量刷新',
+  [RefreshMethod.REFRESH_FAST]: '快速刷新',
+  [RefreshMethod.REFRESH_FORCE]: '强制刷新',
+  [RefreshMethod.REFRESH_COMPLETE]: '完全刷新',
   [RefreshMethod.NEVER_REFRESH]: '不需要刷新',
 };
 

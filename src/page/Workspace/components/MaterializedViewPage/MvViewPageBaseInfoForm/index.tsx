@@ -6,7 +6,6 @@ import ObjectInfoView from '@/component/ObjectInfoView';
 import MaterializedViewPageContext from '../context';
 import { columnGroupsText, refreshMethodText } from '@/constant/label';
 import { ColumnStoreType } from '@/d.ts/table';
-import { synchronizeText } from '@/page/Workspace/components/DDLResultSet/Sync/constants';
 import dayjs from 'dayjs';
 
 interface IProps {
@@ -65,17 +64,17 @@ const MvViewPageBaseInfoForm: React.FC<IProps> = (props) => {
         isHide: !materializedView?.info?.refreshSchedule,
       },
       {
-        label: '上一次同步类型',
-        content: synchronizeText[materializedView?.info?.lastRefreshType]?.label,
+        label: '上一次刷新类型',
+        content: refreshMethodText[materializedView?.info?.lastRefreshType],
       },
       {
-        label: '上一次同步开始时间',
+        label: '上一次刷新开始时间',
         content:
           materializedView?.info?.lastRefreshStartTime &&
           dayjs(materializedView?.info?.lastRefreshStartTime)?.format('YYYY-MM-DD HH:mm:ss'),
       },
       {
-        label: '上一次同步结束时间',
+        label: '上一次刷新结束时间',
         content:
           materializedView?.info?.lastRefreshEndTime &&
           dayjs(materializedView?.info?.lastRefreshEndTime)?.format('YYYY-MM-DD HH:mm:ss'),
