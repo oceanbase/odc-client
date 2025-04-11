@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import { Input, Typography, Button, message } from 'antd';
+import { Input, Typography, Button, message, Checkbox } from 'antd';
 import { CopyOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import styles from './index.less';
 import copy from 'copy-to-clipboard';
@@ -29,6 +29,7 @@ const PasswordInput = (props: { value: string; onChange: (value: string) => Prom
   const [password, setPassword] = useState(props.value);
   const [showPassword, setShowPassword] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [showInput, setShowInput] = useState(false);
 
   const handlePasswordChange = (e) => {
     const value = e.target.value;
@@ -72,66 +73,82 @@ const PasswordInput = (props: { value: string; onChange: (value: string) => Prom
 
   return (
     <>
-      {!editing ? (
+      <Checkbox
+        onChange={(e) => {
+          setShowInput(e.target.checked);
+        }}
+        style={{ marginBottom: 8 }}
+      >
+        自定义数据源密钥
+      </Checkbox>
+      {showInput ? (
         <>
-          {/* 初始状态：显示密码隐藏和修改按钮 */}
-          <div>
-            <Input.Password value={password} hidden />
-            <Input.Password
-              prefix={<>********</>}
-              disabled
-              iconRender={() => <EyeInvisibleOutlined />}
-            />
-          </div>
-          <Button type="link" style={{ padding: 0, marginTop: 8 }} onClick={handleEditClick}>
-            修改密钥
-          </Button>
-        </>
-      ) : (
-        <>
-          {/* 编辑状态：显示输入框和操作按钮 */}
-          <div style={{ display: 'flex' }}>
-            <Input.Password
-              value={password}
-              onChange={handlePasswordChange}
-              placeholder="输入32位英文和数字组合"
-              visibilityToggle={{
-                visible: showPassword,
-                onVisibleChange: setShowPassword,
-              }}
-              className={styles.passwordInput}
-              type="password"
-              key={props.value}
-              defaultValue={props.value}
-              disabled={loading}
-              onBlur={async (e) => {
-                const value = e.target.value;
-                setLoading(true);
-                try {
-                  await props.onChange(value);
-                } finally {
-                  setLoading(false);
-                }
-              }}
-              status={hasError ? 'error' : ''}
-            />
-            <Button style={{ marginLeft: 8 }} onClick={generateRandomPassword}>
-              生成密钥
-            </Button>
-          </div>
-          {hasError && (
-            <Text type="danger" style={{ marginTop: 8, display: 'block' }}>
-              输入32位英文和数字组合
-            </Text>
+          {!editing ? (
+            <>
+              {/* 初始状态：显示密码隐藏和修改按钮 */}
+              <div>
+                <Input.Password value={password} hidden />
+                <Input.Password
+                  prefix={<>********</>}
+                  disabled
+                  iconRender={() => <EyeInvisibleOutlined />}
+                />
+              </div>
+              <Button type="link" style={{ padding: 0, marginTop: 8 }} onClick={handleEditClick}>
+                修改密钥
+              </Button>
+            </>
+          ) : (
+            <>
+              {/* 编辑状态：显示输入框和操作按钮 */}
+              <div style={{ display: 'flex' }}>
+                <Input.Password
+                  value={password}
+                  onChange={handlePasswordChange}
+                  placeholder="输入32位英文和数字组合"
+                  visibilityToggle={{
+                    visible: showPassword,
+                    onVisibleChange: setShowPassword,
+                  }}
+                  className={styles.passwordInput}
+                  type="password"
+                  key={props.value}
+                  defaultValue={props.value}
+                  disabled={loading}
+                  onBlur={async (e) => {
+                    const value = e.target.value;
+                    setLoading(true);
+                    try {
+                      await props.onChange(value);
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                  status={hasError ? 'error' : ''}
+                />
+                <Button style={{ marginLeft: 8 }} onClick={generateRandomPassword}>
+                  生成密钥
+                </Button>
+              </div>
+              {hasError && (
+                <Text type="danger" style={{ marginTop: 8, display: 'block' }}>
+                  输入32位英文和数字组合
+                </Text>
+              )}
+              <div className={styles.scondOperations}>
+                <Button
+                  type="link"
+                  style={{ padding: 0, marginRight: 8 }}
+                  onClick={handleCancelEdit}
+                >
+                  取消修改
+                </Button>
+                {password && <CopyOperation password={password} />}
+              </div>
+            </>
           )}
-          <div className={styles.scondOperations}>
-            <Button type="link" style={{ padding: 0, marginRight: 8 }} onClick={handleCancelEdit}>
-              取消修改
-            </Button>
-            {password && <CopyOperation password={password} />}
-          </div>
         </>
-      )}
+      ) : null}
     </>
   );
 };

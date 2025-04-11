@@ -25,6 +25,7 @@ import taskSetting from './config/group/task';
 import securitySetting from './config/group/security';
 import personalTaskSetting from './config/personal/personalTask';
 import personalSqlQuerySetting from './config/personal/personalSqlQuery';
+import personalSecuritySetting from './config/personal/personalSecurity';
 
 export interface ODCSettingGroup {
   label: string;
@@ -66,7 +67,8 @@ const odcGroupSetting: IODCSetting[] = []
 
 const odcPersonSetting: IODCSetting[] = []
   .concat(personalSqlQuerySetting)
-  .concat(personalTaskSetting);
+  .concat(personalTaskSetting)
+  .concat(personalSecuritySetting);
 
 const odcSettingMap: Record<string, IODCSetting> = {};
 odcSetting.forEach((setting) => {
