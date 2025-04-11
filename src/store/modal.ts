@@ -38,6 +38,7 @@ import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
 import { IUnauthorizedDBResources, TablePermissionType } from '@/d.ts/table';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
+import setting from './setting';
 
 interface ConnectionData {
   data: any;
@@ -662,7 +663,9 @@ export class ModalStore {
   }
 
   @action
-  public changeOdcSettingVisible(isShow: boolean = true) {
+  public async changeOdcSettingVisible(isShow: boolean = true) {
+    await setting.getSpaceConfig();
+    await setting.getUserConfig();
     this.odcSettingVisible = isShow;
   }
 
