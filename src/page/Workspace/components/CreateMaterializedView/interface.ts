@@ -41,6 +41,7 @@ export interface MvColumns {
   tableName: string;
   tableOrViewAliasName: string;
   viewName: string;
+  name?: string;
 }
 
 export interface MviewUnits {

@@ -22,6 +22,20 @@ interface IMViewContext {
   partitions?: Partial<TablePartition>;
   setPartitions?: React.Dispatch<React.SetStateAction<Partial<TablePartition>>>;
   activetab?: MaterializedViewTabType;
+  warningColumns?: {
+    [key: string]: {
+      isWarning: boolean;
+      warnTip: string[];
+    };
+  };
+  setWarningColumns?: React.Dispatch<
+    React.SetStateAction<{
+      [key: string]: {
+        isWarning: boolean;
+        warnTip: string[];
+      };
+    }>
+  >;
 }
 
 function voidFunc(v: any) {}
@@ -40,6 +54,8 @@ const MViewContext = React.createContext<IMViewContext>({
   setViewUnits: voidFunc,
   partitions: null,
   setPartitions: voidFunc,
+  warningColumns: {},
+  setWarningColumns: voidFunc,
 });
 
 export default MViewContext;

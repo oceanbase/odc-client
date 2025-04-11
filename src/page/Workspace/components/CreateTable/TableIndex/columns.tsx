@@ -216,7 +216,13 @@ export function useColumns(
       filterable: false,
       editor: ColumnGroupsMultipleSelect,
       formatter: ({ row }) => {
-        return <span>{row.columnGroups?.map((c) => columnGroupsText[c])?.join(', ')}</span>;
+        return (
+          <span>
+            {row.columnGroups?.length
+              ? row.columnGroups?.map((c) => columnGroupsText[c])?.join(', ')
+              : '-'}
+          </span>
+        );
       },
     },
   ].filter(Boolean);

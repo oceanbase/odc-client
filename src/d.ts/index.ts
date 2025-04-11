@@ -1476,12 +1476,6 @@ export enum RefreshScheduleUnit {
   YEAR = 'YEAR',
 }
 
-export enum SyncMethods {
-  REFRESH_FAST = 'REFRESH_FAST',
-  REFRESH_FORCE = 'REFRESH_FORCE',
-  REFRESH_COMPLETE = 'REFRESH_COMPLETE',
-}
-
 export interface MaterializedViewInfo {
   columnGroups: IColumnStoreServerType[];
   authorizedPermissionTypes?: TablePermissionType[];
@@ -1494,7 +1488,7 @@ export interface MaterializedViewInfo {
   schemaName?: string;
   refreshMethod?: RefreshMethod;
   refreshSchedule?: RefreshSchedule;
-  lastRefreshType: SyncMethods;
+  lastRefreshType: RefreshMethod;
   lastRefreshStartTime: number;
   lastRefreshEndTime: number;
 }

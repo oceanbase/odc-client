@@ -16,17 +16,15 @@
 import React, { useEffect, useState } from 'react';
 import { formatMessage } from '@/util/intl';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
-import { Col, Row, Space, message } from 'antd';
+import { Col, Row, Space, Tooltip } from 'antd';
 import classNames from 'classnames';
 import { parse } from 'query-string';
-import { PureComponent } from 'react';
-// @ts-ignore
 import { ReactComponent as DragSvg } from '@/svgr/DragItem.svg';
 import EditableText from '../EditableText';
 import { CaseEditableText } from '@/component/Input/Case';
 import ObjectName, { EnumObjectType } from '../ObjectName';
-// @ts-ignore
 import styles from './index.less';
+import { InfoCircleOutlined } from '@ant-design/icons';
 
 export interface IProps {
   dataKey: string;
@@ -35,13 +33,8 @@ export interface IProps {
   useCaseInput?: boolean;
   caseSensitive?: boolean;
   escapes?: string;
-  selectMap?: {
-    [key: string]: {
-      aliasName: string;
-      dataKey: string;
-      columnName?: string;
-    };
-  };
+  isWarning?: boolean;
+  warnTip?: string[];
 }
 
 const Item: React.FC<IProps> = React.memo((props) => {
@@ -49,28 +42,18 @@ const Item: React.FC<IProps> = React.memo((props) => {
     dataKey,
     handleDelete,
     handleChange,
-    selectMap,
     useCaseInput = false,
     caseSensitive,
     escapes,
+    isWarning = false,
+    warnTip = [],
   } = props;
   const isCustomer = dataKey.includes('odc.customer.column');
   const params = parse(dataKey);
-  const [haveSameAliasName, setHaveSameAliasName] = useState<boolean>(false);
   const { v, c, t, d, aliasName } = params;
   const handleChangeAliasName = (value: string) => {
-    if (selectMap) {
-      const selectMapValue = Object.values(selectMap).filter((item) => item.dataKey !== dataKey);
-      setHaveSameAliasName(selectMapValue.some((item) => item.aliasName === value));
-    }
     handleChange({ dataKey, aliasName: value });
   };
-
-  useEffect(() => {
-    if (haveSameAliasName && !!selectMap) {
-      message.error('别名不可以重复');
-    }
-  }, [haveSameAliasName, JSON.stringify(selectMap)]);
 
   const handleSetColumnName = (value) => {
     handleChange({ dataKey, columnName: value });
@@ -79,12 +62,17 @@ const Item: React.FC<IProps> = React.memo((props) => {
     <div className="dragable-item">
       <Row
         className={classNames(styles.column, styles.dragable, {
-          [styles.columnItemError]: haveSameAliasName,
+          [styles.warningColumnItem]: isWarning,
         })}
       >
         <Col className={styles['dragable-item']} span={24}>
           <Space>
             <Icon component={DragSvg} className={styles.dragHandler} />
+            {isWarning && (
+              <Tooltip title={warnTip.join('，')}>
+                <InfoCircleOutlined style={{ color: 'red' }} />
+              </Tooltip>
+            )}
             {!isCustomer ? (
               c
             ) : (

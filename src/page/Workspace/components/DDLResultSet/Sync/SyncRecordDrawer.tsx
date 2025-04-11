@@ -14,8 +14,6 @@ import ObjectInfoView from '@/component/ObjectInfoView';
 import { ColumnStoreType } from '@/d.ts/table';
 import MaterializedViewPageContext from '@/page/Workspace/components/MaterializedViewPage/context';
 import { columnGroupsText, refreshMethodText } from '@/constant/label';
-import { synchronizeText } from '@/page/Workspace/components/DDLResultSet/Sync/constants';
-
 const GLOBAL_HEADER_HEIGHT = 40;
 const TABBAR_HEIGHT = 28;
 
@@ -114,17 +112,17 @@ const SyncRecordDrawer: React.FC<IProps> = (props) => {
         isHide: !materializedView?.info?.refreshSchedule,
       },
       {
-        label: '上一次同步类型',
-        content: synchronizeText[materializedView?.info?.lastRefreshType]?.label,
+        label: '上一次刷新类型',
+        content: refreshMethodText[materializedView?.info?.lastRefreshType],
       },
       {
-        label: '上一次同步开始时间',
+        label: '上一次刷新开始时间',
         content:
           materializedView?.info?.lastRefreshStartTime &&
           dayjs(materializedView?.info?.lastRefreshStartTime)?.format('YYYY-MM-DD HH:mm:ss'),
       },
       {
-        label: '上一次同步结束时间',
+        label: '上一次刷新结束时间',
         content:
           materializedView?.info?.lastRefreshEndTime &&
           dayjs(materializedView?.info?.lastRefreshEndTime)?.format('YYYY-MM-DD HH:mm:ss'),
@@ -145,7 +143,7 @@ const SyncRecordDrawer: React.FC<IProps> = (props) => {
     <Drawer
       open={open}
       onClose={onClose}
-      title={'同步记录'}
+      title={'刷新记录'}
       width={1000}
       className={styles.SyncRecordDrawer}
     >

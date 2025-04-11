@@ -17,7 +17,8 @@ const { TreeNode, DirectoryTree } = Tree;
 
 const Columns = () => {
   const mviewContext = useContext(MViewContext);
-  const { viewUnits, session, setColumns, activetab } = mviewContext;
+  const { viewUnits, session, setColumns, activetab, warningColumns, setWarningColumns } =
+    mviewContext;
   const [treeData, setTreeData] = useState<DataNode[]>();
   const [loading, setLoading] = useState<boolean>(false);
   const [keywords, setKeyWords] = useState<string>('');
@@ -122,6 +123,7 @@ const Columns = () => {
     setLoading(false);
     setTreeData(treeData);
     setTargetKeys([]);
+    setWarningColumns({});
     setSelectMap({});
     setColumns([]);
   };
@@ -221,6 +223,7 @@ const Columns = () => {
       key.indexOf('uid') !== -1 ? key : `${key}&uid=${uniqueId('c_')}`,
     );
     setTargetKeys([...newKeys]);
+    handleCheckColumn([...newKeys], selectMap);
     handleSubmit([...newKeys]);
   };
 
@@ -232,6 +235,7 @@ const Columns = () => {
       selectMap[dataKey] = { ...selectMap[dataKey], ...data };
     }
     setSelectMap(selectMap);
+    handleCheckColumn(targetKeys, selectMap);
     handleSubmit(targetKeys);
   };
 
@@ -309,6 +313,99 @@ const Columns = () => {
     );
   };
 
+  /**
+   * 规则
+   * - 如果有列名重复，必须填别名
+   * - 别名不可以与任一列名、任一别名重复,
+   */
+  const handleCheckColumn = (tKey = [], _selectMap) => {
+    const obj: {
+      [key: string]: {
+        isWarning: boolean;
+        warnTip: string[];
+      };
+    } = {};
+    for (let i of tKey) {
+      obj[i] = {
+        isWarning: false,
+        warnTip: [],
+      };
+      // 没有设置别名的情况下，检查列名是否重复
+      if (!_selectMap?.[i]?.aliasName) {
+        _handleCheckColumnSomeName(i, tKey, obj, _selectMap);
+      }
+      // 设置了别名，检查别名是否与其他列的别名、其他没有设置别名的列的列名重复
+      if (_selectMap?.[i]?.aliasName) {
+        _handleCheckColumnSomeAliasName(i, tKey, obj, _selectMap);
+      }
+    }
+    setWarningColumns(obj);
+  };
+
+  const _handleCheckColumnSomeAliasName = (
+    i: string,
+    tKey: string[],
+    obj: {
+      [key: string]: {
+        isWarning: boolean;
+        warnTip: string[];
+      };
+    },
+    _selectMap: {
+      [key: string]: {
+        aliasName: string;
+        dataKey: string;
+        columnName?: string;
+      };
+    },
+  ) => {
+    const aliasName = _selectMap?.[i]?.aliasName;
+    for (let otherKey of tKey) {
+      if (otherKey === i) {
+        continue;
+      }
+      if (_selectMap?.[otherKey]?.aliasName === aliasName) {
+        obj[i].isWarning = true;
+        obj[i].warnTip.push('别名与其他别名不可以重复');
+      }
+      const { c: otherColumnName } = parse(otherKey);
+      if (!_selectMap?.[otherKey]?.aliasName && otherColumnName === aliasName) {
+        obj[i].isWarning = true;
+        obj[i].warnTip.push('别名与其他没有设置别名的列名不可以重复');
+      }
+    }
+  };
+
+  const _handleCheckColumnSomeName = (
+    i: string,
+    tKey: string[],
+    obj: {
+      [key: string]: {
+        isWarning: boolean;
+        warnTip: string[];
+      };
+    },
+    _selectMap: {
+      [key: string]: {
+        aliasName: string;
+        dataKey: string;
+        columnName?: string;
+      };
+    },
+  ) => {
+    const { c: ColumnName } = parse(i);
+    for (let otherKey of tKey) {
+      if (otherKey === i) {
+        continue;
+      }
+      const { c: otherColumnName } = parse(otherKey);
+      if (!_selectMap?.[otherKey]?.aliasName && ColumnName === otherColumnName) {
+        obj[i].isWarning = true;
+        obj[i].warnTip.push('列名与其他列名不可以重复');
+      }
+    }
+  };
+
   const renderTargetPanel = () => {
     if (loading || !targetKeys.length) {
       return <Empty style={{ marginTop: '60px' }} image={Empty.PRESENTED_IMAGE_SIMPLE} />;
@@ -325,12 +422,13 @@ const Columns = () => {
             return (
               <DraggableItem id={targetKey} key={targetKey}>
                 <ColumnItem
-                  selectMap={selectMap}
                   useCaseInput
                   caseSensitive={datasourceConfig?.sql?.caseSensitivity}
                   escapes={datasourceConfig?.sql?.escapeChar}
                   key={targetKey}
                   dataKey={targetKey}
+                  isWarning={warningColumns[targetKey]?.isWarning}
+                  warnTip={warningColumns[targetKey]?.warnTip}
                   handleChange={handleItemChange}
                   handleDelete={handleItemDelete}
                 />
@@ -358,9 +456,7 @@ const Columns = () => {
         titles={[
           null,
           <>
-            <span className={styles['header-tip']}>
-              提示：可点击自定义新建列，列的别名必须填写且不能重复
-            </span>
+            <span className={styles['header-tip']}>提示：可点击自定义新建列</span>
             <a onClick={handleItemAdd}>
               <PlusOutlined />
               {formatMessage({

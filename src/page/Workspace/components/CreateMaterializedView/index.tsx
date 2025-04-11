@@ -4,7 +4,7 @@ import sessionManager, { SessionManagerStore } from '@/store/sessionManager';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
 import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
-import { Button, Card, Space, Tabs, message, Typography } from 'antd';
+import { Button, Card, Space, Tabs, message, Typography, Tooltip } from 'antd';
 import React, { useContext, useMemo, useState } from 'react';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import SessionContext from '../SessionContextWrap/context';
@@ -69,6 +69,12 @@ const CreateMaterializedView: React.FC<IProps> = (props) => {
   const [status, setStatus] = useState<EStatus>(null);
   const [lintResultSet, setLintResultSet] = useState<ISQLLintReuslt[]>([]);
   const [hasExecuted, setHasExecuted] = useState<boolean>(false);
+  const [warningColumns, setWarningColumns] = useState<{
+    [key: string]: {
+      isWarning: boolean;
+      warnTip: string[];
+    };
+  }>({});
 
   const { loading, run: runCreateMaterializedViewDDL } = useRequest(
     generateCreateMaterializedViewSql,
@@ -86,7 +92,6 @@ const CreateMaterializedView: React.FC<IProps> = (props) => {
   const isComplete = useMemo(() => {
     let _isComplete = false;
     _isComplete = !!info.name;
-    const aliasNameSet = new Set();
     if (
       info?.refreshSchedule?.startStrategy === StartStrategy.START_AT &&
       !info?.refreshSchedule?.startWith
@@ -96,14 +101,8 @@ const CreateMaterializedView: React.FC<IProps> = (props) => {
     if (info?.refreshSchedule?.startStrategy && !info?.refreshSchedule?.interval) {
       _isComplete = _isComplete && false;
     }
-    // 若选择了列，必须填别名且是不重复的别名
-    columns?.forEach((item) => {
-      _isComplete = _isComplete && !!item?.aliasName;
-      item?.aliasName && aliasNameSet.add(item.aliasName);
-    });
-    if (aliasNameSet.size) {
-      _isComplete = _isComplete && aliasNameSet?.size === columns?.length;
-    }
+    // 检查列是否合法
+    _isComplete = _isComplete && !Object.values(warningColumns)?.some((item) => item.isWarning);
     return _isComplete;
   }, [info, columns]);
 
@@ -147,15 +146,17 @@ const CreateMaterializedView: React.FC<IProps> = (props) => {
       }
       extra={
         <Space>
-          <Button type="primary" disabled={!isComplete} loading={loading} onClick={handleSubmit}>
-            {
-              formatMessage({
-                id: 'odc.components.CreateTable.SubmitAndConfirmSql',
-                defaultMessage: '提交并确认 SQL',
-              })
-              /*提交并确认 SQL*/
-            }
-          </Button>
+          <Tooltip title={isComplete ? null : '请检查基本信息和列'}>
+            <Button type="primary" disabled={!isComplete} loading={loading} onClick={handleSubmit}>
+              {
+                formatMessage({
+                  id: 'odc.components.CreateTable.SubmitAndConfirmSql',
+                  defaultMessage: '提交并确认 SQL',
+                })
+                /*提交并确认 SQL*/
+              }
+            </Button>
+          </Tooltip>
         </Space>
       }
     >
@@ -169,12 +170,14 @@ const CreateMaterializedView: React.FC<IProps> = (props) => {
           columns,
           partitions,
           primaryConstraints,
+          warningColumns,
           setPartitions,
           setColumns,
           setInfo,
           setOperations,
           setViewUnits,
           setPrimaryConstraints,
+          setWarningColumns,
         }}
       >
         <Tabs

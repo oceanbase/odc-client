@@ -27,6 +27,7 @@ interface IProps<T> extends EditorProps<T> {
   options: (string | { text: string; value: string })[];
   multiple: boolean;
   loading?: boolean;
+  customRenderOptions?: (item) => JSX.Element;
 }
 
 export function SelectEditor<T>({
@@ -37,6 +38,7 @@ export function SelectEditor<T>({
   options,
   multiple,
   loading,
+  customRenderOptions,
 }: IProps<T>) {
   const [open, setOpen] = useState(false);
   const { key } = column;
@@ -88,6 +90,9 @@ export function SelectEditor<T>({
         }}
       >
         {options?.map((value) => {
+          if (customRenderOptions) {
+            return customRenderOptions(value);
+          }
           if (typeof value === 'string') {
             return (
               <Option key={value} value={value}>
@@ -105,8 +110,19 @@ export function SelectEditor<T>({
     </AntdEditorWrap>
   );
 }
-export function WrapSelectEditor(options, multiple: boolean = true) {
+export function WrapSelectEditor(
+  options,
+  multiple: boolean = true,
+  customRenderOptions = undefined,
+) {
   return (p) => {
-    return <SelectEditor {...p} options={options} multiple={multiple} />;
+    return (
+      <SelectEditor
+        {...p}
+        options={options}
+        multiple={multiple}
+        customRenderOptions={customRenderOptions}
+      />
+    );
   };
 }
