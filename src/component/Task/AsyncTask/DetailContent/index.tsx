@@ -27,6 +27,8 @@ import { Descriptions, Divider, Space, Tooltip } from 'antd';
 import DatabaseLabel from '../../component/DatabaseLabel';
 import { DownloadFileAction } from '../../component/DownloadFileAction';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
+import styles from './index.less';
+
 export const ErrorStrategy = {
   ABORT: formatMessage({
     id: 'odc.TaskManagePage.AsyncTask.StopATask',
@@ -131,68 +133,71 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           )}
         </Descriptions.Item>
       </Descriptions>
-      <SimpleTextItem
-        label={formatMessage({
-          id: 'odc.TaskManagePage.AsyncTask.SqlContent',
-          defaultMessage: 'SQL 内容',
-        })}
-        /* SQL 内容 */ content={
-          <div
-            style={{
-              marginTop: '8px',
-            }}
-          >
-            <SQLContent
-              theme={theme}
-              sqlContent={task?.parameters?.sqlContent}
-              sqlObjectIds={task?.parameters?.sqlObjectIds}
-              sqlObjectNames={task?.parameters?.sqlObjectNames}
-              taskId={task?.id}
-              language={
-                getDataSourceModeConfigByConnectionMode(task?.database?.dataSource?.dialectType)
-                  ?.sql?.language
-              }
-            />
-          </div>
-        }
-        direction="column"
-      />
-
-      <SimpleTextItem
-        label={
-          <Space>
-            <span>
-              {
-                formatMessage({
-                  id: 'odc.AsyncTask.DetailContent.RollbackContent',
-                  defaultMessage: '回滚内容',
-                }) /*回滚内容*/
-              }
-            </span>
-            <DownloadFileAction url={result?.rollbackPlanResult?.resultFileDownloadUrl} />
-          </Space>
-        }
-        content={
-          <div
-            style={{
-              marginTop: '8px',
-            }}
-          >
-            <SQLContent
-              theme={theme}
-              sqlContent={task?.parameters?.rollbackSqlContent}
-              sqlObjectIds={task?.parameters?.rollbackSqlObjectIds}
-              sqlObjectNames={task?.parameters?.rollbackSqlObjectNames}
-              taskId={task?.id}
-              language={
-                getDataSourceModeConfigByConnectionMode(task?.database?.dataSource?.dialectType)
-                  ?.sql?.language
-              }
-            />
-          </div>
-        }
-        direction="column"
-      />
+      <div className={styles.format}>
+        <SimpleTextItem
+          label={formatMessage({
+            id: 'odc.TaskManagePage.AsyncTask.SqlContent',
+            defaultMessage: 'SQL 内容',
+          })}
+          /* SQL 内容 */ content={
+            <div
+              style={{
+                marginTop: '8px',
+              }}
+            >
+              <SQLContent
+                theme={theme}
+                sqlContent={task?.parameters?.sqlContent}
+                sqlObjectIds={task?.parameters?.sqlObjectIds}
+                sqlObjectNames={task?.parameters?.sqlObjectNames}
+                taskId={task?.id}
+                language={
+                  getDataSourceModeConfigByConnectionMode(task?.database?.dataSource?.dialectType)
+                    ?.sql?.language
+                }
+              />
+            </div>
+          }
+          direction="column"
+        />
+      </div>
+      <div className={styles.format}>
+        <SimpleTextItem
+          label={
+            <Space>
+              <span>
+                {
+                  formatMessage({
+                    id: 'odc.AsyncTask.DetailContent.RollbackContent',
+                    defaultMessage: '回滚内容',
+                  }) /*回滚内容*/
+                }
+              </span>
+              <DownloadFileAction url={result?.rollbackPlanResult?.resultFileDownloadUrl} />
+            </Space>
+          }
+          content={
+            <div
+              style={{
+                marginTop: '8px',
+              }}
+            >
+              <SQLContent
+                theme={theme}
+                sqlContent={task?.parameters?.rollbackSqlContent}
+                sqlObjectIds={task?.parameters?.rollbackSqlObjectIds}
+                sqlObjectNames={task?.parameters?.rollbackSqlObjectNames}
+                taskId={task?.id}
+                language={
+                  getDataSourceModeConfigByConnectionMode(task?.database?.dataSource?.dialectType)
+                    ?.sql?.language
+                }
+              />
+            </div>
+          }
+          direction="column"
+        />
+      </div>
 
       <Descriptions
         column={2}
