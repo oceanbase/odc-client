@@ -79,12 +79,12 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
               },
             },
           ]}
+          validateTrigger=""
           tooltip={description}
         >
           <InputNumber
             defaultValue={defaultValue}
             min={0}
-            max={setting?.spaceConfigurations?.['odc.sqlexecute.default.maxQueryLimit']}
             placeholder={
               formatMessage({
                 id: 'odc.src.page.Secure.Env.components.PleaseEnter.1',
