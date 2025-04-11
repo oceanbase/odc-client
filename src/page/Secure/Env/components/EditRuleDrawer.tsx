@@ -24,6 +24,7 @@ import React, { useEffect, useState } from 'react';
 import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
 import EditPropertyComponentMap from './EditPropertyComponent';
 import styles from './index.less';
+import setting from '@/store/setting';
 interface EditRuleDrawerProps {
   editRuleDrawerVisible: boolean;
   ruleType: RuleType;
@@ -97,6 +98,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         level,
         enabled,
       };
+      setting.getSpaceConfig();
       propertyMetadatas.forEach((pm, index) => {
         newInitData[`activeKey${index}`] = properties?.[pm.name];
         if (pm?.name === SqlInterceptorKey) {

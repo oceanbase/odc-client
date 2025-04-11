@@ -239,6 +239,9 @@ const SQLConfig: React.FC<IProps> = function (props) {
         open={visible}
         showArrow={false}
         onOpenChange={(v) => {
+          if (v) {
+            setting.getSpaceConfig();
+          }
           setVisible(v);
         }}
       >

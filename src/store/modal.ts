@@ -507,7 +507,10 @@ export class ModalStore {
   }
 
   @action
-  public changeExportModal(isShow: boolean = true, modalData?: IExportModalData) {
+  public async changeExportModal(isShow: boolean = true, modalData?: IExportModalData) {
+    if (isShow) {
+      await setting.getSpaceConfig();
+    }
     this.exportModalVisible = isShow;
     this.exportModalData = isShow ? modalData : null;
   }
@@ -518,7 +521,10 @@ export class ModalStore {
   }
 
   @action
-  public changeImportModal(isShow: boolean = true, modalData?: IImportModalData) {
+  public async changeImportModal(isShow: boolean = true, modalData?: IImportModalData) {
+    if (isShow) {
+      await setting.getSpaceConfig();
+    }
     this.importModalVisible = isShow;
     this.importModalData = isShow ? modalData : null;
   }
@@ -530,14 +536,20 @@ export class ModalStore {
   }
 
   @action
-  public changeDataMockerModal(isShow: boolean = true, modalData?: DataMockerData) {
+  public async changeDataMockerModal(isShow: boolean = true, modalData?: DataMockerData) {
     isShow && tracert.expo('c114250');
+    if (isShow) {
+      await setting.getSpaceConfig();
+    }
     this.dataMockerVisible = isShow;
     this.dataMockerData = isShow ? modalData : null;
   }
 
   @action
-  public changeCreateAsyncTaskModal(isShow: boolean = true, data?: AsyncData) {
+  public async changeCreateAsyncTaskModal(isShow: boolean = true, data?: AsyncData) {
+    if (isShow) {
+      await setting.getSpaceConfig();
+    }
     this.createAsyncTaskVisible = isShow;
     this.asyncTaskData = isShow ? data : null;
   }
@@ -552,7 +564,13 @@ export class ModalStore {
   }
 
   @action
-  public changeCreateResultSetExportTaskModal(isShow: boolean = true, data?: ResultSetExportData) {
+  public async changeCreateResultSetExportTaskModal(
+    isShow: boolean = true,
+    data?: ResultSetExportData,
+  ) {
+    if (isShow) {
+      await setting.getSpaceConfig();
+    }
     this.createResultSetExportTaskVisible = isShow;
     this.resultSetExportData = isShow ? data : null;
   }
@@ -582,7 +600,10 @@ export class ModalStore {
   }
 
   @action
-  public changeDataArchiveModal(isShow: boolean = true, data?: IDataArchiveTaskData) {
+  public async changeDataArchiveModal(isShow: boolean = true, data?: IDataArchiveTaskData) {
+    if (isShow) {
+      await setting.getSpaceConfig();
+    }
     this.dataArchiveVisible = isShow;
     this.dataArchiveTaskData = isShow ? data : null;
   }
@@ -598,13 +619,22 @@ export class ModalStore {
   }
 
   @action
-  public changeMultiDatabaseChangeModal(isShow: boolean = true, data?: IMultipleAsyncTaskData) {
+  public async changeMultiDatabaseChangeModal(
+    isShow: boolean = true,
+    data?: IMultipleAsyncTaskData,
+  ) {
+    if (isShow) {
+      await setting.getSpaceConfig();
+    }
     this.multipleDatabaseChangeOpen = isShow;
     this.multipleAsyncTaskData = isShow ? data : null;
   }
 
   @action
-  public changeLogicialDatabaseModal(isShow: boolean = true, data?: any) {
+  public async changeLogicialDatabaseModal(isShow: boolean = true, data?: any) {
+    if (isShow) {
+      await setting.getSpaceConfig();
+    }
     this.logicDatabaseVisible = isShow;
     this.logicDatabaseInfo = isShow ? data : null;
   }
@@ -629,19 +659,28 @@ export class ModalStore {
   }
 
   @action
-  public changeDataClearModal(isShow: boolean = true, data?: IDataClearTaskData) {
+  public async changeDataClearModal(isShow: boolean = true, data?: IDataClearTaskData) {
+    if (isShow) {
+      await setting.getSpaceConfig();
+    }
     this.dataClearVisible = isShow;
     this.dataClearTaskData = isShow ? data : null;
   }
 
   @action
-  public changeCreateSQLPlanTaskModal(isShow: boolean = true, data?: ISQLPlanTaskData) {
+  public async changeCreateSQLPlanTaskModal(isShow: boolean = true, data?: ISQLPlanTaskData) {
+    if (isShow) {
+      await setting.getSpaceConfig();
+    }
     this.createSQLPlanVisible = isShow;
     this.sqlPlanData = isShow ? data : null;
   }
 
   @action
-  public changeCreateDDLAlterTaskModal(isShow: boolean = true, data?: IDDLAlterTaskData) {
+  public async changeCreateDDLAlterTaskModal(isShow: boolean = true, data?: IDDLAlterTaskData) {
+    if (isShow) {
+      await setting.getSpaceConfig();
+    }
     this.createDDLAlterVisible = isShow;
     this.ddlAlterData = isShow ? data : null;
   }
@@ -652,7 +691,10 @@ export class ModalStore {
   }
 
   @action
-  public changeShadowSyncVisible(isShow: boolean = true, data?: IShadowSyncTaskData) {
+  public async changeShadowSyncVisible(isShow: boolean = true, data?: IShadowSyncTaskData) {
+    if (isShow) {
+      await setting.getSpaceConfig();
+    }
     this.addShadowSyncVisible = isShow;
     this.shadowSyncData = isShow ? data : null;
   }
@@ -664,8 +706,10 @@ export class ModalStore {
 
   @action
   public async changeOdcSettingVisible(isShow: boolean = true) {
-    await setting.getSpaceConfig();
-    await setting.getUserConfig();
+    if (isShow) {
+      await setting.getSpaceConfig();
+      await setting.getUserConfig();
+    }
     this.odcSettingVisible = isShow;
   }
 
