@@ -29,6 +29,15 @@ const DescriptionInput = () => {
       name="description"
       rules={[
         {
+          validator: (_, value) => {
+            if (!value)
+              return Promise.reject(
+                setting.spaceConfigurations['odc.task.default.taskDescriptionPrompt'],
+              );
+            return Promise.resolve();
+          },
+        },
+        {
           max: 200,
           message: formatMessage({
             id: 'odc.component.DescriptionInput.TheDescriptionCannotExceedCharacters',
