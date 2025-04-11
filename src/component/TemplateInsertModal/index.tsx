@@ -21,7 +21,7 @@ import { DbObjectType, DragInsertType } from '@/d.ts/index';
 import type { ModalStore } from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
-import { SettingStore } from '@/store/setting';
+import setting, { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { getQuoteTableName } from '@/util/utils';
 import { Button, Checkbox, message, Modal, Radio, Space } from 'antd';
@@ -79,7 +79,7 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
           <Button
             type="link"
             size="small"
-            onClick={() => {
+            onClick={async () => {
               modalStore.changeOdcSettingVisible(true);
             }}
           >

@@ -290,6 +290,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     }
     const clear = addListener();
     loadData();
+    setSpaceType(ESpaceType.USER);
     return () => {
       clear();
     };
@@ -298,7 +299,6 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   async function save() {
     const values = await formRef.validateFields();
     const spaceValues = await spaceFormRef.validateFields();
-    console.log(111, spaceValues['odc.sqlexecute.default.secretKey']);
     const serverData: Record<string, string> = {},
       localData = {};
     const spaceServerData: Record<string, string> = {};
