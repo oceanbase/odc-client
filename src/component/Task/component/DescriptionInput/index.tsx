@@ -21,6 +21,7 @@ import { Form, Input } from 'antd';
 const DescriptionInput = () => {
   return (
     <Form.Item
+      required
       label={formatMessage({
         id: 'odc.component.DescriptionInput.Description',
         defaultMessage: '描述',
