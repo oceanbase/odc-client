@@ -264,11 +264,13 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
         onOk: () => {
           setChanged(false);
           modalStore.changeOdcSettingVisible(false);
+          setSearchValue(undefined);
         },
       });
     } else {
       setChanged(false);
       modalStore.changeOdcSettingVisible(false);
+      setSearchValue(undefined);
     }
   }
 
