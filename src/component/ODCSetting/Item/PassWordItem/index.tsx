@@ -53,7 +53,7 @@ const PasswordInput = (props: { value: string; onChange: (value: string) => Prom
     setHasError(false); // 清除错误状态
   };
 
-  const generateRandomPassword = () => {
+  const generateRandomPassword = async () => {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let newPassword = '';
     for (let i = 0; i < 32; i++) {
@@ -61,6 +61,12 @@ const PasswordInput = (props: { value: string; onChange: (value: string) => Prom
     }
     setShowPassword(true);
     setPassword(newPassword);
+    setLoading(true);
+    try {
+      await props.onChange(newPassword);
+    } finally {
+      setLoading(false);
+    }
     setHasError(false);
   };
 
