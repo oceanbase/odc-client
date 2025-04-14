@@ -34,6 +34,7 @@ import { IPageType } from '@/d.ts/_index';
 import { gotoSQLWorkspace } from '@/util/route';
 import { URL_ACTION } from '@/util/hooks/useUrlAction';
 import QrCodeWithIcon from './components/QRCodeWithIcon';
+import { sumTaskStats } from '@/util/utils';
 
 const paddingCal = (currentLayout) => {
   return currentLayout === gridConfig.all ? 0 : 8;
@@ -65,7 +66,9 @@ const Console = () => {
   });
   const res = {};
   data?.forEach((item) => {
-    res[item?.type] = item;
+    const taskStat = sumTaskStats(item.taskStats);
+    const schedule = { ...item, taskStat };
+    res[item?.type] = schedule;
   });
 
   useEffect(() => {

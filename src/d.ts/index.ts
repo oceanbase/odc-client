@@ -2728,14 +2728,14 @@ export interface IDatabaseHistoriesParam {
 export interface ICycleTaskStatRecord {
   type: string;
   successEnabledCount: number;
-  taskStat: {
+  taskStats: {
     type: string;
     successExecutionCount: number;
     failedExecutionCount: number;
     waitingExecutionCount: number;
     executingCount: number;
     otherCount: number;
-  };
+  }[];
 }
 
 export interface ICycleSubTaskDetailRecord {
