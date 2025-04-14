@@ -167,31 +167,33 @@ export const DatabaseBelongsToProjectTypeText = {
   }),
 };
 
-export const DragInsertTypeText = {
-  [DragInsertType.NAME]: formatMessage({
-    id: 'odc.component.UserConfigForm.ObjectName',
-    defaultMessage: '对象名',
-  }),
+export const DragInsertTypeText = function () {
+  return {
+    [DragInsertType.NAME]: formatMessage({
+      id: 'odc.component.UserConfigForm.ObjectName',
+      defaultMessage: '对象名',
+    }),
 
-  [DragInsertType.SELECT]: formatMessage({
-    id: 'odc.component.UserConfigForm.SelectStatement',
-    defaultMessage: 'Select 语句',
-  }),
+    [DragInsertType.SELECT]: formatMessage({
+      id: 'odc.component.UserConfigForm.SelectStatement',
+      defaultMessage: 'Select 语句',
+    }),
 
-  [DragInsertType.INSERT]: formatMessage({
-    id: 'odc.component.UserConfigForm.InsertStatement',
-    defaultMessage: 'Insert 语句',
-  }),
+    [DragInsertType.INSERT]: formatMessage({
+      id: 'odc.component.UserConfigForm.InsertStatement',
+      defaultMessage: 'Insert 语句',
+    }),
 
-  [DragInsertType.UPDATE]: formatMessage({
-    id: 'odc.component.UserConfigForm.UpdateStatement',
-    defaultMessage: 'Update 语句',
-  }),
+    [DragInsertType.UPDATE]: formatMessage({
+      id: 'odc.component.UserConfigForm.UpdateStatement',
+      defaultMessage: 'Update 语句',
+    }),
 
-  [DragInsertType.DELETE]: formatMessage({
-    id: 'odc.component.UserConfigForm.DeleteStatement',
-    defaultMessage: 'Delete 语句',
-  }),
+    [DragInsertType.DELETE]: formatMessage({
+      id: 'odc.component.UserConfigForm.DeleteStatement',
+      defaultMessage: 'Delete 语句',
+    }),
+  };
 };
 
 export const SQLLintModeText = {
@@ -199,31 +201,36 @@ export const SQLLintModeText = {
   [SQLLintMode.MANUAL]: formatMessage({ id: 'odc.src.d.ts.Manual', defaultMessage: '手动' }), //手动
 };
 
-export const SchemaComparingResultText = {
-  [SchemaComparingResult.CREATE]: formatMessage({
-    id: 'odc.src.d.ts.Create',
-    defaultMessage: '新建',
-  }), //新建
-  [SchemaComparingResult.UPDATE]: formatMessage({
-    id: 'odc.src.d.ts.Modify',
-    defaultMessage: '修改',
-  }), //修改
-  [SchemaComparingResult.NO_ACTION]: formatMessage({
-    id: 'odc.src.d.ts.Consistent',
-    defaultMessage: '一致',
-  }),
-  //一致
-  [SchemaComparingResult.WAITING]: formatMessage({
-    id: 'odc.src.d.ts.ToBeAnalyzed',
-    defaultMessage: '待分析',
-  }),
-  //待分析
-  [SchemaComparingResult.COMPARING]: formatMessage({
-    id: 'odc.src.d.ts.Analyzing',
-    defaultMessage: '分析中',
-  }),
-  //分析中
-  [SchemaComparingResult.SKIP]: formatMessage({ id: 'odc.src.d.ts.Skip', defaultMessage: '跳过' }), //跳过
+export const SchemaComparingResultText = function () {
+  return {
+    [SchemaComparingResult.CREATE]: formatMessage({
+      id: 'odc.src.d.ts.Create',
+      defaultMessage: '新建',
+    }), //新建
+    [SchemaComparingResult.UPDATE]: formatMessage({
+      id: 'odc.src.d.ts.Modify',
+      defaultMessage: '修改',
+    }), //修改
+    [SchemaComparingResult.NO_ACTION]: formatMessage({
+      id: 'odc.src.d.ts.Consistent',
+      defaultMessage: '一致',
+    }),
+    //一致
+    [SchemaComparingResult.WAITING]: formatMessage({
+      id: 'odc.src.d.ts.ToBeAnalyzed',
+      defaultMessage: '待分析',
+    }),
+    //待分析
+    [SchemaComparingResult.COMPARING]: formatMessage({
+      id: 'odc.src.d.ts.Analyzing',
+      defaultMessage: '分析中',
+    }),
+    //分析中
+    [SchemaComparingResult.SKIP]: formatMessage({
+      id: 'odc.src.d.ts.Skip',
+      defaultMessage: '跳过',
+    }), //跳过
+  };
 };
 
 export const SQLSessionModeText = {
