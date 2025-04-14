@@ -299,7 +299,7 @@ export function getDefaultRule(columnType: string, dbMode: ConnectionMode) {
       return NumberRuleType.RANDOM;
     }
     default: {
-      return CharRuleType.NULL;
+      return CharRuleType.SKIP;
     }
   }
 }
