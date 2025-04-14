@@ -142,33 +142,33 @@ export function useColumns(
       filters: isSync
         ? [
             {
-              text: SchemaComparingResultText[SchemaComparingResult.CREATE],
+              text: SchemaComparingResultText()[SchemaComparingResult.CREATE],
               value: SchemaComparingResult.CREATE,
             },
 
             {
-              text: SchemaComparingResultText[SchemaComparingResult.UPDATE],
+              text: SchemaComparingResultText()[SchemaComparingResult.UPDATE],
               value: SchemaComparingResult.UPDATE,
             },
           ]
         : [
             {
-              text: SchemaComparingResultText[SchemaComparingResult.NO_ACTION],
+              text: SchemaComparingResultText()[SchemaComparingResult.NO_ACTION],
               value: SchemaComparingResult.NO_ACTION,
             },
 
             {
-              text: SchemaComparingResultText[SchemaComparingResult.SKIP],
+              text: SchemaComparingResultText()[SchemaComparingResult.SKIP],
               value: SchemaComparingResult.SKIP,
             },
 
             {
-              text: SchemaComparingResultText[SchemaComparingResult.WAITING],
+              text: SchemaComparingResultText()[SchemaComparingResult.WAITING],
               value: SchemaComparingResult.WAITING,
             },
 
             {
-              text: SchemaComparingResultText[SchemaComparingResult.COMPARING],
+              text: SchemaComparingResultText()[SchemaComparingResult.COMPARING],
               value: SchemaComparingResult.COMPARING,
             },
           ],
@@ -177,7 +177,7 @@ export function useColumns(
         return v === row.comparingResult;
       },
       render(v) {
-        return SchemaComparingResultText[v] || '-';
+        return SchemaComparingResultText()[v] || '-';
       },
     },
 
