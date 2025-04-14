@@ -75,9 +75,6 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
                 if (value !== undefined && value > max) {
                   return Promise.reject(`不超过查询条数上限 ${max}`);
                 }
-                if (value < 0) {
-                  return Promise.reject(`请输入正整数`);
-                }
                 return Promise.resolve();
               },
             },
@@ -85,7 +82,9 @@ const EditPropertyComponentMap: React.FC<EditPropertyComponentMapProps> = ({
           tooltip={description}
         >
           <InputNumber
+            precision={0}
             defaultValue={defaultValue}
+            min={0}
             placeholder={
               formatMessage({
                 id: 'odc.src.page.Secure.Env.components.PleaseEnter.1',
