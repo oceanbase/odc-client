@@ -252,6 +252,7 @@ export default inject('userStore')(
           ['ssoParameter', 'singlesignon', 'url'],
           ['ssoParameter', 'singlesignon', 'binding'],
           ['ssoParameter', 'singlesignon', 'signRequest'],
+          ['ssoParameter', 'providerEntityId'],
         ]);
         if (!value) {
           return;
