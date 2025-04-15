@@ -137,6 +137,7 @@ class CreateModal extends React.Component<IProps, IState> {
   private submit = () => {
     const { projectId } = this.props;
     this._formRef.current?.valid(async (haveError, values) => {
+      console.log(haveError);
       if (!haveError) {
         let exportFilePath;
         if (isClient()) {
@@ -227,6 +228,7 @@ class CreateModal extends React.Component<IProps, IState> {
       }
     });
   };
+
   private nextStep = async () => {
     this._formRef.current.valid(async (haveError, values) => {
       if (!haveError) {

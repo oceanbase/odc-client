@@ -64,26 +64,30 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
       }, [databaseId]);
 
       async function valid(callback: (haveError, values) => void) {
-        const values = await form.validateFields();
-        if (!values) {
-          return;
-        }
-        if (
-          !values.exportDbObjects?.length &&
-          formType === FormType.ObjSelecter &&
-          !values.exportAllObjects
-        ) {
-          message.warning(
-            formatMessage({
-              id: 'odc.ExportDrawer.ExportForm.SelectExportObjects',
-              defaultMessage: '请选择导出对象',
-            }),
-          );
+        try {
+          const values = await form.validateFields();
+          if (!values) {
+            return;
+          }
+          if (
+            !values.exportDbObjects?.length &&
+            formType === FormType.ObjSelecter &&
+            !values.exportAllObjects
+          ) {
+            message.warning(
+              formatMessage({
+                id: 'odc.ExportDrawer.ExportForm.SelectExportObjects',
+                defaultMessage: '请选择导出对象',
+              }),
+            );
 
-          callback(true, values);
-          return;
+            callback(true, values);
+            return;
+          }
+          callback(false, values);
+        } catch (errorInfo) {
+          form.scrollToField(errorInfo?.errorFields?.[0]?.name);
         }
-        callback(false, values);
       }
 
       useEffect(() => {

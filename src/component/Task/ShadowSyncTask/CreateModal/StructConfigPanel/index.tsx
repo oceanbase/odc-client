@@ -41,8 +41,12 @@ const StructConfigPanel = forwardRef<any, IProps>(function (
   useImperativeHandle(ref, () => {
     return {
       next: async () => {
-        const values = await form.validateFields();
-        return !!values;
+        try {
+          const values = await form.validateFields();
+          return !!values;
+        } catch (errorInfo) {
+          form.scrollToField(errorInfo?.errorFields?.[0]?.name);
+        }
       },
     };
   });

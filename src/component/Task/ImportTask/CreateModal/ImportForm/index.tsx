@@ -63,22 +63,26 @@ const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
       const isSingleImport = !!modalStore.importModalData?.table;
 
       async function valid(callback: (haveError, values) => void) {
-        const values = await form.validateFields();
-        if (
-          values.importFileName?.find((file) => {
-            console.log(file);
-            return file?.status === 'uploading';
-          })
-        ) {
-          message.warning(
-            formatMessage({
-              id: 'odc.ImportDrawer.ImportForm.FileUploading',
-              defaultMessage: '文件上传中',
-            }), //文件上传中
-          );
-          return;
+        try {
+          const values = await form.validateFields();
+          if (
+            values.importFileName?.find((file) => {
+              console.log(file);
+              return file?.status === 'uploading';
+            })
+          ) {
+            message.warning(
+              formatMessage({
+                id: 'odc.ImportDrawer.ImportForm.FileUploading',
+                defaultMessage: '文件上传中',
+              }), //文件上传中
+            );
+            return;
+          }
+          callback(false, values);
+        } catch (errorInfo) {
+          form.scrollToField(errorInfo?.errorFields?.[0]?.name);
         }
-        callback(false, values);
       }
 
       useEffect(() => {

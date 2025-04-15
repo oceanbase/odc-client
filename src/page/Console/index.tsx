@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useMount, useRequest } from 'ahooks';
 import modal from '@/store/modal';
 import {
@@ -64,12 +64,15 @@ const Console = () => {
   } = useRequest((params: ICycleTaskStatParam) => getScheduleStat(params), {
     manual: true,
   });
-  const res = {};
-  data?.forEach((item) => {
-    const taskStat = sumTaskStats(item.taskStats);
-    const schedule = { ...item, taskStat };
-    res[item?.type] = schedule;
-  });
+  const res = useMemo(() => {
+    const scheduleData = {};
+    data?.forEach((item) => {
+      const taskStat = sumTaskStats(item.taskStats);
+      const schedule = { ...item, taskStat };
+      scheduleData[item?.type] = schedule;
+    });
+    return scheduleData;
+  }, [data]);
 
   useEffect(() => {
     const enable = setting.configurations['odc.user.guidePromptEnabled'];

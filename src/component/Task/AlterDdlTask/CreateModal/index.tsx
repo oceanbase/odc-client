@@ -200,6 +200,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         }
       })
       .catch((errorInfo) => {
+        form.scrollToField(errorInfo?.errorFields?.[0]?.name);
         console.error(JSON.stringify(errorInfo));
       });
   };

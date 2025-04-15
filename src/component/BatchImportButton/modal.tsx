@@ -79,6 +79,7 @@ const BatchImportModal: React.FC<IProps> = (props) => {
         onSubmit(contentFile);
       })
       .catch((errorInfo) => {
+        form.scrollToField(errorInfo?.errorFields?.[0]?.name);
         console.error(JSON.stringify(errorInfo));
       });
   };
