@@ -414,7 +414,7 @@ export class SQLStore {
   }) {
     const sid = generateDatabaseSid(params.dbName, params.sessionId);
     const res = await request.post(
-      `/api/v2/connect/sessions/${sid}/currentDatabase/batchCompilations`,
+      `/api/v2/connect/sessions/${encodeURIComponent(sid)}/currentDatabase/batchCompilations`,
       {
         data: params,
       },
@@ -426,7 +426,7 @@ export class SQLStore {
   public async getBatchCompilePLResult(id: string, sessionId: string, dbName: string) {
     const sid = generateDatabaseSid(dbName, sessionId);
     const res = await request.get(
-      `/api/v2/connect/sessions/${sid}/currentDatabase/batchCompilations/${id}`,
+      `/api/v2/connect/sessions/${encodeURIComponent(sid)}/currentDatabase/batchCompilations/${id}`,
     );
     return res?.data;
   }
@@ -435,7 +435,7 @@ export class SQLStore {
   public async deleteBatchCompilePL(id: string, sessionId: string, dbName: string) {
     const sid = generateDatabaseSid(dbName, sessionId);
     const res = await request.delete(
-      `/api/v2/connect/sessions/${sid}/currentDatabase/batchCompilations/${id}`,
+      `/api/v2/connect/sessions/${encodeURIComponent(sid)}/currentDatabase/batchCompilations/${id}`,
     );
     return res?.data;
   }
