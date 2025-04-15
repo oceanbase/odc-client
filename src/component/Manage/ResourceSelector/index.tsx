@@ -22,12 +22,13 @@ import { Button, Divider, Form, Popover, Select, Space } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
+import odc from '@/plugins/odc';
 
 const { Option } = Select;
 
 export const ALL_SELECTED_ID = 'ALL';
 export const ALL_I_HAVE_CREATED_ID = 'ALL_I_HAVE_CREATED_ID';
-export const ALL_SELECTED_VALUE = '*';
+export const ALL_SELECTED_VALUE = () => (odc?.createdByMeRolesSupport?.() ? '*' : null);
 export const ALL_I_HAVE_CREATED_VALUE = 'CREATOR';
 
 export const AllOption: IResourceOption = {
@@ -55,7 +56,7 @@ export const isSelectedAllThatIHaveCreated = (id: number | string) => {
 };
 
 export const staticSelectedMap = {
-  [ALL_SELECTED_ID]: ALL_SELECTED_VALUE,
+  [ALL_SELECTED_ID]: ALL_SELECTED_VALUE(),
   [ALL_I_HAVE_CREATED_ID]: ALL_I_HAVE_CREATED_VALUE,
 };
 
@@ -148,9 +149,9 @@ const ResourceItem: React.FC<{
   const disableSelectAll = allSelecteField?.type === type && allSelecteField?.index !== fieldName;
   const disableSelectAllICreated =
     allICreatedSelecteField?.type === type && allICreatedSelecteField?.index !== fieldName;
-  const allFieldOptions = fieldOptions?.length
+  const allFieldOptions = odc?.createdByMeRolesSupport?.()
     ? fieldOptions.concat([AllOption, AllIHaveCreatedOption])
-    : fieldOptions;
+    : fieldOptions.concat([AllOption]);
   const hasEnableKeys = actionOptions.some((item) => item?.enableKeys?.length);
   const enabledActionOptions = !hasEnableKeys
     ? actionOptions
@@ -249,26 +250,27 @@ const ResourceItem: React.FC<{
                 ? (menu) => (
                     <>
                       {menu}
-                      {!!fieldOptions?.length && (
-                        <>
-                          <Divider style={{ margin: '8px 0' }} />
-                          <Button
-                            type="link"
-                            disabled={disableSelectAll}
-                            onClick={handleSelectAllFields}
-                          >
-                            {
-                              !isSelectAll
-                                ? formatMessage({
-                                    id: 'odc.components.ResourceSelector2.All',
-                                    defaultMessage: '全部',
-                                  }) //全部
-                                : formatMessage({
-                                    id: 'odc.components.ResourceSelector2.CancelAll',
-                                    defaultMessage: '取消全部',
-                                  }) //取消全部
-                            }
-                          </Button>
+                      <>
+                        {fieldOptions?.length > 0 && <Divider style={{ margin: '8px 0' }} />}
+                        <Button
+                          type="link"
+                          disabled={disableSelectAll}
+                          onClick={handleSelectAllFields}
+                        >
+                          {
+                            !isSelectAll
+                              ? formatMessage({
+                                  id: 'odc.components.ResourceSelector2.All',
+                                  defaultMessage: '全部',
+                                }) //全部
+                              : formatMessage({
+                                  id: 'odc.components.ResourceSelector2.CancelAll',
+                                  defaultMessage: '取消全部',
+                                }) //取消全部
+                          }
+                        </Button>
+                        {odc?.createdByMeRolesSupport?.() &&
+                        values?.[fieldName]?.resourceType !== IManagerResourceType.role ? (
                           <Button
                             type="link"
                             disabled={disableSelectAllICreated}
@@ -284,8 +286,8 @@ const ResourceItem: React.FC<{
                                   defaultMessage: '取消我创建的',
                                 })}
                           </Button>
-                        </>
-                      )}
+                        ) : null}
+                      </>
                     </>
                   )
                 : null

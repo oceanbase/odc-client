@@ -257,6 +257,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
       onOpenObjectStorage={() => setOpenObjectStorage(true)}
       onOpenDatabaseAdmin={() => {
         setChangeOwnerModalVisible(true);
+        setDatabase(null);
       }}
     />
   );
