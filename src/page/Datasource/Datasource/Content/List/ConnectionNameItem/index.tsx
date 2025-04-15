@@ -69,7 +69,7 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
           >
             <Icon
               style={{ color: DBIcon.color }}
-              component={DBIcon.component}
+              component={DBIcon?.component}
               className={styles.activeStatus}
             />
           </Tooltip>
@@ -112,7 +112,7 @@ const ConnectionName: React.FC<IProps> = function ({ connection, openNewConnecti
         return (
           <Tooltip title={status?.errorMessage} placement="top">
             <Icon
-              component={DBIcon.component}
+              component={DBIcon?.component}
               style={{ filter: 'grayscale(1)' }}
               className={styles.activeStatus}
             />
