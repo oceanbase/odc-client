@@ -44,6 +44,7 @@ class BaseInfoForm extends Component<IProps> {
         this.props.onSave(Step.BASEINFO, values);
       })
       .catch((errorInfo) => {
+        this?.formRef?.current?.scrollToField(errorInfo?.errorFields?.[0]?.name);
         throw new Error(errorInfo);
       });
   };

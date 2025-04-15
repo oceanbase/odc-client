@@ -212,6 +212,8 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                     openTasksPage(TaskPageType.DATAMOCK, TaskPageScope.CREATED_BY_CURRENT_USER);
                   }
                 } catch (e) {
+                  formRef?.current?.scrollToField(e?.errorFields?.[0]?.name);
+
                   console.log(e);
                 }
               }}

@@ -98,69 +98,73 @@ const SelectPanel = forwardRef<any, IProps>(function (
     () => {
       return {
         next: async () => {
-          const values = await form.validateFields();
-          if (!values) {
-            return;
-          }
-          let originTableNames = Array.from(data.originTableNames);
-          if (values.syncAll) {
-            /**
-             * 同步全部的情况下，需要再更新一次表获取最新的全量数据
-             */
-            const tables = await updateTables();
-            originTableNames = tables?.map((table) => table.tableName);
-          }
-          if (!originTableNames?.length) {
-            message.warning(
-              formatMessage({
-                id: 'odc.CreateShadowSyncModal.SelectPanel.SelectASynchronizationObject',
-                defaultMessage: '请选择同步对象',
-              }),
-
-              //请选择同步对象
-            );
-            return;
-          }
-          const destTableNames = originTableNames?.map((name) => {
-            return values.prefix ? `${values.name}${name}` : `${name}${values.name}`;
-          });
-          const taskId = await startShadowSyncAnalysis(
-            databaseId,
-            connectionId,
-            originTableNames,
-            destTableNames,
-          );
-
-          if (!taskId) {
-            return;
-          }
-          return new Promise((resolve) => {
-            async function getResult() {
-              const result = await getShadowSyncAnalysisResult(taskId);
-              if (!result || unmountedRef.current) {
-                resolve(false);
-                return;
-              }
-              if (!result.completed) {
-                loopRef.current = setTimeout(() => {
-                  getResult();
-                }, 3000);
-              } else {
-                if (selectDestTableNames.length) {
-                  setSelectDestTableNames([]);
-                }
-                setData({
-                  ...data,
-                  originTableNames: new Set([]),
-                  shadowAnalysisData: result,
-                });
-
-                resolve(true);
-                return;
-              }
+          try {
+            const values = await form.validateFields();
+            if (!values) {
+              return;
             }
-            getResult();
-          });
+            let originTableNames = Array.from(data.originTableNames);
+            if (values.syncAll) {
+              /**
+               * 同步全部的情况下，需要再更新一次表获取最新的全量数据
+               */
+              const tables = await updateTables();
+              originTableNames = tables?.map((table) => table.tableName);
+            }
+            if (!originTableNames?.length) {
+              message.warning(
+                formatMessage({
+                  id: 'odc.CreateShadowSyncModal.SelectPanel.SelectASynchronizationObject',
+                  defaultMessage: '请选择同步对象',
+                }),
+
+                //请选择同步对象
+              );
+              return;
+            }
+            const destTableNames = originTableNames?.map((name) => {
+              return values.prefix ? `${values.name}${name}` : `${name}${values.name}`;
+            });
+            const taskId = await startShadowSyncAnalysis(
+              databaseId,
+              connectionId,
+              originTableNames,
+              destTableNames,
+            );
+
+            if (!taskId) {
+              return;
+            }
+            return new Promise((resolve) => {
+              async function getResult() {
+                const result = await getShadowSyncAnalysisResult(taskId);
+                if (!result || unmountedRef.current) {
+                  resolve(false);
+                  return;
+                }
+                if (!result.completed) {
+                  loopRef.current = setTimeout(() => {
+                    getResult();
+                  }, 3000);
+                } else {
+                  if (selectDestTableNames.length) {
+                    setSelectDestTableNames([]);
+                  }
+                  setData({
+                    ...data,
+                    originTableNames: new Set([]),
+                    shadowAnalysisData: result,
+                  });
+
+                  resolve(true);
+                  return;
+                }
+              }
+              getResult();
+            });
+          } catch (errorInfo) {
+            form.scrollToField(errorInfo?.errorFields?.[0]?.name);
+          }
         },
       };
     },

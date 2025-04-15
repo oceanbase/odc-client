@@ -29,13 +29,8 @@ const DescriptionInput = () => {
       name="description"
       rules={[
         {
-          validator: (_, value) => {
-            if (!value)
-              return Promise.reject(
-                setting.spaceConfigurations['odc.task.default.taskDescriptionPrompt'],
-              );
-            return Promise.resolve();
-          },
+          required: true,
+          message: setting.spaceConfigurations['odc.task.default.taskDescriptionPrompt'],
         },
         {
           max: 200,

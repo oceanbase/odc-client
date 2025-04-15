@@ -66,6 +66,7 @@ class AdvancedInfoForm extends Component<IProps, IState> {
         this.props.onSave(Step.ADVANCED, values);
       })
       .catch((errorInfo) => {
+        this?.formRef?.current?.scrollToField(errorInfo?.errorFields?.[0]?.name);
         throw new Error(errorInfo);
       });
   };

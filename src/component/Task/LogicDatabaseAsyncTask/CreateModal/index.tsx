@@ -195,6 +195,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         openTasksPage(TaskPageType.LOGICAL_DATABASE_CHANGE, TaskPageScope.CREATED_BY_CURRENT_USER);
       })
       .catch((errorInfo) => {
+        form.scrollToField(errorInfo?.errorFields?.[0]?.name);
         console.error(JSON.stringify(errorInfo));
       });
   };
