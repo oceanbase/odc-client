@@ -110,7 +110,9 @@ export interface IScannResult {
 
 export async function getScanningResults(projectId: number, taskId: string): Promise<IScannResult> {
   const ret = await request.get(
-    `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/getScanningResults?taskId=${taskId}`,
+    `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/getScanningResults?taskId=${encodeURIComponent(
+      taskId,
+    )}`,
   );
   return ret?.data;
 }
