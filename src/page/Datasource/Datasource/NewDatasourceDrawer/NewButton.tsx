@@ -124,7 +124,7 @@ const NewDatasourceButton: React.FC<{
       connectTypes.forEach((item) => {
         if (getDataSourceGroupByConnectType(item) === at.key) {
           at.children.push({
-            label: ConnectTypeText[item],
+            label: ConnectTypeText(item),
             key: item,
             icon: (
               <Icon

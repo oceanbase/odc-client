@@ -25,11 +25,12 @@ interface IProps extends ButtonProps {
   label: React.ReactNode;
   projectId?: number;
   modalStore?: ModalStore;
+  buttontype?: 'primary' | 'text' | 'link' | 'default' | 'dashed';
 }
 
 const ApplyDatabasePermissionButton: React.FC<IProps> = inject('modalStore')(
   observer((props) => {
-    const { label, projectId, modalStore, ...rest } = props;
+    const { label, projectId, modalStore, buttontype = 'primary', ...rest } = props;
 
     const handleApplyDatabasePermission = () => {
       modalStore.changeApplyDatabasePermissionModal(true);
@@ -37,7 +38,12 @@ const ApplyDatabasePermissionButton: React.FC<IProps> = inject('modalStore')(
 
     return (
       <>
-        <Button {...rest} onClick={handleApplyDatabasePermission}>
+        <Button
+          {...rest}
+          onClick={handleApplyDatabasePermission}
+          type={buttontype}
+          style={buttontype === 'text' ? { padding: 0 } : {}}
+        >
           <Space size={4}>{label}</Space>
         </Button>
         <ApplyDatabasePermissionCreateModal projectId={projectId} />

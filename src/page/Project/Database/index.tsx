@@ -184,6 +184,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
       projectId={parseInt(id)}
       onOpenLogicialDatabase={() => setOpenLogicialDatabase(true)}
       onOpenObjectStorage={() => setOpenObjectStorage(true)}
+      onOpenDatabaseAdmin={() => {
+        setChangeOwnerModalVisible(true);
+        setDatabase(null);
+      }}
     />
   );
 
@@ -597,8 +601,13 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
       <ChangeOwnerModal
         visible={changeOwnerModalVisible}
         database={database}
+        databaseList={selectedRowKeys?.length ? (selectedRowKeys as number[]) : null}
         close={() => setChangeOwnerModalVisible(false)}
-        onSuccess={() => reload()}
+        onSuccess={() => {
+          reload();
+          setDatabase(null);
+        }}
+        projectId={project?.id}
       />
 
       <CreateLogicialDatabase

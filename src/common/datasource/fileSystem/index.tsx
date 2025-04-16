@@ -1,7 +1,9 @@
 import { ConnectType, TaskType } from '@/d.ts';
 import { IDataSourceModeConfig } from '../interface';
+import { haveOCP } from '@/util/env';
 
 const CloudStorageConfig: IDataSourceModeConfig = {
+  isFileSystem: true,
   connection: {
     address: {
       items: ['ip'],
@@ -42,5 +44,4 @@ const HUAWEI: Record<ConnectType.OBS, IDataSourceModeConfig> = {
 const QCLOUD: Record<ConnectType.COS, IDataSourceModeConfig> = {
   [ConnectType.COS]: CloudStorageConfig,
 };
-
 export default { ALIYUN, AWSS3, HUAWEI, QCLOUD };

@@ -106,11 +106,5 @@ config.headScripts = [
   `window.currentEnv=window.currentEnv || '${process.env.CURRENT_ENV || ''}'`,
   `window.publicPath=window.publicPath || '${publicPath}'`,
 ];
-if (process.env.CURRENT_ENV === 'obcloud') {
-  config.headScripts.push(
-    `window.ODCApiHost='${config.proxy['/api/'].target}'`,
-  );
-} else {
-  config.headScripts.push(`window.ODCApiHost= window.ODCApiHost || ''`);
-}
+config.headScripts.push(`window.ODCApiHost= window.ODCApiHost || ''`);
 export default config;

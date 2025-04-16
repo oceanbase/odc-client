@@ -949,17 +949,17 @@ export function getEventFilterAndOptions(eventMeta: IAuditEvent[]) {
       const children =
         metas[type]?.map((value) => {
           return {
-            title: AuditEventActionMap[value],
+            title: eventMeta?.find((i) => i.action === value)?.actionName,
             key: value,
             value,
           };
         }) ?? [];
       filter.push({
-        text: AuditEventMetaMap[type],
+        text: eventMeta?.find((i) => i.type === type)?.typeName,
         value: type,
       });
       return {
-        title: AuditEventMetaMap[type],
+        title: eventMeta?.find((i) => i.type === type)?.typeName,
         key: type,
         value: type,
         children: children,

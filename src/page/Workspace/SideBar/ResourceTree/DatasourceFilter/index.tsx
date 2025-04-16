@@ -94,7 +94,7 @@ const DatasourceFilter: React.FC<IProps> = function ({
               <CheckboxTag
                 value={types}
                 options={[].concat(getAllConnectTypes()).map((v) => ({
-                  label: ConnectTypeText[v],
+                  label: ConnectTypeText(v),
                   value: v,
                 }))}
                 onChange={(v) => {

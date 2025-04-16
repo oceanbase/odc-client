@@ -196,7 +196,7 @@ const ConnectionPopover: React.FC<{
                 id: 'src.component.ConnectionPopover.8E155F86',
                 defaultMessage: '类型: {ConnectTypeTextDatabaseConnectType}',
               },
-              { ConnectTypeTextDatabaseConnectType: ConnectTypeText[database?.connectType] },
+              { ConnectTypeTextDatabaseConnectType: ConnectTypeText(database?.connectType) },
             )}
           </div>
           {showRemark && databaseRemarkDescription}
@@ -264,7 +264,7 @@ const ConnectionPopover: React.FC<{
               defaultMessage: '类型：{ConnectTypeTextType}',
             },
 
-            { ConnectTypeTextType: ConnectTypeText[type] },
+            { ConnectTypeTextType: ConnectTypeText(type) },
           )
 
           /*类型：{ConnectTypeTextType}*/

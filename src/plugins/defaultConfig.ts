@@ -19,6 +19,7 @@ import type { IManagerUser } from '@/d.ts';
 export default {
   login: {
     menu: true,
+    setFirstOraganizationToDefault: true,
   },
   locale: {
     menu: true,
@@ -38,7 +39,7 @@ export default {
       create: true,
       resetPwd: true,
       delete: true,
-      isAdmin: (user: IManagerUser) => {
+      isAdmin: (user: Pick<IManagerUser, 'builtIn' | 'accountName'>) => {
         return user?.builtIn && user?.accountName === 'admin';
       },
       tabInVisible: (setting) => {
@@ -72,5 +73,10 @@ export default {
   workspace: {
     preMount() {},
     unMount() {},
+  },
+  network: {
+    baseUrl() {
+      return window.ODCApiHost || '';
+    },
   },
 };

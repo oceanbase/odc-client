@@ -166,7 +166,7 @@ const getTreeData = (validTableList: IDataBaseWithTable[], isSourceTree = false)
 
     function treeChildrenHelper(objectList: TableItemInDB[], objectType: DbObjectType) {
       return {
-        title: DbObjectTypeTextMap[objectType],
+        title: DbObjectTypeTextMap(objectType),
         key: `${id}-${objectType}`,
         selectable: false,
         disabled: hasGetTableList && objectList?.length === 0,

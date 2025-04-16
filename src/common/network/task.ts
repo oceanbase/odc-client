@@ -54,6 +54,7 @@ import request from '@/util/request';
 import { downloadFile } from '@/util/utils';
 import { generateFunctionSid } from './pathUtil';
 import { IDatabase } from '@/d.ts/database';
+import odc from '@/plugins/odc';
 
 /**
  * 根据函数获取ddl sql
@@ -419,7 +420,7 @@ export async function downloadTaskFlow(id: number, fileName?: string) {
     return;
   }
   downloadFile(
-    window.ODCApiHost +
+    odc.appConfig.network?.baseUrl?.() +
       `/api/v2/flow/flowInstances/${id}/tasks/download` +
       (fileName ? `?fileName=${fileName}` : ''),
   );
@@ -444,7 +445,7 @@ export async function postTaskFile(data: {
 }
 
 export function getAsyncTaskUploadUrl() {
-  return window.ODCApiHost + '/api/v2/objectstorage/async/files/batchUpload';
+  return odc.appConfig.network?.baseUrl?.() + '/api/v2/objectstorage/async/files/batchUpload';
 }
 
 /**

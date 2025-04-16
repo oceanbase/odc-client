@@ -328,7 +328,7 @@ const databaseSettings: IODCSetting[] = [
             DragInsertType.DELETE,
           ].map((item) => {
             return {
-              label: DragInsertTypeText[item],
+              label: DragInsertTypeText()[item],
               value: item,
             };
           })}

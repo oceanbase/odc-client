@@ -45,6 +45,7 @@ export interface IUser {
   id: number;
   accountName: string;
   name: string;
+  builtIn: boolean;
   password: string;
   role: string;
   enabled: boolean;
@@ -56,7 +57,7 @@ export interface IUser {
 }
 
 export interface IPermission {
-  resourceId: number;
+  resourceId: number | string;
   resourceType: string;
   actions: string[];
 }
@@ -219,6 +220,7 @@ export interface IManagerUser {
   password: string;
   builtIn: boolean; // 是否是内置用户
   roleIds: number[];
+  roles?: IManagerRole[];
   enabled: boolean;
   description: string;
   creatorName: string;
@@ -700,7 +702,9 @@ export enum AuditEventResult {
 export interface IAudit {
   id: number;
   type: AuditEventType;
+  typeName: string;
   action: AuditEventActionType;
+  actionName: string;
   connectionId: number;
   connectionName: string;
   connectionHost: string;
@@ -725,7 +729,9 @@ export interface IAuditEvent {
   id: number;
   methodSignature: string;
   type: AuditEventType;
+  typeName: string;
   action: AuditEventActionType;
+  actionName: string;
   sidExtractExpression: string;
   inConnection: boolean;
   enabled: boolean;
