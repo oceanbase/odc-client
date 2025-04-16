@@ -72,7 +72,7 @@ const Script: React.FC<{}> = function () {
             'Accept-Language': getLocale(),
             currentOrganizationId: login.organizationId?.toString(),
           }}
-          action={odc.appConfig.network.baseUrl() + `/api/v2/script/scripts/batchUpload`}
+          action={odc.appConfig.network?.baseUrl?.() + `/api/v2/script/scripts/batchUpload`}
           accept=".sql, .pl, .txt"
           fileList={uploadFiles}
           onChange={(info) => {

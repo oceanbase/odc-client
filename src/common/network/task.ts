@@ -395,7 +395,7 @@ export async function downloadTaskFlow(id: number, fileName?: string) {
     return;
   }
   downloadFile(
-    odc.appConfig.network.baseUrl() +
+    odc.appConfig.network?.baseUrl?.() +
       `/api/v2/flow/flowInstances/${id}/tasks/download` +
       (fileName ? `?fileName=${fileName}` : ''),
   );
@@ -420,7 +420,7 @@ export async function postTaskFile(data: {
 }
 
 export function getAsyncTaskUploadUrl() {
-  return odc.appConfig.network.baseUrl() + '/api/v2/objectstorage/async/files/batchUpload';
+  return odc.appConfig.network?.baseUrl?.() + '/api/v2/objectstorage/async/files/batchUpload';
 }
 
 /**
