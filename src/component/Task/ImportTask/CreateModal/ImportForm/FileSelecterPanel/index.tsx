@@ -17,7 +17,7 @@
 import { getImportUploadUrl } from '@/common/network';
 import ODCDragger from '@/component/OSSDragger';
 import { DbObjsIcon } from '@/constant';
-import { ImportFormData, IMPORT_CONTENT, IMPORT_ENCODING, IMPORT_TYPE } from '@/d.ts';
+import { ImportFormData, IMPORT_CONTENT, IMPORT_ENCODING, IMPORT_TYPE, DbObjectType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import Icon from '@ant-design/icons';
@@ -399,7 +399,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
                 icon = <Icon component={ObjIcon} />;
               }
               return {
-                title: DbObjectTypeTextMap[dataType] + `(${list?.length})`,
+                title: DbObjectTypeTextMap(dataType as DbObjectType) + `(${list?.length})`,
                 key: dataType,
                 icon,
                 children: list?.map((name) => {

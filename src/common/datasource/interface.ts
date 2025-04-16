@@ -114,6 +114,7 @@ interface IProcedureConfig {
 }
 
 export interface IDataSourceModeConfig {
+  isFileSystem?: boolean;
   priority?: number;
   connection: {
     address?: {

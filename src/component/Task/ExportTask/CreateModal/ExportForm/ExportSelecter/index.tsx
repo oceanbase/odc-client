@@ -189,7 +189,7 @@ const ExportSelecter: React.FC<IProps> = function ({
           })
           .filter(Boolean);
         return {
-          title: DbObjectTypeTextMap[objType] + `(${children?.length})`,
+          title: DbObjectTypeTextMap(objType) + `(${children?.length})`,
           key: objType,
           icon,
           children,
@@ -226,7 +226,7 @@ const ExportSelecter: React.FC<IProps> = function ({
           })
           .filter(Boolean);
         return {
-          title: DbObjectTypeTextMap[objType] + `(${children?.length})`,
+          title: DbObjectTypeTextMap(objType) + `(${children?.length})`,
           key: objType,
           icon,
           children,

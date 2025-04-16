@@ -30,6 +30,7 @@ import dayjs from 'dayjs';
 import { generateDatabaseSid, generateTableSid } from '../pathUtil';
 import { convertServerTableToTable, convertTableToServerTable } from './helper';
 import { getLogicalTableDetail } from '@/common/network/logicalDatabase';
+import odc from '@/plugins/odc';
 export async function getTableColumnList(
   tableName: string,
   databaseName?: string,
@@ -382,7 +383,7 @@ export async function getDataObjectDownloadUrl(
     return donwloadUrl;
   } else {
     return (
-      window.ODCApiHost +
+      odc.appConfig.network?.baseUrl?.() +
       `/api/v2/datasource/sessions/${generateDatabaseSid(
         dbName,
         sessionId,

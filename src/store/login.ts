@@ -254,13 +254,18 @@ export class UserStore {
   }
 
   @action
-  public async switchCurrentOrganization(id?: number) {
+  public async switchCurrentOrganization(
+    id?: number,
+    getDefaultOrganization?: () => Promise<number>,
+    beforeOrganizationSwitch?: () => void,
+  ) {
     await Promise.all([setting.getUserConfig(), setting.getSpaceConfig()]);
-    id = id || this.getDefaultOrganization()?.id;
+    id = id || (await this.getDefaultOrganization(getDefaultOrganization))?.id;
     if (!id) {
       return false;
     }
     this.isSwitchingOrganization = true;
+    beforeOrganizationSwitch?.();
     this.organizationId = id;
     sessionStorage.setItem(sessionKey, id?.toString());
     this.isUserFetched = false;
@@ -269,8 +274,11 @@ export class UserStore {
     return isSuccess;
   }
 
-  public getDefaultOrganization() {
-    const sessionOrganizationId = parseInt(sessionStorage.getItem(sessionKey));
+  public async getDefaultOrganization(getDefaultOrganization?: () => Promise<number>) {
+    let sessionOrganizationId = parseInt(sessionStorage.getItem(sessionKey));
+    if (!sessionOrganizationId && getDefaultOrganization) {
+      sessionOrganizationId = await getDefaultOrganization();
+    }
     const sessionOrganization = this.organizations?.find(
       (item) => item.id === sessionOrganizationId,
     );

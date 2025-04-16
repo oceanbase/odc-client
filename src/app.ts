@@ -29,6 +29,7 @@ import { initIntl } from './util/intl';
 import { initSentry } from './util/sentry';
 import { ConfigProvider } from 'antd';
 import { theme } from './layout/antdTheme';
+import { initDatasource } from './common/datasource';
 dayjs.extend(utc);
 dayjs.extend(duration);
 if (isClient()) {
@@ -69,9 +70,10 @@ export async function render(oldRender: () => void) {
   ConfigProvider.config({
     theme: theme,
   });
-  await initIntl();
   registerPlugins();
+  await initIntl();
   await initMetaStore();
+  await initDatasource();
   oldRender();
 }
 

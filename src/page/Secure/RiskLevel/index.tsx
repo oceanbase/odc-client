@@ -31,7 +31,7 @@ function genRiskLevel(riskLevel: IRiskLevel): {
   origin: IRiskLevel;
 } {
   return {
-    label: RiskLevelMap[riskLevel?.level],
+    label: RiskLevelMap(riskLevel?.level),
     value: riskLevel?.level,
     origin: riskLevel,
   };

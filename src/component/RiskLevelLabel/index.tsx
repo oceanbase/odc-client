@@ -79,7 +79,7 @@ const RiskLevelLabel: React.FC<{
         }}
         color={''}
       >
-        {level !== -1 ? RiskLevelMap[level] : content}
+        {level !== -1 ? RiskLevelMap(level) : content}
         {extra}
       </Tag>
     </div>
@@ -106,7 +106,7 @@ export const ODCRiskLevelLabel: React.FC<{
         <div>
           <RenderIconByRiskLevel level={level} />
         </div>
-        {levelMap && level !== -1 && RiskLevelMap[level]}
+        {levelMap && level !== -1 && RiskLevelMap(Number(level))}
         {content && <div>{content}</div>}
         {extra && <div>{extra}</div>}
       </Space>

@@ -5583,5 +5583,16 @@
   "src.component.Task.DataArchiveTask.CreateModal.5A19F0AB": "Cleanup will be performed immediately without backup by default.",
   "src.component.Task.DataArchiveTask.CreateModal.3D6F0B7D": "Remove temporary tables created during archiving after task completion.",
   "src.component.Task.DataArchiveTask.CreateModal.85B377FF": "Rollback is not available for archived tasks when selected.",
-  "src.component.Task.DataArchiveTask.CreateModal.79D75776": "Target File"
+  "src.component.Task.DataArchiveTask.CreateModal.79D75776": "Target File",
+  "src.page.Project.Database.components.ChangeOwnerModal.99FD4EBF": "Database",
+  "src.page.Project.Database.components.ChangeOwnerModal.E92E5B77": "Please select a database.",
+  "src.page.Project.Database.components.AddDataBaseButton.438E94A5": "Assign Database Admin",
+  "src.page.Project.Database.components.AddDataBaseButton.85804FB2": "Batch operation",
+  "src.component.OrganizationSelectModal.EDDC445E": "Please select a default space first.",
+  "src.component.OrganizationSelectModal.21D23DE2": "After making a selection, you can also switch in the left navigation.",
+  "src.component.OrganizationSelectModal.F08D9948": "OK",
+  "src.component.Manage.ResourceSelector.87EC2FC6": "All",
+  "src.component.Manage.ResourceSelector.DCB7A4BF": "I created",
+  "src.component.Manage.ResourceSelector.8CA96C98": "I created",
+  "src.component.Manage.ResourceSelector.EEEF9C96": "Cancel the one I created."
 }

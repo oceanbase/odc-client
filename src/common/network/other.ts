@@ -15,6 +15,7 @@
  */
 
 import { ISystemConfig, ServerSystemInfo } from '@/d.ts';
+import odc from '@/plugins/odc';
 import request from '@/util/request';
 
 /**
@@ -98,4 +99,5 @@ export const odcServerLoginUrl = '/api/v1/sso-login';
 
 export const odcServerLogoutUrl = '/api/v1/sso-logout';
 
-export const uploadSSLFileUrl = window.ODCApiHost + `/api/v2/objectstorage/ssl/files/batchUpload`;
+export const uploadSSLFileUrl =
+  odc.appConfig.network?.baseUrl?.() + `/api/v2/objectstorage/ssl/files/batchUpload`;

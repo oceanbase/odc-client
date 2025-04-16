@@ -20,6 +20,7 @@ import type { IConnectionType } from '@/d.ts';
 import { haveOCP } from '@/util/env';
 import { action, observable } from 'mobx';
 import React from 'react';
+import login from './login';
 
 export interface ICluster {
   instanceName: string | React.ReactNode;
@@ -29,6 +30,7 @@ export interface ICluster {
   type: 'CLUSTER' | 'MYSQL_TENANT' | 'ORACLE_TENANT' | 'MYSQL_SERVERLESS' | 'ORACLE_SERVERLESS';
   status: 'ONLINE' | 'OTHERS';
 }
+export const ClusterTypeList = ['CLUSTER', 'DEDICATED', 'K8s_DEDICATED', 'UNKNOWN'];
 
 export interface ITenant {
   tenantName: string | React.ReactNode;
@@ -58,12 +60,15 @@ export class ClusterStore {
   @action
   public async loadClusterList(visibleScope?: IConnectionType) {
     if (haveOCP()) {
-      const result = await getOBCloudClusterList();
+      const result = await getOBCloudClusterList(login.organizationId);
       if (result) {
         let newTenantMap = { ...this.tenantListMap };
         this.clusterList = result.map((item) => {
           switch (item.type) {
-            case 'CLUSTER': {
+            case 'CLUSTER':
+            case 'DEDICATED':
+            case 'K8s_DEDICATED':
+            case 'UNKNOWN': {
               newTenantMap[item.id] = item.tenants?.map((tenant) => {
                 return {
                   tenantName: tenant.name,
@@ -78,7 +83,7 @@ export class ClusterStore {
               tenants.push({
                 tenantName: item.name,
                 tenantId: item.id,
-                tenantMode: ['MYSQL_TENANT', 'MYSQL_SERVERLESS'].includes(item.type)
+                tenantMode: !['ORACLE_TENANT', 'ORACLE_SERVERLESS'].includes(item.type)
                   ? 'MySQL'
                   : 'ORACLE',
               });

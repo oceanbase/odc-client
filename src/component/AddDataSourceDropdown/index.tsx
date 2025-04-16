@@ -30,7 +30,7 @@ export default function AddDataSourceDropdown(props: IProps) {
     const result = [];
     obConnectTypes.forEach((t) => {
       result.push({
-        label: ConnectTypeText[t],
+        label: ConnectTypeText(t),
         key: t,
       });
     });
@@ -39,13 +39,13 @@ export default function AddDataSourceDropdown(props: IProps) {
     });
     mysqlConnectTypes.forEach((t) => {
       result.push({
-        label: ConnectTypeText[t],
+        label: ConnectTypeText(t),
         key: t,
       });
     });
     dorisConnectTypes.forEach((t) => {
       result.push({
-        label: ConnectTypeText[t],
+        label: ConnectTypeText(t),
         key: t,
       });
     });

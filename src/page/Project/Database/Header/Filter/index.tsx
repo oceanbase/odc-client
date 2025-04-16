@@ -31,7 +31,7 @@ const Filter: React.FC<IProps> = function ({}) {
   const { connectType, type, environmentId } = context?.filterParams;
   let selectedNames = [];
   connectType?.forEach((c) => {
-    selectedNames.push(ConnectTypeText[c]);
+    selectedNames.push(ConnectTypeText(c));
   });
   type?.forEach((c) => {
     selectedNames.push(DBTypeText[c]);
@@ -98,7 +98,7 @@ const Filter: React.FC<IProps> = function ({}) {
                 value={context?.filterParams?.connectType}
                 options={[]
                   .concat(getAllConnectTypes())
-                  .map((v) => ({ label: ConnectTypeText[v], value: v }))}
+                  .map((v) => ({ label: ConnectTypeText(v), value: v }))}
                 onChange={(v) => {
                   context.setFilterParams({
                     ...context?.filterParams,

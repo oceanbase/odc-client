@@ -25,6 +25,7 @@ import type { UploadFile } from 'antd/lib/upload/interface';
 import Cookies from 'js-cookie';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
+import odc from '@/plugins/odc';
 // 20M
 const MAX_FILE_SIZE = 1024 * 1024 * 20;
 
@@ -159,7 +160,9 @@ const BatchImportModal: React.FC<IProps> = (props) => {
             {description}
             <Button
               type="link"
-              href={(window.ODCApiHost || '') + templatePath + '?lang=' + getLocale()}
+              href={
+                (odc.appConfig.network?.baseUrl?.() || '') + templatePath + '?lang=' + getLocale()
+              }
               download={true}
             >
               {

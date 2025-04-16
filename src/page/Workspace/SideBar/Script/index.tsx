@@ -28,6 +28,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import SideTabs from '../components/SideTabs';
 import ScriptFile from './ScriptFile';
 import Snippet from './Snippet';
+import odc from '@/plugins/odc';
 
 const Script: React.FC<{}> = function () {
   const snippetRef = useRef(null);
@@ -71,7 +72,7 @@ const Script: React.FC<{}> = function () {
             'Accept-Language': getLocale(),
             currentOrganizationId: login.organizationId?.toString(),
           }}
-          action={window.ODCApiHost + `/api/v2/script/scripts/batchUpload`}
+          action={odc.appConfig.network?.baseUrl?.() + `/api/v2/script/scripts/batchUpload`}
           accept=".sql, .pl, .txt"
           fileList={uploadFiles}
           onChange={(info) => {

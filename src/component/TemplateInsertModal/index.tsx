@@ -165,11 +165,19 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
           }}
         >
           <Space direction="vertical">
-            <Radio value={DragInsertType.NAME}>{DragInsertTypeText[DragInsertType.NAME]}</Radio>
-            <Radio value={DragInsertType.SELECT}>{DragInsertTypeText[DragInsertType.SELECT]}</Radio>
-            <Radio value={DragInsertType.INSERT}>{DragInsertTypeText[DragInsertType.INSERT]}</Radio>
-            <Radio value={DragInsertType.UPDATE}>{DragInsertTypeText[DragInsertType.UPDATE]}</Radio>
-            <Radio value={DragInsertType.DELETE}>{DragInsertTypeText[DragInsertType.DELETE]}</Radio>
+            <Radio value={DragInsertType.NAME}>{DragInsertTypeText()[DragInsertType.NAME]}</Radio>
+            <Radio value={DragInsertType.SELECT}>
+              {DragInsertTypeText()[DragInsertType.SELECT]}
+            </Radio>
+            <Radio value={DragInsertType.INSERT}>
+              {DragInsertTypeText()[DragInsertType.INSERT]}
+            </Radio>
+            <Radio value={DragInsertType.UPDATE}>
+              {DragInsertTypeText()[DragInsertType.UPDATE]}
+            </Radio>
+            <Radio value={DragInsertType.DELETE}>
+              {DragInsertTypeText()[DragInsertType.DELETE]}
+            </Radio>
           </Space>
         </Radio.Group>
       </Space>

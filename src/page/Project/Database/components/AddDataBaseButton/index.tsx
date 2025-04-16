@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import { getDataSourceStyleByConnectType, isFileSystemSupport } from '@/common/datasource';
 import { getConnectionDetail, getConnectionList } from '@/common/network/connection';
 import { listDatabases, updateDataBase } from '@/common/network/database';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
@@ -54,6 +54,7 @@ interface IProps {
   onOpenLogicialDatabase: () => void;
   onOpenObjectStorage: () => void;
   disabledMultiDBChanges?: boolean;
+  onOpenDatabaseAdmin?: () => void;
 }
 const AddDataBaseButton: React.FC<IProps> = ({
   projectId,
@@ -64,6 +65,7 @@ const AddDataBaseButton: React.FC<IProps> = ({
   onOpenLogicialDatabase,
   onOpenObjectStorage,
   disabledMultiDBChanges,
+  onOpenDatabaseAdmin,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const { project } = useContext(ProjectContext);
@@ -147,15 +149,76 @@ const AddDataBaseButton: React.FC<IProps> = ({
           },
         ]
       : []),
+    ...(isFileSystemSupport()
+      ? [
+          {
+            label: formatMessage({
+              id: 'src.page.Project.Database.components.AddDataBaseButton.201B0791',
+              defaultMessage: '添加对象存储',
+            }),
+            key: '2',
+            onClick: onOpenObjectStorage,
+          },
+        ]
+      : []),
+  ];
+
+  const batchOperationItems: MenuProps['items'] = [
     {
+      key: 'multiDatabaseChange',
+      disabled: disabledMultiDBChanges,
+      onClick: () => {
+        modalStore?.changeMultiDatabaseChangeModal(true, {
+          projectId,
+          orderedDatabaseIds,
+        });
+        clearSelectedRowKeys?.();
+      },
+      label: (
+        <Tooltip
+          title={
+            disabledMultiDBChanges
+              ? formatMessage({
+                  id: 'src.page.Project.Database.components.AddDataBaseButton.11CC7812',
+                  defaultMessage: '仅支持选择相同类型的数据源的数据库发起多库变更任务',
+                })
+              : null
+          }
+        >
+          {formatMessage({
+            id: 'src.page.Project.Database.AddDataBaseButton.693C4817',
+            defaultMessage: '多库变更',
+          })}
+        </Tooltip>
+      ),
+    },
+    {
+      key: 'applyDatabasePermission',
+      label: (
+        <ApplyDatabasePermissionButton
+          label={
+            formatMessage({
+              id: 'src.page.Project.Database.AddDataBaseButton.B54F6D7D',
+              defaultMessage: '申请库权限',
+            }) /*"申请库权限"*/
+          }
+          projectId={projectId}
+          buttontype="text"
+        />
+      ),
+    },
+    {
+      key: 'setDatabaseAdmin',
+      onClick: () => {
+        onOpenDatabaseAdmin?.();
+      },
       label: formatMessage({
-        id: 'src.page.Project.Database.components.AddDataBaseButton.201B0791',
-        defaultMessage: '添加对象存储',
+        id: 'src.page.Project.Database.components.AddDataBaseButton.438E94A5',
+        defaultMessage: '设置库管理员',
       }),
-      key: '2',
-      onClick: onOpenObjectStorage,
     },
   ];
+
   return (
     <>
       <Space size={12}>
@@ -182,41 +245,16 @@ const AddDataBaseButton: React.FC<IProps> = ({
             })}
           </Dropdown.Button>
         </TooltipAction>
-        <Tooltip
-          title={
-            disabledMultiDBChanges
-              ? formatMessage({
-                  id: 'src.page.Project.Database.components.AddDataBaseButton.11CC7812',
-                  defaultMessage: '仅支持选择相同类型的数据源的数据库发起多库变更任务',
-                })
-              : null
-          }
-        >
-          <Button
-            disabled={disabledMultiDBChanges}
-            onClick={() => {
-              modalStore?.changeMultiDatabaseChangeModal(true, {
-                projectId,
-                orderedDatabaseIds,
-              });
-              clearSelectedRowKeys?.();
-            }}
-          >
+        <Dropdown menu={{ items: batchOperationItems }} placement="bottomLeft">
+          <Button>
             {formatMessage({
-              id: 'src.page.Project.Database.AddDataBaseButton.693C4817',
-              defaultMessage: '多库变更',
+              id: 'src.page.Project.Database.components.AddDataBaseButton.85804FB2',
+              defaultMessage: '批量操作',
             })}
+
+            <DownOutlined />
           </Button>
-        </Tooltip>
-        <ApplyDatabasePermissionButton
-          label={
-            formatMessage({
-              id: 'src.page.Project.Database.AddDataBaseButton.B54F6D7D',
-              defaultMessage: '申请库权限',
-            }) /*"申请库权限"*/
-          }
-          projectId={projectId}
-        />
+        </Dropdown>
       </Space>
       <Modal
         open={open}

@@ -371,7 +371,7 @@ const UserDetailContent: React.FC<{
     <DetailContent
       data={{ ...data }}
       disabledOp={disabledOp}
-      roles={roles}
+      roles={data?.roles}
       handleCloseAndReload={handleCloseAndReload}
     />
   );

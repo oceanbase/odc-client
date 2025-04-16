@@ -52,6 +52,7 @@ import { inject, observer } from 'mobx-react';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { LDAPPartForm, OAUTH2PartForm, OIDCPartForm, SAMLPartForm } from './PartForm';
 import SAMLModalConfirm from './SAMLModalConfirm';
+import odc from '@/plugins/odc';
 
 export const requiredRule = {
   required: true,
@@ -410,9 +411,11 @@ export default inject('userStore')(
           case ISSOType.SAML:
             form.setFieldsValue({
               ssoParameter: {
-                acsLocation: `${window.ODCApiHost || location.origin}/login/saml2/sso/${id}`,
+                acsLocation: `${
+                  odc.appConfig.network?.baseUrl?.() || location.origin
+                }/login/saml2/sso/${id}`,
                 acsEntityId: `${
-                  window.ODCApiHost || location.origin
+                  odc.appConfig.network?.baseUrl?.() || location.origin
                 }/saml2/service-provider-metadata/${id}`,
               },
             });
@@ -423,10 +426,21 @@ export default inject('userStore')(
                 }/saml2/service-provider-metadata/${userStore?.organizationId}-test`,
               },
             });
+            if (showExtraConfigForSAML) {
+              form.setFieldsValue({
+                ssoParameter: {
+                  providerEntityId: `${
+                    odc.appConfig.network?.baseUrl?.() || location.origin
+                  }/saml2/service-provider-metadata/${id}`,
+                },
+              });
+            }
           default:
             form.setFieldsValue({
               ssoParameter: {
-                redirectUrl: `${window.ODCApiHost || location.origin}/login/oauth2/code/${id}`,
+                redirectUrl: `${
+                  odc.appConfig.network?.baseUrl?.() || location.origin
+                }/login/oauth2/code/${id}`,
               },
             });
         }
@@ -458,9 +472,9 @@ export default inject('userStore')(
           return <OIDCPartForm isEdit={isEdit} />;
         }
       };
-      const redirectUrl = `${window.ODCApiHost || location.origin}/login/oauth2/code/${
-        userStore?.organizationId
-      }-test`;
+      const redirectUrl = `${
+        odc.appConfig.network?.baseUrl?.() || location.origin
+      }/login/oauth2/code/${userStore?.organizationId}-test`;
 
       const updateSAMLCheckBoxConfig = async (type: SAMLType, checked: boolean, value?: string) => {
         if (checked) {
