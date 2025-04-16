@@ -142,7 +142,7 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
 
     let url = new URL(
       `/api/v1/webSocket/obclient/${generateSessionSid(session?.sessionId)}`,
-      odc.appConfig.network.baseUrl() || window.location.href,
+      odc.appConfig.network?.baseUrl?.() || window.location.href,
     );
     url.protocol = url.protocol.replace('http', 'ws');
     console.log(url);

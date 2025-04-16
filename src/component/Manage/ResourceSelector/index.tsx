@@ -269,7 +269,8 @@ const ResourceItem: React.FC<{
                                 }) //取消全部
                           }
                         </Button>
-                        {odc?.createdByMeRolesSupport?.() ? (
+                        {odc?.createdByMeRolesSupport?.() &&
+                        values?.[fieldName]?.resourceType !== IManagerResourceType.role ? (
                           <Button
                             type="link"
                             disabled={disableSelectAllICreated}
