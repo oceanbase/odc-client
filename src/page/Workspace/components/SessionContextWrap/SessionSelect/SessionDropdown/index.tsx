@@ -213,7 +213,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
         searchValue.type === SearchType.CLUSTER ? searchValue.value : null,
         searchValue.type === SearchType.TENANT ? searchValue.value : null,
       );
-      if (!context.datasourceMode) {
+      if (!context.datasourceMode && !checkModeConfig && !userStore.isPrivateSpace()) {
         runGetDatabasesHistories({
           currentOrganizationId: userStore.organizationId,
           limit: 10,
@@ -553,7 +553,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
           <Spin spinning={loading || fetchLoading || databaseHistoryLoading}>
             <div className={styles.main}>
               <div className={styles.header} style={{ width: width || DEFALT_WIDTH }}>
-                {!context.datasourceMode && !checkModeConfig && (
+                {!context.datasourceMode && !checkModeConfig && !userStore.isPrivateSpace() && (
                   <DatabaseSelectTab tab={tab} setTab={setTab} />
                 )}
                 {tab === TabsType.all && (
