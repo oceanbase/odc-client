@@ -131,7 +131,7 @@ const WindowManager: React.FC<IProps> = function (props) {
   };
 
   function getPageTitle(page: IPage): ReactNode {
-    const iconColor = page?.params?.isDisabled ? '#bfbfbf' : pageMap[page.type].color;
+    const iconColor = page?.params?.isDisabled ? '#bfbfbf' : pageMap[page.type]?.color;
     const isDocked = page.params.isDocked;
     const pageTitle = getPageTitleText(page);
     const isPageProcessing = props.sqlStore.runningPageKey.has(page.key);
@@ -293,7 +293,7 @@ const WindowManager: React.FC<IProps> = function (props) {
               className={styles.icon}
               style={{
                 display: 'flex',
-                color: `${pageMap[page.type].color}`,
+                color: `${pageMap[page.type]?.color}`,
                 lineHeight: 1,
                 fontSize: 14,
               }}

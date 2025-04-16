@@ -274,7 +274,7 @@ export const getMapIdByDB = <T extends DatabaseGroup>(db: IDatabase, type: T): G
     }
     case DatabaseGroup.connectType: {
       mapId = connectType;
-      groupName = ConnectTypeText[connectType];
+      groupName = ConnectTypeText(connectType);
       break;
     }
     case DatabaseGroup.cluster: {
@@ -315,7 +315,7 @@ export const getMapIdByDataSource = <T extends DatabaseGroup>(
     }
     case DatabaseGroup.connectType: {
       mapId = type;
-      groupName = ConnectTypeText[type];
+      groupName = ConnectTypeText(type);
       break;
     }
     case DatabaseGroup.cluster: {
