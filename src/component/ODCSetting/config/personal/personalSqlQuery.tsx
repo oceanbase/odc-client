@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { IODCSetting, ODCSettingGroup } from '../../config';
+import InputIntergerItem from '../../Item/InputIntegerItem';
 import InputItem from '../../Item/InputItem';
 import { validForqueryLimit, validForqueryQueryNumber } from '../../validators';
 
@@ -38,7 +39,7 @@ const personalSqlQuerySetting: IODCSetting[] = [
       },
     ],
     render: (value, onChange) => {
-      return <InputItem value={value} onChange={onChange} />;
+      return <InputIntergerItem value={value} onChange={onChange} />;
     },
   },
   {
@@ -55,7 +56,7 @@ const personalSqlQuerySetting: IODCSetting[] = [
       },
     ],
     render: (value, onChange) => {
-      return <InputItem value={value} onChange={onChange} />;
+      return <InputIntergerItem value={value} onChange={onChange} />;
     },
   },
 ];

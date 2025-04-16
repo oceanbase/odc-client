@@ -218,7 +218,6 @@ const CreateModal: React.FC<IProps> = (props) => {
           tableName: null,
           fileFormat: EXPORT_TYPE.CSV,
           fileEncoding: IMPORT_ENCODING.UTF8,
-          maxRows: setting.spaceConfigurations['odc.sqlexecute.default.queryLimit'],
           csvFormat: {
             isContainColumnHeader: true,
             isTransferEmptyString: true,
@@ -301,6 +300,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           <InputBigNumber
             isInt
             min="1"
+            defaultValue={setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')}
             style={{
               width: 200,
             }}

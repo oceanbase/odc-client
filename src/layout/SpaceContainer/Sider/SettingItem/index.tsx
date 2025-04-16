@@ -29,8 +29,8 @@ const SettingItem: React.FC<IProps> = function ({ collapsed }) {
   return (
     <>
       <MenuItem
-        onClick={() => {
-          modal.changeOdcSettingVisible(true);
+        onClick={async () => {
+          await modal.changeOdcSettingVisible(true);
         }}
         icon={SettingOutlined}
         collapsed={collapsed}

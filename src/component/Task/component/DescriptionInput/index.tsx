@@ -30,7 +30,7 @@ const DescriptionInput = () => {
       rules={[
         {
           required: true,
-          message: setting.spaceConfigurations['odc.task.default.taskDescriptionPrompt'],
+          message: setting.getSpaceConfigByKey('odc.task.default.taskDescriptionPrompt'),
         },
         {
           max: 200,
@@ -43,7 +43,7 @@ const DescriptionInput = () => {
     >
       <Input.TextArea
         rows={6}
-        placeholder={setting.spaceConfigurations['odc.task.default.taskDescriptionPrompt']}
+        placeholder={setting.getSpaceConfigByKey('odc.task.default.taskDescriptionPrompt')}
       />
     </Form.Item>
   );
