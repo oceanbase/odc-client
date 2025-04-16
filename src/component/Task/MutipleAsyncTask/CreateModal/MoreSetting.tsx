@@ -55,7 +55,6 @@ const MoreSetting = () => {
               id: 'src.component.Task.MutipleAsyncTask.CreateModal.34D62304',
               defaultMessage: '查询结果限制',
             })}
-            initialValue={setting.spaceConfigurations['odc.sqlexecute.default.queryLimit']}
             required
             rules={[
               {
@@ -67,7 +66,12 @@ const MoreSetting = () => {
               },
             ]}
           >
-            <InputNumber style={{ width: 128 }} min={1} max={10000 * 100} />
+            <InputNumber
+              defaultValue={setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')}
+              style={{ width: 128 }}
+              min={1}
+              max={10000 * 100}
+            />
           </Form.Item>
           <Form.Item
             label={formatMessage({

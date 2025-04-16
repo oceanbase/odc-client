@@ -736,3 +736,15 @@ export function groupBySessionId(filteredRows) {
 
   return cleanedSessions;
 }
+
+export function withSpaceConfig(action: (isShow: boolean, ...args: any[]) => void) {
+  return function (isShow: boolean = true, ...args: any[]) {
+    if (isShow) {
+      setting.getSpaceConfig().then(() => {
+        action.call(this, isShow, ...args);
+      });
+    } else {
+      action.call(this, isShow, ...args);
+    }
+  };
+}

@@ -39,6 +39,7 @@ import { IUnauthorizedDBResources, TablePermissionType } from '@/d.ts/table';
 import tracert from '@/util/tracert';
 import { action, observable } from 'mobx';
 import setting from './setting';
+import { withSpaceConfig } from '@/util/utils';
 
 interface ConnectionData {
   data: any;
@@ -507,13 +508,12 @@ export class ModalStore {
   }
 
   @action
-  public changeExportModal(isShow: boolean = true, modalData?: IExportModalData) {
-    if (isShow) {
-      setting.getSpaceConfig();
-    }
-    this.exportModalVisible = isShow;
-    this.exportModalData = isShow ? modalData : null;
-  }
+  public changeExportModal = withSpaceConfig(
+    (isShow: boolean = true, modalData?: IExportModalData) => {
+      this.exportModalVisible = isShow;
+      this.exportModalData = isShow ? modalData : null;
+    },
+  );
 
   @action
   public changeAllModal(isShow: boolean = true) {
@@ -521,13 +521,12 @@ export class ModalStore {
   }
 
   @action
-  public changeImportModal(isShow: boolean = true, modalData?: IImportModalData) {
-    if (isShow) {
-      setting.getSpaceConfig();
-    }
-    this.importModalVisible = isShow;
-    this.importModalData = isShow ? modalData : null;
-  }
+  public changeImportModal = withSpaceConfig(
+    (isShow: boolean = true, modalData?: IImportModalData) => {
+      this.importModalVisible = isShow;
+      this.importModalData = isShow ? modalData : null;
+    },
+  );
 
   @action
   public changeAddConnectionModal(isShow: boolean = true, modalData?: ConnectionData) {
@@ -536,23 +535,22 @@ export class ModalStore {
   }
 
   @action
-  public changeDataMockerModal(isShow: boolean = true, modalData?: DataMockerData) {
-    isShow && tracert.expo('c114250');
-    if (isShow) {
-      setting.getSpaceConfig();
-    }
-    this.dataMockerVisible = isShow;
-    this.dataMockerData = isShow ? modalData : null;
-  }
+  public changeDataMockerModal = withSpaceConfig(
+    (isShow: boolean = true, modalData?: DataMockerData) => {
+      isShow && tracert.expo('c114250');
+      this.dataMockerVisible = isShow;
+      this.dataMockerData = isShow ? modalData : null;
+    },
+  );
 
   @action
-  public changeCreateAsyncTaskModal(isShow: boolean = true, data?: AsyncData) {
-    if (isShow) {
-      setting.getSpaceConfig();
-    }
-    this.createAsyncTaskVisible = isShow;
-    this.asyncTaskData = isShow ? data : null;
-  }
+  public changeCreateAsyncTaskModal = withSpaceConfig(
+    (isShow: boolean = true, data?: AsyncData) => {
+      this.createAsyncTaskVisible = isShow;
+      this.asyncTaskData = isShow ? data : null;
+    },
+  );
+
   @action
   public updateCreateAsyncTaskModal(data?: AsyncData) {
     this.asyncTaskData = data ? data : null;
@@ -564,13 +562,12 @@ export class ModalStore {
   }
 
   @action
-  public changeCreateResultSetExportTaskModal(isShow: boolean = true, data?: ResultSetExportData) {
-    if (isShow) {
-      setting.getSpaceConfig();
-    }
-    this.createResultSetExportTaskVisible = isShow;
-    this.resultSetExportData = isShow ? data : null;
-  }
+  public changeCreateResultSetExportTaskModal = withSpaceConfig(
+    (isShow: boolean = true, data?: ResultSetExportData) => {
+      this.createResultSetExportTaskVisible = isShow;
+      this.resultSetExportData = isShow ? data : null;
+    },
+  );
 
   @action
   public changeApplyPermissionModal(isShow: boolean = true, data?: any) {
@@ -597,13 +594,12 @@ export class ModalStore {
   }
 
   @action
-  public changeDataArchiveModal(isShow: boolean = true, data?: IDataArchiveTaskData) {
-    if (isShow) {
-      setting.getSpaceConfig();
-    }
-    this.dataArchiveVisible = isShow;
-    this.dataArchiveTaskData = isShow ? data : null;
-  }
+  public changeDataArchiveModal = withSpaceConfig(
+    (isShow: boolean = true, data?: IDataArchiveTaskData) => {
+      this.dataArchiveVisible = isShow;
+      this.dataArchiveTaskData = isShow ? data : null;
+    },
+  );
 
   @action
   public changeStructureComparisonModal(
@@ -616,22 +612,18 @@ export class ModalStore {
   }
 
   @action
-  public changeMultiDatabaseChangeModal(isShow: boolean = true, data?: IMultipleAsyncTaskData) {
-    if (isShow) {
-      setting.getSpaceConfig();
-    }
-    this.multipleDatabaseChangeOpen = isShow;
-    this.multipleAsyncTaskData = isShow ? data : null;
-  }
+  public changeMultiDatabaseChangeModal = withSpaceConfig(
+    (isShow: boolean = true, data?: IMultipleAsyncTaskData) => {
+      this.multipleDatabaseChangeOpen = isShow;
+      this.multipleAsyncTaskData = isShow ? data : null;
+    },
+  );
 
   @action
-  public changeLogicialDatabaseModal(isShow: boolean = true, data?: any) {
-    if (isShow) {
-      setting.getSpaceConfig();
-    }
+  public changeLogicialDatabaseModal = withSpaceConfig((isShow: boolean = true, data?: any) => {
     this.logicDatabaseVisible = isShow;
     this.logicDatabaseInfo = isShow ? data : null;
-  }
+  });
 
   @action
   public updateStructureComparisonDataMap(
@@ -653,31 +645,28 @@ export class ModalStore {
   }
 
   @action
-  public changeDataClearModal(isShow: boolean = true, data?: IDataClearTaskData) {
-    if (isShow) {
-      setting.getSpaceConfig();
-    }
-    this.dataClearVisible = isShow;
-    this.dataClearTaskData = isShow ? data : null;
-  }
+  public changeDataClearModal = withSpaceConfig(
+    (isShow: boolean = true, data?: IDataClearTaskData) => {
+      this.dataClearVisible = isShow;
+      this.dataClearTaskData = isShow ? data : null;
+    },
+  );
 
   @action
-  public changeCreateSQLPlanTaskModal(isShow: boolean = true, data?: ISQLPlanTaskData) {
-    if (isShow) {
-      setting.getSpaceConfig();
-    }
-    this.createSQLPlanVisible = isShow;
-    this.sqlPlanData = isShow ? data : null;
-  }
+  public changeCreateSQLPlanTaskModal = withSpaceConfig(
+    (isShow: boolean = true, data?: ISQLPlanTaskData) => {
+      this.createSQLPlanVisible = isShow;
+      this.sqlPlanData = isShow ? data : null;
+    },
+  );
 
   @action
-  public changeCreateDDLAlterTaskModal(isShow: boolean = true, data?: IDDLAlterTaskData) {
-    if (isShow) {
-      setting.getSpaceConfig();
-    }
-    this.createDDLAlterVisible = isShow;
-    this.ddlAlterData = isShow ? data : null;
-  }
+  public changeCreateDDLAlterTaskModal = withSpaceConfig(
+    (isShow: boolean = true, data?: IDDLAlterTaskData) => {
+      this.createDDLAlterVisible = isShow;
+      this.ddlAlterData = isShow ? data : null;
+    },
+  );
 
   @action
   public changeVersionModalVisible(isShow: boolean = true) {
@@ -685,13 +674,12 @@ export class ModalStore {
   }
 
   @action
-  public changeShadowSyncVisible(isShow: boolean = true, data?: IShadowSyncTaskData) {
-    if (isShow) {
-      setting.getSpaceConfig();
-    }
-    this.addShadowSyncVisible = isShow;
-    this.shadowSyncData = isShow ? data : null;
-  }
+  public changeShadowSyncVisible = withSpaceConfig(
+    (isShow: boolean = true, data?: IShadowSyncTaskData) => {
+      this.addShadowSyncVisible = isShow;
+      this.shadowSyncData = isShow ? data : null;
+    },
+  );
 
   @action
   public changeSensitiveColumnVisible(isShow: boolean = true) {
@@ -699,10 +687,10 @@ export class ModalStore {
   }
 
   @action
-  public changeOdcSettingVisible(isShow: boolean = true) {
+  public async changeOdcSettingVisible(isShow: boolean = true) {
     if (isShow) {
-      setting.getSpaceConfig();
-      setting.getUserConfig();
+      await setting.getSpaceConfig();
+      await setting.getUserConfig();
     }
     this.odcSettingVisible = isShow;
   }

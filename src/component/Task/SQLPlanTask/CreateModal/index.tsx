@@ -82,10 +82,6 @@ const defaultValue = {
   allowConcurrent: false,
 };
 
-const getDefaultQueryLimit = () => {
-  return setting.spaceConfigurations['odc.sqlexecute.default.queryLimit'];
-};
-
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId, theme } = props;
   const [sqlContentType, setSqlContentType] = useState(SQLContentType.TEXT);
@@ -676,7 +672,6 @@ const CreateModal: React.FC<IProps> = (props) => {
             </Form.Item>
             <Form.Item
               name="queryLimit"
-              initialValue={getDefaultQueryLimit()}
               label={formatMessage({
                 id: 'odc.components.CreateSQLPlanTaskModal.QueryResultLimits',
                 defaultMessage: '查询结果限制',
@@ -694,7 +689,11 @@ const CreateModal: React.FC<IProps> = (props) => {
                 },
               ]}
             >
-              <InputNumber min={1} max={10000 * 100} />
+              <InputNumber
+                defaultValue={setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')}
+                min={1}
+                max={10000 * 100}
+              />
             </Form.Item>
             <Form.Item
               label={formatMessage({
