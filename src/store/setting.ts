@@ -27,9 +27,11 @@ import request from '@/util/request';
 import { isLinux, isWin64 } from '@/util/utils';
 import { message } from 'antd';
 import { action, observable } from 'mobx';
-import login from './login';
+import login, { sessionKey } from '@/store/login';
 
 export const themeKey = 'odc-theme';
+const SPACE_CONFIG_EXPIRES = 60 * 1000;
+const getCurrentOrganizationId = () => sessionStorage.getItem(sessionKey);
 
 interface IThemeConfig {
   editorTheme: Record<string, string>;
@@ -112,6 +114,7 @@ export class SettingStore {
    */
   public enableStructureCompare: boolean = false;
 
+  public cacheStorage = new Map();
   /**
    * SQL 计划
    */
@@ -242,8 +245,6 @@ export class SettingStore {
 
   @observable
   public configurations: Partial<IUserConfig> = null;
-  @observable
-  public spaceConfigurations: Partial<IUserConfig> = null;
 
   @observable
   public headerStyle: any = {
@@ -261,6 +262,43 @@ export class SettingStore {
     const newTheme = themeConfig[theme] || themeConfig[defaultTheme];
     this.theme = newTheme;
     localStorage.setItem(themeKey, themeConfig[theme] ? theme : defaultTheme);
+  }
+
+  @action
+  public setSpaceConfig(config: Partial<IUserConfig>) {
+    const cacheData = {
+      data: config,
+      timestamp: Date.now(),
+      organizationId: getCurrentOrganizationId(),
+    };
+    localStorage.setItem(`cached-${getCurrentOrganizationId()}`, JSON.stringify(cacheData));
+    this.cacheStorage.set(`cached-${getCurrentOrganizationId()}`, true);
+  }
+
+  @action
+  public clearSpaceConfig() {
+    localStorage.removeItem(`cached-${getCurrentOrganizationId()}`);
+    this.cacheStorage.set(`cached-${getCurrentOrganizationId()}`, false);
+  }
+
+  @action
+  public readCachedSpaceConfig() {
+    const storageSpaceConfigurations = localStorage.getItem(`cached-${getCurrentOrganizationId()}`);
+    const { data, timestamp, organizationId } = JSON.parse(storageSpaceConfigurations) || {};
+
+    const cached = organizationId === getCurrentOrganizationId();
+    const sessionExist = this.cacheStorage.get(`cached-${getCurrentOrganizationId()}`);
+
+    if (cached && sessionExist) {
+      try {
+        if (Date.now() - timestamp < SPACE_CONFIG_EXPIRES) {
+          return data;
+        }
+      } catch (error) {
+        console.error('Failed to parse cached spaceConfig:', error);
+      }
+    }
+    return null;
   }
 
   @action
@@ -303,18 +341,32 @@ export class SettingStore {
       this.configurations = {};
     }
   }
+
   @action
   public async getSpaceConfig() {
+    const cachedSpaceConfig = this.readCachedSpaceConfig();
+    if (cachedSpaceConfig) return cachedSpaceConfig;
+
     const res = await request.get('/api/v2/config/organization/configurations');
     if (res?.data) {
       const config = res?.data?.contents?.reduce((data, item) => {
         data[item.key] = item.value;
         return data;
       }, {});
-      this.spaceConfigurations = config;
+
+      this.setSpaceConfig(config);
+
+      return config;
     } else {
-      this.spaceConfigurations = {};
+      this.clearSpaceConfig();
     }
+  }
+
+  @action
+  public getSpaceConfigByKey(key: string) {
+    const storageSpaceConfigurations = localStorage.getItem(`cached-${getCurrentOrganizationId()}`);
+    const { data } = JSON.parse(storageSpaceConfigurations) || {};
+    return data?.[key] || undefined;
   }
 
   @action
@@ -397,12 +449,13 @@ export class SettingStore {
         value: newData[key],
       };
     });
+
     const res = await request.patch('/api/v2/config/organization/configurations', {
       data: serverData,
     });
     const data = res?.data?.contents;
     if (data) {
-      await this.getSpaceConfig();
+      this.setSpaceConfig(newData);
     }
     return !!data;
   }

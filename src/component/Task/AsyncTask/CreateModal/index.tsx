@@ -544,8 +544,6 @@ const CreateModal: React.FC<IProps> = (props) => {
           executionStrategy: TaskExecStrategy.MANUAL,
           databaseId: asyncTaskData?.databaseId,
           retryTimes: 0,
-          generateRollbackPlan:
-            setting.spaceConfigurations['odc.task.default.rollbackPlanEnabled'] === 'true',
         }}
         layout="vertical"
         requiredMark="optional"
@@ -778,7 +776,11 @@ const CreateModal: React.FC<IProps> = (props) => {
                 '可针对 Update、Delete 语句自动生成回滚方案，并以附件形式提供下载，该方案仅供参考',
             })} /*可针对 Update、Delete 语句自动生成回滚方案，并以附件形式提供下载，该方案仅供参考*/
           >
-            <Checkbox>
+            <Checkbox
+              defaultChecked={
+                setting.getSpaceConfigByKey('odc.task.default.rollbackPlanEnabled') === 'true'
+              }
+            >
               {
                 formatMessage({
                   id: 'odc.AsyncTask.CreateModal.GenerateABackupRollbackScheme',
@@ -916,9 +918,6 @@ const CreateModal: React.FC<IProps> = (props) => {
             id: 'odc.components.CreateAsyncTaskModal.QueryResultLimits',
             defaultMessage: '查询结果限制',
           })}
-          /* 查询结果限制 */ initialValue={
-            setting.spaceConfigurations['odc.sqlexecute.default.queryLimit']
-          }
           required
           rules={[
             {
@@ -932,7 +931,11 @@ const CreateModal: React.FC<IProps> = (props) => {
             },
           ]}
         >
-          <InputNumber min={1} max={10000 * 100} />
+          <InputNumber
+            defaultValue={setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')}
+            min={1}
+            max={10000 * 100}
+          />
         </Form.Item>
         <FormItemPanel
           label={formatMessage({
