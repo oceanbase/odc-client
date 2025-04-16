@@ -257,22 +257,22 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     };
   }
 
-  function close(force: boolean = false) {
+  async function close(force: boolean = false) {
     if (changed && !force) {
       Modal.confirm({
         title: formatMessage({
           id: 'src.component.ODCSetting.983C51BC',
           defaultMessage: '确认要取消修改配置吗？',
         }), //'确认要取消修改配置吗？'
-        onOk: () => {
+        onOk: async () => {
           setChanged(false);
-          modalStore.changeOdcSettingVisible(false);
+          await modalStore.changeOdcSettingVisible(false);
           setSearchValue(undefined);
         },
       });
     } else {
       setChanged(false);
-      modalStore.changeOdcSettingVisible(false);
+      await modalStore.changeOdcSettingVisible(false);
       setSearchValue(undefined);
     }
   }
@@ -285,7 +285,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     }
     formRef.setFieldsValue(data);
 
-    let spaceData = setting.spaceConfigurations || {};
+    let spaceData = (await setting.getSpaceConfig()) || {};
     spaceFormRef.setFieldsValue(spaceData);
   }
 

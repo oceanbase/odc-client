@@ -158,9 +158,9 @@ const StructDataFormItem: React.FC<IProps> = function (props) {
                   <Radio
                     value
                     disabled={
-                      setting?.spaceConfigurations[
-                        'odc.task.default.importTaskStructureReplacementEnabled'
-                      ] === 'false'
+                      setting?.getSpaceConfigByKey(
+                        'odc.task.default.importTaskStructureReplacementEnabled',
+                      ) === 'false'
                     }
                   >
                     {formatMessage({

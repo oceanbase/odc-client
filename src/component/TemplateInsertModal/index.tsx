@@ -80,7 +80,7 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
             type="link"
             size="small"
             onClick={async () => {
-              modalStore.changeOdcSettingVisible(true);
+              await modalStore.changeOdcSettingVisible(true);
             }}
           >
             {
