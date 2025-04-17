@@ -143,7 +143,7 @@ class SessionStore {
 
   private lastTableAndViewLoadTime: number = 0;
 
-  private lastIdentitiesLoadTime: number = 0;
+  private lastIdentitiesLoadTime: Map<string, number> = new Map();
 
   constructor(connection: IDatasource, database: IDatabase) {
     this.connection = connection;
@@ -529,16 +529,21 @@ class SessionStore {
   }
 
   @action
-  public async queryIdentities() {
+  public async queryIdentities(identityNameLike?: string) {
     const now = Date.now();
-    if (now - this.lastIdentitiesLoadTime < 15000) {
+    if (now - this.lastIdentitiesLoadTime.get(identityNameLike || 'default') < 15000) {
       return;
     }
-    this.lastIdentitiesLoadTime = now;
+    this.lastIdentitiesLoadTime.set(identityNameLike || 'default', now);
     let supportType = ['TABLE', 'VIEW'];
     this.supportFeature.enableExternalTable && supportType.push('EXTERNAL_TABLE');
     this.supportFeature.enableMaterializedView && supportType.push('MATERIALIZED_VIEW');
-    const data = await queryIdentities(supportType, this.sessionId, this.database?.dbName);
+    const data = await queryIdentities(
+      supportType,
+      this.sessionId,
+      this.database?.dbName,
+      identityNameLike,
+    );
     if (!data) {
       this.lastTableAndViewLoadTime = 0;
     }

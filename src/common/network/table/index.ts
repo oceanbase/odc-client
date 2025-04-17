@@ -120,11 +120,17 @@ export async function queryTableOrViewData(
   return res?.data;
 }
 
-export async function queryIdentities(types: string[], sessionId: string, dbName: string) {
+export async function queryIdentities(
+  types: string[],
+  sessionId: string,
+  dbName: string,
+  identityNameLike?: string,
+) {
   const sid = generateDatabaseSid(dbName, sessionId);
   const res = await request.get(`/api/v2/connect/sessions/${sid}/metadata/identities`, {
     params: {
       type: types?.join(','),
+      identityNameLike,
     },
   });
 
