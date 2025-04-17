@@ -64,13 +64,21 @@ const MoreSetting = () => {
                   defaultMessage: '请输入查询结果限制',
                 }),
               },
+              {
+                validator: (_, value) => {
+                  const max = setting.getSpaceConfigByKey('odc.sqlexecute.default.maxQueryLimit');
+                  if (value !== undefined && value > max) {
+                    return Promise.reject(`不超过查询条数上限 ${max}`);
+                  }
+                  return Promise.resolve();
+                },
+              },
             ]}
           >
             <InputNumber
               defaultValue={setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')}
               style={{ width: 128 }}
               min={1}
-              max={10000 * 100}
             />
           </Form.Item>
           <Form.Item
