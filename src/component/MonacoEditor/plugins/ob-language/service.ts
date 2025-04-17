@@ -39,18 +39,18 @@ export function getModelService(
       if (!hasConnect(sessionFunc())) {
         return;
       }
-      const db =
-        sessionFunc()?.allIdentities[dbName] || sessionFunc()?.allIdentities[dbName?.toUpperCase()];
-      if (
-        db?.tables?.length ||
-        db?.views?.length ||
-        db?.external_table?.length ||
-        db?.materialized_view?.length
-      ) {
-        sessionFunc()?.queryIdentities();
-      } else {
-        await sessionFunc()?.queryIdentities();
-      }
+      /**
+       * 保证200ms内返回，不返回就用上一次的值
+       */
+      await Promise.race([
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve([]);
+          }, 300);
+        }),
+        sessionFunc()?.queryIdentities(),
+      ]);
+
       const dbObj =
         sessionFunc()?.allIdentities[dbName] || sessionFunc()?.allIdentities[dbName?.toUpperCase()];
       if (!dbObj) {
@@ -78,22 +78,10 @@ export function getModelService(
         dbName = sessionFunc()?.database?.dbName;
       }
       if (/[\u4e00-\u9fa5\w]+/.test(realTableName) && realTableName?.length < 500) {
-        const db =
+        await sessionFunc()?.queryIdentities(realTableName);
+        let db =
           sessionFunc()?.allIdentities[dbName] ||
           sessionFunc()?.allIdentities[dbName?.toUpperCase()];
-        /**
-         * schemaStore.queryIdentities(); 不能是阻塞的，编辑器对于函数的超时时间有严格的要求，不能超过 300ms，调用这个接口肯定会超过这个时间。
-         */
-        if (
-          db?.tables?.length ||
-          db?.views?.length ||
-          db?.external_table?.length ||
-          db?.materialized_view?.length
-        ) {
-          sessionFunc()?.queryIdentities();
-        } else {
-          await sessionFunc()?.queryIdentities();
-        }
         const isTable = db?.tables?.includes(realTableName);
         /**
          * 虚表，需要单独识别处理
@@ -178,17 +166,13 @@ export function getModelService(
         dbName = sessionFunc()?.database?.dbName;
       }
       if (/[\u4e00-\u9fa5\w]+/.test(realTableName) && realTableName?.length < 500) {
-        const db =
-          sessionFunc()?.allIdentities[dbName] ||
-          sessionFunc()?.allIdentities[dbName?.toUpperCase()];
         /**
          * schemaStore.queryIdentities(); 不能是阻塞的，编辑器对于函数的超时时间有严格的要求，不能超过 300ms，调用这个接口肯定会超过这个时间。
          */
-        if (db?.tables?.length || db?.views?.length || db?.external_table?.length) {
-          sessionFunc()?.queryIdentities();
-        } else {
-          await sessionFunc()?.queryIdentities();
-        }
+        await sessionFunc()?.queryIdentities(realTableName);
+        const db =
+          sessionFunc()?.allIdentities[dbName] ||
+          sessionFunc()?.allIdentities[dbName?.toUpperCase()];
         const isTable = db?.tables?.includes(realTableName);
         /**
          * 虚表，需要单独识别处理
