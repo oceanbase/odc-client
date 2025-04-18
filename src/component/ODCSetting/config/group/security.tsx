@@ -24,7 +24,7 @@ const securityGroup: ODCSettingGroup = {
 const securitySetting: IODCSetting[] = [
   {
     label: '数据源密钥',
-    key: 'odc.sqlexecute.default.secretKey',
+    key: 'odc.security.default.customDataSourceEncryptionKey',
     locationKey: 'secretKey',
     group: securityGroup,
     rules: [

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Input, Typography, Button, message, Checkbox } from 'antd';
 import { CopyOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import styles from './index.less';
@@ -22,20 +22,19 @@ import copy from 'copy-to-clipboard';
 import CopyOperation from './CopyOpertaion';
 
 const { Text } = Typography;
+const INPUT_PASSWORD = 'password';
 
 const PasswordInput = (props: { value: string; onChange: (value: string) => Promise<void> }) => {
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [password, setPassword] = useState(props.value);
-  const [showPassword, setShowPassword] = useState(false);
+  const [inputType, setInputType] = useState(INPUT_PASSWORD);
   const [hasError, setHasError] = useState(false);
   const [showInput, setShowInput] = useState(false);
 
   const handlePasswordChange = (e) => {
     const value = e.target.value;
-    setPassword(value);
+    props.onChange(value);
 
-    // 输入验证：是否符合32位字母和数字的要求
     if (!/^[a-zA-Z0-9]{32}$/.test(value)) {
       setHasError(true);
     } else {
@@ -44,14 +43,13 @@ const PasswordInput = (props: { value: string; onChange: (value: string) => Prom
   };
 
   const handleEditClick = () => {
-    setEditing(true); // 进入编辑状态
-    setShowPassword(false); // 切回隐藏密码状态
+    setEditing(true);
   };
 
   const handleCancelEdit = () => {
-    setEditing(false); // 退出编辑状态
-    setPassword('********'); // 恢复原始展示的加密内容
-    setHasError(false); // 清除错误状态
+    setInputType(INPUT_PASSWORD);
+    setEditing(false);
+    setHasError(false);
   };
 
   const generateRandomPassword = async () => {
@@ -60,22 +58,30 @@ const PasswordInput = (props: { value: string; onChange: (value: string) => Prom
     for (let i = 0; i < 32; i++) {
       newPassword += characters.charAt(Math.floor(Math.random() * characters.length));
     }
-    setShowPassword(true);
-    setPassword(newPassword);
     setLoading(true);
     try {
       await props.onChange(newPassword);
     } finally {
       setLoading(false);
+      setInputType('');
     }
     setHasError(false);
   };
+  useEffect(() => {
+    if (props.value) {
+      setShowInput(true);
+    }
+  }, [props.value]);
 
   return (
     <>
       <Checkbox
+        checked={showInput}
         onChange={(e) => {
           setShowInput(e.target.checked);
+          if (!e.target.checked) {
+            props.onChange('');
+          }
         }}
         style={{ marginBottom: 8 }}
       >
@@ -87,12 +93,8 @@ const PasswordInput = (props: { value: string; onChange: (value: string) => Prom
             <>
               {/* 初始状态：显示密码隐藏和修改按钮 */}
               <div>
-                <Input.Password value={password} hidden />
-                <Input.Password
-                  prefix={<>********</>}
-                  disabled
-                  iconRender={() => <EyeInvisibleOutlined />}
-                />
+                <Input.Password value={props.value} hidden />
+                <Input prefix={<>********</>} disabled />
               </div>
               <Button type="link" style={{ padding: 0, marginTop: 8 }} onClick={handleEditClick}>
                 修改密钥
@@ -102,16 +104,12 @@ const PasswordInput = (props: { value: string; onChange: (value: string) => Prom
             <>
               {/* 编辑状态：显示输入框和操作按钮 */}
               <div style={{ display: 'flex' }}>
-                <Input.Password
-                  value={password}
+                <Input
+                  value={props.value}
                   onChange={handlePasswordChange}
                   placeholder="输入32位英文和数字组合"
-                  visibilityToggle={{
-                    visible: showPassword,
-                    onVisibleChange: setShowPassword,
-                  }}
                   className={styles.passwordInput}
-                  type="password"
+                  type={inputType}
                   key={props.value}
                   defaultValue={props.value}
                   disabled={loading}
@@ -143,7 +141,7 @@ const PasswordInput = (props: { value: string; onChange: (value: string) => Prom
                 >
                   取消修改
                 </Button>
-                {password && <CopyOperation password={password} />}
+                {props.value && inputType === '' && <CopyOperation password={props.value} />}
               </div>
             </>
           )}

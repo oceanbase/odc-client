@@ -346,10 +346,6 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       );
       return;
     }
-    delete spaceServerData['odc.sqlexecute.default.secretKey'];
-    // spaceServerData['odc.sqlexecute.default.secretKey'] = encrypt(
-    //   spaceServerData['odc.sqlexecute.default.secretKey'],
-    // );
     /**
      * submit serverData
      */
