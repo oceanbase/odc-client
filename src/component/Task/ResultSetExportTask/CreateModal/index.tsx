@@ -295,6 +295,15 @@ const CreateModal: React.FC<IProps> = (props) => {
                 defaultMessage: '请填写条数限制',
               }), //'请填写条数限制'
             },
+            {
+              validator: (_, value) => {
+                const max = setting.getSpaceConfigByKey('odc.sqlexecute.default.maxQueryLimit');
+                if (value !== undefined && Number(value) > max) {
+                  return Promise.reject(`不超过查询条数上限 ${max}`);
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
         >
           <InputBigNumber
