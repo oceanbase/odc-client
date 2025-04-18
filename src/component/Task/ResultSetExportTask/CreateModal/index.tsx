@@ -151,6 +151,14 @@ const CreateModal: React.FC<IProps> = (props) => {
         console.error(JSON.stringify(errorInfo));
       });
   };
+
+  const initData = () => {
+    form.setFieldValue(
+      'maxRows',
+      Number(setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')),
+    );
+  };
+
   useEffect(() => {
     if (resultSetExportData) {
       const { sql, tableName, databaseId, task } = resultSetExportData;
@@ -163,8 +171,10 @@ const CreateModal: React.FC<IProps> = (props) => {
         form.setFieldsValue(task.parameters);
         form.setFieldValue('description', task.description);
       }
+    } else {
+      initData();
     }
-  }, [resultSetExportData]);
+  }, [resultSetExportData, modalStore?.createResultSetExportTaskVisible]);
 
   return (
     <Drawer
@@ -309,7 +319,6 @@ const CreateModal: React.FC<IProps> = (props) => {
           <InputBigNumber
             isInt
             min="1"
-            defaultValue={setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')}
             style={{
               width: 200,
             }}

@@ -152,11 +152,20 @@ const CreateModal: React.FC<IProps> = (props) => {
     });
   };
 
+  const initData = () => {
+    form.setFieldValue(
+      'queryLimit',
+      Number(setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')),
+    );
+  };
+
   useEffect(() => {
     if (SQLPlanEditId || taskId) {
       loadEditData(SQLPlanEditId || taskId);
+    } else {
+      initData();
     }
-  }, [SQLPlanEditId, taskId]);
+  }, [SQLPlanEditId, taskId, createSQLPlanVisible]);
 
   const setFormStatus = (fieldName: string, errorMessage: string) => {
     form.setFields([
@@ -698,10 +707,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 },
               ]}
             >
-              <InputNumber
-                defaultValue={setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')}
-                min={1}
-              />
+              <InputNumber min={1} />
             </Form.Item>
             <Form.Item
               label={formatMessage({
