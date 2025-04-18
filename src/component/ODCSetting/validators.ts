@@ -1,7 +1,7 @@
 import setting from '@/store/setting';
 
 export const validForqueryQueryNumber = (value) => {
-  const queryLimit = setting.configurations['odc.sqlexecute.default.maxQueryLimit'];
+  const queryLimit = setting.getSpaceConfigByKey('odc.sqlexecute.default.maxQueryLimit');
   if (value > Number(queryLimit)) {
     return Promise.reject(`不超过${queryLimit}`);
   }

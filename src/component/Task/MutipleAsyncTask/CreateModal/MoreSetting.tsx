@@ -75,11 +75,7 @@ const MoreSetting = () => {
               },
             ]}
           >
-            <InputNumber
-              defaultValue={setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')}
-              style={{ width: 128 }}
-              min={1}
-            />
+            <InputNumber style={{ width: 128 }} min={1} />
           </Form.Item>
           <Form.Item
             label={formatMessage({

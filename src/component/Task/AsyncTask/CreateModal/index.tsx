@@ -274,6 +274,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     }
     return isLt20M;
   };
+
   const handleFileChange = (files: UploadFile[], type: 'sqlFiles' | 'rollbackSqlFiles') => {
     form?.setFieldsValue({
       [type]: files,
@@ -471,6 +472,21 @@ const CreateModal: React.FC<IProps> = (props) => {
       utils.removeHighlight(editor);
     });
   };
+
+  const initData = () => {
+    form.setFieldsValue({
+      queryLimit: Number(setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')),
+      generateRollbackPlan:
+        setting.getSpaceConfigByKey('odc.task.default.rollbackPlanEnabled') === 'true',
+    });
+  };
+
+  useEffect(() => {
+    if (modalStore.createAsyncTaskVisible && !asyncTaskData) {
+      initData();
+    }
+  }, [modalStore.createAsyncTaskVisible, asyncTaskData]);
+
   useEffect(() => {
     if (asyncTaskData?.task) {
       loadEditData();
@@ -486,6 +502,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       setSqlChanged(false);
     }
   }, [asyncTaskData]);
+
   useEffect(() => {
     if (initSqlContent) {
       handleSqlChange('sqlContent', initSqlContent);
@@ -776,11 +793,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 '可针对 Update、Delete 语句自动生成回滚方案，并以附件形式提供下载，该方案仅供参考',
             })} /*可针对 Update、Delete 语句自动生成回滚方案，并以附件形式提供下载，该方案仅供参考*/
           >
-            <Checkbox
-              defaultChecked={
-                setting.getSpaceConfigByKey('odc.task.default.rollbackPlanEnabled') === 'true'
-              }
-            >
+            <Checkbox>
               {
                 formatMessage({
                   id: 'odc.AsyncTask.CreateModal.GenerateABackupRollbackScheme',
@@ -940,10 +953,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             },
           ]}
         >
-          <InputNumber
-            defaultValue={setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')}
-            min={1}
-          />
+          <InputNumber min={1} />
         </Form.Item>
         <FormItemPanel
           label={formatMessage({

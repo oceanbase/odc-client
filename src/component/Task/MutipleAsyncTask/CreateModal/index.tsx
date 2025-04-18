@@ -440,6 +440,10 @@ const CreateModal: React.FC<IProps> = (props) => {
       retryTimes: 0,
       parameters: {
         orderedDatabaseIds: [[undefined]],
+        queryLimit: Number(setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')),
+        generateRollbackPlan:
+          multipleAsyncTaskData?.task?.parameters?.generateRollbackPlan ||
+          setting.getSpaceConfigByKey('odc.task.default.rollbackPlanEnabled') === 'true',
       },
     };
     if (multipleAsyncTaskData?.task) {
@@ -795,13 +799,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                         '可针对 Update、Delete 语句自动生成回滚方案，并以附件形式提供下载，该方案仅供参考',
                     })}
                   >
-                    <Checkbox
-                      defaultChecked={
-                        multipleAsyncTaskData?.task?.parameters?.generateRollbackPlan ||
-                        setting.getSpaceConfigByKey('odc.task.default.rollbackPlanEnabled') ===
-                          'true'
-                      }
-                    >
+                    <Checkbox>
                       {formatMessage({
                         id: 'src.component.Task.MutipleAsyncTask.CreateModal.2549497E',
                         defaultMessage: '生成备份回滚方案',
