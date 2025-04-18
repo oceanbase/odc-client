@@ -32,6 +32,7 @@ import dayjs from 'dayjs';
 import { isSqlEmpty } from './parser/sql';
 import { encodeIdentifiers, splitSql } from './sql';
 import type { RangePickerProps } from 'antd/es/date-picker';
+import { runInAction } from 'mobx';
 export const invalidRegexpStr = /[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g;
 
 /**
@@ -737,14 +738,14 @@ export function groupBySessionId(filteredRows) {
   return cleanedSessions;
 }
 
-export function withSpaceConfig(action: (isShow: boolean, ...args: any[]) => void) {
-  return function (isShow: boolean = true, ...args: any[]) {
-    if (isShow) {
-      setting.getSpaceConfig().then(() => {
-        action.call(this, isShow, ...args);
-      });
-    } else {
-      action.call(this, isShow, ...args);
-    }
-  };
+export async function getSpaceConfigForFormInitialValue(isShow, callback) {
+  if (isShow) {
+    await setting.getSpaceConfig();
+
+    runInAction(() => {
+      callback();
+    });
+  } else {
+    callback();
+  }
 }
