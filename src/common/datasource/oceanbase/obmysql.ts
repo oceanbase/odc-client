@@ -110,7 +110,7 @@ const items: Record<
       unionUser: true,
     },
     features: {
-      task: Object.values(TaskType),
+      task: Object.values(TaskType)?.filter((i) => ![TaskType.ONLINE_SCHEMA_CHANGE]?.includes?.(i)),
       obclient: true,
       recycleBin: true,
       sessionManage: true,

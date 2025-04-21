@@ -30,7 +30,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import React from 'react';
+import React, { useState } from 'react';
 import { intervalPrecisionOptions } from '../configModal';
 import { START_DATE, INCREAMENT_FIELD_TYPE, increamentFieldTypeLabelMap } from '../const';
 import styles from '../index.less';
@@ -146,11 +146,42 @@ interface TableFormProps {
   dataTypeName: string;
 }
 
+const getIntervalPrecisionOptionsByIncrementDateType = (incrementFieldTypeInDate: string) => {
+  const containYear = incrementFieldTypeInDate?.toLocaleLowerCase?.()?.includes?.('y');
+  const containMonth = incrementFieldTypeInDate?.toLocaleLowerCase?.()?.includes?.('m');
+  const containDay = incrementFieldTypeInDate?.toLocaleLowerCase?.()?.includes?.('d');
+  // 只能为年
+  if (containYear && !containMonth && !containDay) {
+    return intervalPrecisionOptions?.filter((item) => item.value <= 1);
+  }
+  // 只能为年, 月
+  if (containYear && containMonth && !containDay) {
+    return intervalPrecisionOptions?.filter((item) => item.value <= 3);
+  }
+  if (containYear && containMonth && containDay) {
+    return intervalPrecisionOptions?.filter((item) => item.value <= 7);
+  }
+  return intervalPrecisionOptions;
+};
+
+const getDefaultPrecisionByIncrementDateType = (incrementFieldTypeInDate: string) => {
+  const containYear = incrementFieldTypeInDate?.toLocaleLowerCase?.()?.includes?.('y');
+  const containMonth = incrementFieldTypeInDate?.toLocaleLowerCase?.()?.includes?.('m');
+  const containDay = incrementFieldTypeInDate?.toLocaleLowerCase?.()?.includes?.('d');
+  // 只能为年
+  if (containYear && !containMonth && !containDay) {
+    return 1;
+  }
+
+  return 3;
+};
+
 const RuleFormItem: React.FC<TableFormProps> = (props) => {
   const { field, precision, isDate, dataTypeName } = props;
+  const [intervalErrorInBlur, setIntervalErrorInBlur] = useState<string[]>();
   return (
     <Form.Item shouldUpdate={true} className={styles.noMarginBottom}>
-      {({ getFieldValue, getFieldError }) => {
+      {({ getFieldValue, getFieldError, setFieldValue }) => {
         const partitionKeyInvoker = getFieldValue([
           'option',
           'partitionKeyConfigs',
@@ -168,6 +199,12 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
           'partitionKeyConfigs',
           field.name,
           'incrementFieldType',
+        ]);
+        const incrementFieldTypeInDate = getFieldValue([
+          'option',
+          'partitionKeyConfigs',
+          field.name,
+          'incrementFieldTypeInDate',
         ]);
         const generateExprError = getFieldError([
           'option',
@@ -187,6 +224,11 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
           field.name,
           'interval',
         ]);
+
+        const validateInput = (error) => {
+          setIntervalErrorInBlur(error);
+        };
+
         const isCustom = partitionKeyInvoker === PARTITION_KEY_INVOKER.CUSTOM_GENERATOR;
         const validIntervalPrecisionOptions = intervalPrecisionOptions?.filter(
           (item) => item.value <= precision,
@@ -225,7 +267,10 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                     <InputNumber
                       min={0}
                       style={{ width: 300 }}
-                      {...getFieldProps(intervalError, 'prefix')}
+                      {...getFieldProps(intervalErrorInBlur, 'prefix')}
+                      onBlur={() => {
+                        validateInput(intervalError);
+                      }}
                     />
                   </Form.Item>
                 </Input.Group>
@@ -251,6 +296,7 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                   help={EmptyHelp}
                 >
                   <InputNumber
+                    precision={0}
                     min={0}
                     addonBefore={
                       formatMessage({
@@ -260,11 +306,19 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                     }
                     addonAfter={
                       <Form.Item {...field} name={[field.name, 'intervalPrecision']} noStyle>
-                        <Select options={intervalPrecisionOptions} style={{ width: 60 }} />
+                        <Select
+                          options={getIntervalPrecisionOptionsByIncrementDateType(
+                            incrementFieldTypeInDate,
+                          )}
+                          style={{ width: 60 }}
+                        />
                       </Form.Item>
                     }
                     style={{ width: 243 }}
-                    {...getFieldProps(intervalError, 'prefix')}
+                    {...getFieldProps(intervalErrorInBlur, 'prefix')}
+                    onBlur={() => {
+                      validateInput(intervalError);
+                    }}
                   />
                 </Form.Item>
               );
@@ -288,6 +342,7 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                   width: incrementFieldType !== INCREAMENT_FIELD_TYPE.TIME_STRING ? 320 : 160,
                 }}
                 optionLabelProp="text"
+                dropdownStyle={{ width: 320 }}
               />
             </Form.Item>
             {incrementFieldType === INCREAMENT_FIELD_TYPE.TIME_STRING && (
@@ -308,6 +363,13 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                   filterOption={(inputValue, option) =>
                     option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                   }
+                  onChange={(e) => {
+                    const defaultPrecision = getDefaultPrecisionByIncrementDateType(e);
+                    setFieldValue(
+                      ['option', 'partitionKeyConfigs', field.name, 'intervalPrecision'],
+                      defaultPrecision,
+                    );
+                  }}
                 />
               </Form.Item>
             )}
@@ -388,7 +450,10 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                           defaultMessage: '请输入',
                         }) /*"请输入"*/
                       }
-                      {...getFieldProps(intervalGenerateExprError)}
+                      {...getFieldProps(intervalErrorInBlur, 'prefix')}
+                      onBlur={() => {
+                        validateInput(intervalGenerateExprError);
+                      }}
                     />
                   </Form.Item>
                 </Input.Group>
@@ -447,6 +512,7 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                   help={EmptyHelp}
                 >
                   <InputNumber
+                    precision={0}
                     min={0}
                     addonBefore={
                       formatMessage({
@@ -473,7 +539,10 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                       </Form.Item>
                     }
                     style={{ width: 243 }}
-                    {...getFieldProps(intervalError, 'prefix')}
+                    {...getFieldProps(intervalErrorInBlur, 'prefix')}
+                    onBlur={() => {
+                      validateInput(intervalError);
+                    }}
                   />
                 </Form.Item>
               </>

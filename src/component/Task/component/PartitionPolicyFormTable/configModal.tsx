@@ -36,6 +36,7 @@ import {
   Select,
   Space,
   Tag,
+  Tooltip,
   Typography,
 } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -213,12 +214,10 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   const nameRuleType = Form.useWatch('nameRuleType', form);
   const generateCount = Form.useWatch('generateCount', form);
   const partitionKeyOptions =
-    configs?.[0]?.option?.partitionKeyConfigs
-      ?.filter((item) => item?.type?.localizedMessage)
-      ?.map((item) => ({
-        label: item?.name,
-        value: item?.name,
-      })) ?? [];
+    configs?.[0]?.option?.partitionKeyConfigs?.map((item) => ({
+      label: item?.name,
+      value: item?.name,
+    })) ?? [];
   const alertMessage = getAlertMessage(strategies);
   const isDropConfigVisible = strategies?.includes(TaskPartitionStrategy.DROP);
   const isCreateConfigVisible = strategies?.includes(TaskPartitionStrategy.CREATE);
@@ -559,18 +558,21 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               }) /*取消*/
             }
           </Button>
-          <Button
-            onClick={() => {
-              handlePreview();
-            }}
-          >
-            {
-              formatMessage({
-                id: 'src.component.Task.component.PartitionPolicyFormTable.E0664950' /*预览 SQL*/,
-                defaultMessage: '预览 SQL',
-              }) /* 预览 SQL */
-            }
-          </Button>
+          <Tooltip title={strategies?.length ? null : '暂未设置创建策略，无 SQL 可预览'}>
+            <Button
+              onClick={() => {
+                handlePreview();
+              }}
+              disabled={!strategies?.length}
+            >
+              {
+                formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyFormTable.E0664950' /*预览 SQL*/,
+                  defaultMessage: '预览 SQL',
+                }) /* 预览 SQL */
+              }
+            </Button>
+          </Tooltip>
           {submitBtn}
         </Space>
       }
@@ -666,6 +668,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                   }) /*"请输入"*/
                 }
                 min={1}
+                precision={0}
                 style={{ width: 100 }}
               />
             </Form.Item>
@@ -730,6 +733,11 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               }
               required
               style={{ marginBottom: '0' }}
+              tooltip={
+                isCustomRuleType
+                  ? "分区名的生成规则，可引用变量。比如：concat('P_',${COL1})，其中 COL1 表示分区表的分区键。"
+                  : null
+              }
             >
               <Space size={8} align="start" style={{ width: '100%' }}>
                 {isCustomRuleType ? (
@@ -950,6 +958,9 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     id: 'src.component.Task.component.PartitionPolicyFormTable.7BC3752C',
                     defaultMessage: '命名间隔',
                   }) /*"命名间隔"*/
+                }
+                tooltip={
+                  "可在命名规则表达式中通过 ${INTERVAL} 变量引用，比如:concat('P_',${COL1}+${INTERVAL})"
                 }
               >
                 <Input

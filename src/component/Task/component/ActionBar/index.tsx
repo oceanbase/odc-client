@@ -1168,6 +1168,7 @@ const ActionBar: React.FC<IProps> = inject(
       switch (status) {
         case TaskStatus.APPROVING: {
           tools = [viewBtn];
+          setBtnByCreater(tools, reTryBtn);
           if (haveOperationPermission) {
             tools.push(stopBtn);
           }
@@ -1178,6 +1179,7 @@ const ActionBar: React.FC<IProps> = inject(
         }
         case TaskStatus.REJECTED: {
           tools = [viewBtn];
+          setBtnByCreater(tools, reTryBtn);
           break;
         }
         case TaskStatus.ENABLED: {
@@ -1203,6 +1205,7 @@ const ActionBar: React.FC<IProps> = inject(
         case TaskStatus.APPROVAL_EXPIRED:
         case TaskStatus.TERMINATED: {
           tools = [viewBtn];
+          setBtnByCreater(tools, reTryBtn);
           if (haveOperationPermission) {
             if (
               [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE, TaskType.SQL_PLAN].includes(task?.type)
@@ -1241,6 +1244,7 @@ const ActionBar: React.FC<IProps> = inject(
         }
         case TaskStatus.CANCELLED: {
           tools = [viewBtn];
+          setBtnByCreater(tools, reTryBtn);
           if (haveOperationPermission) {
             tools.push(stopBtn);
           }

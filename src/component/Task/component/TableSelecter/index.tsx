@@ -242,7 +242,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
         // 过滤掉对象存储的数据源
         const list: IDataBaseWithTable[] = res.contents
           .filter((item) => {
-            return !isConnectTypeBeFileSystemGroup(item.connectType);
+            return !isConnectTypeBeFileSystemGroup(item.connectType) && !isLogicalDatabase(item);
           })
           .map((db) => {
             return {
