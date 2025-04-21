@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { IODCSetting, ODCSettingGroup } from '../../config';
-import PassWordItem from '../../Item/PassWordItem';
+import SecretKeyItem from '../../Item/SecretKeyItem';
 
 const securityGroup: ODCSettingGroup = {
   label: '安全设置',
@@ -30,7 +30,7 @@ const securitySetting: IODCSetting[] = [
     rules: [
       {
         validator(rule, value, callback) {
-          if (/^[a-zA-Z0-9]{32}$/.test(value) || !value) {
+          if (/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9]{32}$/.test(value) || !value) {
             return Promise.resolve();
           }
           return Promise.reject();
@@ -39,7 +39,7 @@ const securitySetting: IODCSetting[] = [
     ],
     storeType: 'server',
     render: (value, onChange) => {
-      return <PassWordItem value={value || ''} onChange={onChange} />;
+      return <SecretKeyItem value={value || ''} onChange={onChange} />;
     },
   },
 ];

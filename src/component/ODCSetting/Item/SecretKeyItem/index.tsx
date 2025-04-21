@@ -14,64 +14,79 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
-import { Input, Typography, Button, message, Checkbox } from 'antd';
-import { CopyOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
+import { useEffect, useState } from 'react';
+import { Input, Typography, Button, Checkbox } from 'antd';
 import styles from './index.less';
-import copy from 'copy-to-clipboard';
 import CopyOperation from './CopyOpertaion';
+import setting from '@/store/setting';
 
 const { Text } = Typography;
 const INPUT_PASSWORD = 'password';
 
-const PasswordInput = (props: { value: string; onChange: (value: string) => Promise<void> }) => {
+const SecretKeyInput = (props: { value: string; onChange: (value: string) => Promise<void> }) => {
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
   const [inputType, setInputType] = useState(INPUT_PASSWORD);
   const [hasError, setHasError] = useState(false);
   const [showInput, setShowInput] = useState(false);
 
-  const handlePasswordChange = (e) => {
-    const value = e.target.value;
-    props.onChange(value);
-
-    if (!/^[a-zA-Z0-9]{32}$/.test(value)) {
-      setHasError(true);
-    } else {
-      setHasError(false);
-    }
-  };
-
-  const handleEditClick = () => {
-    setEditing(true);
-  };
-
-  const handleCancelEdit = () => {
-    setInputType(INPUT_PASSWORD);
-    setEditing(false);
-    setHasError(false);
-  };
-
-  const generateRandomPassword = async () => {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let newPassword = '';
-    for (let i = 0; i < 32; i++) {
-      newPassword += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    setLoading(true);
-    try {
-      await props.onChange(newPassword);
-    } finally {
-      setLoading(false);
-      setInputType('');
-    }
-    setHasError(false);
-  };
   useEffect(() => {
     if (props.value) {
       setShowInput(true);
     }
   }, [props.value]);
+
+  const updateSecretKey = async (secretKey: string) => {
+    setLoading(true);
+    try {
+      await props.onChange(secretKey);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetSecretKeyItemState = async () => {
+    const storedSecurityKey = setting.getSpaceConfigByKey(
+      'odc.security.default.customDataSourceEncryptionKey',
+    );
+    if (storedSecurityKey?.length > 0) {
+      await updateSecretKey(storedSecurityKey);
+    } else {
+      await updateSecretKey('');
+      setShowInput(false);
+    }
+    setInputType(INPUT_PASSWORD);
+    setHasError(false);
+  };
+
+  const generateRandomPassword = async () => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let secretKey = '';
+    for (let i = 0; i < 32; i++) {
+      secretKey += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    updateSecretKey(secretKey);
+    setInputType('');
+    setHasError(false);
+  };
+
+  const handleBlur = async (e) => {
+    if (!/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9]{32}$/.test(e.target.value)) {
+      setHasError(true);
+      return;
+    }
+    setHasError(false);
+    await updateSecretKey(e.target.value);
+  };
+
+  const handleEdit = () => {
+    setEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    resetSecretKeyItemState();
+    setEditing(false);
+  };
 
   return (
     <>
@@ -96,7 +111,7 @@ const PasswordInput = (props: { value: string; onChange: (value: string) => Prom
                 <Input.Password value={props.value} hidden />
                 <Input prefix={<>********</>} disabled />
               </div>
-              <Button type="link" style={{ padding: 0, marginTop: 8 }} onClick={handleEditClick}>
+              <Button type="link" style={{ padding: 0, marginTop: 8 }} onClick={handleEdit}>
                 修改密钥
               </Button>
             </>
@@ -105,23 +120,13 @@ const PasswordInput = (props: { value: string; onChange: (value: string) => Prom
               {/* 编辑状态：显示输入框和操作按钮 */}
               <div style={{ display: 'flex' }}>
                 <Input
-                  value={props.value}
-                  onChange={handlePasswordChange}
+                  key={props.value}
+                  defaultValue={props.value}
                   placeholder="输入32位英文和数字组合"
                   className={styles.passwordInput}
                   type={inputType}
-                  key={props.value}
-                  defaultValue={props.value}
                   disabled={loading}
-                  onBlur={async (e) => {
-                    const value = e.target.value;
-                    setLoading(true);
-                    try {
-                      await props.onChange(value);
-                    } finally {
-                      setLoading(false);
-                    }
-                  }}
+                  onBlur={handleBlur}
                   status={hasError ? 'error' : ''}
                 />
                 <Button style={{ marginLeft: 8 }} onClick={generateRandomPassword}>
@@ -151,4 +156,4 @@ const PasswordInput = (props: { value: string; onChange: (value: string) => Prom
   );
 };
 
-export default PasswordInput;
+export default SecretKeyInput;
