@@ -1,15 +1,12 @@
 import { TreeProps } from 'antd';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import TreeStateStore from '../TreeStateStore';
-import { TreeDataNode } from '../type';
-import { EventDataNode } from 'antd/lib/tree';
-import sessionManager from '@/store/sessionManager';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import { isGroupNode } from '@/page/Workspace/SideBar/ResourceTree/const';
+import { isString } from 'lodash';
+import DatabaseStore from '@/store/sessionManager/database';
 
 export default function useTreeState(id: string) {
   const { cache } = useContext(TreeStateStore);
-  const treeContext = useContext(ResourceTreeContext);
   let state: {
     sessionIds: Record<number, string>;
     expandedKeys: (string | number)[];
@@ -50,6 +47,31 @@ export default function useTreeState(id: string) {
     setExpandedKeys(newExpandedKeys);
   };
 
+  useEffect(() => {
+    if (DatabaseStore.refreshKey) {
+      setExpandedKeys(
+        expandedKeys.filter(
+          (item) =>
+            !(
+              isString(item) &&
+              item !== DatabaseStore.refreshKey &&
+              item.includes(DatabaseStore.refreshKey)
+            ),
+        ),
+      );
+      setLoadedKeys(
+        loadedKeys.filter(
+          (item) =>
+            !(
+              isString(item) &&
+              item !== DatabaseStore.refreshKey &&
+              item.includes(DatabaseStore.refreshKey)
+            ),
+        ),
+      );
+    }
+  }, [DatabaseStore.refreshKey]);
+
   return {
     onExpand,
     onLoad,
@@ -59,6 +81,7 @@ export default function useTreeState(id: string) {
     setSessionId: (dbId: number, sessionId: string) => {
       cache[id].sessionIds[dbId] = sessionId;
     },
+    setLoadedKeys,
     setExpandedKeys,
   };
 }
