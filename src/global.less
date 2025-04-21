@@ -248,7 +248,7 @@ ol {
   display: inline-block;
   margin-bottom: @odc-section-title-margin-bottom;
   overflow: hidden;
-  color: var(--text-color-secondary);
+  color: var(--text-color-hint);
   font-size: @odc-base-font-size;
   line-height: @odc-section-title-line-height;
   white-space: nowrap;
@@ -265,6 +265,28 @@ ol {
     .ant-table {
       border: 1px solid var(--odc-border-color);
       border-bottom: none;
+    }
+  }
+  .ant-table-filter-column {
+    .ant-table-column-title {
+      color: var(--text-color-primary);
+    }
+  }
+  .ant-table-thead {
+    .ant-table-cell {
+      .anticon {
+        color: var(--icon-color-normal);
+      }
+    }
+  }
+  .ant-pagination-next[aria-disabled='false'] {
+    .anticon {
+      color: var(--icon-color-normal);
+    }
+  }
+  .ant-pagination-disabled {
+    .anticon {
+      color: var(--neutral-grey5-color);
     }
   }
 

@@ -292,7 +292,7 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
             })}
           >
             {' '}
-            <QuestionCircleOutlined />{' '}
+            <QuestionCircleOutlined style={{ color: 'var(--text-color-hint)' }} />{' '}
           </Tooltip>
           <span> :</span>
         </div>

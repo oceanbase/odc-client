@@ -139,7 +139,7 @@ const RecordPopover = forwardRef<any, any>((props, ref) => {
               }) /*操作记录*/
             }
           </span>
-          <SyncOutlined onClick={handleReload} />
+          <SyncOutlined onClick={handleReload} style={{ color: 'var(--text-color-hint)' }} />
         </Space>
       }
       open={visible}

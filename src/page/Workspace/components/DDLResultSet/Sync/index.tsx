@@ -123,7 +123,7 @@ const Sync: React.FC<IProps> = (props) => {
           <ToolbarButton
             icon={
               <LoadingOutlined
-                style={{ fontSize: 13, cursor: 'pointer', color: 'var(--brand-blue6-color)' }}
+                style={{ fontSize: 13, cursor: 'pointer', color: 'var(--icon-color-focus)' }}
               />
             }
           />

@@ -20,6 +20,7 @@ const QrCodeWithIcon = ({ size = 75 }: IProps) => {
           size={qrSize}
           className={styles.qrCode}
           style={{ padding }}
+          color="#132039"
         />
       </div>
     </div>

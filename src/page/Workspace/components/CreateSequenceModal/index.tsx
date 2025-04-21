@@ -265,7 +265,7 @@ const CreateSequenceModal: React.FC<IProps> = function (props) {
                   })}
                 >
                   <InputBigNumber
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', borderColor: 'var(--odc-border-color)' }}
                     size="small"
                     placeholder={formatMessage({
                       id: 'workspace.window.createSequence.params.startValue.placeholder',
@@ -294,7 +294,7 @@ const CreateSequenceModal: React.FC<IProps> = function (props) {
                 ]}
               >
                 <InputNumber
-                  style={{ width: '100%' }}
+                  style={{ width: '100%', borderColor: 'var(--odc-border-color)' }}
                   size="small"
                   placeholder={formatMessage({
                     id: 'workspace.window.createSequence.params.increament.placeholder',

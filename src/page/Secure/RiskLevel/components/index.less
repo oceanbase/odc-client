@@ -131,9 +131,9 @@
 
 .tag {
   height: 20px;
-
+  color: var(--text-color-primary);
   .tagLabel {
-    color: var(--text-color-primary);
+    color: var(--text-color-hint);
   }
 }
 
@@ -149,7 +149,12 @@
 .ruleContent {
   .ruleDetail {
     margin-bottom: 8px;
-    color: var(--text-color-primary);
+    color: var(--text-color-hint);
+  }
+  :global {
+    .anticon {
+      color: var(--text-color-hint);
+    }
   }
 }
 

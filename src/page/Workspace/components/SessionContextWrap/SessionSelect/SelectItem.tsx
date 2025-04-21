@@ -22,7 +22,7 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { TaskType } from '@/d.ts';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import Icon, { LoadingOutlined } from '@ant-design/icons';
+import Icon, { ArrowDownOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Divider, Select, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -184,6 +184,7 @@ const SelectItem: React.FC<IProps> = ({
             placeholder={getPlaceholder()}
             style={{ width: width || DEFALT_WIDTH }}
             open={false}
+            className={styles.select}
           />
         </SessionDropdown>
         {value && database?.data ? (

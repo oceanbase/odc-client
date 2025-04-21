@@ -55,9 +55,19 @@
   &-toolbar {
     color: @default-text-color;
     cursor: pointer;
+    :global {
+      .anticon {
+        color: var(--icon-color-normal);
+      }
+    }
 
     &-text {
       color: @default-text-color;
+    }
+    &-icon {
+      &-target {
+        color: var(--icon-color-normal);
+      }
     }
   }
 

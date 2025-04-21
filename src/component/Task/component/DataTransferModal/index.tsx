@@ -45,7 +45,7 @@ const SimpleTextItem: React.FC<{
         style={{
           flexGrow: 0,
           flexShrink: 0,
-          color: 'var(--text-color-primary)',
+          color: 'var(--text-color-hint)',
         }}
       >
         {formatMessage(
@@ -62,7 +62,7 @@ const SimpleTextItem: React.FC<{
         style={{
           flexGrow: 1,
           wordBreak: 'break-all',
-          color: 'var(--text-color-secondary)',
+          color: 'var(--text-color-primary)',
         }}
       >
         {content}

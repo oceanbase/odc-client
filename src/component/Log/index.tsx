@@ -334,8 +334,8 @@ const Log: React.FC<LogProps> = ({
                 onClick={item.onClick}
                 key={item.key}
               >
-                <Typography.Text className={`${prefixCls}-toolbar-text`}>
-                  {item.icon}
+                <Typography.Text className={`${prefixCls}-toolbar-icon`}>
+                  <span className={`${prefixCls}-toolbar-icon-target`}>{item.icon}</span>
                 </Typography.Text>
                 <Typography.Text className={`${prefixCls}-toolbar-text`}>
                   {item.text}

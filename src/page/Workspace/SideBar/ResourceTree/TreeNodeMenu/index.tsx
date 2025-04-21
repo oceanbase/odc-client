@@ -102,11 +102,11 @@ const TreeNodeMenu = (props: IProps) => {
       {node.title}
       {node.warning ? (
         <Tooltip placement="right" title={node.warning}>
-          <InfoCircleFilled style={{ color: 'var(--icon-color-3)', paddingLeft: 5 }} />
+          <InfoCircleFilled style={{ color: 'var(--icon-color-normal)', paddingLeft: 5 }} />
         </Tooltip>
       ) : null}
       {node.tip && showTip ? (
-        <span style={{ color: 'var(--text-color-placeholder)', paddingLeft: 5 }}>{node.tip}</span>
+        <span style={{ color: 'var(--text-color-hint)', paddingLeft: 5 }}>{node.tip}</span>
       ) : null}
       {isGroupNode(type) && isShowGlobalSearchEntrance ? (
         <SearchOutlined

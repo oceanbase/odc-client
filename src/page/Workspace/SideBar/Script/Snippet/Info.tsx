@@ -36,7 +36,7 @@ const SnippetInfoToolTip: React.FC<{
       content={
         <div>
           <dl>
-            <dt>
+            <dt className={styles['snippet-value']}>
               {
                 formatMessage({
                   id: 'odc.component.SnippetCard.Syntax',
@@ -45,7 +45,9 @@ const SnippetInfoToolTip: React.FC<{
               }
             </dt>
             <dd>
-              <pre style={{ maxHeight: 300 }}>{getSnippetText(snippet.body)}</pre>
+              <pre className={styles['snippet-value']} style={{ maxHeight: 300 }}>
+                {getSnippetText(snippet.body)}
+              </pre>
             </dd>
             <dt>
               {

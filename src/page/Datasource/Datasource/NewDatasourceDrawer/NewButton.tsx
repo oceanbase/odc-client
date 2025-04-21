@@ -151,7 +151,11 @@ const NewDatasourceButton: React.FC<{
         <>
           <Divider style={{ margin: 0 }} />
           <Space style={{ padding: 8 }}>
-            <Button type="text" icon={<ImportOutlined />} onClick={batchImport}>
+            <Button
+              type="text"
+              icon={<ImportOutlined style={{ color: 'var(--icon-color-normal)' }} />}
+              onClick={batchImport}
+            >
               {formatMessage({
                 id: 'odc.component.BatchImportButton.BatchImport',
                 defaultMessage: '批量导入',

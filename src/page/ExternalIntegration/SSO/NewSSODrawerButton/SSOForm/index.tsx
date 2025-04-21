@@ -53,6 +53,7 @@ import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } f
 import { LDAPPartForm, OAUTH2PartForm, OIDCPartForm, SAMLPartForm } from './PartForm';
 import SAMLModalConfirm from './SAMLModalConfirm';
 import odc from '@/plugins/odc';
+import styles from './index.less';
 
 export const requiredRule = {
   required: true,
@@ -874,32 +875,21 @@ export default inject('userStore')(
                                 defaultMessage: '请输入自定义字段映射规则',
                               })} /*请输入自定义字段映射规则*/
                             />
+                            <Icon
+                              style={{
+                                cursor: 'pointer',
+                                paddingLeft: 10,
+                                color: 'var(--text-color-hint)',
+                              }}
+                              component={DeleteOutlined}
+                              onClick={() => operation.remove(index)}
+                            />
                           </Form.Item>
-                          <Icon
-                            style={{
-                              cursor: 'pointer',
-                              paddingBottom: 10,
-                            }}
-                            component={DeleteOutlined}
-                            onClick={() => operation.remove(index)}
-                          />
                         </Space>
                       );
                     })}
-                    <Button
-                      style={{
-                        width: '100%',
-                      }}
-                      onClick={() => operation.add()}
-                      type="dashed"
-                    >
-                      <Icon
-                        style={{
-                          verticalAlign: 'text-bottom',
-                        }}
-                        component={PlusOutlined}
-                      />
-
+                    <Button className={styles.add} onClick={() => operation.add()} type="dashed">
+                      <Icon className={styles.icon} component={PlusOutlined} />
                       {
                         formatMessage({
                           id: 'odc.NewSSODrawerButton.SSOForm.Add',

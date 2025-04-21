@@ -134,7 +134,7 @@ export function getItems(
   const { parameters, id, status, project } = task;
   const haveOperationPermission = useMemo(() => {
     return (
-      project.currentUserResourceRoles?.some((item) =>
+      project?.currentUserResourceRoles?.some((item) =>
         [ProjectRole.DBA, ProjectRole.OWNER].includes(item),
       ) || userStore?.user?.id === task?.creator?.id
     );

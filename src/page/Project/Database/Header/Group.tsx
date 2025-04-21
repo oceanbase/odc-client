@@ -52,8 +52,8 @@ const Group: React.FC<IProps> = function () {
         component={GroupSvg}
         style={
           context.groupMode !== DatabaseGroup.none
-            ? { color: 'var(--brand-blue6-color)', fontSize: 16 }
-            : { color: 'var(--neutral-grey8-color)', fontSize: 16 }
+            ? { color: 'var(--icon-color-focus)', fontSize: 16 }
+            : { color: 'var(--icon-color-normal)', fontSize: 16 }
         }
       />
     </Dropdown>
