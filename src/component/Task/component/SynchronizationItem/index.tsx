@@ -33,7 +33,7 @@ const SynchronizationItem: React.FC<IProps> = ({ form, targetDatabase }) => {
               })
             : ''
         }
-        style={{ marginBottom: 8 }}
+        style={{ marginBottom: syncTableStructure ? 8 : 24 }}
       >
         <Tooltip
           title={
@@ -75,6 +75,7 @@ const SynchronizationItem: React.FC<IProps> = ({ form, targetDatabase }) => {
             name="syncTableStructure"
             initialValue={[SyncTableStructureEnum.COLUMN, SyncTableStructureEnum.CONSTRAINT]}
             required
+            style={{ marginBottom: 24 }}
           >
             <Checkbox.Group options={SyncTableStructureOptions} />
           </Form.Item>

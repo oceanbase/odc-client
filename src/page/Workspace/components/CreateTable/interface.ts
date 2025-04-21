@@ -211,6 +211,7 @@ export interface ITableRangePartition {
     key?: string;
     /* 二级分区才会有 */
     parentName?: string;
+    valueForColumnDisplay?: string;
   }[];
   subPartitions?: TablePartition;
   subpartitionTemplated?: boolean;
@@ -227,6 +228,7 @@ export interface ITableListPartition {
     ordinalPosition?: number;
     key?: string;
     parentName?: string;
+    valueForColumnDisplay?: string;
   }[];
   subPartitions?: TablePartition;
   subpartitionTemplated?: boolean;
@@ -271,6 +273,7 @@ export interface ITableRangeColumnsPartition {
     ordinalPosition?: number;
     key?: string;
     parentName?: string;
+    valueForColumnDisplay?: string;
   }[];
   subPartitions?: TablePartition;
   subpartitionTemplated?: boolean;
@@ -286,6 +289,7 @@ export interface ITableListColumnsPartition {
     ordinalPosition?: number;
     key?: string;
     parentName?: string;
+    valueForColumnDisplay?: string;
   }[];
   subPartitions?: TablePartition;
   subpartitionTemplated?: boolean;

@@ -16,7 +16,7 @@ const MaxAllowedDirtyRowCount: React.FC = () => {
   return isVisible ? (
     <Form.Item
       style={{
-        marginBottom: 18,
+        marginBottom: 24,
       }}
       name="maxAllowedDirtyRowCount"
       label="跳过不清理数据"

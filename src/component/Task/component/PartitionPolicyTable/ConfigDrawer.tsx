@@ -139,7 +139,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         </Space>
       }
     >
-      <Descriptions column={1}>
+      <Descriptions column={1} style={{ paddingBottom: 16 }}>
         <Descriptions.Item
           label={
             formatMessage({
@@ -173,7 +173,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       </Descriptions>
       {createKeyConfigs?.length > 0 && (
         <>
-          <Descriptions column={1}>
+          <Descriptions column={1} style={{ paddingBottom: 16 }}>
             <Descriptions.Item
               label={
                 formatMessage({

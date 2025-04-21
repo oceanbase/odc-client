@@ -753,7 +753,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               <Form.Item
                 name="deleteAfterMigration"
                 valuePropName="checked"
-                style={{ marginBottom: 18 }}
+                style={{ marginBottom: 24 }}
                 extra={
                   <span>
                     {
