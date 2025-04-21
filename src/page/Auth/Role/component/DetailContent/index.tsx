@@ -61,11 +61,11 @@ const getColumns = (roles: IManagerRole[]) => {
       render: (name, record) => (
         <Tooltip
           placement="right"
-          color="var(--background-normal-color)"
           overlayClassName={styles.userName}
+          color="var(--background-secondry-color)"
           title={
-            <Space direction="vertical">
-              <span>
+            <Space direction="vertical" className={styles.description}>
+              <span className={styles.label}>
                 {
                   formatMessage(
                     {
@@ -73,14 +73,14 @@ const getColumns = (roles: IManagerRole[]) => {
                       defaultMessage: '姓名：{name}',
                     },
                     {
-                      name,
+                      name: <span className={styles.value}>{name}</span>,
                     },
                   )
 
                   /* 姓名：{name} */
                 }
               </span>
-              <span>
+              <span className={styles.label}>
                 {
                   formatMessage(
                     {
@@ -88,7 +88,7 @@ const getColumns = (roles: IManagerRole[]) => {
                       defaultMessage: '账号：{recordAccountName}',
                     },
                     {
-                      recordAccountName: record.accountName,
+                      recordAccountName: <span className={styles.value}>{record.accountName}</span>,
                     },
                   )
 

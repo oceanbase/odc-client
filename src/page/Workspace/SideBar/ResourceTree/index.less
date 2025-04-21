@@ -69,11 +69,17 @@
             }
           }
         }
+        .anticon {
+          color: var(--icon-color-normal);
+        }
       }
     }
     .shortCut {
       color: var(--text-color-hint);
       background-color: var(--hover-color2);
+      .anticon {
+        color: var(--icon-color-normal);
+      }
       padding: 0px 2px;
       border: 1px solid transparent;
       border-radius: 3px;
@@ -109,6 +115,11 @@
             display: none;
             align-items: center;
             background-color: transparent;
+            :global {
+              .anticon {
+                color: var(--icon-color-normal);
+              }
+            }
           }
           .env {
             position: absolute;

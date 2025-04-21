@@ -6,7 +6,7 @@
   .disabledAction {
     cursor: pointer;
     font-size: 12px;
-    color: #1890ff;
+    color: var(--text-color-link);
     line-height: 20px;
   }
   .disabledAction {
@@ -25,5 +25,10 @@
   .ant-table-row:nth-child(n) {
     height: 40px;
     max-height: 40px;
+  }
+  :global {
+    .ant-table-thead .ant-table-cell {
+      background-color: var(--table-header-background-color);
+    }
   }
 }

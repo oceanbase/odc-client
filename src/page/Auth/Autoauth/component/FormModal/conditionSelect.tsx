@@ -19,6 +19,7 @@ import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, Space, Typography } from 'antd';
 import React, { useState } from 'react';
+import styles from './index.less';
 
 export const operationOptions = [
   {
@@ -180,6 +181,7 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                   />
                 </Form.Item>
                 <DeleteOutlined
+                  style={{ color: 'var(--text-color-hint)' }}
                   onClick={() => {
                     remove(name);
                   }}
@@ -189,6 +191,7 @@ const ConditionSelect: React.FC<IProps> = (props) => {
 
             <Form.Item style={{ marginBottom: 0, width: '630px' }}>
               <Button
+                className={styles.conditionSelectAdd}
                 type="dashed"
                 onClick={() =>
                   add({
@@ -199,7 +202,7 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                   })
                 }
                 block
-                icon={<PlusOutlined />}
+                icon={<PlusOutlined className={styles.icon} />}
               >
                 {
                   formatMessage({

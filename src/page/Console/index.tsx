@@ -41,7 +41,7 @@ const paddingCal = (currentLayout) => {
 };
 
 const aboutUsIcons = [
-  <Icon component={DownloadSvg} style={{ color: '#1890ff', fontSize: 14 }} />,
+  <Icon component={DownloadSvg} style={{ color: '#006AFF', fontSize: 14 }} />,
   <Icon component={SendSvg} style={{ color: '#52c41a', fontSize: 14 }} />,
   <Icon component={GithubSvg} style={{ fontSize: 14 }} />,
 ];
@@ -287,7 +287,9 @@ const Console = () => {
                         <Divider variant="dashed" style={{ margin: '20px 0' }} />
                         <LabelWithIcon
                           gap={8}
-                          icon={<ExperimentOutlined />}
+                          icon={
+                            <ExperimentOutlined style={{ color: 'var(--icon-color-normal)' }} />
+                          }
                           label={
                             <span
                               className={`${styles.articleTitleTypograpy} ${styles.moreFunctionIntro}`}

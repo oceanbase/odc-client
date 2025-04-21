@@ -62,6 +62,7 @@ const OperationItem: React.FC<IOperationItemProps> = ({ option, onClick }) => {
     default:
       operation = (
         <Button
+          className={styles.deafaultOperation}
           type={isPrimary ? 'primary' : 'default'}
           disabled={disabled}
           icon={icon}

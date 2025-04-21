@@ -69,7 +69,7 @@ export default function Info() {
         width: 500,
         content: (
           <>
-            <div style={{ color: 'rgba(0, 0, 0, 0.45)' }}>
+            <div style={{ color: 'var(--text-color-secondary)' }}>
               {formatMessage(
                 {
                   id: 'src.page.Project.Setting.Info.4EF2A2EA',

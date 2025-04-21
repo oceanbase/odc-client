@@ -127,7 +127,9 @@ export const getColumns = ({
         >
           <TooltipContent content={record?.metadata?.name} maxWdith={180} />
           <Tooltip title={record?.metadata?.description}>
-            <QuestionCircleOutlined style={{ marginLeft: '8px' }} />
+            <QuestionCircleOutlined
+              style={{ marginLeft: '8px', color: 'var(--text-color-hint)' }}
+            />
           </Tooltip>
         </div>
       ),

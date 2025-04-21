@@ -77,9 +77,10 @@ export const DatabaseOwnerSelect = ({
                   id: 'src.page.Project.Database.components.DatabaseOwnerSelect.tsx.34B8A74A',
                   defaultMessage: '库管理员是数据库和表的负责人，可以在审批流程中引用',
                 })}
-                overlayInnerStyle={{ width: 268 }}
+                color="#fff"
+                overlayInnerStyle={{ width: 268, color: '#132039' }}
               >
-                <QuestionCircleOutlined />
+                <QuestionCircleOutlined style={{ color: 'var(--icon-normal-color)' }} />
               </Tooltip>
             </span>
           }

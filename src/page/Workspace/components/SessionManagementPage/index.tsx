@@ -18,7 +18,7 @@ import Toolbar from '@/component/Toolbar';
 import { IDatabaseSession } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { groupBySessionId, sortNumber, sortString } from '@/util/utils';
-import { SyncOutlined } from '@ant-design/icons';
+import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { Input, Layout, message, Space, Spin, Tooltip, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { useContext, useEffect, useState } from 'react';

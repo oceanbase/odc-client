@@ -20,7 +20,7 @@
               height: 24px;
               padding-top: 2px;
               padding-bottom: 2px;
-              background-color: var(--neutral-grey2-color);
+              background-color: var(--table-header-background-color);
               border-bottom: none;
 
               &::before {
@@ -39,6 +39,30 @@
           }
         }
       }
+    }
+  }
+}
+.table {
+  :global {
+    .ant-table-thead {
+      .ant-table-cell {
+        .anticon {
+          color: var(--icon-color-normal);
+        }
+      }
+    }
+    .ant-pagination-next[aria-disabled='false'] {
+      .anticon {
+        color: var(--icon-color-normal);
+      }
+    }
+    .ant-pagination-disabled {
+      .anticon {
+        color: var(--icon-color-disable);
+      }
+    }
+    .ant-select-arrow {
+      color: var(--icon-color-normal);
     }
   }
 }

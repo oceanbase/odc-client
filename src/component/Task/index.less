@@ -23,6 +23,16 @@
     .ant-table-tbody > tr > td > .ant-table-wrapper:only-child .ant-table {
       margin-top: 0;
     }
+    .ant-pagination-next[aria-disabled='false'] {
+      .anticon {
+        color: var(--icon-color-normal);
+      }
+    }
+    .ant-pagination-disabled {
+      .anticon {
+        color: var(--icon-color-disable);
+      }
+    }
   }
 }
 
@@ -148,7 +158,7 @@
   padding-top: 6px;
   .groupName {
     padding-top: 6px;
-    color: var(--text-color-placeholder);
+    color: var(--text-color-hint);
     line-height: 28px;
   }
   .groupItem {
@@ -163,8 +173,13 @@
       background-color: var(--hover-color);
     }
     &.selected {
-      color: var(--text-color-link);
-      background-color: var(--brand-blue1-color);
+      :global {
+        .ant-typography {
+          line-height: 28px;
+          color: var(--text-color-link);
+        }
+      }
+      background-color: var(--focus-color);
       border-radius: 2px;
     }
     :global {

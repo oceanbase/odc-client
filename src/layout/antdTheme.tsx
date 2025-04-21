@@ -1,12 +1,32 @@
 import { ThemeConfig } from 'antd/es';
 
+const colorToken = {
+  action: '#006aff',
+  warning: '#ffa21a',
+  error: '#f93939',
+  success: '#0ac185',
+};
+
 export const theme: ThemeConfig = {
   token: {
     fontSize: 12,
     controlHeight: 28,
     borderRadius: 2,
-    colorText: '#132039',
+    colorText: 'var(--text-color-primary)',
+    colorTextSecondary: 'var(--text-color-hint)',
     colorTextTertiary: 'var(--text-color-hint)',
+    colorBgContainerDisabled: 'var(--forbiden-color)',
+    colorTextDisabled: 'var(--text-color-placeholder)',
+    colorTextPlaceholder: 'var(--text-color-placeholder)',
+    colorIcon: 'var(--icon-color-normal)',
+    colorSplit: 'var(--divider-color)',
+
+    // antd seed token 只能读具体值，无法读取 less 变量
+    colorPrimary: colorToken.action,
+    colorLink: colorToken.action,
+    colorWarning: colorToken.warning,
+    colorError: colorToken.error,
+    colorSuccess: colorToken.success,
   },
   components: {
     Tree: {
@@ -14,28 +34,48 @@ export const theme: ThemeConfig = {
       colorBgContainer: 'transparent',
       paddingXS: 4,
     },
-    Tooltip: {},
+    Transfer: {
+      colorIcon: 'var(--icon-color-normal)',
+      colorBorder: 'var(--odc-border-color)',
+    },
+    Radio: {
+      colorPrimaryBorder: 'var(--odc-border-color)',
+    },
+    Drawer: {
+      colorBorder: 'var(--odc-border-color)',
+      colorSplit: 'var(--odc-border-color)',
+    },
+    Divider: {
+      colorSplit: 'var(--divider-color)',
+    },
     Input: {
-      colorBorder: '#CDD5E4',
-      colorTextPlaceholder: '#C1CBE0',
+      colorBorder: 'var(--odc-border-color)',
+      colorIcon: 'var(--icon-color-normal)',
+    },
+    Tabs: {
+      colorBorder: 'var(--odc-border-color)',
     },
     Select: {
-      colorBorder: '#CDD5E4',
-      colorTextPlaceholder: '#C1CBE0',
+      colorBorder: 'var(--odc-border-color)',
+      colorIcon: 'var(--icon-color-normal)',
     },
     Checkbox: {
-      colorBorder: '#CDD5E4',
+      colorBorder: 'var(--odc-border-color)',
     },
     Menu: {
       itemBorderRadius: 0,
       horizontalItemBorderRadius: 0,
       subMenuItemBorderRadius: 0,
     },
+    Dropdown: {
+      controlItemBgActive: 'var(--hover-color)',
+    },
     Button: {
-      defaultBorderColor: '#CDD5E4',
+      defaultBorderColor: 'var(--odc-border-color)',
     },
     Table: {
       colorTextHeading: 'var(--text-color-primary)',
+      borderColor: 'var(--table-border-color)',
     },
     Modal: {
       contentBg: 'var(--background-primary-color)',

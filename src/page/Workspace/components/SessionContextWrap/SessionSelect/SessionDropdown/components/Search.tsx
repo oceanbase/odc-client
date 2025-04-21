@@ -50,7 +50,7 @@ const RemoveSplitInput = forwardRef(function RemoveSplitInput({ value, ...rest }
     <Input
       ref={ref}
       value={value}
-      prefix={<SearchOutlined />}
+      prefix={<SearchOutlined style={{ color: 'var(--icon-color-normal)' }} />}
       suffix={
         <span style={{ paddingRight: 15, color: 'var(--text-color-hint)' }}>
           {SearchTypeText[type]}
@@ -73,7 +73,7 @@ const Search: React.FC<IProps> = function (props) {
     return (
       <Input
         value={searchValueByDataSource}
-        suffix={<SearchOutlined />}
+        suffix={<SearchOutlined style={{ color: 'var(--icon-normal-color)' }} />}
         onChange={(e) => {
           setSearchValueByDataSource(e.target.value);
         }}

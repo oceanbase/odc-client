@@ -117,7 +117,9 @@ const SessionSelect: React.FC<IProps> = (props) => {
               style={{ fontSize: 16, verticalAlign: 'middle', color: dsStyle?.icon?.color }}
             />
 
-            <span style={{ lineHeight: 1 }}>{context?.session?.connection?.name}</span>
+            <span style={{ lineHeight: 1, color: 'var(--text-color-primary)' }}>
+              {context?.session?.connection?.name}
+            </span>
             <DownOutlined />
           </Space>
         ) : (
@@ -144,7 +146,7 @@ const SessionSelect: React.FC<IProps> = (props) => {
       >
         {login.isPrivateSpace() ? null : (
           <span className={styles.describeItem}>
-            <span>
+            <span className={styles.label}>
               {formatMessage({
                 id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.38EA55F4' /*项目：*/,
                 defaultMessage: '项目：',
@@ -163,7 +165,7 @@ const SessionSelect: React.FC<IProps> = (props) => {
         )}
         {context?.session?.odcDatabase?.dataSource?.name && (
           <span className={styles.describeItem}>
-            <span>
+            <span className={styles.label}>
               {formatMessage({
                 id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.CD007EC1' /*数据源：*/,
                 defaultMessage: '数据源：',

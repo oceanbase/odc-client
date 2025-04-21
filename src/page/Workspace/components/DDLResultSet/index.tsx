@@ -1184,10 +1184,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 </>
               ) : null}
               <Input.Search
-                style={{
-                  marginLeft: 8,
-                  width: 136,
-                }}
+                className={styles.search}
                 placeholder={
                   formatMessage({
                     id: 'odc.components.DDLResultSet.EnterAKeyword',

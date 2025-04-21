@@ -328,7 +328,7 @@ const WindowManager: React.FC<IProps> = function (props) {
               alignItems: 'center',
             }}
           >
-            <PlusOutlined />
+            <PlusOutlined style={{ color: 'var(--icon-color-normal)' }} />
             <Dropdown
               trigger={['click']}
               menu={{
@@ -378,7 +378,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                   e.stopPropagation();
                 }}
               >
-                <DownOutlined />
+                <DownOutlined style={{ color: 'var(--icon-color-normal)' }} />
               </div>
             </Dropdown>
           </div>

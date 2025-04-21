@@ -16,6 +16,10 @@
     }
 
     .ant-tabs-nav .ant-tabs-tab {
+      &:hover {
+        color: unset;
+        background: var(--hover-color) !important;
+      }
       width: 100px;
       max-width: 160px;
       height: 28px !important;
@@ -32,10 +36,6 @@
       border-radius: unset !important;
       .ant-tabs-tab-btn {
         width: 100%;
-      }
-      &:hover {
-        color: unset;
-        background: var(--background-secondry-color) !important;
       }
       &::after {
         position: absolute;

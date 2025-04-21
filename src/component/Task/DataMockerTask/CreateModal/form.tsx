@@ -34,6 +34,7 @@ import RuleConfigTable from './RuleConfigTable';
 import { convertFormToServerColumns, getDefaultRule, getDefaultValue } from './RuleContent';
 import { IMockFormData, MockStrategy, MockStrategyTextMap, RuleConfigList } from './type';
 import { NumberRuleType } from './RuleContent/ruleItems/NumberItem';
+import styles from './index.less';
 
 const { Option } = Select;
 
@@ -193,6 +194,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
             executionStrategy: TaskExecStrategy.AUTO,
             databaseName,
           }}
+          className={styles.mockData}
         >
           <Row gutter={14}>
             <Col span={12}>

@@ -707,7 +707,10 @@ class FormModal extends React.PureComponent<IProps, IState> {
                               /* 随机密码 */
                             }
                           </Button>
-                          <DeleteOutlined onClick={() => this.handleRemove(name, remove)} />
+                          <DeleteOutlined
+                            className={styles.icon}
+                            onClick={() => this.handleRemove(name, remove)}
+                          />
                         </Space>
                       ))}
 
@@ -716,7 +719,8 @@ class FormModal extends React.PureComponent<IProps, IState> {
                           type="dashed"
                           onClick={() => add(clone(defaultUserInfo))}
                           block
-                          icon={<PlusOutlined />}
+                          className={styles.addUser}
+                          icon={<PlusOutlined className={styles.icon} />}
                         >
                           {
                             formatMessage({

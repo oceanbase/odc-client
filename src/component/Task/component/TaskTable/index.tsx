@@ -546,7 +546,7 @@ const TaskTable: React.FC<IProps> = inject(
           {items?.map((i) => {
             return (
               <Space direction="vertical">
-                <Text type="secondary" key={i.key}>
+                <Text type="secondary" style={{ color: 'var(--text-color-hint)' }} key={i.key}>
                   {i?.label}
                 </Text>
                 <Space size={0} direction="vertical">
@@ -599,7 +599,7 @@ const TaskTable: React.FC<IProps> = inject(
                     }) /*新建工单*/
                   }
 
-                  <DownOutlined />
+                  <DownOutlined style={{ color: '#fff' }} />
                 </Button>
               </Popover>
             ),

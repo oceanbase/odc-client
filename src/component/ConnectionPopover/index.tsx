@@ -25,7 +25,7 @@ import { isLogicalDatabase } from '@/util/database';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
-import { Space, Tooltip } from 'antd';
+import { Space, Tooltip, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useMemo } from 'react';
 import RiskLevelLabel from '../RiskLevelLabel';
@@ -50,7 +50,9 @@ const ConnectionPopover: React.FC<{
   const databaseRemarkDescription = useMemo(() => {
     return (
       <div style={{ display: 'flex' }}>
-        <span style={{ whiteSpace: 'nowrap' }}>备注：</span>
+        <span style={{ whiteSpace: 'nowrap' }} className={styles.label}>
+          备注：
+        </span>
         <div style={{ width: '260px', wordBreak: 'break-word' }}>{database?.remark ?? '-'}</div>
       </div>
     );
@@ -59,7 +61,7 @@ const ConnectionPopover: React.FC<{
   const dataSourceDescription = useMemo(() => {
     return (
       <div style={{ display: 'flex' }}>
-        数据源：
+        <span className={styles.label}>数据源：</span>
         <div>{connection?.name || database?.dataSource?.name || '-'}</div>
       </div>
     );
@@ -68,7 +70,7 @@ const ConnectionPopover: React.FC<{
   const projectDescription = useMemo(() => {
     return (
       <div style={{ display: 'flex' }}>
-        项目：
+        <span className={styles.label}>项目：</span>
         <div>{database?.project?.name || connection?.projectName || '-'}</div>
       </div>
     );
@@ -207,14 +209,16 @@ const ConnectionPopover: React.FC<{
 
   let clusterAndTenant = (
     <div>
-      {
-        formatMessage({
-          id: 'odc.components.Header.ConnectionPopover.ClusterTenant',
-          defaultMessage: '集群/租户：',
-        })
+      <span className={styles.label}>
+        {
+          formatMessage({
+            id: 'odc.components.Header.ConnectionPopover.ClusterTenant',
+            defaultMessage: '集群/租户：',
+          })
 
-        /*集群/租户：*/
-      }
+          /*集群/租户：*/
+        }
+      </span>
       {connection?.clusterName || '- '}/{connection?.tenantName || ' -'}
     </div>
   );
@@ -257,18 +261,20 @@ const ConnectionPopover: React.FC<{
     const { type } = connection;
     return (
       <div>
-        {
-          formatMessage(
-            {
-              id: 'odc.component.ConnectionPopover.TypeConnecttypetexttype',
-              defaultMessage: '类型：{ConnectTypeTextType}',
-            },
+        <span className={styles.label}>
+          {
+            formatMessage(
+              {
+                id: 'odc.component.ConnectionPopover.TypeConnecttypetexttype',
+                defaultMessage: '类型：{ConnectTypeTextType}',
+              },
 
-            { ConnectTypeTextType: ConnectTypeText(type) },
-          )
+              { ConnectTypeTextType: <Typography.Text>{ConnectTypeText(type)}</Typography.Text> },
+            )
 
-          /*类型：{ConnectTypeTextType}*/
-        }
+            /*类型：{ConnectTypeTextType}*/
+          }
+        </span>
       </div>
     );
   }
@@ -318,20 +324,22 @@ const ConnectionPopover: React.FC<{
         {renderConnectionMode()}
         {haveOCP() ? null : (
           <div>
-            {
-              formatMessage({
-                id: 'odc.components.Header.ConnectionPopover.HostnamePort',
-                defaultMessage: '主机名/端口：',
-              })
+            <span className={styles.label}>
+              {
+                formatMessage({
+                  id: 'odc.components.Header.ConnectionPopover.HostnamePort',
+                  defaultMessage: '主机名/端口：',
+                })
 
-              /*主机名/端口：*/
-            }
+                /*主机名/端口：*/
+              }
+            </span>
             {connection?.host}:{connection?.port}
           </div>
         )}
 
         {clusterAndTenant}
-        <div>
+        <div className={styles.label}>
           {
             formatMessage(
               {
@@ -339,7 +347,9 @@ const ConnectionPopover: React.FC<{
                 defaultMessage: '数据库用户名：{connectionDbUser}',
               },
 
-              { connectionDbUser: connection?.username ?? '-' },
+              {
+                connectionDbUser: <Typography.Text>{connection?.username ?? '-'}</Typography.Text>,
+              },
             )
 
             /*数据库用户名：{connectionDbUser}*/

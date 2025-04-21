@@ -256,7 +256,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
           pagination={false}
         />
       ) : (
-        <RecentlyDatabaseEmpty height={391} />
+        <RecentlyDatabaseEmpty height={391} color="var(--text-color-secondary)" />
       )}
       <ExportTaskCreateModal />
       <ImportTaskCreateModal />
