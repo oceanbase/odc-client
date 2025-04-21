@@ -17,7 +17,7 @@
 import HelpDoc from '@/component/helpDoc';
 import { PARTITION_KEY_INVOKER } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { CloseCircleFilled } from '@ant-design/icons';
+import { CloseCircleFilled, InfoCircleOutlined } from '@ant-design/icons';
 import {
   AutoComplete,
   DatePicker,
@@ -359,7 +359,6 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                       : incrementByDateOptionsInChar
                   }
                   style={{ width: 160 }}
-                  placeholder="输入或选择格式"
                   filterOption={(inputValue, option) =>
                     option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                   }
@@ -370,7 +369,15 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                       defaultPrecision,
                     );
                   }}
-                />
+                >
+                  <Input
+                    suffix={
+                      <Tooltip title="请输入格式，格式需与字段内容保持一致。">
+                        <InfoCircleOutlined style={{ color: 'var(--icon-color-normal)' }} />
+                      </Tooltip>
+                    }
+                  />
+                </AutoComplete>
               </Form.Item>
             )}
           </Input.Group>

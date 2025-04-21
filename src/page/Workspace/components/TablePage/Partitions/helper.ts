@@ -70,7 +70,9 @@ export function getRowsByPartType(
             name: p.name,
             position,
             partValues:
-              connectionMode === ConnectionMode.OB_ORACLE ? formatMultiListValue(p.value) : p.value,
+              connectionMode === ConnectionMode.OB_ORACLE
+                ? formatMultiListValue(p.valueForColumnDisplay)
+                : p.valueForColumnDisplay,
             isNew: p.isNew,
             key: p.ordinalPosition ?? p.key,
             parentName: p?.parentName,
@@ -86,8 +88,8 @@ export function getRowsByPartType(
             position,
             partValues:
               connectionMode === ConnectionMode.OB_ORACLE
-                ? formatMultiRangeValue(p.value)
-                : p.value,
+                ? formatMultiRangeValue(p.valueForColumnDisplay)
+                : p.valueForColumnDisplay,
             isNew: p.isNew,
             key: p.ordinalPosition ?? p.key,
             parentName: p?.parentName,

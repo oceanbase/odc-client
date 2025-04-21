@@ -83,11 +83,9 @@ const FormItemPanel: React.FC<IProps> = function (props) {
         </div>
       ) : null}
       <div
+        className={styles.content}
         style={{
-          background: 'var(--background-tertraiy-color)',
-          padding: '11px 12px 8px 12px',
-          paddingBottom: noPaddingBottom ? '0px' : '8px',
-          margin: '0px 0px 16px 0px',
+          paddingBottom: noPaddingBottom ? '0px' : '16px',
         }}
       >
         <div>{overview}</div>

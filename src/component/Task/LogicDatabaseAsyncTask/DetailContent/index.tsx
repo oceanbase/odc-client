@@ -70,7 +70,7 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
             defaultMessage: '所属项目',
           })}
         >
-          {task?.database?.project?.name || '-'}
+          {task?.project?.name || '-'}
         </Descriptions.Item>
       </Descriptions>
       <SimpleTextItem

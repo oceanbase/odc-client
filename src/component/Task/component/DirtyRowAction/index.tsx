@@ -37,7 +37,7 @@ const DirtyRowAction: React.FC<IProps> = ({ dependentField }: IProps) => {
     <>
       {isVisible ? (
         <Form.Item
-          style={{ marginBottom: 18 }}
+          style={{ marginBottom: 24 }}
           label={'源端目标端数据不一致处理'}
           name="dirtyRowAction"
           required={true}

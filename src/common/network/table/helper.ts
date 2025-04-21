@@ -443,10 +443,11 @@ export function convertServerTablePartitionToTablePartition(
           return Object.assign(
             {
               name: item.name,
-              value:
+              valueForColumnDisplay:
                 dbMode === ConnectionMode.OB_ORACLE
                   ? getMultiPartitionKeyValue(columns, item)
                   : getSinglePartitionKeyValue(item),
+              value: item.maxValues?.join?.(', '),
               ordinalPosition: item.ordinalPosition,
             },
             keyName === PartitionLevelEnum.subpartitions
@@ -492,10 +493,11 @@ export function convertServerTablePartitionToTablePartition(
           return Object.assign(
             {
               name: item.name,
-              value:
+              valueForColumnDisplay:
                 dbMode === ConnectionMode.OB_ORACLE
                   ? getMultiPartitionKeyValue(columns, item)
                   : getSinglePartitionKeyValue(item),
+              value: item.valuesList?.map((item) => item.join(',')).join(','),
               ordinalPosition: item.ordinalPosition,
             },
             keyName === PartitionLevelEnum.subpartitions

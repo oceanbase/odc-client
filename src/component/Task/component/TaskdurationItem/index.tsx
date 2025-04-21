@@ -19,7 +19,7 @@ const TaskDurationItem: React.FC<IProps> = ({ form }) => {
           id: 'src.component.Task.component.TaskdurationItem.7B7A6912',
           defaultMessage: '任务启动指定时长后，若未完成则会暂停调度，等待下一次调度',
         })}
-        style={{ marginBottom: 8 }}
+        style={{ marginBottom: hasTaskDuration ? 8 : 24 }}
       >
         <Checkbox checked={hasTaskDuration} onChange={(e) => setTaskDuration(e.target.checked)}>
           {formatMessage({
@@ -29,7 +29,7 @@ const TaskDurationItem: React.FC<IProps> = ({ form }) => {
         </Checkbox>
       </Form.Item>
       {hasTaskDuration && (
-        <Space size={4} align="center" style={{ marginBottom: 12 }}>
+        <Space size={4} align="center" style={{ marginBottom: 24 }}>
           <Form.Item
             style={{
               marginBottom: 0,
