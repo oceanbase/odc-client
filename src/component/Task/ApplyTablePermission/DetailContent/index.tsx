@@ -23,6 +23,7 @@ import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider, Space } from 'antd';
 import { useMemo } from 'react';
 import { getExpireTimeLabel, permissionOptionsMap } from '../';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 
 const getConnectionColumns = () => {
   return [
@@ -68,9 +69,10 @@ const getConnectionColumns = () => {
 
 interface IProps {
   task: TaskDetail<IApplyTablePermissionTaskParams>;
+  hasFlow: boolean;
 }
 const TaskContent: React.FC<IProps> = (props) => {
-  const { task } = props;
+  const { task, hasFlow } = props;
   const { parameters, database } = task || {};
   /**
    * 数据处理成每个表一行
@@ -78,12 +80,13 @@ const TaskContent: React.FC<IProps> = (props) => {
   const dataSource = useMemo(() => {
     const tableList = [];
     for (const table of parameters?.tables || []) {
-      const { tableName, databaseName, dataSourceName } = table;
+      const { tableName, databaseName, dataSourceName, tableId } = table;
       tableList.push({
         tableName,
         databaseName,
         dataSourceName,
         dataSourceType: database?.dataSource?.type,
+        tableId,
       });
     }
     return tableList;
@@ -111,6 +114,16 @@ const TaskContent: React.FC<IProps> = (props) => {
             defaultMessage: '申请表/视图权限',
           })}
         </Descriptions.Item>
+        {hasFlow && (
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'odc.DataArchiveTask.DetailContent.RiskLevel',
+              defaultMessage: '风险等级',
+            })} /*风险等级*/
+          >
+            <RiskLevelLabel level={task?.riskLevel?.level} color={task?.riskLevel?.style} />
+          </Descriptions.Item>
+        )}
       </Descriptions>
       <Divider
         style={{
@@ -135,7 +148,7 @@ const TaskContent: React.FC<IProps> = (props) => {
         })}
         content={
           <DisplayTable
-            rowKey="tableName"
+            rowKey="tableId"
             columns={getConnectionColumns()}
             dataSource={dataSource}
             scroll={null}

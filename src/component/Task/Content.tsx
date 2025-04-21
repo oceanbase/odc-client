@@ -15,7 +15,7 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { getTaskDetail } from '@/common/network/task';
+import { getCycleTaskDetail, getTaskDetail } from '@/common/network/task';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import type {
   IAlterScheduleTaskParams,
@@ -38,7 +38,7 @@ import type { Dayjs } from 'dayjs';
 import React, { useEffect, useRef, useMemo } from 'react';
 import TaskTable from './component/TaskTable';
 import DetailModal from './DetailModal';
-import { isCycleTaskPage } from './helper';
+import { isCycleTask, isCycleTaskPage } from './helper';
 import styles from './index.less';
 import { UserStore } from '@/store/login';
 import { TaskDetailContext } from './TaskDetailContext';
@@ -258,7 +258,10 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
   const openDefaultTask = async () => {
     const { defaultTaskId, defaultTaskType } = props;
     if (defaultTaskId) {
-      const data = await getTaskDetail(defaultTaskId, true);
+      const isSchedule = isCycleTask(defaultTaskType);
+      const data = isSchedule
+        ? await getCycleTaskDetail(defaultTaskId)
+        : await getTaskDetail(defaultTaskId, true);
       if (!data) {
         message.error(
           formatMessage({

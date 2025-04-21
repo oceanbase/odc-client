@@ -334,7 +334,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             const createdOriginTableConfig = createdOriginTableConfigs?.find(
               (item) => item.tableName === config.tableName,
             );
-            if (!config?.__isCreate && createdOriginTableConfig) {
+            if (!config?.__isCreate) {
               return createdOriginTableConfig ? createdOriginTableConfig : null;
             }
             const {

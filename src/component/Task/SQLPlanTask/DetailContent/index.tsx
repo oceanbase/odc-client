@@ -28,6 +28,7 @@ import { Collapse, Descriptions, Divider, Space } from 'antd';
 import React from 'react';
 import { getCronCycle } from '../../component/TaskTable';
 import styles from '../../index.less';
+import DatabaseLabel from '../../component/DatabaseLabel';
 
 const { Panel } = Collapse;
 const ErrorStrategy = {
@@ -79,6 +80,23 @@ const SqlPlanTaskContent: React.FC<IProps> = (props) => {
         >
           {task?.id}
         </Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'odc.component.DetailModal.dataMocker.Database',
+            defaultMessage: '所属数据库',
+          })}
+        >
+          <DatabaseLabel database={task?.database} />
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'odc.src.component.Task.DataMockerTask.DetailContent.DataSource',
+            defaultMessage: '所属数据源',
+          })}
+        >
+          {task?.database?.dataSource?.name || '-'}
+        </Descriptions.Item>
+
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.component.DetailModal.sqlPlan.TaskType',

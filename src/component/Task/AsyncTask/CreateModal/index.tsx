@@ -980,7 +980,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               },
             ]}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} precision={0} />
           </Form.Item>
           <Form.Item
             label={formatMessage({
