@@ -52,6 +52,9 @@ class DatabaseStore {
   @observable.shallow
   public tables: Array<Partial<ITableModel>> = [];
 
+  @observable
+  public static refreshKey: string = undefined;
+
   @observable.shallow
   public externalTableTables: Array<Partial<ITableModel>> = [];
 
@@ -84,6 +87,16 @@ class DatabaseStore {
 
   @observable.shallow
   public types: Array<Partial<IType>> = [];
+
+  private static setRefreshKey(key: string) {
+    runInAction(() => {
+      this.refreshKey = key;
+    });
+  }
+
+  private static resetRefreshKey() {
+    this.refreshKey = undefined;
+  }
 
   /**
    * version 用来标识这个列表的获取时间，在很多场景下，需要感知当前对象的版本，以此来区分新老版本来做出对应的变化
@@ -133,15 +146,16 @@ class DatabaseStore {
       databaseId: this.databaseId,
       includePermittedAction: true,
     };
-
+    let refreshKey = `${this.databaseId}-${this.dbName}-table`;
     if (isExternalTable) {
       params.type = 'EXTERNAL_TABLE';
+      refreshKey = `${this.databaseId}-${this.dbName}-externalTable`;
     }
-
+    DatabaseStore.setRefreshKey(refreshKey);
     const data = await request.get(`/api/v2/databaseSchema/tables`, {
       params,
     });
-
+    DatabaseStore.resetRefreshKey();
     runInAction(() => {
       const tablesValue: Partial<ITableModel>[] =
         data?.data?.contents?.map((table: ITable) => ({
@@ -235,9 +249,11 @@ class DatabaseStore {
       includePermittedAction: true,
       type: DbObjectType.view,
     };
+    DatabaseStore.setRefreshKey(`${this.databaseId}-${this.dbName}-view`);
     const res = await request.get(`/api/v2/databaseSchema/tables`, {
       params,
     });
+    DatabaseStore.resetRefreshKey();
     runInAction(() => {
       this.views =
         res?.data?.contents?.map((t) => {
@@ -291,6 +307,7 @@ class DatabaseStore {
 
   @action
   public async getMaterializedViewList() {
+    DatabaseStore.setRefreshKey(`${this.databaseId}-${this.dbName}-materializedView`);
     const res = await request.get(
       `/api/v2/connect/sessions/${this.sessionId}/databases/${this.databaseId}/materializedViews`,
       {
@@ -300,6 +317,7 @@ class DatabaseStore {
         },
       },
     );
+    DatabaseStore.resetRefreshKey();
     runInAction(() => {
       this.materializedView =
         res?.data?.contents?.map((t) => {
@@ -315,11 +333,13 @@ class DatabaseStore {
   @action
   public async getFunctionList(ignoreError?: boolean) {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
+    DatabaseStore.setRefreshKey(`${this.databaseId}-${this.dbName}-function-pkg`);
     const ret = await request.get(`/api/v1/function/list/${sid}`, {
       params: {
         ignoreError,
       },
     });
+    DatabaseStore.resetRefreshKey();
     runInAction(() => {
       this.functions = ret?.data || [];
     });
@@ -346,7 +366,9 @@ class DatabaseStore {
   @action
   public async getProcedureList() {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
+    DatabaseStore.setRefreshKey(`${this.databaseId}-${this.dbName}-procedure`);
     const ret = await request.get(`/api/v1/procedure/list/${sid}`);
+    DatabaseStore.resetRefreshKey();
     runInAction(() => {
       this.procedures = ret?.data || [];
     });
@@ -373,7 +395,9 @@ class DatabaseStore {
   @action
   public async getTriggerList() {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
+    DatabaseStore.setRefreshKey(`${this.databaseId}-${this.dbName}-trigger`);
     const res = await request.get(`/api/v1/trigger/list/${sid}`);
+    DatabaseStore.resetRefreshKey();
     runInAction(() => {
       this.triggers = res?.data || [];
     });
@@ -388,7 +412,9 @@ class DatabaseStore {
 
   @action
   public async getTypeList() {
+    DatabaseStore.setRefreshKey(`${this.databaseId}-${this.dbName}-type`);
     const types = await getTypeList(this.dbName, this.sessionId);
+    DatabaseStore.resetRefreshKey();
 
     this.types = types || [];
   }
@@ -412,7 +438,9 @@ class DatabaseStore {
   @action
   public async getPackageList() {
     const sid = generateDatabaseSid(this.dbName, this.sessionId);
+    DatabaseStore.setRefreshKey(`${this.databaseId}-${this.dbName}-package`);
     const ret = await request.get(`/api/v1/package/list/${sid}`);
+    DatabaseStore.resetRefreshKey();
     this.packages = ret?.data || [];
   }
 
