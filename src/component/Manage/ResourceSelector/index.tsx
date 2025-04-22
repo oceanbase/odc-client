@@ -26,9 +26,11 @@ import odc from '@/plugins/odc';
 
 const { Option } = Select;
 
+export const getIsSupportCreatedByMeRoles = () =>
+  !odc?.createdByMeRolesSupport || odc?.createdByMeRolesSupport?.();
 export const ALL_SELECTED_ID = 'ALL';
 export const ALL_I_HAVE_CREATED_ID = 'ALL_I_HAVE_CREATED_ID';
-export const ALL_SELECTED_VALUE = () => (odc?.createdByMeRolesSupport?.() ? '*' : null);
+export const ALL_SELECTED_VALUE = () => (getIsSupportCreatedByMeRoles() ? '*' : null);
 export const ALL_I_HAVE_CREATED_VALUE = 'CREATOR';
 
 export const AllOption: IResourceOption = {
@@ -149,7 +151,7 @@ const ResourceItem: React.FC<{
   const disableSelectAll = allSelecteField?.type === type && allSelecteField?.index !== fieldName;
   const disableSelectAllICreated =
     allICreatedSelecteField?.type === type && allICreatedSelecteField?.index !== fieldName;
-  const allFieldOptions = odc?.createdByMeRolesSupport?.()
+  const allFieldOptions = getIsSupportCreatedByMeRoles()
     ? fieldOptions.concat([AllOption, AllIHaveCreatedOption])
     : fieldOptions.concat([AllOption]);
   const hasEnableKeys = actionOptions.some((item) => item?.enableKeys?.length);
@@ -269,7 +271,7 @@ const ResourceItem: React.FC<{
                                 }) //取消全部
                           }
                         </Button>
-                        {odc?.createdByMeRolesSupport?.() &&
+                        {getIsSupportCreatedByMeRoles() &&
                         values?.[fieldName]?.resourceType !== IManagerResourceType.role ? (
                           <Button
                             type="link"
