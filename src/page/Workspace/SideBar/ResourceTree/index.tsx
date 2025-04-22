@@ -442,7 +442,7 @@ const ResourceTree: React.FC<IProps> = function ({
         <div className={styles.search}>
           <DatabaseSearch searchValue={searchValue} setSearchValue={setSearchValue} />
           {userStore.isPrivateSpace() ? (
-            <NewDatasourceButton onSuccess={() => reloadDatasourceList()}>
+            <NewDatasourceButton onSuccess={() => reload()}>
               <Button
                 size="small"
                 type="primary"
