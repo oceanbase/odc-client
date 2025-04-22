@@ -95,7 +95,9 @@ class DatabaseStore {
   }
 
   private static resetRefreshKey() {
-    this.refreshKey = undefined;
+    runInAction(() => {
+      this.refreshKey = undefined;
+    });
   }
 
   /**
