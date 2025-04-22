@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
+import login from '@/store/login';
 import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { Form, Input } from 'antd';
 
 const DescriptionInput = () => {
+  const defaultPlaceholder = formatMessage({
+    id: 'odc.component.DescriptionInput.EnterADescriptionLessThan',
+    defaultMessage: '请输入描述，200字以内；未输入时，系统会根据对象和工单类型自动生成描述信息',
+  });
   return (
     <Form.Item
-      required
       label={formatMessage({
         id: 'odc.component.DescriptionInput.Description',
         defaultMessage: '描述',
       })} /*描述*/
       name="description"
       rules={[
-        {
-          required: true,
-          message: setting.getSpaceConfigByKey('odc.task.default.taskDescriptionPrompt'),
-        },
         {
           max: 200,
           message: formatMessage({
@@ -43,7 +43,12 @@ const DescriptionInput = () => {
     >
       <Input.TextArea
         rows={6}
-        placeholder={setting.getSpaceConfigByKey('odc.task.default.taskDescriptionPrompt')}
+        placeholder={
+          login.isPrivateSpace()
+            ? defaultPlaceholder
+            : setting.getSpaceConfigByKey('odc.task.default.taskDescriptionPrompt') ||
+              defaultPlaceholder
+        }
       />
     </Form.Item>
   );
