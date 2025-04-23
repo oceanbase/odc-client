@@ -343,10 +343,11 @@ export class SettingStore {
   }
 
   @action
-  public async getSpaceConfig() {
-    const cachedSpaceConfig = this.readCachedSpaceConfig();
-    if (cachedSpaceConfig) return cachedSpaceConfig;
-
+  public async getSpaceConfig(diabledCache?: boolean) {
+    if (!diabledCache) {
+      const cachedSpaceConfig = this.readCachedSpaceConfig();
+      if (cachedSpaceConfig) return cachedSpaceConfig;
+    }
     const res = await request.get('/api/v2/config/organization/configurations');
     if (res?.data) {
       const config = res?.data?.contents?.reduce((data, item) => {
@@ -355,7 +356,6 @@ export class SettingStore {
       }, {});
 
       this.setSpaceConfig(config);
-
       return config;
     } else {
       this.clearSpaceConfig();
@@ -470,7 +470,7 @@ export class SettingStore {
       });
       const userConfig = res?.data?.contents;
       if (userConfig) {
-        await this.getSpaceConfig();
+        await this.getSpaceConfig(true);
       }
     }
     return !!data;
