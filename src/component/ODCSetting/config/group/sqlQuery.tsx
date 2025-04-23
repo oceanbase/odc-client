@@ -38,7 +38,7 @@ const sqlQuerySetting: IODCSetting[] = [
       },
     ],
     render: (value, onChange) => {
-      return <InputIntergerItem value={value} onChange={onChange} />;
+      return <InputIntergerItem value={value} onChange={onChange} min={'1'} />;
     },
   },
   {
@@ -55,7 +55,7 @@ const sqlQuerySetting: IODCSetting[] = [
       },
     ],
     render: (value, onChange) => {
-      return <InputIntergerItem value={value} onChange={onChange} />;
+      return <InputIntergerItem value={value} onChange={onChange} min={'1'} />;
     },
   },
 ];
