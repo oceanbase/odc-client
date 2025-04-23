@@ -28,6 +28,7 @@ import DatabaseLabel from '../../component/DatabaseLabel';
 import { DownloadFileAction } from '../../component/DownloadFileAction';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 import styles from './index.less';
+import login from '@/store/login';
 
 export const ErrorStrategy = {
   ABORT: formatMessage({
@@ -123,15 +124,17 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />
           </Descriptions.Item>
         )}
-        <Descriptions.Item span={4} label="DML语句预估影响行数">
-          {node?.status === TaskNodeStatus.EXECUTING ? (
-            <LoadingOutlined />
-          ) : task?.affectedRows === -1 ? (
-            '该 SQL 语句不支持'
-          ) : (
-            task?.affectedRows || '-'
-          )}
-        </Descriptions.Item>
+        {!login.isPrivateSpace() && (
+          <Descriptions.Item span={4} label="DML语句预估影响行数">
+            {node?.status === TaskNodeStatus.EXECUTING ? (
+              <LoadingOutlined />
+            ) : task?.affectedRows === -1 ? (
+              '该 SQL 语句不支持'
+            ) : (
+              task?.affectedRows || '-'
+            )}
+          </Descriptions.Item>
+        )}
       </Descriptions>
       <div className={styles.format}>
         <SimpleTextItem
