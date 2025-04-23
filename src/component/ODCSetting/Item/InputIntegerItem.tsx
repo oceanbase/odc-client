@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-import { Input, InputNumber, Radio, RadioGroupProps } from 'antd';
+import { InputNumber } from 'antd';
 import { useState } from 'react';
 
 export default function InputIntergerItem(props: {
   value: string;
   onChange: (value: string) => Promise<void>;
+  min?: string;
 }) {
   const [loading, setLoading] = useState(false);
+  const minValue = props?.min || '0';
+
   return (
     <InputNumber
-      min="0"
+      min={minValue}
       precision={0}
       style={{ width: 140 }}
       key={props.value}
@@ -34,10 +37,10 @@ export default function InputIntergerItem(props: {
         const value = e.target.value;
         setLoading(true);
         try {
-          if (Number(value) < 0) {
-            await props.onChange('0');
+          if (Number(value) < Number(minValue)) {
+            await props.onChange(minValue);
           } else {
-            await props.onChange(value);
+            await props.onChange(value.replace(/[^0-9]/g, ''));
           }
         } finally {
           setLoading(false);
