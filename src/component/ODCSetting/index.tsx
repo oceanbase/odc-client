@@ -257,6 +257,12 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     };
   }
 
+  const resetConfigurations = () => {
+    setSearchValue(undefined);
+    formRef.resetFields();
+    spaceFormRef.resetFields();
+  };
+
   async function close(force: boolean = false) {
     if (changed && !force) {
       Modal.confirm({
@@ -267,13 +273,13 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
         onOk: async () => {
           setChanged(false);
           await modalStore.changeOdcSettingVisible(false);
-          setSearchValue(undefined);
+          resetConfigurations();
         },
       });
     } else {
       setChanged(false);
       await modalStore.changeOdcSettingVisible(false);
-      setSearchValue(undefined);
+      resetConfigurations();
     }
   }
 
