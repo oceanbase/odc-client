@@ -120,6 +120,19 @@ class MainServer {
     return obPath;
   }
 
+  private getOthersPath() {
+    let obPath;
+    let base;
+    if (process.env.NODE_ENV === 'development') {
+      base = process.cwd();
+    } else {
+      base = process.resourcesPath;
+    }
+    obPath = obPath = path.join(base, 'libraries', 'others');
+    log.info('others Path: ', obPath);
+    return obPath;
+  }
+
   /**
    * 获取可用的端口
    */
@@ -262,6 +275,7 @@ class MainServer {
       // 任务文件上传参数，后续任务会统一到这个目录下
       'file.storage.dir': path.join(app.getPath('userData'), 'data'),
       'obclient.file.path': this.getOBClientPath(),
+      'libraries.others.file.path': this.getOthersPath(),
     };
     if (JAVA_HOME) {
       env['JAVA_HOME'] = JAVA_HOME;
