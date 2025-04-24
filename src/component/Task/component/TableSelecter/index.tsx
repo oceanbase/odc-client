@@ -823,7 +823,13 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
                         handleDelete(node);
                       }}
                     >
-                      <DeleteOutlined style={{ color: 'var(--icon-color-disable)' }} />
+                      <DeleteOutlined
+                        style={{
+                          color: node?.disabled
+                            ? 'var(--icon-color-disable)'
+                            : 'var(--icon-color-normal)',
+                        }}
+                      />
                     </a>
                   </div>
                 );
