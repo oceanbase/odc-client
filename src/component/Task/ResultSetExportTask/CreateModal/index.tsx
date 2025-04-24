@@ -152,27 +152,35 @@ const CreateModal: React.FC<IProps> = (props) => {
       });
   };
 
-  const initData = () => {
-    form.setFieldValue(
-      'maxRows',
-      Number(setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')),
-    );
-  };
-
   useEffect(() => {
+    if (!modalStore?.createResultSetExportTaskVisible) {
+      return;
+    }
+
+    const maxRowsValueFromSpaceConfig = Number(
+      setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit'),
+    );
+
     if (resultSetExportData) {
       const { sql, tableName, databaseId, task } = resultSetExportData;
+
       handleSqlChange(sql);
-      form.setFieldsValue({
-        tableName,
-        databaseId,
-      });
-      if (task) {
-        form.setFieldsValue(task.parameters);
-        form.setFieldValue('description', task.description);
-      }
+
+      const initialFormData = task
+        ? {
+            tableName,
+            databaseId,
+            ...task.parameters,
+            description: task.description,
+          }
+        : {
+            tableName,
+            databaseId,
+            maxRows: maxRowsValueFromSpaceConfig,
+          };
+      form.setFieldsValue(initialFormData);
     } else {
-      initData();
+      form.setFieldValue('maxRows', maxRowsValueFromSpaceConfig);
     }
   }, [resultSetExportData, modalStore?.createResultSetExportTaskVisible]);
 
