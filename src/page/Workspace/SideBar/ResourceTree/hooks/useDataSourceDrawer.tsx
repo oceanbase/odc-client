@@ -38,6 +38,7 @@ const useDataSourceDrawer = () => {
             setSelectKeys([]);
           }
           context?.reloadDatasourceList();
+          context?.reloadDatabaseList();
         }
       },
     });

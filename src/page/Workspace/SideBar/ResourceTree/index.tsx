@@ -109,7 +109,6 @@ const ResourceTree: React.FC<IProps> = function ({
     setGroupMode,
     datasourceList,
     currentObject,
-    reloadDatasourceList,
     databaseList,
   } = treeContext;
   const [wrapperHeight, setWrapperHeight] = useState(0);
@@ -490,7 +489,7 @@ const ResourceTree: React.FC<IProps> = function ({
           setAddDSVisiable(false);
         }}
         onSuccess={() => {
-          reloadDatasourceList?.();
+          reload?.();
         }}
       />
 
@@ -503,7 +502,7 @@ const ResourceTree: React.FC<IProps> = function ({
           setCopyDatasourceId(null);
         }}
         onSuccess={() => {
-          reloadDatasourceList?.();
+          reload?.();
         }}
       />
     </>
