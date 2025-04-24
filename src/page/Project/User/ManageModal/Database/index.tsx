@@ -136,7 +136,7 @@ const ManageModal: React.FC<IProps> = (props) => {
     Modal.confirm({
       title,
       content: (
-        <Text type="secondary">
+        <Text>
           {
             formatMessage({
               id: 'src.page.Project.User.ManageModal.B7377F46' /*回收后不可撤回*/,

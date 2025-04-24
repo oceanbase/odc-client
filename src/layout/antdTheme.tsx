@@ -52,6 +52,12 @@ export const theme: ThemeConfig = {
       colorBorder: 'var(--odc-border-color)',
       colorIcon: 'var(--icon-color-normal)',
     },
+    Collapse: {
+      colorBorder: 'var(--odc-border-color)',
+    },
+    InputNumber: {
+      colorBorder: 'var(--odc-border-color)',
+    },
     Tabs: {
       colorBorder: 'var(--odc-border-color)',
     },
@@ -76,6 +82,7 @@ export const theme: ThemeConfig = {
     Table: {
       colorTextHeading: 'var(--text-color-primary)',
       borderColor: 'var(--table-border-color)',
+      headerBg: 'var(--table-header-background-color)',
     },
     Modal: {
       contentBg: 'var(--background-primary-color)',

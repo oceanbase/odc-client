@@ -39,8 +39,8 @@
     gap: 8px;
     .title {
       font-size: 20px;
-      color: #000000;
       line-height: 28px;
+      color: var(--text-color-primary);
       font-weight: 600;
       opacity: 0.85;
     }
@@ -66,10 +66,10 @@
             display: inline-block;
             margin-right: 12px;
           }
-          .subTitle {
+          .consoleTips {
             display: inline-block;
             font-size: 12px;
-            color: #00000073;
+            color: var(--text-color-hint);
             line-height: 22px;
             font-weight: 400;
           }
@@ -178,17 +178,16 @@
                     text-align: center;
                     font-weight: 600;
                     &.active {
-                      background-color: #1890ff;
+                      background-color: var(--icon-color-focus);
                     }
                   }
                   .stepLabel {
                     font-size: 12px;
-                    color: #000000;
                     line-height: 20px;
                     opacity: 0.85;
                     &.active {
                       font-size: 12px;
-                      color: #1890ff;
+                      color: var(--text-color-link);
                       line-height: 20px;
                     }
                   }
@@ -271,12 +270,12 @@
           .docs {
             cursor: pointer;
             font-size: 12px;
-            color: #000000;
             line-height: 20px;
             opacity: 0.65;
+            color: var(--text-color-secondary);
             &:hover {
               opacity: 1;
-              color: #1890ff;
+              color: var(--text-color-link);
             }
           }
         }
@@ -289,16 +288,16 @@
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+          color: var(--text-color-secondary);
           margin-top: 14px;
           font-size: 12px;
-          color: #000000;
           line-height: 20px;
           opacity: 0.65;
           &:hover {
             opacity: 1;
             cursor: pointer;
             font-size: 12px;
-            color: #1890ff;
+            color: var(--text-color-link);
             line-height: 20px;
           }
           &:nth-child(2) {

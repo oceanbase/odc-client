@@ -563,7 +563,7 @@ const SensitiveColumn = ({
               }) /*添加敏感列*/
             }
 
-            <DownOutlined />
+            <DownOutlined style={{ color: '#fff' }} />
           </Space>
         </a>
       </Button>

@@ -172,6 +172,7 @@ export default function SelectTransfer(props: IProps) {
                       whiteSpace: 'nowrap',
                       textOverflow: 'ellipsis',
                       wordBreak: 'break-all',
+                      color: 'var(--text-color-primary)',
                     }}
                     title={node.title}
                   >

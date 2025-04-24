@@ -18,7 +18,7 @@ import { detailMaskingAlgorithm, testMaskingAlgorithm } from '@/common/network/m
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
 import { formatMessage } from '@/util/intl';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Descriptions, Drawer, Input, message, Tooltip } from 'antd';
+import { Button, Descriptions, Drawer, Input, message, Tooltip, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { maskRuleTypeMap } from '..';
 const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClose }) => {
@@ -139,10 +139,12 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
         </Descriptions.Item>
         <Descriptions.Item
           label={
-            formatMessage({
-              id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationEffect',
-              defaultMessage: '脱敏效果',
-            }) //脱敏效果
+            <Typography.Text>
+              {formatMessage({
+                id: 'odc.MaskingAlgorithm.components.ViewMaskingAlgorithmDrawer.DesensitizationEffect',
+                defaultMessage: '脱敏效果',
+              })}
+            </Typography.Text>
           }
         >
           &nbsp;
@@ -186,6 +188,7 @@ const ViewMaskingAlgorithmDrawer = ({ visible, selectedData, handleViewDrawerClo
                 style={{
                   marginLeft: '8px',
                   cursor: 'pointer',
+                  color: 'var(--icon-color-normal)',
                 }}
               />
             </Tooltip>
