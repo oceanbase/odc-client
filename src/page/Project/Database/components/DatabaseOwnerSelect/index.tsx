@@ -80,7 +80,7 @@ export const DatabaseOwnerSelect = ({
                 color="#fff"
                 overlayInnerStyle={{ width: 268, color: '#132039' }}
               >
-                <QuestionCircleOutlined style={{ color: 'var(--icon-normal-color)' }} />
+                <QuestionCircleOutlined style={{ color: 'var(--icon-color-normal)' }} />
               </Tooltip>
             </span>
           }
@@ -124,7 +124,7 @@ export const DatabaseOwnerSelect = ({
                       style={{
                         padding: '0 8px',
                         fontSize: 12,
-                        color: 'var(--neutral-black45-color)',
+                        color: 'var(--text-color-hint)',
                       }}
                     >
                       {item?.role?.map((i) => projectRoleTextMap[i]).join(',')}

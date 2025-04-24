@@ -45,7 +45,7 @@ export const SimpleTextItem: React.FC<{
         style={{
           flexGrow: 0,
           flexShrink: 0,
-          color: 'var(--text-color-primary)',
+          color: 'var(--text-color-hint)',
           marginBottom: direction === 'column' ? '8px' : 0,
         }}
       >
@@ -64,7 +64,7 @@ export const SimpleTextItem: React.FC<{
         style={{
           flexGrow: 1,
           wordBreak: 'break-all',
-          color: 'var(--text-color-secondary)',
+          color: 'var(--text-color-primary)',
         }}
       >
         {content}

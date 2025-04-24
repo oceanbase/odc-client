@@ -882,7 +882,7 @@ export const FromChannelDrawer: React.FC<{
                 />
               </Form.Item>
               <div>
-                <span style={{ color: 'var(--neutral-black45-color)' }}>
+                <span style={{ color: 'var(--text-color-hint)' }}>
                   {formatMessage({
                     id: 'src.page.Project.Notification.components.D0CF8521',
                     defaultMessage: '可通过输入${ } 引入标签，',

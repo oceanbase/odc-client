@@ -124,7 +124,7 @@ const Console = () => {
       <Card className={styles.card}>
         <div className={styles.consoleCardTitle}>
           <span className={styles.title}>定时任务概览</span>
-          <span className={styles.subTitle}>(近 7 天)</span>
+          <span className={styles.consoleTips}>(近 7 天)</span>
         </div>
         <div className={styles.legend}>
           {status.map((item, index) => {

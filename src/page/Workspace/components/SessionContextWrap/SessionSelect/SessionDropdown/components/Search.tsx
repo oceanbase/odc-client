@@ -73,7 +73,7 @@ const Search: React.FC<IProps> = function (props) {
     return (
       <Input
         value={searchValueByDataSource}
-        suffix={<SearchOutlined style={{ color: 'var(--icon-normal-color)' }} />}
+        suffix={<SearchOutlined style={{ color: 'var(--icon-color-normal)' }} />}
         onChange={(e) => {
           setSearchValueByDataSource(e.target.value);
         }}
