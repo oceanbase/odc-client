@@ -14,7 +14,7 @@ import { DataNode } from 'antd/lib/tree';
 import { toInteger } from 'lodash';
 import { UserStore } from '@/store/login';
 import { inject, observer } from 'mobx-react';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup, isPgDataDataSource } from '@/util/connection';
 import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import SessionContext from '../../context';
 import { DEFALT_HEIGHT, DEFALT_WIDTH } from '../const';
@@ -53,6 +53,7 @@ export interface ISessionDropdownFiltersProps {
   feature?: keyof IDataSourceModeConfig['features'];
   isIncludeLogicalDb?: boolean;
   hideFileSystem?: boolean;
+  hidePgDatabase?: boolean;
 }
 
 export interface ISessionDropdownCheckModeConfigProps {
@@ -168,6 +169,9 @@ const SessionDropdown: React.FC<IProps> = (props) => {
         database.type === 'LOGICAL' ||
         getDataSourceModeConfig(database.dataSource?.type)?.features?.task?.includes(taskType);
       if (!support) {
+        return false;
+      }
+      if (isPgDataDataSource(database?.dataSource?.type) && filters?.hidePgDatabase) {
         return false;
       }
       if (
