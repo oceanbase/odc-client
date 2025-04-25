@@ -38,11 +38,11 @@ const DatabaseTree = function () {
   } = useContext(ResourceTreeContext);
   const { DatabaseGroupMap } = useGroupData({
     databaseList,
-    // 个人空间展示全量的数据源
+    // 个人空间展示全量的数据源,不会根据配置来
     datasourceList: login.isPrivateSpace() ? datasourceList : [],
     filter: (db: IDatabase) => {
       const config = getDataSourceModeConfig(db?.dataSource?.type);
-      if (!config?.features?.resourceTree && isPhysicalDatabase(db)) {
+      if (!config?.features?.groupResourceTree && isPhysicalDatabase(db)) {
         return false;
       }
       return db.existed;
