@@ -152,7 +152,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     });
   };
 
-  const initData = () => {
+  const loadInitialDataFromSpaceConfig = () => {
     form.setFieldValue(
       'queryLimit',
       Number(setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')),
@@ -160,10 +160,12 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
+    if (!createSQLPlanVisible) return;
+
     if (SQLPlanEditId || taskId) {
       loadEditData(SQLPlanEditId || taskId);
     } else {
-      initData();
+      loadInitialDataFromSpaceConfig();
     }
   }, [SQLPlanEditId, taskId, createSQLPlanVisible]);
 
