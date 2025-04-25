@@ -86,7 +86,8 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
       sessionManage: true,
       sqlExplain: true,
       sessionParams: true,
-      resourceTree: true,
+      groupResourceTree: true,
+      sqlconsole: true,
       export: {
         fileLimit: false,
         snapshot: false,

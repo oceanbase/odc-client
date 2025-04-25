@@ -53,7 +53,6 @@ export interface ISessionDropdownFiltersProps {
   feature?: keyof IDataSourceModeConfig['features'];
   isIncludeLogicalDb?: boolean;
   hideFileSystem?: boolean;
-  hidePgDatabase?: boolean;
 }
 
 export interface ISessionDropdownCheckModeConfigProps {
@@ -171,7 +170,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
       if (!support) {
         return false;
       }
-      if (isPgDataDataSource(database?.dataSource?.type) && filters?.hidePgDatabase) {
+      if (!taskType && !getDataSourceModeConfig(database?.dataSource?.type)?.features?.sqlconsole) {
         return false;
       }
       if (
@@ -193,7 +192,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
         (datasourceId && toInteger(datasourceId) !== database?.dataSource?.id) ||
         (!datasourceId && database?.dataSource?.temp)
       ) {
-        return null;
+        return false;
       }
       return true;
     },

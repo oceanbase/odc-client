@@ -81,7 +81,7 @@ const getOrdinaryDatabaseOperation: getDatabaseOperation = (params) => {
   const hasChangeAuth = record.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
   const config = getDataSourceModeConfig(record?.dataSource?.type);
   const hasDBAuth = !!record.authorizedPermissionTypes?.length;
-  const notSupportToResourceTree = !config?.features?.resourceTree;
+  const notSupportToResourceTree = !config?.features?.groupResourceTree;
   const curRoles = project?.currentUserResourceRoles || [];
   const isOwnerOrDBA = curRoles.some((role) => [ProjectRole.OWNER, ProjectRole.DBA].includes(role));
   const disableTransfer =

@@ -73,7 +73,8 @@ const items: Record<ConnectType.PG, IDataSourceModeConfig> = {
       sessionManage: false,
       sessionParams: false,
       sqlExplain: false,
-      resourceTree: false,
+      groupResourceTree: false,
+      sqlconsole: false,
       export: {
         fileLimit: false,
         snapshot: false,

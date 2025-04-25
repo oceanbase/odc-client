@@ -177,7 +177,6 @@ const ManualForm: React.FC<ManualFormProps> = ({ modalOpen, setModalOpen, callba
               }) //数据库
             }
             projectId={projectId}
-            filters={{ hideFileSystem: true }}
             onSelect={handleDatabaseSelect}
             onChange={handleDatabaseChange}
             onClear={handleDatabaseClear}

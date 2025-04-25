@@ -103,7 +103,7 @@ const getOrdinaryDatabaseOperation = ({ record, project }) => {
   const config = getDataSourceModeConfig(record?.dataSource?.type);
   const hasDBAuth = !!record.authorizedPermissionTypes?.length;
   const hasProjectAuth = record?.project?.currentUserResourceRoles;
-  const notSupportToResourceTree = !config?.features?.resourceTree;
+  const notSupportToResourceTree = !config?.features?.groupResourceTree;
   const existed = record.existed;
   const isFileSyetem = isConnectTypeBeFileSystemGroup(record.connectType);
 

@@ -79,7 +79,8 @@ const items: Record<ConnectType.DORIS, IDataSourceModeConfig> = {
       recycleBin: false,
       sessionManage: true,
       sessionParams: true,
-      resourceTree: true,
+      groupResourceTree: true,
+      sqlconsole: true,
       sqlExplain: true,
       export: {
         fileLimit: false,

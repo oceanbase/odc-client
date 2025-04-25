@@ -145,7 +145,8 @@ export interface IDataSourceModeConfig {
     disableTriggerSwitch?: boolean;
     plRun?: boolean;
     sessionParams?: boolean;
-    resourceTree?: boolean;
+    groupResourceTree?: boolean;
+    sqlconsole: boolean;
     export: {
       fileLimit: boolean;
       snapshot: boolean;

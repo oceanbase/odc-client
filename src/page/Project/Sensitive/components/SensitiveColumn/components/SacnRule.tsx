@@ -191,7 +191,6 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
         }
         dataSourceId={dataSourceId === -1 ? undefined : dataSourceId}
         projectId={context.projectId}
-        filters={{ hideFileSystem: true }}
         onSelect={handleSelect}
         disabled={dataSourceId === -1}
         isAdaptiveWidth

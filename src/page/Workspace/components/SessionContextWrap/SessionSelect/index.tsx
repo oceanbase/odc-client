@@ -201,7 +201,7 @@ const SessionSelect: React.FC<IProps> = (props) => {
       <div className={styles.content}>
         {renderEnv()}
         <SessionDropdown
-          filters={{ feature, isIncludeLogicalDb, hideFileSystem: true, hidePgDatabase: true }}
+          filters={{ feature, isIncludeLogicalDb }}
           groupMode={resourceTreeContext.groupMode}
         >
           <div>{databaseItem}</div>
@@ -222,10 +222,7 @@ const SessionSelect: React.FC<IProps> = (props) => {
           }}
           className={styles.line}
         >
-          <SessionDropdown
-            filters={{ hideFileSystem: true, hidePgDatabase: true }}
-            groupMode={resourceTreeContext.groupMode}
-          >
+          <SessionDropdown groupMode={resourceTreeContext.groupMode}>
             <a>
               {
                 formatMessage({

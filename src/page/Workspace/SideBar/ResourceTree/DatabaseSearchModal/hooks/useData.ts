@@ -50,7 +50,7 @@ const useGlobalSearchData = (params: {
       /**
        * feature filter
        */
-      if (!config?.features?.resourceTree && isPhysicalDatabase(db)) {
+      if (!config?.features?.groupResourceTree && isPhysicalDatabase(db)) {
         return;
       }
       return db.existed;

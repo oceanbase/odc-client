@@ -17,12 +17,13 @@ const CloudStorageConfig: IDataSourceModeConfig = {
   },
   features: {
     task: [TaskType.DATA_ARCHIVE],
+    sqlconsole: false,
     obclient: false,
     recycleBin: false,
     sessionManage: false,
     sessionParams: false,
     sqlExplain: false,
-    resourceTree: false,
+    groupResourceTree: false,
     export: {
       fileLimit: false,
       snapshot: false,

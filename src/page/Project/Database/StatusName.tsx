@@ -39,7 +39,7 @@ export default observer(function StatusName({
   }
   const config = getDataSourceModeConfig(item?.dataSource?.type);
   const notSupport =
-    !config?.features?.resourceTree || isConnectTypeBeFileSystemGroup(item?.dataSource?.type);
+    !config?.features?.groupResourceTree || isConnectTypeBeFileSystemGroup(item?.dataSource?.type);
 
   const renderNotSupportDBWithTip = (name: React.ReactNode) => {
     return <span className={styles.disable}>{name}</span>;
