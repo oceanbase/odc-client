@@ -96,7 +96,7 @@ const getFilesByIds = (ids: string[], names: string[]) => {
 };
 const CreateModal: React.FC<IProps> = (props) => {
   const { modalStore, projectId, theme } = props;
-  const { asyncTaskData } = modalStore;
+  const { createAsyncTaskVisible, asyncTaskData } = modalStore;
   const [form] = Form.useForm();
   const editorRef = useRef<CommonIDE>();
   const [sqlContentType, setSqlContentType] = useState(SQLContentType.TEXT);
@@ -473,23 +473,22 @@ const CreateModal: React.FC<IProps> = (props) => {
     });
   };
 
-  const initData = () => {
-    form.setFieldsValue({
+  const loadInitialDataFromSpaceConfig = () => {
+    const initialFormData = {
       queryLimit: Number(setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')),
       generateRollbackPlan:
         setting.getSpaceConfigByKey('odc.task.default.rollbackPlanEnabled') === 'true',
-    });
+    };
+    form.setFieldsValue(initialFormData);
   };
 
   useEffect(() => {
-    if (modalStore.createAsyncTaskVisible && !asyncTaskData) {
-      initData();
-    }
-  }, [modalStore.createAsyncTaskVisible, asyncTaskData]);
+    if (!createAsyncTaskVisible) return;
 
-  useEffect(() => {
     if (asyncTaskData?.task) {
       loadEditData();
+    } else {
+      loadInitialDataFromSpaceConfig();
     }
     if (asyncTaskData?.rules) {
       if (asyncTaskData?.rules?.length > 0) {
@@ -501,7 +500,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       setExecuteOrPreCheckSql(asyncTaskData?.sql);
       setSqlChanged(false);
     }
-  }, [asyncTaskData]);
+  }, [asyncTaskData, createAsyncTaskVisible]);
 
   useEffect(() => {
     if (initSqlContent) {
