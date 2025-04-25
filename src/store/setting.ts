@@ -31,7 +31,7 @@ import login, { sessionKey } from '@/store/login';
 
 export const themeKey = 'odc-theme';
 const SPACE_CONFIG_EXPIRES = 60 * 1000;
-const getCurrentOrganizationId = () => sessionStorage.getItem(sessionKey);
+export const getCurrentOrganizationId = () => sessionStorage.getItem(sessionKey);
 
 interface IThemeConfig {
   editorTheme: Record<string, string>;

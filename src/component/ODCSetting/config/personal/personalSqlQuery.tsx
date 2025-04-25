@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { getCurrentOrganizationId } from '@/store/setting';
 import { IODCSetting, ODCSettingGroup } from '../../config';
 import InputIntergerItem from '../../Item/InputIntegerItem';
 import InputItem from '../../Item/InputItem';
@@ -39,7 +40,16 @@ const personalSqlQuerySetting: IODCSetting[] = [
       },
     ],
     render: (value, onChange) => {
-      return <InputIntergerItem value={value} onChange={onChange} min={'1'} />;
+      return (
+        <InputIntergerItem
+          value={value}
+          onChange={async (value) => {
+            sessionStorage.setItem(`maxQueryLimit-${getCurrentOrganizationId()}`, value || '');
+            onChange(value);
+          }}
+          min={'1'}
+        />
+      );
     },
   },
   {
@@ -48,6 +58,7 @@ const personalSqlQuerySetting: IODCSetting[] = [
     locationKey: 'queryLimit',
     group: databaseGroup,
     storeType: 'server',
+    dependencies: ['odc.sqlexecute.default.maxQueryLimit'],
     rules: [
       {
         validator(rule, value, callback) {

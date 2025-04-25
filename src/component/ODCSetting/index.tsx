@@ -39,7 +39,7 @@ import odcSetting, {
 } from './config';
 
 import { ModalStore } from '@/store/modal';
-import setting from '@/store/setting';
+import setting, { getCurrentOrganizationId } from '@/store/setting';
 import { getODCSetting, saveODCSetting } from '@/util/client';
 import { isClient } from '@/util/env';
 import { encrypt, safeParseJson } from '@/util/utils';
@@ -261,6 +261,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     setSearchValue(undefined);
     formRef.resetFields();
     spaceFormRef.resetFields();
+    sessionStorage.setItem(`maxQueryLimit-${getCurrentOrganizationId()}`, '');
   };
 
   async function close(force: boolean = false) {
@@ -451,6 +452,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                                       )}
                                     </Space>
                                   }
+                                  dependencies={set?.dependencies}
                                   name={set.key}
                                   key={set.key}
                                   rules={set.rules}
@@ -491,6 +493,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                             )}
                           </Space>
                         }
+                        dependencies={set?.dependencies}
                         name={set.key}
                         key={set.key}
                         rules={set.rules}

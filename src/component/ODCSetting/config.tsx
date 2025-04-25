@@ -44,6 +44,7 @@ export interface IODCSetting<T = any> {
    */
   span?: number;
   rules?: FormRule[];
+  dependencies?: string[];
   storeType: 'server' | 'local';
   disabledInClient?: boolean;
   hidden?: boolean;
