@@ -61,6 +61,10 @@ export function isConnectTypeBeFileSystemGroup(connectType: ConnectType): boolea
   return getDataSourceGroupByConnectType(connectType) === DatasourceGroup.FileSystem;
 }
 
+export function isPgDataDataSource(connectType: ConnectType): boolean {
+  return connectType === ConnectType.PG;
+}
+
 export function encryptConnection<T>(connection: T) {
   const res = {};
   Object.keys(connection)?.forEach((key) => {
