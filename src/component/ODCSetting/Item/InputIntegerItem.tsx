@@ -32,6 +32,7 @@ export default function InputIntergerItem(props: {
       style={{ width: 140 }}
       key={props.value}
       defaultValue={props.value}
+      value={props.value}
       disabled={loading}
       onBlur={async (e) => {
         const value = e.target.value;

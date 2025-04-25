@@ -1,12 +1,20 @@
-import setting from '@/store/setting';
+import setting, { getCurrentOrganizationId } from '@/store/setting';
 
 export const validForqueryQueryNumber = (value) => {
+  const sessionQueryLimit = sessionStorage.getItem(`maxQueryLimit-${getCurrentOrganizationId()}`);
   const queryLimit = setting.getSpaceConfigByKey('odc.sqlexecute.default.maxQueryLimit');
-  if (value > Number(queryLimit)) {
-    return Promise.reject(`不超过${queryLimit}`);
-  }
   if (!value) {
     return Promise.reject('请输入查询条数默认值');
+  }
+  if (sessionQueryLimit) {
+    if (value > Number(sessionQueryLimit)) {
+      return Promise.reject(`不超过${sessionQueryLimit}`);
+    } else {
+      return Promise.resolve();
+    }
+  }
+  if (value > Number(queryLimit)) {
+    return Promise.reject(`不超过${queryLimit}`);
   }
   return Promise.resolve();
 };
