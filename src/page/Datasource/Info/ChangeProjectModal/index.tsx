@@ -19,7 +19,7 @@ import { getProject, listProjects } from '@/common/network/project';
 import { IDatabase } from '@/d.ts/database';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Form, message, Modal } from 'antd';
+import { Alert, Form, message, Modal } from 'antd';
 import { isUndefined } from 'lodash';
 import { useEffect, useState } from 'react';
 import ProjectSelect from './ProjectSelect';
@@ -116,6 +116,12 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
           }
 
           {database?.name}
+          <Alert
+            style={{ marginTop: '6px' }}
+            type="info"
+            message="通过该入口修改库所属项目或库管理员会导致针对该库的库权限分配失效。若只需修改库管理员且希望库权限分配不受影响，可通过【设置库管理员】入口进行调整。"
+            showIcon
+          />
         </Form.Item>
         <Form.Item
           required
