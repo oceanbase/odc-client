@@ -21,7 +21,10 @@ import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Tooltip } from 'antd';
 import React from 'react';
 import styles from './index.less';
-import { increamentFieldTypeLabelMap } from '../PartitionPolicyFormTable/const';
+import {
+  INCREAMENT_FIELD_TYPE,
+  increamentFieldTypeLabelMap,
+} from '../PartitionPolicyFormTable/const';
 
 const getFromCurrentTimeLabel = (fromCurrentTime: boolean, baseTimestampMillis: number) => {
   const labels = [
@@ -100,8 +103,9 @@ const columns = [
               {incrementFieldTimeFormat ? `(${incrementFieldTimeFormat})` : null}
             </Descriptions.Item>
           ) : null}
-          {!!record?.partitionKeyInvokerParameters?.generateParameter?.baseTimestampMillis ||
-          !!record?.partitionKeyInvokerParameters?.generateParameter?.fromCurrentTime ? (
+          {(!!record?.partitionKeyInvokerParameters?.generateParameter?.baseTimestampMillis ||
+            !!record?.partitionKeyInvokerParameters?.generateParameter?.fromCurrentTime) &&
+          incrementFieldType !== INCREAMENT_FIELD_TYPE.NUMBER ? (
             <Descriptions.Item
               label={
                 formatMessage({

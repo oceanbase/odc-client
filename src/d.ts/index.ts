@@ -2654,6 +2654,7 @@ export interface IDataArchiveJobParameters {
   syncTableStructure: SyncTableStructureEnum[];
   dirtyRowAction: DirtyRowActionEnum;
   maxAllowedDirtyRowCount: number;
+  fullDatabase: boolean;
 }
 
 export interface IDataClearJobParameters {
@@ -2680,6 +2681,7 @@ export interface IDataClearJobParameters {
   shardingStrategy?: ShardingStrategy;
   dirtyRowAction: DirtyRowActionEnum;
   maxAllowedDirtyRowCount: number;
+  fullDatabase: boolean;
 }
 
 export interface ISqlPlayJobParameters {

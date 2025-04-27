@@ -359,7 +359,7 @@ export function getDefaultRuleByGenerator(
       );
     }
     default: {
-      return CharRuleType.NULL;
+      return CharRuleType.SKIP;
     }
   }
 }

@@ -713,6 +713,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 }) /*"命名方式"*/
               }
               name="nameRuleType"
+              tooltip={'分区名的生成方式'}
               rules={[
                 {
                   required: true,

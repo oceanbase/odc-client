@@ -173,6 +173,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       timeoutMillis,
       dirtyRowAction,
       maxAllowedDirtyRowCount,
+      fullDatabase,
     } = jobParameters;
     setEnablePartition(!!tables?.find((i) => i?.partitions?.length));
     const formData = {
@@ -186,7 +187,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       shardingStrategy,
       deleteByUniqueKey,
       variables: getVariableValue(variables),
-      archiveRange: IArchiveRange.PORTION,
+      archiveRange: fullDatabase ? IArchiveRange.ALL : IArchiveRange.PORTION,
       triggerStrategy,
       startAt: undefined,
       description,
@@ -329,6 +330,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           operationType: isEdit ? TaskOperationType.UPDATE : TaskOperationType.CREATE,
           taskId: editTaskId,
           scheduleTaskParameters: {
+            fullDatabase: archiveRange === IArchiveRange.ALL,
             databaseId,
             deleteByUniqueKey,
             variables: getVariables(variables),

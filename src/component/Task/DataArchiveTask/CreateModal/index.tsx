@@ -227,6 +227,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       syncTableStructure,
       dirtyRowAction,
       maxAllowedDirtyRowCount,
+      fullDatabase,
     } = jobParameters;
     setEnablePartition(!!tables?.find((i) => i?.partitions?.length));
     setIsdeleteAfterMigration(deleteAfterMigration);
@@ -244,7 +245,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         return i;
       }),
       variables: getVariableValue(variables),
-      archiveRange: IArchiveRange.PORTION,
+      archiveRange: fullDatabase ? IArchiveRange.ALL : IArchiveRange.PORTION,
       triggerStrategy,
       startAt: undefined,
       description,
@@ -413,6 +414,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               rowLimit,
               dataSizeLimit: mbToKb(dataSizeLimit),
             },
+            fullDatabase: archiveRange === IArchiveRange.ALL,
           },
           triggerConfig: {
             triggerStrategy,
