@@ -945,7 +945,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
         newPageState,
       );
 
-      this.editor?.setValue(newPageState.scriptText);
+      this.editor?.setValue(newPageState.scriptText || '');
       this.setState({
         initialSQL: newPageState.scriptText,
       });

@@ -62,7 +62,7 @@ export function getEntryNameFromPLName(plType: any, plName: string, fromPackage:
     }
     case PLTYPE.PKG_BODY:
     case PLTYPE.PKG_HEAD: {
-      return getRealNameInDatabase(plName, true, true);
+      return getRealNameInDatabase(plName, true, false);
     }
   }
   return null;
