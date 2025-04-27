@@ -424,7 +424,7 @@ export const LintLabel: React.FC<{
       <div>
         <LintResultIcon level={'' + level} />
       </div>
-      {level !== -1 && needLevelMap && <div>{RiskLevelTextMap?.[level]}</div>}
+      {level !== -1 && needLevelMap && <div>{RiskLevelTextMap()[level]}</div>}
       {extra}
     </Space>
   );

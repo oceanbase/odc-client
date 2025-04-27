@@ -33,11 +33,11 @@ export const RenderLevel: React.FC<{
   iconMode?: boolean;
 }> = ({ iconMode, level, extra }) => {
   const levelMap = {
-    [RiskLevelEnum.DEFAULT]: RiskLevelTextMap[RiskLevelEnum.DEFAULT],
+    [RiskLevelEnum.DEFAULT]: RiskLevelTextMap()[RiskLevelEnum.DEFAULT],
     //无需改进
-    [RiskLevelEnum.SUGGEST]: RiskLevelTextMap[RiskLevelEnum.SUGGEST],
+    [RiskLevelEnum.SUGGEST]: RiskLevelTextMap()[RiskLevelEnum.SUGGEST],
     //建议改进
-    [RiskLevelEnum.MUST]: RiskLevelTextMap[RiskLevelEnum.MUST], //必须改进
+    [RiskLevelEnum.MUST]: RiskLevelTextMap()[RiskLevelEnum.MUST], //必须改进
   };
 
   const colorMap = {
