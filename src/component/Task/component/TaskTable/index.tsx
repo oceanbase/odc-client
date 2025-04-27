@@ -25,7 +25,7 @@ import { CommonTableMode, IOperationOptionType } from '@/component/CommonTable/i
 import { getCronExecuteCycleByObject, translator } from '@/component/Crontab';
 import SearchFilter from '@/component/SearchFilter';
 import StatusLabel, { cycleStatus, status } from '@/component/Task/component/Status';
-import { TimeOptions } from '@/component/TimeSelect';
+import { TIME_OPTION_ALL_TASK, TimeOptions } from '@/component/TimeSelect';
 import UserPopover from '@/component/UserPopover';
 import type {
   ICycleTaskRecord,
@@ -189,7 +189,7 @@ interface IProps {
   >;
 
   isMultiPage?: boolean;
-  getTaskList: (args: ITableLoadOptions, executeDate: [Dayjs, Dayjs]) => Promise<any>;
+  getTaskList: (args: ITableLoadOptions, executeDate: [Dayjs, Dayjs] | []) => Promise<any>;
   onReloadList: () => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onChange?: (args: ITableLoadOptions) => void;
@@ -228,7 +228,7 @@ const TaskTable: React.FC<IProps> = inject(
     const [executeTime, setExecuteTime] = useState(() => {
       return JSON.parse(localStorage?.getItem(TASK_EXECUTE_TIME_KEY)) ?? 7;
     });
-    const [executeDate, setExecuteDate] = useState<[Dayjs, Dayjs]>(() => {
+    const [executeDate, setExecuteDate] = useState<[Dayjs, Dayjs] | []>(() => {
       const [start, end] = JSON.parse(localStorage?.getItem(TASK_EXECUTE_DATE_KEY)) ?? [null, null];
       return !start || !end ? null : [dayjs(start), dayjs(end)];
     });
@@ -254,7 +254,7 @@ const TaskTable: React.FC<IProps> = inject(
         setExecuteTime(_executeTime);
         const filters = {
           ...args?.filters,
-          executeTime: _executeTime,
+          executeTime: urlStatus ? TIME_OPTION_ALL_TASK : _executeTime,
         };
 
         setListParams({
@@ -275,6 +275,12 @@ const TaskTable: React.FC<IProps> = inject(
     useEffect(() => {
       runAction({ actionType: URL_ACTION.newTask, callback: () => setHoverInNewTaskMenu(true) });
     }, []);
+
+    useEffect(() => {
+      if (urlStatus) {
+        setExecuteTime(TIME_OPTION_ALL_TASK);
+      }
+    }, [urlStatus]);
 
     useEffect(() => {
       loadData(loadParams.current);
@@ -299,6 +305,7 @@ const TaskTable: React.FC<IProps> = inject(
         localStorage.setItem(TASK_EXECUTE_TIME_KEY, JSON.stringify(executeTime));
       }
     }, [executeTime]);
+
     function initColumns(listParams: { filters: ITableFilter; sorter: ITableSorter }) {
       const { filters, sorter } = listParams ?? {};
       const columns = [
@@ -646,13 +653,13 @@ const TaskTable: React.FC<IProps> = inject(
           filters: [
             {
               name: 'executeTime',
-              defaultValue: executeTime,
+              defaultValue: urlStatus ? TIME_OPTION_ALL_TASK : executeTime,
               dropdownWidth: 160,
               options: TimeOptions,
             },
             {
               render: (params: ITableLoadOptions) => {
-                const content = executeTime === 'custom' && (
+                const content = executeTime === 'custom' && executeDate?.length === 2 && (
                   <RangePicker
                     className={styles.rangePicker}
                     style={{

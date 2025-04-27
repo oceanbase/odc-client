@@ -131,27 +131,32 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
           case EDatabaseTableColumnKey.Recently:
             const databaseStyle = getDataSourceStyleByConnectType(record?.dataSource?.type);
             return (
-              <div
-                className={actionStyle}
-                style={hasDBAuth ? {} : { filter: 'grayScale(1)', pointerEvents: 'none' }}
-              >
+              <div className={actionStyle} style={hasDBAuth ? {} : { filter: 'grayScale(1)' }}>
                 <LabelWithIcon
                   gap={4}
                   label={
-                    <span
-                      onClick={() => {
-                        gotoSQLWorkspace(
-                          record?.project?.id,
-                          record?.dataSource?.id,
-                          record?.id,
-                          null,
-                          '',
-                          isLogicalDatabase(record),
-                        );
-                      }}
+                    <Tooltip
+                      overlayInnerStyle={{ whiteSpace: 'nowrap', width: 'fit-content' }}
+                      title={renderTooltipContent({
+                        type: hasProjectAuth ? (hasDBAuth ? '' : 'database') : 'project',
+                        record,
+                      })}
                     >
-                      {value}
-                    </span>
+                      <span
+                        onClick={() => {
+                          gotoSQLWorkspace(
+                            record?.project?.id,
+                            record?.dataSource?.id,
+                            record?.id,
+                            null,
+                            '',
+                            isLogicalDatabase(record),
+                          );
+                        }}
+                      >
+                        {value}
+                      </span>
+                    </Tooltip>
                   }
                   icon={
                     record?.type === 'LOGICAL' ? (
@@ -179,7 +184,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
                 <Tooltip
                   overlayInnerStyle={{ whiteSpace: 'nowrap', width: 'fit-content' }}
                   title={renderTooltipContent({
-                    type: hasProjectAuth ? (hasDBAuth ? '' : 'database') : 'project',
+                    type: hasProjectAuth ? '' : 'project',
                     record,
                   })}
                 >
