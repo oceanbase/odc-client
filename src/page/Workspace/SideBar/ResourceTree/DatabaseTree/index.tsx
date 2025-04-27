@@ -58,7 +58,7 @@ const DatabaseTree = function () {
     if (databaseList?.length) {
       const ids: Set<number> = new Set();
       databaseList.forEach((d) => {
-        if (d.type !== DBType.LOGICAL) {
+        if (d.type !== DBType.LOGICAL && !!d.dataSource?.id) {
           ids.add(d.dataSource?.id);
         }
       });

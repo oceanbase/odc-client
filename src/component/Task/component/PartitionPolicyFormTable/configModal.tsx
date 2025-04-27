@@ -587,7 +587,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         }}
         onChange={handleChange}
       >
-        <Descriptions column={1} style={{ paddingBottom: 16 }}>
+        <Descriptions column={1} style={{ paddingBottom: 24 }}>
           <Descriptions.Item
             label={
               formatMessage({
@@ -617,6 +617,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               defaultMessage: '分区策略',
             }) /*"分区策略"*/
           }
+          style={{ marginBottom: 16 }}
         >
           <Checkbox.Group options={StrategyOptions} />
         </Form.Item>
@@ -626,7 +627,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               <div>{item}</div>
             ))}
             type="warning"
-            style={{ marginBottom: '8px' }}
+            style={{ marginBottom: '16px' }}
             showIcon
           />
         )}

@@ -70,7 +70,7 @@ const useData = (id) => {
     if (res) {
       datasourceStatus.asyncUpdateStatus(
         res?.contents
-          ?.filter((item) => item.type !== 'LOGICAL')
+          ?.filter((item) => item.type !== 'LOGICAL' && !!item.dataSource?.id)
           ?.map((item) => item?.dataSource?.id),
       );
       setData(res?.contents);

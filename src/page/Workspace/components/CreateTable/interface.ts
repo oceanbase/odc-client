@@ -197,6 +197,7 @@ export enum TableIndexScope {
 }
 
 export interface ITableRangePartition {
+  columns: { columnName: string }[];
   columnName: string;
   expression: string;
   partType: IPartitionType.RANGE;
@@ -218,6 +219,7 @@ export interface ITableRangePartition {
 }
 
 export interface ITableListPartition {
+  columns: { columnName: string }[];
   columnName: string;
   expression: string;
   partType: IPartitionType.LIST;
