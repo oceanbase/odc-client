@@ -71,12 +71,12 @@ const SecretKeyInput = (props: { value: string; onChange: (value: string) => Pro
   };
 
   const handleBlur = async (e) => {
+    await updateSecretKey(e.target.value);
     if (!/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9]{32}$/.test(e.target.value)) {
       setHasError(true);
       return;
     }
     setHasError(false);
-    await updateSecretKey(e.target.value);
   };
 
   const handleEdit = () => {
