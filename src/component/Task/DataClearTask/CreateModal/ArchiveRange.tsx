@@ -238,7 +238,13 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                                   onCancel={close}
                                   onOk={handleSubmit}
                                 />
-                                <Tooltip title="过滤条件设置（如关联表）">
+
+                                <Tooltip
+                                  title={formatMessage({
+                                    id: 'src.component.Task.DataClearTask.CreateModal.BB3EA37A',
+                                    defaultMessage: '过滤条件设置（如关联表）',
+                                  })}
+                                >
                                   <div onClick={() => open(index)} style={{ cursor: 'pointer' }}>
                                     {form.getFieldValue(['tables', name, 'joinTableConfigs'])
                                       ?.length ? (

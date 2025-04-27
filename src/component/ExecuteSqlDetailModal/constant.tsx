@@ -124,7 +124,16 @@ export enum DirtyRowActionEnum {
 }
 
 export const DirtyRowActionLabelMap = {
-  [DirtyRowActionEnum.SKIP]: '跳过清理',
-  [DirtyRowActionEnum.REMIGRATE]: '清理并更新目标库',
-  [DirtyRowActionEnum.RAISE_ERROR]: '任务失败',
+  [DirtyRowActionEnum.SKIP]: formatMessage({
+    id: 'src.component.ExecuteSqlDetailModal.1F699B52',
+    defaultMessage: '跳过清理',
+  }),
+  [DirtyRowActionEnum.REMIGRATE]: formatMessage({
+    id: 'src.component.ExecuteSqlDetailModal.86528F49',
+    defaultMessage: '清理并更新目标库',
+  }),
+  [DirtyRowActionEnum.RAISE_ERROR]: formatMessage({
+    id: 'src.component.ExecuteSqlDetailModal.B88E979F',
+    defaultMessage: '任务失败',
+  }),
 };

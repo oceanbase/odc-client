@@ -47,6 +47,7 @@ const Search = ({ userStore, modalStore }: Iprops) => {
         <span style={{ color: 'var(--icon-color-disable)', paddingRight: 4 }}>/</span>
       </>
     );
+
     searchTag = (
       <SearchOutlined
         style={{
@@ -57,6 +58,7 @@ const Search = ({ userStore, modalStore }: Iprops) => {
         }}
       />
     );
+
     if (database) {
       databaseTag = (
         <>
@@ -95,6 +97,7 @@ const Search = ({ userStore, modalStore }: Iprops) => {
               component={ProjectSvg}
               style={{ color: 'var(--icon-blue-color)', fontSize: 16 }}
             />
+
             <Tooltip title={project?.name} placement="top" overlayStyle={{ maxWidth: 280 }}>
               <span className={styles.selectTitle}>{project?.name}</span>
             </Tooltip>
@@ -133,17 +136,29 @@ const Search = ({ userStore, modalStore }: Iprops) => {
     switch (status) {
       case SearchStatus.defalut: {
         if (userStore?.isPrivateSpace()) {
-          text = '支持搜索数据源、数据库，也可继续搜索表、列、视图等';
+          text = formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.57B0EBE9',
+            defaultMessage: '支持搜索数据源、数据库，也可继续搜索表、列、视图等',
+          });
         } else {
-          text = '支持搜索项目、数据源、数据库，也可继续搜索表、列、视图等';
+          text = formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.7F586D70',
+            defaultMessage: '支持搜索项目、数据源、数据库，也可继续搜索表、列、视图等',
+          });
         }
         break;
       }
       default: {
         if (database) {
-          text = '搜索表、列、视图等';
+          text = formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.DB1BDB57',
+            defaultMessage: '搜索表、列、视图等',
+          });
         } else {
-          text = '搜索数据库、表、列、视图等';
+          text = formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.0260FE41',
+            defaultMessage: '搜索数据库、表、列、视图等',
+          });
         }
         break;
       }

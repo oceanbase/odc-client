@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React, { useContext, useState } from 'react';
 import { Dropdown } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -9,31 +10,52 @@ import { DatabaseGroup } from '@/d.ts/database';
 const items: MenuProps['items'] = [
   {
     key: DatabaseGroup.none,
-    label: '不分组',
+    label: formatMessage({
+      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseGroup.3C8E637D',
+      defaultMessage: '不分组',
+    }),
   },
   {
     key: DatabaseGroup.project,
-    label: '按项目分组',
+    label: formatMessage({
+      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseGroup.EE74D94F',
+      defaultMessage: '按项目分组',
+    }),
   },
   {
     key: DatabaseGroup.dataSource,
-    label: '按数据源分组',
+    label: formatMessage({
+      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseGroup.14AB54E9',
+      defaultMessage: '按数据源分组',
+    }),
   },
   {
     key: DatabaseGroup.environment,
-    label: '按环境分组',
+    label: formatMessage({
+      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseGroup.499C395F',
+      defaultMessage: '按环境分组',
+    }),
   },
   {
     key: DatabaseGroup.connectType,
-    label: '按类型分组',
+    label: formatMessage({
+      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseGroup.347628AC',
+      defaultMessage: '按类型分组',
+    }),
   },
   {
     key: DatabaseGroup.cluster,
-    label: '按集群分组',
+    label: formatMessage({
+      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseGroup.BD2C3E80',
+      defaultMessage: '按集群分组',
+    }),
   },
   {
     key: DatabaseGroup.tenant,
-    label: '按租户分组',
+    label: formatMessage({
+      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseGroup.63870CFD',
+      defaultMessage: '按租户分组',
+    }),
   },
 ];
 

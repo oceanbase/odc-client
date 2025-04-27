@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -48,7 +49,12 @@ export default function SelectItem(props: {
           {option.data.label}
           {isSelected && (
             <Tag style={{ border: 'none' }}>
-              <Typography.Text type="secondary">默认</Typography.Text>
+              <Typography.Text type="secondary">
+                {formatMessage({
+                  id: 'src.component.ODCSetting.Item.SelectItem.C99AE9F7',
+                  defaultMessage: '默认',
+                })}
+              </Typography.Text>
             </Tag>
           )}
           <span
@@ -59,7 +65,10 @@ export default function SelectItem(props: {
               setSelectedValue(option.data.value);
             }}
           >
-            设为默认值
+            {formatMessage({
+              id: 'src.component.ODCSetting.Item.SelectItem.56CA55CD',
+              defaultMessage: '设为默认值',
+            })}
           </span>
         </Space>
       </div>
@@ -71,9 +80,15 @@ export default function SelectItem(props: {
       style={{ width: props.config?.width || 140 }}
       tagRender={(tag) => {
         return (
-          <Tag className={styles.selectTag} closable onClose={tag.onClose}>{`${tag.label}${
-            selectedValue === tag.value ? '-默认' : ''
-          }`}</Tag>
+          <Tag className={styles.selectTag} closable onClose={tag.onClose}>
+            {tag.label}
+            {selectedValue === tag.value
+              ? formatMessage({
+                  id: 'src.component.ODCSetting.Item.SelectItem.4A6D93E1',
+                  defaultMessage: '-默认',
+                })
+              : ''}
+          </Tag>
         );
       }}
       allowClear

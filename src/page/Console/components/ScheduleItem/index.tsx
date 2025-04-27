@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { useNavigate } from '@umijs/max';
 import { ConsoleTextConfig } from '../../const';
 import CounterCard from '../CounterCard';
@@ -30,22 +31,46 @@ const ScheduleItem = ({ title, progress, type }) => {
                     ? TaskStatus.EXECUTION_SUCCEEDED
                     : TaskStatus.ENABLED
                 }`;
+
                 navigate(target);
               }}
             >
-              已启用 <span className={styles.count}>{successEnabledCount || 0}</span> 个
+              {formatMessage({
+                id: 'src.page.Console.components.ScheduleItem.4E8811DF',
+                defaultMessage: '已启用',
+              })}
+
+              <span className={styles.count}>{successEnabledCount || 0}</span>
+              {formatMessage({
+                id: 'src.page.Console.components.ScheduleItem.728A17A0',
+                defaultMessage: '个',
+              })}
             </span>
           }
           gap={4}
           align={['vertical', 'center']}
         />
+
         <div className={styles.ringChart}>
           <DonutChart progress={progress} />
         </div>
       </div>
       <div className={styles.counters}>
-        <CounterCard title="共执行" counter={total} />
-        <CounterCard title="执行失败" counter={parseInt(failedExecutionCount)} status="failed" />
+        <CounterCard
+          title={formatMessage({
+            id: 'src.page.Console.components.ScheduleItem.1ADBD842',
+            defaultMessage: '共执行',
+          })}
+          counter={total}
+        />
+        <CounterCard
+          title={formatMessage({
+            id: 'src.page.Console.components.ScheduleItem.6F6BDC9E',
+            defaultMessage: '执行失败',
+          })}
+          counter={parseInt(failedExecutionCount)}
+          status="failed"
+        />
       </div>
     </div>
   );

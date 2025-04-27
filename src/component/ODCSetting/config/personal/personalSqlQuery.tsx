@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -20,13 +21,19 @@ import InputItem from '../../Item/InputItem';
 import { validForqueryLimit, validForqueryQueryNumber } from '../../validators';
 
 const databaseGroup: ODCSettingGroup = {
-  label: 'SQL 查询',
+  label: formatMessage({
+    id: 'src.component.ODCSetting.config.personal.2B385A6E',
+    defaultMessage: 'SQL 查询',
+  }),
   key: 'personalSqlQuery',
 };
 
 const personalSqlQuerySetting: IODCSetting[] = [
   {
-    label: '查询条数上限',
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.personal.60D2A889',
+      defaultMessage: '查询条数上限',
+    }),
     key: 'odc.sqlexecute.default.maxQueryLimit',
     locationKey: 'maxQueryLimit',
     group: databaseGroup,
@@ -39,6 +46,7 @@ const personalSqlQuerySetting: IODCSetting[] = [
         },
       },
     ],
+
     render: (value, onChange) => {
       return (
         <InputIntergerItem
@@ -53,7 +61,10 @@ const personalSqlQuerySetting: IODCSetting[] = [
     },
   },
   {
-    label: '查询条数默认值',
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.personal.FC79048F',
+      defaultMessage: '查询条数默认值',
+    }),
     key: 'odc.sqlexecute.default.queryLimit',
     locationKey: 'queryLimit',
     group: databaseGroup,
@@ -66,6 +77,7 @@ const personalSqlQuerySetting: IODCSetting[] = [
         },
       },
     ],
+
     render: (value, onChange) => {
       return <InputIntergerItem value={value} onChange={onChange} min={'1'} />;
     },

@@ -18,7 +18,10 @@ export const MaterializedViewTreeData = (dbSession: SessionStore, database: IDat
   const dbName = database.name;
   const materializedViews = dbSession?.database?.materializedView;
   const treeData: TreeDataNode = {
-    title: '物化视图',
+    title: formatMessage({
+      id: 'src.page.Workspace.SideBar.ResourceTree.Nodes.844D4AF7',
+      defaultMessage: '物化视图',
+    }),
     key: `${database.id}-${dbName}-materializedView`,
     type: ResourceNodeType.MaterializedViewRoot,
     data: database,
@@ -32,7 +35,10 @@ export const MaterializedViewTreeData = (dbSession: SessionStore, database: IDat
       let MaterializedViewColumnRoot: TreeDataNode;
       if (item.columns) {
         MaterializedViewColumnRoot = {
-          title: '列',
+          title: formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.Nodes.25929E55',
+            defaultMessage: '列',
+          }),
           type: ResourceNodeType.MaterializedViewColumnRoot,
           key: `${materializedViewKey}-column`,
           data: item,
@@ -44,6 +50,7 @@ export const MaterializedViewTreeData = (dbSession: SessionStore, database: IDat
               }}
             />
           ),
+
           children: item?.columns?.map((c) => {
             return {
               title: c.name,
@@ -59,6 +66,7 @@ export const MaterializedViewTreeData = (dbSession: SessionStore, database: IDat
                   }}
                 />
               ),
+
               isLeaf: true,
             };
           }),
@@ -81,6 +89,7 @@ export const MaterializedViewTreeData = (dbSession: SessionStore, database: IDat
               }}
             />
           ),
+
           sessionId: dbSession?.sessionId,
           children: item.indexes?.map((c) => {
             return {
@@ -138,6 +147,7 @@ export const MaterializedViewTreeData = (dbSession: SessionStore, database: IDat
                   }}
                 />
               ),
+
               type: ResourceNodeType.MaterializedViewPartition,
             };
           });
@@ -160,6 +170,7 @@ export const MaterializedViewTreeData = (dbSession: SessionStore, database: IDat
                   }}
                 />
               ),
+
               type: ResourceNodeType.MaterializedViewPartition,
               children: subpartitionsDataHelper(key, item.subpartitions?.partitions, p.name),
             };
@@ -183,6 +194,7 @@ export const MaterializedViewTreeData = (dbSession: SessionStore, database: IDat
                   }}
                 />
               ),
+
               type: ResourceNodeType.MaterializedViewPartition,
               children: subpartitionsDataHelper(key, item.subpartitions?.partitions, p.name),
             };
@@ -304,6 +316,7 @@ export const MaterializedViewTreeData = (dbSession: SessionStore, database: IDat
               }}
             />
           ),
+
           children: constraint.map((c) => {
             return {
               title: c.name,
@@ -351,6 +364,7 @@ export const MaterializedViewTreeData = (dbSession: SessionStore, database: IDat
             }}
           />
         ),
+
         sessionId: dbSession?.sessionId,
         isLeaf: false,
         children: item.columns

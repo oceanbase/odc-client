@@ -1,30 +1,53 @@
+import { formatMessage } from '@/util/intl';
 import setting, { getCurrentOrganizationId } from '@/store/setting';
 
 export const validForqueryQueryNumber = (value) => {
   const sessionQueryLimit = sessionStorage.getItem(`maxQueryLimit-${getCurrentOrganizationId()}`);
   const queryLimit = setting.getSpaceConfigByKey('odc.sqlexecute.default.maxQueryLimit');
   if (!value) {
-    return Promise.reject('请输入查询条数默认值');
+    return Promise.reject(
+      formatMessage({
+        id: 'src.component.ODCSetting.B7CA4CA1',
+        defaultMessage: '请输入查询条数默认值',
+      }),
+    );
   }
   if (sessionQueryLimit) {
     if (value > Number(sessionQueryLimit)) {
-      return Promise.reject(`不超过${sessionQueryLimit}`);
+      return Promise.reject(
+        formatMessage(
+          { id: 'src.component.ODCSetting.5127321B', defaultMessage: '不超过{sessionQueryLimit}' },
+          { sessionQueryLimit },
+        ),
+      );
     } else {
       return Promise.resolve();
     }
   }
   if (value > Number(queryLimit)) {
-    return Promise.reject(`不超过${queryLimit}`);
+    return Promise.reject(
+      formatMessage(
+        { id: 'src.component.ODCSetting.A8E22CC2', defaultMessage: '不超过{queryLimit}' },
+        { queryLimit },
+      ),
+    );
   }
   return Promise.resolve();
 };
 
 export const validForqueryLimit = (value) => {
   if (value > 100000) {
-    return Promise.reject(`不超过100000`);
+    return Promise.reject(
+      formatMessage({ id: 'src.component.ODCSetting.4C8CC366', defaultMessage: '不超过100000' }),
+    );
   }
   if (!value) {
-    return Promise.reject('请输入查询条数上限');
+    return Promise.reject(
+      formatMessage({
+        id: 'src.component.ODCSetting.DD41DED4',
+        defaultMessage: '请输入查询条数上限',
+      }),
+    );
   }
   return Promise.resolve();
 };

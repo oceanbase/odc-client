@@ -98,7 +98,12 @@ const columns = [
                 })}
           </Descriptions.Item>
           {!!incrementFieldType ? (
-            <Descriptions.Item label={'含义'}>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyTable.D136FFC8',
+                defaultMessage: '含义',
+              })}
+            >
               {increamentFieldTypeLabelMap[incrementFieldType]}
               {incrementFieldTimeFormat ? `(${incrementFieldTimeFormat})` : null}
             </Descriptions.Item>
@@ -149,7 +154,14 @@ const columns = [
             </Descriptions.Item>
           )}
           {!!numberInterval && (
-            <Descriptions.Item label={'间隔(数值)'}>{numberInterval}</Descriptions.Item>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyTable.8AA131EB',
+                defaultMessage: '间隔(数值)',
+              })}
+            >
+              {numberInterval}
+            </Descriptions.Item>
           )}
           {!!interval && (
             <Descriptions.Item

@@ -285,7 +285,10 @@ const Columns = () => {
             handleSelectAll(e, onItemSelectAll);
           }}
         >
-          全部列
+          {formatMessage({
+            id: 'src.page.Workspace.components.CreateMaterializedView.Columns.4E0A7E66',
+            defaultMessage: '全部列',
+          })}
         </Checkbox>
         <DirectoryTree
           blockNode
@@ -366,12 +369,22 @@ const Columns = () => {
       }
       if (_selectMap?.[otherKey]?.aliasName === aliasName) {
         obj[i].isWarning = true;
-        obj[i].warnTip.push('别名与其他别名不可以重复');
+        obj[i].warnTip.push(
+          formatMessage({
+            id: 'src.page.Workspace.components.CreateMaterializedView.Columns.C838FDD8',
+            defaultMessage: '别名与其他别名不可以重复',
+          }),
+        );
       }
       const { c: otherColumnName } = parse(otherKey);
       if (!_selectMap?.[otherKey]?.aliasName && otherColumnName === aliasName) {
         obj[i].isWarning = true;
-        obj[i].warnTip.push('别名与其他没有设置别名的列名不可以重复');
+        obj[i].warnTip.push(
+          formatMessage({
+            id: 'src.page.Workspace.components.CreateMaterializedView.Columns.19B4BA2D',
+            defaultMessage: '别名与其他没有设置别名的列名不可以重复',
+          }),
+        );
       }
     }
   };
@@ -401,7 +414,12 @@ const Columns = () => {
       const { c: otherColumnName } = parse(otherKey);
       if (!_selectMap?.[otherKey]?.aliasName && ColumnName === otherColumnName) {
         obj[i].isWarning = true;
-        obj[i].warnTip.push('列名与其他列名不可以重复');
+        obj[i].warnTip.push(
+          formatMessage({
+            id: 'src.page.Workspace.components.CreateMaterializedView.Columns.A0A1E23D',
+            defaultMessage: '列名与其他列名不可以重复',
+          }),
+        );
       }
     }
   };
@@ -443,8 +461,17 @@ const Columns = () => {
   return (
     <div style={{ padding: '12px' }}>
       <p>
-        选择列
-        <span style={{ color: 'var(--icon-color-normal-2)' }}>（可选）</span>
+        {formatMessage({
+          id: 'src.page.Workspace.components.CreateMaterializedView.Columns.68D7301A',
+          defaultMessage: '选择列',
+        })}
+
+        <span style={{ color: 'var(--icon-color-normal-2)' }}>
+          {formatMessage({
+            id: 'src.page.Workspace.components.CreateMaterializedView.Columns.98CDC21D',
+            defaultMessage: '（可选）',
+          })}
+        </span>
       </p>
       <Transfer
         showSelectAll
@@ -456,7 +483,12 @@ const Columns = () => {
         titles={[
           null,
           <>
-            <span className={styles['header-tip']}>提示：可点击自定义新建列</span>
+            <span className={styles['header-tip']}>
+              {formatMessage({
+                id: 'src.page.Workspace.components.CreateMaterializedView.Columns.C831E1E0',
+                defaultMessage: '提示：可点击自定义新建列',
+              })}
+            </span>
             <a onClick={handleItemAdd}>
               <PlusOutlined />
               {formatMessage({
@@ -466,7 +498,12 @@ const Columns = () => {
             </a>
           </>,
         ]}
-        locale={{ searchPlaceholder: '请输入列名称' }}
+        locale={{
+          searchPlaceholder: formatMessage({
+            id: 'src.page.Workspace.components.CreateMaterializedView.Columns.9A13C46F',
+            defaultMessage: '请输入列名称',
+          }),
+        }}
         onChange={handleTransfer}
         onSearch={handleTreeSearch}
         oneWay

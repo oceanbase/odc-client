@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { useContext, useState } from 'react';
 import { Table, Tooltip, Empty, Spin } from 'antd';
 import { useMount, useRequest } from 'ahooks';
@@ -66,7 +67,13 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
       case 'project':
         return (
           <div>
-            {`未加入项目【${record?.project?.name || '-'}】请先`}
+            {formatMessage(
+              {
+                id: 'src.page.Console.components.RecentlyDatabase.CA6BD899',
+                defaultMessage: '未加入项目【{LogicalExpression0}】请先',
+              },
+              { LogicalExpression0: record?.project?.name || '-' },
+            )}
             <a
               target="_blank"
               rel="noopener noreferrer"
@@ -75,14 +82,22 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
                 handleApply(TaskType.APPLY_PROJECT_PERMISSION, record?.project?.id);
               }}
             >
-              申请项目权限
+              {formatMessage({
+                id: 'src.page.Console.components.RecentlyDatabase.825A345D',
+                defaultMessage: '申请项目权限',
+              })}
             </a>
           </div>
         );
+
       case 'database':
         return (
           <div>
-            暂无该数据库权限，请先
+            {formatMessage({
+              id: 'src.page.Console.components.RecentlyDatabase.67205237',
+              defaultMessage: '暂无该数据库权限，请先',
+            })}
+
             <a
               target="_blank"
               rel="noopener noreferrer"
@@ -91,10 +106,14 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
                 handleApply(TaskType.APPLY_DATABASE_PERMISSION, record?.project?.id);
               }}
             >
-              申请库权限
+              {formatMessage({
+                id: 'src.page.Console.components.RecentlyDatabase.CEF9CB7E',
+                defaultMessage: '申请库权限',
+              })}
             </a>
           </div>
         );
+
       default:
         return '';
     }
@@ -128,6 +147,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
                 </Action.Group>
               </div>
             );
+
           case EDatabaseTableColumnKey.Recently:
             const databaseStyle = getDataSourceStyleByConnectType(record?.dataSource?.type);
             return (
@@ -177,6 +197,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
                 />
               </div>
             );
+
           case EDatabaseTableColumnKey.DataSource:
             const style = getDataSourceStyleByConnectType(record.dataSource?.type);
             if (!value) {
@@ -233,6 +254,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
                 {value?.name || '-'}
               </div>
             );
+
           case EDatabaseTableColumnKey.Environment:
             return (
               <div className={styles.environment}>
@@ -242,6 +264,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
                 />
               </div>
             );
+
           default:
             return <>-</>;
         }

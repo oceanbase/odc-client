@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -239,6 +240,7 @@ export type GroupWithDatabases = {
     dataSource?: IConnection;
   };
 };
+
 export type GroupWithSecondGroup = {
   [K in keyof GroupResult as K extends DatabaseGroup.none ? never : K]: GroupResult[K] & {
     secondGroup: secondGroupType;
@@ -268,7 +270,10 @@ export const getMapIdByDB = <T extends DatabaseGroup>(db: IDatabase, type: T): G
       if (db.type === 'LOGICAL') {
         // 逻辑库特殊处理
         mapId = 0;
-        groupName = '逻辑库';
+        groupName = formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.9E33C6EC',
+          defaultMessage: '逻辑库',
+        });
       }
       break;
     }
@@ -278,13 +283,35 @@ export const getMapIdByDB = <T extends DatabaseGroup>(db: IDatabase, type: T): G
       break;
     }
     case DatabaseGroup.cluster: {
-      mapId = clusterName || '无集群';
-      groupName = clusterName || '无集群';
+      mapId =
+        clusterName ||
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.F79830BF',
+          defaultMessage: '无集群',
+        });
+      groupName =
+        clusterName ||
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.E04CDD3A',
+          defaultMessage: '无集群',
+        });
       break;
     }
     case DatabaseGroup.tenant: {
-      mapId = !tenantName ? '无租户' : clusterName ? `${tenantName}@${clusterName}` : tenantName;
-      groupName = tenantName ? tenantName : '无租户';
+      mapId = !tenantName
+        ? formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.D70F1953',
+            defaultMessage: '无租户',
+          })
+        : clusterName
+        ? `${tenantName}@${clusterName}`
+        : tenantName;
+      groupName = tenantName
+        ? tenantName
+        : formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.F827EE1E',
+            defaultMessage: '无租户',
+          });
       tip = clusterName;
       break;
     }
@@ -319,8 +346,18 @@ export const getMapIdByDataSource = <T extends DatabaseGroup>(
       break;
     }
     case DatabaseGroup.cluster: {
-      mapId = clusterName || '无集群';
-      groupName = clusterName || '无集群';
+      mapId =
+        clusterName ||
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.8C3BC0E3',
+          defaultMessage: '无集群',
+        });
+      groupName =
+        clusterName ||
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.F8428567',
+          defaultMessage: '无集群',
+        });
       break;
     }
   }

@@ -752,9 +752,16 @@ const CreateModal: React.FC<IProps> = (props) => {
                 marginBottom: '8px',
               }}
             />
+
             <Alert
               closable
-              message={`DML语句预估影响行数：${affectedRows || '-'}`}
+              message={formatMessage(
+                {
+                  id: 'src.component.Task.AsyncTask.CreateModal.4F14EA28',
+                  defaultMessage: 'DML语句预估影响行数：{LogicalExpression0}',
+                },
+                { LogicalExpression0: affectedRows || '-' },
+              )}
               type={lintResultSet?.length === 0 ? 'success' : 'warning'}
               showIcon
               style={{
@@ -945,7 +952,15 @@ const CreateModal: React.FC<IProps> = (props) => {
               validator: (_, value) => {
                 const max = setting.getSpaceConfigByKey('odc.sqlexecute.default.maxQueryLimit');
                 if (value !== undefined && value > max) {
-                  return Promise.reject(`不超过查询条数上限 ${max}`);
+                  return Promise.reject(
+                    formatMessage(
+                      {
+                        id: 'src.component.Task.AsyncTask.CreateModal.06DB3655',
+                        defaultMessage: '不超过查询条数上限 {max}',
+                      },
+                      { max },
+                    ),
+                  );
                 }
                 return Promise.resolve();
               },

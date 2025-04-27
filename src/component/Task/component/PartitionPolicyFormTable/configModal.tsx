@@ -450,8 +450,12 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
 
   const submitBtn = useMemo(() => {
     const isSingleGenerateCount = generateCount === 1;
-    const isSingleGenerateCountMessage =
-      '当前预创建分区数量过小，若调度失败恐影响业务运行，建议调整预创建分区数量至2个及以上。';
+    const isSingleGenerateCountMessage = formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.9F024A60',
+      defaultMessage:
+        '当前预创建分区数量过小，若调度失败恐影响业务运行，建议调整预创建分区数量至2个及以上。',
+    });
+
     const isBatchMessage = formatMessage({
       id: 'odc.components.PartitionPolicyTable.configModal.BatchSettingWillOverwriteThe',
       defaultMessage: '批量设置将覆盖原有的策略，是否确定设置？',
@@ -558,7 +562,16 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               }) /*取消*/
             }
           </Button>
-          <Tooltip title={strategies?.length ? null : '暂未设置创建策略，无 SQL 可预览'}>
+          <Tooltip
+            title={
+              strategies?.length
+                ? null
+                : formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyFormTable.E753A67D',
+                    defaultMessage: '暂未设置创建策略，无 SQL 可预览',
+                  })
+            }
+          >
             <Button
               onClick={() => {
                 handlePreview();
@@ -713,7 +726,10 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 }) /*"命名方式"*/
               }
               name="nameRuleType"
-              tooltip={'分区名的生成方式'}
+              tooltip={formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyFormTable.18397BFF',
+                defaultMessage: '分区名的生成方式',
+              })}
               rules={[
                 {
                   required: true,
@@ -737,7 +753,11 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               style={{ marginBottom: '0' }}
               tooltip={
                 isCustomRuleType
-                  ? "分区名的生成规则，可引用变量。比如：concat('P_',${COL1})，其中 COL1 表示分区表的分区键。"
+                  ? formatMessage({
+                      id: 'src.component.Task.component.PartitionPolicyFormTable.044700A2',
+                      defaultMessage:
+                        "分区名的生成规则，可引用变量。比如：concat('P_',${COL1})，其中 COL1 表示分区表的分区键。",
+                    })
                   : null
               }
             >
@@ -961,9 +981,11 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                     defaultMessage: '命名间隔',
                   }) /*"命名间隔"*/
                 }
-                tooltip={
-                  "可在命名规则表达式中通过 ${INTERVAL} 变量引用，比如:concat('P_',${COL1}+${INTERVAL})"
-                }
+                tooltip={formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyFormTable.7F47487A',
+                  defaultMessage:
+                    "可在命名规则表达式中通过 ${INTERVAL} 变量引用，比如:concat('P_',${COL1}+${INTERVAL})",
+                })}
               >
                 <Input
                   style={{ width: 180 }}

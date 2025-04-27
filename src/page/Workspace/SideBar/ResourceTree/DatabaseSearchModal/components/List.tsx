@@ -149,7 +149,10 @@ const List = ({ modalStore }: Iprops) => {
             }
           }}
         >
-          继续搜索
+          {formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.D28EA9CA',
+            defaultMessage: '继续搜索',
+          })}
         </span>
       </div>
     );
@@ -194,21 +197,41 @@ const List = ({ modalStore }: Iprops) => {
             className={styles.center}
             description={
               <div>
-                <p>暂无数据</p>
                 <p>
-                  请尝试
+                  {formatMessage({
+                    id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.49EEB88D',
+                    defaultMessage: '暂无数据',
+                  })}
+                </p>
+                <p>
+                  {formatMessage({
+                    id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.7880C5CD',
+                    defaultMessage: '请尝试',
+                  })}
+
                   <a
                     onClick={async () => {
                       const data = await fetchSyncAll?.();
                       if (data?.data) {
-                        message.success('同步发起成功');
+                        message.success(
+                          formatMessage({
+                            id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.5D2CB0F6',
+                            defaultMessage: '同步发起成功',
+                          }),
+                        );
                         reloadDatabaseList?.();
                       }
                     }}
                   >
-                    同步数据库
+                    {formatMessage({
+                      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.884084AB',
+                      defaultMessage: '同步数据库',
+                    })}
                   </a>
-                  ，或联系管理员
+                  {formatMessage({
+                    id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.55AB56DF',
+                    defaultMessage: '，或联系管理员',
+                  })}
                 </p>
               </div>
             }
@@ -322,13 +345,22 @@ const List = ({ modalStore }: Iprops) => {
   const searchInfo = useMemo(() => {
     switch (status) {
       case SearchStatus.forDataSource: {
-        return '数据源';
+        return formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.40A85606',
+          defaultMessage: '数据源',
+        });
       }
       case SearchStatus.forProject: {
-        return '项目';
+        return formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.F8D1DA01',
+          defaultMessage: '项目',
+        });
       }
       default: {
-        return '数据库';
+        return formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.BA1A0AD7',
+          defaultMessage: '数据库',
+        });
       }
     }
   }, [status]);

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Dropdown, Button, Divider, Modal, Tooltip } from 'antd';
 import React, { useContext, useMemo, useState } from 'react';
 import { synchronizeText, refreshMethodAllowsSyncMethods } from './constants';
@@ -33,7 +34,10 @@ const Sync: React.FC<IProps> = (props) => {
       {
         key: 'group',
         type: 'group',
-        label: '选择刷新方式',
+        label: formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.Sync.88BF23AB',
+          defaultMessage: '选择刷新方式',
+        }),
         children: [
           RefreshMethod.REFRESH_FAST,
           RefreshMethod.REFRESH_COMPLETE,
@@ -42,6 +46,7 @@ const Sync: React.FC<IProps> = (props) => {
           label: (
             <Tooltip title={synchronizeText?.[item]?.tip}>{synchronizeText?.[item]?.label}</Tooltip>
           ),
+
           key: item,
           disabled:
             !refreshMethodAllowsSyncMethods[materializedView?.info?.refreshMethod]?.includes(item),
@@ -57,7 +62,12 @@ const Sync: React.FC<IProps> = (props) => {
       <>
         <Divider style={{ margin: 0 }} />
         <div className={styles.parallelismDegree}>
-          <p className={styles.parallelismDegreeLabel}>设置并行度</p>
+          <p className={styles.parallelismDegreeLabel}>
+            {formatMessage({
+              id: 'src.page.Workspace.components.DDLResultSet.Sync.F802A21B',
+              defaultMessage: '设置并行度',
+            })}
+          </p>
           <InputNumber
             min={1}
             max={Number.MAX_SAFE_INTEGER}
@@ -71,7 +81,10 @@ const Sync: React.FC<IProps> = (props) => {
             setOpenSyncRecordDrawer(true);
           }}
         >
-          查看刷新记录 &gt;
+          {formatMessage({
+            id: 'src.page.Workspace.components.DDLResultSet.Sync.46962039',
+            defaultMessage: '查看刷新记录 &gt;',
+          })}
         </Button>
       </>
     );
@@ -87,7 +100,12 @@ const Sync: React.FC<IProps> = (props) => {
       materializedViewName: pageStore?.activePage?.params?.materializedViewName,
     });
     if (res) {
-      message.success('刷新数据成功');
+      message.success(
+        formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.Sync.F3681DA6',
+          defaultMessage: '刷新数据成功',
+        }),
+      );
     }
     setSyncing(false);
   };
@@ -103,7 +121,13 @@ const Sync: React.FC<IProps> = (props) => {
           items: synchronizeOptions,
           onClick(info) {
             confirm({
-              title: `确认要${synchronizeText?.[info.key]?.label}吗`,
+              title: formatMessage(
+                {
+                  id: 'src.page.Workspace.components.DDLResultSet.Sync.E5C0001D',
+                  defaultMessage: '确认要{synchronizeTextInfoKeyLabel}吗',
+                },
+                { synchronizeTextInfoKeyLabel: synchronizeText?.[info.key]?.label },
+              ),
               icon: <ExclamationCircleFilled />,
               content: synchronizeText?.[info.key]?.descriptions,
               onOk: () => handleSyncMaterializedView(info.key as RefreshMethod),

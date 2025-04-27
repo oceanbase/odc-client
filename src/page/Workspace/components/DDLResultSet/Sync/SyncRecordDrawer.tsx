@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React, { useMemo, useEffect, useContext } from 'react';
 import { Drawer, Descriptions, Spin } from 'antd';
 import { getRefreshRecords } from '@/common/network/materializedView';
@@ -70,15 +71,24 @@ const SyncRecordDrawer: React.FC<IProps> = (props) => {
       isHide?: boolean;
     }[] = [
       {
-        label: '物化视图名称',
+        label: formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.Sync.37022016',
+          defaultMessage: '物化视图名称',
+        }),
         content: materializedView?.info?.name,
       },
       {
-        label: '所属数据库',
+        label: formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.Sync.06C6984C',
+          defaultMessage: '所属数据库',
+        }),
         content: materializedView?.info?.schemaName,
       },
       {
-        label: '存储模式',
+        label: formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.Sync.D17C87D8',
+          defaultMessage: '存储模式',
+        }),
         content: materializedView?.info?.columnGroups
           ?.map((item) => {
             return item?.allColumns
@@ -90,52 +100,107 @@ const SyncRecordDrawer: React.FC<IProps> = (props) => {
           !materializedView?.info?.columnGroups || !materializedView?.info?.columnGroups?.length,
       },
       {
-        label: '刷新方式',
+        label: formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.Sync.763D7D1D',
+          defaultMessage: '刷新方式',
+        }),
         content: refreshMethodText[materializedView?.info?.refreshMethod],
       },
       {
-        label: '刷新并行度',
+        label: formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.Sync.7EF2E04C',
+          defaultMessage: '刷新并行度',
+        }),
         content: materializedView?.info?.parallelismDegree,
       },
       {
-        label: '自动刷新',
-        content: !!materializedView?.info?.refreshSchedule ? '开启' : '不开启',
+        label: formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.Sync.AB4F6A74',
+          defaultMessage: '自动刷新',
+        }),
+        content: !!materializedView?.info?.refreshSchedule
+          ? formatMessage({
+              id: 'src.page.Workspace.components.DDLResultSet.Sync.77AA80C9',
+              defaultMessage: '开启',
+            })
+          : formatMessage({
+              id: 'src.page.Workspace.components.DDLResultSet.Sync.E25CD4CC',
+              defaultMessage: '不开启',
+            }),
       },
       {
-        label: '开始刷新表达式',
+        label: formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.Sync.896AD8B4',
+          defaultMessage: '开始刷新表达式',
+        }),
         content: materializedView?.info?.refreshSchedule?.startExpression,
         isHide: !materializedView?.info?.refreshSchedule,
       },
       {
-        label: '下次刷新表达式',
+        label: formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.Sync.E4C45DEC',
+          defaultMessage: '下次刷新表达式',
+        }),
         content: materializedView?.info?.refreshSchedule?.nextExpression,
         isHide: !materializedView?.info?.refreshSchedule,
       },
       {
-        label: '上一次刷新类型',
+        label: formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.Sync.56F9AF2F',
+          defaultMessage: '上一次刷新类型',
+        }),
         content: refreshMethodText[materializedView?.info?.lastRefreshType],
       },
       {
-        label: '上一次刷新开始时间',
+        label: formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.Sync.1709A66E',
+          defaultMessage: '上一次刷新开始时间',
+        }),
         content:
           materializedView?.info?.lastRefreshStartTime &&
           dayjs(materializedView?.info?.lastRefreshStartTime)?.format('YYYY-MM-DD HH:mm:ss'),
       },
       {
-        label: '上一次刷新结束时间',
+        label: formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.Sync.595C4B1C',
+          defaultMessage: '上一次刷新结束时间',
+        }),
         content:
           materializedView?.info?.lastRefreshEndTime &&
           dayjs(materializedView?.info?.lastRefreshEndTime)?.format('YYYY-MM-DD HH:mm:ss'),
       },
       {
-        label: '查询改写',
-        content: materializedView?.info?.enableQueryRewrite ? '开启' : '不开启',
+        label: formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.Sync.F8CC4704',
+          defaultMessage: '查询改写',
+        }),
+        content: materializedView?.info?.enableQueryRewrite
+          ? formatMessage({
+              id: 'src.page.Workspace.components.DDLResultSet.Sync.162045FD',
+              defaultMessage: '开启',
+            })
+          : formatMessage({
+              id: 'src.page.Workspace.components.DDLResultSet.Sync.F17F6386',
+              defaultMessage: '不开启',
+            }),
       },
       {
-        label: '实时',
-        content: materializedView?.info?.enableQueryComputation ? '是' : '否',
+        label: formatMessage({
+          id: 'src.page.Workspace.components.DDLResultSet.Sync.619DF546',
+          defaultMessage: '实时',
+        }),
+        content: materializedView?.info?.enableQueryComputation
+          ? formatMessage({
+              id: 'src.page.Workspace.components.DDLResultSet.Sync.FB2B5757',
+              defaultMessage: '是',
+            })
+          : formatMessage({
+              id: 'src.page.Workspace.components.DDLResultSet.Sync.A34C9F84',
+              defaultMessage: '否',
+            }),
       },
     ];
+
     return options.filter((item) => !item?.isHide);
   }, [JSON.stringify(materializedView?.info)]);
 
@@ -143,7 +208,10 @@ const SyncRecordDrawer: React.FC<IProps> = (props) => {
     <Drawer
       open={open}
       onClose={onClose}
-      title={'刷新记录'}
+      title={formatMessage({
+        id: 'src.page.Workspace.components.DDLResultSet.Sync.144EEF21',
+        defaultMessage: '刷新记录',
+      })}
       width={1000}
       className={styles.SyncRecordDrawer}
     >

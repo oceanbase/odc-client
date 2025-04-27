@@ -51,7 +51,10 @@ const ConnectionPopover: React.FC<{
     return (
       <div style={{ display: 'flex' }}>
         <span style={{ whiteSpace: 'nowrap' }} className={styles.label}>
-          备注：
+          {formatMessage({
+            id: 'src.component.ConnectionPopover.7A11191E',
+            defaultMessage: '备注：',
+          })}
         </span>
         <div style={{ width: '260px', wordBreak: 'break-word' }}>{database?.remark ?? '-'}</div>
       </div>
@@ -61,7 +64,12 @@ const ConnectionPopover: React.FC<{
   const dataSourceDescription = useMemo(() => {
     return (
       <div style={{ display: 'flex' }}>
-        <span className={styles.label}>数据源：</span>
+        <span className={styles.label}>
+          {formatMessage({
+            id: 'src.component.ConnectionPopover.2A18AD55',
+            defaultMessage: '数据源：',
+          })}
+        </span>
         <div>{connection?.name || database?.dataSource?.name || '-'}</div>
       </div>
     );
@@ -70,7 +78,12 @@ const ConnectionPopover: React.FC<{
   const projectDescription = useMemo(() => {
     return (
       <div style={{ display: 'flex' }}>
-        <span className={styles.label}>项目：</span>
+        <span className={styles.label}>
+          {formatMessage({
+            id: 'src.component.ConnectionPopover.16ED170C',
+            defaultMessage: '项目：',
+          })}
+        </span>
         <div>{database?.project?.name || connection?.projectName || '-'}</div>
       </div>
     );
@@ -312,6 +325,7 @@ const ConnectionPopover: React.FC<{
                   database?.environment?.style?.toLowerCase()
                 }
               />
+
               <DataBaseStatusIcon item={database} />
               <span style={{ marginLeft: '6px', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                 {database?.name}

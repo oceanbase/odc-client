@@ -62,7 +62,12 @@ const columns = (needCheckBeforeDelete: boolean) => [
                 ></DisplayTable>
               }
             >
-              <Typography.Link>关联表</Typography.Link>
+              <Typography.Link>
+                {formatMessage({
+                  id: 'src.component.Task.DataClearTask.DetailContent.079D6222',
+                  defaultMessage: '关联表',
+                })}
+              </Typography.Link>
             </Popover>
           ) : (
             <></>

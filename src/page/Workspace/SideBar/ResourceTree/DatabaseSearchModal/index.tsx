@@ -103,7 +103,15 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
               onClick={() => {
                 next({ searchStatus: type });
               }}
-            >{`搜索${SearchOptionTypeTextMap?.[type]}"${searchKey}"`}</div>
+            >
+              {formatMessage(
+                {
+                  id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.3788E8F0',
+                  defaultMessage: '搜索{SearchOptionTypeTextMapType}"{searchKey}"',
+                },
+                { SearchOptionTypeTextMapType: SearchOptionTypeTextMap?.[type], searchKey },
+              )}
+            </div>
           );
         })}
       </div>
@@ -136,7 +144,13 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
       };
     }
     if ([SearchStatus.projectforObject].includes(status)) {
-      positionText = `定位到项目${project?.name}`;
+      positionText = formatMessage(
+        {
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.E1E46959',
+          defaultMessage: '定位到项目{projectName}',
+        },
+        { projectName: project?.name },
+      );
       action = () => {
         positionProjectOrDataSource?.({
           status,
@@ -145,7 +159,13 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
       };
     }
     if ([SearchStatus.dataSourceforObject].includes(status)) {
-      positionText = `定位到数据源${dataSource?.name}`;
+      positionText = formatMessage(
+        {
+          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.FB02CA29',
+          defaultMessage: '定位到数据源{dataSourceName}',
+        },
+        { dataSourceName: dataSource?.name },
+      );
       action = () => {
         positionProjectOrDataSource?.({
           status,

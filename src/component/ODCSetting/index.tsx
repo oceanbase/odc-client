@@ -613,21 +613,30 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
           onChange={(e) => setSpaceType(e.target.value)}
         >
           <Radio.Button className={styles.user} value={ESpaceType.USER}>
-            用户
+            {formatMessage({ id: 'src.component.ODCSetting.6BCFD6DD', defaultMessage: '用户' })}
           </Radio.Button>
           {login.isPrivateSpace() ? (
             <Radio.Button className={styles.space} value={ESpaceType.PERSONAL}>
-              个人空间
+              {formatMessage({
+                id: 'src.component.ODCSetting.47586FD4',
+                defaultMessage: '个人空间',
+              })}
             </Radio.Button>
           ) : isAdmin ? (
             <Radio.Button className={styles.space} value={ESpaceType.GROUP}>
-              团队空间
+              {formatMessage({
+                id: 'src.component.ODCSetting.AC147B83',
+                defaultMessage: '团队空间',
+              })}
             </Radio.Button>
           ) : null}
         </Radio.Group>
         <Search
           className={styles.search}
-          placeholder="搜索设置项"
+          placeholder={formatMessage({
+            id: 'src.component.ODCSetting.439621E6',
+            defaultMessage: '搜索设置项',
+          })}
           onChange={(e) => handleSearch(e.target.value)}
           onSearch={handleSearch}
           onPressEnter={handleEnterPress}

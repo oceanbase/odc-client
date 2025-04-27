@@ -257,13 +257,29 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
           </Descriptions.Item>
         )}
         {jobParameters?.needCheckBeforeDelete ? (
-          <Descriptions.Item label={'源端目标端数据不一致处理'}>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Task.DataClearTask.DetailContent.C6968CAA',
+              defaultMessage: '源端目标端数据不一致处理',
+            })}
+          >
             {DirtyRowActionLabelMap[jobParameters?.dirtyRowAction]}
           </Descriptions.Item>
         ) : null}
         {jobParameters?.dirtyRowAction === DirtyRowActionEnum.SKIP ? (
-          <Descriptions.Item label={'跳过不清理数据'}>
-            {`${jobParameters?.maxAllowedDirtyRowCount || 0} 行`}
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Task.DataClearTask.DetailContent.D89667B8',
+              defaultMessage: '跳过不清理数据',
+            })}
+          >
+            {formatMessage(
+              {
+                id: 'src.component.Task.DataClearTask.DetailContent.66E3D51C',
+                defaultMessage: '{LogicalExpression0} 行',
+              },
+              { LogicalExpression0: jobParameters?.maxAllowedDirtyRowCount || 0 },
+            )}
           </Descriptions.Item>
         ) : null}
         <Descriptions.Item

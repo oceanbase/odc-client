@@ -52,7 +52,7 @@ export const TimeOptions = [
     value: 183,
   },
   {
-    label: '全部',
+    label: formatMessage({ id: 'src.component.TimeSelect.9E6CA23B', defaultMessage: '全部' }),
     value: TIME_OPTION_ALL_TASK,
   },
   {

@@ -303,13 +303,13 @@ export const conditionExpressionColumns = [
   {
     dataIndex: 'tableName',
     key: 'tableName',
-    title: '关联表',
+    title: formatMessage({ id: 'src.component.Task.2BADF17E', defaultMessage: '关联表' }),
     ellipsis: true,
   },
   {
     dataIndex: 'joinCondition',
     key: 'joinCondition',
-    title: '关联条件',
+    title: formatMessage({ id: 'src.component.Task.96BD5290', defaultMessage: '关联条件' }),
     ellipsis: false,
     render: (value) => {
       return (
