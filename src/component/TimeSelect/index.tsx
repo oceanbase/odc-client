@@ -21,6 +21,8 @@ import React, { useState } from 'react';
 
 const { RangePicker } = DatePicker;
 
+export const TIME_OPTION_ALL_TASK = 'ALL';
+
 export const TimeOptions = [
   {
     label: formatMessage({ id: 'odc.component.TimeSelect.LastDays', defaultMessage: '最近 7 天' }), //最近 7 天
@@ -42,7 +44,6 @@ export const TimeOptions = [
     }), //最近 30 天
     value: 30,
   },
-
   {
     label: formatMessage({
       id: 'odc.component.TimeSelect.LastSixMonths',
@@ -50,7 +51,10 @@ export const TimeOptions = [
     }), //最近半年
     value: 183,
   },
-
+  {
+    label: '全部',
+    value: TIME_OPTION_ALL_TASK,
+  },
   {
     label: formatMessage({ id: 'odc.component.TimeSelect.Custom', defaultMessage: '自定义' }), //自定义
     value: 'custom',
