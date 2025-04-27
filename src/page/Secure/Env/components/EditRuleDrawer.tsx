@@ -283,7 +283,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
                     defaultMessage: '允许执行',
                   })} /*允许执行*/
                 >
-                  {RiskLevelTextMap[RiskLevelEnum.DEFAULT]}
+                  {RiskLevelTextMap()[RiskLevelEnum.DEFAULT]}
                 </HelpDoc>
               </Radio>
               <Radio value={RiskLevelEnum.SUGGEST}>
@@ -294,7 +294,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
                     defaultMessage: '执行之前需要审批',
                   })} /*执行之前需要审批*/
                 >
-                  {RiskLevelTextMap[RiskLevelEnum.SUGGEST]}
+                  {RiskLevelTextMap()[RiskLevelEnum.SUGGEST]}
                 </HelpDoc>
               </Radio>
               <Radio value={RiskLevelEnum.MUST}>
@@ -305,7 +305,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
                     defaultMessage: '禁止执行，无法发起审批',
                   })} /*禁止执行，无法发起审批*/
                 >
-                  {RiskLevelTextMap[RiskLevelEnum.MUST]}
+                  {RiskLevelTextMap()[RiskLevelEnum.MUST]}
                 </HelpDoc>
               </Radio>
             </Radio.Group>

@@ -94,15 +94,15 @@ export const getTaskTypeOptions = () => {
 export const getSqlCheckResultOptions = () => {
   const sqlCheckResultOptions = [
     {
-      label: RiskLevelTextMap[RiskLevelEnum.DEFAULT],
+      label: RiskLevelTextMap()[RiskLevelEnum.DEFAULT],
       value: '' + RiskLevelEnum.DEFAULT,
     },
     {
-      label: RiskLevelTextMap[RiskLevelEnum.SUGGEST],
+      label: RiskLevelTextMap()[RiskLevelEnum.SUGGEST],
       value: '' + RiskLevelEnum.SUGGEST,
     },
     {
-      label: RiskLevelTextMap[RiskLevelEnum.MUST],
+      label: RiskLevelTextMap()[RiskLevelEnum.MUST],
       value: '' + RiskLevelEnum.MUST,
     },
   ];
