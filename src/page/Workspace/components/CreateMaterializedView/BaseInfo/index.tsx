@@ -34,6 +34,7 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
       RefreshScheduleUnit.MONTH,
       RefreshScheduleUnit.YEAR,
     ];
+
     /**
      * obOracle 不支持选择周
      * */
@@ -98,12 +99,18 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
     >
       <Form.Item
         name="name"
-        label={'物化视图名称'}
+        label={formatMessage({
+          id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.F066FDC2',
+          defaultMessage: '物化视图名称',
+        })}
         style={{ width: 400 }}
         rules={[
           {
             required: true,
-            message: '请填写名称',
+            message: formatMessage({
+              id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.A9B5F2DD',
+              defaultMessage: '请填写名称',
+            }),
           },
         ]}
       >
@@ -111,7 +118,10 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
           caseSensitive={datasourceConfig?.sql?.caseSensitivity}
           escapes={datasourceConfig?.sql?.escapeChar}
           autoFocus
-          placeholder={'请输入名称'}
+          placeholder={formatMessage({
+            id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.16BC7831',
+            defaultMessage: '请输入名称',
+          })}
         />
       </Form.Item>
       <Form.Item
@@ -139,11 +149,17 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
       </Form.Item>
       <Form.Item
         name="refreshMethod"
-        label="刷新方式"
+        label={formatMessage({
+          id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.3E600800',
+          defaultMessage: '刷新方式',
+        })}
         rules={[
           {
             required: true,
-            message: '请选择刷新方式',
+            message: formatMessage({
+              id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.5E10D5AE',
+              defaultMessage: '请选择刷新方式',
+            }),
           },
         ]}
         required
@@ -162,14 +178,23 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
         />
       </Form.Item>
       {info.refreshMethod !== RefreshMethod.NEVER_REFRESH && (
-        <Form.Item name="parallelismDegree" label="刷新并行度">
+        <Form.Item
+          name="parallelismDegree"
+          label={formatMessage({
+            id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.F34539EC',
+            defaultMessage: '刷新并行度',
+          })}
+        >
           <InputNumber min={1} max={Number.MAX_SAFE_INTEGER} style={{ width: 200 }} />
         </Form.Item>
       )}
       <div style={{ display: 'flex' }}>
         <Form.Item
           name={['refreshSchedule', 'startStrategy']}
-          label="自动刷新"
+          label={formatMessage({
+            id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.276039AE',
+            defaultMessage: '自动刷新',
+          })}
           style={{ marginRight: '40px' }}
           required
         >
@@ -181,17 +206,26 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
             }}
             options={[
               {
-                label: '立即开启',
+                label: formatMessage({
+                  id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.1AF3CB75',
+                  defaultMessage: '立即开启',
+                }),
                 value: StartStrategy.START_NOW,
                 disabled: info.refreshMethod === RefreshMethod.NEVER_REFRESH,
               },
               {
-                label: '指定开启时间',
+                label: formatMessage({
+                  id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.AA4FAFC5',
+                  defaultMessage: '指定开启时间',
+                }),
                 value: StartStrategy.START_AT,
                 disabled: info.refreshMethod === RefreshMethod.NEVER_REFRESH,
               },
               {
-                label: '不开启',
+                label: formatMessage({
+                  id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.1240C8BF',
+                  defaultMessage: '不开启',
+                }),
                 value: false,
               },
             ]}
@@ -202,7 +236,11 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
             name={['refreshSchedule', 'startWith']}
             label={
               <>
-                刷新开始时间 <HelpDoc doc="CreateMaterializedViewSelectStartWith" />
+                {formatMessage({
+                  id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.F9A9075D',
+                  defaultMessage: '刷新开始时间',
+                })}
+                <HelpDoc doc="CreateMaterializedViewSelectStartWith" />
               </>
             }
             style={{ marginRight: '40px' }}
@@ -215,7 +253,10 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
           <>
             <Form.Item
               name={['refreshSchedule', 'interval']}
-              label="刷新间隔"
+              label={formatMessage({
+                id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.A7E62951',
+                defaultMessage: '刷新间隔',
+              })}
               initialValue={1}
               style={{
                 display: 'inline',
@@ -244,31 +285,57 @@ const CreateMaterializedViewBaseInfoForm: React.FC<IProps> = (props) => {
           </>
         )}
       </div>
-      <Form.Item name="enableQueryRewrite" label="查询改写" required>
+      <Form.Item
+        name="enableQueryRewrite"
+        label={formatMessage({
+          id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.A93F6FF8',
+          defaultMessage: '查询改写',
+        })}
+        required
+      >
         <Select
           style={{ width: 200 }}
           options={[
             {
-              label: '开启',
+              label: formatMessage({
+                id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.6177F5AB',
+                defaultMessage: '开启',
+              }),
               value: true,
             },
             {
-              label: '不开启',
+              label: formatMessage({
+                id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.EAE65A99',
+                defaultMessage: '不开启',
+              }),
               value: false,
             },
           ]}
         />
       </Form.Item>
-      <Form.Item name="enableQueryComputation" label="实时" required>
+      <Form.Item
+        name="enableQueryComputation"
+        label={formatMessage({
+          id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.4B279078',
+          defaultMessage: '实时',
+        })}
+        required
+      >
         <Select
           style={{ width: 200 }}
           options={[
             {
-              label: '是',
+              label: formatMessage({
+                id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.F7C602A7',
+                defaultMessage: '是',
+              }),
               value: true,
             },
             {
-              label: '否',
+              label: formatMessage({
+                id: 'src.page.Workspace.components.CreateMaterializedView.BaseInfo.3DC02FAF',
+                defaultMessage: '否',
+              }),
               value: false,
             },
           ]}

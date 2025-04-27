@@ -4,7 +4,10 @@ export function useColumns() {
   const columns = [
     {
       key: 'name',
-      name: '列名称',
+      name: formatMessage({
+        id: 'src.page.Workspace.components.MaterializedViewPage.Columns.81E9C43F',
+        defaultMessage: '列名称',
+      }),
       resizable: true,
     },
 
@@ -20,7 +23,10 @@ export function useColumns() {
 
     {
       key: 'comment',
-      name: '列注释',
+      name: formatMessage({
+        id: 'src.page.Workspace.components.MaterializedViewPage.Columns.60269134',
+        defaultMessage: '列注释',
+      }),
       resizable: true,
       filterable: false,
     },

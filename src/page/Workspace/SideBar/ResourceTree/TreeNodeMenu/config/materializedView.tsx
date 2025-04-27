@@ -23,7 +23,10 @@ export const materializedViewConfig: Partial<Record<ResourceNodeType, IMenuItemC
     {
       key: ResourceTreeNodeMenuKeys.CREATE_MATERIALIZED_VIEW,
       icon: PlusOutlined,
-      text: '新建物化视图',
+      text: formatMessage({
+        id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.956E7805',
+        defaultMessage: '新建物化视图',
+      }),
       actionType: actionTypes.create,
       run(session, node) {
         openCreateMaterializedViewPage(session?.odcDatabase?.id);
@@ -41,10 +44,14 @@ export const materializedViewConfig: Partial<Record<ResourceNodeType, IMenuItemC
       },
     },
   ],
+
   [ResourceNodeType.MaterializedView]: [
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_SCHEMA,
-      text: '查看物化视图属性',
+      text: formatMessage({
+        id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.CDD2E445',
+        defaultMessage: '查看物化视图属性',
+      }),
       ellipsis: true,
       run(session, node) {
         openMaterializedViewViewPage(
@@ -58,7 +65,10 @@ export const materializedViewConfig: Partial<Record<ResourceNodeType, IMenuItemC
     },
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_DATA,
-      text: '查看物化视图数据',
+      text: formatMessage({
+        id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.BDEC9A66',
+        defaultMessage: '查看物化视图数据',
+      }),
       ellipsis: true,
       hasDivider: true,
       run(session, node) {
@@ -125,6 +135,7 @@ export const materializedViewConfig: Partial<Record<ResourceNodeType, IMenuItemC
               defaultMessage: 'Select 语句',
             }),
           ],
+
           run(session, node) {
             const materializedViewName = node?.data?.info?.name;
             copyObj(
@@ -251,7 +262,12 @@ export const materializedViewConfig: Partial<Record<ResourceNodeType, IMenuItemC
             );
             if (success) {
               await session.database.getMaterializedViewList();
-              message.success('删除物化视图成功');
+              message.success(
+                formatMessage({
+                  id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.C87931E7',
+                  defaultMessage: '删除物化视图成功',
+                }),
+              );
               const openedPage = pageStore!.pages.find(
                 (p) => p.params.materializedViewName === materializedViewName,
               );
@@ -264,6 +280,7 @@ export const materializedViewConfig: Partial<Record<ResourceNodeType, IMenuItemC
       },
     },
   ],
+
   [ResourceNodeType.MaterializedViewColumnRoot]: [
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_COLUMNS,
@@ -273,6 +290,7 @@ export const materializedViewConfig: Partial<Record<ResourceNodeType, IMenuItemC
           defaultMessage: '查看列',
         }),
       ],
+
       ellipsis: true,
       run(session, node) {
         const materializedViewName = node?.data?.info?.name;
@@ -301,6 +319,7 @@ export const materializedViewConfig: Partial<Record<ResourceNodeType, IMenuItemC
       },
     },
   ],
+
   [ResourceNodeType.MaterializedViewIndexRoot]: [
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_INDEXES,
@@ -310,6 +329,7 @@ export const materializedViewConfig: Partial<Record<ResourceNodeType, IMenuItemC
           defaultMessage: '查看索引',
         }),
       ],
+
       ellipsis: true,
       run(session, node) {
         const materializedViewName = node?.data?.info?.name;
@@ -338,6 +358,7 @@ export const materializedViewConfig: Partial<Record<ResourceNodeType, IMenuItemC
       },
     },
   ],
+
   [ResourceNodeType.MaterializedViewPartitionRoot]: [
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_PARTITIONS,
@@ -376,6 +397,7 @@ export const materializedViewConfig: Partial<Record<ResourceNodeType, IMenuItemC
       },
     },
   ],
+
   [ResourceNodeType.MaterializedViewConstraintRoot]: [
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_CONSTRAINTS,
@@ -385,6 +407,7 @@ export const materializedViewConfig: Partial<Record<ResourceNodeType, IMenuItemC
           defaultMessage: '查看约束',
         }),
       ],
+
       ellipsis: true,
       run(session, node) {
         const materializedViewName = node?.data?.info?.name;

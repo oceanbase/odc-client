@@ -546,6 +546,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               /*源端数据库*/ projectId={projectId}
               onChange={handleDBChange}
             />
+
             {/* </Space> */}
             <Space direction="vertical" size={24} style={{ width: '100%' }}>
               <Form.Item noStyle shouldUpdate>
@@ -658,7 +659,10 @@ const CreateModal: React.FC<IProps> = (props) => {
                         })} /*目标数据库*/
                         name="targetDatabaseId"
                         projectId={projectId}
-                        placeholder="仅支持选择同一项目内数据库"
+                        placeholder={formatMessage({
+                          id: 'src.component.Task.DataClearTask.CreateModal.EA952FEA',
+                          defaultMessage: '仅支持选择同一项目内数据库',
+                        })}
                       />
                     )
                   );

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -18,7 +19,10 @@ import RadioItem from '../../Item/RadioItem';
 import TextAreaItem from '../../Item/TextItem';
 
 const taskGroup: ODCSettingGroup = {
-  label: '工单任务',
+  label: formatMessage({
+    id: 'src.component.ODCSetting.config.group.5AF13B23',
+    defaultMessage: '工单任务',
+  }),
   key: 'groupTask',
 };
 
@@ -86,7 +90,10 @@ const taskSetting: IODCSetting[] = [
   //   },
   // },
   {
-    label: '导入工单允许结构替换',
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.group.81FAF01E',
+      defaultMessage: '导入工单允许结构替换',
+    }),
     key: 'odc.task.default.importTaskStructureReplacementEnabled',
     locationKey: 'importTaskStructureReplacementEnabled',
     group: taskGroup,
@@ -96,11 +103,17 @@ const taskSetting: IODCSetting[] = [
         <RadioItem
           options={[
             {
-              label: '是',
+              label: formatMessage({
+                id: 'src.component.ODCSetting.config.group.B9594124',
+                defaultMessage: '是',
+              }),
               value: 'true',
             },
             {
-              label: '否',
+              label: formatMessage({
+                id: 'src.component.ODCSetting.config.group.B89D1A86',
+                defaultMessage: '否',
+              }),
               value: 'false',
             },
           ]}
@@ -111,7 +124,10 @@ const taskSetting: IODCSetting[] = [
     },
   },
   {
-    label: '数据库变更默认生成备份回滚方案',
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.group.B3BD15DD',
+      defaultMessage: '数据库变更默认生成备份回滚方案',
+    }),
     key: 'odc.task.default.rollbackPlanEnabled',
     locationKey: 'rollbackPlanEnabled',
     group: taskGroup,
@@ -121,11 +137,17 @@ const taskSetting: IODCSetting[] = [
         <RadioItem
           options={[
             {
-              label: '是',
+              label: formatMessage({
+                id: 'src.component.ODCSetting.config.group.75980064',
+                defaultMessage: '是',
+              }),
               value: 'true',
             },
             {
-              label: '否',
+              label: formatMessage({
+                id: 'src.component.ODCSetting.config.group.228F4926',
+                defaultMessage: '否',
+              }),
               value: 'false',
             },
           ]}
@@ -136,7 +158,10 @@ const taskSetting: IODCSetting[] = [
     },
   },
   {
-    label: '任务描述提示文案',
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.group.0ACF68C5',
+      defaultMessage: '任务描述提示文案',
+    }),
     key: 'odc.task.default.taskDescriptionPrompt',
     locationKey: 'taskDescriptionPrompt',
     group: taskGroup,

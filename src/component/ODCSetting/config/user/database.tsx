@@ -40,7 +40,10 @@ const databaseResultsetGroup: ODCSettingGroup = {
   key: 'databaseResultset',
 };
 const sqlQueryGroup: ODCSettingGroup = {
-  label: 'SQL 查询',
+  label: formatMessage({
+    id: 'src.component.ODCSetting.config.user.ACD1CDE0',
+    defaultMessage: 'SQL 查询',
+  }),
   key: 'sqlQuery',
 };
 const databaseSQLExecuteGroup: ODCSettingGroup = {

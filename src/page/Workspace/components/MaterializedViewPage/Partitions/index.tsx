@@ -134,8 +134,22 @@ const MvViewPartitions: React.FC<IProps> = () => {
           toolbar={
             <EditToolbar modified={false}>
               <Toolbar>
-                <Toolbar.Button icon={<PlusOutlined />} text={'暂不支持'} disabled />
-                <Toolbar.Button icon={<DeleteOutlined />} text={'暂不支持'} disabled />
+                <Toolbar.Button
+                  icon={<PlusOutlined />}
+                  text={formatMessage({
+                    id: 'src.page.Workspace.components.MaterializedViewPage.Partitions.63E013C3',
+                    defaultMessage: '暂不支持',
+                  })}
+                  disabled
+                />
+                <Toolbar.Button
+                  icon={<DeleteOutlined />}
+                  text={formatMessage({
+                    id: 'src.page.Workspace.components.MaterializedViewPage.Partitions.940F0641',
+                    defaultMessage: '暂不支持',
+                  })}
+                  disabled
+                />
                 <Toolbar.Button
                   icon={<SyncOutlined />}
                   text={formatMessage({
@@ -190,6 +204,7 @@ const MvViewPartitions: React.FC<IProps> = () => {
             initialColumns={rdgColumns}
             initialRows={rows as any}
           />
+
           {subpartitionsRows?.length > 0 ? (
             <>
               <div style={{ lineHeight: '40px', height: 40, padding: '0px 12px' }}>

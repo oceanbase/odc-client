@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -100,7 +101,10 @@ const SecretKeyInput = (props: { value: string; onChange: (value: string) => Pro
         }}
         style={{ marginBottom: 8 }}
       >
-        自定义数据源密钥
+        {formatMessage({
+          id: 'src.component.ODCSetting.Item.SecretKeyItem.F9BA8783',
+          defaultMessage: '自定义数据源密钥',
+        })}
       </Checkbox>
       {showInput ? (
         <>
@@ -112,7 +116,10 @@ const SecretKeyInput = (props: { value: string; onChange: (value: string) => Pro
                 <Input prefix={<>********</>} disabled />
               </div>
               <Button type="link" style={{ padding: 0, marginTop: 8 }} onClick={handleEdit}>
-                修改密钥
+                {formatMessage({
+                  id: 'src.component.ODCSetting.Item.SecretKeyItem.C1F93F6F',
+                  defaultMessage: '修改密钥',
+                })}
               </Button>
             </>
           ) : (
@@ -122,20 +129,30 @@ const SecretKeyInput = (props: { value: string; onChange: (value: string) => Pro
                 <Input
                   key={props.value}
                   defaultValue={props.value}
-                  placeholder="输入32位英文和数字组合"
+                  placeholder={formatMessage({
+                    id: 'src.component.ODCSetting.Item.SecretKeyItem.E0D2EBB0',
+                    defaultMessage: '输入32位英文和数字组合',
+                  })}
                   className={styles.passwordInput}
                   type={inputType}
                   disabled={loading}
                   onBlur={handleBlur}
                   status={hasError ? 'error' : ''}
                 />
+
                 <Button style={{ marginLeft: 8 }} onClick={generateRandomPassword}>
-                  生成密钥
+                  {formatMessage({
+                    id: 'src.component.ODCSetting.Item.SecretKeyItem.F2B4A8FF',
+                    defaultMessage: '生成密钥',
+                  })}
                 </Button>
               </div>
               {hasError && (
                 <Text type="danger" style={{ marginTop: 8, display: 'block' }}>
-                  输入32位英文和数字组合
+                  {formatMessage({
+                    id: 'src.component.ODCSetting.Item.SecretKeyItem.70476C14',
+                    defaultMessage: '输入32位英文和数字组合',
+                  })}
                 </Text>
               )}
               <div className={styles.scondOperations}>
@@ -144,7 +161,10 @@ const SecretKeyInput = (props: { value: string; onChange: (value: string) => Pro
                   style={{ padding: 0, marginRight: 8 }}
                   onClick={handleCancelEdit}
                 >
-                  取消修改
+                  {formatMessage({
+                    id: 'src.component.ODCSetting.Item.SecretKeyItem.723D08EC',
+                    defaultMessage: '取消修改',
+                  })}
                 </Button>
                 {props.value && inputType === '' && <CopyOperation password={props.value} />}
               </div>

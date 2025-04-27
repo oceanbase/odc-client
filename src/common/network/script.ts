@@ -101,8 +101,14 @@ export async function batchDownloadScript(scriptIds: ScriptId[]): Promise<void> 
   const MAX_DOWNLOAD_COUNT = 200;
   if (scriptIds.length > MAX_DOWNLOAD_COUNT) {
     Modal.error({
-      title: '批量下载失败',
-      content: `最多支持批量下载${MAX_DOWNLOAD_COUNT}个脚本，建议先取消选择部分脚本`,
+      title: formatMessage({ id: 'src.common.network.7B0A4820', defaultMessage: '批量下载失败' }),
+      content: formatMessage(
+        {
+          id: 'src.common.network.F390612A',
+          defaultMessage: '最多支持批量下载{MAX_DOWNLOAD_COUNT}个脚本，建议先取消选择部分脚本',
+        },
+        { MAX_DOWNLOAD_COUNT },
+      ),
     });
     return;
   }

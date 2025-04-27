@@ -125,11 +125,20 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           </Descriptions.Item>
         )}
         {!login.isPrivateSpace() && (
-          <Descriptions.Item span={4} label="DML语句预估影响行数">
+          <Descriptions.Item
+            span={4}
+            label={formatMessage({
+              id: 'src.component.Task.AsyncTask.DetailContent.D9CDFEE1',
+              defaultMessage: 'DML语句预估影响行数',
+            })}
+          >
             {node?.status === TaskNodeStatus.EXECUTING ? (
               <LoadingOutlined />
             ) : task?.affectedRows === -1 ? (
-              '该 SQL 语句不支持'
+              formatMessage({
+                id: 'src.component.Task.AsyncTask.DetailContent.4F8FADD3',
+                defaultMessage: '该 SQL 语句不支持',
+              })
             ) : (
               task?.affectedRows || '-'
             )}

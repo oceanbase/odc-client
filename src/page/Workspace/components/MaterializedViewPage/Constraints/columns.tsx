@@ -9,7 +9,10 @@ export function useColumns(columns: TableColumn[], mode: ConnectionMode) {
   return [
     {
       key: 'name',
-      name: '主键约束名称', //名称
+      name: formatMessage({
+        id: 'src.page.Workspace.components.MaterializedViewPage.Constraints.C0B77838',
+        defaultMessage: '主键约束名称',
+      }), //名称
       resizable: true,
     },
 

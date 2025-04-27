@@ -232,6 +232,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             `${GroupKey}_${DatabaseGroup.tenant}_0`,
             `${GroupKey}_${DatabaseGroup.environment}_0`,
           ],
+
           fixed: true,
           expandIcon: ({ expanded, onExpand, record }) => {
             if (!isGroupColumn(record.id)) {
@@ -293,6 +294,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                         marginRight: 4,
                       }}
                     />
+
                     <HelpDoc
                       leftText
                       isTip={false}
@@ -319,6 +321,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                         marginRight: 4,
                       }}
                     />
+
                     <HelpDoc
                       leftText
                       isTip={false}
@@ -461,7 +464,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             },
           },
           {
-            title: '备注',
+            title: formatMessage({
+              id: 'src.page.Project.Database.10D6FEA0',
+              defaultMessage: '备注',
+            }),
             dataIndex: 'remark',
             ellipsis: {
               showTitle: true,
@@ -478,7 +484,10 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
                   record,
                   editable: true,
                   dataIndex: 'remark',
-                  title: '备注',
+                  title: formatMessage({
+                    id: 'src.page.Project.Database.AD165F33',
+                    defaultMessage: '备注',
+                  }),
                   width: '160',
                   handleSave: async (value, callback) => {
                     if (value?.remark?.trim() !== record?.remark) {
@@ -591,6 +600,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
         enableResize
         enableEditTable
       />
+
       <ChangeProjectModal
         visible={visible}
         database={database}

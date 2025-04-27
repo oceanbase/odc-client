@@ -761,7 +761,16 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
                 loadData={({ key }: EventDataNode<DataNode>) => handleLoadTables(key as number)}
               />
             ) : (
-              <ApplyDatabaseAuthEmpty description={projectId ? undefined : '暂无数据'} />
+              <ApplyDatabaseAuthEmpty
+                description={
+                  projectId
+                    ? undefined
+                    : formatMessage({
+                        id: 'src.component.Task.component.TableSelecter.6D5646CD',
+                        defaultMessage: '暂无数据',
+                      })
+                }
+              />
             )}
           </ExportCard>
         </Spin>
@@ -836,7 +845,12 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
               }}
             />
           ) : (
-            <ApplyDatabaseAuthEmpty description="暂无数据" />
+            <ApplyDatabaseAuthEmpty
+              description={formatMessage({
+                id: 'src.component.Task.component.TableSelecter.22E6453E',
+                defaultMessage: '暂无数据',
+              })}
+            />
           )}
         </ExportCard>
       </div>

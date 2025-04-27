@@ -56,7 +56,10 @@ export function useColumns(
   return [
     {
       key: 'name',
-      name: '主键约束名称',
+      name: formatMessage({
+        id: 'src.page.Workspace.components.CreateMaterializedView.Constraint.Primary.BD5072E1',
+        defaultMessage: '主键约束名称',
+      }),
       resizable: true,
       editable: false,
     },

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React, { useContext } from 'react';
 import { Dropdown } from 'antd';
 import type { MenuProps } from 'antd';
@@ -11,29 +12,48 @@ interface IProps {}
 const items: MenuProps['items'] = [
   {
     key: DatabaseGroup.none,
-    label: '不分组',
+    label: formatMessage({
+      id: 'src.page.Project.Database.Header.A1EE90B2',
+      defaultMessage: '不分组',
+    }),
   },
   {
     key: DatabaseGroup.dataSource,
-    label: '按数据源分组',
+    label: formatMessage({
+      id: 'src.page.Project.Database.Header.5FD57F6A',
+      defaultMessage: '按数据源分组',
+    }),
   },
   {
     key: DatabaseGroup.connectType,
-    label: '按类型分组',
+    label: formatMessage({
+      id: 'src.page.Project.Database.Header.E108F9A6',
+      defaultMessage: '按类型分组',
+    }),
   },
   {
     key: DatabaseGroup.cluster,
-    label: '按集群分组',
+    label: formatMessage({
+      id: 'src.page.Project.Database.Header.8730FD3B',
+      defaultMessage: '按集群分组',
+    }),
   },
   {
     key: DatabaseGroup.tenant,
-    label: '按租户分组',
+    label: formatMessage({
+      id: 'src.page.Project.Database.Header.C4EF591A',
+      defaultMessage: '按租户分组',
+    }),
   },
   {
     key: DatabaseGroup.environment,
-    label: '按环境分组',
+    label: formatMessage({
+      id: 'src.page.Project.Database.Header.B1C73CB4',
+      defaultMessage: '按环境分组',
+    }),
   },
 ];
+
 const Group: React.FC<IProps> = function () {
   const context = useContext(ParamContext);
 

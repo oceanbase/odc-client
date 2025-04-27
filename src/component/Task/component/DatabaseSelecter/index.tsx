@@ -313,7 +313,16 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                   onCheck={handleChosenDataBase}
                 />
               ) : (
-                <ApplyDatabaseAuthEmpty description={projectId ? undefined : '暂无数据'} />
+                <ApplyDatabaseAuthEmpty
+                  description={
+                    projectId
+                      ? undefined
+                      : formatMessage({
+                          id: 'src.component.Task.component.DatabaseSelecter.581BBA20',
+                          defaultMessage: '暂无数据',
+                        })
+                  }
+                />
               )}
             </ExportCard>
           </Spin>
@@ -386,7 +395,12 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                 }}
               />
             ) : (
-              <ApplyDatabaseAuthEmpty description="暂无数据" />
+              <ApplyDatabaseAuthEmpty
+                description={formatMessage({
+                  id: 'src.component.Task.component.DatabaseSelecter.A8E97972',
+                  defaultMessage: '暂无数据',
+                })}
+              />
             )}
           </ExportCard>
         </div>

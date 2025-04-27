@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useMount, useRequest } from 'ahooks';
 import modal from '@/store/modal';
@@ -45,6 +46,7 @@ const aboutUsIcons = [
   <Icon component={SendSvg} style={{ color: '#52c41a', fontSize: 14 }} />,
   <Icon component={GithubSvg} style={{ fontSize: 14 }} />,
 ];
+
 const Console = () => {
   const { quickStart, aboutUs, bestPractice, schdules } = ConsoleTextConfig;
   const [currentQuickStartRole, setCurrentQuickStartRole] = useState(EQuickStartRole.Admin);
@@ -123,8 +125,12 @@ const Console = () => {
     return (
       <Card className={styles.card}>
         <div className={styles.consoleCardTitle}>
-          <span className={styles.title}>定时任务概览</span>
-          <span className={styles.consoleTips}>(近 7 天)</span>
+          <span className={styles.title}>
+            {formatMessage({ id: 'src.page.Console.21065126', defaultMessage: '定时任务概览' })}
+          </span>
+          <span className={styles.consoleTips}>
+            {formatMessage({ id: 'src.page.Console.675B230B', defaultMessage: '(近 7 天)' })}
+          </span>
         </div>
         <div className={styles.legend}>
           {status.map((item, index) => {
@@ -163,8 +169,18 @@ const Console = () => {
       <div className={styles.consoleBackgroud} />
       <div className={styles.consoleWrapper}>
         <div className={styles.header}>
-          <div className={styles.title}>欢迎使用 OceanBase 开发者中心</div>
-          <div className={styles.subTitle}>开源的数据库开发和数据库管控协同工具</div>
+          <div className={styles.title}>
+            {formatMessage({
+              id: 'src.page.Console.BEABD6A7',
+              defaultMessage: '欢迎使用 OceanBase 开发者中心',
+            })}
+          </div>
+          <div className={styles.subTitle}>
+            {formatMessage({
+              id: 'src.page.Console.94172A72',
+              defaultMessage: '开源的数据库开发和数据库管控协同工具',
+            })}
+          </div>
         </div>
         <div className={styles.content}>
           <Spin
@@ -189,17 +205,31 @@ const Console = () => {
                 >
                   <Card className={styles.card}>
                     <div className={styles.consoleCardTitle}>
-                      快速上手
+                      {formatMessage({
+                        id: 'src.page.Console.D52989BC',
+                        defaultMessage: '快速上手',
+                      })}
+
                       <Popconfirm
                         placement="bottom"
                         title={
                           <>
                             {' '}
                             <div>
-                              <Typography.Text>确认要隐藏快速上手内容吗？</Typography.Text>
+                              <Typography.Text>
+                                {formatMessage({
+                                  id: 'src.page.Console.3791DCBC',
+                                  defaultMessage: '确认要隐藏快速上手内容吗？',
+                                })}
+                              </Typography.Text>
                             </div>
                             <div>
-                              <Typography.Text>你也可以在帮助中重新查看。</Typography.Text>
+                              <Typography.Text>
+                                {formatMessage({
+                                  id: 'src.page.Console.8C05BBCA',
+                                  defaultMessage: '你也可以在帮助中重新查看。',
+                                })}
+                              </Typography.Text>
                             </div>
                           </>
                         }
@@ -213,7 +243,12 @@ const Console = () => {
                           );
                         }}
                       >
-                        <span className={styles.hide}>不再提示</span>
+                        <span className={styles.hide}>
+                          {formatMessage({
+                            id: 'src.page.Console.210E7550',
+                            defaultMessage: '不再提示',
+                          })}
+                        </span>
                       </Popconfirm>
                     </div>
                     <div className={styles.quickStartContent}>
@@ -295,7 +330,10 @@ const Console = () => {
                               className={`${styles.articleTitleTypograpy} ${styles.moreFunctionIntro}`}
                               onClick={() => modal.changeVersionModalVisible(true)}
                             >
-                              更多功能介绍
+                              {formatMessage({
+                                id: 'src.page.Console.39E600CA',
+                                defaultMessage: '更多功能介绍',
+                              })}
                             </span>
                           }
                         />
@@ -321,13 +359,20 @@ const Console = () => {
           <Row className={styles.bottom}>
             <Col span={18} className={styles.recently}>
               <Card className={styles.card}>
-                <div className={styles.consoleCardTitle}>最近访问数据库</div>
+                <div className={styles.consoleCardTitle}>
+                  {formatMessage({
+                    id: 'src.page.Console.7492F9E4',
+                    defaultMessage: '最近访问数据库',
+                  })}
+                </div>
                 <RecentlyDatabase />
               </Card>
             </Col>
             <Col span={6} className={styles.docWrapper}>
               <Card className={styles.aboutUs}>
-                <div className={styles.consoleCardTitle}>关于我们</div>
+                <div className={styles.consoleCardTitle}>
+                  {formatMessage({ id: 'src.page.Console.3A3E34F5', defaultMessage: '关于我们' })}
+                </div>
                 <div className={styles.aboutUsContent}>
                   <div className={styles.docsWrapper}>
                     {aboutUs.helps.map((help, index) => {
@@ -355,20 +400,28 @@ const Console = () => {
                     align={['vertical', 'center']}
                     icon={<QrCodeWithIcon />}
                     gap={4}
-                    label={<Typography.Text type="secondary">钉钉群：67365031753</Typography.Text>}
+                    label={
+                      <Typography.Text type="secondary">
+                        {formatMessage({
+                          id: 'src.page.Console.30113922',
+                          defaultMessage: '钉钉群：67365031753',
+                        })}
+                      </Typography.Text>
+                    }
                   />
                 </div>
               </Card>
               <Card className={styles.practice}>
                 <div className={styles.consoleCardTitle}>
-                  最佳实践
+                  {formatMessage({ id: 'src.page.Console.41EC22B4', defaultMessage: '最佳实践' })}
+
                   <span
                     className={styles.showMore}
                     onClick={() =>
                       window.open('https://www.oceanbase.com/docs/common-odc-1000000002687235')
                     }
                   >
-                    {'更多 >'}
+                    {formatMessage({ id: 'src.page.Console.E60EAE10', defaultMessage: '更多 >' })}
                   </span>
                 </div>
                 {bestPractice.articles.map((article) => {

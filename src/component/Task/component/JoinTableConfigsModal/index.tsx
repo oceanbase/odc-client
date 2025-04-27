@@ -38,7 +38,10 @@ export default function JoinTableConfigModal({
 
   return (
     <Modal
-      title="更多过滤条件设置"
+      title={formatMessage({
+        id: 'src.component.Task.component.JoinTableConfigsModal.F43041F0',
+        defaultMessage: '更多过滤条件设置',
+      })}
       open={visible}
       onCancel={onCancel}
       onOk={() => form.submit()}
@@ -52,16 +55,48 @@ export default function JoinTableConfigModal({
         preserve={false}
         onFinish={onOk}
       >
-        <div className={styles.tableName}>归档表: {initialValues?.tableName || '-'}</div>
-        <Form.Item label="过滤条件类型" name="filterType">
-          <Select options={[{ label: '关联表', value: 'relationTable' }]} />
+        <div className={styles.tableName}>
+          {formatMessage({
+            id: 'src.component.Task.component.JoinTableConfigsModal.0D345FF1',
+            defaultMessage: '归档表:',
+          })}
+          {initialValues?.tableName || '-'}
+        </div>
+        <Form.Item
+          label={formatMessage({
+            id: 'src.component.Task.component.JoinTableConfigsModal.829861F8',
+            defaultMessage: '过滤条件类型',
+          })}
+          name="filterType"
+        >
+          <Select
+            options={[
+              {
+                label: formatMessage({
+                  id: 'src.component.Task.component.JoinTableConfigsModal.24B9E931',
+                  defaultMessage: '关联表',
+                }),
+                value: 'relationTable',
+              },
+            ]}
+          />
         </Form.Item>
         <Form.List name="joinTableConfigs">
           {(fields: FormListFieldData[], { add, remove }) => (
             <div className={styles.container}>
               <div className={classNames(styles.tables, styles.header)}>
-                <div className={styles.column}>关联表名</div>
-                <div className={styles.column}>关联条件</div>
+                <div className={styles.column}>
+                  {formatMessage({
+                    id: 'src.component.Task.component.JoinTableConfigsModal.B97ACBEB',
+                    defaultMessage: '关联表名',
+                  })}
+                </div>
+                <div className={styles.column}>
+                  {formatMessage({
+                    id: 'src.component.Task.component.JoinTableConfigsModal.8ED2D92E',
+                    defaultMessage: '关联条件',
+                  })}
+                </div>
                 <div className={styles.action}></div>
               </div>
 
@@ -75,20 +110,46 @@ export default function JoinTableConfigModal({
                   <Form.Item
                     {...restField}
                     name={[name, 'tableName']}
-                    rules={[{ required: true, message: '请输入表名' }]}
+                    rules={[
+                      {
+                        required: true,
+                        message: formatMessage({
+                          id: 'src.component.Task.component.JoinTableConfigsModal.4DC642F8',
+                          defaultMessage: '请输入表名',
+                        }),
+                      },
+                    ]}
                     style={{ marginBottom: 0 }}
                     className={styles.column}
                   >
-                    <Input placeholder="请输入" />
+                    <Input
+                      placeholder={formatMessage({
+                        id: 'src.component.Task.component.JoinTableConfigsModal.3693087B',
+                        defaultMessage: '请输入',
+                      })}
+                    />
                   </Form.Item>
                   <Form.Item
                     {...restField}
                     name={[name, 'joinCondition']}
-                    rules={[{ required: true, message: '请输入关联条件' }]}
+                    rules={[
+                      {
+                        required: true,
+                        message: formatMessage({
+                          id: 'src.component.Task.component.JoinTableConfigsModal.DD1AB5CB',
+                          defaultMessage: '请输入关联条件',
+                        }),
+                      },
+                    ]}
                     style={{ marginBottom: 0 }}
                     className={styles.column}
                   >
-                    <Input placeholder="请输入表达式 ，如 tableA.col1=tableB.col2" />
+                    <Input
+                      placeholder={formatMessage({
+                        id: 'src.component.Task.component.JoinTableConfigsModal.4DB23955',
+                        defaultMessage: '请输入表达式 ，如 tableA.col1=tableB.col2',
+                      })}
+                    />
                   </Form.Item>
 
                   <Button
@@ -97,7 +158,10 @@ export default function JoinTableConfigModal({
                     className={styles.deleteBtn}
                     disabled={name === 0}
                   >
-                    移除
+                    {formatMessage({
+                      id: 'src.component.Task.component.JoinTableConfigsModal.7A66FCAE',
+                      defaultMessage: '移除',
+                    })}
                   </Button>
                 </div>
               ))}
@@ -122,12 +186,26 @@ export default function JoinTableConfigModal({
         <Form.Item
           label={
             <Space>
-              过滤条件<Typography.Text type="secondary">可直接引用关联表名和字段</Typography.Text>
+              {formatMessage({
+                id: 'src.component.Task.component.JoinTableConfigsModal.A7BA6701',
+                defaultMessage: '过滤条件',
+              })}
+              <Typography.Text type="secondary">
+                {formatMessage({
+                  id: 'src.component.Task.component.JoinTableConfigsModal.7D5E49E8',
+                  defaultMessage: '可直接引用关联表名和字段',
+                })}
+              </Typography.Text>
             </Space>
           }
           name="conditionExpression"
         >
-          <Input placeholder="请输入" />
+          <Input
+            placeholder={formatMessage({
+              id: 'src.component.Task.component.JoinTableConfigsModal.94EDBB8B',
+              defaultMessage: '请输入',
+            })}
+          />
         </Form.Item>
       </Form>
     </Modal>

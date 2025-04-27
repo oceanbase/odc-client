@@ -140,13 +140,25 @@ const CreateMaterializedView: React.FC<IProps> = (props) => {
         <Typography.Text style={{ fontSize: 12 }} type="secondary">
           <Space>
             <InfoCircleOutlined />
-            基本信息为必填项，其他选填
+            {formatMessage({
+              id: 'src.page.Workspace.components.CreateMaterializedView.268F51A8',
+              defaultMessage: '基本信息为必填项，其他选填',
+            })}
           </Space>
         </Typography.Text>
       }
       extra={
         <Space>
-          <Tooltip title={isComplete ? null : '请检查基本信息和列'}>
+          <Tooltip
+            title={
+              isComplete
+                ? null
+                : formatMessage({
+                    id: 'src.page.Workspace.components.CreateMaterializedView.9C08B5A3',
+                    defaultMessage: '请检查基本信息和列',
+                  })
+            }
+          >
             <Button type="primary" disabled={!isComplete} loading={loading} onClick={handleSubmit}>
               {
                 formatMessage({
@@ -198,7 +210,10 @@ const CreateMaterializedView: React.FC<IProps> = (props) => {
             },
             {
               key: MaterializedViewTabType.INDEX,
-              label: '基表',
+              label: formatMessage({
+                id: 'src.page.Workspace.components.CreateMaterializedView.CE333264',
+                defaultMessage: '基表',
+              }),
               children: <TableSelector />,
             },
             {
@@ -227,6 +242,7 @@ const CreateMaterializedView: React.FC<IProps> = (props) => {
             },
           ]}
         />
+
         <ExecuteSQLModal
           sessionStore={session}
           sql={DDL}

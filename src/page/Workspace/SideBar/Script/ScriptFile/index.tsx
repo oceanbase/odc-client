@@ -141,7 +141,10 @@ export default inject('userStore')(
       if (!activeFileList?.length) return [];
       return [
         {
-          label: '批量下载',
+          label: formatMessage({
+            id: 'src.page.Workspace.SideBar.Script.ScriptFile.4903D296',
+            defaultMessage: '批量下载',
+          }),
           key: 'bacthDownload',
           onClick: () => {
             batchDownloadScript(activeFileList);

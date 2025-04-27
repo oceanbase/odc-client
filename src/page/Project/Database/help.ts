@@ -33,13 +33,18 @@ const getGroupMapId = (record: IDatabase, groupMode) => {
       return record?.environment?.id;
     }
     case DatabaseGroup.cluster: {
-      return record?.dataSource?.clusterName || '无集群';
+      return (
+        record?.dataSource?.clusterName ||
+        formatMessage({ id: 'src.page.Project.Database.C129D7E6', defaultMessage: '无集群' })
+      );
     }
     case DatabaseGroup.connectType: {
       return record?.connectType;
     }
     case DatabaseGroup.tenant: {
-      return tenantName && clusterName ? `${tenantName}@${clusterName}` : '无租户';
+      return tenantName && clusterName
+        ? `${tenantName}@${clusterName}`
+        : formatMessage({ id: 'src.page.Project.Database.FC645671', defaultMessage: '无租户' });
     }
   }
 };

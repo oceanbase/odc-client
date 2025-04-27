@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -17,13 +18,19 @@ import { IODCSetting, ODCSettingGroup } from '../../config';
 import SecretKeyItem from '../../Item/SecretKeyItem';
 
 const securityGroup: ODCSettingGroup = {
-  label: '安全设置',
+  label: formatMessage({
+    id: 'src.component.ODCSetting.config.personal.8E54A4BD',
+    defaultMessage: '安全设置',
+  }),
   key: 'groupSecurity',
 };
 
 const personalSecuritySetting: IODCSetting[] = [
   {
-    label: '数据源密钥',
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.personal.C9C23CA7',
+      defaultMessage: '数据源密钥',
+    }),
     key: 'odc.security.default.customDataSourceEncryptionKey',
     locationKey: 'secretKey',
     group: securityGroup,
@@ -37,6 +44,7 @@ const personalSecuritySetting: IODCSetting[] = [
         },
       },
     ],
+
     storeType: 'server',
     render: (value, onChange) => {
       return <SecretKeyItem value={value || ''} onChange={onChange} />;

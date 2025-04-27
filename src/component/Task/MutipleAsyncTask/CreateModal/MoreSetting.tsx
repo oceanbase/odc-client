@@ -68,7 +68,15 @@ const MoreSetting = () => {
                 validator: (_, value) => {
                   const max = setting.getSpaceConfigByKey('odc.sqlexecute.default.maxQueryLimit');
                   if (value !== undefined && value > max) {
-                    return Promise.reject(`不超过查询条数上限 ${max}`);
+                    return Promise.reject(
+                      formatMessage(
+                        {
+                          id: 'src.component.Task.MutipleAsyncTask.CreateModal.61AA1269',
+                          defaultMessage: '不超过查询条数上限 {max}',
+                        },
+                        { max },
+                      ),
+                    );
                   }
                   return Promise.resolve();
                 },

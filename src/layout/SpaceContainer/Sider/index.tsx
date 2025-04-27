@@ -103,7 +103,10 @@ const Sider: React.FC<IProps> = function (props) {
               selected={selected === IPageType.Console}
               icon={HomeOutlined}
               collapsed={collapsed}
-              label="工作台"
+              label={formatMessage({
+                id: 'src.layout.SpaceContainer.Sider.DC8F533F',
+                defaultMessage: '工作台',
+              })}
             />
           </Link>
           <Link to={`/${IPageType.Project}`}>

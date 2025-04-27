@@ -65,7 +65,12 @@ const columns = [
                 ></DisplayTable>
               }
             >
-              <Typography.Link>关联表</Typography.Link>
+              <Typography.Link>
+                {formatMessage({
+                  id: 'src.component.Task.DataArchiveTask.DetailContent.361EA0F5',
+                  defaultMessage: '关联表',
+                })}
+              </Typography.Link>
             </Popover>
           ) : (
             <></>

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -28,9 +29,18 @@ export enum INCREAMENT_FIELD_TYPE {
 }
 
 export const increamentFieldTypeLabelMap = {
-  [INCREAMENT_FIELD_TYPE.NUMBER]: '数值',
-  [INCREAMENT_FIELD_TYPE.TIME_STRING]: '日期时间',
-  [INCREAMENT_FIELD_TYPE.TIMESTAMP]: '时间戳',
+  [INCREAMENT_FIELD_TYPE.NUMBER]: formatMessage({
+    id: 'src.component.Task.component.PartitionPolicyFormTable.E0F368F6',
+    defaultMessage: '数值',
+  }),
+  [INCREAMENT_FIELD_TYPE.TIME_STRING]: formatMessage({
+    id: 'src.component.Task.component.PartitionPolicyFormTable.053D6705',
+    defaultMessage: '日期时间',
+  }),
+  [INCREAMENT_FIELD_TYPE.TIMESTAMP]: formatMessage({
+    id: 'src.component.Task.component.PartitionPolicyFormTable.FCD94271',
+    defaultMessage: '时间戳',
+  }),
 };
 
 export const getPartitionKeyInvokerByIncrementFieldType = (

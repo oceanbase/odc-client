@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -17,13 +18,19 @@ import { IODCSetting, ODCSettingGroup } from '../../config';
 import RadioItem from '../../Item/RadioItem';
 
 const taskGroup: ODCSettingGroup = {
-  label: '工单任务',
+  label: formatMessage({
+    id: 'src.component.ODCSetting.config.personal.744D5453',
+    defaultMessage: '工单任务',
+  }),
   key: 'personalTask',
 };
 
 const personalTaskSetting: IODCSetting[] = [
   {
-    label: '数据库变更默认生成备份回滚方案',
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.personal.460D1C94',
+      defaultMessage: '数据库变更默认生成备份回滚方案',
+    }),
     key: 'odc.task.default.rollbackPlanEnabled',
     locationKey: 'rollbackPlanEnabled',
     group: taskGroup,
@@ -33,11 +40,17 @@ const personalTaskSetting: IODCSetting[] = [
         <RadioItem
           options={[
             {
-              label: '是',
+              label: formatMessage({
+                id: 'src.component.ODCSetting.config.personal.DD02C044',
+                defaultMessage: '是',
+              }),
               value: 'true',
             },
             {
-              label: '否',
+              label: formatMessage({
+                id: 'src.component.ODCSetting.config.personal.B8C87030',
+                defaultMessage: '否',
+              }),
               value: 'false',
             },
           ]}

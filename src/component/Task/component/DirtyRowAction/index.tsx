@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Form, Radio } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
@@ -38,7 +39,10 @@ const DirtyRowAction: React.FC<IProps> = ({ dependentField }: IProps) => {
       {isVisible ? (
         <Form.Item
           style={{ marginBottom: 24 }}
-          label={'源端目标端数据不一致处理'}
+          label={formatMessage({
+            id: 'src.component.Task.component.DirtyRowAction.EA3C7E86',
+            defaultMessage: '源端目标端数据不一致处理',
+          })}
           name="dirtyRowAction"
           required={true}
         >

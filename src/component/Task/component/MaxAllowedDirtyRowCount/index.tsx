@@ -19,8 +19,14 @@ const MaxAllowedDirtyRowCount: React.FC = () => {
         marginBottom: 24,
       }}
       name="maxAllowedDirtyRowCount"
-      label="跳过不清理数据"
-      tooltip="可设置跳过不需要清理的数据行数"
+      label={formatMessage({
+        id: 'src.component.Task.component.MaxAllowedDirtyRowCount.85595161',
+        defaultMessage: '跳过不清理数据',
+      })}
+      tooltip={formatMessage({
+        id: 'src.component.Task.component.MaxAllowedDirtyRowCount.C85AB990',
+        defaultMessage: '可设置跳过不需要清理的数据行数',
+      })}
       initialValue={0}
     >
       <InputNumber
@@ -28,7 +34,10 @@ const MaxAllowedDirtyRowCount: React.FC = () => {
         max={Number.MAX_SAFE_INTEGER}
         controls={true}
         precision={0}
-        addonAfter={'行'}
+        addonAfter={formatMessage({
+          id: 'src.component.Task.component.MaxAllowedDirtyRowCount.0EF88247',
+          defaultMessage: '行',
+        })}
         className={styles.inputNumber}
       />
     </Form.Item>

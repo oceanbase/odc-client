@@ -66,17 +66,26 @@ const incrementFieldTypeOptionsValues = [
   {
     label: increamentFieldTypeLabelMap[INCREAMENT_FIELD_TYPE.NUMBER],
     value: INCREAMENT_FIELD_TYPE.NUMBER,
-    description: '仅代表数值数据，如：001、002',
+    description: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.33B07A9E',
+      defaultMessage: '仅代表数值数据，如：001、002',
+    }),
   },
   {
     label: increamentFieldTypeLabelMap[INCREAMENT_FIELD_TYPE.TIME_STRING],
     value: INCREAMENT_FIELD_TYPE.TIME_STRING,
-    description: '类型为数值但实际含义为日期时间，如: 20250207',
+    description: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.38D2B418',
+      defaultMessage: '类型为数值但实际含义为日期时间，如: 20250207',
+    }),
   },
   {
     label: increamentFieldTypeLabelMap[INCREAMENT_FIELD_TYPE.TIMESTAMP],
     value: INCREAMENT_FIELD_TYPE.TIMESTAMP,
-    description: '类型为数值但实际含义为时间戳，如: 1609459200',
+    description: formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.EBF8762C',
+      defaultMessage: '类型为数值但实际含义为时间戳，如: 1609459200',
+    }),
   },
 ];
 
@@ -87,13 +96,24 @@ const incrementByDateOptionsInNumber = ['yyyy', 'yyyyMM', 'yyyyMMdd'].map((item)
 
 const incrementByDateOptionsInChar = [
   'yyyy',
-  'yyyy年',
+  formatMessage({
+    id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.E205FB6F',
+    defaultMessage: 'yyyy年',
+  }),
+
   'yyyyMM',
   'yyyy-MM',
-  'yyyy年MM月',
+  formatMessage({
+    id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.216E3527',
+    defaultMessage: 'yyyy年MM月',
+  }),
+
   'yyyyMMdd',
   'yyyy-MM-dd',
-  'yyyy年MM月dd日',
+  formatMessage({
+    id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.EF0BF81D',
+    defaultMessage: 'yyyy年MM月dd日',
+  }),
 ].map((item) => ({
   label: item,
   value: item,
@@ -240,7 +260,14 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
               return (
                 <Input.Group compact style={{ width: '374px', display: 'inline-flex', height: 29 }}>
                   <Tag className={styles.suffix}>
-                    <HelpDoc leftText isTip title={'将使用已有分区最大值作为分区起始值，以此递增'}>
+                    <HelpDoc
+                      leftText
+                      isTip
+                      title={formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.AA5160C7',
+                        defaultMessage: '将使用已有分区最大值作为分区起始值，以此递增',
+                      })}
+                    >
                       {
                         formatMessage({
                           id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.9F9223B3' /*间隔*/,
@@ -330,10 +357,23 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
 
         const incrementFieldTypeForm = (
           <Input.Group compact>
-            <Tag className={styles.suffix}>含义</Tag>
+            <Tag className={styles.suffix}>
+              {formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.7BE0F4B2',
+                defaultMessage: '含义',
+              })}
+            </Tag>
             <Form.Item
               name={[field.name, 'incrementFieldType']}
-              rules={[{ required: true, message: '请选择' }]}
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.88F8B3BE',
+                    defaultMessage: '请选择',
+                  }),
+                },
+              ]}
               style={{ margin: 0 }}
             >
               <Select
@@ -350,7 +390,15 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                 {...field}
                 name={[field.name, 'incrementFieldTypeInDate']}
                 className={styles.noMarginBottom}
-                rules={[{ required: true, message: '请输入格式' }]}
+                rules={[
+                  {
+                    required: true,
+                    message: formatMessage({
+                      id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.3174105E',
+                      defaultMessage: '请输入格式',
+                    }),
+                  },
+                ]}
               >
                 <AutoComplete
                   options={
@@ -372,7 +420,12 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                 >
                   <Input
                     suffix={
-                      <Tooltip title="请输入格式，格式需与字段内容保持一致。">
+                      <Tooltip
+                        title={formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.9C8C52CF',
+                          defaultMessage: '请输入格式，格式需与字段内容保持一致。',
+                        })}
+                      >
                         <InfoCircleOutlined style={{ color: 'var(--icon-color-normal)' }} />
                       </Tooltip>
                     }

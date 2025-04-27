@@ -97,21 +97,41 @@ const ObjectList = ({ modalStore }: Iprops) => {
           className={styles.asyncingContent}
           description={
             <div>
-              <p>暂无数据</p>
               <p>
-                请尝试
+                {formatMessage({
+                  id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.32E0FB21',
+                  defaultMessage: '暂无数据',
+                })}
+              </p>
+              <p>
+                {formatMessage({
+                  id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.0A19E90A',
+                  defaultMessage: '请尝试',
+                })}
+
                 <a
                   onClick={async () => {
                     const data = await fetchSyncAll?.();
                     if (data?.data) {
-                      message.success('同步发起成功');
+                      message.success(
+                        formatMessage({
+                          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.6BFBD33C',
+                          defaultMessage: '同步发起成功',
+                        }),
+                      );
                       reloadDatabaseList?.();
                     }
                   }}
                 >
-                  同步数据库
+                  {formatMessage({
+                    id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.37A2B88B',
+                    defaultMessage: '同步数据库',
+                  })}
                 </a>
-                ，或联系管理员
+                {formatMessage({
+                  id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.6B9FDF51',
+                  defaultMessage: '，或联系管理员',
+                })}
               </p>
             </div>
           }

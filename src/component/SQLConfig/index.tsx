@@ -148,6 +148,7 @@ const SQLConfig: React.FC<IProps> = function (props) {
               }}
               onBlur={handleSetQueryLimit}
             />
+
             {showMaxLimit && (
               <div
                 style={{
@@ -155,7 +156,12 @@ const SQLConfig: React.FC<IProps> = function (props) {
                   color: '#ff4d4f',
                 }}
               >
-                不超过查询条数上限{maxQueryLimit}
+                {formatMessage({
+                  id: 'src.component.SQLConfig.5E06ED93',
+                  defaultMessage: '不超过查询条数上限',
+                })}
+
+                {maxQueryLimit}
               </div>
             )}
 

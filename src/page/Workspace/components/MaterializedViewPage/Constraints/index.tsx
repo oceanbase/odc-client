@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React, { useContext, useRef, useState, useEffect, useMemo } from 'react';
 import Toolbar from '@/component/Toolbar';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
@@ -32,8 +33,22 @@ const MvViewConstraints: React.FC<IProps> = () => {
       toolbar={
         <EditToolbar modified={false}>
           <Toolbar>
-            <Toolbar.Button icon={<PlusOutlined />} text={'暂不支持'} disabled />
-            <Toolbar.Button icon={<DeleteOutlined />} text={'暂不支持'} disabled />
+            <Toolbar.Button
+              icon={<PlusOutlined />}
+              text={formatMessage({
+                id: 'src.page.Workspace.components.MaterializedViewPage.Constraints.12B20B8D',
+                defaultMessage: '暂不支持',
+              })}
+              disabled
+            />
+            <Toolbar.Button
+              icon={<DeleteOutlined />}
+              text={formatMessage({
+                id: 'src.page.Workspace.components.MaterializedViewPage.Constraints.7EB7A258',
+                defaultMessage: '暂不支持',
+              })}
+              disabled
+            />
           </Toolbar>
         </EditToolbar>
       }

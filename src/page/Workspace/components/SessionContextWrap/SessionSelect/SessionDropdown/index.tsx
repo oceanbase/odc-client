@@ -354,6 +354,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
                 <div className={styles.textoverflow}>{dataSource?.name}</div>
               </Popover>
             ),
+
             icon: getIcon({ type: NodeType.Connection, dataSource }),
             key: dataSource?.id,
             selectable: true,
@@ -514,7 +515,10 @@ const SessionDropdown: React.FC<IProps> = (props) => {
               onSelect?.(KeyList);
             }}
           >
-            全选
+            {formatMessage({
+              id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.86AE09B0',
+              defaultMessage: '全选',
+            })}
           </Button>
         )}
         {checkedKeys?.length === canCheckedDbKeys?.length && (
@@ -525,7 +529,10 @@ const SessionDropdown: React.FC<IProps> = (props) => {
               onSelect?.([]);
             }}
           >
-            取消全选
+            {formatMessage({
+              id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.7FA7CC62',
+              defaultMessage: '取消全选',
+            })}
           </Button>
         )}
       </div>

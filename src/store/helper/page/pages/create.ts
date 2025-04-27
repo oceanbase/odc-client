@@ -68,7 +68,10 @@ export class CreateMaterializedViewPage extends Page {
   constructor(databaseId: number) {
     super();
     this.pageKey = `createMaterializedViewPage-${generateUniqKey()}`;
-    this.pageTitle = '新建物化视图';
+    this.pageTitle = formatMessage({
+      id: 'src.store.helper.page.pages.1690882C',
+      defaultMessage: '新建物化视图',
+    });
     this.pageType = PageType.CREATE_MATERIALIZED_VIEW;
     this.pageParams = {
       databaseId,

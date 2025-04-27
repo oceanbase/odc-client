@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Form, GetRef, InputRef, Input, Tooltip } from 'antd';
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import styles from '../index.less';
@@ -74,7 +75,10 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
         rules={[
           {
             max: 100,
-            message: '备注字符不允许超过100',
+            message: formatMessage({
+              id: 'src.component.CommonTable.component.2343D924',
+              defaultMessage: '备注字符不允许超过100',
+            }),
           },
         ]}
       >

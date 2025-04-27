@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -403,7 +404,12 @@ const ResourceTree: React.FC<IProps> = function ({
     <>
       <div className={styles.resourceTree}>
         <div className={styles.title}>
-          <span className={styles.titleText}>数据库</span>
+          <span className={styles.titleText}>
+            {formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.87784E3D',
+              defaultMessage: '数据库',
+            })}
+          </span>
           <span className={styles.titleAction}>
             <Space size={8} style={{ lineHeight: 1.5 }}>
               {enableFilter ? (

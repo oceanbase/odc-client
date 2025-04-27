@@ -558,6 +558,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             type={TaskType.SQL_PLAN}
             projectId={projectId}
           />
+
           <Form.Item
             label={formatMessage({
               id: 'odc.components.CreateSQLPlanTaskModal.SqlContent',
@@ -702,7 +703,15 @@ const CreateModal: React.FC<IProps> = (props) => {
                   validator: (_, value) => {
                     const max = setting.getSpaceConfigByKey('odc.sqlexecute.default.maxQueryLimit');
                     if (value !== undefined && value > max) {
-                      return Promise.reject(`不超过查询条数上限 ${max}`);
+                      return Promise.reject(
+                        formatMessage(
+                          {
+                            id: 'src.component.Task.SQLPlanTask.CreateModal.B88FB9EC',
+                            defaultMessage: '不超过查询条数上限 {max}',
+                          },
+                          { max },
+                        ),
+                      );
                     }
                     return Promise.resolve();
                   },

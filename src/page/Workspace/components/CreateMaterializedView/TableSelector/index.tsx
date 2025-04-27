@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { uniqueId, debounce } from 'lodash';
 import MViewContext from '../context/MaterializedViewContext';
 import React, { useContext, useEffect, useState, useMemo } from 'react';
@@ -43,7 +44,10 @@ const TableSelector = () => {
         type: TableSelectorNode.database,
         children: [
           {
-            title: '表',
+            title: formatMessage({
+              id: 'src.page.Workspace.components.CreateMaterializedView.TableSelector.7234E38C',
+              defaultMessage: '表',
+            }),
             key: `${TableSelectorNode.database}-${dbName}-${TableSelectorNode.tableRoot}`,
             type: TableSelectorNode.tableRoot,
             children: tables?.map((tableName) => ({
@@ -53,7 +57,10 @@ const TableSelector = () => {
             })),
           },
           {
-            title: '物化视图',
+            title: formatMessage({
+              id: 'src.page.Workspace.components.CreateMaterializedView.TableSelector.6EFF8857',
+              defaultMessage: '物化视图',
+            }),
             key: `${TableSelectorNode.database}-${dbName}-${TableSelectorNode.materializedViewRoot}`,
             type: TableSelectorNode.materializedViewRoot,
             children: mvs?.map((mvName) => ({
@@ -92,6 +99,7 @@ const TableSelector = () => {
             }}
           />
         );
+
         break;
       }
       case TableSelectorNode.materializedView: {
@@ -106,6 +114,7 @@ const TableSelector = () => {
             }}
           />
         );
+
         break;
       }
     }
@@ -286,8 +295,17 @@ const TableSelector = () => {
   return (
     <div style={{ padding: '12px' }}>
       <p>
-        选择基表
-        <span style={{ color: 'var(--icon-color-normal-2)' }}>（可选）</span>
+        {formatMessage({
+          id: 'src.page.Workspace.components.CreateMaterializedView.TableSelector.7AFF6985',
+          defaultMessage: '选择基表',
+        })}
+
+        <span style={{ color: 'var(--icon-color-normal-2)' }}>
+          {formatMessage({
+            id: 'src.page.Workspace.components.CreateMaterializedView.TableSelector.8DEC2BED',
+            defaultMessage: '（可选）',
+          })}
+        </span>
       </p>
       <Transfer
         showSearch={!loading}
@@ -296,7 +314,10 @@ const TableSelector = () => {
         showSelectAll
         className={styles['mv-tree-transfer']}
         locale={{
-          searchPlaceholder: '请输入表/物化视图名称',
+          searchPlaceholder: formatMessage({
+            id: 'src.page.Workspace.components.CreateMaterializedView.TableSelector.AA55002C',
+            defaultMessage: '请输入表/物化视图名称',
+          }),
         }}
         onChange={handleTransfer}
         onSearch={handleTreeSearch}
