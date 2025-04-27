@@ -133,7 +133,7 @@ const Sider: React.FC<IProps> = function (props) {
                   }) /*工单*/
                 ) : (
                   <Badge showZero={false} count={count} overflowCount={100} offset={[-8, 5]}>
-                    <div style={{ width: '100px' }}>
+                    <div style={{ width: '100px' }} className={styles.ticket}>
                       {
                         formatMessage({
                           id: 'odc.SpaceContainer.Sider.Ticket',
