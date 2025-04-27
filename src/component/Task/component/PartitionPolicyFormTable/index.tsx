@@ -219,7 +219,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     console.log('partitionConfig', partitionConfig);
 
     const dateTypes = res?.contents?.find((item) => !!item?.localizedMessage);
-    const nameRuleType = isInit && dateTypes ? NameRuleType.PRE_SUFFIX : NameRuleType.CUSTOM;
+    const nameRuleType = isInit ? NameRuleType.PRE_SUFFIX : NameRuleType.CUSTOM;
     const values = activeConfigs.map((item) => {
       return {
         nameRuleType,

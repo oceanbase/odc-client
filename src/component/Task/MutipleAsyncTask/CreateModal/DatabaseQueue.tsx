@@ -66,7 +66,7 @@ export const DatabaseQueueSelect: React.FC<{
       datasourceStatus.asyncUpdateStatus([
         ...new Set(
           databaseList?.contents
-            ?.filter((item) => item.type !== 'LOGICAL')
+            ?.filter((item) => item.type !== 'LOGICAL' && !!item.dataSource?.id)
             ?.map((item) => item?.dataSource?.id),
         ),
       ]);

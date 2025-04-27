@@ -236,7 +236,7 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
       if (res?.contents) {
         datasourceStatus.asyncUpdateStatus(
           res?.contents
-            ?.filter((item) => item.type !== 'LOGICAL')
+            ?.filter((item) => item.type !== 'LOGICAL' && !!item.dataSource?.id)
             ?.map((item) => item?.dataSource?.id),
         );
         // 过滤掉对象存储的数据源

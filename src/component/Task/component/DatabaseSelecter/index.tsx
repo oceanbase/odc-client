@@ -71,7 +71,7 @@ const DatabaseSelecter: React.FC<IProps> = function ({
         datasourceStatus.asyncUpdateStatus([
           ...new Set(
             res?.contents
-              ?.filter((item) => item.type !== 'LOGICAL')
+              ?.filter((item) => item.type !== 'LOGICAL' && !!item.dataSource?.id)
               ?.map((item) => item?.dataSource?.id),
           ),
         ]);
