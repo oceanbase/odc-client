@@ -49,6 +49,7 @@ import { CommonTableMode } from './interface';
 import { TableInfo } from './TableInfo';
 import { Toolbar } from './Toolbar';
 import { TaskStatus } from '@/d.ts';
+import useURLParams from '@/util/hooks/useUrlParams';
 
 interface IProps<RecordType> {
   // 表格支持的2种模式
@@ -129,6 +130,8 @@ const CommonTable: <RecordType extends object = any>(
   const [loading, setLoading] = useControllableValue(tableProps, {
     valuePropName: 'loading',
   });
+  const { getParam, deleteParam } = useURLParams();
+  const urlStatusValue = getParam('status');
   const [pageSize, setPageSize] = useState(0);
   const [columnWidthMap, setColumnWidthMap] = useState(null);
   const tableColumns = getFilteredColumns();
@@ -263,6 +266,9 @@ const CommonTable: <RecordType extends object = any>(
       ...filters,
       ...filter,
     };
+    if (!_filter?.status?.includes(TaskStatus.ENABLED) && urlStatusValue) {
+      deleteParam('status');
+    }
     setFilters(_filter);
     setSorter(_sorter);
     setPagination(paginationValue);
