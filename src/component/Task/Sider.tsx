@@ -43,12 +43,16 @@ const Sider: React.FC<IProps> = function ({ taskStore, pageStore, className, isP
   const { Text } = Typography;
   const { getParam, deleteParam } = useURLParams();
   const urlTriggerValue = getParam('filtered');
+  const urlStatusValue = getParam('status');
 
   const { runTask } = useUrlAction();
 
   const handleClick = (value: TaskPageType) => {
     if (urlTriggerValue) {
       deleteParam('filtered');
+    }
+    if (urlStatusValue) {
+      deleteParam('status');
     }
     if (isPage) {
       openTasksPage(value);
