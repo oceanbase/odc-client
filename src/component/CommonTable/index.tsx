@@ -266,7 +266,9 @@ const CommonTable: <RecordType extends object = any>(
       ...filters,
       ...filter,
     };
-    if (!_filter?.status?.includes(TaskStatus.ENABLED) && urlStatusValue) {
+    const statusesToCheck = [TaskStatus.ENABLED, TaskStatus.EXECUTION_SUCCEEDED];
+
+    if (urlStatusValue && statusesToCheck.some((status) => !_filter?.status?.includes(status))) {
       deleteParam('status');
     }
     setFilters(_filter);
