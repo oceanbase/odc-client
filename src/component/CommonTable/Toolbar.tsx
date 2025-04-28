@@ -15,7 +15,7 @@
  */
 
 import { SyncOutlined } from '@ant-design/icons';
-import { Cascader, Space } from 'antd';
+import { Cascader, Space, Tag } from 'antd';
 import classNames from 'classnames';
 import React from 'react';
 import { FilterContent, OperationContent, TitleContent } from './component';
@@ -27,6 +27,7 @@ import type {
   ITableLoadOptions,
   ITitleContent,
 } from './interface';
+import useURLParams from '@/util/hooks/useUrlParams';
 
 interface IProps {
   loading: boolean;
@@ -60,6 +61,9 @@ export const Toolbar: React.FC<IProps> = (props) => {
     onTabChange,
     onOperationClick,
   } = props;
+  const { getParam, deleteParam } = useURLParams();
+  const urlTriggerValue = getParam('filtered');
+
   return (
     <Space className={classNames(styles.toolBar, 'odc-commontable-toolbar')}>
       {operationContent?.isNeedOccupyElement && <div></div>}
@@ -67,6 +71,18 @@ export const Toolbar: React.FC<IProps> = (props) => {
       {titleContent && <TitleContent {...titleContent} onTabChange={onTabChange} />}
       <Space split={isSplit ? '|' : null} size={16}>
         {cascaderContent && <Cascader {...cascaderContent} multiple maxTagCount="responsive" />}
+        {urlTriggerValue && (
+          <Tag
+            closable
+            onClose={() => {
+              if (urlTriggerValue) {
+                deleteParam('filtered');
+              }
+            }}
+          >
+            仅展示周期执行任务
+          </Tag>
+        )}
         {filterContent && (
           <FilterContent
             {...filterContent}

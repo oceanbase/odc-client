@@ -16,6 +16,7 @@
 
 import { TablePermissionType } from '@/d.ts/table';
 import { DatabasePermissionType } from './database';
+import { TaskExecStrategy } from '.';
 
 export enum ProjectTabType {
   /** 全部项目 */

@@ -2695,6 +2695,7 @@ export interface ISqlPlayJobParameters {
 }
 
 export interface ICycleTaskRecord<T> {
+  project: IProject;
   id: number;
   type: TaskType;
   projectId?: number;

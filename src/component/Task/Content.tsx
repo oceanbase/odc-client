@@ -25,7 +25,14 @@ import type {
   TaskRecordParameters,
   TaskStatus,
 } from '@/d.ts';
-import { IConnectionType, ICycleTaskRecord, TaskPageType, TaskRecord, TaskType } from '@/d.ts';
+import {
+  IConnectionType,
+  ICycleTaskRecord,
+  TaskExecStrategy,
+  TaskPageType,
+  TaskRecord,
+  TaskType,
+} from '@/d.ts';
 import { ModalStore } from '@/store/modal';
 import type { TaskStore } from '@/store/task';
 import tracert from '@/util/tracert';
@@ -42,6 +49,7 @@ import { isCycleTask, isCycleTaskPage } from './helper';
 import styles from './index.less';
 import { UserStore } from '@/store/login';
 import { TaskDetailContext } from './TaskDetailContext';
+import useURLParams from '@/util/hooks/useUrlParams';
 
 interface IProps {
   taskStore?: TaskStore;
@@ -89,6 +97,8 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
   const taskList = isCycleTaskPage(taskTabType) ? cycleTasks : tasks;
   const theme = isSqlworkspace ? null : 'vs';
   const tableRef = useRef<ITableInstance>();
+  const { getParam } = useURLParams();
+  const urlTriggerValue = getParam('filtered');
 
   const TaskEventMap = {
     [TaskPageType.IMPORT]: () => modalStore.changeImportModal(true),
@@ -211,8 +221,8 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
       createdByCurrentUser: taskTabType === TaskPageType.CREATED_BY_CURRENT_USER,
       approveByCurrentUser: taskTabType === TaskPageType.APPROVE_BY_CURRENT_USER,
       sort: column?.dataIndex,
-      page: current,
-      size: pageSize,
+      page: urlTriggerValue ? undefined : current,
+      size: urlTriggerValue ? undefined : pageSize,
       containsAll: isAll || isAllScope,
     };
     if (executeTime !== 'custom' && typeof executeTime === 'number') {
@@ -222,8 +232,14 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
     // sorter
     params.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
     const cycleTasks = await props.taskStore.getCycleTaskList(params);
+    const filteredContents = cycleTasks?.contents?.filter(
+      (item) =>
+        ![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(
+          item?.triggerConfig?.triggerStrategy,
+        ),
+    );
     setState({
-      cycleTasks,
+      cycleTasks: urlTriggerValue ? { ...cycleTasks, contents: filteredContents } : cycleTasks,
     });
   };
 
