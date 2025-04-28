@@ -95,7 +95,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
   const tableResource = handleFilter(tableConfigs);
   const activeConfigs = tableConfigs?.filter((item) => activeConfigKeys.includes(item.__id));
   const selectedConfigs = tableConfigs?.filter((item) => selectedConfigKeys.includes(item.__id));
-
+  const [dateTypes, setDateTypes] = useState(false);
   const columns = [
     {
       title: formatMessage({
@@ -219,9 +219,11 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     console.log('partitionConfig', partitionConfig);
 
     const dateTypes = res?.contents?.find((item) => !!item?.localizedMessage);
-    const nameRuleType = isInit ? NameRuleType.PRE_SUFFIX : NameRuleType.CUSTOM;
+    setDateTypes(!!dateTypes);
+    const nameRuleType = isInit && dateTypes ? NameRuleType.PRE_SUFFIX : NameRuleType.CUSTOM; //
     const values = activeConfigs.map((item) => {
       return {
+        generateCount: null,
         nameRuleType,
         ...partitionConfig,
         ...item,
@@ -389,6 +391,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
         onClose={() => {
           setVisible(false);
         }}
+        dateTypes={dateTypes}
       />
     </div>
   );

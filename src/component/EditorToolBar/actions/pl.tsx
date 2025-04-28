@@ -65,7 +65,7 @@ const plActions: ToolBarActions = {
         default:
           return await ctx.savePL();
       }
-    }, 300)
+    }, 300),
   },
 
   PL_TRIGGER_TYPE_SAVE: {
@@ -74,9 +74,15 @@ const plActions: ToolBarActions = {
       defaultMessage: '确认修改',
     }),
     type: 'BUTTON_PRIMARY',
-    async action(ctx: any) {
-      await ctx.savePL();
+    statusFunc: (ctx: PLPage) => {
+      if (ctx?.state?.isSavingScript) {
+        return IConStatus.RUNNING;
+      }
+      return IConStatus.INIT;
     },
+    action: debounce(async (ctx: any) => {
+      ctx.savePL();
+    }, 300),
   },
 
   PL_SCRIPT_SAVE: {
