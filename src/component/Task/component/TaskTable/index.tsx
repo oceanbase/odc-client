@@ -49,7 +49,6 @@ import { flatten } from 'lodash';
 import { inject, observer } from 'mobx-react';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
-import type { FixedType } from 'rc-table/lib/interface';
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import { getTaskGroupLabels, getTaskLabelByType, isCycleTaskPage } from '../../helper';
 import styles from '../../index.less';
@@ -59,9 +58,9 @@ import ProjectContext from '@/page/Project/ProjectContext';
 import { isProjectArchived } from '@/page/Project/helper';
 import { useRequest } from 'ahooks';
 import useUrlAction, { URL_ACTION } from '@/util/hooks/useUrlAction';
-import { useLocation } from '@umijs/max';
+import useURLParams from '@/util/hooks/useUrlParams';
 const { RangePicker } = DatePicker;
-const { Text, Link } = Typography;
+const { Text } = Typography;
 
 export const getCronCycle = (triggerConfig: ICycleTaskTriggerConfig) => {
   const { triggerStrategy, days, hours, cronExpression } = triggerConfig;
@@ -220,9 +219,9 @@ const TaskTable: React.FC<IProps> = inject(
       text: name,
       value: id?.toString(),
     }));
-    const location = useLocation();
-    const searchParams = new URLSearchParams(location.search);
-    const urlStatus = searchParams.get('status');
+    const { getParam } = useURLParams();
+    const urlStatusValue = getParam('status');
+    const urlTriggerValue = getParam('filtered');
 
     const currentTask = taskList;
     const [executeTime, setExecuteTime] = useState(() => {
@@ -254,7 +253,7 @@ const TaskTable: React.FC<IProps> = inject(
         setExecuteTime(_executeTime);
         const filters = {
           ...args?.filters,
-          executeTime: urlStatus ? TIME_OPTION_ALL_TASK : _executeTime,
+          executeTime: urlStatusValue ? TIME_OPTION_ALL_TASK : _executeTime,
         };
 
         setListParams({
@@ -277,10 +276,10 @@ const TaskTable: React.FC<IProps> = inject(
     }, []);
 
     useEffect(() => {
-      if (urlStatus) {
-        setExecuteTime(TIME_OPTION_ALL_TASK);
+      if (executeTime) {
+        localStorage.setItem(TASK_EXECUTE_TIME_KEY, JSON.stringify(executeTime));
       }
-    }, [urlStatus]);
+    }, [executeTime]);
 
     useEffect(() => {
       loadData(loadParams.current);
@@ -299,12 +298,6 @@ const TaskTable: React.FC<IProps> = inject(
         });
       }
     }, [taskPageScope, taskTabType, activePageKey]);
-
-    useEffect(() => {
-      if (executeTime) {
-        localStorage.setItem(TASK_EXECUTE_TIME_KEY, JSON.stringify(executeTime));
-      }
-    }, [executeTime]);
 
     function initColumns(listParams: { filters: ITableFilter; sorter: ITableSorter }) {
       const { filters, sorter } = listParams ?? {};
@@ -471,7 +464,7 @@ const TaskTable: React.FC<IProps> = inject(
           //状态
           width: 120,
           filters: taskStatusFilters,
-          defaultFilteredValue: urlStatus ? [urlStatus] : [],
+          defaultFilteredValue: urlStatusValue ? [urlStatusValue] : [],
           onFilter: (value, record) => {
             return record.status == value;
           },
@@ -653,7 +646,7 @@ const TaskTable: React.FC<IProps> = inject(
           filters: [
             {
               name: 'executeTime',
-              defaultValue: urlStatus ? TIME_OPTION_ALL_TASK : executeTime,
+              defaultValue: urlStatusValue ? TIME_OPTION_ALL_TASK : executeTime,
               dropdownWidth: 160,
               options: TimeOptions,
             },
@@ -697,10 +690,12 @@ const TaskTable: React.FC<IProps> = inject(
           dataSource: currentTask?.contents,
           rowKey: 'id',
           loading: loading,
-          pagination: {
-            current: currentTask?.page?.number,
-            total: currentTask?.page?.totalElements,
-          },
+          pagination: urlTriggerValue
+            ? false
+            : {
+                current: currentTask?.page?.number,
+                total: currentTask?.page?.totalElements,
+              },
         }}
       />
     );

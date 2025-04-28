@@ -27,6 +27,7 @@ import { getFirstEnabledTask, getTaskGroupLabels } from './helper';
 
 import styles from './index.less';
 import useUrlAction, { URL_ACTION } from '@/util/hooks/useUrlAction';
+import useURLParams from '@/util/hooks/useUrlParams';
 
 interface IProps {
   taskStore?: TaskStore;
@@ -40,10 +41,15 @@ const Sider: React.FC<IProps> = function ({ taskStore, pageStore, className, isP
   const firstEnabledTask = getFirstEnabledTask();
   const pageKey = isPage ? pageStore?.activePageKey : taskStore?.taskPageType;
   const { Text } = Typography;
+  const { getParam, deleteParam } = useURLParams();
+  const urlTriggerValue = getParam('filtered');
 
   const { runTask } = useUrlAction();
 
   const handleClick = (value: TaskPageType) => {
+    if (urlTriggerValue) {
+      deleteParam('filtered');
+    }
     if (isPage) {
       openTasksPage(value);
     }
