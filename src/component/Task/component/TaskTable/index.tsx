@@ -253,6 +253,7 @@ const TaskTable: React.FC<IProps> = inject(
         setExecuteTime(_executeTime);
         const filters = {
           ...args?.filters,
+          status: (args?.filters?.status || []).concat(urlStatusValue ? [urlStatusValue] : []),
           executeTime: urlStatusValue ? TIME_OPTION_ALL_TASK : _executeTime,
         };
 
@@ -297,7 +298,7 @@ const TaskTable: React.FC<IProps> = inject(
           },
         });
       }
-    }, [taskPageScope, taskTabType, activePageKey]);
+    }, [taskPageScope, taskTabType, activePageKey, urlStatusValue]);
 
     function initColumns(listParams: { filters: ITableFilter; sorter: ITableSorter }) {
       const { filters, sorter } = listParams ?? {};
