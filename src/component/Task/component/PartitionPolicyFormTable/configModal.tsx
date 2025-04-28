@@ -135,6 +135,13 @@ const nameRuleOptions = [
   },
 ];
 
+const filteredNameRuleOptions = (dateTypes: boolean, incrementFieldType: INCREAMENT_FIELD_TYPE) => {
+  if (dateTypes || incrementFieldType === INCREAMENT_FIELD_TYPE.TIME_STRING) {
+    return nameRuleOptions;
+  }
+  return nameRuleOptions.filter((item) => item.value === NameRuleType.CUSTOM);
+};
+
 interface IProps {
   visible: boolean;
   isBatch: boolean;
@@ -143,6 +150,7 @@ interface IProps {
   theme?: string;
   onClose: () => void;
   onChange?: (values: ITableConfig[]) => void;
+  dateTypes: boolean;
 }
 
 const suffixOptions = [
@@ -200,7 +208,7 @@ export const getUnitLabel = (value: number) => {
 };
 
 const ConfigDrawer: React.FC<IProps> = (props) => {
-  const { visible, configs, isBatch, sessionId, theme, onClose } = props;
+  const { visible, configs, isBatch, sessionId, theme, onClose, dateTypes } = props;
   const [previewSQLVisible, setPreviewSQLVisible] = useState(false);
   const [ruleExample, setRuleExample] = useState('');
   const [previewData, setPreviewData] = useState<
@@ -213,11 +221,20 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   const strategies = Form.useWatch('strategies', form);
   const nameRuleType = Form.useWatch('nameRuleType', form);
   const generateCount = Form.useWatch('generateCount', form);
+  const incrementFieldType = Form.useWatch(
+    ['option', 'partitionKeyConfigs', '0', 'incrementFieldType'],
+    form,
+  );
   const partitionKeyOptions =
-    configs?.[0]?.option?.partitionKeyConfigs?.map((item) => ({
-      label: item?.name,
-      value: item?.name,
-    })) ?? [];
+    configs?.[0]?.option?.partitionKeyConfigs
+      ?.filter(
+        (item) =>
+          item?.type?.localizedMessage || incrementFieldType === INCREAMENT_FIELD_TYPE.TIME_STRING,
+      )
+      ?.map((item) => ({
+        label: item?.name,
+        value: item?.name,
+      })) ?? [];
   const alertMessage = getAlertMessage(strategies);
   const isDropConfigVisible = strategies?.includes(TaskPartitionStrategy.DROP);
   const isCreateConfigVisible = strategies?.includes(TaskPartitionStrategy.CREATE);
@@ -740,7 +757,10 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                 },
               ]}
             >
-              <Select options={nameRuleOptions} style={{ width: 120 }} />
+              <Select
+                options={filteredNameRuleOptions(dateTypes, incrementFieldType)}
+                style={{ width: 120 }}
+              />
             </Form.Item>
             <Form.Item
               label={

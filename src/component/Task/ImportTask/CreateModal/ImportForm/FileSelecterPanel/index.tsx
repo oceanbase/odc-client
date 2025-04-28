@@ -169,7 +169,6 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
     const path = await selectFolder();
     if (!path) return;
     const response = await getImportFileMeta(path, fileType);
-    console.log(response);
     formContext.updateFormData({
       importFileName: [
         {
@@ -180,10 +179,30 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
         },
       ],
     });
+    handleImportFileChange(response);
   };
 
   const isDirImport = (fileType) => fileType === IMPORT_TYPE.DIR;
 
+  const handleImportFileChange = (data) => {
+    const { containsData, containsSchema } = data;
+    if (containsData && containsSchema) {
+      formContext.updateFormData({
+        importContent: IMPORT_CONTENT.DATA_AND_STRUCT,
+      });
+    } else if (containsData) {
+      formContext.updateFormData({
+        importContent: IMPORT_CONTENT.DATA,
+        replaceSchemaWhenExists: false,
+      });
+    } else if (containsSchema) {
+      formContext.updateFormData({
+        importContent: IMPORT_CONTENT.STRUCT,
+      });
+    } else {
+      return;
+    }
+  };
   return (
     <>
       <FormItem
@@ -318,23 +337,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({ isSingleImport, form }) 
                     /**
                      * 文件状态改变，需要更新数据
                      */
-                    const { containsData, containsSchema } = file.response?.data;
-                    if (containsData && containsSchema) {
-                      formContext.updateFormData({
-                        importContent: IMPORT_CONTENT.DATA_AND_STRUCT,
-                      });
-                    } else if (containsData) {
-                      formContext.updateFormData({
-                        importContent: IMPORT_CONTENT.DATA,
-                        replaceSchemaWhenExists: false,
-                      });
-                    } else if (containsSchema) {
-                      formContext.updateFormData({
-                        importContent: IMPORT_CONTENT.STRUCT,
-                      });
-                    } else {
-                      return;
-                    }
+                    handleImportFileChange(file.response?.data);
                   }
                 }}
                 action={getImportUploadUrl()}

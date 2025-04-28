@@ -23,7 +23,7 @@ import React, { useState } from 'react';
 import RuleFormItem from '../RuleFormItem';
 import styles from './index.less';
 
-const TABLE_ROW_HEIGHT = 100;
+const TABLE_ROW_HEIGHT = 128;
 
 const columns = [
   {

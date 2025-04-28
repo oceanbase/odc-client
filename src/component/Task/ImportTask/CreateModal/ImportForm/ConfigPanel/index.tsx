@@ -79,6 +79,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({
           const isZipFileType = getFieldValue('fileType') == IMPORT_TYPE.ZIP;
           const isCsvFileType = getFieldValue('fileType') == IMPORT_TYPE.CSV;
           const isSQLFileType = getFieldValue('fileType') == IMPORT_TYPE.SQL;
+          const isDIRFileType = getFieldValue('fileType') == IMPORT_TYPE.DIR;
           const importFileName = getFieldValue('importFileName');
           const importContent = getFieldValue('importContent');
           const transferData = importContent !== EXPORT_CONTENT.STRUCT;
@@ -91,7 +92,7 @@ const FileSelecterPanel: React.FC<IProps> = function ({
                   defaultMessage: '导入内容',
                 })}
                 name="importContent"
-                style={{ display: isZipFileType ? 'block' : 'none' }}
+                style={{ display: isZipFileType || isDIRFileType ? 'block' : 'none' }}
                 rules={[
                   {
                     required: true,

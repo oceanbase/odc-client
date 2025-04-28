@@ -32,6 +32,7 @@ import {
 } from 'antd';
 import React, { useState } from 'react';
 import { intervalPrecisionOptions } from '../configModal';
+import { NameRuleType } from '../configModal';
 import { START_DATE, INCREAMENT_FIELD_TYPE, increamentFieldTypeLabelMap } from '../const';
 import styles from '../index.less';
 
@@ -89,10 +90,12 @@ const incrementFieldTypeOptionsValues = [
   },
 ];
 
-const incrementByDateOptionsInNumber = ['yyyy', 'yyyyMM', 'yyyyMMdd'].map((item) => ({
-  label: item,
-  value: item,
-}));
+const incrementByDateOptionsInNumber = ['yyyy', 'yyyyMM', 'yyyyMMdd', 'yyyyMMddHHmmss'].map(
+  (item) => ({
+    label: item,
+    value: item,
+  }),
+);
 
 const incrementByDateOptionsInChar = [
   'yyyy',
@@ -114,6 +117,7 @@ const incrementByDateOptionsInChar = [
     id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.EF0BF81D',
     defaultMessage: 'yyyy年MM月dd日',
   }),
+  'yyyy-MM-dd HH:mm:ss',
 ].map((item) => ({
   label: item,
   value: item,
@@ -166,31 +170,70 @@ interface TableFormProps {
   dataTypeName: string;
 }
 
-const getIntervalPrecisionOptionsByIncrementDateType = (incrementFieldTypeInDate: string) => {
-  const containYear = incrementFieldTypeInDate?.toLocaleLowerCase?.()?.includes?.('y');
-  const containMonth = incrementFieldTypeInDate?.toLocaleLowerCase?.()?.includes?.('m');
-  const containDay = incrementFieldTypeInDate?.toLocaleLowerCase?.()?.includes?.('d');
-  // 只能为年
-  if (containYear && !containMonth && !containDay) {
-    return intervalPrecisionOptions?.filter((item) => item.value <= 1);
+const PRECISION_MAP = {
+  second: 63,
+  minute: 31,
+  hour: 15,
+  day: 7,
+  month: 3,
+  year: 1,
+};
+
+const getIntervalPrecisionOptionsByIncrementDateType = (
+  incrementFieldTypeInDate: string,
+  incrementFieldType: INCREAMENT_FIELD_TYPE,
+) => {
+  if (incrementFieldType !== INCREAMENT_FIELD_TYPE.TIME_STRING || !incrementFieldTypeInDate) {
+    return intervalPrecisionOptions;
   }
-  // 只能为年, 月
-  if (containYear && containMonth && !containDay) {
-    return intervalPrecisionOptions?.filter((item) => item.value <= 3);
+
+  if (incrementFieldTypeInDate?.includes?.('s')) {
+    return intervalPrecisionOptions?.filter((item) => item.value <= PRECISION_MAP.second);
   }
-  if (containYear && containMonth && containDay) {
-    return intervalPrecisionOptions?.filter((item) => item.value <= 7);
+  if (incrementFieldTypeInDate?.includes?.('m')) {
+    return intervalPrecisionOptions?.filter((item) => item.value <= PRECISION_MAP.minute);
   }
+  if (incrementFieldTypeInDate?.includes?.('H')) {
+    return intervalPrecisionOptions?.filter((item) => item.value <= PRECISION_MAP.hour);
+  }
+  if (incrementFieldTypeInDate?.includes?.('d')) {
+    return intervalPrecisionOptions?.filter((item) => item.value <= PRECISION_MAP.day);
+  }
+  if (incrementFieldTypeInDate?.includes?.('M')) {
+    return intervalPrecisionOptions?.filter((item) => item.value <= PRECISION_MAP.month);
+  }
+  if (incrementFieldTypeInDate?.includes?.('y')) {
+    return intervalPrecisionOptions?.filter((item) => item.value <= PRECISION_MAP.year);
+  }
+
   return intervalPrecisionOptions;
 };
 
-const getDefaultPrecisionByIncrementDateType = (incrementFieldTypeInDate: string) => {
-  const containYear = incrementFieldTypeInDate?.toLocaleLowerCase?.()?.includes?.('y');
-  const containMonth = incrementFieldTypeInDate?.toLocaleLowerCase?.()?.includes?.('m');
-  const containDay = incrementFieldTypeInDate?.toLocaleLowerCase?.()?.includes?.('d');
-  // 只能为年
-  if (containYear && !containMonth && !containDay) {
-    return 1;
+const getDefaultPrecisionByIncrementDateTypeInDate = (
+  incrementFieldTypeInDate: string,
+  incrementFieldType: INCREAMENT_FIELD_TYPE,
+) => {
+  if (incrementFieldType !== INCREAMENT_FIELD_TYPE.TIME_STRING || !incrementFieldTypeInDate) {
+    return 3;
+  }
+
+  if (incrementFieldTypeInDate?.includes?.('s')) {
+    return PRECISION_MAP.second;
+  }
+  if (incrementFieldTypeInDate?.includes?.('m')) {
+    return PRECISION_MAP.minute;
+  }
+  if (incrementFieldTypeInDate?.includes?.('H')) {
+    return PRECISION_MAP.hour;
+  }
+  if (incrementFieldTypeInDate?.includes?.('d')) {
+    return PRECISION_MAP.day;
+  }
+  if (incrementFieldTypeInDate?.includes?.('M')) {
+    return PRECISION_MAP.month;
+  }
+  if (incrementFieldTypeInDate?.includes?.('y')) {
+    return PRECISION_MAP.year;
   }
 
   return 3;
@@ -336,6 +379,7 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                         <Select
                           options={getIntervalPrecisionOptionsByIncrementDateType(
                             incrementFieldTypeInDate,
+                            incrementFieldType,
                           )}
                           style={{ width: 60 }}
                         />
@@ -383,6 +427,21 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                 }}
                 optionLabelProp="text"
                 dropdownStyle={{ width: 320 }}
+                onChange={(value) => {
+                  const defaultPrecision = getDefaultPrecisionByIncrementDateTypeInDate(
+                    incrementFieldTypeInDate,
+                    value,
+                  );
+                  setFieldValue(
+                    ['option', 'partitionKeyConfigs', field.name, 'intervalPrecision'],
+                    defaultPrecision,
+                  );
+                  if (value === INCREAMENT_FIELD_TYPE.TIME_STRING) {
+                    setFieldValue('nameRuleType', NameRuleType.PRE_SUFFIX);
+                  } else {
+                    setFieldValue('nameRuleType', NameRuleType.CUSTOM);
+                  }
+                }}
               />
             </Form.Item>
             {incrementFieldType === INCREAMENT_FIELD_TYPE.TIME_STRING && (
@@ -411,7 +470,10 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                     option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                   }
                   onChange={(e) => {
-                    const defaultPrecision = getDefaultPrecisionByIncrementDateType(e);
+                    const defaultPrecision = getDefaultPrecisionByIncrementDateTypeInDate(
+                      e,
+                      incrementFieldType,
+                    );
                     setFieldValue(
                       ['option', 'partitionKeyConfigs', field.name, 'intervalPrecision'],
                       defaultPrecision,

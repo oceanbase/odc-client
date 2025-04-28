@@ -131,6 +131,7 @@ function TButton({
           type="primary"
           disabled={disabled}
           onClick={!disabled ? onClick : null}
+          loading={isRunning}
         >
           {text}
         </Button>
