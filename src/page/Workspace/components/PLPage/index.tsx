@@ -897,9 +897,6 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     const { pageStore, params, onChangeSaved, pageKey, page } = this.props;
     const plSchema = this.getFormatPLSchema();
     const { plName, plType, packageName } = plSchema;
-    this.setState({
-      isSavingScript: true,
-    });
     const newPLEntryName = await getPLEntryName(params.scriptText);
     if (!this.isPackageProgram()) {
       /** 暂时还检测不了程序包内的函数等 */
@@ -963,9 +960,6 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     }
 
     onChangeSaved(pageKey);
-    this.setState({
-      isSavingScript: false,
-    });
   }
 
   /* 执行保存PL */
@@ -1046,10 +1040,10 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     }
 
     return {
-      scriptText: ddl,
+      scriptText: ddl || params.scriptText,
       plSchema: {
         ...params.plSchema,
-        ddl,
+        ddl: ddl || params.scriptText,
         params: newParams || plSchema.params,
       },
     };

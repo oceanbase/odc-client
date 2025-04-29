@@ -75,7 +75,9 @@ const plActions: ToolBarActions = {
     }),
     type: 'BUTTON_PRIMARY',
     statusFunc: (ctx: PLPage) => {
-      if (ctx?.state?.isSavingScript) {
+      const { pageStore, pageKey } = ctx.props;
+      const page = pageStore?.getPageByKey(pageKey);
+      if (page?.startSaving) {
         return IConStatus.RUNNING;
       }
       return IConStatus.INIT;

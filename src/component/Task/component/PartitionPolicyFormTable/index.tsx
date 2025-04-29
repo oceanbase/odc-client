@@ -220,7 +220,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
 
     const dateTypes = res?.contents?.find((item) => !!item?.localizedMessage);
     setDateTypes(!!dateTypes);
-    const nameRuleType = isInit && dateTypes ? NameRuleType.PRE_SUFFIX : NameRuleType.CUSTOM; //
+    const nameRuleType = isInit && dateTypes ? NameRuleType.PRE_SUFFIX : NameRuleType.CUSTOM;
     const values = activeConfigs.map((item) => {
       return {
         generateCount: null,
@@ -242,8 +242,6 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
                 ) || PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
               ...defaultKeyConfig,
               name,
-              ...partitionConfig?.option?.partitionKeyConfigs?.[index],
-              type,
               fromCurrentTime: START_DATE.CURRENT_DATE,
               intervalPrecision: defaultIntervalPrecision,
               incrementFieldType:
@@ -252,6 +250,8 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
                 createdTableConfig?.option?.partitionKeyConfigs?.[index]?.timeFormat,
               intervalGenerateExpr:
                 createdTableConfig?.option?.partitionKeyConfigs?.[index]?.numberInterval,
+              ...partitionConfig?.option?.partitionKeyConfigs?.[index],
+              type,
             };
           }),
         },
