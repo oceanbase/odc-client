@@ -13,6 +13,7 @@ import {
   Radio,
   Row,
   Spin,
+  Tooltip,
   Typography,
 } from 'antd';
 import { ReactComponent as DownloadSvg } from '@/svgr/download-fill.svg';
@@ -266,14 +267,16 @@ const Console = () => {
                           })}
                         </Radio.Group>
                         <div className={styles.descriptions}>
-                          <Typography.Paragraph
-                            type="secondary"
-                            ellipsis={{
-                              rows: 2,
-                            }}
-                          >
-                            {quickStart.descriptions[currentQuickStartRole]}
-                          </Typography.Paragraph>
+                          <Tooltip title={quickStart.descriptions[currentQuickStartRole]}>
+                            <Typography.Paragraph
+                              type="secondary"
+                              ellipsis={{
+                                rows: 2,
+                              }}
+                            >
+                              {quickStart.descriptions[currentQuickStartRole]}
+                            </Typography.Paragraph>
+                          </Tooltip>
                         </div>
                         <div
                           className={styles.steps}

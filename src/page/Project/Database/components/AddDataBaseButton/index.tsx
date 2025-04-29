@@ -252,7 +252,7 @@ const AddDataBaseButton: React.FC<IProps> = ({
               defaultMessage: '批量操作',
             })}
 
-            <DownOutlined />
+            <DownOutlined style={{ color: 'var(--icon-color-normal)' }} />
           </Button>
         </Dropdown>
       </Space>
