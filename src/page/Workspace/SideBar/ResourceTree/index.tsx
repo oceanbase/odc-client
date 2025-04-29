@@ -111,6 +111,8 @@ const ResourceTree: React.FC<IProps> = function ({
     datasourceList,
     currentObject,
     databaseList,
+    reloadDatasourceList,
+    reloadDatabaseList,
   } = treeContext;
   const [wrapperHeight, setWrapperHeight] = useState(0);
   const clockRef = useRef(null);
@@ -139,6 +141,13 @@ const ResourceTree: React.FC<IProps> = function ({
       window.removeEventListener('resize', resizeHeight);
     };
   }, []);
+
+  const dataSourceChangeReload = async () => {
+    await reloadDatasourceList();
+    setTimeout(() => {
+      reloadDatabaseList();
+    }, 500);
+  };
 
   useEffect(() => {
     selectProjectId &&
@@ -447,7 +456,7 @@ const ResourceTree: React.FC<IProps> = function ({
         <div className={styles.search}>
           <DatabaseSearch searchValue={searchValue} setSearchValue={setSearchValue} />
           {userStore.isPrivateSpace() ? (
-            <NewDatasourceButton onSuccess={() => reload()}>
+            <NewDatasourceButton onSuccess={dataSourceChangeReload}>
               <Button
                 size="small"
                 type="primary"
@@ -494,9 +503,7 @@ const ResourceTree: React.FC<IProps> = function ({
           setEditDatasourceId(null);
           setAddDSVisiable(false);
         }}
-        onSuccess={() => {
-          reload?.();
-        }}
+        onSuccess={dataSourceChangeReload}
       />
 
       <NewDatasourceDrawer
@@ -507,9 +514,7 @@ const ResourceTree: React.FC<IProps> = function ({
         close={() => {
           setCopyDatasourceId(null);
         }}
-        onSuccess={() => {
-          reload?.();
-        }}
+        onSuccess={dataSourceChangeReload}
       />
     </>
   );

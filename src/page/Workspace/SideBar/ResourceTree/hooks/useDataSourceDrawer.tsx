@@ -38,7 +38,9 @@ const useDataSourceDrawer = () => {
             setSelectKeys([]);
           }
           context?.reloadDatasourceList();
-          context?.reloadDatabaseList();
+          setTimeout(() => {
+            context?.reloadDatabaseList();
+          }, 500);
         }
       },
     });
