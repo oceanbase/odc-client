@@ -41,7 +41,6 @@ const ScheduleItem = ({ title, progress, type }) => {
                 id: 'src.page.Console.components.ScheduleItem.4E8811DF',
                 defaultMessage: '已启用',
               })}
-
               <span className={styles.count}>{successEnabledCount || 0}</span>
               {formatMessage({
                 id: 'src.page.Console.components.ScheduleItem.728A17A0',
