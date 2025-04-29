@@ -77,7 +77,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: '#40a9ff' }}
+              style={{ color: '#40a9ff', marginLeft: 4 }}
               onClick={() => {
                 handleApply(TaskType.APPLY_PROJECT_PERMISSION, record?.project?.id);
               }}

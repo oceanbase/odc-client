@@ -235,7 +235,7 @@ const Sider: React.FC<IProps> = function (props) {
             <span>
               {formatMessage({ id: 'src.page.Project.8635398D', defaultMessage: 'SQL 控制台' })}
               <Icon
-                style={{ marginLeft: 8, color: 'var(--icon-color-disable)' }}
+                style={{ marginLeft: 8, color: 'var(--text-color-hint)' }}
                 component={NewOpenSvg}
               />
             </span>
