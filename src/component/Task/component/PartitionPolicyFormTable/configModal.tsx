@@ -24,6 +24,7 @@ import odc from '@/plugins/odc';
 import { formatMessage, getLocalDocs } from '@/util/intl';
 import {
   Alert,
+  AutoComplete,
   Button,
   Checkbox,
   Descriptions,
@@ -177,6 +178,10 @@ const suffixOptions = [
   {
     label: 'yyyy_MM',
     value: 'yyyy_MM',
+  },
+  {
+    label: 'yyyyMMddHHmmss',
+    value: 'yyyyMMddHHmmss',
   },
 ];
 
@@ -464,6 +469,12 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       });
     }
   }, [configs, visible]);
+
+  useEffect(() => {
+    if (nameRuleType === NameRuleType.PRE_SUFFIX) {
+      form.setFieldValue('refPartitionKey', partitionKeyOptions?.[0]?.value);
+    }
+  }, [nameRuleType]);
 
   const submitBtn = useMemo(() => {
     const isSingleGenerateCount = generateCount === 1;
@@ -917,7 +928,10 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                           },
                         ]}
                       >
-                        <Select
+                        <AutoComplete
+                          filterOption={(inputValue, option) =>
+                            option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                          }
                           placeholder={
                             formatMessage({
                               id: 'src.component.Task.component.PartitionPolicyFormTable.0259BAC2',
@@ -925,8 +939,9 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
                             }) /*"请选择"*/
                           }
                           style={{ width: 124 }}
+                          dropdownMatchSelectWidth={200}
                           options={suffixOptions}
-                        />
+                        ></AutoComplete>
                       </Form.Item>
                     </Input.Group>
                     <Input.Group compact>
