@@ -35,6 +35,7 @@ import { intervalPrecisionOptions } from '../configModal';
 import { NameRuleType } from '../configModal';
 import { START_DATE, INCREAMENT_FIELD_TYPE, increamentFieldTypeLabelMap } from '../const';
 import styles from '../index.less';
+import { getLocale } from '@umijs/max';
 
 const { Text } = Typography;
 
@@ -97,31 +98,49 @@ const incrementByDateOptionsInNumber = ['yyyy', 'yyyyMM', 'yyyyMMdd', 'yyyyMMddH
   }),
 );
 
-const incrementByDateOptionsInChar = [
-  'yyyy',
-  formatMessage({
-    id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.E205FB6F',
-    defaultMessage: 'yyyy年',
-  }),
+const getIncrementByDateOptionsInChar = () => {
+  const locale = getLocale();
+  const options = [
+    'yyyy',
+    formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.E205FB6F',
+      defaultMessage: 'yyyy年',
+    }),
 
-  'yyyyMM',
-  'yyyy-MM',
-  formatMessage({
-    id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.216E3527',
-    defaultMessage: 'yyyy年MM月',
-  }),
+    'yyyyMM',
+    'yyyy-MM',
+    'yyyy/MM',
+    formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.216E3527',
+      defaultMessage: 'yyyy年MM月',
+    }),
 
-  'yyyyMMdd',
-  'yyyy-MM-dd',
-  formatMessage({
-    id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.EF0BF81D',
-    defaultMessage: 'yyyy年MM月dd日',
-  }),
-  'yyyy-MM-dd HH:mm:ss',
-].map((item) => ({
-  label: item,
-  value: item,
-}));
+    'yyyyMMdd',
+    'yyyy-MM-dd',
+    'yyyy/MM/dd',
+    formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.EF0BF81D',
+      defaultMessage: 'yyyy年MM月dd日',
+    }),
+    'yyyyMMdd HH:mm:ss',
+    'yyyy-MM-dd HH:mm:ss',
+    'yyyy/MM/dd HH:mm:ss',
+    'yyyy年MM月dd日 HH:mm:ss',
+  ];
+  if (locale !== 'zh-CN') {
+    return options
+      .filter((item) => !/[\u4e00-\u9fa5]/.test(item))
+      .map((item) => ({
+        label: item,
+        value: item,
+      }));
+  }
+
+  return options.map((item) => ({
+    label: item,
+    value: item,
+  }));
+};
 
 const getOptionsByValueList = (valueList) => {
   return valueList.map(({ label, value, description }) => {
@@ -463,9 +482,10 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
                   options={
                     dataTypeName?.toLowerCase()?.includes('number')
                       ? incrementByDateOptionsInNumber
-                      : incrementByDateOptionsInChar
+                      : getIncrementByDateOptionsInChar()
                   }
                   style={{ width: 160 }}
+                  dropdownMatchSelectWidth={192}
                   filterOption={(inputValue, option) =>
                     option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                   }
