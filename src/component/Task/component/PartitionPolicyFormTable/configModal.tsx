@@ -180,8 +180,24 @@ const suffixOptions = [
     value: 'yyyy_MM',
   },
   {
+    label: 'yyyy/MM',
+    value: 'yyyy/MM',
+  },
+  {
+    label: 'yyyy/MM/dd',
+    value: 'yyyy/MM/dd',
+  },
+  {
     label: 'yyyyMMddHHmmss',
     value: 'yyyyMMddHHmmss',
+  },
+  {
+    label: 'yyyy/MM/dd HH:mm:ss',
+    value: 'yyyy/MM/dd HH:mm:ss',
+  },
+  {
+    label: 'yyyy_MM_dd HH:mm:ss',
+    value: 'yyyy_MM_dd HH:mm:ss',
   },
 ];
 
@@ -475,6 +491,15 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       form.setFieldValue('refPartitionKey', partitionKeyOptions?.[0]?.value);
     }
   }, [nameRuleType]);
+
+  useEffect(() => {
+    if (
+      configs?.[0]?.option?.partitionKeyConfigs?.[0]?.incrementFieldType ===
+      INCREAMENT_FIELD_TYPE.TIME_STRING
+    ) {
+      form.setFieldValue('nameRuleType', NameRuleType.PRE_SUFFIX);
+    }
+  }, [configs]);
 
   const submitBtn = useMemo(() => {
     const isSingleGenerateCount = generateCount === 1;

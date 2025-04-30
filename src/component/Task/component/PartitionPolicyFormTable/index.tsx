@@ -220,7 +220,10 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
 
     const dateTypes = res?.contents?.find((item) => !!item?.localizedMessage);
     setDateTypes(!!dateTypes);
-    const nameRuleType = isInit && dateTypes ? NameRuleType.PRE_SUFFIX : NameRuleType.CUSTOM;
+
+    const initNameRuleType = isInit && dateTypes ? NameRuleType.PRE_SUFFIX : NameRuleType.CUSTOM;
+    const nameRuleType = createdTableConfig?.generateExpr ? NameRuleType.CUSTOM : initNameRuleType;
+
     const values = activeConfigs.map((item) => {
       return {
         generateCount: null,
@@ -235,11 +238,6 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
             };
             const name = item.option?.partitionKeyConfigs?.[index]?.name;
             return {
-              partitionKeyInvoker:
-                revertPartitionKeyInvokerByIncrementFieldType(
-                  createdTableConfig?.option?.partitionKeyConfigs?.[index]?.partitionKeyInvoker,
-                  createdTableConfig?.option?.partitionKeyConfigs?.[index]?.fieldType,
-                ) || PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
               ...defaultKeyConfig,
               name,
               fromCurrentTime: START_DATE.CURRENT_DATE,
@@ -251,6 +249,11 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
               intervalGenerateExpr:
                 createdTableConfig?.option?.partitionKeyConfigs?.[index]?.numberInterval,
               ...partitionConfig?.option?.partitionKeyConfigs?.[index],
+              partitionKeyInvoker:
+                revertPartitionKeyInvokerByIncrementFieldType(
+                  partitionConfig?.option?.partitionKeyConfigs?.[index]?.partitionKeyInvoker,
+                  partitionConfig?.option?.partitionKeyConfigs?.[index]?.fieldType,
+                ) || PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
               type,
             };
           }),
