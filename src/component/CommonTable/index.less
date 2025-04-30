@@ -137,8 +137,13 @@
         padding: 0 16px;
         line-height: 24px;
         background-color: var(--table-header-background-color);
+
         .anticon {
           color: var(--icon-color-normal);
+        }
+        .active .anticon,
+        .anticon.active {
+          color: var(--icon-color-focus);
         }
 
         &::before {
@@ -188,8 +193,15 @@
     .ant-checkbox .ant-checkbox-inner {
       border: 1px solid var(--odc-border-color);
     }
-    .ant-table-thead .ant-table-cell .anticon {
-      color: var(--icon-color-normal);
+    .ant-table-thead .ant-table-cell {
+      .anticon {
+        color: var(--icon-color-normal);
+      }
+
+      .active .anticon,
+      .anticon.active {
+        color: var(--icon-color-focus);
+      }
     }
 
     .ant-table-thead > tr > th {
