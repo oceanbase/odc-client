@@ -1,21 +1,9 @@
-import { formatMessage } from '@/util/intl';
+import { formatMessage, getLocalDocs } from '@/util/intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useMount, useRequest } from 'ahooks';
 import modal from '@/store/modal';
-import {
-  Button,
-  Card,
-  Col,
-  Divider,
-  Popconfirm,
-  Popover,
-  QRCode,
-  Radio,
-  Row,
-  Spin,
-  Tooltip,
-  Typography,
-} from 'antd';
+import { Card, Col, Divider, Popconfirm, Radio, Row, Spin, Tooltip, Typography } from 'antd';
+import odc from '@/plugins/odc';
 import { ReactComponent as DownloadSvg } from '@/svgr/download-fill.svg';
 import { ReactComponent as GithubSvg } from '@/svgr/github.svg';
 import { ReactComponent as SendSvg } from '@/svgr/send-fill.svg';
@@ -421,7 +409,11 @@ const Console = () => {
                   <span
                     className={styles.showMore}
                     onClick={() =>
-                      window.open('https://www.oceanbase.com/docs/common-odc-1000000002687235')
+                      window.open(
+                        odc.appConfig.docs.url
+                          ? `${odc.appConfig.docs.url}#/100.sql-development-common-techniques.html`
+                          : getLocalDocs('100.sql-development-common-techniques.html'),
+                      )
                     }
                   >
                     {formatMessage({ id: 'src.page.Console.E60EAE10', defaultMessage: '更多 >' })}
@@ -429,7 +421,16 @@ const Console = () => {
                 </div>
                 {bestPractice.articles.map((article) => {
                   return (
-                    <div className={styles.article} onClick={() => window.open(article.url)}>
+                    <div
+                      className={styles.article}
+                      onClick={() => {
+                        window.open(
+                          odc.appConfig.docs.url
+                            ? `${odc.appConfig.docs.url}#/${article.fragmentIdentifier}`
+                            : getLocalDocs(article.fragmentIdentifier),
+                        );
+                      }}
+                    >
                       {article.title}
                     </div>
                   );
