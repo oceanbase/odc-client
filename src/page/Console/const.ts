@@ -117,59 +117,57 @@ export const ConsoleTextConfig = {
     articles: [
       {
         title: formatMessage({
-          id: 'src.page.Console.470D66DD',
-          defaultMessage: 'OceanBase AP 实时 SQL 诊断能力解析',
+          id: 'src.page.Console.343BA069',
+          defaultMessage: 'SQL 开发常用小技巧',
         }),
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687235',
+        fragmentIdentifier: '100.sql-development-common-techniques.html',
       },
       {
         title: formatMessage({
-          id: 'src.page.Console.9D0C276D',
-          defaultMessage: '优化管理数据库历史库',
+          id: 'src.page.Console.470D66DD',
+          defaultMessage: 'OceanBase AP 实时 SQL 诊断能力解析',
         }),
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687236',
+        fragmentIdentifier:
+          '300.analysis-of-oceanbase-ap-real-time-sql-diagnostic-capabilities.html',
+      },
+      {
+        title: 'OceanBase 历史库解决方案',
+        fragmentIdentifier: '400.history-database-optimization-management.html',
       },
       {
         title: formatMessage({
           id: 'src.page.Console.67004EA1',
           defaultMessage: 'ODC SQL 检查自动识别高危操作',
         }),
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687237',
+        fragmentIdentifier: '500.automatic-detection-of-high-risk-changes.html',
       },
       {
         title: formatMessage({
           id: 'src.page.Console.4F744942',
           defaultMessage: '快速集成 ODC 的企业级账号体系',
         }),
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687238',
-      },
-      {
-        title: formatMessage({
-          id: 'src.page.Console.15BABD7A',
-          defaultMessage: '企业级管控协同：守护数据库的每一次变更',
-        }),
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687239',
+        fragmentIdentifier: '600.rapid-integration-of-enterprise-level-account-systems.html',
       },
       {
         title: formatMessage({
           id: 'src.page.Console.A0F9F190',
           defaultMessage: '通过 ODC 实现分库分表的管理和变更',
         }),
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687240',
+        fragmentIdentifier: '700.implement-management-and-changes-for-database.html',
       },
       {
         title: formatMessage({
           id: 'src.page.Console.7BD8C2BB',
           defaultMessage: '数据脱敏管控实践',
         }),
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687241',
+        fragmentIdentifier: '800.data-masking-control-practices.html',
       },
       {
         title: formatMessage({
-          id: 'src.page.Console.343BA069',
-          defaultMessage: 'SQL 开发常用小技巧',
+          id: 'src.page.Console.15BABD7A',
+          defaultMessage: '企业级管控协同：守护数据库的每一次变更',
         }),
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687242',
+        fragmentIdentifier: '900.enterprise-level-governance-and-control-synergy.html',
       },
     ],
   },
