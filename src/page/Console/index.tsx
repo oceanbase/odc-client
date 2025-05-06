@@ -411,7 +411,7 @@ const Console = () => {
                     onClick={() =>
                       window.open(
                         odc.appConfig.docs.url
-                          ? `${odc.appConfig.docs.url}#/100.sql-development-common-techniques.html`
+                          ? 'https://www.oceanbase.com/docs/common-odc-1000000002687242'
                           : getLocalDocs('100.sql-development-common-techniques.html'),
                       )
                     }
@@ -426,7 +426,7 @@ const Console = () => {
                       onClick={() => {
                         window.open(
                           odc.appConfig.docs.url
-                            ? `${odc.appConfig.docs.url}#/${article.fragmentIdentifier}`
+                            ? article.url
                             : getLocalDocs(article.fragmentIdentifier),
                         );
                       }}
