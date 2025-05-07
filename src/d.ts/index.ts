@@ -2737,6 +2737,7 @@ export interface IDatabaseHistoriesParam {
 export interface ICycleTaskStatRecord {
   type: string;
   successEnabledCount: number;
+  totalCount?: number;
   taskStats: {
     type: string;
     successExecutionCount: number;
