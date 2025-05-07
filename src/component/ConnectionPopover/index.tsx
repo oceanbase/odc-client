@@ -49,42 +49,46 @@ const ConnectionPopover: React.FC<{
 
   const databaseRemarkDescription = useMemo(() => {
     return (
-      <div style={{ display: 'flex' }}>
-        <span style={{ whiteSpace: 'nowrap' }} className={styles.label}>
+      <div className={styles.describe}>
+        <span className={styles.label}>
           {formatMessage({
             id: 'src.component.ConnectionPopover.7A11191E',
             defaultMessage: '备注：',
           })}
         </span>
-        <div style={{ width: '260px', wordBreak: 'break-word' }}>{database?.remark ?? '-'}</div>
+        <div className={styles.content}>{database?.remark ?? '-'}</div>
       </div>
     );
   }, [database]);
 
   const dataSourceDescription = useMemo(() => {
     return (
-      <div style={{ display: 'flex' }}>
+      <div className={styles.describe}>
         <span className={styles.label}>
           {formatMessage({
             id: 'src.component.ConnectionPopover.2A18AD55',
             defaultMessage: '数据源：',
           })}
         </span>
-        <div>{connection?.name || database?.dataSource?.name || '-'}</div>
+        <div className={styles.content}>
+          {connection?.name || database?.dataSource?.name || '-'}
+        </div>
       </div>
     );
   }, [connection, database]);
 
   const projectDescription = useMemo(() => {
     return (
-      <div style={{ display: 'flex' }}>
+      <div className={styles.describe}>
         <span className={styles.label}>
           {formatMessage({
             id: 'src.component.ConnectionPopover.16ED170C',
             defaultMessage: '项目：',
           })}
         </span>
-        <div>{database?.project?.name || connection?.projectName || '-'}</div>
+        <div className={styles.content}>
+          {database?.project?.name || connection?.projectName || '-'}
+        </div>
       </div>
     );
   }, [database, connection]);
@@ -95,7 +99,7 @@ const ConnectionPopover: React.FC<{
         onClick={(e) => {
           e.stopPropagation();
         }}
-        style={{ lineHeight: '20px' }}
+        style={{ lineHeight: '20px', maxWidth: '280px' }}
       >
         <Space direction="vertical">
           <Tooltip title={connection?.name}>
@@ -105,7 +109,7 @@ const ConnectionPopover: React.FC<{
                 fontFamily: 'PingFangSC-Semibold',
                 color: 'var(--text-color-primary)',
                 fontWeight: 'bold',
-                width: '240px',
+                width: '280px',
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
@@ -154,7 +158,7 @@ const ConnectionPopover: React.FC<{
         onClick={(e) => {
           e.stopPropagation();
         }}
-        style={{ lineHeight: '20px' }}
+        style={{ lineHeight: '20px', maxWidth: '280px' }}
       >
         <Space direction="vertical">
           <Tooltip>
@@ -164,7 +168,7 @@ const ConnectionPopover: React.FC<{
                 fontFamily: 'PingFangSC-Semibold',
                 color: 'var(--text-color-primary)',
                 fontWeight: 'bold',
-                width: '240px',
+                width: '280px',
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
@@ -221,7 +225,7 @@ const ConnectionPopover: React.FC<{
   }
 
   let clusterAndTenant = (
-    <div>
+    <div className={styles.describe}>
       <span className={styles.label}>
         {
           formatMessage({
@@ -232,7 +236,9 @@ const ConnectionPopover: React.FC<{
           /*集群/租户：*/
         }
       </span>
-      {connection?.clusterName || '- '}/{connection?.tenantName || ' -'}
+      <span className={styles.content}>
+        {connection?.clusterName || '- '}/{connection?.tenantName || ' -'}
+      </span>
     </div>
   );
 
@@ -240,31 +246,36 @@ const ConnectionPopover: React.FC<{
     const isTenantInstance = !!clusterStore.tenantListMap?.[connection?.tenantName];
     if (isTenantInstance) {
       clusterAndTenant = (
-        <div>
-          {
-            formatMessage({
-              id: 'odc.component.ConnectionPopover.InstanceId',
-              defaultMessage: '实例 ID:',
-            })
+        <div className={styles.describe}>
+          <span className={styles.label}>
+            {
+              formatMessage({
+                id: 'odc.component.ConnectionPopover.InstanceId',
+                defaultMessage: '实例 ID:',
+              })
 
-            /*实例 ID:*/
-          }
-
-          {connection?.tenantName}
+              /*实例 ID:*/
+            }
+          </span>
+          <span className={styles.content}>{connection?.tenantName}</span>
         </div>
       );
     } else {
       clusterAndTenant = (
-        <div>
-          {
-            formatMessage({
-              id: 'odc.component.ConnectionPopover.InstanceIdTenantId',
-              defaultMessage: '实例ID/租户ID:',
-            })
+        <div className={styles.describe}>
+          <span className={styles.label}>
+            {
+              formatMessage({
+                id: 'odc.component.ConnectionPopover.InstanceIdTenantId',
+                defaultMessage: '实例ID/租户ID:',
+              })
 
-            /*实例ID/租户ID:*/
-          }
-          {connection?.clusterName}/{connection?.tenantName}
+              /*实例ID/租户ID:*/
+            }
+          </span>
+          <span className={styles.content}>
+            {connection?.clusterName}/{connection?.tenantName}
+          </span>
         </div>
       );
     }
@@ -299,7 +310,6 @@ const ConnectionPopover: React.FC<{
       }}
       style={{
         lineHeight: '20px',
-        // padding: 12,
         maxWidth: '280px',
       }}
     >
@@ -337,7 +347,7 @@ const ConnectionPopover: React.FC<{
         {projectDescription}
         {renderConnectionMode()}
         {haveOCP() ? null : (
-          <div>
+          <div className={styles.describe}>
             <span className={styles.label}>
               {
                 formatMessage({
@@ -348,7 +358,9 @@ const ConnectionPopover: React.FC<{
                 /*主机名/端口：*/
               }
             </span>
-            {connection?.host}:{connection?.port}
+            <span className={styles.content}>
+              {connection?.host}:{connection?.port}
+            </span>
           </div>
         )}
 
