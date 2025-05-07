@@ -5971,5 +5971,10 @@
   "src.component.ConnectionPopover.16ED170C": "项目：",
   "src.component.CommonTable.component.2343D924": "备注不允许超过 100 个字符",
   "src.common.network.7B0A4820": "批量下载失败",
-  "src.common.network.F390612A": "最多支持批量下载 {MAX_DOWNLOAD_COUNT} 个脚本，建议先取消选择部分脚本"
+  "src.common.network.F390612A": "最多支持批量下载 {MAX_DOWNLOAD_COUNT} 个脚本，建议先取消选择部分脚本",
+  "src.page.Datasource.Info.ChangeProjectModal.1FCE3834": "通过该入口修改库所属项目或库管理员会导致针对该库的库权限分配失效。若只需修改库管理员且希望库权限分配不受影响，可通过【设置库管理员】入口进行调整。",
+  "src.page.Console.4F75D3F9": "OceanBase 历史库解决方案",
+  "src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.13B22678": "yyyy年MM月dd日 HH:mm:ss",
+  "src.component.Task.LogicDatabaseAsyncTask.CreateModal.C53810BF": "逻辑库变更内容暂不支持注释解析，编写注释可能会导致 SQL 语句解析异常。",
+  "src.component.CommonTable.2363A9C8": "仅展示周期执行任务"
 }

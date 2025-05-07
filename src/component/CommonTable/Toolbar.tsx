@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -80,7 +81,10 @@ export const Toolbar: React.FC<IProps> = (props) => {
               }
             }}
           >
-            仅展示周期执行任务
+            {formatMessage({
+              id: 'src.component.CommonTable.2363A9C8',
+              defaultMessage: '仅展示周期执行任务',
+            })}
           </Tag>
         )}
         {filterContent && (

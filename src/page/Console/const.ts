@@ -25,6 +25,7 @@ export const ConsoleTextConfig = {
       formatMessage({ id: 'src.page.Console.A46DFDCA', defaultMessage: '待执行' }),
       formatMessage({ id: 'src.page.Console.32807E76', defaultMessage: '其他' }),
     ],
+
     statusType: [
       'successExecutionCount',
       'failedExecutionCount',
@@ -40,6 +41,7 @@ export const ConsoleTextConfig = {
       formatMessage({ id: 'src.page.Console.A9C48F30', defaultMessage: '分区计划' }),
       formatMessage({ id: 'src.page.Console.E561DFFF', defaultMessage: 'SQL 计划' }),
     ],
+
     scheduleType: [
       TaskPageType.DATA_ARCHIVE,
       TaskPageType.DATA_DELETE,
@@ -52,6 +54,7 @@ export const ConsoleTextConfig = {
       formatMessage({ id: 'src.page.Console.AF3D84A0', defaultMessage: '我是管理员' }),
       formatMessage({ id: 'src.page.Console.2D54E921', defaultMessage: '我是开发者' }),
     ],
+
     descriptions: [
       formatMessage({
         id: 'src.page.Console.3FDC0120',
@@ -72,6 +75,7 @@ export const ConsoleTextConfig = {
         formatMessage({ id: 'src.page.Console.FAF37E03', defaultMessage: '管理风险规则和审批流' }),
         formatMessage({ id: 'src.page.Console.1A6CAD7C', defaultMessage: '发起一个工单' }),
       ],
+
       [
         formatMessage({ id: 'src.page.Console.2994ACD6', defaultMessage: '加入一个项目' }),
         formatMessage({ id: 'src.page.Console.BA100E5E', defaultMessage: '生成测试数据' }),
@@ -87,6 +91,7 @@ export const ConsoleTextConfig = {
       formatMessage({ id: 'src.page.Console.3F90E879', defaultMessage: '环境' }),
       formatMessage({ id: 'src.page.Console.C79E24E1', defaultMessage: '操作' }),
     ],
+
     columnKeys: [
       EDatabaseTableColumnKey.Recently,
       EDatabaseTableColumnKey.DataSource,
@@ -104,6 +109,7 @@ export const ConsoleTextConfig = {
       formatMessage({ id: 'src.page.Console.B27ADAC6', defaultMessage: '产品动态' }),
       formatMessage({ id: 'src.page.Console.9B6E647E', defaultMessage: '反馈建议' }),
     ],
+
     urls: [
       'https://www.oceanbase.com/softwarecenter',
       'https://www.oceanbase.com/product/oceanbase-developer-center-rn/releaseNote',
@@ -133,7 +139,10 @@ export const ConsoleTextConfig = {
         url: 'https://www.oceanbase.com/docs/common-odc-1000000002687235',
       },
       {
-        title: 'OceanBase 历史库解决方案',
+        title: formatMessage({
+          id: 'src.page.Console.4F75D3F9',
+          defaultMessage: 'OceanBase 历史库解决方案',
+        }),
         fragmentIdentifier: '400.history-database-optimization-management.html',
         url: 'https://www.oceanbase.com/docs/common-odc-1000000002687236',
       },
