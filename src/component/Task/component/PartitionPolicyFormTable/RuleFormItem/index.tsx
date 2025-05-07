@@ -125,8 +125,12 @@ const getIncrementByDateOptionsInChar = () => {
     'yyyyMMdd HH:mm:ss',
     'yyyy-MM-dd HH:mm:ss',
     'yyyy/MM/dd HH:mm:ss',
-    'yyyy年MM月dd日 HH:mm:ss',
+    formatMessage({
+      id: 'src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.13B22678',
+      defaultMessage: 'yyyy年MM月dd日 HH:mm:ss',
+    }),
   ];
+
   if (locale !== 'zh-CN') {
     return options
       .filter((item) => !/[\u4e00-\u9fa5]/.test(item))

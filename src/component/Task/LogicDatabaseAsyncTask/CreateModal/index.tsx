@@ -282,7 +282,11 @@ const CreateModal: React.FC<IProps> = (props) => {
                 defaultMessage:
                   '逻辑库变更仅支持 DDL 语句，多条 SQL 将依次在所有实际数据库上执行。',
               })}
-              逻辑库变更内容暂不支持注释解析，编写注释可能会导致 SQL 语句解析异常。
+              {formatMessage({
+                id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.C53810BF',
+                defaultMessage:
+                  '逻辑库变更内容暂不支持注释解析，编写注释可能会导致 SQL 语句解析异常。',
+              })}
             </Space>
           }
         />
