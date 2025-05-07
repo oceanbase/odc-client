@@ -5971,5 +5971,10 @@
   "src.component.ConnectionPopover.16ED170C": "項目:",
   "src.component.CommonTable.component.2343D924": "備註不允許超過 100 個字元",
   "src.common.network.7B0A4820": "批量下載失敗",
-  "src.common.network.F390612A": "最多支援批量下載 {MAX_DOWNLOAD_COUNT} 個腳本，建議先取消選擇部分腳本"
+  "src.common.network.F390612A": "最多支援批量下載 {MAX_DOWNLOAD_COUNT} 個腳本，建議先取消選擇部分腳本",
+  "src.page.Datasource.Info.ChangeProjectModal.1FCE3834": "透過該入口修改庫所屬專案或庫管理員會導致針對該庫的庫權限分配失效。若只需修改庫管理員且希望庫權限分配不受影響，可透過【設定庫管理員】入口進行調整。",
+  "src.page.Console.4F75D3F9": "OceanBase 歷史庫解決方案",
+  "src.component.Task.component.PartitionPolicyFormTable.RuleFormItem.13B22678": "yyyy年MM月dd日 HH:mm:ss",
+  "src.component.Task.LogicDatabaseAsyncTask.CreateModal.C53810BF": "邏輯庫變更內容暫不支援註解解析，編寫註解可能會導致 SQL 語句解析異常。",
+  "src.component.CommonTable.2363A9C8": "僅展示週期執行任務"
 }
