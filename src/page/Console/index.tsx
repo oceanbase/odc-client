@@ -55,26 +55,27 @@ const Console = () => {
   } = useRequest((params: ICycleTaskStatParam) => getScheduleStat(params), {
     manual: true,
   });
-  const res = useMemo(() => {
-    const scheduleData = {};
+  const schedulesData = useMemo(() => {
+    const _schedules = { totalCount: 0 };
     data?.forEach((item) => {
       const taskStat = sumTaskStats(item.taskStats);
       const schedule = { ...item, taskStat };
-      scheduleData[item?.type] = schedule;
+      _schedules[item?.type] = schedule;
+      _schedules.totalCount += Number(item?.totalCount || 0);
     });
-    return scheduleData;
+    return _schedules;
   }, [data]);
 
   useEffect(() => {
-    const enable = setting.configurations['odc.user.guidePromptEnabled'];
-    const guidePromptEnabled = enable !== 'true';
-    const hasData = data?.length > 0;
+    const enable = setting.configurations?.['odc.user.guidePromptEnabled'];
+    const guidePromptEnabled = enable && enable !== 'true';
+    const hasData = schedulesData?.totalCount > 0;
     if (guidePromptEnabled) {
       setTopAreaLayout(hasData ? areaLayout.schedules : areaLayout.hideTop);
     } else {
       setTopAreaLayout(hasData ? areaLayout.both : areaLayout.quickStart);
     }
-  }, [data]);
+  }, [schedulesData]);
 
   useMount(() => {
     runGetScheduleStat({
@@ -144,7 +145,7 @@ const Console = () => {
             return (
               <ScheduleItem
                 title={title}
-                progress={res[schdules.scheduleType[index]]}
+                progress={schedulesData[schdules.scheduleType[index]]}
                 type={schdules.scheduleType[index]}
               />
             );
@@ -152,7 +153,7 @@ const Console = () => {
         </div>
       </Card>
     );
-  }, [res]);
+  }, [schedulesData]);
   return (
     <>
       <div className={styles.consoleBackgroud} />
