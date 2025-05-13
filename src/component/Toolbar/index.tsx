@@ -177,7 +177,11 @@ function TButton({
 
   if (!isShowText) {
     return (
-      <Tooltip placement={isMenuIcon ? 'top' : 'bottom'} title={text}>
+      <Tooltip
+        getPopupContainer={(triggerNode) => triggerNode.parentElement}
+        placement={isMenuIcon ? 'top' : 'bottom'}
+        title={text}
+      >
         {content}
       </Tooltip>
     );
