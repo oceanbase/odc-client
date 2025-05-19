@@ -555,16 +555,18 @@ const ObjectList = ({ modalStore }: Iprops) => {
 
       children: renderAllTab(),
     },
-  ].concat(
-    objectTypeConfig[dbType]?.map((i) => {
-      if (i === DbObjectType.database && database) return;
-      return {
-        key: i,
-        label: <span style={{ padding: '0 6px', margin: 0 }}>{DbObjectTypeMap?.[i]?.label}</span>,
-        children: renderObjectTypeTabs(i),
-      };
-    }),
-  );
+  ]
+    .concat(
+      objectTypeConfig[dbType]?.map((i) => {
+        if (i === DbObjectType.database && database) return;
+        return {
+          key: i,
+          label: <span style={{ padding: '0 6px', margin: 0 }}>{DbObjectTypeMap?.[i]?.label}</span>,
+          children: renderObjectTypeTabs(i),
+        };
+      }),
+    )
+    ?.filter(Boolean);
 
   const handleChange = (key) => {
     setActiveKey?.(key);
