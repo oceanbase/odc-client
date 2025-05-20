@@ -16,7 +16,7 @@ import { formatMessage } from '@/util/intl';
  */
 
 import { listEnvironments } from '@/common/network/env';
-import { TaskTypeMap } from '@/component/Task/component/TaskTable';
+import { TaskTypeMap } from '@/component/Task/component/TaskTable/const';
 import { TaskType } from '@/d.ts';
 import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
 export const getEnvironmentOptions = async () => {

@@ -1,5 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import { Checkbox, Form, FormInstance, InputNumber, Radio, Space, Tooltip } from 'antd';
+import { Form, InputNumber } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
 import { DirtyRowActionEnum } from '@/component/ExecuteSqlDetailModal/constant';

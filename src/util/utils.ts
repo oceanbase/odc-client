@@ -749,3 +749,12 @@ export async function getSpaceConfigForFormInitialValue(isShow, callback) {
     callback();
   }
 }
+
+/** 根据Key去重数组 */
+export const uniqueTools = (tools) => {
+  return Array.from(new Map(tools.map((obj) => [obj.key, obj])).values());
+};
+
+export const flatArray = (array: any[]): any[] => {
+  return array?.reduce?.((pre, cur) => pre?.concat(Array.isArray(cur) ? flatArray(cur) : cur), []);
+};

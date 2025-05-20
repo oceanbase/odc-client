@@ -18,7 +18,7 @@ import { getDataSourceStyleByConnectType, isFileSystemSupport } from '@/common/d
 import { getConnectionDetail, getConnectionList } from '@/common/network/connection';
 import { listDatabases, updateDataBase } from '@/common/network/database';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import ApplyDatabasePermissionButton from '@/component/Task/ApplyDatabasePermission/CreateButton';
+import ApplyDatabasePermissionButton from '@/component/Task/modals/ApplyDatabasePermission/CreateButton';
 import TooltipAction from '@/component/TooltipAction';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';

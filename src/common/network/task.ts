@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IShadowSyncAnalysisResult } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
+import { IShadowSyncAnalysisResult } from '@/component/Task/modals/ShadowSyncTask/CreateModal/interface';
 import {
   AgainTaskRecord,
   CommonTaskLogType,

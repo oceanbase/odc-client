@@ -1,6 +1,6 @@
 import { formatMessage } from '@/util/intl';
 import { Form, Radio } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   DirtyRowActionEnum,
   DirtyRowActionLabelMap,

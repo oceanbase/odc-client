@@ -6,7 +6,7 @@ import {
 import { DatabasePermissionType } from '@/d.ts/database';
 import { ColumnType } from 'antd/es/table';
 import { formatMessage } from '@/util/intl';
-import { permissionOptionsMap } from '@/component/Task/ApplyDatabasePermission';
+import { permissionOptionsMap } from '@/component/Task/modals/ApplyDatabasePermission';
 import Action from '@/component/Action';
 import DisplayTable from '@/component/DisplayTable';
 import { ModalStore } from '@/store/modal';

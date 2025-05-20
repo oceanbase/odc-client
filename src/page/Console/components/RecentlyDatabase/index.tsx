@@ -9,9 +9,9 @@ import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import { IDatabaseHistoriesParam, TaskType } from '@/d.ts';
 import Action from '@/component/Action';
-import AsyncTaskCreateModal from '@/component/Task/AsyncTask';
-import ExportTaskCreateModal from '@/component/Task/ExportTask';
-import ImportTaskCreateModal from '@/component/Task/ImportTask';
+import AsyncTaskCreateModal from '@/component/Task/modals/AsyncTask';
+import ExportTaskCreateModal from '@/component/Task/modals/ExportTask';
+import ImportTaskCreateModal from '@/component/Task/modals/ImportTask';
 import { renderTool } from '@/util/renderTool';
 import { isLogicalDatabase } from '@/util/database';
 import { gotoSQLWorkspace } from '@/util/route';
@@ -22,11 +22,11 @@ import styles from './index.less';
 import { getDatabasesHistories } from '@/common/network/task';
 import login from '@/store/login';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import ApplyPermission from '@/component/Task/ApplyPermission';
-import ApplyDatabasePermission from '@/component/Task/ApplyDatabasePermission';
+import ApplyPermission from '@/component/Task/modals/ApplyPermission';
+import ApplyDatabasePermission from '@/component/Task/modals/ApplyDatabasePermission';
 import RecentlyDatabaseEmpty from '@/component/Empty/RecentlyDatabaseEmpty';
 import { getRecentlyDatabaseOperation } from './help';
-import LogicDatabaseAsyncTask from '@/component/Task/LogicDatabaseAsyncTask';
+import LogicDatabaseAsyncTask from '@/component/Task/modals/LogicDatabaseAsyncTask';
 import LogicIcon from '@/component/logicIcon';
 
 interface IProps {

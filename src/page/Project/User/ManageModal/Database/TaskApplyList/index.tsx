@@ -24,8 +24,8 @@ import {
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
 import SearchFilter from '@/component/SearchFilter';
-import { getExpireTimeLabel } from '@/component/Task/ApplyDatabasePermission';
-import TaskDetailModal from '@/component/Task/DetailModal';
+import { getExpireTimeLabel } from '@/component/Task/modals/ApplyDatabasePermission';
+import TaskDetailModal from '@/component/Task/modals/DetailModals';
 import type { IResponseData } from '@/d.ts';
 import { TaskType } from '@/d.ts';
 import { DatabasePermissionStatus, IDatabasePermission } from '@/d.ts/project';

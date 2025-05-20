@@ -20,7 +20,7 @@ import type { IPartitionTableConfig } from '@/d.ts';
 import { PARTITION_KEY_INVOKER, TaskPartitionStrategy } from '@/d.ts';
 import { Button, Descriptions, Drawer, Space } from 'antd';
 import React from 'react';
-import { SimpleTextItem } from '../../component/SimpleTextItem';
+import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import ConfigTable from './ConfigTable';
 import { getStrategyLabelByConfig } from './index';
 import styles from './index.less';

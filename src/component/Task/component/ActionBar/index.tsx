@@ -27,7 +27,7 @@ import {
   getTaskDetail,
 } from '@/common/network/task';
 import Action from '@/component/Action';
-import { TaskTypeMap } from '@/component/Task/component/TaskTable';
+import { TaskTypeMap } from '@/component/Task/component/TaskTable/const';
 import type {
   ICycleSubTaskRecord,
   ICycleTaskRecord,
@@ -58,14 +58,23 @@ import type { TaskStore } from '@/store/task';
 import ipcInvoke from '@/util/client/service';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { downloadFile, getLocalFormatDateTime } from '@/util/utils';
+import { downloadFile, getLocalFormatDateTime, uniqueTools } from '@/util/utils';
 import { message, Modal, Popconfirm, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useMemo, useState } from 'react';
-import { isCycleTask, isLogicalDbChangeTask } from '../../helper';
+import { isCycleTask, isLogicalDbChangeTask } from '@/component/Task/helper';
 import RollBackModal from '../RollbackModal';
 import { ProjectRole } from '@/d.ts/project';
 import { useRequest } from 'ahooks';
+import { taskSuccessHintInfo } from '@/constant';
+import {
+  actionInfo,
+  actions,
+  JOB_SCHEDULE_TASKS,
+  limitRertyButtonShowConfig,
+  SCHEDULE_TASKS,
+} from './helper';
+import { IAddOperationsParams } from './type';
 interface IProps {
   userStore?: UserStore;
   taskStore?: TaskStore;
@@ -92,7 +101,6 @@ const ActionBar: React.FC<IProps> = inject(
 )(
   observer((props) => {
     const {
-      taskStore,
       modalStore,
       userStore: { user },
       settingStore,
@@ -122,11 +130,13 @@ const ActionBar: React.FC<IProps> = inject(
       }
       return cancel();
     }, [task?.id]);
+
     const getScheduleTask = async () => {
       const taskList = await getDataArchiveSubTask(task?.id);
       setTaskList(taskList?.contents);
       return taskList?.contents;
     };
+
     const { run: loadtaskList, cancel } = useRequest(getScheduleTask, {
       pollingInterval: 3000,
       manual: true,
@@ -141,7 +151,7 @@ const ActionBar: React.FC<IProps> = inject(
       },
     });
 
-    const openTaskDetail = async () => {
+    const _openTaskDetail = async () => {
       props.onDetailVisible(task as TaskRecord<TaskRecordParameters>, true);
     };
 
@@ -157,19 +167,24 @@ const ActionBar: React.FC<IProps> = inject(
       setActiveBtnKey('stop');
       const res = await stopTask(task.id);
       if (res) {
-        message.success(
-          formatMessage({
-            id: 'odc.components.TaskManagePage.TerminatedSuccessfully',
-            defaultMessage: '终止成功',
-          }),
-        );
+        message.success(taskSuccessHintInfo.terminate);
 
         props?.onReloadList?.();
         props?.onReload?.();
       }
     };
 
-    const deleteTask = async () => {
+    const _executeTask = async () => {
+      setActiveBtnKey('execute');
+      const res = await executeTask(task.id);
+      if (res) {
+        message.success(taskSuccessHintInfo.start);
+        closeTaskDetail();
+        props?.onReloadList?.();
+      }
+    };
+
+    const _deleteTask = async () => {
       const { id } = task;
       const res = await createTask({
         taskType: TaskType.ALTER_SCHEDULE,
@@ -180,12 +195,7 @@ const ActionBar: React.FC<IProps> = inject(
       });
       if (res) {
         setDelTaskList?.([...delTaskList, id]);
-        message.success(
-          formatMessage({
-            id: 'src.component.Task.component.ActionBar.9EDD0936',
-            defaultMessage: '删除成功',
-          }),
-        );
+        message.success(taskSuccessHintInfo.delete);
         props?.onReloadList?.();
       }
     };
@@ -202,7 +212,7 @@ const ActionBar: React.FC<IProps> = inject(
 
     const confirmRollback = async (type: RollbackType) => {
       closeTaskDetail();
-      props.modalStore.changeCreateAsyncTaskModal(true, {
+      actions[TaskType.ASYNC]({
         type,
         task: task as TaskDetail<IAsyncTaskParams>,
         databaseId: task?.database?.id,
@@ -217,7 +227,7 @@ const ActionBar: React.FC<IProps> = inject(
       }
     }, [task?.status]);
 
-    const handleRollback = async () => {
+    const _rollbackTask = async () => {
       setOpenRollback(true);
     };
 
@@ -225,85 +235,46 @@ const ActionBar: React.FC<IProps> = inject(
       setOpenRollback(false);
     };
 
-    const handleExecute = async () => {
-      setActiveBtnKey('execute');
-      const res = await executeTask(task.id);
-      if (res) {
-        message.success(
-          formatMessage({
-            id: 'src.component.Task.component.ActionBar.10A4FEFD',
-            defaultMessage: '开始执行',
-          }),
-        );
-        closeTaskDetail();
-        props?.onReloadList?.();
-      }
-    };
-
-    const handleApproval = async (status: boolean) => {
+    const _approvalTask = async (status: boolean) => {
       props.onApprovalVisible(status, true);
     };
 
-    const handleReTry = async () => {
+    const _retryTask = async () => {
       const { type } = task;
 
       switch (type) {
-        case TaskType.ASYNC: {
-          const detailRes = (await getTaskDetail(task?.id)) as TaskDetail<IAsyncTaskParams>;
-          props.modalStore.changeCreateAsyncTaskModal(true, {
-            task: detailRes,
-          });
-          return;
-        }
+        case TaskType.ASYNC:
         case TaskType.DATAMOCK: {
-          const detailRes = (await getTaskDetail(task?.id)) as TaskDetail<IMockDataParams>;
-          props.modalStore.changeDataMockerModal(true, {
-            task: detailRes,
-          });
+          const detailRes = (await getTaskDetail(task?.id)) as TaskDetail<IAsyncTaskParams>;
+          actions[type]({ task: detailRes });
           return;
         }
         case TaskType.APPLY_DATABASE_PERMISSION: {
-          modalStore.changeApplyDatabasePermissionModal(true, {
+          actions[type]({
             task: task as TaskDetail<IApplyDatabasePermissionTaskParams>,
           });
           return;
         }
         case TaskType.APPLY_TABLE_PERMISSION: {
-          modalStore.changeApplyTablePermissionModal(true, {
+          actions[type]({
             task: task as TaskDetail<IApplyTablePermissionTaskParams>,
           });
           return;
         }
         case TaskType.MULTIPLE_ASYNC: {
-          modalStore.changeMultiDatabaseChangeModal(true, {
+          actions[type]({
             projectId: (task as TaskDetail<IMultipleAsyncTaskParams>)?.parameters?.projectId,
             task: task as TaskDetail<IMultipleAsyncTaskParams>,
           });
           return;
         }
-        case TaskType.SHADOW: {
-          modalStore.changeShadowSyncVisible(true, {
-            taskId: task?.id,
-            databaseId: task.database?.id,
-          });
-          return;
-        }
-        case TaskType.STRUCTURE_COMPARISON: {
-          modalStore.changeStructureComparisonModal(true, {
-            databaseId: task.database?.id,
-            taskId: task?.id,
-          });
-          return;
-        }
-        case TaskType.EXPORT: {
-          modalStore.changeExportModal(true, {
-            databaseId: task.database?.id,
-            taskId: task?.id,
-          });
-          return;
-        }
-        case TaskType.IMPORT: {
-          modalStore.changeImportModal(true, {
+        case TaskType.SHADOW:
+        case TaskType.STRUCTURE_COMPARISON:
+        case TaskType.EXPORT:
+        case TaskType.IMPORT:
+        case TaskType.ONLINE_SCHEMA_CHANGE:
+        case TaskType.PARTITION_PLAN: {
+          actions[type]({
             databaseId: task.database?.id,
             taskId: task?.id,
           });
@@ -313,25 +284,11 @@ const ActionBar: React.FC<IProps> = inject(
           const detailRes = (await getTaskDetail(
             task?.id,
           )) as TaskDetail<IResultSetExportTaskParams>;
-          modalStore.changeCreateResultSetExportTaskModal(true, {
+          actions[type]({
             databaseId: task.database?.id,
             taskId: task?.id,
             sql: detailRes.parameters.sql,
             task: detailRes,
-          });
-          return;
-        }
-        case TaskType.ONLINE_SCHEMA_CHANGE: {
-          modalStore.changeCreateDDLAlterTaskModal(true, {
-            databaseId: task.database?.id,
-            taskId: task?.id,
-          });
-          return;
-        }
-        case TaskType.PARTITION_PLAN: {
-          modalStore.changePartitionModal(true, {
-            databaseId: task.database?.id,
-            taskId: task?.id,
           });
           return;
         }
@@ -349,85 +306,51 @@ const ActionBar: React.FC<IProps> = inject(
 
           const res = await createTask(data);
           if (res) {
-            message.success(
-              formatMessage({
-                id: 'odc.TaskManagePage.component.TaskTools.InitiatedAgain',
-                defaultMessage: '再次发起成功',
-              }),
-
-              //再次发起成功
-            );
+            message.success(taskSuccessHintInfo.retry); //再次发起成功
           }
         }
       }
     };
 
-    const handleAgain = async () => {
+    const _againTask = async () => {
       const { id } = task;
 
       const res = await againTask({ id: id });
       if (res) {
-        message.success(
-          formatMessage({
-            id: 'src.component.Task.component.ActionBar.15961986',
-            defaultMessage: '发起重试成功',
-          }),
-        );
+        message.success(taskSuccessHintInfo.again);
         props?.onReloadList?.();
         props?.onReload?.();
       }
     };
 
-    const editCycleTask = async () => {
+    const _editCycleTask = async () => {
       props?.onClose?.();
-      switch (task?.type) {
-        case TaskType.DATA_ARCHIVE: {
-          props.modalStore.changeDataArchiveModal(true, {
-            id: task?.id,
-            type: 'EDIT',
-          });
-          break;
-        }
-        case TaskType.DATA_DELETE: {
-          props.modalStore.changeDataClearModal(true, {
-            id: task?.id,
-            type: 'EDIT',
-          });
-          break;
-        }
-        default: {
-          props.modalStore.changeCreateSQLPlanTaskModal(true, {
-            id: task?.id,
-          });
-        }
-      }
+      const actionType = JOB_SCHEDULE_TASKS.includes(task?.type) ? task?.type : TaskType.SQL_PLAN;
+      actions?.[actionType]?.({
+        id: task?.id,
+        type: JOB_SCHEDULE_TASKS.includes(task?.type) ? ('EDIT' as 'EDIT') : undefined,
+      });
     };
 
-    const handleReTryCycleTask = async () => {
+    const _retryCycleTask = async () => {
       props?.onClose?.();
       switch (task?.type) {
-        case TaskType.DATA_ARCHIVE: {
-          props.modalStore.changeDataArchiveModal(true, {
+        case TaskType.DATA_ARCHIVE:
+        case TaskType.DATA_DELETE: {
+          actions?.[task?.type]?.({
             id: task?.id,
             type: 'RETRY',
           });
           break;
         }
         case TaskType.LOGICAL_DATABASE_CHANGE: {
-          modalStore.changeLogicialDatabaseModal(true, {
+          actions?.[task?.type]?.({
             task: task,
           });
           break;
         }
-        case TaskType.DATA_DELETE: {
-          props.modalStore.changeDataClearModal(true, {
-            id: task?.id,
-            type: 'RETRY',
-          });
-          break;
-        }
         case TaskType.SQL_PLAN: {
-          modalStore.changeCreateSQLPlanTaskModal(true, {
+          actions?.[task?.type]?.({
             databaseId: task.database?.id,
             taskId: task?.id,
           });
@@ -436,158 +359,121 @@ const ActionBar: React.FC<IProps> = inject(
       }
     };
 
-    const stopScheduleTask = async () => {
+    const _stopScheduleTask = async () => {
       await stopDataArchiveSubTask(task?.id, taskList?.[0]?.id);
       await getScheduleTask();
       props?.onReload?.();
     };
 
-    const disableCycleTask = async () => {
-      let databaseId;
-      if (task.database) {
-        databaseId = task.database?.id;
-      } else {
-        databaseId = (task as ICycleTaskRecord<ILogicalDatabaseAsyncTaskParams>).jobParameters
-          ?.databaseId;
-      }
-      Modal.confirm({
-        title: formatMessage(
-          {
-            id: 'src.component.Task.component.ActionBar.5495D4C7',
-            defaultMessage: '确认要禁用此{TaskTypeMapTaskType}?',
-          },
-          { TaskTypeMapTaskType: TaskTypeMap[task.type] },
-        ),
-        content: (
-          <>
-            <div>
-              {formatMessage(
-                {
-                  id: 'src.component.Task.component.ActionBar.EC0C09D6',
-                  defaultMessage: '禁用{TaskTypeMapTaskType}',
-                },
-                { TaskTypeMapTaskType: TaskTypeMap[task.type] },
-              )}
-            </div>
-            <div>
-              {
-                formatMessage({
-                  id: 'odc.TaskManagePage.component.TaskTools.TheTaskNeedsToBe',
-                  defaultMessage: '任务需要重新审批，审批通过后此任务将禁用',
-                }) /*任务需要重新审批，审批通过后此任务将禁用*/
-              }
-            </div>
-          </>
-        ),
-
-        cancelText: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Cancel',
-          defaultMessage: '取消',
-        }), //取消
-        okText: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Ok.2',
-          defaultMessage: '确定',
-        }), //确定
-        centered: true,
-        onOk: async () => {
-          await createTask({
-            databaseId,
-            taskType: TaskType.ALTER_SCHEDULE,
-            parameters: {
-              taskId: task.id,
-              operationType: 'PAUSE',
-            },
-          });
-          props?.onReload?.();
+    const _alterScheduleTask = async ({ databaseId, operationType }) => {
+      await createTask({
+        databaseId,
+        taskType: TaskType.ALTER_SCHEDULE,
+        parameters: {
+          taskId: task.id,
+          operationType,
         },
       });
+      props?.onReload?.();
     };
 
-    const enableCycleTask = async () => {
+    const handleTaskOperation = async ({
+      operationType,
+      callback,
+    }: {
+      operationType: TaskOperationType;
+      callback?: () => void;
+    }) => {
       let databaseId;
-      if (task.database) {
-        databaseId = task.database?.id;
+      if (task?.database) {
+        databaseId = task?.database?.id;
       } else {
-        databaseId = (task as ICycleTaskRecord<ILogicalDatabaseAsyncTaskParams>).jobParameters
-          ?.databaseId;
-      }
-      Modal.confirm({
-        title: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.AreYouSureYouWant.2',
-          defaultMessage: '是否确认启用此 SQL 计划？',
-        }), //确认要启用此 SQL 计划吗？
-        content: (
-          <>
-            <div>
-              {
-                formatMessage({
-                  id: 'odc.TaskManagePage.component.TaskTools.EnableSqlScheduling',
-                  defaultMessage: '启用 SQL 计划',
-                }) /*启用 SQL 计划*/
-              }
-            </div>
-            <div>
-              {
-                formatMessage({
-                  id: 'odc.TaskManagePage.component.TaskTools.TheTaskNeedsToBe.1',
-                  defaultMessage: '任务需要重新审批，审批通过后此任务将启用',
-                }) /*任务需要重新审批，审批通过后此任务将启用*/
-              }
-            </div>
-          </>
-        ),
-
-        cancelText: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Cancel',
-          defaultMessage: '取消',
-        }), //取消
-        okText: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Ok.2',
-          defaultMessage: '确定',
-        }), //确定
-        centered: true,
-        onOk: async () => {
-          await createTask({
-            databaseId,
-            taskType: TaskType.ALTER_SCHEDULE,
-            parameters: {
-              taskId: task?.id,
-              operationType: 'RESUME',
-            },
-          });
-          props?.onReload?.();
-        },
-      });
-    };
-
-    const stopCycleTask = async () => {
-      let databaseId;
-      if (task.database) {
-        databaseId = task.database?.id;
-      } else {
-        databaseId = (task as ICycleTaskRecord<ILogicalDatabaseAsyncTaskParams>).jobParameters
+        databaseId = (task as ICycleTaskRecord<ILogicalDatabaseAsyncTaskParams>)?.jobParameters
           ?.databaseId;
       }
       const taskTypeName = TaskTypeMap[task?.type];
-      Modal.confirm({
-        title: formatMessage(
-          {
-            id: 'src.component.Task.component.ActionBar.718054C5',
-            defaultMessage: '确认要终止此{taskTypeName}?',
+      const config = {
+        [TaskOperationType.RESUME]: {
+          title: formatMessage({
+            id: 'odc.TaskManagePage.component.TaskTools.AreYouSureYouWant.2',
+            defaultMessage: '是否确认启用此 SQL 计划？',
+          }),
+          content: (
+            <>
+              <div>
+                {
+                  formatMessage({
+                    id: 'odc.TaskManagePage.component.TaskTools.EnableSqlScheduling',
+                    defaultMessage: '启用 SQL 计划',
+                  }) /*启用 SQL 计划*/
+                }
+              </div>
+              <div>
+                {
+                  formatMessage({
+                    id: 'odc.TaskManagePage.component.TaskTools.TheTaskNeedsToBe.1',
+                    defaultMessage: '任务需要重新审批，审批通过后此任务将启用',
+                  }) /*任务需要重新审批，审批通过后此任务将启用*/
+                }
+              </div>
+            </>
+          ),
+        },
+        [TaskOperationType.TERMINATE]: {
+          title: formatMessage(
+            {
+              id: 'src.component.Task.component.ActionBar.718054C5',
+              defaultMessage: '确认要终止此{taskTypeName}?',
+            },
+            { taskTypeName },
+          ),
+          content: (
+            <>
+              <div>
+                {formatMessage({
+                  id: 'src.component.Task.component.ActionBar.5E24502A',
+                  defaultMessage: '任务终止后将不可恢复',
+                })}
+              </div>
+            </>
+          ),
+          [TaskOperationType.PAUSE]: {
+            title: formatMessage(
+              {
+                id: 'src.component.Task.component.ActionBar.5495D4C7',
+                defaultMessage: '确认要禁用此{TaskTypeMapTaskType}?',
+              },
+              { TaskTypeMapTaskType: taskTypeName },
+            ),
+            content: (
+              <>
+                <div>
+                  {formatMessage(
+                    {
+                      id: 'src.component.Task.component.ActionBar.EC0C09D6',
+                      defaultMessage: '禁用{TaskTypeMapTaskType}',
+                    },
+                    { TaskTypeMapTaskType: taskTypeName },
+                  )}
+                </div>
+                <div>
+                  {
+                    formatMessage({
+                      id: 'odc.TaskManagePage.component.TaskTools.TheTaskNeedsToBe',
+                      defaultMessage: '任务需要重新审批，审批通过后此任务将禁用',
+                    }) /*任务需要重新审批，审批通过后此任务将禁用*/
+                  }
+                </div>
+              </>
+            ),
           },
-          { taskTypeName },
-        ),
-        content: (
-          <>
-            <div>
-              {formatMessage({
-                id: 'src.component.Task.component.ActionBar.5E24502A',
-                defaultMessage: '任务终止后将不可恢复',
-              })}
-            </div>
-          </>
-        ),
+        },
+      };
+      const { title, content } = config[operationType] || {};
 
+      Modal.confirm({
+        title,
+        content,
         cancelText: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.Cancel',
           defaultMessage: '取消',
@@ -598,23 +484,10 @@ const ActionBar: React.FC<IProps> = inject(
         }), //确定
         centered: true,
         onOk: async () => {
-          setActiveBtnKey('stop');
-          await createTask({
-            databaseId,
-            taskType: TaskType.ALTER_SCHEDULE,
-            parameters: {
-              taskId: task?.id,
-              operationType: TaskOperationType.TERMINATE,
-            },
-          });
-          props?.onReload?.();
+          callback?.();
+          await _alterScheduleTask({ databaseId, operationType });
         },
       });
-    };
-
-    /** 去重数组 */
-    const uniqueTools = (tools) => {
-      return Array.from(new Map(tools.map((obj) => [obj.key, obj])).values());
     };
 
     /**
@@ -634,9 +507,41 @@ const ActionBar: React.FC<IProps> = inject(
         tools.push(reTryBtn);
       }
     };
+    const commonButtonConfig = {
+      viewBtn: {
+        key: 'view',
+        text: formatMessage({ id: 'odc.TaskManagePage.AsyncTask.See', defaultMessage: '查看' }), // 查看
+        action: _openTaskDetail,
+        type: 'button',
+        isOpenBtn: true,
+      },
+      rejectBtn: {
+        key: 'reject',
+        text: formatMessage({
+          id: 'odc.TaskManagePage.component.TaskTools.Reject',
+          defaultMessage: '拒绝',
+        }),
+
+        //拒绝
+        type: 'button',
+        action: async () => {
+          _approvalTask(false);
+        },
+      },
+    };
 
     const getTaskTools = (_task) => {
       let tools = [];
+      const addOperations = ({ auth, taskTypeLimit, operations }: IAddOperationsParams) => {
+        const hasOperaitons = Boolean(operations?.length);
+        const useableTaskType =
+          (taskTypeLimit && taskTypeLimit.includes(task?.type)) || Boolean(taskTypeLimit?.length);
+        if (auth && useableTaskType && hasOperaitons) {
+          tools.push(...operations);
+          return true;
+        }
+        return false;
+      };
 
       if (!_task) {
         return [];
@@ -656,241 +561,223 @@ const ActionBar: React.FC<IProps> = inject(
         SubTaskStatus.DONE === structureComparisonData?.status &&
         ((structureComparisonData?.overSizeLimit && structureComparisonData?.storageObjectId) ||
           (!structureComparisonData?.overSizeLimit &&
-            !(structureComparisonData?.totalChangeScript?.length > 0)));
-      const viewBtn = {
-        key: 'view',
-        text: formatMessage({ id: 'odc.TaskManagePage.AsyncTask.See', defaultMessage: '查看' }), // 查看
-        action: openTaskDetail,
-        type: 'button',
-        isOpenBtn: true,
-      };
+            !Boolean(structureComparisonData?.totalChangeScript?.length)));
+      const buttonConfig = {
+        ...commonButtonConfig,
+        closeBtn: {
+          ...actionInfo.closeBtn,
+          //关闭
+          action: closeTaskDetail,
+        },
+        copyBtn: {
+          ...actionInfo.copyBtn,
+          //复制
+          action: handleCopy,
 
-      const closeBtn = {
-        key: 'close',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Close',
-          defaultMessage: '关闭',
-        }),
+          isOpenBtn: true,
+        },
+        rollbackBtn: {
+          ...actionInfo.rollbackBtn,
+          //回滚
+          action: _rollbackTask,
+        },
+        stopBtn: {
+          ...actionInfo.stopBtn,
+          //终止
+          action: _stopTask,
+        },
+        executeBtn: {
+          ...actionInfo.executeBtn,
+          //执行
+          action: _executeTask,
+          isOpenBtn: true,
+          isPrimary: isDetailModal,
+          disabled: false,
+          tooltip: '',
+        },
+        approvalBtn: {
+          ...actionInfo.approvalBtn,
+          //通过
+          isPrimary: isDetailModal,
+          disabled: disabledApproval,
+          tooltip: disabledApproval
+            ? formatMessage({
+                id: 'odc.TaskManagePage.component.TaskTools.SetPartitionPoliciesForAll',
+                defaultMessage: '请设置所有Range分区表的分区策略',
+              })
+            : //请设置所有Range分区表的分区策略
+              null,
+          action: async () => {
+            _approvalTask(true);
+          },
+        },
+        reTryBtn: {
+          ...actionInfo.reTryBtn,
+          //再次发起
+          action: _retryTask,
+        },
+        againBtn: {
+          ...actionInfo.againBtn,
+          // 重试
+          action: _againTask,
+        },
+        downloadBtn: {
+          ...actionInfo.downloadBtn,
+          disabled: isExpired,
+          isExpired,
+          tip: formatMessage({
+            id: 'src.component.Task.component.ActionBar.F20AAC3F',
+            defaultMessage: '文件下载链接已超时，请重新发起工单。',
+          }), //'文件下载链接已超时，请重新发起工单。'
 
-        //关闭
-        action: closeTaskDetail,
-        type: 'button',
-      };
+          action: download,
+        },
+        downloadSQLBtn: {
+          ...actionInfo.downloadSQLBtn,
+          disabled: disableBtn || !structureComparisonData?.storageObjectId,
+          isExpired: disableBtn || !structureComparisonData?.storageObjectId,
+          tip: formatMessage({
+            id: 'src.component.Task.component.ActionBar.A79907A3',
+            defaultMessage: '暂不可用',
+          }), //'暂不可用'
+          action: async () => {
+            if (structureComparisonData?.storageObjectId) {
+              const fileUrl = await getStructureComparisonTaskFile(_task?.id, [
+                `${structureComparisonData?.storageObjectId}`,
+              ]);
+              fileUrl?.forEach((url) => {
+                url && downloadFile(url);
+              });
+            }
+          },
+        },
+        structrueComparisonBySQL: {
+          ...actionInfo.structrueComparisonBySQL,
+          isExpired: disableBtn || noAction,
+          disabled: disableBtn || noAction,
+          tip: noAction
+            ? formatMessage({
+                id: 'src.component.Task.component.ActionBar.D98B5B62',
+                defaultMessage: '结构一致，无需发起结构同步',
+              })
+            : formatMessage({
+                id: 'src.component.Task.component.ActionBar.4BF7D8BF',
+                defaultMessage: '暂不可用',
+              }),
+          isPrimary: true,
+          action: async () => {
+            structureComparisonData &&
+              actions[TaskType.ASYNC]({
+                sql: structureComparisonData?.totalChangeScript,
+                databaseId: structureComparisonData?.database?.id,
+                rules: null,
+              });
+          },
+        },
+        openLocalFolder: {
+          ...actionInfo.openLocalFolder,
+          //打开文件夹
+          action: async () => {
+            const info = await getTaskResult(task.id);
+            if (info?.exportZipFilePath) {
+              ipcInvoke('showItemInFolder', info?.exportZipFilePath);
+            }
+          },
+        },
+        downloadViewResultBtn: {
+          ...actionInfo.downloadViewResultBtn,
+          disabled: isExpired,
+          isExpired,
+          tip: formatMessage({
+            id: 'src.component.Task.component.ActionBar.E9211B1A',
+            defaultMessage: '文件下载链接已超时，请重新发起工单。',
+          }), //'文件下载链接已超时，请重新发起工单。'
 
-      const copyBtn = {
-        key: 'copy',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Copy',
-          defaultMessage: '复制',
-        }),
-
-        //复制
-        action: handleCopy,
-        type: 'button',
-        isOpenBtn: true,
-      };
-
-      const rollbackBtn = {
-        key: 'rollback',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.RollBack',
-          defaultMessage: '回滚',
-        }),
-
-        //回滚
-        action: handleRollback,
-        type: 'button',
-      };
-
-      const stopBtn = {
-        key: 'stop',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Terminate',
-          defaultMessage: '终止',
-        }),
-
-        //终止
-        action: _stopTask,
-        type: 'button',
-      };
-
-      const executeBtn = {
-        key: 'execute',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Run',
-          defaultMessage: '执行',
-        }),
-
-        //执行
-        type: 'button',
-        action: handleExecute,
-        isOpenBtn: true,
-        isPrimary: isDetailModal,
-        disabled: false,
-        tooltip: '',
-      };
-
-      const approvalBtn = {
-        key: 'approval',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Pass',
-          defaultMessage: '通过',
-        }),
-
-        //通过
-        type: 'button',
-        isPrimary: isDetailModal,
-        disabled: disabledApproval,
-        tooltip: disabledApproval
-          ? formatMessage({
-              id: 'odc.TaskManagePage.component.TaskTools.SetPartitionPoliciesForAll',
-              defaultMessage: '请设置所有Range分区表的分区策略',
-            })
-          : //请设置所有Range分区表的分区策略
-            null,
-        action: async () => {
-          handleApproval(true);
+          action: downloadViewResult,
         },
       };
 
-      const rejectBtn = {
-        key: 'reject',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Reject',
-          defaultMessage: '拒绝',
-        }),
+      const addRetryButton = () => {
+        setBtnByCreater(tools, buttonConfig.reTryBtn);
+      };
 
-        //拒绝
-        type: 'button',
-        action: async () => {
-          handleApproval(false);
+      const resetToolsForApprover = (
+        target?: Array<{
+          key: string;
+          text: any;
+          type: string;
+          action: () => Promise<void>;
+        }>,
+      ) => {
+        if (isApprover) {
+          tools = target || [];
+        }
+      };
+
+      const operationNeedPermission = {
+        [TaskStatus.EXECUTION_ABNORMAL]: {
+          operations: [buttonConfig.stopBtn, buttonConfig.againBtn],
+        },
+        [TaskStatus.EXECUTING]: {
+          operations: [buttonConfig.stopBtn],
+          taskRules: [
+            {
+              auth: true,
+              taskTypeLimit: [TaskType.STRUCTURE_COMPARISON],
+              operations: [buttonConfig.downloadSQLBtn, buttonConfig.structrueComparisonBySQL],
+            },
+          ],
+        },
+        [TaskStatus.APPROVING]: {
+          operations: [buttonConfig.stopBtn],
+        },
+        [TaskStatus.EXECUTION_SUCCEEDED]: {
+          operations: [],
+          // taskRules 中的规则按顺序匹配，匹配上一个之后则应用该规则，不再继续匹配
+          taskRules: [
+            {
+              taskTypeLimit: [TaskType.EXPORT],
+              auth: settingStore.enableDataExport && isClient(),
+              operations: [buttonConfig.openLocalFolder],
+            },
+            {
+              taskTypeLimit: [TaskType.EXPORT, TaskType.DATAMOCK, TaskType.EXPORT_RESULT_SET],
+              auth: settingStore.enableDataExport,
+              operations: [buttonConfig.downloadBtn],
+            },
+            {
+              taskTypeLimit: [TaskType.ASYNC, TaskType.MULTIPLE_ASYNC],
+              auth: task?.rollbackable,
+              operations: [buttonConfig.rollbackBtn],
+            },
+            {
+              taskTypeLimit: [TaskType.STRUCTURE_COMPARISON],
+              auth: true,
+              operations: [buttonConfig.downloadSQLBtn, buttonConfig.structrueComparisonBySQL],
+            },
+          ],
         },
       };
+      const getSpecialExecuteBtn = () => {
+        const _executeBtn = { ...buttonConfig.executeBtn };
+        if (task?.executionStrategy === TaskExecStrategy.TIMER) {
+          _executeBtn.disabled = true;
+          const executionTime = getLocalFormatDateTime(task?.executionTime);
 
-      const reTryBtn = {
-        key: 'reTry',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.InitiateAgain',
-          defaultMessage: '再次发起',
-        }),
+          _executeBtn.tooltip = formatMessage(
+            {
+              id: 'odc.TaskManagePage.component.TaskTools.ScheduledExecutionTimeExecutiontime',
+              defaultMessage: '定时执行时间：{executionTime}',
+            },
 
-        //再次发起
-        type: 'button',
-        action: handleReTry,
+            { executionTime },
+          );
+
+          //`定时执行时间：${executionTime}`
+        }
+        return _executeBtn;
       };
 
-      const againBtn = {
-        key: 'again',
-        text: formatMessage({
-          id: 'src.component.Task.component.ActionBar.57DBF8A7',
-          defaultMessage: '重试',
-        }),
-        // 重试
-        type: 'button',
-        action: handleAgain,
-      };
-
-      const downloadBtn = {
-        key: 'download',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Download',
-          defaultMessage: '下载',
-        }),
-        disabled: isExpired,
-        isExpired,
-        tip: formatMessage({
-          id: 'src.component.Task.component.ActionBar.F20AAC3F',
-          defaultMessage: '文件下载链接已超时，请重新发起工单。',
-        }), //'文件下载链接已超时，请重新发起工单。'
-
-        action: download,
-        type: 'button',
-      };
-      const downloadSQLBtn = {
-        key: 'downloadSQL',
-        text: formatMessage({
-          id: 'src.component.Task.component.ActionBar.DBA6CB6E',
-          defaultMessage: '下载 SQL',
-        }), //'下载 SQL'
-        disabled: disableBtn || !structureComparisonData?.storageObjectId,
-        isExpired: disableBtn || !structureComparisonData?.storageObjectId,
-        tip: formatMessage({
-          id: 'src.component.Task.component.ActionBar.A79907A3',
-          defaultMessage: '暂不可用',
-        }), //'暂不可用'
-        type: 'button',
-        action: async () => {
-          if (structureComparisonData?.storageObjectId) {
-            const fileUrl = await getStructureComparisonTaskFile(_task?.id, [
-              `${structureComparisonData?.storageObjectId}`,
-            ]);
-            fileUrl?.forEach((url) => {
-              url && downloadFile(url);
-            });
-          }
-        },
-      };
-      const structrueComparisonBySQL = {
-        key: 'structrueComparisonBySQL',
-        text: formatMessage({
-          id: 'src.component.Task.component.ActionBar.46F2F0ED',
-          defaultMessage: '发起结构同步',
-        }), //'发起结构同步'
-        isExpired: disableBtn || noAction,
-        disabled: disableBtn || noAction,
-        tip: noAction
-          ? formatMessage({
-              id: 'src.component.Task.component.ActionBar.D98B5B62',
-              defaultMessage: '结构一致，无需发起结构同步',
-            })
-          : formatMessage({
-              id: 'src.component.Task.component.ActionBar.4BF7D8BF',
-              defaultMessage: '暂不可用',
-            }),
-        type: 'button',
-        isPrimary: true,
-        action: async () => {
-          structureComparisonData &&
-            modalStore?.changeCreateAsyncTaskModal(true, {
-              sql: structureComparisonData?.totalChangeScript,
-              databaseId: structureComparisonData?.database?.id,
-              rules: null,
-            });
-        },
-      };
-      const openLocalFolder = {
-        key: 'openLocalFolder',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.OpenFolder',
-          defaultMessage: '打开文件夹',
-        }),
-
-        //打开文件夹
-        action: async () => {
-          const info = await getTaskResult(task.id);
-          if (info?.exportZipFilePath) {
-            ipcInvoke('showItemInFolder', info?.exportZipFilePath);
-          }
-        },
-        type: 'button',
-      };
-
-      const downloadViewResultBtn = {
-        key: 'downloadViewResult',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.DownloadQueryResults',
-          defaultMessage: '下载查询结果',
-        }),
-        disabled: isExpired,
-        isExpired,
-        tip: formatMessage({
-          id: 'src.component.Task.component.ActionBar.E9211B1A',
-          defaultMessage: '文件下载链接已超时，请重新发起工单。',
-        }), //'文件下载链接已超时，请重新发起工单。'
-
-        action: downloadViewResult,
-        type: 'button',
-      };
       if (isDetailModal) {
         switch (status) {
           case TaskStatus.REJECTED:
@@ -904,107 +791,46 @@ const ActionBar: React.FC<IProps> = inject(
           case TaskStatus.CANCELLED:
           case TaskStatus.PRE_CHECK_FAILED:
           case TaskStatus.COMPLETED: {
-            setBtnByCreater(tools, reTryBtn);
-            if (isApprover) {
-              tools = [];
-            }
+            addRetryButton();
+            resetToolsForApprover();
             break;
           }
-          case TaskStatus.EXECUTING: {
-            setBtnByCreater(tools, reTryBtn);
-
-            if (haveOperationPermission) {
-              if (task.type === TaskType.STRUCTURE_COMPARISON) {
-                tools.push(downloadSQLBtn, structrueComparisonBySQL);
-              }
-              tools.push(stopBtn);
-            }
-            if (isApprover) {
-              tools = [];
-            }
-            break;
-          }
+          case TaskStatus.EXECUTING:
+          case TaskStatus.EXECUTION_ABNORMAL:
           case TaskStatus.EXECUTION_SUCCEEDED: {
-            setBtnByCreater(tools, reTryBtn);
-            if (haveOperationPermission) {
-              if (task.type === TaskType.EXPORT && settingStore.enableDataExport) {
-                if (isClient()) {
-                  tools.push(openLocalFolder);
-                } else {
-                  tools.push(downloadBtn);
-                }
-              } else if (task.type === TaskType.DATAMOCK && settingStore.enableDataExport) {
-                tools.push(downloadBtn);
-              } else if (
-                task.type === TaskType.EXPORT_RESULT_SET &&
-                settingStore.enableDataExport
-              ) {
-                tools.push(downloadBtn);
-              } else if (
-                [TaskType.ASYNC, TaskType.MULTIPLE_ASYNC]?.includes(task.type) &&
-                task?.rollbackable
-              ) {
-                tools.push(rollbackBtn);
-              } else if (task.type === TaskType.STRUCTURE_COMPARISON) {
-                tools.push(downloadSQLBtn, structrueComparisonBySQL);
-              }
-            }
+            addRetryButton();
 
-            if (isApprover) {
-              tools = [];
+            if (haveOperationPermission) {
+              const taskRules = operationNeedPermission?.[status]?.taskRules;
+              taskRules?.some((rule) => {
+                return addOperations(rule);
+              });
+              tools.push(...operationNeedPermission[status].operations);
             }
+            resetToolsForApprover();
             break;
           }
           case TaskStatus.WAIT_FOR_CONFIRM:
           case TaskStatus.APPROVING: {
-            if (isApprover) {
-              tools = [rejectBtn, approvalBtn];
-            }
-            setBtnByCreater(tools, reTryBtn);
+            resetToolsForApprover([buttonConfig.rejectBtn, buttonConfig.approvalBtn]);
+            addRetryButton();
             if (haveOperationPermission) {
-              tools.push(stopBtn);
+              tools.push(...operationNeedPermission[status].operations);
             }
             break;
           }
           case TaskStatus.WAIT_FOR_EXECUTION: {
-            setBtnByCreater(tools, reTryBtn);
+            addRetryButton();
 
             if (haveOperationPermission) {
-              const _executeBtn = { ...executeBtn };
-              if (task?.executionStrategy === TaskExecStrategy.TIMER) {
-                _executeBtn.disabled = true;
-                const executionTime = getLocalFormatDateTime(task?.executionTime);
-
-                _executeBtn.tooltip = formatMessage(
-                  {
-                    id: 'odc.TaskManagePage.component.TaskTools.ScheduledExecutionTimeExecutiontime',
-                    defaultMessage: '定时执行时间：{executionTime}',
-                  },
-
-                  { executionTime },
-                );
-
-                //`定时执行时间：${executionTime}`
-              }
+              const _executeBtn = getSpecialExecuteBtn();
               const tempTools =
                 task?.executionStrategy === TaskExecStrategy.AUTO
-                  ? [stopBtn]
-                  : [stopBtn, _executeBtn];
+                  ? [buttonConfig.stopBtn]
+                  : [buttonConfig.stopBtn, _executeBtn];
               tools.push(...tempTools);
             }
-            if (isApprover) {
-              tools = [];
-            }
-            break;
-          }
-          case TaskStatus.EXECUTION_ABNORMAL: {
-            setBtnByCreater(tools, reTryBtn);
-            if (haveOperationPermission) {
-              tools.push(stopBtn, againBtn);
-            }
-            if (isApprover) {
-              tools = [];
-            }
+            resetToolsForApprover();
             break;
           }
           default:
@@ -1012,31 +838,19 @@ const ActionBar: React.FC<IProps> = inject(
 
         if (task?.type === TaskType.ASYNC && result?.containQuery) {
           if (settingStore.enableDataExport) {
-            tools.unshift(downloadViewResultBtn);
+            tools.unshift(buttonConfig.downloadViewResultBtn);
           }
         }
       } else {
-        tools = [viewBtn];
+        tools = [buttonConfig.viewBtn];
         if (status === TaskStatus.WAIT_FOR_EXECUTION) {
           if (haveOperationPermission) {
-            const _executeBtn = { ...executeBtn };
-            if (task?.executionStrategy === TaskExecStrategy.TIMER) {
-              _executeBtn.disabled = true;
-              const executionTime = getLocalFormatDateTime(task?.executionTime);
-              _executeBtn.tooltip = formatMessage(
-                {
-                  id: 'odc.TaskManagePage.component.TaskTools.ScheduledExecutionTimeExecutiontime',
-                  defaultMessage: '定时执行时间：{executionTime}',
-                },
-
-                { executionTime },
-              );
-            }
+            const _executeBtn = getSpecialExecuteBtn();
             task?.executionStrategy === TaskExecStrategy.AUTO
-              ? tools.push(stopBtn)
-              : tools.push(_executeBtn, stopBtn);
+              ? tools.push(buttonConfig.stopBtn)
+              : tools.push(_executeBtn, buttonConfig.stopBtn);
           }
-          setBtnByCreater(tools, reTryBtn);
+          addRetryButton();
         }
       }
       if (task?.executionStrategy === TaskExecStrategy.TIMER) {
@@ -1053,204 +867,142 @@ const ActionBar: React.FC<IProps> = inject(
         return [];
       }
       const { status } = _task;
+      const buttongConfig = {
+        ...commonButtonConfig,
+        stopBtn: {
+          ...actionInfo.stopBtn,
+          action: async () => {
+            await handleTaskOperation({
+              operationType: TaskOperationType.TERMINATE,
+              callback: () => {
+                setActiveBtnKey('stop');
+              },
+            });
+          },
+        },
+        editBtn: {
+          ...actionInfo.editBtn,
+          action: _editCycleTask,
+        },
+        reTryBtn: {
+          ...actionInfo.reTryBtn,
+          action: _retryCycleTask,
+        },
+        disableBtn: {
+          ...actionInfo.disableBtn,
+          action: async () => {
+            await handleTaskOperation({ operationType: TaskOperationType.PAUSE });
+          },
+        },
 
-      const viewBtn = {
-        key: 'view',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.View',
-          defaultMessage: '查看',
-        }), //查看
-        action: openTaskDetail,
-        type: 'button',
-        isOpenBtn: true,
+        /* 禁用Schedule下的Task for logical database change task */
+        /* 很脏的逻辑, ued少一层导致的 */
+        stopScheduleTaskBtn: {
+          ...actionInfo.stopScheduleTaskBtn,
+          action: _stopScheduleTask,
+        },
+        enableBtn: {
+          ...actionInfo.enableBtn,
+          action: async () => {
+            await handleTaskOperation({ operationType: TaskOperationType.RESUME });
+          },
+        },
+        approvalBtn: {
+          ...actionInfo.approvalBtn,
+          isPrimary: isDetailModal,
+          action: async () => {
+            _approvalTask(true);
+          },
+        },
+        deleteBtn: {
+          ...actionInfo.deleteBtn,
+          confirmText: formatMessage({
+            id: 'src.component.Task.component.ActionBar.72AF1732',
+            defaultMessage: '你确定要删除这个任务吗？',
+          }),
+          action: _deleteTask,
+        },
+      };
+      const initTools = ({ view, retry }: { view?: boolean; retry?: boolean }) => {
+        if (view) {
+          tools = [buttongConfig.viewBtn];
+        }
+        if (retry) {
+          setBtnByCreater(tools, buttongConfig.reTryBtn);
+        }
       };
 
-      const stopBtn = {
-        key: 'stop',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Termination',
-          defaultMessage: '终止',
-        }), //终止
-        action: stopCycleTask,
-        type: 'button',
-      };
-
-      const editBtn = {
-        key: 'edit',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Edit',
-          defaultMessage: '编辑',
-        }), //编辑
-        action: editCycleTask,
-        type: 'button',
-      };
-
-      const reTryBtn = {
-        key: 'reTry',
-        text: formatMessage({
-          id: 'src.component.Task.component.ActionBar.C324AD20',
-          defaultMessage: '再次发起',
-        }), //'再次发起'
-        type: 'button',
-        action: handleReTryCycleTask,
-      };
-
-      const disableBtn = {
-        key: 'disable',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Disable',
-          defaultMessage: '禁用',
-        }), //禁用
-        action: disableCycleTask,
-        type: 'button',
-      };
-
-      /* 禁用Schedule下的Task for logical database change task */
-      /* 很脏的逻辑, ued少一层导致的 */
-      const stopScheduleTaskBtn = {
-        key: 'stopLogicalChangeTask',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Termination',
-          defaultMessage: '终止',
-        }), //终止
-        action: stopScheduleTask,
-        type: 'button',
-      };
-
-      const enableBtn = {
-        key: 'enable',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Enable',
-          defaultMessage: '启用',
-        }), //启用
-        action: enableCycleTask,
-        type: 'button',
-      };
-
-      const approvalBtn = {
-        key: 'approval',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Pass',
-          defaultMessage: '通过',
-        }), //通过
-        type: 'button',
-        isPrimary: isDetailModal,
-        action: async () => {
-          handleApproval(true);
+      const operationNeedPermission = {
+        [TaskStatus.APPROVING]: {
+          auth: haveOperationPermission,
+          operations: [buttongConfig.stopBtn],
+        },
+        [TaskStatus.PAUSE]: {
+          auth: haveOperationPermission,
+          operations: [buttongConfig.editBtn, buttongConfig.enableBtn, buttongConfig.stopBtn],
+        },
+        [TaskStatus.CANCELLED]: {
+          auth: haveOperationPermission,
+          operations: [buttongConfig.stopBtn],
+        },
+        [TaskStatus.REJECTED]: { auth: haveOperationPermission, operations: [] },
+        [TaskStatus.APPROVAL_EXPIRED]: {
+          taskTypeLimit: SCHEDULE_TASKS,
+          auth: haveOperationPermission,
+          operations: [buttongConfig.deleteBtn],
+        },
+        [TaskStatus.TERMINATED]: {
+          taskTypeLimit: SCHEDULE_TASKS,
+          auth: haveOperationPermission,
+          operations: [buttongConfig.deleteBtn],
+        },
+        [TaskStatus.COMPLETED]: {
+          taskTypeLimit: SCHEDULE_TASKS,
+          auth: haveOperationPermission,
+          operations: [buttongConfig.deleteBtn],
+        },
+        [TaskStatus.ENABLED]: {
+          auth:
+            haveOperationPermission &&
+            !(
+              JOB_SCHEDULE_TASKS.includes(task?.type) &&
+              (task as ICycleTaskRecord<TaskRecordParameters>)?.triggerConfig?.triggerStrategy ===
+                TaskExecStrategy.START_NOW
+            ),
+          operations: [buttongConfig.disableBtn, buttongConfig.stopBtn, buttongConfig.editBtn],
         },
       };
 
-      const rejectBtn = {
-        key: 'reject',
-        text: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Reject',
-          defaultMessage: '拒绝',
-        }), //拒绝
-        type: 'button',
-        action: async () => {
-          handleApproval(false);
-        },
+      const operationNeedApprover = {
+        [TaskStatus.APPROVING]: [buttongConfig.approvalBtn, buttongConfig.rejectBtn],
       };
 
-      const deleteBtn = {
-        key: 'delete',
-        text: formatMessage({
-          id: 'src.component.Task.component.ActionBar.E16B982C',
-          defaultMessage: '删除',
-        }),
-        type: 'button',
-        confirmText: formatMessage({
-          id: 'src.component.Task.component.ActionBar.72AF1732',
-          defaultMessage: '你确定要删除这个任务吗？',
-        }),
-        action: deleteTask,
+      const addOperations = ({ taskTypeLimit, auth, operations }: IAddOperationsParams) => {
+        const hasOperations = Boolean(operations?.length);
+        const useableTaskType =
+          (taskTypeLimit && taskTypeLimit.includes(task?.type)) || Boolean(taskTypeLimit?.length);
+        if (auth && hasOperations && useableTaskType) {
+          tools.push(...operations);
+        }
       };
+      const enableRetry =
+        status !== TaskStatus.COMPLETED ||
+        limitRertyButtonShowConfig?.[status]?.includes(task?.type);
+      initTools({ view: true, retry: enableRetry });
+      addOperations(operationNeedPermission?.[status]);
+
       switch (status) {
-        case TaskStatus.APPROVING: {
-          tools = [viewBtn];
-          setBtnByCreater(tools, reTryBtn);
-          if (haveOperationPermission) {
-            tools.push(stopBtn);
-          }
-          if (isApprover) {
-            tools.push(approvalBtn, rejectBtn);
-          }
+        case TaskStatus.APPROVING:
+          addOperations({ auth: isApprover, operations: operationNeedApprover[status] });
           break;
-        }
-        case TaskStatus.REJECTED: {
-          tools = [viewBtn];
-          setBtnByCreater(tools, reTryBtn);
-          break;
-        }
         case TaskStatus.ENABLED: {
-          tools = [viewBtn];
-          setBtnByCreater(tools, reTryBtn);
-          if (haveOperationPermission) {
-            if (
-              !(
-                [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type) &&
-                (task as ICycleTaskRecord<TaskRecordParameters>)?.triggerConfig?.triggerStrategy ===
-                  TaskExecStrategy.START_NOW
-              )
-            ) {
-              tools.push(disableBtn, stopBtn, editBtn);
-            }
-          }
-
           if (haveOperationPermission && isLogicalDbChangeTask(task?.type)) {
-            tools = [viewBtn, editBtn, reTryBtn];
-          }
-          break;
-        }
-        case TaskStatus.APPROVAL_EXPIRED:
-        case TaskStatus.TERMINATED: {
-          tools = [viewBtn];
-          setBtnByCreater(tools, reTryBtn);
-          if (haveOperationPermission) {
-            if (
-              [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE, TaskType.SQL_PLAN].includes(task?.type)
-            ) {
-              tools.push(deleteBtn);
-            }
-          }
-          break;
-        }
-        case TaskStatus.PAUSE: {
-          tools = [viewBtn];
-          setBtnByCreater(tools, reTryBtn);
-          if (haveOperationPermission) {
-            tools.push(editBtn, enableBtn, stopBtn);
-          }
-          break;
-        }
-        case TaskStatus.COMPLETED: {
-          tools = [viewBtn];
-          if (
-            [
-              TaskType.DATA_ARCHIVE,
-              TaskType.DATA_DELETE,
-              TaskType.LOGICAL_DATABASE_CHANGE,
-            ].includes(task?.type)
-          ) {
-            setBtnByCreater(tools, reTryBtn);
-          }
-          if (
-            [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE, TaskType.SQL_PLAN].includes(task?.type) &&
-            haveOperationPermission
-          ) {
-            tools.push(deleteBtn);
-          }
-          break;
-        }
-        case TaskStatus.CANCELLED: {
-          tools = [viewBtn];
-          setBtnByCreater(tools, reTryBtn);
-          if (haveOperationPermission) {
-            tools.push(stopBtn);
+            tools = [buttongConfig.viewBtn, buttongConfig.editBtn, buttongConfig.reTryBtn];
           }
           break;
         }
         default:
+          break;
       }
 
       if (isDetailModal) {
@@ -1260,11 +1012,11 @@ const ActionBar: React.FC<IProps> = inject(
       }
 
       // sql 计划 & 数据归档 & 数据清理 支持编辑
-      if (![TaskType.SQL_PLAN, TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(task?.type)) {
+      if (!SCHEDULE_TASKS.includes(task?.type)) {
         tools = tools.filter((item) => item.key !== 'edit');
       }
       if ((taskList?.[0]?.status as any) === SubTaskStatus.RUNNING) {
-        tools = [...tools, stopScheduleTaskBtn];
+        tools = [...tools, buttongConfig.stopScheduleTaskBtn];
       }
       tools = uniqueTools(tools);
       return tools;

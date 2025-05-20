@@ -18,7 +18,7 @@ import { getTaskList } from '@/common/network/task';
 import Action from '@/component/Action';
 import DisplayTable from '@/component/DisplayTable';
 import StatusLabel, { status } from '@/component/Task/component/Status';
-import DetailModal from '@/component/Task/DetailModal';
+import DetailModal from '@/component/Task/modals/DetailModals';
 import { TaskDetail, TaskRecord, TaskRecordParameters, TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';

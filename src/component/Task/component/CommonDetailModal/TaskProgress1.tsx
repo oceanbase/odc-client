@@ -39,8 +39,8 @@ import Icon from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useState } from 'react';
-import { flatArray } from '../../MutipleAsyncTask/CreateModal/helper';
-import { TaskDetailContext } from '../../TaskDetailContext';
+import { flatArray } from '@/util/utils';
+import { TaskDetailContext } from '@/component/Task/container/TaskDetailContext';
 import { SimpleTextItem } from '../SimpleTextItem';
 import styles from './index.less';
 const getColumns = (params: {

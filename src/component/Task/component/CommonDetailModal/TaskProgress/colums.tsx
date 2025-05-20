@@ -6,7 +6,7 @@ import { SubTaskStatus, TaskType, TaskStatus } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
 import Icon, { QuestionCircleOutlined } from '@ant-design/icons';
-import { Popover, Space, Tooltip, Typography } from 'antd';
+import { Popover, Space, Tooltip } from 'antd';
 
 const getColumns = (params: {
   handleDetailVisible: (id: number) => void;

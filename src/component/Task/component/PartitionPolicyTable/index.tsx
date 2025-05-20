@@ -24,7 +24,7 @@ import { formatMessage } from '@/util/intl';
 import { CheckCircleFilled, SearchOutlined, StopFilled } from '@ant-design/icons';
 import { Space } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
-import { TaskPartitionStrategyMap } from '../../const';
+import { TaskPartitionStrategyMap } from '@/component/Task/const';
 import ConfigDrawer from './ConfigDrawer';
 import styles from './index.less';
 

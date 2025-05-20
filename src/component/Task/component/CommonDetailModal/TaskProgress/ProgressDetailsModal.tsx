@@ -1,7 +1,7 @@
 import { formatMessage } from '@/util/intl';
 import { ProgressOfLocklessStructureChangeTaskStatusMap } from '@/d.ts';
-import { Button, Modal, Steps } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Modal, Steps } from 'antd';
+import { useEffect, useState } from 'react';
 
 export default ({ modalOpen, handleClose, parametersJson, resultJson }) => {
   const { state } = parametersJson || {};

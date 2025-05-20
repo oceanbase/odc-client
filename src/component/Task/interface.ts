@@ -24,7 +24,21 @@ import type {
   TaskRecordParameters,
   IResponseData,
   Operation,
+  TaskStatus,
+  ICycleTaskRecord,
+  ISqlPlayJobParameters,
+  IDataArchiveJobParameters,
+  TaskType,
 } from '@/d.ts';
+
+export interface IState {
+  detailId: number;
+  detailType: TaskType;
+  detailVisible: boolean;
+  status: TaskStatus;
+  tasks: IResponseData<TaskRecord<TaskRecordParameters>>;
+  cycleTasks: IResponseData<ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>>;
+}
 export interface ITaskDetailModalProps {
   visible: boolean;
   taskTools: React.ReactNode;

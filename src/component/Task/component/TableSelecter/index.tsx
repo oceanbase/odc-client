@@ -21,7 +21,7 @@ import ExportCard from '@/component/ExportCard';
 import { EnvColorMap } from '@/constant';
 import { ReactComponent as TableSvg } from '@/svgr/menuTable.svg';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
-import { Badge, Empty, Popconfirm, Space, Spin, Tree, Typography } from 'antd';
+import { Badge, Popconfirm, Space, Spin, Tree, Typography } from 'antd';
 import { DataNode, EventDataNode, TreeProps } from 'antd/lib/tree';
 import classnames from 'classnames';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
