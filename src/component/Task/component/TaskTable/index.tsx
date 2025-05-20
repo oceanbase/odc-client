@@ -653,7 +653,7 @@ const TaskTable: React.FC<IProps> = inject(
             },
             {
               render: (params: ITableLoadOptions) => {
-                const content = executeTime === 'custom' && executeDate?.length === 2 && (
+                const content = executeTime === 'custom' && (
                   <RangePicker
                     className={styles.rangePicker}
                     style={{
@@ -662,7 +662,7 @@ const TaskTable: React.FC<IProps> = inject(
                     size="small"
                     bordered={false}
                     suffixIcon={null}
-                    defaultValue={executeDate}
+                    defaultValue={executeDate as [Dayjs, Dayjs]}
                     showTime={{
                       format: 'HH:mm:ss',
                     }}
