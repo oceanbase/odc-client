@@ -21,7 +21,7 @@ import Reload from '@/component/Button/Reload';
 import ProjectEmpty from '@/component/Empty/ProjectEmpty';
 import Search from '@/component/Input/Search';
 import PageContainer, { TitleType } from '@/component/PageContainer';
-import ApplyPermissionButton from '@/component/Task/ApplyPermission/CreateButton';
+import ApplyPermissionButton from '@/component/Task/modals/ApplyPermission/CreateButton';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
 import { IProject, ProjectTabType } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';

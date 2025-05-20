@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Sider from '@/component/Task/Sider';
+import Sider from '@/component/Task/container/Sider';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
 import React, { useEffect } from 'react';

@@ -1,7 +1,6 @@
 import SessionDropdown, {
   ISessionDropdownFiltersProps,
 } from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SessionDropdown';
-import { IDatabase } from '@/d.ts/database';
 import React, { useState } from 'react';
 import { Divider, Select, Space, Form } from 'antd';
 import { formatMessage } from '@/util/intl';

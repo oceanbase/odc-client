@@ -20,7 +20,7 @@ import { formatMessage } from '@/util/intl';
 import { Form, Input, message, Modal, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useRef, useState } from 'react';
-import styles from '../../index.less';
+import styles from './index.less';
 
 const { TextArea } = Input;
 
@@ -109,7 +109,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
         onCancel={handleCancel}
         zIndex={1001}
       >
-        <Space direction="vertical" size={20} className={styles.block}>
+        <Space direction="vertical" size={20}>
           <Space>
             <span>
               {

@@ -3,7 +3,7 @@ import { TaskDetail, TaskRecordParameters } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { Drawer, Space } from 'antd';
 import React from 'react';
-import { SimpleTextItem } from '../../SimpleTextItem';
+import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 const TaskProgressDrawer: React.FC<{

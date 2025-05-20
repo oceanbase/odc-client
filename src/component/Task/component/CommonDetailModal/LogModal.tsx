@@ -20,7 +20,6 @@ import TaskLog from '@/component/Task/component/Log';
 import { CommonTaskLogType, SubTaskStatus } from '@/d.ts';
 import { useRequest } from 'ahooks';
 import { Drawer } from 'antd';
-import login from '@/store/login';
 import React, { useEffect, useState } from 'react';
 interface IProps {
   scheduleId: number;

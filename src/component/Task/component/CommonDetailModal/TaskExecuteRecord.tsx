@@ -24,7 +24,7 @@ import StatusLabel, {
   status,
   subTaskStatus,
 } from '@/component/Task/component/Status';
-import DetailModal from '@/component/Task/DetailModal';
+import DetailModal from '@/component/Task/modals/DetailModals';
 import {
   IAsyncTaskParams,
   IResponseData,
@@ -45,7 +45,7 @@ import { getFormatDateTime } from '@/util/utils';
 import Icon, { FilterOutlined, SearchOutlined } from '@ant-design/icons';
 import { Space, Typography, message } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
-import { isLogicalDbChangeTask } from '../../helper';
+import { isLogicalDbChangeTask } from '@/component/Task/helper';
 import ExcecuteDetailModal from './ExcecuteDetailModal';
 import styles from './index.less';
 import LogModal from './LogModal';

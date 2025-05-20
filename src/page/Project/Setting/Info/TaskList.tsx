@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styles from './index.less';
 import DisplayTable from '@/component/DisplayTable';
 import { formatMessage } from '@/util/intl';
-import { TaskTypeMap } from '@/component/Task/component/TaskTable';
+import { TaskTypeMap } from '@/component/Task/component/TaskTable/const';
 import StatusLabel from '@/component/Task/component/Status';
 
 interface TaskListProps {

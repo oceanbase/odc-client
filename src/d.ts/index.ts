@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ErrorStrategy } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
+import { ErrorStrategy } from '@/component/Task/modals/ShadowSyncTask/CreateModal/interface';
 import { PLType } from '@/constant/plType';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import { IUnauthorizedDBResources, TablePermissionType } from '@/d.ts/table';

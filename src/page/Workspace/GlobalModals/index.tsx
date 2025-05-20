@@ -19,7 +19,7 @@ import CreatePackageModal from '@/component/CreatePackageModal';
 import CreateProcedureModal from '@/component/CreateProcedureModal';
 import CreateSynonymModal from '@/component/CreateSynonymModal';
 import CreateTypeModal from '@/component/CreateTypeModal';
-import CreateModals from '@/component/Task/CreateModals';
+import CreateModals from '@/component/Task/modals/CreateModals';
 import ExecuteSqlDetailModal from '@/component/ExecuteSqlDetailModal';
 import { ModalStore } from '@/store/modal';
 import { inject, observer } from 'mobx-react';

@@ -219,3 +219,26 @@ export enum PartitionBound {
   PARTITION_UPPER_BOUND = 'PARTITION_UPPER_BOUND',
   PARTITION_LOWER_BOUND = 'PARTITION_LOWER_BOUND',
 }
+
+export const taskSuccessHintInfo = {
+  terminate: formatMessage({
+    id: 'odc.components.TaskManagePage.TerminatedSuccessfully',
+    defaultMessage: '终止成功',
+  }),
+  delete: formatMessage({
+    id: 'src.component.Task.component.ActionBar.9EDD0936',
+    defaultMessage: '删除成功',
+  }),
+  retry: formatMessage({
+    id: 'odc.TaskManagePage.component.TaskTools.InitiatedAgain',
+    defaultMessage: '再次发起成功',
+  }),
+  again: formatMessage({
+    id: 'src.component.Task.component.ActionBar.15961986',
+    defaultMessage: '发起重试成功',
+  }),
+  start: formatMessage({
+    id: 'src.component.Task.component.ActionBar.10A4FEFD',
+    defaultMessage: '开始执行',
+  }),
+};

@@ -20,7 +20,7 @@ import {
   expireTimeOptions,
   getExpireTime,
   permissionOptions,
-} from '@/component/Task/ApplyTablePermission/CreateModal';
+} from '@/component/Task/modals/ApplyTablePermission/CreateModal';
 import TableSelecter from '@/component/Task/component/TableSelecter';
 import { groupTableIdsByDataBase } from '@/component/Task/component/TableSelecter/util';
 import { Button, Checkbox, DatePicker, Drawer, Form, Modal, Select, Space, message } from 'antd';

@@ -20,8 +20,11 @@ import login from '@/store/login';
 import settingStore from '@/store/setting';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
+import { getPreTime } from '@/util/utils';
 import { flatten } from 'lodash';
-export { TaskTypeMap } from '@/component/Task/component/TaskTable';
+import type { Dayjs } from 'dayjs';
+import { ITableLoadOptions } from '../CommonTable/interface';
+export { TaskTypeMap } from '@/component/Task/component/TaskTable/const';
 
 // 423 屏蔽 SysFormItem 配置
 export const ENABLED_SYS_FROM_ITEM = false;

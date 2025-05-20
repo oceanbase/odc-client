@@ -16,7 +16,6 @@
 
 import { downloadTaskFlow } from '@/common/network/task';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { getTaskExecStrategyMap } from '@/component/Task';
 import { FILE_DATA_TYPE, IMPORT_TYPE, TaskExecStrategy } from '@/d.ts';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
@@ -26,7 +25,8 @@ import React from 'react';
 import CsvTable from './csvTables';
 import styles from './index.less';
 import ObjTable from './ObjTables';
-import { getImportTypeLabel } from '../../ImportTask/CreateModal/ImportForm/helper';
+import { getImportTypeLabel } from '@/component/Task/modals/ImportTask/CreateModal/ImportForm/helper';
+import { getTaskExecStrategyMap } from '@/component/Task/const';
 const SimpleTextItem: React.FC<{
   label: string;
   content: React.ReactNode;

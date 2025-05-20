@@ -20,7 +20,7 @@ import {
   expireTimeOptions,
   getExpireTime,
   permissionOptions,
-} from '@/component/Task/ApplyDatabasePermission/CreateModal';
+} from '@/component/Task/modals/ApplyDatabasePermission/CreateModal';
 import DatabaseSelecter from '@/component/Task/component/DatabaseSelecter';
 import { Button, Checkbox, DatePicker, Drawer, Form, message, Modal, Select, Space } from 'antd';
 import React, { useState } from 'react';

@@ -22,21 +22,19 @@ import type {
   ITableSorter,
 } from '@/component/CommonTable/interface';
 import { CommonTableMode, IOperationOptionType } from '@/component/CommonTable/interface';
-import { getCronExecuteCycleByObject, translator } from '@/component/Crontab';
 import SearchFilter from '@/component/SearchFilter';
 import StatusLabel, { cycleStatus, status } from '@/component/Task/component/Status';
 import { TIME_OPTION_ALL_TASK, TimeOptions } from '@/component/TimeSelect';
 import UserPopover from '@/component/UserPopover';
 import type {
   ICycleTaskRecord,
-  ICycleTaskTriggerConfig,
   IDataArchiveJobParameters,
   IResponseData,
   ISqlPlayJobParameters,
   TaskRecord,
   TaskRecordParameters,
 } from '@/d.ts';
-import { TaskExecStrategy, TaskPageType, TaskStatus, TaskType } from '@/d.ts';
+import { TaskPageType, TaskType } from '@/d.ts';
 import type { PageStore } from '@/store/page';
 import type { TaskStore } from '@/store/task';
 import { isClient } from '@/util/env';
@@ -50,8 +48,8 @@ import { inject, observer } from 'mobx-react';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState, useContext } from 'react';
-import { getTaskGroupLabels, getTaskLabelByType, isCycleTaskPage } from '../../helper';
-import styles from '../../index.less';
+import { getTaskGroupLabels, getTaskLabelByType, isCycleTaskPage } from '@/component/Task/helper';
+import styles from '@/component/Task/index.less';
 import TaskTools from '../ActionBar';
 import { listProjects } from '@/common/network/project';
 import ProjectContext from '@/page/Project/ProjectContext';
@@ -59,124 +57,11 @@ import { isProjectArchived } from '@/page/Project/helper';
 import { useRequest } from 'ahooks';
 import useUrlAction, { URL_ACTION } from '@/util/hooks/useUrlAction';
 import useURLParams from '@/util/hooks/useUrlParams';
+import { TASK_EXECUTE_DATE_KEY, TASK_EXECUTE_TIME_KEY, TaskTypeMap } from './const';
+import { getStatusFilters } from './utils';
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
 
-export const getCronCycle = (triggerConfig: ICycleTaskTriggerConfig) => {
-  const { triggerStrategy, days, hours, cronExpression } = triggerConfig;
-  return triggerStrategy !== TaskExecStrategy.CRON
-    ? getCronExecuteCycleByObject(triggerStrategy as any, {
-        hour: hours,
-        dayOfWeek: days,
-        dayOfMonth: days,
-      })
-    : translator.parse(cronExpression).toLocaleString();
-};
-export const TaskTypeMap = {
-  [TaskType.IMPORT]: formatMessage({
-    id: 'odc.TaskManagePage.component.TaskTable.Import',
-    defaultMessage: '导入',
-  }),
-  //导入
-  [TaskType.EXPORT]: formatMessage({
-    id: 'odc.TaskManagePage.component.TaskTable.Export',
-    defaultMessage: '导出',
-  }),
-  //导出
-  [TaskType.DATAMOCK]: formatMessage({
-    id: 'odc.TaskManagePage.component.TaskTable.AnalogData',
-    defaultMessage: '模拟数据',
-  }),
-  //模拟数据
-  [TaskType.ASYNC]: formatMessage({
-    id: 'odc.TaskManagePage.component.TaskTable.DatabaseChanges',
-    defaultMessage: '数据库变更',
-  }),
-  // 数据库变更
-
-  [TaskType.PARTITION_PLAN]: formatMessage({
-    id: 'odc.TaskManagePage.component.TaskTable.PartitionPlan',
-    defaultMessage: '分区计划',
-  }),
-  //分区计划
-
-  [TaskType.SHADOW]: formatMessage({
-    id: 'odc.TaskManagePage.component.TaskTable.ShadowTableSynchronization',
-    defaultMessage: '影子表同步',
-  }),
-  //影子表同步
-
-  [TaskType.ALTER_SCHEDULE]: formatMessage({
-    id: 'odc.TaskManagePage.component.TaskTable.PlannedChange',
-    defaultMessage: '计划变更',
-  }),
-  //计划变更
-  [TaskType.EXPORT_RESULT_SET]: formatMessage({
-    id: 'odc.src.component.Task.component.TaskTable.ExportResultSet',
-    defaultMessage: '导出结果集',
-  }),
-  //'导出结果集'
-  [TaskType.SQL_PLAN]: formatMessage({
-    id: 'odc.component.TaskTable.SqlPlan',
-    defaultMessage: 'SQL 计划',
-  }),
-  //SQL 计划
-  [TaskType.DATA_ARCHIVE]: formatMessage({
-    id: 'odc.component.TaskTable.DataArchiving',
-    defaultMessage: '数据归档',
-  }),
-  //数据归档
-  [TaskType.ONLINE_SCHEMA_CHANGE]: formatMessage({
-    id: 'odc.component.TaskTable.LockFreeStructureChange',
-    defaultMessage: '无锁结构变更',
-  }),
-  //无锁结构变更
-  [TaskType.DATA_DELETE]: formatMessage({
-    id: 'odc.component.TaskTable.DataCleansing',
-    defaultMessage: '数据清理',
-  }),
-  //数据清理
-  [TaskType.APPLY_PROJECT_PERMISSION]: formatMessage({
-    id: 'odc.src.component.Task.component.TaskTable.ApplicationProjectPermissions',
-    defaultMessage: '申请项目权限',
-  }), //'申请项目权限'
-  [TaskType.APPLY_DATABASE_PERMISSION]: formatMessage({
-    id: 'src.component.Task.component.TaskTable.E1E161BA',
-    defaultMessage: '申请库权限',
-  }), //'申请库权限'
-  [TaskType.APPLY_TABLE_PERMISSION]: formatMessage({
-    id: 'src.component.Task.component.TaskTable.573E2A28',
-    defaultMessage: '申请表/视图权限',
-  }),
-  [TaskType.STRUCTURE_COMPARISON]: formatMessage({
-    id: 'src.component.Task.component.TaskTable.80E1D16A',
-    defaultMessage: '结构比对',
-  }), //'结构比对'
-  [TaskType.MULTIPLE_ASYNC]: formatMessage({
-    id: 'src.component.Task.component.TaskTable.A3CA13D5',
-    defaultMessage: '多库变更',
-  }),
-  [TaskType.LOGICAL_DATABASE_CHANGE]: formatMessage({
-    id: 'src.component.Task.component.TaskTable.4203E912',
-    defaultMessage: '逻辑库变更',
-  }),
-};
-export const getStatusFilters = (status: {
-  [key: string]: {
-    text: string;
-  };
-}) => {
-  return Object.keys(status)
-    ?.filter((key) => key !== TaskStatus.WAIT_FOR_CONFIRM)
-    .map((key) => {
-      return {
-        text: status?.[key].text,
-        value: key,
-      };
-    });
-};
-export const TASK_EXECUTE_TIME_KEY = 'task:executeTime';
-export const TASK_EXECUTE_DATE_KEY = 'task:executeDate';
 interface IProps {
   tableRef: React.RefObject<ITableInstance>;
   taskStore?: TaskStore;
@@ -422,7 +307,8 @@ const TaskTable: React.FC<IProps> = inject(
               />
             );
           },
-
+          onFilter: (value, record) =>
+            record?.creator?.name?.toLowerCase()?.includes(value?.toLowerCase()),
           filterIcon: (filtered) => (
             <SearchOutlined
               style={{

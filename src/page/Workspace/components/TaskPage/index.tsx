@@ -15,8 +15,8 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { TaskTypeMap } from '@/component/Task/component/TaskTable';
-import Content from '@/component/Task/Content';
+import { TaskTypeMap } from '@/component/Task/component/TaskTable/const';
+import Content from '@/component/Task/container/Content';
 import { TaskPageType } from '@/d.ts';
 import styles from './index.less';
 export const getTitleByParams = (params: { type: TaskPageType }) => {

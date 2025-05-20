@@ -1,14 +1,13 @@
 import { formatMessage } from '@/util/intl';
-import { Drawer, Table, Descriptions, Spin } from 'antd';
+import { Drawer, Descriptions } from 'antd';
 import { useRequest } from 'ahooks';
 import React, { useEffect, useState } from 'react';
 import type { ColumnsType } from 'antd/es/table';
 import StatusLabel from '@/component/Task/component/Status';
 import { getCycleSubTaskDetail } from '@/common/network/task';
 import { SubTaskStatus, ISubTaskTaskUnit } from '@/d.ts';
-import styles from './index.less';
 import { getLocalFormatDateTime } from '@/util/utils';
-import { SubTaskTypeMap } from '../../const';
+import { SubTaskTypeMap } from '@/component/Task/const';
 import CommonTable from '@/component/CommonTable';
 
 interface IProps {

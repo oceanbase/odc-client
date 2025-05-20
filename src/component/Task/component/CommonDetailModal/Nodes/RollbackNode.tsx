@@ -20,7 +20,7 @@ import { formatMessage } from '@/util/intl';
 import { Descriptions, Space } from 'antd';
 import { isEmpty } from 'lodash';
 import React from 'react';
-import { DownloadFileAction } from '../../DownloadFileAction';
+import { DownloadFileAction } from '@/component/Task/component/DownloadFileAction';
 import styles from '../index.less';
 
 interface IProps {

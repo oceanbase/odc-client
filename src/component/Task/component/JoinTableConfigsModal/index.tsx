@@ -1,4 +1,4 @@
-import { IDataArchiveJobParameters, IDLMJobParametersTables } from '@/d.ts';
+import { IDLMJobParametersTables } from '@/d.ts';
 import { Modal, Form, Input, Button, Space, Select, Typography } from 'antd';
 import { FormListFieldData } from 'antd/es/form/FormList';
 import styles from './index.less';

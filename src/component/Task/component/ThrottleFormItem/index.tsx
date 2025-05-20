@@ -19,7 +19,6 @@ import HelpDoc from '@/component/helpDoc';
 import setting from '@/store/setting';
 import { Form, InputNumber, Space } from 'antd';
 import React from 'react';
-import { TaskType } from '@/d.ts';
 interface IProps {
   initialValue?: {
     rowLimit?: number;

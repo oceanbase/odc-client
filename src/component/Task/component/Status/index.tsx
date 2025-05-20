@@ -35,7 +35,7 @@ import {
 import { Space, Tooltip } from 'antd';
 import { isNil } from 'lodash';
 import React from 'react';
-import { isCycleTask } from '../../helper';
+import { isCycleTask } from '@/component/Task/helper';
 export const nodeStatus = {
   [TaskFlowNodeType.APPROVAL_TASK]: {
     [TaskNodeStatus.PENDING]: {

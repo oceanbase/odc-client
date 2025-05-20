@@ -2,7 +2,7 @@ import { formatMessage } from '@/util/intl';
 import { Form, Space, Checkbox, FormInstance, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { SyncTableStructureEnum } from '@/d.ts';
-import { SyncTableStructureOptions } from '../../const';
+import { SyncTableStructureOptions } from '@/component/Task/const';
 import { IDatabase } from '@/d.ts/database';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 
