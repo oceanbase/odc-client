@@ -379,7 +379,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
     if (isBatch || isSingleGenerateCount) {
       return (
         <Popconfirm
-          overlayStyle={{ width: '216px' }}
+          styles={{ root: { width: '216px' } }}
           title={
             <>
               {isSingleGenerateCount && <div>{isSingleGenerateCountMessage}</div>}
