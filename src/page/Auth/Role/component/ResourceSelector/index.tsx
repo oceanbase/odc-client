@@ -48,7 +48,7 @@ const getOptions = (
       return {
         ...item,
         resourceType: type,
-        resourceId: item?.id,
+        resourceId: item?.id?.toString?.(),
         name: item?.name,
       };
     }) ?? []
