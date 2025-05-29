@@ -114,9 +114,9 @@ export default class TableIndexSelector extends Component<{
           })}
           render={() =>
             columns && columns.length ? (
-              columns.map((c) => (
+              columns.map((c, index) => (
                 <Row
-                  key={c.columnName}
+                  key={`${c.columnName}-${c.type}-${index}`}
                   onClick={this.handleAdd.bind(this, c.columnName)}
                   className={styles.column}
                 >

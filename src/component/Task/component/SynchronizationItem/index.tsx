@@ -11,19 +11,18 @@ interface IProps {
   targetDatabase?: IDatabase;
 }
 const SynchronizationItem: React.FC<IProps> = ({ form, targetDatabase }) => {
-  const [initValue, setInitValue] = useState(null);
   const [syncTableStructure, setSyncTableStructure] = useState<boolean>(false);
 
   const tempSyncTableStructure = Form.useWatch('syncTableStructure');
 
   useEffect(() => {
     setSyncTableStructure(Boolean(form.getFieldValue('syncTableStructure')?.length));
-    setInitValue(form.getFieldValue('syncTableStructure'));
   }, [tempSyncTableStructure]);
 
   return (
     <>
       <Form.Item
+        name="syncTableStructure"
         extra={
           !syncTableStructure
             ? formatMessage({
@@ -50,11 +49,13 @@ const SynchronizationItem: React.FC<IProps> = ({ form, targetDatabase }) => {
             disabled={isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)}
             onChange={(e) => {
               setSyncTableStructure(e.target.checked);
-              if (initValue && initValue.length === 0 && e.target.checked) {
+              if (e.target.checked) {
                 form.setFieldValue('syncTableStructure', [
                   SyncTableStructureEnum.COLUMN,
                   SyncTableStructureEnum.CONSTRAINT,
                 ]);
+              } else {
+                form.setFieldValue('syncTableStructure', undefined);
               }
             }}
           >
