@@ -37,7 +37,7 @@ const SAMLModalConfirm: React.FC<SAMLModalConfirmProps> = (props) => {
       </p>
       <Form layout="vertical" requiredMark="optional" form={form}>
         <Form.Item
-          name={['ssoParameter', 'acsLocation']}
+          name={['ssoParameter', 'testAcsLocation']}
           label="SP Endpoint"
           tooltip={formatMessage({
             id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.F950EA44',

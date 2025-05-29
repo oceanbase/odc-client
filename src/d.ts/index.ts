@@ -4033,6 +4033,7 @@ export enum SAMLType {
 
 export interface ISSO_SAML_CONFIG {
   acsLocation?: string;
+  testAcsLocation?: string;
   redirectUrl: string;
   registrationId: string;
   secret: string;
