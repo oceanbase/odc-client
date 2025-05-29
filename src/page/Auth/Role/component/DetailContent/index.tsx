@@ -405,7 +405,7 @@ const UserDetail: React.FC<{
       [IManagerResourceType.role]: roles,
       [IManagerResourceType.user]: users,
     };
-    const info = resourceMap[type]?.find((item) => item.id === resourceId);
+    const info = resourceMap[type]?.find((item) => item.id?.toString?.() === resourceId);
     return getResourceLabel(info, resourceId);
   };
 
