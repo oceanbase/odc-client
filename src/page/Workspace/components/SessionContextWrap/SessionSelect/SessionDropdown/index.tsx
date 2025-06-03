@@ -473,7 +473,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
           setLoading(true);
           try {
             //@ts-ignore
-            await context.selectSession(dbId, dsId, undefined, info?.node?.data);
+            await context.selectSession(dbId, dsId, info?.node?.data);
           } catch (e) {
             console.error(e);
           } finally {
