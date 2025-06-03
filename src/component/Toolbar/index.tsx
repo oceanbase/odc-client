@@ -48,6 +48,7 @@ function TButton({
   confirmConfig,
   tip = null,
   tipStyle = { width: 296 },
+  renderToParentElement = false,
   ...rest
 }: {
   [key: string]: any;
@@ -175,13 +176,21 @@ function TButton({
     );
   }
 
-  if (!isShowText) {
+  if (renderToParentElement) {
     return (
       <Tooltip
         getPopupContainer={(triggerNode) => triggerNode.parentElement}
-        placement={isMenuIcon ? 'top' : 'bottom'}
+        placement="left"
         title={text}
       >
+        {content}
+      </Tooltip>
+    );
+  }
+
+  if (!isShowText) {
+    return (
+      <Tooltip placement={isMenuIcon ? 'top' : 'bottom'} title={text}>
         {content}
       </Tooltip>
     );

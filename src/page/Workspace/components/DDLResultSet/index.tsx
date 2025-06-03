@@ -1247,6 +1247,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               />
             </Popover>
             <ToolbarButton
+              renderToParentElement
               disabled={!rows[selectedRowIdx]}
               text={formatMessage({
                 id: 'workspace.window.sql.button.columnMode',

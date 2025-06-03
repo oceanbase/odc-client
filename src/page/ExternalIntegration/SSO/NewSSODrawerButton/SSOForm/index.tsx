@@ -207,6 +207,9 @@ export default inject('userStore')(
               testAcsEntityId: `${
                 window.ODCApiHost || location.origin
               }/saml2/service-provider-metadata/${userStore?.organizationId}-test`,
+              testAcsLocation: `${
+                odc.appConfig.network?.baseUrl?.() || location.origin
+              }/login/saml2/sso/${userStore?.organizationId}-test`,
             },
           });
         }
@@ -286,6 +289,10 @@ export default inject('userStore')(
           (clone.ssoParameter as ISSO_SAML_CONFIG).acsEntityId = form.getFieldValue([
             'ssoParameter',
             'testAcsEntityId',
+          ]);
+          (clone.ssoParameter as ISSO_SAML_CONFIG).acsLocation = form.getFieldValue([
+            'ssoParameter',
+            'testAcsLocation',
           ]);
           params.odcBackUrl =
             location.origin + '/' + '#/gateway/eyJhY3Rpb24iOiJ0ZXN0TG9naW4iLCJkYXRhIjp7fX0=';
@@ -407,6 +414,7 @@ export default inject('userStore')(
       function updateRegistrationId(name) {
         var md5Hex = md5(`${name || ''}`);
         const id = `${userStore?.organizationId}-${md5Hex}`;
+        const testId = `${userStore?.organizationId}-test`;
         setRegistrationId(id);
         switch (form.getFieldValue('type')) {
           case ISSOType.SAML:
@@ -415,16 +423,15 @@ export default inject('userStore')(
                 acsLocation: `${
                   odc.appConfig.network?.baseUrl?.() || location.origin
                 }/login/saml2/sso/${id}`,
+                testAcsLocation: `${
+                  odc.appConfig.network?.baseUrl?.() || location.origin
+                }/login/saml2/sso/${testId}`,
                 acsEntityId: `${
                   odc.appConfig.network?.baseUrl?.() || location.origin
                 }/saml2/service-provider-metadata/${id}`,
-              },
-            });
-            form.setFieldsValue({
-              ssoParameter: {
                 testAcsEntityId: `${
                   window.ODCApiHost || location.origin
-                }/saml2/service-provider-metadata/${userStore?.organizationId}-test`,
+                }/saml2/service-provider-metadata/${testId}`,
               },
             });
             if (showExtraConfigForSAML) {
