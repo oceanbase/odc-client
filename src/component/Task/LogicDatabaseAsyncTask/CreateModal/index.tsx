@@ -183,16 +183,23 @@ const CreateModal: React.FC<IProps> = (props) => {
           description,
         };
         setConfirmLoading(true);
-        await createTask(data);
-        handleCancel(false);
-        setConfirmLoading(false);
-        message.success(
-          formatMessage({
-            id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.E7B4AE89',
-            defaultMessage: '创建成功',
-          }),
-        );
-        openTasksPage(TaskPageType.LOGICAL_DATABASE_CHANGE, TaskPageScope.CREATED_BY_CURRENT_USER);
+        const res = await createTask(data);
+        if (res) {
+          handleCancel(false);
+          setConfirmLoading(false);
+          message.success(
+            formatMessage({
+              id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.E7B4AE89',
+              defaultMessage: '创建成功',
+            }),
+          );
+          openTasksPage(
+            TaskPageType.LOGICAL_DATABASE_CHANGE,
+            TaskPageScope.CREATED_BY_CURRENT_USER,
+          );
+        } else {
+          setConfirmLoading(false);
+        }
       })
       .catch((errorInfo) => {
         form.scrollToField(errorInfo?.errorFields?.[0]?.name);
@@ -308,7 +315,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.9398BE2A',
               defaultMessage: '逻辑库',
             })}
-            type={TaskType.ALTER_SCHEDULE}
+            type={TaskType.LOGICAL_DATABASE_CHANGE}
           />
 
           <Form.Item
