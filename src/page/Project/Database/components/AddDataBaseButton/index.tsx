@@ -274,7 +274,13 @@ const AddDataBaseButton: React.FC<IProps> = ({
           onValuesChange={(changedValues) => {
             if (changedValues.hasOwnProperty('dataSourceId')) {
               fetchDataSource(changedValues?.dataSourceId);
-              fetchDatabases(null, changedValues?.dataSourceId, 1, 999999, null, null, true, true);
+              fetchDatabases({
+                dataSourceId: changedValues?.dataSourceId,
+                page: 1,
+                size: 999999,
+                containsUnassigned: true,
+                existed: true,
+              });
             }
           }}
         >

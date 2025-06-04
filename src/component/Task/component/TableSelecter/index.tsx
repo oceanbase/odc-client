@@ -232,7 +232,11 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
     if (!projectId) return;
     setIsLoading(true);
     try {
-      const res = await listDatabases(projectId, null, null, null, null, null, null, true, true);
+      const res = await listDatabases({
+        projectId,
+        existed: true,
+        includesPermittedAction: true,
+      });
       if (res?.contents) {
         datasourceStatus.asyncUpdateStatus(
           res?.contents

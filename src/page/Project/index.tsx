@@ -45,7 +45,7 @@ import { UserStore } from '@/store/login';
 
 const ExtraContent = ({ projectId, hasLoginDatabaseAuth, setHasLoginDatabaseAuth }) => {
   const getLoginDatabaseAuth = async () => {
-    const res = await listDatabases(projectId, null, null, null, null, null, null, null, true);
+    const res = await listDatabases({ projectId, includesPermittedAction: true });
     const canLoginDatabase = res.contents?.some((item) => !!item.authorizedPermissionTypes.length);
     setHasLoginDatabaseAuth(canLoginDatabase);
   };

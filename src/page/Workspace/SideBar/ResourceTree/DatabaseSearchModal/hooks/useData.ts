@@ -30,17 +30,13 @@ const useGlobalSearchData = (params: {
   });
 
   const loadDatabaseList = useCallback(async () => {
-    const data = await fetchDatabases(
-      null,
-      null,
-      1,
-      99999,
-      null,
-      null,
-      login.isPrivateSpace(),
-      true,
-      true,
-    );
+    const data = await fetchDatabases({
+      page: 1,
+      size: 99999,
+      containsUnassigned: true,
+      existed: true,
+      includesPermittedAction: true,
+    });
     const databases = data?.contents?.filter((db: IDatabase) => {
       const config = getDataSourceModeConfig(db?.dataSource?.type);
       // 隐藏对象存储类型数据库

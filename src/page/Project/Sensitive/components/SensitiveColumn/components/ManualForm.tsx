@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import { listDatabases } from '@/common/network/database';
 import { batchCreateSensitiveColumns, listColumns } from '@/common/network/sensitiveColumn';
 import ExportCard from '@/component/ExportCard';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { fieldIconMap } from '@/constant';
-import { IDatabase } from '@/d.ts/database';
 import { IMaskingAlgorithm } from '@/d.ts/maskingAlgorithm';
 import { ESensitiveColumnType } from '@/d.ts/sensitiveColumn';
 import ProjectContext from '@/page/Project/ProjectContext';

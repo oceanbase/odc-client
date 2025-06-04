@@ -48,17 +48,14 @@ export default function ChangeOwnerModal({
   const [form] = Form.useForm<{ ownerIds: number[]; databaseList: number[] }>();
 
   const loadData = async () => {
-    const res = await listDatabases(
+    const res = await listDatabases({
       projectId,
-      null,
-      1,
-      99999,
-      null,
-      null,
-      login.isPrivateSpace(),
-      true,
-      true,
-    );
+      page: 1,
+      size: 99999,
+      containsUnassigned: login.isPrivateSpace(),
+      existed: true,
+      includesPermittedAction: true,
+    });
     if (res) {
       setDatabaseOptions(
         res?.contents?.map((i) => {

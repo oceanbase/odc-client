@@ -90,7 +90,7 @@ export default function WorkspaceStore({ children }) {
     manual: true,
   });
 
-  const { run: fetchDatabases, loading: dbLoading } = useRequest(listDatabases, {
+  const { run: fetchDatabases } = useRequest(listDatabases, {
     manual: true,
   });
 
@@ -106,17 +106,13 @@ export default function WorkspaceStore({ children }) {
   }, []);
 
   const reloadDatabaseList = useCallback(async () => {
-    const data = await fetchDatabases(
-      null,
-      null,
-      1,
-      99999,
-      null,
-      null,
-      login.isPrivateSpace(),
-      true,
-      true,
-    );
+    const data = await fetchDatabases({
+      page: 1,
+      size: 99999,
+      containsUnassigned: true,
+      existed: true,
+      includesPermittedAction: true,
+    });
     setDatabaseList(data?.contents || []);
     return data?.contents;
   }, []);
