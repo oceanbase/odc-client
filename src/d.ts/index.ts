@@ -48,6 +48,7 @@ export interface IUser {
   builtIn: boolean;
   password: string;
   role: string;
+  roleIds?: number[];
   enabled: boolean;
   roles?: IManagerRole[];
   organizationId: number;
@@ -249,6 +250,10 @@ export interface IManagerUserPermission {
   organizationId: number;
   createTime: number;
   updateTime: number;
+}
+
+export enum IRoles {
+  SYSTEM_ADMIN = 1,
 }
 
 export interface IManagerRole {
