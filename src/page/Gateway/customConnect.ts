@@ -34,7 +34,7 @@ import { Base64 } from 'js-base64';
 import dayjs from 'dayjs';
 
 async function getDefaultSchema(dsId: number, userName: string) {
-  const res = await listDatabases(null, dsId, 1, 999);
+  const res = await listDatabases({ dataSourceId: dsId, page: 1, size: 999 });
   const databases = res?.contents;
   const informationSchema = databases?.find((d) => d.name === 'information_schema');
   const sameName = databases?.find((d) => d.name?.toLowerCase() === userName?.toLowerCase());

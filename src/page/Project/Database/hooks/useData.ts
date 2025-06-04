@@ -51,22 +51,19 @@ const useData = (id) => {
     connectType = filterParams?.connectType,
     type = filterParams.type,
   ) => {
-    const res = await fetchDatabases(
-      parseInt(id),
-      null,
-      1,
-      99999,
-      searchValue.value,
-      environmentId,
-      null,
-      null,
-      true,
+    const res = await fetchDatabases({
+      projectId: parseInt(id),
+      page: 1,
+      size: 99999,
+      name: searchValue?.value,
+      environmentId: environmentId,
+      includesPermittedAction: true,
       type,
       connectType,
-      searchValue.type === SearchType.DATASOURCE ? searchValue.value : null,
-      searchValue.type === SearchType.CLUSTER ? searchValue.value : null,
-      searchValue.type === SearchType.TENANT ? searchValue.value : null,
-    );
+      dataSourceName: searchValue?.type === SearchType.DATASOURCE ? searchValue?.value : null,
+      clusterName: searchValue?.type === SearchType.CLUSTER ? searchValue?.value : null,
+      tenantName: searchValue?.type === SearchType.TENANT ? searchValue?.value : null,
+    });
     if (res) {
       datasourceStatus.asyncUpdateStatus(
         res?.contents

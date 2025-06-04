@@ -22,42 +22,29 @@ import request from '@/util/request';
 import { getDropSQL } from '@/util/sql';
 import { executeSQL } from './sql';
 
+interface listDatabasesParams {
+  projectId?: number;
+  dataSourceId?: number;
+  page?: number;
+  size?: number;
+  name?: string;
+  environmentId?: number[];
+  /** 是否包含未分配项目的数据库 */
+  containsUnassigned?: boolean;
+  existed?: boolean;
+  includesPermittedAction?: boolean;
+  type?: DBType[];
+  connectType?: ConnectType[];
+  dataSourceName?: string;
+  clusterName?: string;
+  tenantName?: string;
+}
+
 export async function listDatabases(
-  projectId?: number,
-  dataSourceId?: number,
-  page?: number,
-  size?: number,
-  name?: string,
-  environmentId?: number[],
-  /**
-   * 是否包含未分配项目的数据库
-   */
-  containsUnassigned?: boolean,
-  existed?: boolean,
-  includesPermittedAction?: boolean,
-  type?: DBType[],
-  connectType?: ConnectType[],
-  dataSourceName?: string,
-  clusterName?: string,
-  tenantName?: string,
+  params: listDatabasesParams,
 ): Promise<IResponseData<IDatabase>> {
   const res = await request.get(`/api/v2/database/databases`, {
-    params: {
-      projectId,
-      dataSourceId,
-      name,
-      page,
-      size,
-      environmentId,
-      containsUnassigned,
-      existed,
-      includesPermittedAction,
-      type: type,
-      connectType: connectType,
-      dataSourceName,
-      clusterName,
-      tenantName,
-    },
+    params: params,
   });
 
   return res?.data;

@@ -42,25 +42,18 @@ export const DatabaseQueueSelect: React.FC<{
   const orderedDatabaseIds = Form.useWatch(['parameters', 'orderedDatabaseIds'], form);
   const [databaseIdMap, setDatabaseIdMap] = useState<Map<number, boolean>>(new Map());
   const [_databaseOptions, setDatabaseOptions] = useState<DatabaseOption[]>([]);
-  const {
-    data,
-    run,
-    loading: fetchLoading,
-  } = useRequest(listDatabases, {
+  const { run } = useRequest(listDatabases, {
     manual: true,
   });
   const loadDatabaseList = async (projectId: number) => {
-    const databaseList = await run(
+    const databaseList = await run({
       projectId,
-      null,
-      1,
-      99999,
-      null,
-      null,
-      login.isPrivateSpace(),
-      true,
-      true,
-    );
+      page: 1,
+      size: 99999,
+      containsUnassigned: login.isPrivateSpace(),
+      existed: true,
+      includesPermittedAction: true,
+    });
     if (databaseList?.contents?.length) {
       setDefaultDatasource(databaseList?.contents?.[0]?.dataSource);
       datasourceStatus.asyncUpdateStatus([

@@ -200,22 +200,19 @@ const SessionDropdown: React.FC<IProps> = (props) => {
 
   useEffect(() => {
     if (isOpen) {
-      run(
+      run({
         projectId,
-        datasourceId ? toInteger(datasourceId) : dataSourceId,
-        1,
-        99999,
-        searchValue.value,
-        null,
-        userStore.isPrivateSpace(),
-        true,
-        true,
-        null,
-        null,
-        searchValue.type === SearchType.DATASOURCE ? searchValue.value : null,
-        searchValue.type === SearchType.CLUSTER ? searchValue.value : null,
-        searchValue.type === SearchType.TENANT ? searchValue.value : null,
-      );
+        dataSourceId: datasourceId ? toInteger(datasourceId) : dataSourceId,
+        page: 1,
+        size: 99999,
+        name: searchValue?.value,
+        containsUnassigned: userStore.isPrivateSpace(),
+        existed: true,
+        includesPermittedAction: true,
+        dataSourceName: searchValue?.type === SearchType.DATASOURCE ? searchValue?.value : null,
+        clusterName: searchValue?.type === SearchType.CLUSTER ? searchValue?.value : null,
+        tenantName: searchValue?.type === SearchType.TENANT ? searchValue?.value : null,
+      });
       if (!context.datasourceMode && !checkModeConfig && !userStore.isPrivateSpace()) {
         runGetDatabasesHistories({
           currentOrganizationId: userStore.organizationId,

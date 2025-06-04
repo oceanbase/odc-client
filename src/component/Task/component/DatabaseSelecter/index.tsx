@@ -65,7 +65,10 @@ const DatabaseSelecter: React.FC<IProps> = function ({
   const loadExportObjects = async () => {
     setIsLoading(true);
     try {
-      const res = await listDatabases(projectId, null, null, null, null, null, null, true, null);
+      const res = await listDatabases({
+        projectId,
+        existed: true,
+      });
       if (res?.contents) {
         setDatabaseList(databaseFilter ? databaseFilter(res?.contents) : res?.contents);
         datasourceStatus.asyncUpdateStatus([
