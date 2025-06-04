@@ -88,8 +88,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   const scrollSwitcher = useRef<Boolean>(true);
   const [spaceType, setSpaceType] = useState(ESpaceType.USER);
   const isAdmin = odc.appConfig.manage.user.isAdmin({
-    builtIn: login.user?.builtIn,
-    accountName: login.user?.accountName,
+    roleIds: login.user?.roleIds,
   });
   const [searchValue, setSearchValue] = useState('');
 
