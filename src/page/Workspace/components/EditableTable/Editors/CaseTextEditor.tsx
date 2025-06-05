@@ -28,11 +28,13 @@ import AntdEditorWrap from './AntdEditorWrap';
 interface CaseOptions {
   caseSensitive: boolean;
   escapes: string;
+  valueFilter?: (value: string) => string;
 }
 
 export function CaseTextEditor<T>({
   row,
   onRowChange,
+  valueFilter,
   column,
   width,
   caseSensitive,
@@ -75,6 +77,7 @@ export function CaseTextEditor<T>({
           }}
           style={{ width: Math.max(width, 200), height: 68 }}
           value={value}
+          valueFilter={valueFilter}
           onChange={innerOnChange}
           autoSize={false}
         />
@@ -109,6 +112,7 @@ export function CaseTextEditor<T>({
           <CaseTextArea
             caseSensitive={caseSensitive}
             escapes={escapes}
+            valueFilter={valueFilter}
             autoSize={{ minRows: 15, maxRows: 15 }}
             value={modalTextValue}
             onKeyDown={(e) => {
