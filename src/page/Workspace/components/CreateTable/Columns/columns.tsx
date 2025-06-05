@@ -36,6 +36,10 @@ interface IColumnParams {
   session?: SessionStore;
 }
 
+const valueFilter = (value: string) => {
+  return value.replace(/[\n\r\v\t\f\s]/g, '');
+};
+
 export function useColumns({ session }: IColumnParams, originColumns: TableColumn[]): Column[] {
   const { dataTypes } = session;
   const { dialectType, type } = session.connection || {};
@@ -78,6 +82,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
       return (
         <CaseTextEditor
           {...rest}
+          valueFilter={valueFilter}
           caseSensitive={sqlConfig?.caseSensitivity}
           escapes={sqlConfig?.escapeChar}
           onRowChange={(newRow: TableColumn, submit) => {

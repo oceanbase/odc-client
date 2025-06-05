@@ -77,6 +77,7 @@ interface WrapProps {
   value?: string;
   caseSensitive?: boolean;
   escapes?: string;
+  valueFilter?: (value: string) => string;
 }
 
 export function CaseInput(props: InputProps & WrapProps) {
@@ -139,7 +140,7 @@ const CaseTextArea = forwardRef<TextAreaRef, ICaseTextAreaProps>(function CaseTe
   props: ICaseTextAreaProps,
   ref,
 ) {
-  const { value, caseSensitive, escapes, onChange, ...rest } = props;
+  const { value, caseSensitive, escapes, onChange, valueFilter, ...rest } = props;
   const [innerValue, setInnerValue] = useState<string>();
   const [onChangeValue, setOnChangeValue] = useState<any>();
   useEffect(() => {
@@ -180,18 +181,26 @@ const CaseTextArea = forwardRef<TextAreaRef, ICaseTextAreaProps>(function CaseTe
       onChange={(e) => {
         const start = e.target.selectionStart,
           end = e.target.selectionEnd;
+
+        if (valueFilter) {
+          e.target.value = valueFilter(e.target.value);
+        }
+
         const { displayValue, onChangeValue } = handleChange(e);
         setInnerValue(displayValue);
+
         if (typeof onChangeValue === 'string') {
           setOnChangeValue(onChangeValue);
         } else {
           setOnChangeValue(onChangeValue?.target?.value);
         }
+
         if (e.target.value !== displayValue) {
           Promise.resolve().then(() => {
             inputRef?.current?.resizableTextArea?.textArea?.setSelectionRange(start, end);
           });
         }
+
         if (typeof onChangeValue !== 'string') {
           onChange?.(onChangeValue as any);
         }
