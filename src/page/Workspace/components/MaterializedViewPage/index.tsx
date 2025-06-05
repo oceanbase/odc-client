@@ -91,7 +91,7 @@ const MaterializedViewPage = inject(
       );
     };
     const [materializedView, setMaterializedView] = useState<Partial<IMaterializedView>>(null);
-    const showPartition = !!materializedView?.partitions?.partType;
+    const showPartition = Boolean(materializedView?.partitions?.partType);
 
     const handlePropsTabChanged = async (propsTab: PropsTab) => {
       pageStore.updatePage(
@@ -257,16 +257,14 @@ const MaterializedViewPage = inject(
                           }),
                           children: <MvViewConstraints />,
                         },
-                        showPartition
-                          ? {
-                              key: PropsTab.PARTITION,
-                              label: formatMessage({
-                                id: 'workspace.window.table.propstab.partition',
-                                defaultMessage: '分区',
-                              }),
-                              children: <MvViewPartitions />,
-                            }
-                          : null,
+                        showPartition && {
+                          key: PropsTab.PARTITION,
+                          label: formatMessage({
+                            id: 'workspace.window.table.propstab.partition',
+                            defaultMessage: '分区',
+                          }),
+                          children: <MvViewPartitions />,
+                        },
                         {
                           key: PropsTab.DDL,
                           label: formatMessage({
@@ -275,7 +273,7 @@ const MaterializedViewPage = inject(
                           }),
                           children: <MvViewDDL />,
                         },
-                      ]}
+                      ].filter(Boolean)}
                     />
                   ),
                 },
