@@ -1200,7 +1200,6 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               />
             </span>
             <Popover
-              // visible={true}
               content={
                 <Checkbox.Group
                   value={columnsToDisplay.map((c) => c.key)}
@@ -1216,7 +1215,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                     maxHeight: '500px',
                     overflowY: 'auto',
                     overflowX: 'hidden',
-                    padding: 2, // 这个变量在样式上不是必须的，但是加上之后可以避免checkboxgroup高度抖动的问题
+                    padding: 2, // 避免高度抖动
                   }}
                 >
                   <Row>
@@ -1233,10 +1232,31 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   </Row>
                 </Checkbox.Group>
               }
-              title={formatMessage({
-                id: 'workspace.window.sql.button.columnFilter.title',
-                defaultMessage: '请选择要展示的列',
-              })}
+              title={
+                <>
+                  {/* 添加全选/取消全选按钮 */}
+                  <Checkbox
+                    indeterminate={
+                      columnsToDisplay.length > 0 && columnsToDisplay.length < columns.length
+                    }
+                    checked={columnsToDisplay.length === columns.length}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setColumnsToDisplay(columns);
+                      } else {
+                        setColumnsToDisplay([]);
+                      }
+                    }}
+                    className={styles.checkbox}
+                  />
+                  <span>
+                    {formatMessage({
+                      id: 'workspace.window.sql.button.columnFilter.title',
+                      defaultMessage: '请选择要展示的列',
+                    })}
+                  </span>
+                </>
+              }
             >
               <ToolbarButton
                 text={formatMessage({
