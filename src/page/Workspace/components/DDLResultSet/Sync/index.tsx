@@ -81,10 +81,7 @@ const Sync: React.FC<IProps> = (props) => {
             setOpenSyncRecordDrawer(true);
           }}
         >
-          {formatMessage({
-            id: 'src.page.Workspace.components.DDLResultSet.Sync.46962039',
-            defaultMessage: '查看刷新记录 &gt;',
-          })}
+          查看刷新记录
         </Button>
       </>
     );
