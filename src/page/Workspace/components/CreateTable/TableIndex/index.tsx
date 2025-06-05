@@ -41,7 +41,7 @@ import { useColumns } from './columns';
 const defaultIndex: ITableIndex = {
   name: null,
   method: TableIndexMehod.BTREE,
-  scope: TableIndexScope.GLOBAL,
+  scope: TableIndexScope.LOCAL,
   columns: [],
   visible: true,
   type: TableIndexType.NORMAL,
