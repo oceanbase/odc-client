@@ -36,6 +36,7 @@ const ObjectList = ({ modalStore }: Iprops) => {
     actions,
     syncAllLoading,
     fetchSyncAll,
+    next,
   } = globalSearchContext;
   const { positionResourceTree, applyTablePermission, openTree, openSql, applyDbPermission } =
     actions;
@@ -409,7 +410,9 @@ const ObjectList = ({ modalStore }: Iprops) => {
           className={styles.itemButton}
           onClick={(e) => {
             e.stopPropagation();
-            setDatabase?.(object);
+            next?.({
+              database: object,
+            });
           }}
         >
           {formatMessage({
