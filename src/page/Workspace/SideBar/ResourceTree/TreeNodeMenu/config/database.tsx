@@ -424,11 +424,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
 
       ellipsis: true,
       hasDivider(node) {
-        return (
-          setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'true' &&
-          !isLogicalDatabase(node?.data) &&
-          (isClient() || isPrivateSpace)
-        );
+        return !isLogicalDatabase(node?.data) && (isClient() || isPrivateSpace);
       },
       isHide(_, node) {
         return isClient() || isLogicalDatabase(node?.data);
@@ -553,8 +549,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         }),
       ],
       ellipsis: true,
-      hasDivider:
-        setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'true',
+      hasDivider: true,
       isHide(_, node) {
         return isClient() || isPrivateSpace || isLogicalDatabase(node.data);
       },
@@ -622,10 +617,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       },
       ellipsis: true,
       isHide(_, node) {
-        return (
-          setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'false' ||
-          isLogicalDatabase(node.data)
-        );
+        return isLogicalDatabase(node.data);
       },
       run(session, node, pollingDatabase) {
         const database: IDatabase = node.data;

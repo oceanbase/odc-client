@@ -109,7 +109,6 @@ export interface IUserConfig {
   'odc.appearance.language': 'FollowSystem' | string;
   'odc.account.defaultOrganizationType': SpaceType;
   'odc.account.userBehaviorAnalysisEnabled': 'true' | 'false';
-  'odc.database.default.enableGlobalObjectSearch': 'true' | 'false';
   'odc.sqlexecute.default.secretKey': string;
   'odc.sqlexecute.default.queryNumber': string;
   'odc.task.default.rollbackPlan': 'true' | 'false';
