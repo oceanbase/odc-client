@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { Radio, RadioGroupProps } from 'antd';
+import { QuestionCircleOutlined } from '@@node_modules/@ant-design/icons/lib';
+import { Radio, RadioGroupProps, Tooltip } from 'antd';
 import { useState } from 'react';
+import styles from './index.less';
 
 export default function RadioItem(props: {
   options: RadioGroupProps['options'];
@@ -25,9 +27,9 @@ export default function RadioItem(props: {
   const [loading, setLoading] = useState(false);
   return (
     <Radio.Group
-      options={props.options}
       key={props.value}
-      defaultValue={props.value}
+      options={props.options}
+      value={props.value}
       disabled={loading}
       onChange={async (e) => {
         setLoading(true);
@@ -40,3 +42,14 @@ export default function RadioItem(props: {
     />
   );
 }
+
+export const RadioWithTooltip = ({ label, title }) => {
+  return (
+    <>
+      <span className={styles.label}>{label}</span>
+      <Tooltip title={title}>
+        <QuestionCircleOutlined style={{ color: 'var(--icon-color-normal)' }} />
+      </Tooltip>
+    </>
+  );
+};
