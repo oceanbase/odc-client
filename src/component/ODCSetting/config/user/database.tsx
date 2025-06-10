@@ -18,8 +18,15 @@ import { DragInsertTypeText } from '@/constant/label';
 import { AutoCommitMode, DragInsertType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { IODCSetting, ODCSettingGroup } from '../../config';
-import RadioItem from '../../Item/RadioItem';
+import RadioItem, { RadioWithTooltip } from '../../Item/RadioItem';
 import SelectItem from '../../Item/SelectItem';
+import { Tooltip } from 'antd';
+import { QuestionCircleOutlined } from '@@node_modules/@ant-design/icons/lib';
+
+export const EquerySqlResultDisplayMode = {
+  COVER: 'COVER',
+  APPEND: 'APPEND',
+};
 
 const databaseGroup: ODCSettingGroup = {
   label: formatMessage({
@@ -191,6 +198,42 @@ const databaseSettings: IODCSetting[] = [
                 defaultMessage: '否',
               }), //'否'
               value: 'false',
+            },
+          ]}
+          value={value}
+          onChange={onChange}
+        />
+      );
+    },
+  },
+  {
+    label: '结果集展示',
+    key: 'odc.sqlexecute.querySqlResultDisplayMode',
+    locationKey: 'querySqlResultDisplayMode',
+    group: databaseGroup,
+    secondGroup: databaseResultsetGroup,
+    storeType: 'server',
+    render: (value, onChange) => {
+      return (
+        <RadioItem
+          options={[
+            {
+              label: (
+                <RadioWithTooltip
+                  title="最近查询结果覆盖上一次查询结果，若要查看多次执行结果需手动固定结果集（在结果集页签右键操作）。"
+                  label="覆盖"
+                />
+              ),
+              value: EquerySqlResultDisplayMode.COVER,
+            },
+            {
+              label: (
+                <RadioWithTooltip
+                  title="多次查询结果追加展示，需手动关闭结果集页签才会关闭。"
+                  label="追加"
+                />
+              ),
+              value: EquerySqlResultDisplayMode.APPEND,
             },
           ]}
           value={value}

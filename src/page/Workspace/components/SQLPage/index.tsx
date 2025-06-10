@@ -388,8 +388,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         Array.isArray(result?.executeResult) &&
         result?.executeResult?.find((result) => result.status !== ISqlExecuteResultStatus.SUCCESS)
       ) {
-        const firstResultKey = sqlStore.getFirstUnlockedResultKey(pageKey);
-        sqlStore.setActiveTab(pageKey, firstResultKey ? firstResultKey : recordsTabKey);
+        const lastResultKey = sqlStore.getLastUnlockedResultKey(pageKey);
+        sqlStore.setActiveTab(pageKey, lastResultKey ? lastResultKey : recordsTabKey);
       } else if (result?.status !== EStatus.SUBMIT) {
         sqlStore.setActiveTab(pageKey, sqlLintTabKey);
       }
@@ -455,8 +455,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
         Array.isArray(results?.executeResult) &&
         results?.executeResult?.find((result) => result.status !== ISqlExecuteResultStatus.SUCCESS)
       ) {
-        const firstResultKey = sqlStore.getFirstUnlockedResultKey(pageKey);
-        sqlStore.setActiveTab(pageKey, firstResultKey ? firstResultKey : recordsTabKey);
+        const lastResultKey = sqlStore.getLastUnlockedResultKey(pageKey);
+        sqlStore.setActiveTab(pageKey, lastResultKey ? lastResultKey : recordsTabKey);
       } else if (results?.status !== EStatus.SUBMIT) {
         sqlStore.setActiveTab(pageKey, sqlLintTabKey);
       }
@@ -1319,8 +1319,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     /**
      * 装填一下额外数据,详细的列名
      */
-    const firstResultKey = sqlStore.getFirstUnlockedResultKey(pageKey);
-    sqlStore.setActiveTab(pageKey, firstResultKey ? firstResultKey : recordsTabKey);
+    const lastResultKey = sqlStore.getLastUnlockedResultKey(pageKey);
+    sqlStore.setActiveTab(pageKey, lastResultKey ? lastResultKey : recordsTabKey);
 
     // TODO: 刷新左侧资源树
 

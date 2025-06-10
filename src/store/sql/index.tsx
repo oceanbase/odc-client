@@ -39,6 +39,7 @@ import { action, observable, runInAction } from 'mobx';
 import { generateResultSetColumns } from '../helper';
 import sessionManager from '../sessionManager';
 import setting from '../setting';
+import { EquerySqlResultDisplayMode } from '@/component/ODCSetting/config/user/database';
 
 export enum ExcecuteSQLMode {
   PL = 'PL',
@@ -70,6 +71,10 @@ export class SQLStore {
   public records: ISqlExecuteResult[] = [];
   @observable.shallow
   public resultSets: Map<string, IResultSet[]> = new Map();
+
+  @observable.shallow
+  public historyResults: Map<string, (ISqlExecuteResult | IResultSet)[]> = new Map();
+
   @observable.shallow
   public lockedResultSets: IResultSet[] = []; // 编译|运行|调试中的 PL 对象 name, state
 
@@ -195,6 +200,9 @@ export class SQLStore {
     if (!this.resultSets.has(pageKey)) {
       this.resultSets.set(pageKey, []);
     }
+    if (!this.historyResults.has(pageKey)) {
+      this.historyResults.set(pageKey, []);
+    }
     const session = sessionManager.sessionMap.get(sessionId);
     this.logLoading = true;
     try {
@@ -249,13 +257,33 @@ export class SQLStore {
             }
           });
           const resultSet = this.resultSets.get(pageKey);
+          const historyResult = this.historyResults.get(pageKey);
           if (resultSet) {
             const lockedResultSets = resultSet.filter((r) => r.locked); // @ts-ignore
+            if (
+              setting.configurations['odc.sqlexecute.querySqlResultDisplayMode'] ===
+              EquerySqlResultDisplayMode.APPEND
+            ) {
+              const newInfoLength = info?.results?.length || 0;
+              const gap = 30 - newInfoLength;
+              while (historyResult.length > gap) {
+                historyResult.shift();
+              }
+              const allResults = [...historyResult, ...info?.results];
+              this.resultSets.set(pageKey, [
+                ...lockedResultSets,
+                this.getLogTab(info),
+                ...generateResultSetColumns(allResults, session?.connection?.dialectType),
+              ]);
+              this.historyResults.set(pageKey, allResults);
+              return;
+            }
             this.resultSets.set(pageKey, [
               ...lockedResultSets,
               this.getLogTab(info),
-              ...generateResultSetColumns(info.results, session?.connection?.dialectType),
+              ...generateResultSetColumns(info?.results, session?.connection?.dialectType),
             ]);
+            this.historyResults.set(pageKey, info.results);
           }
         });
       };
@@ -676,6 +704,16 @@ export class SQLStore {
       resultSet?.find((r) => !r.locked && r.type !== 'LOG')?.uniqKey ||
       resultSet?.find((r) => !r.locked && r.type === 'LOG')?.uniqKey
     );
+  }
+
+  public getLastUnlockedResultKey(pageKey: string) {
+    const resultSet = this.resultSets.get(pageKey);
+    if (resultSet) {
+      const lastResultKey = [...resultSet]
+        .reverse()
+        .find((r) => !r.locked && r.type !== 'LOG')?.uniqKey;
+      return lastResultKey;
+    }
   }
 
   public getLogKey(pageKey: string) {
