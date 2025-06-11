@@ -36,10 +36,10 @@ export const validForqueryQueryNumber = (value) => {
 };
 
 export const validForqueryLimit = (value) => {
-  if (value > 100000) {
-    return Promise.reject(
-      formatMessage({ id: 'src.component.ODCSetting.4C8CC366', defaultMessage: '不超过100000' }),
-    );
+  const limit =
+    Number(setting.configurations['odc.session.sql-execute.max-result-set-rows']) || 100000;
+  if (value > limit) {
+    return Promise.reject(`不超过${limit}`);
   }
   if (!value) {
     return Promise.reject(
