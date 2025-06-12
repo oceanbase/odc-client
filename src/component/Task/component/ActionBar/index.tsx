@@ -1039,10 +1039,6 @@ const ActionBar: React.FC<IProps> = inject(
           setBtnByCreater(tools, reTryBtn);
         }
       }
-      if (task?.executionStrategy === TaskExecStrategy.TIMER) {
-        // 定时任务无再次发起
-        tools = tools?.filter((item) => item.key !== 'reTry');
-      }
       tools = uniqueTools(tools);
       return tools;
     };
