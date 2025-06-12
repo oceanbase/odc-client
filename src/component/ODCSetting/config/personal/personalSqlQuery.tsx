@@ -18,7 +18,7 @@ import { getCurrentOrganizationId } from '@/store/setting';
 import { IODCSetting, ODCSettingGroup } from '../../config';
 import InputIntergerItem from '../../Item/InputIntegerItem';
 import InputItem from '../../Item/InputItem';
-import { validForqueryLimit, validForqueryQueryNumber } from '../../validators';
+import { validForQueryLimit, validForQueryQueryNumber } from '../../validators';
 
 const databaseGroup: ODCSettingGroup = {
   label: formatMessage({
@@ -42,7 +42,7 @@ const personalSqlQuerySetting: IODCSetting[] = [
     rules: [
       {
         validator(rule, value, callback) {
-          return validForqueryLimit(value);
+          return validForQueryLimit(value);
         },
       },
     ],
@@ -73,7 +73,7 @@ const personalSqlQuerySetting: IODCSetting[] = [
     rules: [
       {
         validator(rule, value, callback) {
-          return validForqueryQueryNumber(value);
+          return validForQueryQueryNumber(value);
         },
       },
     ],

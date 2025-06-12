@@ -1,7 +1,8 @@
 import { formatMessage } from '@/util/intl';
 import setting, { getCurrentOrganizationId } from '@/store/setting';
+import { getSystemConfig } from '@/common/network/other';
 
-export const validForqueryQueryNumber = (value) => {
+export const validForQueryQueryNumber = (value) => {
   const sessionQueryLimit = sessionStorage.getItem(`maxQueryLimit-${getCurrentOrganizationId()}`);
   const queryLimit = setting.getSpaceConfigByKey('odc.sqlexecute.default.maxQueryLimit');
   if (!value) {
@@ -35,11 +36,13 @@ export const validForqueryQueryNumber = (value) => {
   return Promise.resolve();
 };
 
-export const validForqueryLimit = (value) => {
-  const limit =
-    Number(setting.configurations['odc.session.sql-execute.max-result-set-rows']) || 100000;
-  if (value > limit) {
-    return Promise.reject(`不超过${limit}`);
+export const validForQueryLimit = async (value) => {
+  const res = await getSystemConfig();
+  const maxResultsetRows =
+    parseInt(res?.['odc.session.sql-execute.max-result-set-rows']) || Number.MAX_SAFE_INTEGER;
+
+  if (value > maxResultsetRows) {
+    return Promise.reject(`不超过${maxResultsetRows}`);
   }
   if (!value) {
     return Promise.reject(
