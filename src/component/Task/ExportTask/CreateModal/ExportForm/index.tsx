@@ -30,6 +30,7 @@ import { useForm } from 'antd/es/form/Form';
 import ConfigPanel from './ConfigPanel';
 import ObjSelecterPanel from './ObjSelecterPanel';
 import { getTaskDetail } from '@/common/network/task';
+import dayjs from 'dayjs';
 
 export enum FormType {
   ObjSelecter,
@@ -134,6 +135,11 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
             exportContent,
             exportFileMaxSize,
             description: detailRes?.description,
+            executionStrategy: detailRes?.executionStrategy,
+            executionTime:
+              detailRes?.executionTime && detailRes?.executionTime > new Date().getTime()
+                ? dayjs(detailRes?.executionTime)
+                : null,
             ...detailRes?.parameters?.csvConfig,
             withColumnTitle,
           });

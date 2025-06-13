@@ -94,7 +94,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [hasEdit, setHasEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { projectOptions, loadProjects } = useProjects();
-  const { applyPermissionVisible, asyncTaskData } = modalStore;
+  const { applyPermissionVisible, asyncTaskData, applyPermissionData } = modalStore;
   const rolesOptions = roles?.map(({ roleName, id }) => {
     const role = projectRoleMap?.[roleName];
     return {
@@ -119,6 +119,14 @@ const CreateModal: React.FC<IProps> = (props) => {
       loadRoles();
     }
   }, [applyPermissionVisible]);
+
+  useEffect(() => {
+    const { task } = applyPermissionData ?? {};
+    if (task && applyPermissionVisible) {
+      loadEditData();
+    }
+  }, [applyPermissionData]);
+
   const handleFieldsChange = () => {
     setHasEdit(true);
   };
@@ -144,6 +152,24 @@ const CreateModal: React.FC<IProps> = (props) => {
       hadleReset();
     }
   };
+
+  const loadEditData = async () => {
+    const { task } = applyPermissionData;
+    const {
+      parameters: {
+        project: { id: projectId },
+        resourceRoles,
+        applyReason,
+      },
+    } = task;
+    const formData = {
+      projectId: projectOptions?.find(({ value }) => value === projectId) ? projectId : null,
+      applyReason,
+      resourceRoleIds: resourceRoles?.map(({ id }) => id),
+    };
+    form.setFieldsValue(formData);
+  };
+
   const handleSubmit = () => {
     form
       .validateFields()

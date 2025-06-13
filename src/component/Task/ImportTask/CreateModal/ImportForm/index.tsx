@@ -35,6 +35,7 @@ import FileSelecterPanel from './FileSelecterPanel';
 import FormConfigContext from './FormConfigContext';
 import FormContext from './FormContext';
 import { getTaskDetail } from '@/common/network/task';
+import dayjs from 'dayjs';
 
 interface IImportFormProps {
   formType: 'fileSelecter' | 'config';
@@ -122,6 +123,10 @@ const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
           });
           const databaseId = detailRes?.database?.id;
           const executionStrategy = detailRes?.executionStrategy;
+          const executionTime =
+            detailRes?.executionTime && detailRes?.executionTime > new Date().getTime()
+              ? dayjs(detailRes?.executionTime)
+              : null;
           // importContent 转换
           const importContent = getExportContent(
             detailRes?.parameters?.transferDDL,
@@ -132,6 +137,7 @@ const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
             importFileName,
             databaseId,
             executionStrategy,
+            executionTime,
             importContent,
             ...detailRes?.parameters?.csvConfig,
             tableName: detailRes?.parameters?.exportDbObjects?.[0]?.objectName,
