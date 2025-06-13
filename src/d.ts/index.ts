@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Dayjs } from 'dayjs';
 import { ErrorStrategy } from '@/component/Task/ShadowSyncTask/CreateModal/interface';
 import { PLType } from '@/constant/plType';
 import { IRiskLevel } from '@/d.ts/riskLevel';
@@ -2256,7 +2257,7 @@ export interface ExportFormData {
   databaseName?: string;
   databaseId: number;
   executionStrategy: TaskExecStrategy;
-  executionTime?: number;
+  executionTime?: number | Dayjs;
   taskName: string;
   dataTransferFormat: EXPORT_TYPE;
   exportContent: EXPORT_CONTENT;
@@ -2353,7 +2354,7 @@ export interface ImportFormData {
   projectId?: number;
   databaseName?: string;
   executionStrategy: TaskExecStrategy;
-  executionTime?: number;
+  executionTime?: number | Dayjs;
   dataTransferFormat: FILE_DATA_TYPE; // 导入格式
   fileType: IMPORT_TYPE;
   useSys: boolean;
@@ -2885,7 +2886,7 @@ export interface CreateTaskRecord {
   taskType: TaskType;
   parameters: Record<string, any>;
   executionStrategy: TaskExecStrategy;
-  executionTime?: number;
+  executionTime?: number | Dayjs;
   description?: string;
 }
 export interface CreateStructureComparisonTaskRecord {

@@ -29,6 +29,7 @@ import {
 import Action from '@/component/Action';
 import { TaskTypeMap } from '@/component/Task/component/TaskTable';
 import type {
+  IApplyPermissionTaskParams,
   ICycleSubTaskRecord,
   ICycleTaskRecord,
   ILogicalDatabaseAsyncTaskParams,
@@ -265,6 +266,12 @@ const ActionBar: React.FC<IProps> = inject(
         case TaskType.APPLY_DATABASE_PERMISSION: {
           modalStore.changeApplyDatabasePermissionModal(true, {
             task: task as TaskDetail<IApplyDatabasePermissionTaskParams>,
+          });
+          return;
+        }
+        case TaskType.APPLY_PROJECT_PERMISSION: {
+          modalStore.changeApplyPermissionModal(true, {
+            task: task as TaskDetail<IApplyPermissionTaskParams>,
           });
           return;
         }

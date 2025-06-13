@@ -32,6 +32,7 @@ import {
   SubTaskStatus,
   TaskDetail,
   IResultSetExportTaskParams,
+  IApplyPermissionTaskParams,
 } from '@/d.ts';
 import { SearchStatus } from '@/page/Workspace/SideBar/ResourceTree/DatabaseSearchModal/constant';
 import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
@@ -96,7 +97,10 @@ interface ResultSetExportData {
   task?: TaskDetail<IResultSetExportTaskParams>;
 }
 
-interface ApplyPermissionData {}
+interface ApplyPermissionData {
+  projectId?: number;
+  task?: Partial<TaskDetail<IApplyPermissionTaskParams>>;
+}
 
 interface ApplyDatabasePermissionData {
   projectId?: number;

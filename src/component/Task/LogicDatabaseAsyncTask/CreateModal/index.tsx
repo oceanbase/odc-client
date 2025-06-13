@@ -88,7 +88,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       triggerStrategy,
     };
     if (triggerStrategy === TaskExecStrategy.START_AT) {
-      formData.startAt = dayjs(startAt);
+      formData.startAt = startAt && startAt > new Date().getTime() ? dayjs(startAt) : null;
     }
     form.setFieldsValue(formData);
   };

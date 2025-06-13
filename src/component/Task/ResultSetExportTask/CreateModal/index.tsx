@@ -45,6 +45,8 @@ import DatabaseSelect from '../../component/DatabaseSelect';
 import { CsvFormItemPanel } from './CsvFormItemPanel';
 import styles from './index.less';
 import setting from '@/store/setting';
+import dayjs from 'dayjs';
+
 const { Text } = Typography;
 const { Option } = Select;
 interface IProps {
@@ -172,6 +174,11 @@ const CreateModal: React.FC<IProps> = (props) => {
             databaseId,
             ...task.parameters,
             description: task.description,
+            executionStrategy: task.executionStrategy,
+            executionTime:
+              task.executionTime && task.executionTime > new Date().getTime()
+                ? dayjs(task.executionTime)
+                : null,
           }
         : {
             tableName,

@@ -58,8 +58,13 @@ const SelectPanel = forwardRef<any, IProps>(function (
   const [form] = Form.useForm<IShaodwSyncData>();
   const loopRef = useRef<any>();
   const unmountedRef = useUnmountedRef();
+  const dataRef = useRef(data);
 
   const [selectDestTableNames, setSelectDestTableNames] = useState([]);
+
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
 
   const sourceDisplayTables = useMemo(() => {
     if (!sourceSearchValue) {
@@ -75,23 +80,30 @@ const SelectPanel = forwardRef<any, IProps>(function (
   const targetDisplayTables = useMemo(() => {
     let targetTables = [];
     if (!targetSearchValue) {
-      targetTables = Array.from(data.originTableNames);
+      targetTables = Array.from(dataRef.current.originTableNames);
     } else {
-      targetTables = Array.from(data.originTableNames)?.filter(
+      targetTables = Array.from(dataRef.current.originTableNames)?.filter(
         (name) => name?.toLowerCase().indexOf(targetSearchValue) > -1,
       );
     }
     return targetTables?.map((name) => ({
-      label: data.prefix ? `${data.name}${name}` : `${name}${data.name}`,
+      label: dataRef.current.prefix
+        ? `${dataRef.current.name}${name}`
+        : `${name}${dataRef.current.name}`,
       value: name,
     }));
-  }, [targetSearchValue, data.originTableNames, data.prefix, data.name]);
+  }, [
+    targetSearchValue,
+    dataRef.current.originTableNames,
+    dataRef.current.prefix,
+    dataRef.current.name,
+  ]);
   const [sourceSelectCount, sourceCount] = useMemo(() => {
     let _sourceSelectCount = sourceDisplayTables?.filter((t) => {
-      return data.originTableNames.has(t.value);
+      return dataRef.current.originTableNames.has(t.value);
     })?.length;
     return [_sourceSelectCount ?? 0, sourceDisplayTables?.length ?? 0];
-  }, [sourceDisplayTables, data.originTableNames]);
+  }, [sourceDisplayTables, dataRef.current.originTableNames]);
 
   useImperativeHandle(
     ref,
@@ -103,7 +115,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
             if (!values) {
               return;
             }
-            let originTableNames = Array.from(data.originTableNames);
+            let originTableNames = Array.from(dataRef.current.originTableNames);
             if (values.syncAll) {
               /**
                * 同步全部的情况下，需要再更新一次表获取最新的全量数据
@@ -151,7 +163,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                     setSelectDestTableNames([]);
                   }
                   setData({
-                    ...data,
+                    ...dataRef.current,
                     originTableNames: new Set([]),
                     shadowAnalysisData: result,
                   });
@@ -168,7 +180,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
         },
       };
     },
-    [data],
+    [dataRef.current],
   );
 
   async function updateTables() {
@@ -178,7 +190,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
     const tables = await getTableListByDatabaseName(sessionId, schemaName);
     setTables(tables);
     setData({
-      ...data,
+      ...dataRef.current,
       originTableNames: selectDestTableNames.length
         ? clone(new Set(selectDestTableNames))
         : new Set(),
@@ -206,26 +218,29 @@ const SelectPanel = forwardRef<any, IProps>(function (
     if (index !== -1) {
       // index不等于-1时，说明是VirtualList中的checkbox;
       if (checked) {
-        data.originTableNames.add(sourceDisplayTables[index]?.value);
+        dataRef.current.originTableNames.add(sourceDisplayTables[index]?.value);
       } else {
-        data.originTableNames.delete(sourceDisplayTables[index]?.value);
+        dataRef.current.originTableNames.delete(sourceDisplayTables[index]?.value);
       }
       setIndeterminate(
-        !!data.originTableNames.size && data.originTableNames.size < sourceDisplayTables.length,
+        !!dataRef.current.originTableNames.size &&
+          dataRef.current.originTableNames.size < sourceDisplayTables.length,
       );
-      setCheckAll(data.originTableNames.size === sourceDisplayTables.length);
+      setCheckAll(dataRef.current.originTableNames.size === sourceDisplayTables.length);
     } else {
       if (checked) {
-        data.originTableNames = new Set<string>(sourceDisplayTables.map((item) => item.value));
+        dataRef.current.originTableNames = new Set<string>(
+          sourceDisplayTables.map((item) => item.value),
+        );
       } else {
-        data.originTableNames.clear();
+        dataRef.current.originTableNames.clear();
       }
       setIndeterminate(false);
       setCheckAll(checked);
     }
     setData({
-      ...data,
-      originTableNames: clone(data.originTableNames),
+      ...dataRef.current,
+      originTableNames: clone(dataRef.current.originTableNames),
     });
   }
 
@@ -236,7 +251,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
     if (databaseId) {
       form.setFieldsValue({ databaseId });
       setData({
-        ...data,
+        ...dataRef.current,
         databaseId,
       });
     }
@@ -259,7 +274,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
     );
 
     const newDataObj = {
-      ...data,
+      ...dataRef.current,
       originTableNames: clone(new Set<string>(res?.tables?.map((item) => item.originTableName))),
     };
 
@@ -267,29 +282,39 @@ const SelectPanel = forwardRef<any, IProps>(function (
       /** false：后缀、true：前缀 */
       let prefixTemp = true;
       let nameTemp;
-      // 源数据-表名
-      const originTableName = res?.tables[0]?.originTableName;
-      // 加过后缀/前缀的表名
-      const destTableName = res?.tables[0]?.destTableName;
-      // 后缀
-      if (destTableName?.startsWith(originTableName)) {
+
+      // 寻找第一个能明确判断前缀/后缀模式的表，如果没找到则使用第一个表
+      const targetTable =
+        res.tables.find((table) => {
+          const { originTableName, destTableName } = table;
+          return !(
+            destTableName?.startsWith(originTableName) && destTableName?.endsWith(originTableName)
+          );
+        }) || res.tables[0];
+
+      const { originTableName, destTableName } = targetTable;
+
+      // 判断是前缀还是后缀
+      if (destTableName?.startsWith(originTableName) && !destTableName?.endsWith(originTableName)) {
         prefixTemp = false;
+        nameTemp = destTableName.substring(originTableName.length);
+      } else if (
+        destTableName?.endsWith(originTableName) &&
+        !destTableName?.startsWith(originTableName)
+      ) {
+        prefixTemp = true;
+        nameTemp = destTableName.substring(0, destTableName.length - originTableName.length);
+      } else {
+        prefixTemp = true;
+        nameTemp = '_test_';
       }
-      let arr = destTableName?.split(originTableName);
-      let initialNameArr = ['_test_', '_t'];
-      arr = arr?.map((item, index) => {
-        if (!item) {
-          return initialNameArr[index];
-        }
-        return item;
-      });
-      nameTemp = prefixTemp ? arr?.[0] : arr?.[1];
+
       newDataObj.prefix = prefixTemp;
       newDataObj.name = nameTemp;
       form.setFieldValue('prefix', prefixTemp);
       form.setFieldValue('name', nameTemp);
     }
-    if (!data.originTableNames.size) {
+    if (!dataRef.current.originTableNames.size) {
       newDataObj.originTableNames = new Set();
     }
 
@@ -306,7 +331,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
       <Form
         form={form}
         layout="vertical"
-        initialValues={data}
+        initialValues={dataRef.current}
         onValuesChange={(changedValues, values) => {
           if (changedValues.hasOwnProperty('prefix')) {
             values.name = changedValues.prefix ? '_test_' : '_t';
@@ -314,10 +339,12 @@ const SelectPanel = forwardRef<any, IProps>(function (
               name: values.name,
             });
           }
-          setData({
-            ...data,
+
+          const newData = {
+            ...dataRef.current,
             ...values,
-          });
+          };
+          setData(newData);
         }}
       >
         <DatabaseSelect projectId={projectId} type={TaskType.SHADOW} />
@@ -337,7 +364,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
           <Radio.Group
             onChange={() => {
               setData({
-                ...data,
+                ...dataRef.current,
                 originTableNames: new Set(),
               });
             }}
@@ -483,7 +510,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                           return (
                             <Row key={key} style={{ height: 22, ..._style }}>
                               <Checkbox
-                                checked={data.originTableNames.has(
+                                checked={dataRef.current.originTableNames.has(
                                   sourceDisplayTables[index]?.value,
                                 )}
                                 key={sourceDisplayTables[index]?.value}
@@ -519,7 +546,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                             setCheckAll(false);
                             setIndeterminate(false);
                             setData({
-                              ...data,
+                              ...dataRef.current,
                               originTableNames: new Set(),
                             });
                           }}
@@ -556,7 +583,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                             <a
                               className={styles.delete}
                               onClick={() => {
-                                let newNames = cloneDeep(data.originTableNames);
+                                let newNames = cloneDeep(dataRef.current.originTableNames);
                                 if (newNames.size === targetDisplayTables.length) {
                                   // 源表 全选时，影子表 单选删除。
                                   setCheckAll(false);
@@ -564,7 +591,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                                 newNames.delete(targetDisplayTables[index]?.value);
                                 setIndeterminate(!!newNames.size); // newNames中元素个数大于零时，indeterminate为true; 当元素个数等于零时为false;
                                 setData({
-                                  ...data,
+                                  ...dataRef.current,
                                   originTableNames: newNames,
                                 });
                               }}
