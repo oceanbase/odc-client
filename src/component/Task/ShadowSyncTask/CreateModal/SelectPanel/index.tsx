@@ -194,11 +194,15 @@ const SelectPanel = forwardRef<any, IProps>(function (
 
   useEffect(() => {
     updateTables();
+  }, [schemaName]);
+
+  useEffect(() => {
     return () => {
       clearTimeout(loopRef.current);
       loopRef.current = null;
+      setTables([]);
     };
-  }, [schemaName]);
+  }, []);
 
   const TableIcon = DbObjsIcon.TABLE;
 
