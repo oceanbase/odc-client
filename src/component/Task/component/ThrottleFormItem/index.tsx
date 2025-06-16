@@ -82,7 +82,7 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
                 },
               ]}
             >
-              <InputNumber min={minRowLimit} precision={1} max={maxRowLimit} />
+              <InputNumber min={minRowLimit} precision={0} max={maxRowLimit} />
             </Form.Item>
             <span>Rows/s</span>
           </Space>
