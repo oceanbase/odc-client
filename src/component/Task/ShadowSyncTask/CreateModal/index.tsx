@@ -141,6 +141,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
         res.executionTime && res.executionTime > new Date().getTime()
           ? dayjs(res.executionTime)
           : null,
+      databaseId: modalStore?.shadowSyncData?.databaseId,
     };
     setData(newData);
   }
