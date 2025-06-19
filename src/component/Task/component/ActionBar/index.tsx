@@ -1181,6 +1181,7 @@ const ActionBar: React.FC<IProps> = inject(
           break;
         }
         case TaskStatus.REJECTED: {
+          setBtnByCreater(tools, reTryBtn);
           tools = [viewBtn];
           setBtnByCreater(tools, reTryBtn);
           break;
@@ -1228,15 +1229,7 @@ const ActionBar: React.FC<IProps> = inject(
         }
         case TaskStatus.COMPLETED: {
           tools = [viewBtn];
-          if (
-            [
-              TaskType.DATA_ARCHIVE,
-              TaskType.DATA_DELETE,
-              TaskType.LOGICAL_DATABASE_CHANGE,
-            ].includes(task?.type)
-          ) {
-            setBtnByCreater(tools, reTryBtn);
-          }
+          setBtnByCreater(tools, reTryBtn);
           if (
             [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE, TaskType.SQL_PLAN].includes(task?.type) &&
             haveOperationPermission
