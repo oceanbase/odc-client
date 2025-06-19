@@ -815,6 +815,7 @@ export interface IConnection {
   port: number; // 端口，公有云连接不需要设置 port
   clusterName: string; // OceanBase 集群称，cluster 公有云连接不需要设置
   tenantName: string; // OceanBase 租户名称，tenant 公有云连接不需要设置
+  tenantNickName?: string;
   username: string; // 数据库登录用户名，dbUser
   password: string; // 连接密码，null 表示不设置，空字符串表示空密码，当 passwordSaved=true 时，不能为 null
   passwordEncrypted: string;

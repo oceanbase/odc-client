@@ -26,7 +26,15 @@ interface IOperationItemProps {
   onClick: (fn: (args?: ITableLoadOptions) => void) => void;
 }
 const OperationItem: React.FC<IOperationItemProps> = ({ option, onClick }) => {
-  const { type, content, icon = null, isPrimary, menu, disabled = false } = option;
+  const {
+    type,
+    content,
+    icon = null,
+    isPrimary,
+    menu,
+    disabled = false,
+    trigger = ['click'],
+  } = option;
   let operation = null;
   const { runAction } = useUrlAction();
 
@@ -54,7 +62,7 @@ const OperationItem: React.FC<IOperationItemProps> = ({ option, onClick }) => {
       break;
     case IOperationOptionType.dropdown:
       operation = (
-        <Dropdown trigger={['click']} disabled={disabled} menu={menu} placement="bottomRight">
+        <Dropdown trigger={trigger} disabled={disabled} menu={menu} placement="bottomRight">
           {content}
         </Dropdown>
       );

@@ -104,8 +104,16 @@ export class TaskStore {
   @observable
   public showAllSchemaTaskType: boolean = false;
 
+  @observable
+  public selectedRowKeys: React.Key[] = [];
+
   @action clear() {
     this.showAllSchemaTaskType = false;
+  }
+
+  @action
+  public setSelectedRowKeys(value: React.Key[]) {
+    this.selectedRowKeys = value;
   }
 
   @action

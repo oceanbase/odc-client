@@ -54,6 +54,15 @@ import request from '@/util/request';
 import { downloadFile } from '@/util/utils';
 import { generateFunctionSid } from './pathUtil';
 import { IDatabase } from '@/d.ts/database';
+import { FileExportResponse, ScheduleExportListView } from '@/d.ts/migrateTask';
+import {
+  IBatchTerminateFlowResult,
+  IImportScheduleTaskView,
+  IImportTaskResult,
+  IScheduleTaskImportRequest,
+  IScheduleTerminateCmd,
+  IScheduleTerminateResult,
+} from '@/d.ts/importTask';
 import odc from '@/plugins/odc';
 
 /**
@@ -803,4 +812,171 @@ export async function queryOmsWorkerInstance(): Promise<{
     };
   }
   return res;
+}
+
+/** --------- shchedule 导出  -------- **/
+
+/**
+ * 提交导出任务
+ */
+export async function exportSchedulesTask(params: {
+  ids: number[];
+  scheduleType: TaskType;
+}): Promise<string> {
+  const res = await request.post(`/api/v2/export/exportSchedule`, {
+    data: params,
+  });
+  return res?.data;
+}
+
+/**
+ * 获取导出任务详情列表
+ */
+export async function getExportListView(params: {
+  ids: number[];
+  scheduleType: TaskType;
+}): Promise<ScheduleExportListView[]> {
+  const res = await request.post(`/api/v2/export/getExportListView`, {
+    data: params,
+  });
+  return res?.data;
+}
+
+/**
+ * 获取导出任务的结果
+ * @returns
+ */
+export async function getExportSchedulesResult(exportId: number): Promise<FileExportResponse> {
+  const res = await request.get(`/api/v2/export/getExportResult?exportId=${exportId}`);
+  return res?.data;
+}
+
+/**
+ * 获取导出任务的日志
+ * @returns
+ */
+export async function getExportTaskLog({ exportId }: { exportId: string }): Promise<string> {
+  const res = await request.get(`/api/v2/export/getExportLog?exportId=${exportId}`);
+  return res?.data;
+}
+
+/**
+ * 提交预览导入任务
+ */
+export async function startSchedulePreviewTask(
+  params: IScheduleTaskImportRequest,
+): Promise<string> {
+  const res = await request.post('/api/v2/import/startSchedulePreviewTask', {
+    data: params,
+  });
+  return res?.data;
+}
+
+/**
+ * 预览详情
+ */
+export async function getSchedulePreviewResult(
+  previewId: string,
+): Promise<IImportScheduleTaskView[] | { errMsg: string; isError: boolean }> {
+  const res = await request.get(`/api/v2/import/getSchedulePreviewResult?previewId=${previewId}`, {
+    params: { ignoreError: true },
+  });
+  if (res?.isError) {
+    return res;
+  }
+  return res?.data;
+}
+
+/**
+ * 发起导入
+ */
+export async function startScheduleImportTask(params: IScheduleTaskImportRequest): Promise<string> {
+  const res = await request.post(`/api/v2/import/startScheduleImportTask`, {
+    data: params,
+  });
+  return res?.data;
+}
+
+/**
+ * 导入详情
+ */
+export async function getScheduleImportResult(importTaskId: string): Promise<IImportTaskResult[]> {
+  const res = await request.get(
+    `/api/v2/import/getScheduleImportResult?importTaskId=${importTaskId}`,
+  );
+  return res?.data;
+}
+
+/**
+ * 导入日志
+ */
+export async function getScheduleImportLog(importTaskId: string): Promise<string> {
+  const res = await request.get(`/api/v2/import/getScheduleImportLog?importTaskId=${importTaskId}`);
+  return res?.data;
+}
+
+/** --------- task 终止  -------- **/
+
+/**
+ * 工单任务终止-发起
+ */
+export async function cancelFlowInstance(flowInstanceId: number[]): Promise<string> {
+  const res = await request.post(`/api/v2/flow/flowInstances/asyncCancel`, {
+    data: flowInstanceId,
+  });
+  return res?.data;
+}
+
+/**
+ * 工单任务终止-查看
+ */
+export async function getBatchCancelResult(
+  terminateId: string,
+): Promise<IBatchTerminateFlowResult[]> {
+  const res = await request.get(
+    `/api/v2/flow/flowInstances/asyncCancelResult?terminateId=${terminateId}`,
+  );
+  return res?.data;
+}
+
+/**
+ * 工单任务终止-查看日志
+ */
+export async function getBatchCancelLog(terminateId: string): Promise<string> {
+  const res = await request.get(
+    `/api/v2/flow/flowInstances/asyncCancelLog?terminateId=${terminateId}`,
+  );
+  return res?.data;
+}
+
+/**
+ * 计划任务终止-发起
+ */
+export async function batchTerminateScheduleAndTask(data: IScheduleTerminateCmd): Promise<string> {
+  const res = await request.post(`/api/v2/schedule/schedules/asyncTerminate`, {
+    data,
+  });
+  return res?.data;
+}
+
+/**
+ * 工单任务终止-查看
+ */
+export async function getTerminateScheduleResult(
+  terminateId: string,
+): Promise<IScheduleTerminateResult[]> {
+  const res = await request.get(
+    `/api/v2/schedule/schedules/asyncTerminateResult?terminateId=${terminateId}`,
+  );
+  return res?.data;
+}
+
+/**
+ * 工单任务终止-查看日志
+ */
+export async function getTerminateScheduleLog(terminateId: string): Promise<string> {
+  const res = await request.get(
+    `/api/v2/schedule/schedules/asyncTerminateLog?terminateId=${terminateId}`,
+  );
+  return res?.data;
 }

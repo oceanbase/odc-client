@@ -295,6 +295,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
       taskOpenRef.current = true;
     }
   };
+
   useEffect(() => {
     openDefaultTask();
   }, []);
