@@ -15,10 +15,9 @@
  */
 
 import React from 'react';
-import type { IState as IExportDrawerState } from '../index';
-
+import { ExportFormData } from '@/d.ts';
 interface IFormContext {
-  dfaultConfig?: IExportDrawerState['formData'];
+  dfaultConfig?: ExportFormData;
 }
 
 const FormContext = React.createContext<IFormContext>({ dfaultConfig: null });
