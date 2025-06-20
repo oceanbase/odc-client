@@ -22,6 +22,7 @@ import { DateRuleType } from './RuleContent/ruleItems/DateItem';
 import { IntervalRuleType } from './RuleContent/ruleItems/IntervalItem';
 import { NumberRuleType } from './RuleContent/ruleItems/NumberItem';
 import { OtherRuleType } from './RuleContent/ruleItems/OtherItem';
+import type { Dayjs } from 'dayjs';
 
 export enum RuleItem {
   NUMBER = 'NUMBER',
@@ -107,7 +108,7 @@ export interface IMockFormData {
   databaseId: number;
   databaseName: string;
   executionStrategy: TaskExecStrategy;
-  executionTime?: number;
+  executionTime?: number | Dayjs;
   tableName: string;
   taskName?: string;
   totalCount: number;

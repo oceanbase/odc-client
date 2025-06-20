@@ -18,8 +18,6 @@ const DatabaseSearch: React.FC<IProps> = (props) => {
   const { modalStore, setSearchValue, searchValue, settingStore } = props;
 
   const getShortcut = useMemo(() => {
-    if (settingStore.configurations['odc.database.default.enableGlobalObjectSearch'] === 'false')
-      return;
     let str = '';
     if (isMac()) {
       str = '⌘ J';

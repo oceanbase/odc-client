@@ -65,6 +65,8 @@ import styles from './index.less';
 import setting from '@/store/setting';
 import { rules } from './const';
 import { Rule } from 'antd/es/form';
+import dayjs from 'dayjs';
+
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 interface IProps {
   sqlStore?: SQLStore;
@@ -136,6 +138,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       database: { id: databaseId },
       description,
       executionStrategy,
+      executionTime,
     } = task;
     const {
       delimiter,
@@ -165,6 +168,8 @@ const CreateModal: React.FC<IProps> = (props) => {
       databaseId,
       description,
       executionStrategy,
+      executionTime:
+        executionTime && executionTime > new Date().getTime() ? dayjs(executionTime) : null,
       sqlContentType,
       rollbackContentType,
       generateRollbackPlan,

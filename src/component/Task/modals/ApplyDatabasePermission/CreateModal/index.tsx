@@ -167,11 +167,12 @@ const CreateModal: React.FC<IProps> = (props) => {
       },
       executionStrategy,
     } = task;
+    const idProjectActive = projectOptions?.find(({ value }) => value === projectId);
     const formData = {
       ...defaultValue,
-      projectId,
+      projectId: idProjectActive ? projectId : null,
       executionStrategy,
-      databases: databases?.map((item) => item.id),
+      databases: idProjectActive ? databases?.map((item) => item.id) : [],
       types,
       applyReason,
       expireTime: validDuration ? validDuration : defaultValue.expireTime,

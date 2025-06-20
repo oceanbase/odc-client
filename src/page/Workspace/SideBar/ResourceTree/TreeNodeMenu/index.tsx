@@ -74,10 +74,15 @@ const TreeNodeMenu = (props: IProps) => {
    */
   const isSessionValid = type === ResourceNodeType.Database || dbSession;
 
-  const isShowGlobalSearchEntrance = isSupportQuickOpenGlobalSearchNodes(
+  let isShowGlobalSearchEntrance = isSupportQuickOpenGlobalSearchNodes(
     type as ResourceNodeType,
     node.key,
   );
+  if (type === ResourceNodeType.Database) {
+    isShowGlobalSearchEntrance =
+      isShowGlobalSearchEntrance && Boolean(node?.data?.authorizedPermissionTypes?.length);
+  }
+
   /**
    * 只有dbobjecttype的情况下才可以拖动，因为编辑器需要type才能做出对应的响应
    * 不可拖动

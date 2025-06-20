@@ -36,7 +36,7 @@ export function FunctionTreeNodeData(
   pkg?: Partial<IPackage>,
   index?: number,
 ): TreeDataNode {
-  const funcKey = `${dbSession?.database?.databaseId}-${dbName}-function-pkg-${func.funName}-index:${index}`;
+  const funcKey = `${dbSession?.database?.databaseId}-${packageName}-${dbName}-function-pkg-${func.funName}-index:${index}`;
   let paramRoot: TreeDataNode;
   let returnroot: TreeDataNode;
   let variableRoot: TreeDataNode;

@@ -68,6 +68,7 @@ import styles from './index.less';
 import { isBoolean } from 'lodash';
 import { rules, SwapTableType } from './const';
 import { Rule } from 'antd/es/form';
+import dayjs from 'dayjs';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -259,6 +260,10 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
     form.setFieldsValue({
       ...detailRes?.parameters,
       executionStrategy: detailRes?.executionStrategy,
+      executionTime:
+        detailRes?.executionTime && detailRes?.executionTime > new Date().getTime()
+          ? dayjs(detailRes?.executionTime)
+          : null,
       rowLimit: rateLimitConfig?.rowLimit,
       dataSizeLimit: rateLimitConfig?.dataSizeLimit,
       description: detailRes?.description,

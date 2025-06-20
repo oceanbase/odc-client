@@ -15,6 +15,7 @@
  */
 
 import { ErrorStrategy } from '@/component/Task/modals/ShadowSyncTask/CreateModal/interface';
+import type { Dayjs } from 'dayjs';
 import { PLType } from '@/constant/plType';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import { IUnauthorizedDBResources, TablePermissionType } from '@/d.ts/table';
@@ -48,6 +49,7 @@ export interface IUser {
   builtIn: boolean;
   password: string;
   role: string;
+  roleIds?: number[];
   enabled: boolean;
   roles?: IManagerRole[];
   organizationId: number;
@@ -108,7 +110,6 @@ export interface IUserConfig {
   'odc.appearance.language': 'FollowSystem' | string;
   'odc.account.defaultOrganizationType': SpaceType;
   'odc.account.userBehaviorAnalysisEnabled': 'true' | 'false';
-  'odc.database.default.enableGlobalObjectSearch': 'true' | 'false';
   'odc.sqlexecute.default.secretKey': string;
   'odc.sqlexecute.default.queryNumber': string;
   'odc.task.default.rollbackPlan': 'true' | 'false';
@@ -249,6 +250,10 @@ export interface IManagerUserPermission {
   organizationId: number;
   createTime: number;
   updateTime: number;
+}
+
+export enum IRoles {
+  SYSTEM_ADMIN = 1,
 }
 
 export interface IManagerRole {
@@ -810,6 +815,7 @@ export interface IConnection {
   port: number; // 端口，公有云连接不需要设置 port
   clusterName: string; // OceanBase 集群称，cluster 公有云连接不需要设置
   tenantName: string; // OceanBase 租户名称，tenant 公有云连接不需要设置
+  tenantNickName?: string;
   username: string; // 数据库登录用户名，dbUser
   password: string; // 连接密码，null 表示不设置，空字符串表示空密码，当 passwordSaved=true 时，不能为 null
   passwordEncrypted: string;
@@ -2252,7 +2258,7 @@ export interface ExportFormData {
   databaseName?: string;
   databaseId: number;
   executionStrategy: TaskExecStrategy;
-  executionTime?: number;
+  executionTime?: number | Dayjs;
   taskName: string;
   dataTransferFormat: EXPORT_TYPE;
   exportContent: EXPORT_CONTENT;
@@ -2349,7 +2355,7 @@ export interface ImportFormData {
   projectId?: number;
   databaseName?: string;
   executionStrategy: TaskExecStrategy;
-  executionTime?: number;
+  executionTime?: number | Dayjs;
   dataTransferFormat: FILE_DATA_TYPE; // 导入格式
   fileType: IMPORT_TYPE;
   useSys: boolean;
@@ -2881,7 +2887,7 @@ export interface CreateTaskRecord {
   taskType: TaskType;
   parameters: Record<string, any>;
   executionStrategy: TaskExecStrategy;
-  executionTime?: number;
+  executionTime?: number | Dayjs;
   description?: string;
 }
 export interface CreateStructureComparisonTaskRecord {

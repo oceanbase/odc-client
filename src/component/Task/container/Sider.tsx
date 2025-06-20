@@ -58,6 +58,7 @@ const Sider: React.FC<IProps> = function ({ taskStore, pageStore, className, isP
       openTasksPage(value);
     }
     taskStore.changeTaskPageType(value);
+    taskStore.setSelectedRowKeys([]);
   };
 
   function renderTaskTypeList() {

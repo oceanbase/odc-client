@@ -36,7 +36,7 @@ export function ProcedureTreeNodeData(
   pkg?: Partial<IPackage>,
   index?: number,
 ): TreeDataNode {
-  const funcKey = `${dbSession?.database?.databaseId}-${dbName}-procedure-${packageName}-${proc.proName}-index:${index}`;
+  const funcKey = `${dbSession?.database?.databaseId}-${packageName}-${dbName}-procedure-${packageName}-${proc.proName}-index:${index}`;
   let paramRoot: TreeDataNode;
   let variableRoot: TreeDataNode;
 

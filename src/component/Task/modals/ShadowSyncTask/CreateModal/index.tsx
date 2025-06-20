@@ -28,6 +28,7 @@ import { createTask, getTaskDetail } from '@/common/network/task';
 import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import styles from './index.less';
+import dayjs from 'dayjs';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -132,13 +133,17 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
 
   async function loadEditData() {
     const res = await getTaskDetail(modalStore?.shadowSyncData?.taskId);
-    setData({
+    const newData = {
       ...data,
       ...res?.parameters,
       executionStrategy: res.executionStrategy,
-      executionTime: res.executionTime,
+      executionTime:
+        res.executionTime && res.executionTime > new Date().getTime()
+          ? dayjs(res.executionTime)
+          : null,
       databaseId: modalStore?.shadowSyncData?.databaseId,
-    });
+    };
+    setData(newData);
   }
 
   useEffect(() => {

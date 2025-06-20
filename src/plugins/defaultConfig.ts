@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { IManagerUser } from '@/d.ts';
+import { IRoles, type IManagerUser } from '@/d.ts';
 
 export default {
   login: {
@@ -39,8 +39,8 @@ export default {
       create: true,
       resetPwd: true,
       delete: true,
-      isAdmin: (user: Pick<IManagerUser, 'builtIn' | 'accountName'>) => {
-        return user?.builtIn && user?.accountName === 'admin';
+      isAdmin: (user: Pick<IManagerUser, 'roleIds'>) => {
+        return user?.roleIds?.includes(IRoles.SYSTEM_ADMIN);
       },
       tabInVisible: (setting) => {
         return false;
