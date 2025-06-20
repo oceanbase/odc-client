@@ -77,6 +77,8 @@ interface IProps<RecordType> {
   isSplit?: boolean;
   // 行选择 相关配置 (初使用时容易与antd的rowSelection混淆重复导致bug)
   rowSelecter?: IRowSelecter<RecordType>;
+  // 手动设置是否展示已选择的信息
+  showSelectedInfoBar?: boolean;
   // 行选择状态回调
   rowSelectedCallback?: (selectedRowKeys: any[]) => void;
   // 是否启用 列宽可拖拽
@@ -106,6 +108,7 @@ const CommonTable: <RecordType extends object = any>(
     cascaderContent,
     isSplit = false,
     rowSelecter,
+    showSelectedInfoBar = true,
     rowSelectedCallback = (selectedRowKeys: any[]) => {},
     rowHeight = mode === CommonTableMode.BIG ? DEFAULT_BIG_ROW_HEIGHT : DEFAULT_SMALL_ROW_HEIGHT,
     tableProps = {
@@ -135,7 +138,7 @@ const CommonTable: <RecordType extends object = any>(
   const [pageSize, setPageSize] = useState(0);
   const [columnWidthMap, setColumnWidthMap] = useState(null);
   const tableColumns = getFilteredColumns();
-  const showInfoBar = rowSelecter && !!selectedRowKeys?.length;
+  const showInfoBar = rowSelecter && !!selectedRowKeys?.length && props?.showSelectedInfoBar;
   const TOOLBAR_HEIGHT = showToolbar ? TABLE_TOOLBAR_HEIGHT : 0;
   const INFO_BAR_HEIGHT = showInfoBar ? TABLE_INFO_BAR_HEIGHT : 0;
   const ALERT_INFO_HEIGHT = alertInfoVisible ? TABLE_ALERT_INFO_HEIGHT : 0;
@@ -176,6 +179,9 @@ const CommonTable: <RecordType extends object = any>(
     },
     resetSelectedRows: () => {
       setSelectedRowKeys([]);
+    },
+    setSelectedRowKeys: (keys: number[]) => {
+      setSelectedRowKeys(keys);
     },
   }));
 

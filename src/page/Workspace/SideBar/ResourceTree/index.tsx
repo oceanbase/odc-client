@@ -212,7 +212,7 @@ const ResourceTree: React.FC<IProps> = function ({
       });
       return;
     }
-    let duration = 1100;
+    let duration = 1300;
     if (loadedKeys.includes(shouldExpandedKeys?.[index])) {
       // 已加载的节点只需等待页面加载时间，不需要考虑网络请求时间
       duration = 500;
@@ -439,10 +439,8 @@ const ResourceTree: React.FC<IProps> = function ({
                 />
               ) : null}
               <Group setGroupMode={setGroupMode} groupMode={groupMode} />
-              {settingStore.configurations['odc.database.default.enableGlobalObjectSearch'] ===
-              'true' ? (
-                <SyncMetadata reload={reload} databaseList={[...allDatabasesMap.values()]} />
-              ) : null}
+
+              <SyncMetadata reload={reload} databaseList={[...allDatabasesMap.values()]} />
               <Reload
                 key="ResourceTreeReload"
                 onClick={() => {

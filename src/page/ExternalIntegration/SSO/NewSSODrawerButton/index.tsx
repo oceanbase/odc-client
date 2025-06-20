@@ -15,7 +15,14 @@
  */
 
 import { createIntegration } from '@/common/network/manager';
-import { EncryptionAlgorithm, IntegrationType, ISSOConfig, ISSOType } from '@/d.ts';
+import {
+  EncryptionAlgorithm,
+  IntegrationType,
+  ISSOConfig,
+  ISSOType,
+  SAMLType,
+  ISSO_SAML_CONFIG,
+} from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
 import { encrypt } from '@/util/utils';
@@ -54,6 +61,14 @@ export default function NewSSODrawerButton({ onSuccess }: IProps) {
       clone?.type === ISSOType.LDAP
         ? clone?.ssoParameter?.managerPassword
         : clone?.ssoParameter?.secret;
+    if (clone.type === ISSOType.SAML) {
+      for (let key in SAMLType) {
+        (clone.ssoParameter as ISSO_SAML_CONFIG)[key] = form.getFieldValue([
+          'ssoParameter',
+          key as any,
+        ]);
+      }
+    }
     const isSuccess = await createIntegration({
       type: IntegrationType.SSO,
       name: clone?.name,

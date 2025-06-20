@@ -127,9 +127,12 @@ const TableSelector: React.FC<{
         const findData = treeData.find((tree) => {
           return tree.title === item;
         });
-        selectValue.push(findData.key);
+        !!findData && selectValue.push(findData.key);
       });
       setCheckedKeys(selectValue);
+      if (value?.length !== selectValue?.length) {
+        onChange?.(selectValue);
+      }
     }
   }, [value, treeData]);
 

@@ -59,8 +59,13 @@ const SelectPanel = forwardRef<any, IProps>(function (
   const [form] = Form.useForm<IShaodwSyncData>();
   const loopRef = useRef<any>();
   const unmountedRef = useUnmountedRef();
+  const dataRef = useRef(data);
 
   const [selectDestTableNames, setSelectDestTableNames] = useState([]);
+
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
 
   const sourceDisplayTables = useMemo(() => {
     if (!sourceSearchValue) {
@@ -104,7 +109,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
             if (!values) {
               return;
             }
-            let originTableNames = Array.from(data.originTableNames);
+            let originTableNames = Array.from(dataRef.current.originTableNames);
             if (values.syncAll) {
               /**
                * 同步全部的情况下，需要再更新一次表获取最新的全量数据
@@ -152,7 +157,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
                     setSelectDestTableNames([]);
                   }
                   setData({
-                    ...data,
+                    ...dataRef.current,
                     originTableNames: new Set([]),
                     shadowAnalysisData: result,
                   });
@@ -179,7 +184,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
     const tables = await getTableListByDatabaseName(sessionId, schemaName);
     setTables(tables);
     setData({
-      ...data,
+      ...dataRef.current,
       originTableNames: selectDestTableNames.length
         ? clone(new Set(selectDestTableNames))
         : new Set(),
@@ -190,11 +195,15 @@ const SelectPanel = forwardRef<any, IProps>(function (
 
   useEffect(() => {
     updateTables();
+  }, [schemaName]);
+
+  useEffect(() => {
     return () => {
       clearTimeout(loopRef.current);
       loopRef.current = null;
+      setTables([]);
     };
-  }, [schemaName]);
+  }, []);
 
   const TableIcon = DbObjsIcon.TABLE;
 
@@ -260,7 +269,7 @@ const SelectPanel = forwardRef<any, IProps>(function (
     );
 
     const newDataObj = {
-      ...data,
+      ...dataRef.current,
       originTableNames: clone(new Set<string>(res?.tables?.map((item) => item.originTableName))),
     };
 
@@ -268,29 +277,39 @@ const SelectPanel = forwardRef<any, IProps>(function (
       /** false：后缀、true：前缀 */
       let prefixTemp = true;
       let nameTemp;
-      // 源数据-表名
-      const originTableName = res?.tables[0]?.originTableName;
-      // 加过后缀/前缀的表名
-      const destTableName = res?.tables[0]?.destTableName;
-      // 后缀
-      if (destTableName?.startsWith(originTableName)) {
+
+      // 寻找第一个能明确判断前缀/后缀模式的表，如果没找到则使用第一个表
+      const targetTable =
+        res.tables.find((table) => {
+          const { originTableName, destTableName } = table;
+          return !(
+            destTableName?.startsWith(originTableName) && destTableName?.endsWith(originTableName)
+          );
+        }) || res.tables[0];
+
+      const { originTableName, destTableName } = targetTable;
+
+      // 判断是前缀还是后缀
+      if (destTableName?.startsWith(originTableName) && !destTableName?.endsWith(originTableName)) {
         prefixTemp = false;
+        nameTemp = destTableName.substring(originTableName.length);
+      } else if (
+        destTableName?.endsWith(originTableName) &&
+        !destTableName?.startsWith(originTableName)
+      ) {
+        prefixTemp = true;
+        nameTemp = destTableName.substring(0, destTableName.length - originTableName.length);
+      } else {
+        prefixTemp = true;
+        nameTemp = '_test_';
       }
-      let arr = destTableName?.split(originTableName);
-      let initialNameArr = ['_test_', '_t'];
-      arr = arr?.map((item, index) => {
-        if (!item) {
-          return initialNameArr[index];
-        }
-        return item;
-      });
-      nameTemp = prefixTemp ? arr?.[0] : arr?.[1];
+
       newDataObj.prefix = prefixTemp;
       newDataObj.name = nameTemp;
       form.setFieldValue('prefix', prefixTemp);
       form.setFieldValue('name', nameTemp);
     }
-    if (!data.originTableNames.size) {
+    if (!dataRef.current.originTableNames.size) {
       newDataObj.originTableNames = new Set();
     }
 

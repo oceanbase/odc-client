@@ -37,7 +37,7 @@ import type {
 import { TaskPageType, TaskType } from '@/d.ts';
 import type { PageStore } from '@/store/page';
 import type { TaskStore } from '@/store/task';
-import { isClient } from '@/util/env';
+import { haveOCP, isClient } from '@/util/env';
 import { useLoop } from '@/util/hooks/useLoop';
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
@@ -59,8 +59,19 @@ import useUrlAction, { URL_ACTION } from '@/util/hooks/useUrlAction';
 import useURLParams from '@/util/hooks/useUrlParams';
 import { TASK_EXECUTE_DATE_KEY, TASK_EXECUTE_TIME_KEY, TaskTypeMap } from './const';
 import { getStatusFilters } from './utils';
+import { AsyncTaskOperationButton } from '../AsyncTaskOperationButton';
+import {
+  getExportConfig,
+  getTerminateConfig,
+  isScheduleMigrateTask,
+} from '../AsyncTaskOperationButton/helper';
 const { RangePicker } = DatePicker;
-const { Text } = Typography;
+const { Text, Link } = Typography;
+import ImportModal from '../ImportModal';
+import { useImport } from '../ImportModal/useImport';
+import clusterStore from '@/store/cluster';
+import { useTaskSelection, taskTypeThatCanBeExport } from './useTaskSelection';
+import login from '@/store/login';
 
 interface IProps {
   tableRef: React.RefObject<ITableInstance>;
@@ -80,6 +91,7 @@ interface IProps {
   onMenuClick?: (type: TaskPageType) => void;
   disableProjectCol?: boolean;
 }
+
 const TaskTable: React.FC<IProps> = inject(
   'taskStore',
   'pageStore',
@@ -121,12 +133,23 @@ const TaskTable: React.FC<IProps> = inject(
     const [hoverInNewTaskMenu, setHoverInNewTaskMenu] = useState(false);
     const [listParams, setListParams] = useState(null);
     const [delTaskList, setDelTaskList] = useState<number[]>([]);
+    const [importModalVisible, setImportModalVisible] = useState<boolean>(false);
+    const [importProjectId, setImportProjectId] = useState<string>();
     const { project } = useContext(ProjectContext) || {};
     const projectArchived = isProjectArchived(project);
     const loadParams = useRef(null);
     const { activePageKey } = pageStore;
     const columns = initColumns(listParams);
     const { runAction } = useUrlAction();
+    const { isSubmitImport, debounceSubmit } = useImport(props.onReloadList, importProjectId);
+
+    const { selectedRow, rowSelection, clearSelection } = useTaskSelection({
+      taskStore,
+      taskTabType,
+      taskList,
+      tableRef,
+    });
+
     const { loop: loadData, destory } = useLoop((count) => {
       return async (args: ITableLoadOptions) => {
         const _executeTime = args?.filters?.executeTime ?? executeTime;
@@ -184,6 +207,12 @@ const TaskTable: React.FC<IProps> = inject(
         });
       }
     }, [taskPageScope, taskTabType, activePageKey, urlStatusValue]);
+
+    useEffect(() => {
+      if (executeTime) {
+        localStorage.setItem(TASK_EXECUTE_TIME_KEY, JSON.stringify(executeTime));
+      }
+    }, [executeTime]);
 
     function initColumns(listParams: { filters: ITableFilter; sorter: ITableSorter }) {
       const { filters, sorter } = listParams ?? {};
@@ -494,97 +523,203 @@ const TaskTable: React.FC<IProps> = inject(
         ];
       }
       return [
-        {
-          type: IOperationOptionType.button,
-          content: [
-            TaskPageType.APPLY_PROJECT_PERMISSION,
-            TaskPageType.APPLY_DATABASE_PERMISSION,
-            TaskPageType.APPLY_TABLE_PERMISSION,
-          ].includes(taskTabType)
-            ? activeTaskLabel
-            : formatMessage(
-                {
-                  id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
-                  defaultMessage: '新建{activeTaskLabel}',
-                },
-                { activeTaskLabel },
+        !taskTypeThatCanBeExport.includes(taskTabType) || login.isPrivateSpace()
+          ? {
+              type: IOperationOptionType.button,
+              content: [
+                TaskPageType.APPLY_PROJECT_PERMISSION,
+                TaskPageType.APPLY_DATABASE_PERMISSION,
+                TaskPageType.APPLY_TABLE_PERMISSION,
+              ].includes(taskTabType)
+                ? activeTaskLabel
+                : formatMessage(
+                    {
+                      id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
+                      defaultMessage: '新建{activeTaskLabel}',
+                    },
+                    { activeTaskLabel },
+                  ),
+              //`新建${activeTaskLabel}`
+              isPrimary: true,
+              onClick: () => {
+                props.onMenuClick(taskTabType);
+              },
+            }
+          : {
+              type: IOperationOptionType.dropdown,
+              trigger: ['hover'] as ('contextMenu' | 'hover' | 'click')[],
+              content: (
+                <Button type="primary">
+                  <a onClick={() => props.onMenuClick(taskTabType)}>
+                    <Space>
+                      {formatMessage(
+                        {
+                          id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
+                          defaultMessage: '新建{activeTaskLabel}',
+                        },
+                        { activeTaskLabel },
+                      )}
+
+                      <DownOutlined />
+                    </Space>
+                  </a>
+                </Button>
               ),
-          //`新建${activeTaskLabel}`
-          isPrimary: true,
-          onClick: () => {
-            props.onMenuClick(taskTabType);
-          },
-        },
-      ];
+
+              menu: {
+                items: [
+                  {
+                    key: 'import',
+                    label: formatMessage(
+                      {
+                        id: 'src.component.Task.component.TaskTable.D4FAED98',
+                        defaultMessage: '导入{activeTaskLabel}',
+                      },
+                      { activeTaskLabel },
+                    ),
+                    onClick: () => {
+                      setImportModalVisible(true);
+                    },
+                    disabled: isSubmitImport,
+                    tooltip: isSubmitImport
+                      ? formatMessage({
+                          id: 'src.component.Task.component.TaskTable.55FC08BB',
+                          defaultMessage: '正在导入中',
+                        })
+                      : '',
+                  },
+                ],
+              },
+              onClick: () => {
+                props.onMenuClick(taskTabType);
+              },
+            },
+        isScheduleMigrateTask(taskTabType as any)
+          ? {
+              type: IOperationOptionType.custom,
+              render: () => (
+                <AsyncTaskOperationButton
+                  onReload={() => {
+                    clearSelection();
+                    props.onReloadList?.();
+                  }}
+                  {...getExportConfig(selectedRow)}
+                  dataSource={selectedRow}
+                />
+              ),
+            }
+          : null,
+        [
+          TaskPageType.ALL,
+          TaskPageType.STRUCTURE_COMPARISON,
+          TaskPageType.MULTIPLE_ASYNC,
+        ]?.includes(taskTabType)
+          ? null
+          : {
+              type: IOperationOptionType.custom,
+              render: () => (
+                <AsyncTaskOperationButton
+                  onReload={() => {
+                    clearSelection();
+                    props.onReloadList?.();
+                  }}
+                  {...getTerminateConfig(selectedRow)}
+                  dataSource={selectedRow}
+                />
+              ),
+            },
+      ]?.filter(Boolean);
     };
 
     return (
-      <CommonTable
-        ref={tableRef}
-        mode={CommonTableMode.SMALL}
-        titleContent={null}
-        enableResize
-        operationContent={{
-          options: getOperationContentOption(),
-          isNeedOccupyElement: projectArchived,
-        }}
-        filterContent={{
-          enabledSearch: false,
-          filters: [
-            {
-              name: 'executeTime',
-              defaultValue: urlStatusValue ? TIME_OPTION_ALL_TASK : executeTime,
-              dropdownWidth: 160,
-              options: TimeOptions,
-            },
-            {
-              render: (params: ITableLoadOptions) => {
-                const content = executeTime === 'custom' && (
-                  <RangePicker
-                    className={styles.rangePicker}
-                    style={{
-                      width: '250px',
-                    }}
-                    size="small"
-                    bordered={false}
-                    suffixIcon={null}
-                    defaultValue={executeDate as [Dayjs, Dayjs]}
-                    showTime={{
-                      format: 'HH:mm:ss',
-                    }}
-                    disabledDate={(current) => {
-                      return current > dayjs();
-                    }}
-                    format="YYYY-MM-DD HH:mm:ss"
-                    onChange={(value) => {
-                      setExecuteDate(value);
-                      localStorage.setItem(TASK_EXECUTE_DATE_KEY, JSON.stringify(value));
-                    }}
-                  />
-                );
+      <>
+        <CommonTable
+          ref={tableRef}
+          mode={CommonTableMode.SMALL}
+          titleContent={null}
+          enableResize
+          operationContent={{
+            options: getOperationContentOption(),
+            isNeedOccupyElement: projectArchived,
+          }}
+          filterContent={{
+            enabledSearch: false,
+            filters: [
+              {
+                name: 'executeTime',
+                defaultValue: urlStatusValue ? TIME_OPTION_ALL_TASK : executeTime,
+                dropdownWidth: 160,
+                options: TimeOptions,
+              },
+              {
+                render: (params: ITableLoadOptions) => {
+                  const content = executeTime === 'custom' && (
+                    <RangePicker
+                      className={styles.rangePicker}
+                      style={{
+                        width: '250px',
+                      }}
+                      size="small"
+                      bordered={false}
+                      suffixIcon={null}
+                      defaultValue={executeDate as [Dayjs, Dayjs]}
+                      showTime={{
+                        format: 'HH:mm:ss',
+                      }}
+                      disabledDate={(current) => {
+                        return current > dayjs();
+                      }}
+                      format="YYYY-MM-DD HH:mm:ss"
+                      onChange={(value) => {
+                        setExecuteDate(value);
+                        localStorage.setItem(TASK_EXECUTE_DATE_KEY, JSON.stringify(value));
+                      }}
+                    />
+                  );
+                  return content;
+                },
+              },
+            ],
+          }}
+          onLoad={loadData}
+          onChange={handleChange}
+          tableProps={{
+            className: styles.commonTable,
+            rowClassName: styles.tableRrow,
+            columns: columns as any,
+            dataSource: currentTask?.contents,
+            rowKey: 'id',
+            loading: loading,
+            pagination: urlTriggerValue
+              ? false
+              : {
+                  current: currentTask?.page?.number,
+                  total: currentTask?.page?.totalElements,
+                },
+          }}
+          rowSelecter={
+            [
+              TaskPageType.ALL,
+              TaskPageType.STRUCTURE_COMPARISON,
+              TaskPageType.MULTIPLE_ASYNC,
+            ]?.includes(taskTabType)
+              ? null
+              : rowSelection
+          }
+          showSelectedInfoBar={false}
+        />
 
-                return content;
-              },
-            },
-          ],
-        }}
-        onLoad={loadData}
-        onChange={handleChange}
-        tableProps={{
-          className: styles.commonTable,
-          rowClassName: styles.tableRrow,
-          columns: columns as any,
-          dataSource: currentTask?.contents,
-          rowKey: 'id',
-          loading: loading,
-          pagination: urlTriggerValue
-            ? false
-            : {
-                current: currentTask?.page?.number,
-                total: currentTask?.page?.totalElements,
-              },
-        }}
-      />
+        <ImportModal
+          taskType={taskTabType as any}
+          open={importModalVisible}
+          onCancel={() => setImportModalVisible(false)}
+          onOk={(scheduleTaskImportRequest, previewData, projectId) => {
+            setImportModalVisible(false);
+            setImportProjectId(projectId);
+            debounceSubmit(scheduleTaskImportRequest, previewData);
+          }}
+        />
+      </>
     );
   }),
 );

@@ -29,6 +29,7 @@ import {
 import Action from '@/component/Action';
 import { TaskTypeMap } from '@/component/Task/component/TaskTable/const';
 import type {
+  IApplyPermissionTaskParams,
   ICycleSubTaskRecord,
   ICycleTaskRecord,
   ILogicalDatabaseAsyncTaskParams,
@@ -67,13 +68,7 @@ import RollBackModal from '../RollbackModal';
 import { ProjectRole } from '@/d.ts/project';
 import { useRequest } from 'ahooks';
 import { taskSuccessHintInfo } from '@/constant';
-import {
-  actionInfo,
-  actions,
-  JOB_SCHEDULE_TASKS,
-  limitRertyButtonShowConfig,
-  SCHEDULE_TASKS,
-} from './helper';
+import { actionInfo, actions, JOB_SCHEDULE_TASKS, SCHEDULE_TASKS } from './helper';
 import { IAddOperationsParams } from './type';
 interface IProps {
   userStore?: UserStore;
@@ -252,6 +247,12 @@ const ActionBar: React.FC<IProps> = inject(
         case TaskType.APPLY_DATABASE_PERMISSION: {
           actions[type]({
             task: task as TaskDetail<IApplyDatabasePermissionTaskParams>,
+          });
+          return;
+        }
+        case TaskType.APPLY_PROJECT_PERMISSION: {
+          modalStore.changeApplyPermissionModal(true, {
+            task: task as TaskDetail<IApplyPermissionTaskParams>,
           });
           return;
         }
@@ -853,10 +854,6 @@ const ActionBar: React.FC<IProps> = inject(
           addRetryButton();
         }
       }
-      if (task?.executionStrategy === TaskExecStrategy.TIMER) {
-        // 定时任务无再次发起
-        tools = tools?.filter((item) => item.key !== 'reTry');
-      }
       tools = uniqueTools(tools);
       return tools;
     };
@@ -985,9 +982,7 @@ const ActionBar: React.FC<IProps> = inject(
           tools.push(...operations);
         }
       };
-      const enableRetry =
-        status !== TaskStatus.COMPLETED ||
-        limitRertyButtonShowConfig?.[status]?.includes(task?.type);
+      const enableRetry = isOwner;
       initTools({ view: true, retry: enableRetry });
       addOperations(operationNeedPermission?.[status]);
 

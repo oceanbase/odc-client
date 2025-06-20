@@ -54,7 +54,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const loadEditData = async () => {
       const { task } = dataMockerData;
 
-      const { description, executionStrategy } = task;
+      const { description, executionStrategy, executionTime } = task;
       const taskDetail = task?.parameters?.taskDetail ?? null;
       const databaseId = task?.database?.id ?? null;
       const taskDetailObj: {
@@ -94,6 +94,8 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         strategy,
         batchSize,
         executionStrategy,
+        executionTime:
+          executionTime && executionTime > new Date().getTime() ? dayjs(executionTime) : null,
         description,
         columns,
       };

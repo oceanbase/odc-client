@@ -852,7 +852,7 @@ export default inject('userStore')(
                   >
                     {fields?.map((field, index) => {
                       return (
-                        <Space key={field.key}>
+                        <div key={field.key} style={{ display: 'flex' }}>
                           <Form.Item
                             {...field}
                             key="attributeName"
@@ -876,23 +876,26 @@ export default inject('userStore')(
                             <Input
                               style={{
                                 width: 200,
+                                marginLeft: '8px',
                               }}
                               placeholder={formatMessage({
                                 id: 'odc.NewSSODrawerButton.SSOForm.EnterACustomFieldMapping',
                                 defaultMessage: '请输入自定义字段映射规则',
                               })} /*请输入自定义字段映射规则*/
                             />
-                            <Icon
-                              style={{
-                                cursor: 'pointer',
-                                paddingLeft: 10,
-                                color: 'var(--text-color-hint)',
-                              }}
-                              component={DeleteOutlined}
-                              onClick={() => operation.remove(index)}
-                            />
                           </Form.Item>
-                        </Space>
+                          <Icon
+                            style={{
+                              cursor: 'pointer',
+                              height: '100%',
+                              marginLeft: '8px',
+                              marginTop: '8px',
+                              color: 'var(--text-color-hint)',
+                            }}
+                            component={DeleteOutlined}
+                            onClick={() => operation.remove(index)}
+                          />
+                        </div>
                       );
                     })}
                     <Button className={styles.add} onClick={() => operation.add()} type="dashed">

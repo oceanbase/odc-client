@@ -114,6 +114,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       jobParameters,
       triggerConfig: { triggerStrategy, cronExpression, hours, days },
       database: { id: databaseId },
+      allowConcurrent,
       ...rest
     } = data;
     const sqlContentType = jobParameters?.sqlObjectIds ? SQLContentType.FILE : SQLContentType.TEXT;
@@ -124,6 +125,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       sqlContentType,
       sqlFiles: undefined,
       timeoutMillis: jobParameters.timeoutMillis / 1000 / 60 / 60,
+      allowConcurrent,
     };
 
     if (sqlContentType === SQLContentType.FILE) {

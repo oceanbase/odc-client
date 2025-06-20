@@ -1,0 +1,53 @@
+.rulesPanel {
+  background: #ffffff;
+  border-radius: 2px;
+  .title {
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 12px;
+  }
+  :global(.ant-collapse > .ant-collapse-item > .ant-collapse-header) {
+    padding: 16px;
+  }
+  :global(.ant-collapse-content-box) {
+    padding-top: 0px !important ;
+  }
+  :global(.ant-table-row) {
+    & > td {
+      height: auto;
+      padding: 8px !important;
+    }
+  }
+  :global(.ant-table-thead) {
+    & > tr > th {
+      height: auto;
+      padding: 8px !important;
+    }
+  }
+}
+
+.modal {
+  padding-bottom: 0px !important;
+  :global(.ant-table-row) {
+    & > td {
+      height: auto;
+      padding: 8px !important;
+    }
+  }
+  :global(.ant-table-thead) {
+    & > tr > th {
+      height: auto;
+      padding: 8px !important;
+    }
+  }
+}
+
+.riskConfirmCheckboxDanger {
+  color: #ff4d4f;
+}
+
+.checkboxError {
+  :global(.ant-checkbox-inner) {
+    border-color: #ff4d4f;
+    color: #ff4d4f;
+  }
+}

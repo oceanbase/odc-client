@@ -353,7 +353,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
   const submitBtn = useMemo(() => {
     const isSingleGenerateCount = generateCount === 1;
     const isSingleGenerateCountMessage = formatMessage({
-      id: 'src.component.Task.component.PartitionPolicyFormTable.9F024A60',
+      id: 'src.component.Task.component.PartitionPolicyFormTable.B988E243',
       defaultMessage:
         '当前预创建分区数量过小，若调度失败恐影响业务运行，建议调整预创建分区数量至2个及以上。',
     });

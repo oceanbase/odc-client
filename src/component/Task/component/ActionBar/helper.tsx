@@ -30,14 +30,6 @@ export const SCHEDULE_TASKS = [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE, Task
 /** 作业调度任务 */
 export const JOB_SCHEDULE_TASKS = [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE];
 
-export const limitRertyButtonShowConfig = {
-  [TaskStatus.COMPLETED]: [
-    TaskType.DATA_ARCHIVE,
-    TaskType.DATA_DELETE,
-    TaskType.LOGICAL_DATABASE_CHANGE,
-  ],
-};
-
 export const actionInfo = {
   reTryBtn: {
     key: 'reTry',
