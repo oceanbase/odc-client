@@ -21,7 +21,12 @@ import WindowManager from '@/component/WindowManager';
 import WorkspaceSideTip from '@/component/WorkspaceSideTip';
 import type { IPage } from '@/d.ts';
 import odc from '@/plugins/odc';
-import { movePagePostion, openNewSQLPage, openCreateTablePage } from '@/store/helper/page';
+import {
+  movePagePostion,
+  openNewSQLPage,
+  openCreateTablePage,
+  openSQLResultSetViewPage,
+} from '@/store/helper/page';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import type { PageStore } from '@/store/page';
@@ -47,6 +52,7 @@ import SideBar from './SideBar';
 import { isLogicalDatabase } from '@/util/database';
 import { DatabaseGroup } from '@/d.ts/database';
 import { ResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/type';
+import { getAsyncResultSet } from '@/common/network/task';
 
 let _closeMsg = '';
 export function changeCloseMsg(t: any) {
@@ -74,12 +80,16 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   const [isReady, setIsReady] = useState<boolean>(false);
   const { tabKey } = useParams<{ tabKey: string }>();
 
-  function resolveParams() {
+  async function resolveParams() {
     const projectId = toInteger(params.get('projectId'));
     const databaseId = toInteger(params.get('databaseId'));
     const datasourceId = toInteger(params.get('datasourceId'));
     const isLogicalDatabase = params.get('isLogicalDatabase') === 'true';
     const isCreateTable = params.get('isCreateTable') === 'true';
+    const isResultSets = params.get('resultSets') === 'true';
+    const taskId = params.get('taskId');
+    const sqlContent = JSON.parse(params.get('sqlContent') || '{}');
+
     databaseId &&
       resourceTreeContext?.setCurrentObject({
         value: databaseId,
@@ -98,6 +108,11 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       resourceTreeContext?.setSelectDatasourceId(datasourceId);
       resourceTreeContext?.setGroupMode(DatabaseGroup.dataSource);
       databaseId && openNewSQLPage(databaseId);
+    } else if (isResultSets && taskId) {
+      const resultSets = await getAsyncResultSet(Number(taskId));
+      if (resultSets) {
+        await openSQLResultSetViewPage(Number(taskId), resultSets, sqlContent);
+      }
     } else {
       return;
     }

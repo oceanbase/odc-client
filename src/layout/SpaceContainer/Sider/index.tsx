@@ -51,6 +51,7 @@ import MineItem from './MineItem';
 import SettingItem from './SettingItem';
 import SpaceSelect from './SpaceSelect';
 import { gotoSQLWorkspace } from '@/util/route';
+import setting from '@/store/setting';
 
 interface IProps {
   taskStore?: TaskStore;
@@ -97,18 +98,20 @@ const Sider: React.FC<IProps> = function (props) {
         )}
 
         <Space size={mentItemGap} direction="vertical" style={{ width: '100%' }}>
-          <Link to={`/${IPageType.Console}`}>
-            <MenuItem
-              key={IPageType.Console}
-              selected={selected === IPageType.Console}
-              icon={HomeOutlined}
-              collapsed={collapsed}
-              label={formatMessage({
-                id: 'src.layout.SpaceContainer.Sider.DC8F533F',
-                defaultMessage: '工作台',
-              })}
-            />
-          </Link>
+          {setting.enableWorkbench ? (
+            <Link to={`/${IPageType.Console}`}>
+              <MenuItem
+                key={IPageType.Console}
+                selected={selected === IPageType.Console}
+                icon={HomeOutlined}
+                collapsed={collapsed}
+                label={formatMessage({
+                  id: 'src.layout.SpaceContainer.Sider.DC8F533F',
+                  defaultMessage: '工作台',
+                })}
+              />
+            </Link>
+          ) : null}
           <Link to={`/${IPageType.Project}`}>
             <MenuItem
               key={IPageType.Project}
