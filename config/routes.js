@@ -31,7 +31,7 @@ module.exports = [
                 { path: '/auth/:page', component: '@/page/Auth', spmBPos: 'b64007' },
                 { path: '/secure/:page', component: '@/page/Secure', spmBPos: 'b64008' },
                 { path: '/externalIntegration/:page', component: '@/page/ExternalIntegration', spmBPos: 'b64009' },
-                { path: '/', redirect: '/console'},
+                { path: '/', component: '@/layout/DefaultRedirect'},
               ],
             },
             {

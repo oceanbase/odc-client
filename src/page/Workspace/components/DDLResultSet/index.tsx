@@ -731,55 +731,65 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     );
   };
 
-  const getExecuteIcon = () => {
-    return showExecutePlan && withQueryProfile ? (
-      <ToolbarButton
-        text={formatMessage({
-          id: 'src.page.Workspace.components.DDLResultSet.22F863D6',
-          defaultMessage: '执行画像',
-        })}
-        icon={<Icon component={SqlProfile} />}
-        onClick={() => {
-          onOpenExecutingDetailModal?.(traceId, originSql, null, traceEmptyReason);
-          setTimeout(() => {
-            updateExecutePlanGuideCache();
-          }, 1000);
-        }}
-        tip={executeGuideTipContent()}
-        overlayInnerStyle={{ width: 300 }}
-      />
-    ) : (
-      <>
-        {showExplain &&
-          ([GeneralSQLType.DML, GeneralSQLType.DQL].includes(props?.generalSqlType) &&
-          props?.traceId ? (
+  // 分析按钮组（执行计划、Trace等）
+  const getAnalysisButtons = () => {
+    const buttons = [];
+
+    // 执行画像按钮
+    if (showExecutePlan && withQueryProfile) {
+      buttons.push(
+        <ToolbarButton
+          key="execute-profile"
+          text={formatMessage({
+            id: 'src.page.Workspace.components.DDLResultSet.22F863D6',
+            defaultMessage: '执行画像',
+          })}
+          icon={<Icon component={SqlProfile} />}
+          onClick={() => {
+            onOpenExecutingDetailModal?.(traceId, originSql, null, traceEmptyReason);
+            setTimeout(() => {
+              updateExecutePlanGuideCache();
+            }, 1000);
+          }}
+          tip={executeGuideTipContent()}
+          overlayInnerStyle={{ width: 300 }}
+        />,
+      );
+    } else {
+      // 执行计划按钮
+      if (showExplain) {
+        if (
+          [GeneralSQLType.DML, GeneralSQLType.DQL].includes(props?.generalSqlType) &&
+          props?.traceId
+        ) {
+          buttons.push(
             <ToolbarButton
-              text={
-                formatMessage({
-                  id: 'odc.components.DDLResultSet.Plan',
-                  defaultMessage: '计划',
-                }) // 计划
-              }
+              key="execute-plan"
+              text={formatMessage({
+                id: 'odc.components.DDLResultSet.Plan',
+                defaultMessage: '计划',
+              })}
               icon={<ExpainSvg status={IConStatus.INIT} />}
               onClick={() => {
                 onShowExecuteDetail?.();
               }}
-            />
-          ) : (
+            />,
+          );
+        } else {
+          buttons.push(
             <Tooltip
+              key="execute-plan-disabled"
               title={
                 [GeneralSQLType.DDL, GeneralSQLType.OTHER].includes(props?.generalSqlType)
                   ? formatMessage({
                       id: 'odc.components.DDLResultSet.TheCurrentStatementTypeDoes',
                       defaultMessage: '当前语句类型不支持查看执行详情',
                     })
-                  : // 当前语句类型不支持查看执行详情
-                    formatMessage({
+                  : formatMessage({
                       id: 'odc.components.DDLResultSet.TheTraceIdIsEmpty',
                       defaultMessage:
                         'TRACE ID 为空，请确保该语句运行时 enable_sql_audit 系统参数及 ob_enable_trace_log 变量值均为 ON',
                     })
-                // TRACE ID 为空，请确保该语句运行时 enable_sql_audit 系统参数及 ob_enable_trace_log 变量值均为 ON
               }
             >
               <ToolbarButton
@@ -789,18 +799,23 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                 }}
                 disabled
               />
-            </Tooltip>
-          ))}
+            </Tooltip>,
+          );
+        }
+      }
 
-        {showTrace &&
-          (isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=') ? (
+      // Trace按钮
+      if (showTrace) {
+        if (isString(obVersion) && OBCompare(obVersion, ODC_TRACE_SUPPORT_VERSION, '>=')) {
+          buttons.push(
             <ToolbarButton
+              key="trace"
               text={
                 withFullLinkTrace
                   ? formatMessage({
                       id: 'odc.src.page.Workspace.components.DDLResultSet.FullLinkTrace',
                       defaultMessage: '全链路 Trace',
-                    }) //'全链路 Trace'
+                    })
                   : traceEmptyReason
               }
               disabled={!withFullLinkTrace}
@@ -808,20 +823,393 @@ const DDLResultSet: React.FC<IProps> = function (props) {
               onClick={() => {
                 onShowTrace?.();
               }}
-            />
-          ) : (
+            />,
+          );
+        } else {
+          buttons.push(
             <ToolbarButton
+              key="trace-disabled"
               text={traceEmptyReason}
               disabled={true}
               icon={<TraceSvg />}
               onClick={() => {
                 onShowTrace?.();
               }}
+            />,
+          );
+        }
+      }
+    }
+
+    return buttons;
+  };
+
+  // 编辑状态按钮组
+  const getEditingButtons = () => {
+    if (!isEditing) return [];
+
+    const buttons = [];
+
+    // 提交相关按钮
+    if (!autoCommit) {
+      buttons.push(
+        <SubmitConfirm
+          key="modify-submit"
+          onConfirm={() => {
+            onSubmitRows?.(editRows, limit || 1000, true, table.columns);
+          }}
+        >
+          <ToolbarButton
+            text={formatMessage({
+              id: 'odc.components.DDLResultSet.ModifyAndSubmit',
+              defaultMessage: '修改并提交',
+            })}
+            icon={<CloudUploadOutlined />}
+            status={isSubmitting ? IConStatus.RUNNING : IConStatus.INIT}
+            isShowText
+          />
+        </SubmitConfirm>,
+      );
+    }
+
+    buttons.push(
+      <ToolbarButton
+        key="confirm-modify"
+        text={formatMessage({
+          id: 'odc.components.DDLResultSet.ConfirmModification',
+          defaultMessage: '确认修改',
+        })}
+        icon={<CheckOutlined />}
+        isShowText
+        status={isSubmitting ? IConStatus.RUNNING : IConStatus.INIT}
+        onClick={async () => {
+          setIsSubmitting(true);
+          try {
+            await onSubmitRows?.(editRows, limit || 1000, false, table.columns);
+          } finally {
+            setIsSubmitting(false);
+          }
+        }}
+      />,
+    );
+
+    buttons.push(
+      <ToolbarButton
+        key="cancel"
+        text={formatMessage({
+          id: 'odc.components.DDLResultSet.Cancel',
+          defaultMessage: '取消',
+        })}
+        icon={<CloseOutlined />}
+        isShowText
+        onClick={handleCancel}
+      />,
+    );
+
+    return buttons;
+  };
+
+  // 表格数据编辑按钮组
+  const getTableDataEditButtons = () => {
+    if (disableEdit || !isTableData) return [];
+
+    if (isEditing) {
+      return [
+        <ToolbarButton
+          key="add-row"
+          text={formatMessage({
+            id: 'workspace.window.sql.button.add',
+            defaultMessage: '添加行',
+          })}
+          icon={<PlusOutlined />}
+          onClick={handleAddRow}
+        />,
+        <ToolbarButton
+          key="delete-row"
+          text={formatMessage({
+            id: 'workspace.window.sql.button.delete',
+            defaultMessage: '删除行',
+          })}
+          icon={<MinusOutlined />}
+          onClick={handleDeleteRows}
+        />,
+        <ToolbarButton
+          key="copy-row"
+          disabled={!rows[selectedRowIdx]}
+          text={formatMessage({
+            id: 'workspace.window.sql.button.copy',
+            defaultMessage: '复制当前行',
+          })}
+          icon={<CopyOutlined />}
+          onClick={handleCopyRow}
+        />,
+      ];
+    } else {
+      const buttons = [
+        <ToolbarButton
+          key="enable-edit"
+          text={formatMessage({
+            id: 'workspace.window.sql.button.edit.enable',
+            defaultMessage: '开启编辑',
+          })}
+          icon={<EditOutlined />}
+          onClick={() => {
+            setIsEditing(true);
+          }}
+        />,
+      ];
+
+      if (!autoCommit) {
+        buttons.push(
+          <SubmitConfirm
+            key="commit"
+            onConfirm={async () => {
+              await sqlStore.commit(props.pageKey, sessionId, session?.database?.dbName);
+              onRefresh(limit || 1000);
+            }}
+            disabled={isInTransaction}
+          >
+            <ToolbarButton
+              text={formatMessage({
+                id: 'odc.components.DDLResultSet.Submitted',
+                defaultMessage: '提交',
+              })}
+              icon={<Icon component={SubmitSvg} />}
             />
-          ))}
+          </SubmitConfirm>,
+          <SubmitConfirm
+            key="rollback"
+            onConfirm={async () => {
+              await sqlStore.rollback(props.pageKey, sessionId, session?.database?.dbName);
+              onRefresh(limit || 1000);
+            }}
+            isRollback
+            disabled={isInTransaction}
+          >
+            <ToolbarButton
+              text={formatMessage({
+                id: 'odc.components.DDLResultSet.Rollback',
+                defaultMessage: '回滚',
+              })}
+              icon={<Icon component={RollbackSvg} />}
+            />
+          </SubmitConfirm>,
+        );
+      }
+
+      return buttons;
+    }
+  };
+
+  // 非表格数据编辑按钮组
+  const getNonTableDataEditButtons = () => {
+    if (isTableData || disableEdit) return [];
+
+    if (isEditing) {
+      return [
+        <ToolbarButton
+          key="add-row-non-table"
+          disabled={!isEditing}
+          text={formatMessage({
+            id: 'workspace.window.sql.button.edit.add',
+            defaultMessage: '添加一行',
+          })}
+          icon={<PlusOutlined />}
+          onClick={handleAddRow}
+        />,
+        <ToolbarButton
+          key="delete-non-table"
+          disabled={!isEditing}
+          text={formatMessage({
+            id: 'workspace.window.sql.button.edit.delete',
+            defaultMessage: '删除',
+          })}
+          icon={<MinusOutlined />}
+          onClick={handleDeleteRows}
+        />,
+        <ToolbarButton
+          key="copy-non-table"
+          disabled={!isEditing || !rows[selectedRowIdx]}
+          text={formatMessage({
+            id: 'workspace.window.sql.button.copy',
+            defaultMessage: '复制当前行',
+          })}
+          icon={<CopyOutlined />}
+          onClick={handleCopyRow}
+        />,
+      ];
+    } else {
+      return [
+        <ToolbarButton
+          key="enable-edit-non-table"
+          text={formatMessage({
+            id: 'workspace.window.sql.button.edit.enable',
+            defaultMessage: '开启编辑',
+          })}
+          icon={<EditOutlined />}
+          onClick={handleToggleEditable}
+        />,
+      ];
+    }
+  };
+
+  // 操作按钮组（导出、模拟数据等）
+  const getActionButtons = () => {
+    const buttons = [];
+
+    // 导出按钮
+    if (
+      !isEditing &&
+      allowExport &&
+      onExport &&
+      settingStore.enableDBExport &&
+      getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
+        TaskType.EXPORT_RESULT_SET,
+      )
+    ) {
+      buttons.push(
+        <ToolbarButton
+          key="export"
+          text={formatMessage({
+            id: 'odc.components.DDLResultSet.DownloadData',
+            defaultMessage: '下载数据',
+          })}
+          icon={<ExportOutlined />}
+          onClick={handleExport}
+        />,
+      );
+    }
+
+    // 模拟数据按钮
+    if (
+      !isEditing &&
+      !isExternalTable &&
+      showMock &&
+      getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
+        TaskType.DATAMOCK,
+      )
+    ) {
+      buttons.push(
+        <ToolbarButton
+          key="mock"
+          text={formatMessage({
+            id: 'odc.components.DDLResultSet.AnalogData',
+            defaultMessage: '模拟数据',
+          })}
+          icon={<Icon component={MockSvg} />}
+          onClick={() => {
+            modal.changeDataMockerModal(true, {
+              tableName: table?.tableName,
+              databaseId: session?.database?.databaseId,
+            });
+          }}
+        />,
+      );
+    }
+
+    return buttons;
+  };
+
+  // 分页按钮组
+  const getPaginationButtons = () => {
+    if (!showPagination || !rows.length) return [];
+
+    return [
+      <ToolbarButton
+        key="back-to-start"
+        text={formatMessage({
+          id: 'odc.components.DDLResultSet.BackToStart',
+          defaultMessage: '回到开始',
+        })}
+        icon={
+          <VerticalRightOutlined
+            style={{
+              transform: 'rotate(90deg)',
+            }}
+          />
+        }
+        onClick={() => scrollToTop()}
+      />,
+      <ToolbarButton
+        key="prev-page"
+        text={formatMessage({
+          id: 'odc.components.DDLResultSet.PreviousPage',
+          defaultMessage: '上一页',
+        })}
+        icon={<UpOutlined />}
+        onClick={() => {
+          gridRef.current.scrollToPrevPage();
+        }}
+      />,
+      <ToolbarButton
+        key="next-page"
+        text={formatMessage({
+          id: 'odc.components.DDLResultSet.NextPage',
+          defaultMessage: '下一页',
+        })}
+        icon={<DownOutlined />}
+        onClick={() => gridRef.current.scrollToNextPage()}
+      />,
+      <ToolbarButton
+        key="jump-to-bottom"
+        text={formatMessage({
+          id: 'odc.components.DDLResultSet.JumpToTheBottom',
+          defaultMessage: '跳至底部',
+        })}
+        icon={
+          <VerticalLeftOutlined
+            style={{
+              transform: 'rotate(90deg)',
+            }}
+          />
+        }
+        onClick={() => gridRef.current.scrollToRow(rows.length - 1)}
+      />,
+    ];
+  };
+
+  // 按钮分组辅助函数
+  const renderButtonGroup = (buttons: React.ReactNode[], isLastGroup = false) => {
+    const validButtons = buttons.filter(Boolean);
+    if (validButtons.length === 0) return null;
+
+    return (
+      <>
+        {validButtons}
+        {!isLastGroup && <ToolbarDivider />}
       </>
     );
   };
+
+  // 渲染所有按钮组
+  const renderAllButtonGroups = () => {
+    const buttonGroups = [
+      { name: 'editing', buttons: getEditingButtons() },
+      { name: 'tableDataEdit', buttons: getTableDataEditButtons() },
+      { name: 'nonTableDataEdit', buttons: getNonTableDataEditButtons() },
+      { name: 'action', buttons: getActionButtons() },
+      { name: 'analysis', buttons: getAnalysisButtons() },
+      { name: 'pagination', buttons: getPaginationButtons() },
+    ];
+
+    // 过滤出有内容的按钮组 - 确保按钮数组不为空且有有效元素
+    const validGroups = buttonGroups.filter((group) => {
+      if (!group.buttons || !Array.isArray(group.buttons)) return false;
+      const validButtons = group.buttons.filter(Boolean);
+      return validButtons.length > 0;
+    });
+
+    // 渲染按钮组，最后一个组不显示分隔符
+    return validGroups.map((group, index) => {
+      const isLastGroup = index === validGroups.length - 1;
+      return (
+        <React.Fragment key={group.name}>
+          {renderButtonGroup(group.buttons, isLastGroup)}
+        </React.Fragment>
+      );
+    });
+  };
+
   return (
     <div
       style={{
@@ -832,326 +1220,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     >
       <Spin spinning={false}>
         <Toolbar compact>
-          <div className={styles.toolsLeft}>
-            {isEditing ? (
-              <>
-                {!autoCommit ? (
-                  <SubmitConfirm
-                    onConfirm={() => {
-                      onSubmitRows?.(editRows, limit || 1000, true, table.columns);
-                    }}
-                  >
-                    <ToolbarButton
-                      text={formatMessage({
-                        id: 'odc.components.DDLResultSet.ModifyAndSubmit',
-                        defaultMessage: '修改并提交',
-                      })}
-                      icon={<CloudUploadOutlined />}
-                      status={isSubmitting ? IConStatus.RUNNING : IConStatus.INIT}
-                      isShowText
-                    />
-                  </SubmitConfirm>
-                ) : null}
-                <ToolbarButton
-                  text={formatMessage({
-                    id: 'odc.components.DDLResultSet.ConfirmModification',
-                    defaultMessage: '确认修改',
-                  })}
-                  icon={<CheckOutlined />}
-                  isShowText
-                  status={isSubmitting ? IConStatus.RUNNING : IConStatus.INIT}
-                  onClick={async () => {
-                    setIsSubmitting(true);
-                    try {
-                      await onSubmitRows?.(editRows, limit || 1000, false, table.columns);
-                    } finally {
-                      setIsSubmitting(false);
-                    }
-                  }}
-                />
-
-                <ToolbarButton
-                  text={formatMessage({
-                    id: 'odc.components.DDLResultSet.Cancel',
-                    defaultMessage: '取消',
-                  })}
-                  icon={<CloseOutlined />}
-                  isShowText
-                  onClick={handleCancel}
-                />
-
-                <ToolbarDivider />
-              </>
-            ) : null}
-            {!disableEdit &&
-              isTableData &&
-              (isEditing ? (
-                <>
-                  <ToolbarButton
-                    text={formatMessage({
-                      id: 'workspace.window.sql.button.add',
-                      defaultMessage: '添加行',
-                    })}
-                    icon={<PlusOutlined />}
-                    onClick={handleAddRow}
-                  />
-
-                  <ToolbarButton
-                    text={formatMessage({
-                      id: 'workspace.window.sql.button.delete',
-                      defaultMessage: '删除行',
-                    })}
-                    icon={<MinusOutlined />}
-                    onClick={handleDeleteRows}
-                  />
-
-                  <ToolbarButton
-                    disabled={!rows[selectedRowIdx]}
-                    text={formatMessage({
-                      id: 'workspace.window.sql.button.copy',
-                      defaultMessage: '复制当前行',
-                    })}
-                    icon={<CopyOutlined />}
-                    onClick={handleCopyRow}
-                  />
-
-                  <ToolbarDivider />
-                </>
-              ) : (
-                <>
-                  <ToolbarButton
-                    text={formatMessage({
-                      id: 'workspace.window.sql.button.edit.enable',
-                      defaultMessage: '开启编辑',
-                    })}
-                    icon={<EditOutlined />}
-                    onClick={() => {
-                      setIsEditing(true);
-                    }}
-                  />
-
-                  {autoCommit ? null : (
-                    <>
-                      <SubmitConfirm
-                        onConfirm={async () => {
-                          await sqlStore.commit(
-                            props.pageKey,
-                            sessionId,
-                            session?.database?.dbName,
-                          );
-                          onRefresh(limit || 1000);
-                        }}
-                        disabled={isInTransaction}
-                      >
-                        <ToolbarButton
-                          text={
-                            formatMessage({
-                              id: 'odc.components.DDLResultSet.Submitted',
-                              defaultMessage: '提交',
-                            })
-
-                            // 提交
-                          }
-                          icon={<Icon component={SubmitSvg} />}
-                        />
-                      </SubmitConfirm>
-                      <SubmitConfirm
-                        onConfirm={async () => {
-                          await sqlStore.rollback(
-                            props.pageKey,
-                            sessionId,
-                            session?.database?.dbName,
-                          );
-                          onRefresh(limit || 1000);
-                        }}
-                        isRollback
-                        disabled={isInTransaction}
-                      >
-                        <ToolbarButton
-                          text={
-                            formatMessage({
-                              id: 'odc.components.DDLResultSet.Rollback',
-                              defaultMessage: '回滚',
-                            })
-
-                            // 回滚
-                          }
-                          icon={<Icon component={RollbackSvg} />}
-                        />
-                      </SubmitConfirm>
-                    </>
-                  )}
-                </>
-              ))}
-
-            {!isTableData && !disableEdit ? (
-              isEditing ? (
-                <>
-                  <ToolbarButton
-                    disabled={!isEditing}
-                    text={formatMessage({
-                      id: 'workspace.window.sql.button.edit.add',
-                      defaultMessage: '添加一行',
-                    })}
-                    icon={<PlusOutlined />}
-                    onClick={handleAddRow}
-                  />
-
-                  <ToolbarButton
-                    disabled={!isEditing}
-                    text={formatMessage({
-                      id: 'workspace.window.sql.button.edit.delete',
-                      defaultMessage: '删除',
-                    })}
-                    icon={<MinusOutlined />}
-                    onClick={handleDeleteRows}
-                  />
-
-                  <ToolbarButton
-                    disabled={!isEditing || !rows[selectedRowIdx]}
-                    text={formatMessage({
-                      id: 'workspace.window.sql.button.copy',
-                      defaultMessage: '复制当前行',
-                    })}
-                    icon={<CopyOutlined />}
-                    onClick={handleCopyRow}
-                  />
-
-                  <ToolbarDivider />
-                </>
-              ) : (
-                <ToolbarButton
-                  text={formatMessage({
-                    id: 'workspace.window.sql.button.edit.enable',
-                    defaultMessage: '开启编辑',
-                  })}
-                  icon={<EditOutlined />}
-                  onClick={handleToggleEditable}
-                />
-              )
-            ) : null}
-            {!isEditing &&
-            allowExport &&
-            onExport &&
-            settingStore.enableDBExport &&
-            getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
-              TaskType.EXPORT_RESULT_SET,
-            ) ? (
-              <ToolbarButton
-                text={
-                  formatMessage({
-                    id: 'odc.components.DDLResultSet.DownloadData',
-                    defaultMessage: '下载数据',
-                  }) //下载数据
-                }
-                icon={<ExportOutlined />}
-                onClick={handleExport}
-              />
-            ) : null}
-            {!isEditing &&
-            !isExternalTable &&
-            showMock &&
-            getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
-              TaskType.DATAMOCK,
-            ) ? (
-              <>
-                <ToolbarButton
-                  text={
-                    formatMessage({
-                      id: 'odc.components.DDLResultSet.AnalogData',
-                      defaultMessage: '模拟数据',
-                    })
-
-                    // 模拟数据
-                  }
-                  icon={<Icon component={MockSvg} />}
-                  onClick={() => {
-                    modal.changeDataMockerModal(true, {
-                      tableName: table?.tableName,
-                      databaseId: session?.database?.databaseId,
-                    });
-                  }}
-                />
-              </>
-            ) : null}
-            {getExecuteIcon()}
-            {showPagination && rows.length ? (
-              <>
-                <ToolbarDivider />
-                <ToolbarButton
-                  text={
-                    formatMessage({
-                      id: 'odc.components.DDLResultSet.BackToStart',
-                      defaultMessage: '回到开始',
-                    })
-
-                    // 回到开始
-                  }
-                  icon={
-                    <VerticalRightOutlined
-                      style={{
-                        transform: 'rotate(90deg)',
-                      }}
-                    />
-                  }
-                  onClick={() => scrollToTop()}
-                />
-
-                <ToolbarButton
-                  text={
-                    formatMessage({
-                      id: 'odc.components.DDLResultSet.PreviousPage',
-                      defaultMessage: '上一页',
-                    })
-
-                    // 上一页
-                  }
-                  icon={<UpOutlined />}
-                  onClick={() => {
-                    gridRef.current.scrollToPrevPage();
-                  }}
-                />
-
-                <ToolbarButton
-                  text={
-                    formatMessage({
-                      id: 'odc.components.DDLResultSet.NextPage',
-                      defaultMessage: '下一页',
-                    })
-
-                    // 下一页
-                  }
-                  icon={<DownOutlined />}
-                  onClick={() => gridRef.current.scrollToNextPage()}
-                />
-
-                <ToolbarButton
-                  text={
-                    formatMessage({
-                      id: 'odc.components.DDLResultSet.JumpToTheBottom',
-                      defaultMessage: '跳至底部',
-                    })
-
-                    // 跳至底部
-                  }
-                  icon={
-                    <VerticalLeftOutlined
-                      style={{
-                        transform: 'rotate(90deg)',
-                      }}
-                    />
-                  }
-                  onClick={() => gridRef.current.scrollToRow(rows.length - 1)}
-                />
-              </>
-            ) : null}
-
-            {/* <ToolbarButton
-                    text={formatMessage({ id: "workspace.window.session.button.refresh" })}
-                    icon={<Icon type="sync" />}
-                    onClick={onRefresh.bind(this, this.state.limit || 1000)}
-                    /> */}
-          </div>
+          <div className={styles.toolsLeft}>{renderAllButtonGroups()}</div>
           <div className={styles.toolsRight}>
             <span className={styles.limit}>
               {isTableData || isViewData || isMvViewData || isShowLimit ? (
