@@ -10,6 +10,11 @@ import type {
 import { TaskPageType, TaskStatus } from '@/d.ts';
 import type { TaskStore } from '@/store/task';
 import type { ITableInstance } from '@/component/CommonTable/interface';
+import {
+  isSupportTaksExport,
+  isSupportTaksImport,
+  isSupportTaksTerminate,
+} from '../AsyncTaskOperationButton/helper';
 
 export const statusThatCanBeExport = Object.keys(TaskStatus);
 
@@ -127,7 +132,10 @@ export const useTaskSelection = ({
   return {
     selectedRow,
     setSelectedRow,
-    rowSelection,
+    rowSelection:
+      isSupportTaksExport || isSupportTaksImport || isSupportTaksTerminate
+        ? rowSelection
+        : undefined,
     clearSelection,
   };
 };
