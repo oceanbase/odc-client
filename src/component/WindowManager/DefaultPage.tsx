@@ -117,11 +117,15 @@ export default function DefaultPage() {
       <div
         onClick={() => {
           tracert.click('a3112.b41896.c330987.d367620');
-          setting.setTheme(
+          const value =
             setting.theme?.key === EThemeConfigKey.ODC_WHITE
               ? EThemeConfigKey.ODC_DARK
-              : EThemeConfigKey.ODC_WHITE,
-          );
+              : EThemeConfigKey.ODC_WHITE;
+          setting.setTheme(value);
+          setting.updateOneUserConfig({
+            key: 'odc.appearance.scheme',
+            value,
+          });
         }}
         className={styles.item}
       >
