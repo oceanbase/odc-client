@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 // 聚合配置项定义
 interface AggregateConfig {
   key: string; // 聚合配置的 key
@@ -17,11 +18,17 @@ const AGGREGATE_CONFIGS: AggregateConfig[] = [
 
 export const resultSetsGroup = [
   {
-    label: '支持查看查询结果',
+    label: formatMessage({
+      id: 'src.component.ODCSetting.utils.E642F884',
+      defaultMessage: '支持查看查询结果',
+    }),
     value: 'odc.task.databaseChange.allowShowResultSets',
   },
   {
-    label: '支持下载查询结果',
+    label: formatMessage({
+      id: 'src.component.ODCSetting.utils.9CE1F69C',
+      defaultMessage: '支持下载查询结果',
+    }),
     value: 'odc.task.databaseChange.allowDownloadResultSets',
   },
 ];
