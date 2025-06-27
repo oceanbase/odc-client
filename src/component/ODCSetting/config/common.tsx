@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import CheckboxItem from '../Item/CheckboxItem';
 import RadioItem from '../Item/RadioItem';
 import { ODCSettingGroup } from '../config';
@@ -6,7 +7,10 @@ import { resultSetsGroup } from '../utils/configHelper';
 export const getExecutionStrategyConfig = (taskGroup: ODCSettingGroup) => {
   return [
     {
-      label: '数据库变更默认执行方式',
+      label: formatMessage({
+        id: 'src.component.ODCSetting.config.C6A45A24',
+        defaultMessage: '数据库变更默认执行方式',
+      }),
       key: 'odc.task.databaseChange.executionStrategy',
       locationKey: 'executionStrategy',
       group: taskGroup,
@@ -16,15 +20,24 @@ export const getExecutionStrategyConfig = (taskGroup: ODCSettingGroup) => {
           <RadioItem
             options={[
               {
-                label: '立即执行',
+                label: formatMessage({
+                  id: 'src.component.ODCSetting.config.00714039',
+                  defaultMessage: '立即执行',
+                }),
                 value: 'AUTO',
               },
               {
-                label: '定时执行',
+                label: formatMessage({
+                  id: 'src.component.ODCSetting.config.11DE5799',
+                  defaultMessage: '定时执行',
+                }),
                 value: 'TIMER',
               },
               {
-                label: '手动执行',
+                label: formatMessage({
+                  id: 'src.component.ODCSetting.config.7CE2AC8D',
+                  defaultMessage: '手动执行',
+                }),
                 value: 'MANUAL',
               },
             ]}
@@ -40,7 +53,10 @@ export const getExecutionStrategyConfig = (taskGroup: ODCSettingGroup) => {
 export const getDatabaseChangeResultSetsConfig = (taskGroup: ODCSettingGroup) => {
   return [
     {
-      label: '支持查看查询结果',
+      label: formatMessage({
+        id: 'src.component.ODCSetting.config.AB482BC7',
+        defaultMessage: '支持查看查询结果',
+      }),
       key: 'odc.task.databaseChange.allowShowResultSets',
       locationKey: 'allowShowResultSets',
       group: taskGroup,
@@ -49,7 +65,10 @@ export const getDatabaseChangeResultSetsConfig = (taskGroup: ODCSettingGroup) =>
       render: () => null,
     },
     {
-      label: '支持下载查询结果',
+      label: formatMessage({
+        id: 'src.component.ODCSetting.config.3FE1F2A7',
+        defaultMessage: '支持下载查询结果',
+      }),
       key: 'odc.task.databaseChange.allowDownloadResultSets',
       locationKey: 'allowDownloadResultSets',
       group: taskGroup,
@@ -58,7 +77,10 @@ export const getDatabaseChangeResultSetsConfig = (taskGroup: ODCSettingGroup) =>
       render: () => null,
     },
     {
-      label: '数据库变更查询结果',
+      label: formatMessage({
+        id: 'src.component.ODCSetting.config.1ED38C41',
+        defaultMessage: '数据库变更查询结果',
+      }),
       key: 'databaseChangeResultSets',
       locationKey: 'databaseChangeResultSets',
       group: taskGroup,

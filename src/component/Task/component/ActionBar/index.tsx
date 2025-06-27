@@ -405,7 +405,12 @@ const ActionBar: React.FC<IProps> = inject(
           );
 
           if (!haveSuccessQuery) {
-            message.warning('无可查看的结果信息');
+            message.warning(
+              formatMessage({
+                id: 'src.component.Task.component.ActionBar.797981FE',
+                defaultMessage: '无可查看的结果信息',
+              }),
+            );
             return;
           }
           if (isSqlworkspace) {
@@ -945,7 +950,10 @@ const ActionBar: React.FC<IProps> = inject(
 
       const viewResultBtn = {
         key: 'viewResult',
-        text: '查询结果',
+        text: formatMessage({
+          id: 'src.component.Task.component.ActionBar.5218D741',
+          defaultMessage: '查询结果',
+        }),
         isLoading: viewLoading,
         action: viewResult,
         type: 'button',
