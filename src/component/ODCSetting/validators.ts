@@ -42,7 +42,12 @@ export const validForQueryLimit = async (value) => {
     parseInt(res?.['odc.session.sql-execute.max-result-set-rows']) || Number.MAX_SAFE_INTEGER;
 
   if (value > maxResultsetRows) {
-    return Promise.reject(`不超过${maxResultsetRows}`);
+    return Promise.reject(
+      formatMessage(
+        { id: 'src.component.ODCSetting.694DF8AE', defaultMessage: '不超过{maxResultsetRows}' },
+        { maxResultsetRows },
+      ),
+    );
   }
   if (!value) {
     return Promise.reject(

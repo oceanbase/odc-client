@@ -111,15 +111,18 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const connection = database?.dataSource;
   const lockStrategy = Form.useWatch('forbiddenWriteType', form);
   const isLockUser = lockStrategy === LockStrategy.LOCK_USER;
-  const lockTableTipInCloud = `在表名切换前，锁定原表禁写。请确保您的数据库满足以下条件：
-        1. OB 版本号 ≥ 4.2.5 且 < 4.3.0 
-        2. 参数 enable_lock_priority 已设置为 true`;
-  const lockTableTipInPrivate = `在表名切换前，锁定原表禁写。请确保您的数据库满足以下条件：
-1. OB 版本号 ≥ 4.2.5 且 < 4.3.0 ，且参数 enable_lock_priority 已设置为 true 
-2. ODP 版本 ≥ 4.3.1 且已进行以下参数设置：
-        alter proxyconfig set proxy_id=1;
-        alter proxyconfig set client_session_id_version=2;
-        alter proxyconfig set enable_single_leader_node_routing = false;`;
+  const lockTableTipInCloud = formatMessage({
+    id: 'src.component.Task.AlterDdlTask.CreateModal.830CE5EA',
+    defaultMessage:
+      '在表名切换前，锁定原表禁写。请确保您的数据库满足以下条件：\n        1. OB 版本号 ≥ 4.2.5 且 < 4.3.0 \n        2. 参数 enable_lock_priority 已设置为 true',
+  });
+
+  const lockTableTipInPrivate = formatMessage({
+    id: 'src.component.Task.AlterDdlTask.CreateModal.288DF615',
+    defaultMessage:
+      '在表名切换前，锁定原表禁写。请确保您的数据库满足以下条件：\n1. OB 版本号 ≥ 4.2.5 且 < 4.3.0 ，且参数 enable_lock_priority 已设置为 true \n2. ODP 版本 ≥ 4.3.1 且已进行以下参数设置：\n        alter proxyconfig set proxy_id=1;\n        alter proxyconfig set client_session_id_version=2;\n        alter proxyconfig set enable_single_leader_node_routing = false;',
+  });
+
   const lockTableTip = haveOCP() ? lockTableTipInCloud : lockTableTipInPrivate;
 
   const initialValue = {
@@ -374,7 +377,10 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           }}
           type="warning"
           showIcon
-          message={'注意：执行无锁结构变更前请确保数据库服务器磁盘空间充足。'}
+          message={formatMessage({
+            id: 'src.component.Task.AlterDdlTask.CreateModal.767B6898',
+            defaultMessage: '注意：执行无锁结构变更前请确保数据库服务器磁盘空间充足。',
+          })}
         />
 
         {!canCreateTask && (
@@ -455,22 +461,39 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             </Col>
           </Row>
           <Form.Item
-            label={'表名切换禁写策略'}
+            label={formatMessage({
+              id: 'src.component.Task.AlterDdlTask.CreateModal.CC3FB49A',
+              defaultMessage: '表名切换禁写策略',
+            })}
             rules={[{ required: true }]}
             name={'forbiddenWriteType'}
             initialValue={LockStrategy.LOCK_USER}
             extra={
               isLockUser ? (
-                '在表名切换前，系统将锁定您指定的数据库账号，并终止该账号的当前会话。切换期间，所有涉及该账号的应用将无法访问数据库。建议避免在业务高峰期执行此操作，以减少对业务的影响。'
+                formatMessage({
+                  id: 'src.component.Task.AlterDdlTask.CreateModal.4871DE06',
+                  defaultMessage:
+                    '在表名切换前，系统将锁定您指定的数据库账号，并终止该账号的当前会话。切换期间，所有涉及该账号的应用将无法访问数据库。建议避免在业务高峰期执行此操作，以减少对业务的影响。',
+                })
               ) : (
                 <div style={{ whiteSpace: 'pre-wrap' }}>{lockTableTip}</div>
               )
             }
           >
             <Radio.Group>
-              <Radio.Button value={LockStrategy.LOCK_USER}>锁定用户</Radio.Button>
+              <Radio.Button value={LockStrategy.LOCK_USER}>
+                {formatMessage({
+                  id: 'src.component.Task.AlterDdlTask.CreateModal.72D3ECEB',
+                  defaultMessage: '锁定用户',
+                })}
+              </Radio.Button>
               {!lockDatabaseUserRequired && (
-                <Radio.Button value={LockStrategy.LOCK_TABLE}>锁定表</Radio.Button>
+                <Radio.Button value={LockStrategy.LOCK_TABLE}>
+                  {formatMessage({
+                    id: 'src.component.Task.AlterDdlTask.CreateModal.4D9F1206',
+                    defaultMessage: '锁定表',
+                  })}
+                </Radio.Button>
               )}
             </Radio.Group>
           </Form.Item>
@@ -678,7 +701,12 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                         defaultMessage: '重命名不处理',
                       }) /*重命名不处理*/
                     }
-                    <Tag color="blue">推荐</Tag>
+                    <Tag color="blue">
+                      {formatMessage({
+                        id: 'src.component.Task.AlterDdlTask.CreateModal.310DB54C',
+                        defaultMessage: '推荐',
+                      })}
+                    </Tag>
                   </Space>
                 </Radio>
                 <Radio value={ClearStrategy.ORIGIN_TABLE_DROP}>
