@@ -188,12 +188,6 @@ const SessionDropdown: React.FC<IProps> = (props) => {
       ) {
         return false;
       }
-      if (
-        (datasourceId && toInteger(datasourceId) !== database?.dataSource?.id) ||
-        (!datasourceId && database?.dataSource?.temp)
-      ) {
-        return false;
-      }
       return true;
     },
   });

@@ -97,7 +97,6 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       });
     if (projectId) {
       resourceTreeContext?.setSelectProjectId(projectId);
-      resourceTreeContext?.setGroupMode(DatabaseGroup.project);
       if (!isLogicalDatabase) {
         databaseId && openNewSQLPage(databaseId);
       }
@@ -106,7 +105,6 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       }
     } else if (datasourceId) {
       resourceTreeContext?.setSelectDatasourceId(datasourceId);
-      resourceTreeContext?.setGroupMode(DatabaseGroup.dataSource);
       databaseId && openNewSQLPage(databaseId);
     } else if (isResultSets && taskId) {
       const resultSets = await getAsyncResultSet(Number(taskId));
