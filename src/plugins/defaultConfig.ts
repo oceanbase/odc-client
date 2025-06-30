@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IManagerResourceType, IRoles, type IManagerUser } from '@/d.ts';
+import { actionTypes, IManagerResourceType, IRoles, type IManagerUser } from '@/d.ts';
 
 export default {
   login: {
@@ -39,7 +39,22 @@ export default {
       create: true,
       resetPwd: true,
       delete: true,
-      isAdmin: (user: Pick<IManagerUser, 'systemOperationPermissions'>) => {
+      canEdit: (user: Pick<IManagerUser, 'resourceManagementPermissions'>, resourceId?: string) => {
+        const permissions = user?.resourceManagementPermissions?.filter(
+          (item) =>
+            item.resourceType === IManagerResourceType.user &&
+            item.actions.includes(actionTypes.update),
+        );
+        if (!permissions || permissions.length === 0) {
+          return false;
+        }
+        return permissions.some((item) => {
+          if (item?.resourceId === '*' || item?.resourceId === resourceId) {
+            return true;
+          }
+        });
+      },
+      isODCOrganizationConfig: (user: Pick<IManagerUser, 'systemOperationPermissions'>) => {
         return user?.systemOperationPermissions?.some(
           (item) => item?.resourceType === IManagerResourceType.odc_organization_config,
         );

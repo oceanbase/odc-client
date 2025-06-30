@@ -239,6 +239,7 @@ export interface IManagerUser {
   extraProperties?: Record<string, string>;
   errorMessage?: string;
   systemOperationPermissions?: IPermission[];
+  resourceManagementPermissions?: IPermission[];
 }
 
 export interface IManagerUserPermission {

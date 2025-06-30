@@ -47,6 +47,7 @@ import { ResourceContext } from '../context';
 import DetailContent from './component/DetailContent';
 import FormModal from './component/FormModal';
 import styles from './index.less';
+import login from '@/store/login';
 
 interface IProps {
   userStore?: UserStore;
@@ -180,7 +181,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
         ],
 
         render: (enabled, record) => {
-          const disabledOp = this.isAdminOrMe(record);
+          const disabledOp = !this.isCanEdit(record, record?.id);
           return (
             <StatusSwitch
               disabled={disabledOp}
@@ -202,7 +203,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
         key: 'action',
         fixed: 'right' as FixedType,
         render: (value, record) => {
-          const disabledOp = this.isAdminOrMe(record);
+          const disabledOp = !this.isCanEdit(record, record?.id);
           return (
             <Action.Group>
               <Action.Link
@@ -346,15 +347,9 @@ class UserPage extends React.PureComponent<IProps, IState> {
     this.tableRef.current.reload();
   };
 
-  private isAdminOrMe = (user: IManagerUser) => {
-    const {
-      userStore: { user: me },
-    } = this.props;
-    const isAdmin = odc.appConfig.manage.user.isAdmin
-      ? odc.appConfig.manage.user.isAdmin(user)
-      : user?.builtIn && user?.accountName === 'admin';
-    const isMeUser = user?.id === me?.id;
-    return isAdmin || isMeUser;
+  private isCanEdit = (user: IManagerUser, resourceId?: string) => {
+    const isEditable = odc.appConfig.manage.user.canEdit(login.user, resourceId);
+    return isEditable;
   };
 
   private handleCreate = () => {
@@ -403,7 +398,8 @@ class UserPage extends React.PureComponent<IProps, IState> {
   render() {
     const { formModalVisible, detailModalVisible, editId, detailId, users, roles, user } =
       this.state;
-    const disabledOp = this.isAdminOrMe(user);
+    const disabledOp = !this.isCanEdit(user, detailId);
+
     const canAcessCreate = canAcess({
       resourceIdentifier: IManagerResourceType.user,
       action: actionTypes.create,
