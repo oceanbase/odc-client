@@ -184,6 +184,7 @@ export enum IManagerResourceType {
   environment = 'ODC_ENVIRONMENT',
   individual_organization = 'ODC_INDIVIDUAL_ORGANIZATION',
   database = 'ODC_DATABASE',
+  odc_organization_config = 'ODC_ORGANIZATION_CONFIG',
 }
 
 export enum actionTypes {
@@ -237,6 +238,7 @@ export interface IManagerUser {
   }[];
   extraProperties?: Record<string, string>;
   errorMessage?: string;
+  systemOperationPermissions?: IPermission[];
 }
 
 export interface IManagerUserPermission {
