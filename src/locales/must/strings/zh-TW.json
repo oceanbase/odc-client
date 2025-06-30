@@ -5969,5 +5969,17 @@
   "src.component.Task.component.AsyncTaskOperationButton.091E3B93": "去看看。",
   "src.component.Task.component.AsyncTaskOperationButton.89CE28F7": "終止錯誤已發生",
   "src.component.Task.component.AsyncTaskOperationButton.08EE66D0": "終止任務",
-  "src.component.Task.component.AsyncTaskOperationButton.5E6481EB": "{idsLength} 個任務正在終止中..."
+  "src.component.Task.component.AsyncTaskOperationButton.5E6481EB": "{idsLength} 個任務正在終止中...",
+  "src.component.Task.component.ActionBar.797981FE": "無可查看的結果資訊",
+  "src.component.Task.component.ActionBar.5218D741": "查詢結果",
+  "src.component.ODCSetting.9651E837": "不超過{maxResultsetRows}",
+  "src.component.ODCSetting.utils.E642F884": "支援查看查詢結果",
+  "src.component.ODCSetting.utils.9CE1F69C": "支援下載查詢結果",
+  "src.component.ODCSetting.config.C6A45A24": "資料庫變更預設執行方式",
+  "src.component.ODCSetting.config.00714039": "立即執行",
+  "src.component.ODCSetting.config.11DE5799": "定時執行",
+  "src.component.ODCSetting.config.7CE2AC8D": "手動執行",
+  "src.component.ODCSetting.config.AB482BC7": "支援查看查詢結果",
+  "src.component.ODCSetting.config.3FE1F2A7": "支援下載查詢結果",
+  "src.component.ODCSetting.config.1ED38C41": "資料庫變更查詢結果"
 }

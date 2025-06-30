@@ -5969,5 +5969,17 @@
   "src.component.Task.component.AsyncTaskOperationButton.091E3B93": "to see.",
   "src.component.Task.component.AsyncTaskOperationButton.89CE28F7": "Termination error occurred",
   "src.component.Task.component.AsyncTaskOperationButton.08EE66D0": "Terminate Task",
-  "src.component.Task.component.AsyncTaskOperationButton.5E6481EB": "{idsLength} task(s) are being terminated..."
+  "src.component.Task.component.AsyncTaskOperationButton.5E6481EB": "{idsLength} task(s) are being terminated...",
+  "src.component.Task.component.ActionBar.797981FE": "No results",
+  "src.component.Task.component.ActionBar.5218D741": "Query Results",
+  "src.component.ODCSetting.9651E837": "Do not exceed {maxResultsetRows}",
+  "src.component.ODCSetting.utils.E642F884": "Support Viewing Query Results",
+  "src.component.ODCSetting.utils.9CE1F69C": "Support Downloading Query Results",
+  "src.component.ODCSetting.config.C6A45A24": "Default Execution Mode of Database Changes",
+  "src.component.ODCSetting.config.00714039": "Immediate Execution",
+  "src.component.ODCSetting.config.11DE5799": "Scheduled Execution",
+  "src.component.ODCSetting.config.7CE2AC8D": "Manual Execution",
+  "src.component.ODCSetting.config.AB482BC7": "Support Viewing Query Results",
+  "src.component.ODCSetting.config.3FE1F2A7": "Support Downloading Query Results",
+  "src.component.ODCSetting.config.1ED38C41": "Query Results of Database Changes"
 }

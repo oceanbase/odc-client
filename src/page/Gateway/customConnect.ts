@@ -50,7 +50,7 @@ async function newConnection(params: Partial<IDatasource>): Promise<IDatasource 
        * 在这边创建的时候去加上租户id，这样可以让用户老的连接也能继续用，并且可以检查老的连接是否存在租户id的变更。
        * 新的名字一律加上id
        */
-      name: params.name + '_' + params.tenantName,
+      name: params.name,
       environmentId: envs?.[0]?.id,
     },
     true,
@@ -81,9 +81,9 @@ function resolveRemoteData(data: IRemoteCustomConnectionData) {
     data.properties = data.interceptData;
   }
 
-  const sessionName = `${data.username}@${data.tenantName}#${data.clusterName}-${data.host}:${
-    data.port
-  }_${dayjs().format('MMDDHHmmss')}-${generateUniqKey()}`;
+  const sessionName = `${data.username}@${data.tenantName}#${
+    data.clusterName
+  }-${generateUniqKey()}`;
   data.name = sessionName;
   return data;
 }
