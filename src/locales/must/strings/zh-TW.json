@@ -5969,5 +5969,14 @@
   "src.component.Task.component.AsyncTaskOperationButton.091E3B93": "去看看。",
   "src.component.Task.component.AsyncTaskOperationButton.89CE28F7": "終止錯誤已發生",
   "src.component.Task.component.AsyncTaskOperationButton.08EE66D0": "終止任務",
-  "src.component.Task.component.AsyncTaskOperationButton.5E6481EB": "{idsLength} 個任務正在終止中..."
+  "src.component.Task.component.AsyncTaskOperationButton.5E6481EB": "{idsLength} 個任務正在終止中...",
+  "src.component.Task.AlterDdlTask.CreateModal.A37F2729": "在表名切換前，鎖定原表禁寫。請確保您的資料庫符合以下條件：\n        1. OB 版本號 ≥ 4.2.5 且 < 4.3.0\n        2. 參數 enable_lock_priority 已設定為 true",
+  "src.component.Task.AlterDdlTask.CreateModal.8AC211D6": "在表名切換前，鎖定原表禁寫。請確保您的資料庫符合以下條件：\n1. OB 版本號 ≥ 4.2.5 且 < 4.3.0 ，且參數 enable_lock_priority 已設定為 true\n2. ODP 版本 ≥ 4.3.1 且已進行以下參數設定：\n        alter proxyconfig set proxy_id=1;\n        alter proxyconfig set client_session_id_version=2;\n        alter proxyconfig set enable_single_leader_node_routing = false;",
+  "src.component.Task.AlterDdlTask.CreateModal.D1732875": "注意：執行無鎖結構變更前，請確保資料庫伺服器磁碟空間充足。",
+  "src.component.Task.AlterDdlTask.CreateModal.05BCC428": "表名切換禁寫策略",
+  "src.component.Task.AlterDdlTask.CreateModal.B0CFE0E1": "在表名切換前，系統將鎖定您指定的資料庫帳號，並終止該帳號的當前會話。切換期間，所有涉及該帳號的應用將無法訪問資料庫。建議避免在業務高峰期執行此操作，以減少對業務的影響。",
+  "src.component.Task.AlterDdlTask.CreateModal.D056FD5E": "鎖定使用者",
+  "src.component.Task.AlterDdlTask.CreateModal.EA0D82E0": "鎖定表",
+  "src.component.Task.AlterDdlTask.CreateModal.125DF508": "推薦",
+  "src.component.ODCSetting.2BE8F5C3": "不超過{maxResultsetRows}"
 }
