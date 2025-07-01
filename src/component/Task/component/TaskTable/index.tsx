@@ -675,7 +675,7 @@ const TaskTable: React.FC<IProps> = inject(
                         { activeTaskLabel },
                       )}
 
-                      <DownOutlined />
+                      <DownOutlined style={{ color: '#fff' }} />
                     </Space>
                   </a>
                 </Button>

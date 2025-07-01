@@ -121,7 +121,7 @@ const ThrottleFormItem: React.FC<IProps> = (props) => {
                 ]}
                 initialValue={initialValue?.dataSizeLimit}
               >
-                <InputNumber min={1} max={maxDataSizeLimit} precision={1} />
+                <InputNumber min={1} max={maxDataSizeLimit} precision={0} />
               </Form.Item>
               <span>MB/s</span>
             </Space>
