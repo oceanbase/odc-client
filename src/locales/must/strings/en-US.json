@@ -5969,5 +5969,14 @@
   "src.component.Task.component.AsyncTaskOperationButton.091E3B93": "to see.",
   "src.component.Task.component.AsyncTaskOperationButton.89CE28F7": "Termination error occurred",
   "src.component.Task.component.AsyncTaskOperationButton.08EE66D0": "Terminate Task",
-  "src.component.Task.component.AsyncTaskOperationButton.5E6481EB": "{idsLength} task(s) are being terminated..."
+  "src.component.Task.component.AsyncTaskOperationButton.5E6481EB": "{idsLength} task(s) are being terminated...",
+  "src.component.Task.AlterDdlTask.CreateModal.A37F2729": "Before switching the table name, lock the original table to prohibit writes. Please ensure that your database meets the following conditions:\n    1. OceanBase Version ≥ 4.2.5 and < 4.3.0.\n    2. The enable_lock_priority parameter has been set to true.",
+  "src.component.Task.AlterDdlTask.CreateModal.8AC211D6": "Before switching the table name, lock the original table to prohibit writes. Please ensure that your database meets the following conditions:  \n    1. OceanBase Version ≥ 4.2.5 and < 4.3.0, and the enable_lock_priority parameter has been set to true.\n    2. ODP Version ≥ 4.3.1 and the following parameter settings have been made:  \n        alter proxyconfig set proxy_id=1;\n        alter proxyconfig set client_session_id_version=2;\n        alter proxyconfig set enable_single_leader_node_routing = false;",
+  "src.component.Task.AlterDdlTask.CreateModal.D1732875": "Note: Please ensure that the database server has sufficient disk space before performing the online schema change.",
+  "src.component.Task.AlterDdlTask.CreateModal.05BCC428": "Write Prohibition during Table Name Switch ",
+  "src.component.Task.AlterDdlTask.CreateModal.B0CFE0E1": "Before switching the table name, the system will lock the specified database account and terminate the session of the account. During the switch, all applications involving the account will not be able to access the database. It is recommended to avoid performing this operation during peak business hours to minimize the impact on your business.",
+  "src.component.Task.AlterDdlTask.CreateModal.D056FD5E": "Lock User",
+  "src.component.Task.AlterDdlTask.CreateModal.EA0D82E0": "Lock Table",
+  "src.component.Task.AlterDdlTask.CreateModal.125DF508": "Recommended",
+  "src.component.ODCSetting.2BE8F5C3": "Do not exceed {maxResultsetRows}"
 }
