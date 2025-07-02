@@ -81,9 +81,7 @@ function resolveRemoteData(data: IRemoteCustomConnectionData) {
     data.properties = data.interceptData;
   }
 
-  const sessionName = `${data.username}@${data.tenantName}#${
-    data.clusterName
-  }-${generateUniqKey()}`;
+  const sessionName = `${data.username}@${data.tenantName}#${data.clusterName}-${Date.now()}`;
   data.name = sessionName;
   return data;
 }
