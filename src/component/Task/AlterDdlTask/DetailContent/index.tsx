@@ -28,7 +28,7 @@ import React, { useMemo } from 'react';
 import { SimpleTextItem } from '../../component/SimpleTextItem';
 import ThrottleEditableCell from '../../component/ThrottleEditableCell';
 import { OscMaxDataSizeLimit, OscMaxRowLimit } from '../../const';
-import { ClearStrategy, SwapTableType } from '../CreateModal';
+import { ClearStrategy, LockStrategy, LockStrategyLableMap, SwapTableType } from '../CreateModal';
 import { ProjectRole } from '@/d.ts/project';
 import userStore from '@/store/login';
 
@@ -40,6 +40,7 @@ interface IDDLAlterParamters {
   comparingTaskId: string;
   description: string;
   sqlContent?: string;
+  forbiddenWriteType: LockStrategy;
   lockUsers: {
     name: string;
   }[];
@@ -240,7 +241,15 @@ export function getItems(
           //'所属数据源'
           task?.database?.dataSource?.name || '-',
         ],
-
+        [
+          formatMessage({
+            id: 'src.component.Task.AlterDdlTask.CreateModal.CC3FB49A',
+            defaultMessage: '表名切换禁写策略',
+          }),
+          lockUsers
+            ? LockStrategyLableMap[LockStrategy.LOCK_USER]
+            : LockStrategyLableMap[LockStrategy.LOCK_TABLE],
+        ],
         hasFlow ? riskItem : null,
         lockUsers
           ? [

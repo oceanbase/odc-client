@@ -87,7 +87,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   const formBoxRef = React.createRef<HTMLDivElement>();
   const scrollSwitcher = useRef<Boolean>(true);
   const [spaceType, setSpaceType] = useState(ESpaceType.USER);
-  const isAdmin = odc.appConfig.manage.user.isODCOrganizationConfig(login.user);
+  const isAdmin = odc.appConfig.manage.user.isODCOrganizationConfig?.(login.user);
   const [searchValue, setSearchValue] = useState('');
 
   const getData = useCallback(
