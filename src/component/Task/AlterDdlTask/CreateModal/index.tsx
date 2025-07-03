@@ -96,6 +96,16 @@ export enum LockStrategy {
   LOCK_USER = 'LOCK_USER',
   LOCK_TABLE = 'LOCK_TABLE',
 }
+export const LockStrategyLableMap = {
+  [LockStrategy.LOCK_USER]: formatMessage({
+    id: 'src.component.Task.AlterDdlTask.CreateModal.72D3ECEB',
+    defaultMessage: '锁定用户',
+  }),
+  [LockStrategy.LOCK_TABLE]: formatMessage({
+    id: 'src.component.Task.AlterDdlTask.CreateModal.4D9F1206',
+    defaultMessage: '锁定表',
+  }),
+};
 const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const { modalStore, settingStore, projectId, theme } = props;
   const { ddlAlterData } = modalStore;
@@ -250,10 +260,10 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
     setLockDatabaseUserRequired(res?.lockDatabaseUserRequired);
   };
   useEffect(() => {
-    if (connection?.id && lockDatabaseUserRequired) {
+    if (connection?.id && isLockUser) {
       loadDatasourceUsers(connection.id);
     }
-  }, [connection?.id]);
+  }, [connection?.id, isLockUser]);
   useEffect(() => {
     if (databaseId) {
       checkLockDatabaseUserRequired(databaseId);
@@ -482,17 +492,11 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           >
             <Radio.Group>
               <Radio.Button value={LockStrategy.LOCK_USER}>
-                {formatMessage({
-                  id: 'src.component.Task.AlterDdlTask.CreateModal.72D3ECEB',
-                  defaultMessage: '锁定用户',
-                })}
+                {LockStrategyLableMap[LockStrategy.LOCK_USER]}
               </Radio.Button>
               {!lockDatabaseUserRequired && (
                 <Radio.Button value={LockStrategy.LOCK_TABLE}>
-                  {formatMessage({
-                    id: 'src.component.Task.AlterDdlTask.CreateModal.4D9F1206',
-                    defaultMessage: '锁定表',
-                  })}
+                  {LockStrategyLableMap[LockStrategy.LOCK_TABLE]}
                 </Radio.Button>
               )}
             </Radio.Group>

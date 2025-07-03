@@ -181,7 +181,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
         ],
 
         render: (enabled, record) => {
-          const disabledOp = !this.isCanEdit(record, record?.id);
+          const disabledOp = !this.isCanEdit?.(record, record?.id);
           return (
             <StatusSwitch
               disabled={disabledOp}
@@ -203,7 +203,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
         key: 'action',
         fixed: 'right' as FixedType,
         render: (value, record) => {
-          const disabledOp = !this.isCanEdit(record, record?.id);
+          const disabledOp = !this.isCanEdit?.(record, record?.id);
           return (
             <Action.Group>
               <Action.Link
@@ -348,7 +348,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
   };
 
   private isCanEdit = (user: IManagerUser, resourceId?: string) => {
-    const isEditable = odc.appConfig.manage.user.canEdit(login.user, resourceId);
+    const isEditable = odc.appConfig.manage.user.canEdit?.(login.user, resourceId);
     return isEditable;
   };
 
@@ -398,7 +398,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
   render() {
     const { formModalVisible, detailModalVisible, editId, detailId, users, roles, user } =
       this.state;
-    const disabledOp = !this.isCanEdit(user, detailId);
+    const disabledOp = !this.isCanEdit?.(user, detailId);
 
     const canAcessCreate = canAcess({
       resourceIdentifier: IManagerResourceType.user,
