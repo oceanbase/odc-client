@@ -90,8 +90,8 @@ const ProjectItem: React.FC<IProps> = function () {
           }
           let disabledInfo: string = null;
           if (
-            !item.currentUserResourceRoles?.includes(ProjectRole.DBA) &&
-            !item.currentUserResourceRoles?.includes(ProjectRole.OWNER)
+            !item?.currentUserResourceRoles?.includes(ProjectRole.DBA) &&
+            !item?.currentUserResourceRoles?.includes(ProjectRole.OWNER)
           ) {
             disabledInfo = formatMessage({
               id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.NonProjectAdministratorsOr',
