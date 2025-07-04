@@ -5978,5 +5978,8 @@
   "src.component.Task.AlterDdlTask.CreateModal.D056FD5E": "Lock User",
   "src.component.Task.AlterDdlTask.CreateModal.EA0D82E0": "Lock Table",
   "src.component.Task.AlterDdlTask.CreateModal.125DF508": "Recommended",
-  "src.component.ODCSetting.2BE8F5C3": "Do not exceed {maxResultsetRows}"
+  "src.component.ODCSetting.2BE8F5C3": "Do not exceed {maxResultsetRows}",
+  "src.component.Task.AlterDdlTask.CreateModal.44A394CE": "Before switching the table name, lock the original table to prohibit writes. ",
+  "src.component.Task.AlterDdlTask.CreateModal.6DC73E39": "Before switching the table name, lock the original table to prevent writing. Please ensure that the ODP meets the following conditions:  \nODP version ≥ 4.3.1 and the following parameter settings have been made:  \n    alter proxyconfig set proxy_id=1;  \n    alter proxyconfig set client_session_id_version=2;  \n    alter proxyconfig set enable_single_leader_node_routing = false;  ",
+  "src.component.Task.AlterDdlTask.CreateModal.C62A7DBB": "Parameter enable_lock_priority needs to be set to true"
 }
