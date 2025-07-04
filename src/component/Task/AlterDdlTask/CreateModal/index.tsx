@@ -116,21 +116,21 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const [datasourceUser, setDatasourceUser] = useState<IDatasourceUser[]>([]);
   const [canCreateTask, setCanCreateTask] = useState(true); // 判断是否可以进行创建任务
   const [lockDatabaseUserRequired, setLockDatabaseUserRequired] = useState(true);
+  const [isDbEnableLockPriorityFlagSet, setIsDbEnableLockPriorityFlagSet] = useState(false);
   const databaseId = Form.useWatch('databaseId', form);
   const { database } = useDBSession(databaseId);
   const connection = database?.dataSource;
   const lockStrategy = Form.useWatch('forbiddenWriteType', form);
   const isLockUser = lockStrategy === LockStrategy.LOCK_USER;
   const lockTableTipInCloud = formatMessage({
-    id: 'src.component.Task.AlterDdlTask.CreateModal.830CE5EA',
-    defaultMessage:
-      '在表名切换前，锁定原表禁写。请确保您的数据库满足以下条件：\n        1. OB 版本号 ≥ 4.2.5 且 < 4.3.0 \n        2. 参数 enable_lock_priority 已设置为 true',
+    id: 'src.component.Task.AlterDdlTask.CreateModal.44A394CE',
+    defaultMessage: '在表名切换前，锁定原表禁写。',
   });
 
   const lockTableTipInPrivate = formatMessage({
-    id: 'src.component.Task.AlterDdlTask.CreateModal.288DF615',
+    id: 'src.component.Task.AlterDdlTask.CreateModal.6DC73E39',
     defaultMessage:
-      '在表名切换前，锁定原表禁写。请确保您的数据库满足以下条件：\n1. OB 版本号 ≥ 4.2.5 且 < 4.3.0 ，且参数 enable_lock_priority 已设置为 true \n2. ODP 版本 ≥ 4.3.1 且已进行以下参数设置：\n        alter proxyconfig set proxy_id=1;\n        alter proxyconfig set client_session_id_version=2;\n        alter proxyconfig set enable_single_leader_node_routing = false;',
+      '在表名切换前，锁定原表禁写。请您确保 ODP 满足以下条件：\nODP 版本 ≥ 4.3.1 且已进行以下参数设置：\n    alter proxyconfig set proxy_id=1;\n    alter proxyconfig set client_session_id_version=2;\n    alter proxyconfig set enable_single_leader_node_routing = false;',
   });
 
   const lockTableTip = haveOCP() ? lockTableTipInCloud : lockTableTipInPrivate;
@@ -153,6 +153,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
     form.resetFields(null);
     setHasEdit(false);
     setLockDatabaseUserRequired(true);
+    setIsDbEnableLockPriorityFlagSet(false);
   };
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
@@ -258,6 +259,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const checkLockDatabaseUserRequired = async (databaseId: number) => {
     const res = await getLockDatabaseUserRequired(databaseId);
     setLockDatabaseUserRequired(res?.lockDatabaseUserRequired);
+    setIsDbEnableLockPriorityFlagSet(res?.isDbEnableLockPriorityFlagSet);
   };
   useEffect(() => {
     if (connection?.id && isLockUser) {
@@ -494,10 +496,25 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
               <Radio.Button value={LockStrategy.LOCK_USER}>
                 {LockStrategyLableMap[LockStrategy.LOCK_USER]}
               </Radio.Button>
+
               {!lockDatabaseUserRequired && (
-                <Radio.Button value={LockStrategy.LOCK_TABLE}>
-                  {LockStrategyLableMap[LockStrategy.LOCK_TABLE]}
-                </Radio.Button>
+                <Tooltip
+                  title={
+                    !isDbEnableLockPriorityFlagSet
+                      ? formatMessage({
+                          id: 'src.component.Task.AlterDdlTask.CreateModal.C62A7DBB',
+                          defaultMessage: '需要将参数 enable_lock_priority 设置为 true',
+                        })
+                      : null
+                  }
+                >
+                  <Radio.Button
+                    value={LockStrategy.LOCK_TABLE}
+                    disabled={!isDbEnableLockPriorityFlagSet}
+                  >
+                    {LockStrategyLableMap[LockStrategy.LOCK_TABLE]}
+                  </Radio.Button>
+                </Tooltip>
               )}
             </Radio.Group>
           </Form.Item>

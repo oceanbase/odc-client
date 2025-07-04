@@ -5978,5 +5978,8 @@
   "src.component.Task.AlterDdlTask.CreateModal.D056FD5E": "鎖定使用者",
   "src.component.Task.AlterDdlTask.CreateModal.EA0D82E0": "鎖定表",
   "src.component.Task.AlterDdlTask.CreateModal.125DF508": "推薦",
-  "src.component.ODCSetting.2BE8F5C3": "不超過{maxResultsetRows}"
+  "src.component.ODCSetting.2BE8F5C3": "不超過{maxResultsetRows}",
+  "src.component.Task.AlterDdlTask.CreateModal.44A394CE": "在表名切換前，鎖定原表禁寫。",
+  "src.component.Task.AlterDdlTask.CreateModal.6DC73E39": "在表名切換前，鎖定原表禁寫。請您確保 ODP 滿足以下條件：\nODP 版本 ≥ 4.3.1 且已進行以下參數設定：\n    alter proxyconfig set proxy_id=1;\n    alter proxyconfig set client_session_id_version=2;\n    alter proxyconfig set enable_single_leader_node_routing = false;",
+  "src.component.Task.AlterDdlTask.CreateModal.C62A7DBB": "需要將參數 enable_lock_priority 設置為 true"
 }
