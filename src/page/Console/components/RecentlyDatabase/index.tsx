@@ -1,12 +1,10 @@
 import { formatMessage } from '@/util/intl';
-import { useContext, useState } from 'react';
-import { Table, Tooltip, Empty, Spin } from 'antd';
+import { Table, Tooltip, Spin } from 'antd';
 import { useMount, useRequest } from 'ahooks';
 import { ConsoleTextConfig, EDatabaseTableColumnKey } from '../../const';
 import Icon from '@ant-design/icons';
 import LabelWithIcon from '../LabelWithIcon';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import { IDatabaseHistoriesParam, TaskType } from '@/d.ts';
 import Action from '@/component/Action';
 import AsyncTaskCreateModal from '@/component/Task/AsyncTask';
@@ -17,7 +15,6 @@ import { isLogicalDatabase } from '@/util/database';
 import { gotoSQLWorkspace } from '@/util/route';
 import { inject, observer } from 'mobx-react';
 import { ModalStore } from '@/store/modal';
-import ProjectContext from '@/page/Project/ProjectContext';
 import styles from './index.less';
 import { getDatabasesHistories } from '@/common/network/task';
 import login from '@/store/login';
@@ -28,6 +25,7 @@ import RecentlyDatabaseEmpty from '@/component/Empty/RecentlyDatabaseEmpty';
 import { getRecentlyDatabaseOperation } from './help';
 import LogicDatabaseAsyncTask from '@/component/Task/LogicDatabaseAsyncTask';
 import LogicIcon from '@/component/logicIcon';
+import HelpDoc from '@/component/helpDoc';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -150,8 +148,12 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
 
           case EDatabaseTableColumnKey.Recently:
             const databaseStyle = getDataSourceStyleByConnectType(record?.dataSource?.type);
+            const existed = record?.existed;
             return (
-              <div className={actionStyle} style={hasDBAuth ? {} : { filter: 'grayScale(1)' }}>
+              <div
+                className={existed ? actionStyle : ''}
+                style={hasDBAuth ? {} : { filter: 'grayScale(1)' }}
+              >
                 <LabelWithIcon
                   gap={4}
                   label={
@@ -164,6 +166,9 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
                     >
                       <span
                         onClick={() => {
+                          if (!existed) {
+                            return;
+                          }
                           gotoSQLWorkspace(
                             record?.project?.id,
                             record?.dataSource?.id,
@@ -175,6 +180,16 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
                         }}
                       >
                         {value}
+                        {!existed && (
+                          <HelpDoc
+                            leftText
+                            isTip={false}
+                            title={formatMessage({
+                              id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
+                              defaultMessage: '当前数据库不存在',
+                            })} /*当前数据库不存在*/
+                          />
+                        )}
                       </span>
                     </Tooltip>
                   }
