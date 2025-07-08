@@ -412,7 +412,7 @@ const Console = () => {
                     onClick={() =>
                       window.open(
                         odc.appConfig.docs.url
-                          ? 'https://www.oceanbase.com/docs/common-odc-1000000002687242'
+                          ? 'https://www.oceanbase.com/docs/common-odc-1000000002859674'
                           : getLocalDocs('100.sql-development-common-techniques.html'),
                       )
                     }

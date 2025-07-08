@@ -127,7 +127,7 @@ export const ConsoleTextConfig = {
           defaultMessage: 'SQL 开发常用小技巧',
         }),
         fragmentIdentifier: '100.sql-development-common-techniques.html',
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687242',
+        url: 'https://www.oceanbase.com/docs/common-odc-1000000002859674',
       },
       {
         title: formatMessage({
@@ -155,12 +155,9 @@ export const ConsoleTextConfig = {
         url: 'https://www.oceanbase.com/docs/common-odc-1000000002687237',
       },
       {
-        title: formatMessage({
-          id: 'src.page.Console.4F744942',
-          defaultMessage: '快速集成 ODC 的企业级账号体系',
-        }),
-        fragmentIdentifier: '600.rapid-integration-of-enterprise-level-account-systems.html',
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687238',
+        title: '带你走进 ODC 团队空间的精彩世界',
+        fragmentIdentifier: '200.common-operations-in-odc-team-space.html',
+        url: ' https://www.oceanbase.com/docs/common-odc-1000000002859675',
       },
       {
         title: formatMessage({
