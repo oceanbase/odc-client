@@ -596,8 +596,10 @@ export class ModalStore {
 
   @action
   public changePartitionModal(isShow: boolean = true, data?: IPartitionTaskData) {
-    this.partitionVisible = isShow;
-    this.partitionData = isShow ? data : null;
+    getSpaceConfigForFormInitialValue(isShow, () => {
+      this.partitionVisible = isShow;
+      this.partitionData = isShow ? data : null;
+    });
   }
 
   @action
@@ -613,9 +615,11 @@ export class ModalStore {
     isShow: boolean = true,
     data?: IStructureComparisonTaskData,
   ) {
-    this.structureComparisonVisible = isShow;
-    isShow && !data?.taskId && this.structureComparisonDataMap.clear();
-    this.structureComparisonTaskData = isShow ? data : null;
+    getSpaceConfigForFormInitialValue(isShow, () => {
+      this.structureComparisonVisible = isShow;
+      isShow && !data?.taskId && this.structureComparisonDataMap.clear();
+      this.structureComparisonTaskData = isShow ? data : null;
+    });
   }
 
   @action
