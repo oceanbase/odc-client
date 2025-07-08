@@ -98,11 +98,11 @@ export enum LockStrategy {
 }
 export const LockStrategyLableMap = {
   [LockStrategy.LOCK_USER]: formatMessage({
-    id: 'src.component.Task.AlterDdlTask.CreateModal.72D3ECEB',
+    id: 'src.component.Task.AlterDdlTask.CreateModal.D056FD5E',
     defaultMessage: '锁定用户',
   }),
   [LockStrategy.LOCK_TABLE]: formatMessage({
-    id: 'src.component.Task.AlterDdlTask.CreateModal.4D9F1206',
+    id: 'src.component.Task.AlterDdlTask.CreateModal.EA0D82E0',
     defaultMessage: '锁定表',
   }),
 };
@@ -184,7 +184,6 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           sqlContent,
           swapTableNameRetryTimes,
           swapTableType,
-          lockTableTimeOutSeconds,
           originTableCleanStrategy,
           errorStrategy,
           description,
@@ -196,7 +195,6 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           forbiddenWriteType,
         } = values;
         const parameters = {
-          lockTableTimeOutSeconds,
           errorStrategy,
           sqlContent,
           sqlType,
@@ -390,7 +388,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           type="warning"
           showIcon
           message={formatMessage({
-            id: 'src.component.Task.AlterDdlTask.CreateModal.767B6898',
+            id: 'src.component.Task.AlterDdlTask.CreateModal.D1732875',
             defaultMessage: '注意：执行无锁结构变更前请确保数据库服务器磁盘空间充足。',
           })}
         />
@@ -474,7 +472,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           </Row>
           <Form.Item
             label={formatMessage({
-              id: 'src.component.Task.AlterDdlTask.CreateModal.CC3FB49A',
+              id: 'src.component.Task.AlterDdlTask.CreateModal.05BCC428',
               defaultMessage: '表名切换禁写策略',
             })}
             rules={[{ required: true }]}
@@ -483,7 +481,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             extra={
               isLockUser ? (
                 formatMessage({
-                  id: 'src.component.Task.AlterDdlTask.CreateModal.4871DE06',
+                  id: 'src.component.Task.AlterDdlTask.CreateModal.B0CFE0E1',
                   defaultMessage:
                     '在表名切换前，系统将锁定您指定的数据库账号，并终止该账号的当前会话。切换期间，所有涉及该账号的应用将无法访问数据库。建议避免在业务高峰期执行此操作，以减少对业务的影响。',
                 })
@@ -614,88 +612,24 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             }
             keepExpand
           >
-            <Row>
-              <Col span={6}>
-                <Form.Item
-                  label={
-                    <HelpDoc leftText isTip doc="schemaChangeSwapTableTimeout">
-                      {
-                        formatMessage({
-                          id: 'odc.AlterDdlTask.CreateModal.LockTableTimeout',
-                          defaultMessage: '锁表超时时间',
-                        }) /*锁表超时时间*/
-                      }
-                    </HelpDoc>
-                  }
-                  required
-                >
-                  <Form.Item
-                    label={formatMessage({
-                      id: 'odc.AlterDdlTask.CreateModal.Seconds',
-                      defaultMessage: '秒',
-                    })}
-                    /*秒*/ name="lockTableTimeOutSeconds"
-                    rules={[
-                      {
-                        required: true,
-                        message: formatMessage({
-                          id: 'odc.AlterDdlTask.CreateModal.EnterATimeoutPeriod',
-                          defaultMessage: '请输入超时时间',
-                        }), //请输入超时时间
-                      },
-                      {
-                        type: 'number',
-                        max: 3600,
-                        message: formatMessage({
-                          id: 'odc.AlterDdlTask.CreateModal.UpToSeconds',
-                          defaultMessage: '最大不超过 3600 秒',
-                        }), //最大不超过 3600 秒
-                      },
-                    ]}
-                    initialValue={5}
-                    noStyle
-                  >
-                    <InputNumber min={0} max={3600} />
-                  </Form.Item>
-                  <span className={styles.hour}>
-                    {
-                      formatMessage({
-                        id: 'odc.AlterDdlTask.CreateModal.Seconds',
-                        defaultMessage: '秒',
-                      }) /*秒*/
-                    }
-                  </span>
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item
-                  name="swapTableNameRetryTimes"
-                  label={
-                    <HelpDoc leftText isTip doc="schemaChangeSwapTableRetryTimes">
-                      {
-                        formatMessage({
-                          id: 'odc.AlterDdlTask.CreateModal.NumberOfFailedRetries',
-                          defaultMessage: '失败重试次数',
-                        }) /*失败重试次数*/
-                      }
-                    </HelpDoc>
-                  }
-                  initialValue={3}
-                  required
-                  rules={[
-                    {
-                      required: true,
-                      message: formatMessage({
-                        id: 'odc.AlterDdlTask.CreateModal.PleaseEnterTheNumberOf',
-                        defaultMessage: '请输入失败重试次数',
-                      }), //请输入失败重试次数
-                    },
-                  ]}
-                >
-                  <InputNumber min={0} max={10} />
-                </Form.Item>
-              </Col>
-            </Row>
+            <Form.Item
+              name="swapTableNameRetryTimes"
+              label={
+                <HelpDoc leftText isTip doc="schemaChangeSwapTableRetryTimes">
+                  锁定失败重试次数
+                </HelpDoc>
+              }
+              initialValue={3}
+              required
+              rules={[
+                {
+                  required: true,
+                  message: '请输入锁定失败重试次数',
+                },
+              ]}
+            >
+              <InputNumber min={0} max={10} />
+            </Form.Item>
             <Form.Item
               label={formatMessage({
                 id: 'odc.AlterDdlTask.CreateModal.SourceTableCleanupPolicyAfter',
@@ -724,7 +658,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                     }
                     <Tag color="blue">
                       {formatMessage({
-                        id: 'src.component.Task.AlterDdlTask.CreateModal.310DB54C',
+                        id: 'src.component.Task.AlterDdlTask.CreateModal.125DF508',
                         defaultMessage: '推荐',
                       })}
                     </Tag>

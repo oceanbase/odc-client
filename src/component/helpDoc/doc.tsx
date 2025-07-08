@@ -654,16 +654,7 @@ export default {
     </p>
   ),
 
-  schemaChangeSwapTableRetryTimes: (
-    <p>
-      {
-        formatMessage({
-          id: 'odc.component.helpDoc.doc.AfterTheTableLockTime',
-          defaultMessage: '超过锁表时间后，未切换完成可自动重试',
-        }) /*超过锁表时间后，未切换完成可自动重试*/
-      }
-    </p>
-  ),
+  schemaChangeSwapTableRetryTimes: <p>若锁定失败，可自动重试次数</p>,
 
   TaskLmitRow: (
     <p>
