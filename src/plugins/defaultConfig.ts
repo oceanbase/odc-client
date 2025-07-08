@@ -84,6 +84,9 @@ export default {
   systemConfig: {
     default: null,
   },
+  spaceConfig: {
+    showSecurity: true,
+  },
   spm: {
     enable: true,
   },

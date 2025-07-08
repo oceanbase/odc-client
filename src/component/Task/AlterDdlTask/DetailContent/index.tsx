@@ -44,8 +44,6 @@ interface IDDLAlterParamters {
   lockUsers: {
     name: string;
   }[];
-  // 单位：秒
-  lockTableTimeOutSeconds: number;
   swapTableNameRetryTimes: number;
   originTableCleanStrategy: ClearStrategy;
   swapTableType: SwapTableType;
@@ -243,12 +241,10 @@ export function getItems(
         ],
         [
           formatMessage({
-            id: 'src.component.Task.AlterDdlTask.CreateModal.CC3FB49A',
+            id: 'src.component.Task.AlterDdlTask.CreateModal.05BCC428',
             defaultMessage: '表名切换禁写策略',
           }),
-          lockUsers
-            ? LockStrategyLableMap[LockStrategy.LOCK_USER]
-            : LockStrategyLableMap[LockStrategy.LOCK_TABLE],
+          LockStrategyLableMap[parameters?.forbiddenWriteType || LockStrategy.LOCK_USER],
         ],
         hasFlow ? riskItem : null,
         lockUsers
@@ -279,14 +275,6 @@ export function getItems(
         ],
 
         [null, <SQLContentSection task={task} key={task.id} theme={theme} />, 2],
-        [
-          formatMessage({
-            id: 'odc.AlterDdlTask.DetailContent.LockTableTimeout',
-            defaultMessage: '锁表超时时间',
-          }),
-          //锁表超时时间
-          `${parameters?.lockTableTimeOutSeconds}s`,
-        ],
 
         [
           formatMessage({

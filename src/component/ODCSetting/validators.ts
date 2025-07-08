@@ -44,7 +44,7 @@ export const validForQueryLimit = async (value) => {
   if (value > maxResultsetRows) {
     return Promise.reject(
       formatMessage(
-        { id: 'src.component.ODCSetting.694DF8AE', defaultMessage: '不超过{maxResultsetRows}' },
+        { id: 'src.component.ODCSetting.2BE8F5C3', defaultMessage: '不超过{maxResultsetRows}' },
         { maxResultsetRows },
       ),
     );
