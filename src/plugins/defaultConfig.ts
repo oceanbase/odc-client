@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IRoles, type IManagerUser } from '@/d.ts';
+import { actionTypes, IManagerResourceType, IRoles, type IManagerUser } from '@/d.ts';
 
 export default {
   login: {
@@ -41,6 +41,11 @@ export default {
       delete: true,
       isAdmin: (user: Pick<IManagerUser, 'roleIds'>) => {
         return user?.roleIds?.includes(IRoles.SYSTEM_ADMIN);
+      },
+      isODCOrganizationConfig: (user: Pick<IManagerUser, 'systemOperationPermissions'>) => {
+        return user?.systemOperationPermissions?.some(
+          (item) => item?.resourceType === IManagerResourceType.odc_organization_config,
+        );
       },
       tabInVisible: (setting) => {
         return false;
