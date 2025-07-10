@@ -126,8 +126,8 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           })} /*源数据库*/
         >
           <Space size={2}>
-            <span>{jobParameters?.sourceDatabaseName}</span>
-            <Text type="secondary">{jobParameters?.sourceDataSourceName}</Text>
+            <span>{jobParameters?.sourceDatabase?.name}</span>
+            <Text type="secondary">{jobParameters?.sourceDatabase?.dataSource?.name}</Text>
           </Space>
         </Descriptions.Item>
         <Descriptions.Item
@@ -138,8 +138,8 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
           })} /*目标数据库*/
         >
           <Space size={2}>
-            <span>{jobParameters?.targetDatabaseName}</span>
-            <Text type="secondary">{jobParameters?.targetDataSourceName}</Text>
+            <span>{jobParameters?.targetDatabase?.name}</span>
+            <Text type="secondary">{jobParameters?.targetDatabase?.dataSource?.name}</Text>
           </Space>
         </Descriptions.Item>
         {hasFlow && (
@@ -155,6 +155,9 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
       </Descriptions>
 
       <SimpleTextItem
+        style={{
+          marginTop: 12,
+        }}
         label={formatMessage({
           id: 'odc.DataArchiveTask.DetailContent.VariableConfiguration',
           defaultMessage: '变量配置',

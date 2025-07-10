@@ -2641,11 +2641,9 @@ export interface IDataArchiveJobParameters {
   deleteTemporaryTable?: boolean;
   name: string;
   sourceDatabaseId: number;
-  sourceDatabaseName?: string;
-  sourceDataSourceName?: string;
+  sourceDatabase?: IDatabase;
   targetDataBaseId: number;
-  targetDatabaseName?: string;
-  targetDataSourceName?: string;
+  targetDatabase: IDatabase;
   migrationInsertAction?: MigrationInsertAction;
   shardingStrategy?: ShardingStrategy;
   deleteByUniqueKey?: boolean;
@@ -2658,7 +2656,6 @@ export interface IDataArchiveJobParameters {
     name: string;
     pattern: string;
   }[];
-  targetDatabase: IDatabase;
   timeoutMillis: number;
   syncTableStructure: SyncTableStructureEnum[];
   dirtyRowAction: DirtyRowActionEnum;
@@ -2670,7 +2667,7 @@ export interface IDataClearJobParameters {
   deleteAfterMigration: boolean;
   name: string;
   databaseId: number;
-  databaseName?: string;
+  database?: IDatabase;
   deleteByUniqueKey?: boolean;
   rateLimit?: {
     rowLimit?: number;
@@ -2684,9 +2681,7 @@ export interface IDataClearJobParameters {
   timeoutMillis: number;
   needCheckBeforeDelete: boolean;
   targetDatabaseId?: number;
-  targetDatabaseName?: string;
-  sourceDataSourceName?: string;
-  targetDataSourceName?: string;
+  targetDatabase?: IDatabase;
   shardingStrategy?: ShardingStrategy;
   dirtyRowAction: DirtyRowActionEnum;
   maxAllowedDirtyRowCount: number;
