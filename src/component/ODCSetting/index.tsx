@@ -560,12 +560,17 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
         size="small"
         moreIcon={false}
         tabPosition="right"
-        items={Array.from(data.values()).map((g) => {
-          return {
-            label: g.label,
-            key: g.key,
-          };
-        })}
+        items={Array.from(data.values())
+          .map((g) => {
+            if (!hasVisibleSettings(g)) {
+              return null;
+            }
+            return {
+              label: g.label,
+              key: g.key,
+            };
+          })
+          .filter(Boolean)}
         activeKey={activeKey}
         onChange={(key) => {
           setActiveKey(key);
