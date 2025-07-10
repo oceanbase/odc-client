@@ -16,6 +16,7 @@ import { formatMessage } from '@/util/intl';
  */
 import { IODCSetting, ODCSettingGroup } from '../../config';
 import RadioItem from '../../Item/RadioItem';
+import { getExecutionStrategyConfig, getDatabaseChangeResultSetsConfig } from '../common';
 
 const taskGroup: ODCSettingGroup = {
   label: formatMessage({
@@ -60,6 +61,8 @@ const personalTaskSetting: IODCSetting[] = [
       );
     },
   },
+  ...getDatabaseChangeResultSetsConfig(taskGroup),
+  ...getExecutionStrategyConfig(taskGroup),
 ];
 
 export default personalTaskSetting;

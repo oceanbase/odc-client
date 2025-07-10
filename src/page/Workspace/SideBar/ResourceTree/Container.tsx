@@ -23,6 +23,8 @@ import { Spin } from 'antd';
 import DatabaseTree from './DatabaseTree';
 import TreeStateStore, { ITreeStateCache } from './TreeStateStore';
 import { ModalStore } from '@/store/modal';
+import { useParams, useSearchParams } from '@umijs/max';
+import { openNewSQLPage } from '@/store/helper/page';
 
 export default inject(
   'userStore',
@@ -39,6 +41,12 @@ export default inject(
     const { pollingDatabase } = resourcetreeContext;
     const cacheRef = useRef<ITreeStateCache>({});
 
+    const { datasourceId: tempDatasourceId } = useParams<{
+      tabKey: string;
+      datasourceId: string;
+    }>();
+    const [searchParams, setSearchParams] = useSearchParams();
+
     const [loading, setLoading] = useState(true);
 
     async function initData() {
@@ -47,7 +55,31 @@ export default inject(
       resourcetreeContext.reloadProjectList();
       setLoading(false);
       pollingDatabase();
+      resolveParams();
     }
+
+    const resolveParams = async () => {
+      const databaseName = searchParams.get('databaseName');
+      if (tempDatasourceId) {
+        const databaseListData =
+          resourcetreeContext.databaseList?.length > 0
+            ? resourcetreeContext.databaseList
+            : await resourcetreeContext.reloadDatabaseList();
+        if (databaseName && databaseListData) {
+          const targetDatabase = databaseListData.find(
+            (db) => db.name === databaseName && db?.dataSource?.id === parseInt(tempDatasourceId),
+          );
+          if (targetDatabase) {
+            // 打开sql窗口
+            openNewSQLPage(targetDatabase.id);
+            // 删除databaseName参数
+            const newSearchParams = new URLSearchParams(searchParams);
+            newSearchParams.delete('databaseName');
+            setSearchParams(newSearchParams, { replace: true });
+          }
+        }
+      }
+    };
 
     useEffect(() => {
       initData();

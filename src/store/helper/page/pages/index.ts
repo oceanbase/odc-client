@@ -477,8 +477,9 @@ export class SQLResultSetPage extends Page {
   public pageParams: {
     resultSets: IResultSet[];
     databaseId: number;
+    sqlContent: string;
   };
-  constructor(databaseId: number, resultSets: IResultSet[], title: string) {
+  constructor(databaseId: number, resultSets: IResultSet[], title: string, sqlContent: string) {
     super();
     this.pageKey = 'sql_resultset_view-' + generateUniqKey();
     this.pageTitle = title;
@@ -486,6 +487,7 @@ export class SQLResultSetPage extends Page {
     this.pageParams = {
       resultSets,
       databaseId,
+      sqlContent,
     };
   }
 }

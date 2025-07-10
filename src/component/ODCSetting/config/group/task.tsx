@@ -17,6 +17,7 @@ import { formatMessage } from '@/util/intl';
 import { IODCSetting, ODCSettingGroup } from '../../config';
 import RadioItem from '../../Item/RadioItem';
 import TextAreaItem from '../../Item/TextItem';
+import { getExecutionStrategyConfig, getDatabaseChangeResultSetsConfig } from '../common';
 
 const taskGroup: ODCSettingGroup = {
   label: formatMessage({
@@ -157,6 +158,8 @@ const taskSetting: IODCSetting[] = [
       );
     },
   },
+  ...getDatabaseChangeResultSetsConfig(taskGroup),
+  ...getExecutionStrategyConfig(taskGroup),
   {
     label: formatMessage({
       id: 'src.component.ODCSetting.config.group.0ACF68C5',

@@ -47,6 +47,7 @@ import { inject, observer } from 'mobx-react';
 import styles from './index.less';
 import odc from '@/plugins/odc';
 import login from '@/store/login';
+import { ConfigHelper } from './utils/configHelper';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -287,10 +288,13 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       const clientData = safeParseJson(await getODCSetting(), {});
       data = { ...data, ...clientData };
     }
-    formRef.setFieldsValue(data);
+    const transformedData = ConfigHelper.transformLoadData(data);
+    formRef.setFieldsValue(transformedData);
 
     let spaceData = (await setting.getSpaceConfig()) || {};
-    spaceFormRef.setFieldsValue(spaceData);
+
+    const transformedSpaceData = ConfigHelper.transformLoadData(spaceData);
+    spaceFormRef.setFieldsValue(transformedSpaceData);
   }
 
   useEffect(() => {
@@ -311,33 +315,42 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     const serverData: Record<string, string> = {},
       localData = {};
     const spaceServerData: Record<string, string> = {};
-    Object.keys(values).forEach((key) => {
+
+    const expandedValues = ConfigHelper.transformSaveData(values);
+    const expandedSpaceValues = ConfigHelper.transformSaveData(spaceValues);
+
+    Object.keys(expandedValues).forEach((key) => {
       const info = odcSettingMap[key];
+      if (!info) return;
+
       switch (info.storeType) {
         case 'server': {
-          serverData[key] = values[key] || '';
+          serverData[key] = expandedValues[key] || '';
           break;
         }
         case 'local': {
-          localData[key] = values[key];
+          localData[key] = expandedValues[key];
           break;
         }
       }
     });
 
-    Object.keys(spaceValues).forEach((key) => {
+    Object.keys(expandedSpaceValues).forEach((key) => {
       const info = odcSettingMap[key];
+      if (!info) return;
+
       switch (info.storeType) {
         case 'server': {
-          spaceServerData[key] = spaceValues[key];
+          spaceServerData[key] = expandedSpaceValues[key];
           break;
         }
         case 'local': {
-          localData[key] = spaceValues[key];
+          localData[key] = expandedSpaceValues[key];
           break;
         }
       }
     });
+
     if (
       serverData['odc.editor.shortcut.executeStatement'] ===
       serverData['odc.editor.shortcut.executeCurrentStatement']

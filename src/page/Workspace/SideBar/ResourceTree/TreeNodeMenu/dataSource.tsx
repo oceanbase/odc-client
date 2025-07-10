@@ -15,6 +15,8 @@ import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import { SearchOutlined } from '@ant-design/icons';
 import { openGlobalSearch } from '@/page/Workspace/SideBar/ResourceTree/const';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { syncDatasource } from '@/common/network/connection';
+
 const CustomDropdown = ({
   node,
   login,
@@ -22,6 +24,8 @@ const CustomDropdown = ({
   setCopyDatasourceId,
   setEditDatasourceId,
   setAddDSVisiable,
+  userStore,
+  sync,
 }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const treeContext = useContext(ResourceTreeContext);
@@ -38,6 +42,7 @@ const CustomDropdown = ({
     setDropdownVisible(false);
     action(e);
   };
+
   const menuItems = node.data
     ? [
         {
@@ -72,7 +77,20 @@ const CustomDropdown = ({
               deleteDataSource(name as string, node.data.id as string);
             }),
         },
-      ]
+        userStore.isPrivateSpace()
+          ? {
+              label: formatMessage({
+                id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.884084AB',
+                defaultMessage: '同步数据库',
+              }),
+              key: 'sync',
+              onClick: (e) =>
+                handleMenuClick(e, () => {
+                  sync(node.data.id);
+                }),
+            }
+          : null,
+      ]?.filter(Boolean)
     : [];
   const menu = (
     <Menu>
@@ -117,6 +135,7 @@ interface IProps {
   setCopyDatasourceId: any;
   setEditDatasourceId: React.Dispatch<React.SetStateAction<number>>;
   setAddDSVisiable: React.Dispatch<React.SetStateAction<boolean>>;
+  reload: () => void;
 }
 
 const DataSourceNodeMenu = (props: IProps) => {
@@ -128,8 +147,23 @@ const DataSourceNodeMenu = (props: IProps) => {
     setAddDSVisiable,
     setEditDatasourceId,
     copyDatasourceId,
+    reload,
   } = props;
   const dataSource = node.data;
+
+  async function sync(id: number | string) {
+    const isSuccess = await syncDatasource(toInteger(id));
+    if (isSuccess) {
+      message.success(
+        formatMessage({
+          id: 'odc.Datasource.Info.SynchronizationSucceeded',
+          defaultMessage: '同步成功',
+        }), //同步成功
+      );
+      reload();
+    }
+  }
+
   return (
     <>
       <Popover
@@ -153,6 +187,8 @@ const DataSourceNodeMenu = (props: IProps) => {
             setCopyDatasourceId={setCopyDatasourceId}
             setEditDatasourceId={setEditDatasourceId}
             setAddDSVisiable={setAddDSVisiable}
+            userStore={userStore}
+            sync={sync}
           />
           <div
             className={classNames(treeStyles.envTip, {
@@ -221,6 +257,13 @@ const DataSourceNodeMenu = (props: IProps) => {
                     {formatMessage({
                       id: 'odc.ResourceTree.Datasource.Delete',
                       defaultMessage: '删除',
+                    })}
+                  </Action.Link>
+
+                  <Action.Link onClick={() => sync(dataSource.id)} key={'sync'}>
+                    {formatMessage({
+                      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.884084AB',
+                      defaultMessage: '同步数据库',
                     })}
                   </Action.Link>
                 </Action.Group>

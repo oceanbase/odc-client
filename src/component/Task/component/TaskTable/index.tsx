@@ -64,6 +64,9 @@ import {
   getExportConfig,
   getTerminateConfig,
   isScheduleMigrateTask,
+  isSupportTaksExport,
+  isSupportTaksImport,
+  isSupportTaksTerminate,
 } from '../AsyncTaskOperationButton/helper';
 const { RangePicker } = DatePicker;
 const { Text, Link } = Typography;
@@ -285,12 +288,15 @@ const TaskTable: React.FC<IProps> = inject(
           ...args,
           filters,
         });
+
+        // 只有在执行时间不为"全部"时才传递 executeDate
+        const shouldUseExecuteDate = filters.executeTime !== TIME_OPTION_ALL_TASK;
         await props.getTaskList(
           {
             ...args,
             filters,
           },
-          executeDate,
+          shouldUseExecuteDate ? executeDate : [],
         );
         setLoading(false);
       };
@@ -638,7 +644,9 @@ const TaskTable: React.FC<IProps> = inject(
         ];
       }
       return [
-        !taskTypeThatCanBeExport.includes(taskTabType) || login.isPrivateSpace()
+        !taskTypeThatCanBeExport.includes(taskTabType) ||
+        login.isPrivateSpace() ||
+        !isSupportTaksImport
           ? {
               type: IOperationOptionType.button,
               content: [
@@ -712,6 +720,7 @@ const TaskTable: React.FC<IProps> = inject(
         isScheduleMigrateTask(taskTabType as any)
           ? {
               type: IOperationOptionType.custom,
+              visible: isSupportTaksExport,
               render: () => (
                 <AsyncTaskOperationButton
                   onReload={() => {
@@ -732,6 +741,7 @@ const TaskTable: React.FC<IProps> = inject(
           ? null
           : {
               type: IOperationOptionType.custom,
+              visible: isSupportTaksTerminate,
               render: () => (
                 <AsyncTaskOperationButton
                   onReload={() => {
