@@ -135,6 +135,7 @@ interface IProps {
   setCopyDatasourceId: any;
   setEditDatasourceId: React.Dispatch<React.SetStateAction<number>>;
   setAddDSVisiable: React.Dispatch<React.SetStateAction<boolean>>;
+  reload: () => void;
 }
 
 const DataSourceNodeMenu = (props: IProps) => {
@@ -146,6 +147,7 @@ const DataSourceNodeMenu = (props: IProps) => {
     setAddDSVisiable,
     setEditDatasourceId,
     copyDatasourceId,
+    reload,
   } = props;
   const dataSource = node.data;
 
@@ -158,6 +160,7 @@ const DataSourceNodeMenu = (props: IProps) => {
           defaultMessage: '同步成功',
         }), //同步成功
       );
+      reload();
     }
   }
 

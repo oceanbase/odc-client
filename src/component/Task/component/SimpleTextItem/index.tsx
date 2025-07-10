@@ -29,8 +29,9 @@ export const SimpleTextItem: React.FC<{
   direction?: 'row' | 'column';
   className?: string;
   showSplit?: boolean;
+  style?: React.CSSProperties;
 }> = (props) => {
-  const { label, content, direction = 'row', className = '', showSplit = true } = props;
+  const { label, content, direction = 'row', className = '', showSplit = true, style } = props;
   return (
     <div
       className={className}
@@ -39,6 +40,7 @@ export const SimpleTextItem: React.FC<{
         fontSize: 12,
         lineHeight: '20px',
         flexDirection: direction,
+        ...style,
       }}
     >
       <div
