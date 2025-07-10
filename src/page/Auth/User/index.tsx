@@ -181,7 +181,12 @@ class UserPage extends React.PureComponent<IProps, IState> {
         ],
 
         render: (enabled, record) => {
-          const disabledOp = this.isMe(record);
+          const canAcessUpdate = () =>
+            canAcess({
+              resourceIdentifier: IManagerResourceType.user,
+              action: actionTypes.update,
+            }).accessible;
+          const disabledOp = this.isMe(record) || !canAcessUpdate();
           return (
             <StatusSwitch
               disabled={disabledOp}
