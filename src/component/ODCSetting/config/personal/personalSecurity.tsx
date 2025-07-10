@@ -16,6 +16,7 @@ import { formatMessage } from '@/util/intl';
  */
 import { IODCSetting, ODCSettingGroup } from '../../config';
 import SecretKeyItem from '../../Item/SecretKeyItem';
+import odc from '@/plugins/odc';
 
 const securityGroup: ODCSettingGroup = {
   label: formatMessage({
@@ -49,6 +50,7 @@ const personalSecuritySetting: IODCSetting[] = [
     render: (value, onChange) => {
       return <SecretKeyItem value={value || ''} onChange={onChange} />;
     },
+    hidden: !odc.appConfig.spaceConfig.showSecurity,
   },
 ];
 
