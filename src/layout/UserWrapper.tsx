@@ -23,7 +23,7 @@ import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useState } from 'react';
 import { PageLoadingContext } from './PageLoadingWrapper';
-import { toDefaultProjectPage } from '@/service/projectHistory';
+import { getDefaultProjectPage, toDefaultProjectPage } from '@/service/projectHistory';
 import OrganizationSelectModal from '@/component/OrganizationSelectModal';
 import odc from '@/plugins/odc';
 interface IProps {
@@ -113,7 +113,11 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
        */
       userFrozenErrorResolve();
       return;
-    } else if (isLoginPage || location.pathname === '/console' || location.pathname === '/') {
+    } else if (
+      isLoginPage ||
+      location.pathname === getDefaultProjectPage() ||
+      location.pathname === '/'
+    ) {
       /**
        * 处于login页面并且已经登录，需要跳到对应的页面上
        */

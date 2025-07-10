@@ -120,8 +120,8 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             })} /*源数据库*/
           >
             <Space size={2}>
-              <span>{jobParameters?.databaseName}</span>
-              <Text type="secondary">{jobParameters?.sourceDataSourceName}</Text>
+              <span>{jobParameters?.database?.name}</span>
+              <Text type="secondary">{jobParameters?.database?.dataSource?.name}</Text>
             </Space>
           </Descriptions.Item>
         ) : (
@@ -133,8 +133,8 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             })} /*数据库*/
           >
             <Space size={2}>
-              <span>{jobParameters?.databaseName}</span>
-              <Text type="secondary">{task?.database?.dataSource?.name}</Text>
+              <span>{jobParameters?.database?.name}</span>
+              <Text type="secondary">{jobParameters?.database?.dataSource?.name}</Text>
             </Space>
           </Descriptions.Item>
         )}
@@ -148,8 +148,8 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
             })} /*目标数据库*/
           >
             <Space size={2}>
-              <span>{jobParameters?.targetDatabaseName}</span>
-              <Text type="secondary">{jobParameters?.targetDataSourceName}</Text>
+              <span>{jobParameters?.targetDatabase?.name}</span>
+              <Text type="secondary">{jobParameters?.targetDatabase?.dataSource?.name}</Text>
             </Space>
           </Descriptions.Item>
         )}
@@ -167,6 +167,9 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
       </Descriptions>
 
       <SimpleTextItem
+        style={{
+          marginTop: 12,
+        }}
         label={formatMessage({
           id: 'odc.DataClearTask.DetailContent.VariableConfiguration',
           defaultMessage: '变量配置',

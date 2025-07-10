@@ -150,6 +150,12 @@ export class SettingStore {
    */
   public enableApplyTableAuth: boolean = false;
 
+  /**
+   * 工作台
+   */
+  @observable
+  public enableWorkbench: boolean = false;
+
   @observable
   public enableAsyncTask: boolean = false;
 
@@ -422,6 +428,9 @@ export class SettingStore {
       res?.['odc.features.task.apply-project-permission.enabled'] === 'true' && !isPrivateSpace;
     this.enableApplyTableAuth =
       res?.['odc.features.task.apply-table-permission.enabled'] === 'true' && !isPrivateSpace;
+    this.enableWorkbench =
+      res?.['odc.features.workbench.enabled'] === 'true' ||
+      !res?.['odc.features.workbench.enabled'];
   }
 
   @action

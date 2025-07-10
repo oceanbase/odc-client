@@ -5981,5 +5981,17 @@
   "src.component.ODCSetting.2BE8F5C3": "不超过{maxResultsetRows}",
   "src.component.Task.AlterDdlTask.CreateModal.44A394CE": "在表名切换前，锁定原表禁写。",
   "src.component.Task.AlterDdlTask.CreateModal.6DC73E39": "在表名切换前，锁定原表禁写。请您确保 ODP 满足以下条件：\nODP 版本 ≥ 4.3.1 且已进行以下参数设置：\n    alter proxyconfig set proxy_id=1;\n    alter proxyconfig set client_session_id_version=2;\n    alter proxyconfig set enable_single_leader_node_routing = false;",
-  "src.component.Task.AlterDdlTask.CreateModal.C62A7DBB": "需要将参数 enable_lock_priority 设置为 true"
+  "src.component.Task.AlterDdlTask.CreateModal.C62A7DBB": "需要将参数 enable_lock_priority 设置为 true",
+  "src.component.Task.component.ActionBar.797981FE": "无可查看的结果信息",
+  "src.component.Task.component.ActionBar.5218D741": "查询结果",
+  "src.component.ODCSetting.9651E837": "不超过{maxResultsetRows}",
+  "src.component.ODCSetting.utils.E642F884": "支持查看查询结果",
+  "src.component.ODCSetting.utils.9CE1F69C": "支持下载查询结果",
+  "src.component.ODCSetting.config.C6A45A24": "数据库变更默认执行方式",
+  "src.component.ODCSetting.config.00714039": "立即执行",
+  "src.component.ODCSetting.config.11DE5799": "定时执行",
+  "src.component.ODCSetting.config.7CE2AC8D": "手动执行",
+  "src.component.ODCSetting.config.AB482BC7": "支持查看查询结果",
+  "src.component.ODCSetting.config.3FE1F2A7": "支持下载查询结果",
+  "src.component.ODCSetting.config.1ED38C41": "数据库变更查询结果"
 }

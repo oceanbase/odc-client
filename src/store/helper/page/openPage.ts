@@ -619,8 +619,8 @@ export async function openTypeEditPageByName(
   page.openPage(new PLEditPage(PLType.TYPE, databaseId, typeName, plSchema, false, readonly));
 }
 
-export async function openSQLResultSetViewPage(name, resultSets) {
-  await page.openPage(new SQLResultSetPage(null, resultSets, name));
+export async function openSQLResultSetViewPage(name, resultSets, sqlContent) {
+  await page.openPage(new SQLResultSetPage(null, resultSets, name, sqlContent));
 }
 
 // 批量编译PL页面
