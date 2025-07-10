@@ -394,6 +394,25 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     });
   }
 
+  function hasVisibleSettings(groupData) {
+    // 1. group 自己的 settings 里有未 hidden 的项
+    if (groupData.settings?.some((set) => !set.hidden)) {
+      return true;
+    }
+    // 2. secondGroup 里有 settings，且有未 hidden 的项
+    if (
+      groupData.secondGroup &&
+      Array.from(
+        groupData.secondGroup.values() as {
+          settings: IODCSetting[];
+        }[],
+      ).some((sg) => sg.settings?.some((set) => !set.hidden))
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   function formRender({
     currentRef,
     data,
@@ -413,9 +432,11 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
         {Array.from(data.values()).map((groupData) => {
           return (
             <React.Fragment key={groupData.key}>
-              <Typography.Title data-name={groupData.key} level={5}>
-                {groupData?.label}
-              </Typography.Title>
+              {hasVisibleSettings(groupData) && (
+                <Typography.Title data-name={groupData.key} level={5}>
+                  {groupData?.label}
+                </Typography.Title>
+              )}
               {groupData?.secondGroup.size > 0 ? (
                 Array.from(groupData?.secondGroup?.values()).map((group, index) => {
                   return (
@@ -431,9 +452,6 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                         )}
                         <Row style={{ paddingLeft: 12 }} gutter={20}>
                           {group.settings.map((set, index) => {
-                            if (set.hidden) {
-                              return null;
-                            }
                             return (
                               <Col key={index} span={set.span || 10}>
                                 <Form.Item
@@ -453,6 +471,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                                   name={set.key}
                                   key={set.key}
                                   rules={set.rules}
+                                  hidden={set.hidden}
                                 >
                                   {set.render(null, async () => {})}
                                 </Form.Item>
@@ -474,9 +493,6 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                   size={'small'}
                 >
                   {groupData.settings.map((set, index) => {
-                    if (set.hidden) {
-                      return null;
-                    }
                     return (
                       <Form.Item
                         style={{ marginBottom: 12 }}
@@ -494,6 +510,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                         name={set.key}
                         key={set.key}
                         rules={set.rules}
+                        hidden={set.hidden}
                       >
                         {set.render(null, async () => {})}
                       </Form.Item>
