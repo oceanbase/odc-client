@@ -616,7 +616,10 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
               name="swapTableNameRetryTimes"
               label={
                 <HelpDoc leftText isTip doc="schemaChangeSwapTableRetryTimes">
-                  锁定失败重试次数
+                  {formatMessage({
+                    id: 'src.component.Task.AlterDdlTask.CreateModal.1A8336C1',
+                    defaultMessage: '锁定失败重试次数',
+                  })}
                 </HelpDoc>
               }
               initialValue={3}
@@ -624,7 +627,10 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
               rules={[
                 {
                   required: true,
-                  message: '请输入锁定失败重试次数',
+                  message: formatMessage({
+                    id: 'src.component.Task.AlterDdlTask.CreateModal.A56878AD',
+                    defaultMessage: '请输入锁定失败重试次数',
+                  }),
                 },
               ]}
             >

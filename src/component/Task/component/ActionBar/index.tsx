@@ -423,9 +423,11 @@ const ActionBar: React.FC<IProps> = inject(
             props.onDetailVisible(null, false);
           } else {
             window.open(
-              `/#/sqlworkspace?taskId=${task.id}&resultSets=${true}&sqlContent=${JSON.stringify(
-                (task?.parameters as IAsyncTaskParams)?.sqlContent,
-              )}`,
+              location.origin +
+                location.pathname +
+                `#/sqlworkspace?taskId=${task.id}&resultSets=${true}&sqlContent=${JSON.stringify(
+                  (task?.parameters as IAsyncTaskParams)?.sqlContent,
+                )}`,
             );
           }
         }
