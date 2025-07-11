@@ -50,7 +50,7 @@ const personalSecuritySetting: IODCSetting[] = [
     render: (value, onChange) => {
       return <SecretKeyItem value={value || ''} onChange={onChange} />;
     },
-    hidden: !odc.appConfig.spaceConfig.showSecurity,
+    hidden: !odc.appConfig?.spaceConfig?.showSecurity,
   },
 ];
 

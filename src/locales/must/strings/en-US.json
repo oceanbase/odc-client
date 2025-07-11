@@ -5993,5 +5993,9 @@
   "src.component.ODCSetting.config.7CE2AC8D": "Manual Execution",
   "src.component.ODCSetting.config.AB482BC7": "Support Viewing Query Results",
   "src.component.ODCSetting.config.3FE1F2A7": "Support Downloading Query Results",
-  "src.component.ODCSetting.config.1ED38C41": "Query Results of Database Changes"
+  "src.component.ODCSetting.config.1ED38C41": "Query Results of Database Changes",
+  "src.page.Console.8F636FA5": "Explore ODC team workspaces",
+  "src.component.helpDoc.7F2FDC2E": "Number of automatic retry attempts on lock failure",
+  "src.component.Task.AlterDdlTask.CreateModal.1A8336C1": "Retry Attempts on Lock Failure",
+  "src.component.Task.AlterDdlTask.CreateModal.A56878AD": "Enter the number of retry attempts on lock failure"
 }

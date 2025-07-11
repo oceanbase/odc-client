@@ -123,7 +123,10 @@ export const ConsoleTextConfig = {
         fragmentIdentifier: '100.sql-development-common-techniques.html',
       },
       {
-        title: '带你走进 ODC 团队空间的精彩世界',
+        title: formatMessage({
+          id: 'src.page.Console.8F636FA5',
+          defaultMessage: '带你走进 ODC 团队空间的精彩世界',
+        }),
         fragmentIdentifier: '200.common-operations-in-odc-team-space.html',
       },
       {

@@ -72,7 +72,7 @@ export default inject('userStore')(
     }, [searchVaue, userStore?.scriptStore?.scripts]);
 
     const onFileSelect = (script: IScriptMeta) => {
-      if (!odc.appConfig.workspaceConfig.batchDownloadScripts) {
+      if (!odc.appConfig?.workspaceConfig?.batchDownloadScripts) {
         return;
       }
       // 单击任一脚本，选中单个

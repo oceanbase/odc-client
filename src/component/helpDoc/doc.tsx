@@ -654,7 +654,14 @@ export default {
     </p>
   ),
 
-  schemaChangeSwapTableRetryTimes: <p>若锁定失败，可自动重试次数</p>,
+  schemaChangeSwapTableRetryTimes: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.7F2FDC2E',
+        defaultMessage: '若锁定失败，可自动重试次数',
+      })}
+    </p>
+  ),
 
   TaskLmitRow: (
     <p>

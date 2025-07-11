@@ -5993,5 +5993,9 @@
   "src.component.ODCSetting.config.7CE2AC8D": "手动执行",
   "src.component.ODCSetting.config.AB482BC7": "支持查看查询结果",
   "src.component.ODCSetting.config.3FE1F2A7": "支持下载查询结果",
-  "src.component.ODCSetting.config.1ED38C41": "数据库变更查询结果"
+  "src.component.ODCSetting.config.1ED38C41": "数据库变更查询结果",
+  "src.page.Console.8F636FA5": "带你走进 ODC 团队空间的精彩世界",
+  "src.component.helpDoc.7F2FDC2E": "若锁定失败，可自动重试次数",
+  "src.component.Task.AlterDdlTask.CreateModal.1A8336C1": "锁定失败重试次数",
+  "src.component.Task.AlterDdlTask.CreateModal.A56878AD": "请输入锁定失败重试次数"
 }
