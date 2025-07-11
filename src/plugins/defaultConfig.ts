@@ -87,6 +87,9 @@ export default {
   spaceConfig: {
     showSecurity: true,
   },
+  workspaceConfig: {
+    batchDownloadScripts: true,
+  },
   spm: {
     enable: true,
   },
