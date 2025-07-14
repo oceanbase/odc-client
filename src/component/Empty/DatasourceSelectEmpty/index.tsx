@@ -39,7 +39,7 @@ export default ({ height = 160 }: IProps) => {
 
         <div className={styles.setting}>
           <SettingOutlined color="#1890ff" />
-          <span className={styles.action} onClick={() => window.open('/#/datasource')}>
+          <span className={styles.action} onClick={() => window.open('#/datasource')}>
             {formatMessage({
               id: 'src.component.Empty.DatasourceSelectEmpty.6DC59C18',
               defaultMessage: '管理数据源',
