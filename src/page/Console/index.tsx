@@ -336,8 +336,8 @@ const Console = () => {
                             style={{ width: 550, height: 278 }}
                             src={getImg(
                               currentQuickStartStep > -1
-                                ? `/guide/${currentQuickStartRole}-${currentQuickStartStep}.png`
-                                : `/guide/default-${currentQuickStartRole}.png`,
+                                ? `guide/${currentQuickStartRole}-${currentQuickStartStep}.png`
+                                : `guide/default-${currentQuickStartRole}.png`,
                             )}
                           />
                         </div>
