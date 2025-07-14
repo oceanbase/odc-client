@@ -259,6 +259,7 @@ export class UserStore {
     getDefaultOrganization?: () => Promise<number>,
     beforeOrganizationSwitch?: () => void,
   ) {
+    await setting.getUserConfig();
     id = id || (await this.getDefaultOrganization(getDefaultOrganization))?.id;
     if (!id) {
       return false;
@@ -267,8 +268,7 @@ export class UserStore {
     beforeOrganizationSwitch?.();
     this.organizationId = id;
     sessionStorage.setItem(sessionKey, id?.toString());
-    // 在更新organizationId之后再获取配置，确保currentOrganizationId参数是最新的
-    await Promise.all([setting.getUserConfig(), setting.getSpaceConfig()]);
+    await setting.getSpaceConfig();
     this.isUserFetched = false;
     const isSuccess = await this.getCurrentUser();
     this.isSwitchingOrganization = false;
@@ -288,7 +288,7 @@ export class UserStore {
     }
 
     const firstOrganization = this.organizations?.find(
-      (item) => item.type === setting.configurations['odc.account.defaultOrganizationType'],
+      (item) => item.type === setting?.configurations?.['odc.account.defaultOrganizationType'],
     );
     let defaultOrganization = firstOrganization || this.organizations?.[0];
     return defaultOrganization;
