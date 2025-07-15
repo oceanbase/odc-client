@@ -242,3 +242,47 @@ export const taskSuccessHintInfo = {
     defaultMessage: '开始执行',
   }),
 };
+export const ObDocsUrlMap = {
+  'en-us': {
+    '100.sql-development-common-techniques.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418134',
+    '200.common-operations-in-odc-team-space.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418130',
+    '300.analysis-of-oceanbase-ap-real-time-sql-diagnostic-capabilities.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418132',
+    '400.history-database-optimization-management.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418131',
+    '500.automatic-detection-of-high-risk-changes.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418133',
+    '700.implement-management-and-changes-for-database.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418127',
+    '800.data-masking-control-practices.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418126',
+    '900.enterprise-level-governance-and-control-synergy.html':
+      'https://en.oceanbase.com/docs/common-odc-10000000002418128',
+    softwarecenter: 'https://en.oceanbase.com/softwarecenter',
+    releaseNote: 'https://www.oceanbase.com/product/oceanbase-developer-center-rn/releaseNote',
+    issues: 'https://github.com/oceanbase/odc/issues',
+  },
+  'zh-cn': {
+    '100.sql-development-common-techniques.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002859674',
+    '200.common-operations-in-odc-team-space.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002859675',
+    '300.analysis-of-oceanbase-ap-real-time-sql-diagnostic-capabilities.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687235',
+    '400.history-database-optimization-management.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687236',
+    '500.automatic-detection-of-high-risk-changes.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687237',
+    '700.implement-management-and-changes-for-database.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687240',
+    '800.data-masking-control-practices.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687241',
+    '900.enterprise-level-governance-and-control-synergy.html':
+      'https://www.oceanbase.com/docs/common-odc-1000000002687239',
+    softwarecenter: 'https://www.oceanbase.com/softwarecenter',
+    releaseNote: 'https://www.oceanbase.com/product/oceanbase-developer-center-rn/releaseNote',
+    issues: 'https://github.com/oceanbase/odc/issues',
+  },
+};

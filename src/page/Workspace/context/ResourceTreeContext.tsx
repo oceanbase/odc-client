@@ -40,7 +40,7 @@ interface IResourceTreeContext {
   shouldExpandedKeys?: React.Key[];
   setShouldExpandedKeys?: React.Dispatch<React.SetStateAction<React.Key[]>>;
   databaseList: IDatabase[];
-  reloadDatabaseList?: () => void;
+  reloadDatabaseList?: () => Promise<IDatabase[]>;
   pollingDatabase?: () => void;
   groupMode?: DatabaseGroup;
   setGroupMode?: React.Dispatch<React.SetStateAction<DatabaseGroup>>;

@@ -106,7 +106,7 @@ const TaskProgress: React.FC<IProps> = (props) => {
   const pendingExectionDatabases = databases?.filter((item) => !item?.status)?.length;
   const haveOperationPermission = useMemo(() => {
     return (
-      task.project.currentUserResourceRoles?.some((item) =>
+      task?.project?.currentUserResourceRoles?.some((item) =>
         [ProjectRole.DBA, ProjectRole.OWNER].includes(item),
       ) || userStore?.user?.id === task?.creator?.id
     );

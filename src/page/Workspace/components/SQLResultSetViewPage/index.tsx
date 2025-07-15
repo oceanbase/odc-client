@@ -18,6 +18,7 @@ import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import CommonIDE from '@/component/CommonIDE';
 import { TAB_HEADER_HEIGHT, WORKSPACE_HEADER_HEIGHT } from '@/constant';
 import { ConnectionMode } from '@/d.ts';
+import { generateResultSetColumns } from '@/store/helper';
 import { SQLResultSetPage } from '@/store/helper/page/pages';
 import React from 'react';
 
@@ -38,16 +39,13 @@ const SQLResultSetViewPage: React.FC<IProps> = (props) => {
       <CommonIDE
         session={null}
         language={config?.sql?.language}
-        initialSQL={props.params?.resultSets
-          ?.map((r) => {
-            return r.originSql;
-          })
-          .join('\r\n')}
+        initialSQL={props.params?.sqlContent}
         editorProps={{
           readOnly: true,
         }}
         toolbarGroupKey="EMPTY"
-        resultSets={props.params?.resultSets}
+        resultSets={generateResultSetColumns(props.params?.resultSets, ConnectionMode.OB_ORACLE)}
+        showLog={false}
       />
     </div>
   );

@@ -27,7 +27,7 @@ import React, { useMemo } from 'react';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import ThrottleEditableCell from '@/component/Task/component/ThrottleEditableCell';
 import { getTaskExecStrategyMap, OscMaxRowLimit } from '@/component/Task/const';
-import { ClearStrategy } from '../CreateModal';
+import { ClearStrategy, LockStrategy, LockStrategyLableMap } from '../CreateModal';
 import { SwapTableType } from '../CreateModal/const';
 import { ProjectRole } from '@/d.ts/project';
 import userStore from '@/store/login';
@@ -40,11 +40,10 @@ interface IDDLAlterParamters {
   comparingTaskId: string;
   description: string;
   sqlContent?: string;
+  forbiddenWriteType: LockStrategy;
   lockUsers: {
     name: string;
   }[];
-  // 单位：秒
-  lockTableTimeOutSeconds: number;
   swapTableNameRetryTimes: number;
   originTableCleanStrategy: ClearStrategy;
   swapTableType: SwapTableType;
@@ -240,7 +239,13 @@ export function getItems(
           //'所属数据源'
           task?.database?.dataSource?.name || '-',
         ],
-
+        [
+          formatMessage({
+            id: 'src.component.Task.AlterDdlTask.CreateModal.05BCC428',
+            defaultMessage: '表名切换禁写策略',
+          }),
+          LockStrategyLableMap[parameters?.forbiddenWriteType || LockStrategy.LOCK_USER],
+        ],
         hasFlow ? riskItem : null,
         lockUsers
           ? [
@@ -270,14 +275,6 @@ export function getItems(
         ],
 
         [null, <SQLContentSection task={task} key={task.id} theme={theme} />, 2],
-        [
-          formatMessage({
-            id: 'odc.AlterDdlTask.DetailContent.LockTableTimeout',
-            defaultMessage: '锁表超时时间',
-          }),
-          //锁表超时时间
-          `${parameters?.lockTableTimeOutSeconds}s`,
-        ],
 
         [
           formatMessage({

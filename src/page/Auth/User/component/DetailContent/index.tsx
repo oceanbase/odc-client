@@ -176,6 +176,12 @@ const UserDetail: React.FC<{
     );
   };
 
+  const canDelete = () =>
+    canAcess({
+      resourceIdentifier: IManagerResourceType.user,
+      action: actionTypes.delete,
+    }).accessible;
+
   return (
     <>
       <Descriptions column={1}>
@@ -283,7 +289,7 @@ const UserDetail: React.FC<{
         </Descriptions.Item>
       </Descriptions>
       <Divider />
-      {odc.appConfig.manage.user.delete && (
+      {odc.appConfig.manage.user.delete && canDelete() && (
         <Space size={5}>
           <span>
             {

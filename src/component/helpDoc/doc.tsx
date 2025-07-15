@@ -656,12 +656,10 @@ export default {
 
   schemaChangeSwapTableRetryTimes: (
     <p>
-      {
-        formatMessage({
-          id: 'odc.component.helpDoc.doc.AfterTheTableLockTime',
-          defaultMessage: '超过锁表时间后，未切换完成可自动重试',
-        }) /*超过锁表时间后，未切换完成可自动重试*/
-      }
+      {formatMessage({
+        id: 'src.component.helpDoc.7F2FDC2E',
+        defaultMessage: '若锁定失败，可自动重试次数',
+      })}
     </p>
   ),
 
@@ -684,17 +682,6 @@ export default {
           defaultMessage: '每秒操作数据总大小限制',
         }) /* 每秒操作数据总大小限制 */
       }
-    </p>
-  ),
-
-  AlterDdlTaskLockUsersTip: (
-    <p>
-      {formatMessage({
-        id: 'src.component.helpDoc.AEEC5916' /*关于注意事项第3条，由您指定将要锁定的账号，是为了保障表名切换期间数据一致性的同时尽可能降低对业务的影响。请您确保指定账号的准确性，若您未指定任何账号，ODC
-      将不会进行任何账号锁定及kill session 操作，切换期间数据的一致性将需要由您来保障*/,
-        defaultMessage:
-          '关于注意事项第 3 条，由您指定将要锁定的账号，是为了保障表名切换期间数据一致性的同时尽可能降低对业务的影响。请您确保指定账号的准确性，若您未指定任何账号，ODC 将不会进行任何账号锁定及 Kill Session 操作，切换期间数据的一致性将需要由您来保障。',
-      })}
     </p>
   ),
 

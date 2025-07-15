@@ -68,6 +68,7 @@ import styles from './index.less';
 import { useRequest } from 'ahooks';
 import { rules } from './const';
 import { Rule } from 'antd/es/form';
+import DescriptionInput from '@/component/Task/component/DescriptionInput';
 
 const { Paragraph, Text } = Typography;
 
@@ -850,24 +851,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                 }
               </span>
             </Form.Item>
-            <Form.Item
-              name="description"
-              label={formatMessage({
-                id: 'odc.components.PartitionDrawer.Remarks',
-                defaultMessage: '备注',
-              })} /*备注*/
-            >
-              <Input.TextArea
-                rows={5}
-                placeholder={
-                  formatMessage({
-                    id: 'src.component.Task.PartitionTask.CreateModal.026392ED',
-                    defaultMessage:
-                      '请输入描述，不超过200个字符；未输入时，系统会根据对象和工单类型自动生成描述信息',
-                  }) /*"请输入描述，200字以内；未输入时，系统会根据对象和工单类型自动生成描述信息"*/
-                }
-              />
-            </Form.Item>
+            <DescriptionInput />
           </Form>
         </Spin>
       </Drawer>

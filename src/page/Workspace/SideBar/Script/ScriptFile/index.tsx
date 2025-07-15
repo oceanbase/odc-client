@@ -31,6 +31,7 @@ import styles from './index.less';
 import Item from './Item';
 import { IScriptMeta } from '@/d.ts';
 import useKeyBoardSensor from './hooks/useKeyBoardSensor';
+import odc from '@/plugins/odc';
 
 interface IProps {
   userStore?: UserStore;
@@ -71,6 +72,9 @@ export default inject('userStore')(
     }, [searchVaue, userStore?.scriptStore?.scripts]);
 
     const onFileSelect = (script: IScriptMeta) => {
+      if (!odc.appConfig?.workspaceConfig?.batchDownloadScripts) {
+        return;
+      }
       // 单击任一脚本，选中单个
       if (!crtlorCommandPressed && !shiftPressed) {
         setActiveFileList([script.id]);

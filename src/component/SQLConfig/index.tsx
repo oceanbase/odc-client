@@ -49,6 +49,10 @@ const SQLConfig: React.FC<IProps> = function (props) {
   const continueExecutionOnError = session?.params.continueExecutionOnError;
 
   useEffect(() => {
+    setting.getUserConfig();
+  }, []);
+
+  useEffect(() => {
     setQueryLimitValue(session?.params.queryLimit);
   }, [queryLimit]);
 

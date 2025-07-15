@@ -16,7 +16,7 @@ export default () => {
       <Divider />
       <div className={styles.setting}>
         <SettingOutlined color="#1890ff" />
-        <span className={styles.action} onClick={() => window.open('/#/project')}>
+        <span className={styles.action} onClick={() => window.open('#/project')}>
           {formatMessage({
             id: 'src.component.Empty.ProjectSelectEmpty.E8AA0AD9',
             defaultMessage: '管理项目',

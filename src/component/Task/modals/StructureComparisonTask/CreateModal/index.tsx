@@ -40,6 +40,7 @@ import { comparisonScopeMap } from './interface';
 import TableSelector from './TableSelector';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
 import { rules } from './const';
+import DescriptionInput from '@/component/Task/component/DescriptionInput';
 interface IProps {
   projectId?: number;
   modalStore?: ModalStore;
@@ -317,28 +318,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
             />
           </Form.Item>
         </FormItemPanel>
-        <Form.Item
-          label={
-            formatMessage({
-              id: 'src.component.Task.StructureComparisonTask.CreateModal.52828286',
-              defaultMessage: '描述',
-            }) /*"描述"*/
-          }
-          name="description"
-          required={false}
-          rules={rules.description}
-        >
-          <Input.TextArea
-            placeholder={
-              formatMessage({
-                id: 'src.component.Task.StructureComparisonTask.CreateModal.67E284BD',
-                defaultMessage: '描述不超过 200 个字符',
-              }) /*"请输入描述，200字以内；"*/
-            }
-            maxLength={200}
-            rows={6}
-          />
-        </Form.Item>
+        <DescriptionInput />
       </Form>
     </Drawer>
   );

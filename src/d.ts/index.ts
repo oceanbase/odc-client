@@ -37,6 +37,7 @@ import {
   TablePrimaryConstraint,
 } from '@/page/Workspace/components/CreateTable/interface';
 import { IColumnStoreServerType } from '@/d.ts/table';
+import { LockStrategy } from '@/component/Task/modals/AlterDdlTask/CreateModal';
 export interface IUser {
   email: string;
   desc: string;
@@ -183,6 +184,7 @@ export enum IManagerResourceType {
   environment = 'ODC_ENVIRONMENT',
   individual_organization = 'ODC_INDIVIDUAL_ORGANIZATION',
   database = 'ODC_DATABASE',
+  odc_organization_config = 'ODC_ORGANIZATION_CONFIG',
 }
 
 export enum actionTypes {
@@ -234,6 +236,8 @@ export interface IManagerUser {
     resourceIdentifier: number;
     action: string;
   }[];
+  systemOperationPermissions?: IPermission[];
+  resourceManagementPermissions?: IPermission[];
   extraProperties?: Record<string, string>;
   errorMessage?: string;
 }
@@ -2638,11 +2642,9 @@ export interface IDataArchiveJobParameters {
   deleteTemporaryTable?: boolean;
   name: string;
   sourceDatabaseId: number;
-  sourceDatabaseName?: string;
-  sourceDataSourceName?: string;
+  sourceDatabase?: IDatabase;
   targetDataBaseId: number;
-  targetDatabaseName?: string;
-  targetDataSourceName?: string;
+  targetDatabase: IDatabase;
   migrationInsertAction?: MigrationInsertAction;
   shardingStrategy?: ShardingStrategy;
   deleteByUniqueKey?: boolean;
@@ -2655,7 +2657,6 @@ export interface IDataArchiveJobParameters {
     name: string;
     pattern: string;
   }[];
-  targetDatabase: IDatabase;
   timeoutMillis: number;
   syncTableStructure: SyncTableStructureEnum[];
   dirtyRowAction: DirtyRowActionEnum;
@@ -2667,7 +2668,7 @@ export interface IDataClearJobParameters {
   deleteAfterMigration: boolean;
   name: string;
   databaseId: number;
-  databaseName?: string;
+  database?: IDatabase;
   deleteByUniqueKey?: boolean;
   rateLimit?: {
     rowLimit?: number;
@@ -2681,9 +2682,7 @@ export interface IDataClearJobParameters {
   timeoutMillis: number;
   needCheckBeforeDelete: boolean;
   targetDatabaseId?: number;
-  targetDatabaseName?: string;
-  sourceDataSourceName?: string;
-  targetDataSourceName?: string;
+  targetDatabase?: IDatabase;
   shardingStrategy?: ShardingStrategy;
   dirtyRowAction: DirtyRowActionEnum;
   maxAllowedDirtyRowCount: number;
@@ -3086,6 +3085,7 @@ export interface IAlterScheduleTaskParams {
   taskId: number;
   operationType: TaskOperationType;
   allowConcurrent: boolean;
+  forbiddenWriteType: LockStrategy;
   scheduleTaskParameters: {
     timeoutMillis: number;
     errorStrategy: string;
