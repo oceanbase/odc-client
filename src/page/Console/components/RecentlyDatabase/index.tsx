@@ -248,7 +248,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
               <div
                 className={actionStyle}
                 onClick={() => {
-                  window.open(`/#/project/${value.id}/database`);
+                  window.open(`#/project/${value.id}/database`);
                 }}
               >
                 {value?.name || '-'}
