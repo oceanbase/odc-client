@@ -710,7 +710,8 @@ export async function getProjectList(archived: boolean): Promise<IResponseData<I
  * 查询当前数据库是否需要锁表
  */
 export async function getLockDatabaseUserRequired(databaseId: number): Promise<{
-  lockDatabaseUserRequired: boolean;
+  lockDatabaseUserRequired: boolean; // 是否只能是锁用户
+  isDbEnableLockPriorityFlagSet: boolean; // 是否能锁表
   databaseId: number;
 }> {
   const res = await request.get(`/api/v2/osc/lockDatabaseUserRequired/${databaseId}`);

@@ -1,5 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { IDatasourceInfo } from '.';
 import {
   IImportDatabaseView,
@@ -306,6 +306,13 @@ const ImportPreviewTable: React.FC<ImportPreviewTableProps> = ({ data, loading, 
     );
   }, [data]);
 
+  // 当数据变化时，如果当前tableType不存在则重置为'importable'
+  useEffect(() => {
+    if (data?.length > 0 && groupedData[tableType] === undefined) {
+      setTableType('importable');
+    }
+  }, [data]);
+
   const tableRender = () => {
     if (tableType === 'importable' && !groupedData['importable']) {
       return (
@@ -322,7 +329,7 @@ const ImportPreviewTable: React.FC<ImportPreviewTableProps> = ({ data, loading, 
       <>
         <Table
           columns={columns}
-          dataSource={groupedData[tableType]}
+          dataSource={groupedData[tableType] || []}
           loading={loading}
           pagination={false}
           scroll={{ y: 300 }}

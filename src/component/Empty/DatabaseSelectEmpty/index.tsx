@@ -39,7 +39,7 @@ export default ({ showIcon, height = 280 }: IProps) => {
                       defaultMessage:
                         '仅支持选择项目内的数据库，请先确认已加入项目、且项目内存在数据库。',
                     })}
-                <span className={styles.action} onClick={() => window.open('/#/project')}>
+                <span className={styles.action} onClick={() => window.open('#/project')}>
                   {formatMessage({
                     id: 'src.component.Empty.DatabaseSelectEmpty.8F714B05',
                     defaultMessage: '管理项目',

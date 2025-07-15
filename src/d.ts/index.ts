@@ -37,6 +37,7 @@ import {
   TablePrimaryConstraint,
 } from '@/page/Workspace/components/CreateTable/interface';
 import { IColumnStoreServerType } from '@/d.ts/table';
+import { LockStrategy } from '@/component/Task/AlterDdlTask/CreateModal';
 export interface IUser {
   email: string;
   desc: string;
@@ -3084,6 +3085,7 @@ export interface IAlterScheduleTaskParams {
   taskId: number;
   operationType: TaskOperationType;
   allowConcurrent: boolean;
+  forbiddenWriteType: LockStrategy;
   scheduleTaskParameters: {
     timeoutMillis: number;
     errorStrategy: string;
