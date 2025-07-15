@@ -1,4 +1,4 @@
-import { formatMessage, getLocalDocs } from '@/util/intl';
+import { formatMessage, getLocalDocs, getOBDocsUrl } from '@/util/intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useMount, useRequest } from 'ahooks';
 import modal from '@/store/modal';
@@ -336,8 +336,8 @@ const Console = () => {
                             style={{ width: 550, height: 278 }}
                             src={getImg(
                               currentQuickStartStep > -1
-                                ? `/guide/${currentQuickStartRole}-${currentQuickStartStep}.png`
-                                : `/guide/default-${currentQuickStartRole}.png`,
+                                ? `guide/${currentQuickStartRole}-${currentQuickStartStep}.png`
+                                : `guide/default-${currentQuickStartRole}.png`,
                             )}
                           />
                         </div>
@@ -377,7 +377,7 @@ const Console = () => {
                               <div
                                 className={styles.docs}
                                 onClick={() => {
-                                  window.open(aboutUs.urls[index]);
+                                  window.open(getOBDocsUrl(aboutUs.urlKeys[index]));
                                 }}
                               >
                                 {help}
@@ -409,13 +409,13 @@ const Console = () => {
 
                   <span
                     className={styles.showMore}
-                    onClick={() =>
+                    onClick={() => {
                       window.open(
                         odc.appConfig.docs.url
-                          ? 'https://www.oceanbase.com/docs/common-odc-1000000002687242'
+                          ? getOBDocsUrl('100.sql-development-common-techniques.html')
                           : getLocalDocs('100.sql-development-common-techniques.html'),
-                      )
-                    }
+                      );
+                    }}
                   >
                     {formatMessage({ id: 'src.page.Console.E60EAE10', defaultMessage: '更多 >' })}
                   </span>
@@ -427,7 +427,7 @@ const Console = () => {
                       onClick={() => {
                         window.open(
                           odc.appConfig.docs.url
-                            ? article.url
+                            ? getOBDocsUrl(article.fragmentIdentifier)
                             : getLocalDocs(article.fragmentIdentifier),
                         );
                       }}

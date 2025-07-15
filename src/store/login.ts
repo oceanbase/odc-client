@@ -259,7 +259,7 @@ export class UserStore {
     getDefaultOrganization?: () => Promise<number>,
     beforeOrganizationSwitch?: () => void,
   ) {
-    await Promise.all([setting.getUserConfig(), setting.getSpaceConfig()]);
+    await setting.getUserConfig();
     id = id || (await this.getDefaultOrganization(getDefaultOrganization))?.id;
     if (!id) {
       return false;
@@ -268,6 +268,7 @@ export class UserStore {
     beforeOrganizationSwitch?.();
     this.organizationId = id;
     sessionStorage.setItem(sessionKey, id?.toString());
+    await setting.getSpaceConfig();
     this.isUserFetched = false;
     const isSuccess = await this.getCurrentUser();
     this.isSwitchingOrganization = false;
@@ -287,7 +288,7 @@ export class UserStore {
     }
 
     const firstOrganization = this.organizations?.find(
-      (item) => item.type === setting.configurations['odc.account.defaultOrganizationType'],
+      (item) => item.type === setting?.configurations?.['odc.account.defaultOrganizationType'],
     );
     let defaultOrganization = firstOrganization || this.organizations?.[0];
     return defaultOrganization;
