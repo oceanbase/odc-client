@@ -10,11 +10,7 @@ import type {
 import { TaskPageType, TaskStatus } from '@/d.ts';
 import type { TaskStore } from '@/store/task';
 import type { ITableInstance } from '@/component/CommonTable/interface';
-import {
-  isSupportTaksExport,
-  isSupportTaksImport,
-  isSupportTaksTerminate,
-} from '../AsyncTaskOperationButton/helper';
+import odc from '@/plugins/odc';
 
 export const statusThatCanBeExport = Object.keys(TaskStatus);
 
@@ -44,6 +40,10 @@ interface UseTaskSelectionProps {
   >;
   tableRef: React.RefObject<ITableInstance>;
 }
+
+const isSupportTaksExport = odc?.appConfig?.task?.isSupportTaksExport;
+const isSupportTaksImport = odc?.appConfig?.task?.isSupportTaksImport;
+const isSupportTaksTerminate = odc?.appConfig?.task?.isSupportTaksTerminate;
 
 export const useTaskSelection = ({
   taskStore,

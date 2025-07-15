@@ -64,9 +64,6 @@ import {
   getExportConfig,
   getTerminateConfig,
   isScheduleMigrateTask,
-  isSupportTaksExport,
-  isSupportTaksImport,
-  isSupportTaksTerminate,
 } from '../AsyncTaskOperationButton/helper';
 const { RangePicker } = DatePicker;
 const { Text, Link } = Typography;
@@ -75,6 +72,7 @@ import { useImport } from '../ImportModal/useImport';
 import clusterStore from '@/store/cluster';
 import { useTaskSelection, taskTypeThatCanBeExport } from './useTaskSelection';
 import login from '@/store/login';
+import odc from '@/plugins/odc';
 
 export const getCronCycle = (triggerConfig: ICycleTaskTriggerConfig) => {
   const { triggerStrategy, days, hours, cronExpression } = triggerConfig;
@@ -191,6 +189,10 @@ export const getStatusFilters = (status: {
 };
 export const TASK_EXECUTE_TIME_KEY = 'task:executeTime';
 export const TASK_EXECUTE_DATE_KEY = 'task:executeDate';
+
+const isSupportTaksImport = odc?.appConfig?.task?.isSupportTaksImport;
+const isSupportTaksExport = odc?.appConfig?.task?.isSupportTaksExport;
+const isSupportTaksTerminate = odc?.appConfig?.task?.isSupportTaksTerminate;
 
 interface IProps {
   tableRef: React.RefObject<ITableInstance>;
