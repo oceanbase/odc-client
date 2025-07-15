@@ -109,13 +109,7 @@ export const ConsoleTextConfig = {
       formatMessage({ id: 'src.page.Console.B27ADAC6', defaultMessage: '产品动态' }),
       formatMessage({ id: 'src.page.Console.9B6E647E', defaultMessage: '反馈建议' }),
     ],
-
-    urls: [
-      'https://www.oceanbase.com/softwarecenter',
-      'https://www.oceanbase.com/product/oceanbase-developer-center-rn/releaseNote',
-      'https://github.com/oceanbase/odc/issues',
-    ],
-
+    urlKeys: ['softwarecenter', 'releaseNote', 'issues'],
     QRUrl:
       'https://qr.dingtalk.com/action/joingroup?code=v1,k1,HovdSAqfBdRGqRk2jQ0TDu1eMvQ+BB6rt8mFHeIqi/A=&_dt_no_comment=1&origin=11',
   },
@@ -127,7 +121,13 @@ export const ConsoleTextConfig = {
           defaultMessage: 'SQL 开发常用小技巧',
         }),
         fragmentIdentifier: '100.sql-development-common-techniques.html',
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687242',
+      },
+      {
+        title: formatMessage({
+          id: 'src.page.Console.8F636FA5',
+          defaultMessage: '带你走进 ODC 团队空间的精彩世界',
+        }),
+        fragmentIdentifier: '200.common-operations-in-odc-team-space.html',
       },
       {
         title: formatMessage({
@@ -136,7 +136,6 @@ export const ConsoleTextConfig = {
         }),
         fragmentIdentifier:
           '300.analysis-of-oceanbase-ap-real-time-sql-diagnostic-capabilities.html',
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687235',
       },
       {
         title: formatMessage({
@@ -144,7 +143,6 @@ export const ConsoleTextConfig = {
           defaultMessage: 'OceanBase 历史库解决方案',
         }),
         fragmentIdentifier: '400.history-database-optimization-management.html',
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687236',
       },
       {
         title: formatMessage({
@@ -152,15 +150,6 @@ export const ConsoleTextConfig = {
           defaultMessage: 'ODC SQL 检查自动识别高危操作',
         }),
         fragmentIdentifier: '500.automatic-detection-of-high-risk-changes.html',
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687237',
-      },
-      {
-        title: formatMessage({
-          id: 'src.page.Console.4F744942',
-          defaultMessage: '快速集成 ODC 的企业级账号体系',
-        }),
-        fragmentIdentifier: '600.rapid-integration-of-enterprise-level-account-systems.html',
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687238',
       },
       {
         title: formatMessage({
@@ -168,7 +157,6 @@ export const ConsoleTextConfig = {
           defaultMessage: '通过 ODC 实现分库分表的管理和变更',
         }),
         fragmentIdentifier: '700.implement-management-and-changes-for-database.html',
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687240',
       },
       {
         title: formatMessage({
@@ -176,7 +164,6 @@ export const ConsoleTextConfig = {
           defaultMessage: '数据脱敏管控实践',
         }),
         fragmentIdentifier: '800.data-masking-control-practices.html',
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687241',
       },
       {
         title: formatMessage({
@@ -184,7 +171,6 @@ export const ConsoleTextConfig = {
           defaultMessage: '企业级管控协同：守护数据库的每一次变更',
         }),
         fragmentIdentifier: '900.enterprise-level-governance-and-control-synergy.html',
-        url: 'https://www.oceanbase.com/docs/common-odc-1000000002687239',
       },
     ],
   },

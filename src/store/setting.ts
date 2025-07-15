@@ -24,7 +24,7 @@ import type { IUserConfig, ServerSystemInfo } from '@/d.ts';
 import odc from '@/plugins/odc';
 import { isClient } from '@/util/env';
 import request from '@/util/request';
-import { isLinux, isWin64 } from '@/util/utils';
+import { isLinux, isWin64, kbToMb } from '@/util/utils';
 import { message } from 'antd';
 import { action, observable } from 'mobx';
 import login, { sessionKey } from '@/store/login';
@@ -149,6 +149,12 @@ export class SettingStore {
    * 申请表权限
    */
   public enableApplyTableAuth: boolean = false;
+
+  /**
+   * 工作台
+   */
+  @observable
+  public enableWorkbench: boolean = false;
 
   @observable
   public enableAsyncTask: boolean = false;
@@ -402,7 +408,8 @@ export class SettingStore {
     this.maxSingleTaskRowLimit =
       parseInt(res?.['odc.task.dlm.max-single-task-row-limit']) || Number.MAX_SAFE_INTEGER;
     this.maxSingleTaskDataSizeLimit =
-      parseInt(res?.['odc.task.dlm.max-single-task-data-size-limit']) || Number.MAX_SAFE_INTEGER;
+      kbToMb?.(parseInt(res?.['odc.task.dlm.max-single-task-data-size-limit'])) ||
+      Number.MAX_SAFE_INTEGER;
 
     this.enableMultipleAsyncTask =
       res?.['odc.features.task.multiple-async.enabled'] === 'true' && !isPrivateSpace;
@@ -421,6 +428,9 @@ export class SettingStore {
       res?.['odc.features.task.apply-project-permission.enabled'] === 'true' && !isPrivateSpace;
     this.enableApplyTableAuth =
       res?.['odc.features.task.apply-table-permission.enabled'] === 'true' && !isPrivateSpace;
+    this.enableWorkbench =
+      res?.['odc.features.workbench.enabled'] === 'true' ||
+      !res?.['odc.features.workbench.enabled'];
   }
 
   @action

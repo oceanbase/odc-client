@@ -16,6 +16,7 @@
 
 import { getProjectWithErrorCatch } from '@/common/network/project';
 import login from '@/store/login';
+import setting from '@/store/setting';
 import logger from '@/util/logger';
 import { safeParseJson } from '@/util/utils';
 import { history } from '@umijs/max';
@@ -49,6 +50,14 @@ export function setDefaultProject(projectId: number) {
   window.localStorage.setItem(key, projectId?.toString());
 }
 
+export function getDefaultProjectPage() {
+  if (setting.enableWorkbench) {
+    return '/console';
+  } else {
+    return '/project';
+  }
+}
+
 export async function toDefaultProjectPage() {
-  history.push('/console');
+  history.push(getDefaultProjectPage());
 }

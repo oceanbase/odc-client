@@ -82,7 +82,10 @@ interface ICommonIDEProps {
    */
   bordered?: boolean;
   session?: SessionStore;
-
+  /**
+   * 是否显示运行结果
+   */
+  showLog?: boolean;
   /**
    * 创建后监听事件
    */
@@ -193,16 +196,19 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                 <Tabs
                   className={styles.tabs}
                   animated={false}
-                  items={[
-                    {
-                      key: ITabType.LOG as string,
-                      label: formatMessage({
-                        id: 'odc.component.CommonIDE.Result',
-                        defaultMessage: '运行结果',
-                      }),
-                      children: log,
-                    },
-                  ]
+                  items={(this.props.showLog
+                    ? [
+                        {
+                          key: ITabType.LOG as string,
+                          label: formatMessage({
+                            id: 'odc.component.CommonIDE.Result',
+                            defaultMessage: '运行结果',
+                          }),
+                          children: log,
+                        },
+                      ]
+                    : []
+                  )
                     .concat(
                       resultSets?.map((set, i) => {
                         return {

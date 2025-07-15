@@ -24,7 +24,6 @@ import { UploadFileStatus } from 'antd/lib/upload/interface';
 import { getODCServerHost } from '@/util/request';
 import ODCDragger from '@/component/OSSDragger';
 import login from '@/store/login';
-import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
 import CreateProjectDrawer from '@/page/Project/Project/CreateProject/Drawer';
 import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawer/NewButton';
 import { listProjects } from '@/common/network/project';

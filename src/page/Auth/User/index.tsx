@@ -47,6 +47,7 @@ import { ResourceContext } from '../context';
 import DetailContent from './component/DetailContent';
 import FormModal from './component/FormModal';
 import styles from './index.less';
+import login from '@/store/login';
 
 interface IProps {
   userStore?: UserStore;
@@ -180,7 +181,12 @@ class UserPage extends React.PureComponent<IProps, IState> {
         ],
 
         render: (enabled, record) => {
-          const disabledOp = this.isAdminOrMe(record);
+          const canAcessUpdate = () =>
+            canAcess({
+              resourceIdentifier: IManagerResourceType.user,
+              action: actionTypes.update,
+            }).accessible;
+          const disabledOp = this.isMe(record) || !canAcessUpdate();
           return (
             <StatusSwitch
               disabled={disabledOp}
@@ -202,7 +208,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
         key: 'action',
         fixed: 'right' as FixedType,
         render: (value, record) => {
-          const disabledOp = this.isAdminOrMe(record);
+          const disabledOp = this.isMe(record);
           return (
             <Action.Group>
               <Action.Link
@@ -346,15 +352,11 @@ class UserPage extends React.PureComponent<IProps, IState> {
     this.tableRef.current.reload();
   };
 
-  private isAdminOrMe = (user: IManagerUser) => {
+  private isMe = (user: IManagerUser) => {
     const {
       userStore: { user: me },
     } = this.props;
-    const isAdmin = odc.appConfig.manage.user.isAdmin
-      ? odc.appConfig.manage.user.isAdmin(user)
-      : user?.builtIn && user?.accountName === 'admin';
-    const isMeUser = user?.id === me?.id;
-    return isAdmin || isMeUser;
+    return user?.id === me?.id;
   };
 
   private handleCreate = () => {
@@ -403,7 +405,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
   render() {
     const { formModalVisible, detailModalVisible, editId, detailId, users, roles, user } =
       this.state;
-    const disabledOp = this.isAdminOrMe(user);
+    const disabledOp = this.isMe(user);
     const canAcessCreate = canAcess({
       resourceIdentifier: IManagerResourceType.user,
       action: actionTypes.create,

@@ -56,6 +56,7 @@ import {
   Space,
   Tooltip,
   Spin,
+  Tag,
 } from 'antd';
 import { useRequest } from 'ahooks';
 import { inject, observer } from 'mobx-react';
@@ -89,6 +90,21 @@ export enum ClearStrategy {
   ORIGIN_TABLE_RENAME_AND_RESERVED = 'ORIGIN_TABLE_RENAME_AND_RESERVED',
   ORIGIN_TABLE_DROP = 'ORIGIN_TABLE_DROP',
 }
+
+export enum LockStrategy {
+  LOCK_USER = 'LOCK_USER',
+  LOCK_TABLE = 'LOCK_TABLE',
+}
+export const LockStrategyLableMap = {
+  [LockStrategy.LOCK_USER]: formatMessage({
+    id: 'src.component.Task.AlterDdlTask.CreateModal.D056FD5E',
+    defaultMessage: '锁定用户',
+  }),
+  [LockStrategy.LOCK_TABLE]: formatMessage({
+    id: 'src.component.Task.AlterDdlTask.CreateModal.EA0D82E0',
+    defaultMessage: '锁定表',
+  }),
+};
 const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const { modalStore, settingStore, projectId, theme } = props;
   const { ddlAlterData } = modalStore;
@@ -98,10 +114,26 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [datasourceUser, setDatasourceUser] = useState<IDatasourceUser[]>([]);
   const [canCreateTask, setCanCreateTask] = useState(true); // 判断是否可以进行创建任务
-  const [lockDatabaseUserRequired, setLockDatabaseUserRequired] = useState(false);
+  const [lockDatabaseUserRequired, setLockDatabaseUserRequired] = useState(true);
+  const [isDbEnableLockPriorityFlagSet, setIsDbEnableLockPriorityFlagSet] = useState(false);
   const databaseId = Form.useWatch('databaseId', form);
   const { database } = useDBSession(databaseId);
   const connection = database?.dataSource;
+  const lockStrategy = Form.useWatch('forbiddenWriteType', form);
+  const isLockUser = lockStrategy === LockStrategy.LOCK_USER;
+  const lockTableTipInCloud = formatMessage({
+    id: 'src.component.Task.AlterDdlTask.CreateModal.44A394CE',
+    defaultMessage: '在表名切换前，锁定原表禁写。',
+  });
+
+  const lockTableTipInPrivate = formatMessage({
+    id: 'src.component.Task.AlterDdlTask.CreateModal.6DC73E39',
+    defaultMessage:
+      '在表名切换前，锁定原表禁写。请您确保 ODP 满足以下条件：\nODP 版本 ≥ 4.3.1 且已进行以下参数设置：\n    alter proxyconfig set proxy_id=1;\n    alter proxyconfig set client_session_id_version=2;\n    alter proxyconfig set enable_single_leader_node_routing = false;',
+  });
+
+  const lockTableTip = haveOCP() ? lockTableTipInCloud : lockTableTipInPrivate;
+
   const initialValue = {
     rowLimit: 100,
     dataSizeLimit: 1.0,
@@ -119,7 +151,8 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const hadleReset = () => {
     form.resetFields(null);
     setHasEdit(false);
-    setLockDatabaseUserRequired(false);
+    setLockDatabaseUserRequired(true);
+    setIsDbEnableLockPriorityFlagSet(false);
   };
   const handleCancel = (hasEdit: boolean) => {
     if (hasEdit) {
@@ -150,7 +183,6 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           sqlContent,
           swapTableNameRetryTimes,
           swapTableType,
-          lockTableTimeOutSeconds,
           originTableCleanStrategy,
           errorStrategy,
           description,
@@ -159,9 +191,9 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           lockUsers,
           dataSizeLimit,
           rowLimit,
+          forbiddenWriteType,
         } = values;
         const parameters = {
-          lockTableTimeOutSeconds,
           errorStrategy,
           sqlContent,
           sqlType,
@@ -176,6 +208,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                   dataSizeLimit: mbToB(dataSizeLimit),
                 }
               : null,
+          forbiddenWriteType,
         };
         const data = {
           projectId,
@@ -223,12 +256,13 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
   const checkLockDatabaseUserRequired = async (databaseId: number) => {
     const res = await getLockDatabaseUserRequired(databaseId);
     setLockDatabaseUserRequired(res?.lockDatabaseUserRequired);
+    setIsDbEnableLockPriorityFlagSet(res?.isDbEnableLockPriorityFlagSet);
   };
   useEffect(() => {
-    if (connection?.id && lockDatabaseUserRequired) {
+    if (connection?.id && isLockUser) {
       loadDatasourceUsers(connection.id);
     }
-  }, [connection?.id]);
+  }, [connection?.id, isLockUser]);
   useEffect(() => {
     if (databaseId) {
       checkLockDatabaseUserRequired(databaseId);
@@ -259,6 +293,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
 
     form.setFieldsValue({
       ...detailRes?.parameters,
+      forbiddenWriteType: detailRes?.parameters.forbiddenWriteType || LockStrategy.LOCK_USER,
       executionStrategy: detailRes?.executionStrategy,
       executionTime:
         detailRes?.executionTime && detailRes?.executionTime > new Date().getTime()
@@ -351,51 +386,10 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
           }}
           type="warning"
           showIcon
-          message={
-            formatMessage({
-              id: 'odc.src.component.Task.AlterDdlTask.CreateModal.Notice',
-              defaultMessage: '注意',
-            }) /* 注意 */
-          }
-          description={
-            <div>
-              {
-                formatMessage({
-                  id: 'odc.src.component.Task.AlterDdlTask.CreateModal.1BeforePerformingThe',
-                  defaultMessage: '1. 执行无锁结构变更前请确保数据库服务器磁盘空间充足；',
-                }) /*
-          1、执行无锁结构变更前请确保数据库服务器磁盘空间充足；
-          */
-              }
-
-              <br />
-              {
-                formatMessage({
-                  id: 'odc.src.component.Task.AlterDdlTask.CreateModal.2WhenCreatingA',
-                  defaultMessage: '2. 创建工单选择源表清理策略时建议选择保留源表；',
-                }) /*
-          2、创建工单选择源表清理策略时建议选择保留源表；
-          */
-              }
-
-              {lockDatabaseUserRequired && (
-                <>
-                  <br />
-                  {
-                    formatMessage({
-                      id: 'odc.src.component.Task.AlterDdlTask.CreateModal.3IfTheOB',
-                      defaultMessage:
-                        '3. 若 OceanBase Oracle 模式版本小于 4.0.0 或 OceanBase MySQL 模式版本小于 4.3.0，表名切换之前会锁定您指定的数据库账号，并关闭该账号对应的会话。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行；',
-                    }) /*
-            3、若 OB Oracle 模式版本小于 4.0 或 OB MySQL 模式版本小于
-            4.3，表名切换之前会锁定您指定的数据库账号，并 kill 该账号对应的
-            session。表名切换期间，锁定账号涉及应用将无法访问数据库，请勿在业务高峰期执行；
-            */
-                  }
-                </>
-              )}
-            </div>
-          }
+          message={formatMessage({
+            id: 'src.component.Task.AlterDdlTask.CreateModal.D1732875',
+            defaultMessage: '注意：执行无锁结构变更前请确保数据库服务器磁盘空间充足。',
+          })}
         />
 
         {!canCreateTask && (
@@ -474,42 +468,84 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
                 onChange={handleDatabaseChange}
               />
             </Col>
-            {lockDatabaseUserRequired && (
-              <Col span={12}>
-                <Form.Item
-                  label={
-                    <HelpDoc leftText isTip doc="AlterDdlTaskLockUsersTip">
-                      {
-                        formatMessage({
-                          id: 'odc.src.component.Task.AlterDdlTask.CreateModal.LockUsers.1',
-                          defaultMessage: '锁定用户',
-                        }) /*
-                锁定用户
-                */
-                      }
-                    </HelpDoc>
-                  }
-                  name="lockUsers"
-                  required
-                >
-                  <Select
-                    showSearch
-                    mode="multiple"
-                    filterOption={(input, option) =>
-                      (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                    }
-                    placeholder={
-                      formatMessage({
-                        id: 'odc.src.component.Task.AlterDdlTask.CreateModal.PleaseChoose',
-                        defaultMessage: '请选择',
-                      }) /* 请选择 */
-                    }
-                    options={datasourceUserOptions}
-                  />
-                </Form.Item>
-              </Col>
-            )}
           </Row>
+          <Form.Item
+            label={formatMessage({
+              id: 'src.component.Task.AlterDdlTask.CreateModal.05BCC428',
+              defaultMessage: '表名切换禁写策略',
+            })}
+            rules={[{ required: true }]}
+            name={'forbiddenWriteType'}
+            initialValue={LockStrategy.LOCK_USER}
+            extra={
+              isLockUser ? (
+                formatMessage({
+                  id: 'src.component.Task.AlterDdlTask.CreateModal.B0CFE0E1',
+                  defaultMessage:
+                    '在表名切换前，系统将锁定您指定的数据库账号，并终止该账号的当前会话。切换期间，所有涉及该账号的应用将无法访问数据库。建议避免在业务高峰期执行此操作，以减少对业务的影响。',
+                })
+              ) : (
+                <div style={{ whiteSpace: 'pre-wrap' }}>{lockTableTip}</div>
+              )
+            }
+          >
+            <Radio.Group>
+              <Radio.Button value={LockStrategy.LOCK_USER}>
+                {LockStrategyLableMap[LockStrategy.LOCK_USER]}
+              </Radio.Button>
+
+              {!lockDatabaseUserRequired && (
+                <Tooltip
+                  title={
+                    !isDbEnableLockPriorityFlagSet
+                      ? formatMessage({
+                          id: 'src.component.Task.AlterDdlTask.CreateModal.C62A7DBB',
+                          defaultMessage: '需要将参数 enable_lock_priority 设置为 true',
+                        })
+                      : null
+                  }
+                >
+                  <Radio.Button
+                    value={LockStrategy.LOCK_TABLE}
+                    disabled={!isDbEnableLockPriorityFlagSet}
+                  >
+                    {LockStrategyLableMap[LockStrategy.LOCK_TABLE]}
+                  </Radio.Button>
+                </Tooltip>
+              )}
+            </Radio.Group>
+          </Form.Item>
+          {isLockUser && (
+            <Col span={12}>
+              <Form.Item
+                label={
+                  formatMessage({
+                    id: 'odc.src.component.Task.AlterDdlTask.CreateModal.LockUsers.1',
+                    defaultMessage: '锁定用户',
+                  }) /*
+              锁定用户
+              */
+                }
+                name="lockUsers"
+                required
+              >
+                <Select
+                  showSearch
+                  mode="multiple"
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  placeholder={
+                    formatMessage({
+                      id: 'odc.src.component.Task.AlterDdlTask.CreateModal.PleaseChoose',
+                      defaultMessage: '请选择',
+                    }) /* 请选择 */
+                  }
+                  options={datasourceUserOptions}
+                />
+              </Form.Item>
+            </Col>
+          )}
           <Form.Item
             label={formatMessage({
               id: 'odc.AlterDdlTask.CreateModal.ChangeDefinition',
@@ -564,64 +600,30 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             }
             keepExpand
           >
-            <Row>
-              <Col span={6}>
-                <Form.Item
-                  label={
-                    <HelpDoc leftText isTip doc="schemaChangeSwapTableTimeout">
-                      {
-                        formatMessage({
-                          id: 'odc.AlterDdlTask.CreateModal.LockTableTimeout',
-                          defaultMessage: '锁表超时时间',
-                        }) /*锁表超时时间*/
-                      }
-                    </HelpDoc>
-                  }
-                  required
-                >
-                  <Form.Item
-                    label={formatMessage({
-                      id: 'odc.AlterDdlTask.CreateModal.Seconds',
-                      defaultMessage: '秒',
-                    })}
-                    /*秒*/ name="lockTableTimeOutSeconds"
-                    rules={rules.lockTableTimeOutSeconds as Rule[]}
-                    initialValue={5}
-                    noStyle
-                  >
-                    <InputNumber min={0} max={3600} />
-                  </Form.Item>
-                  <span className={styles.hour}>
-                    {
-                      formatMessage({
-                        id: 'odc.AlterDdlTask.CreateModal.Seconds',
-                        defaultMessage: '秒',
-                      }) /*秒*/
-                    }
-                  </span>
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item
-                  name="swapTableNameRetryTimes"
-                  label={
-                    <HelpDoc leftText isTip doc="schemaChangeSwapTableRetryTimes">
-                      {
-                        formatMessage({
-                          id: 'odc.AlterDdlTask.CreateModal.NumberOfFailedRetries',
-                          defaultMessage: '失败重试次数',
-                        }) /*失败重试次数*/
-                      }
-                    </HelpDoc>
-                  }
-                  initialValue={3}
-                  required
-                  rules={rules.swapTableNameRetryTimes}
-                >
-                  <InputNumber min={0} max={10} />
-                </Form.Item>
-              </Col>
-            </Row>
+            <Form.Item
+              name="swapTableNameRetryTimes"
+              label={
+                <HelpDoc leftText isTip doc="schemaChangeSwapTableRetryTimes">
+                  {formatMessage({
+                    id: 'src.component.Task.AlterDdlTask.CreateModal.1A8336C1',
+                    defaultMessage: '锁定失败重试次数',
+                  })}
+                </HelpDoc>
+              }
+              initialValue={3}
+              required
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage({
+                    id: 'src.component.Task.AlterDdlTask.CreateModal.A56878AD',
+                    defaultMessage: '请输入锁定失败重试次数',
+                  }),
+                },
+              ]}
+            >
+              <InputNumber min={0} max={10} />
+            </Form.Item>
             <Form.Item
               label={formatMessage({
                 id: 'odc.AlterDdlTask.CreateModal.SourceTableCleanupPolicyAfter',
@@ -634,10 +636,22 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
               <Radio.Group
                 options={[
                   {
-                    label: formatMessage({
-                      id: 'odc.AlterDdlTask.CreateModal.RenameNotProcessed',
-                      defaultMessage: '重命名不处理',
-                    }) /*重命名不处理*/,
+                    label: (
+                      <Space>
+                        {
+                          formatMessage({
+                            id: 'odc.AlterDdlTask.CreateModal.RenameNotProcessed',
+                            defaultMessage: '重命名不处理',
+                          }) /*重命名不处理*/
+                        }
+                        <Tag color="blue">
+                          {formatMessage({
+                            id: 'src.component.Task.AlterDdlTask.CreateModal.125DF508',
+                            defaultMessage: '推荐',
+                          })}
+                        </Tag>
+                      </Space>
+                    ),
                     value: ClearStrategy.ORIGIN_TABLE_RENAME_AND_RESERVED,
                   },
                   {

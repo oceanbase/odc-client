@@ -47,6 +47,7 @@ import { inject, observer } from 'mobx-react';
 import styles from './index.less';
 import odc from '@/plugins/odc';
 import login from '@/store/login';
+import { ConfigHelper } from './utils/configHelper';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -87,9 +88,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   const formBoxRef = React.createRef<HTMLDivElement>();
   const scrollSwitcher = useRef<Boolean>(true);
   const [spaceType, setSpaceType] = useState(ESpaceType.USER);
-  const isAdmin = odc.appConfig.manage.user.isAdmin({
-    roleIds: login.user?.roleIds,
-  });
+  const isAdmin = odc.appConfig.manage.user.isODCOrganizationConfig?.(login.user);
   const [searchValue, setSearchValue] = useState('');
 
   const getData = useCallback(
@@ -289,10 +288,13 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       const clientData = safeParseJson(await getODCSetting(), {});
       data = { ...data, ...clientData };
     }
-    formRef.setFieldsValue(data);
+    const transformedData = ConfigHelper.transformLoadData(data);
+    formRef.setFieldsValue(transformedData);
 
     let spaceData = (await setting.getSpaceConfig()) || {};
-    spaceFormRef.setFieldsValue(spaceData);
+
+    const transformedSpaceData = ConfigHelper.transformLoadData(spaceData);
+    spaceFormRef.setFieldsValue(transformedSpaceData);
   }
 
   useEffect(() => {
@@ -313,33 +315,42 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     const serverData: Record<string, string> = {},
       localData = {};
     const spaceServerData: Record<string, string> = {};
-    Object.keys(values).forEach((key) => {
+
+    const expandedValues = ConfigHelper.transformSaveData(values);
+    const expandedSpaceValues = ConfigHelper.transformSaveData(spaceValues);
+
+    Object.keys(expandedValues).forEach((key) => {
       const info = odcSettingMap[key];
+      if (!info) return;
+
       switch (info.storeType) {
         case 'server': {
-          serverData[key] = values[key] || '';
+          serverData[key] = expandedValues[key] || '';
           break;
         }
         case 'local': {
-          localData[key] = values[key];
+          localData[key] = expandedValues[key];
           break;
         }
       }
     });
 
-    Object.keys(spaceValues).forEach((key) => {
+    Object.keys(expandedSpaceValues).forEach((key) => {
       const info = odcSettingMap[key];
+      if (!info) return;
+
       switch (info.storeType) {
         case 'server': {
-          spaceServerData[key] = spaceValues[key];
+          spaceServerData[key] = expandedSpaceValues[key];
           break;
         }
         case 'local': {
-          localData[key] = spaceValues[key];
+          localData[key] = expandedSpaceValues[key];
           break;
         }
       }
     });
+
     if (
       serverData['odc.editor.shortcut.executeStatement'] ===
       serverData['odc.editor.shortcut.executeCurrentStatement']
@@ -396,6 +407,25 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
     });
   }
 
+  function hasVisibleSettings(groupData) {
+    // 1. group 自己的 settings 里有未 hidden 的项
+    if (groupData.settings?.some((set) => !set.hidden)) {
+      return true;
+    }
+    // 2. secondGroup 里有 settings，且有未 hidden 的项
+    if (
+      groupData.secondGroup &&
+      Array.from(
+        groupData.secondGroup.values() as {
+          settings: IODCSetting[];
+        }[],
+      ).some((sg) => sg.settings?.some((set) => !set.hidden))
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   function formRender({
     currentRef,
     data,
@@ -415,9 +445,11 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
         {Array.from(data.values()).map((groupData) => {
           return (
             <React.Fragment key={groupData.key}>
-              <Typography.Title data-name={groupData.key} level={5}>
-                {groupData?.label}
-              </Typography.Title>
+              {hasVisibleSettings(groupData) && (
+                <Typography.Title data-name={groupData.key} level={5}>
+                  {groupData?.label}
+                </Typography.Title>
+              )}
               {groupData?.secondGroup.size > 0 ? (
                 Array.from(groupData?.secondGroup?.values()).map((group, index) => {
                   return (
@@ -433,9 +465,6 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                         )}
                         <Row style={{ paddingLeft: 12 }} gutter={20}>
                           {group.settings.map((set, index) => {
-                            if (set.hidden) {
-                              return null;
-                            }
                             return (
                               <Col key={index} span={set.span || 10}>
                                 <Form.Item
@@ -455,6 +484,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                                   name={set.key}
                                   key={set.key}
                                   rules={set.rules}
+                                  hidden={set.hidden}
                                 >
                                   {set.render(null, async () => {})}
                                 </Form.Item>
@@ -476,9 +506,6 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                   size={'small'}
                 >
                   {groupData.settings.map((set, index) => {
-                    if (set.hidden) {
-                      return null;
-                    }
                     return (
                       <Form.Item
                         style={{ marginBottom: 12 }}
@@ -496,6 +523,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                         name={set.key}
                         key={set.key}
                         rules={set.rules}
+                        hidden={set.hidden}
                       >
                         {set.render(null, async () => {})}
                       </Form.Item>
@@ -545,12 +573,17 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
         size="small"
         moreIcon={false}
         tabPosition="right"
-        items={Array.from(data.values()).map((g) => {
-          return {
-            label: g.label,
-            key: g.key,
-          };
-        })}
+        items={Array.from(data.values())
+          .map((g) => {
+            if (!hasVisibleSettings(g)) {
+              return null;
+            }
+            return {
+              label: g.label,
+              key: g.key,
+            };
+          })
+          .filter(Boolean)}
         activeKey={activeKey}
         onChange={(key) => {
           setActiveKey(key);

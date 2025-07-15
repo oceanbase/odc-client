@@ -25,6 +25,7 @@ import {
   stopDataArchiveSubTask,
   getDataArchiveSubTask,
   getTaskDetail,
+  getAsyncResultSet,
 } from '@/common/network/task';
 import Action from '@/component/Action';
 import { TaskTypeMap } from '@/component/Task/component/TaskTable/const';
@@ -51,11 +52,13 @@ import {
   TaskStatus,
   TaskType,
   IResultSetExportTaskParams,
+  ISqlExecuteResultStatus,
 } from '@/d.ts';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
 import type { TaskStore } from '@/store/task';
+import taskStore from '@/store/task';
 import ipcInvoke from '@/util/client/service';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
@@ -70,6 +73,8 @@ import { useRequest } from 'ahooks';
 import { taskSuccessHintInfo } from '@/constant';
 import { actionInfo, actions, JOB_SCHEDULE_TASKS, SCHEDULE_TASKS } from './helper';
 import { IAddOperationsParams } from './type';
+import { openSQLResultSetViewPage } from '@/store/helper/page';
+import setting from '@/store/setting';
 interface IProps {
   userStore?: UserStore;
   taskStore?: TaskStore;
@@ -115,7 +120,8 @@ const ActionBar: React.FC<IProps> = inject(
     const [activeBtnKey, setActiveBtnKey] = useState(null);
     const [openRollback, setOpenRollback] = useState(false);
     const [taskList, setTaskList] = useState<ICycleSubTaskRecord[]>([]);
-
+    const [viewLoading, setViewLoading] = useState(false);
+    const isSqlworkspace = location?.hash?.includes('sqlworkspace');
     const disabledApproval =
       task?.status === TaskStatus.WAIT_FOR_CONFIRM && !isDetailModal ? true : disabledSubmit;
 
@@ -321,6 +327,51 @@ const ActionBar: React.FC<IProps> = inject(
         message.success(taskSuccessHintInfo.again);
         props?.onReloadList?.();
         props?.onReload?.();
+      }
+    };
+
+    const viewResult = async () => {
+      setViewLoading(true);
+      try {
+        const resultSets = await getAsyncResultSet(task.id);
+        if (resultSets) {
+          /**
+           * 没有成功的请求的话，这里就不去展示结果了。
+           */
+
+          const haveSuccessQuery = !!resultSets?.find(
+            (result) => result.status === ISqlExecuteResultStatus.SUCCESS && result.columns?.length,
+          );
+
+          if (!haveSuccessQuery) {
+            message.warning(
+              formatMessage({
+                id: 'src.component.Task.component.ActionBar.797981FE',
+                defaultMessage: '无可查看的结果信息',
+              }),
+            );
+            return;
+          }
+          if (isSqlworkspace) {
+            await openSQLResultSetViewPage(
+              task.id,
+              resultSets,
+              (task?.parameters as IAsyncTaskParams)?.sqlContent,
+            );
+            taskStore.changeTaskManageVisible(false);
+            props.onDetailVisible(null, false);
+          } else {
+            window.open(
+              location.origin +
+                location.pathname +
+                `#/sqlworkspace?taskId=${task.id}&resultSets=${true}&sqlContent=${JSON.stringify(
+                  (task?.parameters as IAsyncTaskParams)?.sqlContent,
+                )}`,
+            );
+          }
+        }
+      } finally {
+        setViewLoading(false);
       }
     };
 
@@ -778,7 +829,16 @@ const ActionBar: React.FC<IProps> = inject(
         }
         return _executeBtn;
       };
-
+      const viewResultBtn = {
+        key: 'viewResult',
+        text: formatMessage({
+          id: 'src.component.Task.component.ActionBar.5218D741',
+          defaultMessage: '查询结果',
+        }),
+        isLoading: viewLoading,
+        action: viewResult,
+        type: 'button',
+      };
       if (isDetailModal) {
         switch (status) {
           case TaskStatus.REJECTED:
@@ -837,9 +897,25 @@ const ActionBar: React.FC<IProps> = inject(
           default:
         }
 
-        if (task?.type === TaskType.ASYNC && result?.containQuery) {
-          if (settingStore.enableDataExport) {
+        // 是否为数据库变更
+        const isAsyncTask = task?.type === TaskType.ASYNC;
+        // 是否包含查询结果
+        const hasQueryResult = result?.containQuery;
+        // 是否为管理员或者是发起者
+        const hasPermission =
+          currentUserResourceRoles?.some((item) => [ProjectRole.OWNER].includes(item)) || isOwner;
+
+        if (isAsyncTask && hasQueryResult && hasPermission) {
+          const allowDownloadResultSets =
+            setting.getSpaceConfigByKey('odc.task.databaseChange.allowDownloadResultSets') ===
+            'true';
+          const allowShowResultSets =
+            setting.getSpaceConfigByKey('odc.task.databaseChange.allowShowResultSets') === 'true';
+          if (settingStore.enableDataExport && allowDownloadResultSets) {
             tools.unshift(buttonConfig.downloadViewResultBtn);
+          }
+          if (allowShowResultSets) {
+            tools.unshift(viewResultBtn);
           }
         }
       } else {
@@ -987,9 +1063,16 @@ const ActionBar: React.FC<IProps> = inject(
       addOperations(operationNeedPermission?.[status]);
 
       switch (status) {
-        case TaskStatus.APPROVING:
+        case TaskStatus.APPROVING: {
           addOperations({ auth: isApprover, operations: operationNeedApprover[status] });
           break;
+        }
+        case TaskStatus.REJECTED: {
+          setBtnByCreater(tools, buttongConfig.reTryBtn);
+          tools = [buttongConfig.viewBtn];
+          setBtnByCreater(tools, buttongConfig.reTryBtn);
+          break;
+        }
         case TaskStatus.ENABLED: {
           if (haveOperationPermission && isLogicalDbChangeTask(task?.type)) {
             tools = [buttongConfig.viewBtn, buttongConfig.editBtn, buttongConfig.reTryBtn];

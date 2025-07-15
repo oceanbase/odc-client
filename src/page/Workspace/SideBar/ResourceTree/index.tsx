@@ -394,6 +394,7 @@ const ResourceTree: React.FC<IProps> = function ({
             setAddDSVisiable={setAddDSVisiable}
             setEditDatasourceId={setEditDatasourceId}
             copyDatasourceId={copyDatasourceId}
+            reload={reload}
           />
         );
       }
