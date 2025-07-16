@@ -526,7 +526,3 @@ export const getCloudProviderName = function (cp: CloudProvider) {
   };
   return map[cp] || '';
 };
-
-export const isSupportTaksImport = false;
-export const isSupportTaksExport = false;
-export const isSupportTaksTerminate = false;

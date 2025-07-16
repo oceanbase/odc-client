@@ -64,17 +64,14 @@ import {
   getExportConfig,
   getTerminateConfig,
   isScheduleMigrateTask,
-  isSupportTaksExport,
-  isSupportTaksImport,
-  isSupportTaksTerminate,
 } from '../AsyncTaskOperationButton/helper';
 const { RangePicker } = DatePicker;
 const { Text, Link } = Typography;
 import ImportModal from '../ImportModal';
 import { useImport } from '../ImportModal/useImport';
-import clusterStore from '@/store/cluster';
 import { useTaskSelection, taskTypeThatCanBeExport } from './useTaskSelection';
 import login from '@/store/login';
+import odc from '@/plugins/odc';
 
 interface IProps {
   tableRef: React.RefObject<ITableInstance>;
@@ -528,6 +525,9 @@ const TaskTable: React.FC<IProps> = inject(
           },
         ];
       }
+      const isSupportTaksImport = odc?.appConfig?.task?.isSupportTaksImport;
+      const isSupportTaksExport = odc?.appConfig?.task?.isSupportTaksExport;
+      const isSupportTaksTerminate = odc?.appConfig?.task?.isSupportTaksTerminate;
       return [
         !taskTypeThatCanBeExport.includes(taskTabType) ||
         login.isPrivateSpace() ||
