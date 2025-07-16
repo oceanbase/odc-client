@@ -59,25 +59,13 @@ export default inject(
     }
 
     const resolveParams = async () => {
-      const databaseName = searchParams.get('databaseName');
-      if (tempDatasourceId) {
-        const databaseListData =
-          resourcetreeContext.databaseList?.length > 0
-            ? resourcetreeContext.databaseList
-            : await resourcetreeContext.reloadDatabaseList();
-        if (databaseName && databaseListData) {
-          const targetDatabase = databaseListData.find(
-            (db) => db.name === databaseName && db?.dataSource?.id === parseInt(tempDatasourceId),
-          );
-          if (targetDatabase) {
-            // 打开sql窗口
-            openNewSQLPage(targetDatabase.id);
-            // 删除databaseName参数
-            const newSearchParams = new URLSearchParams(searchParams);
-            newSearchParams.delete('databaseName');
-            setSearchParams(newSearchParams, { replace: true });
-          }
-        }
+      const databaseId = searchParams.get('databaseId');
+      if (databaseId) {
+        // 打开sql窗口
+        openNewSQLPage(parseInt(databaseId));
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.delete('databaseId');
+        setSearchParams(newSearchParams, { replace: true });
       }
     };
 

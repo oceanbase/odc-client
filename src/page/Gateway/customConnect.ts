@@ -36,8 +36,11 @@ import dayjs from 'dayjs';
 async function getDefaultSchema(dsId: number, userName: string) {
   const res = await listDatabases(null, dsId, 1, 999);
   const databases = res?.contents;
+  // mysql 模式的默认数据库是 information_schema
   const informationSchema = databases?.find((d) => d.name === 'information_schema');
+  // oracle 模式的的默认数据库是和用户名相同的 schema
   const sameName = databases?.find((d) => d.name?.toLowerCase() === userName?.toLowerCase());
+  // 如果都没有，则取第一个
   return informationSchema?.id || sameName?.id || databases?.[0]?.id;
 }
 
@@ -197,7 +200,6 @@ export const action = async (config: ICustomConnectAction) => {
     return 'Connection Test Failed';
   }
   const createResult = await newConnection(params);
-  const databaseName = params?.defaultSchema;
 
   if (createResult) {
     gotoSQLWorkspace(
@@ -208,7 +210,6 @@ export const action = async (config: ICustomConnectAction) => {
       generateUniqKey(),
       false,
       false,
-      databaseName,
     );
   } else {
     return 'create connection failed';
