@@ -24,13 +24,12 @@ export function gotoSQLWorkspace(
   tabKey: string = '',
   isLogicalDatabase: boolean = false,
   isCreateTable: boolean = false,
-  databaseName?: string,
 ) {
   const url =
     location.origin +
     location.pathname +
     (tabKey
-      ? `#/sqlworkspace/${tabKey}/${datasourceId}?databaseName=${databaseName}`
+      ? `#/sqlworkspace/${tabKey}/${datasourceId}?databaseId=${databaseId}`
       : `#/sqlworkspace?projectId=${projectId || ''}&datasourceId=${
           datasourceId || ''
         }&databaseId=${
