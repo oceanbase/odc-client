@@ -72,6 +72,7 @@ import ShardingStrategyItem from '../../component/ShardingStrategyItem';
 import { disabledDate, disabledTime } from '@/util/utils';
 import DirtyRowAction from '../../component/DirtyRowAction';
 import MaxAllowedDirtyRowCount from '../../component/MaxAllowedDirtyRowCount';
+import ExecuteFailTip from '../../component/ExecuteFailTip';
 
 export enum IArchiveRange {
   PORTION = 'portion',
@@ -731,13 +732,16 @@ const CreateModal: React.FC<IProps> = (props) => {
                 }
                 if (triggerStrategy === TaskExecStrategy.TIMER) {
                   return (
-                    <Form.Item>
-                      <Crontab
-                        ref={crontabRef}
-                        initialValue={crontab}
-                        onValueChange={handleCrontabChange}
-                      />
-                    </Form.Item>
+                    <>
+                      <ExecuteFailTip />
+                      <Form.Item>
+                        <Crontab
+                          ref={crontabRef}
+                          initialValue={crontab}
+                          onValueChange={handleCrontabChange}
+                        />
+                      </Form.Item>
+                    </>
                   );
                 }
                 return null;

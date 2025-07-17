@@ -60,6 +60,7 @@ import DatabaseSelect from '../../component/DatabaseSelect';
 import { useRequest } from 'ahooks';
 import styles from './index.less';
 import setting from '@/store/setting';
+import ExecuteFailTip from '../../component/ExecuteFailTip';
 
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 
@@ -770,6 +771,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               </span>
             </Form.Item>
           </Space>
+          <ExecuteFailTip />
           <Form.Item>
             <Crontab ref={crontabRef} initialValue={crontab} onValueChange={handleCrontabChange} />
           </Form.Item>

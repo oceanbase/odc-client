@@ -67,6 +67,7 @@ import {
 import styles from './index.less';
 import { useRequest } from 'ahooks';
 import DescriptionInput from '../../component/DescriptionInput';
+import ExecuteFailTip from '../../component/ExecuteFailTip';
 
 const { Paragraph, Text } = Typography;
 
@@ -722,6 +723,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               </Form.Item>
             </Spin>
             <Divider />
+            <ExecuteFailTip />
             <Form.Item>
               <Crontab
                 ref={crontabRef}
