@@ -114,7 +114,7 @@ const CreateViewPage: React.FC<IProps> = inject(
         session?.odcDatabase?.name,
       );
       setCreateCheckResults(results);
-      if (results?.invalid || !results?.executeResult?.length || !results.unauthorizedDBResources) {
+      if (results?.invalid || !results?.executeResult?.length) {
         return;
       }
       const { dbObjectName: viewName, track } = results.executeResult[0];
