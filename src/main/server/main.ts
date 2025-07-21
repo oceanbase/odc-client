@@ -29,6 +29,7 @@ import {
   getSetting,
 } from '../utils';
 import log from '../utils/log';
+import { runH2Migration } from '../utils/h2';
 
 class MainServer {
   static _mainServer: MainServer = null;
@@ -280,6 +281,11 @@ class MainServer {
     if (JAVA_HOME) {
       env['JAVA_HOME'] = JAVA_HOME;
     }
+    const h2MigrationSuccess = await runH2Migration();
+    if (!h2MigrationSuccess) {
+      app.quit();
+      return;
+    }
     // https://stackoverflow.com/questions/10232192/exec-display-stdout-live
     try {
       const setting = getSetting();
@@ -304,6 +310,12 @@ class MainServer {
           `-Dfile.encoding=UTF-8`,
           `-Duser.language=en-US`,
           ...jvmOptions,
+          '--add-opens',
+          'java.base/jdk.internal.loader=ALL-UNNAMED',
+          '--add-opens',
+          'java.base/java.net=ALL-UNNAMED',
+          '--add-opens',
+          'java.base/java.lang=ALL-UNNAMED',
           '-jar',
           this.jarPath,
           ...odcOptions,

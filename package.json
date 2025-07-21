@@ -1,6 +1,6 @@
 {
   "name": "odc",
-  "version": "4.3.4",
+  "version": "4.4.0",
   "private": true,
   "description": "企业级数据开发平台",
   "homepage": "https://www.oceanbase.com/",
@@ -87,7 +87,7 @@
     "@types/jest": "^22.2.2",
     "@types/lodash": "^4.14.168",
     "@types/memoize-one": "^4.1.1",
-    "@types/node": "^9.6.0",
+    "@types/node": "^16.7.0",
     "@types/react": "^16.0.0",
     "@types/react-dom": "^16.0.0",
     "@types/react-resizable": "^1.7.3",
