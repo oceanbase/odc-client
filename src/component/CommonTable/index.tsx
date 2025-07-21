@@ -19,7 +19,7 @@ import { useControllableValue } from 'ahooks';
 import { Alert, Spin, Table } from 'antd';
 import classNames from 'classnames';
 import { throttle } from 'lodash';
-import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { ResizeTitle } from './component/ResizeTitle';
 import {
   DEFAULT_BIG_ROW_HEIGHT,
@@ -137,7 +137,6 @@ const CommonTable: <RecordType extends object = any>(
   const urlStatusValue = getParam('status');
   const [pageSize, setPageSize] = useState(0);
   const [columnWidthMap, setColumnWidthMap] = useState(null);
-  const tableColumns = getFilteredColumns();
   const showInfoBar = rowSelecter && !!selectedRowKeys?.length && showSelectedInfoBar;
   const TOOLBAR_HEIGHT = showToolbar ? TABLE_TOOLBAR_HEIGHT : 0;
   const INFO_BAR_HEIGHT = showInfoBar ? TABLE_INFO_BAR_HEIGHT : 0;
@@ -357,15 +356,21 @@ const CommonTable: <RecordType extends object = any>(
     });
   }
 
-  function getFilteredColumns() {
-    return columns.map((item) => {
-      const key = item?.key || (item as any)?.dataIndex;
-      const defaultFilteredValue = item?.defaultFilteredValue || null;
-
-      item.filteredValue = filters?.[key] || defaultFilteredValue || null;
-      return item;
-    });
-  }
+  const tableColumns = useMemo(() => {
+    return enableResize
+      ? columns?.map((oriColumn) => {
+          return {
+            ...oriColumn,
+            width: columnWidthMap?.[oriColumn?.key] || oriColumn.width || DEFAULT_COLUMN_WIDTH,
+            onHeaderCell: (column) =>
+              ({
+                width: columnWidthMap?.[column?.key] || oriColumn.width || DEFAULT_COLUMN_WIDTH,
+                onResize: handleResize(oriColumn),
+              } as React.HTMLAttributes<HTMLElement>),
+          };
+        })
+      : columns;
+  }, [enableResize, JSON.stringify(columns), columnWidthMap]);
 
   function handleCloseAlert() {
     setAlertInfoVisible(false);
@@ -482,26 +487,7 @@ const CommonTable: <RecordType extends object = any>(
               `${tableProps?.rowClassName} ${i % 2 === 0 ? styles.even : styles.odd}`
             }
             dataSource={dataSource}
-            //@ts-ignore
-            columns={
-              enableResize
-                ? columns?.map((oriColumn) => {
-                    return {
-                      ...oriColumn,
-                      width:
-                        columnWidthMap?.[oriColumn?.key] || oriColumn.width || DEFAULT_COLUMN_WIDTH,
-                      onHeaderCell: (column) =>
-                        ({
-                          width:
-                            columnWidthMap?.[column?.key] ||
-                            oriColumn.width ||
-                            DEFAULT_COLUMN_WIDTH,
-                          onResize: handleResize(oriColumn),
-                        } as React.HTMLAttributes<HTMLElement>),
-                    };
-                  })
-                : tableColumns
-            }
+            columns={tableColumns}
             components={
               enableResize
                 ? {

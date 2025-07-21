@@ -90,6 +90,12 @@ const ImportForm: React.FC<IImportFormProps> = inject('modalStore')(
         getTaskDetailFoTaskId();
       }, [taskId]);
 
+      useEffect(() => {
+        if (modalStore?.importModalData?.databaseId) {
+          form.setFieldValue('databaseId', modalStore?.importModalData?.databaseId);
+        }
+      }, [modalStore?.importModalData?.databaseId]);
+
       function getExportContent(transferDDL: boolean, transferData: boolean) {
         if (transferDDL && transferData) {
           return EXPORT_CONTENT.DATA_AND_STRUCT;

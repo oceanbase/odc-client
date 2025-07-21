@@ -416,7 +416,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       (!state.formData.importFileName?.length ||
         !!state.formData?.importFileName?.find((item) => item.status !== 'done'))
     );
-  }, [state.formData.importFileName?.length, state?.stepIndex]);
+  }, [state.formData.importFileName, state?.stepIndex]);
 
   return (
     <Drawer
