@@ -31,7 +31,7 @@ exports.run = async function () {
     fs.rmSync(jrePath, { recursive: true, force: true });
   }
   const isSuccess = await download(
-    baseUrl + `library/jre/${platform}/jre.zip`,
+    baseUrl + `library/jre/${platform}/jre17.zip`,
     'libraries/jre',
     'jre.zip',
   );
