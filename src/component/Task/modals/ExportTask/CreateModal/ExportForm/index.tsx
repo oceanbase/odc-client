@@ -48,7 +48,7 @@ interface IExportFormProps {
 const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
   observer(
     forwardRef(function (props, ref) {
-      const { formData, formType, onFormValueChange, projectId } = props;
+      const { formData, formType, onFormValueChange, projectId, modalStore } = props;
       const { taskId } = formData;
       const [form] = useForm<ExportFormData>();
       const databaseId = Form.useWatch('databaseId', form);
@@ -63,6 +63,14 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
           run(databaseId);
         }
       }, [databaseId]);
+
+      useEffect(() => {
+        if (modalStore?.exportModalData?.databaseId) {
+          form.setFieldsValue({
+            databaseId: modalStore?.exportModalData?.databaseId,
+          });
+        }
+      }, [modalStore?.exportModalData?.databaseId]);
 
       async function valid(callback: (haveError, values) => void) {
         try {

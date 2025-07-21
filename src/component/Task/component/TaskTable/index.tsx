@@ -161,7 +161,9 @@ const TaskTable: React.FC<IProps> = inject(
         setExecuteTime(_executeTime);
         const filters = {
           ...args?.filters,
-          status: (args?.filters?.status || []).concat(urlStatusValue ? [urlStatusValue] : []),
+          status: Array.from(
+            new Set((args?.filters?.status || []).concat(urlStatusValue ? [urlStatusValue] : [])),
+          ),
           executeTime: urlStatusValue ? TIME_OPTION_ALL_TASK : _executeTime,
         };
 
@@ -209,7 +211,7 @@ const TaskTable: React.FC<IProps> = inject(
           },
         });
       }
-    }, [taskPageScope, taskTabType, activePageKey, urlStatusValue]);
+    }, [taskPageScope, taskTabType, activePageKey]);
 
     useEffect(() => {
       if (executeTime) {
