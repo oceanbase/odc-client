@@ -758,3 +758,7 @@ export const uniqueTools = (tools) => {
 export const flatArray = (array: any[]): any[] => {
   return array?.reduce?.((pre, cur) => pre?.concat(Array.isArray(cur) ? flatArray(cur) : cur), []);
 };
+
+export const valueFilter = (value: string) => {
+  return value.replace(/[\n\r\v\t\f\s]/g, '');
+};
