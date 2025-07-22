@@ -85,7 +85,7 @@ async function clear(type?: 'delete_old' | 'delete_new'): Promise<void> {
  */
 async function executeSqlInOldH2(sql: string): Promise<string> {
   const { stdout, stderr } = (await execAsync(
-    `${JAVA_PATH} -cp "${OLD_H2_JAR_PATH}" org.h2.tools.Shell -url "${OLD_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -sql "${sql}"`,
+    `"${JAVA_PATH}" -cp "${OLD_H2_JAR_PATH}" org.h2.tools.Shell -url "${OLD_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -sql "${sql}"`,
   )) as ExecResult;
   if (stderr) {
     log.error('[old]execute sql error: ', stderr);
@@ -101,7 +101,7 @@ async function executeSqlInOldH2(sql: string): Promise<string> {
  */
 async function executeSqlInNewH2(sql: string): Promise<string> {
   const { stdout, stderr } = (await execAsync(
-    `${JAVA_PATH} -cp "${NEW_H2_JAR_PATH}" org.h2.tools.Shell -url "${NEW_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -sql "${sql}"`,
+    `"${JAVA_PATH}" -cp "${NEW_H2_JAR_PATH}" org.h2.tools.Shell -url "${NEW_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -sql "${sql}"`,
   )) as ExecResult;
   if (stderr) {
     log.error('[new]execute sql error: ', stderr);
@@ -219,7 +219,7 @@ async function exportSql(): Promise<boolean> {
 
   try {
     const { stdout, stderr } = await execAsync(
-      `${JAVA_PATH} -cp "${OLD_H2_JAR_PATH}" org.h2.tools.Script -url "${OLD_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -script "${TMP_EXPORT_SQL_PATH}" -options 'DROP'`,
+      `"${JAVA_PATH}" -cp "${OLD_H2_JAR_PATH}" org.h2.tools.Script -url "${OLD_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -script "${TMP_EXPORT_SQL_PATH}" -options 'DROP'`,
     );
     if (!fs.existsSync(TMP_EXPORT_SQL_PATH)) {
       log.error('Failed Export Sql\n', 'stdout:', stdout, 'error:', stderr);
@@ -254,7 +254,7 @@ async function importSql(): Promise<boolean> {
 
   try {
     await execAsync(
-      `${JAVA_PATH} -cp "${NEW_H2_JAR_PATH}" org.h2.tools.RunScript -url "${NEW_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -script "${TMP_EXPORT_SQL_PATH}" -options "FROM_1X"`,
+      `"${JAVA_PATH}" -cp "${NEW_H2_JAR_PATH}" org.h2.tools.RunScript -url "${NEW_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -script "${TMP_EXPORT_SQL_PATH}" -options "FROM_1X"`,
     );
     log.info(`Sql Import Success, Path is ${TMP_EXPORT_SQL_PATH}`);
     return true;
