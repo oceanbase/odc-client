@@ -24,7 +24,7 @@ import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@@node_modules/@ant-design/icons/lib';
 
 export const EquerySqlResultDisplayMode = {
-  COVER: 'COVER',
+  OVERWRITE: 'OVERWRITE',
   APPEND: 'APPEND',
 };
 
@@ -224,7 +224,7 @@ const databaseSettings: IODCSetting[] = [
                   label="覆盖"
                 />
               ),
-              value: EquerySqlResultDisplayMode.COVER,
+              value: EquerySqlResultDisplayMode.OVERWRITE,
             },
             {
               label: (
