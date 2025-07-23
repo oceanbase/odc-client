@@ -668,7 +668,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     const resultSetIndex = sqlStore.resultSets.get(pageKey)?.findIndex((set) => {
       return set.uniqKey === resultSetKey;
     });
-    sqlStore.closeResultSet(pageKey, resultSetIndex);
+    sqlStore.closeResultSet(pageKey, resultSetKey);
     const resultSet = sqlStore.resultSets.get(pageKey); // 如果已经关闭了全部结果集，只剩下历史记录，需要切换
 
     if (resultSet && resultSet.length === 0) {
