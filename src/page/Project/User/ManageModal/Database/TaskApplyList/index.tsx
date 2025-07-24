@@ -24,7 +24,7 @@ import {
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
 import SearchFilter from '@/component/SearchFilter';
-import { getExpireTimeLabel } from '@/component/Task/ApplyDatabasePermission';
+import { getExpireTimeLabel } from '@/component/Task/helper';
 import TaskDetailModal from '@/component/Task/DetailModal';
 import type { IResponseData } from '@/d.ts';
 import { TaskType } from '@/d.ts';

@@ -23,7 +23,7 @@ import {
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
 import SearchFilter from '@/component/SearchFilter';
-import { getExpireTimeLabel } from '@/component/Task/ApplyDatabasePermission';
+import { getExpireTimeLabel } from '@/component/Task/helper';
 import type { IResponseData } from '@/d.ts';
 import { DatabasePermissionStatus, IDatabasePermission } from '@/d.ts/project';
 import { SearchOutlined } from '@ant-design/icons';

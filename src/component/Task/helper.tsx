@@ -21,6 +21,8 @@ import settingStore from '@/store/setting';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { flatten } from 'lodash';
+import dayjs from 'dayjs';
+
 export { TaskTypeMap } from '@/component/Task/component/TaskTable';
 
 // 423 屏蔽 SysFormItem 配置
@@ -318,3 +320,45 @@ export const conditionExpressionColumns = [
     },
   },
 ];
+
+type TimeUnit = 'years' | 'months' | 'days';
+
+const MAX_DATE = '9999-12-31 23:59:59';
+const MAX_DATE_LABEL = '9999-12-31';
+
+/**
+ * 处理时间单位转换的兼容函数
+ * @param value 时间值
+ * @param unit 单位
+ * @returns [转换后的值, 转换后的单位]
+ */
+const normalizeTimeUnit = (value: number, unit: TimeUnit): [number, TimeUnit] => {
+  if (unit === 'years' && value % 1 !== 0) {
+    // 处理年的小数情况，转换为月
+    return [value * 12, 'months'];
+  }
+  return [value, unit];
+};
+
+export const getExpireTime = (expireTime, customExpireTime, isCustomExpireTime) => {
+  if (isCustomExpireTime) {
+    return customExpireTime?.valueOf();
+  } else {
+    const [offset, unit] = expireTime.split(',') ?? [];
+    if (offset === 'never') {
+      return dayjs(MAX_DATE)?.valueOf();
+    }
+    const [normalizedValue, normalizedUnit] = normalizeTimeUnit(Number(offset), unit as TimeUnit);
+    return dayjs().add(normalizedValue, normalizedUnit)?.valueOf();
+  }
+};
+
+export const getExpireTimeLabel = (expireTime) => {
+  const label = dayjs(expireTime).format('YYYY-MM-DD');
+  return label === MAX_DATE_LABEL
+    ? formatMessage({
+        id: 'src.component.Task.ApplyDatabasePermission.CreateModal.B5C7760D',
+        defaultMessage: '永不过期',
+      })
+    : label;
+};

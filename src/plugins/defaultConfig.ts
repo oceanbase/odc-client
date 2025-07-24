@@ -80,9 +80,9 @@ export default {
   },
   task: {
     sys: true,
-    isSupportTaksImport: false,
-    isSupportTaksExport: false,
-    isSupportTaksTerminate: false,
+    isSupportTaksImport: true,
+    isSupportTaksExport: true,
+    isSupportTaksTerminate: true,
   },
   systemConfig: {
     default: null,

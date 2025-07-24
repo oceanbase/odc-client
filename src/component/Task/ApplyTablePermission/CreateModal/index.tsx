@@ -46,34 +46,13 @@ import { inject, observer } from 'mobx-react';
 import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './index.less';
+import { getExpireTime } from '../../helper';
 
 const CheckboxGroup = Checkbox.Group;
-
-const MAX_DATE = '9999-12-31 23:59:59';
-const MAX_DATE_LABEL = '9999-12-31';
 
 const defaultValue = {
   tables: [],
   expireTime: '7,days',
-};
-
-export const getExpireTime = (expireTime, customExpireTime, isCustomExpireTime) => {
-  if (isCustomExpireTime) {
-    return customExpireTime?.valueOf();
-  } else {
-    const [offset, unit] = expireTime.split(',') ?? [];
-    return offset === 'never' ? dayjs(MAX_DATE)?.valueOf() : dayjs().add(offset, unit)?.valueOf();
-  }
-};
-
-export const getExpireTimeLabel = (expireTime) => {
-  const label = dayjs(expireTime).format('YYYY-MM-DD');
-  return label === MAX_DATE_LABEL
-    ? formatMessage({
-        id: 'src.component.Task.ApplyTablePermission.CreateModal.BC4488C7',
-        defaultMessage: '永不过期',
-      })
-    : label;
 };
 
 const Label: React.FC<{
