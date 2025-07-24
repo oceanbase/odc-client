@@ -6,7 +6,19 @@ import {
   IImportScheduleTaskView,
   IScheduleTaskImportRequest,
 } from '@/d.ts/importTask';
-import { Alert, Button, Form, Input, Modal, Select, Space, Spin, Typography } from 'antd';
+import {
+  Alert,
+  Button,
+  Checkbox,
+  Flex,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Space,
+  Spin,
+  Typography,
+} from 'antd';
 import {
   CheckCircleFilled,
   CloseCircleFilled,
@@ -30,7 +42,9 @@ import CreateProjectDrawer from '@/page/Project/Project/CreateProject/Drawer';
 import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawer/NewButton';
 import { TaskTypeMap } from '../TaskTable';
 import { listProjects } from '@/common/network/project';
+import styles from './index.less';
 
+export const IMPORTABLE_TYPE = 'IMPORTABLE_TYPE';
 interface IImportModalProps {
   open: boolean;
   onCancel: () => void;
@@ -50,6 +64,7 @@ export interface IDatasourceInfo {
 }
 const ImportModal: React.FC<IImportModalProps> = ({ open, onCancel, onOk, taskType }) => {
   const [form] = Form.useForm();
+  const [isConfirm, setIsConfirm] = useState(false);
   const [scheduleTaskImportRequest, setScheduleTaskImportRequest] =
     useState<IScheduleTaskImportRequest>();
   const [previewData, setPreviewData] = useState<IImportScheduleTaskView[]>([]);
@@ -61,6 +76,11 @@ const ImportModal: React.FC<IImportModalProps> = ({ open, onCancel, onOk, taskTy
     matchedList: [],
     createdList: [],
   });
+  const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
+  const [databaseSelections, setDatabaseSelections] = useState<
+    Record<string, { databaseId: number; targetDatabaseId: number }>
+  >({});
+  const [notConfirmButSubmit, setNotConfirmButSubmit] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<UploadFileStatus | 'default'>('default');
   const [addProjectDropVisible, setAddProjectDropVisible] = useState<boolean>(false);
   const { data: projects, run: loadProjects } = useRequest(listProjects, {
@@ -95,9 +115,6 @@ const ImportModal: React.FC<IImportModalProps> = ({ open, onCancel, onOk, taskTy
           setLoading(false);
           setScheduleTaskImportRequest({
             ...params,
-            importableExportRowId: (previewResult as IImportScheduleTaskView[])
-              ?.map((i) => (i.importable ? i?.exportRowId : null))
-              ?.filter(Boolean),
           });
           setPreviewData((previewResult as IImportScheduleTaskView[]) || []);
           setDatasourceInfo(
@@ -185,6 +202,9 @@ const ImportModal: React.FC<IImportModalProps> = ({ open, onCancel, onOk, taskTy
     e?.stopPropagation();
     setUploadStatus('default');
     form.setFieldValue('importFile', []);
+    setNotConfirmButSubmit(false);
+    setDatabaseSelections({});
+    setSelectedRowKeys([]);
   };
 
   const uploadInfoMap = useMemo(() => {
@@ -301,33 +321,66 @@ const ImportModal: React.FC<IImportModalProps> = ({ open, onCancel, onOk, taskTy
               </Button>
             </Space>
           ) : (
-            <Space>
-              <Button onClick={() => setStep('upload')}>
-                {formatMessage({
-                  id: 'src.component.Task.component.ImportModal.9FFF1F71',
-                  defaultMessage: '上一步: 上传文件',
-                })}
-              </Button>
-              <Button
-                loading={loading}
-                onClick={() => {
-                  const currentProjectId = form.getFieldValue('projectId');
-                  onOk(
-                    scheduleTaskImportRequest as IScheduleTaskImportRequest,
-                    previewData?.filter((i) => i.importable),
-                    currentProjectId,
-                  );
-                  onReset();
+            <Flex justify="space-between" align="center">
+              <Checkbox
+                value={isConfirm}
+                onChange={(e) => {
+                  setIsConfirm(e.target.checked);
+                  setNotConfirmButSubmit(false);
                 }}
-                type="primary"
-                disabled={previewData?.filter((i) => i?.importable)?.length === 0}
+                className={notConfirmButSubmit ? styles.checkboxError : null}
               >
-                {formatMessage({
-                  id: 'src.component.Task.component.ImportModal.81026A36',
-                  defaultMessage: '导入',
-                })}
-              </Button>
-            </Space>
+                我己确认导入的工单新旧数据库对象一致
+              </Checkbox>
+              <Space>
+                <Button
+                  onClick={() => {
+                    setStep('upload');
+                    setNotConfirmButSubmit(false);
+                    setDatabaseSelections({});
+                    setSelectedRowKeys([]);
+                  }}
+                >
+                  {formatMessage({
+                    id: 'src.component.Task.component.ImportModal.9FFF1F71',
+                    defaultMessage: '上一步: 上传文件',
+                  })}
+                </Button>
+                <Button
+                  loading={loading}
+                  onClick={() => {
+                    if (!isConfirm) {
+                      setNotConfirmButSubmit(true);
+                      return;
+                    }
+                    const currentProjectId = form.getFieldValue('projectId');
+                    onOk(
+                      {
+                        ...scheduleTaskImportRequest,
+                        scheduleTaskImportRows: previewData
+                          ?.filter((i) => selectedRowKeys.includes(i.originId))
+                          ?.map((i) => ({
+                            rowId: i?.exportRowId,
+                            databaseId:
+                              databaseSelections?.[i?.originId]?.databaseId ||
+                              i?.databaseView?.matchedDatabaseId,
+                            targetDatabaseId:
+                              databaseSelections?.[i?.originId]?.targetDatabaseId ||
+                              i?.targetDatabaseView?.matchedDatabaseId,
+                          })),
+                      },
+                      previewData?.filter((i) => selectedRowKeys.includes(i.originId)),
+                      currentProjectId,
+                    );
+                    onReset();
+                  }}
+                  type="primary"
+                  disabled={selectedRowKeys?.length === 0}
+                >
+                  {`导入 (${selectedRowKeys?.length})`}
+                </Button>
+              </Space>
+            </Flex>
           )
         }
         width={step === 'upload' ? 520 : 960}
@@ -337,11 +390,26 @@ const ImportModal: React.FC<IImportModalProps> = ({ open, onCancel, onOk, taskTy
           <Alert
             type="info"
             showIcon
-            message={formatMessage({
-              id: 'src.component.Task.component.ImportModal.0C3395D0',
-              defaultMessage:
-                '仅支持导入由阿里云 OceanBase 数据研发导出的配置文件；\n请确认作业关联的实例已切换至 OB Cloud 当前项目中，系统将根据实例信息匹配或新建对应的数据源。',
-            })}
+            message={
+              <>
+                仅支持导入由 阿里云 OceanBase 数据研发 或 ODC
+                导出的配置文件；在导入之前，请先将添加相关数据源、 井指定对应的项目。
+                <NewDatasourceButton onSuccess={() => {}}>
+                  <Button type="link">
+                    <a onClick={(e) => e.preventDefault()}>
+                      <Space>
+                        {formatMessage({
+                          id: 'src.component.Task.component.ImportModal.1E47B6CE',
+                          defaultMessage: '新建数据源',
+                        })}
+
+                        <DownOutlined />
+                      </Space>
+                    </a>
+                  </Button>
+                </NewDatasourceButton>
+              </>
+            }
           />
 
           <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
@@ -425,89 +493,72 @@ const ImportModal: React.FC<IImportModalProps> = ({ open, onCancel, onOk, taskTy
                 })}
               />
             </Form.Item>
-            <Form.Item
-              name="projectId"
-              label={formatMessage({
-                id: 'src.component.Task.component.ImportModal.889B80AD',
-                defaultMessage: '导入项目',
-              })}
-              rules={[
-                {
-                  required: true,
-                  message: formatMessage({
-                    id: 'src.component.Task.component.ImportModal.30D6697A',
-                    defaultMessage: '请选择',
-                  }),
-                },
-              ]}
-              extra={
-                <>
-                  <span>
-                    {formatMessage({
-                      id: 'src.component.Task.component.ImportModal.B3686BE9',
-                      defaultMessage: '请确认相关数据源已加至项目',
-                    })}
-                  </span>
-                  <NewDatasourceButton onSuccess={() => {}}>
-                    <Button type="link">
-                      <a onClick={(e) => e.preventDefault()}>
-                        <Space>
-                          {formatMessage({
-                            id: 'src.component.Task.component.ImportModal.1E47B6CE',
-                            defaultMessage: '新建数据源',
-                          })}
-
-                          <DownOutlined />
-                        </Space>
-                      </a>
-                    </Button>
-                  </NewDatasourceButton>
-                </>
-              }
-            >
-              <Select
-                options={projectOptions}
-                placeholder={formatMessage({
-                  id: 'src.component.Task.component.ImportModal.E82DB6D1',
-                  defaultMessage: '请选择',
+            {!login.isPrivateSpace() && (
+              <Form.Item
+                name="projectId"
+                label={formatMessage({
+                  id: 'src.component.Task.component.ImportModal.889B80AD',
+                  defaultMessage: '导入项目',
                 })}
-                showSearch
-                filterOption={(input, option) =>
-                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                }
-                open={addProjectDropVisible}
-                onDropdownVisibleChange={setAddProjectDropVisible}
-                dropdownRender={(menu) => (
-                  <>
-                    {menu}
-                    {
-                      <CreateProjectDrawer
-                        buttonChildren={
-                          <Space onClick={() => setAddProjectDropVisible(false)}>
-                            <PlusOutlined />
-                            {formatMessage({
-                              id: 'src.component.Task.component.ImportModal.68180A60',
-                              defaultMessage: '新建项目',
-                            })}
-                          </Space>
-                        }
-                        buttonType="link"
-                        onCreate={() => loadProjects(null, 1, 9999)}
-                      />
-                    }
-                  </>
-                )}
-              />
-            </Form.Item>
+                rules={[
+                  {
+                    required: true,
+                    message: formatMessage({
+                      id: 'src.component.Task.component.ImportModal.30D6697A',
+                      defaultMessage: '请选择',
+                    }),
+                  },
+                ]}
+              >
+                <Select
+                  options={projectOptions}
+                  placeholder={formatMessage({
+                    id: 'src.component.Task.component.ImportModal.E82DB6D1',
+                    defaultMessage: '请选择',
+                  })}
+                  showSearch
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  open={addProjectDropVisible}
+                  onDropdownVisibleChange={setAddProjectDropVisible}
+                  dropdownRender={(menu) => (
+                    <>
+                      {menu}
+                      {
+                        <CreateProjectDrawer
+                          buttonChildren={
+                            <Space onClick={() => setAddProjectDropVisible(false)}>
+                              <PlusOutlined />
+                              {formatMessage({
+                                id: 'src.component.Task.component.ImportModal.68180A60',
+                                defaultMessage: '新建项目',
+                              })}
+                            </Space>
+                          }
+                          buttonType="link"
+                          onCreate={() => loadProjects(null, 1, 9999)}
+                        />
+                      }
+                    </>
+                  )}
+                />
+              </Form.Item>
+            )}
           </Form>
         </div>
-        <div style={{ display: step === 'preview' ? 'block' : 'none' }}>
+        {step === 'preview' ? (
           <ImportPreviewTable
             data={previewData}
             datasourceInfo={datasourceInfo}
             taskType={taskType}
+            projectId={form.getFieldValue('projectId')}
+            selectedRowKeys={selectedRowKeys}
+            setSelectedRowKeys={setSelectedRowKeys}
+            databaseSelections={databaseSelections}
+            setDatabaseSelections={setDatabaseSelections}
           />
-        </div>
+        ) : null}
       </Modal>
     </>
   );

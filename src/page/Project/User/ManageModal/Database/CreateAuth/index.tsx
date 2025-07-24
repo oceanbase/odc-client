@@ -18,9 +18,9 @@ import { formatMessage } from '@/util/intl';
 import { addDatabasePermissions } from '@/common/network/project';
 import {
   expireTimeOptions,
-  getExpireTime,
   permissionOptions,
 } from '@/component/Task/ApplyDatabasePermission/CreateModal';
+import { getExpireTime } from '@/component/Task/helper';
 import DatabaseSelecter from '@/component/Task/component/DatabaseSelecter';
 import { Button, Checkbox, DatePicker, Drawer, Form, message, Modal, Select, Space } from 'antd';
 import React, { useState } from 'react';

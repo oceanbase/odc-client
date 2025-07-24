@@ -1,5 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import { ConnectType, IConnection, TaskType } from '.';
+import { ConnectType, IConnection, TaskStatus, TaskType } from '.';
 import { ODCCloudProvider } from './migrateTask';
 
 export enum ScheduleNonImportableType {
@@ -7,6 +7,8 @@ export enum ScheduleNonImportableType {
   TYPE_NOT_MATCH = 'TYPE_NOT_MATCH',
   DATASOURCE_NON_EXIST = 'DATASOURCE_NON_EXIST',
   IMPORTED = 'IMPORTED',
+  // 前端维护的待导入, 包含DATASOURCE_NON_EXIST, LACK_OF_INSTANCE和可导入的
+  // TO_BE_IMPORTED = 'TO_BE_IMPORTED',
 }
 
 export const ScheduleNonImportableTypeMap = {
@@ -22,10 +24,7 @@ export const ScheduleNonImportableTypeMap = {
     id: 'src.d.ts.B89ABE6D',
     defaultMessage: '类型不匹配',
   }),
-  [ScheduleNonImportableType.IMPORTED]: formatMessage({
-    id: 'src.d.ts.7AE88D0A',
-    defaultMessage: '已导入',
-  }),
+  [ScheduleNonImportableType.IMPORTED]: '已存在',
 };
 
 export interface IScheduleTaskImportRequest {
@@ -35,7 +34,16 @@ export interface IScheduleTaskImportRequest {
   projectId: string;
   decryptKey: string;
   // 导入接口必须传
-  importableExportRowId?: string[];
+  scheduleTaskImportRows?: scheduleTaskImportRows[];
+}
+
+export interface scheduleTaskImportRows {
+  // 行ID
+  rowId: string;
+  // 手动指定的源数据库ID
+  databaseId: number;
+  // 手动指定的目标数据库ID
+  targetDatabaseId: number;
 }
 
 export interface IImportScheduleTaskView {
@@ -60,8 +68,10 @@ export interface IImportScheduleTaskView {
    */
   originProjectName: string;
   type: TaskType;
-  databaseView: IImportDatabaseView;
-  targetDatabaseView: IImportDatabaseView;
+  databaseView: IImportDatabaseView; // 源端
+  targetDatabaseView: IImportDatabaseView; // 目标端
+  description: string;
+  originStatus: TaskStatus;
 }
 
 export interface IImportDatabaseView {
@@ -85,6 +95,7 @@ export interface IImportDatabaseView {
    */
   matchedDatasourceName: string;
   databaseName: string;
+  matchedDatabaseId?: number; // 匹配到的源端 / 目标端数据库ID
 }
 
 export interface IImportTaskResult {
@@ -94,6 +105,7 @@ export interface IImportTaskResult {
   exportRowId: string;
   success: boolean;
   failedReason: string;
+  remark?: string;
 }
 
 export enum IMPORT_TYPE {

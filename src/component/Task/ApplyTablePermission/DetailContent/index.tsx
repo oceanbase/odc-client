@@ -22,7 +22,8 @@ import type { IApplyTablePermissionTaskParams, TaskDetail } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider, Space } from 'antd';
 import { useMemo } from 'react';
-import { getExpireTimeLabel, permissionOptionsMap } from '../';
+import { permissionOptionsMap } from '../';
+import { getExpireTimeLabel } from '@/component/Task/helper';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 
 const getConnectionColumns = () => {

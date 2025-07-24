@@ -646,9 +646,7 @@ const TaskTable: React.FC<IProps> = inject(
         ];
       }
       return [
-        !taskTypeThatCanBeExport.includes(taskTabType) ||
-        login.isPrivateSpace() ||
-        !isSupportTaksImport
+        !taskTypeThatCanBeExport.includes(taskTabType) || !isSupportTaksImport
           ? {
               type: IOperationOptionType.button,
               content: [
