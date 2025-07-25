@@ -1850,7 +1850,7 @@ export interface IDatabaseSession {
   dbUser: string;
   executeTime: number;
   obproxyIp: string;
-  sessionId: number;
+  sessionId: string;
   sql: string;
   srcIp: string;
   svrIp: string;

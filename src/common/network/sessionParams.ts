@@ -69,7 +69,7 @@ export async function killSessions(
   killType: 'session' | 'query',
 ): Promise<
   {
-    sessionId: number;
+    sessionId: string;
     killed: boolean;
     errorMessage?: string;
   }[]

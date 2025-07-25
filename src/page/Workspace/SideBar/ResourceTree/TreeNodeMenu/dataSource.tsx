@@ -111,7 +111,10 @@ const CustomDropdown = ({
     >
       <span
         onContextMenu={handleContextMenu}
-        className={styles.dataSourceTitle}
+        className={classNames(styles.dataSourceTitle, {
+          [styles.mr12]: !userStore?.isPrivateSpace(),
+          [styles.mr24]: userStore?.isPrivateSpace(),
+        })}
         onClick={() => {
           if (!node?.disabled) {
             setCurrentObject?.({
