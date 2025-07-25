@@ -2620,6 +2620,7 @@ export enum MigrationInsertAction {
 export enum ShardingStrategy {
   FIXED_LENGTH = 'FIXED_LENGTH',
   MATCH = 'MATCH',
+  AUTO = 'AUTO',
 }
 
 export enum SyncTableStructureEnum {

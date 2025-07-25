@@ -674,6 +674,8 @@ export default {
     </p>
   ),
 
+  TaskShardingStrategy: <p>检索目标记录行的方式</p>,
+
   TaskLmitData: (
     <p>
       {
