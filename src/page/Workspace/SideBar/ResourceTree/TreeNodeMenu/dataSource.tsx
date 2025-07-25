@@ -111,7 +111,7 @@ const CustomDropdown = ({
     >
       <span
         onContextMenu={handleContextMenu}
-        className={styles.fullWidthTitle}
+        className={styles.dataSourceTitle}
         onClick={() => {
           if (!node?.disabled) {
             setCurrentObject?.({

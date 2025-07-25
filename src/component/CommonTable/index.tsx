@@ -370,7 +370,7 @@ const CommonTable: <RecordType extends object = any>(
           };
         })
       : columns;
-  }, [enableResize, JSON.stringify(columns), columnWidthMap]);
+  }, [enableResize, columns, columnWidthMap]);
 
   function handleCloseAlert() {
     setAlertInfoVisible(false);
