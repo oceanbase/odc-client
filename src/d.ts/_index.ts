@@ -39,6 +39,7 @@ export enum IPageType {
   Datasource_session = 'session',
   Datasource_recycle = 'recycle',
   Datasource_obclient = 'obclient',
+  Large_Model = 'largeModel',
   Task = 'task',
   Auth = 'auth',
   Auth_User = 'user',

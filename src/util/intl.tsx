@@ -73,6 +73,15 @@ export function getLocalDocs(hash?: string) {
   return window.publicPath + 'help-doc/' + local + '/index.html' + (hash ? `#/${hash}` : '');
 }
 
+export function getServerLocalKey() {
+  let local: string = getEnvLocale();
+  local = local.toLowerCase();
+  if (local === 'zh-cn') {
+    return 'zh_Hans';
+  }
+  return 'en_US';
+}
+
 export function getOBDocsUrl(key?: string) {
   let local: string = getEnvLocale();
   local = local.toLowerCase();

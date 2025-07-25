@@ -21,10 +21,14 @@ import { history, useParams } from '@umijs/max';
 import React from 'react';
 import SqlInterceptor from './SqlInterceptor';
 import SSO from './SSO';
+import LargeModel from './LargeModel';
 
 interface IProps {}
 
 const Pages = {
+  [IPageType.Large_Model]: {
+    component: LargeModel,
+  },
   [IPageType.ExternalIntegration_Approval]: {
     component: SqlInterceptor,
   },
@@ -37,6 +41,10 @@ const Pages = {
 };
 
 const tabs = [
+  {
+    tab: '大模型集成',
+    key: IPageType.Large_Model,
+  },
   {
     tab: formatMessage({
       id: 'odc.page.ExternalIntegration.ApprovalIntegration',
@@ -79,7 +87,11 @@ const Index: React.FC<IProps> = function () {
       tabActiveKey={page}
       onTabChange={handleChange}
     >
-      <Component id={id} pageKey={page} />
+      {page === IPageType.Large_Model ? (
+        <Component id={id} pageKey={page} />
+      ) : (
+        <Component id={id} pageKey={page} />
+      )}
     </PageContainer>
   );
 };

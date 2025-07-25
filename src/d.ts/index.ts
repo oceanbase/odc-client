@@ -425,6 +425,8 @@ export enum IntegrationType {
   // SQL 审核集成
   SQL_INTERCEPTOR = 'SQL_INTERCEPTOR',
   SSO = 'SSO',
+  // 大模型集成
+  LARGE_MODEL = 'LARGE_MODEL',
 }
 
 export enum AuditEventType {

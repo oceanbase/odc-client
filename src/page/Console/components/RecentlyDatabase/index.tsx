@@ -3,7 +3,7 @@ import { Table, Tooltip, Spin } from 'antd';
 import { useMount, useRequest } from 'ahooks';
 import { ConsoleTextConfig, EDatabaseTableColumnKey } from '../../const';
 import Icon from '@ant-design/icons';
-import LabelWithIcon from '../LabelWithIcon';
+import LabelWithIcon from '../../../../component/LabelWithIcon';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { IDatabaseHistoriesParam, TaskType } from '@/d.ts';
 import Action from '@/component/Action';
