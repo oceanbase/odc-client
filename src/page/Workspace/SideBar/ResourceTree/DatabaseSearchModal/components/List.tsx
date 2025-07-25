@@ -271,6 +271,7 @@ const List = ({ modalStore }: Iprops) => {
         <div
           key={'database' + db.id}
           onClick={(e) => {
+            if (!db?.authorizedPermissionTypes?.length) return;
             handlePosition(e, db);
             openSql?.(e, db);
           }}

@@ -113,7 +113,9 @@ export default function WorkspaceStore({ children }) {
       existed: true,
       includesPermittedAction: true,
     });
-    setDatabaseList(data?.contents || []);
+    setDatabaseList(
+      data?.contents?.filter((item) => !!item?.authorizedPermissionTypes?.length) || [],
+    );
     return data?.contents;
   }, []);
 
