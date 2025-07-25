@@ -758,3 +758,15 @@ export const uniqueTools = (tools) => {
 export const flatArray = (array: any[]): any[] => {
   return array?.reduce?.((pre, cur) => pre?.concat(Array.isArray(cur) ? flatArray(cur) : cur), []);
 };
+
+export const maskAPIKey = (apiKey: string) => {
+  if (apiKey.length <= 3) {
+    return apiKey; // 如果长度小于等于3，直接返回原字符串
+  }
+
+  const firstPart = apiKey.slice(0, 2); // 取前两位
+  const lastPart = apiKey.slice(-1); // 取最后一位
+  const maskedPart = '*'.repeat(apiKey.length - 3); // 生成遮盖部分
+
+  return `${firstPart}${maskedPart}${lastPart}`; // 拼接结果
+};

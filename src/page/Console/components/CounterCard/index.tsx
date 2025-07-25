@@ -1,4 +1,4 @@
-import LabelWithIcon from '../LabelWithIcon';
+import LabelWithIcon from '../../../../component/LabelWithIcon';
 import styles from './index.less';
 interface IProps {
   title: string;

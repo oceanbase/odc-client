@@ -1,0 +1,159 @@
+import { Button, Descriptions, Form, Input, message, Modal, Spin } from 'antd';
+import { VendorsConfig } from '../../constant';
+import { EVendorType } from '@/d.ts/llm';
+import Icon, { ExportOutlined } from '@ant-design/icons';
+import styles from './index.less';
+import { useCallback, useEffect, forwardRef, useImperativeHandle, useState } from 'react';
+import { updateProviderDescription } from '@/util/request/largeModel';
+import { useRequest } from 'ahooks';
+import { getServerLocalKey } from '@/util/intl';
+import type { DescriptionModelRef, DescriptionModelProps, IModelProvider } from '@/d.ts/llm';
+
+const DescriptionModel = forwardRef<DescriptionModelRef, DescriptionModelProps>(
+  ({ onRefresh }, ref) => {
+    const [form] = Form.useForm();
+
+    // 内部状态管理
+    const [isOpen, setIsOpen] = useState(false);
+    const [provider, setProvider] = useState<IModelProvider | undefined>();
+
+    // 暴露给外部的方法
+    useImperativeHandle(ref, () => ({
+      open: (provider) => {
+        setProvider(provider);
+        setIsOpen(true);
+      },
+    }));
+
+    // 更新供应商描述
+    const { run: updateDescription, loading: updateLoading } = useRequest(
+      ({ provider, description }: { provider: string; description: string }) =>
+        updateProviderDescription(provider, { description }),
+      {
+        manual: true,
+        onSuccess: () => {
+          message.success('备注保存成功');
+          resetStates();
+          // 刷新供应商信息
+          if (onRefresh) {
+            onRefresh();
+          }
+        },
+        onError: (error) => {
+          message.error('备注保存失败');
+          console.error('保存备注失败:', error);
+        },
+      },
+    );
+
+    const resetStates = useCallback(() => {
+      setIsOpen(false);
+      setProvider(undefined);
+      form.resetFields();
+    }, [form]);
+
+    // 当模态框打开时，回填现有的description值
+    useEffect(() => {
+      if (isOpen && provider) {
+        const currentDescription = provider.description;
+        if (currentDescription) {
+          form.setFieldsValue({ description: currentDescription });
+        } else {
+          form.resetFields();
+        }
+      }
+    }, [isOpen, provider, form]);
+
+    const handleConfirm = useCallback(async () => {
+      if (!provider) {
+        message.error('未选择供应商');
+        return;
+      }
+
+      try {
+        await form.validateFields();
+        const values = form.getFieldsValue();
+
+        await updateDescription({
+          provider: provider.provider,
+          description: values.description || '',
+        });
+      } catch (error) {
+        console.error('表单验证失败:', error);
+      }
+    }, [form, provider, updateDescription]);
+
+    const currentVendorType = (provider?.provider as EVendorType) || EVendorType.DEEPSEEK;
+    const currentVendorConfig = VendorsConfig[currentVendorType];
+
+    return (
+      <Modal
+        destroyOnClose
+        open={isOpen}
+        title="添加备注"
+        onCancel={resetStates}
+        footer={() => (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            {/* Help链接 */}
+            {provider?.help ? (
+              <a
+                href={provider.help.url?.[getServerLocalKey()]}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#1890ff', textDecoration: 'none' }}
+              >
+                {provider.help.title?.[getServerLocalKey()]}
+                <ExportOutlined style={{ marginLeft: 4 }} />
+              </a>
+            ) : (
+              <div></div>
+            )}
+
+            {/* 按钮区域 */}
+            <div>
+              <Button onClick={resetStates} disabled={updateLoading} style={{ marginRight: 8 }}>
+                取消
+              </Button>
+              <Button type="primary" onClick={handleConfirm} loading={updateLoading}>
+                确定
+              </Button>
+            </div>
+          </div>
+        )}
+      >
+        <Descriptions
+          layout="horizontal"
+          items={[
+            {
+              label: '模型供应商',
+              span: 4,
+              children: (
+                <div className={styles.vendor}>
+                  <Icon style={{ fontSize: 16 }} component={currentVendorConfig?.icon} />
+                  {currentVendorConfig?.label || provider?.provider}
+                </div>
+              ),
+            },
+          ]}
+        />
+
+        <Form layout="vertical" form={form} className={styles.form} requiredMark="optional">
+          <Form.Item
+            label="备注"
+            name="description"
+            rules={[{ max: 200, message: '备注长度不能超过200个字符' }]}
+          >
+            <Input.TextArea
+              rows={4}
+              placeholder="请输入供应商备注信息..."
+              showCount
+              maxLength={200}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+    );
+  },
+);
+
+export default DescriptionModel;

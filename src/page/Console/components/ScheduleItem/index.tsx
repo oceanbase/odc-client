@@ -2,7 +2,7 @@ import { formatMessage } from '@/util/intl';
 import { useNavigate } from '@umijs/max';
 import { ConsoleTextConfig } from '../../const';
 import CounterCard from '../CounterCard';
-import LabelWithIcon from '../LabelWithIcon';
+import LabelWithIcon from '../../../../component/LabelWithIcon';
 import styles from './index.less';
 import DonutChart from '../DonutChart';
 import { IPageType } from '@/d.ts/_index';

@@ -208,9 +208,7 @@ const Sider: React.FC<IProps> = function (props) {
           </Link>
           {odc.appConfig?.manage?.integration?.enable ? (
             <Acess {...createPermission(IManagerResourceType.integration, actionTypes.read)}>
-              <Link
-                to={`/${IPageType.ExternalIntegration}/${IPageType.ExternalIntegration_Approval}`}
-              >
+              <Link to={`/${IPageType.ExternalIntegration}/${IPageType.Large_Model}`}>
                 <MenuItem
                   key={IPageType.ExternalIntegration}
                   selected={selected === IPageType.ExternalIntegration}

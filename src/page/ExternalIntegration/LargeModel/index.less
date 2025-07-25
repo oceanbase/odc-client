@@ -1,0 +1,121 @@
+.largeModelWrapper {
+  color: var(--text-color-primary);
+  .title {
+    font-size: 14px;
+    line-height: 22px;
+    font-weight: 600;
+  }
+  .aiFeatures {
+    background: #f8fafe;
+    border-radius: 2px;
+    height: 52px;
+    padding-left: 21px;
+    display: flex;
+    align-items: center;
+    .aiFeaturesItem {
+      margin-bottom: 0;
+    }
+  }
+
+  .aiConfig {
+    .switch {
+      margin-left: 14px;
+    }
+    .tips {
+      display: inline-block;
+      line-height: 20px;
+      margin-top: 8px;
+    }
+  }
+  .modelConfig {
+    margin-top: 32px;
+    .tips {
+      display: inline-block;
+      line-height: 20px;
+    }
+  }
+  .largeModel {
+    margin-top: 37px;
+    padding-bottom: 0;
+    .largeModelContent {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin-top: 12px;
+      .list {
+        width: 480px;
+      }
+      .modelList {
+        flex: 1;
+        min-height: 540px;
+        overflow-y: auto;
+        margin-left: 20px;
+        background: #f8fafe;
+        padding: 12px 14px;
+        .modelItem {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          height: 40px;
+          border-bottom: 1px solid var(--odc-border-color);
+          &:hover,
+          &.forceShowActions {
+            .operations {
+              .hidden {
+                margin-right: 16px;
+                display: flex;
+                gap: 16px;
+                right: 0;
+              }
+            }
+          }
+
+          .description,
+          .greyDescription {
+            display: flex;
+            height: 40px;
+            align-items: center;
+            .icon {
+              font-size: 24px;
+              margin-right: 8px;
+            }
+            .modelName {
+              max-width: 308px;
+              margin-right: 4px;
+            }
+            .tips {
+              max-width: 168px;
+              margin-right: 4px;
+            }
+          }
+          .greyDescription {
+            .icon {
+              font-size: 24px;
+              filter: grayscale(0.8);
+            }
+            .modelName {
+              color: #8592ad;
+            }
+          }
+          .operations {
+            display: flex;
+            .hidden {
+              margin-right: 16px;
+              display: none;
+              .icon {
+                color: var(--icon-color-normal);
+              }
+            }
+          }
+
+          .tags {
+            background: #f8fafe;
+            border: 1px solid #c1cbe0;
+            color: #5c6b8a;
+            border-radius: 4px;
+          }
+        }
+      }
+    }
+  }
+}

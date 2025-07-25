@@ -10,7 +10,7 @@ import { ReactComponent as SendSvg } from '@/svgr/send-fill.svg';
 import { getImg } from '@/util/intl';
 
 import Icon, { ExperimentOutlined } from '@ant-design/icons';
-import LabelWithIcon from './components/LabelWithIcon';
+import LabelWithIcon from '../../component/LabelWithIcon';
 import ScheduleItem from './components/ScheduleItem';
 import { areaLayout, ConsoleTextConfig, EQuickStartRole, gridConfig } from './const';
 import styles from './index.less';
