@@ -52,14 +52,23 @@ const StatusBar: React.FC<IProps> = function ({
     if (!columns?.length || !selectedColumnKeys?.length || !fields?.length) {
       return [];
     }
-    const selectColumnNames = new Set(
-      selectedColumnKeys?.map((key) => fields.find((c) => c.key === key)?.columnName),
-    );
 
-    if (!selectColumnNames.size) {
-      return [];
+    const fieldsMap = new Map(fields.map((field) => [field.key, field]));
+    const columnsMap = new Map(columns.map((column) => [column.columnName, column]));
+
+    const result: Partial<ITableColumn>[] = [];
+
+    for (const key of selectedColumnKeys) {
+      const field = fieldsMap.get(String(key));
+      if (!field?.columnName) continue;
+
+      const column = columnsMap.get(field.columnName);
+      if (column) {
+        result.push(column);
+      }
     }
-    return columns?.filter(Boolean).filter((c) => selectColumnNames.has(c.columnName));
+
+    return result;
   }, [columns, fields, selectedColumnKeys]);
   const columnText = selectColumns
     .map((column) => {
