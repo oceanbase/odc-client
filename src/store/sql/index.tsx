@@ -266,8 +266,13 @@ export class SQLStore {
               // 获取未锁定的历史结果（排除LOG类型）
               const unlockedHistoryResults = resultSet.filter((r) => !r.locked && isResultTab(r));
 
+              const historySqlIDs = resultSet.map((r) => r.sqlId);
+              // 去重处理：避免轮询时对同一个SQL对应结果重复渲染
+              const newInfo = info.results?.filter((r) => !historySqlIDs.includes(r.sqlId));
+
               // 限制执行记录+日志一共30个tab
-              const newInfoLength = info?.results?.length || 0;
+              const newInfoLength = newInfo.length || 0;
+
               const maxHistoryResults = Math.max(
                 0,
                 HISTORY_RESULT_LIMIT - newInfoLength - lockedResultSets?.length,
@@ -276,11 +281,11 @@ export class SQLStore {
 
               // 生成新的结果集
               const newResultSets = generateResultSetColumns(
-                info?.results,
+                newInfo,
                 session?.connection?.dialectType,
               );
 
-              // 设置结果集：锁定结果集 + 历史结果集 + 新的日志tab + 新结果集
+              // 设置结果集：锁定结果集 + 历史结果集 + 新的日志tab + 去重后的新结果集
               this.resultSets.set(pageKey, [
                 ...lockedResultSets,
                 this.getLogTab(info),
@@ -383,10 +388,21 @@ export class SQLStore {
 
   private initLog(pageKey: string, info: IExecutingInfo) {
     const resultSet = this.resultSets.get(pageKey);
-    if (resultSet?.length === 0) {
-      this.resultSets.set(pageKey, [this.getLogTab(info)]);
-      this.setActiveTab(pageKey, this.resultSets.get(pageKey)?.find((i) => isLogTab(i))?.uniqKey);
+    const lockedResultSets = resultSet?.filter((r) => r.locked);
+    const historyResultSets = resultSet?.filter((r) => !r.locked && isResultTab(r));
+    if (
+      setting.configurations['odc.sqlexecute.querySqlResultDisplayMode'] ===
+      EquerySqlResultDisplayMode.APPEND
+    ) {
+      this.resultSets.set(pageKey, [
+        ...lockedResultSets,
+        this.getLogTab(info),
+        ...historyResultSets,
+      ]);
+    } else {
+      this.resultSets.set(pageKey, [...lockedResultSets, this.getLogTab(info)]);
     }
+    this.setActiveTab(pageKey, this.resultSets.get(pageKey)?.find((i) => isLogTab(i))?.uniqKey);
   }
 
   public getLogTab(record?: IExecutingInfo): IResultSet {
