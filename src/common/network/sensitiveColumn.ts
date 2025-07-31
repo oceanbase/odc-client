@@ -28,6 +28,7 @@ export async function startScanning(
     databaseIds: number[];
     allSensitiveRules: boolean;
     sensitiveRuleIds: number[];
+    scanningMode?: string;
   },
 ): Promise<string> {
   const ret = await request.post(

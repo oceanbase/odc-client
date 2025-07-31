@@ -114,6 +114,14 @@ const getColumns: (columnsFunction: {
           //脚本
           value: SensitiveRuleType.GROOVY,
         },
+        {
+          text: formatMessage({
+            id: 'odc.components.SensitiveRule.AI',
+            defaultMessage: 'AI',
+          }),
+          //AI
+          value: SensitiveRuleType.AI,
+        },
       ],
 
       onCell: () => {
@@ -149,6 +157,11 @@ const getColumns: (columnsFunction: {
         };
       },
       render: (text, record, index) => {
+        // AI规则的脱敏算法显示为"-"
+        if (record?.type === SensitiveRuleType.AI) {
+          return <TooltipContent content="-" />;
+        }
+
         const target = maskingAlgorithms?.find(
           (maskingAlgorithm) => maskingAlgorithm?.id === record?.maskingAlgorithmId,
         );
@@ -460,6 +473,7 @@ const SensitiveRule = ({ projectId }) => {
           selectedRecord,
           formDrawerVisible,
           handleFormDrawerClose,
+          projectId,
         }}
       />
 

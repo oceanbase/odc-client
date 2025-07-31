@@ -910,6 +910,8 @@ const CollapseItemContent: React.FC<{
                 handleScanTableDataDelete,
               )}
               dataSource={dataSource}
+              scroll={{ x: 540 }}
+              tableLayout="fixed"
               pagination={{
                 showSizeChanger: false,
                 pageSize: 10,

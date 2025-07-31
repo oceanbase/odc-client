@@ -20,6 +20,7 @@ export enum SensitiveRuleType {
   PATH = 'PATH',
   REGEX = 'REGEX',
   GROOVY = 'GROOVY',
+  AI = 'AI',
 }
 export interface ISensitiveRule {
   id?: number;
@@ -42,4 +43,7 @@ export interface ISensitiveRule {
   createTime: number;
   updateTime: number;
   organizationId: number;
+  // AI识别相关字段
+  aiSensitiveTypes?: string[];
+  aiCustomPrompt?: string;
 }
