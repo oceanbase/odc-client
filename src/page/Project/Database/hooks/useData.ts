@@ -58,6 +58,7 @@ const useData = (id) => {
       name: searchValue?.value,
       environmentId: environmentId,
       includesPermittedAction: true,
+      includesDbOwner: true,
       type,
       connectType,
       dataSourceName: searchValue?.type === SearchType.DATASOURCE ? searchValue?.value : null,

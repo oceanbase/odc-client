@@ -106,24 +106,28 @@ export default function WorkspaceStore({ children }) {
   }, []);
 
   const reloadDatabaseList = useCallback(async () => {
-    const data = await fetchDatabases({
+    const params = {
       page: 1,
       size: 99999,
       containsUnassigned: true,
       existed: true,
       includesPermittedAction: true,
-    });
-    setDatabaseList(
-      data?.contents?.filter((item) => !!item?.authorizedPermissionTypes?.length) || [],
-    );
-    return data?.contents;
-  }, []);
+    };
+    // 个人空间不需要获取数据库的权限
+    if (login?.isPrivateSpace()) {
+      params.includesPermittedAction = false;
+    }
+    const data = await fetchDatabases(params);
+    let list = data?.contents?.filter((item) => !!item?.authorizedPermissionTypes?.length) || [];
+    setDatabaseList(list);
+    return list;
+  }, [login?.isPrivateSpace()]);
 
   const { run: pollingDatabase, cancel } = useRequest(
     async () => {
       const databaseList = await reloadDatabaseList();
       const arr = [DBObjectSyncStatus.SYNCING, DBObjectSyncStatus.PENDING];
-      if (!databaseList?.find((item) => arr.includes(item.objectSyncStatus))) {
+      if (!databaseList?.find((item) => arr?.includes(item.objectSyncStatus))) {
         cancel();
       }
     },
