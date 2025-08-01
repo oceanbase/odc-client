@@ -55,3 +55,10 @@ export enum IDataSourceType {
   HUAWEI = 'HUAWEI',
   AWSS3 = 'AWSS3',
 }
+
+export enum IForbiddenSQLConsoleDataSourceType {
+  OSS = 'OSS',
+  COS = 'COS',
+  AWS = 'AWS',
+  OBS = 'OBS',
+}
