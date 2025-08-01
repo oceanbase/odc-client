@@ -23,7 +23,10 @@ const config = {
   win: {
     target: 'nsis',
     rfc3161TimeStampServer: "http://sha256timestamp.ws.symantec.com/sha256/timestamp",
-    signingHashAlgorithms: ["sha256"]
+    signingHashAlgorithms: ["sha256"],
+    signtoolOptions: {
+      sign: "./scripts/client/winsign.js"
+    }
   },
   nsis: {
     differentialPackage: false,
