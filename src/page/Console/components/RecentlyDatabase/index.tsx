@@ -26,11 +26,15 @@ import { getRecentlyDatabaseOperation } from './help';
 import LogicDatabaseAsyncTask from '@/component/Task/LogicDatabaseAsyncTask';
 import LogicIcon from '@/component/logicIcon';
 import HelpDoc from '@/component/helpDoc';
+import { IForbiddenSQLConsoleDataSourceType } from '@/d.ts/datasource';
 
 interface IProps {
   modalStore?: ModalStore;
 }
-
+enum ETootipType {
+  DATABASE = 'database',
+  PROJECT = 'project',
+}
 const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
   const {
     data: databaseList,
@@ -62,7 +66,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
 
   const renderTooltipContent = ({ type, record }) => {
     switch (type) {
-      case 'project':
+      case ETootipType.PROJECT:
         return (
           <div>
             {formatMessage(
@@ -88,7 +92,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
           </div>
         );
 
-      case 'database':
+      case ETootipType.DATABASE:
         return (
           <div>
             {formatMessage({
@@ -126,20 +130,39 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
       ellipsis: true,
       width: columnWidth[index],
       render: (value, record) => {
-        const hasProjectAuth = record?.project?.currentUserResourceRoles?.length > 0;
-        const hasDBAuth = !!record?.authorizedPermissionTypes?.length;
-        const actionStyle = hasProjectAuth ? styles.action : styles.disabledAction;
-        const normalStyle = hasProjectAuth ? '' : styles.disabledAction;
+        const needToApplyProjectAuth = !record?.project?.currentUserResourceRoles?.length;
+        const needToApplyDatabaseAuth = !record?.authorizedPermissionTypes?.length;
+
+        const forbiddenAccessSQLConsole = [
+          IForbiddenSQLConsoleDataSourceType.OSS,
+          IForbiddenSQLConsoleDataSourceType.COS,
+          IForbiddenSQLConsoleDataSourceType.AWS,
+          IForbiddenSQLConsoleDataSourceType.OBS,
+        ].includes(record?.dataSource?.type);
+
+        const disabledAllOperations = needToApplyProjectAuth || forbiddenAccessSQLConsole;
+
+        const recordWithActionClassName = disabledAllOperations
+          ? styles.disabledAction
+          : styles.action;
+
+        const recordWithoutActionClassName = disabledAllOperations ? styles.disabledAction : '';
+
         switch (key) {
           case EDatabaseTableColumnKey.Operation:
             const operation = getRecentlyDatabaseOperation({ record, project: record?.project });
             return (
               <div
-                className={actionStyle}
-                style={hasDBAuth ? {} : { filter: 'grayscale(1)', pointerEvents: 'none' }}
+                className={recordWithActionClassName}
+                style={
+                  needToApplyDatabaseAuth ? { filter: 'grayscale(1)', color: '#00000040' } : {}
+                }
               >
                 <Action.Group size={3}>
                   {operation.map((item, index) => {
+                    if (disabledAllOperations || needToApplyDatabaseAuth) {
+                      item.disable = true;
+                    }
                     return renderTool(item, index);
                   })}
                 </Action.Group>
@@ -150,67 +173,76 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
             const databaseStyle = getDataSourceStyleByConnectType(record?.dataSource?.type);
             const existed = record?.existed;
             return (
-              <div
-                className={existed ? actionStyle : ''}
-                style={hasDBAuth ? {} : { filter: 'grayScale(1)' }}
-              >
-                <LabelWithIcon
-                  gap={4}
-                  label={
-                    <Tooltip
-                      overlayInnerStyle={{ whiteSpace: 'nowrap', width: 'fit-content' }}
-                      title={renderTooltipContent({
-                        type: hasProjectAuth ? (hasDBAuth ? '' : 'database') : 'project',
-                        record,
-                      })}
-                    >
-                      <span
-                        onClick={() => {
-                          if (!existed) {
-                            return;
-                          }
-                          gotoSQLWorkspace(
-                            record?.project?.id,
-                            record?.dataSource?.id,
-                            record?.id,
-                            null,
-                            '',
-                            isLogicalDatabase(record),
-                          );
-                        }}
+              <Tooltip title={forbiddenAccessSQLConsole ? '对象存储暂不支持打开 SQL 控制台' : ''}>
+                <div
+                  className={existed ? recordWithActionClassName : ''}
+                  style={
+                    needToApplyDatabaseAuth ? { filter: 'grayScale(1)', color: '#00000040' } : {}
+                  }
+                >
+                  <LabelWithIcon
+                    gap={4}
+                    label={
+                      <Tooltip
+                        styles={{ body: { whiteSpace: 'nowrap', width: 'fit-content' } }}
+                        title={renderTooltipContent({
+                          type: needToApplyProjectAuth
+                            ? ETootipType.PROJECT
+                            : needToApplyDatabaseAuth
+                            ? ETootipType.DATABASE
+                            : '',
+
+                          record,
+                        })}
                       >
-                        {value}
-                        {!existed && (
-                          <HelpDoc
-                            leftText
-                            isTip={false}
-                            title={formatMessage({
-                              id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
-                              defaultMessage: '当前数据库不存在',
-                            })} /*当前数据库不存在*/
-                          />
-                        )}
-                      </span>
-                    </Tooltip>
-                  }
-                  icon={
-                    record?.type === 'LOGICAL' ? (
-                      <div className={styles.logicIcon}>
-                        <LogicIcon />
-                      </div>
-                    ) : (
-                      <Icon
-                        component={databaseStyle?.dbIcon?.component}
-                        style={{
-                          color: databaseStyle?.icon?.color,
-                          fontSize: 16,
-                          marginRight: 4,
-                        }}
-                      />
-                    )
-                  }
-                />
-              </div>
+                        <span
+                          onClick={() => {
+                            if (!existed || disabledAllOperations || needToApplyDatabaseAuth) {
+                              return;
+                            }
+                            gotoSQLWorkspace(
+                              record?.project?.id,
+                              record?.dataSource?.id,
+                              record?.id,
+                              null,
+                              '',
+                              isLogicalDatabase(record),
+                            );
+                          }}
+                        >
+                          {value}
+                          {!existed && (
+                            <HelpDoc
+                              leftText
+                              isTip={false}
+                              title={formatMessage({
+                                id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
+                                defaultMessage: '当前数据库不存在',
+                              })} /*当前数据库不存在*/
+                            />
+                          )}
+                        </span>
+                      </Tooltip>
+                    }
+                    icon={
+                      record?.type === 'LOGICAL' ? (
+                        <div className={styles.logicIcon}>
+                          <LogicIcon />
+                        </div>
+                      ) : (
+                        <Icon
+                          component={databaseStyle?.dbIcon?.component}
+                          style={{
+                            color: databaseStyle?.icon?.color,
+                            fontSize: 16,
+                            marginRight: 4,
+                          }}
+                        />
+                      )
+                    }
+                  />
+                </div>
+              </Tooltip>
             );
 
           case EDatabaseTableColumnKey.DataSource:
@@ -218,9 +250,9 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
             if (!value) {
               return (
                 <Tooltip
-                  overlayInnerStyle={{ whiteSpace: 'nowrap', width: 'fit-content' }}
+                  styles={{ body: { whiteSpace: 'nowrap', width: 'fit-content' } }}
                   title={renderTooltipContent({
-                    type: hasProjectAuth ? '' : 'project',
+                    type: needToApplyDatabaseAuth ? ETootipType.PROJECT : '',
                     record,
                   })}
                 >
@@ -230,14 +262,18 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
             }
 
             return (
-              <div className={normalStyle}>
+              <div className={recordWithoutActionClassName}>
                 <LabelWithIcon
                   gap={6}
                   label={
                     <Tooltip
-                      overlayInnerStyle={{ whiteSpace: 'nowrap', width: 'fit-content' }}
+                      styles={{ body: { whiteSpace: 'nowrap', width: 'fit-content' } }}
                       title={renderTooltipContent({
-                        type: hasProjectAuth ? (hasDBAuth ? '' : 'database') : 'project',
+                        type: needToApplyProjectAuth
+                          ? ETootipType.PROJECT
+                          : needToApplyDatabaseAuth
+                          ? ETootipType.DATABASE
+                          : '',
                         record,
                       })}
                     >
@@ -261,8 +297,11 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
           case EDatabaseTableColumnKey.Project:
             return (
               <div
-                className={actionStyle}
+                className={recordWithActionClassName}
                 onClick={() => {
+                  if (disabledAllOperations) {
+                    return;
+                  }
                   window.open(`#/project/${value.id}/database`);
                 }}
               >
