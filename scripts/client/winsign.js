@@ -5,7 +5,7 @@ exports.default = async function(configuration) {
   
     require("child_process").execSync(
       // your commande here ! For exemple and with JSign :
-      ` smctl sign --keypair-alias key_1318155498 --config-file ${CONFIG_FILE}  --input ${configuration.path} -v`,
+      ` smctl sign --keypair-alias key_1318155498 --config-file ${CONFIG_FILE}  --input "${configuration.path}" -v`,
       {
         stdio: "inherit"
       }
