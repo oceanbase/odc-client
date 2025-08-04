@@ -21,6 +21,7 @@ const config = {
     writeUpdateInfo: false
   },
   win: {
+    publisherName: 'OceanBase',
     target: 'nsis',
     rfc3161TimeStampServer: "http://sha256timestamp.ws.symantec.com/sha256/timestamp",
     signingHashAlgorithms: ["sha256"],
