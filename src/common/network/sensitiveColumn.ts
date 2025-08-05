@@ -96,6 +96,7 @@ export enum ScannResultType {
   RUNNING = 'RUNNING',
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED',
 }
 export interface IScannResult {
   taskId: string;
@@ -111,9 +112,20 @@ export interface IScannResult {
 
 export async function getScanningResults(projectId: number, taskId: string): Promise<IScannResult> {
   const ret = await request.get(
-    `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/getScanningResults?taskId=${encodeURIComponent(
-      taskId,
-    )}`,
+    `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/getScanningResults`,
+    {
+      params: { taskId },
+    },
+  );
+  return ret?.data;
+}
+
+export async function stopScanning(projectId: number, taskId: string): Promise<boolean> {
+  const ret = await request.post(
+    `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/stopScanning`,
+    {
+      params: { taskId },
+    },
   );
   return ret?.data;
 }
