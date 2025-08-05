@@ -118,7 +118,10 @@ export default function WorkspaceStore({ children }) {
       params.includesPermittedAction = false;
     }
     const data = await fetchDatabases(params);
-    let list = data?.contents?.filter((item) => !!item?.authorizedPermissionTypes?.length) || [];
+    let list = data?.contents;
+    if (!login?.isPrivateSpace()) {
+      list = data?.contents?.filter((item) => !!item?.authorizedPermissionTypes?.length) || [];
+    }
     setDatabaseList(list);
     return list;
   }, [login?.isPrivateSpace()]);
