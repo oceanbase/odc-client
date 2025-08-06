@@ -384,8 +384,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
           break;
         }
         case DatabaseGroup.project:
-        case DatabaseGroup.dataSource:
-        case DatabaseGroup.tenant: {
+        case DatabaseGroup.dataSource: {
           _treeData = [...(DatabaseGroupMap[groupMode]?.values() || [])].map((groupItem) => {
             const groupKey = getGroupKey(groupItem.mapId, groupMode);
             return {
@@ -412,7 +411,8 @@ const SessionDropdown: React.FC<IProps> = (props) => {
         }
         case DatabaseGroup.cluster:
         case DatabaseGroup.environment:
-        case DatabaseGroup.connectType: {
+        case DatabaseGroup.connectType:
+        case DatabaseGroup.tenant: {
           _treeData = [...(DatabaseGroupMap[groupMode]?.values() || [])].map((groupItem) => {
             const groupKey = getGroupKey(groupItem.mapId, groupMode);
             return {

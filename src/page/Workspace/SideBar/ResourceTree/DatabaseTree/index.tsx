@@ -96,7 +96,12 @@ const DatabaseTree = function () {
       const group = DatabaseGroupMap?.[item]?.entries()?.next()?.value?.[1];
       defaultExpandedKeys.push(getGroupKey(group?.mapId, item));
       if (
-        [DatabaseGroup.cluster, DatabaseGroup.environment, DatabaseGroup.connectType].includes(item)
+        [
+          DatabaseGroup.cluster,
+          DatabaseGroup.environment,
+          DatabaseGroup.connectType,
+          DatabaseGroup.tenant,
+        ].includes(item)
       ) {
         const secondGroup = group?.secondGroup?.entries()?.next()?.value?.[1];
         defaultExpandedKeys.push(getSecondGroupKey(group?.mapId, secondGroup?.mapId, item));
