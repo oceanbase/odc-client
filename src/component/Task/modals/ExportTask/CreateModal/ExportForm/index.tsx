@@ -64,14 +64,6 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
         }
       }, [databaseId]);
 
-      useEffect(() => {
-        if (modalStore?.exportModalData?.databaseId) {
-          form.setFieldsValue({
-            databaseId: modalStore?.exportModalData?.databaseId,
-          });
-        }
-      }, [modalStore?.exportModalData?.databaseId]);
-
       async function valid(callback: (haveError, values) => void) {
         try {
           const values = await form.validateFields();
@@ -173,6 +165,10 @@ const ExportForm: React.FC<IExportFormProps> = inject('modalStore')(
           }
         }
       }
+
+      useEffect(() => {
+        form.setFieldsValue(formData);
+      }, [formData]);
 
       return (
         <Form
