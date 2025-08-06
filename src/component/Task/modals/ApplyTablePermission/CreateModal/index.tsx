@@ -192,6 +192,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const tableSelecterRef = useRef<TableSelecterRef>(null);
   const { run: getProjects, data: projects } = useRequest(listProjects, {
     defaultParams: [null, null, null],
+    manual: true,
   });
   const projectOptions = projects?.contents?.map(({ name, id }) => ({
     label: name,

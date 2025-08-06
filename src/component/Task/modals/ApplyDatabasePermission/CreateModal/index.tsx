@@ -67,6 +67,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { run: getProjects, data: projects } = useRequest(listProjects, {
     defaultParams: [null, null, null],
+    manual: true,
   });
   const projectOptions = projects?.contents?.map(({ name, id }) => ({
     label: name,
