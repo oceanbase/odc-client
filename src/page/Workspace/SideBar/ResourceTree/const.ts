@@ -107,7 +107,7 @@ const getShouldExpandedGroupKeys = (params: {
     getGroupKey(mapId, groupMode),
     getSecondGroupKey(mapId, secondMapId, groupMode),
   );
-  if ([DatabaseGroup.project, DatabaseGroup.dataSource, DatabaseGroup.tenant].includes(groupMode)) {
+  if ([DatabaseGroup.project, DatabaseGroup.dataSource].includes(groupMode)) {
     shouldExpandedKeys = shouldExpandedKeys.filter((item) => {
       if (isString(item)) {
         return !item.includes(TreeDataSecondGroupKey);
@@ -225,7 +225,7 @@ const getShouldExpandedKeysByObject = (params: {
       break;
     }
   }
-  if ([DatabaseGroup.project, DatabaseGroup.dataSource, DatabaseGroup.tenant].includes(groupMode)) {
+  if ([DatabaseGroup.project, DatabaseGroup.dataSource].includes(groupMode)) {
     shouldExpandedKeys = shouldExpandedKeys.filter((item) => {
       if (isString(item)) {
         return !item?.includes(TreeDataSecondGroupKey);
@@ -414,7 +414,7 @@ const getObjectShouldExpandedKeysByPage = (params: {
       break;
     }
   }
-  if ([DatabaseGroup.project, DatabaseGroup.dataSource, DatabaseGroup.tenant].includes(groupMode)) {
+  if ([DatabaseGroup.project, DatabaseGroup.dataSource].includes(groupMode)) {
     shouldExpandedKeys = shouldExpandedKeys.filter((item) => {
       if (isString(item)) {
         return !item?.includes(TreeDataSecondGroupKey);
