@@ -376,25 +376,31 @@ const InnerRiskLevel: React.FC<InnerRiskLevelProps> = ({ currentRiskLevel, memor
                                           {(inFields, { add: inAdd, remove: inRemove }) => {
                                             return (
                                               <div className={styles.conditionItem} key={index}>
-                                                {inFields?.map((inField, inIndex) => (
-                                                  <Condition
-                                                    key={inIndex}
-                                                    indexChan={[index, inIndex]}
-                                                    parentField={inField}
-                                                    siblingSum={inFields?.length}
-                                                    prevSiblingSum={fields?.length}
-                                                    formRef={formRef}
-                                                    remove={inRemove}
-                                                    removeGroup={remove}
-                                                    setShowConditionGroup={setShowConditionGroup}
-                                                    environmentMap={taskTypeIdMap}
-                                                    taskTypeIdMap={taskTypeIdMap}
-                                                    sqlCheckResultIdMap={sqlCheckResultIdMap}
-                                                    environmentOptions={environmentOptions}
-                                                    taskTypeOptions={taskTypeOptions}
-                                                    sqlCheckResultOptions={sqlCheckResultOptions}
-                                                  />
-                                                ))}
+                                                {inFields?.map((inField, inIndex) => {
+                                                  const key = `${inIndex}_${
+                                                    formRef?.getFieldsValue()?.conditions?.[index]
+                                                      ?.children?.[inIndex]?.expression
+                                                  }`;
+                                                  return (
+                                                    <Condition
+                                                      key={key}
+                                                      indexChan={[index, inIndex]}
+                                                      parentField={inField}
+                                                      siblingSum={inFields?.length}
+                                                      prevSiblingSum={fields?.length}
+                                                      formRef={formRef}
+                                                      remove={inRemove}
+                                                      removeGroup={remove}
+                                                      setShowConditionGroup={setShowConditionGroup}
+                                                      environmentMap={taskTypeIdMap}
+                                                      taskTypeIdMap={taskTypeIdMap}
+                                                      sqlCheckResultIdMap={sqlCheckResultIdMap}
+                                                      environmentOptions={environmentOptions}
+                                                      taskTypeOptions={taskTypeOptions}
+                                                      sqlCheckResultOptions={sqlCheckResultOptions}
+                                                    />
+                                                  );
+                                                })}
                                                 <div>
                                                   <Button
                                                     type="link"
