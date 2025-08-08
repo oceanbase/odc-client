@@ -13,8 +13,10 @@ export interface TableSelecterRef {
     tables: LoadTableItems[];
     externalTables: LoadTableItems[];
     views: LoadTableItems[];
+    materializedViews: LoadTableItems[];
   }>;
   expandTable: (dbId: number) => void;
+  getAllLoadedTables: () => TableItemInDB[];
 }
 
 export type LoadTableItems = {

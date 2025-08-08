@@ -23,7 +23,6 @@ import {
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
 import SearchFilter from '@/component/SearchFilter';
-import { getExpireTimeLabel } from '@/component/Task/modals/ApplyTablePermission';
 import type { IResponseData } from '@/d.ts';
 import { ITablePermission, TablePermissionStatus } from '@/d.ts/project';
 import { SearchOutlined } from '@ant-design/icons';
@@ -35,6 +34,7 @@ import {
   tablePermissionTypeMap,
 } from '../';
 import StatusLabel from '../Status';
+import { getExpireTimeLabel } from '@/component/Task/helper';
 
 const getColumns = (params: {
   paramOptions: ITableLoadOptions;
