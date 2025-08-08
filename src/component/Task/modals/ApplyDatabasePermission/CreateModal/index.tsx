@@ -40,8 +40,9 @@ import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
 import ProjectSelectEmpty from '@/component/Empty/ProjectSelectEmpty';
-import { getExpireTime, permissionOptions } from './utils';
+import { permissionOptions } from './utils';
 import { expireTimeOptions, rules } from './const';
+import { getExpireTime } from '@/component/Task/helper';
 
 export * from './const';
 export * from './utils';

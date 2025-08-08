@@ -18,9 +18,10 @@ import { formatMessage } from '@/util/intl';
 import { addTablePermissions } from '@/common/network/project';
 import {
   expireTimeOptions,
-  getExpireTime,
   permissionOptions,
 } from '@/component/Task/modals/ApplyTablePermission/CreateModal';
+import { getExpireTime } from '@/component/Task/helper';
+
 import TableSelecter from '@/component/Task/component/TableSelecter';
 import { groupTableIdsByDataBase } from '@/component/Task/component/TableSelecter/util';
 import { Button, Checkbox, DatePicker, Drawer, Form, Modal, Select, Space, message } from 'antd';
