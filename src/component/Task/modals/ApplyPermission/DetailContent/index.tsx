@@ -92,7 +92,7 @@ const ApplyPermissionTaskContent: React.FC<IProps> = (props) => {
       </Descriptions>
       <Divider
         style={{
-          marginTop: 4,
+          marginTop: 16,
         }}
       />
 

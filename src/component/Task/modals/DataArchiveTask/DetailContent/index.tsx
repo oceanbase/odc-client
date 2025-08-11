@@ -419,7 +419,7 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
 
       <Divider
         style={{
-          marginTop: 4,
+          marginTop: 16,
         }}
       />
 

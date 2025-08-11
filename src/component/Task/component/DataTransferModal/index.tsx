@@ -628,7 +628,7 @@ class TaskContent extends React.Component<any, any> {
         <>
           <Divider
             style={{
-              marginTop: 4,
+              marginTop: 16,
             }}
           />
 
@@ -666,6 +666,7 @@ class TaskContent extends React.Component<any, any> {
             />
           </Col>
         </Row>
+        <Divider style={{ marginTop: 16 }} />
         <Row className={styles.spaceBlock}>
           <Col span={12}>
             <SimpleTextItem
