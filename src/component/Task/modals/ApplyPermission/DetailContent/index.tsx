@@ -19,6 +19,7 @@ import type { IApplyPermissionTaskParams, TaskDetail } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider } from 'antd';
 import { projectRoleMap } from '../CreateModal';
+import EllipsisText from '@/component/EllipsisText';
 
 interface IProps {
   task: TaskDetail<IApplyPermissionTaskParams>;
@@ -65,7 +66,7 @@ const ApplyPermissionTaskContent: React.FC<IProps> = (props) => {
             }) /* 申请项目 */
           }
         >
-          {parameters?.project?.name || '-'}
+          <EllipsisText content={parameters?.project?.name} />
         </Descriptions.Item>
         <Descriptions.Item
           label={
