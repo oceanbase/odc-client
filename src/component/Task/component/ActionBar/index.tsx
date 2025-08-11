@@ -586,7 +586,7 @@ const ActionBar: React.FC<IProps> = inject(
       let tools = [];
       const addOperations = ({ auth, taskTypeLimit, operations }: IAddOperationsParams) => {
         const hasOperaitons = Boolean(operations?.length);
-        const useableTaskType = !taskTypeLimit || taskTypeLimit.includes(task?.type);
+        const useableTaskType = !taskTypeLimit || taskTypeLimit?.includes(task?.type);
         if (auth && useableTaskType && hasOperaitons) {
           tools.push(...operations);
           return true;
@@ -863,7 +863,7 @@ const ActionBar: React.FC<IProps> = inject(
             if (haveOperationPermission) {
               const taskRules = operationNeedPermission?.[status]?.taskRules;
               taskRules?.some((rule) => {
-                return addOperations(rule);
+                return addOperations(rule || {});
               });
               tools.push(...operationNeedPermission[status].operations);
             }
@@ -1051,14 +1051,14 @@ const ActionBar: React.FC<IProps> = inject(
 
       const addOperations = ({ taskTypeLimit, auth, operations }: IAddOperationsParams) => {
         const hasOperations = Boolean(operations?.length);
-        const useableTaskType = !taskTypeLimit || taskTypeLimit.includes(task?.type);
+        const useableTaskType = !taskTypeLimit || taskTypeLimit?.includes(task?.type);
         if (auth && hasOperations && useableTaskType) {
           tools.push(...operations);
         }
       };
       const enableRetry = isOwner;
       initTools({ view: true, retry: enableRetry });
-      addOperations(operationNeedPermission?.[status]);
+      addOperations(operationNeedPermission?.[status] || {});
 
       switch (status) {
         case TaskStatus.APPROVING: {
