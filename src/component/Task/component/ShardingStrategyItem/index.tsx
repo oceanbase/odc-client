@@ -1,8 +1,13 @@
 import { formatMessage } from '@/util/intl';
-import { Form, Radio } from 'antd';
+import { Form, Radio, Space } from 'antd';
 import { ShardingStrategy } from '@/d.ts';
+import HelpDoc from '@/component/helpDoc';
 
 export const shardingStrategyOptions = [
+  {
+    label: '程序自动匹配',
+    value: ShardingStrategy.AUTO,
+  },
   {
     label: formatMessage({
       id: 'src.component.Task.component.ShardingStrategyItem.E5A6B481',
@@ -22,10 +27,17 @@ export const shardingStrategyOptions = [
 const ShardingStrategyItem = () => {
   return (
     <Form.Item
-      label={formatMessage({
-        id: 'src.component.Task.component.ShardingStrategyItem.3BD95C1A',
-        defaultMessage: '搜索策略',
-      })}
+      label={
+        <Space size={2}>
+          <span>
+            {formatMessage({
+              id: 'src.component.Task.component.ShardingStrategyItem.3BD95C1A',
+              defaultMessage: '搜索策略',
+            })}
+          </span>
+          <HelpDoc leftText isTip doc="TaskShardingStrategy" />
+        </Space>
+      }
       name="shardingStrategy"
       rules={[
         {

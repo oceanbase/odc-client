@@ -24,6 +24,7 @@ import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import PartitionPolicyTable from '@/component/Task/component/PartitionPolicyTable';
 import { ErrorStrategyMap } from '@/component/Task/const';
 import CycleDescriptionItem from './CycleDescriptionItem';
+import EllipsisText from '@/component/EllipsisText';
 
 const { Text } = Typography;
 
@@ -93,7 +94,7 @@ const PartitionTaskContent: React.FC<IProps> = (props) => {
             }) /*"所属数据源"*/
           }
         >
-          {task?.database?.dataSource?.name || '-'}
+          <EllipsisText content={task?.database?.dataSource?.name} />
         </Descriptions.Item>
         {hasFlow && (
           <Descriptions.Item

@@ -194,7 +194,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
 
   useEffect(() => {
     if (isOpen) {
-      run({
+      const params = {
         projectId,
         dataSourceId: datasourceId ? toInteger(datasourceId) : dataSourceId,
         page: 1,
@@ -206,7 +206,12 @@ const SessionDropdown: React.FC<IProps> = (props) => {
         dataSourceName: searchValue?.type === SearchType.DATASOURCE ? searchValue?.value : null,
         clusterName: searchValue?.type === SearchType.CLUSTER ? searchValue?.value : null,
         tenantName: searchValue?.type === SearchType.TENANT ? searchValue?.value : null,
-      });
+      };
+      // 个人空间不需要获取数据库的权限
+      if (userStore?.isPrivateSpace()) {
+        params.includesPermittedAction = false;
+      }
+      run(params);
       if (!context.datasourceMode && !checkModeConfig && !userStore.isPrivateSpace()) {
         runGetDatabasesHistories({
           currentOrganizationId: userStore.organizationId,

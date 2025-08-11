@@ -29,6 +29,7 @@ import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import styles from './index.less';
 import login from '@/store/login';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
+import EllipsisText from '@/component/EllipsisText';
 
 export const ErrorStrategy = {
   ABORT: formatMessage({
@@ -91,7 +92,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             }) /* 所属数据源 */
           }
         >
-          {task?.database?.dataSource?.name || '-'}
+          <EllipsisText content={task?.database?.dataSource?.name} />
         </Descriptions.Item>
         <Descriptions.Item
           span={2}

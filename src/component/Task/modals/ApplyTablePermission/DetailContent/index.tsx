@@ -22,8 +22,10 @@ import type { IApplyTablePermissionTaskParams, TaskDetail } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider, Space } from 'antd';
 import { useMemo } from 'react';
-import { getExpireTimeLabel, permissionOptionsMap } from '../';
+import { permissionOptionsMap } from '../';
+import { getExpireTimeLabel } from '@/component/Task/helper';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import EllipsisText from '@/component/EllipsisText';
 
 const getConnectionColumns = () => {
   return [
@@ -138,7 +140,7 @@ const TaskContent: React.FC<IProps> = (props) => {
             defaultMessage: '项目',
           })}
         >
-          {parameters?.project?.name}
+          <EllipsisText content={parameters?.project?.name} />
         </Descriptions.Item>
       </Descriptions>
       <SimpleTextItem

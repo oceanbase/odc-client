@@ -58,7 +58,6 @@ import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import type { SettingStore } from '@/store/setting';
 import type { TaskStore } from '@/store/task';
-import taskStore from '@/store/task';
 import ipcInvoke from '@/util/client/service';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
@@ -109,6 +108,7 @@ const ActionBar: React.FC<IProps> = inject(
       disabledSubmit = false,
       result,
       delTaskList = [],
+      taskStore,
       setDelTaskList,
     } = props;
     /** 是否创建者 */
@@ -471,6 +471,36 @@ const ActionBar: React.FC<IProps> = inject(
             </>
           ),
         },
+        [TaskOperationType.PAUSE]: {
+          title: formatMessage(
+            {
+              id: 'src.component.Task.component.ActionBar.5495D4C7',
+              defaultMessage: '确认要禁用此{TaskTypeMapTaskType}?',
+            },
+            { TaskTypeMapTaskType: taskTypeName },
+          ),
+          content: (
+            <>
+              <div>
+                {formatMessage(
+                  {
+                    id: 'src.component.Task.component.ActionBar.EC0C09D6',
+                    defaultMessage: '禁用{TaskTypeMapTaskType}',
+                  },
+                  { TaskTypeMapTaskType: taskTypeName },
+                )}
+              </div>
+              <div>
+                {
+                  formatMessage({
+                    id: 'odc.TaskManagePage.component.TaskTools.TheTaskNeedsToBe',
+                    defaultMessage: '任务需要重新审批，审批通过后此任务将禁用',
+                  }) /*任务需要重新审批，审批通过后此任务将禁用*/
+                }
+              </div>
+            </>
+          ),
+        },
         [TaskOperationType.TERMINATE]: {
           title: formatMessage(
             {
@@ -489,36 +519,6 @@ const ActionBar: React.FC<IProps> = inject(
               </div>
             </>
           ),
-          [TaskOperationType.PAUSE]: {
-            title: formatMessage(
-              {
-                id: 'src.component.Task.component.ActionBar.5495D4C7',
-                defaultMessage: '确认要禁用此{TaskTypeMapTaskType}?',
-              },
-              { TaskTypeMapTaskType: taskTypeName },
-            ),
-            content: (
-              <>
-                <div>
-                  {formatMessage(
-                    {
-                      id: 'src.component.Task.component.ActionBar.EC0C09D6',
-                      defaultMessage: '禁用{TaskTypeMapTaskType}',
-                    },
-                    { TaskTypeMapTaskType: taskTypeName },
-                  )}
-                </div>
-                <div>
-                  {
-                    formatMessage({
-                      id: 'odc.TaskManagePage.component.TaskTools.TheTaskNeedsToBe',
-                      defaultMessage: '任务需要重新审批，审批通过后此任务将禁用',
-                    }) /*任务需要重新审批，审批通过后此任务将禁用*/
-                  }
-                </div>
-              </>
-            ),
-          },
         },
       };
       const { title, content } = config[operationType] || {};
@@ -586,8 +586,7 @@ const ActionBar: React.FC<IProps> = inject(
       let tools = [];
       const addOperations = ({ auth, taskTypeLimit, operations }: IAddOperationsParams) => {
         const hasOperaitons = Boolean(operations?.length);
-        const useableTaskType =
-          (taskTypeLimit && taskTypeLimit.includes(task?.type)) || Boolean(taskTypeLimit?.length);
+        const useableTaskType = !taskTypeLimit || taskTypeLimit?.includes(task?.type);
         if (auth && useableTaskType && hasOperaitons) {
           tools.push(...operations);
           return true;
@@ -864,7 +863,7 @@ const ActionBar: React.FC<IProps> = inject(
             if (haveOperationPermission) {
               const taskRules = operationNeedPermission?.[status]?.taskRules;
               taskRules?.some((rule) => {
-                return addOperations(rule);
+                return addOperations(rule || {});
               });
               tools.push(...operationNeedPermission[status].operations);
             }
@@ -1052,15 +1051,14 @@ const ActionBar: React.FC<IProps> = inject(
 
       const addOperations = ({ taskTypeLimit, auth, operations }: IAddOperationsParams) => {
         const hasOperations = Boolean(operations?.length);
-        const useableTaskType =
-          (taskTypeLimit && taskTypeLimit.includes(task?.type)) || Boolean(taskTypeLimit?.length);
+        const useableTaskType = !taskTypeLimit || taskTypeLimit?.includes(task?.type);
         if (auth && hasOperations && useableTaskType) {
           tools.push(...operations);
         }
       };
       const enableRetry = isOwner;
       initTools({ view: true, retry: enableRetry });
-      addOperations(operationNeedPermission?.[status]);
+      addOperations(operationNeedPermission?.[status] || {});
 
       switch (status) {
         case TaskStatus.APPROVING: {

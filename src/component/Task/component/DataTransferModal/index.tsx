@@ -27,6 +27,8 @@ import styles from './index.less';
 import ObjTable from './ObjTables';
 import { getImportTypeLabel } from '@/component/Task/modals/ImportTask/CreateModal/ImportForm/helper';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
+import EllipsisText from '@/component/EllipsisText';
+
 const SimpleTextItem: React.FC<{
   label: string;
   content: React.ReactNode;
@@ -60,9 +62,10 @@ const SimpleTextItem: React.FC<{
       </div>
       <div
         style={{
-          flexGrow: 1,
           wordBreak: 'break-all',
           color: 'var(--text-color-primary)',
+          overflow: 'hidden',
+          width: 'max-content',
         }}
       >
         {content}
@@ -544,7 +547,7 @@ class TaskContent extends React.Component<any, any> {
                 id: 'odc.component.DataTransferModal.Database',
                 defaultMessage: '所属数据库',
               })}
-              /*所属数据库*/ content={task?.database?.name || '-'}
+              /*所属数据库*/ content={<EllipsisText content={task?.database?.name} />}
             />
           </Col>
           <Col span={12}>
@@ -555,7 +558,7 @@ class TaskContent extends React.Component<any, any> {
                   defaultMessage: '所属数据源',
                 }) /* 所属数据源 */
               }
-              content={task?.database?.dataSource?.name || '-'}
+              content={<EllipsisText content={task?.database?.dataSource?.name} />}
             />
           </Col>
           <Col span={12}>

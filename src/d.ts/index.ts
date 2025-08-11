@@ -1852,7 +1852,7 @@ export interface IDatabaseSession {
   dbUser: string;
   executeTime: number;
   obproxyIp: string;
-  sessionId: number;
+  sessionId: string;
   sql: string;
   srcIp: string;
   svrIp: string;
@@ -2622,6 +2622,7 @@ export enum MigrationInsertAction {
 export enum ShardingStrategy {
   FIXED_LENGTH = 'FIXED_LENGTH',
   MATCH = 'MATCH',
+  AUTO = 'AUTO',
 }
 
 export enum SyncTableStructureEnum {
@@ -3270,6 +3271,7 @@ export enum TaskNodeStatus {
   FAILED = 'FAILED',
   WAIT_FOR_CONFIRM = 'WAIT_FOR_CONFIRM',
   PRE_CHECK_FAILED = 'PRE_CHECK_FAILED',
+  EXECUTING_ABNORMAL = 'EXECUTING_ABNORMAL',
 }
 
 export enum SQLContentType {

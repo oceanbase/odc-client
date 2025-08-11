@@ -40,8 +40,9 @@ import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
 import ProjectSelectEmpty from '@/component/Empty/ProjectSelectEmpty';
-import { getExpireTime, permissionOptions } from './utils';
+import { permissionOptions } from './utils';
 import { expireTimeOptions, rules } from './const';
+import { getExpireTime } from '@/component/Task/helper';
 
 export * from './const';
 export * from './utils';
@@ -67,6 +68,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { run: getProjects, data: projects } = useRequest(listProjects, {
     defaultParams: [null, null, null],
+    manual: true,
   });
   const projectOptions = projects?.contents?.map(({ name, id }) => ({
     label: name,

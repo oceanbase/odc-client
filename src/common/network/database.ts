@@ -33,6 +33,8 @@ interface listDatabasesParams {
   containsUnassigned?: boolean;
   existed?: boolean;
   includesPermittedAction?: boolean;
+  /** 是否查询数据库管理员owners列表，默认不查 */
+  includesDbOwner?: boolean;
   type?: DBType[];
   connectType?: ConnectType[];
   dataSourceName?: string;

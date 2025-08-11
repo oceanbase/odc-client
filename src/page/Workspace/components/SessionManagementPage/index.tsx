@@ -21,7 +21,7 @@ import { groupBySessionId, sortNumber, sortString } from '@/util/utils';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { Input, Layout, message, Space, Spin, Tooltip, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 // @ts-ignore
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { getDatabaseSessionList, killSessions } from '@/common/network/sessionParams';
@@ -55,8 +55,7 @@ function SessionManagementPage(props: IProps) {
   const context = useContext(SessionContext);
   const session = context?.session;
   const config = getDataSourceModeConfig(session?.connection?.type);
-
-  async function fetchDatabaseSessionList() {
+  async function fetchDatabaseSessionList(killSession?: string[]) {
     if (!session?.sessionId) {
       return;
     }
@@ -66,7 +65,8 @@ function SessionManagementPage(props: IProps) {
     // 获取连接参数列表
     const data = await getDatabaseSessionList(session?.sessionId);
     setListLoading(false);
-    setSessionList(data);
+    // 关闭会话后马上请求会话列表，关闭的会话还是会返回（有延迟），所以需要过滤掉
+    setSessionList(data?.filter((item) => !killSession?.includes(item.sessionId)));
   }
 
   useEffect(() => {
@@ -103,7 +103,8 @@ function SessionManagementPage(props: IProps) {
 
       dataIndex: 'sessionId',
       width: 105,
-      sorter: (a: IDatabaseSession, b: IDatabaseSession) => sortNumber(a.sessionId, b.sessionId),
+      sorter: (a: IDatabaseSession, b: IDatabaseSession) =>
+        sortNumber(Number(a.sessionId), Number(b.sessionId)),
       sortDirections: ['descend', 'ascend'],
       render: (value) => {
         return <Tooltip title={value}>{value}</Tooltip>;
@@ -243,7 +244,7 @@ function SessionManagementPage(props: IProps) {
       type,
     );
     if (data && !data?.find((item) => !item.killed)) {
-      await fetchDatabaseSessionList();
+      await fetchDatabaseSessionList(data?.map((item) => item.sessionId));
       message.success(
         formatMessage({
           id: 'odc.components.SessionManagementPage.ClosedSuccessfully',

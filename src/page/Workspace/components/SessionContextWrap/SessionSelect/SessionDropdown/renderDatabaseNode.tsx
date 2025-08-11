@@ -4,6 +4,7 @@ import { IDatabase } from '@/d.ts/database';
 import DatabasesTitle from './components/DatabasesTitle';
 import { getIcon, NodeType } from './helper';
 import styles from './index.less';
+import login from '@/store/login';
 
 const renderDatabaseNode = (parmas: {
   taskType: TaskType;
@@ -16,6 +17,9 @@ const renderDatabaseNode = (parmas: {
     dbDisabled = !hasPermission(taskType, database.authorizedPermissionTypes);
   } else {
     dbDisabled = !database.authorizedPermissionTypes?.length;
+  }
+  if (login.isPrivateSpace()) {
+    dbDisabled = false;
   }
   !dbDisabled && canCheckedDbKeys && canCheckedDbKeys.push(database.id);
 
