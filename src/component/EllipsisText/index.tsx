@@ -21,7 +21,7 @@ const EllipsisText = (props: IProps) => {
 
   return content ? (
     <Tooltip title={tooltipContent}>
-      <div className={styles.ellipsis}>{content}</div>
+      <div className={styles.ellipsisContent}>{content}</div>
     </Tooltip>
   ) : (
     <>-</>

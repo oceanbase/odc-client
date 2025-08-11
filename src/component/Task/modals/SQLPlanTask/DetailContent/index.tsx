@@ -71,7 +71,7 @@ const SqlPlanTaskContent: React.FC<IProps> = (props) => {
 
   return (
     <>
-      <Descriptions column={2}>
+      <Descriptions column={2} style={{ marginBottom: 16 }}>
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.component.DetailModal.sqlPlan.TaskNumber',
@@ -131,6 +131,7 @@ const SqlPlanTaskContent: React.FC<IProps> = (props) => {
           </Descriptions.Item>
         )}
       </Descriptions>
+      <Divider style={{ marginTop: 16 }} />
       <SimpleTextItem
         label={formatMessage({
           id: 'odc.component.DetailModal.sqlPlan.SqlContent',
@@ -273,7 +274,7 @@ const SqlPlanTaskContent: React.FC<IProps> = (props) => {
           {task?.description || '-'}
         </Descriptions.Item>
       </Descriptions>
-      <Divider style={{ marginTop: 4 }} />
+      <Divider style={{ marginTop: 16 }} />
       <Descriptions column={2}>
         <Descriptions.Item
           label={formatMessage({

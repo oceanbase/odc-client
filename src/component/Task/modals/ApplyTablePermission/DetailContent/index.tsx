@@ -129,7 +129,7 @@ const TaskContent: React.FC<IProps> = (props) => {
       </Descriptions>
       <Divider
         style={{
-          marginTop: 4,
+          marginTop: 16,
         }}
       />
 
@@ -164,7 +164,7 @@ const TaskContent: React.FC<IProps> = (props) => {
 
       <Divider
         style={{
-          marginTop: 4,
+          marginTop: 16,
         }}
       />
 
@@ -196,7 +196,7 @@ const TaskContent: React.FC<IProps> = (props) => {
       </Descriptions>
       <Divider
         style={{
-          marginTop: 4,
+          marginTop: 16,
         }}
       />
 

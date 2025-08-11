@@ -109,7 +109,7 @@ const PartitionTaskContent: React.FC<IProps> = (props) => {
           </Descriptions.Item>
         )}
       </Descriptions>
-      <Divider style={{ marginTop: 4 }} />
+      <Divider style={{ marginTop: 16 }} />
       <PartitionPolicyTable taskId={task?.id} />
       {creationTrigger && (
         <CycleDescriptionItem
@@ -137,7 +137,7 @@ const PartitionTaskContent: React.FC<IProps> = (props) => {
         />
       )}
 
-      <Descriptions column={2}>
+      <Descriptions column={2} style={{ marginTop: 16 }}>
         <Descriptions.Item
           label={
             formatMessage({
@@ -174,7 +174,7 @@ const PartitionTaskContent: React.FC<IProps> = (props) => {
           {task?.description || '-'}
         </Descriptions.Item>
       </Descriptions>
-      <Divider style={{ marginTop: 4 }} />
+      <Divider style={{ marginTop: 16 }} />
       <Descriptions column={2}>
         <Descriptions.Item
           label={

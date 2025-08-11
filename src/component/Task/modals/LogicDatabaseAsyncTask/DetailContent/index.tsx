@@ -32,7 +32,7 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
 
   return (
     <>
-      <Descriptions column={4}>
+      <Descriptions column={4} style={{ marginBottom: 16 }}>
         <Descriptions.Item
           span={2}
           label={formatMessage({
@@ -73,6 +73,7 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
           <EllipsisText content={task?.project?.name} />
         </Descriptions.Item>
       </Descriptions>
+      <Divider style={{ marginTop: 16 }} />
       <SimpleTextItem
         label={formatMessage({
           id: 'src.component.Task.LogicDatabaseAsyncTask.DetailContent.97C2BA42',
@@ -177,7 +178,7 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
       </Descriptions>
       <Divider
         style={{
-          marginTop: 4,
+          marginTop: 16,
         }}
       />
 
