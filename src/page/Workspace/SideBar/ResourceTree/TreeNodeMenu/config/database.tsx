@@ -43,16 +43,16 @@ const isPrivateSpace = userStore?.isPrivateSpace();
  * @param menuNode 当前菜单名称
  */
 export const menuAccessWrap = (
-  needPermissionTypeList: DatabasePermissionType[],
-  permissionList: DatabasePermissionType[],
+  needPermissionTypeList: DatabasePermissionType[] = [],
+  permissionList: DatabasePermissionType[] = [],
   menuNode: React.ReactNode,
 ) => {
   /* 不需要权限控制 */
-  if (!needPermissionTypeList?.length) {
+  if (!needPermissionTypeList?.length || isPrivateSpace) {
     return menuNode;
   }
   /* 需要的每一个权限点都存在于当前拥有的权限中 */
-  if (needPermissionTypeList.every((element) => permissionList.includes(element))) {
+  if (needPermissionTypeList.every((element) => permissionList?.includes(element))) {
     return menuNode;
   }
   return (

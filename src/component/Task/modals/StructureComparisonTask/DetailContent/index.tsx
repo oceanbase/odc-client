@@ -58,6 +58,7 @@ import { TaskTypeMap } from '@/component/Task/component/TaskTable/const';
 import { comparisonScopeMap, EOperationTypeMap } from '../CreateModal/interface';
 import styles from './index.less';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
+import EllipsisText from '@/component/EllipsisText';
 interface IStructureComparisonTaskContentProps {
   modalStore?: ModalStore;
   visible?: boolean;
@@ -591,7 +592,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
               }) /*"项目"*/
             }
           >
-            {task?.project?.name || '-'}
+            <EllipsisText content={task?.project?.name} />
           </Descriptions.Item>
           <Descriptions.Item
             span={2}
@@ -602,7 +603,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
               }) /*"源端数据源"*/
             }
           >
-            {task?.database?.dataSource?.name || '-'}
+            <EllipsisText content={task?.database?.dataSource?.name} />
           </Descriptions.Item>
           <Descriptions.Item
             span={2}
@@ -613,7 +614,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
               }) /*"源端数据库"*/
             }
           >
-            {task?.database?.name || '-'}
+            <EllipsisText content={task?.database?.name} />
           </Descriptions.Item>
 
           <Descriptions.Item
@@ -636,7 +637,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
               }) /*"目标端数据源"*/
             }
           >
-            {task?.relatedDatabase?.dataSource?.name || '-'}
+            <EllipsisText content={task?.relatedDatabase?.dataSource?.name} />
           </Descriptions.Item>
           <Descriptions.Item
             span={2}
@@ -647,7 +648,7 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
               }) /*"目标端数据库"*/
             }
           >
-            {task?.relatedDatabase?.name || '-'}
+            <EllipsisText content={task?.relatedDatabase?.name} />
           </Descriptions.Item>
 
           <Descriptions.Item

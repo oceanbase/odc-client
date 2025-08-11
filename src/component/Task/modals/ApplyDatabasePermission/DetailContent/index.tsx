@@ -24,11 +24,13 @@ import {
 } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider, Alert, Space } from 'antd';
-import { getExpireTimeLabel, permissionOptionsMap } from '../';
+import { permissionOptionsMap } from '../';
+import { getExpireTimeLabel } from '@/component/Task/helper';
 import styles from './index.less';
 import { DBType, IDatabase } from '@/d.ts/database';
 import DatabaseIcon from '@/component/StatusIcon/DatabaseIcon';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import EllipsisText from '@/component/EllipsisText';
 
 const getConnectionColumns = () => {
   return [
@@ -145,7 +147,7 @@ const TaskContent: React.FC<IProps> = (props) => {
             }) /*"申请项目"*/
           }
         >
-          {parameters?.project?.name}
+          <EllipsisText content={parameters?.project?.name} />
         </Descriptions.Item>
       </Descriptions>
       <SimpleTextItem

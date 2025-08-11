@@ -90,7 +90,7 @@ const deleteByUniqueKeyOptions = [
 const defaultValue = {
   triggerStrategy: TaskExecStrategy.START_NOW,
   archiveRange: IArchiveRange.PORTION,
-  shardingStrategy: ShardingStrategy.FIXED_LENGTH,
+  shardingStrategy: ShardingStrategy.AUTO,
   tables: [null],
   rowLimit: 100,
   dataSizeLimit: 1,

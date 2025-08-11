@@ -111,7 +111,7 @@ const defaultValue = {
   archiveRange: IArchiveRange.PORTION,
   tables: [null],
   migrationInsertAction: MigrationInsertAction.INSERT_DUPLICATE_UPDATE,
-  shardingStrategy: ShardingStrategy.FIXED_LENGTH,
+  shardingStrategy: ShardingStrategy.AUTO,
   rowLimit: 100,
   dataSizeLimit: 1,
 };

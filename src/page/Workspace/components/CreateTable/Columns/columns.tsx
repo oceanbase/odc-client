@@ -31,14 +31,11 @@ import { TableColumn } from '../interface';
 import WrapCheckboxFormatetr from '../RdgFomatter/CheckboxFormatter';
 import WrapDisableFormatter from '../RdgFomatter/DisableFormatter';
 import { getTypeByColumnName } from './helper';
+import { valueFilter } from '@/util/utils';
 
 interface IColumnParams {
   session?: SessionStore;
 }
-
-const valueFilter = (value: string) => {
-  return value.replace(/[\n\r\v\t\f\s]/g, '');
-};
 
 export function useColumns({ session }: IColumnParams, originColumns: TableColumn[]): Column[] {
   const { dataTypes } = session;

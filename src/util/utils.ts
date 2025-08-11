@@ -759,6 +759,10 @@ export const flatArray = (array: any[]): any[] => {
   return array?.reduce?.((pre, cur) => pre?.concat(Array.isArray(cur) ? flatArray(cur) : cur), []);
 };
 
+export const valueFilter = (value: string) => {
+  return value.replace(/[\n\r\v\t\f\s]/g, '');
+};
+
 export const maskAPIKey = (apiKey: string) => {
   if (apiKey.length <= 3) {
     return apiKey; // 如果长度小于等于3，直接返回原字符串
