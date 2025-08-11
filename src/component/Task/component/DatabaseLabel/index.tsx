@@ -16,7 +16,7 @@
 
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { IDatabase } from '@/d.ts/database';
-import { Space } from 'antd';
+import { Space, Tooltip } from 'antd';
 import Icon from '@ant-design/icons';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import React from 'react';
@@ -30,7 +30,7 @@ const DatabaseLabel: React.FC<IProps> = (props) => {
   const dbIcon = getDataSourceStyleByConnectType(database?.dataSource?.type)?.dbIcon;
 
   return (
-    <Space size={1}>
+    <div style={{ width: '100%', display: 'flex' }}>
       {!!database?.environment?.name && (
         <RiskLevelLabel
           content={database?.environment?.name}
@@ -41,8 +41,22 @@ const DatabaseLabel: React.FC<IProps> = (props) => {
         component={dbIcon?.component}
         style={{ fontSize: 16, marginRight: 4, verticalAlign: 'textBottom' }}
       />
-      <span>{database?.name || '-'}</span>
-    </Space>
+      <div style={{ flex: 1, overflow: 'hidden' }}>
+        <Tooltip title={database?.name}>
+          <div
+            style={{
+              overflow: 'hidden',
+              maxWidth: '100%',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              width: 'max-content',
+            }}
+          >
+            {database?.name || '-'}
+          </div>
+        </Tooltip>
+      </div>
+    </div>
   );
 };
 export default DatabaseLabel;

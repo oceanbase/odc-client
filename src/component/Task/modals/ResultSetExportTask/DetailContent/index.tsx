@@ -25,6 +25,7 @@ import { Divider } from 'antd';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
+import EllipsisText from '@/component/EllipsisText';
 export const getItems = (
   _task: TaskDetail<IResultSetExportTaskParams>,
   result: ITaskResult,
@@ -93,7 +94,7 @@ export const getItems = (
                   defaultMessage: '所属数据源',
                 }) /* 所属数据源 */
               }
-              content={task?.database?.dataSource?.name || '-'}
+              content={<EllipsisText content={task?.database?.dataSource?.name} />}
             />
 
             <SimpleTextItem

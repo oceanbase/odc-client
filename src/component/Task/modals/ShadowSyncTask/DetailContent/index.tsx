@@ -29,6 +29,7 @@ import { Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
+import EllipsisText from '@/component/EllipsisText';
 interface IShadowSyncParamters {
   errorStrategy: ErrorStrategy;
   connectionId: string;
@@ -156,7 +157,7 @@ export function getItems(
             id: 'odc.src.component.Task.ShadowSyncTask.DetailContent.DataSource',
             defaultMessage: '所属数据源',
           }), //'所属数据源'
-          task?.database?.dataSource?.name || '-',
+          <EllipsisText content={task?.database?.dataSource?.name} />,
         ],
 
         hasFlow ? riskItem : null,

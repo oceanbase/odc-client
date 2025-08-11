@@ -22,6 +22,7 @@ import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { TaskTypeMap } from '@/component/Task/helper';
 import styles from './index.less';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
+import EllipsisText from '@/component/EllipsisText';
 const { Step } = Steps;
 interface IStructureComparisonTaskContentProps {
   modalStore?: ModalStore;
@@ -110,7 +111,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
               defaultMessage: '所属项目',
             })}
           >
-            {task?.parameters?.databases?.[0]?.project?.name || '-'}
+            <EllipsisText content={task?.parameters?.databases?.[0]?.project?.name} />
           </Descriptions.Item>
           <Descriptions.Item
             span={2}
