@@ -1,6 +1,9 @@
 import { formatMessage } from '@/util/intl';
 import { TaskPageType } from '@/d.ts';
-import { title } from 'process';
+import { ReactComponent as DownloadSvg } from '@/svgr/download-fill.svg';
+import { ReactComponent as GithubSvg } from '@/svgr/github.svg';
+import { ReactComponent as SendSvg } from '@/svgr/send-fill.svg';
+import Icon from '@ant-design/icons';
 
 export enum EQuickStartRole {
   Admin,
@@ -105,11 +108,22 @@ export const ConsoleTextConfig = {
   },
   aboutUs: {
     helps: [
-      formatMessage({ id: 'src.page.Console.D66A7480', defaultMessage: '下载新版' }),
-      formatMessage({ id: 'src.page.Console.B27ADAC6', defaultMessage: '产品动态' }),
-      formatMessage({ id: 'src.page.Console.9B6E647E', defaultMessage: '反馈建议' }),
+      {
+        title: formatMessage({ id: 'src.page.Console.D66A7480', defaultMessage: '下载新版' }),
+        url: 'https://www.oceanbase.com/download',
+        icon: <Icon component={DownloadSvg} style={{ color: '#006AFF', fontSize: 14 }} />,
+      },
+      {
+        title: formatMessage({ id: 'src.page.Console.B27ADAC6', defaultMessage: '产品动态' }),
+        url: 'releaseNote',
+        icon: <Icon component={SendSvg} style={{ color: '#52c41a', fontSize: 14 }} />,
+      },
+      {
+        title: formatMessage({ id: 'src.page.Console.9B6E647E', defaultMessage: '反馈建议' }),
+        url: 'issues',
+        icon: <Icon component={GithubSvg} style={{ fontSize: 14 }} />,
+      },
     ],
-    urlKeys: ['softwarecenter', 'releaseNote', 'issues'],
     QRUrl:
       'https://qr.dingtalk.com/action/joingroup?code=v1,k1,HovdSAqfBdRGqRk2jQ0TDu1eMvQ+BB6rt8mFHeIqi/A=&_dt_no_comment=1&origin=11',
   },
