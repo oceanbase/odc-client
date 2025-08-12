@@ -64,8 +64,22 @@ export const useImport = (
         };
         if (result?.every((i) => i.success)) {
           const importedCount = result?.filter((i) => i?.remark === 'Have been imported.')?.length;
-          const importedDescription = importedCount ? `(包含 ${importedCount} 个已导入的任务)` : '';
-          const privateSpaceDescription = `${result?.length} 个作业导入成功${importedDescription}。`;
+          const importedDescription = importedCount
+            ? formatMessage(
+                {
+                  id: 'src.component.Task.component.ImportModal.A6892359',
+                  defaultMessage: '(包含 {importedCount} 个已导入的任务)',
+                },
+                { importedCount },
+              )
+            : '';
+          const privateSpaceDescription = formatMessage(
+            {
+              id: 'src.component.Task.component.ImportModal.AF106FF6',
+              defaultMessage: '{resultLength} 个作业导入成功{importedDescription}。',
+            },
+            { resultLength: result?.length, importedDescription },
+          );
           notification.success({
             message: formatMessage({
               id: 'src.component.Task.component.ImportModal.997B6AC7',
@@ -75,8 +89,18 @@ export const useImport = (
               privateSpaceDescription
             ) : (
               <Typography.Text>
-                {`${result?.length} 个作业导入成功${importedDescription}。`}
-                建议手动为任务
+                {formatMessage(
+                  {
+                    id: 'src.component.Task.component.ImportModal.97A1A7A3',
+                    defaultMessage: '{resultLength} 个作业导入成功{importedDescription}。',
+                  },
+                  { resultLength: result?.length, importedDescription },
+                )}
+                {formatMessage({
+                  id: 'src.component.Task.component.ImportModal.1B653B27',
+                  defaultMessage: '建议手动为任务',
+                })}
+
                 <Typography.Link onClick={() => goNotification(projectId)}>
                   {formatMessage({
                     id: 'src.component.Task.component.ImportModal.8AD83BC8',
@@ -89,6 +113,7 @@ export const useImport = (
                 })}
               </Typography.Text>
             ),
+
             duration: null,
           });
         } else {
@@ -97,10 +122,25 @@ export const useImport = (
           const importedCount = result?.filter(
             (i) => i?.success && i?.remark === 'Have been imported.',
           )?.length;
-          const importedDescription = importedCount ? `(包含 ${importedCount} 个已导入的任务)` : '';
+          const importedDescription = importedCount
+            ? formatMessage(
+                {
+                  id: 'src.component.Task.component.ImportModal.92D087FB',
+                  defaultMessage: '(包含 {importedCount} 个已导入的任务)',
+                },
+                { importedCount },
+              )
+            : '';
           const privateSpaceDescription = (
             <Typography.Text>
-              {`${successCount} 个作业导入成功${importedDescription}, ${failedCount} 个作业导入失败。可`}
+              {formatMessage(
+                {
+                  id: 'src.component.Task.component.ImportModal.94BFD01C',
+                  defaultMessage:
+                    '{successCount} 个作业导入成功{importedDescription}, {failedCount} 个作业导入失败。可',
+                },
+                { successCount, importedDescription, failedCount },
+              )}
               <Typography.Link
                 onClick={downloadLog}
                 style={{ padding: '0 4px', display: 'inline' }}
@@ -116,6 +156,7 @@ export const useImport = (
               })}
             </Typography.Text>
           );
+
           notification.warning({
             message: formatMessage({
               id: 'src.component.Task.component.ImportModal.997B6AC7',
@@ -125,7 +166,13 @@ export const useImport = (
               privateSpaceDescription
             ) : (
               <Typography.Text style={{ textAlign: 'center' }}>
-                {`${successCount} 个作业导入成功${importedDescription}, `}
+                {formatMessage(
+                  {
+                    id: 'src.component.Task.component.ImportModal.AE88E265',
+                    defaultMessage: '{successCount} 个作业导入成功{importedDescription}, ',
+                  },
+                  { successCount, importedDescription },
+                )}
                 {formatMessage(
                   {
                     id: 'src.component.Task.component.ImportModal.32698C46',
@@ -161,6 +208,7 @@ export const useImport = (
                 })}
               </Typography.Text>
             ),
+
             duration: null,
           });
         }

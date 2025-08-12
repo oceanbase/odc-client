@@ -760,14 +760,17 @@ const TaskTable: React.FC<IProps> = inject(
       <>
         {login.isPrivateSpace() && isScheduleMigrateTask(taskTabType as any) && (
           <Alert
-            message={
-              '个人空间任务仅支持本人管理和查看，且不提供告警配置功能，因此不建议将其用于对生产业务有强依赖的场景。如需在生产业务中使用该功能，请优先选择团队空间，并配置相应的消息通知机制，以保障业务的正常运转。'
-            }
+            message={formatMessage({
+              id: 'src.component.Task.component.TaskTable.E20D58A0',
+              defaultMessage:
+                '个人空间任务仅支持本人管理和查看，且不提供告警配置功能，因此不建议将其用于对生产业务有强依赖的场景。如需在生产业务中使用该功能，请优先选择团队空间，并配置相应的消息通知机制，以保障业务的正常运转。',
+            })}
             type="warning"
             showIcon
             style={{ margin: '8px 0' }}
           />
         )}
+
         <CommonTable
           ref={tableRef}
           mode={CommonTableMode.SMALL}
@@ -811,6 +814,7 @@ const TaskTable: React.FC<IProps> = inject(
                       }}
                     />
                   );
+
                   return content;
                 },
               },

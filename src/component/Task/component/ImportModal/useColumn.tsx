@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { IImportDatabaseView, IImportScheduleTaskView } from '@/d.ts/importTask';
 import { Tooltip, Typography, Flex } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
@@ -22,7 +23,10 @@ export const useColumns = (
 ) => {
   const baseInfoColumns = [
     {
-      title: '工单',
+      title: formatMessage({
+        id: 'src.component.Task.component.ImportModal.7C3EB72C',
+        defaultMessage: '工单',
+      }),
       dataIndex: 'description',
       key: 'description',
       width: 300,
@@ -46,14 +50,24 @@ export const useColumns = (
 
   const originDatabaseColumns = [
     {
-      title: '原数据库',
+      title: formatMessage({
+        id: 'src.component.Task.component.ImportModal.DCD1BA1A',
+        defaultMessage: '原数据库',
+      }),
       dataIndex: 'databaseView',
       key: 'databaseView',
       width: 140,
       render: (_: IImportDatabaseView) => {
         if (!_) return '-';
         return (
-          <DatabaseInfoPopover title={'原数据库'} value={_} popoverWidth={240}>
+          <DatabaseInfoPopover
+            title={formatMessage({
+              id: 'src.component.Task.component.ImportModal.93C2FD0F',
+              defaultMessage: '原数据库',
+            })}
+            value={_}
+            popoverWidth={240}
+          >
             <Flex vertical gap={4}>
               <Typography.Text
                 ellipsis
@@ -63,7 +77,11 @@ export const useColumns = (
                 {_ ? `${_?.databaseName}` : '-'}
               </Typography.Text>
               <Typography.Text ellipsis type="secondary" title={_?.name}>
-                数据源: {_?.name}
+                {formatMessage({
+                  id: 'src.component.Task.component.ImportModal.A8B5EF34',
+                  defaultMessage: '数据源:',
+                })}
+                {_?.name}
               </Typography.Text>
             </Flex>
           </DatabaseInfoPopover>
@@ -74,7 +92,10 @@ export const useColumns = (
 
   const originDatabaseWithTargetColumns = [
     {
-      title: '原数据库',
+      title: formatMessage({
+        id: 'src.component.Task.component.ImportModal.4C0466BB',
+        defaultMessage: '原数据库',
+      }),
       dataIndex: 'databaseId',
       key: 'databaseId',
       width: 150,
@@ -82,7 +103,10 @@ export const useColumns = (
         return (
           <Flex vertical gap={4}>
             <DatabaseInfoPopover
-              title={'源端数据库'}
+              title={formatMessage({
+                id: 'src.component.Task.component.ImportModal.E78A5A7E',
+                defaultMessage: '源端数据库',
+              })}
               value={record.databaseView}
               popoverWidth={240}
             >
@@ -98,7 +122,10 @@ export const useColumns = (
               </Flex>
             </DatabaseInfoPopover>
             <DatabaseInfoPopover
-              title={'目标端数据库'}
+              title={formatMessage({
+                id: 'src.component.Task.component.ImportModal.47F8A3BA',
+                defaultMessage: '目标端数据库',
+              })}
               value={record.targetDatabaseView}
               popoverWidth={240}
             >
@@ -121,7 +148,10 @@ export const useColumns = (
 
   const originStatusColumns = [
     {
-      title: '原状态',
+      title: formatMessage({
+        id: 'src.component.Task.component.ImportModal.55E87B63',
+        defaultMessage: '原状态',
+      }),
       dataIndex: 'originStatus',
       key: 'originStatus',
       width: 120,
@@ -129,7 +159,12 @@ export const useColumns = (
         <Flex gap={4}>
           <StatusLabel status={status} type={record?.type} />
           {status !== TaskStatus.ENABLED && (
-            <Tooltip title={'工单导入成功后将重新启用'}>
+            <Tooltip
+              title={formatMessage({
+                id: 'src.component.Task.component.ImportModal.DFCD4ABB',
+                defaultMessage: '工单导入成功后将重新启用',
+              })}
+            >
               <InfoCircleOutlined style={{ color: 'var(--icon-color-3)' }} />
             </Tooltip>
           )}
@@ -140,7 +175,10 @@ export const useColumns = (
 
   const originDatabaseTypeColumns = [
     {
-      title: '类型',
+      title: formatMessage({
+        id: 'src.component.Task.component.ImportModal.37A63CCA',
+        defaultMessage: '类型',
+      }),
       dataIndex: 'taskType',
       key: 'taskType',
       width: 120,
@@ -153,7 +191,10 @@ export const useColumns = (
   const dlmColumns = [
     ...originDatabaseWithTargetColumns,
     {
-      title: '新源端',
+      title: formatMessage({
+        id: 'src.component.Task.component.ImportModal.D22149A7',
+        defaultMessage: '新源端',
+      }),
       dataIndex: 'databaseView',
       key: 'databaseView',
       width: 200,
@@ -172,7 +213,10 @@ export const useColumns = (
       },
     },
     {
-      title: '新目标端',
+      title: formatMessage({
+        id: 'src.component.Task.component.ImportModal.6992AD58',
+        defaultMessage: '新目标端',
+      }),
       dataIndex: 'targetDatabaseView',
       key: 'targetDatabaseView',
       width: 200,
@@ -195,7 +239,10 @@ export const useColumns = (
   const otherScheduleColumns = [
     ...originDatabaseColumns,
     {
-      title: '新数据库',
+      title: formatMessage({
+        id: 'src.component.Task.component.ImportModal.01BA659E',
+        defaultMessage: '新数据库',
+      }),
       dataIndex: 'databaseView',
       key: 'databaseView',
       width: 200,

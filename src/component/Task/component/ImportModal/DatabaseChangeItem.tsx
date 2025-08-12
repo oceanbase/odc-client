@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Form } from 'antd';
 import DatabaseSelect from '../DatabaseSelect';
 import { TaskType } from '@/d.ts';
@@ -37,7 +38,14 @@ const DatabaseChangeItem = ({
         projectId={projectId}
         showProject={false}
         validateStatus={!form.getFieldValue('databaseId') ? 'warning' : undefined}
-        help={!form.getFieldValue('databaseId') ? '请选择新的数据库' : undefined}
+        help={
+          !form.getFieldValue('databaseId')
+            ? formatMessage({
+                id: 'src.component.Task.component.ImportModal.825A80AC',
+                defaultMessage: '请选择新的数据库',
+              })
+            : undefined
+        }
         label={null}
         style={{ marginBottom: 0 }}
         width={180}

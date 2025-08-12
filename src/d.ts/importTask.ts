@@ -7,10 +7,8 @@ export enum ScheduleNonImportableType {
   TYPE_NOT_MATCH = 'TYPE_NOT_MATCH',
   DATASOURCE_NON_EXIST = 'DATASOURCE_NON_EXIST',
   IMPORTED = 'IMPORTED',
-  // 前端维护的待导入, 包含DATASOURCE_NON_EXIST, LACK_OF_INSTANCE和可导入的
-  // TO_BE_IMPORTED = 'TO_BE_IMPORTED',
-}
-
+} // 前端维护的待导入, 包含DATASOURCE_NON_EXIST, LACK_OF_INSTANCE和可导入的
+// TO_BE_IMPORTED = 'TO_BE_IMPORTED',
 export const ScheduleNonImportableTypeMap = {
   [ScheduleNonImportableType.DATASOURCE_NON_EXIST]: formatMessage({
     id: 'src.d.ts.25D43093',
@@ -24,7 +22,10 @@ export const ScheduleNonImportableTypeMap = {
     id: 'src.d.ts.B89ABE6D',
     defaultMessage: '类型不匹配',
   }),
-  [ScheduleNonImportableType.IMPORTED]: '已存在',
+  [ScheduleNonImportableType.IMPORTED]: formatMessage({
+    id: 'src.d.ts.BE8F2539',
+    defaultMessage: '已存在',
+  }),
 };
 
 export interface IScheduleTaskImportRequest {

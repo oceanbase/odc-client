@@ -330,7 +330,10 @@ const ImportModal: React.FC<IImportModalProps> = ({ open, onCancel, onOk, taskTy
                 }}
                 className={notConfirmButSubmit ? styles.checkboxError : null}
               >
-                我己确认导入的工单新旧数据库对象一致
+                {formatMessage({
+                  id: 'src.component.Task.component.ImportModal.EA6397CD',
+                  defaultMessage: '我己确认导入的工单新旧数据库对象一致',
+                })}
               </Checkbox>
               <Space>
                 <Button
@@ -377,7 +380,13 @@ const ImportModal: React.FC<IImportModalProps> = ({ open, onCancel, onOk, taskTy
                   type="primary"
                   disabled={selectedRowKeys?.length === 0}
                 >
-                  {`导入 (${selectedRowKeys?.length})`}
+                  {formatMessage(
+                    {
+                      id: 'src.component.Task.component.ImportModal.E756EF6A',
+                      defaultMessage: '导入 ({selectedRowKeysLength})',
+                    },
+                    { selectedRowKeysLength: selectedRowKeys?.length },
+                  )}
                 </Button>
               </Space>
             </Flex>
@@ -392,8 +401,12 @@ const ImportModal: React.FC<IImportModalProps> = ({ open, onCancel, onOk, taskTy
             showIcon
             message={
               <>
-                仅支持导入由 阿里云 OceanBase 数据研发 或 ODC
-                导出的配置文件；在导入之前，请先将添加相关数据源、 井指定对应的项目。
+                {formatMessage({
+                  id: 'src.component.Task.component.ImportModal.A28A2A00',
+                  defaultMessage:
+                    '仅支持导入由 阿里云 OceanBase 数据研发 或 ODC\n                导出的配置文件；在导入之前，请先将添加相关数据源、 井指定对应的项目。',
+                })}
+
                 <NewDatasourceButton onSuccess={() => {}}>
                   <Button type="link">
                     <a onClick={(e) => e.preventDefault()}>
