@@ -81,9 +81,9 @@ export default {
   canDownloadNewVersion: true,
   task: {
     sys: true,
-    isSupportTaksImport: true,
-    isSupportTaksExport: true,
-    isSupportTaksTerminate: true,
+    isSupportTaksImport: false,
+    isSupportTaksExport: false,
+    isSupportTaksTerminate: false,
   },
   systemConfig: {
     default: null,
