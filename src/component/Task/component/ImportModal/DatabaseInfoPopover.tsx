@@ -18,6 +18,7 @@ import {
   Flex,
   Tag,
 } from 'antd';
+import { haveOCP } from '@/util/env';
 
 const DatabaseInfoPopover = ({
   title,
@@ -67,16 +68,29 @@ const DatabaseInfoPopover = ({
         </div>
       ),
     },
-    {
-      key: 'host',
-      label: '主机 IP/域名：',
-      children: <Tooltip title={`${value?.host}`}>{value?.host}</Tooltip>,
-    },
-    {
-      key: 'host',
-      label: '端口',
-      children: <Tooltip title={`${value?.port}`}>{value?.port}</Tooltip>,
-    },
+    ...(haveOCP()
+      ? [
+          {
+            key: 'instanceId',
+            label: formatMessage({
+              id: 'odc.component.ConnectionPopover.InstanceIdTenantId',
+              defaultMessage: '实例ID/租户ID:',
+            }),
+            children: `${value?.instanceId}/${value?.tenantId}`,
+          },
+        ]
+      : [
+          {
+            key: 'host',
+            label: '主机 IP/域名：',
+            children: <Tooltip title={`${value?.host}`}>{value?.host}</Tooltip>,
+          },
+          {
+            key: 'port',
+            label: '端口',
+            children: <Tooltip title={`${value?.port}`}>{value?.port}</Tooltip>,
+          },
+        ]),
     {
       key: 'username',
       label: formatMessage({
