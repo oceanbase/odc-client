@@ -325,7 +325,7 @@ const TaskManaerContent: React.FC<IProps> = (props) => {
           onMenuClick={handleMenuItemClick}
         />
       </div>
-      <CreateModals />
+      {!isSqlworkspace && <CreateModals />}
       <DetailModals
         theme={theme}
         taskOpenRef={taskOpenRef}
