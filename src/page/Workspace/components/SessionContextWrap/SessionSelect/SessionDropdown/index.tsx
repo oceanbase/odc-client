@@ -521,7 +521,11 @@ const SessionDropdown: React.FC<IProps> = (props) => {
             }}
           >
             <Space>
-              管理数据库
+              {formatMessage({
+                id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.49B355DA',
+                defaultMessage: '管理数据库',
+              })}
+
               <ExportOutlined />
             </Space>
           </Button>
@@ -548,6 +552,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
             })}
           </Button>
         )}
+
         {checkedKeys?.length === canCheckedDbKeys?.length && (
           <Button
             type="link"
@@ -593,6 +598,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
                 {!context.datasourceMode && !checkModeConfig && !userStore.isPrivateSpace() && (
                   <DatabaseSelectTab tab={tab} setTab={setTab} />
                 )}
+
                 {tab === TabsType.all && (
                   <Search
                     searchValue={searchValue}
@@ -603,6 +609,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
                     }}
                   />
                 )}
+
                 {!context.datasourceMode && tab === TabsType.all && (
                   <span className={styles.groupIcon}>
                     <Group setGroupMode={setGroupMode} groupMode={groupMode} />

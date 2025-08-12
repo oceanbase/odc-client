@@ -82,15 +82,22 @@ const DatabaseInfoPopover = ({
       : [
           {
             key: 'host',
-            label: '主机 IP/域名：',
+            label: formatMessage({
+              id: 'src.component.Task.component.ImportModal.4559F373',
+              defaultMessage: '主机 IP/域名：',
+            }),
             children: <Tooltip title={`${value?.host}`}>{value?.host}</Tooltip>,
           },
           {
             key: 'port',
-            label: '端口',
+            label: formatMessage({
+              id: 'src.component.Task.component.ImportModal.FF8162DA',
+              defaultMessage: '端口',
+            }),
             children: <Tooltip title={`${value?.port}`}>{value?.port}</Tooltip>,
           },
         ]),
+
     {
       key: 'username',
       label: formatMessage({

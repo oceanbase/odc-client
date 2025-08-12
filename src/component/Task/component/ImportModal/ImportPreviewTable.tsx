@@ -23,6 +23,7 @@ interface ImportPreviewTableProps {
     string,
     { databaseId: number | null; targetDatabaseId: number | null }
   >;
+
   setDatabaseSelections: React.Dispatch<
     React.SetStateAction<
       Record<string, { databaseId: number | null; targetDatabaseId: number | null }>
@@ -242,21 +243,39 @@ const ImportPreviewTable: React.FC<ImportPreviewTableProps> = ({
     const map = {
       TO_BE_IMPORTED: (
         <Flex justify="space-between" style={{ marginBottom: 16 }}>
-          勾选需要导入的工单，导入后将重新启用。导入前请检查涉及的新旧数据库对象是否一致，否则导入或执行时可能出现失败。
+          {formatMessage({
+            id: 'src.component.Task.component.ImportModal.C264F2F5',
+            defaultMessage:
+              '勾选需要导入的工单，导入后将重新启用。导入前请检查涉及的新旧数据库对象是否一致，否则导入或执行时可能出现失败。',
+          })}
+
           <Checkbox
             checked={showOnlyImportable}
             onChange={(e) => handleShowOnlyImportableChange(e.target.checked)}
           >
-            仅显示已选择数据库的工单
+            {formatMessage({
+              id: 'src.component.Task.component.ImportModal.3137AA28',
+              defaultMessage: '仅显示已选择数据库的工单',
+            })}
           </Checkbox>
         </Flex>
       ),
+
       [ScheduleNonImportableType.IMPORTED]: (
-        <div style={{ paddingBottom: 8 }}>以下工单已导入，无需重复操作。</div>
+        <div style={{ paddingBottom: 8 }}>
+          {formatMessage({
+            id: 'src.component.Task.component.ImportModal.F8B503DB',
+            defaultMessage: '以下工单已导入，无需重复操作。',
+          })}
+        </div>
       ),
+
       [ScheduleNonImportableType.TYPE_NOT_MATCH]: (
         <div style={{ paddingBottom: 8 }}>
-          以下工单类型不匹配、无法导入，建议选择对应工单类型重新导入。
+          {formatMessage({
+            id: 'src.component.Task.component.ImportModal.49FDDB00',
+            defaultMessage: '以下工单类型不匹配、无法导入，建议选择对应工单类型重新导入。',
+          })}
         </div>
       ),
     };
@@ -272,12 +291,17 @@ const ImportPreviewTable: React.FC<ImportPreviewTableProps> = ({
       >
         {groupedData['TO_BE_IMPORTED']?.length > 0 && (
           <Radio.Button value={'TO_BE_IMPORTED'} key={'TO_BE_IMPORTED'}>
-            待导入
+            {formatMessage({
+              id: 'src.component.Task.component.ImportModal.F42820DF',
+              defaultMessage: '待导入',
+            })}
+
             <Typography.Text type="secondary" style={{ paddingLeft: 4 }}>
               {groupedData['TO_BE_IMPORTED']?.length || 0}
             </Typography.Text>
           </Radio.Button>
         )}
+
         {Object.keys(ScheduleNonImportableType)
           ?.filter(
             (key) =>

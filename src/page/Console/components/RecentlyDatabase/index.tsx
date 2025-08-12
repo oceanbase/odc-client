@@ -173,7 +173,16 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
             const databaseStyle = getDataSourceStyleByConnectType(record?.dataSource?.type);
             const existed = record?.existed;
             return (
-              <Tooltip title={forbiddenAccessSQLConsole ? '对象存储暂不支持打开 SQL 控制台' : ''}>
+              <Tooltip
+                title={
+                  forbiddenAccessSQLConsole
+                    ? formatMessage({
+                        id: 'src.page.Console.components.RecentlyDatabase.806E294C',
+                        defaultMessage: '对象存储暂不支持打开 SQL 控制台',
+                      })
+                    : ''
+                }
+              >
                 <div
                   className={existed ? recordWithActionClassName : ''}
                   style={
@@ -340,6 +349,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
       ) : (
         <RecentlyDatabaseEmpty height={391} color="var(--text-color-secondary)" />
       )}
+
       <ExportTaskCreateModal />
       <ImportTaskCreateModal />
       <AsyncTaskCreateModal theme="white" />
