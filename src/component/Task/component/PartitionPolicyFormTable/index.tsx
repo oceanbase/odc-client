@@ -28,7 +28,7 @@ import {
 } from '@ant-design/icons';
 import { Checkbox, Space, Tooltip } from 'antd';
 import React, { useRef, useState } from 'react';
-import { ITableConfig } from '@/component/Task/modals/PartitionTask/CreateModal';
+import { ITableConfig } from '@/component/Schedule/modals/PartitionPlan/Create';
 import { getStrategyLabel } from '../PartitionPolicyTable';
 import ConfigDrawer from './configModal';
 import { NameRuleType, revertPartitionKeyInvokerByIncrementFieldType, START_DATE } from './const';
@@ -209,11 +209,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     const isInit = activeConfigs?.some((item) => !item?.__isCreate);
     let partitionConfig = activeConfigs?.[0];
     if (!!createdTableConfig && isInit) {
-      const isLengthEqual =
-        createdTableConfig?.option?.partitionKeyConfigs?.length === res?.contents?.length;
-      if (isLengthEqual) {
-        partitionConfig = createdTableConfig;
-      }
+      partitionConfig = createdTableConfig;
     }
     console.log('createdTableConfig', !!createdTableConfig, isInit);
     console.log('partitionConfig', partitionConfig);
@@ -223,7 +219,6 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
 
     const initNameRuleType = isInit && dateTypes ? NameRuleType.PRE_SUFFIX : NameRuleType.CUSTOM;
     const nameRuleType = createdTableConfig?.generateExpr ? NameRuleType.CUSTOM : initNameRuleType;
-
     const values = activeConfigs.map((item) => {
       return {
         generateCount: null,

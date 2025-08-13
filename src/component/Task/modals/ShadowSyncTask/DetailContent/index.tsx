@@ -15,7 +15,7 @@
  */
 
 import { getShadowSyncAnalysisResult } from '@/common/network/task';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
+import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import {
   ErrorStrategy,
   IShadowSyncAnalysisResult,
@@ -108,7 +108,7 @@ export function getItems(
       defaultMessage: '风险等级',
     }),
     //风险等级
-    <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />,
+    <ODCRiskLevelLabel iconMode level={task?.riskLevel?.level} levelMap />,
   ];
 
   const isTimerExecution = task?.executionStrategy === TaskExecStrategy.TIMER;
@@ -125,29 +125,17 @@ export function getItems(
     {
       //@ts-ignore
       textItems: [
-        [
-          formatMessage({
-            id: 'odc.component.DetailModal.permission.TaskNumber',
-            defaultMessage: '任务编号',
-          }),
-          task.id,
-        ],
+        ['ID', task.id],
 
         [
-          formatMessage({
-            id: 'odc.component.DetailModal.permission.TaskType',
-            defaultMessage: '任务类型',
-          }),
+          '类型',
           formatMessage({
             id: 'odc.component.DetailModal.shadowSync.ShadowTableSynchronization',
             defaultMessage: '影子表同步',
           }), //影子表同步
         ],
         [
-          formatMessage({
-            id: 'odc.component.DetailModal.dataMocker.Database',
-            defaultMessage: '所属数据库',
-          }),
+          '数据库',
           //所属数据库
           <DatabaseLabel database={task?.database} />,
         ],
@@ -159,6 +147,7 @@ export function getItems(
           }), //'所属数据源'
           <EllipsisText content={task?.database?.dataSource?.name} />,
         ],
+        ['项目', <EllipsisText content={task?.project?.name} />],
 
         hasFlow ? riskItem : null,
         [

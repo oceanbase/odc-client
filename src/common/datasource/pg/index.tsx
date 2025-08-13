@@ -18,6 +18,7 @@ import { ConnectType, TaskType } from '@/d.ts';
 import { IDataSourceModeConfig } from '../interface';
 import MySQLColumnExtra from '../oceanbase/MySQLColumnExtra';
 import { haveOCP } from '@/util/env';
+import { ScheduleType } from '@/d.ts/schedule';
 
 const tableConfig = {
   enableTableCharsetsAndCollations: true,
@@ -67,7 +68,8 @@ const items: Record<ConnectType.PG, IDataSourceModeConfig> = {
       disableURLParse: true,
     },
     features: {
-      task: [TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE],
+      task: [],
+      schedule: [ScheduleType.DATA_ARCHIVE, ScheduleType.DATA_DELETE],
       obclient: false,
       recycleBin: false,
       sessionManage: false,

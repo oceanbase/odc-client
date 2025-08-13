@@ -123,33 +123,33 @@ export async function previewSqls(
 /* 查看某个物理库sql执行详情 */
 /* schedule->task(仅有一个task)->physicalDatabases(逻辑库特殊的资源) */
 export async function getPhysicalExecuteDetails(
-  scheduleTaskId: number,
+  flowInstanceId: number,
   physicalDatabaseId: number,
 ): Promise<ISchemaChangeRecord> {
   const res = await request.get(
-    `/api/v2/logicaldatabase/scheduleTasks/${scheduleTaskId}/physicalDatabases/${physicalDatabaseId}`,
+    `/api/v2/logicaldatabase/flowTasks/${flowInstanceId}/physicalDatabases/${physicalDatabaseId}`,
   );
   return res?.data;
 }
 
 /* 终止某个物理库 SQL 执行 */
 export async function stopPhysicalSqlExecute(
-  scheduleTaskId: number,
+  flowInstanceId: number,
   physicalDatabaseId: number,
 ): Promise<boolean> {
   const res = await request.post(
-    `/api/v2/logicaldatabase/scheduleTasks/${scheduleTaskId}/physicalDatabases/${physicalDatabaseId}/terminateCurrentStatement`,
+    `/api/v2/logicaldatabase/flowTasks/${flowInstanceId}/physicalDatabases/${physicalDatabaseId}/terminateCurrentStatement`,
   );
   return res?.data;
 }
 
 /* 跳过某个物理库 SQL 执行 */
 export async function skipPhysicalSqlExecute(
-  scheduleTaskId: number,
+  flowInstanceId: number,
   physicalDatabaseId: number,
 ): Promise<boolean> {
   const res = await request.post(
-    `/api/v2/logicaldatabase/scheduleTasks/${scheduleTaskId}/physicalDatabases/${physicalDatabaseId}/skipCurrentStatement`,
+    `/api/v2/logicaldatabase/flowTasks/${flowInstanceId}/physicalDatabases/${physicalDatabaseId}/skipCurrentStatement`,
   );
   return res?.data;
 }

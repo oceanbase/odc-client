@@ -43,6 +43,8 @@ import {
 import DatasourceSelectEmpty from '@/component/Empty/DatasourceSelectEmpty';
 import DatabaseSelectEmpty from '@/component/Empty/DatabaseSelectEmpty';
 import renderDatabaseNode from './renderDatabaseNode';
+import { ScheduleType } from '@/d.ts/schedule';
+
 export interface IDatabasesTitleProps {
   db: IDatabase;
   taskType: TaskType;
@@ -68,6 +70,7 @@ export enum TabsType {
 interface IProps {
   width?: number | string;
   taskType?: TaskType;
+  scheduleType?: ScheduleType;
   projectId?: number;
   dataSourceId?: number;
   filters?: ISessionDropdownFiltersProps;
@@ -86,6 +89,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
     dataSourceId,
     filters = null,
     taskType,
+    scheduleType,
     dataSourceStatusStore,
     disabled = false,
     userStore,
@@ -168,6 +172,14 @@ const SessionDropdown: React.FC<IProps> = (props) => {
         database.type === 'LOGICAL' ||
         getDataSourceModeConfig(database.dataSource?.type)?.features?.task?.includes(taskType);
       if (!support) {
+        return false;
+      }
+      if (
+        scheduleType &&
+        !getDataSourceModeConfig(database?.dataSource?.type)?.features?.schedule?.includes(
+          scheduleType,
+        )
+      ) {
         return false;
       }
       if (!taskType && !getDataSourceModeConfig(database?.dataSource?.type)?.features?.sqlconsole) {
@@ -585,7 +597,6 @@ const SessionDropdown: React.FC<IProps> = (props) => {
                 {treeData?.length > 0 ? TreeRender() : empty}
               </div>
             </div>
-
             {footerRender()}
           </Spin>
         )

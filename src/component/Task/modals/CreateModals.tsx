@@ -17,15 +17,11 @@
 import React from 'react';
 import AlterDDLTaskCreateModal from './AlterDdlTask';
 import AsyncTaskCreateModal from './AsyncTask';
-import DataArchiveTaskCreateModal from './DataArchiveTask';
-import DataClearTaskCreateModal from './DataClearTask';
 import DataMockerTaskCreateModal from './DataMockerTask';
 import ExportTaskCreateModal from './ExportTask';
 import ImportTaskCreateModal from './ImportTask';
-import PartitionTaskCreateModal from './PartitionTask';
 import ResultSetExportTask from './ResultSetExportTask';
 import ShadowSyncTaskCreateModal from './ShadowSyncTask';
-import SQLPlanTaskCreateModal from './SQLPlanTask';
 import ApplyPermissionCreateModal from './ApplyPermission';
 import ApplyDatabasePermissionCreateModal from './ApplyDatabasePermission';
 import ApplyTablePermissionCreateModal from './ApplyTablePermission';
@@ -46,11 +42,7 @@ const CreateModals: React.FC<IProps> = (props) => {
       <DataMockerTaskCreateModal projectId={projectId} />
       <ExportTaskCreateModal projectId={projectId} />
       <ImportTaskCreateModal projectId={projectId} />
-      <PartitionTaskCreateModal projectId={projectId} theme={theme} />
-      <SQLPlanTaskCreateModal projectId={projectId} theme={theme} />
       <ShadowSyncTaskCreateModal projectId={projectId} />
-      <DataArchiveTaskCreateModal projectId={projectId} />
-      <DataClearTaskCreateModal projectId={projectId} />
       <ApplyPermissionCreateModal projectId={projectId} />
       <AlterDDLTaskCreateModal projectId={projectId} theme={theme} />
       <ResultSetExportTask projectId={projectId} theme={theme} />

@@ -1,6 +1,5 @@
 import { formatMessage } from '@/util/intl';
 import { getSchedulePreviewResult, startSchedulePreviewTask } from '@/common/network/task';
-// import user from '@/store/user';
 import {
   IImportDatabaseView,
   IImportScheduleTaskView,

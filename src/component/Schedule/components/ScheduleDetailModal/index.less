@@ -1,0 +1,107 @@
+.header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  background: var(--odc-antd-drawer-bg-color);
+}
+
+.content {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  bottom: 45px;
+  left: 0;
+  padding: 0 24px 24px 24px;
+  overflow: auto;
+
+  :global {
+    .ant-divider-horizontal {
+      margin: 12px 0;
+    }
+  }
+}
+
+.tools {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 45px;
+  padding-right: 16px;
+  border-top: 1px solid var(--odc-border-color);
+}
+
+.detailDrawer {
+  :global {
+    .ant-drawer-header {
+      width: 100%;
+      .ant-drawer-title {
+        width: 100%;
+      }
+    }
+  }
+  .title {
+    width: 100%;
+    display: flex;
+    .ProcessingTag {
+      display: flex;
+      align-items: center;
+      margin-left: 10px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .detailName {
+      max-width: calc(100% - 100px);
+      display: flex;
+      .scheduleName {
+        flex: 1;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .ml4 {
+        margin-left: 2px;
+      }
+    }
+  }
+  :global {
+    .ant-spin-nested-loading,
+    .ant-spin-container {
+      height: 100%;
+    }
+
+    .ant-drawer-body {
+      position: absolute;
+      top: 55px;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      overflow: hidden;
+      overflow-y: scroll;
+    }
+  }
+
+  .content {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    bottom: 45px;
+    left: 0;
+    padding: 0 24px 24px 24px;
+    overflow: auto;
+
+    :global {
+      .ant-divider-horizontal {
+        margin: 12px 0;
+      }
+    }
+  }
+}

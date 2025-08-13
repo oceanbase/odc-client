@@ -21,9 +21,11 @@ import { formatMessage } from '@/util/intl';
 import { IDatabase } from '@/d.ts/database';
 import { Form } from 'antd';
 import React from 'react';
+import { ScheduleType } from '@/d.ts/schedule';
 
 interface IProps {
   type?: TaskType;
+  scheduleType?: ScheduleType;
   label?: string;
   disabled?: boolean;
   name?: string | string[];
@@ -35,6 +37,7 @@ interface IProps {
   placeholder?: string;
   isLogicalDatabase?: boolean;
   onChange?: (v: number, database?: IDatabase) => void;
+  onInit?: (database?: IDatabase) => void;
 }
 const DatabaseSelect: React.FC<IProps> = (props) => {
   const {
@@ -45,6 +48,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     }),
     //数据库
     name = 'databaseId',
+    scheduleType,
     projectId,
     dataSourceId,
     filters = null,
@@ -53,6 +57,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     disabled = false,
     isLogicalDatabase = false,
     onChange,
+    onInit,
   } = props;
 
   return (
@@ -71,11 +76,13 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
       ]}
     >
       <SessionSelect
+        onInit={onInit}
         disabled={disabled}
         dataSourceId={dataSourceId}
         projectId={projectId}
         filters={filters}
         taskType={type}
+        scheduleType={scheduleType}
         width={width}
         onChange={onChange}
         isLogicalDatabase={isLogicalDatabase}

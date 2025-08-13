@@ -16,21 +16,36 @@ import { formatMessage } from '@/util/intl';
  */
 
 import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
-import { Modal } from 'antd';
+import { Modal, Form, Input } from 'antd';
 import { useEffect, useState } from 'react';
+import { IDatabase } from '@/d.ts/database';
+import { getDefaultName } from '../CreateTaskConfirmModal/helper';
 
 function SQLPreviewModal(props: {
   sql?: string;
   visible?: boolean;
   onClose: () => void;
-  onOk: () => void;
+  onOk: (Name?: string) => void;
+  database?: IDatabase;
+  isEdit: boolean;
+  initName?: string;
 }) {
-  const { sql, visible, onClose, onOk } = props;
+  const { sql, visible, onClose, onOk, database, isEdit = false, initName } = props;
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [form] = Form.useForm();
 
   useEffect(() => {
     setConfirmLoading(false);
+    if (initName) {
+      form.setFieldValue('Name', initName);
+    } else if (visible && database) {
+      form.setFieldValue('Name', getDefaultName(database));
+    }
   }, [visible]);
+
+  const handleOk = async (name: string) => {
+    onOk(name);
+  };
 
   return (
     <Modal
@@ -49,22 +64,46 @@ function SQLPreviewModal(props: {
       }}
       open={visible}
       onCancel={onClose}
-      onOk={() => {
+      onOk={async () => {
         setConfirmLoading(true);
-        setTimeout(() => {
-          onOk();
-        });
+        await form
+          .validateFields()
+          .then((value) => {
+            handleOk(value?.Name);
+          })
+          .catch(() => {
+            setConfirmLoading(false);
+            return false;
+          });
       }}
       confirmLoading={confirmLoading}
     >
       <div
         style={{
+          display: 'flex',
+          flexDirection: 'column',
           height: '100%',
-          position: 'relative',
-          border: '1px solid var(--odc-border-color)',
         }}
       >
-        <SQLCodePreviewer readOnly language="sql" value={sql} />
+        <div
+          style={{
+            flex: 1,
+            position: 'relative',
+            border: '1px solid var(--odc-border-color)',
+            marginBottom: '16px',
+          }}
+        >
+          <SQLCodePreviewer readOnly language="sql" value={sql} />
+        </div>
+        <Form form={form} layout="vertical" requiredMark="optional">
+          <Form.Item
+            rules={[{ required: true, message: '请输入作业名称' }]}
+            name={'Name'}
+            label={'作业名称'}
+          >
+            <Input maxLength={200} showCount />
+          </Form.Item>
+        </Form>
       </div>
     </Modal>
   );

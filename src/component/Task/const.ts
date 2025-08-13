@@ -20,8 +20,10 @@ import {
   TaskErrorStrategy,
   TaskExecStrategy,
   TaskPartitionStrategy,
+  TaskStatus,
   TaskType,
 } from '@/d.ts';
+import { TaskActionsEnum } from '@/d.ts/task';
 import { formatMessage } from '@/util/intl';
 
 export const ErrorStrategyMap = {
@@ -108,40 +110,22 @@ export const OscMaxDataSizeLimit = 1000;
 
 export const getTaskExecStrategyMap = (type: TaskType) => {
   switch (type) {
-    case TaskType.DATA_ARCHIVE:
-    case TaskType.DATA_DELETE:
-    case TaskType.LOGICAL_DATABASE_CHANGE:
-    case TaskType.PARTITION_PLAN:
+    case TaskType.LOGICAL_DATABASE_CHANGE: {
       return {
-        [TaskExecStrategy.TIMER]: formatMessage({
-          id: 'odc.src.component.Task.CycleExecution',
-          defaultMessage: '周期执行',
-        }), //'周期执行'
-        [TaskExecStrategy.CRON]: formatMessage({
-          id: 'odc.src.component.Task.CycleExecution.1',
-          defaultMessage: '周期执行',
-        }), //'周期执行'
-        [TaskExecStrategy.DAY]: formatMessage({
-          id: 'odc.src.component.Task.CycleExecution.2',
-          defaultMessage: '周期执行',
-        }), //'周期执行'
-        [TaskExecStrategy.MONTH]: formatMessage({
-          id: 'odc.src.component.Task.CycleExecution.3',
-          defaultMessage: '周期执行',
-        }), //'周期执行'
-        [TaskExecStrategy.WEEK]: formatMessage({
-          id: 'odc.src.component.Task.CycleExecution.4',
-          defaultMessage: '周期执行',
-        }), //'周期执行'
-        [TaskExecStrategy.START_NOW]: formatMessage({
-          id: 'odc.src.component.Task.ExecuteImmediately',
+        [TaskExecStrategy.AUTO]: formatMessage({
+          id: 'odc.DataClearTask.CreateModal.ExecuteNow',
           defaultMessage: '立即执行',
-        }), //'立即执行'
-        [TaskExecStrategy.START_AT]: formatMessage({
-          id: 'odc.src.component.Task.TimedExecution',
+        }),
+        [TaskExecStrategy.MANUAL]: formatMessage({
+          id: 'src.component.Task.0B2B1D60',
+          defaultMessage: '手动执行',
+        }), //'手动执行'
+        [TaskExecStrategy.TIMER]: formatMessage({
+          id: 'odc.DataClearTask.CreateModal.ScheduledExecution',
           defaultMessage: '定时执行',
-        }), //'定时执行'
+        }),
       };
+    }
     case TaskType.STRUCTURE_COMPARISON: {
       return {
         [TaskExecStrategy.AUTO]: formatMessage({
@@ -210,4 +194,74 @@ export const getTaskExecStrategyTextMap = {
     id: 'src.component.Task.0B2B1D60',
     defaultMessage: '手动执行',
   }), //'手动执行'
+};
+
+const _commonActions = [TaskActionsEnum.SHARE, TaskActionsEnum.VIEW, TaskActionsEnum.CLONE];
+
+const _AsyncTaskActions = [TaskActionsEnum.DOWNLOAD_VIEW_RESULT, TaskActionsEnum.VIEW_RESULT];
+
+export const TaskStatus2Actions: Partial<Record<TaskStatus, TaskActionsEnum[]>> = {
+  [TaskStatus.REJECTED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.APPROVAL_EXPIRED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.WAIT_FOR_EXECUTION_EXPIRED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.EXECUTION_EXPIRED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.CREATED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.EXECUTION_FAILED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.ROLLBACK_FAILED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.ROLLBACK_SUCCEEDED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.CANCELLED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.PRE_CHECK_FAILED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.COMPLETED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.EXECUTING]: [
+    ..._commonActions,
+    ..._AsyncTaskActions,
+    TaskActionsEnum.DOWNLOAD_SQL,
+    TaskActionsEnum.STRUCTURE_COMPARISON,
+    TaskActionsEnum.STOP,
+  ],
+  [TaskStatus.EXECUTION_SUCCEEDED]: [
+    ..._commonActions,
+    ..._AsyncTaskActions,
+    TaskActionsEnum.OPEN_LOCAL_FOLDER,
+    TaskActionsEnum.DOWNLOAD,
+    TaskActionsEnum.ROLLBACK,
+    TaskActionsEnum.DOWNLOAD_SQL,
+    TaskActionsEnum.STRUCTURE_COMPARISON,
+  ],
+  [TaskStatus.EXECUTION_SUCCEEDED_WITH_ERRORS]: [
+    ..._commonActions,
+    ..._AsyncTaskActions,
+    TaskActionsEnum.OPEN_LOCAL_FOLDER,
+    TaskActionsEnum.DOWNLOAD,
+    TaskActionsEnum.ROLLBACK,
+    TaskActionsEnum.DOWNLOAD_SQL,
+    TaskActionsEnum.STRUCTURE_COMPARISON,
+  ],
+  [TaskStatus.WAIT_FOR_CONFIRM]: [
+    ..._commonActions,
+    ..._AsyncTaskActions,
+    TaskActionsEnum.PASS,
+    TaskActionsEnum.REJECT,
+    TaskActionsEnum.STOP,
+  ],
+  [TaskStatus.APPROVING]: [
+    ..._commonActions,
+    ..._AsyncTaskActions,
+
+    TaskActionsEnum.PASS,
+    TaskActionsEnum.REJECT,
+    TaskActionsEnum.STOP,
+  ],
+  [TaskStatus.WAIT_FOR_EXECUTION]: [
+    ..._commonActions,
+    ..._AsyncTaskActions,
+    TaskActionsEnum.EXECUTE,
+    TaskActionsEnum.STOP,
+  ],
+  [TaskStatus.EXECUTION_ABNORMAL]: [
+    ..._commonActions,
+    ..._AsyncTaskActions,
+    TaskActionsEnum.STOP,
+    TaskActionsEnum.AGAIN,
+  ],
 };

@@ -25,7 +25,7 @@ import SelectPanel from './SelectPanel';
 import StructConfigPanel from './StructConfigPanel';
 
 import { createTask, getTaskDetail } from '@/common/network/task';
-import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import { TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import styles from './index.less';
 import dayjs from 'dayjs';
@@ -179,7 +179,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
       return;
     }
     close(true);
-    openTasksPage(TaskPageType.SHADOW, TaskPageScope.CREATED_BY_CURRENT_USER);
+    openTasksPage(TaskPageType.SHADOW);
   }
   return (
     <Drawer

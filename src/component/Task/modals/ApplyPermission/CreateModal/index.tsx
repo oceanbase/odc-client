@@ -16,8 +16,8 @@
 
 import { getResourceRoles } from '@/common/network/manager';
 import { createTask } from '@/common/network/task';
-import { useLoadProjects } from '@/component/Task/hooks/useLoadProjects';
-import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import { useLoadProjects } from '@/component/Task/hooks';
+import { TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
 import { ProjectRole } from '@/d.ts/project';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
@@ -208,10 +208,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               defaultMessage: '工单创建成功',
             }),
           );
-          openTasksPage(
-            TaskPageType.APPLY_PROJECT_PERMISSION,
-            TaskPageScope.CREATED_BY_CURRENT_USER,
-          );
+          openTasksPage(TaskPageType.APPLY_PROJECT_PERMISSION);
         }
       })
       .catch((errorInfo) => {

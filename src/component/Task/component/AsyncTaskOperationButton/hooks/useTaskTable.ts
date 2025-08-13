@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { AsyncTaskType, ISwitchOdcTaskListResponse } from '@/d.ts/migrateTask';
 import { UnfinishedScheduleListType } from '@/d.ts/migrateTask';
 import { TaskRecord, TaskRecordParameters, TaskStatus } from '@/d.ts';
+import { ScheduleStatus } from '@/d.ts/schedule';
 
 export interface AsyncTaskModalConfig {
   asyncTaskType: AsyncTaskType;
@@ -17,7 +18,7 @@ export interface AsyncTaskModalConfig {
   modalTitle: string;
   modalExtra: (count: number, ids?: number[]) => React.ReactNode;
 
-  checkStatus: (status: TaskStatus) => boolean;
+  checkStatus: (status: TaskStatus | ScheduleStatus) => boolean;
   checkStatusFailed: string;
 
   onReload: () => void;

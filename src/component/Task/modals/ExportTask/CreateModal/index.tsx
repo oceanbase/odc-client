@@ -7,7 +7,6 @@ import {
   EXPORT_TYPE,
   IMPORT_ENCODING,
   TaskExecStrategy,
-  TaskPageScope,
   TaskPageType,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
@@ -289,7 +288,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               initDefaultConfig();
             }
             handleClose();
-            openTasksPage(TaskPageType.EXPORT, TaskPageScope.CREATED_BY_CURRENT_USER);
+            openTasksPage(TaskPageType.EXPORT);
           }
         } finally {
           setState((prev) => ({
@@ -363,7 +362,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         }) //导出
       }
       open={modalStore.exportModalVisible}
-      destroyOnHidden
+      destroyOnClose
       width={720}
       onClose={handleConfirmClose}
     >

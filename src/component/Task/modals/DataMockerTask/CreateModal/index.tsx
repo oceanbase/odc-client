@@ -15,14 +15,7 @@
  */
 
 import { createTask } from '@/common/network/task';
-import {
-  ConnectionMode,
-  IServerMockTable,
-  TaskExecStrategy,
-  TaskPageScope,
-  TaskPageType,
-  TaskType,
-} from '@/d.ts';
+import { ConnectionMode, IServerMockTable, TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
@@ -30,7 +23,7 @@ import { Button, Drawer, message, Modal, Space } from 'antd';
 import { DrawerProps } from 'antd/es/drawer';
 import { FormInstance } from 'antd/es/form/Form';
 import { inject, observer } from 'mobx-react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import DataMockerForm, { converFormToServerData } from './form';
 import { IMockFormData } from './type';
 import dayjs from 'dayjs';
@@ -50,6 +43,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const [dbMode, setDbMode] = useState<ConnectionMode>(null);
     const formRef = useRef<FormInstance<IMockFormData>>(null);
     const [ruleConfigList, setRuleConfigList] = useState([]);
+    const [open, setOpen] = useState<boolean>(false);
 
     const loadEditData = async () => {
       const { task } = dataMockerData;
@@ -124,6 +118,61 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       setDbMode(mode);
     };
 
+    const handleCreate = async () => {
+      try {
+        const values = await formRef.current.validateFields();
+
+        const editingColumn = values?.columns?.find((c) => {
+          return c.typeConfig?._isEditing;
+        });
+        if (editingColumn) {
+          message.warning(
+            formatMessage(
+              {
+                id: 'odc.component.DataMockerDrawer.TheFieldEditingcolumncolumnnameIsBeing',
+                defaultMessage: '字段{editingColumnColumnName}正在编辑中',
+              },
+
+              { editingColumnColumnName: editingColumn.columnName },
+            ),
+            // `字段${editingColumn.columnName}正在编辑中`
+          );
+          return;
+        } else if (!values?.columns?.length) {
+          return;
+        }
+        setConfirmLoading(true);
+        const { databaseName, databaseId, executionStrategy, executionTime, description, ...rest } =
+          values;
+        const serverData = converFormToServerData(rest as any, dbMode, databaseName);
+        const isSuccess = await createTask({
+          projectId,
+          databaseId,
+          executionStrategy,
+          executionTime: executionStrategy === TaskExecStrategy.TIMER ? executionTime : undefined,
+          taskType: TaskType.DATAMOCK,
+          parameters: {
+            taskDetail: JSON.stringify(serverData),
+          },
+          description,
+        });
+        setConfirmLoading(false);
+        if (isSuccess) {
+          message.success(
+            formatMessage({
+              id: 'src.component.Task.DataMockerTask.CreateModal.753EA4C0' /*'工单创建成功'*/,
+              defaultMessage: '工单创建成功',
+            }),
+          );
+          onClose();
+          openTasksPage(TaskPageType.DATAMOCK);
+        }
+      } catch (e) {
+        formRef?.current?.scrollToField(e?.errorFields?.[0]?.name);
+        console.log(e);
+      }
+    };
+
     useEffect(() => {
       if (dataMockerData?.task) {
         loadEditData();
@@ -152,74 +201,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
                 /* 取消 */
               }
             </Button>
-            <Button
-              type="primary"
-              loading={confirmLoading}
-              onClick={async () => {
-                try {
-                  const values = await formRef.current.validateFields();
-
-                  const editingColumn = values?.columns?.find((c) => {
-                    return c.typeConfig?._isEditing;
-                  });
-                  if (editingColumn) {
-                    message.warning(
-                      formatMessage(
-                        {
-                          id: 'odc.component.DataMockerDrawer.TheFieldEditingcolumncolumnnameIsBeing',
-                          defaultMessage: '字段{editingColumnColumnName}正在编辑中',
-                        },
-
-                        { editingColumnColumnName: editingColumn.columnName },
-                      ),
-                      // `字段${editingColumn.columnName}正在编辑中`
-                    );
-                    return;
-                  } else if (!values?.columns?.length) {
-                    return;
-                  }
-                  setConfirmLoading(true);
-                  const {
-                    databaseName,
-                    databaseId,
-                    executionStrategy,
-                    executionTime,
-                    description,
-                    ...rest
-                  } = values;
-                  const serverData = converFormToServerData(rest as any, dbMode, databaseName);
-
-                  const isSuccess = await createTask({
-                    projectId,
-                    databaseId,
-                    executionStrategy,
-                    executionTime:
-                      executionStrategy === TaskExecStrategy.TIMER ? executionTime : undefined,
-                    taskType: TaskType.DATAMOCK,
-                    parameters: {
-                      taskDetail: JSON.stringify(serverData),
-                    },
-                    description,
-                  });
-
-                  setConfirmLoading(false);
-                  if (isSuccess) {
-                    message.success(
-                      formatMessage({
-                        id: 'src.component.Task.DataMockerTask.CreateModal.753EA4C0' /*'工单创建成功'*/,
-                        defaultMessage: '工单创建成功',
-                      }),
-                    );
-                    onClose();
-                    openTasksPage(TaskPageType.DATAMOCK, TaskPageScope.CREATED_BY_CURRENT_USER);
-                  }
-                } catch (e) {
-                  formRef?.current?.scrollToField(e?.errorFields?.[0]?.name);
-
-                  console.log(e);
-                }
-              }}
-            >
+            <Button type="primary" loading={confirmLoading} onClick={() => handleCreate()}>
               {
                 formatMessage({
                   id: 'odc.component.DataMockerDrawer.Submitted',

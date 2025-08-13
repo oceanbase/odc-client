@@ -15,12 +15,13 @@ import Icon from '@ant-design/icons';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { getCloudProviderName } from '../AsyncTaskOperationButton/helper';
 import { fromODCPRoviderToProvider } from '@/d.ts/migrateTask';
+import { ScheduleType } from '@/d.ts/schedule';
 
 interface ImportPreviewTableProps {
   data: IImportScheduleTaskView[];
   loading?: boolean;
   datasourceInfo: IDatasourceInfo;
-  taskType: TaskType;
+  taskType: TaskType | ScheduleType;
 }
 
 const ImportPreviewTable: React.FC<ImportPreviewTableProps> = ({ data, loading, taskType }) => {
@@ -284,8 +285,10 @@ const ImportPreviewTable: React.FC<ImportPreviewTableProps> = ({ data, loading, 
       },
     },
     // 数据清理/归档有源端目标端, 分区计划和sql计划只有数据库
-    ...([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE]?.includes(taskType) ? dlmColumns : []),
-    ...([TaskType.SQL_PLAN, TaskType.PARTITION_PLAN]?.includes(taskType)
+    ...([ScheduleType.DATA_ARCHIVE, ScheduleType.DATA_DELETE]?.includes(taskType as ScheduleType)
+      ? dlmColumns
+      : []),
+    ...([ScheduleType.SQL_PLAN, ScheduleType.PARTITION_PLAN]?.includes(taskType as ScheduleType)
       ? otherScheduleColumns
       : []),
   ]?.filter(Boolean);

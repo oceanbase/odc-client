@@ -34,6 +34,7 @@ import { DrawerProps } from 'antd/es/drawer';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useState } from 'react';
 import styles from './index.less';
+import { ScheduleType } from '@/d.ts/schedule';
 
 export enum IPartitionPlanInspectTriggerStrategy {
   EVERY_DAY = 'EVERY_DAY',
@@ -88,7 +89,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         // // 4.0.0 禁止设置 巡检周期，保留一个默认值：无需巡检
         // const inspectTriggerStrategy = IPartitionPlanInspectTriggerStrategy.NONE;
         // const params = {
-        //   taskType: TaskType.PARTITION_PLAN,
+        // taskType: ScheduleType.PARTITION_PLAN,
         //   databaseName: schemaStore.database.name,
         //   description,
         //   connectionId,
@@ -106,10 +107,6 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
         // const resCount = await createTask(params);
         setConfirmLoading(false);
         onClose();
-        // if (resCount) {
-        //   onClose();
-        //   openTasksPage(TaskPageType.PARTITION_PLAN, TaskPageScope.CREATED_BY_CURRENT_USER);
-        // }
       } catch (e) {
         console.log(e);
       }

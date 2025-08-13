@@ -1,738 +1,424 @@
-/*
- * Copyright 2023 OceanBase
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import CommonTable from '@/component/CommonTable';
-import type {
-  ITableFilter,
-  ITableInstance,
-  ITableLoadOptions,
-  ITableSorter,
-} from '@/component/CommonTable/interface';
+import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import { CommonTableMode, IOperationOptionType } from '@/component/CommonTable/interface';
-import SearchFilter from '@/component/SearchFilter';
-import StatusLabel, { cycleStatus, status } from '@/component/Task/component/Status';
-import { TIME_OPTION_ALL_TASK, TimeOptions } from '@/component/TimeSelect';
-import UserPopover from '@/component/UserPopover';
-import type {
-  ICycleTaskRecord,
-  IDataArchiveJobParameters,
-  IResponseData,
-  ISqlPlayJobParameters,
-  TaskRecord,
-  TaskRecordParameters,
-} from '@/d.ts';
+import StatusLabel, { status } from '@/component/Task/component/Status';
+import type { IResponseData, TaskRecord, TaskRecordParameters } from '@/d.ts';
 import { TaskPageType, TaskType } from '@/d.ts';
 import type { PageStore } from '@/store/page';
 import type { TaskStore } from '@/store/task';
-import { haveOCP, isClient } from '@/util/env';
 import { useLoop } from '@/util/hooks/useLoop';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
-import { DownOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, DatePicker, Tooltip, Popover, Space, Typography } from 'antd';
-import { flatten } from 'lodash';
+import Icon, { DownOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, DatePicker, Tooltip, Popover, Space, Typography, Dropdown } from 'antd';
 import { inject, observer } from 'mobx-react';
-import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
-import React, { useEffect, useRef, useState, useContext } from 'react';
-import { getTaskGroupLabels, getTaskLabelByType, isCycleTaskPage } from '@/component/Task/helper';
+import React, { useEffect, useRef, useState, useContext, useCallback, useMemo } from 'react';
 import styles from '@/component/Task/index.less';
-import TaskTools from '../ActionBar';
 import { listProjects } from '@/common/network/project';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { isProjectArchived } from '@/page/Project/helper';
-import { useRequest } from 'ahooks';
-import useUrlAction, { URL_ACTION } from '@/util/hooks/useUrlAction';
+import { useRequest, useSetState } from 'ahooks';
 import useURLParams from '@/util/hooks/useUrlParams';
-import { TASK_EXECUTE_DATE_KEY, TASK_EXECUTE_TIME_KEY, TaskTypeMap } from './const';
-import { getStatusFilters } from './utils';
-import { AsyncTaskOperationButton } from '../AsyncTaskOperationButton';
-import {
-  getExportConfig,
-  getTerminateConfig,
-  isScheduleMigrateTask,
-} from '../AsyncTaskOperationButton/helper';
-const { RangePicker } = DatePicker;
-const { Text, Link } = Typography;
-import ImportModal from '../ImportModal';
-import { useImport } from '../ImportModal/useImport';
-import { useTaskSelection, taskTypeThatCanBeExport } from './useTaskSelection';
-import login from '@/store/login';
+import { useTaskGroup } from '../../hooks';
+import { TaskConfig } from '@/common/task';
+import Header from '../../layout/Header';
+import TableCard from '@/component/Table/TableCard';
+import ParamsContext, { defaultParam } from '../../context/ParamsContext';
+import { debounce } from 'lodash';
+import { ITaskParam, TaskPageMode, IPagination } from '@/component/Task/interface';
+import { TaskPageTextMap } from '@/constant/task';
+import { useTaskSelection } from '@/component/Task/component/TaskTable/useTaskSelection';
+import useUrlAction, { URL_ACTION } from '@/util/hooks/useUrlAction';
+import { getTerminateConfig } from '@/component/Task/component/AsyncTaskOperationButton/helper';
+import { AsyncTaskOperationButton } from '@/component/Task/component/AsyncTaskOperationButton';
+import ImportModal from '@/component/Task/component/ImportModal';
+import { useImport } from '@/component/Task/component/ImportModal/useImport';
+import TaskNameColumn from './TaskNameColumn';
 import odc from '@/plugins/odc';
+import TaskActions from '../TaskActions';
+import { taskTypeThatCanBeTerminate } from '@/constant/triangularization';
+import { TASK_EXECUTE_DATE_KEY, TASK_EXECUTE_TIME_KEY } from './const';
+const { Text } = Typography;
 
 interface IProps {
   tableRef: React.RefObject<ITableInstance>;
   taskStore?: TaskStore;
   pageStore?: PageStore;
   taskTabType?: TaskPageType;
-  taskList: IResponseData<
-    | TaskRecord<TaskRecordParameters>
-    | ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>
-  >;
-
-  isMultiPage?: boolean;
-  getTaskList: (args: ITableLoadOptions, executeDate: [Dayjs, Dayjs] | []) => Promise<any>;
+  taskList: IResponseData<TaskRecord<TaskRecordParameters>>;
+  mode?: TaskPageMode;
+  getTaskList: (args: ITableLoadOptions, pagination: IPagination) => Promise<any>;
   onReloadList: () => void;
   onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
   onChange?: (args: ITableLoadOptions) => void;
   onMenuClick?: (type: TaskPageType) => void;
   disableProjectCol?: boolean;
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  onApprovalVisible?: (status: boolean, id: number) => void;
+  params?: ITaskParam;
+  setParams?: React.Dispatch<React.SetStateAction<ITaskParam>>;
+  pagination?: IPagination;
+  setPagination?: React.Dispatch<React.SetStateAction<IPagination>>;
 }
 
-const TaskTable: React.FC<IProps> = inject(
-  'taskStore',
-  'pageStore',
-)(
-  observer((props) => {
-    const {
-      taskStore,
-      pageStore,
-      taskTabType,
-      tableRef,
-      taskList,
-      isMultiPage,
-      disableProjectCol,
-    } = props;
-    const { taskPageScope } = taskStore;
-    const taskStatusFilters = getStatusFilters(isCycleTaskPage(taskTabType) ? cycleStatus : status);
+const TaskTable: React.FC<IProps> = (props) => {
+  const {
+    taskStore,
+    pageStore,
+    getTaskList,
+    taskTabType,
+    tableRef,
+    taskList,
+    mode,
+    onMenuClick,
+    onDetailVisible,
+    loading,
+    setLoading,
+    onApprovalVisible,
+    params,
+    setParams,
+    pagination,
+    setPagination,
+  } = props;
+  const { results: menus } = useTaskGroup({ taskItems: Object.values(TaskConfig) });
+  const { project } = useContext(ProjectContext) || {};
+  const projectArchived = isProjectArchived(project);
+  const { activePageKey } = pageStore;
+  const isAll = TaskPageType.ALL === taskTabType;
+  const [hoverInNewTaskMenuBtn, setHoverInNewTaskMenuBtn] = useState(false);
+  const [hoverInNewTaskMenu, setHoverInNewTaskMenu] = useState(false);
+  const [importModalVisible, setImportModalVisible] = useState<boolean>(false);
+  const [importProjectId, setImportProjectId] = useState<string>();
+  const { isSubmitImport, debounceSubmit } = useImport(props.onReloadList, importProjectId);
+  const { runAction } = useUrlAction();
 
-    const { data: projects } = useRequest(listProjects, {
-      defaultParams: [null, 1, 40],
-    });
-    const projectOptions = projects?.contents?.map(({ name, id }) => ({
-      text: name,
-      value: id?.toString(),
-    }));
-    const { getParam } = useURLParams();
-    const urlStatusValue = getParam('status');
-    const urlTriggerValue = getParam('filtered');
-
-    const currentTask = taskList;
-    const [executeTime, setExecuteTime] = useState(() => {
-      return JSON.parse(localStorage?.getItem(TASK_EXECUTE_TIME_KEY)) ?? 7;
-    });
-    const [executeDate, setExecuteDate] = useState<[Dayjs, Dayjs] | []>(() => {
-      const [start, end] = JSON.parse(localStorage?.getItem(TASK_EXECUTE_DATE_KEY)) ?? [null, null];
-      return !start || !end ? null : [dayjs(start), dayjs(end)];
-    });
-    const [loading, setLoading] = useState(false);
-    const [hoverInNewTaskMenuBtn, setHoverInNewTaskMenuBtn] = useState(false);
-    const [hoverInNewTaskMenu, setHoverInNewTaskMenu] = useState(false);
-    const [listParams, setListParams] = useState(null);
-    const [delTaskList, setDelTaskList] = useState<number[]>([]);
-    const [importModalVisible, setImportModalVisible] = useState<boolean>(false);
-    const [importProjectId, setImportProjectId] = useState<string>();
-    const { project } = useContext(ProjectContext) || {};
-    const projectArchived = isProjectArchived(project);
-    const loadParams = useRef(null);
-    const { activePageKey } = pageStore;
-    const columns = initColumns(listParams);
-    const { runAction } = useUrlAction();
-    const { isSubmitImport, debounceSubmit } = useImport(props.onReloadList, importProjectId);
-
-    const { selectedRow, rowSelection, clearSelection } = useTaskSelection({
-      taskStore,
-      taskTabType,
-      taskList,
-      tableRef,
-    });
-
-    const { loop: loadData, destory } = useLoop((count) => {
-      return async (args: ITableLoadOptions) => {
-        const _executeTime = args?.filters?.executeTime ?? executeTime;
-        loadParams.current = args;
-        if (isMultiPage && activePageKey !== taskTabType) {
-          destory();
-          return;
-        }
-        setExecuteTime(_executeTime);
-        const filters = {
-          ...args?.filters,
-          status: Array.from(
-            new Set((args?.filters?.status || []).concat(urlStatusValue ? [urlStatusValue] : [])),
-          ),
-          executeTime: urlStatusValue ? TIME_OPTION_ALL_TASK : _executeTime,
-        };
-
-        setListParams({
-          ...args,
-          filters,
-        });
-
-        // 只有在执行时间不为"全部"时才传递 executeDate
-        const shouldUseExecuteDate = filters.executeTime !== TIME_OPTION_ALL_TASK;
-        await props.getTaskList(
-          {
-            ...args,
-            filters,
-          },
-          shouldUseExecuteDate ? executeDate : [],
-        );
-        setLoading(false);
-      };
-    }, 6000);
-
-    useEffect(() => {
-      runAction({ actionType: URL_ACTION.newTask, callback: () => setHoverInNewTaskMenu(true) });
-    }, []);
-
-    useEffect(() => {
-      if (executeTime) {
-        localStorage.setItem(TASK_EXECUTE_TIME_KEY, JSON.stringify(executeTime));
+  const { loop: loadData, destory } = useLoop((count) => {
+    return async (args, propsPagination) => {
+      if (mode === TaskPageMode.MULTI_PAGE && activePageKey !== taskTabType) {
+        destory();
+        return;
       }
-    }, [executeTime]);
-
-    useEffect(() => {
-      loadData(loadParams.current);
-    }, [executeDate]);
-
-    useEffect(() => {
-      if (loadParams.current) {
-        setLoading(true);
-        loadData({
-          ...loadParams.current,
-          filters: null,
-          sorter: null,
-          pagination: {
-            current: 1,
-          },
-        });
+      if (propsPagination?.pageSize) {
+        setPagination(propsPagination);
       }
-    }, [taskPageScope, taskTabType, activePageKey]);
-
-    useEffect(() => {
-      if (executeTime) {
-        localStorage.setItem(TASK_EXECUTE_TIME_KEY, JSON.stringify(executeTime));
-      }
-    }, [executeTime]);
-
-    function initColumns(listParams: { filters: ITableFilter; sorter: ITableSorter }) {
-      const { filters, sorter } = listParams ?? {};
-      const columns = [
-        {
-          dataIndex: 'id',
-          key: 'id',
-          title: formatMessage({
-            id: 'odc.component.TaskTable.No',
-            defaultMessage: '编号',
-          }),
-          //编号
-          filterDropdown: (props) => {
-            return (
-              <SearchFilter
-                {...props}
-                selectedKeys={filters?.id}
-                placeholder={formatMessage({
-                  id: 'odc.TaskManagePage.component.TaskTable.PleaseEnterTheNumber',
-                  defaultMessage: '请输入编号',
-                })}
-
-                /*请输入编号*/
-              />
-            );
-          },
-          filterIcon: (filtered) => (
-            <SearchOutlined
-              style={{
-                color: filtered ? 'var(--icon-color-focus)' : undefined,
-              }}
-            />
-          ),
-
-          filteredValue: filters?.id || null,
-          filters: [],
-          ellipsis: true,
-          width: 80,
-        },
-        {
-          dataIndex: 'type',
-          key: 'type',
-          title: formatMessage({
-            id: 'odc.component.TaskTable.Type',
-            defaultMessage: '类型',
-          }),
-          //类型
-          ellipsis: true,
-          width: 100,
-          render: (type, record) => {
-            return TaskTypeMap[type === TaskType.ALTER_SCHEDULE ? record?.parameters?.type : type];
-          },
-        },
-        disableProjectCol
-          ? null
-          : {
-              dataIndex: 'project',
-              key: 'projectIdList',
-              title: formatMessage({
-                id: 'src.component.Task.component.TaskTable.CDB513DC',
-                defaultMessage: '项目',
-              }),
-              filters: projectOptions,
-              filteredValue: filters?.projectIdList || null,
-              ellipsis: true,
-              width: 80,
-              render(project) {
-                return project?.name || '-';
-              },
-            },
-        {
-          dataIndex: 'description',
-          key: 'description',
-          title: formatMessage({
-            id: 'odc.component.TaskTable.TicketDescription',
-            defaultMessage: '工单描述',
-          }),
-          width: 100,
-          //工单描述
-          ellipsis: {
-            showTitle: false,
-          },
-          render: (description) => <Tooltip title={description}>{description || '-'}</Tooltip>,
-        },
-        {
-          dataIndex: 'candidateApprovers',
-          key: 'candidateApprovers',
-          title: formatMessage({
-            id: 'odc.component.TaskTable.CurrentHandler',
-            defaultMessage: '当前处理人',
-          }),
-          //当前处理人
-          ellipsis: true,
-          width: 115,
-          render: (candidateApprovers) =>
-            candidateApprovers?.map((item) => item.name)?.join(', ') || '-',
-        },
-        {
-          dataIndex: 'creator',
-          key: 'creator',
-          title: formatMessage({
-            id: 'odc.TaskManagePage.component.TaskTable.Created',
-            defaultMessage: '创建人',
-          }),
-          //创建人
-          width: 80,
-          ellipsis: {
-            showTitle: false,
-          },
-          filterDropdown: (props) => {
-            return (
-              <SearchFilter
-                {...props}
-                selectedKeys={filters?.creator}
-                placeholder={formatMessage({
-                  id: 'odc.TaskManagePage.component.TaskTable.EnterTheCreator',
-                  defaultMessage: '请输入创建人',
-                })}
-
-                /*请输入创建人*/
-              />
-            );
-          },
-          onFilter: (value, record) =>
-            record?.creator?.name?.toLowerCase()?.includes(value?.toLowerCase()),
-          filterIcon: (filtered) => (
-            <SearchOutlined
-              style={{
-                color: filtered ? 'var(--icon-color-focus)' : undefined,
-              }}
-            />
-          ),
-
-          filteredValue: filters?.creator || null,
-          filters: [],
-          render: (creator) => {
-            return (
-              <UserPopover
-                name={creator?.name || '-'}
-                accountName={creator?.accountName}
-                roles={creator?.roleNames}
-              />
-            );
-          },
-        },
-        {
-          dataIndex: 'createTime',
-          key: 'createTime',
-          title: formatMessage({
-            id: 'odc.components.TaskManagePage.CreationTime',
-            defaultMessage: '创建时间',
-          }),
-          render: (time: number) => getLocalFormatDateTime(time),
-          sorter: true,
-          sortOrder: sorter?.columnKey === 'createTime' && sorter?.order,
-          width: 180,
-        },
-        {
-          dataIndex: 'status',
-          key: 'status',
-          title: formatMessage({
-            id: 'odc.component.TaskTable.Status',
-            defaultMessage: '状态',
-          }),
-          //状态
-          width: 120,
-          filters: taskStatusFilters,
-          defaultFilteredValue: urlStatusValue ? [urlStatusValue] : [],
-          onFilter: (value, record) => {
-            return record.status == value;
-          },
-          filteredValue: filters?.status || null,
-          render: (status, record) => (
-            <StatusLabel
-              status={status}
-              type={record?.type}
-              progress={Math.floor(record.progressPercentage)}
-            />
-          ),
-        },
-        {
-          dataIndex: 'deal',
-
-          key: 'deal',
-          title: formatMessage({
-            id: 'odc.components.TaskManagePage.Operation',
-            defaultMessage: '操作',
-          }),
-          width: 150,
-          render: (_, record) => (
-            <TaskTools
-              task={record}
-              delTaskList={delTaskList}
-              setDelTaskList={setDelTaskList}
-              onReloadList={props.onReloadList}
-              onDetailVisible={props.onDetailVisible}
-            />
-          ),
-        },
-      ].filter(Boolean);
-
-      return !isClient() ? columns : columns.filter((item) => item.dataIndex !== 'creator');
-    }
-    const handleChange = (params: ITableLoadOptions) => {
-      loadData(params);
+      await getTaskList(args, propsPagination);
+      setLoading(false);
     };
-    const handleReload = () => {
-      loadData(listParams);
-    };
-    const isAll = [
-      TaskPageType.ALL,
-      TaskPageType.APPROVE_BY_CURRENT_USER,
-      TaskPageType.CREATED_BY_CURRENT_USER,
-    ].includes(taskTabType);
-    const menus = getTaskGroupLabels()?.filter((item) => !!item.groupName);
-    const activeTaskLabel = getTaskLabelByType(taskTabType);
+  }, 6000);
 
-    const newTaskMenu = () => {
-      const items = flatten(
-        menus
-          ?.map(({ group, groupName }, index) => {
-            const tasks = group?.filter((task) => task.enabled);
-            if (tasks.length === 0) {
-              return null;
-            }
-            return {
-              key: index,
-              label: groupName,
-              children: tasks?.map((item) => {
-                return {
-                  key: item.value,
-                  label: item.label,
-                };
-              }),
-              type: 'group',
-            };
-          })
-          .filter(Boolean),
-      );
-      return (
-        <Space
-          align="start"
-          size={20}
-          onMouseMove={() => setHoverInNewTaskMenuBtn(true)}
-          onMouseLeave={() => setHoverInNewTaskMenuBtn(false)}
-        >
-          {items?.map((i) => {
-            return (
-              <Space direction="vertical">
-                <Text type="secondary" style={{ color: 'var(--text-color-hint)' }} key={i.key}>
-                  {i?.label}
-                </Text>
-                <Space size={0} direction="vertical">
-                  {i?.children?.map((i) => {
-                    return (
-                      <div
-                        className={styles.menuItem}
-                        onClick={() => {
-                          setHoverInNewTaskMenuBtn(false);
-                          props.onMenuClick(i?.key as TaskPageType);
-                        }}
-                      >
-                        {i?.label}
-                      </div>
-                    );
-                  })}
-                </Space>
-              </Space>
-            );
-          })}
-        </Space>
-      );
+  useEffect(() => {
+    setLoading(true);
+    runAction({ actionType: URL_ACTION.newTask, callback: () => setHoverInNewTaskMenu(true) });
+    runAction({
+      actionType: URL_ACTION.newDataMock,
+      callback: () => {
+        props.onMenuClick(TaskPageType.DATAMOCK);
+      },
+    });
+    loadData(params, pagination);
+    return () => {
+      destory?.();
     };
+  }, []);
 
-    const getOperationContentOption = () => {
-      if (projectArchived) return [];
-      if (isAll) {
-        return [
-          {
-            type: IOperationOptionType.custom,
-            render: () => (
-              <Popover
-                content={newTaskMenu}
-                placement="bottomLeft"
-                open={hoverInNewTaskMenuBtn || hoverInNewTaskMenu}
+  const { data: resProjects } = useRequest(listProjects, {
+    defaultParams: [null, 1, 400],
+  });
+
+  const handleChangeParams = useCallback(
+    debounce((params, pagination) => {
+      setLoading(true);
+      loadData(params, pagination);
+    }, 150),
+    [pagination, params],
+  );
+
+  useEffect(() => {
+    setPagination({
+      current: taskList?.page?.number,
+      pageSize: taskList?.page?.size ? taskList?.page?.size : pagination?.pageSize,
+    });
+  }, [taskList]);
+
+  useEffect(() => {
+    params.timeRange &&
+      localStorage.setItem(TASK_EXECUTE_TIME_KEY, JSON.stringify(params.timeRange));
+    params.executeDate &&
+      localStorage.setItem(TASK_EXECUTE_DATE_KEY, JSON.stringify(params.executeDate));
+    handleChangeParams(params, {
+      ...pagination,
+      current: 1,
+    });
+  }, [params, taskTabType]);
+
+  const { selectedRow, rowSelection, clearSelection } = useTaskSelection({
+    taskStore,
+    taskTabType,
+    taskList,
+    tableRef,
+  });
+
+  const newTaskMenu = () => {
+    return (
+      <Space
+        align="start"
+        size={20}
+        onMouseMove={() => setHoverInNewTaskMenuBtn(true)}
+        onMouseLeave={() => setHoverInNewTaskMenuBtn(false)}
+      >
+        {menus?.map((groupItem) => {
+          if (!groupItem.label) {
+            return;
+          }
+          return (
+            <Space direction="vertical">
+              <Text
+                type="secondary"
+                style={{ color: 'var(--text-color-hint)' }}
+                key={groupItem.key}
               >
-                <Button
-                  type="primary"
-                  onMouseMove={() => setHoverInNewTaskMenu(true)}
-                  onMouseLeave={() => {
-                    setTimeout(() => {
-                      setHoverInNewTaskMenu(false);
-                    }, 500);
-                  }}
-                >
-                  {
-                    formatMessage({
-                      id: 'odc.component.TaskTable.NewWorkOrder',
-                      defaultMessage: '新建工单',
-                    }) /*新建工单*/
-                  }
+                {groupItem?.label}
+              </Text>
+              <Space size={0} direction="vertical">
+                {groupItem?.children?.map((item) => {
+                  return (
+                    <div
+                      className={styles.menuItem}
+                      key={item.value}
+                      onClick={() => {
+                        setHoverInNewTaskMenuBtn(false);
+                        onMenuClick(item.value);
+                      }}
+                    >
+                      {item?.label}
+                    </div>
+                  );
+                })}
+              </Space>
+            </Space>
+          );
+        })}
+      </Space>
+    );
+  };
 
-                  <DownOutlined style={{ color: '#fff' }} />
-                </Button>
-              </Popover>
-            ),
-          },
-        ];
-      }
-      const isSupportTaksImport = odc?.appConfig?.task?.isSupportTaksImport;
-      const isSupportTaksExport = odc?.appConfig?.task?.isSupportTaksExport;
-      const isSupportTaksTerminate = odc?.appConfig?.task?.isSupportTaksTerminate;
-      return [
-        !taskTypeThatCanBeExport.includes(taskTabType) ||
-        login.isPrivateSpace() ||
-        !isSupportTaksImport
-          ? {
-              type: IOperationOptionType.button,
-              content: [
-                TaskPageType.APPLY_PROJECT_PERMISSION,
-                TaskPageType.APPLY_DATABASE_PERMISSION,
-                TaskPageType.APPLY_TABLE_PERMISSION,
-              ].includes(taskTabType)
-                ? activeTaskLabel
-                : formatMessage(
-                    {
-                      id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
-                      defaultMessage: '新建{activeTaskLabel}',
-                    },
-                    { activeTaskLabel },
-                  ),
-              //`新建${activeTaskLabel}`
-              isPrimary: true,
-              onClick: () => {
-                props.onMenuClick(taskTabType);
-              },
-            }
-          : {
-              type: IOperationOptionType.dropdown,
-              trigger: ['hover'] as ('contextMenu' | 'hover' | 'click')[],
-              content: (
-                <Button type="primary">
-                  <a onClick={() => props.onMenuClick(taskTabType)}>
-                    <Space>
-                      {formatMessage(
-                        {
-                          id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
-                          defaultMessage: '新建{activeTaskLabel}',
-                        },
-                        { activeTaskLabel },
-                      )}
-
-                      <DownOutlined style={{ color: '#fff' }} />
-                    </Space>
-                  </a>
-                </Button>
-              ),
-
-              menu: {
-                items: [
-                  {
-                    key: 'import',
-                    label: formatMessage(
-                      {
-                        id: 'src.component.Task.component.TaskTable.D4FAED98',
-                        defaultMessage: '导入{activeTaskLabel}',
-                      },
-                      { activeTaskLabel },
-                    ),
-                    onClick: () => {
-                      setImportModalVisible(true);
-                    },
-                    disabled: isSubmitImport,
-                    tooltip: isSubmitImport
-                      ? formatMessage({
-                          id: 'src.component.Task.component.TaskTable.55FC08BB',
-                          defaultMessage: '正在导入中',
-                        })
-                      : '',
-                  },
-                ],
-              },
-              onClick: () => {
-                props.onMenuClick(taskTabType);
-              },
+  const columns = [
+    {
+      title: '工单',
+      dataIndex: 'id',
+      width: 500,
+      render: (id, record) => <TaskNameColumn record={record} onDetailVisible={onDetailVisible} />,
+    },
+    {
+      ...(isAll
+        ? {
+            title: '类型',
+            dataIndex: 'type',
+            width: 150,
+            render: (type, record) => {
+              return TaskPageTextMap[type];
             },
-        isScheduleMigrateTask(taskTabType as any)
-          ? {
-              type: IOperationOptionType.custom,
-              visible: isSupportTaksExport,
-              render: () => (
-                <AsyncTaskOperationButton
-                  onReload={() => {
-                    clearSelection();
-                    props.onReloadList?.();
-                  }}
-                  {...getExportConfig(selectedRow)}
-                  dataSource={selectedRow}
-                />
-              ),
-            }
-          : null,
-        [
-          TaskPageType.ALL,
-          TaskPageType.STRUCTURE_COMPARISON,
-          TaskPageType.MULTIPLE_ASYNC,
-        ]?.includes(taskTabType)
-          ? null
-          : {
-              type: IOperationOptionType.custom,
-              visible: isSupportTaksTerminate,
-              render: () => (
-                <AsyncTaskOperationButton
-                  onReload={() => {
-                    clearSelection();
-                    props.onReloadList?.();
-                  }}
-                  {...getTerminateConfig(selectedRow)}
-                  dataSource={selectedRow}
-                />
-              ),
-            },
-      ]?.filter(Boolean);
-    };
+          }
+        : {}),
+    },
+
+    {
+      title: formatMessage({
+        id: 'odc.component.TaskTable.Status',
+        defaultMessage: '状态',
+      }),
+      dataIndex: 'status',
+      width: 100,
+      render: (status, record) => {
+        return <StatusLabel status={status} type={record?.type} />;
+      },
+    },
+    {
+      title: '操作',
+      dataIndex: 'actions',
+      width: 200,
+      render: (_, record) => (
+        <TaskActions
+          task={record}
+          onDetailVisible={props.onDetailVisible}
+          onReloadList={props.onReloadList}
+          isDetailModal={false}
+          onClose={() => props.onDetailVisible(null, false)}
+          onApprovalVisible={onApprovalVisible}
+        />
+      ),
+    },
+  ];
+
+  const newALLTaskOperation = useMemo(() => {
+    if (!isAll || projectArchived) return;
 
     return (
-      <>
-        <CommonTable
-          ref={tableRef}
-          mode={CommonTableMode.SMALL}
-          titleContent={null}
-          enableResize
-          operationContent={{
-            options: getOperationContentOption(),
-            isNeedOccupyElement: projectArchived,
+      <Popover
+        content={newTaskMenu}
+        placement="bottomLeft"
+        open={(hoverInNewTaskMenuBtn || hoverInNewTaskMenu) && isAll}
+      >
+        <Button
+          type="primary"
+          onMouseMove={() => setHoverInNewTaskMenu(true)}
+          onMouseLeave={() => {
+            setTimeout(() => {
+              setHoverInNewTaskMenu(false);
+            }, 200);
           }}
-          filterContent={{
-            enabledSearch: false,
-            filters: [
-              {
-                name: 'executeTime',
-                defaultValue: urlStatusValue ? TIME_OPTION_ALL_TASK : executeTime,
-                dropdownWidth: 160,
-                options: TimeOptions,
-              },
-              {
-                render: (params: ITableLoadOptions) => {
-                  const content = executeTime === 'custom' && (
-                    <RangePicker
-                      className={styles.rangePicker}
-                      style={{
-                        width: '250px',
-                      }}
-                      size="small"
-                      bordered={false}
-                      suffixIcon={null}
-                      defaultValue={executeDate as [Dayjs, Dayjs]}
-                      showTime={{
-                        format: 'HH:mm:ss',
-                      }}
-                      disabledDate={(current) => {
-                        return current > dayjs();
-                      }}
-                      format="YYYY-MM-DD HH:mm:ss"
-                      onChange={(value) => {
-                        setExecuteDate(value);
-                        localStorage.setItem(TASK_EXECUTE_DATE_KEY, JSON.stringify(value));
-                      }}
-                    />
-                  );
-                  return content;
-                },
-              },
-            ],
+          onClick={() => {
+            if (isAll) return;
+            onMenuClick(taskTabType);
           }}
-          onLoad={loadData}
-          onChange={handleChange}
-          tableProps={{
-            className: styles.commonTable,
-            rowClassName: styles.tableRrow,
-            columns: columns as any,
-            dataSource: currentTask?.contents,
-            rowKey: 'id',
-            loading: loading,
-            pagination: urlTriggerValue
-              ? false
-              : {
-                  current: currentTask?.page?.number,
-                  total: currentTask?.page?.totalElements,
-                },
-          }}
-          rowSelecter={
-            [
-              TaskPageType.ALL,
-              TaskPageType.STRUCTURE_COMPARISON,
-              TaskPageType.MULTIPLE_ASYNC,
-            ]?.includes(taskTabType)
-              ? null
-              : rowSelection
-          }
-          showSelectedInfoBar={false}
-        />
-
-        <ImportModal
-          taskType={taskTabType as any}
-          open={importModalVisible}
-          onCancel={() => setImportModalVisible(false)}
-          onOk={(scheduleTaskImportRequest, previewData, projectId) => {
-            setImportModalVisible(false);
-            setImportProjectId(projectId);
-            debounceSubmit(scheduleTaskImportRequest, previewData);
-          }}
-        />
-      </>
+        >
+          <>
+            新建
+            <DownOutlined style={{ color: '#fff' }} />
+          </>
+        </Button>
+      </Popover>
     );
-  }),
-);
-export default TaskTable;
+  }, [isAll, hoverInNewTaskMenuBtn, hoverInNewTaskMenu]);
+
+  const newTaskOperation = useMemo(() => {
+    if (isAll || projectArchived) return;
+    const taskTypeLabel = TaskPageTextMap[taskTabType];
+    return (
+      <Button type="primary">
+        <a onClick={() => props.onMenuClick(taskTabType)}>
+          <Space>
+            {formatMessage(
+              {
+                id: 'odc.src.component.Task.component.TaskTable.NewActiveTasklabel',
+                defaultMessage: '新建{activeTaskLabel}',
+              },
+              { activeTaskLabel: taskTypeLabel },
+            )}
+          </Space>
+        </a>
+      </Button>
+    );
+  }, [isAll, taskTabType, isSubmitImport]);
+
+  const batchOperation = () => {
+    if (projectArchived) return;
+    let menuItems = [];
+    const isSupportTaksTerminate = odc?.appConfig?.task?.isSupportTaksTerminate;
+    if (isSupportTaksTerminate && taskTypeThatCanBeTerminate?.includes(taskTabType)) {
+      menuItems.push({
+        key: 'batchTerminate',
+        label: (
+          <AsyncTaskOperationButton
+            onReload={() => {
+              clearSelection();
+              props.onReloadList?.();
+            }}
+            {...getTerminateConfig(selectedRow)}
+            buttonType="text"
+            dataSource={selectedRow}
+          />
+        ),
+      });
+    }
+    if (!menuItems.length) return;
+    return (
+      <Dropdown
+        menu={{ items: menuItems }}
+        placement="bottomLeft"
+        overlayClassName={styles.batchOperationDropdown}
+      >
+        <Button>
+          {formatMessage({
+            id: 'src.page.Project.Database.components.AddDataBaseButton.85804FB2',
+            defaultMessage: '批量操作',
+          })}
+
+          <DownOutlined style={{ color: 'var(--icon-color-normal)' }} />
+        </Button>
+      </Dropdown>
+    );
+  };
+
+  return (
+    <TableCard
+      title={
+        <Space size={12}>
+          {newALLTaskOperation}
+          {newTaskOperation}
+          {batchOperation()}
+        </Space>
+      }
+      extra={
+        <ParamsContext.Provider
+          value={{
+            params,
+            setParams,
+            projectList: resProjects?.contents,
+            mode,
+            reload: () => {
+              setLoading(true);
+              loadData(params, pagination);
+            },
+          }}
+        >
+          <Space>
+            <Header />
+          </Space>
+        </ParamsContext.Provider>
+      }
+    >
+      <CommonTable
+        stripe={false}
+        showToolbar={false}
+        computePageSizeByResize
+        rowHeight={51}
+        ref={tableRef}
+        mode={CommonTableMode.SMALL}
+        titleContent={null}
+        enableResize
+        onLoad={async (e) => {
+          loadData(params, {
+            current: 1,
+            pageSize: e?.pageSize ? e?.pageSize : pagination?.pageSize,
+          });
+        }}
+        onChange={(e) => {
+          if (e.pagination) {
+            loadData(params, {
+              pageSize: e?.pagination?.pageSize ? e?.pagination?.pageSize : pagination?.pageSize,
+              current: e?.pagination?.current,
+            });
+          }
+        }}
+        enabledReload={false}
+        tableProps={{
+          className: styles.commonTable,
+          loading,
+          columns: columns,
+          rowKey: 'id',
+          dataSource: taskList?.contents,
+          pagination: {
+            current: taskList?.page?.number,
+            total: taskList?.page?.totalElements,
+          },
+        }}
+        showSelectedInfoBar={false}
+        rowSelecter={[TaskPageType.ALL]?.includes(taskTabType) ? null : rowSelection}
+      />
+      <ImportModal
+        taskType={taskTabType as any}
+        open={importModalVisible}
+        onCancel={() => setImportModalVisible(false)}
+        onOk={(scheduleTaskImportRequest, previewData, projectId) => {
+          setImportModalVisible(false);
+          setImportProjectId(projectId);
+          debounceSubmit(scheduleTaskImportRequest, previewData);
+        }}
+      />
+    </TableCard>
+  );
+};
+
+export default inject('taskStore', 'pageStore')(observer(TaskTable));

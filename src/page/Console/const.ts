@@ -1,5 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import { TaskPageType } from '@/d.ts';
+import { ScheduleType } from '@/d.ts/schedule';
 import { title } from 'process';
 
 export enum EQuickStartRole {
@@ -43,10 +43,10 @@ export const ConsoleTextConfig = {
     ],
 
     scheduleType: [
-      TaskPageType.DATA_ARCHIVE,
-      TaskPageType.DATA_DELETE,
-      TaskPageType.PARTITION_PLAN,
-      TaskPageType.SQL_PLAN,
+      ScheduleType.DATA_ARCHIVE,
+      ScheduleType.DATA_DELETE,
+      ScheduleType.PARTITION_PLAN,
+      ScheduleType.SQL_PLAN,
     ],
   },
   quickStart: {

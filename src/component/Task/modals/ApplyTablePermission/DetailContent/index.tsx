@@ -22,9 +22,9 @@ import type { IApplyTablePermissionTaskParams, TaskDetail } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider, Space } from 'antd';
 import { useMemo } from 'react';
+import { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import { permissionOptionsMap } from '../';
 import { getExpireTimeLabel } from '@/component/Task/helper';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
 import EllipsisText from '@/component/EllipsisText';
 
 const getConnectionColumns = () => {
@@ -96,15 +96,8 @@ const TaskContent: React.FC<IProps> = (props) => {
 
   return (
     <>
-      <Descriptions column={1}>
-        <Descriptions.Item
-          label={formatMessage({
-            id: 'src.component.Task.ApplyTablePermission.DetailContent.8CEA0610',
-            defaultMessage: '任务编号',
-          })}
-        >
-          {task?.id}
-        </Descriptions.Item>
+      <Descriptions column={2}>
+        <Descriptions.Item label={'ID'}>{task?.id}</Descriptions.Item>
         <Descriptions.Item
           label={formatMessage({
             id: 'src.component.Task.ApplyTablePermission.DetailContent.4B4A4E81',
@@ -123,7 +116,7 @@ const TaskContent: React.FC<IProps> = (props) => {
               defaultMessage: '风险等级',
             })} /*风险等级*/
           >
-            <RiskLevelLabel level={task?.riskLevel?.level} color={task?.riskLevel?.style} />
+            <ODCRiskLevelLabel iconMode levelMap level={task?.riskLevel?.level} />
           </Descriptions.Item>
         )}
       </Descriptions>
@@ -133,7 +126,7 @@ const TaskContent: React.FC<IProps> = (props) => {
         }}
       />
 
-      <Descriptions column={1}>
+      <Descriptions column={1} style={{ marginBottom: '12px' }}>
         <Descriptions.Item
           label={formatMessage({
             id: 'src.component.Task.ApplyTablePermission.DetailContent.32776504',
@@ -168,7 +161,7 @@ const TaskContent: React.FC<IProps> = (props) => {
         }}
       />
 
-      <Descriptions column={1}>
+      <Descriptions column={2}>
         <Descriptions.Item
           label={formatMessage({
             id: 'src.component.Task.ApplyTablePermission.DetailContent.64239A78',
@@ -200,7 +193,7 @@ const TaskContent: React.FC<IProps> = (props) => {
         }}
       />
 
-      <Descriptions column={1}>
+      <Descriptions column={2}>
         <Descriptions.Item
           label={formatMessage({
             id: 'src.component.Task.ApplyTablePermission.DetailContent.2740E99B',

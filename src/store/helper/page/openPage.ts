@@ -21,6 +21,7 @@ import {
   getScript,
   getTypemByName,
 } from '@/common/network';
+import { SchedulePageType, ScheduleType } from '@/d.ts/schedule';
 import {
   DbObjectType,
   IFunction,
@@ -30,7 +31,6 @@ import {
   ITriggerFormData,
   PageType,
   SynonymType,
-  TaskPageScope,
   TaskPageType,
   TriggerPropsTab,
   TriggerState,
@@ -67,6 +67,7 @@ import { PLType } from '@/constant/plType';
 import modalStore from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
 import taskStore from '@/store/task';
+import scheduleStore from '@/store/schedule';
 import { message } from 'antd';
 import page from '../../page';
 import {
@@ -83,6 +84,7 @@ import {
   SQLResultSetPage,
   SynonymPage,
   TablePage,
+  SchedulePage,
   TaskPage,
   TriggerPage,
   TutorialPage,
@@ -93,6 +95,7 @@ import {
 import {
   CreateMaterializedViewPage,
   CreateTablePage,
+  CreateSchedulePage,
   CreateTriggerPage,
   CreateViewPage,
   SQLConfirmPage,
@@ -176,9 +179,14 @@ export async function openNewDefaultPLPage(
   page.openPage(plPage);
 }
 
-export function openTasksPage(taskType?: TaskPageType, taskPageScope?: TaskPageScope) {
-  taskStore.changeTaskManageVisible(true, taskType, taskPageScope);
+export function openTasksPage(taskType?: TaskPageType) {
+  taskStore.changeTaskManageVisible(true, taskType);
   page.openPage(new TaskPage(taskType));
+}
+
+export async function openSchedulesPage(scheduleType?: SchedulePageType) {
+  scheduleStore.changeScheduleManageVisible(true, scheduleType);
+  await page.openPage(new SchedulePage(scheduleType));
 }
 
 /** 会话管理 */
@@ -259,6 +267,11 @@ export function openCreateViewPage(dbId: number) {
 /** 创建物化视图页面 */
 export function openCreateMaterializedViewPage(dbId: number) {
   page.openPage(new CreateMaterializedViewPage(dbId));
+}
+
+/** 创建作业页面 */
+export function openCreateSchedulePage(scheduleType: ScheduleType, title?: string) {
+  page.openPage(new CreateSchedulePage(scheduleType, title));
 }
 
 /**

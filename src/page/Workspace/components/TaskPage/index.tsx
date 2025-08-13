@@ -16,9 +16,10 @@ import { formatMessage } from '@/util/intl';
  */
 
 import { TaskTypeMap } from '@/component/Task/component/TaskTable/const';
-import Content from '@/component/Task/container/Content';
+import Content from '@/component/Task/layout/Content';
 import { TaskPageType } from '@/d.ts';
 import styles from './index.less';
+import { TaskPageMode } from '@/component/Task/interface';
 export const getTitleByParams = (params: { type: TaskPageType }) => {
   const { type } = params;
   let title = '';
@@ -28,20 +29,6 @@ export const getTitleByParams = (params: { type: TaskPageType }) => {
         id: 'odc.src.page.Workspace.components.TaskPage.WorkOrderAllWorkOrders',
         defaultMessage: '工单-所有工单',
       }); //'工单-所有工单'
-      break;
-    }
-    case TaskPageType.CREATED_BY_CURRENT_USER: {
-      title = formatMessage({
-        id: 'odc.src.page.Workspace.components.TaskPage.WorkersIInitiated',
-        defaultMessage: '工单-我发起的',
-      }); //'工单-我发起的'
-      break;
-    }
-    case TaskPageType.APPROVE_BY_CURRENT_USER: {
-      title = formatMessage({
-        id: 'odc.src.page.Workspace.components.TaskPage.WorkOrderWaitingForMe',
-        defaultMessage: '工单-待我审批的',
-      }); //'工单-待我审批的'
       break;
     }
     default: {
@@ -65,7 +52,7 @@ interface IProps {
 const TaskPage: React.FC<IProps> = (props) => {
   return (
     <div className={styles.task}>
-      <Content pageKey={props?.pageKey} isMultiPage />
+      <Content pageKey={props?.pageKey} mode={TaskPageMode.MULTI_PAGE} />
     </div>
   );
 };

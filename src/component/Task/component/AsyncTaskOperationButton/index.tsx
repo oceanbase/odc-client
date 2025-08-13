@@ -10,11 +10,12 @@ import { ScheduleExportListView } from '@/d.ts/migrateTask';
 import { TaskType } from '@/d.ts';
 import datasourceStatus from '@/store/datasourceStatus';
 import { isScheduleMigrateTask } from './helper';
+import { ScheduleType } from '@/d.ts/schedule';
 
 export interface IAsyncTaskOperationConfig extends AsyncTaskModalConfig {
   buttonText: string;
   buttonDisabledText: string;
-  buttonType: 'primary' | 'default';
+  buttonType: 'primary' | 'default' | 'text';
 }
 
 export function AsyncTaskOperationButton(props: IAsyncTaskOperationConfig) {
@@ -44,14 +45,14 @@ export function AsyncTaskOperationButton(props: IAsyncTaskOperationConfig) {
     if (!props.dataSource?.length) {
       return;
     }
-    const scheduleType = props?.dataSource?.[0]?.type;
+    const scheduleType = props?.dataSource?.[0]?.type as unknown as ScheduleType;
     if (isScheduleMigrateTask(scheduleType)) {
       const res = await getExportListView({
         ids: props?.dataSource?.map((i) => i?.id),
         scheduleType,
       });
       setTaskList(
-        scheduleType === TaskType.PARTITION_PLAN
+        scheduleType === ScheduleType.PARTITION_PLAN
           ? res?.map((i) => {
               return {
                 ...i,

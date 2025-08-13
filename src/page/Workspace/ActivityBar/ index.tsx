@@ -20,12 +20,13 @@ import MenuItem from '@/layout/SpaceContainer/Sider/MenuItem';
 import MineItem from '@/layout/SpaceContainer/Sider/MineItem';
 import SettingItem from '@/layout/SpaceContainer/Sider/SettingItem';
 import SpaceSelect from '@/layout/SpaceContainer/Sider/SpaceSelect';
-import { openTasksPage } from '@/store/helper/page';
+import { openTasksPage, openSchedulesPage } from '@/store/helper/page';
 import { UserStore } from '@/store/login';
 import { ReactComponent as DBSvg } from '@/svgr/database_outline.svg';
 import { ReactComponent as TaskSvg } from '@/svgr/icon_task.svg';
 import { ReactComponent as ManagerSvg } from '@/svgr/operate.svg';
 import { ReactComponent as CodeSvg } from '@/svgr/Snippet.svg';
+import { ReactComponent as ScheduleSvg } from '@/svgr/icon_schedule.svg';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { BulbOutlined, UserOutlined } from '@ant-design/icons';
@@ -37,6 +38,7 @@ import ActivityBarButton from './ActivityBarButton';
 import styles from './index.less';
 import Logo from './Logo';
 import { ActivityBarItemType, ActivityBarItemTypeText } from './type';
+import { getFirstEnabledSchedule } from '@/component/Schedule/helper';
 
 interface IProps {
   userStore?: UserStore;
@@ -70,6 +72,12 @@ const ActivityBar: React.FC<IProps> = (props) => {
       title: ActivityBarItemTypeText[ActivityBarItemType.Task],
       key: ActivityBarItemType.Task,
       icon: TaskSvg,
+      isVisible: true,
+    },
+    {
+      title: ActivityBarItemTypeText[ActivityBarItemType.Schedule],
+      key: ActivityBarItemType.Schedule,
+      icon: ScheduleSvg,
       isVisible: true,
     },
     {
@@ -109,7 +117,13 @@ const ActivityBar: React.FC<IProps> = (props) => {
                     if (item.key === ActivityBarItemType.Task) {
                       const firstEnabledTask = getFirstEnabledTask();
                       if (firstEnabledTask) {
-                        openTasksPage(firstEnabledTask?.value);
+                        openTasksPage(firstEnabledTask?.pageType);
+                      }
+                    }
+                    if (item.key === ActivityBarItemType.Schedule) {
+                      const firstEnabledSchedule = getFirstEnabledSchedule();
+                      if (firstEnabledSchedule) {
+                        openSchedulesPage(firstEnabledSchedule?.pageType);
                       }
                     }
                     context?.setActiveKey(item.key);

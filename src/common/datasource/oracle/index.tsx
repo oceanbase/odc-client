@@ -19,6 +19,7 @@ import { TableForeignConstraintOnDeleteType } from '@/d.ts/table';
 import { haveOCP } from '@/util/env';
 import { IDataSourceModeConfig } from '../interface';
 import OracleColumnExtra from '../oceanbase/OracleColumnExtra';
+import { ScheduleType } from '@/d.ts/schedule';
 
 const oracleTableConfig = {
   constraintEnableConfigurable: true,
@@ -68,12 +69,10 @@ const items: Record<ConnectType.ORACLE, IDataSourceModeConfig> = {
         TaskType.IMPORT,
         TaskType.EXPORT,
         TaskType.EXPORT_RESULT_SET,
-        TaskType.SQL_PLAN,
         TaskType.ASYNC,
-        TaskType.DATA_DELETE,
-        TaskType.DATA_ARCHIVE,
         TaskType.MULTIPLE_ASYNC,
       ],
+      schedule: [ScheduleType.SQL_PLAN, ScheduleType.DATA_ARCHIVE, ScheduleType.DATA_DELETE],
       obclient: false,
       recycleBin: false,
       sqlExplain: false,

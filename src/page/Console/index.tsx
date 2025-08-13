@@ -16,7 +16,7 @@ import { areaLayout, ConsoleTextConfig, EQuickStartRole, gridConfig } from './co
 import styles from './index.less';
 import RecentlyDatabase from './components/RecentlyDatabase';
 import { useNavigate } from '@umijs/max';
-import { getScheduleStat } from '@/common/network/task';
+import { getScheduleStat } from '@/common/network/schedule';
 import { ICycleTaskStatParam, TaskPageType } from '@/d.ts';
 import login from '@/store/login';
 import setting from '@/store/setting';

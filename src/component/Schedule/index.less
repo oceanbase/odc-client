@@ -1,0 +1,61 @@
+.task {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  .sider {
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: 100%;
+  }
+}
+
+.schedlueSider {
+  width: 148px;
+  height: 100%;
+  padding: 0 12px 12px 0;
+  overflow: auto;
+  overflow-x: hidden;
+  border-right: 1px solid var(--divider-color);
+}
+
+.groupName {
+  padding-top: 6px;
+  color: var(--text-color-hint);
+  line-height: 28px;
+}
+.groupItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 12px;
+  color: var(--text-color-primary);
+  line-height: 28px;
+  cursor: pointer;
+  &:hover {
+    background-color: var(--hover-color);
+  }
+  &.selected {
+    :global {
+      .ant-typography {
+        line-height: 28px;
+        color: var(--text-color-link);
+      }
+    }
+    background-color: var(--focus-color);
+    border-radius: 2px;
+  }
+  :global {
+    .ant-typography {
+      line-height: 28px;
+    }
+  }
+}
+
+.content {
+  flex-grow: 1;
+  flex-shrink: 1;
+  height: 100%;
+  padding-bottom: 12px;
+  padding-left: 12px;
+  overflow: auto;
+}

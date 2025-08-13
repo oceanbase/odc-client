@@ -10,7 +10,6 @@ import {
   IConnection,
   SQLContentType,
   TaskExecStrategy,
-  TaskPageScope,
   TaskPageType,
   TaskType,
 } from '@/d.ts';
@@ -383,7 +382,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         handleCancel(false);
         setConfirmLoading(false);
         if (res) {
-          openTasksPage(TaskPageType.MULTIPLE_ASYNC, TaskPageScope.CREATED_BY_CURRENT_USER);
+          openTasksPage(TaskPageType.MULTIPLE_ASYNC);
           modalStore.changeMultiDatabaseChangeModal(false);
         }
       })

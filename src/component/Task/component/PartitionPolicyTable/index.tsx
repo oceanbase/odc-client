@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getPartitionPlan } from '@/common/network/task';
 import Action from '@/component/Action';
 import CommonTable from '@/component/CommonTable';
 import { CommonTableMode, ITableLoadOptions } from '@/component/CommonTable/interface';
@@ -27,7 +26,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { TaskPartitionStrategyMap } from '@/component/Task/const';
 import ConfigDrawer from './ConfigDrawer';
 import styles from './index.less';
-
+import { IScheduleRecord, IPartitionPlan } from '@/d.ts/schedule';
 export const getStrategyLabel = (strategies: TaskPartitionStrategy[], split = ', ') => {
   return strategies?.map((item) => TaskPartitionStrategyMap[item])?.join(split);
 };
@@ -101,7 +100,8 @@ const ConfigStatusRender: React.FC<IConfigStatusRender> = (enabled) => {
 };
 
 interface IProps {
-  taskId: number;
+  taskId?: number;
+  schedule: IScheduleRecord<IPartitionPlan>;
 }
 
 interface ITableFilter {
@@ -110,25 +110,14 @@ interface ITableFilter {
 }
 
 const PartitionPolicyTable: React.FC<IProps> = (props) => {
-  const { taskId } = props;
+  const { taskId, schedule } = props;
   const [activeId, setActiveId] = useState(0);
   const [visible, setVisible] = useState(false);
   const [filters, setFilters] = useState<ITableFilter>(null);
-  const [tableConfigs, setTableConfigs] = useState<IPartitionTableConfig[]>([]);
+  const tableConfigs = schedule?.parameters?.partitionTableConfigs;
   const tableRef = useRef();
   const tableResource = handleFilter(tableConfigs);
   const activeConfig = tableConfigs?.find((item) => item.id === activeId);
-
-  const loadData = async () => {
-    const res = await getPartitionPlan(taskId);
-    setTableConfigs(res?.partitionTableConfigs);
-  };
-
-  useEffect(() => {
-    if (taskId) {
-      loadData();
-    }
-  }, [taskId]);
 
   const columns = [
     {
@@ -138,7 +127,7 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
       }), //'分区表'
       key: 'tableName',
       dataIndex: 'tableName',
-      width: 114,
+      width: 164,
       ellipsis: true,
       filterDropdown: (props) => {
         return (
@@ -164,7 +153,7 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
         defaultMessage: '类型',
       }), //'类型'
       ellipsis: true,
-      width: 80,
+      width: 100,
       render: () => <span>Range</span>,
     },
     {
@@ -251,16 +240,13 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
         mode={CommonTableMode.SMALL}
         ref={tableRef}
         titleContent={{
-          title: formatMessage({
-            id: 'odc.components.PartitionPolicyTable.PartitionPolicy',
-            defaultMessage: '分区策略',
-          }), //分区策略
+          title: '分区策略：',
         }}
         filterContent={{
           enabledSearch: false,
         }}
         onChange={handleChange}
-        onLoad={loadData}
+        onLoad={async () => {}}
         tableProps={{
           className: styles.partitionTable,
           rowClassName: styles.tableRrow,

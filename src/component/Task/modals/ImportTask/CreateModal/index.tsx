@@ -8,7 +8,6 @@ import {
   IMPORT_ENCODING,
   IMPORT_TYPE,
   TaskExecStrategy,
-  TaskPageScope,
   TaskPageType,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
@@ -221,7 +220,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               ...prev,
               setIsSaveDefaultConfig: false,
             }));
-            openTasksPage(TaskPageType.IMPORT, TaskPageScope.CREATED_BY_CURRENT_USER);
+            openTasksPage(TaskPageType.IMPORT);
           }
         } catch (e) {
           console.error(e);
@@ -432,7 +431,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             })
       }
       open={modalStore.importModalVisible}
-      destroyOnHidden
+      destroyOnClose
       width={520}
       onClose={handleConfirmClose}
     >

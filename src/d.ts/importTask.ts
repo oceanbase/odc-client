@@ -1,6 +1,7 @@
 import { formatMessage } from '@/util/intl';
 import { ConnectType, IConnection, TaskType } from '.';
 import { ODCCloudProvider } from './migrateTask';
+import { ScheduleType } from './schedule';
 
 export enum ScheduleNonImportableType {
   LACK_OF_INSTANCE = 'LACK_OF_INSTANCE',
@@ -59,7 +60,7 @@ export interface IImportScheduleTaskView {
    * Project name of the system before export
    */
   originProjectName: string;
-  type: TaskType;
+  type: TaskType | ScheduleType;
   databaseView: IImportDatabaseView;
   targetDatabaseView: IImportDatabaseView;
 }

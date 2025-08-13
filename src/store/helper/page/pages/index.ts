@@ -29,6 +29,7 @@ import {
   TriggerState,
   TypePropsTab,
 } from '@/d.ts';
+import { SchedulePageType } from '@/d.ts/schedule';
 import {
   PropsTab as FunctionPropsTab,
   TopTab as FunctionTopTab,
@@ -172,6 +173,19 @@ export class TaskPage extends Page {
     };
   }
 }
+
+export class SchedulePage extends Page {
+  constructor(type: SchedulePageType) {
+    super();
+    this.pageKey = type;
+    this.pageType = PageType.SCHEDULES;
+    this.pageTitle = '作业';
+    this.pageParams = {
+      type,
+    };
+  }
+}
+
 export class SessionManagePage extends Page {
   public pageParams: {
     cid: number;

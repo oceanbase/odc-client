@@ -23,14 +23,7 @@ import ODCDragger from '@/component/OSSDragger2';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import TaskTimer from '@/component/Task/component/TimerSelect';
-import {
-  RollbackType,
-  SQLContentType,
-  TaskExecStrategy,
-  TaskPageScope,
-  TaskPageType,
-  TaskType,
-} from '@/d.ts';
+import { RollbackType, SQLContentType, TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
 import LintResultTable from '@/page/Workspace/components/SQLResultSet/LintResultTable';
 import { openTasksPage } from '@/store/helper/page';
 import login from '@/store/login';
@@ -448,7 +441,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         handleCancel(false);
         setConfirmLoading(false);
         if (res) {
-          openTasksPage(TaskPageType.ASYNC, TaskPageScope.CREATED_BY_CURRENT_USER);
+          openTasksPage(TaskPageType.ASYNC);
         }
       })
       .catch((errorInfo) => {

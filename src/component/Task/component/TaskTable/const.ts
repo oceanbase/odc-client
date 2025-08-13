@@ -23,13 +23,6 @@ export const TaskTypeMap = {
     defaultMessage: '数据库变更',
   }),
   // 数据库变更
-
-  [TaskType.PARTITION_PLAN]: formatMessage({
-    id: 'odc.TaskManagePage.component.TaskTable.PartitionPlan',
-    defaultMessage: '分区计划',
-  }),
-  //分区计划
-
   [TaskType.SHADOW]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.ShadowTableSynchronization',
     defaultMessage: '影子表同步',
@@ -46,24 +39,9 @@ export const TaskTypeMap = {
     defaultMessage: '导出结果集',
   }),
   //'导出结果集'
-  [TaskType.SQL_PLAN]: formatMessage({
-    id: 'odc.component.TaskTable.SqlPlan',
-    defaultMessage: 'SQL 计划',
-  }),
-  //SQL 计划
-  [TaskType.DATA_ARCHIVE]: formatMessage({
-    id: 'odc.component.TaskTable.DataArchiving',
-    defaultMessage: '数据归档',
-  }),
-  //数据归档
   [TaskType.ONLINE_SCHEMA_CHANGE]: formatMessage({
     id: 'odc.component.TaskTable.LockFreeStructureChange',
     defaultMessage: '无锁结构变更',
-  }),
-  //无锁结构变更
-  [TaskType.DATA_DELETE]: formatMessage({
-    id: 'odc.component.TaskTable.DataCleansing',
-    defaultMessage: '数据清理',
   }),
   //数据清理
   [TaskType.APPLY_PROJECT_PERMISSION]: formatMessage({

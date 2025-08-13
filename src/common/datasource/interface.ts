@@ -17,6 +17,7 @@
 import { ConnectionMode, TaskType } from '@/d.ts';
 import { TableForeignConstraintOnDeleteType } from '@/d.ts/table';
 import { TableColumn } from '@/page/Workspace/components/CreateTable/interface';
+import { ScheduleType } from '@/d.ts/schedule';
 
 export type columnExtraComponent = React.FC<{
   column: TableColumn;
@@ -133,6 +134,7 @@ export interface IDataSourceModeConfig {
   };
   features: {
     task: TaskType[];
+    schedule: ScheduleType[];
     allTask?: boolean;
     obclient?: boolean;
     recycleBin?: boolean;
