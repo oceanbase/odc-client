@@ -42,6 +42,7 @@ const GlobalModals: React.FC<IProps> = function ({ modalStore }) {
       <CreateFunctionModal />
       <CreateProcedureModal />
       <CreateSequenceModal key={`${modalStore.createSequenceModalVisible}sequence`} />
+      <CreateModals />
       <SelectDatabase />
       <DatabaseSearchModal />
       <ExecuteSqlDetailModal />
