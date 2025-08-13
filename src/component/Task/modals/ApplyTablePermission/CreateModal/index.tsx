@@ -24,7 +24,7 @@ import {
   flatTableByGroupedParams,
   groupTableByDataBase,
 } from '@/component/Task/component/TableSelecter/util';
-import { TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import { TaskPageType, TaskType } from '@/d.ts';
 import { TablePermissionType } from '@/d.ts/table';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
@@ -249,7 +249,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               defaultMessage: '工单创建成功',
             }),
           );
-          openTasksPage(TaskPageType.APPLY_TABLE_PERMISSION, TaskPageScope.CREATED_BY_CURRENT_USER);
+          openTasksPage(TaskPageType.APPLY_TABLE_PERMISSION);
         }
       })
       .catch((errorInfo) => {
@@ -331,7 +331,7 @@ const CreateModal: React.FC<IProps> = (props) => {
 
   const applyProjectPermission = () => {
     handleCancel(hasEdit);
-    openTasksPage(TaskPageType.APPLY_PROJECT_PERMISSION, TaskPageScope.CREATED_BY_CURRENT_USER);
+    openTasksPage(TaskPageType.APPLY_PROJECT_PERMISSION);
   };
 
   const projectEmptyRender = () => {

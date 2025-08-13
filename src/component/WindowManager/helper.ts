@@ -16,6 +16,8 @@
 
 import { IPage, PageType } from '@/d.ts';
 import { getTitleByParams } from '@/page/Workspace/components/TaskPage';
+import { getScheduleTitleByParams } from '@/page/Workspace/components/SchedulePage';
+import { getTitleByParams as getCreateScheduleTitleByParams } from '@/page/Workspace/components/CreateSchedule';
 import { BatchCompilePage, OBClientPage, SQLPage } from '@/store/helper/page/pages';
 import { SQLConfirmPage } from '@/store/helper/page/pages/create';
 import { AnonymousPage } from '@/store/helper/page/pages/pl';
@@ -104,6 +106,12 @@ export function getPageTitleText(page: IPage) {
     }
     case PageType.TASKS: {
       return getTitleByParams(params);
+    }
+    case PageType.SCHEDULES: {
+      return getScheduleTitleByParams(params);
+    }
+    case PageType.CREATE_SCHEDULES: {
+      return title || getCreateScheduleTitleByParams(params);
     }
     default: {
       return title;

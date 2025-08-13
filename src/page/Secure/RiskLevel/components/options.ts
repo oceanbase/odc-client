@@ -19,6 +19,8 @@ import { listEnvironments } from '@/common/network/env';
 import { TaskTypeMap } from '@/component/Task/component/TaskTable/const';
 import { TaskType } from '@/d.ts';
 import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
+import { ScheduleType } from '@/d.ts/schedule';
+import { ScheduleTextMap } from '@/constant/schedule';
 export const getEnvironmentOptions = async () => {
   const rawData = (await listEnvironments()) || [];
   const newEnvOptions = rawData?.map((rd) => {
@@ -49,8 +51,8 @@ export const getTaskTypeOptions = () => {
       value: TaskType.ASYNC,
     },
     {
-      label: TaskTypeMap[TaskType.PARTITION_PLAN],
-      value: TaskType.PARTITION_PLAN,
+      label: ScheduleTextMap[ScheduleType.PARTITION_PLAN],
+      value: ScheduleType.PARTITION_PLAN,
     },
     {
       label: formatMessage({
@@ -91,6 +93,29 @@ export const getTaskTypeOptions = () => {
 
   return newTaskTypeOptions;
 };
+
+const getScheduleTypeOptions = () => {
+  const scheduleTypeOptions = [
+    {
+      label: ScheduleTextMap[ScheduleType.PARTITION_PLAN],
+      value: ScheduleType.PARTITION_PLAN,
+    },
+    {
+      label: ScheduleTextMap[ScheduleType.DATA_ARCHIVE],
+      value: ScheduleType.DATA_ARCHIVE,
+    },
+    {
+      label: ScheduleTextMap[ScheduleType.DATA_DELETE],
+      value: ScheduleType.DATA_DELETE,
+    },
+    {
+      label: ScheduleTextMap[ScheduleType.SQL_PLAN],
+      value: ScheduleType.SQL_PLAN,
+    },
+  ];
+  return scheduleTypeOptions;
+};
+
 export const getSqlCheckResultOptions = () => {
   const sqlCheckResultOptions = [
     {
@@ -113,7 +138,9 @@ export const initOptions = async ({
   setEnvironmentMap,
   setEnvironmentOptions,
   setTaskTypeIdMap,
+  setScheduleTypeIdMap,
   setTaskTypeOptions,
+  setScheduleTypeOptions,
   setSqlCheckResultIdMap,
   setSqlCheckResultOptions,
 }) => {
@@ -126,10 +153,15 @@ export const initOptions = async ({
   setEnvironmentMap(envMap);
   setEnvironmentOptions(envOptions);
   const taskTypeOptions = await getTaskTypeOptions();
+  const scheduleTypeOptions = getScheduleTypeOptions();
   const taskTypeIdMap = {};
+  const scheduleTypeIdMap = {};
   taskTypeOptions?.forEach(({ label, value }) => (taskTypeIdMap[value] = label));
+  scheduleTypeOptions?.forEach(({ label, value }) => (scheduleTypeIdMap[value] = label));
+  setScheduleTypeIdMap(scheduleTypeIdMap);
   setTaskTypeIdMap(taskTypeIdMap);
   setTaskTypeOptions(taskTypeOptions);
+  setScheduleTypeOptions(scheduleTypeOptions);
   const sqlCheckResultOptions = await getSqlCheckResultOptions();
   const sqlChekcResultMap = {};
   sqlCheckResultOptions?.forEach(({ label, value }) => (sqlChekcResultMap['' + value] = label));

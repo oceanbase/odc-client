@@ -1,12 +1,15 @@
 import { formatMessage } from '@/util/intl';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { SQLContent } from '@/component/SQLContent';
-import type { ITaskResult } from '@/d.ts';
+import type { ILogicalDatabaseAsyncTaskParams, ITaskResult, TaskDetail } from '@/d.ts';
 import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Descriptions, Divider, Space, Tooltip } from 'antd';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { getTaskExecStrategyMap } from '@/component/Task//const';
+import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
+import { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
+
 import EllipsisText from '@/component/EllipsisText';
 export const ErrorStrategy = {
   ABORT: formatMessage({
@@ -20,59 +23,54 @@ export const ErrorStrategy = {
 };
 
 interface IProps {
-  task: any;
+  task: TaskDetail<ILogicalDatabaseAsyncTaskParams>;
   result: ITaskResult;
   hasFlow: boolean;
 }
 const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
   const { task, hasFlow, result } = props;
-  const jobParameters = task?.jobParameters;
-  const executionTimeout = milliSecondsToHour(jobParameters?.timeoutMillis);
+  const parameters = task?.parameters;
+  const executionTimeout = milliSecondsToHour(parameters?.timeoutMillis);
   const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
 
   return (
     <>
-      <Descriptions column={4}>
-        <Descriptions.Item
-          span={2}
-          label={formatMessage({
-            id: 'src.component.Task.LogicDatabaseAsyncTask.DetailContent.5C2BBF67',
-            defaultMessage: '任务编号',
-          })}
-        >
-          {task?.id}
-        </Descriptions.Item>
-        <Descriptions.Item
-          span={2}
-          label={formatMessage({
-            id: 'src.component.Task.LogicDatabaseAsyncTask.DetailContent.169FC916',
-            defaultMessage: '任务类型',
-          })}
-        >
+      <Descriptions column={2} style={{ marginBottom: '16px' }}>
+        <Descriptions.Item label={'ID'}>{task?.id}</Descriptions.Item>
+        <Descriptions.Item label={'类型'}>
           {formatMessage({
             id: 'src.component.Task.LogicDatabaseAsyncTask.DetailContent.E8885A6E',
             defaultMessage: '逻辑库变更',
           })}
         </Descriptions.Item>
         <Descriptions.Item
-          span={2}
           label={formatMessage({
             id: 'src.component.Task.LogicDatabaseAsyncTask.DetailContent.85BCF723',
             defaultMessage: '数据库',
           })}
         >
-          <EllipsisText content={task?.database?.name} />
+          <EllipsisText content={<DatabaseLabel database={task?.database} />} />
         </Descriptions.Item>
-        <Descriptions.Item
-          span={2}
-          label={formatMessage({
-            id: 'src.component.Task.LogicDatabaseAsyncTask.DetailContent.CFAA8390',
-            defaultMessage: '所属项目',
-          })}
-        >
+        <Descriptions.Item label={'数据源'}>
+          {task?.database?.dataSource?.name || '-'}
+        </Descriptions.Item>
+        <Descriptions.Item label={'项目'}>
           <EllipsisText content={task?.project?.name} />
         </Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'odc.DataArchiveTask.DetailContent.RiskLevel',
+            defaultMessage: '风险等级',
+          })} /*风险等级*/
+        >
+          <ODCRiskLevelLabel iconMode levelMap level={task?.riskLevel?.level} />
+        </Descriptions.Item>
       </Descriptions>
+      <Divider
+        style={{
+          marginTop: 4,
+        }}
+      />
       <SimpleTextItem
         label={formatMessage({
           id: 'src.component.Task.LogicDatabaseAsyncTask.DetailContent.97C2BA42',
@@ -85,9 +83,9 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
             }}
           >
             <SQLContent
-              sqlContent={jobParameters?.sqlContent}
-              sqlObjectIds={jobParameters?.sqlObjectIds}
-              sqlObjectNames={jobParameters?.sqlObjectNames}
+              sqlContent={parameters?.sqlContent}
+              sqlObjectIds={null}
+              sqlObjectNames={null}
               taskId={task?.id}
               language={
                 getDataSourceModeConfigByConnectionMode(task?.database?.dataSource?.dialectType)
@@ -112,7 +110,7 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
             defaultMessage: '分隔符',
           })}
         >
-          {jobParameters?.delimiter}
+          {parameters?.delimiter}
         </Descriptions.Item>
         <Descriptions.Item
           span={2}
@@ -121,10 +119,10 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
             defaultMessage: '执行方式',
           })}
         >
-          {taskExecStrategyMap[task?.triggerConfig?.triggerStrategy]}
+          {taskExecStrategyMap[task?.executionStrategy]}
         </Descriptions.Item>
         <Descriptions.Item
-          span={4}
+          span={2}
           label={formatMessage({
             id: 'src.component.Task.LogicDatabaseAsyncTask.DetailContent.3D1C66A3',
             defaultMessage: '执行超时时间',
@@ -177,7 +175,7 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
       </Descriptions>
       <Divider
         style={{
-          marginTop: 4,
+          marginTop: 12,
         }}
       />
 

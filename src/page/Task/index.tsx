@@ -17,6 +17,7 @@
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import TaskManage from '@/component/Task';
 import { formatMessage } from '@/util/intl';
+import { TaskPageMode } from '@/component/Task/interface';
 
 const Task = () => {
   return (
@@ -27,7 +28,7 @@ const Task = () => {
         showDivider: true,
       }}
     >
-      <TaskManage />
+      <TaskManage mode={TaskPageMode.COMMON} />
     </PageContainer>
   );
 };

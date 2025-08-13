@@ -29,6 +29,7 @@ import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import Form from 'antd/lib/form/Form';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
+import { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
 import EllipsisText from '@/component/EllipsisText';
 export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult, hasFlow: boolean) {
@@ -56,6 +57,14 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
         schemaName = table.schemaName;
         taskDetailItems = {
           textItems: [
+            [
+              formatMessage({
+                id: 'odc.component.DetailModal.dataMocker.ExecutionMethod',
+                defaultMessage: '执行方式',
+              }),
+              //执行方式
+              taskExecStrategyMap[task?.executionStrategy],
+            ],
             [
               formatMessage({
                 id: 'odc.TaskManagePage.DataMocker.TargetTable',
@@ -194,53 +203,18 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
   }[] = [
     {
       textItems: [
+        ['ID', task?.id],
         [
-          formatMessage({
-            id: 'odc.component.DetailModal.dataMocker.TaskNo',
-            defaultMessage: '任务编号',
-          }),
-          //任务编号
-          task?.id,
-        ],
-
-        [
-          formatMessage({
-            id: 'odc.component.DetailModal.dataMocker.Database',
-            defaultMessage: '所属数据库',
-          }),
-          //所属数据库
-          <DatabaseLabel database={task?.database} />,
-        ],
-
-        [
-          formatMessage({
-            id: 'odc.src.component.Task.DataMockerTask.DetailContent.DataSource',
-            defaultMessage: '所属数据源',
-          }), //'所属数据源'
-          <EllipsisText content={task?.database?.dataSource?.name} />,
-        ],
-
-        [
-          formatMessage({
-            id: 'odc.component.DetailModal.dataMocker.TaskType',
-            defaultMessage: '任务类型',
-          }),
-          //任务类型
+          '类型',
           formatMessage({
             id: 'odc.component.DetailModal.dataMocker.AnalogData',
             defaultMessage: '模拟数据',
           }),
+        ],
+        ['数据库', <DatabaseLabel database={task?.database} />],
 
-          //模拟数据
-        ],
-        [
-          formatMessage({
-            id: 'odc.component.DetailModal.dataMocker.ExecutionMethod',
-            defaultMessage: '执行方式',
-          }),
-          //执行方式
-          taskExecStrategyMap[task?.executionStrategy],
-        ],
+        ['数据源', <EllipsisText content={task?.database?.dataSource?.name} />],
+        ['项目', <EllipsisText content={task?.project?.name} />],
       ],
     },
     taskDetailItems,
@@ -286,7 +260,7 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
           defaultMessage: '风险等级',
         }),
         //风险等级
-        <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />,
+        <ODCRiskLevelLabel iconMode level={task?.riskLevel?.level} levelMap />,
       ],
     ];
 

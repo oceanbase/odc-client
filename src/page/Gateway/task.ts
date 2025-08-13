@@ -45,7 +45,7 @@ export const action = async (actionData: ITaskAction) => {
   if (!task) {
     return 'Get Task Failed';
   }
-  taskStore.changeTaskManageVisible(true, TaskPageType.ALL, undefined, taskId, task?.type);
+  taskStore.changeTaskManageVisible(true, TaskPageType.ALL, taskId, task?.type);
   history.push('/project');
   return;
 };

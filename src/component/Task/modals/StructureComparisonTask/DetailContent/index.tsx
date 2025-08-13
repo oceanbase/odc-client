@@ -548,31 +548,10 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             </div>
           </div>
         </Modal>
-        <Descriptions column={6}>
+        <Descriptions column={2}>
+          <Descriptions.Item label={'ID'}>{task?.id}</Descriptions.Item>
+          <Descriptions.Item label={'类型'}>{TaskTypeMap?.[task?.type]}</Descriptions.Item>
           <Descriptions.Item
-            span={2}
-            label={
-              formatMessage({
-                id: 'src.component.Task.StructureComparisonTask.DetailContent.152888BE',
-                defaultMessage: '任务编号',
-              }) /*"任务编号"*/
-            }
-          >
-            {task?.id}
-          </Descriptions.Item>
-          <Descriptions.Item
-            span={2}
-            label={
-              formatMessage({
-                id: 'src.component.Task.StructureComparisonTask.DetailContent.5E3A8702',
-                defaultMessage: '任务类型',
-              }) /*"任务类型"*/
-            }
-          >
-            {TaskTypeMap?.[task?.type]}
-          </Descriptions.Item>
-          <Descriptions.Item
-            span={2}
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.575F8B39',
@@ -584,7 +563,6 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
           </Descriptions.Item>
 
           <Descriptions.Item
-            span={2}
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.0570289A',
@@ -595,7 +573,6 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             <EllipsisText content={task?.project?.name} />
           </Descriptions.Item>
           <Descriptions.Item
-            span={2}
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.BB26A84B',
@@ -606,7 +583,6 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             <EllipsisText content={task?.database?.dataSource?.name} />
           </Descriptions.Item>
           <Descriptions.Item
-            span={2}
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.D26187E4',
@@ -618,7 +594,6 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
           </Descriptions.Item>
 
           <Descriptions.Item
-            span={2}
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.5B5EF5E5',
@@ -629,7 +604,6 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             {getTaskExecStrategyMap(task?.type)?.[task?.executionStrategy] || '-'}
           </Descriptions.Item>
           <Descriptions.Item
-            span={2}
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.CE00A7E1',
@@ -640,7 +614,6 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
             <EllipsisText content={task?.relatedDatabase?.dataSource?.name} />
           </Descriptions.Item>
           <Descriptions.Item
-            span={2}
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.3C7B0B00',
@@ -650,9 +623,9 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
           >
             <EllipsisText content={task?.relatedDatabase?.name} />
           </Descriptions.Item>
-
+        </Descriptions>
+        <Descriptions column={2} style={{ marginTop: '12px' }}>
           <Descriptions.Item
-            span={6}
             label={
               formatMessage({
                 id: 'src.component.Task.StructureComparisonTask.DetailContent.A0036BAC',

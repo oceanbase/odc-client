@@ -15,27 +15,10 @@
  */
 
 import { getMaskPolicyList } from '@/common/network/mask';
-import {
-  getCycleTaskList,
-  getTaskFlowList,
-  getTaskList,
-  getTaskMetaInfo,
-} from '@/common/network/task';
-import type {
-  IDataArchiveJobParameters,
-  IMaskPolicy,
-  IResponseData,
-  ISqlPlayJobParameters,
-} from '@/d.ts';
-import {
-  ICycleTaskRecord,
-  TaskPageScope,
-  TaskPageType,
-  TaskRecord,
-  TaskRecordParameters,
-  TaskStatus,
-  TaskType,
-} from '@/d.ts';
+import { getTaskFlowList, getTaskList, getTaskMetaInfo } from '@/common/network/task';
+import { TaskSearchType } from '@/component/Task/interface';
+import type { IMaskPolicy, IResponseData } from '@/d.ts';
+import { TaskPageType, TaskRecord, TaskRecordParameters, TaskType } from '@/d.ts';
 import tracert from '@/util/tracert';
 import { isUndefined } from 'lodash';
 import { action, observable } from 'mobx';
@@ -71,30 +54,11 @@ export class TaskStore {
   public tasks: IResponseData<TaskRecord<TaskRecordParameters>>;
 
   /**
-   * sql 计划列表
-   */
-  @observable
-  public cycleTasks: IResponseData<
-    ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>
-  >;
-
-  /**
    * task page 的 tab
    */
   @observable
   public taskPageType: TaskPageType;
 
-  /**
-   * 任务一级筛选范围
-   */
-  @observable
-  public taskPageScope: TaskPageScope;
-
-  /**
-   * 控制task隐藏显示
-   */
-  @observable
-  public taskManageVisible: boolean = false;
   /**
    * 脱敏策略
    */
@@ -120,15 +84,11 @@ export class TaskStore {
   public changeTaskManageVisible(
     isShow: boolean,
     taskPageType?: TaskPageType,
-    taskPageScope?: TaskPageScope,
     taskId?: number,
     taskType?: TaskType,
   ) {
     if (!isUndefined(taskPageType)) {
       this.changeTaskPageType(taskPageType);
-    }
-    if (!isUndefined(taskPageScope)) {
-      this.taskPageScope = taskPageScope;
     }
     if (isShow) {
       this.defaultOpenTaskId = taskId;
@@ -146,17 +106,10 @@ export class TaskStore {
   };
 
   @action
-  public changeTaskPageScope = (taskPageScope: TaskPageScope) => {
-    if (taskPageScope) {
-      tracert.expo('a3112.b64006.c330917', { type: taskPageScope });
-    }
-    this.taskPageScope = taskPageScope;
-  };
-
-  @action
   public getTaskList = async (params?: {
-    taskType?: TaskPageType;
-    projectId?: number;
+    taskTypes?: TaskPageType[];
+    searchType: TaskSearchType;
+    projectId?: number | number[];
     connection?: number;
     fuzzySearchKeyword?: string;
     status?: string[];
@@ -173,27 +126,6 @@ export class TaskStore {
     size?: number;
   }) => {
     const res = await getTaskList<TaskRecordParameters>(params);
-    return res;
-  };
-
-  @action
-  public getCycleTaskList = async (params?: {
-    connectionId?: number[];
-    projectId?: number;
-    creator?: string;
-    databaseName?: string[];
-    id?: number;
-    status?: TaskStatus[];
-    type?: TaskPageType;
-    startTime?: number;
-    endTime?: number;
-    createdByCurrentUser?: boolean;
-    approveByCurrentUser?: boolean;
-    sort?: string;
-    page?: number;
-    size?: number;
-  }) => {
-    const res = await getCycleTaskList<ISqlPlayJobParameters | IDataArchiveJobParameters>(params);
     return res;
   };
 

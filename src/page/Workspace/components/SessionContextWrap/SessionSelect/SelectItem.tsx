@@ -31,11 +31,13 @@ import { DEFALT_WIDTH } from './const';
 import { IDatabase } from '@/d.ts/database';
 import styles from './index.less';
 import SessionDropdown, { ISessionDropdownFiltersProps } from './SessionDropdown';
+import { ScheduleType } from '@/d.ts/schedule';
 import { isNumber } from 'lodash';
 
 interface IProps {
   value?: number;
   taskType?: TaskType;
+  scheduleType?: ScheduleType;
   width?: number | string;
   projectId?: number;
   dataSourceId?: number;
@@ -46,11 +48,13 @@ interface IProps {
   datasourceMode?: boolean;
   projectMode?: boolean;
   onChange?: (value: number, database?: IDatabase) => void;
+  onInit?: (database?: IDatabase) => void;
 }
 
 const SelectItem: React.FC<IProps> = ({
   value,
   taskType,
+  scheduleType,
   projectId,
   dataSourceId,
   filters = null,
@@ -64,6 +68,7 @@ const SelectItem: React.FC<IProps> = ({
   isLogicalDatabase = false,
   datasourceMode = false,
   projectMode = isLogicalDatabase,
+  onInit,
 }) => {
   const { data: database, run: runDatabase } = useRequest(getDatabase, {
     manual: true,
@@ -76,17 +81,23 @@ const SelectItem: React.FC<IProps> = ({
   const { data: logicalDatabase, run: runLogicalDatabase } = useRequest(logicalDatabaseDetail, {
     manual: true,
   });
+
+  const initDatabase = async () => {
+    if (datasourceMode) {
+      runDataSource(value);
+    } else {
+      if (isLogicalDatabase) {
+        runLogicalDatabase(value);
+      } else {
+        const res = await runDatabase(value);
+        onInit?.(res?.data);
+      }
+    }
+  };
+
   useEffect(() => {
     if (value) {
-      if (datasourceMode) {
-        runDataSource(value);
-      } else {
-        if (isLogicalDatabase) {
-          runLogicalDatabase(value);
-          return;
-        }
-        runDatabase(value);
-      }
+      initDatabase();
     }
   }, [value]);
 
@@ -190,6 +201,7 @@ const SelectItem: React.FC<IProps> = ({
           filters={filters}
           width={width || DEFALT_WIDTH}
           taskType={taskType}
+          scheduleType={scheduleType}
           disabled={disabled}
         >
           <Select

@@ -32,7 +32,6 @@ import {
   IDatasourceUser,
   TaskDetail,
   TaskExecStrategy,
-  TaskPageScope,
   TaskPageType,
   TaskType,
 } from '@/d.ts';
@@ -229,7 +228,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         setConfirmLoading(false);
         if (res) {
           handleCancel(false);
-          openTasksPage(TaskPageType.ONLINE_SCHEMA_CHANGE, TaskPageScope.CREATED_BY_CURRENT_USER);
+          openTasksPage(TaskPageType.ONLINE_SCHEMA_CHANGE);
         }
       })
       .catch((errorInfo) => {

@@ -29,13 +29,13 @@ import {
   CloseCircleFilled,
   EllipsisOutlined,
   ExclamationCircleFilled,
+  ExclamationCircleOutlined,
   LoadingOutlined,
   StopFilled,
 } from '@ant-design/icons';
 import { Space, Tooltip } from 'antd';
 import { isNil } from 'lodash';
 import React from 'react';
-import { isCycleTask } from '@/component/Task/helper';
 export const nodeStatus = {
   [TaskFlowNodeType.APPROVAL_TASK]: {
     [TaskNodeStatus.PENDING]: {
@@ -171,6 +171,29 @@ export const status = {
       id: 'odc.component.TaskStatus.Approving',
       defaultMessage: '审批中',
     }), //审批中
+  },
+
+  [TaskStatus.EXECUTION_SUCCEEDED_WITH_ERRORS]: {
+    icon: (
+      <CheckCircleFilled
+        style={{
+          color: 'var(--icon-green-color)',
+        }}
+      />
+    ),
+    text: (
+      <>
+        执行成功
+        <Tooltip title="执行时存在错误，已跳过">
+          <ExclamationCircleOutlined
+            style={{
+              color: 'rgb(250, 173, 20)',
+              marginLeft: 4,
+            }}
+          />
+        </Tooltip>
+      </>
+    ),
   },
 
   [TaskStatus.WAIT_FOR_CONFIRM]: {
@@ -786,13 +809,11 @@ const StatusLabel: React.FC<IProps> = (props) => {
     string,
     {
       icon: React.ReactNode;
-      text: string;
+      text: string | React.ReactNode;
     }
   > = statusMap[StatusNodeType.FLOW_TASK];
   if (isSubTask) {
     statusInfo = statusMap[StatusNodeType.SUB_TASK];
-  } else if (isCycleTask(type)) {
-    statusInfo = statusMap[StatusNodeType.CYCLE_TASK];
   }
   const statusObj = statusInfo[_status];
   return (

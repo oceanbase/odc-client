@@ -47,6 +47,7 @@ export enum Expression {
   SQL_CHECK_RESULT = 'SQL_CHECK_RESULT',
   PROJECT_NAME = 'PROJECT_NAME',
   DATABASE_NAME = 'DATABASE_NAME',
+  SCHEDULE_TYPE = 'SCHEDULE_TYPE',
 }
 export const ExpressionMap = {
   [Expression.ENVIRONMENT_NAME]: formatMessage({
@@ -69,6 +70,7 @@ export const ExpressionMap = {
     id: 'odc.src.page.Secure.RiskLevel.NameDatabase',
     defaultMessage: '数据库名称',
   }), //'数据库名称'
+  [Expression.SCHEDULE_TYPE]: '作业类型',
 };
 export enum EOperator {
   EQUALS = 'EQUALS',

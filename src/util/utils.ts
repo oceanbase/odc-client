@@ -33,6 +33,7 @@ import { isSqlEmpty } from './parser/sql';
 import { encodeIdentifiers, splitSql } from './sql';
 import type { RangePickerProps } from 'antd/es/date-picker';
 import { runInAction } from 'mobx';
+import { IOperationTypeRole } from '@/d.ts/schedule';
 export const invalidRegexpStr = /[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g;
 
 /**
@@ -757,6 +758,30 @@ export const uniqueTools = (tools) => {
 
 export const flatArray = (array: any[]): any[] => {
   return array?.reduce?.((pre, cur) => pre?.concat(Array.isArray(cur) ? flatArray(cur) : cur), []);
+};
+
+/** 工单、作业、作业类任务权限判断 */
+export const widthPermission = (
+  /** 权限判断函数 */
+  fn: (hasPermission: boolean) => boolean,
+  /** 操作需要的权限列表 */
+  ActionsNeedRoles: IOperationTypeRole[] = [],
+  /** 当前工单的权限列表 */
+  taskIRoles: IOperationTypeRole[] = [],
+): (() => boolean) => {
+  let hasPermission = false;
+  /** ActionsNeedRoles为空数组 代表不需要权限 */
+  if (ActionsNeedRoles?.length === 0) {
+    hasPermission = true;
+  }
+
+  for (let i of taskIRoles) {
+    if (ActionsNeedRoles?.includes(i)) {
+      hasPermission = true;
+      break;
+    }
+  }
+  return () => fn(hasPermission);
 };
 
 export const valueFilter = (value: string) => {

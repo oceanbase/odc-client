@@ -53,31 +53,11 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
     const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
     return (
       <>
-        <Descriptions column={4}>
+        <Descriptions column={2}>
+          <Descriptions.Item label={'ID'}>{task?.id}</Descriptions.Item>
+          <Descriptions.Item label={'类型'}>{TaskTypeMap?.[task?.type]}</Descriptions.Item>
           <Descriptions.Item
             span={2}
-            label={
-              formatMessage({
-                id: 'src.component.Task.StructureComparisonTask.DetailContent.152888BE',
-                defaultMessage: '任务编号',
-              }) /*"任务编号"*/
-            }
-          >
-            {task?.id}
-          </Descriptions.Item>
-          <Descriptions.Item
-            span={2}
-            label={
-              formatMessage({
-                id: 'src.component.Task.StructureComparisonTask.DetailContent.5E3A8702',
-                defaultMessage: '任务类型',
-              }) /*"任务类型"*/
-            }
-          >
-            {TaskTypeMap?.[task?.type]}
-          </Descriptions.Item>
-          <Descriptions.Item
-            span={4}
             label={formatMessage({
               id: 'src.component.Task.MutipleAsyncTask.DetailContent.628C9DB4',
               defaultMessage: '数据库',
@@ -104,13 +84,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
             </a>
           </Descriptions.Item>
 
-          <Descriptions.Item
-            span={2}
-            label={formatMessage({
-              id: 'src.component.Task.MutipleAsyncTask.DetailContent.B6FF5C81',
-              defaultMessage: '所属项目',
-            })}
-          >
+          <Descriptions.Item span={1} label={'项目'}>
             <EllipsisText content={task?.parameters?.databases?.[0]?.project?.name} />
           </Descriptions.Item>
           <Descriptions.Item
@@ -122,11 +96,13 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
           >
             <ODCRiskLevelLabel
               iconMode
+              levelMap
               level={task?.riskLevel?.level}
               content={task?.riskLevel?.name}
             />
           </Descriptions.Item>
         </Descriptions>
+        <Divider />
         <SimpleTextItem
           label={formatMessage({
             id: 'src.component.Task.MutipleAsyncTask.DetailContent.10038C15',

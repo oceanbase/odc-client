@@ -18,6 +18,7 @@ import { ConnectType, TaskType } from '@/d.ts';
 import { IDataSourceModeConfig } from '../interface';
 import MySQLColumnExtra from '../oceanbase/MySQLColumnExtra';
 import { haveOCP } from '@/util/env';
+import { ScheduleType } from '@/d.ts/schedule';
 
 const tableConfig = {
   enableTableCharsetsAndCollations: true,
@@ -69,12 +70,12 @@ const items: Record<ConnectType.DORIS, IDataSourceModeConfig> = {
     features: {
       task: [
         TaskType.ASYNC,
-        TaskType.SQL_PLAN,
         TaskType.IMPORT,
         TaskType.EXPORT,
         TaskType.EXPORT_RESULT_SET,
         TaskType.MULTIPLE_ASYNC,
       ],
+      schedule: [ScheduleType.SQL_PLAN],
       obclient: true,
       recycleBin: false,
       sessionManage: true,

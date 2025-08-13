@@ -18,6 +18,7 @@ import { ConnectType, TaskType } from '@/d.ts';
 import { IDataSourceModeConfig } from '../interface';
 import MySQLColumnExtra from './MySQLColumnExtra';
 import { haveOCP } from '@/util/env';
+import { ScheduleType } from '@/d.ts/schedule';
 
 const tableConfig = {
   enableTableCharsetsAndCollations: true,
@@ -72,6 +73,7 @@ const items: Record<
     },
     features: {
       task: Object.values(TaskType),
+      schedule: Object.values(ScheduleType),
       obclient: true,
       recycleBin: true,
       sqlExplain: true,
@@ -112,6 +114,7 @@ const items: Record<
     },
     features: {
       task: Object.values(TaskType)?.filter((i) => ![TaskType.ONLINE_SCHEMA_CHANGE]?.includes?.(i)),
+      schedule: Object.values(ScheduleType),
       obclient: true,
       recycleBin: true,
       sessionManage: true,
@@ -152,7 +155,8 @@ const items: Record<
       unionUser: true,
     },
     features: {
-      task: [TaskType.ASYNC, TaskType.SQL_PLAN, TaskType.MULTIPLE_ASYNC],
+      task: [TaskType.ASYNC, TaskType.MULTIPLE_ASYNC],
+      schedule: [ScheduleType.SQL_PLAN],
       obclient: false,
       recycleBin: false,
       sessionManage: true,

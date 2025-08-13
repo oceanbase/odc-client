@@ -38,6 +38,7 @@ const useUrlAction = () => {
 
       if (task) {
         callback?.(task);
+        params.delete('task');
         navigate({ search: params.toString() }, { replace: true }); // 更新 URL，但不加入浏览历史记录
         return true;
       }

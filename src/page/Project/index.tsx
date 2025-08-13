@@ -39,6 +39,7 @@ import { ProjectTabType } from '@/d.ts/project';
 import Setting from './Setting';
 import Task from './Task';
 import User from './User';
+import Schedule from './Schedule';
 import { getSessionStorageKey } from './helper';
 import { observer, inject } from 'mobx-react';
 import { UserStore } from '@/store/login';
@@ -102,6 +103,9 @@ const Pages = {
   [IPageType.Project_Notification]: {
     component: Notification,
   },
+  [IPageType.Project_Schedule]: {
+    component: Schedule,
+  },
 };
 const tabs = [
   {
@@ -119,6 +123,10 @@ const tabs = [
     }),
     //工单
     key: IPageType.Project_Task,
+  },
+  {
+    tab: '作业',
+    key: IPageType.Project_Schedule,
   },
   {
     tab: formatMessage({
@@ -280,6 +288,7 @@ const Index: React.FC<IProps> = function (props) {
       [ProjectRole.DBA]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
+        IPageType.Project_Schedule,
         IPageType.Project_Sensitive,
         IPageType.Project_User,
       ],
@@ -287,12 +296,14 @@ const Index: React.FC<IProps> = function (props) {
       [ProjectRole.DEVELOPER]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
+        IPageType.Project_Schedule,
         IPageType.Project_User,
       ],
 
       [ProjectRole.OWNER]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
+        IPageType.Project_Schedule,
         IPageType.Project_Sensitive,
         IPageType.Project_Setting,
         IPageType.Project_User,
@@ -302,6 +313,7 @@ const Index: React.FC<IProps> = function (props) {
       [ProjectRole.SECURITY_ADMINISTRATOR]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
+        IPageType.Project_Schedule,
         IPageType.Project_Sensitive,
         IPageType.Project_User,
       ],
@@ -309,6 +321,7 @@ const Index: React.FC<IProps> = function (props) {
       [ProjectRole.PARTICIPANT]: [
         IPageType.Project_Database,
         IPageType.Project_Task,
+        IPageType.Project_Schedule,
         IPageType.Project_User,
       ],
     };

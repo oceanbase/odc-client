@@ -25,7 +25,6 @@ import {
   IExportResultSetFileType,
   IMPORT_ENCODING,
   TaskExecStrategy,
-  TaskPageScope,
   TaskPageType,
   TaskType,
 } from '@/d.ts';
@@ -142,7 +141,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         handleCancel(false);
         setConfirmLoading(false);
         if (res) {
-          openTasksPage(TaskPageType.EXPORT_RESULT_SET, TaskPageScope.CREATED_BY_CURRENT_USER);
+          openTasksPage(TaskPageType.EXPORT_RESULT_SET);
         }
       })
       .catch((errorInfo) => {

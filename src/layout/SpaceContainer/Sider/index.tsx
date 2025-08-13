@@ -22,6 +22,7 @@ import { TaskStore } from '@/store/task';
 import { ReactComponent as LinkOutlined } from '@/svgr/icon_connection.svg';
 import { ReactComponent as TaskSvg } from '@/svgr/icon_task.svg';
 import { ReactComponent as NewOpenSvg } from '@/svgr/newopen.svg';
+import { ReactComponent as ScheduleSvg } from '@/svgr/icon_schedule.svg';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
@@ -150,6 +151,15 @@ const Sider: React.FC<IProps> = function (props) {
                   </Badge>
                 )
               }
+            />
+          </Link>
+          <Link to={`/${IPageType.Schedule}`}>
+            <MenuItem
+              key={IPageType.Schedule}
+              selected={selected === IPageType.Schedule}
+              icon={ScheduleSvg}
+              collapsed={collapsed}
+              label={'作业'}
             />
           </Link>
           <AccessResourceTypePermission

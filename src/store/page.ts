@@ -212,7 +212,7 @@ export class PageStore {
       return pages.filter(
         (p) =>
           p.params.isDocked ||
-          [PageType.SQL, PageType.OB_CLIENT, PageType.TASKS].includes(p.type) ||
+          [PageType.SQL, PageType.OB_CLIENT, PageType.TASKS, PageType.SCHEDULES].includes(p.type) ||
           (p.type == PageType.PL && !p.params?.plName),
       );
     });

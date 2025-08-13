@@ -18,36 +18,38 @@ import { TaskType } from '@/d.ts';
 import login from '@/store/login';
 import { useSearchParams } from '@umijs/max';
 import { toInteger } from 'lodash';
-import Content from './container/Content';
+import Content from './layout/Content';
 import styles from './index.less';
-import Sider from './container/Sider';
+import Sider from './layout/Sider';
+import { TaskPageMode } from './interface';
+import CreateModals from '@/component/Task/modals/CreateModals';
 
 interface IProps {
   projectId?: number;
-  inProject?: boolean;
+  mode: TaskPageMode;
 }
 const TaskManagerPage: React.FC<IProps> = (props) => {
-  const { projectId, inProject } = props;
+  const { projectId, mode } = props;
   const [search] = useSearchParams();
   const defaultTaskId = search.get('taskId');
   const defaultTaskType = search.get('taskType') as TaskType;
   const defaultOrganizationId = search.get('organizationId');
   const currentOrganizationId = login.organizationId;
   const isOrganizationMatch = toInteger(defaultOrganizationId) === toInteger(currentOrganizationId);
+
   return (
-    <>
-      <div className={styles.task}>
-        <div className={styles.sider}>
-          <Sider inProject={inProject} />
-        </div>
-        <Content
-          projectId={projectId}
-          inProject={inProject}
-          defaultTaskType={defaultTaskType}
-          defaultTaskId={isOrganizationMatch ? toInteger(defaultTaskId) : null}
-        />
+    <div className={styles.task}>
+      <div className={styles.sider}>
+        <Sider mode={mode} />
       </div>
-    </>
+      <Content
+        mode={mode}
+        projectId={projectId}
+        defaultTaskId={isOrganizationMatch ? toInteger(defaultTaskId) : null}
+        defaultTaskType={defaultTaskType}
+      />
+      <CreateModals projectId={projectId} theme={'white'} />
+    </div>
   );
 };
 export default TaskManagerPage;

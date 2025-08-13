@@ -69,10 +69,12 @@ import SQLConfirmPage from '@/page/Workspace/components/SQLConfirmPage';
 import SQLResultSetViewPage from '@/page/Workspace/components/SQLResultSetViewPage';
 import SynonymPage from '@/page/Workspace/components/SynonymPage';
 import TaskManaerPage from '@/page/Workspace/components/TaskPage';
+import ScheduleManaerPage from '@/page/Workspace/components/SchedulePage';
 import TriggerPage from '@/page/Workspace/components/TriggerPage';
 import TutorialPage from '@/page/Workspace/components/TutorialPage';
 import TypePage from '@/page/Workspace/components/TypePage';
 import CreateMaterializedViewPage from '@/page/Workspace/components/CreateMaterializedView';
+import CreateSchedule from '@/page/Workspace/components/CreateSchedule';
 
 /** 页面类型 */
 export const pageMap = {
@@ -134,6 +136,20 @@ export const pageMap = {
   // 任务管理
   [PageType.TASKS]: {
     component: withConfirmModal(TaskManaerPage),
+    icon: <TaskSvg />,
+    color: '#1890FF',
+  },
+
+  // 作业管理
+  [PageType.SCHEDULES]: {
+    component: withConfirmModal(ScheduleManaerPage),
+    icon: <TaskSvg />,
+    color: '#1890FF',
+  },
+
+  // 新建作业
+  [PageType.CREATE_SCHEDULES]: {
+    component: withConfirmModal(CreateSchedule),
     icon: <TaskSvg />,
     color: '#1890FF',
   },

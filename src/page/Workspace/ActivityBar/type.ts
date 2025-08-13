@@ -21,6 +21,7 @@ export enum ActivityBarItemType {
   Task = 'Task',
   Manager = 'manager',
   Page = 'project',
+  Schedule = 'Schedule',
 }
 export const ActivityBarItemTypeText = {
   [ActivityBarItemType.Database]: formatMessage({
@@ -32,6 +33,7 @@ export const ActivityBarItemTypeText = {
     id: 'odc.src.page.Workspace.ActivityBar.WorkOrder',
     defaultMessage: '工单',
   }), //'工单'
+  [ActivityBarItemType.Schedule]: '作业',
   [ActivityBarItemType.Script]: formatMessage({
     id: 'odc.Workspace.ActivityBar.type.Script',
     defaultMessage: '脚本',

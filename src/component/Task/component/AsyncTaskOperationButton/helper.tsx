@@ -19,8 +19,13 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import Icon, { ExclamationCircleFilled } from '@ant-design/icons';
 import { ConnectTypeText } from '@/constant/label';
 import { formatMessage } from '@/util/intl';
-import { statusThatCanBeExport, statusThatCanBeTerminate } from '../TaskTable/useTaskSelection';
+import {
+  taskStatusThatCanBeTerminate,
+  scheduleStatusThatCanBeExport,
+  SchedulestatusThatCanBeTerminate,
+} from '@/constant/triangularization';
 import { TaskTypeMap } from '../TaskTable/const';
+import { ScheduleStatus, ScheduleType } from '@/d.ts/schedule';
 
 export const DatabasePopover: React.FC<{
   connection: Partial<IConnection>;
@@ -308,13 +313,17 @@ export const getExportConfig: (
 
 export const getTerminateConfig: (
   datasource,
-) => Omit<IAsyncTaskOperationConfig, 'onReload' | 'dataSource'> = (datasource) => {
+  isSchedule?: boolean,
+) => Omit<IAsyncTaskOperationConfig, 'onReload' | 'dataSource'> = (
+  datasource,
+  isSchedule = false,
+) => {
   return {
     asyncTaskType: [
-      TaskType.SQL_PLAN,
-      TaskType.PARTITION_PLAN,
-      TaskType.DATA_ARCHIVE,
-      TaskType.DATA_DELETE,
+      ScheduleType.SQL_PLAN,
+      ScheduleType.PARTITION_PLAN,
+      ScheduleType.DATA_ARCHIVE,
+      ScheduleType.DATA_DELETE,
     ]?.includes(datasource?.[0]?.type)
       ? AsyncTaskType.terminateSchedule
       : AsyncTaskType.terminateTask,
@@ -448,35 +457,43 @@ export const getTerminateConfig: (
     confirmButtonType: 'danger',
     needRiskConfirm: true,
     needSelectSpace: false,
-    checkStatus: checkIsTaskListCanBeTerminated,
-    checkStatusFailed: formatMessage({
-      id: 'src.component.Task.component.AsyncTaskOperationButton.E5D14CDC',
-      defaultMessage:
-        '请选择运行中的任务（包括待执行、排队中、执行中）和正常调度的定时任务（包括已创建、已启用、已禁用）',
-    }),
+    checkStatus: isSchedule
+      ? checkIsScheduleTaskListCanBeTerminated
+      : checkIsTaskListCanBeTerminated,
+    checkStatusFailed: isSchedule
+      ? '请选择运行中的作业'
+      : formatMessage({
+          id: 'src.component.Task.component.AsyncTaskOperationButton.E5D14CDC',
+          defaultMessage:
+            '请选择运行中的任务（包括待执行、排队中、执行中）和正常调度的定时任务（包括已创建、已启用、已禁用）',
+        }),
   };
 };
 
 // 是否为导出任务支持的周期任务
-export const isScheduleMigrateTask = (taskType: TaskType) => {
+export const isScheduleMigrateTask = (scheduleType: ScheduleType) => {
   return [
-    TaskType.DATA_ARCHIVE,
-    TaskType.DATA_DELETE,
-    TaskType.PARTITION_PLAN,
-    TaskType.SQL_PLAN,
-  ]?.includes(taskType);
+    ScheduleType.DATA_ARCHIVE,
+    ScheduleType.DATA_DELETE,
+    ScheduleType.PARTITION_PLAN,
+    ScheduleType.SQL_PLAN,
+  ]?.includes(scheduleType);
 };
 
 // 是否是在正常调度状态的任务(已创建, 已启用, 已禁用)
 export const checkIsScheduleTaskListCanBeExported = (taskStatus: TaskStatus) => {
-  return statusThatCanBeExport?.includes(taskStatus);
+  return scheduleStatusThatCanBeExport?.includes(taskStatus);
 };
 
 // 是否是能终止的任务状态
 export const checkIsTaskListCanBeTerminated = (taskStatus: TaskStatus) => {
-  return statusThatCanBeTerminate?.includes(taskStatus);
+  return taskStatusThatCanBeTerminate?.includes(taskStatus);
 };
 
+// 是否是能终止的作业状态
+const checkIsScheduleTaskListCanBeTerminated = (scheduleStatus: ScheduleStatus) => {
+  return SchedulestatusThatCanBeTerminate?.includes(scheduleStatus);
+};
 /**
  * 从 URL 中提取 filename 参数的值
  * @param {string} url - 完整的 URL 字符串

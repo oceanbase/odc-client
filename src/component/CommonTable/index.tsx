@@ -18,8 +18,8 @@ import { formatMessage } from '@/util/intl';
 import { useControllableValue } from 'ahooks';
 import { Alert, Spin, Table } from 'antd';
 import classNames from 'classnames';
-import { throttle } from 'lodash';
-import React, { useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { debounce, throttle } from 'lodash';
+import React, { useEffect, useImperativeHandle, useRef, useState, useMemo } from 'react';
 import { ResizeTitle } from './component/ResizeTitle';
 import {
   DEFAULT_BIG_ROW_HEIGHT,
@@ -89,6 +89,10 @@ interface IProps<RecordType> {
   onLoad: (args: ITableLoadOptions) => Promise<any>;
   // 其他: antd table 支持的 props
   tableProps: TableProps<any>;
+  // 是否为斑马纹 table
+  stripe?: boolean;
+  // 是否在列宽拖拽时，重新计算 pageSize
+  computePageSizeByResize?: boolean;
 }
 
 const CommonTable: <RecordType extends object = any>(
@@ -117,6 +121,8 @@ const CommonTable: <RecordType extends object = any>(
     enableResize = false,
     onLoad,
     onChange,
+    stripe = true,
+    computePageSizeByResize = false,
   } = props;
   const { columns, dataSource, scroll, ...rest } = tableProps;
   const [wrapperHeight, setWrapperHeight] = useState(0);
@@ -156,8 +162,9 @@ const CommonTable: <RecordType extends object = any>(
     ? null
     : computeTableScrollHeight();
 
-  const resizeHeight = throttle(() => {
+  const resizeHeight = debounce(() => {
     setWrapperHeight(tableRef?.current?.offsetHeight);
+    computePageSizeByResize && computePageSize();
   }, 500);
 
   useEffect(() => {
@@ -483,9 +490,12 @@ const CommonTable: <RecordType extends object = any>(
                 [styles.scrollAble]: !!scrollHeight,
               },
             )}
-            rowClassName={(record, i) =>
-              `${tableProps?.rowClassName} ${i % 2 === 0 ? styles.even : styles.odd}`
-            }
+            rowClassName={(record, i) => {
+              if (stripe) {
+                return `${tableProps?.rowClassName} ${i % 2 === 0 ? styles.even : styles.odd}`;
+              }
+              return `${tableProps?.rowClassName} `;
+            }}
             dataSource={dataSource}
             columns={tableColumns}
             components={

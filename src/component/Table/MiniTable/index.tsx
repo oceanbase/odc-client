@@ -39,6 +39,7 @@ interface IProps<T> extends TableProps<T> {
   enableEditTable?: boolean;
   columns: IColumnsType<T>;
   isScroll?: boolean;
+  itemHigeht?: number;
 }
 
 export default function MiniTable<T extends object>({
@@ -48,6 +49,7 @@ export default function MiniTable<T extends object>({
   enableEditTable = false,
   columns: PropColumns = [],
   isScroll = false,
+  itemHigeht = 40,
   ...restProps
 }: IProps<T>) {
   const [pageSize, setPageSize] = useState(0);
@@ -62,13 +64,13 @@ export default function MiniTable<T extends object>({
       function resize() {
         const height = domRef.current.clientHeight - 24 - 60;
         console.log('resize', height);
-        setPageSize(Math.floor(height / 40));
+        setPageSize(Math.floor(height / itemHigeht));
       }
       const height = domRef.current.clientHeight - 24 - 60;
       if (isScroll) {
         setScrollHeight(domRef.current.clientHeight - 60);
       }
-      setPageSize(Math.floor(height / 40));
+      setPageSize(Math.floor(height / itemHigeht));
       const obsever = new ResizeObserver(() => {
         resize();
       });

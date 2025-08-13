@@ -21,6 +21,7 @@ import { DatabasePermissionType, DBObjectSyncStatus, IDatabase } from '@/d.ts/da
 import { openNewDefaultPLPage, openNewSQLPage, openOBClientPage } from '@/store/helper/page';
 import { default as login, default as userStore } from '@/store/login';
 import modal from '@/store/modal';
+import scheduleStore from '@/store/schedule';
 import setting from '@/store/setting';
 import { isLogicalDatabase } from '@/util/database';
 import { isClient } from '@/util/env';
@@ -31,6 +32,8 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { message, Tooltip, Typography } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
+import { ScheduleType } from '@/d.ts/schedule';
+import { SchedulePageMode } from '@/component/Schedule/interface';
 
 const { Text } = Typography;
 
@@ -447,12 +450,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !setting.enableSQLPlan ||
               isClient() ||
               isLogicalDatabase(node?.data) ||
-              !config?.features?.task?.includes(TaskType.SQL_PLAN)
+              !config?.features?.schedule?.includes(ScheduleType.SQL_PLAN)
             );
           },
           run(session, node) {
             const database: IDatabase = node.data;
-            modal.changeCreateSQLPlanTaskModal(true, {
+            scheduleStore.setSQLPlanData(true, SchedulePageMode.MULTI_PAGE, {
               databaseId: database?.id,
             });
           },
@@ -474,12 +477,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !setting.enablePartitionPlan ||
               isClient() ||
               isLogicalDatabase(node.data) ||
-              !config?.features?.task?.includes(TaskType.PARTITION_PLAN)
+              !config?.features?.schedule?.includes(ScheduleType.PARTITION_PLAN)
             );
           },
           run(session, node) {
             const database: IDatabase = node.data;
-            modal.changePartitionModal(true, {
+            scheduleStore.setPartitionPlanData(true, SchedulePageMode.MULTI_PAGE, {
               databaseId: database?.id,
             });
           },
@@ -501,12 +504,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !setting.enableDataArchive ||
               isClient() ||
               isLogicalDatabase(node.data) ||
-              !config?.features?.task?.includes(TaskType.DATA_ARCHIVE)
+              !config?.features?.schedule?.includes(ScheduleType.DATA_ARCHIVE)
             );
           },
           run(session, node) {
             const database: IDatabase = node.data;
-            modal.changeDataArchiveModal(true, {
+            scheduleStore.setDataArchiveData(true, SchedulePageMode.MULTI_PAGE, {
               databaseId: database?.id,
             });
           },
@@ -528,12 +531,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !setting.enableDataClear ||
               isClient() ||
               isLogicalDatabase(node.data) ||
-              !config?.features?.task?.includes(TaskType.DATA_DELETE)
+              !config?.features?.schedule?.includes(ScheduleType.DATA_DELETE)
             );
           },
           run(session, node) {
             const database: IDatabase = node.data;
-            modal.changeDataClearModal(true, {
+            scheduleStore.setDataClearData(true, SchedulePageMode.MULTI_PAGE, {
               databaseId: database?.id,
             });
           },

@@ -12,10 +12,12 @@ import {
   cancelFlowInstance,
   getBatchCancelResult,
   getBatchCancelLog,
+} from '@/common/network/task';
+import {
   batchTerminateScheduleAndTask,
   getTerminateScheduleResult,
   getTerminateScheduleLog,
-} from '@/common/network/task';
+} from '@/common/network/schedule';
 import { LoadingOutlined } from '@ant-design/icons';
 import type { AsyncTaskModalConfig } from './hooks/useTaskTable';
 import { useDebounceFn } from 'ahooks';

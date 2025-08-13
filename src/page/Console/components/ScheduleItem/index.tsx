@@ -6,7 +6,7 @@ import LabelWithIcon from '../../../../component/LabelWithIcon';
 import styles from './index.less';
 import DonutChart from '../DonutChart';
 import { IPageType } from '@/d.ts/_index';
-import { TaskExecStrategy, TaskStatus, TaskType } from '@/d.ts';
+import { ScheduleStatus } from '@/d.ts/schedule';
 const ScheduleItem = ({ title, progress, type }) => {
   const { statusType } = ConsoleTextConfig.schdules;
   const { successEnabledCount } = progress || {};
@@ -25,17 +25,11 @@ const ScheduleItem = ({ title, progress, type }) => {
           label={
             <span
               className={styles.label}
-              onClick={() => {
-                const baseRoute = `/${IPageType.Task}?task=${type}`;
-
-                if (type === TaskType.PARTITION_PLAN) {
-                  navigate(baseRoute + `&status=${TaskStatus.EXECUTION_SUCCEEDED}`);
-                } else {
-                  navigate(
-                    baseRoute + `&status=${TaskStatus.ENABLED}&filtered=${TaskExecStrategy.CRON}`,
-                  );
-                }
-              }}
+              onClick={() =>
+                navigate(
+                  `/${IPageType.Schedule}?scheduleType=${type}&scheduleStatus=${ScheduleStatus.ENABLED}`,
+                )
+              }
             >
               {formatMessage({
                 id: 'src.page.Console.components.ScheduleItem.4E8811DF',

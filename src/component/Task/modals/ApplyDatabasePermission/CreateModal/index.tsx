@@ -18,7 +18,7 @@ import { formatMessage } from '@/util/intl';
 import { listProjects } from '@/common/network/project';
 import { createTask } from '@/common/network/task';
 import DatabaseSelecter from '@/component/Task/component/DatabaseSelecter';
-import { TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import { TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
 import { useRequest } from 'ahooks';
@@ -144,10 +144,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               defaultMessage: '工单创建成功',
             }),
           );
-          openTasksPage(
-            TaskPageType.APPLY_DATABASE_PERMISSION,
-            TaskPageScope.CREATED_BY_CURRENT_USER,
-          );
+          openTasksPage(TaskPageType.APPLY_DATABASE_PERMISSION);
         }
       })
       .catch((errorInfo) => {

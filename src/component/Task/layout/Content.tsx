@@ -1,0 +1,264 @@
+import DetailModals from '@/component/Task/modals/DetailModals';
+import styles from '@/component/Task/index.less';
+import type { TaskStore } from '@/store/task';
+import { UserStore } from '@/store/login';
+import { ModalStore } from '@/store/modal';
+import { useLocation } from '@umijs/max';
+import type { ITableInstance } from '@/component/CommonTable/interface';
+import { useEffect, useRef, useState } from 'react';
+import { getPreTime } from '@/util/utils';
+import { getTaskDetail } from '@/common/network/task';
+import tracert from '@/util/tracert';
+import { formatMessage } from '@/util/intl';
+import { TaskDetailContext } from '@/component/Task/context/TaskDetailContext';
+import { useSetState } from 'ahooks';
+import { inject, observer } from 'mobx-react';
+import {
+  TaskPageType,
+  TaskRecord,
+  TaskRecordParameters,
+  TaskType,
+  IAlterScheduleTaskParams,
+  TaskStatus,
+} from '@/d.ts';
+import { message } from 'antd';
+import TaskTable from '../component/TaskTable';
+import { IPagination, ITaskParam, TaskPageMode, TaskTab } from '@/component/Task/interface';
+import { IState } from '@/component/Task/interface';
+import ApprovalModal from '@/component/Task/component/ApprovalModal';
+import { getDefaultParam } from '../helper';
+
+interface IProps {
+  taskStore?: TaskStore;
+  userStore?: UserStore;
+  modalStore?: ModalStore;
+  pageKey?: TaskPageType;
+  tabHeight?: number;
+  projectId?: number;
+  defaultTaskId?: number;
+  defaultTaskType?: TaskType;
+  mode?: TaskPageMode;
+}
+
+const Content: React.FC<IProps> = (props) => {
+  const {
+    pageKey,
+    taskStore,
+    modalStore,
+    projectId,
+    userStore,
+    mode = TaskPageMode.COMMON,
+  } = props;
+  const taskTabType = pageKey || taskStore?.taskPageType;
+  const location = useLocation();
+  const isSqlworkspace = location?.pathname?.includes('/sqlworkspace');
+  const theme = isSqlworkspace ? null : 'vs';
+  const tableRef = useRef<ITableInstance>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [state, setState] = useSetState<IState>({
+    detailId: taskStore?.defaultOpenTaskId,
+    detailType: taskStore?.defauleOpenTaskType,
+    detailVisible: !!taskStore?.defaultOpenTaskId,
+    tasks: null,
+    status: null,
+  });
+
+  const [pagination, setPagination] = useState<IPagination>({
+    current: 1,
+    pageSize: 0,
+  });
+  const [params, setParams] = useSetState<ITaskParam>(getDefaultParam());
+
+  const [approvalState, setApprovalState] = useSetState({
+    visible: false,
+    approvalStatus: false,
+    detailId: null,
+  });
+
+  const taskModalActions = {
+    [TaskPageType.IMPORT]: () => modalStore.changeImportModal(true),
+    [TaskPageType.EXPORT]: () => modalStore.changeExportModal(),
+    [TaskPageType.DATAMOCK]: () => modalStore.changeDataMockerModal(true),
+    [TaskPageType.ASYNC]: () => modalStore.changeCreateAsyncTaskModal(true),
+    [TaskPageType.SHADOW]: () => modalStore.changeShadowSyncVisible(true),
+    [TaskPageType.STRUCTURE_COMPARISON]: () => modalStore.changeStructureComparisonModal(true),
+    [TaskPageType.ONLINE_SCHEMA_CHANGE]: () => modalStore.changeCreateDDLAlterTaskModal(true),
+    [TaskPageType.EXPORT_RESULT_SET]: () => modalStore.changeCreateResultSetExportTaskModal(true),
+    [TaskPageType.APPLY_PROJECT_PERMISSION]: () => modalStore.changeApplyPermissionModal(true),
+    [TaskPageType.APPLY_DATABASE_PERMISSION]: () =>
+      modalStore.changeApplyDatabasePermissionModal(true),
+    [TaskPageType.APPLY_TABLE_PERMISSION]: () => modalStore.changeApplyTablePermissionModal(true),
+    [TaskPageType.MULTIPLE_ASYNC]: () =>
+      modalStore.changeMultiDatabaseChangeModal(
+        true,
+        mode === TaskPageMode.PROJECT
+          ? {
+              projectId,
+            }
+          : null,
+      ),
+    [TaskPageType.LOGICAL_DATABASE_CHANGE]: () => modalStore.changeLogicialDatabaseModal(true),
+  };
+
+  const resolveParams = (params: ITaskParam, pagination: IPagination) => {
+    const {
+      sort,
+      searchValue,
+      taskTypes,
+      taskStatus,
+      searchType,
+      projectId: projectIdList,
+      timeRange,
+      executeDate,
+      tab,
+    } = params ?? {};
+    const { pageSize, current } = pagination ?? {};
+
+    const taskTabType = pageKey || taskStore?.taskPageType;
+    const isAll = taskTabType === TaskPageType.ALL;
+    const apiParams = {
+      fuzzySearchKeyword: searchValue,
+      searchType,
+      status: tab === TaskTab.executionByCurrentUser ? [TaskStatus.WAIT_FOR_EXECUTION] : taskStatus,
+      taskTypes: isAll ? taskTypes : taskTabType,
+      projectId: projectId || projectIdList || undefined,
+      startTime: timeRange === 'ALL' ? undefined : String(getPreTime(7)),
+      endTime: timeRange === 'ALL' ? undefined : String(getPreTime(0)),
+      sort,
+      page: current,
+      size: pageSize,
+      createdByCurrentUser: true,
+      approveByCurrentUser: [TaskTab.all, TaskTab.approveByCurrentUser].includes(tab),
+      containsAll: tab === TaskTab.all,
+    };
+    if (typeof timeRange === 'number') {
+      apiParams.startTime = String(getPreTime(timeRange));
+      apiParams.endTime = String(getPreTime(0));
+    }
+    if (timeRange === 'custom' && executeDate?.filter(Boolean)?.length === 2) {
+      apiParams.startTime = String(executeDate?.[0]?.valueOf());
+      apiParams.endTime = String(executeDate?.[1]?.valueOf());
+    }
+
+    return apiParams;
+  };
+
+  const loadTaskList = async (params: ITaskParam, pagination: IPagination) => {
+    const apiParams = resolveParams(params, pagination);
+    if (!apiParams.size) {
+      return;
+    }
+    const tasks = await props.taskStore.getTaskList(apiParams as any);
+    setLoading(false);
+    setState({
+      tasks,
+    });
+  };
+
+  const reloadList = () => {
+    loadTaskList(params, pagination);
+  };
+
+  const handleApprovalVisible = (approvalStatus: boolean = false, id: number) => {
+    setApprovalState({
+      detailId: id,
+      approvalStatus,
+      visible: true,
+    });
+  };
+
+  const handleDetailVisible = (
+    task: TaskRecord<TaskRecordParameters>,
+    visible: boolean = false,
+  ) => {
+    const { id, type } = task ?? {};
+    const detailId =
+      type === TaskType.ALTER_SCHEDULE
+        ? (task as TaskRecord<IAlterScheduleTaskParams>)?.parameters?.taskId
+        : id;
+    setState({
+      detailId,
+      detailType: (task as TaskRecord<TaskRecordParameters>)?.type || TaskType.ASYNC,
+      detailVisible: visible,
+    });
+  };
+
+  const handleMenuItemClick = (type: TaskPageType) => {
+    tracert.click('a3112.b64006.c330917.d367464', {
+      type,
+    });
+    taskModalActions?.[type]?.();
+  };
+
+  const openDefaultTask = async () => {
+    const { defaultTaskId, defaultTaskType } = props;
+    if (defaultTaskId) {
+      const data = await getTaskDetail(defaultTaskId, true);
+      if (!data) {
+        message.error(
+          formatMessage({
+            id: 'odc.src.component.Task.NoCurrentWorkOrderView',
+            defaultMessage: '无当前工单查看权限',
+          }), //'无当前工单查看权限'
+        );
+        return;
+      }
+      setState({
+        detailId: defaultTaskId,
+        detailType: defaultTaskType || TaskType.ASYNC,
+        detailVisible: true,
+      });
+    }
+  };
+
+  useEffect(() => {
+    openDefaultTask();
+  }, []);
+
+  return (
+    <TaskDetailContext.Provider
+      value={{
+        handleDetailVisible,
+        setState,
+      }}
+    >
+      <div className={styles.content}>
+        <TaskTable
+          onApprovalVisible={handleApprovalVisible}
+          tableRef={tableRef}
+          taskTabType={taskTabType}
+          taskList={state.tasks}
+          getTaskList={loadTaskList}
+          onDetailVisible={handleDetailVisible}
+          onReloadList={reloadList}
+          onMenuClick={handleMenuItemClick}
+          loading={loading}
+          setLoading={setLoading}
+          mode={mode}
+          params={params}
+          setParams={setParams}
+          pagination={pagination}
+          setPagination={setPagination}
+        />
+      </div>
+      <DetailModals
+        onApprovalVisible={handleApprovalVisible}
+        theme={theme}
+        type={state.detailType}
+        detailId={state.detailId}
+        visible={state.detailVisible}
+        onDetailVisible={handleDetailVisible}
+        onReloadList={reloadList}
+      />
+      <ApprovalModal
+        id={approvalState.detailId}
+        visible={approvalState.visible}
+        approvalStatus={approvalState.approvalStatus}
+        onReload={reloadList}
+        onCancel={() => setApprovalState({ visible: false })}
+      />
+    </TaskDetailContext.Provider>
+  );
+};
+
+export default inject('userStore', 'taskStore', 'modalStore')(observer(Content));

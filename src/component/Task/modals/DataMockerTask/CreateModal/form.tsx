@@ -28,7 +28,14 @@ import { Col, Divider, Form, InputNumber, Radio, Row, Select } from 'antd';
 import { FormInstance } from 'antd/es/form/Form';
 import { cloneDeep } from 'lodash';
 import { inject, observer } from 'mobx-react';
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
 import DatabaseSelect from '@/component/Task/component/DatabaseSelect';
 import RuleConfigTable from './RuleConfigTable';
 import { convertFormToServerColumns, getDefaultRule, getDefaultValue } from './RuleContent';
@@ -201,7 +208,9 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
           <Row gutter={14}>
             <Col span={12}>
               <DatabaseSelect
-                onChange={(v) => form.resetFields(['tableName', 'columns'])}
+                onChange={(v, db) => {
+                  form.resetFields(['tableName', 'columns']);
+                }}
                 projectId={projectId}
                 width={'441px'}
                 type={TaskType.DATAMOCK}

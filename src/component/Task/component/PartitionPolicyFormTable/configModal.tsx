@@ -35,8 +35,8 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
-import { ITableConfig } from '@/component/Task/modals/PartitionTask/CreateModal';
+import React, { useEffect, useState } from 'react';
+import { ITableConfig } from '@/component/Schedule/modals/PartitionPlan/Create';
 import {
   getPartitionKeyInvokerByIncrementFieldType,
   INCREAMENT_FIELD_TYPE,
@@ -350,7 +350,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
     }
   }, [configs]);
 
-  const submitBtn = useMemo(() => {
+  const submitBtn = () => {
     const isSingleGenerateCount = generateCount === 1;
     const isSingleGenerateCountMessage = formatMessage({
       id: 'src.component.Task.component.PartitionPolicyFormTable.B988E243',
@@ -365,7 +365,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
 
     const renderConfirmButton = () => {
       return (
-        <Button type="primary">
+        <Button type="primary" onClick={handleOk}>
           {
             formatMessage({
               id: 'odc.components.PartitionPolicyTable.configModal.Ok',
@@ -401,7 +401,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       );
     }
     return renderConfirmButton();
-  }, [isBatch, generateCount]);
+  };
 
   return (
     <Drawer
@@ -455,7 +455,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               }
             </Button>
           </Tooltip>
-          {submitBtn}
+          {submitBtn()}
         </Space>
       }
     >

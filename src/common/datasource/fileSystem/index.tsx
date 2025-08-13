@@ -1,6 +1,7 @@
 import { ConnectType, TaskType } from '@/d.ts';
 import { IDataSourceModeConfig } from '../interface';
 import { haveOCP } from '@/util/env';
+import { ScheduleType } from '@/d.ts/schedule';
 
 const CloudStorageConfig: IDataSourceModeConfig = {
   isFileSystem: true,
@@ -16,7 +17,8 @@ const CloudStorageConfig: IDataSourceModeConfig = {
     disableExtraConfig: true,
   },
   features: {
-    task: [TaskType.DATA_ARCHIVE],
+    task: [],
+    schedule: [ScheduleType.DATA_ARCHIVE],
     sqlconsole: false,
     obclient: false,
     recycleBin: false,

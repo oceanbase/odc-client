@@ -29,6 +29,7 @@ import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import styles from './index.less';
 import login from '@/store/login';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
+import { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import EllipsisText from '@/component/EllipsisText';
 
 export const ErrorStrategy = {
@@ -61,60 +62,26 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
   return (
     <>
       <Descriptions column={2}>
-        <Descriptions.Item
-          span={2}
-          label={
-            formatMessage({
-              id: 'odc.src.component.Task.AsyncTask.DetailContent.TaskNumber',
-              defaultMessage: '任务编号',
-            }) /* 任务编号 */
-          }
-        >
+        <Descriptions.Item span={1} label={'ID'}>
           {task?.id}
         </Descriptions.Item>
-        <Descriptions.Item
-          span={2}
-          label={
-            formatMessage({
-              id: 'odc.src.component.Task.AsyncTask.DetailContent.Database',
-              defaultMessage: '所属数据库',
-            }) /* 所属数据库 */
-          }
-        >
+        <Descriptions.Item span={1} label={'类型'}>
+          数据库变更
+        </Descriptions.Item>
+        <Descriptions.Item span={1} label={'数据库'}>
           <DatabaseLabel database={task?.database} />
         </Descriptions.Item>
-        <Descriptions.Item
-          span={2}
-          label={
-            formatMessage({
-              id: 'odc.src.component.Task.AsyncTask.DetailContent.DataSource',
-              defaultMessage: '所属数据源',
-            }) /* 所属数据源 */
-          }
-        >
+
+        <Descriptions.Item span={2} label={'数据源'}>
           <EllipsisText content={task?.database?.dataSource?.name} />
         </Descriptions.Item>
-        <Descriptions.Item
-          span={2}
-          label={
-            formatMessage({
-              id: 'odc.src.component.Task.AsyncTask.DetailContent.Type',
-              defaultMessage: '任务类型',
-            }) /* 任务类型 */
-          }
-        >
-          {
-            formatMessage({
-              id: 'odc.src.component.Task.AsyncTask.DetailContent.DatabaseChange',
-              defaultMessage: '数据库变更',
-            }) /* 
-          数据库变更
-          */
-          }
+        <Descriptions.Item span={1} label={'项目'}>
+          {task?.project?.name || '-'}
         </Descriptions.Item>
+
         {hasFlow && (
           <Descriptions.Item
-            span={2}
+            span={1}
             label={
               formatMessage({
                 id: 'odc.src.component.Task.AsyncTask.DetailContent.RiskLevel',
@@ -122,30 +89,11 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
               }) /* 风险等级 */
             }
           >
-            <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />
-          </Descriptions.Item>
-        )}
-        {!login.isPrivateSpace() && (
-          <Descriptions.Item
-            span={4}
-            label={formatMessage({
-              id: 'src.component.Task.AsyncTask.DetailContent.D9CDFEE1',
-              defaultMessage: 'DML语句预估影响行数',
-            })}
-          >
-            {node?.status === TaskNodeStatus.EXECUTING ? (
-              <LoadingOutlined />
-            ) : task?.affectedRows === -1 ? (
-              formatMessage({
-                id: 'src.component.Task.AsyncTask.DetailContent.4F8FADD3',
-                defaultMessage: '该 SQL 语句不支持',
-              })
-            ) : (
-              task?.affectedRows || '-'
-            )}
+            <ODCRiskLevelLabel iconMode levelMap level={riskLevel?.level} />
           </Descriptions.Item>
         )}
       </Descriptions>
+      <Divider />
       <div className={styles.format}>
         <SimpleTextItem
           label={formatMessage({
@@ -218,8 +166,28 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           marginTop: '8px',
         }}
       >
+        {!login.isPrivateSpace() && (
+          <Descriptions.Item
+            span={1}
+            label={formatMessage({
+              id: 'src.component.Task.AsyncTask.DetailContent.D9CDFEE1',
+              defaultMessage: 'DML语句预估影响行数',
+            })}
+          >
+            {node?.status === TaskNodeStatus.EXECUTING ? (
+              <LoadingOutlined />
+            ) : task?.affectedRows === -1 ? (
+              formatMessage({
+                id: 'src.component.Task.AsyncTask.DetailContent.4F8FADD3',
+                defaultMessage: '该 SQL 语句不支持',
+              })
+            ) : (
+              task?.affectedRows || '-'
+            )}
+          </Descriptions.Item>
+        )}
         <Descriptions.Item
-          span={2}
+          span={1}
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.Separatist',
@@ -230,7 +198,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           {parameters?.delimiter}
         </Descriptions.Item>
         <Descriptions.Item
-          span={2}
+          span={1}
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.QueryResultsLimit',
@@ -241,7 +209,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           {parameters?.queryLimit}
         </Descriptions.Item>
         <Descriptions.Item
-          span={2}
+          span={1}
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.MissionErrorTreatment',
@@ -252,7 +220,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           {ErrorStrategy[parameters?.errorStrategy]}
         </Descriptions.Item>
         <Descriptions.Item
-          span={2}
+          span={1}
           label={
             formatMessage({
               id: 'src.component.Task.AsyncTask.DetailContent.1F4ECA8A',
@@ -263,7 +231,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           {parameters?.retryTimes ?? 0}
         </Descriptions.Item>
         <Descriptions.Item
-          span={2}
+          span={1}
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.ExecuteTimeoutTime',
@@ -354,7 +322,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
 
       <Descriptions column={2}>
         <Descriptions.Item
-          span={2}
+          span={1}
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.Founder',
@@ -365,7 +333,7 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           {task?.creator?.name || '-'}
         </Descriptions.Item>
         <Descriptions.Item
-          span={2}
+          span={1}
           label={
             formatMessage({
               id: 'odc.src.component.Task.AsyncTask.DetailContent.CreationTime',

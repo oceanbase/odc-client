@@ -31,11 +31,12 @@ interface IProps {
   approvalStatus: boolean;
   onCancel: () => void;
   onReload: () => void;
+  zIndex?: number;
 }
 
 const ApprovalModal: React.FC<IProps> = inject('taskStore')(
   observer((props) => {
-    const { taskStore, id, visible, approvalStatus, onCancel } = props;
+    const { taskStore, id, visible, approvalStatus, onCancel, zIndex = 1001 } = props;
     const [confirmLoading, setConfirmLoading] = useState(false);
     const formRef = useRef(null);
 
@@ -107,7 +108,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
         confirmLoading={confirmLoading}
         onOk={onSubmit}
         onCancel={handleCancel}
-        zIndex={1001}
+        zIndex={zIndex}
       >
         <Space direction="vertical" size={20}>
           <Space>
