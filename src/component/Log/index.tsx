@@ -248,7 +248,7 @@ const Log: React.FC<LogProps> = ({
     if (!lineWrapNode) {
       index = copyData.current.scrollDirection === 'up' ? 0 : logData.data.length;
     } else {
-      index = Number(lineWrapNode.firstChild.innerText);
+      index = Number((lineWrapNode.firstChild as HTMLElement).innerText);
     }
     return index;
   };
