@@ -62,7 +62,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
       enabled: [true],
     });
 
-    // 不再过滤AI规则，而是在Select组件中禁用它们
+    // 根据扫描模式禁用相应的规则类型
     const resData = rawData?.contents?.map((content) => ({
       label: content.name,
       value: content.id,
@@ -116,13 +116,18 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
     // 重新加载规则列表
     await initDetectRules();
 
+    const currentValues = formRef.getFieldValue('sensitiveRuleIds') || [];
+    let filteredValues = currentValues;
+
     // 如果切换到传统规则识别模式，需要移除已选择的AI规则
     if (scanningMode === 'RULES_ONLY') {
-      const currentValues = formRef.getFieldValue('sensitiveRuleIds') || [];
-      const filteredValues = currentValues.filter((id) => {
+      filteredValues = currentValues.filter((id) => {
         const option = sensitiveOptions.find((opt) => opt.value === id);
         return option && (!option.type || option.type !== SensitiveRuleType.AI);
       });
+    }
+
+    if (filteredValues.length !== currentValues.length) {
       await formRef.setFieldsValue({
         sensitiveRuleIds: filteredValues,
       });

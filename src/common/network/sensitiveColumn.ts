@@ -42,6 +42,70 @@ export async function startScanning(
   return ret?.data?.taskId;
 }
 
+// 新增单表扫描API
+export async function scanSingleTableAsync(
+  projectId: number,
+  params: {
+    databaseId: number;
+    tableName: string;
+    scanningMode?: string;
+  },
+): Promise<string> {
+  // 导入login store来检查organizationId
+  const login = require('@/store/login').default;
+  console.log('发起单表扫描请求:', { projectId, params });
+  console.log('当前organizationId:', login?.organizationId);
+  console.log('当前用户信息:', login?.user);
+
+  try {
+    const ret = await request.post(
+      `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/scanSingleTableAsync`,
+      {
+        data: {
+          ...params,
+        },
+        params: {
+          currentOrganizationId: login?.organizationId,
+        },
+      },
+    );
+    console.log('单表扫描请求响应:', ret);
+    // 后端直接返回taskId在data字段中，而不是data.taskId
+    const taskId = ret?.data?.taskId || ret?.data;
+    if (!taskId) {
+      console.error('单表扫描请求返回的taskId为空:', ret);
+    }
+    return taskId;
+  } catch (error) {
+    console.error('单表扫描请求失败:', error);
+    throw error;
+  }
+}
+
+// 获取单表扫描结果
+export async function getSingleTableScanResult(projectId: number, taskId: string): Promise<any> {
+  // 导入login store来检查organizationId
+  const login = require('@/store/login').default;
+  console.log('获取单表扫描结果:', { projectId, taskId });
+  console.log('当前organizationId:', login?.organizationId);
+
+  try {
+    const ret = await request.get(
+      `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/singleTableScan/${taskId}/result`,
+      {
+        params: {
+          currentOrganizationId: login?.organizationId,
+        },
+      },
+    );
+    console.log('单表扫描结果响应:', ret);
+    return ret?.data;
+  } catch (error) {
+    console.error('获取单表扫描结果失败:', error);
+    throw error;
+  }
+}
+
 export async function setEnabled(
   projectId: number,
   id: number,

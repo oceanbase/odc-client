@@ -42,6 +42,7 @@ import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
 import { isLogicalDatabase } from '@/util/database';
 import { DatabasePermissionType } from '@/d.ts/database';
+import { sensitiveColumnScanner } from '@/service/sensitiveColumnScanner';
 import request from '@/util/request';
 import DatabaseStore from '@/store/sessionManager/database';
 
@@ -61,6 +62,8 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
           return;
         }
         await session.database.getTableList(true);
+        // 刷新外表列表时清除整个数据库的敏感列缓存
+        sensitiveColumnScanner.clearCacheByDatabase(session?.database?.dbName);
         message.success(
           formatMessage({
             id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.69DBC559',
@@ -329,6 +332,8 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
       async run(session, node) {
         const table = node.data as ITableModel;
         await session.database.loadTable(table.info, true);
+        // 刷新外表列时清除该表的敏感列缓存
+        sensitiveColumnScanner.clearCache(table.info?.tableName, session?.database?.dbName);
       },
     },
   ],

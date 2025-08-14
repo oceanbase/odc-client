@@ -481,16 +481,6 @@ const DetectWay = ({
                 }) /*敏感类别*/
               }
               name="aiSensitiveTypes"
-              required
-              rules={[
-                {
-                  required: true,
-                  message: formatMessage({
-                    id: 'odc.SensitiveRule.components.DetectWay.SelectSensitiveTypes',
-                    defaultMessage: '请至少选择一个敏感类别',
-                  }), //请至少选择一个敏感类别
-                },
-              ]}
             >
               <div
                 style={{

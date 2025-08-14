@@ -16,6 +16,7 @@
 
 import SubmitConfirm from '@/component/SubmitConfirm';
 import Toolbar from '@/component/Toolbar';
+import SensitiveColumnIndicator from '@/component/SensitiveColumnIndicator';
 import icon, { IConStatus } from '@/component/Toolbar/statefulIcon/index';
 import {
   GeneralSQLType,
@@ -647,7 +648,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   const setSearchKey = useCallback(
     debounce(
       (v) => {
-        console.log(v);
+        // 处理值变化
         _setSearchKey(v);
       },
       500,
@@ -1276,6 +1277,21 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   />
                 </>
               ) : null}
+              {/* 敏感列标识 - 在SQL执行结果中显示 */}
+              <SensitiveColumnIndicator
+                tableName={table?.tableName}
+                databaseName={session?.database?.dbName}
+                columns={columns?.map((col) => ({
+                  columnName: col.name,
+                  columnType: (col as any).type || 'VARCHAR',
+                }))}
+                sessionId={session?.sessionId}
+                triggerSource="SQL_RESULT"
+                autoScan={true}
+                showDetails={true}
+                size="small"
+                style={{ marginRight: 8 }}
+              />
               <Input.Search
                 className={styles.search}
                 placeholder={
