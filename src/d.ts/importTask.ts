@@ -127,6 +127,11 @@ export interface IScheduleTerminateCmd {
   ids: number[];
 }
 
+export interface ITaskTerminateCmd {
+  taskType: TaskType;
+  flowInstanceIds: number[];
+}
+
 export interface IScheduleTerminateResult {
   terminateSucceed: boolean;
   scheduleType: TaskType;

@@ -69,6 +69,7 @@ export interface FileExportResponse {
 export interface ScheduleExportListView {
   id: number;
   scheduleType: TaskType;
+  type: TaskType;
   databaseId: number;
   database: IDatabase;
   description: string;

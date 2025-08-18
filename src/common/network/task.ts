@@ -61,6 +61,7 @@ import {
   IImportTaskResult,
   IScheduleTaskImportRequest,
   IScheduleTerminateCmd,
+  ITaskTerminateCmd,
   IScheduleTerminateResult,
 } from '@/d.ts/importTask';
 import odc from '@/plugins/odc';
@@ -921,9 +922,9 @@ export async function getScheduleImportLog(importTaskId: string): Promise<string
 /**
  * 工单任务终止-发起
  */
-export async function cancelFlowInstance(flowInstanceId: number[]): Promise<string> {
+export async function cancelFlowInstance(data: ITaskTerminateCmd): Promise<string> {
   const res = await request.post(`/api/v2/flow/flowInstances/asyncCancel`, {
-    data: flowInstanceId,
+    data,
   });
   return res?.data;
 }
