@@ -30,7 +30,7 @@ import { IDatabase } from '@/d.ts/database';
 import JoinTableConfigModal from '@/component/Task/component/JoinTableConfigsModal';
 import useJoinTableConfig from '@/component/Task/component/JoinTableConfigsModal/useJoinTableConfig';
 import { rules } from './const';
-const MAX_TABLES_COUNT = 3;
+const MAX_TABLES_COUNT = 100;
 const { Text, Link } = Typography;
 
 interface IProps {
