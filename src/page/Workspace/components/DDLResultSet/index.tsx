@@ -229,7 +229,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   /**
    * 数据量限制
    */
-  const [limit, setLimit] = useState(1000);
+  const [limit, setLimit] = useState(session?.params?.queryLimit);
   /**
    * 表数据搜索
    */
@@ -1232,16 +1232,23 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   <InputNumber
                     onInput={(limit) => {
                       if (limit == '' || isNil(limit)) {
-                        setLimit(0);
+                        setLimit(1);
                       }
                     }}
-                    onChange={(limit) => setLimit(limit || 0)}
+                    onChange={(limit) => {
+                      const maxQueryLimit = session?.params?.maxQueryLimit;
+                      if (limit > maxQueryLimit) {
+                        const tips = `${formatMessage({
+                          id: 'src.component.SQLConfig.5E06ED93',
+                          defaultMessage: '不超过查询条数上限',
+                        })} ${maxQueryLimit}`;
+                        message.error(tips);
+                      }
+                      setLimit(limit || 1);
+                    }}
                     min={1}
                     precision={0}
-                    placeholder={formatMessage({
-                      id: 'workspace.window.sql.limit.placeholder',
-                      defaultMessage: '1000',
-                    })}
+                    defaultValue={session?.params?.queryLimit}
                     style={{
                       width: 70,
                       marginLeft: 8,
