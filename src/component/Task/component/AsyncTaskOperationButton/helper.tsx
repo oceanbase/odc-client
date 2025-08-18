@@ -6,7 +6,14 @@ import {
 } from '@/d.ts/migrateTask';
 import { IAsyncTaskOperationConfig } from '.';
 import { Popover, Space, Tooltip, Typography } from 'antd';
-import { IConnection, TaskDetail, TaskRecordParameters, TaskStatus, TaskType } from '@/d.ts';
+import {
+  IConnection,
+  TaskDetail,
+  TaskRecord,
+  TaskRecordParameters,
+  TaskStatus,
+  TaskType,
+} from '@/d.ts';
 import { TaskTypeMap } from '../TaskTable';
 import { getLocalFormatDateTime } from '@/util/utils';
 import {
@@ -467,14 +474,18 @@ export const isScheduleMigrateTask = (taskType: TaskType) => {
   ]?.includes(taskType);
 };
 
-// 是否是在正常调度状态的任务(已创建, 已启用, 已禁用)
-export const checkIsScheduleTaskListCanBeExported = (taskStatus: TaskStatus) => {
-  return statusThatCanBeExport?.includes(taskStatus);
+// 是否是能被导出的任务状态
+export const checkIsScheduleTaskListCanBeExported = (task: TaskRecord<TaskRecordParameters>) => {
+  return statusThatCanBeExport?.includes(task?.status);
 };
 
 // 是否是能终止的任务状态
-export const checkIsTaskListCanBeTerminated = (taskStatus: TaskStatus) => {
-  return statusThatCanBeTerminate?.includes(taskStatus);
+export const checkIsTaskListCanBeTerminated = (task: TaskRecord<TaskRecordParameters>) => {
+  // 分区计划执行成功能够被终止
+  if (task?.type === TaskType.PARTITION_PLAN && task?.status === TaskStatus.EXECUTION_SUCCEEDED) {
+    return true;
+  }
+  return statusThatCanBeTerminate?.includes(task?.status);
 };
 
 /**
