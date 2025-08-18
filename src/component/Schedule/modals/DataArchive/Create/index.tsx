@@ -16,7 +16,6 @@ import {
 } from '@/d.ts';
 import { createSchedule, updateSchedule, getScheduleDetail } from '@/common/network/schedule';
 import { SchedulePageType, ScheduleType } from '@/d.ts/schedule';
-import { CreateScheduleContext } from '@/component/Schedule/context/createScheduleContext';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
@@ -25,7 +24,7 @@ import { FieldTimeOutlined } from '@ant-design/icons';
 import { Button, Checkbox, DatePicker, Form, Modal, Radio, Space, Spin, message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import dayjs from 'dayjs';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '@/component/Task/component/DatabaseSelect';
 import SQLPreviewModal from '@/component/Task/component/SQLPreviewModal';
 import SynchronizationItem from '@/component/Task/component/SynchronizationItem';
@@ -48,6 +47,9 @@ import { IScheduleRecord, IDataArchiveParameters } from '@/d.ts/schedule';
 import { PageStore } from '@/store/page';
 import { SchedulePageMode } from '@/component/Schedule/interface';
 import { openSchedulesPage } from '@/store/helper/page';
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { ConnectTypeText } from '@/constant/label';
+
 export enum IArchiveRange {
   PORTION = 'portion',
   ALL = 'all',
@@ -113,8 +115,8 @@ const defaultValue = {
   tables: [null],
   migrationInsertAction: MigrationInsertAction.INSERT_DUPLICATE_UPDATE,
   shardingStrategy: ShardingStrategy.AUTO,
-  rowLimit: 100,
-  dataSizeLimit: 1,
+  rowLimit: 1000,
+  dataSizeLimit: 10,
 };
 
 interface IProps {
@@ -132,6 +134,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
   const [tables, setTables] = useState<ITable[]>();
   const [enablePartition, setEnablePartition] = useState<boolean>(false);
   const [targetDatabase, setTargetDatabase] = useState<IDatabase>();
+  const [sourceDatabase, setSourceDatabase] = useState<IDatabase>();
   const [form] = Form.useForm();
   const databaseId = Form.useWatch('databaseId', form);
   const { session: sourceDBSession, database: sourceDB } = useDBSession(databaseId);
@@ -140,9 +143,6 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     const tables = await getTableListByDatabaseName(sourceDBSession?.sessionId, sourceDB?.name);
     setTables(tables);
   };
-  const { createScheduleDatabase, setCreateScheduleDatabase } =
-    useContext(CreateScheduleContext) || {};
-
   const crontabRef = useRef<{
     setValue: (value: ICrontab) => void;
     resetFields: () => void;
@@ -151,10 +151,10 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
   const dataArchiveEditId = dataArchiveData?.id;
   const isEdit = !!dataArchiveEditId && dataArchiveData?.type === 'EDIT';
   const [isdeleteAfterMigration, setIsdeleteAfterMigration] = useState(false);
+  const [isTargetConnectTypeAllow, setIsTargetConnectTypeAllow] = useState<boolean>(true);
 
   const loadEditData = async (editId: number) => {
     const dataRes = (await fetchScheduleDetail(editId)) as IScheduleRecord<IDataArchiveParameters>;
-    setCreateScheduleDatabase(dataRes?.parameters?.sourceDatabase);
     const {
       parameters,
       scheduleName,
@@ -220,6 +220,8 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     }
     await form.setFieldsValue(formData);
     setTargetDatabase(parameters.targetDatabase);
+    setSourceDatabase(parameters.sourceDatabase);
+    handleCheckTargetConnectTypeIsAllow(parameters.sourceDatabase, parameters.targetDatabase);
   };
   const handleCancel = async (hasEdit: boolean) => {
     if (hasEdit) {
@@ -463,12 +465,37 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     setCrontab(null);
     setHasEdit(false);
     setTargetDatabase(null);
-    setCreateScheduleDatabase(undefined);
+    setSourceDatabase(null);
   };
 
-  const handleDBChange = (v, db) => {
+  const handleSourceDatabaseChange = (v, db) => {
     form.setFieldValue('tables', [null]);
-    setCreateScheduleDatabase(db);
+    setSourceDatabase(db);
+    handleCheckTargetConnectTypeIsAllow(db, targetDatabase);
+  };
+
+  const handleTargetDatabaseChange = (v, db) => {
+    setTargetDatabase(db);
+    handleCheckTargetConnectTypeIsAllow(sourceDatabase, db);
+  };
+
+  const handleCheckTargetConnectTypeIsAllow = (
+    sourceDatabase: IDatabase,
+    targetDatabase: IDatabase,
+  ) => {
+    if (!sourceDatabase?.dataSource?.type || !targetDatabase?.dataSource?.type) {
+      return;
+    }
+    const allowTargetConnectType = getDataSourceModeConfig(sourceDatabase?.dataSource?.type)
+      ?.features?.scheduleConfig?.allowTargetConnectTypeByDataArchive;
+    if (
+      allowTargetConnectType &&
+      allowTargetConnectType?.includes(targetDatabase?.dataSource?.type)
+    ) {
+      setIsTargetConnectTypeAllow(true);
+    } else {
+      setIsTargetConnectTypeAllow(false);
+    }
   };
 
   useEffect(() => {
@@ -558,8 +585,8 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
                   defaultMessage: '源端数据库',
                 })}
                 /*源端数据库*/ projectId={projectId}
-                onChange={handleDBChange}
-                onInit={(db) => setCreateScheduleDatabase(db)}
+                onChange={handleSourceDatabaseChange}
+                onInit={(db) => setTargetDatabase(db)}
                 filters={{
                   hideFileSystem: true,
                 }}
@@ -571,10 +598,37 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
                   id: 'odc.DataArchiveTask.CreateModal.TargetDatabase',
                   defaultMessage: '目标数据库',
                 })}
-                onChange={(_, database) => {
-                  setTargetDatabase(database);
-                }}
-                /*目标数据库*/ name="targetDataBaseId"
+                rules={[
+                  {
+                    required: true,
+                    message: formatMessage({
+                      id: 'odc.component.DatabaseSelect.SelectADatabase',
+                      defaultMessage: '请选择数据库',
+                    }), //请选择数据库
+                  },
+                  {
+                    validator: (rule, value, callback) => {
+                      if (!value) {
+                        callback();
+                        return;
+                      }
+                      const sourceConnectTypeName = ConnectTypeText(
+                        sourceDatabase?.dataSource?.type,
+                      );
+                      const targetConnectTypeName = ConnectTypeText(
+                        targetDatabase?.dataSource?.type,
+                      );
+                      if (!isTargetConnectTypeAllow) {
+                        callback(
+                          `源端 ${sourceConnectTypeName} 类型 -> 目标端 ${targetConnectTypeName} 类型不在已支持的归档链路范围内`,
+                        );
+                      }
+                      callback();
+                    },
+                  },
+                ]}
+                onChange={handleTargetDatabaseChange}
+                name="targetDataBaseId"
                 projectId={projectId}
               />
             </Space>
@@ -743,7 +797,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
         </Spin>
       </AnchorContainer>
       <SQLPreviewModal
-        database={createScheduleDatabase}
+        database={targetDatabase}
         initName={isEdit ? form.getFieldValue('scheduleName') : undefined}
         isEdit={isEdit}
         sql={previewSql}

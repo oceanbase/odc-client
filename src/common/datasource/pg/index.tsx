@@ -54,7 +54,16 @@ const procedureConfig: IDataSourceModeConfig['schema']['proc'] = {
   sqlSecurity: true,
   deterministic: true,
 };
-
+const scheduleConfig: IDataSourceModeConfig['features']['scheduleConfig'] = {
+  allowTargetConnectTypeByDataArchive: [
+    ConnectType.OB_MYSQL,
+    ConnectType.CLOUD_OB_MYSQL,
+    ConnectType.COS,
+    ConnectType.OBS,
+    ConnectType.S3A,
+    ConnectType.OSS,
+  ],
+};
 const items: Record<ConnectType.PG, IDataSourceModeConfig> = {
   [ConnectType.PG]: {
     connection: {
@@ -68,6 +77,7 @@ const items: Record<ConnectType.PG, IDataSourceModeConfig> = {
       disableURLParse: true,
     },
     features: {
+      scheduleConfig,
       task: [],
       schedule: [ScheduleType.DATA_ARCHIVE, ScheduleType.DATA_DELETE],
       obclient: false,

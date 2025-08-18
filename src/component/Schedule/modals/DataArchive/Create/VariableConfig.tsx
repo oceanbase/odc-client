@@ -18,7 +18,7 @@ import HelpDoc from '@/component/helpDoc';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import type { FormInstance } from 'antd';
-import { Button, Form, Input, InputNumber, Select, Space, Tooltip } from 'antd';
+import { AutoComplete, Button, Form, Input, InputNumber, Select, Space, Tooltip } from 'antd';
 import classNames from 'classnames';
 import { variable } from './index';
 import styles from './index.less';
@@ -81,7 +81,7 @@ export const timeUnitOptions = [
     value: 'y',
   },
 ];
-
+const MAX_VARIABLES_COUNT = 100;
 const ENABLE_PATTERN_OPERATOR = false;
 const timeFormatOptions = ['yyyy-MM-dd', 'yyyyMMdd'].map((item) => ({
   label: item,
@@ -96,6 +96,7 @@ interface IProps {
 }
 const VariableConfig: React.FC<IProps> = (props) => {
   const variables = Form.useWatch('variables', props.form);
+
   return (
     <Space
       direction="vertical"
@@ -174,145 +175,156 @@ const VariableConfig: React.FC<IProps> = (props) => {
       )}
 
       <Form.List name="variables">
-        {(fields, { add, remove }) => (
-          <div className={styles.infoBlock}>
-            {fields.map(({ key, name, ...restField }, index) => (
-              <div
-                key={key}
-                className={classNames(styles.variables, {
-                  [styles.delete]: true,
-                })}
-              >
-                <Form.Item {...restField} name={[name, 'name']}>
-                  <Input
-                    placeholder={formatMessage({
-                      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseEnter',
-                      defaultMessage: '请输入',
-                    })} /*请输入*/
-                  />
-                </Form.Item>
-                <Form.Item {...restField} name={[name, 'format']}>
-                  <Select
-                    placeholder={formatMessage({
-                      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
-                      defaultMessage: '请选择',
-                    })}
-                    /*请选择*/ options={timeFormatOptions}
-                  />
-                </Form.Item>
-                <Form.List name={[name, 'pattern']}>
-                  {(subFields, { add: _add, remove: _remove }) => {
-                    const disabledAdd = subFields.length >= 3;
-                    const required = !!Object.values(variables?.[index].pattern?.[0] ?? {})?.join(
-                      '',
-                    )?.length;
-                    return (
-                      <div className={styles.infoBlock}>
-                        {subFields.map(({ key, name, ...restField }) => (
-                          <div className={styles.pattern}>
-                            <Form.Item
-                              {...restField}
-                              name={[name, 'operator']}
-                              rules={rules.operator({ required })}
-                            >
-                              <Select
-                                placeholder={formatMessage({
-                                  id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
-                                  defaultMessage: '请选择',
-                                })}
-                                /*请选择*/ options={operatorOptions}
-                              />
-                            </Form.Item>
-                            <Form.Item
-                              {...restField}
-                              name={[name, 'step']}
-                              rules={rules.step({ required })}
-                            >
-                              <InputNumber
-                                placeholder={formatMessage({
-                                  id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseEnter',
-                                  defaultMessage: '请输入',
-                                })}
-                                /*请输入*/ min={0}
-                              />
-                            </Form.Item>
-                            <Form.Item
-                              {...restField}
-                              name={[name, 'unit']}
-                              rules={rules.unit({ required })}
-                            >
-                              <Select
-                                placeholder={formatMessage({
-                                  id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
-                                  defaultMessage: '请选择',
-                                })}
-                                /*请选择*/ options={timeUnitOptions}
-                              />
-                            </Form.Item>
-                            {ENABLE_PATTERN_OPERATOR && (
-                              <>
-                                <Tooltip
-                                  title={
-                                    formatMessage({
-                                      id: 'odc.src.component.Task.DataArchiveTask.CreateModal.AddTimeOffset',
-                                      defaultMessage: '添加时间偏移',
-                                    }) /* 添加时间偏移 */
-                                  }
-                                >
-                                  <Button type="text" disabled={disabledAdd}>
-                                    <PlusOutlined onClick={() => _add()} />
-                                  </Button>
-                                </Tooltip>
-                                <Tooltip
-                                  title={
-                                    formatMessage({
-                                      id: 'odc.src.component.Task.DataArchiveTask.CreateModal.DeleteTimeOffset',
-                                      defaultMessage: '删除时间偏移',
-                                    }) /* 删除时间偏移 */
-                                  }
-                                >
-                                  <Button type="text">
-                                    <MinusOutlined
-                                      onClick={() => {
-                                        if (subFields?.length > 1) _remove(name);
-                                      }}
-                                    />
-                                  </Button>
-                                </Tooltip>
-                              </>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  }}
-                </Form.List>
-                <Tooltip
-                  title={formatMessage({
-                    id: 'odc.DataArchiveTask.CreateModal.VariableConfig.DeleteAVariable',
-                    defaultMessage: '删除变量',
-                  })} /*删除变量*/
+        {(fields, { add, remove }) => {
+          const disabledAddFields = fields.length >= MAX_VARIABLES_COUNT;
+          return (
+            <div className={styles.infoBlock}>
+              {fields.map(({ key, name, ...restField }, index) => (
+                <div
+                  key={key}
+                  className={classNames(styles.variables, {
+                    [styles.delete]: true,
+                  })}
                 >
-                  <DeleteOutlined onClick={() => remove(name)} />
+                  <Form.Item {...restField} name={[name, 'name']} className={styles.mb8}>
+                    <Input
+                      placeholder={formatMessage({
+                        id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseEnter',
+                        defaultMessage: '请输入',
+                      })} /*请输入*/
+                    />
+                  </Form.Item>
+                  <Form.Item {...restField} name={[name, 'format']} className={styles.mb8}>
+                    <AutoComplete
+                      placeholder={'请输入或选择一种时间格式'}
+                      options={timeFormatOptions}
+                    />
+                  </Form.Item>
+                  <Form.List name={[name, 'pattern']}>
+                    {(subFields, { add: _add, remove: _remove }) => {
+                      const disabledAddSubFields = subFields.length >= 3;
+                      const required = !!Object.values(variables?.[index].pattern?.[0] ?? {})?.join(
+                        '',
+                      )?.length;
+                      return (
+                        <div className={styles.infoBlock}>
+                          {subFields.map(({ key, name, ...restField }) => (
+                            <div className={styles.pattern}>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'operator']}
+                                rules={rules.operator({ required })}
+                                className={styles.mb8}
+                              >
+                                <Select
+                                  placeholder={formatMessage({
+                                    id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
+                                    defaultMessage: '请选择',
+                                  })}
+                                  /*请选择*/ options={operatorOptions}
+                                />
+                              </Form.Item>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'step']}
+                                rules={rules.step({ required })}
+                                className={styles.mb8}
+                              >
+                                <InputNumber
+                                  placeholder={formatMessage({
+                                    id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseEnter',
+                                    defaultMessage: '请输入',
+                                  })}
+                                  /*请输入*/ min={0}
+                                />
+                              </Form.Item>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'unit']}
+                                rules={rules.unit({ required })}
+                                className={styles.mb8}
+                              >
+                                <Select
+                                  placeholder={formatMessage({
+                                    id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
+                                    defaultMessage: '请选择',
+                                  })}
+                                  /*请选择*/ options={timeUnitOptions}
+                                />
+                              </Form.Item>
+                              {ENABLE_PATTERN_OPERATOR && (
+                                <>
+                                  <Tooltip
+                                    title={
+                                      formatMessage({
+                                        id: 'odc.src.component.Task.DataArchiveTask.CreateModal.AddTimeOffset',
+                                        defaultMessage: '添加时间偏移',
+                                      }) /* 添加时间偏移 */
+                                    }
+                                  >
+                                    <Button type="text" disabled={disabledAddSubFields}>
+                                      <PlusOutlined onClick={() => _add()} />
+                                    </Button>
+                                  </Tooltip>
+                                  <Tooltip
+                                    title={
+                                      formatMessage({
+                                        id: 'odc.src.component.Task.DataArchiveTask.CreateModal.DeleteTimeOffset',
+                                        defaultMessage: '删除时间偏移',
+                                      }) /* 删除时间偏移 */
+                                    }
+                                  >
+                                    <Button type="text">
+                                      <MinusOutlined
+                                        onClick={() => {
+                                          if (subFields?.length > 1) _remove(name);
+                                        }}
+                                      />
+                                    </Button>
+                                  </Tooltip>
+                                </>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    }}
+                  </Form.List>
+                  <Tooltip
+                    title={formatMessage({
+                      id: 'odc.DataArchiveTask.CreateModal.VariableConfig.DeleteAVariable',
+                      defaultMessage: '删除变量',
+                    })} /*删除变量*/
+                  >
+                    <DeleteOutlined onClick={() => remove(name)} />
+                  </Tooltip>
+                </div>
+              ))}
+              <Form.Item
+                style={{
+                  width: '100%',
+                }}
+              >
+                <Tooltip title={disabledAddFields ? `最多添加${MAX_VARIABLES_COUNT}个变量` : ''}>
+                  <Button
+                    type="dashed"
+                    onClick={() => add(variable)}
+                    block
+                    icon={<PlusOutlined />}
+                    disabled={disabledAddFields}
+                  >
+                    {
+                      formatMessage({
+                        id: 'odc.DataArchiveTask.CreateModal.VariableConfig.AddVariables',
+                        defaultMessage: '添加变量',
+                      }) /*添加变量*/
+                    }
+                  </Button>
                 </Tooltip>
-              </div>
-            ))}
-            <Form.Item
-              style={{
-                width: '100%',
-              }}
-            >
-              <Button type="dashed" onClick={() => add(variable)} block icon={<PlusOutlined />}>
-                {
-                  formatMessage({
-                    id: 'odc.DataArchiveTask.CreateModal.VariableConfig.AddVariables',
-                    defaultMessage: '添加变量',
-                  }) /*添加变量*/
-                }
-              </Button>
-            </Form.Item>
-          </div>
-        )}
+              </Form.Item>
+            </div>
+          );
+        }}
       </Form.List>
     </Space>
   );

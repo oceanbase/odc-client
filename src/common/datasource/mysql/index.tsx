@@ -55,6 +55,18 @@ const procedureConfig: IDataSourceModeConfig['schema']['proc'] = {
   deterministic: true,
 };
 
+const scheduleConfig: IDataSourceModeConfig['features']['scheduleConfig'] = {
+  allowTargetConnectTypeByDataArchive: [
+    ConnectType.COS,
+    ConnectType.OBS,
+    ConnectType.S3A,
+    ConnectType.OSS,
+    ConnectType.OB_MYSQL,
+    ConnectType.CLOUD_OB_MYSQL,
+    ConnectType.MYSQL,
+  ],
+};
+
 const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
   [ConnectType.MYSQL]: {
     connection: {
@@ -79,6 +91,7 @@ const items: Record<ConnectType.MYSQL, IDataSourceModeConfig> = {
         TaskType.LOGICAL_DATABASE_CHANGE,
       ],
       schedule: [ScheduleType.SQL_PLAN, ScheduleType.DATA_ARCHIVE, ScheduleType.DATA_DELETE],
+      scheduleConfig,
       obclient: true,
       recycleBin: false,
       plRun: true,

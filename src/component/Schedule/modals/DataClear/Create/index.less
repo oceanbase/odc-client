@@ -33,45 +33,38 @@
   .tables {
     display: grid;
     width: 100%;
-    border: 1px solid var(--table-border-color);
-    border-bottom: 0;
     align-items: center;
     width: 100%;
     grid-template-columns: 160px 1fr;
     &.delete {
-      grid-template-columns: 160px 1fr 35px;
+      grid-template-columns: 160px 1fr 25px;
     }
     &.advancedOption {
       grid-template-columns: 160px 186px 1fr;
     }
     &.delete.advancedOption {
-      grid-template-columns: 160px 186px 1fr 35px;
+      grid-template-columns: 160px 186px 1fr 25px;
     }
 
-    &.title {
-      background-color: var(--neutral-grey2-color);
-      border: 1px solid var(--table-border-color);
-      border-bottom: 0;
-    }
     :global {
       .ant-form-item {
-        border-right: 1px solid var(--table-border-color);
         margin-bottom: 0;
         height: 100%;
         display: grid;
         place-items: center;
         .ant-form-item-row {
-          padding: 8px;
+          padding: 0px 0px 8px 0px;
           width: 100%;
         }
       }
     }
   }
   .tableTitle {
-    // padding: 3px 8px;
-    border-right: 1px solid var(--table-border-color);
+    padding: 3px 8px;
   }
-
+  .pr6 {
+    padding-right: 6px;
+  }
   .hide {
     display: none;
   }
@@ -110,6 +103,9 @@
 }
 
 .infoBlock {
+  .mb8 {
+    margin-bottom: 8px;
+  }
   .multiInputBox {
     > :global(.ant-form-item):not(:last-child) {
       > :global(.ant-form-item-row) {
@@ -120,18 +116,6 @@
       > :global(.ant-form-item-row) {
         padding-top: 4px;
       }
-    }
-  }
-  .operationContainer {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    border: 1px solid var(--odc-border-color);
-    button {
-      margin-right: 6px;
-    }
-    button:last-child {
-      margin-right: 0px;
     }
   }
 }

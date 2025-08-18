@@ -1,6 +1,6 @@
 import { formatMessage } from '@/util/intl';
 import React, { useEffect, useState, useMemo } from 'react';
-import { Button, Checkbox, Popover, Spin, Empty, Input, Space } from 'antd';
+import { Button, Checkbox, Popover, Spin, Empty, Input, Space, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import styles from './index.less';
@@ -12,10 +12,12 @@ interface BatchSelectionPopoverProps {
     value: string;
   }[];
   handleConfirm: (selectedList: any[]) => void;
+  disabled?: boolean;
+  maxCount?: number;
 }
 
 const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
-  const { options = [], handleConfirm } = props;
+  const { options = [], handleConfirm, disabled = false, maxCount } = props;
 
   const [checkedList, setCheckedList] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState<string>(undefined);
@@ -107,6 +109,10 @@ const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
             size="small"
             type="primary"
             onClick={() => {
+              if (maxCount && checkedList?.length > maxCount) {
+                message.warning(`最多还可以添加${maxCount}个`);
+                return;
+              }
               handleConfirm(checkedList);
               setOpen(false);
             }}
@@ -182,6 +188,7 @@ const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
           onClick={() => {
             setOpen(true);
           }}
+          disabled={disabled}
         >
           {formatMessage({
             id: 'src.component.BatchSelectionPopover.F72B9B10',

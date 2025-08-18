@@ -49,6 +49,18 @@ const functionConfig: IDataSourceModeConfig['schema']['func'] = {
   params: ['paramName', 'paramMode', 'dataType', 'defaultValue'],
 };
 
+const scheduleConfig: IDataSourceModeConfig['features']['scheduleConfig'] = {
+  allowTargetConnectTypeByDataArchive: [
+    ConnectType.COS,
+    ConnectType.OBS,
+    ConnectType.S3A,
+    ConnectType.OSS,
+    ConnectType.OB_ORACLE,
+    ConnectType.CLOUD_OB_ORACLE,
+    ConnectType.ORACLE,
+  ],
+};
+
 const items: Record<ConnectType.ORACLE, IDataSourceModeConfig> = {
   [ConnectType.ORACLE]: {
     priority: 2,
@@ -65,6 +77,7 @@ const items: Record<ConnectType.ORACLE, IDataSourceModeConfig> = {
       disableURLParse: true,
     },
     features: {
+      scheduleConfig,
       task: [
         TaskType.IMPORT,
         TaskType.EXPORT,

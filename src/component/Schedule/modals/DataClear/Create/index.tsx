@@ -77,8 +77,8 @@ const defaultValue = {
   archiveRange: IArchiveRange.PORTION,
   shardingStrategy: ShardingStrategy.AUTO,
   tables: [null],
-  rowLimit: 100,
-  dataSizeLimit: 1,
+  rowLimit: 1000,
+  dataSizeLimit: 10,
   deleteByUniqueKey: true,
 };
 const getVariables = (

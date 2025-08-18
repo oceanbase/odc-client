@@ -57,6 +57,18 @@ const procedureConfig: IDataSourceModeConfig['schema']['proc'] = {
   deterministic: true,
 };
 
+const scheduleConfig: IDataSourceModeConfig['features']['scheduleConfig'] = {
+  allowTargetConnectTypeByDataArchive: [
+    ConnectType.OB_MYSQL,
+    ConnectType.CLOUD_OB_MYSQL,
+    ConnectType.MYSQL,
+    ConnectType.COS,
+    ConnectType.OBS,
+    ConnectType.S3A,
+    ConnectType.OSS,
+  ],
+};
+
 const items: Record<
   ConnectType.OB_MYSQL | ConnectType.CLOUD_OB_MYSQL | ConnectType.ODP_SHARDING_OB_MYSQL,
   IDataSourceModeConfig
@@ -72,6 +84,7 @@ const items: Record<
       ssl: true,
     },
     features: {
+      scheduleConfig,
       task: Object.values(TaskType),
       schedule: Object.values(ScheduleType),
       obclient: true,
@@ -113,6 +126,7 @@ const items: Record<
       unionUser: true,
     },
     features: {
+      scheduleConfig,
       task: Object.values(TaskType)?.filter((i) => ![TaskType.ONLINE_SCHEMA_CHANGE]?.includes?.(i)),
       schedule: Object.values(ScheduleType),
       obclient: true,
