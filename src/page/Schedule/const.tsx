@@ -3,6 +3,7 @@ import { SchedulePageType } from '@/d.ts/schedule';
 import { formatMessage } from '@/util/intl';
 import settingStore from '@/store/setting';
 import { SchedulePageTextMap } from '@/constant/schedule';
+import { isClient } from '@/util/env';
 
 export interface ITaskModeConfig {
   pageType: SchedulePageType;
@@ -14,7 +15,7 @@ const schedlueConfig: PartialTaskConfig = {
   [SchedulePageType.ALL]: {
     label: SchedulePageTextMap[SchedulePageType.ALL],
     pageType: SchedulePageType.ALL,
-    enabled: () => true,
+    enabled: () => !isClient(),
   },
   [SchedulePageType.DATA_ARCHIVE]: {
     label: SchedulePageTextMap[SchedulePageType.DATA_ARCHIVE],

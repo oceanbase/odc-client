@@ -532,6 +532,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
       className={styles.sqlPlan}
     >
       <AnchorContainer
+        containerWrapStyle={{ paddingLeft: '24px' }}
         items={[
           {
             key: 'baseInfo',
@@ -853,7 +854,9 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
           </Form>
         </Spin>
       </AnchorContainer>
-      <div style={{ padding: '16px 16px 0px 0px' }}>
+      <div
+        style={{ padding: '16px 16px 0px 24px', borderTop: '1px solid var(--table-border-color)' }}
+      >
         <Space>
           <Button
             onClick={() => {

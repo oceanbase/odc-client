@@ -1,5 +1,5 @@
 import { IScheduleRecord, ISqlPlanParameters, ScheduleType } from '@/d.ts/schedule';
-import { Descriptions, Divider, Typography } from 'antd';
+import { Descriptions, Divider } from 'antd';
 import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
@@ -7,10 +7,14 @@ import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { formatMessage } from '@/util/intl';
 import { SQLContent } from '@/component/SQLContent';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
-import { TaskType } from '@/d.ts';
-import { IScheduleTaskRecord, scheduleTask } from '@/d.ts/scheduleTask';
+import {
+  ISqlPlanParametersSubTaskParameters,
+  ISqlPlanSubTaskExecutionDetails,
+  scheduleTask,
+} from '@/d.ts/scheduleTask';
 import { SubTypeTextMap } from '@/constant/scheduleTask';
 import EllipsisText from '@/component/EllipsisText';
+import login from '@/store/login';
 
 const ErrorStrategy = {
   ABORT: formatMessage({
@@ -26,7 +30,7 @@ const ErrorStrategy = {
 
 interface IProps {
   schedule: IScheduleRecord<ISqlPlanParameters>;
-  subTask?: scheduleTask;
+  subTask?: scheduleTask<ISqlPlanParametersSubTaskParameters, ISqlPlanSubTaskExecutionDetails>;
   theme?: string;
 }
 const SQLPlanScheduleContent: React.FC<IProps> = (props) => {
@@ -66,9 +70,11 @@ const SQLPlanScheduleContent: React.FC<IProps> = (props) => {
         <Descriptions.Item label={'数据源'}>
           <EllipsisText content={parameters?.databaseInfo?.dataSource?.name} />
         </Descriptions.Item>
-        <Descriptions.Item label={'项目'}>
-          <EllipsisText content={schedule?.project?.name} />
-        </Descriptions.Item>
+        {!login.isPrivateSpace() && (
+          <Descriptions.Item label={'项目'}>
+            <EllipsisText content={schedule?.project?.name} />
+          </Descriptions.Item>
+        )}
       </Descriptions>
       <Divider style={{ marginTop: 16 }} />
       {parameters && (

@@ -52,7 +52,6 @@ interface IItem {
 }
 
 const ActivityBar: React.FC<IProps> = (props) => {
-  const { userStore } = props;
   const context = useContext(ActivityBarContext);
 
   const items: IItem[] = [
@@ -78,7 +77,7 @@ const ActivityBar: React.FC<IProps> = (props) => {
       title: ActivityBarItemTypeText[ActivityBarItemType.Schedule],
       key: ActivityBarItemType.Schedule,
       icon: ScheduleSvg,
-      isVisible: true,
+      isVisible: !isClient(),
     },
     {
       title: ActivityBarItemTypeText[ActivityBarItemType.Manager],

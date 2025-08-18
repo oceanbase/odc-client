@@ -1,5 +1,3 @@
-import DisplayTable from '@/component/DisplayTable';
-import DetailModal from '@/component/Task/modals/DetailModals';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
 import React, { useEffect, useRef, useState } from 'react';
@@ -11,8 +9,8 @@ import {
 } from '@/d.ts/schedule';
 import PartitionPlanHeader from './components/PartitionPlanHeader';
 import ScheduleTaskActions from '../Actions/ScheduleTaskActions';
-import { listScheduleTasks, detailScheduleTask } from '@/common/network/schedule';
-import { scheduleTask } from '@/d.ts/scheduleTask';
+import { listScheduleTasks } from '@/common/network/schedule';
+import { IScheduleTaskExecutionDetail, scheduleTask, SubTaskParameters } from '@/d.ts/scheduleTask';
 import ScheduleTaskStatusLabel from '../ScheduleTaskStatusLabel';
 import SubTaskDetailModal from '@/component/Schedule/layout/SubTaskDetail';
 import ExecutionInfoContainer from '@/component/Schedule/components/ExecutionInfoContainer';
@@ -24,7 +22,10 @@ import { IResponseData } from '@/d.ts';
 
 const getConnectionColumns = (params: {
   reloadList: () => void;
-  onOpenDetail: (task: scheduleTask, visible: boolean) => void;
+  onOpenDetail: (
+    task: scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>,
+    visible: boolean,
+  ) => void;
   schedule: IScheduleRecord<ScheduleRecordParameters>;
 }) => {
   const { onOpenDetail, schedule, reloadList } = params;
@@ -108,7 +109,8 @@ interface IProps {
 
 const OperationRecord: React.FC<IProps> = (props) => {
   const { schedule } = props;
-  const [subTaskRes, setSubTaskRes] = useState<IResponseData<scheduleTask>>();
+  const [subTaskRes, setSubTaskRes] =
+    useState<IResponseData<scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>>>();
   const [detailId, setDetailId] = useState<number>(null);
   const [detailVisible, setDetailVisible] = useState<boolean>(false);
   const [parentId, setParentId] = useState<number>();
@@ -125,7 +127,10 @@ const OperationRecord: React.FC<IProps> = (props) => {
     };
   }, 6000);
 
-  const handleDetailVisible = async (task: scheduleTask, visible: boolean = false) => {
+  const handleDetailVisible = async (
+    task: scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>,
+    visible: boolean = false,
+  ) => {
     setDetailId(task?.id);
     setParentId(Number(task?.jobName));
     setDetailVisible(visible);

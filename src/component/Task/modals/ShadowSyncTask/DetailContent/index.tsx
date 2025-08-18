@@ -30,6 +30,7 @@ import { useEffect, useState } from 'react';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
 import EllipsisText from '@/component/EllipsisText';
+import login from '@/store/login';
 interface IShadowSyncParamters {
   errorStrategy: ErrorStrategy;
   connectionId: string;
@@ -136,8 +137,10 @@ export function getItems(
         ],
         [
           '数据库',
-          //所属数据库
-          <DatabaseLabel database={task?.database} />,
+          <EllipsisText
+            content={<DatabaseLabel database={task?.database} />}
+            needTooltip={false}
+          />,
         ],
 
         [
@@ -147,7 +150,7 @@ export function getItems(
           }), //'所属数据源'
           <EllipsisText content={task?.database?.dataSource?.name} />,
         ],
-        ['项目', <EllipsisText content={task?.project?.name} />],
+        !login.isPrivateSpace() ? ['项目', <EllipsisText content={task?.project?.name} />] : null,
 
         hasFlow ? riskItem : null,
         [

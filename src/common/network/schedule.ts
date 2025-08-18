@@ -7,7 +7,11 @@ import {
   ScheduleStatus,
 } from '@/d.ts/schedule';
 import request from '@/util/request';
-import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
+import {
+  IScheduleTaskExecutionDetail,
+  ScheduleTaskStatus,
+  SubTaskParameters,
+} from '@/d.ts/scheduleTask';
 import {
   Operation,
   IResponseData,
@@ -242,7 +246,9 @@ export async function getDownloadUrl(scheduleId: number, taskId: number) {
 /**
  * 获取执行视角下的子任务列表
  */
-export const getSubTaskList = async (params): Promise<IResponseData<scheduleTask>> => {
+export const getSubTaskList = async (
+  params,
+): Promise<IResponseData<scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>>> => {
   const res = await request.get(`api/v2/schedule/tasks`, {
     params,
   });
@@ -256,7 +262,7 @@ export const listScheduleTasks = async (params: {
   scheduleId: number;
   size: number;
   page: number;
-}): Promise<IResponseData<scheduleTask>> => {
+}): Promise<IResponseData<scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>>> => {
   const { scheduleId, size, page } = params;
   const res = await request.get(`/api/v2/schedule/schedules/${scheduleId}/tasks`, {
     params: omit(params, 'scheduleId'),
@@ -270,7 +276,7 @@ export const listScheduleTasks = async (params: {
 export const detailScheduleTask = async (
   scheduleId: number,
   taskId: number,
-): Promise<scheduleTask> => {
+): Promise<scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>> => {
   const res = await request.get(`/api/v2/schedule/schedules/${scheduleId}/tasks/${taskId}`);
   return res?.data;
 };

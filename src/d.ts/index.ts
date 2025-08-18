@@ -2157,14 +2157,6 @@ export enum TaskJobType {
   DATA_DELETE = 'DATA_DELETE',
 }
 
-export enum SubTaskType {
-  DATA_ARCHIVE = 'DATA_ARCHIVE',
-  DATA_DELETE = 'DATA_DELETE',
-  DATA_ARCHIVE_ROLLBACK = 'DATA_ARCHIVE_ROLLBACK',
-  DATA_ARCHIVE_DELETE = 'DATA_ARCHIVE_DELETE',
-  ASYNC = 'ASYNC',
-}
-
 export enum TaskSubType {
   INSERT = 'INSERT',
   UPDATE = 'UPDATE',
@@ -2721,18 +2713,7 @@ export interface ICycleTaskStatRecord {
   }[];
 }
 
-export interface ICycleTaskJobRecord<T> {
-  createTime: number;
-  executionDetails: T;
-  fireTime: number;
-  id: number;
-  parameters: any;
-  status: SubTaskStatus;
-  type: TaskType.LOGICAL_DATABASE_CHANGE;
-  updateTime: number;
-}
-
-export enum SubTaskType {
+export enum SubTaskExecuteType {
   MIGRATE = 'MIGRATE',
   CHECK = 'CHECK',
   DELETE = 'DELETE',

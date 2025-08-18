@@ -33,6 +33,7 @@ import { ProjectRole } from '@/d.ts/project';
 import userStore from '@/store/login';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import EllipsisText from '@/component/EllipsisText';
+import login from '@/store/login';
 
 const { Text } = Typography;
 interface IDDLAlterParamters {
@@ -215,7 +216,7 @@ export function getItems(
         ['数据库', <EllipsisText content={<DatabaseLabel database={task?.database} />} />],
 
         ['数据源', <EllipsisText content={task?.database?.dataSource?.name} />],
-        ['项目', <EllipsisText content={task?.project?.name} />],
+        !login.isPrivateSpace() ? ['项目', <EllipsisText content={task?.project?.name} />] : null,
         hasFlow ? riskItem : null,
       ].filter(Boolean),
     },

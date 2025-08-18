@@ -11,7 +11,7 @@ import { inject, observer } from 'mobx-react';
 import { ScheduleStore } from '@/store/schedule';
 import { useSetState } from 'ahooks';
 import styles from '@/component/Schedule/index.less';
-import DetailModals from './ScheduleDetail';
+import ScheduleDetail from './ScheduleDetail';
 import type { ITableInstance } from '@/component/CommonTable/interface';
 import ScheduleTable from '../components/ScheduleTable';
 import SubTaskDetailModal from '@/component/Schedule/layout/SubTaskDetail';
@@ -38,7 +38,7 @@ import { getPreTime } from '@/util/utils';
 import { schedlueConfig } from '@/page/Schedule/const';
 import ApprovalModal from '@/component/Task/component/ApprovalModal';
 import { message } from 'antd';
-import { scheduleTask } from '@/d.ts/scheduleTask';
+import { IScheduleTaskExecutionDetail, scheduleTask, SubTaskParameters } from '@/d.ts/scheduleTask';
 import { IPagination } from '@/component/Schedule/interface';
 import { getFirstEnabledSchedule } from '../helper';
 
@@ -118,7 +118,10 @@ const Content: React.FC<IProps> = (props) => {
     });
   };
 
-  const handleSubTaskDetailVisible = (subTask: scheduleTask, visible: boolean = false) => {
+  const handleSubTaskDetailVisible = (
+    subTask: scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>,
+    visible: boolean = false,
+  ) => {
     setSubTaskState({
       detailId: subTask?.id,
       detailVisible: visible,
@@ -350,7 +353,7 @@ const Content: React.FC<IProps> = (props) => {
           setPagination={setPagination}
         />
       </div>
-      <DetailModals
+      <ScheduleDetail
         theme={theme}
         onApprovalVisible={handleApprovalVisible}
         type={state.scheduleType}

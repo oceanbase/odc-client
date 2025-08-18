@@ -1,7 +1,7 @@
 import { getScheduleDetail } from '@/common/network/schedule';
 import type { ITableLoadOptions } from '@/component/CommonTable/interface';
 import ScheduleDetailModal from '../components/ScheduleDetailModal';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   DataClearScheduleContent,
   PartitionScheduleContent,
@@ -10,7 +10,6 @@ import {
 } from '../modals/Detail';
 import {
   ScheduleType,
-  SchedulePageType,
   IScheduleRecord,
   ScheduleRecordParameters,
   IPartitionPlan,

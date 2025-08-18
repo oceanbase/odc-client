@@ -30,6 +30,7 @@ import { getTaskExecStrategyMap } from '@/component/Task/const';
 import { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import EllipsisText from '@/component/EllipsisText';
+import login from '@/store/login';
 
 const SimpleTextItem: React.FC<{
   label: string;
@@ -569,9 +570,14 @@ class TaskContent extends React.Component<any, any> {
               content={<EllipsisText content={task?.database?.dataSource?.name} />}
             />
           </Col>
-          <Col span={12}>
-            <SimpleTextItem label={'项目'} content={task?.project?.name || '-'} />
-          </Col>
+          {!login.isPrivateSpace() && (
+            <Col span={12}>
+              <SimpleTextItem
+                label={'项目'}
+                content={<EllipsisText content={task?.project?.name} />}
+              />
+            </Col>
+          )}
           <Col span={12}>
             {hasFlow && (
               <SimpleTextItem

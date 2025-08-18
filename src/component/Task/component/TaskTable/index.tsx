@@ -208,7 +208,9 @@ const TaskTable: React.FC<IProps> = (props) => {
       title: '工单',
       dataIndex: 'id',
       width: 500,
-      render: (id, record) => <TaskNameColumn record={record} onDetailVisible={onDetailVisible} />,
+      render: (id, record) => (
+        <TaskNameColumn record={record} onDetailVisible={onDetailVisible} mode={mode} />
+      ),
     },
     {
       ...(isAll

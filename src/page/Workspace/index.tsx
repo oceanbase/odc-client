@@ -43,7 +43,7 @@ import { isString, toInteger } from 'lodash';
 import { isGroupNode } from '@/page/Workspace/SideBar/ResourceTree/const';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useState } from 'react';
-import ActivityBar from './ActivityBar/ index';
+import ActivityBar from './ActivityBar';
 import ResourceTreeContext from './context/ResourceTreeContext';
 import WorkspaceStore from './context/WorkspaceStore';
 import GlobalModals from './GlobalModals';

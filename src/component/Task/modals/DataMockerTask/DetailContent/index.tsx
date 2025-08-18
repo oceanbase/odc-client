@@ -32,6 +32,7 @@ import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
 import EllipsisText from '@/component/EllipsisText';
+import login from '@/store/login';
 export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult, hasFlow: boolean) {
   if (!task) {
     return [];
@@ -211,11 +212,16 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
             defaultMessage: '模拟数据',
           }),
         ],
-        ['数据库', <DatabaseLabel database={task?.database} />],
-
+        [
+          '数据库',
+          <EllipsisText
+            content={<DatabaseLabel database={task?.database} />}
+            needTooltip={false}
+          />,
+        ],
         ['数据源', <EllipsisText content={task?.database?.dataSource?.name} />],
-        ['项目', <EllipsisText content={task?.project?.name} />],
-      ],
+        !login.isPrivateSpace() ? ['项目', <EllipsisText content={task?.project?.name} />] : null,
+      ].filter(Boolean),
     },
     taskDetailItems,
     columnsItems,

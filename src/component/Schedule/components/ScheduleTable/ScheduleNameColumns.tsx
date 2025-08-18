@@ -3,12 +3,15 @@ import Icon from '@ant-design/icons';
 import classNames from 'classnames';
 import { Tooltip } from 'antd';
 import { ReactComponent as UserSvg } from '@/svgr/user.svg';
+import login from '@/store/login';
 import dayjs from 'dayjs';
+import { SchedulePageMode } from '@/component/Schedule/interface';
 import styles from './index.less';
 
 interface IProps {
   record: IScheduleRecord<ScheduleRecordParameters>;
   delList: number[];
+  mode?: SchedulePageMode;
   onDetailVisible: (
     schedule: IScheduleRecord<ScheduleRecordParameters>,
     visible: boolean,
@@ -16,7 +19,7 @@ interface IProps {
   ) => void;
 }
 const ScheduleName: React.FC<IProps> = (props) => {
-  const { record, delList, onDetailVisible } = props;
+  const { record, delList, onDetailVisible, mode } = props;
 
   return (
     <div className={styles.scheduleNameColumn}>
@@ -62,12 +65,19 @@ const ScheduleName: React.FC<IProps> = (props) => {
             <span>{record?.creator?.name}</span>
           </div>
         </Tooltip>
-        <span>创建于 {dayjs(record?.createTime).format('YYYY-MM-DD HH:mm:ss')}</span>·
-        <div className={styles.project}>
-          <Tooltip title={'所属项目：' + record?.project?.name} placement="bottom">
-            {record?.project?.name}
-          </Tooltip>
-        </div>
+        <span>创建于 {dayjs(record?.createTime).format('YYYY-MM-DD HH:mm:ss')}</span>
+        {login.isPrivateSpace() || mode === SchedulePageMode.PROJECT ? (
+          ''
+        ) : (
+          <>
+            ·
+            <div className={styles.project}>
+              <Tooltip title={'所属项目：' + record?.project?.name} placement="bottom">
+                {record?.project?.name}
+              </Tooltip>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

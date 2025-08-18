@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import type { PageStore } from '@/store/page';
 import { ScheduleStore } from '@/store/schedule';
 import { inject, observer } from 'mobx-react';
