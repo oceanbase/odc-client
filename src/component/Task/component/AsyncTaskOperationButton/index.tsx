@@ -103,7 +103,7 @@ export function AsyncTaskOperationButton(props: IAsyncTaskOperationConfig) {
       );
       return;
     }
-    if (props?.dataSource?.find((d) => !props?.checkStatus?.(d?.status))) {
+    if (props?.dataSource?.find((d) => !props?.checkStatus?.(d))) {
       message.info(props?.checkStatusFailed);
       return;
     }
