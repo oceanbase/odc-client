@@ -22,6 +22,7 @@ import { IDatabase } from '@/d.ts/database';
 import { Form } from 'antd';
 import React from 'react';
 import { ScheduleType } from '@/d.ts/schedule';
+import { Rule } from 'antd/lib/form';
 
 interface IProps {
   type?: TaskType;
@@ -38,6 +39,7 @@ interface IProps {
   isLogicalDatabase?: boolean;
   onChange?: (v: number, database?: IDatabase) => void;
   onInit?: (database?: IDatabase) => void;
+  rules?: Rule[];
 }
 const DatabaseSelect: React.FC<IProps> = (props) => {
   const {
@@ -58,6 +60,7 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     isLogicalDatabase = false,
     onChange,
     onInit,
+    rules,
   } = props;
 
   return (
@@ -65,15 +68,17 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
       label={label}
       name={name}
       required
-      rules={[
-        {
-          required: true,
-          message: formatMessage({
-            id: 'odc.component.DatabaseSelect.SelectADatabase',
-            defaultMessage: '请选择数据库',
-          }), //请选择数据库
-        },
-      ]}
+      rules={
+        rules || [
+          {
+            required: true,
+            message: formatMessage({
+              id: 'odc.component.DatabaseSelect.SelectADatabase',
+              defaultMessage: '请选择数据库',
+            }), //请选择数据库
+          },
+        ]
+      }
     >
       <SessionSelect
         onInit={onInit}

@@ -16,8 +16,8 @@
 
 import { ITable } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { PlusOutlined, SettingOutlined, SettingFilled } from '@ant-design/icons';
-import { Tooltip, Button, Checkbox, Form, Input, Radio, Select, Typography } from 'antd';
+import { PlusOutlined, SettingOutlined, SettingFilled, DeleteOutlined } from '@ant-design/icons';
+import { Tooltip, Button, Checkbox, Form, Input, Radio, Select, Typography, Divider } from 'antd';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import ArchiveRangeTip from '@/component/Schedule/components/ArchiveRangeTip';
@@ -30,6 +30,7 @@ import useJoinTableConfig from '@/component/Task/component/JoinTableConfigsModal
 import { rules } from './const';
 
 const { Text, Link } = Typography;
+const MAX_TABLES_COUNT = 100;
 
 interface IProps {
   tables: ITable[];
@@ -129,7 +130,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                 </div>
               </div>
               <div
-                className={classNames(styles.tables, styles.title, {
+                className={classNames(styles.tables, {
                   [styles.delete]: tables?.length > 1,
                   [styles.advancedOption]: needCheckBeforeDelete || enablePartition,
                 })}
@@ -141,7 +142,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                   })}
                 </div>
                 <div className={styles.tableTitle}>
-                  <div style={{ display: 'inline-flex', gap: 4, padding: '3px 8px' }}>
+                  <div style={{ display: 'inline-flex', gap: 4, padding: '3px 0px' }}>
                     {
                       formatMessage({
                         id: 'odc.DataClearTask.CreateModal.ArchiveRange.CleaningConditions',
@@ -189,128 +190,153 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                 )}
               </div>
               <Form.List name="tables">
-                {(fields, { add, remove }) => (
-                  <div className={styles.infoBlock}>
-                    {fields.map(({ key, name, ...restField }: any, index) => (
-                      <div
-                        key={key}
-                        className={classNames(styles.tables, {
-                          [styles.delete]: fields?.length > 1,
-                          [styles.advancedOption]: hasAdvancedOptionCol,
-                        })}
-                      >
-                        <Form.Item
-                          {...restField}
-                          name={[name, 'tableName']}
-                          rules={rules.tableName}
-                          style={{ width: 160 }}
+                {(fields, { add, remove }) => {
+                  const disabledAddFields = fields.length >= MAX_TABLES_COUNT;
+                  return (
+                    <div className={styles.infoBlock}>
+                      {fields.map(({ key, name, ...restField }: any, index) => (
+                        <div
+                          key={key}
+                          className={classNames(styles.tables, {
+                            [styles.delete]: fields?.length > 1,
+                            [styles.advancedOption]: hasAdvancedOptionCol,
+                          })}
                         >
-                          <Select
-                            showSearch
-                            placeholder={formatMessage({
-                              id: 'odc.DataClearTask.CreateModal.ArchiveRange.PleaseSelect',
-                              defaultMessage: '请选择',
-                            })}
-                            /*请选择*/ options={tablesOptions}
-                            filterOption={(input, option) =>
-                              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                            }
-                          />
-                        </Form.Item>
-                        <Form.Item {...restField} name={[name, 'conditionExpression']}>
-                          <Input
-                            placeholder={formatMessage({
-                              id: 'odc.DataClearTask.CreateModal.ArchiveRange.EnterACleanupCondition',
-                              defaultMessage: '请输入清理条件',
-                            })} /*请输入清理条件*/
-                            addonAfter={
-                              <>
-                                <JoinTableConfigModal
-                                  visible={visible && currentIndex === index}
-                                  initialValues={form.getFieldValue(['tables', index])}
-                                  onCancel={close}
-                                  onOk={handleSubmit}
-                                />
-
-                                <Tooltip
-                                  title={formatMessage({
-                                    id: 'src.component.Task.DataClearTask.CreateModal.BB3EA37A',
-                                    defaultMessage: '过滤条件设置（如关联表）',
-                                  })}
-                                >
-                                  <div onClick={() => open(index)} style={{ cursor: 'pointer' }}>
-                                    {form.getFieldValue(['tables', name, 'joinTableConfigs'])
-                                      ?.length ? (
-                                      <SettingFilled style={{ color: '#1890ff' }} />
-                                    ) : (
-                                      <SettingOutlined />
-                                    )}
-                                  </div>
-                                </Tooltip>
-                              </>
-                            }
-                          />
-                        </Form.Item>
-                        {(needCheckBeforeDelete || enablePartition) && (
-                          <div
-                            style={{ display: 'flex', flexDirection: 'column' }}
-                            className={styles.multiInputBox}
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'tableName']}
+                            rules={rules.tableName}
+                            style={{ width: 160 }}
+                            className={styles.pr6}
                           >
-                            {needCheckBeforeDelete && (
-                              <Form.Item {...restField} name={[name, 'targetTableName']}>
-                                <Input
-                                  addonBefore={formatMessage({
-                                    id: 'src.component.Task.DataClearTask.CreateModal.7E1F34E7',
-                                    defaultMessage: '目标表',
-                                  })}
-                                  placeholder={
-                                    formatMessage({
-                                      id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
-                                      defaultMessage: '请输入',
-                                    }) /*"请输入"*/
-                                  }
-                                />
-                              </Form.Item>
-                            )}
-
-                            {enablePartition && (
-                              <PartitionTextArea {...restField} name={[name, 'partitions']} />
-                            )}
-                          </div>
-                        )}
-
-                        {fields?.length > 1 && (
-                          <Link onClick={() => remove(name)} style={{ textAlign: 'center' }}>
-                            {formatMessage({
-                              id: 'src.component.Task.DataClearTask.CreateModal.F0991266',
-                              defaultMessage: '移除',
+                            <Select
+                              showSearch
+                              placeholder={formatMessage({
+                                id: 'odc.DataClearTask.CreateModal.ArchiveRange.PleaseSelect',
+                                defaultMessage: '请选择',
+                              })}
+                              /*请选择*/ options={tablesOptions}
+                              filterOption={(input, option) =>
+                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                              }
+                            />
+                          </Form.Item>
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'conditionExpression']}
+                            className={classNames({
+                              [styles.pr6]: needCheckBeforeDelete || enablePartition,
                             })}
-                          </Link>
-                        )}
-                      </div>
-                    ))}
-                    <Form.Item
-                      style={{
-                        marginBottom: 0,
-                      }}
-                    >
-                      <div className={styles.operationContainer}>
-                        <Button type="link" onClick={() => add()} icon={<PlusOutlined />}>
-                          {
-                            formatMessage({
-                              id: 'odc.DataClearTask.CreateModal.ArchiveRange.Add',
-                              defaultMessage: '添加',
-                            }) /*添加*/
-                          }
-                        </Button>
-                        <BatchSelectionPopover
-                          options={tablesOptions}
-                          handleConfirm={(checkList) => handleConfirm(checkList, add, remove)}
-                        />
-                      </div>
-                    </Form.Item>
-                  </div>
-                )}
+                          >
+                            <Input
+                              placeholder={formatMessage({
+                                id: 'odc.DataClearTask.CreateModal.ArchiveRange.EnterACleanupCondition',
+                                defaultMessage: '请输入清理条件',
+                              })} /*请输入清理条件*/
+                              addonAfter={
+                                <>
+                                  <JoinTableConfigModal
+                                    visible={visible && currentIndex === index}
+                                    initialValues={form.getFieldValue(['tables', index])}
+                                    onCancel={close}
+                                    onOk={handleSubmit}
+                                  />
+
+                                  <Tooltip
+                                    title={formatMessage({
+                                      id: 'src.component.Task.DataClearTask.CreateModal.BB3EA37A',
+                                      defaultMessage: '过滤条件设置（如关联表）',
+                                    })}
+                                  >
+                                    <div onClick={() => open(index)} style={{ cursor: 'pointer' }}>
+                                      {form.getFieldValue(['tables', name, 'joinTableConfigs'])
+                                        ?.length ? (
+                                        <SettingFilled style={{ color: '#1890ff' }} />
+                                      ) : (
+                                        <SettingOutlined />
+                                      )}
+                                    </div>
+                                  </Tooltip>
+                                </>
+                              }
+                            />
+                          </Form.Item>
+                          {(needCheckBeforeDelete || enablePartition) && (
+                            <div
+                              style={{ display: 'flex', flexDirection: 'column' }}
+                              className={styles.multiInputBox}
+                            >
+                              {needCheckBeforeDelete && (
+                                <Form.Item {...restField} name={[name, 'targetTableName']}>
+                                  <Input
+                                    addonBefore={formatMessage({
+                                      id: 'src.component.Task.DataClearTask.CreateModal.7E1F34E7',
+                                      defaultMessage: '目标表',
+                                    })}
+                                    placeholder={
+                                      formatMessage({
+                                        id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
+                                        defaultMessage: '请输入',
+                                      }) /*"请输入"*/
+                                    }
+                                  />
+                                </Form.Item>
+                              )}
+
+                              {enablePartition && (
+                                <PartitionTextArea {...restField} name={[name, 'partitions']} />
+                              )}
+                            </div>
+                          )}
+
+                          {fields?.length > 1 && (
+                            <Tooltip
+                              title={formatMessage({
+                                id: 'src.component.Task.DataClearTask.CreateModal.F0991266',
+                                defaultMessage: '移除',
+                              })}
+                            >
+                              <DeleteOutlined
+                                onClick={() => remove(name)}
+                                style={{ margin: '0px 0px 10px 8px' }}
+                              />
+                            </Tooltip>
+                          )}
+                        </div>
+                      ))}
+                      <Form.Item
+                        style={{
+                          marginBottom: 0,
+                        }}
+                      >
+                        <Tooltip title={disabledAddFields ? `最多添加${MAX_TABLES_COUNT}个` : ''}>
+                          <Button type="dashed" block disabled={disabledAddFields}>
+                            <Button
+                              type="link"
+                              onClick={() => add()}
+                              icon={<PlusOutlined />}
+                              disabled={disabledAddFields}
+                            >
+                              {
+                                formatMessage({
+                                  id: 'odc.DataClearTask.CreateModal.ArchiveRange.Add',
+                                  defaultMessage: '添加',
+                                }) /*添加*/
+                              }
+                            </Button>
+                            <Divider type="vertical" />
+                            <BatchSelectionPopover
+                              maxCount={MAX_TABLES_COUNT - fields?.length}
+                              disabled={disabledAddFields}
+                              options={tablesOptions}
+                              handleConfirm={(checkList) => handleConfirm(checkList, add, remove)}
+                            />
+                          </Button>
+                        </Tooltip>
+                      </Form.Item>
+                    </div>
+                  );
+                }}
               </Form.List>
             </div>
           );

@@ -16,8 +16,8 @@
 
 import { ITable } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { PlusOutlined, SettingOutlined, SettingFilled } from '@ant-design/icons';
-import { Button, Checkbox, Form, Input, Radio, Select, Typography, Tooltip } from 'antd';
+import { PlusOutlined, SettingOutlined, SettingFilled, DeleteOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Form, Input, Radio, Select, Typography, Tooltip, Divider } from 'antd';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import ArchiveRangeTip from '@/component/Schedule/components/ArchiveRangeTip';
@@ -30,7 +30,7 @@ import { IDatabase } from '@/d.ts/database';
 import JoinTableConfigModal from '@/component/Task/component/JoinTableConfigsModal';
 import useJoinTableConfig from '@/component/Task/component/JoinTableConfigsModal/useJoinTableConfig';
 import { rules } from './const';
-
+const MAX_TABLES_COUNT = 3;
 const { Text, Link } = Typography;
 
 interface IProps {
@@ -184,131 +184,154 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                 )}
               </div>
               <Form.List name="tables">
-                {(fields, { add, remove }) => (
-                  <div className={styles.infoBlock}>
-                    {fields.map(({ key, name, ...restField }: any, index) => (
-                      <div
-                        key={key}
-                        className={classNames(styles.tables, {
-                          [styles.delete]: fields?.length > 1,
-                        })}
-                      >
-                        <Form.Item
-                          {...restField}
-                          name={[name, 'tableName']}
-                          rules={rules.tableName}
+                {(fields, { add, remove }) => {
+                  const disabledAddFields = fields.length >= MAX_TABLES_COUNT;
+                  return (
+                    <div className={styles.infoBlock}>
+                      {fields.map(({ key, name, ...restField }: any, index) => (
+                        <div
+                          key={key}
+                          className={classNames(styles.tables, {
+                            [styles.delete]: fields?.length > 1,
+                          })}
                         >
-                          <Select
-                            showSearch
-                            placeholder={formatMessage({
-                              id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.PleaseSelect',
-                              defaultMessage: '请选择',
-                            })}
-                            /*请选择*/ options={tablesOptions}
-                            filterOption={(input, option) =>
-                              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                            }
-                          />
-                        </Form.Item>
-                        <Form.Item {...restField} name={[name, 'conditionExpression']}>
-                          <Input
-                            placeholder={formatMessage({
-                              id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.EnterAFilterCondition',
-                              defaultMessage: '请输入过滤条件',
-                            })} /*请输入过滤条件*/
-                            addonAfter={
-                              <>
-                                <JoinTableConfigModal
-                                  visible={visible && currentIndex === index}
-                                  initialValues={form.getFieldValue(['tables', index])}
-                                  onCancel={close}
-                                  onOk={handleSubmit}
-                                />
-
-                                <Tooltip
-                                  title={formatMessage({
-                                    id: 'src.component.Task.DataArchiveTask.CreateModal.1389EA71',
-                                    defaultMessage: '过滤条件设置（如关联表）',
-                                  })}
-                                >
-                                  <div onClick={() => open(index)} style={{ cursor: 'pointer' }}>
-                                    {form.getFieldValue(['tables', name, 'joinTableConfigs'])
-                                      ?.length ? (
-                                      <SettingFilled style={{ color: '#1890ff' }} />
-                                    ) : (
-                                      <SettingOutlined />
-                                    )}
-                                  </div>
-                                </Tooltip>
-                              </>
-                            }
-                          />
-                        </Form.Item>
-                        {enabledTargetTable && (
-                          <div
-                            style={{ display: 'flex', flexDirection: 'column' }}
-                            className={styles.multiInputBox}
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'tableName']}
+                            rules={rules.tableName}
+                            className={styles.pr6}
                           >
-                            <Form.Item {...restField} name={[name, 'targetTableName']}>
-                              <Input
-                                addonBefore={
-                                  isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
-                                    ? formatMessage({
-                                        id: 'src.component.Task.DataArchiveTask.CreateModal.79D75776',
-                                        defaultMessage: '目标文件',
-                                      })
-                                    : formatMessage({
-                                        id: 'src.component.Task.DataArchiveTask.CreateModal.94BCB0E1',
-                                        defaultMessage: '目标表',
-                                      })
-                                }
-                                placeholder={
-                                  formatMessage({
-                                    id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
-                                    defaultMessage: '请输入',
-                                  }) /*"请输入"*/
-                                }
+                            <Select
+                              showSearch
+                              placeholder={formatMessage({
+                                id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.PleaseSelect',
+                                defaultMessage: '请选择',
+                              })}
+                              /*请选择*/ options={tablesOptions}
+                              filterOption={(input, option) =>
+                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                              }
+                            />
+                          </Form.Item>
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'conditionExpression']}
+                            className={styles.pr6}
+                          >
+                            <Input
+                              placeholder={formatMessage({
+                                id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.EnterAFilterCondition',
+                                defaultMessage: '请输入过滤条件',
+                              })} /*请输入过滤条件*/
+                              addonAfter={
+                                <>
+                                  <JoinTableConfigModal
+                                    visible={visible && currentIndex === index}
+                                    initialValues={form.getFieldValue(['tables', index])}
+                                    onCancel={close}
+                                    onOk={handleSubmit}
+                                  />
+
+                                  <Tooltip
+                                    title={formatMessage({
+                                      id: 'src.component.Task.DataArchiveTask.CreateModal.1389EA71',
+                                      defaultMessage: '过滤条件设置（如关联表）',
+                                    })}
+                                  >
+                                    <div onClick={() => open(index)} style={{ cursor: 'pointer' }}>
+                                      {form.getFieldValue(['tables', name, 'joinTableConfigs'])
+                                        ?.length ? (
+                                        <SettingFilled style={{ color: '#1890ff' }} />
+                                      ) : (
+                                        <SettingOutlined />
+                                      )}
+                                    </div>
+                                  </Tooltip>
+                                </>
+                              }
+                            />
+                          </Form.Item>
+                          {enabledTargetTable && (
+                            <div
+                              style={{ display: 'flex', flexDirection: 'column' }}
+                              className={styles.multiInputBox}
+                            >
+                              <Form.Item {...restField} name={[name, 'targetTableName']}>
+                                <Input
+                                  addonBefore={
+                                    isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
+                                      ? formatMessage({
+                                          id: 'src.component.Task.DataArchiveTask.CreateModal.79D75776',
+                                          defaultMessage: '目标文件',
+                                        })
+                                      : formatMessage({
+                                          id: 'src.component.Task.DataArchiveTask.CreateModal.94BCB0E1',
+                                          defaultMessage: '目标表',
+                                        })
+                                  }
+                                  placeholder={
+                                    formatMessage({
+                                      id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
+                                      defaultMessage: '请输入',
+                                    }) /*"请输入"*/
+                                  }
+                                />
+                              </Form.Item>
+
+                              {enablePartition && (
+                                <PartitionTextArea {...restField} name={[name, 'partitions']} />
+                              )}
+                            </div>
+                          )}
+
+                          {fields?.length > 1 && (
+                            <Tooltip
+                              title={formatMessage({
+                                id: 'src.component.Task.DataArchiveTask.CreateModal.890DB04E',
+                                defaultMessage: '移除',
+                              })}
+                            >
+                              <DeleteOutlined
+                                onClick={() => remove(name)}
+                                style={{ margin: ' 0px 0px 10px 8px' }}
                               />
-                            </Form.Item>
-
-                            {enablePartition && (
-                              <PartitionTextArea {...restField} name={[name, 'partitions']} />
-                            )}
-                          </div>
-                        )}
-
-                        {fields?.length > 1 && (
-                          <Link onClick={() => remove(name)} style={{ textAlign: 'center' }}>
-                            {formatMessage({
-                              id: 'src.component.Task.DataArchiveTask.CreateModal.890DB04E',
-                              defaultMessage: '移除',
-                            })}
-                          </Link>
-                        )}
-                      </div>
-                    ))}
-                    <Form.Item
-                      style={{
-                        marginBottom: 0,
-                      }}
-                    >
-                      <div className={styles.operationContainer}>
-                        <Button onClick={() => add()} type="link" icon={<PlusOutlined />}>
-                          {
-                            formatMessage({
-                              id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Add',
-                              defaultMessage: '添加',
-                            }) /*添加*/
-                          }
-                        </Button>
-                        <BatchSelectionPopover
-                          options={tablesOptions}
-                          handleConfirm={(checkList) => handleConfirm(checkList, add, remove)}
-                        />
-                      </div>
-                    </Form.Item>
-                  </div>
-                )}
+                            </Tooltip>
+                          )}
+                        </div>
+                      ))}
+                      <Form.Item
+                        style={{
+                          marginBottom: 0,
+                        }}
+                      >
+                        <Tooltip title={disabledAddFields ? `最多添加${MAX_TABLES_COUNT}个` : ''}>
+                          <Button type="dashed" block disabled={disabledAddFields}>
+                            <Button
+                              onClick={() => add()}
+                              type="link"
+                              icon={<PlusOutlined />}
+                              disabled={disabledAddFields}
+                            >
+                              {
+                                formatMessage({
+                                  id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Add',
+                                  defaultMessage: '添加',
+                                }) /*添加*/
+                              }
+                            </Button>
+                            <Divider type="vertical" />
+                            <BatchSelectionPopover
+                              maxCount={MAX_TABLES_COUNT - fields?.length}
+                              disabled={disabledAddFields}
+                              options={tablesOptions}
+                              handleConfirm={(checkList) => handleConfirm(checkList, add, remove)}
+                            />
+                          </Button>
+                        </Tooltip>
+                      </Form.Item>
+                    </div>
+                  );
+                }}
               </Form.List>
             </div>
           );
