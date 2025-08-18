@@ -9,7 +9,21 @@ import {
   IDataArchiveParameters,
   IDataClearParameters,
 } from '@/d.ts/schedule';
-import { IScheduleTaskRecord, scheduleTask, ScheduleTaskStatus } from '@/d.ts/scheduleTask';
+import {
+  IDataArchiveParametersSubTaskParameters,
+  IDataArchiveSubTaskExecutionDetails,
+  IDataClearParametersSubTaskParameters,
+  IDataDeleteSubTaskExecutionDetails,
+  IPartitionPlanSubTaskExecutionDetails,
+  IPartitionPlanSubTaskParameters,
+  IScheduleTaskExecutionDetail,
+  IScheduleTaskRecord,
+  ISqlPlanParametersSubTaskParameters,
+  ISqlPlanSubTaskExecutionDetails,
+  scheduleTask,
+  ScheduleTaskStatus,
+  SubTaskParameters,
+} from '@/d.ts/scheduleTask';
 import { ScheduleTaskDetailType, SubTaskType } from '@/d.ts/scheduleTask';
 import type { ILog } from '@/component/Task/component/Log';
 import { ITaskResult, Operation, CommonTaskLogType } from '@/d.ts';
@@ -42,7 +56,8 @@ interface IProps {
 
 const SubTaskDetail: React.FC<IProps> = (props) => {
   const { visible, onClose, detailId, scheduleId } = props;
-  const [subTask, setSubTask] = useState<scheduleTask>(null);
+  const [subTask, setSubTask] =
+    useState<scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>>(null);
   const [detailType, setDetailType] = useState<ScheduleTaskDetailType>(ScheduleTaskDetailType.INFO);
   const [log, setLog] = useState<ILog>(null);
   const [result, setResult] = useState<ITaskResult>(null);
@@ -130,7 +145,12 @@ const SubTaskDetail: React.FC<IProps> = (props) => {
       taskContent = (
         <SQLPlanScheduleContent
           schedule={schedule as IScheduleRecord<ISqlPlanParameters>}
-          subTask={subTask}
+          subTask={
+            subTask as scheduleTask<
+              ISqlPlanParametersSubTaskParameters,
+              ISqlPlanSubTaskExecutionDetails
+            >
+          }
         />
       );
       break;
@@ -138,7 +158,12 @@ const SubTaskDetail: React.FC<IProps> = (props) => {
       taskContent = (
         <PartitionScheduleContent
           schedule={schedule as IScheduleRecord<IPartitionPlan>}
-          subTask={subTask}
+          subTask={
+            subTask as scheduleTask<
+              IPartitionPlanSubTaskParameters,
+              IPartitionPlanSubTaskExecutionDetails
+            >
+          }
         />
       );
       break;
@@ -148,7 +173,12 @@ const SubTaskDetail: React.FC<IProps> = (props) => {
       taskContent = (
         <DataArchiveScheduleContent
           schedule={schedule as IScheduleRecord<IDataArchiveParameters>}
-          subTask={subTask}
+          subTask={
+            subTask as scheduleTask<
+              IDataArchiveParametersSubTaskParameters,
+              IDataArchiveSubTaskExecutionDetails
+            >
+          }
         />
       );
       break;
@@ -156,7 +186,12 @@ const SubTaskDetail: React.FC<IProps> = (props) => {
       taskContent = (
         <DataClearScheduleContent
           schedule={schedule as IScheduleRecord<IDataClearParameters>}
-          subTask={subTask}
+          subTask={
+            subTask as scheduleTask<
+              IDataClearParametersSubTaskParameters,
+              IDataDeleteSubTaskExecutionDetails
+            >
+          }
         />
       );
       break;

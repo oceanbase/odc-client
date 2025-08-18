@@ -15,7 +15,6 @@
  */
 
 import {
-  SubTaskType,
   SyncTableStructureEnum,
   TaskErrorStrategy,
   TaskExecStrategy,
@@ -82,27 +81,6 @@ export const SyncTableStructureOptions = [
     label: SyncTableStructureConfig[SyncTableStructureEnum.INDEX].label,
   },
 ];
-
-export const SubTaskTypeMap = {
-  [SubTaskType.MIGRATE]: {
-    label: formatMessage({ id: 'src.d.ts.CA81991C', defaultMessage: '归档' }),
-  },
-  [SubTaskType.CHECK]: {
-    label: formatMessage({ id: 'src.d.ts.8977156C', defaultMessage: '数据检查' }),
-  },
-  [SubTaskType.DELETE]: {
-    label: formatMessage({ id: 'src.d.ts.237F5711', defaultMessage: '数据清理' }),
-  },
-  [SubTaskType.QUICK_DELETE]: {
-    label: formatMessage({ id: 'src.d.ts.CD43F08A', defaultMessage: '数据清理' }),
-  },
-  [SubTaskType.DEIRECT_DELETE]: {
-    label: formatMessage({ id: 'src.d.ts.910D42B5', defaultMessage: '数据清理' }),
-  },
-  [SubTaskType.ROLLBACK]: {
-    label: formatMessage({ id: 'src.d.ts.DF449BBC', defaultMessage: '回滚' }),
-  },
-};
 
 export const OscMinRowLimit = 1;
 export const OscMaxRowLimit = 10000;

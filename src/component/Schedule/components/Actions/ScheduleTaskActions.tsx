@@ -1,4 +1,10 @@
-import { ScheduleTaskActionsEnum, ScheduleTaskStatus, SubTaskType } from '@/d.ts/scheduleTask';
+import {
+  IScheduleTaskExecutionDetail,
+  ScheduleTaskActionsEnum,
+  ScheduleTaskStatus,
+  SubTaskParameters,
+  SubTaskType,
+} from '@/d.ts/scheduleTask';
 import { ScheduleTaskActionsTextMap } from '@/constant/scheduleTask';
 import { useEffect, useMemo, useState } from 'react';
 import Action from '@/component/Action';
@@ -28,10 +34,13 @@ import { widthPermission } from '@/util/utils';
 import { IOperationTypeRole } from '@/d.ts/schedule';
 
 interface ScheduleActionsIProps {
-  subTask: scheduleTask;
+  subTask: scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>;
   onReloadList?: () => void;
   isDetailModal?: boolean;
-  handleView: (task: scheduleTask, visible: boolean) => void;
+  handleView: (
+    task: scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>,
+    visible: boolean,
+  ) => void;
   scheduleId?: number;
   icon?: JSX.Element;
 }

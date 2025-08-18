@@ -19,12 +19,20 @@ import { SyncTableStructureConfig } from '@/component/Task/const';
 import ThrottleEditableCell from '@/component/Task/component/ThrottleEditableCell';
 import setting from '@/store/setting';
 import { updateLimiterConfig } from '@/common/network/schedule';
-import { IScheduleTaskRecord, scheduleTask } from '@/d.ts/scheduleTask';
+import {
+  IDataArchiveParametersSubTaskParameters,
+  IDataArchiveSubTaskExecutionDetails,
+  scheduleTask,
+} from '@/d.ts/scheduleTask';
 import { SubTypeTextMap } from '@/constant/scheduleTask';
 import EllipsisText from '@/component/EllipsisText';
+import login from '@/store/login';
 interface IProps {
   schedule: IScheduleRecord<IDataArchiveParameters>;
-  subTask?: scheduleTask;
+  subTask?: scheduleTask<
+    IDataArchiveParametersSubTaskParameters,
+    IDataArchiveSubTaskExecutionDetails
+  >;
   onReload?: () => void;
 }
 const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
@@ -116,9 +124,11 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
         <Descriptions.Item label={'目标端数据源'}>
           <EllipsisText content={parameters?.targetDataSourceName} />
         </Descriptions.Item>
-        <Descriptions.Item label={'项目'}>
-          <EllipsisText content={schedule?.project?.name} />
-        </Descriptions.Item>
+        {!login.isPrivateSpace() && (
+          <Descriptions.Item label={'项目'}>
+            <EllipsisText content={schedule?.project?.name} />
+          </Descriptions.Item>
+        )}
       </Descriptions>
       <Divider style={{ marginTop: 16 }} />
       <SimpleTextItem

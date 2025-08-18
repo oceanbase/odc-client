@@ -23,6 +23,7 @@ import { TaskTypeMap } from '@/component/Task/helper';
 import styles from './index.less';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
 import EllipsisText from '@/component/EllipsisText';
+import login from '@/store/login';
 const { Step } = Steps;
 interface IStructureComparisonTaskContentProps {
   modalStore?: ModalStore;
@@ -84,9 +85,11 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
             </a>
           </Descriptions.Item>
 
-          <Descriptions.Item span={1} label={'项目'}>
-            <EllipsisText content={task?.parameters?.databases?.[0]?.project?.name} />
-          </Descriptions.Item>
+          {!login.isPrivateSpace() && (
+            <Descriptions.Item span={1} label={'项目'}>
+              <EllipsisText content={task?.parameters?.databases?.[0]?.project?.name} />
+            </Descriptions.Item>
+          )}
           <Descriptions.Item
             span={2}
             label={formatMessage({

@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import { SubTaskType, TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
+import { TaskExecStrategy, TaskType } from '@/d.ts';
 import { DatabasePermissionType } from '@/d.ts/database';
-import login from '@/store/login';
-import settingStore from '@/store/setting';
-import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { flatten } from 'lodash';
 export { TaskTypeMap } from '@/component/Task/component/TaskTable/const';
 import { TaskConfig, allTaskPageConfig } from '@/common/task';
 import { ITaskParam, TaskTab } from './interface';

@@ -1,5 +1,10 @@
-import { scheduleTask, ScheduleTaskDetailType } from '@/d.ts/scheduleTask';
-import { Drawer, message, Radio, Spin } from 'antd';
+import {
+  IScheduleTaskExecutionDetail,
+  scheduleTask,
+  ScheduleTaskDetailType,
+  SubTaskParameters,
+} from '@/d.ts/scheduleTask';
+import { Drawer, Radio, Spin } from 'antd';
 import styles from '../ScheduleDetailModal/index.less';
 import ScheduleTaskActions from '../Actions/ScheduleTaskActions';
 import ScheduleTaskStatusLabel from '../ScheduleTaskStatusLabel';
@@ -12,7 +17,7 @@ interface TaskContentProps {
   taskContent?: React.ReactNode;
   isLoading: boolean;
   detailType: ScheduleTaskDetailType;
-  subTask: scheduleTask;
+  subTask: scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>;
   log: ILog;
   result: ITaskResult;
   logType: CommonTaskLogType;
@@ -75,7 +80,7 @@ interface ICommonSubTaskDetailModalProps {
   onDetailTypeChange: (type: ScheduleTaskDetailType) => void;
   enabledAction: boolean;
   onReloadList?: () => void;
-  subTask: scheduleTask;
+  subTask: scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>;
   log: ILog;
   result: ITaskResult;
   logType: CommonTaskLogType;
@@ -115,7 +120,7 @@ const SubTaskDetailModal: React.FC<ICommonSubTaskDetailModalProps> = (props) => 
         <Radio.Group
           value={detailType}
           onChange={(e) => {
-            props.onDetailTypeChange(e.target.value);
+            onDetailTypeChange?.(e.target.value);
           }}
         >
           <Radio.Button value={ScheduleTaskDetailType.INFO} key={ScheduleTaskDetailType.INFO}>

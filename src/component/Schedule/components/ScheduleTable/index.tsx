@@ -45,7 +45,7 @@ import ScheduleTaskStatusLabel from '../ScheduleTaskStatusLabel';
 import { IResponseData } from '@/d.ts';
 import ScheduleTaskActions from '@/component/Schedule/components/Actions/ScheduleTaskActions';
 import { SubTypeTextMap } from '@/constant/scheduleTask';
-import { scheduleTask } from '@/d.ts/scheduleTask';
+import { IScheduleTaskExecutionDetail, scheduleTask, SubTaskParameters } from '@/d.ts/scheduleTask';
 import odc from '@/plugins/odc';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { isProjectArchived } from '@/page/Project/helper';
@@ -64,7 +64,7 @@ interface IProps {
   scheduleStore?: ScheduleStore;
   pageStore?: PageStore;
   scheduleRes: IResponseData<IScheduleRecord<ScheduleRecordParameters>>;
-  scheduleTaskRes: IResponseData<scheduleTask>;
+  scheduleTaskRes: IResponseData<scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>>;
   scheduleTabType: SchedulePageType;
   getTaskList: (
     args: IScheduleParam | ISubTaskParam,
@@ -76,7 +76,10 @@ interface IProps {
     visible: boolean,
     detailType?: ScheduleDetailType,
   ) => void;
-  onSubTaskDetailVisible: (subTask: scheduleTask, visible: boolean) => void;
+  onSubTaskDetailVisible: (
+    subTask: scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>,
+    visible: boolean,
+  ) => void;
   onMenuClick?: (type: ScheduleType) => void;
   onReloadList: () => void;
   loading: boolean;
@@ -255,6 +258,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
             record={record as IScheduleRecord<ScheduleRecordParameters>}
             delList={delList}
             onDetailVisible={onDetailVisible}
+            mode={mode}
           />
         );
       },
@@ -366,6 +370,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
                   display: 'flex',
                   gap: '4px',
                   maxWidth: '100%',
+                  width: 'max-content',
                 }}
                 className={classNames(styles.tip, styles.hoverLink)}
               >
@@ -377,13 +382,18 @@ const ScheduleTable: React.FC<IProps> = (props) => {
         );
       },
     },
-    {
-      dataIndex: 'project',
-      title: '项目',
-      ellipsis: true,
-      width: 200,
-      render: (project) => project?.name,
-    },
+    ...(mode === SchedulePageMode.PROJECT || login.isPrivateSpace()
+      ? []
+      : [
+          {
+            dataIndex: 'project',
+            title: '项目',
+            ellipsis: true,
+            width: 200,
+            render: (project) => project?.name,
+          },
+        ]),
+
     {
       dataIndex: 'type',
       title: '类型',

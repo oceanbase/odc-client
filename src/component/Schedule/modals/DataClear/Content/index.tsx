@@ -6,7 +6,6 @@ import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import VariableConfigTable from '@/component/Task/component/VariableConfigTable';
 import ArchiveRange from './ArchiveRange';
-import { getScheduleExecStrategyMap } from '@/component/Schedule/helper';
 import { kbToMb, mbToKb } from '@/util/utils';
 import { Descriptions, Divider, message } from 'antd';
 import ThrottleEditableCell from '@/component/Task/component/ThrottleEditableCell';
@@ -17,13 +16,18 @@ import {
 import setting from '@/store/setting';
 import { shardingStrategyOptions } from '@/component/Task/component/ShardingStrategyItem';
 import { updateLimiterConfig } from '@/common/network/schedule';
-import { IScheduleTaskRecord, scheduleTask } from '@/d.ts/scheduleTask';
+import {
+  IDataClearParametersSubTaskParameters,
+  IDataDeleteSubTaskExecutionDetails,
+  scheduleTask,
+} from '@/d.ts/scheduleTask';
 import { SubTypeTextMap } from '@/constant/scheduleTask';
 import EllipsisText from '@/component/EllipsisText';
+import login from '@/store/login';
 
 interface IProps {
   schedule: IScheduleRecord<IDataClearParameters>;
-  subTask?: scheduleTask;
+  subTask?: scheduleTask<IDataClearParametersSubTaskParameters, IDataDeleteSubTaskExecutionDetails>;
   onReload?: () => void;
 }
 const DataClearScheduleContent: React.FC<IProps> = (props) => {
@@ -115,11 +119,13 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
             </Descriptions.Item>
           </>
         )}
-        <Descriptions.Item label={'项目'}>
-          <EllipsisText content={schedule?.project?.name} />
-        </Descriptions.Item>
+        {!login.isPrivateSpace() && (
+          <Descriptions.Item label={'项目'}>
+            <EllipsisText content={schedule?.project?.name} />
+          </Descriptions.Item>
+        )}
       </Descriptions>
-      <Divider style={{ marginTop: 4 }} />
+      <Divider style={{ marginTop: 16 }} />
       <SimpleTextItem
         label={formatMessage({
           id: 'odc.DataClearTask.DetailContent.VariableConfiguration',
@@ -252,7 +258,7 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
           {parameters?.timeoutMillis ? milliSecondsToHour(parameters?.timeoutMillis) + 'h' : '-'}
         </Descriptions.Item>
       </Descriptions>
-      <Divider style={{ marginTop: 4 }} />
+      <Divider style={{ marginTop: 16 }} />
       <Descriptions>
         <Descriptions.Item
           label={

@@ -11,6 +11,7 @@ import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 
 import EllipsisText from '@/component/EllipsisText';
+import login from '@/store/login';
 export const ErrorStrategy = {
   ABORT: formatMessage({
     id: 'src.component.Task.LogicDatabaseAsyncTask.DetailContent.11ED2337',
@@ -49,14 +50,16 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
             defaultMessage: '数据库',
           })}
         >
-          <EllipsisText content={<DatabaseLabel database={task?.database} />} />
+          <EllipsisText content={<DatabaseLabel database={task?.database} />} needTooltip={false} />
         </Descriptions.Item>
         <Descriptions.Item label={'数据源'}>
-          {task?.database?.dataSource?.name || '-'}
+          <EllipsisText content={task?.database?.dataSource?.name} />
         </Descriptions.Item>
-        <Descriptions.Item label={'项目'}>
-          <EllipsisText content={task?.project?.name} />
-        </Descriptions.Item>
+        {!login.isPrivateSpace() && (
+          <Descriptions.Item label={'项目'}>
+            <EllipsisText content={task?.project?.name} />
+          </Descriptions.Item>
+        )}
         <Descriptions.Item
           label={formatMessage({
             id: 'odc.DataArchiveTask.DetailContent.RiskLevel',

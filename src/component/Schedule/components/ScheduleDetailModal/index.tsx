@@ -1,4 +1,4 @@
-import { Drawer, message, Radio, Spin, Tag } from 'antd';
+import { Drawer, Radio, Spin, Tag } from 'antd';
 import styles from './index.less';
 import { ScheduleDetailType } from '@/d.ts/schedule';
 import OperationRecord from '../OperationRecord';

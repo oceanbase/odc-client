@@ -69,15 +69,17 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
           数据库变更
         </Descriptions.Item>
         <Descriptions.Item span={1} label={'数据库'}>
-          <DatabaseLabel database={task?.database} />
+          <EllipsisText content={<DatabaseLabel database={task?.database} />} needTooltip={false} />
         </Descriptions.Item>
 
         <Descriptions.Item span={2} label={'数据源'}>
           <EllipsisText content={task?.database?.dataSource?.name} />
         </Descriptions.Item>
-        <Descriptions.Item span={1} label={'项目'}>
-          {task?.project?.name || '-'}
-        </Descriptions.Item>
+        {!login.isPrivateSpace() && (
+          <Descriptions.Item span={1} label={'项目'}>
+            <EllipsisText content={task?.project?.name} />
+          </Descriptions.Item>
+        )}
 
         {hasFlow && (
           <Descriptions.Item

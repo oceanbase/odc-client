@@ -1,6 +1,7 @@
 import { ScheduleType } from './schedule';
 import { IDatabase } from './database';
 import { IProject, ProjectRole } from './project';
+import { SubTaskExecuteType } from '.';
 
 export enum ScheduleTaskStatus {
   /** 待调度 */
@@ -49,21 +50,115 @@ export enum ScheduleTaskActionsEnum {
   RETRY = 'RETRY',
 }
 
-export interface scheduleTask {
+export type IScheduleTaskExecutionDetail =
+  | IDataArchiveSubTaskExecutionDetails
+  | IDataDeleteSubTaskExecutionDetails
+  | IPartitionPlanSubTaskExecutionDetails
+  | ISqlPlanSubTaskExecutionDetails;
+export type IDataArchiveSubTaskExecutionDetails = {
+  endTime?: number;
+  processedRowCount?: number;
+  processedRowsPerSecond?: number;
+  readRowCount?: number;
+  readRowsPerSecond?: number;
+  startTime?: number;
+  status?: string;
+  tableName?: string;
+  type?: SubTaskExecuteType;
+  userCondition?: string;
+}[];
+export type IDataDeleteSubTaskExecutionDetails = {
+  endTime?: number;
+  processedRowCount?: number;
+  processedRowsPerSecond?: number;
+  readRowCount?: number;
+  readRowsPerSecond?: number;
+  startTime?: number;
+  status?: string;
+  tableName?: string;
+  type?: SubTaskExecuteType;
+  userCondition?: string;
+}[];
+export type IPartitionPlanSubTaskExecutionDetails = {
+  cloudProvider?: string;
+  csvResultSetZipDownloadUrl?: string;
+  errorRecordsFileDownloadUrl?: string;
+  failedRecord?: string[];
+  failedStatements?: number;
+  finishedStatements?: number;
+  region?: string;
+  sqlExecuteJsonFileDownloadUrl?: string;
+  succeedStatements?: number;
+  totalStatements?: number;
+};
+export type ISqlPlanSubTaskExecutionDetails = {
+  cloudProvider?: string;
+  csvResultSetZipDownloadUrl?: string;
+  errorRecordsFileDownloadUrl?: string;
+  failedRecord?: string[];
+  failedStatements?: number;
+  finishedStatements?: number;
+  region?: string;
+  sqlExecuteJsonFileDownloadUrl?: string;
+  succeedStatements?: number;
+  totalStatements?: number;
+};
+
+export type SubTaskParameters =
+  | IPartitionPlanSubTaskParameters
+  | ISqlPlanParametersSubTaskParameters
+  | IDataClearParametersSubTaskParameters
+  | IDataArchiveParametersSubTaskParameters;
+
+export type IPartitionPlanSubTaskParameters = {
+  delimiter?: string;
+  errorStrategy?: string;
+  queryLimit?: number;
+  retryIntervalMillis?: number;
+  retryTimes?: number;
+  sessionTimeZone?: string;
+  sqlContent?: string;
+  timeoutMillis?: number;
+};
+export type ISqlPlanParametersSubTaskParameters = {
+  databaseId?: number;
+  databaseInfo?: IDatabase;
+  delimiter?: string;
+  errorStrategy?: string;
+  generateRollbackPlan?: string;
+  markAsFailedWhenAnyErrorsHappened?: boolean;
+  modifyTimeoutIfTimeConsumingSqlExists?: boolean;
+  parentScheduleType?: string;
+  queryLimit?: number;
+  retryIntervalMillis?: number;
+  retryTimes?: number;
+  riskLevelIndex?: number;
+  rollbackSqlContent?: string;
+  rollbackSqlObjectIds?: string[];
+  rollbackSqlObjectNames?: string[];
+  sqlContent?: string;
+  sqlObjectIds?: string[];
+  sqlObjectNames?: string[];
+  timeoutMillis?: number;
+};
+export type IDataClearParametersSubTaskParameters = Record<string, any>;
+export type IDataArchiveParametersSubTaskParameters = Record<string, any>;
+
+export interface scheduleTask<T, K> {
   createTime: number;
   id: number;
   jobGroup: ScheduleType;
   status: ScheduleTaskStatus;
   type: SubTaskType;
   updateTime: number;
-  executionDetails: any;
+  executionDetails?: K;
   project: IProject;
   currentUserResourceRoles?: ProjectRole[];
   scheduleId?: number;
   scheduleName?: string;
   lastExecutionTime?: number;
   jobName?: string;
-  parameters: any;
+  parameters: T;
   creator?: {
     id: number;
     name: string;

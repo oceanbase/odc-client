@@ -119,8 +119,9 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
 
   const _handleStop = async () => {
     const { scheduleId } = schedule;
+    const scheduleTypeText = ScheduleTextMap[schedule?.type];
     Modal.confirm({
-      title: `确定要终止${ScheduleTextMap[schedule?.type]}吗`,
+      title: `确定要终止${scheduleTypeText}吗`,
       content: (
         <>
           <div>
@@ -152,8 +153,9 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
 
   const _handleDisable = async () => {
     const { scheduleId } = schedule;
+    const scheduleTypeText = ScheduleTextMap[schedule?.type];
     Modal.confirm({
-      title: `确定要禁用此${ScheduleTextMap[schedule?.type]}吗`,
+      title: `确定要禁用此${scheduleTypeText}吗`,
       content: (
         <>
           <div>
@@ -199,8 +201,9 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
 
   const _handleEnable = async () => {
     const { scheduleId } = schedule;
+    const scheduleTypeText = ScheduleTextMap[schedule?.type];
     Modal.confirm({
-      title: `确定要启用此${ScheduleTextMap[schedule?.type]}吗`,
+      title: `确定要启用此${scheduleTypeText}吗`,
       content: (
         <>
           <div>
@@ -321,8 +324,9 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
 
   const _handleDelete = async () => {
     const { scheduleId } = schedule;
+    const scheduleTypeText = ScheduleTextMap[schedule?.type];
     Modal.confirm({
-      title: `确定要删除此${ScheduleTextMap[schedule?.type]}吗`,
+      title: `确定要删除此${scheduleTypeText}吗`,
       content: (
         <>
           <div>
@@ -357,8 +361,9 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
 
   const _handleRevoke = async () => {
     const { approveInstanceId } = schedule;
+    const scheduleTypeText = ScheduleTextMap[schedule?.type];
     Modal.confirm({
-      title: `确定要撤销此${ScheduleTextMap[schedule?.type]}审批吗`,
+      title: `确定要撤销此${scheduleTypeText}审批吗`,
       content: <div>审批撤销后，作业将进入终止态</div>,
       cancelText: formatMessage({
         id: 'odc.TaskManagePage.component.TaskTools.Cancel',

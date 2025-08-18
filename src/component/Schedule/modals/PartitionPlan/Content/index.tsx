@@ -1,26 +1,23 @@
-import {
-  ScheduleType,
-  SchedulePageType,
-  IScheduleRecord,
-  ScheduleRecordParameters,
-  ScheduleStatus,
-  IPartitionPlan,
-} from '@/d.ts/schedule';
-import { Descriptions, Divider, Typography } from 'antd';
+import { IScheduleRecord, IPartitionPlan } from '@/d.ts/schedule';
+import { Descriptions, Divider } from 'antd';
 import { formatMessage } from '@/util/intl';
 import PartitionPolicyTable from '@/component/Task/component/PartitionPolicyTable';
-import CycleDescriptionItem from './CycleDescriptionItem';
 import { ErrorStrategyMap } from '@/component/Task/const';
 import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { IScheduleTaskRecord, scheduleTask } from '@/d.ts/scheduleTask';
+import {
+  IPartitionPlanSubTaskExecutionDetails,
+  IPartitionPlanSubTaskParameters,
+  scheduleTask,
+} from '@/d.ts/scheduleTask';
 import { SubTypeTextMap } from '@/constant/scheduleTask';
 import EllipsisText from '@/component/EllipsisText';
+import login from '@/store/login';
 
 interface IProps {
   schedule: IScheduleRecord<IPartitionPlan>;
-  subTask?: scheduleTask;
+  subTask?: scheduleTask<IPartitionPlanSubTaskParameters, IPartitionPlanSubTaskExecutionDetails>;
 }
 const PartitionScheduleContent: React.FC<IProps> = (props) => {
   const { schedule, subTask } = props;
@@ -70,9 +67,11 @@ const PartitionScheduleContent: React.FC<IProps> = (props) => {
         <Descriptions.Item label={'数据源'}>
           <EllipsisText content={parameters?.databaseInfo?.dataSource?.name} />
         </Descriptions.Item>
-        <Descriptions.Item label={'项目'}>
-          <EllipsisText content={schedule?.project?.name} />
-        </Descriptions.Item>
+        {!login.isPrivateSpace() && (
+          <Descriptions.Item label={'项目'}>
+            <EllipsisText content={schedule?.project?.name} />
+          </Descriptions.Item>
+        )}
       </Descriptions>
 
       <Divider style={{ marginTop: 16 }} />

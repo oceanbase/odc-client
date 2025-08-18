@@ -34,6 +34,7 @@ const ScheduleCreatePage: React.FC<IProps> = ({ scheduleStore }) => {
 
   return (
     <PageContainer
+      containerWrapStyle={{ padding: '12px 0px' }}
       titleProps={{
         type: TitleType.TEXT,
         title: (

@@ -6,13 +6,17 @@ import { ReactComponent as UserSvg } from '@/svgr/user.svg';
 import Icon from '@ant-design/icons';
 import classNames from 'classnames';
 import { formatMessage } from '@/util/intl';
+import { TaskPageMode } from '../../interface';
+import login from '@/store/login';
 
 interface IProps {
   record: TaskRecord<TaskRecordParameters>;
   onDetailVisible: (record: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
+  mode?: TaskPageMode;
 }
+
 const TaskNameColumn = (props: IProps) => {
-  const { record, onDetailVisible } = props;
+  const { record, onDetailVisible, mode } = props;
   const roleNames = record?.creator?.roleNames?.join(' | ');
 
   return (
@@ -65,12 +69,19 @@ const TaskNameColumn = (props: IProps) => {
             <span>{record?.creator?.name}</span>
           </div>
         </Tooltip>
-        <span>创建于 {dayjs(record?.createTime).format('YYYY-MM-DD HH:mm:ss')}</span>·
-        <div className={styles.project}>
-          <Tooltip title={'所属项目：' + record?.project?.name} placement="bottom">
-            {record?.project?.name}
-          </Tooltip>
-        </div>
+        <span>创建于 {dayjs(record?.createTime).format('YYYY-MM-DD HH:mm:ss')}</span>
+        {login.isPrivateSpace() || mode === TaskPageMode.PROJECT ? (
+          ''
+        ) : (
+          <>
+            ·
+            <div className={styles.project}>
+              <Tooltip title={'所属项目：' + record?.project?.name} placement="bottom">
+                {record?.project?.name}
+              </Tooltip>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

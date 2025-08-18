@@ -38,7 +38,6 @@ import { ApplyDatabasePermissionTaskContent } from './ApplyDatabasePermission';
 import { ApplyPermissionTaskContent } from './ApplyPermission';
 import { ApplyTablePermissionTaskContent } from './ApplyTablePermission';
 import { AsyncTaskContent } from './AsyncTask';
-import ApprovalModal from '../component/ApprovalModal';
 import { getItems as getDataMockerItems } from './DataMockerTask';
 import { LogicDatabaseAsyncTaskContent } from './LogicDatabaseAsyncTask';
 import { MutipleAsyncTaskContent } from './MutipleAsyncTask';

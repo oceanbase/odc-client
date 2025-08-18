@@ -1,27 +1,60 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import ExcecuteDetail from '@/component/Schedule/components/ExcecuteDetail';
 import SqlplanExcecuteDetail from '@/component/Schedule/components/ExcecuteDetail/SqlplanExcecuteDetail';
-import { scheduleTask, SubTaskType } from '@/d.ts/scheduleTask';
+import {
+  IDataArchiveParametersSubTaskParameters,
+  IDataArchiveSubTaskExecutionDetails,
+  IDataClearParametersSubTaskParameters,
+  IDataDeleteSubTaskExecutionDetails,
+  IScheduleTaskExecutionDetail,
+  ISqlPlanParametersSubTaskParameters,
+  ISqlPlanSubTaskExecutionDetails,
+  scheduleTask,
+  SubTaskParameters,
+  SubTaskType,
+} from '@/d.ts/scheduleTask';
 
 interface ScheduleResultProps {
-  subTask: scheduleTask;
+  subTask: scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>;
 }
 
 const ScheduleResult: React.FC<ScheduleResultProps> = (props) => {
   const { subTask } = props;
-
-  if (
-    [
-      SubTaskType.DATA_ARCHIVE,
-      SubTaskType.DATA_DELETE,
-      SubTaskType.DATA_ARCHIVE_ROLLBACK,
-      SubTaskType.DATA_ARCHIVE_DELETE,
-    ].includes(subTask.type)
-  ) {
-    return <ExcecuteDetail subTask={subTask} />;
+  let result = null;
+  switch (subTask.type) {
+    case SubTaskType.DATA_ARCHIVE:
+    case SubTaskType.DATA_DELETE:
+    case SubTaskType.DATA_ARCHIVE_ROLLBACK:
+    case SubTaskType.DATA_ARCHIVE_DELETE: {
+      result = (
+        <ExcecuteDetail
+          subTask={
+            subTask as scheduleTask<
+              IDataClearParametersSubTaskParameters | IDataArchiveParametersSubTaskParameters,
+              IDataArchiveSubTaskExecutionDetails | IDataDeleteSubTaskExecutionDetails
+            >
+          }
+        />
+      );
+      break;
+    }
+    case SubTaskType.SQL_PLAN:
+    case SubTaskType.PARTITION_PLAN: {
+      result = (
+        <SqlplanExcecuteDetail
+          subTask={
+            subTask as scheduleTask<
+              ISqlPlanParametersSubTaskParameters,
+              ISqlPlanSubTaskExecutionDetails
+            >
+          }
+        />
+      );
+      break;
+    }
   }
 
-  return <SqlplanExcecuteDetail subTask={subTask} />;
+  return result;
 };
 
 export default ScheduleResult;

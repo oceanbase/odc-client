@@ -1,36 +1,45 @@
-import { scheduleTask } from '@/d.ts/scheduleTask';
+import {
+  IDataArchiveParametersSubTaskParameters,
+  IDataArchiveSubTaskExecutionDetails,
+  IDataClearParametersSubTaskParameters,
+  IDataDeleteSubTaskExecutionDetails,
+  scheduleTask,
+} from '@/d.ts/scheduleTask';
 import React, { useEffect, useState } from 'react';
 import { getLocalFormatDateTime } from '@/util/utils';
 import CommonTable from '@/component/CommonTable';
 import type { ColumnsType } from 'antd/es/table';
-import { SubTaskStatus, ISubTaskTaskUnit, SubTaskType } from '@/d.ts';
+import { ISubTaskTaskUnit, SubTaskExecuteType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import StatusLabel from '@/component/Task/component/Status';
-import { Drawer, Table, Descriptions, Spin } from 'antd';
+import { Descriptions } from 'antd';
 
 const SubTaskTypeMap = {
-  [SubTaskType.MIGRATE]: {
+  [SubTaskExecuteType.MIGRATE]: {
     label: formatMessage({ id: 'src.d.ts.CA81991C', defaultMessage: '归档' }),
   },
-  [SubTaskType.CHECK]: {
+  [SubTaskExecuteType.CHECK]: {
     label: formatMessage({ id: 'src.d.ts.8977156C', defaultMessage: '数据检查' }),
   },
-  [SubTaskType.DELETE]: {
+  [SubTaskExecuteType.DELETE]: {
     label: formatMessage({ id: 'src.d.ts.237F5711', defaultMessage: '数据清理' }),
   },
-  [SubTaskType.QUICK_DELETE]: {
+  [SubTaskExecuteType.QUICK_DELETE]: {
     label: formatMessage({ id: 'src.d.ts.CD43F08A', defaultMessage: '数据清理' }),
   },
-  [SubTaskType.DEIRECT_DELETE]: {
+  [SubTaskExecuteType.DEIRECT_DELETE]: {
     label: formatMessage({ id: 'src.d.ts.910D42B5', defaultMessage: '数据清理' }),
   },
-  [SubTaskType.ROLLBACK]: {
+  [SubTaskExecuteType.ROLLBACK]: {
     label: formatMessage({ id: 'src.d.ts.DF449BBC', defaultMessage: '回滚' }),
   },
 };
 
 interface ExcecuteDetailProps {
-  subTask: scheduleTask;
+  subTask: scheduleTask<
+    IDataClearParametersSubTaskParameters | IDataArchiveParametersSubTaskParameters,
+    IDataArchiveSubTaskExecutionDetails | IDataDeleteSubTaskExecutionDetails
+  >;
 }
 
 const ExcecuteDetail: React.FC<ExcecuteDetailProps> = (props) => {
@@ -40,8 +49,7 @@ const ExcecuteDetail: React.FC<ExcecuteDetailProps> = (props) => {
 
   const handleGetList = async () => {
     if (subTask?.executionDetails?.length) {
-      let list = JSON.parse(subTask?.executionDetails);
-      list = list?.map((i, index) => {
+      const list = subTask?.executionDetails?.map((i, index) => {
         return {
           ...i,
           endTime: getLocalFormatDateTime(i?.endTime),

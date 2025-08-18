@@ -26,6 +26,7 @@ import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
 import EllipsisText from '@/component/EllipsisText';
+import login from '@/store/login';
 export const getItems = (
   _task: TaskDetail<IResultSetExportTaskParams>,
   result: ITaskResult,
@@ -76,14 +77,19 @@ export const getItems = (
                 })}
               </Descriptions.Item>
               <Descriptions.Item label={'数据库'}>
-                <DatabaseLabel database={task?.database} />
+                <EllipsisText
+                  content={<DatabaseLabel database={task?.database} />}
+                  needTooltip={false}
+                />
               </Descriptions.Item>
               <Descriptions.Item label={'数据源'}>
-                {task?.database?.dataSource?.name || '-'}
+                <EllipsisText content={task?.database?.dataSource?.name} />
               </Descriptions.Item>
-              <Descriptions.Item span={1} label={'项目'}>
-                {task?.project?.name || '-'}
-              </Descriptions.Item>
+              {!login.isPrivateSpace() && (
+                <Descriptions.Item label={'项目'}>
+                  <EllipsisText content={task?.project?.name} />
+                </Descriptions.Item>
+              )}
               {hasFlow && (
                 <Descriptions.Item
                   span={2}
@@ -92,12 +98,7 @@ export const getItems = (
                     defaultMessage: '风险等级',
                   })}
                 >
-                  <ODCRiskLevelLabel
-                    iconMode
-                    levelMap
-                    level={task?.riskLevel?.level}
-                    content={task?.riskLevel?.name}
-                  />
+                  <ODCRiskLevelLabel iconMode levelMap level={task?.riskLevel?.level} />
                 </Descriptions.Item>
               )}
             </Descriptions>

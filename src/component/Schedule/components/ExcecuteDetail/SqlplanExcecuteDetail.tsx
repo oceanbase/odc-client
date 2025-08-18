@@ -1,19 +1,21 @@
-import { scheduleTask } from '@/d.ts/scheduleTask';
-import { Drawer, Table, Descriptions, Spin } from 'antd';
+import {
+  ISqlPlanParametersSubTaskParameters,
+  ISqlPlanSubTaskExecutionDetails,
+  scheduleTask,
+} from '@/d.ts/scheduleTask';
+import { Descriptions } from 'antd';
 import { ScheduleTextMap } from '@/constant/schedule';
-import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
-import { ScheduleTaskStatusTextMap } from '@/constant/scheduleTask';
+import { getFormatDateTime } from '@/util/utils';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { SQLContent } from '@/component/SQLContent';
 import { formatMessage } from '@/util/intl';
-import { TaskType } from '@/d.ts';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 import ScheduleTaskStatusLabel from '@/component/Schedule/components/ScheduleTaskStatusLabel';
 import { ScheduleType } from '@/d.ts/schedule';
 
 interface SqlplanExcecuteDetailProps {
-  subTask: scheduleTask;
+  subTask: scheduleTask<ISqlPlanParametersSubTaskParameters, ISqlPlanSubTaskExecutionDetails>;
 }
 
 const renderExecutionResult = (successCount: number, failCount: number) => {
@@ -44,20 +46,16 @@ const renderExecutionResult = (successCount: number, failCount: number) => {
 
 const SqlplanExcecuteDetail: React.FC<SqlplanExcecuteDetailProps> = ({ subTask }) => {
   const failedRecordsStr =
-    subTask?.executionDetails?.failedRecord && subTask?.executionDetails?.failedRecord.join('\n');
+    subTask?.executionDetails?.failedRecord && subTask?.executionDetails?.failedRecord?.join('\n');
 
   return (
-    <div
-      onClick={() => {
-        console.log(subTask);
-      }}
-    >
+    <div>
       <Descriptions column={1} style={{ marginBottom: '16px' }}>
-        <Descriptions.Item label="类型：">{ScheduleTextMap[subTask.type]}</Descriptions.Item>
-        <Descriptions.Item label="创建时间：">
+        <Descriptions.Item label="类型">{ScheduleTextMap[subTask.type]}</Descriptions.Item>
+        <Descriptions.Item label="创建时间">
           {getFormatDateTime(subTask?.createTime)}
         </Descriptions.Item>
-        <Descriptions.Item label="状态：">
+        <Descriptions.Item label="状态">
           <ScheduleTaskStatusLabel status={subTask.status} />
         </Descriptions.Item>
       </Descriptions>
@@ -85,7 +83,7 @@ const SqlplanExcecuteDetail: React.FC<SqlplanExcecuteDetailProps> = ({ subTask }
         direction="column"
       />
       <Descriptions column={1} style={{ marginTop: '8px' }}>
-        <Descriptions.Item label="执行结果：">
+        <Descriptions.Item label="执行结果">
           {renderExecutionResult(
             subTask?.executionDetails?.succeedStatements || 0,
             subTask?.executionDetails?.failedStatements || 0,
