@@ -277,6 +277,8 @@ const TreeNodeMenu = (props: IProps) => {
                 onMenuClick(clickMap[info.key]);
               },
             }}
+            overlayClassName={treeStyles.dropdownMenu}
+            destroyOnHidden
             trigger={['hover']}
           >
             <div className={styles.actionItem}>
@@ -303,6 +305,7 @@ const TreeNodeMenu = (props: IProps) => {
       <Popover
         showArrow={false}
         placement="right"
+        destroyOnHidden
         content={
           node.type === ResourceNodeType.Database ? (
             <ConnectionPopover
@@ -325,6 +328,8 @@ const TreeNodeMenu = (props: IProps) => {
             },
           }}
           trigger={['contextMenu']}
+          overlayClassName={treeStyles.dropdownMenu}
+          destroyOnHidden
         >
           {nodeChild}
         </Dropdown>
