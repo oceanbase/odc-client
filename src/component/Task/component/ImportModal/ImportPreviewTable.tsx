@@ -50,11 +50,7 @@ const ImportPreviewTable: React.FC<ImportPreviewTableProps> = ({
       ) => {
         let groupKey: ScheduleNonImportableType | 'TO_BE_IMPORTED';
 
-        if (
-          item.importable ||
-          item.nonImportableType === ScheduleNonImportableType.DATASOURCE_NON_EXIST ||
-          item.nonImportableType === ScheduleNonImportableType.LACK_OF_INSTANCE
-        ) {
+        if (item.importable) {
           groupKey = 'TO_BE_IMPORTED';
         } else {
           groupKey = item.nonImportableType;
@@ -97,15 +93,7 @@ const ImportPreviewTable: React.FC<ImportPreviewTableProps> = ({
   // 判断工单是否应该被选中
   const shouldBeSelected = useCallback(
     (item: IImportScheduleTaskView) => {
-      if (item.importable) return true;
-
-      if (
-        item.nonImportableType === ScheduleNonImportableType.DATASOURCE_NON_EXIST ||
-        item.nonImportableType === ScheduleNonImportableType.LACK_OF_INSTANCE
-      ) {
-        return hasSelectedAllDatabases(item);
-      }
-
+      if (item.importable && hasSelectedAllDatabases(item)) return true;
       return false;
     },
     [hasSelectedAllDatabases],
@@ -196,12 +184,7 @@ const ImportPreviewTable: React.FC<ImportPreviewTableProps> = ({
                   setSelectedRowKeys(selectedRowKeys as string[]);
                 },
                 getCheckboxProps: (record) => ({
-                  disabled: !(
-                    record.importable ||
-                    ((record.nonImportableType === ScheduleNonImportableType.DATASOURCE_NON_EXIST ||
-                      record.nonImportableType === ScheduleNonImportableType.LACK_OF_INSTANCE) &&
-                      hasSelectedAllDatabases(record))
-                  ),
+                  disabled: !hasSelectedAllDatabases(record),
                 }),
               }}
             />
@@ -303,12 +286,7 @@ const ImportPreviewTable: React.FC<ImportPreviewTableProps> = ({
         )}
 
         {Object.keys(ScheduleNonImportableType)
-          ?.filter(
-            (key) =>
-              key !== ScheduleNonImportableType.DATASOURCE_NON_EXIST &&
-              key !== ScheduleNonImportableType.LACK_OF_INSTANCE &&
-              groupedData[key as ScheduleNonImportableType]?.length > 0,
-          )
+          ?.filter((key) => groupedData[key as ScheduleNonImportableType]?.length > 0)
           ?.map((key) => {
             return (
               <Radio.Button value={key} key={key}>

@@ -278,6 +278,7 @@ const ImportModal: React.FC<IImportModalProps> = ({ open, onCancel, onOk, taskTy
       createdList: [],
     });
     setPreviewData([]);
+    setIsConfirm(false);
   };
 
   useEffect(() => {
@@ -342,6 +343,7 @@ const ImportModal: React.FC<IImportModalProps> = ({ open, onCancel, onOk, taskTy
                     setNotConfirmButSubmit(false);
                     setDatabaseSelections({});
                     setSelectedRowKeys([]);
+                    setIsConfirm(false);
                   }}
                 >
                   {formatMessage({
