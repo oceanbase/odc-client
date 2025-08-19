@@ -175,6 +175,15 @@
           justify-content: center;
         }
       }
+
+      .ant-tree-treenode:has(
+          > .ant-tree-node-content-wrapper > .ant-tree-title .ant-dropdown-open
+        ) {
+        &:not(.ant-tree-treenode-selected) {
+          background-color: var(--hover-color2);
+        }
+      }
+
       .ant-tree-node-content-wrapper {
         display: flex;
         flex: 1;
@@ -216,5 +225,18 @@
   }
   .content {
     padding: 4px 12px;
+  }
+}
+
+.dropdownMenu {
+  :global {
+    .ant-dropdown-menu {
+      .ant-dropdown-menu-submenu {
+        transition: background-color 0.3s ease;
+      }
+      .ant-dropdown-menu-submenu-open:not(:hover) {
+        background-color: var(--hover-color);
+      }
+    }
   }
 }

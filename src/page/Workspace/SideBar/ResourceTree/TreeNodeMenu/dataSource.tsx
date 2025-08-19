@@ -106,6 +106,7 @@ const CustomDropdown = ({
       overlay={menu}
       trigger={['contextMenu']}
       open={dropdownVisible}
+      destroyOnHidden
       onVisibleChange={setDropdownVisible}
       placement="bottomLeft"
     >
@@ -171,6 +172,7 @@ const DataSourceNodeMenu = (props: IProps) => {
     <>
       <Popover
         showArrow={false}
+        destroyOnHidden
         overlayClassName={styles.connectionPopover}
         placement="right"
         content={!!dataSource && <ConnectionPopover connection={dataSource} />}
@@ -222,7 +224,7 @@ const DataSourceNodeMenu = (props: IProps) => {
                 />
               )}
               {userStore.isPrivateSpace() && (
-                <Action.Group ellipsisIcon="vertical" size={0}>
+                <Action.Group ellipsisIcon="vertical" size={0} destroyOnHidden>
                   <Action.Link
                     onClick={() => {
                       setCopyDatasourceId(dataSource.id);
