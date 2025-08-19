@@ -55,8 +55,8 @@ importers:
         specifier: ~1.4.2
         version: 1.4.2(monaco-editor@0.36.1)
       '@oceanbase-odc/ob-intl-cli':
-        specifier: ^2.1.3
-        version: 2.1.4(chokidar@3.6.0)(encoding@0.1.13)(prettier@2.8.8)(typescript@5.9.2)
+        specifier: ^2.2.0
+        version: 2.2.0(chokidar@3.6.0)(encoding@0.1.13)(prettier@2.8.8)(typescript@5.9.2)
       '@oceanbase-odc/ob-parser-js':
         specifier: ^3.0.5
         version: 3.0.5
@@ -1183,6 +1183,10 @@ packages:
     resolution: {integrity: sha512-t3yaEOuGu9NlIZ+hIeGbBjFtZT7j2cb2tg0fuaJKeGotchRjjLfrBA9Kwf8quhpP1EUuxModQg04q/mBwyg8uA==}
     engines: {node: '>=6.9.0'}
 
+  '@babel/runtime@7.28.3':
+    resolution: {integrity: sha512-9uIQ10o0WGdpP6GDhXcdOJPJuDgFtIDtN/9+ArJQ2NAfAmiuhTQdzkaTGR33v43GYS2UrSA0eX2pPPHoFVvpxA==}
+    engines: {node: '>=6.9.0'}
+
   '@babel/template@7.27.2':
     resolution: {integrity: sha512-LPDZ85aEJyYSd18/DkjNh4/y1ntkE5KwUHWTiqgRxruuZL2F1yuHligVHLvcHY2vMHXttKFpJn6LwfI7cw7ODw==}
     engines: {node: '>=6.9.0'}
@@ -1969,8 +1973,8 @@ packages:
     peerDependencies:
       monaco-editor: ~0.38.0
 
-  '@oceanbase-odc/ob-intl-cli@2.1.4':
-    resolution: {integrity: sha512-AKoGr7cWn3AyvTYB2xoFZtfikBgyRxDWUya1IXbVGZeoBd4GGE7JcwFLmFplYNmtUFrOhyP7Vdkz2SNFAH6gQg==}
+  '@oceanbase-odc/ob-intl-cli@2.2.0':
+    resolution: {integrity: sha512-qCJriKatOEwHICu9sGM5b7PYYtWxtVtB1V+P/ZBTwACXQHhQEgFlBCnt9CDAoMIOM9iDEeFvV13VSWt/kGW8ig==}
     hasBin: true
 
   '@oceanbase-odc/ob-parser-js@3.0.5':
@@ -11486,6 +11490,8 @@ snapshots:
 
   '@babel/runtime@7.27.4': {}
 
+  '@babel/runtime@7.28.3': {}
+
   '@babel/template@7.27.2':
     dependencies:
       '@babel/code-frame': 7.27.1
@@ -12298,7 +12304,7 @@ snapshots:
       comlink: 4.4.2
       monaco-editor: 0.36.1
 
-  '@oceanbase-odc/ob-intl-cli@2.1.4(chokidar@3.6.0)(encoding@0.1.13)(prettier@2.8.8)(typescript@5.9.2)':
+  '@oceanbase-odc/ob-intl-cli@2.2.0(chokidar@3.6.0)(encoding@0.1.13)(prettier@2.8.8)(typescript@5.9.2)':
     dependencies:
       '@babel/core': 7.27.4
       '@babel/generator': 7.27.3
@@ -13057,7 +13063,7 @@ snapshots:
 
   '@types/history@5.0.0':
     dependencies:
-      history: 5.3.0
+      history: 4.10.1
 
   '@types/hoist-non-react-statics@3.3.6':
     dependencies:
@@ -13144,7 +13150,7 @@ snapshots:
       '@types/history': 4.7.11
       '@types/react': 16.14.65
       '@types/react-router': 5.1.20
-      redux: 4.2.1
+      redux: 3.7.2
 
   '@types/react-router@5.1.20':
     dependencies:
@@ -15995,7 +16001,7 @@ snapshots:
 
   dva-core@1.5.0-beta.2(redux@3.7.2):
     dependencies:
-      '@babel/runtime': 7.27.4
+      '@babel/runtime': 7.28.3
       flatten: 1.0.3
       global: 4.4.0
       invariant: 2.2.4
@@ -16028,7 +16034,7 @@ snapshots:
 
   dva@2.5.0-beta.2(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
     dependencies:
-      '@babel/runtime': 7.27.4
+      '@babel/runtime': 7.28.3
       '@types/isomorphic-fetch': 0.0.34
       '@types/react-router-dom': 4.3.5
       '@types/react-router-redux': 5.0.27
@@ -17532,7 +17538,7 @@ snapshots:
 
   history@4.10.1:
     dependencies:
-      '@babel/runtime': 7.27.4
+      '@babel/runtime': 7.28.3
       loose-envify: 1.4.0
       resolve-pathname: 3.0.0
       tiny-invariant: 1.3.3
@@ -19758,7 +19764,7 @@ snapshots:
       lodash: 4.17.21
       postcss: 8.5.4
 
-  postcss-syntax@0.36.2(postcss-html@0.36.0)(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39):
+  postcss-syntax@0.36.2(postcss-html@0.36.0(postcss-syntax@0.36.2(postcss@8.5.4))(postcss@7.0.39))(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39):
     dependencies:
       postcss: 7.0.39
     optionalDependencies:
@@ -20767,7 +20773,7 @@ snapshots:
 
   react-redux@5.1.2(react@17.0.2)(redux@3.7.2):
     dependencies:
-      '@babel/runtime': 7.27.4
+      '@babel/runtime': 7.28.3
       hoist-non-react-statics: 3.3.2
       invariant: 2.2.4
       loose-envify: 1.4.0
@@ -21956,7 +21962,7 @@ snapshots:
       postcss-sass: 0.4.4
       postcss-scss: 2.1.1
       postcss-selector-parser: 6.1.2
-      postcss-syntax: 0.36.2(postcss-html@0.36.0)(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39)
+      postcss-syntax: 0.36.2(postcss-html@0.36.0(postcss-syntax@0.36.2(postcss@8.5.4))(postcss@7.0.39))(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39)
       postcss-value-parser: 4.2.0
       resolve-from: 5.0.0
       slash: 3.0.0
