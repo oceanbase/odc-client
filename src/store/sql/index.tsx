@@ -755,11 +755,12 @@ export class SQLStore {
 
   public getLastUnlockedResultKey(pageKey: string) {
     const resultSet = this.resultSets.get(pageKey);
+    const logKey = this.getLogKey(pageKey);
     if (resultSet) {
       const lastResultKey = [...resultSet]
         .reverse()
         .find((r) => !r.locked && isResultTab(r))?.uniqKey;
-      return lastResultKey;
+      return lastResultKey || logKey;
     }
   }
 

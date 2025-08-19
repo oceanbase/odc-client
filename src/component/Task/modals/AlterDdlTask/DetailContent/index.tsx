@@ -31,6 +31,7 @@ import { ClearStrategy, LockStrategy, LockStrategyLableMap } from '../CreateModa
 import { SwapTableType } from '../CreateModal/const';
 import { ProjectRole } from '@/d.ts/project';
 import userStore from '@/store/login';
+import EllipsisText from '@/component/EllipsisText';
 
 const { Text } = Typography;
 interface IDDLAlterParamters {
@@ -228,7 +229,7 @@ export function getItems(
             defaultMessage: '所属库',
           }),
           //所属库
-          task?.database?.name || '-',
+          <EllipsisText content={task?.database?.name} />,
         ],
 
         [
@@ -237,7 +238,7 @@ export function getItems(
             defaultMessage: '所属数据源',
           }),
           //'所属数据源'
-          task?.database?.dataSource?.name || '-',
+          <EllipsisText content={task?.database?.dataSource?.name} />,
         ],
         [
           formatMessage({

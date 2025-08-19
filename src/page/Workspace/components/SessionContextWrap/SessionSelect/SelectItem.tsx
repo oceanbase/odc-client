@@ -25,12 +25,13 @@ import { formatMessage } from '@/util/intl';
 import Icon, { ArrowDownOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Divider, Select, Space } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import SessionContext from '../context';
 import { DEFALT_WIDTH } from './const';
 import { IDatabase } from '@/d.ts/database';
 import styles from './index.less';
 import SessionDropdown, { ISessionDropdownFiltersProps } from './SessionDropdown';
+import { isNumber } from 'lodash';
 
 interface IProps {
   value?: number;
@@ -67,7 +68,7 @@ const SelectItem: React.FC<IProps> = ({
   const { data: database, run: runDatabase } = useRequest(getDatabase, {
     manual: true,
   });
-
+  const databaseInfoContainerRef = useRef<HTMLDivElement>(null);
   const { data: dataSource, run: runDataSource } = useRequest(getConnectionDetail, {
     manual: true,
   });
@@ -91,6 +92,18 @@ const SelectItem: React.FC<IProps> = ({
 
   const dbIcon = getDataSourceStyleByConnectType(database?.data?.dataSource?.type)?.dbIcon;
   const dataSourceIcon = getDataSourceStyleByConnectType(dataSource?.type)?.icon;
+
+  const [isDatabaseInfoContainerSingleLine, setIsDatabaseInfoContainerSingleLine] = useState(false);
+
+  useEffect(() => {
+    if (
+      databaseInfoContainerRef?.current &&
+      database?.data &&
+      isNumber(databaseInfoContainerRef?.current?.offsetHeight)
+    ) {
+      setIsDatabaseInfoContainerSingleLine(databaseInfoContainerRef?.current?.offsetHeight < 22);
+    }
+  }, [databaseInfoContainerRef?.current, database?.data]);
 
   const getPlaceholder = () => {
     if (!value) return placeholder;
@@ -188,29 +201,31 @@ const SelectItem: React.FC<IProps> = ({
           />
         </SessionDropdown>
         {value && database?.data ? (
-          <Space
-            size={2}
-            split={<Divider type="vertical" />}
-            style={{ color: 'var(--text-color-hint)' }}
+          <div
+            ref={databaseInfoContainerRef}
+            className={styles.databaseInfo}
+            style={{
+              width: width || DEFALT_WIDTH,
+            }}
           >
             {login.isPrivateSpace() ? null : (
-              <span>
+              <div className={styles.item}>
                 {formatMessage({
                   id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.5AC43B24' /*项目：*/,
                   defaultMessage: '项目：',
                 })}
                 {database?.data?.project?.name}
-              </span>
+              </div>
             )}
-
-            <span>
+            {isDatabaseInfoContainerSingleLine && <Divider type="vertical" />}
+            <div className={styles.item}>
               {formatMessage({
                 id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.7780C356' /*数据源：*/,
                 defaultMessage: '数据源：',
               })}
               {database?.data?.dataSource?.name}
-            </span>
-          </Space>
+            </div>
+          </div>
         ) : null}
       </Space>
     </SessionContext.Provider>

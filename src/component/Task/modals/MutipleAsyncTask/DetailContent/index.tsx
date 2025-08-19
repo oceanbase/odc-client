@@ -22,6 +22,7 @@ import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { TaskTypeMap } from '@/component/Task/helper';
 import styles from './index.less';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
+import EllipsisText from '@/component/EllipsisText';
 const { Step } = Steps;
 interface IStructureComparisonTaskContentProps {
   modalStore?: ModalStore;
@@ -52,7 +53,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
     const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
     return (
       <>
-        <Descriptions column={4}>
+        <Descriptions column={4} style={{ marginBottom: 16 }}>
           <Descriptions.Item
             span={2}
             label={
@@ -110,7 +111,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
               defaultMessage: '所属项目',
             })}
           >
-            {task?.parameters?.databases?.[0]?.project?.name || '-'}
+            <EllipsisText content={task?.parameters?.databases?.[0]?.project?.name} />
           </Descriptions.Item>
           <Descriptions.Item
             span={2}
@@ -126,6 +127,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
             />
           </Descriptions.Item>
         </Descriptions>
+        <Divider style={{ marginTop: 16 }} />
         <SimpleTextItem
           label={formatMessage({
             id: 'src.component.Task.MutipleAsyncTask.DetailContent.10038C15',
@@ -254,7 +256,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
             {task?.description || '-'}
           </Descriptions.Item>
         </Descriptions>
-        <Divider />
+        <Divider style={{ marginTop: 16 }} />
         <Descriptions column={4}>
           <Descriptions.Item
             span={2}

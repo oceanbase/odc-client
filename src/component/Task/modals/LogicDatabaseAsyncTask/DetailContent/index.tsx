@@ -7,6 +7,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { Descriptions, Divider, Space, Tooltip } from 'antd';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { getTaskExecStrategyMap } from '@/component/Task//const';
+import EllipsisText from '@/component/EllipsisText';
 export const ErrorStrategy = {
   ABORT: formatMessage({
     id: 'src.component.Task.LogicDatabaseAsyncTask.DetailContent.11ED2337',
@@ -31,7 +32,7 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
 
   return (
     <>
-      <Descriptions column={4}>
+      <Descriptions column={4} style={{ marginBottom: 16 }}>
         <Descriptions.Item
           span={2}
           label={formatMessage({
@@ -60,7 +61,7 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
             defaultMessage: '数据库',
           })}
         >
-          {task?.database?.name || '-'}
+          <EllipsisText content={task?.database?.name} />
         </Descriptions.Item>
         <Descriptions.Item
           span={2}
@@ -69,9 +70,10 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
             defaultMessage: '所属项目',
           })}
         >
-          {task?.project?.name || '-'}
+          <EllipsisText content={task?.project?.name} />
         </Descriptions.Item>
       </Descriptions>
+      <Divider style={{ marginTop: 16 }} />
       <SimpleTextItem
         label={formatMessage({
           id: 'src.component.Task.LogicDatabaseAsyncTask.DetailContent.97C2BA42',
@@ -176,7 +178,7 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
       </Descriptions>
       <Divider
         style={{
-          marginTop: 4,
+          marginTop: 16,
         }}
       />
 
