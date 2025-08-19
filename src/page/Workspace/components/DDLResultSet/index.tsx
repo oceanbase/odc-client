@@ -158,6 +158,10 @@ interface IProps {
    * db 查询耗时
    */
   dbTotalDurationMicroseconds?: number;
+  /**
+   * 外部传入的初始limit值，优先级高于session中的queryLimit
+   */
+  initialLimit?: number;
   onRefresh?: (limit: number) => void;
   onSubmitRows?: (
     newRows,
@@ -177,6 +181,7 @@ interface IProps {
   ) => void;
   isExternalTable?: boolean; // 是否为外表
 }
+
 const DDLResultSet: React.FC<IProps> = function (props) {
   const {
     isTableData,
@@ -206,6 +211,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     withFullLinkTrace = false,
     withQueryProfile = false,
     traceEmptyReason = '',
+    initialLimit,
     onUpdateEditing,
     onRefresh,
     onShowExecuteDetail,
@@ -229,7 +235,9 @@ const DDLResultSet: React.FC<IProps> = function (props) {
   /**
    * 数据量限制
    */
-  const [limit, setLimit] = useState(session?.params?.queryLimit);
+  const [limit, setLimit] = useState(() => {
+    return initialLimit ?? session?.params?.queryLimit;
+  });
   /**
    * 表数据搜索
    */
@@ -402,7 +410,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
     gridRef.current?.scrollToRow(0);
   }, [gridRef]);
   const handleExport = useCallback(() => {
-    onExport?.(limit || 1000);
+    onExport?.(limit);
   }, [onExport, limit]);
   const handleEditPropertyInCell = useCallback(
     (newRows) => {
@@ -856,7 +864,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
         <SubmitConfirm
           key="modify-submit"
           onConfirm={() => {
-            onSubmitRows?.(editRows, limit || 1000, true, table.columns);
+            onSubmitRows?.(editRows, limit, true, table.columns);
           }}
         >
           <ToolbarButton
@@ -885,7 +893,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
         onClick={async () => {
           setIsSubmitting(true);
           try {
-            await onSubmitRows?.(editRows, limit || 1000, false, table.columns);
+            await onSubmitRows?.(editRows, limit, false, table.columns);
           } finally {
             setIsSubmitting(false);
           }
@@ -965,7 +973,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             key="commit"
             onConfirm={async () => {
               await sqlStore.commit(props.pageKey, sessionId, session?.database?.dbName);
-              onRefresh(limit || 1000);
+              onRefresh(limit);
             }}
             disabled={isInTransaction}
           >
@@ -981,7 +989,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
             key="rollback"
             onConfirm={async () => {
               await sqlStore.rollback(props.pageKey, sessionId, session?.database?.dbName);
-              onRefresh(limit || 1000);
+              onRefresh(limit);
             }}
             isRollback
             disabled={isInTransaction}
@@ -1248,13 +1256,16 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                     }}
                     min={1}
                     precision={0}
-                    defaultValue={session?.params?.queryLimit}
+                    defaultValue={limit}
                     style={{
                       width: 70,
                       marginLeft: 8,
                     }}
+                    onBlur={() => {
+                      onRefresh(limit);
+                    }}
                     onPressEnter={() => {
-                      onRefresh(limit || 1000);
+                      onRefresh(limit);
                     }}
                   />
                 </>
@@ -1345,7 +1356,7 @@ const DDLResultSet: React.FC<IProps> = function (props) {
                   defaultMessage: '刷新',
                 })}
                 icon={<SyncOutlined />}
-                onClick={onRefresh.bind(this, limit || 1000)}
+                onClick={onRefresh.bind(this, limit)}
               />
             ) : null}
           </div>
