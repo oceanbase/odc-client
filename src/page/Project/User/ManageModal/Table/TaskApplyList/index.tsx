@@ -23,8 +23,8 @@ import {
   ITableLoadOptions,
 } from '@/component/CommonTable/interface';
 import SearchFilter from '@/component/SearchFilter';
-import { getExpireTimeLabel } from '@/component/Task/modals/ApplyDatabasePermission';
 import TaskDetailModal from '@/component/Task/modals/DetailModals';
+import { getExpireTimeLabel } from '@/component/Task/helper';
 import type { IResponseData } from '@/d.ts';
 import { TaskType } from '@/d.ts';
 import { ITablePermission, TablePermissionStatus } from '@/d.ts/project';

@@ -121,6 +121,7 @@ const items: Record<
       sqlExplain: true,
       supportOBProxy: true,
       plRun: true,
+      plEdit: true,
       export: {
         fileLimit: true,
         snapshot: true,

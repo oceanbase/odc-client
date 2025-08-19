@@ -856,7 +856,10 @@ const DDLResultSet: React.FC<IProps> = function (props) {
         <SubmitConfirm
           key="modify-submit"
           onConfirm={() => {
-            onSubmitRows?.(editRows, limit || 1000, true, table.columns);
+            (document.activeElement as HTMLElement)?.blur();
+            setTimeout(() => {
+              onSubmitRows?.(gridRef.current.rows, limit || 1000, true, table.columns);
+            }, 0);
           }}
         >
           <ToolbarButton
@@ -883,12 +886,15 @@ const DDLResultSet: React.FC<IProps> = function (props) {
         isShowText
         status={isSubmitting ? IConStatus.RUNNING : IConStatus.INIT}
         onClick={async () => {
-          setIsSubmitting(true);
-          try {
-            await onSubmitRows?.(editRows, limit || 1000, false, table.columns);
-          } finally {
-            setIsSubmitting(false);
-          }
+          (document.activeElement as HTMLElement)?.blur();
+          setTimeout(async () => {
+            setIsSubmitting(true);
+            try {
+              await onSubmitRows?.(gridRef.current.rows, limit || 1000, false, table.columns);
+            } finally {
+              setIsSubmitting(false);
+            }
+          }, 0);
         }}
       />,
     );

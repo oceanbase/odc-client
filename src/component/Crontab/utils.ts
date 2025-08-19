@@ -178,7 +178,11 @@ export const getCronString = (values: {
   dayOfMonth: number[];
 }) => {
   const { hour, dayOfWeek, dayOfMonth } = values;
-  const initInterval = parser.parseExpression(initCronString);
+  let baseCron = initCronString;
+  if (dayOfWeek?.length > 0) {
+    baseCron = '0 0 0 ? * *';
+  }
+  const initInterval = parser.parseExpression(baseCron);
   const fields = JSON.parse(JSON.stringify(initInterval.fields));
   if (hour.length) {
     fields.hour = hour;
@@ -186,7 +190,7 @@ export const getCronString = (values: {
     fields.second = [0];
   }
   if (dayOfWeek.length) {
-    fields.dayOfWeek = dayOfWeek;
+    fields.dayOfWeek = dayOfWeek.map((d) => (d === 7 ? 0 : d));
   }
   if (dayOfMonth.length) {
     fields.dayOfMonth = dayOfMonth;

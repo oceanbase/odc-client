@@ -47,34 +47,13 @@ import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './index.less';
 import { rules } from './const';
+import { getExpireTime } from '@/component/Task/helper';
 
 const CheckboxGroup = Checkbox.Group;
-
-const MAX_DATE = '9999-12-31 23:59:59';
-const MAX_DATE_LABEL = '9999-12-31';
 
 const defaultValue = {
   tables: [],
   expireTime: '7,days',
-};
-
-export const getExpireTime = (expireTime, customExpireTime, isCustomExpireTime) => {
-  if (isCustomExpireTime) {
-    return customExpireTime?.valueOf();
-  } else {
-    const [offset, unit] = expireTime.split(',') ?? [];
-    return offset === 'never' ? dayjs(MAX_DATE)?.valueOf() : dayjs().add(offset, unit)?.valueOf();
-  }
-};
-
-export const getExpireTimeLabel = (expireTime) => {
-  const label = dayjs(expireTime).format('YYYY-MM-DD');
-  return label === MAX_DATE_LABEL
-    ? formatMessage({
-        id: 'src.component.Task.ApplyTablePermission.CreateModal.BC4488C7',
-        defaultMessage: '永不过期',
-      })
-    : label;
 };
 
 const Label: React.FC<{
@@ -192,6 +171,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const tableSelecterRef = useRef<TableSelecterRef>(null);
   const { run: getProjects, data: projects } = useRequest(listProjects, {
     defaultParams: [null, null, null],
+    manual: true,
   });
   const projectOptions = projects?.contents?.map(({ name, id }) => ({
     label: name,
@@ -240,11 +220,16 @@ const CreateModal: React.FC<IProps> = (props) => {
       .then(async (values) => {
         const { projectId, tables, types, expireTime, customExpireTime, applyReason } = values;
         const isCustomExpireTime = expireTime?.startsWith('custom');
+        const allLoadedTables = tableSelecterRef.current
+          .getAllLoadedTables()
+          .map((table) => table.id);
+        const allLoadedTablesSet = new Set(allLoadedTables);
+        const filteredTables = tables.filter((table) => allLoadedTablesSet.has(table.tableId));
         const parameters = {
           project: {
             id: projectId,
           },
-          tables: groupTableByDataBase(tables),
+          tables: groupTableByDataBase(filteredTables),
           types,
           expireTime: getExpireTime(expireTime, customExpireTime, isCustomExpireTime),
           applyReason,
@@ -298,12 +283,15 @@ const CreateModal: React.FC<IProps> = (props) => {
       applyReason,
     };
     // 默认获取要申请权限的库下面的表，并且展开
-    // 目前一个工单只会关联一个库
-    const databaseId = tables?.[0]?.databaseId;
-    if (projectId && databaseId) {
+    const databaseIds = [...new Set(tables?.map((table) => table.databaseId).filter(Boolean))];
+    if (projectId && databaseIds.length) {
       await tableSelecterRef.current?.loadDatabases();
-      await tableSelecterRef.current?.loadTables(databaseId);
-      tableSelecterRef.current?.expandTable(databaseId);
+      await Promise.all(
+        databaseIds.map(async (databaseId) => {
+          await tableSelecterRef.current?.loadTables(databaseId);
+          tableSelecterRef.current?.expandTable(databaseId);
+        }),
+      );
     }
     form.setFieldsValue(formData);
   }, [applyTablePermissionData, form]);

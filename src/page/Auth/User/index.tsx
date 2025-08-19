@@ -131,6 +131,14 @@ class UserPage extends React.PureComponent<IProps, IState> {
             value: id,
           };
         }),
+        onFilter: (value, record) => {
+          // 如果过滤值为0，表示选择"空"选项，匹配没有角色的用户
+          if (value === 0) {
+            return !record?.roles?.length;
+          }
+          // 检查用户是否包含选中的角色
+          return record?.roles?.some((role) => role.id === value);
+        },
         render: (roles) => {
           return <RoleList roles={roles} isShowIcon />;
         },

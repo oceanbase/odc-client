@@ -135,6 +135,10 @@ export const nodeStatus = {
       //已终止
       status: 'error',
     },
+    [TaskNodeStatus.EXECUTING_ABNORMAL]: {
+      text: '执行异常',
+      status: 'error',
+    },
     [TaskNodeStatus.FAILED]: {
       text: formatMessage({
         id: 'odc.component.TaskStatus.Failed.2',

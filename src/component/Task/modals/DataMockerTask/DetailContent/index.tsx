@@ -30,6 +30,7 @@ import { getFormatDateTime } from '@/util/utils';
 import Form from 'antd/lib/form/Form';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
+import EllipsisText from '@/component/EllipsisText';
 export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult, hasFlow: boolean) {
   if (!task) {
     return [];
@@ -216,7 +217,7 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
             id: 'odc.src.component.Task.DataMockerTask.DetailContent.DataSource',
             defaultMessage: '所属数据源',
           }), //'所属数据源'
-          task?.database?.dataSource?.name || '-',
+          <EllipsisText content={task?.database?.dataSource?.name} />,
         ],
 
         [

@@ -706,8 +706,14 @@ const TableSelecter: React.ForwardRefRenderFunction<TableSelecterRef, IProps> = 
           return Array.from(new Set([...prevExpandKeys, databaseId]));
         });
       },
+      getAllLoadedTables: () => {
+        return databaseWithTableList.reduce(
+          (pre, cur) => pre.concat(cur.tableList, cur.viewList, cur.materializedViewList),
+          [],
+        );
+      },
     }),
-    [handleLoadTables],
+    [handleLoadTables, databaseWithTableList],
   );
 
   useEffect(() => {

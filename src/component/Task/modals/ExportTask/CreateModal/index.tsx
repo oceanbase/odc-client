@@ -109,7 +109,7 @@ const CreateModal: React.FC<IProps> = (props) => {
 
   useEffect(() => {
     initDefaultConfig();
-    if (modalStore.exportModalData) {
+    if (modalStore.exportModalData?.name) {
       const newExportDbObjects = [
         {
           objectName: modalStore.exportModalData.name,
