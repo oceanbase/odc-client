@@ -198,7 +198,20 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
           >
             {taskExecStrategyMap?.[task?.executionStrategy]}
           </Descriptions.Item>
-          {task?.executionStrategy === TaskExecStrategy.AUTO ? (
+          {task?.executionStrategy === TaskExecStrategy.TIMER && (
+            <Descriptions.Item
+              span={2}
+              label={
+                formatMessage({
+                  id: 'odc.src.component.Task.AsyncTask.DetailContent.ExecutionTime',
+                  defaultMessage: '执行时间',
+                }) /* 执行时间 */
+              }
+            >
+              {getFormatDateTime(task?.executionTime)}
+            </Descriptions.Item>
+          )}
+          {task?.executionStrategy === TaskExecStrategy.AUTO && (
             <Descriptions.Item
               span={2}
               label={formatMessage({
@@ -208,7 +221,8 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
             >
               {ErrorStrategy?.[task?.parameters?.autoErrorStrategy]}
             </Descriptions.Item>
-          ) : (
+          )}
+          {task?.executionStrategy === TaskExecStrategy.MANUAL && (
             <Descriptions.Item
               span={4}
               label={formatMessage({

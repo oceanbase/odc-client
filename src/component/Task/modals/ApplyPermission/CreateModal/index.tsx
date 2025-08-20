@@ -156,6 +156,10 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
 
   const loadEditData = async () => {
+    let tempProjectOptions = projectOptions;
+    if (tempProjectOptions?.length === 0) {
+      tempProjectOptions = await loadProjects();
+    }
     const { task } = applyPermissionData;
     const {
       parameters: {
@@ -165,7 +169,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       },
     } = task;
     const formData = {
-      projectId: projectOptions?.find(({ value }) => value === projectId) ? projectId : null,
+      projectId: tempProjectOptions?.find(({ value }) => value === projectId) ? projectId : null,
       applyReason,
       resourceRoleIds: resourceRoles?.map(({ id }) => id),
     };

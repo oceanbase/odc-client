@@ -91,38 +91,22 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
         )}
 
         <Descriptions.Item label={'源端数据库'}>
-          <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-            <RiskLevelLabel
-              color={parameters?.sourceDatabase?.dataSource?.environmentStyle}
-              content={parameters?.sourceDatabase.dataSource.environmentName ?? '-'}
-            />
-            <div style={{ flex: 1, overflow: 'hidden' }}>
-              <EllipsisText
-                needTooltip={false}
-                content={<DatabaseLabel database={parameters?.sourceDatabase} />}
-              />
-            </div>
-          </div>
+          <EllipsisText
+            needTooltip={false}
+            content={<DatabaseLabel database={parameters?.sourceDatabase} />}
+          />
         </Descriptions.Item>
         <Descriptions.Item label={'源端数据源'}>
           <EllipsisText content={parameters?.sourceDatabase?.dataSource?.name} />
         </Descriptions.Item>
         <Descriptions.Item label={'目标数据库'}>
-          <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-            <RiskLevelLabel
-              color={parameters?.targetDatabase?.dataSource?.environmentStyle}
-              content={parameters?.targetDatabase.dataSource.environmentName ?? '-'}
-            />
-            <div style={{ flex: 1, overflow: 'hidden' }}>
-              <EllipsisText
-                needTooltip={false}
-                content={<DatabaseLabel database={parameters?.targetDatabase} />}
-              />
-            </div>
-          </div>
+          <EllipsisText
+            needTooltip={false}
+            content={<DatabaseLabel database={parameters?.targetDatabase} />}
+          />
         </Descriptions.Item>
         <Descriptions.Item label={'目标端数据源'}>
-          <EllipsisText content={parameters?.targetDataSourceName} />
+          <EllipsisText content={parameters?.targetDatabase?.dataSource?.name} />
         </Descriptions.Item>
         {!login.isPrivateSpace() && (
           <Descriptions.Item label={'项目'}>

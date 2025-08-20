@@ -34,6 +34,10 @@ const useLoadProjects = () => {
       return pre;
     }, {});
     setProjectMap(rawProjectMap);
+    return res?.contents?.map(({ name, id }) => ({
+      label: name,
+      value: id,
+    }));
   };
 
   return {

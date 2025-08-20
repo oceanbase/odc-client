@@ -66,7 +66,7 @@ const defaultData: IShaodwSyncData = {
   prefix: true,
   name: '_test_',
   originTableNames: new Set(),
-  executionStrategy: TaskExecStrategy.AUTO,
+  executionStrategy: TaskExecStrategy.MANUAL,
   executionTime: null,
   errorStrategy: ErrorStrategy.ABORT,
 };

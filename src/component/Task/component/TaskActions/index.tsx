@@ -179,27 +179,35 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
         return;
       }
       case TaskType.APPLY_DATABASE_PERMISSION: {
+        const detailRes = (await getTaskDetail(
+          task?.id,
+        )) as TaskDetail<IApplyDatabasePermissionTaskParams>;
         modalStore.changeApplyDatabasePermissionModal(true, {
-          task: task as TaskDetail<IApplyDatabasePermissionTaskParams>,
+          task: detailRes,
         });
         return;
       }
       case TaskType.APPLY_PROJECT_PERMISSION: {
+        const detailRes = (await getTaskDetail(task?.id)) as TaskDetail<IApplyPermissionTaskParams>;
         modalStore.changeApplyPermissionModal(true, {
-          task: task as TaskDetail<IApplyPermissionTaskParams>,
+          task: detailRes,
         });
         return;
       }
       case TaskType.APPLY_TABLE_PERMISSION: {
+        const detailRes = (await getTaskDetail(
+          task?.id,
+        )) as TaskDetail<IApplyTablePermissionTaskParams>;
         modalStore.changeApplyTablePermissionModal(true, {
-          task: task as TaskDetail<IApplyTablePermissionTaskParams>,
+          task: detailRes,
         });
         return;
       }
       case TaskType.MULTIPLE_ASYNC: {
+        const detailRes = (await getTaskDetail(task?.id)) as TaskDetail<IMultipleAsyncTaskParams>;
         modalStore.changeMultiDatabaseChangeModal(true, {
-          projectId: (task as TaskDetail<IMultipleAsyncTaskParams>)?.parameters?.projectId,
-          task: task as TaskDetail<IMultipleAsyncTaskParams>,
+          projectId: (task as TaskDetail<IMultipleAsyncTaskParams>)?.projectId,
+          task: detailRes,
         });
         return;
       }
@@ -255,7 +263,8 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
         return;
       }
       default: {
-        const { database, executionStrategy, executionTime, parameters, description } = task;
+        const detailRes = await getTaskDetail(task?.id);
+        const { database, executionStrategy, executionTime, parameters, description } = detailRes;
 
         const data = {
           taskType: type,

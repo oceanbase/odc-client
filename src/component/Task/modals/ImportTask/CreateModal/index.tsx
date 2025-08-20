@@ -77,7 +77,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       useSys: false,
       databaseId: modalStore.importModalData?.databaseId,
       taskId: modalStore.exportModalData?.taskId,
-      executionStrategy: defaultConfig?.executionStrategy ?? TaskExecStrategy.AUTO,
+      executionStrategy: defaultConfig?.executionStrategy ?? TaskExecStrategy.MANUAL,
       fileType: defaultConfig?.fileType ?? IMPORT_TYPE.ZIP,
       encoding: defaultConfig?.encoding ?? IMPORT_ENCODING.UTF8,
       importFileName: null,

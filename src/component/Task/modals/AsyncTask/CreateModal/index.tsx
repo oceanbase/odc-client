@@ -22,7 +22,7 @@ import FormItemPanel from '@/component/FormItemPanel';
 import ODCDragger from '@/component/OSSDragger2';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
-import TaskTimer from '@/component/Task/component/TimerSelect';
+import TaskExecutionMethodForm from '@/component/Task/component/TaskExecutionMethodForm';
 import { RollbackType, SQLContentType, TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
 import LintResultTable from '@/page/Workspace/components/SQLResultSet/LintResultTable';
 import { openTasksPage } from '@/store/helper/page';
@@ -477,7 +477,9 @@ const CreateModal: React.FC<IProps> = (props) => {
       queryLimit: Number(setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')),
       generateRollbackPlan:
         setting.getSpaceConfigByKey('odc.task.default.rollbackPlanEnabled') === 'true',
-      executionStrategy: setting.getSpaceConfigByKey('odc.task.databaseChange.executionStrategy'),
+      executionStrategy:
+        setting.getSpaceConfigByKey('odc.task.databaseChange.executionStrategy') ||
+        TaskExecStrategy.MANUAL,
     };
     form.setFieldsValue(initialFormData);
   };
@@ -954,7 +956,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               ]}
             />
           </Form.Item>
-          <TaskTimer />
+          <TaskExecutionMethodForm />
         </FormItemPanel>
         <Form.Item
           label={formatMessage({

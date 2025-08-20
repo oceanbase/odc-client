@@ -22,6 +22,11 @@ import { openNewSQLPage } from '@/store/helper/page';
 import { formatMessage } from '@/util/intl';
 import GlobalSearchContext from '@/page/Workspace/context/GlobalSearchContext';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
+import Icon from '@ant-design/icons';
+import { ReactComponent as ProjectSvg } from '@/svgr/project_space.svg';
+import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
+import EllipsisText from '@/component/EllipsisText';
 
 interface IProps {
   modalStore?: ModalStore;
@@ -119,7 +124,7 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
   }, [searchKey, status]);
 
   const PositioninContent = useMemo(() => {
-    let positionText: string;
+    let positionText: JSX.Element;
     let action: () => void;
     if (
       [
@@ -128,12 +133,12 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
         SearchStatus.dataSourceWithDatabaseforObject,
       ].includes(status)
     ) {
-      positionText = formatMessage(
-        {
-          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.FA5E6855',
-          defaultMessage: '定位到数据库 "${database?.name}"',
-        },
-        { databaseName: database?.name },
+      positionText = (
+        <div className={styles.positioninContentText}>
+          <span>定位到数据库:</span>
+          <DataBaseStatusIcon item={database} />
+          <EllipsisText content={database?.name} />
+        </div>
       );
       action = () => {
         positionResourceTree?.({
@@ -144,12 +149,12 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
       };
     }
     if ([SearchStatus.projectforObject].includes(status)) {
-      positionText = formatMessage(
-        {
-          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.E1E46959',
-          defaultMessage: '定位到项目{projectName}',
-        },
-        { projectName: project?.name },
+      positionText = (
+        <div className={styles.positioninContentText}>
+          <span>定位到项目:</span>
+          <Icon component={ProjectSvg} style={{ color: 'var(--icon-blue-color)', fontSize: 16 }} />
+          <EllipsisText content={project?.name} />
+        </div>
       );
       action = () => {
         positionProjectOrDataSource?.({
@@ -159,12 +164,12 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
       };
     }
     if ([SearchStatus.dataSourceforObject].includes(status)) {
-      positionText = formatMessage(
-        {
-          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.FB02CA29',
-          defaultMessage: '定位到数据源{dataSourceName}',
-        },
-        { dataSourceName: dataSource?.name },
+      positionText = (
+        <div className={styles.positioninContentText}>
+          <span>定位到数据源:</span>
+          <StatusIcon item={dataSource} />
+          <EllipsisText content={dataSource?.name} />
+        </div>
       );
       action = () => {
         positionProjectOrDataSource?.({

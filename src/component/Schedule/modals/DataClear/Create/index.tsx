@@ -1,10 +1,8 @@
 import { getTableListByDatabaseName } from '@/common/network/table';
 import { previewSqlStatements } from '@/common/network/task';
 import { createSchedule, updateSchedule, getScheduleDetail } from '@/common/network/schedule';
-import Crontab from '@/component/Crontab';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
 import FormItemPanel from '@/component/FormItemPanel';
-import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import { ICycleTaskTriggerConfig, ITable, TaskExecStrategy, ShardingStrategy } from '@/d.ts';
 import { history } from '@umijs/max';
 import {
@@ -16,11 +14,9 @@ import {
   SchedulePageType,
 } from '@/d.ts/schedule';
 import { useDBSession } from '@/store/sessionManager/hooks';
-import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { hourToMilliSeconds, kbToMb, mbToKb, milliSecondsToHour } from '@/util/utils';
-import { FieldTimeOutlined } from '@ant-design/icons';
-import { Button, Checkbox, DatePicker, Form, Modal, Radio, Space, Spin, message } from 'antd';
+import { Button, Checkbox, Form, Modal, Radio, Space, Spin, message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { CreateScheduleContext } from '@/component/Schedule/context/createScheduleContext';
 import dayjs from 'dayjs';
@@ -34,7 +30,6 @@ import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig from './VariableConfig';
 import ShardingStrategyItem from '@/component/Task/component/ShardingStrategyItem';
-import { disabledDate, disabledTime } from '@/util/utils';
 import { useRequest } from 'ahooks';
 import DirtyRowAction from '@/component/Task/component/DirtyRowAction';
 import MaxAllowedDirtyRowCount from '@/component/Task/component/MaxAllowedDirtyRowCount';
@@ -44,6 +39,7 @@ import { ScheduleStore } from '@/store/schedule';
 import { PageStore } from '@/store/page';
 import { SchedulePageMode } from '@/component/Schedule/interface';
 import { openSchedulesPage } from '@/store/helper/page';
+import SchduleExecutionMethodForm from '@/component/Schedule/components/SchduleExecutionMethodForm';
 
 export enum IArchiveRange {
   PORTION = 'portion',
@@ -73,7 +69,7 @@ const deleteByUniqueKeyOptions = [
 ];
 
 const defaultValue = {
-  triggerStrategy: TaskExecStrategy.START_NOW,
+  triggerStrategy: TaskExecStrategy.TIMER,
   archiveRange: IArchiveRange.PORTION,
   shardingStrategy: ShardingStrategy.AUTO,
   tables: [null],
@@ -526,6 +522,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
             <h3 id="baseInfo" className={styles.title}>
               基本信息
             </h3>
+
             <DatabaseSelect
               scheduleType={ScheduleType.DATA_DELETE}
               label={formatMessage({
@@ -536,9 +533,11 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               onChange={handleDBChange}
               onInit={(db) => setCreateScheduleDatabase(db)}
             />
+
             <h3 id="clearRange" className={styles.title}>
               清理范围
             </h3>
+
             <Space direction="vertical" size={24} style={{ width: '100%' }}>
               <Form.Item noStyle shouldUpdate>
                 {({ getFieldValue }) => {
@@ -554,71 +553,21 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               </Form.Item>
               <VariableConfig form={form} />
             </Space>
+
             <h3 id="executionMethod" className={styles.title}>
               执行方式
             </h3>
-            <Form.Item /*执行方式*/ name="triggerStrategy" required>
-              <Radio.Group>
-                <Radio.Button value={TaskExecStrategy.START_NOW}>
-                  {
-                    formatMessage({
-                      id: 'odc.DataClearTask.CreateModal.ExecuteNow',
-                      defaultMessage: '立即执行',
-                    }) /*立即执行*/
-                  }
-                </Radio.Button>
-                {!isClient() ? (
-                  <Radio.Button value={TaskExecStrategy.START_AT}>
-                    {
-                      formatMessage({
-                        id: 'odc.DataClearTask.CreateModal.ScheduledExecution',
-                        defaultMessage: '定时执行',
-                      }) /*定时执行*/
-                    }
-                  </Radio.Button>
-                ) : null}
-                <Radio.Button value={TaskExecStrategy.TIMER}>
-                  {
-                    formatMessage({
-                      id: 'odc.DataClearTask.CreateModal.PeriodicExecution',
-                      defaultMessage: '周期执行',
-                    }) /*周期执行*/
-                  }
-                </Radio.Button>
-              </Radio.Group>
-            </Form.Item>
-            <Form.Item shouldUpdate noStyle>
-              {({ getFieldValue }) => {
-                const triggerStrategy = getFieldValue('triggerStrategy') || [];
-                if (triggerStrategy === TaskExecStrategy.START_AT) {
-                  return (
-                    <Form.Item name="startAt">
-                      <DatePicker
-                        showTime
-                        suffixIcon={<FieldTimeOutlined />}
-                        disabledDate={disabledDate}
-                        disabledTime={disabledTime}
-                      />
-                    </Form.Item>
-                  );
-                }
-                if (triggerStrategy === TaskExecStrategy.TIMER) {
-                  return (
-                    <Form.Item>
-                      <Crontab
-                        ref={crontabRef}
-                        initialValue={crontab}
-                        onValueChange={handleCrontabChange}
-                      />
-                    </Form.Item>
-                  );
-                }
-                return null;
-              }}
-            </Form.Item>
+
+            <SchduleExecutionMethodForm
+              ref={crontabRef}
+              crontab={crontab}
+              handleCrontabChange={handleCrontabChange}
+            />
+
             <h3 id="scheduleSetting" className={styles.title}>
               作业设置
             </h3>
+
             <FormItemPanel keepExpand>
               <Form.Item name="needCheckBeforeDelete" valuePropName="checked">
                 <Checkbox>

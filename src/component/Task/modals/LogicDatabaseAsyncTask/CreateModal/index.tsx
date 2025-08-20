@@ -89,10 +89,10 @@ const CreateModal: React.FC<IProps> = (props) => {
   const loadEditData = async (taskId) => {
     const dataRes = (await getTaskDetail(taskId)) as TaskDetail<ILogicalDatabaseAsyncTaskParams>;
     setInitialSQL(dataRes?.parameters?.sqlContent);
-    const { parameters, description, executionStrategy, executionTime: startAt } = dataRes;
+    const { parameters, description, executionStrategy, executionTime } = dataRes;
     const { databaseId, delimiter, sqlContent, timeoutMillis } = parameters;
     const formData = {
-      startAt: undefined,
+      executionTime: undefined,
       databaseId,
       description,
       delimiter,
@@ -101,7 +101,8 @@ const CreateModal: React.FC<IProps> = (props) => {
       triggerStrategy: executionStrategy,
     };
     if (executionStrategy === TaskExecStrategy.TIMER) {
-      formData.startAt = startAt && startAt > new Date().getTime() ? dayjs(startAt) : null;
+      formData.executionTime =
+        executionTime && executionTime > new Date().getTime() ? dayjs(executionTime) : null;
     }
     form.setFieldsValue(formData);
   };
@@ -166,7 +167,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           description,
           delimiter,
           triggerStrategy,
-          startAt,
+          executionTime,
         } = values;
         const parameters = {
           databaseId,
@@ -179,7 +180,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           databaseId,
           executionStrategy: triggerStrategy,
           executionTime:
-            triggerStrategy === TaskExecStrategy.TIMER ? startAt?.valueOf() : undefined,
+            triggerStrategy === TaskExecStrategy.TIMER ? executionTime?.valueOf() : undefined,
           taskType: TaskType.LOGICAL_DATABASE_CHANGE,
           parameters,
           description,
@@ -474,7 +475,7 @@ const CreateModal: React.FC<IProps> = (props) => {
                 if (triggerStrategy === TaskExecStrategy.TIMER) {
                   return (
                     <Form.Item
-                      name="startAt"
+                      name="executionTime"
                       label={formatMessage({
                         id: 'odc.DataArchiveTask.CreateModal.ExecutionTime',
                         defaultMessage: '执行时间',

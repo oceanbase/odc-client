@@ -34,6 +34,7 @@ import { SQLContent } from '@/component/SQLContent';
 import {
   IResponseDataPage,
   SubTaskStatus,
+  TaskExecStrategy,
   TaskStatus,
   type ConnectType,
   type IStructureComparisonTaskParams,
@@ -603,6 +604,19 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
           >
             {getTaskExecStrategyMap(task?.type)?.[task?.executionStrategy] || '-'}
           </Descriptions.Item>
+          {task?.executionStrategy === TaskExecStrategy.TIMER && (
+            <Descriptions.Item
+              span={2}
+              label={
+                formatMessage({
+                  id: 'odc.src.component.Task.AsyncTask.DetailContent.ExecutionTime',
+                  defaultMessage: '执行时间',
+                }) /* 执行时间 */
+              }
+            >
+              {getFormatDateTime(task?.executionTime)}
+            </Descriptions.Item>
+          )}
           <Descriptions.Item
             label={
               formatMessage({

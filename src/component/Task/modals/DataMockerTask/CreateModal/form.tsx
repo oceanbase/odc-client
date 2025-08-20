@@ -17,7 +17,7 @@
 import { getTableColumnList, getTableListByDatabaseName } from '@/common/network/table';
 import FormItemPanel from '@/component/FormItemPanel';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
-import TaskTimer from '@/component/Task/component/TimerSelect';
+import TaskExecutionMethodForm from '@/component/Task/component/TaskExecutionMethodForm';
 import { ConnectionMode, ITable, TaskExecStrategy, TaskType } from '@/d.ts';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { SettingStore } from '@/store/setting';
@@ -200,7 +200,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
             strategy: MockStrategy.IGNORE,
             totalCount: 1000,
             batchSize: 200,
-            executionStrategy: TaskExecStrategy.AUTO,
+            executionStrategy: TaskExecStrategy.MANUAL,
             databaseName,
           }}
           className={styles.mockData}
@@ -360,7 +360,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
             })}
             /*任务设置*/ keepExpand
           >
-            <TaskTimer />
+            <TaskExecutionMethodForm />
           </FormItemPanel>
           <DescriptionInput />
         </Form>

@@ -72,7 +72,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     const formData = {
       databaseId: modalStore.exportModalData?.databaseId,
       taskId: modalStore.exportModalData?.taskId,
-      executionStrategy: defaultConfig?.executionStrategy ?? TaskExecStrategy.AUTO,
+      executionStrategy: defaultConfig?.executionStrategy ?? TaskExecStrategy.MANUAL,
       taskName: null,
       dataTransferFormat: defaultConfig?.dataTransferFormat ?? EXPORT_TYPE.CSV,
       exportContent: defaultConfig?.exportContent ?? EXPORT_CONTENT.DATA_AND_STRUCT,
