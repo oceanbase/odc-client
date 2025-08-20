@@ -12,6 +12,7 @@
     "name": "odc"
   },
   "scripts": {
+    "install-odc": "node ./scripts/rename.js && pnpm install",
     "analyze": "ANALYZE=1 cross-env NODE_OPTIONS=--max_old_space_size=8192 max build",
     "build-main-dev": "cross-env NODE_OPTIONS=--max_old_space_size=8192 NODE_ENV=development webpack -w --config ./build/webpack.main.config.js",
     "build-main-prod": "cross-env NODE_OPTIONS=--max_old_space_size=8192 NODE_ENV=production webpack --config ./build/webpack.main.prod.config.js",
