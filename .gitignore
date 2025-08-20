@@ -29,3 +29,4 @@ src/plugins/pluginList.ts
 config/config.odcPlugin.js
 yarn-error.log
 yarn.lock
+pnpm-lock.yaml
