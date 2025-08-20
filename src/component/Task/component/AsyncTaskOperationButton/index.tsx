@@ -112,6 +112,12 @@ export function AsyncTaskOperationButton(props: IAsyncTaskOperationConfig) {
     showModal();
   };
 
+  const cancel = () => {
+    setVisible(false);
+    setRiskConfirmed(false);
+    setConfirmRiskUnFinished(false);
+  };
+
   return (
     <>
       <Tooltip title={isSubmitButtonLoading ? props.buttonDisabledText : ''}>
@@ -156,14 +162,14 @@ export function AsyncTaskOperationButton(props: IAsyncTaskOperationConfig) {
               <span />
             )}
             <Space>
-              <Button onClick={() => setVisible(false)}>
+              <Button onClick={cancel}>
                 {formatMessage({
                   id: 'src.component.Task.component.AsyncTaskOperationButton.77F8A0C3',
                   defaultMessage: '取消',
                 })}
               </Button>
               <SubmitTripartiteTaskButton
-                closeModal={() => setVisible(false)}
+                closeModal={cancel}
                 disabled={taskListThatCanBeAction?.length === 0}
                 tasks={taskListThatCanBeAction}
                 asyncTaskType={props.asyncTaskType}
