@@ -43,6 +43,7 @@ import ProjectSelectEmpty from '@/component/Empty/ProjectSelectEmpty';
 import { permissionOptions } from './utils';
 import { expireTimeOptions, rules } from './const';
 import { getExpireTime } from '@/component/Task/helper';
+import { useLoadProjects } from '@/component/Task/hooks';
 
 export * from './const';
 export * from './utils';
@@ -66,14 +67,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [showSelectTip, setShowSelectTip] = useState(false);
   const [showSelectLogicDBTip, setShowSelectLogicDBTip] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const { run: getProjects, data: projects } = useRequest(listProjects, {
-    defaultParams: [null, null, null],
-    manual: true,
-  });
-  const projectOptions = projects?.contents?.map(({ name, id }) => ({
-    label: name,
-    value: id,
-  }));
+  const { projectOptions, loadProjects } = useLoadProjects();
   const projectId = Form.useWatch('projectId', form);
 
   const disabledDate = (current) => {
@@ -82,7 +76,7 @@ const CreateModal: React.FC<IProps> = (props) => {
 
   useEffect(() => {
     if (applyDatabasePermissionVisible) {
-      getProjects(null, null, null);
+      loadProjects();
     }
   }, [applyDatabasePermissionVisible]);
   const handleFieldsChange = () => {
@@ -155,6 +149,10 @@ const CreateModal: React.FC<IProps> = (props) => {
 
   const loadEditData = async () => {
     const { task } = applyDatabasePermissionData;
+    let tempProjectOptions = projectOptions;
+    if (tempProjectOptions?.length === 0) {
+      tempProjectOptions = await loadProjects();
+    }
     const {
       parameters: {
         project: { id: projectId },
@@ -166,7 +164,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       },
       executionStrategy,
     } = task;
-    const idProjectActive = projectOptions?.find(({ value }) => value === projectId);
+    const idProjectActive = tempProjectOptions?.find(({ value }) => value === projectId);
     const formData = {
       ...defaultValue,
       projectId: idProjectActive ? projectId : null,

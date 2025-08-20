@@ -19,7 +19,7 @@ import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import InputBigNumber from '@/component/InputBigNumber';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
-import TaskTimer from '@/component/Task/component/TimerSelect';
+import TaskExecutionMethodForm from '@/component/Task/component/TaskExecutionMethodForm';
 import {
   EXPORT_TYPE,
   IExportResultSetFileType,
@@ -234,7 +234,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       <Form
         name="basic"
         initialValues={{
-          executionStrategy: TaskExecStrategy.AUTO,
+          executionStrategy: TaskExecStrategy.MANUAL,
           databaseId: null,
           tableName: null,
           fileFormat: EXPORT_TYPE.CSV,
@@ -382,7 +382,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           }
           keepExpand
         >
-          <TaskTimer />
+          <TaskExecutionMethodForm />
         </FormItemPanel>
         <DescriptionInput />
       </Form>

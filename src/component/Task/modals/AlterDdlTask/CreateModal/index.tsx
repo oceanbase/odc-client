@@ -26,7 +26,7 @@ import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
-import TaskTimer from '@/component/Task/component/TimerSelect';
+import TaskExecutionMethodForm from '@/component/Task/component/TaskExecutionMethodForm';
 import {
   IAlterScheduleTaskParams,
   IDatasourceUser,
@@ -452,7 +452,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         <Form
           name="basic"
           initialValues={{
-            executionStrategy: TaskExecStrategy.AUTO,
+            executionStrategy: TaskExecStrategy.MANUAL,
           }}
           layout="vertical"
           requiredMark="optional"
@@ -671,7 +671,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             })}
             /*任务设置*/ keepExpand
           >
-            <TaskTimer />
+            <TaskExecutionMethodForm />
             <Form.Item
               label={formatMessage({
                 id: 'odc.AlterDdlTask.CreateModal.TaskErrorHandling',

@@ -48,6 +48,7 @@ import { MultipleAsyncContext } from './MultipleAsyncContext';
 import ProjectSelect from './ProjectSelect';
 import setting from '@/store/setting';
 import { rules } from '../const';
+import dayjs from 'dayjs';
 
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 
@@ -288,6 +289,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       .then(async (values) => {
         const {
           executionStrategy,
+          executionTime,
           sqlContentType,
           rollbackContentType,
           rollbackSqlFiles,
@@ -376,12 +378,24 @@ const CreateModal: React.FC<IProps> = (props) => {
           executionStrategy,
           parameters,
           description,
+          executionTime,
         };
+        if (executionStrategy === TaskExecStrategy.TIMER) {
+          data.executionTime = executionTime?.valueOf();
+        } else {
+          data.executionTime = undefined;
+        }
         setConfirmLoading(true);
         const res = await createTask(data);
         handleCancel(false);
         setConfirmLoading(false);
         if (res) {
+          message.success(
+            formatMessage({
+              id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.E7B4AE89',
+              defaultMessage: '创建成功',
+            }),
+          );
           openTasksPage(TaskPageType.MULTIPLE_ASYNC);
           modalStore.changeMultiDatabaseChangeModal(false);
         }
@@ -438,6 +452,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     const defaultFormData = {
       projectId: undefined,
       executionStrategy: TaskExecStrategy.MANUAL,
+      executionTime: undefined,
       retryTimes: 0,
       parameters: {
         orderedDatabaseIds: [[undefined]],
@@ -454,6 +469,10 @@ const CreateModal: React.FC<IProps> = (props) => {
         projectId: parameters?.projectId,
         executionStrategy,
         retryTimes: parameters?.retryTimes,
+        executionTime:
+          multipleAsyncTaskData?.task?.executionTime && new Date().getTime()
+            ? dayjs(multipleAsyncTaskData?.task?.executionTime)
+            : null,
         parameters: {
           orderedDatabaseIds: parameters?.orderedDatabaseIds?.length
             ? parameters?.orderedDatabaseIds

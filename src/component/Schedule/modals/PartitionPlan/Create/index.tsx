@@ -22,7 +22,6 @@ import {
   Checkbox,
   Divider,
   Form,
-  Input,
   InputNumber,
   Modal,
   Radio,
@@ -31,7 +30,6 @@ import {
   Tooltip,
   Typography,
   message,
-  DatePicker,
 } from 'antd';
 import { inject, observer } from 'mobx-react';
 import dayjs from 'dayjs';
@@ -58,12 +56,11 @@ import {
   createPartitionPlanParameters,
   SchedulePageType,
 } from '@/d.ts/schedule';
-import { FieldTimeOutlined } from '@ant-design/icons';
-import { disabledDate, disabledTime } from '@/util/utils';
 import { CreateScheduleContext } from '@/component/Schedule/context/createScheduleContext';
 import { PageStore } from '@/store/page';
 import { SchedulePageMode } from '@/component/Schedule/interface';
 import { openSchedulesPage } from '@/store/helper/page';
+import SchduleExecutionMethodForm from '@/component/Schedule/components/SchduleExecutionMethodForm';
 
 const { Paragraph, Text } = Typography;
 
@@ -166,6 +163,12 @@ const getCreatedTableConfigs: (tableConfigs: IPartitionTableConfig[]) => ITableC
     return tableConfig;
   });
   return originPartitionTableConfigs;
+};
+
+const defaultValue = {
+  errorStrategy: TaskErrorStrategy.ABORT,
+  timeoutMillis: 2,
+  triggerStrategy: TaskExecStrategy.TIMER,
 };
 
 interface IProps {
@@ -719,19 +722,11 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
         ]}
       >
         <Spin spinning={loading}>
-          <Form
-            form={form}
-            layout="vertical"
-            requiredMark="optional"
-            initialValues={{
-              errorStrategy: TaskErrorStrategy.ABORT,
-              timeoutMillis: 2,
-              triggerStrategy: TaskExecStrategy.START_NOW,
-            }}
-          >
+          <Form form={form} layout="vertical" requiredMark="optional" initialValues={defaultValue}>
             <h3 id="baseInfo" className={styles.title}>
               基本信息
             </h3>
+
             <DatabaseSelect
               disabled={isEdit}
               projectId={projectId}
@@ -772,82 +767,16 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
               </Form.Item>
             </Spin>
             <Divider />
+
             <h3 id="executionMethod" className={styles.title}>
               执行方式
             </h3>
-            <Form.Item
-              label={formatMessage({
-                id: 'odc.DataArchiveTask.CreateModal.ExecutionMethod',
-                defaultMessage: '执行方式',
-              })}
-              name="triggerStrategy"
-              required
-            >
-              <Radio.Group>
-                <Radio.Button value={TaskExecStrategy.START_NOW}>
-                  {
-                    formatMessage({
-                      id: 'odc.DataArchiveTask.CreateModal.ExecuteNow',
-                      defaultMessage: '立即执行',
-                    }) /*立即执行*/
-                  }
-                </Radio.Button>
-                <Radio.Button value={TaskExecStrategy.START_AT}>
-                  {
-                    formatMessage({
-                      id: 'odc.DataArchiveTask.CreateModal.ScheduledExecution',
-                      defaultMessage: '定时执行',
-                    }) /*定时执行*/
-                  }
-                </Radio.Button>
-                <Radio.Button value={TaskExecStrategy.TIMER}>
-                  {
-                    formatMessage({
-                      id: 'odc.DataArchiveTask.CreateModal.PeriodicExecution',
-                      defaultMessage: '周期执行',
-                    }) /*周期执行*/
-                  }
-                </Radio.Button>
-              </Radio.Group>
-            </Form.Item>
-            <Form.Item shouldUpdate noStyle>
-              {({ getFieldValue }) => {
-                const triggerStrategy = getFieldValue('triggerStrategy') || [];
 
-                if (triggerStrategy === TaskExecStrategy.START_AT) {
-                  return (
-                    <Form.Item
-                      name="startAt"
-                      label={formatMessage({
-                        id: 'odc.DataArchiveTask.CreateModal.ExecutionTime',
-                        defaultMessage: '执行时间',
-                      })}
-                      /*执行时间*/ required
-                    >
-                      <DatePicker
-                        showTime
-                        suffixIcon={<FieldTimeOutlined />}
-                        disabledDate={disabledDate}
-                        disabledTime={disabledTime}
-                      />
-                    </Form.Item>
-                  );
-                }
-                if (triggerStrategy === TaskExecStrategy.TIMER) {
-                  return (
-                    <Form.Item>
-                      <Crontab
-                        ref={crontabRef}
-                        initialValue={crontab}
-                        onValueChange={(value) => {
-                          handleCrontabChange(value);
-                        }}
-                      />
-                    </Form.Item>
-                  );
-                }
-              }}
-            </Form.Item>
+            <SchduleExecutionMethodForm
+              ref={crontabRef}
+              crontab={crontab}
+              handleCrontabChange={handleCrontabChange}
+            />
             <Form.Item name="isCustomStrategy" valuePropName="checked">
               <Checkbox disabled={triggerStrategy !== TaskExecStrategy.TIMER}>
                 <span>
@@ -882,16 +811,18 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
                       defaultMessage: '删除策略执行周期',
                     }) /*"删除策略执行周期"*/
                   }
-                  initialValue={crontab}
+                  initialValue={dropCrontab}
                   onValueChange={(value) => {
                     handleCrontabChange(value, true);
                   }}
                 />
               </Form.Item>
             )}
+
             <h3 id="scheduleSetting" className={styles.title}>
               作业设置
             </h3>
+
             <FormItemPanel keepExpand>
               <Form.Item
                 label={

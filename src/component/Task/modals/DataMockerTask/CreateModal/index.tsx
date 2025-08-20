@@ -43,7 +43,6 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
     const [dbMode, setDbMode] = useState<ConnectionMode>(null);
     const formRef = useRef<FormInstance<IMockFormData>>(null);
     const [ruleConfigList, setRuleConfigList] = useState([]);
-    const [open, setOpen] = useState<boolean>(false);
 
     const loadEditData = async () => {
       const { task } = dataMockerData;

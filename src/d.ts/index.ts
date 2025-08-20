@@ -2831,6 +2831,7 @@ export interface CreateStructureComparisonTaskRecord {
   taskType: TaskType;
   executionStrategy: TaskExecStrategy;
   description?: string;
+  executionTime?: number | Dayjs;
   parameters: {
     comparisonScope: EComparisonScope;
     sourceDatabaseId: number;

@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-import { TaskExecStrategy } from '@/d.ts';
+import { TaskExecStrategy, TaskType } from '@/d.ts';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { FieldTimeOutlined } from '@ant-design/icons';
 import { DatePicker, Form, Radio } from 'antd';
 import React from 'react';
 import { disabledDate, disabledTime } from '@/util/utils';
+import { getTaskExecStrategyMap } from '@/component/Task/const';
 
-interface IProps {}
+interface IProps {
+  taskType?: TaskType;
+}
 
-const TimerSelect: React.FC<IProps> = (props) => {
+const TaskExecutionMethodForm: React.FC<IProps> = ({ taskType }) => {
+  const taskExecStrategyMap = getTaskExecStrategyMap(taskType);
+
   const label = formatMessage({
     id: 'odc.components.TaskTimer.ExecutionMethodAfterTheApproval',
     defaultMessage: '执行方式：审批完成后',
@@ -34,30 +39,15 @@ const TimerSelect: React.FC<IProps> = (props) => {
       <Form.Item label={label} name="executionStrategy" required>
         <Radio.Group>
           <Radio value={TaskExecStrategy.AUTO}>
-            {
-              formatMessage({
-                id: 'odc.components.TaskTimer.ExecuteNow',
-                defaultMessage: '立即执行',
-              }) /*立即执行*/
-            }
+            {taskExecStrategyMap?.[TaskExecStrategy.AUTO]}
           </Radio>
           {!isClient() ? (
             <Radio value={TaskExecStrategy.TIMER}>
-              {
-                formatMessage({
-                  id: 'odc.components.TaskTimer.ScheduledExecution',
-                  defaultMessage: '定时执行',
-                }) /*定时执行*/
-              }
+              {taskExecStrategyMap?.[TaskExecStrategy.TIMER]}
             </Radio>
           ) : null}
           <Radio value={TaskExecStrategy.MANUAL}>
-            {
-              formatMessage({
-                id: 'odc.components.TaskTimer.ManualExecution',
-                defaultMessage: '手动执行',
-              }) /*手动执行*/
-            }
+            {taskExecStrategyMap?.[TaskExecStrategy.MANUAL]}
           </Radio>
         </Radio.Group>
       </Form.Item>
@@ -103,4 +93,4 @@ const TimerSelect: React.FC<IProps> = (props) => {
   );
 };
 
-export default TimerSelect;
+export default TaskExecutionMethodForm;

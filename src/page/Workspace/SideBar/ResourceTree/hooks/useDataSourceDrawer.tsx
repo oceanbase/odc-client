@@ -3,10 +3,9 @@ import { Modal, message } from 'antd';
 import { formatMessage } from '@/util/intl';
 import { deleteConnection } from '@/common/network/connection';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import { toInteger } from 'lodash';
 
 const useDataSourceDrawer = () => {
-  const [addDSVisiable, setAddDSVisiable] = useState(false);
+  const [dataSourceDrawerVisiable, setDataSourceDrawerVisiable] = useState(false);
   const [editDatasourceId, setEditDatasourceId] = useState<number>(null);
   const [copyDatasourceId, setCopyDatasourceId] = useState<number>(null);
   const context = useContext(ResourceTreeContext);
@@ -47,8 +46,8 @@ const useDataSourceDrawer = () => {
   };
 
   return {
-    addDSVisiable,
-    setAddDSVisiable,
+    dataSourceDrawerVisiable,
+    setDataSourceDrawerVisiable,
     editDatasourceId,
     setEditDatasourceId,
     copyDatasourceId,

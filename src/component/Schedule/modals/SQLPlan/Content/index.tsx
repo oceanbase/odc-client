@@ -54,18 +54,10 @@ const SQLPlanScheduleContent: React.FC<IProps> = (props) => {
           </>
         )}
         <Descriptions.Item label={'数据库'}>
-          <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-            <RiskLevelLabel
-              color={parameters?.databaseInfo?.dataSource?.environmentStyle}
-              content={parameters?.databaseInfo.dataSource.environmentName ?? '-'}
-            />
-            <div style={{ flex: 1, overflow: 'hidden' }}>
-              <EllipsisText
-                needTooltip={false}
-                content={<DatabaseLabel database={parameters?.databaseInfo} />}
-              />
-            </div>
-          </div>
+          <EllipsisText
+            needTooltip={false}
+            content={<DatabaseLabel database={parameters?.databaseInfo} />}
+          />
         </Descriptions.Item>
         <Descriptions.Item label={'数据源'}>
           <EllipsisText content={parameters?.databaseInfo?.dataSource?.name} />

@@ -83,18 +83,10 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
         )}
 
         <Descriptions.Item label={'源端数据库'}>
-          <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-            <RiskLevelLabel
-              color={parameters?.database?.dataSource?.environmentStyle}
-              content={parameters?.database.dataSource.environmentName ?? '-'}
-            />
-            <div style={{ flex: 1, overflow: 'hidden' }}>
-              <EllipsisText
-                needTooltip={false}
-                content={<DatabaseLabel database={parameters?.database} />}
-              />
-            </div>
-          </div>
+          <EllipsisText
+            needTooltip={false}
+            content={<DatabaseLabel database={parameters?.database} />}
+          />
         </Descriptions.Item>
         <Descriptions.Item label={'源端数据源'}>
           <EllipsisText content={parameters?.database?.dataSource?.name} />
@@ -108,14 +100,13 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
         {parameters?.targetDatabase && (
           <>
             <Descriptions.Item label={'目标数据库'}>
-              <RiskLevelLabel
-                color={parameters?.targetDatabase?.dataSource?.environmentStyle}
-                content={parameters?.targetDatabase.dataSource.environmentName ?? '-'}
+              <EllipsisText
+                needTooltip={false}
+                content={<DatabaseLabel database={parameters?.targetDatabase} />}
               />
-              <DatabaseLabel database={parameters?.targetDatabase} />
             </Descriptions.Item>
             <Descriptions.Item label={'目标端数据源'}>
-              {parameters?.targetDatabase?.dataSource?.name}
+              <EllipsisText content={parameters?.targetDatabase?.dataSource?.name} />
             </Descriptions.Item>
           </>
         )}

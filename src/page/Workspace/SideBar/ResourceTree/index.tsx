@@ -92,8 +92,8 @@ const ResourceTree: React.FC<IProps> = function ({
   const { expandedKeys, loadedKeys, sessionIds, setSessionId, onExpand, onLoad, setExpandedKeys } =
     useTreeState(stateId);
   const {
-    addDSVisiable,
-    setAddDSVisiable,
+    dataSourceDrawerVisiable,
+    setDataSourceDrawerVisiable,
     editDatasourceId,
     setEditDatasourceId,
     copyDatasourceId,
@@ -391,7 +391,7 @@ const ResourceTree: React.FC<IProps> = function ({
             node={node}
             setCopyDatasourceId={setCopyDatasourceId}
             deleteDataSource={deleteDataSource}
-            setAddDSVisiable={setAddDSVisiable}
+            setDataSourceDrawerVisiable={setDataSourceDrawerVisiable}
             setEditDatasourceId={setEditDatasourceId}
             copyDatasourceId={copyDatasourceId}
             reload={reload}
@@ -495,22 +495,13 @@ const ResourceTree: React.FC<IProps> = function ({
         </div>
       </div>
       <NewDatasourceDrawer
-        isEdit={!!editDatasourceId}
-        visible={addDSVisiable}
-        id={editDatasourceId}
+        isEdit={Boolean(editDatasourceId)}
+        visible={dataSourceDrawerVisiable}
+        isCopy={Boolean(copyDatasourceId)}
+        id={editDatasourceId || copyDatasourceId}
         close={() => {
           setEditDatasourceId(null);
-          setAddDSVisiable(false);
-        }}
-        onSuccess={dataSourceChangeReload}
-      />
-
-      <NewDatasourceDrawer
-        isEdit={false}
-        isCopy={true}
-        id={copyDatasourceId}
-        visible={!!copyDatasourceId}
-        close={() => {
+          setDataSourceDrawerVisiable(false);
           setCopyDatasourceId(null);
         }}
         onSuccess={dataSourceChangeReload}

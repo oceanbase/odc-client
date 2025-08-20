@@ -55,6 +55,7 @@ import {
 } from '@/d.ts/schedule';
 import { SchedulePageMode } from '@/component/Schedule/interface';
 import { PageStore } from '@/store/page';
+import SchduleExecutionMethodForm from '@/component/Schedule/components/SchduleExecutionMethodForm';
 
 enum ErrorStrategy {
   CONTINUE = 'CONTINUE',
@@ -67,6 +68,7 @@ const defaultValue = {
   timeoutMillis: 48,
   errorStrategy: ErrorStrategy.ABORT,
   allowConcurrent: false,
+  triggerStrategy: TaskExecStrategy.TIMER,
 };
 interface IProps {
   scheduleStore?: ScheduleStore;
@@ -557,15 +559,13 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
             name="basic"
             layout="vertical"
             requiredMark="optional"
-            initialValues={{
-              ...defaultValue,
-              triggerStrategy: TaskExecStrategy.START_NOW,
-            }}
+            initialValues={defaultValue}
             onFieldsChange={handleFieldsChange}
           >
             <h3 id="baseInfo" className={styles.title}>
               基本信息
             </h3>
+
             <DatabaseSelect
               disabled={isEdit && !!SQLPlanEditId}
               scheduleType={ScheduleType.SQL_PLAN}
@@ -714,86 +714,21 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
                 </span>
               </Form.Item>
             </Space>
-            <Form.Item>
-              <h3 id="executionMethod" className={styles.title}>
-                执行方式
-              </h3>
-              <Form.Item
-                label={formatMessage({
-                  id: 'odc.DataArchiveTask.CreateModal.ExecutionMethod',
-                  defaultMessage: '执行方式',
-                })}
-                name="triggerStrategy"
-                required
-              >
-                <Radio.Group>
-                  <Radio.Button value={TaskExecStrategy.START_NOW}>
-                    {
-                      formatMessage({
-                        id: 'odc.DataArchiveTask.CreateModal.ExecuteNow',
-                        defaultMessage: '立即执行',
-                      }) /*立即执行*/
-                    }
-                  </Radio.Button>
-                  <Radio.Button value={TaskExecStrategy.START_AT}>
-                    {
-                      formatMessage({
-                        id: 'odc.DataArchiveTask.CreateModal.ScheduledExecution',
-                        defaultMessage: '定时执行',
-                      }) /*定时执行*/
-                    }
-                  </Radio.Button>
-                  <Radio.Button value={TaskExecStrategy.TIMER}>
-                    {' '}
-                    {
-                      formatMessage({
-                        id: 'odc.DataArchiveTask.CreateModal.PeriodicExecution',
-                        defaultMessage: '周期执行',
-                      }) /*周期执行*/
-                    }
-                  </Radio.Button>
-                </Radio.Group>
-              </Form.Item>
-              <Form.Item shouldUpdate noStyle>
-                {({ getFieldValue }) => {
-                  const triggerStrategy = getFieldValue('triggerStrategy') || [];
-                  if (triggerStrategy === TaskExecStrategy.START_AT) {
-                    return (
-                      <Form.Item
-                        name="startAt"
-                        label={formatMessage({
-                          id: 'odc.DataArchiveTask.CreateModal.ExecutionTime',
-                          defaultMessage: '执行时间',
-                        })}
-                      >
-                        <DatePicker
-                          showTime
-                          suffixIcon={<FieldTimeOutlined />}
-                          disabledDate={disabledDate}
-                          disabledTime={disabledTime}
-                        />
-                      </Form.Item>
-                    );
-                  }
-                  if (triggerStrategy === TaskExecStrategy.TIMER) {
-                    return (
-                      <Form.Item>
-                        <Crontab
-                          ref={crontabRef}
-                          initialValue={crontab}
-                          onValueChange={(value) => {
-                            handleCrontabChange(value);
-                          }}
-                        />
-                      </Form.Item>
-                    );
-                  }
-                }}
-              </Form.Item>
-            </Form.Item>
+
+            <h3 id="executionMethod" className={styles.title}>
+              执行方式
+            </h3>
+
+            <SchduleExecutionMethodForm
+              ref={crontabRef}
+              crontab={crontab}
+              handleCrontabChange={handleCrontabChange}
+            />
+
             <h3 id="scheduleSetting" className={styles.title}>
               作业设置
             </h3>
+
             <FormItemPanel /*任务设置*/ keepExpand>
               <Form.Item
                 label={formatMessage({

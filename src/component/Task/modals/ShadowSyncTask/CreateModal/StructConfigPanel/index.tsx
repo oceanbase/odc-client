@@ -21,7 +21,7 @@ import { SchemaComparingResult } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { Divider, Form, Radio } from 'antd';
 import { forwardRef, useImperativeHandle } from 'react';
-import TaskTimer from '@/component/Task/component/TimerSelect';
+import TaskExecutionMethodForm from '@/component/Task/component/TaskExecutionMethodForm';
 import { ErrorStrategy, IContentProps } from '../interface';
 import StructAnalysisResult from './StructAnalysisResult';
 import { rules } from '../const';
@@ -143,7 +143,7 @@ const StructConfigPanel = forwardRef<any, IProps>(function (
             defaultMessage: '任务设置',
           })} /*任务设置*/
         >
-          <TaskTimer />
+          <TaskExecutionMethodForm />
           <Form.Item
             label={formatMessage({
               id: 'odc.components.CreateAsyncTaskModal.TaskErrorHandling',

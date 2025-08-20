@@ -23,7 +23,7 @@ const CustomDropdown = ({
   deleteDataSource,
   setCopyDatasourceId,
   setEditDatasourceId,
-  setAddDSVisiable,
+  setDataSourceDrawerVisiable,
   userStore,
   sync,
 }) => {
@@ -51,7 +51,11 @@ const CustomDropdown = ({
             defaultMessage: '克隆',
           }),
           key: 'clone',
-          onClick: (e) => handleMenuClick(e, () => setCopyDatasourceId(node.data.id)),
+          onClick: (e) =>
+            handleMenuClick(e, () => {
+              setDataSourceDrawerVisiable(true);
+              setCopyDatasourceId(node.data.id);
+            }),
         },
         {
           label: formatMessage({
@@ -62,7 +66,7 @@ const CustomDropdown = ({
           onClick: (e) =>
             handleMenuClick(e, () => {
               setEditDatasourceId(node.data.id);
-              setAddDSVisiable(true);
+              setDataSourceDrawerVisiable(true);
             }),
         },
         {
@@ -138,7 +142,7 @@ interface IProps {
   copyDatasourceId: number;
   setCopyDatasourceId: any;
   setEditDatasourceId: React.Dispatch<React.SetStateAction<number>>;
-  setAddDSVisiable: React.Dispatch<React.SetStateAction<boolean>>;
+  setDataSourceDrawerVisiable: React.Dispatch<React.SetStateAction<boolean>>;
   reload: () => void;
 }
 
@@ -148,7 +152,7 @@ const DataSourceNodeMenu = (props: IProps) => {
     userStore,
     setCopyDatasourceId,
     deleteDataSource,
-    setAddDSVisiable,
+    setDataSourceDrawerVisiable,
     setEditDatasourceId,
     copyDatasourceId,
     reload,
@@ -191,7 +195,7 @@ const DataSourceNodeMenu = (props: IProps) => {
             deleteDataSource={deleteDataSource}
             setCopyDatasourceId={setCopyDatasourceId}
             setEditDatasourceId={setEditDatasourceId}
-            setAddDSVisiable={setAddDSVisiable}
+            setDataSourceDrawerVisiable={setDataSourceDrawerVisiable}
             userStore={userStore}
             sync={sync}
           />
@@ -228,6 +232,7 @@ const DataSourceNodeMenu = (props: IProps) => {
                   <Action.Link
                     onClick={() => {
                       setCopyDatasourceId(dataSource.id);
+                      setDataSourceDrawerVisiable(true);
                     }}
                     key={'clone'}
                   >
@@ -245,7 +250,7 @@ const DataSourceNodeMenu = (props: IProps) => {
                   <Action.Link
                     onClick={() => {
                       setEditDatasourceId(dataSource.id);
-                      setAddDSVisiable(true);
+                      setDataSourceDrawerVisiable(true);
                     }}
                     key={'edit'}
                   >
