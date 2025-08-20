@@ -28,6 +28,7 @@ import { isLinux, isWin64, kbToMb } from '@/util/utils';
 import { message } from 'antd';
 import { action, observable } from 'mobx';
 import login, { sessionKey } from '@/store/login';
+import { makeDataShareable } from '@/util/makeDataShareable';
 
 export const themeKey = 'odc-theme';
 const SPACE_CONFIG_EXPIRES = 60 * 1000;
@@ -257,6 +258,12 @@ export class SettingStore {
     background: '#1F293D',
     boxShadow: '0px 1px 4px 0px rgba(0,21,41,0.12)',
   };
+
+  constructor() {
+    makeDataShareable(this, 'configurations', {
+      channelName: `user-config`,
+    });
+  }
 
   @action
   public setHeaderStyle(headerStyle: any) {
