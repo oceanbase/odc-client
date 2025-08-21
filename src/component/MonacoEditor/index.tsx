@@ -67,6 +67,8 @@ export interface IProps {
   placeholder?: string;
 }
 
+export type IFullEditor = monaco.editor.IStandaloneDiffEditor;
+
 const MonacoEditor: React.FC<IProps> = function (props) {
   const {
     defaultValue,

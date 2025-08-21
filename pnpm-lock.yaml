@@ -210,6 +210,9 @@ importers:
       loglevel:
         specifier: ^1.8.0
         version: 1.9.2
+      lottie-react:
+        specifier: ^2.4.0
+        version: 2.4.1(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       markdown-it:
         specifier: ^13.0.1
         version: 13.0.2
@@ -6680,6 +6683,15 @@ packages:
   loose-envify@1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
+
+  lottie-react@2.4.1:
+    resolution: {integrity: sha512-LQrH7jlkigIIv++wIyrOYFLHSKQpEY4zehPicL9bQsrt1rnoKRYCYgpCUe5maqylNtacy58/sQDZTkwMcTRxZw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  lottie-web@5.13.0:
+    resolution: {integrity: sha512-+gfBXl6sxXMPe8tKQm7qzLnUy5DUPJPKIyRHwtpCpyUEYjHYRJC/5gjUvdkuO2c3JllrPtHXH5UJJK8LRYl5yQ==}
 
   lower-case@2.0.2:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
@@ -13177,7 +13189,7 @@ snapshots:
 
   '@types/history@5.0.0':
     dependencies:
-      history: 4.10.1
+      history: 5.3.0
 
   '@types/hoist-non-react-statics@3.3.7(@types/react@16.14.65)':
     dependencies:
@@ -13262,7 +13274,7 @@ snapshots:
       '@types/history': 4.7.11
       '@types/react': 16.14.65
       '@types/react-router': 5.1.20
-      redux: 3.7.2
+      redux: 4.2.1
 
   '@types/react-router@5.1.20':
     dependencies:
@@ -18654,6 +18666,14 @@ snapshots:
   loose-envify@1.4.0:
     dependencies:
       js-tokens: 4.0.0
+
+  lottie-react@2.4.1(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+    dependencies:
+      lottie-web: 5.13.0
+      react: 17.0.2
+      react-dom: 17.0.2(react@17.0.2)
+
+  lottie-web@5.13.0: {}
 
   lower-case@2.0.2:
     dependencies:

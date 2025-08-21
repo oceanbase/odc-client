@@ -25,8 +25,7 @@ import {
   type APIKeyConfigModalRef,
   type DescriptionModelRef,
   IModelProvider,
-  IAIConfig,
-  IModelInfo,
+  IModel,
 } from '@/d.ts/llm';
 import LargeModelListEmpty from '@/component/Empty/LargeModelListEmpty';
 import {
@@ -34,18 +33,17 @@ import {
   toggleProviderModel,
   getProviderModels,
   getModelProviders,
-  getAIConfig,
-  updateAIConfig,
 } from '@/util/request/largeModel';
 import { useRequest } from 'ahooks';
 import { EModelSatus, EAIFeatureType, type CardData } from '@/d.ts/llm';
+import { observer } from 'mobx-react';
+import setting from '@/store/setting';
 
 const LargeModel = () => {
   const [items, setItems] = useState<CardData[]>([]);
   const [providers, setProviders] = useState<IModelProvider[]>([]);
-  const [allModels, setAllModels] = useState<IModelInfo[]>([]);
-  const [aiConfig, setAiConfig] = useState<IAIConfig | null>(null);
-  const [filteredModelList, setFilteredModelList] = useState<IModelInfo[]>([]);
+  const [allModels, setAllModels] = useState<IModel[]>([]);
+  const [filteredModelList, setFilteredModelList] = useState<IModel[]>([]);
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
   const [deletePopconfirmOpen, setDeletePopconfirmOpen] = useState<string | null>(null);
   const [form] = Form.useForm();
@@ -54,26 +52,6 @@ const LargeModel = () => {
   const editModalRef = useRef<EditModalRef>(null);
   const apiKeyConfigModalRef = useRef<APIKeyConfigModalRef>(null);
   const descriptionModelRef = useRef<DescriptionModelRef>(null);
-
-  // 获取AI配置
-  const { run: fetchAIConfig, loading: aiConfigLoading } = useRequest(getAIConfig, {
-    manual: true,
-    onSuccess: (data) => {
-      setAiConfig(data);
-    },
-  });
-
-  // 更新AI配置
-  const { run: updateAIConfigFunc, loading: updateLoading } = useRequest(updateAIConfig, {
-    manual: true,
-    onSuccess: (data) => {
-      setAiConfig(data);
-      message.success('配置更新成功');
-    },
-    onError: () => {
-      message.error('配置更新失败');
-    },
-  });
 
   // 获取供应商列表
   const { run: fetchProviders, loading: providersLoading } = useRequest(getModelProviders, {
@@ -86,7 +64,7 @@ const LargeModel = () => {
   // 获取所有模型数据
   const { run: fetchAllModels, loading: modelsLoading } = useRequest(
     async () => {
-      const models: IModelInfo[] = [];
+      const models: IModel[] = [];
 
       if (providers.length === 0) {
         return [];
@@ -124,7 +102,6 @@ const LargeModel = () => {
 
   // 初始化数据
   useEffect(() => {
-    fetchAIConfig();
     fetchProviders();
   }, []);
 
@@ -152,7 +129,7 @@ const LargeModel = () => {
 
   // 计算属性：按供应商分组的模型
   const modelsByProvider = useMemo(() => {
-    const map = new Map<string, IModelInfo[]>();
+    const map = new Map<string, IModel[]>();
     allModels.forEach((model) => {
       const provider = model.providerName;
       if (!map.has(provider)) {
@@ -195,11 +172,11 @@ const LargeModel = () => {
     };
 
     return {
-      llmStatus: checkModelStatus(aiConfig?.defaultLlmModel || ''),
-      chatStatus: checkModelStatus(aiConfig?.defaultChatModel || ''),
-      embeddingStatus: checkModelStatus(aiConfig?.defaultEmbeddingModel || ''),
+      llmStatus: checkModelStatus(setting.AIConfig?.defaultLlmModel || ''),
+      chatStatus: checkModelStatus(setting.AIConfig?.defaultChatModel || ''),
+      embeddingStatus: checkModelStatus(setting.AIConfig?.defaultEmbeddingModel || ''),
     };
-  }, [aiConfig, allModels]);
+  }, [setting.AIConfig, allModels]);
 
   // 获取模型选项（按供应商分组）
   const getModelOptions = useCallback(
@@ -208,7 +185,7 @@ const LargeModel = () => {
       const modelOptions: any[] = [];
 
       // 按供应商分组
-      const providerModels = new Map<string, IModelInfo[]>();
+      const providerModels = new Map<string, IModel[]>();
       models.forEach((model) => {
         const provider = model.providerName;
         if (!providerModels.has(provider)) {
@@ -275,25 +252,6 @@ const LargeModel = () => {
     },
   );
 
-  // 初始化表单值
-  useEffect(() => {
-    if (aiConfig) {
-      const featureMap = [
-        { enabled: aiConfig.chatEnabled, type: EAIFeatureType.CHAT },
-        { enabled: aiConfig.copilotEnabled, type: EAIFeatureType.ASSISTANT },
-        { enabled: aiConfig.completionEnabled, type: EAIFeatureType.COMPLETION },
-      ];
-
-      const aiFeatures = featureMap
-        .filter((feature) => feature.enabled)
-        .map((feature) => feature.type);
-
-      form.setFieldsValue({
-        aiFeatures,
-      });
-    }
-  }, [aiConfig, form]);
-
   // 处理providers数据变化，转换为CardData格式
   useEffect(() => {
     if (providers?.length > 0) {
@@ -338,10 +296,10 @@ const LargeModel = () => {
 
   const handleSwitchChange = async (checked: boolean) => {
     try {
-      if (!aiConfig) return;
+      if (!setting.AIConfig) return;
 
-      await updateAIConfigFunc({
-        ...aiConfig,
+      await setting.updateAIConfig({
+        ...setting.AIConfig,
         chatEnabled: checked,
         copilotEnabled: checked,
         completionEnabled: checked,
@@ -359,24 +317,7 @@ const LargeModel = () => {
     }
   };
 
-  const handleFormValuesChange = async (changedValues, allValues) => {
-    if (!aiConfig) return;
-
-    const { aiFeatures = [] } = allValues;
-
-    try {
-      await updateAIConfigFunc({
-        ...aiConfig,
-        chatEnabled: aiFeatures.includes(EAIFeatureType.CHAT),
-        copilotEnabled: aiFeatures.includes(EAIFeatureType.ASSISTANT),
-        completionEnabled: aiFeatures.includes(EAIFeatureType.COMPLETION),
-      });
-    } catch (error) {
-      console.error('更新AI功能配置失败:', error);
-    }
-  };
-
-  const handleEditModel = (modelInfo: IModelInfo) => {
+  const handleEditModel = (modelInfo: IModel) => {
     const provider = providers.find((p) => p.provider === modelInfo.providerName);
     if (provider && editModalRef.current) {
       editModalRef.current.open({
@@ -387,10 +328,10 @@ const LargeModel = () => {
   };
 
   // 检查模型是否为默认模型之一
-  const isDefaultModel = (modelInfo: IModelInfo): boolean => {
-    if (!aiConfig) return false;
+  const isDefaultModel = (modelInfo: IModel): boolean => {
+    if (!setting.AIConfig) return false;
 
-    const { defaultLlmModel, defaultChatModel, defaultEmbeddingModel } = aiConfig;
+    const { defaultLlmModel, defaultChatModel, defaultEmbeddingModel } = setting.AIConfig;
     const modelKey = `${modelInfo.providerName}/${modelInfo.modelName}`;
 
     return [defaultChatModel, defaultLlmModel, defaultEmbeddingModel].includes(modelKey);
@@ -428,7 +369,7 @@ const LargeModel = () => {
     }
   };
 
-  const handleDeleteModel = (modelInfo: IModelInfo) => {
+  const handleDeleteModel = (modelInfo: IModel) => {
     Modal.confirm({
       title: '确认要删除模型？',
       icon: <ExclamationCircleFilled style={{ color: '#faad14' }} />,
@@ -452,7 +393,7 @@ const LargeModel = () => {
     });
   };
 
-  const handleToggleModel = (modelInfo: IModelInfo, enabled: boolean) => {
+  const handleToggleModel = (modelInfo: IModel, enabled: boolean) => {
     toggleModel({
       provider: modelInfo.providerName,
       modelName: modelInfo.modelName,
@@ -460,52 +401,54 @@ const LargeModel = () => {
     });
   };
 
-  const { chatEnabled, completionEnabled, copilotEnabled } = aiConfig || {};
-
-  const loading = aiConfigLoading || providersLoading || updateLoading;
-
   return (
     <>
       <EditModal ref={editModalRef} onRefresh={handleRefreshAll} />
       <APIKeyConfigModal ref={apiKeyConfigModalRef} onRefresh={handleRefreshAll} />
       <DescriptionModel ref={descriptionModelRef} onRefresh={handleRefreshAll} />
-      <Spin spinning={loading}>
+      <Spin spinning={providersLoading}>
         <div className={styles.largeModelWrapper}>
           <div className={styles.aiConfig}>
             <div className={styles.title}>
               启用 AI 服务
               <Switch
                 className={styles.switch}
-                checked={chatEnabled || completionEnabled || copilotEnabled}
+                checked={setting.AIEnabled}
                 onChange={handleSwitchChange}
-                loading={updateLoading}
               />
             </div>
 
-            {!(chatEnabled || completionEnabled || copilotEnabled) ? (
+            {!setting.AIEnabled ? (
               <Typography.Text type="secondary" className={styles.tips}>
                 开启后，项目内成员可使用代码补全、嵌入式对话等 AI 数据研发能力
               </Typography.Text>
             ) : (
-              <Form
-                form={form}
-                onValuesChange={handleFormValuesChange}
-                style={{ marginTop: 8 }}
-                className={styles.aiFeatures}
-                initialValues={{
-                  aiFeatures: [EAIFeatureType.ASSISTANT],
-                }}
-              >
-                <Form.Item name="aiFeatures" className={styles.aiFeaturesItem}>
-                  <Checkbox.Group
-                    options={[
-                      { label: '嵌入式对话', value: EAIFeatureType.CHAT },
-                      { label: '开发助理', value: EAIFeatureType.ASSISTANT },
-                      { label: '代码补全', value: EAIFeatureType.COMPLETION },
-                    ]}
-                  />
-                </Form.Item>
-              </Form>
+              <div style={{ marginTop: 8 }} className={styles.aiFeatures}>
+                <Checkbox
+                  checked={setting.AIConfig.copilotEnabled}
+                  onChange={async (e) => {
+                    setting.AIConfig.copilotEnabled = e.target.checked;
+                    await setting.updateAIConfig({
+                      ...setting.AIConfig,
+                      copilotEnabled: e.target.checked,
+                    });
+                  }}
+                >
+                  嵌入式对话
+                </Checkbox>
+                <Checkbox
+                  checked={setting.AIConfig.completionEnabled}
+                  onChange={async (e) => {
+                    setting.AIConfig.completionEnabled = e.target.checked;
+                    await setting.updateAIConfig({
+                      ...setting.AIConfig,
+                      completionEnabled: e.target.checked,
+                    });
+                  }}
+                >
+                  代码补全
+                </Checkbox>
+              </div>
             )}
           </div>
 
@@ -515,9 +458,8 @@ const LargeModel = () => {
           <ModelSelect
             allModels={allModels}
             modelsLoading={modelsLoading}
-            aiConfig={aiConfig}
-            updateAIConfig={updateAIConfigFunc}
-            updateLoading={updateLoading}
+            aiConfig={setting.AIConfig}
+            updateLoading={setting.isAIThinking}
             defaultModelStatuses={defaultModelStatuses}
             getModelOptions={getModelOptions}
           />
@@ -621,4 +563,4 @@ const LargeModel = () => {
   );
 };
 
-export default LargeModel;
+export default observer(LargeModel);

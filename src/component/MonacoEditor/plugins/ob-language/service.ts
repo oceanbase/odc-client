@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
+import { modifySync } from '@/common/network/ai';
 import { getTableColumnList, getTableInfo } from '@/common/network/table';
 import { getView } from '@/common/network/view';
 import { ConnectionMode, ITableColumn } from '@/d.ts';
+import { AIQuestionType } from '@/d.ts/ai';
 import { TableColumn } from '@/page/Workspace/components/CreateTable/interface';
 import SessionStore from '@/store/sessionManager/session';
+import setting from '@/store/setting';
+import { getAIConfig } from '@/util/request/largeModel';
 import { getRealNameInDatabase } from '@/util/sql';
 import type { IModelOptions } from '@oceanbase-odc/monaco-plugin-ob/dist/type';
 
 function hasConnect(session: SessionStore) {
   return session?.sessionId && session?.database?.dbName;
 }
+let completionToken: number = 0;
 
 export function getModelService(
   { modelId, delimiter },
@@ -33,6 +38,49 @@ export function getModelService(
   return {
     get delimiter() {
       return delimiter();
+    },
+    llm: {
+      async completions(input, cursorPosition) {
+        if (
+          !setting.enableAIInlineCompletion ||
+          !setting.AIEnabled ||
+          !input?.trim() ||
+          input?.length > 5000
+        ) {
+          return '';
+        }
+        const selfToken = ++completionToken;
+
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(true);
+          }, 1000);
+        })
+          .then(() => {
+            setting.isAIThinking = true;
+            if (selfToken !== completionToken) {
+              return '';
+            }
+            return modifySync({
+              input,
+              fileName: '',
+              questionType: AIQuestionType.SQL_COMPLETION,
+              model: setting.AIConfig?.defaultLlmModel,
+              sid: sessionFunc()?.sessionId,
+              fileContent: input,
+              databaseId: sessionFunc()?.odcDatabase?.id,
+              cursorPosition,
+            });
+          })
+          .then((v) => {
+            setting.isAIThinking = false;
+            return v;
+          })
+          .catch((e) => {
+            setting.isAIThinking = false;
+            return '';
+          });
+      },
     },
     async getTableList(schemaName: string) {
       const dbName = schemaName || sessionFunc()?.database?.dbName;

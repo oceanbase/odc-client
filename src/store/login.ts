@@ -235,6 +235,7 @@ export class UserStore {
         initTracert();
       }
       await setting.getSystemConfig();
+      await setting.getAIConfig();
       this.addLogoutListener();
     }
     return !!user;

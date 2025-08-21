@@ -55,3 +55,12 @@ export enum IDataSourceType {
   HUAWEI = 'HUAWEI',
   AWSS3 = 'AWSS3',
 }
+
+export enum ConnectionMode {
+  MYSQL = 'MYSQL',
+  DORIS = 'DORIS',
+  ORACLE = 'ORACLE',
+  OB_MYSQL = 'OB_MYSQL',
+  OB_ORACLE = 'OB_ORACLE',
+  ALL = 'ALL',
+}
