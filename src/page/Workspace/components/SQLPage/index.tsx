@@ -23,7 +23,7 @@ import { batchGetDataModifySQL } from '@/common/network/table';
 import { ProfileType } from '@/component/ExecuteSqlDetailModal/constant';
 import ExecuteSQLModal from '@/component/ExecuteSQLModal';
 import { getKeyCodeValue } from '@/component/Input/Keymap/keycodemap';
-import { IEditor } from '@/component/MonacoEditor';
+import { IEditor, IFullEditor } from '@/component/MonacoEditor';
 import SaveSQLModal from '@/component/SaveSQLModal';
 import ScriptPage from '@/component/ScriptPage';
 import SQLConfigContext from '@/component/SQLConfig/SQLConfigContext';
@@ -58,6 +58,8 @@ import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { splitSqlForHighlight } from '@/util/sql';
 import { generateAndDownloadFile, getCurrentSQL } from '@/util/utils';
+import { getModelProviders, getProviderModels } from '@/util/request/largeModel';
+import { IModel } from '@/d.ts/llm';
 import { message, Spin } from 'antd';
 import { debounce, isNil } from 'lodash';
 import { inject, observer } from 'mobx-react';
@@ -70,6 +72,13 @@ import Trace from '../Trace';
 import ExecDetail from './ExecDetail';
 import ExecPlan from './ExecPlan';
 import styles from './index.less';
+import {
+  addAIAction,
+  addAIContextMenu,
+  addAIIcon,
+  addAIHint,
+  createStore,
+} from './InlineChat/util';
 
 interface ISQLPageState {
   resultHeight: number;
@@ -106,6 +115,11 @@ interface ISQLPageState {
   baseOffset: number;
   status: EStatus;
   hasExecuted: boolean;
+  // AI Models 相关状态
+  allModels: IModel[];
+  modelsLoading: boolean;
+  modelsLoaded: boolean;
+  lastModelsLoadTime: number;
 }
 
 interface IProps {
@@ -159,9 +173,16 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     status: null,
     hasExecuted: false,
     isSavingScript: false,
+    // AI Models 初始状态
+    allModels: [],
+    modelsLoading: false,
+    modelsLoaded: false,
+    lastModelsLoadTime: 0,
   };
 
   public editor: IEditor;
+
+  public fullEditor: IFullEditor;
 
   public chartContainer: HTMLDivElement | null = null;
 
@@ -171,6 +192,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
 
   private actions: IDisposable[];
   private config: Partial<IUserConfig>;
+  private disposes: (() => void)[] = [];
 
   constructor(props) {
     super(props);
@@ -259,6 +281,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
   public componentWillUnmount() {
     const { pageKey, sqlStore } = this.props;
     const session = this.getSession();
+    this.disposes.forEach((d) => d());
 
     if (this.timer) {
       clearInterval(this.timer);
@@ -327,13 +350,113 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     this.config = setting.configurations;
   };
 
-  public handleEditorCreated = (editor: IEditor) => {
+  public handleEditorCreated = (editor: IEditor, fullEditor: IFullEditor) => {
     this.editor = editor; // 快捷键绑定
+    this.fullEditor = fullEditor;
     this.bindEditorKeymap();
     this.debounceHighlightSelectionLine();
     //  编辑光标位置变化事件
     this.editor.onDidChangeCursorPosition(() => {
       this.debounceHighlightSelectionLine();
+    });
+    this.initAI();
+  };
+
+  /**
+   * 加载模型列表
+   * @param forceRefresh 是否强制刷新，忽略缓存
+   */
+  private loadModels = async (forceRefresh: boolean = false): Promise<void> => {
+    // 检查是否需要重新加载（缓存策略：5分钟内不重复加载）
+    const now = Date.now();
+    const cacheExpiration = 5 * 60 * 1000; // 5分钟
+    const shouldUseCache =
+      this.state.modelsLoaded &&
+      now - this.state.lastModelsLoadTime < cacheExpiration &&
+      !forceRefresh;
+
+    if (shouldUseCache) {
+      return;
+    }
+
+    if (this.state.modelsLoading) {
+      return; // 避免重复加载
+    }
+
+    try {
+      this.setState({ modelsLoading: true });
+      const providersData = await getModelProviders();
+
+      // 获取所有提供商的所有模型
+      const allModelsPromises = (providersData || []).map(async (provider) => {
+        try {
+          const models = await getProviderModels(provider.provider);
+          return (models || []).map((model) => ({
+            ...model,
+            providerName: provider.provider,
+          }));
+        } catch (error) {
+          console.warn(`Failed to fetch models for provider ${provider.provider}:`, error);
+          return [];
+        }
+      });
+
+      const modelsResults = await Promise.all(allModelsPromises);
+      const flattenedModels = modelsResults.flat();
+
+      this.setState({
+        allModels: flattenedModels,
+        modelsLoaded: true,
+        lastModelsLoadTime: now,
+        modelsLoading: false,
+      });
+    } catch (error) {
+      console.error('Failed to fetch providers:', error);
+      this.setState({ modelsLoading: false });
+    }
+  };
+
+  /**
+   * AI 功能挂载
+   */
+  public initAI = async () => {
+    // 初始化时加载模型
+    if (!this.state.modelsLoaded && !this.state.modelsLoading) {
+      await this.loadModels();
+    }
+    const store = createStore();
+    const modelsData = {
+      allModels: this.state.allModels,
+      modelsLoading: this.state.modelsLoading,
+      onRefreshModels: () => this.loadModels(true),
+    };
+    const show = addAIAction(
+      this.editor,
+      () => this.getSession(),
+      store,
+      this.fullEditor,
+      modelsData,
+    );
+    const { dispose } = addAIIcon(this.editor, store, show, this.fullEditor);
+    const disposeMenu = addAIContextMenu(
+      this.editor,
+      store,
+      show,
+      this.fullEditor,
+      () => this.getSession(),
+      dispose,
+    );
+    const disposeHint = addAIHint(this.editor);
+    this.disposes.push(() => {
+      dispose();
+      disposeHint();
+      disposeMenu();
+      this.editor.setSelection({
+        startLineNumber: this.editor.getSelection()?.startLineNumber,
+        startColumn: this.editor.getSelection()?.startColumn,
+        endLineNumber: this.editor.getSelection()?.startLineNumber,
+        endColumn: this.editor.getSelection()?.startColumn,
+      });
     });
   };
 

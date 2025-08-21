@@ -128,6 +128,7 @@
     "lint-staged": "^10.0.7",
     "lodash": "^4.17.10",
     "loglevel": "^1.8.0",
+    "lottie-react": "^2.4.0",
     "markdown-it": "^13.0.1",
     "memoize-one": "^4.0.0",
     "mobx": "^5.9.4",

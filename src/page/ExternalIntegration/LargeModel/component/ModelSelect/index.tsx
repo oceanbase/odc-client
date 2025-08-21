@@ -26,6 +26,7 @@ import LargeModelSelectEmpty from '@/component/Empty/LargeModelSelectEmpty';
 import { modelSelectWarningTooltip, UI_SIZES, VendorsConfig } from '../../constant';
 import styles from './index.less';
 import { EModelSatus, type ModelSelectProps } from '@/d.ts/llm';
+import setting from '@/store/setting';
 
 enum EFiledType {
   LLM = 'llm',
@@ -46,7 +47,6 @@ const ModelSelect: React.FC<ModelSelectProps> = ({
   allModels,
   modelsLoading,
   aiConfig,
-  updateAIConfig,
   updateLoading,
   defaultModelStatuses,
   getModelOptions,
@@ -166,7 +166,7 @@ const ModelSelect: React.FC<ModelSelectProps> = ({
             break;
         }
         // 调用更新API
-        await updateAIConfig({
+        await setting.updateAIConfig({
           ...aiConfig,
           ...updateData,
         });
@@ -284,7 +284,7 @@ const ModelSelect: React.FC<ModelSelectProps> = ({
                 )}
               </Form.Item>
             </Col>
-            <Col offset={0}>
+            {/* <Col offset={0}>
               <Form.Item
                 required
                 layout="vertical"
@@ -339,7 +339,7 @@ const ModelSelect: React.FC<ModelSelectProps> = ({
                   </>
                 )}
               </Form.Item>
-            </Col>
+            </Col> */}
             <Col offset={0}>
               <Form.Item
                 layout="vertical"

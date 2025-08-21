@@ -26,8 +26,10 @@ import { isClient } from '@/util/env';
 import request from '@/util/request';
 import { isLinux, isWin64, kbToMb } from '@/util/utils';
 import { message } from 'antd';
-import { action, observable } from 'mobx';
+import { action, observable, computed } from 'mobx';
 import login, { sessionKey } from '@/store/login';
+import { IAIConfig } from '@/d.ts/llm';
+import { getAIConfig, updateAIConfig } from '@/util/request/largeModel';
 
 export const themeKey = 'odc-theme';
 const SPACE_CONFIG_EXPIRES = 60 * 1000;
@@ -96,6 +98,23 @@ export class SettingStore {
    */
   @observable
   public enableDataExport: boolean = false;
+
+  /**
+   * NL2SQL
+   */
+  @observable
+  public enableAIInlineCompletion: boolean = true;
+
+  @observable
+  public AIConfig: IAIConfig;
+
+  @computed
+  public get AIEnabled() {
+    return this.AIConfig?.copilotEnabled || this.AIConfig?.completionEnabled || false;
+  }
+
+  @observable
+  public isAIThinking: boolean = false;
 
   /**
    * 多库变更
@@ -334,14 +353,44 @@ export class SettingStore {
   }
 
   @action
-  public async getUserConfig() {
-    const res = await request.get('/api/v2/config/users/me/configurations');
-    if (res?.data) {
-      const config = res?.data?.contents?.reduce((data, item) => {
+  public disableAI() {
+    localStorage.setItem('odc.enableAIInlineCompletion', 'false');
+    this.enableAIInlineCompletion = false;
+  }
+  @action
+  public enableAI() {
+    localStorage.setItem('odc.enableAIInlineCompletion', 'true');
+    this.enableAIInlineCompletion = true;
+  }
+  @action async getAIConfig() {
+    const res = await getAIConfig();
+    this.AIConfig = res;
+  }
+
+  @action async updateAIConfig(data) {
+    try {
+      const res = await updateAIConfig(data);
+      if (res) {
+        this.AIConfig = data;
+      }
+    } catch {
+      console.log('fail to update ai config');
+    }
+  }
+
+  @action
+  public async getUserConfig(initData?: any) {
+    this.enableAIInlineCompletion =
+      !localStorage.getItem('odc.enableAIInlineCompletion') ||
+      localStorage.getItem('odc.enableAIInlineCompletion') === 'true';
+    const data = initData
+      ? initData
+      : (await request.get('/api/v2/config/users/me/configurations'))?.data?.contents;
+    if (data) {
+      this.configurations = data?.reduce((data, item) => {
         data[item.key] = item.value;
         return data;
       }, {});
-      this.configurations = config;
       this.theme = themeConfig[this.configurations['odc.appearance.scheme']];
     } else {
       this.configurations = {};

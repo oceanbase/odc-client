@@ -17,7 +17,7 @@
 import {
   IAIConfig,
   IAIConfigPayload,
-  IModelInfo,
+  IModel,
   IModelProvider,
   IProviderCredential,
 } from '@/d.ts/llm';
@@ -52,7 +52,7 @@ export async function getModelProviders(): Promise<IModelProvider[]> {
 /**
  * 获取指定供应商的模型列表
  */
-export async function getProviderModels(provider: string): Promise<IModelInfo[]> {
+export async function getProviderModels(provider: string): Promise<IModel[]> {
   const result = await request.get(`/api/v2/integration/llm/providers/${provider}/models`);
   return result?.data?.contents;
 }
@@ -85,7 +85,7 @@ export async function deleteModelProvider(provider: string): Promise<void> {
 /**
  * 获取指定供应商的指定模型详情
  */
-export async function getModelDetail(provider: string, modelName: string): Promise<IModelInfo> {
+export async function getModelDetail(provider: string, modelName: string): Promise<IModel> {
   const result = await request.get(
     `/api/v2/integration/llm/providers/${provider}/models/${modelName}`,
   );
@@ -105,7 +105,7 @@ export async function createProviderModel(
       dashscope_api_key: string;
     };
   },
-): Promise<IModelInfo> {
+): Promise<IModel> {
   const result = await request.post(`/api/v2/integration/llm/providers/${provider}/models`, {
     data,
   });

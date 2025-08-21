@@ -20,7 +20,7 @@ import { useRequest } from 'ahooks';
 import { encrypt } from '@/util/utils';
 import { getServerLocalKey } from '@/util/intl';
 import { renderFormComponent } from '../../utils';
-import type { EditModalRef, EditModalProps, IModelProvider, IModelInfo } from '@/d.ts/llm';
+import type { EditModalRef, EditModalProps, IModelProvider, IModel } from '@/d.ts/llm';
 
 const EditModal = forwardRef<EditModalRef, EditModalProps>(({ onRefresh }, ref) => {
   const [form] = Form.useForm();
@@ -28,7 +28,7 @@ const EditModal = forwardRef<EditModalRef, EditModalProps>(({ onRefresh }, ref) 
   // 内部状态管理
   const [isOpen, setIsOpen] = useState(false);
   const [provider, setProvider] = useState<IModelProvider | undefined>();
-  const [model, setModel] = useState<IModelInfo | undefined>();
+  const [model, setModel] = useState<IModel | undefined>();
   const [formValues, setFormValues] = useState({});
   const [initialCredentials, setInitialCredentials] = useState<Record<string, any>>({});
 

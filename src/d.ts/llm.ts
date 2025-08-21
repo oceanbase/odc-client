@@ -48,10 +48,9 @@ export interface CardData {
 
 // ModelSelect 组件属性接口
 export interface ModelSelectProps {
-  allModels: IModelInfo[];
+  allModels: IModel[];
   modelsLoading: boolean;
   aiConfig: IAIConfig | null;
-  updateAIConfig: (data: IAIConfigPayload) => Promise<IAIConfig>;
   updateLoading: boolean;
   defaultModelStatuses: {
     llmStatus: EModelSatus;
@@ -63,7 +62,7 @@ export interface ModelSelectProps {
 
 // Modal 组件引用接口 - 只负责状态控制
 export interface EditModalRef {
-  open: (data?: { provider?: IModelProvider; model?: IModelInfo }) => void;
+  open: (data?: { provider?: IModelProvider; model?: IModel }) => void;
 }
 
 export interface APIKeyConfigModalRef {
@@ -172,7 +171,7 @@ export interface IModelProvider {
   supportedModelTypes: string[];
 }
 
-export interface IModelInfo {
+export interface IModel {
   id: number;
   createTime: number;
   updateTime: number;
