@@ -219,7 +219,7 @@ async function exportSql(): Promise<boolean> {
 
   try {
     const { stdout, stderr } = await execAsync(
-      `"${JAVA_PATH}" -cp "${OLD_H2_JAR_PATH}" org.h2.tools.Script -url "${OLD_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -script "${TMP_EXPORT_SQL_PATH}" -options 'DROP'`,
+      `"${JAVA_PATH}" -cp "${OLD_H2_JAR_PATH}" org.h2.tools.Script -url "${OLD_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -script "${TMP_EXPORT_SQL_PATH}" -options "DROP"`,
     );
     if (!fs.existsSync(TMP_EXPORT_SQL_PATH)) {
       log.error('Failed Export Sql\n', 'stdout:', stdout, 'error:', stderr);
