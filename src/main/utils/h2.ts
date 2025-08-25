@@ -84,14 +84,33 @@ async function clear(type?: 'delete_old' | 'delete_new'): Promise<void> {
  * @returns 执行结果
  */
 async function executeSqlInOldH2(sql: string): Promise<string> {
-  const { stdout, stderr } = (await execAsync(
-    `"${JAVA_PATH}" -cp "${OLD_H2_JAR_PATH}" org.h2.tools.Shell -url "${OLD_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -sql "${sql}"`,
-  )) as ExecResult;
-  if (stderr) {
-    log.error('[old]execute sql error: ', stderr);
-    return null;
+  const tempSqlFile = path.join(TMP_EXPORT_SQL_DIR, `temp_${Date.now()}.sql`);
+
+  try {
+    // 确保临时目录存在
+    if (!fs.existsSync(TMP_EXPORT_SQL_DIR)) {
+      await fsPromises.mkdir(TMP_EXPORT_SQL_DIR, { recursive: true });
+    }
+
+    // 将SQL写入临时文件
+    await fsPromises.writeFile(tempSqlFile, sql, 'utf8');
+
+    // 执行SQL文件
+    const { stdout, stderr } = (await execAsync(
+      `"${JAVA_PATH}" -cp "${OLD_H2_JAR_PATH}" org.h2.tools.RunScript -url "${OLD_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -script "${tempSqlFile}"`,
+    )) as ExecResult;
+
+    if (stderr) {
+      log.error('[old]execute sql error: ', stderr);
+      return null;
+    }
+    return stdout;
+  } finally {
+    // 删除临时文件
+    if (fs.existsSync(tempSqlFile)) {
+      await fsPromises.rm(tempSqlFile, { force: true });
+    }
   }
-  return stdout;
 }
 
 /**
@@ -100,14 +119,33 @@ async function executeSqlInOldH2(sql: string): Promise<string> {
  * @returns 执行结果
  */
 async function executeSqlInNewH2(sql: string): Promise<string> {
-  const { stdout, stderr } = (await execAsync(
-    `"${JAVA_PATH}" -cp "${NEW_H2_JAR_PATH}" org.h2.tools.Shell -url "${NEW_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -sql "${sql}"`,
-  )) as ExecResult;
-  if (stderr) {
-    log.error('[new]execute sql error: ', stderr);
-    return null;
+  const tempSqlFile = path.join(TMP_EXPORT_SQL_DIR, `temp_${Date.now()}.sql`);
+
+  try {
+    // 确保临时目录存在
+    if (!fs.existsSync(TMP_EXPORT_SQL_DIR)) {
+      await fsPromises.mkdir(TMP_EXPORT_SQL_DIR, { recursive: true });
+    }
+
+    // 将SQL写入临时文件
+    await fsPromises.writeFile(tempSqlFile, sql, 'utf8');
+
+    // 执行SQL文件
+    const { stdout, stderr } = (await execAsync(
+      `"${JAVA_PATH}" -cp "${NEW_H2_JAR_PATH}" org.h2.tools.RunScript -url "${NEW_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -script "${tempSqlFile}"`,
+    )) as ExecResult;
+
+    if (stderr) {
+      log.error('[new]execute sql error: ', stderr);
+      return null;
+    }
+    return stdout;
+  } finally {
+    // 删除临时文件
+    if (fs.existsSync(tempSqlFile)) {
+      await fsPromises.rm(tempSqlFile, { force: true });
+    }
   }
-  return stdout;
 }
 
 /**
