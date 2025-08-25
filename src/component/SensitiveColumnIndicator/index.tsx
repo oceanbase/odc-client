@@ -8,6 +8,7 @@ import { EyeInvisibleOutlined, SecurityScanOutlined, SyncOutlined } from '@ant-d
 import { formatMessage } from '@/util/intl';
 import sensitiveColumnScanner, { IScanResult } from '@/service/sensitiveColumnScanner';
 import { ISensitiveColumnInfo } from '@/d.ts/sensitiveColumn';
+import { isAIAvailable } from '@/common/network/ai';
 import styles from './index.less';
 
 interface ISensitiveColumnIndicatorProps {
@@ -72,6 +73,21 @@ const SensitiveColumnIndicator: React.FC<ISensitiveColumnIndicatorProps> = ({
   const [scanError, setScanError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
+  const [aiAvailable, setAiAvailable] = useState<boolean>(true);
+
+  // 检查AI功能状态
+  useEffect(() => {
+    const checkAIStatus = async () => {
+      try {
+        const available = await isAIAvailable();
+        setAiAvailable(available);
+      } catch (error) {
+        console.warn('检查AI状态失败:', error);
+        setAiAvailable(false);
+      }
+    };
+    checkAIStatus();
+  }, []);
 
   // 使用传入的敏感列数据或扫描结果
   const sensitiveColumns = propSensitiveColumns || scanResult?.sensitiveColumns || [];
@@ -199,6 +215,15 @@ const SensitiveColumnIndicator: React.FC<ISensitiveColumnIndicatorProps> = ({
       sensitiveColumnScanner.removeCacheChangeListener(handleCacheChange);
     };
   }, [tableName, databaseName, sessionId, autoScan, propSensitiveColumns]);
+
+  // 如果外部已提供敏感列数据，直接显示，不受AI状态影响
+  if (propSensitiveColumns && propSensitiveColumns.length > 0) {
+    // 外部提供的数据，直接渲染，跳过AI状态检查
+  } else if (!aiAvailable) {
+    // 只有在需要扫描且AI未开启时才隐藏组件
+    return null;
+  }
+
   // 如果正在扫描，显示扫描状态
   if (isScanning) {
     return (

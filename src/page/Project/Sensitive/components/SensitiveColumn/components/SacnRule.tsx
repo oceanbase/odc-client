@@ -30,6 +30,7 @@ import { useContext, useEffect, useState } from 'react';
 import SensitiveContext from '../../../SensitiveContext';
 import MultipleDatabaseSelect from '@/component/Task/component/MultipleDatabaseSelect/index';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isAIAvailable } from '@/common/network/ai';
 
 const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const context = useContext(ProjectContext);
@@ -42,6 +43,35 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const [dataSourceOptions, setDataSourceOptions] = useState<SelectItemProps[]>([]);
   const [sensitiveOptions, setSensitiveOptions] = useState<SelectItemProps[]>([]);
   const [rawData, setRawData] = useState<IResponseData<IConnection>>();
+  const [aiAvailable, setAiAvailable] = useState<boolean>(true);
+  // 检查AI功能状态
+  useEffect(() => {
+    const checkAIStatus = async () => {
+      try {
+        const available = await isAIAvailable();
+        setAiAvailable(available);
+
+        // 如果AI不可用且当前选择的是AI增强识别，自动切换到传统规则识别
+        if (!available && scanningMode === 'JOINT_RECOGNITION') {
+          await formRef.setFieldsValue({
+            scanningMode: 'RULES_ONLY',
+          });
+        }
+      } catch (error) {
+        console.warn('检查AI状态失败:', error);
+        setAiAvailable(false);
+
+        // AI检查失败时也切换到传统规则识别
+        if (scanningMode === 'JOINT_RECOGNITION') {
+          await formRef.setFieldsValue({
+            scanningMode: 'RULES_ONLY',
+          });
+        }
+      }
+    };
+    checkAIStatus();
+  }, []);
+
   const initDataSources = async () => {
     const rawData = await getConnectionList({
       projectId: sensitiveContext.projectId,
@@ -283,11 +313,12 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
                 defaultMessage: '传统规则识别',
               })}
             </Radio>
-            <Radio value="JOINT_RECOGNITION">
+            <Radio value="JOINT_RECOGNITION" disabled={!aiAvailable}>
               {formatMessage({
                 id: 'odc.SensitiveColumn.components.SacnRule.AIEnhanced',
                 defaultMessage: 'AI增强识别',
               })}
+              {!aiAvailable && <span style={{ color: '#999', marginLeft: 8 }}>(AI功能未开启)</span>}
             </Radio>
           </Radio.Group>
         </Form.Item>
