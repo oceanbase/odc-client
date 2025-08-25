@@ -264,6 +264,7 @@ class MainServer {
     }
     const h2MigrationSuccess = await runH2Migration();
     if (!h2MigrationSuccess) {
+      log.error('H2 migration failed');
       app.quit();
       return;
     }

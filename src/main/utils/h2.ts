@@ -382,9 +382,11 @@ async function checkH2Connection(): Promise<boolean> {
 }
 
 async function moveOldFileToBackup(): Promise<void> {
+  log.info('Moving old file to backup...');
   if (fs.existsSync(OLD_H2_PATH)) {
     await fsPromises.rename(OLD_H2_PATH, OLD_H2_BACKUP_PATH);
   }
+  log.info('Move old file to backup success');
 }
 
 /**
