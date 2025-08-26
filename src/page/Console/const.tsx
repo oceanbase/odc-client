@@ -1,6 +1,6 @@
 import { formatMessage } from '@/util/intl';
+import { TaskType } from '@/d.ts';
 import { ScheduleType } from '@/d.ts/schedule';
-import { title } from 'process';
 
 export enum EQuickStartRole {
   Admin,
@@ -15,25 +15,79 @@ export enum EDatabaseTableColumnKey {
   Operation = 'operation',
 }
 
+export enum ELayoutKey {
+  QuickStart = 'quick-start',
+  TaskOverview = 'task-overview',
+  WorkOrder = 'work-order',
+  Job = 'job',
+  RecentDatabases = 'recent-databases',
+  AboutUs = 'about-us',
+  BestPractices = 'best-practices',
+}
+
+export const TaskTypes = [
+  TaskType.EXPORT,
+  TaskType.EXPORT_RESULT_SET,
+  TaskType.IMPORT,
+  TaskType.DATAMOCK,
+  TaskType.ASYNC,
+  TaskType.MULTIPLE_ASYNC,
+  TaskType.LOGICAL_DATABASE_CHANGE,
+  TaskType.SHADOW,
+  TaskType.STRUCTURE_COMPARISON,
+  TaskType.ONLINE_SCHEMA_CHANGE,
+];
+
+export const TaskTitle = {
+  [TaskType.EXPORT]: '导出',
+  [TaskType.EXPORT_RESULT_SET]: '导出结果集',
+  [TaskType.IMPORT]: '导入',
+  [TaskType.DATAMOCK]: '模拟数据',
+  [TaskType.ASYNC]: '数据库变更',
+  [TaskType.MULTIPLE_ASYNC]: '多库变更',
+  [TaskType.LOGICAL_DATABASE_CHANGE]: '逻辑库变更',
+  [TaskType.SHADOW]: '影子表同步',
+  [TaskType.STRUCTURE_COMPARISON]: '结构比对',
+  [TaskType.ONLINE_SCHEMA_CHANGE]: '无锁结构变更',
+};
+
+export const ScheduleTitle = {
+  [ScheduleType.DATA_ARCHIVE]: formatMessage({
+    id: 'src.page.Console.B92D6192',
+    defaultMessage: '数据归档',
+  }),
+  [ScheduleType.DATA_DELETE]: formatMessage({
+    id: 'src.page.Console.E2F84D37',
+    defaultMessage: '数据清理',
+  }),
+  [ScheduleType.PARTITION_PLAN]: formatMessage({
+    id: 'src.page.Console.A9C48F30',
+    defaultMessage: '分区计划',
+  }),
+  [ScheduleType.SQL_PLAN]: formatMessage({
+    id: 'src.page.Console.E561DFFF',
+    defaultMessage: 'SQL 计划',
+  }),
+};
+
+export const ScheduleTypes = [
+  ScheduleType.DATA_ARCHIVE,
+  ScheduleType.DATA_DELETE,
+  ScheduleType.PARTITION_PLAN,
+  ScheduleType.SQL_PLAN,
+];
+
 export const ConsoleTextConfig = {
   schdules: {
     keys: ['dataArchive', 'dataClear', 'partition', 'sqlPlan'],
     status: [
+      '待调度',
+      formatMessage({ id: 'src.page.Console.095A8212', defaultMessage: '执行中' }),
       formatMessage({ id: 'src.page.Console.4D58E4BD', defaultMessage: '执行成功' }),
       formatMessage({ id: 'src.page.Console.0DE02703', defaultMessage: '执行失败' }),
-      formatMessage({ id: 'src.page.Console.095A8212', defaultMessage: '执行中' }),
-      formatMessage({ id: 'src.page.Console.A46DFDCA', defaultMessage: '待执行' }),
       formatMessage({ id: 'src.page.Console.32807E76', defaultMessage: '其他' }),
     ],
-
-    statusType: [
-      'successExecutionCount',
-      'failedExecutionCount',
-      'executingCount',
-      'waitingExecutionCount',
-      'otherCount',
-    ],
-
+    statusType: ['PENDING', 'EXECUTING', 'EXECUTION_SUCCESS', 'EXECUTION_FAILURE', 'OTHER'],
     statusColor: ['#73d13d', '#ff6667', '#40a9ff', '#91d5ff', '#e0e0e0'],
     scheduleTitle: [
       formatMessage({ id: 'src.page.Console.B92D6192', defaultMessage: '数据归档' }),

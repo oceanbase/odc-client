@@ -6,64 +6,73 @@ import LabelWithIcon from '../../../../component/LabelWithIcon';
 import styles from './index.less';
 import DonutChart from '../DonutChart';
 import { IPageType } from '@/d.ts/_index';
-import { ScheduleStatus } from '@/d.ts/schedule';
-const ScheduleItem = ({ title, progress, type }) => {
-  const { statusType } = ConsoleTextConfig.schdules;
-  const { successEnabledCount } = progress || {};
-  const { failedExecutionCount } = progress?.taskStat || {};
-  const navigate = useNavigate();
+import { TaskExecStrategy, TaskStatus, TaskType } from '@/d.ts';
+import { Divider } from 'antd';
+import { IStat } from '@/d.ts';
+import { ScheduleStatus, ScheduleType } from '@/d.ts/schedule';
 
-  const total = progress?.taskStat
-    ? statusType.reduce((sum, key) => sum + (parseInt(progress?.taskStat?.[key]) || 0), 0)
-    : undefined;
+const ScheduleItem = ({
+  title,
+  progress,
+  type,
+}: {
+  title: string;
+  progress: IStat;
+  type: ScheduleType;
+}) => {
+  const { count } = progress || {};
+  const { PENDING, EXECUTING, EXECUTION_FAILURE, EXECUTION_SUCCESS, OTHER, ENABLED } = count || {};
+  const totalCount =
+    (PENDING || 0) +
+    (EXECUTING || 0) +
+    (EXECUTION_FAILURE || 0) +
+    (EXECUTION_SUCCESS || 0) +
+    (OTHER || 0);
+  const navigate = useNavigate();
 
   return (
     <div className={styles.scheduleItem}>
+      <div className={styles.title}>{title}</div>
       <div className={styles.progress}>
-        <LabelWithIcon
-          icon={<span className={styles.title}>{title}</span>}
-          label={
-            <span
-              className={styles.label}
-              onClick={() =>
-                navigate(
-                  `/${IPageType.Schedule}?scheduleType=${type}&scheduleStatus=${ScheduleStatus.ENABLED}`,
-                )
-              }
-            >
-              {formatMessage({
-                id: 'src.page.Console.components.ScheduleItem.4E8811DF',
-                defaultMessage: '已启用',
-              })}
-              <span className={styles.count}>{successEnabledCount || 0}</span>
-              {formatMessage({
-                id: 'src.page.Console.components.ScheduleItem.728A17A0',
-                defaultMessage: '个',
-              })}
-            </span>
-          }
-          gap={4}
-          align={['vertical', 'center']}
-        />
-
         <div className={styles.ringChart}>
-          <DonutChart progress={progress} />
+          <DonutChart progress={count} />
         </div>
       </div>
       <div className={styles.counters}>
         <CounterCard
+          onClick={() => {
+            // 跳转到调度管理页面，设置特定类型和已启用状态过滤
+            navigate(`/schedule?scheduleStatus=${ScheduleStatus.ENABLED}&scheduleType=${type}`);
+          }}
+          title={formatMessage({
+            id: 'src.page.Console.components.ScheduleItem.4E8811DF',
+            defaultMessage: '已启用',
+          })}
+          counter={ENABLED || 0}
+        />
+        <Divider className={styles.countersDivider} />
+        <CounterCard
+          onClick={() => {
+            navigate(`/schedule?scheduleType=${type}`);
+          }}
           title={formatMessage({
             id: 'src.page.Console.components.ScheduleItem.1ADBD842',
             defaultMessage: '共执行',
           })}
-          counter={total}
+          counter={totalCount}
         />
         <CounterCard
+          onClick={() => {
+            // 跳转到调度管理页面，设置特定类型和已启用状态过滤
+            navigate(
+              `/schedule?scheduleStatus=${ScheduleStatus.EXECUTION_FAILED}&scheduleType=${type}`,
+            );
+          }}
           title={formatMessage({
             id: 'src.page.Console.components.ScheduleItem.6F6BDC9E',
             defaultMessage: '执行失败',
           })}
-          counter={parseInt(failedExecutionCount)}
+          counter={EXECUTION_FAILURE || 0}
           status="failed"
         />
       </div>

@@ -7,17 +7,20 @@ const PieChart = ({ progress }) => {
   const { status, statusType, statusColor } = ConsoleTextConfig.schdules;
 
   const chartRef = useRef(null);
-  const total = statusType.reduce(
-    (sum, key) => sum + (parseInt(progress?.taskStat?.[key]) || 0),
-    0,
-  );
+  const { PENDING, EXECUTING, EXECUTION_FAILURE, EXECUTION_SUCCESS, OTHER } = progress || {};
+  const total =
+    (PENDING || 0) +
+    (EXECUTING || 0) +
+    (EXECUTION_FAILURE || 0) +
+    (EXECUTION_SUCCESS || 0) +
+    (OTHER || 0);
 
   useEffect(() => {
     if (chartRef.current) {
       const chart = echarts.init(chartRef.current);
 
       const data = status.map((name, i) => {
-        const count = parseInt(progress?.taskStat?.[statusType[i]]) || 0;
+        const count = progress?.[statusType[i]] || 0;
         return {
           name,
           value: count,
@@ -142,7 +145,7 @@ const PieChart = ({ progress }) => {
         chart.dispose();
       };
     }
-  }, [progress, total, status, statusType, statusColor]);
+  }, [progress, total]);
 
   return <div ref={chartRef} className="chart-wrapper" />;
 };

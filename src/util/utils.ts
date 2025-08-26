@@ -689,20 +689,6 @@ export const CRLFToSeparatorString = (separator: string) => {
   return separator?.replace(/\r/g, '\\r').replace(/\n/g, '\\n');
 };
 
-export const sumTaskStats = (taskStats) => {
-  return taskStats.reduce((accumulator, current) => {
-    Object.keys(current).forEach((key) => {
-      if (typeof current[key] === 'number') {
-        // 确保只处理数值类型的键
-        if (!accumulator[key]) {
-          accumulator[key] = 0;
-        }
-        accumulator[key] += current[key];
-      }
-    });
-    return accumulator;
-  }, {});
-};
 export function groupBySessionId(filteredRows) {
   const sessionMap = new Map();
 

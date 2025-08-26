@@ -12,13 +12,7 @@ import {
   ScheduleTaskStatus,
   SubTaskParameters,
 } from '@/d.ts/scheduleTask';
-import {
-  Operation,
-  IResponseData,
-  ICycleTaskStatParam,
-  ICycleTaskStatRecord,
-  CommonTaskLogType,
-} from '@/d.ts';
+import { Operation, IResponseData, CommonTaskLogType, ITaskStatParam, IStat } from '@/d.ts';
 import { scheduleTask, IScheduleTaskRecord } from '@/d.ts/scheduleTask';
 import { ApprovalStatus } from '@/component/Schedule/interface';
 import { omit } from 'lodash';
@@ -204,17 +198,16 @@ export async function getTerminateScheduleLog(terminateId: string): Promise<stri
   );
   return res?.data;
 }
-
 /**
- * 查询作业状态
+ * 查询周期任务状态
  */
 export async function getScheduleStat<T>(
-  params: ICycleTaskStatParam,
-): Promise<ICycleTaskStatRecord[]> {
-  const res = await request.get('/api/v2/schedule/schedules/stats', {
+  params: ITaskStatParam,
+): Promise<Record<ScheduleType, IStat>> {
+  const res = await request.get('/api/v2/collaboration/landingPage/scheduleStat', {
     params,
   });
-  return res?.data?.contents;
+  return res?.data;
 }
 
 /**
