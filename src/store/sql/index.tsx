@@ -660,6 +660,47 @@ export class SQLStore {
   }
 
   @action
+  public closeOtherResultSets(pageKey: string, currentUniqKey: string) {
+    const resultSet = this.resultSets.get(pageKey);
+
+    if (resultSet) {
+      // 保留当前结果集、固定结果集和LOG类型的结果集
+      const remainingResults = resultSet.filter((set) => {
+        return set.uniqKey === currentUniqKey || set.type === 'LOG' || set.locked;
+      });
+
+      // 清理被移除结果集的rows引用
+      resultSet.forEach((set) => {
+        if (set.uniqKey !== currentUniqKey && set.type !== 'LOG' && !set.locked) {
+          set?.rows?.splice(0);
+        }
+      });
+
+      this.resultSets.set(pageKey, clone(remainingResults));
+    }
+  }
+
+  @action
+  public closeAllResultSets(pageKey: string) {
+    const resultSet = this.resultSets.get(pageKey);
+
+    if (resultSet) {
+      // 保留固定的结果集和LOG类型的结果集
+      const logResults = resultSet.filter((set) => set.type === 'LOG');
+      const lockedResults = resultSet.filter((set) => set.locked);
+
+      // 清理被移除结果集的rows引用
+      resultSet.forEach((set) => {
+        if (set.type !== 'LOG' && !set.locked) {
+          set?.rows?.splice(0);
+        }
+      });
+
+      this.resultSets.set(pageKey, clone(lockedResults.concat(logResults)));
+    }
+  }
+
+  @action
   public lockResultSet(pageKey: string, key: string) {
     const resultSet = this.resultSets.get(pageKey);
     const resultSetIdx = resultSet?.findIndex?.((set) => set.uniqKey === key);
