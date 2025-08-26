@@ -2,13 +2,20 @@
   display: flex;
   align-items: center;
   flex-direction: column;
-
-  margin-top: 20px;
-  width: 160px;
-  height: 248px;
+  width: 90px;
+  height: 229px;
   &:nth-child(1) {
     margin-right: 0;
   }
+
+  .title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color-primary);
+    text-align: center;
+    cursor: default;
+  }
+
   .progress {
     display: inline-flex;
     flex-direction: column;
@@ -35,16 +42,18 @@
     .ringChart {
       display: flex;
       justify-content: center;
-      margin-top: 8px;
-      min-height: 140px;
+      min-height: 130px;
       align-items: center;
     }
   }
   .counters {
     display: inline-flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-around;
     width: 100%;
+    .countersDivider {
+      margin: 6px 0;
+    }
   }
 }
 

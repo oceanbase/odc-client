@@ -2685,9 +2685,10 @@ export interface ICycleTaskRecord<T> {
   description?: string;
 }
 
-export interface ICycleTaskStatParam {
+export interface ITaskStatParam {
   currentOrganizationId: number;
   types: string[];
+  projectId?: number;
   startTime?: number;
   endTime?: number;
 }
@@ -2699,18 +2700,34 @@ export interface IDatabaseHistoriesParam {
   endTime?: number;
 }
 
-export interface ICycleTaskStatRecord {
-  type: string;
-  successEnabledCount: number;
-  totalCount?: number;
-  taskStats: {
-    type: string;
-    successExecutionCount: number;
-    failedExecutionCount: number;
-    waitingExecutionCount: number;
-    executingCount: number;
-    otherCount: number;
-  }[];
+export interface IStat {
+  count: {
+    PENDING: number;
+    EXECUTING: number;
+    EXECUTION_FAILURE: number;
+    EXECUTION_SUCCESS: number;
+    ENABLED: number;
+    OTHER: number;
+  };
+}
+
+export interface ITodos {
+  FLOW: {
+    count: {
+      FLOW_WAIT_ME_APPROVAL: number;
+      FLOW_WAIT_ME_EXECUTION: number;
+    };
+  };
+  SCHEDULE: {
+    count: {
+      SCHEDULE_WAIT_ME_APPROVAL: number;
+    };
+  };
+}
+
+export interface IGetFlowScheduleTodoParams {
+  currentOrganizatonId: number;
+  projectId?: number;
 }
 
 export enum SubTaskExecuteType {

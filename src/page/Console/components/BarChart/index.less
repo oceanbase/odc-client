@@ -1,0 +1,79 @@
+.bar-chart-wrapper {
+  width: 100%;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 1400px) {
+  .bar-chart-wrapper {
+    height: 240px;
+  }
+}
+
+// Tooltip 样式
+.bar-chart-tooltip {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: #132039;
+
+  width: 160px;
+
+  &-title {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    &-arrow {
+      color: #5c6b8a;
+    }
+  }
+
+  &-total {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &-number {
+      gap: 4px;
+    }
+    &-arrow {
+      color: #5c6b8a;
+    }
+  }
+
+  &-item {
+    display: flex;
+    align-items: center;
+    margin: 4px 0;
+    font-size: 12px;
+    &-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    &-name {
+      flex: 1;
+    }
+
+    &-value {
+      font-weight: 500;
+      margin-left: 8px;
+    }
+
+    &-arrow {
+      margin-left: 4px;
+      color: #5c6b8a;
+    }
+  }
+}

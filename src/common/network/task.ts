@@ -36,7 +36,12 @@ import {
   TaskRecordParameters,
   TaskStatus,
   TaskType,
+  ITaskStatParam,
+  ITodos,
+  IGetFlowScheduleTodoParams,
+  IStat,
   IAsyncTaskResultSet,
+  ICycleTaskRecord,
 } from '@/d.ts';
 import { IProject } from '@/d.ts/project';
 import { EOperationType, IComparisonResultData, IStructrueComparisonDetail } from '@/d.ts/task';
@@ -169,6 +174,50 @@ export async function getTaskList<T>(params: {
 export async function getUnfinishedTickets(projectId: number): Promise<UnfinishedTickets> {
   const res = await request.get(`/api/v2/collaboration/projects/${projectId}/unfinishedTickets`);
   return res.data;
+}
+
+/**
+ * 查询周期任务列表
+ */
+export async function getCycleTaskList<T>(params: {
+  connectionId?: number[];
+  creator?: string;
+  databaseName?: string[];
+  id?: number;
+  status?: TaskStatus[];
+  type?: TaskPageType;
+  startTime?: number;
+  endTime?: number;
+  createdByCurrentUser?: boolean;
+  approveByCurrentUser?: boolean;
+  sort?: string;
+  page?: number;
+  size?: number;
+}): Promise<IResponseData<ICycleTaskRecord<T>>> {
+  const res = await request.get('/api/v2/schedule/scheduleConfigs', {
+    params,
+  });
+  return res?.data;
+}
+
+/**
+ * 查询工单任务状态
+ */
+export async function getTaskStat<T>(params: ITaskStatParam): Promise<Record<TaskType, IStat>> {
+  const res = await request.get('/api/v2/collaboration/landingPage/flowInstanceStat', {
+    params,
+  });
+  return res?.data;
+}
+
+/**
+ * 查询工单与作业 TODO 统计信息
+ */
+export async function getFlowScheduleTodo<T>(params: IGetFlowScheduleTodoParams): Promise<ITodos> {
+  const res = await request.get('/api/v2/collaboration/landingPage/flowScheduleTodoStat', {
+    params,
+  });
+  return res?.data;
 }
 
 export async function getDatabasesHistories(params: {

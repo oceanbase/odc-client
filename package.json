@@ -71,11 +71,10 @@
     "tree-kill": "^1.2.1"
   },
   "devDependencies": {
-    "axios": "^1.7.7",
+    "@ant-design/icons": "^4.0.0",
     "@dnd-kit/core": "^6.1.0",
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@ant-design/icons": "^4.0.0",
     "@oceanbase-odc/monaco-plugin-ob": "~1.5.3",
     "@oceanbase-odc/ob-intl-cli": "^2.1.3",
     "@oceanbase-odc/ob-parser-js": "^3.1.2",
@@ -102,6 +101,7 @@
     "antlr4": "~4.8.0",
     "array-move": "^4.0.0",
     "aws-sdk": "^2.1231.0",
+    "axios": "^1.7.7",
     "bignumber.js": "^9.0.0",
     "blueimp-md5": "^2.19.0",
     "cherio": "^1.0.0-rc.2",

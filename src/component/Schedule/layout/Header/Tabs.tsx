@@ -1,11 +1,18 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Radio } from 'antd';
 import { ScheduleTab } from '@/component/Schedule/interface';
 import ParamsContext from '@/component/Schedule/context/ParamsContext';
+import { useSearchParams } from '@umijs/max';
 
 const Tabs = () => {
   const context = useContext(ParamsContext);
   const { params, setParams } = context || {};
+  const [searchParams] = useSearchParams();
+  const tab = searchParams.get('tab') as ScheduleTab;
+
+  useEffect(() => {
+    setParams({ tab: tab || ScheduleTab.all });
+  }, [tab]);
 
   const handleSelect = (e) => {
     setParams?.({ tab: e.target.value as ScheduleTab });
