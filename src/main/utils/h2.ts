@@ -84,33 +84,14 @@ async function clear(type?: 'delete_old' | 'delete_new'): Promise<void> {
  * @returns 执行结果
  */
 async function executeSqlInOldH2(sql: string): Promise<string> {
-  const tempSqlFile = path.join(TMP_EXPORT_SQL_DIR, `temp_${Date.now()}.sql`);
-
-  try {
-    // 确保临时目录存在
-    if (!fs.existsSync(TMP_EXPORT_SQL_DIR)) {
-      await fsPromises.mkdir(TMP_EXPORT_SQL_DIR, { recursive: true });
-    }
-
-    // 将SQL写入临时文件
-    await fsPromises.writeFile(tempSqlFile, sql, 'utf8');
-
-    // 执行SQL文件
-    const { stdout, stderr } = (await execAsync(
-      `"${JAVA_PATH}" -cp "${OLD_H2_JAR_PATH}" org.h2.tools.RunScript -url "${OLD_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -script "${tempSqlFile}"`,
-    )) as ExecResult;
-
-    if (stderr) {
-      log.error('[old]execute sql error: ', stderr);
-      return null;
-    }
-    return stdout;
-  } finally {
-    // 删除临时文件
-    if (fs.existsSync(tempSqlFile)) {
-      await fsPromises.rm(tempSqlFile, { force: true });
-    }
+  const { stdout, stderr } = (await execAsync(
+    `"${JAVA_PATH}" -cp "${OLD_H2_JAR_PATH}" org.h2.tools.Shell -url "${OLD_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -sql "${sql}"`,
+  )) as ExecResult;
+  if (stderr) {
+    log.error('[old]execute sql error: ', stderr);
+    return null;
   }
+  return stdout;
 }
 
 /**
@@ -119,33 +100,14 @@ async function executeSqlInOldH2(sql: string): Promise<string> {
  * @returns 执行结果
  */
 async function executeSqlInNewH2(sql: string): Promise<string> {
-  const tempSqlFile = path.join(TMP_EXPORT_SQL_DIR, `temp_${Date.now()}.sql`);
-
-  try {
-    // 确保临时目录存在
-    if (!fs.existsSync(TMP_EXPORT_SQL_DIR)) {
-      await fsPromises.mkdir(TMP_EXPORT_SQL_DIR, { recursive: true });
-    }
-
-    // 将SQL写入临时文件
-    await fsPromises.writeFile(tempSqlFile, sql, 'utf8');
-
-    // 执行SQL文件
-    const { stdout, stderr } = (await execAsync(
-      `"${JAVA_PATH}" -cp "${NEW_H2_JAR_PATH}" org.h2.tools.RunScript -url "${NEW_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -script "${tempSqlFile}"`,
-    )) as ExecResult;
-
-    if (stderr) {
-      log.error('[new]execute sql error: ', stderr);
-      return null;
-    }
-    return stdout;
-  } finally {
-    // 删除临时文件
-    if (fs.existsSync(tempSqlFile)) {
-      await fsPromises.rm(tempSqlFile, { force: true });
-    }
+  const { stdout, stderr } = (await execAsync(
+    `"${JAVA_PATH}" -cp "${NEW_H2_JAR_PATH}" org.h2.tools.Shell -url "${NEW_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -sql "${sql}"`,
+  )) as ExecResult;
+  if (stderr) {
+    log.error('[new]execute sql error: ', stderr);
+    return null;
   }
+  return stdout;
 }
 
 /**
@@ -196,15 +158,25 @@ async function checkTable(): Promise<boolean> {
 async function checkTableRowCounts(oldTables: string[]): Promise<boolean> {
   log.info('Checking row counts for each table...');
   try {
-    const sql = oldTables.map((table) => `SELECT COUNT(*) as c FROM ${table}`).join(' union all ');
-    const result = await executeSqlInOldH2(sql);
-    const newResult = await executeSqlInNewH2(sql);
-    const oldCounts = result.split('\n').filter(Boolean).slice(1, -1);
-    const newCounts = newResult.split('\n').filter(Boolean).slice(1, -1);
-    log.info('sql: ', sql, 'oldCounts: ', oldCounts, 'newCounts: ', newCounts);
-    if (oldCounts.length !== newCounts.length) {
-      log.error('Row count mismatch for all tables! OLD: ', oldCounts, 'NEW: ', newCounts);
-      return false;
+    /**
+     * 由于命令行的长度限制，需要把这条语句拆分成多条来执行
+     * 按照 windows 8191的限制，每条语句按照100个字符来计算，每次执行的语句不能超过81张表，保险一点，按照50张表来处理
+     */
+    const maxTableCount = 50;
+    for (let i = 0; i < oldTables.length; i += maxTableCount) {
+      const sql = oldTables
+        .slice(i, i + maxTableCount)
+        .map((table) => `SELECT COUNT(*) as c FROM ${table}`)
+        .join(' union all ');
+      const result = await executeSqlInOldH2(sql);
+      const newResult = await executeSqlInNewH2(sql);
+      const oldCounts = result.split('\n').filter(Boolean).slice(1, -1);
+      const newCounts = newResult.split('\n').filter(Boolean).slice(1, -1);
+      log.info('sql: ', sql, 'oldCounts: ', oldCounts, 'newCounts: ', newCounts);
+      if (oldCounts.length !== newCounts.length) {
+        log.error('Row count mismatch for all tables! OLD: ', oldCounts, 'NEW: ', newCounts);
+        return false;
+      }
     }
 
     log.info('Row counts match for all tables!');
@@ -377,6 +349,7 @@ async function checkH2Connection(): Promise<boolean> {
   try {
     return !!(await executeSqlInNewH2('SELECT * FROM dual'));
   } catch (error) {
+    log.error('H2 connection check failed...', error);
     return await showRecoverDialog();
   }
 }
@@ -398,10 +371,17 @@ export async function runH2Migration(): Promise<boolean> {
     log.error('Migration failed...');
     return false;
   }
+  log.info('Checking h2 connection...');
   if (!(await checkH2Connection())) {
+    log.error('H2 connection check failed...');
     return false;
   }
+  log.info('H2 connection check success');
+  log.info('Moving old file to backup...');
   await moveOldFileToBackup();
-  clear();
+  log.info('Moving old file to backup success');
+  log.info('Clearing temporary files...');
+  await clear();
+  log.info('Clearing temporary files success');
   return true;
 }
