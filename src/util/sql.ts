@@ -99,6 +99,9 @@ export function getDataType(type: string) {
     case 'VARCHAR': {
       return `${type}(4000)`;
     }
+    case 'CHAR': {
+      return `${type}(32)`;
+    }
     default: {
       return type;
     }
