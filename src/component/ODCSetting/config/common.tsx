@@ -3,6 +3,7 @@ import CheckboxItem from '../Item/CheckboxItem';
 import RadioItem from '../Item/RadioItem';
 import { ODCSettingGroup } from '../config';
 import { resultSetsGroup } from '../utils/configHelper';
+import { isClient } from '@/util/env';
 
 export const getExecutionStrategyConfig = (taskGroup: ODCSettingGroup) => {
   return [
@@ -26,13 +27,15 @@ export const getExecutionStrategyConfig = (taskGroup: ODCSettingGroup) => {
                 }),
                 value: 'AUTO',
               },
-              {
-                label: formatMessage({
-                  id: 'src.component.ODCSetting.config.11DE5799',
-                  defaultMessage: '定时执行',
-                }),
-                value: 'TIMER',
-              },
+              !isClient()
+                ? {
+                    label: formatMessage({
+                      id: 'src.component.ODCSetting.config.11DE5799',
+                      defaultMessage: '定时执行',
+                    }),
+                    value: 'TIMER',
+                  }
+                : null,
               {
                 label: formatMessage({
                   id: 'src.component.ODCSetting.config.7CE2AC8D',
@@ -40,7 +43,7 @@ export const getExecutionStrategyConfig = (taskGroup: ODCSettingGroup) => {
                 }),
                 value: 'MANUAL',
               },
-            ]}
+            ]?.filter(Boolean)}
             value={value}
             onChange={onChange}
           />
