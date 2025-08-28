@@ -1,362 +1,293 @@
 import { formatMessage } from '@/util/intl';
-import React, { useMemo, useState, useEffect } from 'react';
-import { IDatasourceInfo } from '.';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import { IDatasourceInfo, IMPORTABLE_TYPE } from '.';
 import {
   IImportDatabaseView,
   IImportScheduleTaskView,
   ScheduleNonImportableType,
   ScheduleNonImportableTypeMap,
 } from '@/d.ts/importTask';
-import { Tooltip, Popover, Table, Descriptions, Typography, Empty, Radio } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import { TaskType } from '@/d.ts';
-import { ConnectTypeText } from '@/constant/label';
-import Icon from '@ant-design/icons';
-import { getDataSourceStyleByConnectType } from '@/common/datasource';
-import { getCloudProviderName } from '../AsyncTaskOperationButton/helper';
-import { fromODCPRoviderToProvider } from '@/d.ts/migrateTask';
+import { Tooltip, Table, Typography, Empty, Radio, Checkbox, Flex } from 'antd';
+import { TaskType, ConnectType } from '@/d.ts';
+import { useColumns } from './useColumn';
 
 interface ImportPreviewTableProps {
   data: IImportScheduleTaskView[];
   loading?: boolean;
   datasourceInfo: IDatasourceInfo;
   taskType: TaskType;
+  projectId: number;
+  selectedRowKeys: string[];
+  setSelectedRowKeys: (selectedRowKeys: string[]) => void;
+  databaseSelections: Record<
+    string,
+    { databaseId: number | null; targetDatabaseId: number | null }
+  >;
+
+  setDatabaseSelections: React.Dispatch<
+    React.SetStateAction<
+      Record<string, { databaseId: number | null; targetDatabaseId: number | null }>
+    >
+  >;
 }
 
-const ImportPreviewTable: React.FC<ImportPreviewTableProps> = ({ data, loading, taskType }) => {
-  const [tableType, setTableType] = useState<ScheduleNonImportableType | 'importable'>(
-    'importable',
-  );
-
-  const DatabaseInfoPopover = ({
-    title,
-    value,
-    width,
-    children,
-  }: {
-    title: string;
-    value: IImportDatabaseView;
-    width: number;
-    children: React.JSX.Element;
-  }) => {
-    const items = [
-      {
-        key: 'datasource',
-        label: formatMessage({
-          id: 'src.component.Task.component.ImportModal.A8BC98CA',
-          defaultMessage: '数据源',
-        }),
-        children: value?.name,
-      },
-      {
-        key: 'databaseName',
-        label: formatMessage({
-          id: 'src.component.Task.component.ImportModal.0B1F9DCD',
-          defaultMessage: '数据库',
-        }),
-        children: value?.databaseName,
-      },
-      {
-        key: 'type',
-        label: formatMessage({
-          id: 'src.component.Task.component.ImportModal.263EFA83',
-          defaultMessage: '类型',
-        }),
-        children: (
-          <div style={{ display: 'flex', gap: 6 }}>
-            <Icon
-              style={{
-                color: getDataSourceStyleByConnectType(value?.type)?.icon?.color,
-                fontSize: 16,
-              }}
-              component={getDataSourceStyleByConnectType(value?.type)?.icon?.component}
-            />
-
-            {ConnectTypeText(value?.type)}
-          </div>
-        ),
-      },
-      {
-        key: 'cloudProvider',
-        label: formatMessage({
-          id: 'src.component.Task.component.ImportModal.40440087',
-          defaultMessage: '云厂商',
-        }),
-        children: (
-          <div style={{ display: 'flex', gap: 6 }}>
-            {getCloudProviderName(fromODCPRoviderToProvider[value?.cloudProvider]) || '-'}
-          </div>
-        ),
-      },
-      {
-        key: 'region',
-        label: formatMessage({
-          id: 'src.component.Task.component.ImportModal.F2C95E45',
-          defaultMessage: '地域',
-        }),
-        children: <div style={{ display: 'flex', gap: 6 }}>{value?.region || '-'}</div>,
-      },
-      {
-        key: 'host',
-        label: formatMessage({
-          id: 'src.component.Task.component.ImportModal.EFE4E0D0',
-          defaultMessage: '连接信息',
-        }),
-        children: (
-          <Tooltip title={`${value?.host}:${value?.port}`}>
-            {value?.host}:{value?.port}
-          </Tooltip>
-        ),
-      },
-      {
-        key: 'instanceNickName',
-        label: formatMessage({
-          id: 'src.component.Task.component.ImportModal.4A911A47',
-          defaultMessage: '实例名称',
-        }),
-        children: value?.instanceNickName || value?.instanceId || '-',
-      },
-      {
-        key: 'tenantNickName',
-        label: formatMessage({
-          id: 'src.component.Task.component.ImportModal.396EF2AD',
-          defaultMessage: '租户名称',
-        }),
-        children: value?.tenantNickName || value?.tenantId || '-',
-      },
-      {
-        key: 'username',
-        label: formatMessage({
-          id: 'src.component.Task.component.ImportModal.5928CAE8',
-          defaultMessage: '数据库账号',
-        }),
-        children: value?.username || '-',
-      },
-    ];
-
-    return (
-      <Popover
-        title={''}
-        content={
-          value ? (
-            <>
-              <h3>{title}</h3>
-              <Descriptions column={1} style={{ width: width }}>
-                {items?.map((i) => {
-                  return (
-                    <Descriptions.Item key={i?.key} label={i?.label}>
-                      {i?.children}
-                    </Descriptions.Item>
-                  );
-                })}
-              </Descriptions>
-            </>
-          ) : null
-        }
-      >
-        <div>
-          <div style={{ width: width || '' }}>{children}</div>
-        </div>
-      </Popover>
-    );
-  };
-
-  const dlmColumns = [
-    {
-      title: formatMessage({
-        id: 'src.component.Task.component.ImportModal.B4E8467F',
-        defaultMessage: '源端数据库',
-      }),
-      dataIndex: 'databaseView',
-      key: 'databaseView',
-      render: (_: IImportDatabaseView) => {
-        if (!_) return '-';
-        return (
-          <DatabaseInfoPopover
-            title={formatMessage({
-              id: 'src.component.Task.component.ImportModal.50582618',
-              defaultMessage: '源端数据库',
-            })}
-            value={_}
-            width={286}
-          >
-            <Typography.Text ellipsis style={{ width: '160px' }}>
-              {_ ? `${_?.name} / ${_?.databaseName}` : '-'}
-            </Typography.Text>
-          </DatabaseInfoPopover>
-        );
-      },
-      width: 200,
-      ellipsis: true,
-    },
-    {
-      title: formatMessage({
-        id: 'src.component.Task.component.ImportModal.76F572C8',
-        defaultMessage: '目标端数据库',
-      }),
-      dataIndex: 'targetDatabaseView',
-      key: 'targetDatabaseView',
-      render: (_: IImportDatabaseView) => {
-        if (!_) return '-';
-        return (
-          <DatabaseInfoPopover
-            title={formatMessage({
-              id: 'src.component.Task.component.ImportModal.776397D6',
-              defaultMessage: '目标端数据库',
-            })}
-            value={_}
-            width={286}
-          >
-            <Typography.Text ellipsis style={{ width: '160px' }}>
-              {_ ? `${_?.name} / ${_?.databaseName}` : '-'}
-            </Typography.Text>
-          </DatabaseInfoPopover>
-        );
-      },
-      width: 200,
-      ellipsis: true,
-    },
-  ];
-
-  const otherScheduleColumns = [
-    {
-      title: formatMessage({
-        id: 'src.component.Task.component.ImportModal.B5C62BDC',
-        defaultMessage: '工单描述',
-      }),
-      dataIndex: 'description',
-      key: 'description',
-      width: 340,
-      render: (_, record) => {
-        return _ || '-';
-      },
-    },
-    {
-      title: formatMessage({
-        id: 'src.component.Task.component.ImportModal.1EB75659',
-        defaultMessage: '数据库',
-      }),
-      dataIndex: 'databaseView',
-      key: 'databaseView',
-      render: (_: IImportDatabaseView) => {
-        console.log('databaseView', _);
-        if (!_) return '-';
-        return (
-          <DatabaseInfoPopover
-            title={formatMessage({
-              id: 'src.component.Task.component.ImportModal.8D781AC2',
-              defaultMessage: '数据库',
-            })}
-            value={_}
-            width={286}
-          >
-            <Typography.Text ellipsis style={{ width: '160px' }}>
-              {_ ? `${_?.name} / ${_?.databaseName}` : '-'}
-            </Typography.Text>
-          </DatabaseInfoPopover>
-        );
-      },
-      width: 200,
-      ellipsis: true,
-    },
-  ];
-
-  const columns: ColumnsType<IImportScheduleTaskView> = [
-    {
-      title: formatMessage({
-        id: 'src.component.Task.component.ImportModal.5DE578E8',
-        defaultMessage: '原编号',
-      }),
-      dataIndex: 'originId',
-      key: 'originId',
-      width: 100,
-    },
-    {
-      title: formatMessage({
-        id: 'src.component.Task.component.ImportModal.2043ADA9',
-        defaultMessage: '原项目',
-      }),
-      dataIndex: 'originProjectName',
-      key: 'originProjectName',
-      width: 100,
-      render: (_) => {
-        return _ || '-';
-      },
-    },
-    // 数据清理/归档有源端目标端, 分区计划和sql计划只有数据库
-    ...([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE]?.includes(taskType) ? dlmColumns : []),
-    ...([TaskType.SQL_PLAN, TaskType.PARTITION_PLAN]?.includes(taskType)
-      ? otherScheduleColumns
-      : []),
-  ]?.filter(Boolean);
-
+const ImportPreviewTable: React.FC<ImportPreviewTableProps> = ({
+  loading,
+  taskType,
+  projectId,
+  data,
+  selectedRowKeys,
+  setSelectedRowKeys,
+  databaseSelections,
+  setDatabaseSelections,
+}) => {
+  const [showOnlyImportable, setShowOnlyImportable] = useState(false);
   const groupedData = useMemo(() => {
     return data.reduce(
       (
-        acc: Record<ScheduleNonImportableType | 'importable', IImportScheduleTaskView[]>,
-
+        acc: Record<ScheduleNonImportableType | 'TO_BE_IMPORTED', IImportScheduleTaskView[]>,
         item,
       ) => {
-        const groupKey = item.importable ? 'importable' : item.nonImportableType;
+        let groupKey: ScheduleNonImportableType | 'TO_BE_IMPORTED';
+
+        if (item.importable) {
+          groupKey = 'TO_BE_IMPORTED';
+        } else {
+          groupKey = item.nonImportableType;
+        }
+
         acc[groupKey] = acc[groupKey] || [];
         acc[groupKey].push(item);
         return acc;
       },
-      {} as Record<ScheduleNonImportableType | 'importable', IImportScheduleTaskView[]>,
+      {} as Record<ScheduleNonImportableType | 'TO_BE_IMPORTED', IImportScheduleTaskView[]>,
     );
   }, [data]);
 
-  // 当数据变化时，如果当前tableType不存在则重置为'importable'
+  const [tableType, setTableType] = useState<ScheduleNonImportableType | 'TO_BE_IMPORTED'>(
+    groupedData?.['TO_BE_IMPORTED']?.length > 0
+      ? 'TO_BE_IMPORTED'
+      : Object.values(ScheduleNonImportableType).find((key) => groupedData?.[key]?.length > 0) ||
+          'TO_BE_IMPORTED',
+  );
+  // 检查一个工单是否已经选择了所需的数据库
+  const hasSelectedAllDatabases = useCallback(
+    (item: IImportScheduleTaskView) => {
+      const hasSourceDatabase =
+        item.databaseView?.matchedDatabaseId || databaseSelections[item.originId]?.databaseId;
+      const hasTargetDatabase =
+        item.targetDatabaseView?.matchedDatabaseId ||
+        databaseSelections[item.originId]?.targetDatabaseId ||
+        !item?.targetDatabaseView;
+
+      // 如果是数据清理/归档任务，需要检查源端和目标端
+      if ([TaskType.DATA_ARCHIVE, TaskType.DATA_DELETE].includes(taskType)) {
+        return hasSourceDatabase && hasTargetDatabase;
+      }
+      // 其他任务类型只需要检查源端
+      return hasSourceDatabase;
+    },
+    [databaseSelections, taskType],
+  );
+
+  // 判断工单是否应该被选中
+  const shouldBeSelected = useCallback(
+    (item: IImportScheduleTaskView) => {
+      if (item.importable && hasSelectedAllDatabases(item)) return true;
+      return false;
+    },
+    [hasSelectedAllDatabases],
+  );
+
+  // 更新选中状态
+  const updateSelectedRowKeys = useCallback(() => {
+    if (!data?.length) return;
+
+    const selectedIds = data.filter((item) => shouldBeSelected(item)).map((item) => item.originId);
+
+    setSelectedRowKeys(selectedIds);
+  }, [data, shouldBeSelected, setSelectedRowKeys]);
+
+  // 初始化和数据变化时更新选中状态
   useEffect(() => {
-    if (data?.length > 0 && groupedData[tableType] === undefined) {
-      setTableType('importable');
-    }
-  }, [data]);
+    updateSelectedRowKeys();
+  }, [data, updateSelectedRowKeys]);
+
+  // 数据库选择变化时更新选中状态
+  useEffect(() => {
+    updateSelectedRowKeys();
+  }, [databaseSelections, updateSelectedRowKeys]);
+
+  const handleDatabaseChange = useCallback(
+    (originId: string, type: 'databaseId' | 'targetDatabaseId', databaseId: number) => {
+      setDatabaseSelections((prev) => ({
+        ...prev,
+        [originId]: {
+          databaseId: type === 'databaseId' ? databaseId : prev[originId]?.databaseId ?? null,
+          targetDatabaseId:
+            type === 'targetDatabaseId' ? databaseId : prev[originId]?.targetDatabaseId ?? null,
+        },
+      }));
+    },
+    [],
+  );
+
+  const { importableColumns, typeNotMatchColumns, alreadyExistColumns } = useColumns(
+    taskType,
+    projectId,
+    handleDatabaseChange,
+  );
+
+  const handleShowOnlyImportableChange = useCallback(
+    (checked: boolean) => {
+      setShowOnlyImportable(checked);
+      if (checked) {
+        updateSelectedRowKeys();
+      }
+    },
+    [updateSelectedRowKeys],
+  );
+
+  const getFilteredData = useCallback(
+    (data: IImportScheduleTaskView[]) => {
+      if (!showOnlyImportable) {
+        return data;
+      }
+      return data.filter(shouldBeSelected);
+    },
+    [showOnlyImportable, shouldBeSelected],
+  );
 
   const tableRender = () => {
-    if (tableType === 'importable' && !groupedData['importable']) {
-      return (
-        <Empty
-          description={formatMessage({
-            id: 'src.component.Task.component.ImportModal.1BF95006',
-            defaultMessage: '暂无可导入的作业',
-          })}
-          style={{ padding: 24 }}
-        />
-      );
-    }
     return (
       <>
-        <Table
-          columns={columns}
-          dataSource={groupedData[tableType] || []}
-          loading={loading}
-          pagination={false}
-          scroll={{ y: 300 }}
-        />
+        <div style={{ display: tableType === 'TO_BE_IMPORTED' ? 'block' : 'none' }}>
+          {!groupedData['TO_BE_IMPORTED'] ? (
+            <Empty
+              description={formatMessage({
+                id: 'src.component.Task.component.ImportModal.1BF95006',
+                defaultMessage: '暂无可导入的作业',
+              })}
+              style={{ padding: 24 }}
+            />
+          ) : (
+            <Table
+              columns={importableColumns}
+              dataSource={getFilteredData(groupedData['TO_BE_IMPORTED'] || [])}
+              loading={loading}
+              pagination={false}
+              scroll={{ y: 300 }}
+              rowKey="originId"
+              rowSelection={{
+                selectedRowKeys: selectedRowKeys,
+                onChange: (selectedRowKeys) => {
+                  setSelectedRowKeys(selectedRowKeys as string[]);
+                },
+                getCheckboxProps: (record) => ({
+                  disabled: !hasSelectedAllDatabases(record),
+                }),
+              }}
+            />
+          )}
+        </div>
+        <div
+          style={{
+            display: tableType === ScheduleNonImportableType.TYPE_NOT_MATCH ? 'block' : 'none',
+          }}
+        >
+          <Table
+            columns={typeNotMatchColumns}
+            dataSource={getFilteredData(
+              groupedData[ScheduleNonImportableType.TYPE_NOT_MATCH] || [],
+            )}
+            loading={loading}
+            pagination={false}
+            scroll={{ y: 300 }}
+            rowKey="originId"
+          />
+        </div>
+        <div
+          style={{ display: tableType === ScheduleNonImportableType.IMPORTED ? 'block' : 'none' }}
+        >
+          <Table
+            columns={alreadyExistColumns}
+            dataSource={getFilteredData(groupedData[ScheduleNonImportableType.IMPORTED] || [])}
+            loading={loading}
+            pagination={false}
+            scroll={{ y: 300 }}
+            rowKey="originId"
+          />
+        </div>
       </>
     );
   };
 
+  const tablePrefixRender = (type: ScheduleNonImportableType | 'TO_BE_IMPORTED') => {
+    const map = {
+      TO_BE_IMPORTED: (
+        <Flex justify="space-between" style={{ marginBottom: 16 }}>
+          {formatMessage({
+            id: 'src.component.Task.component.ImportModal.C264F2F5',
+            defaultMessage:
+              '勾选需要导入的工单，导入后将重新启用。导入前请检查涉及的新旧数据库对象是否一致，否则导入或执行时可能出现失败。',
+          })}
+
+          <Checkbox
+            checked={showOnlyImportable}
+            onChange={(e) => handleShowOnlyImportableChange(e.target.checked)}
+          >
+            {formatMessage({
+              id: 'src.component.Task.component.ImportModal.3137AA28',
+              defaultMessage: '仅显示已选择数据库的工单',
+            })}
+          </Checkbox>
+        </Flex>
+      ),
+
+      [ScheduleNonImportableType.IMPORTED]: (
+        <div style={{ paddingBottom: 8 }}>
+          {formatMessage({
+            id: 'src.component.Task.component.ImportModal.F8B503DB',
+            defaultMessage: '以下工单已导入，无需重复操作。',
+          })}
+        </div>
+      ),
+
+      [ScheduleNonImportableType.TYPE_NOT_MATCH]: (
+        <div style={{ paddingBottom: 8 }}>
+          {formatMessage({
+            id: 'src.component.Task.component.ImportModal.49FDDB00',
+            defaultMessage: '以下工单类型不匹配、无法导入，建议选择对应工单类型重新导入。',
+          })}
+        </div>
+      ),
+    };
+    return map[type];
+  };
+
   return (
     <>
-      {groupedData['importable']?.length !== data?.length ? (
-        <Radio.Group
-          value={tableType}
-          onChange={(e) => setTableType(e.target.value)}
-          style={{ marginBottom: 16 }}
-        >
-          <Radio.Button value={'importable'} key={'importable'}>
+      <Radio.Group
+        value={tableType}
+        onChange={(e) => setTableType(e.target.value)}
+        style={{ marginBottom: 16 }}
+      >
+        {groupedData['TO_BE_IMPORTED']?.length > 0 && (
+          <Radio.Button value={'TO_BE_IMPORTED'} key={'TO_BE_IMPORTED'}>
             {formatMessage({
-              id: 'src.component.Task.component.ImportModal.E8DE787E',
-              defaultMessage: '可导入',
+              id: 'src.component.Task.component.ImportModal.F42820DF',
+              defaultMessage: '待导入',
             })}
 
             <Typography.Text type="secondary" style={{ paddingLeft: 4 }}>
-              {groupedData['importable']?.length || 0}
+              {groupedData['TO_BE_IMPORTED']?.length || 0}
             </Typography.Text>
           </Radio.Button>
-          {Object.keys(ScheduleNonImportableType)?.map((key) => {
+        )}
+
+        {Object.keys(ScheduleNonImportableType)
+          ?.filter((key) => groupedData[key as ScheduleNonImportableType]?.length > 0)
+          ?.map((key) => {
             return (
               <Radio.Button value={key} key={key}>
                 {ScheduleNonImportableTypeMap[key as ScheduleNonImportableType]}{' '}
@@ -370,8 +301,8 @@ const ImportPreviewTable: React.FC<ImportPreviewTableProps> = ({ data, loading, 
               </Radio.Button>
             );
           })}
-        </Radio.Group>
-      ) : null}
+      </Radio.Group>
+      {tablePrefixRender(tableType)}
       {tableRender()}
     </>
   );

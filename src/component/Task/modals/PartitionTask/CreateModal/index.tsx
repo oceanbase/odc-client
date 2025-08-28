@@ -69,6 +69,7 @@ import { useRequest } from 'ahooks';
 import { rules } from './const';
 import { Rule } from 'antd/es/form';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
+import ExecuteFailTip from '@/component/Task/component/ExecuteFailTip';
 
 const { Paragraph, Text } = Typography;
 
@@ -724,6 +725,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
               </Form.Item>
             </Spin>
             <Divider />
+            <ExecuteFailTip />
             <Form.Item>
               <Crontab
                 ref={crontabRef}

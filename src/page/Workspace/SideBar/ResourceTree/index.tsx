@@ -263,8 +263,7 @@ const ResourceTree: React.FC<IProps> = function ({
           });
       }
       case DatabaseGroup.project:
-      case DatabaseGroup.dataSource:
-      case DatabaseGroup.tenant: {
+      case DatabaseGroup.dataSource: {
         return databases.map((groupItem) => {
           const groupKey = getGroupKey(groupItem.mapId, groupMode);
           let data, icon;
@@ -276,7 +275,6 @@ const ResourceTree: React.FC<IProps> = function ({
           }
           return {
             title: groupItem.groupName,
-            tip: groupItem.tip,
             key: groupKey,
             type: GroupNodeToResourceNodeType[groupMode],
             data: data ?? null,
@@ -306,11 +304,13 @@ const ResourceTree: React.FC<IProps> = function ({
       }
       case DatabaseGroup.cluster:
       case DatabaseGroup.environment:
-      case DatabaseGroup.connectType: {
+      case DatabaseGroup.connectType:
+      case DatabaseGroup.tenant: {
         return databases.map((groupItem) => {
           const groupKey = getGroupKey(groupItem.mapId, groupMode);
           return {
             title: groupItem.groupName,
+            tip: groupItem.tip,
             key: groupKey,
             type: GroupNodeToResourceNodeType[groupMode],
             children: [...groupItem.secondGroup.values()]?.map((sItem) => {

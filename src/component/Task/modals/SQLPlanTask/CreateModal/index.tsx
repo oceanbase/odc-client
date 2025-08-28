@@ -62,6 +62,7 @@ import styles from './index.less';
 import setting from '@/store/setting';
 import { rules } from './const';
 import { Rule } from '@@node_modules/antd/es/form';
+import ExecuteFailTip from '@/component/Task/component/ExecuteFailTip';
 
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 
@@ -701,6 +702,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               </span>
             </Form.Item>
           </Space>
+          <ExecuteFailTip />
           <Form.Item>
             <Crontab ref={crontabRef} initialValue={crontab} onValueChange={handleCrontabChange} />
           </Form.Item>

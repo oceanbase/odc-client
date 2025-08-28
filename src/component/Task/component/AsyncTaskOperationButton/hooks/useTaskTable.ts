@@ -17,7 +17,7 @@ export interface AsyncTaskModalConfig {
   modalTitle: string;
   modalExtra: (count: number, ids?: number[]) => React.ReactNode;
 
-  checkStatus: (status: TaskStatus) => boolean;
+  checkStatus: (task: TaskRecord<TaskRecordParameters>) => boolean;
   checkStatusFailed: string;
 
   onReload: () => void;

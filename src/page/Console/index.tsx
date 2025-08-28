@@ -4,9 +4,6 @@ import { useMount, useRequest } from 'ahooks';
 import modal from '@/store/modal';
 import { Card, Col, Divider, Popconfirm, Radio, Row, Spin, Tooltip, Typography } from 'antd';
 import odc from '@/plugins/odc';
-import { ReactComponent as DownloadSvg } from '@/svgr/download-fill.svg';
-import { ReactComponent as GithubSvg } from '@/svgr/github.svg';
-import { ReactComponent as SendSvg } from '@/svgr/send-fill.svg';
 import { getImg } from '@/util/intl';
 
 import Icon, { ExperimentOutlined } from '@ant-design/icons';
@@ -29,12 +26,6 @@ import { sumTaskStats } from '@/util/utils';
 const paddingCal = (currentLayout) => {
   return currentLayout === gridConfig.all ? 0 : 8;
 };
-
-const aboutUsIcons = [
-  <Icon component={DownloadSvg} style={{ color: '#006AFF', fontSize: 14 }} />,
-  <Icon component={SendSvg} style={{ color: '#52c41a', fontSize: 14 }} />,
-  <Icon component={GithubSvg} style={{ fontSize: 14 }} />,
-];
 
 const Console = () => {
   const { quickStart, aboutUs, bestPractice, schdules } = ConsoleTextConfig;
@@ -368,19 +359,22 @@ const Console = () => {
                 <div className={styles.aboutUsContent}>
                   <div className={styles.docsWrapper}>
                     {aboutUs.helps.map((help, index) => {
+                      if (!odc.appConfig.canDownloadNewVersion && index === 0) {
+                        return null;
+                      }
                       return (
                         <div className={styles.aboutUsHelpDocItem}>
                           <LabelWithIcon
                             gap={9}
-                            icon={aboutUsIcons[index]}
+                            icon={help.icon}
                             label={
                               <div
                                 className={styles.docs}
                                 onClick={() => {
-                                  window.open(getOBDocsUrl(aboutUs.urlKeys[index]));
+                                  window.open(getOBDocsUrl(help.url));
                                 }}
                               >
-                                {help}
+                                {help.title}
                               </div>
                             }
                           />

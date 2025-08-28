@@ -196,7 +196,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
         <Form.Item noStyle>
           <DatabaseSelect
             name={['parameters', 'sourceDatabaseId']}
-            width={'336px'}
+            width={336}
             type={TaskType.STRUCTURE_COMPARISON}
             label={
               formatMessage({
@@ -219,7 +219,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
           />
           <DatabaseSelect
             name={['parameters', 'targetDatabaseId']}
-            width={'336px'}
+            width={336}
             disabled={!sourceDatabaseId}
             type={TaskType.STRUCTURE_COMPARISON}
             label={

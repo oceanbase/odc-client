@@ -24,8 +24,8 @@ import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import Icon, { ArrowDownOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
-import { Divider, Select, Space } from 'antd';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Divider, Flex, Select, Space } from 'antd';
 import SessionContext from '../context';
 import { DEFALT_WIDTH } from './const';
 import { IDatabase } from '@/d.ts/database';
@@ -46,6 +46,9 @@ interface IProps {
   datasourceMode?: boolean;
   projectMode?: boolean;
   onChange?: (value: number, database?: IDatabase) => void;
+  showProject?: boolean;
+  popoverWidth?: number;
+  manageLinkVisible?: boolean;
 }
 
 const SelectItem: React.FC<IProps> = ({
@@ -64,6 +67,9 @@ const SelectItem: React.FC<IProps> = ({
   isLogicalDatabase = false,
   datasourceMode = false,
   projectMode = isLogicalDatabase,
+  showProject = true,
+  popoverWidth,
+  manageLinkVisible = false,
 }) => {
   const { data: database, run: runDatabase } = useRequest(getDatabase, {
     manual: true,
@@ -152,7 +158,10 @@ const SelectItem: React.FC<IProps> = ({
     }
     if (!datasourceMode && database?.data) {
       return (
-        <Space size={1} style={{ color: 'var(--text-color-primary)', width: '100%' }}>
+        <Flex
+          gap={1}
+          style={{ color: 'var(--text-color-primary)', width: '100%', overflow: 'hidden' }}
+        >
           <>
             <RiskLevelLabel
               content={database?.data?.environment?.name}
@@ -164,8 +173,17 @@ const SelectItem: React.FC<IProps> = ({
               style={{ fontSize: 16, marginRight: 4, verticalAlign: 'textBottom' }}
             />
           </>
-          {database?.data?.name}
-        </Space>
+
+          <div
+            style={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+            title={database?.data?.name}
+          >
+            {database?.data?.name}
+          </div>
+        </Flex>
       );
     }
     return placeholder;
@@ -188,9 +206,10 @@ const SelectItem: React.FC<IProps> = ({
           projectId={projectId}
           dataSourceId={dataSourceId}
           filters={filters}
-          width={width || DEFALT_WIDTH}
+          width={popoverWidth || width || DEFALT_WIDTH}
           taskType={taskType}
           disabled={disabled}
+          manageLinkVisible={manageLinkVisible}
         >
           <Select
             disabled={disabled}
@@ -208,14 +227,14 @@ const SelectItem: React.FC<IProps> = ({
               width: width || DEFALT_WIDTH,
             }}
           >
-            {login.isPrivateSpace() ? null : (
-              <div className={styles.item}>
+            {login.isPrivateSpace() || !showProject ? null : (
+              <span>
                 {formatMessage({
                   id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.5AC43B24' /*项目：*/,
                   defaultMessage: '项目：',
                 })}
                 {database?.data?.project?.name}
-              </div>
+              </span>
             )}
             {isDatabaseInfoContainerSingleLine && <Divider type="vertical" />}
             <div className={styles.item}>
