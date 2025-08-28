@@ -153,25 +153,16 @@ const TreeSetting = () => {
   }, [gData, checkedKeys, expandedKeys]);
 
   const onExpand: TreeProps['onExpand'] = (expandedKeysValue) => {
-    console.log('onExpand', expandedKeysValue);
     setExpandedKeys(expandedKeysValue);
     setAutoExpandParent(false);
   };
 
   const onCheck: TreeProps['onCheck'] = (checkedKeysValue) => {
-    console.log('onCheck', checkedKeysValue);
     setCheckedKeys(checkedKeysValue as React.Key[]);
   };
 
   const onSelect: TreeProps['onSelect'] = (selectedKeysValue, info) => {
-    console.log('onSelect', info);
     setSelectedKeys(selectedKeysValue);
-  };
-
-  const onDragEnter: TreeProps['onDragEnter'] = (info) => {
-    console.log(info);
-    // expandedKeys, set it when controlled is needed
-    // setExpandedKeys(info.expandedKeys)
   };
 
   const onDrop: TreeProps['onDrop'] = (info) => {
@@ -285,7 +276,6 @@ const TreeSetting = () => {
           checkedKeys={checkedKeys}
           onSelect={onSelect}
           selectedKeys={selectedKeys}
-          onDragEnter={onDragEnter}
           onDrop={onDrop}
           treeData={gData}
         />
