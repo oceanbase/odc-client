@@ -142,7 +142,7 @@ const BarChart = ({ data }) => {
         chart.dispose();
       };
     }
-  }, [data]);
+  }, [data, checkedKeys]);
 
   return <div ref={chartRef} className="bar-chart-wrapper" />;
 };
