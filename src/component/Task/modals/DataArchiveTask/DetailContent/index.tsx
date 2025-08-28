@@ -20,7 +20,7 @@ import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import VariableConfigTable from '@/component/Task/component/VariableConfigTable';
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
 import type { CycleTaskDetail, IDataArchiveJobParameters, TaskOperationType } from '@/d.ts';
-import { TaskExecStrategy } from '@/d.ts';
+import { ShardingStrategy, TaskExecStrategy } from '@/d.ts';
 import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import {
@@ -38,7 +38,6 @@ import { getTaskExecStrategyMap, SyncTableStructureConfig } from '@/component/Ta
 import styles from '@/component/Task/index.less';
 import { InsertActionOptions } from '../CreateModal';
 import ArchiveRange from './ArchiveRange';
-import { shardingStrategyOptions } from '@/component/Task/component/ShardingStrategyItem';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import {
   DirtyRowActionEnum,
@@ -321,15 +320,8 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         >
           {insertActionLabel || '-'}
         </Descriptions.Item>
-        <Descriptions.Item
-          label={formatMessage({
-            id: 'src.component.Task.DataArchiveTask.DetailContent.4844C10F',
-            defaultMessage: '搜索策略',
-          })}
-          span={isCycleStrategy ? 2 : 1}
-        >
-          {shardingStrategyOptions.find((item) => item.value === jobParameters?.shardingStrategy)
-            ?.label || '-'}
+        <Descriptions.Item label={'通过全表扫描进行数据搜索'} span={isCycleStrategy ? 2 : 1}>
+          {jobParameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH ? '是' : '否'}
         </Descriptions.Item>
         <Descriptions.Item
           label={formatMessage({

@@ -91,7 +91,7 @@ const deleteByUniqueKeyOptions = [
 const defaultValue = {
   triggerStrategy: TaskExecStrategy.START_NOW,
   archiveRange: IArchiveRange.PORTION,
-  shardingStrategy: ShardingStrategy.AUTO,
+  shardingStrategy: ShardingStrategy.MATCH,
   tables: [null],
   rowLimit: 100,
   dataSizeLimit: 1,
@@ -676,7 +676,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               <DirtyRowAction dependentField="needCheckBeforeDelete" />
               <MaxAllowedDirtyRowCount />
               <TaskdurationItem form={form} />
-              <ShardingStrategyItem />
+              <ShardingStrategyItem form={form} />
               <ThrottleFormItem isShowDataSizeLimit={true} />
               <Form.Item
                 label={
