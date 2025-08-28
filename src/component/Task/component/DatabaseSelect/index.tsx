@@ -31,10 +31,16 @@ interface IProps {
   dataSourceId?: number;
   filters?: ISessionDropdownFiltersProps;
   extra?: string;
-  width?: string;
+  width?: number;
   placeholder?: string;
   isLogicalDatabase?: boolean;
   onChange?: (v: number, database?: IDatabase) => void;
+  showProject?: boolean;
+  validateStatus?: 'warning' | 'error' | 'success' | 'validating' | undefined;
+  help?: string;
+  style?: React.CSSProperties;
+  popoverWidth?: number;
+  manageLinkVisible?: boolean;
 }
 const DatabaseSelect: React.FC<IProps> = (props) => {
   const {
@@ -53,6 +59,12 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     disabled = false,
     isLogicalDatabase = false,
     onChange,
+    showProject = true,
+    validateStatus,
+    help,
+    style,
+    popoverWidth,
+    manageLinkVisible = false,
   } = props;
 
   return (
@@ -69,6 +81,9 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
           }), //请选择数据库
         },
       ]}
+      validateStatus={validateStatus}
+      help={help}
+      style={style}
     >
       <SessionSelect
         disabled={disabled}
@@ -80,6 +95,9 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
         onChange={onChange}
         isLogicalDatabase={isLogicalDatabase}
         placeholder={placeholder}
+        showProject={showProject}
+        popoverWidth={popoverWidth}
+        manageLinkVisible={manageLinkVisible}
       />
     </Form.Item>
   );

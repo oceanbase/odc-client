@@ -18,7 +18,7 @@ import HelpDoc from '@/component/helpDoc';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import type { FormInstance } from 'antd';
-import { Button, Form, Input, InputNumber, Select, Space, Tooltip } from 'antd';
+import { AutoComplete, Button, Form, Input, InputNumber, Select, Space, Tooltip } from 'antd';
 import classNames from 'classnames';
 import { variable } from './index';
 import styles from './index.less';
@@ -192,7 +192,7 @@ const VariableConfig: React.FC<IProps> = (props) => {
                   />
                 </Form.Item>
                 <Form.Item {...restField} name={[name, 'format']}>
-                  <Select
+                  <AutoComplete
                     placeholder={formatMessage({
                       id: 'odc.DataArchiveTask.CreateModal.VariableConfig.PleaseSelect',
                       defaultMessage: '请选择',

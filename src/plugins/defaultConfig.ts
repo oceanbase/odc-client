@@ -78,6 +78,7 @@ export default {
   connection: {
     sys: true,
   },
+  canDownloadNewVersion: true,
   task: {
     sys: true,
     isSupportTaksImport: false,

@@ -73,6 +73,7 @@ import { disabledDate, disabledTime } from '@/util/utils';
 import DirtyRowAction from '@/component/Task/component/DirtyRowAction';
 import MaxAllowedDirtyRowCount from '@/component/Task/component/MaxAllowedDirtyRowCount';
 import { rules } from './const';
+import ExecuteFailTip from '@/component/Task/component/ExecuteFailTip';
 
 export enum IArchiveRange {
   PORTION = 'portion',
@@ -732,13 +733,16 @@ const CreateModal: React.FC<IProps> = (props) => {
                 }
                 if (triggerStrategy === TaskExecStrategy.TIMER) {
                   return (
-                    <Form.Item>
-                      <Crontab
-                        ref={crontabRef}
-                        initialValue={crontab}
-                        onValueChange={handleCrontabChange}
-                      />
-                    </Form.Item>
+                    <>
+                      <ExecuteFailTip />
+                      <Form.Item>
+                        <Crontab
+                          ref={crontabRef}
+                          initialValue={crontab}
+                          onValueChange={handleCrontabChange}
+                        />
+                      </Form.Item>
+                    </>
                   );
                 }
                 return null;

@@ -24,6 +24,7 @@ import {
   IBatchTerminateFlowResult,
   IScheduleTerminateCmd,
   IScheduleTerminateResult,
+  ITaskTerminateCmd,
 } from '@/d.ts/importTask';
 
 const SubmitTripartiteTaskButton = (props: {
@@ -211,11 +212,14 @@ const SubmitTripartiteTaskButton = (props: {
       api: (terminateId: number) => {
         return getBatchCancelResult(terminateId?.toString?.());
       },
-      submitApi: (flowInstanceId: number[]) => {
-        return cancelFlowInstance(flowInstanceId);
+      submitApi: (data: ITaskTerminateCmd) => {
+        return cancelFlowInstance(data);
       },
       getSubmitParams: () => {
-        return props.tasks?.map((item) => item.id);
+        return {
+          flowInstanceIds: props.tasks?.map((item) => item.id),
+          taskType: props.tasks?.[0]?.type,
+        };
       },
       isTaskCompleted: (result: IBatchTerminateFlowResult[]) => {
         return result?.length > 0 && result?.every((i) => i?.terminateSucceed || i?.failReason);

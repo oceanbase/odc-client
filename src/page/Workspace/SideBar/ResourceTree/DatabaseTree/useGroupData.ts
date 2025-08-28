@@ -23,7 +23,7 @@ const useGroupData = (props: IProps) => {
     const datasourceGruop: Map<number, GroupWithDatabases[DatabaseGroup.dataSource]> = new Map();
     const clusterGroup: Map<string, GroupWithSecondGroup[DatabaseGroup.cluster]> = new Map();
     const projectGroup: Map<number, GroupWithDatabases[DatabaseGroup.project]> = new Map();
-    const tenantGroup: Map<string, GroupWithDatabases[DatabaseGroup.tenant]> = new Map();
+    const tenantGroup: Map<string, GroupWithSecondGroup[DatabaseGroup.tenant]> = new Map();
     const allDatabases: Map<number, IDatabase> = new Map();
     const filteredList = filter ? databaseList?.filter(filter) : databaseList;
     const allDatasources: IConnection[] = [];
@@ -152,19 +152,30 @@ const useGroupData = (props: IProps) => {
       // 租户分组
       {
         const { mapId, groupName, tip } = getMapIdByDB(db, DatabaseGroup.tenant);
-        const tenantDatabases: GroupWithDatabases[DatabaseGroup.tenant] = tenantGroup.get(
+        const tenantDatabases: GroupWithSecondGroup[DatabaseGroup.tenant] = tenantGroup.get(
           mapId,
         ) || {
           groupName,
           mapId,
           tip,
-          databases: [],
+          secondGroup: new Map(),
         };
+        const { mapId: secondGroupMapId, groupName: secondGroupgroupName } = getMapIdByDB(
+          db,
+          DatabaseGroup.dataSource,
+        );
+        const secondGroupDatabase: GroupWithDatabases[DatabaseGroup.dataSource] =
+          tenantDatabases.secondGroup.get(secondGroupMapId) || {
+            databases: [],
+            groupName: secondGroupgroupName,
+            mapId: secondGroupMapId,
+          };
         if (db.type === 'LOGICAL') {
-          tenantDatabases.databases.unshift(db);
+          secondGroupDatabase.databases.unshift(db);
         } else {
-          tenantDatabases.databases.push(db);
+          secondGroupDatabase.databases.push(db);
         }
+        tenantDatabases.secondGroup.set(secondGroupMapId, secondGroupDatabase);
         tenantGroup.set(mapId, tenantDatabases);
       }
     });
