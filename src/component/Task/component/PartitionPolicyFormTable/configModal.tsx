@@ -379,12 +379,20 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
     if (isBatch || isSingleGenerateCount) {
       return (
         <Popconfirm
-          styles={{ root: { width: '216px' } }}
+          styles={{
+            root: {
+              width: '216px',
+            },
+          }}
           title={
-            <>
-              {isSingleGenerateCount && <div>{isSingleGenerateCountMessage}</div>}
-              {isBatch && <div>{isBatchMessage}</div>}
-            </>
+            isSingleGenerateCount ? (
+              <>
+                <div>{isSingleGenerateCountMessage}</div>
+                <div>{isBatchMessage}</div>
+              </>
+            ) : (
+              isBatchMessage
+            )
           } /*批量设置将覆盖原有的策略，是否确定设置？*/
           onConfirm={handleOk}
           okText={formatMessage({
@@ -396,7 +404,15 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
             defaultMessage: '返回',
           })} /*返回*/
         >
-          {renderConfirmButton()}
+          <Button type="primary">
+            {' '}
+            {
+              formatMessage({
+                id: 'odc.components.PartitionPolicyTable.configModal.Ok',
+                defaultMessage: '确定',
+              }) /*确定*/
+            }
+          </Button>
         </Popconfirm>
       );
     }

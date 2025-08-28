@@ -1,4 +1,9 @@
 import { formatMessage } from '@/util/intl';
+import { TaskPageType } from '@/d.ts';
+import { ReactComponent as DownloadSvg } from '@/svgr/download-fill.svg';
+import { ReactComponent as GithubSvg } from '@/svgr/github.svg';
+import { ReactComponent as SendSvg } from '@/svgr/send-fill.svg';
+import Icon from '@ant-design/icons';
 import { TaskType } from '@/d.ts';
 import { ScheduleType } from '@/d.ts/schedule';
 

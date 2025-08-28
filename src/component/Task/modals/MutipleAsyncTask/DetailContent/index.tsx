@@ -54,7 +54,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
     const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
     return (
       <>
-        <Descriptions column={2}>
+        <Descriptions column={2} style={{ marginBottom: 16 }}>
           <Descriptions.Item label={'ID'}>{task?.id}</Descriptions.Item>
           <Descriptions.Item label={'类型'}>{TaskTypeMap?.[task?.type]}</Descriptions.Item>
           <Descriptions.Item
@@ -248,7 +248,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
             {task?.description || '-'}
           </Descriptions.Item>
         </Descriptions>
-        <Divider />
+        <Divider style={{ marginTop: 16 }} />
         <Descriptions column={4}>
           <Descriptions.Item
             span={2}

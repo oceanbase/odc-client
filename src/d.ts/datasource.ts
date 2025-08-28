@@ -56,6 +56,13 @@ export enum IDataSourceType {
   AWSS3 = 'AWSS3',
 }
 
+export enum IForbiddenSQLConsoleDataSourceType {
+  OSS = 'OSS',
+  COS = 'COS',
+  AWS = 'AWS',
+  OBS = 'OBS',
+}
+
 export enum ConnectionMode {
   MYSQL = 'MYSQL',
   DORIS = 'DORIS',

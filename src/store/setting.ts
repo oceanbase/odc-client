@@ -28,6 +28,7 @@ import { isLinux, isWin64, kbToMb } from '@/util/utils';
 import { message } from 'antd';
 import { action, observable, computed } from 'mobx';
 import login, { sessionKey } from '@/store/login';
+import { makeDataShareable } from '@/util/makeDataShareable';
 import { IAIConfig } from '@/d.ts/llm';
 import { getAIConfig, updateAIConfig } from '@/util/request/largeModel';
 
@@ -276,6 +277,12 @@ export class SettingStore {
     background: '#1F293D',
     boxShadow: '0px 1px 4px 0px rgba(0,21,41,0.12)',
   };
+
+  constructor() {
+    makeDataShareable(this, 'configurations', {
+      channelName: `user-config`,
+    });
+  }
 
   @action
   public setHeaderStyle(headerStyle: any) {

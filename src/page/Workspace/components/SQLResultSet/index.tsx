@@ -31,6 +31,8 @@ import { ModalStore } from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
+import setting from '@/store/setting';
+import { EquerySqlResultDisplayMode } from '@/component/ODCSetting/config/user/database';
 import { inject, observer } from 'mobx-react';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import DDLResultSet from '../DDLResultSet';
@@ -46,6 +48,9 @@ export const sqlLintTabKey = 'sqlLint';
 export const enum MenuKey {
   LOCK = 'LOCK',
   UNLOCK = 'UNLOCK',
+  CLOSE_CURRENT = 'CLOSE_CURRENT',
+  CLOSE_OTHERS = 'CLOSE_OTHERS',
+  CLOSE_ALL = 'CLOSE_ALL',
 }
 
 interface IProps {
@@ -68,6 +73,8 @@ interface IProps {
   onExportResultSet: (resultSetIndex: number, limit: number, tableName: string) => void;
   onLockResultSet?: (key: string) => void;
   onUnLockResultSet?: (key: string) => void;
+  onCloseOtherResultSets?: (currentKey: string) => void;
+  onCloseAllResultSets?: () => void;
   onShowExecuteDetail: (sql: string, tag: string) => void;
   hanldeCloseLintPage: () => void;
   onSubmitRows: (
@@ -105,6 +112,8 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     onLockResultSet,
     onUnLockResultSet,
     onCloseResultSet,
+    onCloseOtherResultSets,
+    onCloseAllResultSets,
     hanldeCloseLintPage,
     onUpdateEditing,
   } = props;
@@ -146,10 +155,29 @@ const SQLResultSet: React.FC<IProps> = function (props) {
             onUnLockResultSet(key);
           }
           break;
+        case MenuKey.CLOSE_CURRENT:
+          onCloseResultSet(key);
+          break;
+        case MenuKey.CLOSE_OTHERS:
+          if (onCloseOtherResultSets) {
+            onCloseOtherResultSets(key);
+          }
+          break;
+        case MenuKey.CLOSE_ALL:
+          if (onCloseAllResultSets) {
+            onCloseAllResultSets();
+          }
+          break;
         default:
       }
     },
-    [onLockResultSet, onUnLockResultSet],
+    [
+      onLockResultSet,
+      onUnLockResultSet,
+      onCloseResultSet,
+      onCloseOtherResultSets,
+      onCloseAllResultSets,
+    ],
   );
 
   /**
@@ -162,6 +190,11 @@ const SQLResultSet: React.FC<IProps> = function (props) {
     locked: boolean,
     resultSetKey: string,
   ): ReactNode {
+    // 检查是否为追加模式
+    const isAppendMode =
+      setting.configurations['odc.sqlexecute.querySqlResultDisplayMode'] ===
+      EquerySqlResultDisplayMode.APPEND;
+
     const menu: MenuProps = {
       style: {
         width: '160px',
@@ -171,22 +204,37 @@ const SQLResultSet: React.FC<IProps> = function (props) {
         e.domEvent.stopPropagation();
         handleMenuClick(e, resultSetKey);
       },
-      items: [
-        {
-          key: MenuKey.LOCK,
-          label: formatMessage({
-            id: 'workspace.window.sql.record.column.lock',
-            defaultMessage: '固定',
-          }),
-        },
-        {
-          key: MenuKey.UNLOCK,
-          label: formatMessage({
-            id: 'workspace.window.sql.record.column.unlock',
-            defaultMessage: '解除固定',
-          }),
-        },
-      ],
+      items: isAppendMode
+        ? [
+            {
+              key: MenuKey.CLOSE_CURRENT,
+              label: '关闭该结果集',
+            },
+            {
+              key: MenuKey.CLOSE_OTHERS,
+              label: '关闭其它结果集',
+            },
+            {
+              key: MenuKey.CLOSE_ALL,
+              label: '关闭所有结果集',
+            },
+          ]
+        : [
+            {
+              key: MenuKey.LOCK,
+              label: formatMessage({
+                id: 'workspace.window.sql.record.column.lock',
+                defaultMessage: '固定',
+              }),
+            },
+            {
+              key: MenuKey.UNLOCK,
+              label: formatMessage({
+                id: 'workspace.window.sql.record.column.unlock',
+                defaultMessage: '解除固定',
+              }),
+            },
+          ],
     };
 
     return (

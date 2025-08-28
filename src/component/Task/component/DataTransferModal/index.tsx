@@ -27,9 +27,9 @@ import styles from './index.less';
 import ObjTable from './ObjTables';
 import { getImportTypeLabel } from '@/component/Task/modals/ImportTask/CreateModal/ImportForm/helper';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
+import EllipsisText from '@/component/EllipsisText';
 import { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
-import EllipsisText from '@/component/EllipsisText';
 import login from '@/store/login';
 
 const SimpleTextItem: React.FC<{
@@ -618,6 +618,12 @@ class TaskContent extends React.Component<any, any> {
 
         {this.renderExt(isImport)}
         <>
+          <Divider
+            style={{
+              marginTop: 16,
+            }}
+          />
+
           <div>
             <div className="o-tableHeader">
               {isImport
@@ -654,7 +660,7 @@ class TaskContent extends React.Component<any, any> {
         </Row>
         <Divider
           style={{
-            marginTop: 4,
+            marginTop: 16,
           }}
         />
         <Row className={styles.spaceBlock}>

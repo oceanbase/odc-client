@@ -182,7 +182,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
       <Drawer
         open={modalStore.dataMockerVisible}
         onClose={closeWithConfirm}
-        destroyOnClose
+        destroyOnHidden
         width={960}
         rootClassName="o-adaptive-drawer"
         title={formatMessage({

@@ -107,6 +107,7 @@ const CronInputName2cronSpeedLabelMap = {
 };
 
 const reg = /[*?]/;
+const intervalReg = /\*\/\d+/;
 const everyReg = /[*]/;
 const charsReg = /[#L]/;
 
@@ -482,7 +483,7 @@ class Translator {
       return nodes
         ?.map((node) => {
           let str = '';
-          if (reg?.test(node.value)) {
+          if (reg?.test(node.value) && !intervalReg.test(node.value)) {
             if (everyReg?.test(node.value)) {
               return (str = getCronLabel(name as CronInputName, node.value));
             }

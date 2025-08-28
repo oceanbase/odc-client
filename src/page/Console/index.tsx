@@ -4,6 +4,8 @@ import { useMount, useRequest } from 'ahooks';
 import dayjs, { Dayjs } from 'dayjs';
 import { Card, Col, Divider, Row, Select, Spin, Typography, DatePicker } from 'antd';
 import odc from '@/plugins/odc';
+import { getImg } from '@/util/intl';
+
 import { ReactComponent as DownloadSvg } from '@/svgr/download-fill.svg';
 import { ReactComponent as GithubSvg } from '@/svgr/github.svg';
 import { ReactComponent as SendSvg } from '@/svgr/send-fill.svg';

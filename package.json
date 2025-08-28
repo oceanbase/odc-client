@@ -12,6 +12,7 @@
     "name": "odc"
   },
   "scripts": {
+    "install-odc": "node ./scripts/rename.js && pnpm install --registry=https://registry.npmmirror.com",
     "analyze": "ANALYZE=1 cross-env NODE_OPTIONS=--max_old_space_size=8192 max build",
     "build-main-dev": "cross-env NODE_OPTIONS=--max_old_space_size=8192 NODE_ENV=development webpack -w --config ./build/webpack.main.config.js",
     "build-main-prod": "cross-env NODE_OPTIONS=--max_old_space_size=8192 NODE_ENV=production webpack --config ./build/webpack.main.prod.config.js",
@@ -23,7 +24,7 @@
     "dev:client": "concurrently \"UMI_ENV=client npm run dev\" \"npm run build-main-dev\"",
     "postinstall": "node scripts/plugin/initPlugins.js && max setup",
     "oic:clear": "oic --configPath ./scripts/must.js --clear",
-    "oic:extract": "oic --configPath ./scripts/must.js --extract all",
+    "oic:extract": "oic --configPath ./scripts/must.js --parallel --extract all",
     "oic:migrate": "oic --configPath ./scripts/must.js --migrate",
     "prepack": "node ./scripts/clientDependencies/index.js",
     "pack-client:all": "node ./scripts/client/build.js all",
@@ -93,7 +94,7 @@
     "@types/react-virtualized": "^9.21.21",
     "@types/request": "^2.48.7",
     "@umijs/fabric": "^3.0.0",
-    "@umijs/max": "^4.0.66",
+    "@umijs/max": "^4.4.12",
     "adm-zip": "^0.5.5",
     "ahooks": "^2.9.0",
     "ali-oss": "^6.17.1",

@@ -9,3 +9,28 @@
     }
   }
 }
+
+.checkboxError {
+  color: var(--text-color-error);
+  :global(.ant-checkbox-inner) {
+    border-color: var(--text-color-error);
+    color: var(--text-color-error);
+  }
+}
+
+.changeDatabaseInput {
+  :global(.ant-form-item) {
+    :global(.ant-select) {
+      :global(.ant-select-selector) {
+        background-color: var(--table-edit-color);
+      }
+    }
+  }
+}
+
+.databasePopoverName {
+  cursor: pointer;
+  &:hover {
+    color: var(--text-color-link);
+  }
+}

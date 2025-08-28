@@ -108,7 +108,7 @@ const TaskContent: React.FC<IProps> = (props) => {
       </Descriptions>
       <Divider
         style={{
-          marginTop: 4,
+          marginTop: 16,
         }}
       />
 
@@ -157,6 +157,11 @@ const TaskContent: React.FC<IProps> = (props) => {
         direction="column"
       />
 
+      <Divider
+        style={{
+          marginTop: 16,
+        }}
+      />
       <Descriptions column={2}>
         <Descriptions.Item
           label={
@@ -191,7 +196,7 @@ const TaskContent: React.FC<IProps> = (props) => {
       </Descriptions>
       <Divider
         style={{
-          marginTop: 4,
+          marginTop: 16,
         }}
       />
 

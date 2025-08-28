@@ -843,6 +843,49 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     sqlStore.unlockResultSet(pageKey, key);
   };
 
+  public handleCloseOtherResultSets = (currentKey: string) => {
+    const { sqlStore, pageKey } = this.props;
+    const resultSets = sqlStore.resultSets.get(pageKey);
+
+    // 关闭其它结果集
+    sqlStore.closeOtherResultSets(pageKey, currentKey);
+
+    // 检查当前激活tab是否被关闭，如果被关闭则切换到当前结果集
+    const updatedResultSets = sqlStore.resultSets.get(pageKey);
+    if (
+      updatedResultSets &&
+      !updatedResultSets.find((set) => set.uniqKey === sqlStore.activeTab[pageKey])
+    ) {
+      sqlStore.setActiveTab(pageKey, currentKey);
+    }
+
+    this.triggerTableLayout();
+  };
+
+  public handleCloseAllResultSets = () => {
+    const { sqlStore, pageKey } = this.props;
+
+    // 关闭所有结果集
+    sqlStore.closeAllResultSets(pageKey);
+
+    // 切换到执行记录tab
+    const updatedResultSets = sqlStore.resultSets.get(pageKey);
+    if (!updatedResultSets || updatedResultSets.length === 0) {
+      sqlStore.setActiveTab(pageKey, 'records');
+    } else {
+      // 优先定位到日志tab
+      const logTab = updatedResultSets.find((set) => set.type === 'LOG');
+      if (logTab) {
+        sqlStore.setActiveTab(pageKey, logTab.uniqKey);
+      } else {
+        // 如果没有日志tab，则定位到第一个（固定的结果集）
+        sqlStore.setActiveTab(pageKey, updatedResultSets[0].uniqKey);
+      }
+    }
+
+    this.triggerTableLayout();
+  };
+
   public handleChangeResultSetTab = (activeKey: string) => {
     const { sqlStore, pageKey } = this.props;
     sqlStore.setActiveTab(pageKey, activeKey);
@@ -1307,6 +1350,8 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
                 onCloseResultSet={this.handleCloseResultSet}
                 onLockResultSet={this.handleLockResultSet}
                 onUnLockResultSet={this.handleUnLockResultSet}
+                onCloseOtherResultSets={this.handleCloseOtherResultSets}
+                onCloseAllResultSets={this.handleCloseAllResultSets}
                 onExportResultSet={this.handleStartExportResultSet}
                 onShowExecuteDetail={this.handleShowExecuteDetail}
                 onShowTrace={this.handleShowTrace}
