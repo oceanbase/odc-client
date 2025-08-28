@@ -7,6 +7,7 @@ import Crontab from '@/component/Crontab';
 import { disabledDate, disabledTime } from '@/util/utils';
 import { forwardRef } from 'react';
 import { ICrontab } from '@/component/Crontab/interface';
+import ExecuteFailTip from '@/component/Task/component/ExecuteFailTip';
 
 interface TriggerStrategyFormProps {
   crontab?: ICrontab;
@@ -76,9 +77,12 @@ const SchduleExecutionMethodForm = forwardRef<
           }
           if (triggerStrategy === TaskExecStrategy.TIMER) {
             return (
-              <Form.Item>
-                <Crontab ref={ref} initialValue={crontab} onValueChange={handleCrontabChange} />
-              </Form.Item>
+              <>
+                <ExecuteFailTip />
+                <Form.Item>
+                  <Crontab ref={ref} initialValue={crontab} onValueChange={handleCrontabChange} />
+                </Form.Item>
+              </>
             );
           }
           return null;

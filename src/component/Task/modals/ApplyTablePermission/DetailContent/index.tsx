@@ -22,9 +22,9 @@ import type { IApplyTablePermissionTaskParams, TaskDetail } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
 import { Descriptions, Divider, Space } from 'antd';
 import { useMemo } from 'react';
-import { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import { permissionOptionsMap } from '../';
 import { getExpireTimeLabel } from '@/component/Task/helper';
+import { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import EllipsisText from '@/component/EllipsisText';
 
 const getConnectionColumns = () => {
@@ -122,7 +122,7 @@ const TaskContent: React.FC<IProps> = (props) => {
       </Descriptions>
       <Divider
         style={{
-          marginTop: 4,
+          marginTop: 16,
         }}
       />
 
@@ -157,7 +157,7 @@ const TaskContent: React.FC<IProps> = (props) => {
 
       <Divider
         style={{
-          marginTop: 4,
+          marginTop: 16,
         }}
       />
 
@@ -189,7 +189,7 @@ const TaskContent: React.FC<IProps> = (props) => {
       </Descriptions>
       <Divider
         style={{
-          marginTop: 4,
+          marginTop: 16,
         }}
       />
 

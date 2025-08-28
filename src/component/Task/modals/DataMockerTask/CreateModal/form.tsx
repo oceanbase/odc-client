@@ -212,7 +212,7 @@ const DataMockerForm: React.FC<IDataMockerFormProps> = inject('settingStore')(
                   form.resetFields(['tableName', 'columns']);
                 }}
                 projectId={projectId}
-                width={'441px'}
+                width={441}
                 type={TaskType.DATAMOCK}
               />
             </Col>

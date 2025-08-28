@@ -50,7 +50,6 @@ import GlobalModals from './GlobalModals';
 import WorkBenchLayout from './Layout';
 import SideBar from './SideBar';
 import { isLogicalDatabase } from '@/util/database';
-import { DatabaseGroup } from '@/d.ts/database';
 import { ResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/type';
 import { getAsyncResultSet } from '@/common/network/task';
 

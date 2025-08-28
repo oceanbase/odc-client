@@ -8,6 +8,8 @@ import type { PageStore } from '@/store/page';
 import type { TaskStore } from '@/store/task';
 import { useLoop } from '@/util/hooks/useLoop';
 import { formatMessage } from '@/util/intl';
+import { getLocalFormatDateTime } from '@/util/utils';
+import { flatten } from 'lodash';
 import Icon, { DownOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Tooltip, Popover, Space, Typography, Dropdown } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -88,9 +90,6 @@ const TaskTable: React.FC<IProps> = (props) => {
   const isAll = TaskPageType.ALL === taskTabType;
   const [hoverInNewTaskMenuBtn, setHoverInNewTaskMenuBtn] = useState(false);
   const [hoverInNewTaskMenu, setHoverInNewTaskMenu] = useState(false);
-  const [importModalVisible, setImportModalVisible] = useState<boolean>(false);
-  const [importProjectId, setImportProjectId] = useState<string>();
-  const { isSubmitImport, debounceSubmit } = useImport(props.onReloadList, importProjectId);
   const { runAction } = useUrlAction();
 
   const { loop: loadData, destory } = useLoop((count) => {
@@ -302,7 +301,7 @@ const TaskTable: React.FC<IProps> = (props) => {
         </a>
       </Button>
     );
-  }, [isAll, taskTabType, isSubmitImport]);
+  }, [isAll, taskTabType]);
 
   const batchOperation = () => {
     if (projectArchived) return;
@@ -408,16 +407,6 @@ const TaskTable: React.FC<IProps> = (props) => {
         }}
         showSelectedInfoBar={false}
         rowSelecter={[TaskPageType.ALL]?.includes(taskTabType) ? null : rowSelection}
-      />
-      <ImportModal
-        taskType={taskTabType as any}
-        open={importModalVisible}
-        onCancel={() => setImportModalVisible(false)}
-        onOk={(scheduleTaskImportRequest, previewData, projectId) => {
-          setImportModalVisible(false);
-          setImportProjectId(projectId);
-          debounceSubmit(scheduleTaskImportRequest, previewData);
-        }}
       />
     </TableCard>
   );

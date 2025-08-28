@@ -9,10 +9,10 @@ import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
 import { useParams } from '@umijs/max';
 import { useRequest } from 'ahooks';
-import { Badge, Popover, Spin, Tooltip, Tree, Button, Radio } from 'antd';
+import { Badge, Popover, Spin, Tooltip, Tree, Button, Radio, Space } from 'antd';
 import { DataNode } from 'antd/lib/tree';
 import { toInteger } from 'lodash';
-import { UserStore } from '@/store/login';
+import login, { UserStore } from '@/store/login';
 import { inject, observer } from 'mobx-react';
 import { isConnectTypeBeFileSystemGroup, isPgDataDataSource } from '@/util/connection';
 import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -43,6 +43,7 @@ import {
 import DatasourceSelectEmpty from '@/component/Empty/DatasourceSelectEmpty';
 import DatabaseSelectEmpty from '@/component/Empty/DatabaseSelectEmpty';
 import renderDatabaseNode from './renderDatabaseNode';
+import { ExportOutlined } from '@ant-design/icons';
 import { ScheduleType } from '@/d.ts/schedule';
 
 export interface IDatabasesTitleProps {
@@ -79,6 +80,7 @@ interface IProps {
   userStore?: UserStore;
   checkModeConfig?: ISessionDropdownCheckModeConfigProps;
   groupMode?: DatabaseGroup;
+  manageLinkVisible?: boolean;
 }
 
 const SessionDropdown: React.FC<IProps> = (props) => {
@@ -95,6 +97,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
     userStore,
     groupMode: initGroupMode,
     checkModeConfig = null,
+    manageLinkVisible = false,
   } = props;
   const { onSelect, checkedKeys, setCheckedKeys, setOptions } = checkModeConfig || {};
   const context = useContext(SessionContext);
@@ -154,54 +157,51 @@ const SessionDropdown: React.FC<IProps> = (props) => {
     manual: true,
   });
 
+  const filter = (database: IDatabase) => {
+    if (!context?.isLogicalDatabase && database.type === 'LOGICAL' && !isIncludeLogicalDb) {
+      return false;
+    }
+    if (
+      context?.isLogicalDatabase
+        ? database.type !== 'LOGICAL'
+        : database.type !== 'PHYSICAL' && !isIncludeLogicalDb
+    ) {
+      return false;
+    }
+    const support =
+      !taskType ||
+      database.type === 'LOGICAL' ||
+      getDataSourceModeConfig(database.dataSource?.type)?.features?.task?.includes(taskType);
+    if (!support) {
+      return false;
+    }
+    if (!taskType && !getDataSourceModeConfig(database?.dataSource?.type)?.features?.sqlconsole) {
+      return false;
+    }
+    if (
+      hasDialectTypesFilter &&
+      !filters?.dialectTypes?.includes(database?.dataSource?.dialectType)
+    ) {
+      return false;
+    }
+    if (isConnectTypeBeFileSystemGroup(database?.dataSource?.type) && filters?.hideFileSystem) {
+      return false;
+    }
+    if (
+      hasFeature &&
+      !getDataSourceModeConfig(database?.dataSource?.type)?.features[filters?.feature]
+    ) {
+      return false;
+    }
+    if (projectId && database?.project?.id && toInteger(projectId) !== database?.project?.id) {
+      return false;
+    }
+    return true;
+  };
+
   const { DatabaseGroupMap, allDatasources } = useGroupData({
     databaseList: data?.contents,
-    filter: (database: IDatabase) => {
-      if (!context?.isLogicalDatabase && database.type === 'LOGICAL' && !isIncludeLogicalDb) {
-        return false;
-      }
-      if (
-        context?.isLogicalDatabase
-          ? database.type !== 'LOGICAL'
-          : database.type !== 'PHYSICAL' && !isIncludeLogicalDb
-      ) {
-        return false;
-      }
-      const support =
-        !taskType ||
-        database.type === 'LOGICAL' ||
-        getDataSourceModeConfig(database.dataSource?.type)?.features?.task?.includes(taskType);
-      if (!support) {
-        return false;
-      }
-      if (
-        scheduleType &&
-        !getDataSourceModeConfig(database?.dataSource?.type)?.features?.schedule?.includes(
-          scheduleType,
-        )
-      ) {
-        return false;
-      }
-      if (!taskType && !getDataSourceModeConfig(database?.dataSource?.type)?.features?.sqlconsole) {
-        return false;
-      }
-      if (
-        hasDialectTypesFilter &&
-        !filters?.dialectTypes?.includes(database?.dataSource?.dialectType)
-      ) {
-        return false;
-      }
-      if (isConnectTypeBeFileSystemGroup(database?.dataSource?.type) && filters?.hideFileSystem) {
-        return false;
-      }
-      if (
-        hasFeature &&
-        !getDataSourceModeConfig(database?.dataSource?.type)?.features[filters?.feature]
-      ) {
-        return false;
-      }
-      return true;
-    },
+    filter,
   });
 
   useEffect(() => {
@@ -372,7 +372,9 @@ const SessionDropdown: React.FC<IProps> = (props) => {
         })
         .filter(Boolean);
     } else if (tab === TabsType.recentlyUsed) {
-      _treeData = databasesHistory?.map((database) => renderDatabaseNode({ taskType, database }));
+      _treeData = databasesHistory
+        ?.filter(filter)
+        ?.map((database) => renderDatabaseNode({ taskType, database }));
     } else {
       switch (groupMode) {
         case DatabaseGroup.none: {
@@ -387,8 +389,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
           break;
         }
         case DatabaseGroup.project:
-        case DatabaseGroup.dataSource:
-        case DatabaseGroup.tenant: {
+        case DatabaseGroup.dataSource: {
           _treeData = [...(DatabaseGroupMap[groupMode]?.values() || [])].map((groupItem) => {
             const groupKey = getGroupKey(groupItem.mapId, groupMode);
             return {
@@ -415,7 +416,8 @@ const SessionDropdown: React.FC<IProps> = (props) => {
         }
         case DatabaseGroup.cluster:
         case DatabaseGroup.environment:
-        case DatabaseGroup.connectType: {
+        case DatabaseGroup.connectType:
+        case DatabaseGroup.tenant: {
           _treeData = [...(DatabaseGroupMap[groupMode]?.values() || [])].map((groupItem) => {
             const groupKey = getGroupKey(groupItem.mapId, groupMode);
             return {
@@ -509,6 +511,32 @@ const SessionDropdown: React.FC<IProps> = (props) => {
   }
 
   function footerRender() {
+    if (manageLinkVisible) {
+      return (
+        <div className={styles.footer}>
+          <Button
+            type="link"
+            onClick={() => {
+              const isPrivateSpace = login.isPrivateSpace();
+              if (isPrivateSpace) {
+                window.open(`#/sqlworkspace`, '_blank');
+              } else {
+                window.open(`#/project/${projectId}/database`, '_blank');
+              }
+            }}
+          >
+            <Space>
+              {formatMessage({
+                id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.SessionDropdown.49B355DA',
+                defaultMessage: '管理数据库',
+              })}
+
+              <ExportOutlined />
+            </Space>
+          </Button>
+        </div>
+      );
+    }
     if (!checkModeConfig || !treeData?.length) return;
     return (
       <div className={styles.footer}>
@@ -529,6 +557,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
             })}
           </Button>
         )}
+
         {checkedKeys?.length === canCheckedDbKeys?.length && (
           <Button
             type="link"
@@ -574,6 +603,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
                 {!context.datasourceMode && !checkModeConfig && !userStore.isPrivateSpace() && (
                   <DatabaseSelectTab tab={tab} setTab={setTab} />
                 )}
+
                 {tab === TabsType.all && (
                   <Search
                     searchValue={searchValue}
@@ -584,6 +614,7 @@ const SessionDropdown: React.FC<IProps> = (props) => {
                     }}
                   />
                 )}
+
                 {!context.datasourceMode && tab === TabsType.all && (
                   <span className={styles.groupIcon}>
                     <Group setGroupMode={setGroupMode} groupMode={groupMode} />

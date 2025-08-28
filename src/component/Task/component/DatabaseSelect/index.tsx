@@ -34,10 +34,16 @@ interface IProps {
   dataSourceId?: number;
   filters?: ISessionDropdownFiltersProps;
   extra?: string;
-  width?: string;
+  width?: number;
   placeholder?: string;
   isLogicalDatabase?: boolean;
   onChange?: (v: number, database?: IDatabase) => void;
+  showProject?: boolean;
+  validateStatus?: 'warning' | 'error' | 'success' | 'validating' | undefined;
+  help?: string;
+  style?: React.CSSProperties;
+  popoverWidth?: number;
+  manageLinkVisible?: boolean;
   onInit?: (database?: IDatabase) => void;
   rules?: Rule[];
 }
@@ -59,6 +65,12 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
     disabled = false,
     isLogicalDatabase = false,
     onChange,
+    showProject = true,
+    validateStatus,
+    help,
+    style,
+    popoverWidth,
+    manageLinkVisible = false,
     onInit,
     rules,
   } = props;
@@ -68,6 +80,9 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
       label={label}
       name={name}
       required
+      validateStatus={validateStatus}
+      help={help}
+      style={style}
       rules={
         rules || [
           {
@@ -92,6 +107,9 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
         onChange={onChange}
         isLogicalDatabase={isLogicalDatabase}
         placeholder={placeholder}
+        showProject={showProject}
+        popoverWidth={popoverWidth}
+        manageLinkVisible={manageLinkVisible}
       />
     </Form.Item>
   );

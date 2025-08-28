@@ -6,7 +6,14 @@ import {
 } from '@/d.ts/migrateTask';
 import { IAsyncTaskOperationConfig } from '.';
 import { Popover, Space, Tooltip, Typography } from 'antd';
-import { IConnection, TaskDetail, TaskRecordParameters, TaskStatus, TaskType } from '@/d.ts';
+import {
+  IConnection,
+  TaskDetail,
+  TaskRecord,
+  TaskRecordParameters,
+  TaskStatus,
+  TaskType,
+} from '@/d.ts';
 import { getLocalFormatDateTime } from '@/util/utils';
 import {
   status as TaskStatusMap,
@@ -25,7 +32,12 @@ import {
   SchedulestatusThatCanBeTerminate,
 } from '@/constant/triangularization';
 import { TaskTypeMap } from '../TaskTable/const';
-import { ScheduleStatus, ScheduleType } from '@/d.ts/schedule';
+import {
+  IScheduleRecord,
+  ScheduleRecordParameters,
+  ScheduleStatus,
+  ScheduleType,
+} from '@/d.ts/schedule';
 
 export const DatabasePopover: React.FC<{
   connection: Partial<IConnection>;
@@ -480,19 +492,30 @@ export const isScheduleMigrateTask = (scheduleType: ScheduleType) => {
   ]?.includes(scheduleType);
 };
 
-// 是否是在正常调度状态的任务(已创建, 已启用, 已禁用)
-export const checkIsScheduleTaskListCanBeExported = (taskStatus: TaskStatus) => {
-  return scheduleStatusThatCanBeExport?.includes(taskStatus);
+// 是否是能被导出的任务状态
+export const checkIsScheduleTaskListCanBeExported = (
+  task: IScheduleRecord<ScheduleRecordParameters>,
+) => {
+  return scheduleStatusThatCanBeExport?.includes(task?.status);
 };
 
 // 是否是能终止的任务状态
-export const checkIsTaskListCanBeTerminated = (taskStatus: TaskStatus) => {
-  return taskStatusThatCanBeTerminate?.includes(taskStatus);
+export const checkIsTaskListCanBeTerminated = (task: TaskRecord<TaskRecordParameters>) => {
+  return taskStatusThatCanBeTerminate?.includes(task?.status);
 };
 
 // 是否是能终止的作业状态
-const checkIsScheduleTaskListCanBeTerminated = (scheduleStatus: ScheduleStatus) => {
-  return SchedulestatusThatCanBeTerminate?.includes(scheduleStatus);
+const checkIsScheduleTaskListCanBeTerminated = (
+  schedule: IScheduleRecord<ScheduleRecordParameters>,
+) => {
+  // 分区计划执行成功能够被终止
+  if (
+    schedule?.type === ScheduleType.PARTITION_PLAN &&
+    schedule?.status === ScheduleStatus.COMPLETED
+  ) {
+    return true;
+  }
+  return SchedulestatusThatCanBeTerminate?.includes(schedule?.status);
 };
 /**
  * 从 URL 中提取 filename 参数的值

@@ -58,9 +58,12 @@ const DatabaseGroupArr = [
 ];
 
 const hasSecondGroup = (group: DatabaseGroup) => {
-  return [DatabaseGroup.cluster, DatabaseGroup.environment, DatabaseGroup.connectType].includes(
-    group,
-  );
+  return [
+    DatabaseGroup.cluster,
+    DatabaseGroup.environment,
+    DatabaseGroup.connectType,
+    DatabaseGroup.tenant,
+  ].includes(group);
 };
 
 const getShouldExpandedGroupKeys = (params: {
@@ -96,7 +99,7 @@ const getShouldExpandedGroupKeys = (params: {
     getGroupKey(mapId, groupMode),
     getSecondGroupKey(mapId, secondMapId, groupMode),
   );
-  if ([DatabaseGroup.project, DatabaseGroup.dataSource, DatabaseGroup.tenant].includes(groupMode)) {
+  if ([DatabaseGroup.project, DatabaseGroup.dataSource].includes(groupMode)) {
     shouldExpandedKeys = shouldExpandedKeys.filter((item) => {
       if (isString(item)) {
         return !item.includes(TreeDataSecondGroupKey);

@@ -178,7 +178,7 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
       </Descriptions>
       <Divider
         style={{
-          marginTop: 12,
+          marginTop: 16,
         }}
       />
 
