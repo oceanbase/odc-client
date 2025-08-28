@@ -20,7 +20,7 @@ import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import VariableConfigTable from '@/component/Task/component/VariableConfigTable';
 import { isCycleTriggerStrategy } from '@/component/Task/helper';
 import type { CycleTaskDetail, IDataClearJobParameters, TaskOperationType } from '@/d.ts';
-import { TaskExecStrategy } from '@/d.ts';
+import { ShardingStrategy, TaskExecStrategy } from '@/d.ts';
 import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import {
@@ -36,7 +36,6 @@ import React from 'react';
 import ThrottleEditableCell from '@/component/Task/component/ThrottleEditableCell';
 import styles from '@/component/Task/index.less';
 import ArchiveRange from './ArchiveRange';
-import { shardingStrategyOptions } from '@/component/Task/component/ShardingStrategyItem';
 import {
   DirtyRowActionEnum,
   DirtyRowActionLabelMap,
@@ -286,14 +285,10 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
           </Descriptions.Item>
         ) : null}
         <Descriptions.Item
-          label={formatMessage({
-            id: 'src.component.Task.DataClearTask.DetailContent.E977DA21',
-            defaultMessage: '搜索策略',
-          })}
+          label={'通过全表扫描进行数据搜索'}
           span={isCycleTriggerStrategy(triggerConfig?.triggerStrategy) ? 2 : 1}
         >
-          {shardingStrategyOptions.find((item) => item.value === jobParameters?.shardingStrategy)
-            ?.label || '-'}
+          {jobParameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH ? '是' : '否'}
         </Descriptions.Item>
         <Descriptions.Item
           label={

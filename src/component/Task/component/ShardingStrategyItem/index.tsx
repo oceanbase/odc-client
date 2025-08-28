@@ -1,43 +1,26 @@
 import { formatMessage } from '@/util/intl';
-import { Form, Radio, Space } from 'antd';
+import { Checkbox, CheckboxChangeEvent, Form, FormInstance, Radio, Space } from 'antd';
 import { ShardingStrategy } from '@/d.ts';
-import HelpDoc from '@/component/helpDoc';
+import { useState, useEffect, useMemo } from 'react';
 
-export const shardingStrategyOptions = [
-  {
-    label: '程序自动匹配',
-    value: ShardingStrategy.AUTO,
-  },
-  {
-    label: formatMessage({
-      id: 'src.component.Task.component.ShardingStrategyItem.E5A6B481',
-      defaultMessage: '全表扫描',
-    }),
-    value: ShardingStrategy.FIXED_LENGTH,
-  },
-  {
-    label: formatMessage({
-      id: 'src.component.Task.component.ShardingStrategyItem.F91EEC6C',
-      defaultMessage: '条件匹配',
-    }),
-    value: ShardingStrategy.MATCH,
-  },
-];
+interface IProps {
+  form: FormInstance;
+}
 
-const ShardingStrategyItem = () => {
+const ShardingStrategyItem: React.FC<IProps> = ({ form }) => {
+  const [fullTableSearch, setFullTableSearch] = useState<boolean>(
+    form.getFieldValue('shardingStrategy') === ShardingStrategy.FIXED_LENGTH,
+  );
+  const handleChange = (e: CheckboxChangeEvent) => {
+    form.setFieldsValue({
+      shardingStrategy: e.target.checked ? ShardingStrategy.FIXED_LENGTH : ShardingStrategy.MATCH,
+    });
+    setFullTableSearch(e.target.checked);
+  };
+
   return (
     <Form.Item
-      label={
-        <Space size={2}>
-          <span>
-            {formatMessage({
-              id: 'src.component.Task.component.ShardingStrategyItem.3BD95C1A',
-              defaultMessage: '搜索策略',
-            })}
-          </span>
-          <HelpDoc leftText isTip doc="TaskShardingStrategy" />
-        </Space>
-      }
+      extra={'若使用全表扫描方式进行数据搜索，处理过程将更加稳定但性能可能会受到影响'}
       name="shardingStrategy"
       rules={[
         {
@@ -49,7 +32,9 @@ const ShardingStrategyItem = () => {
         },
       ]}
     >
-      <Radio.Group options={shardingStrategyOptions} />
+      <Checkbox checked={fullTableSearch} onChange={handleChange}>
+        通过全表扫描进行数据搜索
+      </Checkbox>
     </Form.Item>
   );
 };
