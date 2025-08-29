@@ -1,4 +1,4 @@
-import { TaskPageType } from '@/d.ts';
+import { ISqlExecuteResultStatus, TaskPageType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { TaskActionsEnum, TaskGroup } from '@/d.ts/task';
 
@@ -84,4 +84,12 @@ export const TaskActionsTextMap = {
   [TaskActionsEnum.OPEN_LOCAL_FOLDER]: '打开文件夹',
   [TaskActionsEnum.DOWNLOAD_VIEW_RESULT]: '下载查询结果',
   [TaskActionsEnum.VIEW_RESULT]: '查询结果',
+};
+
+export const SchemaChangeRecordStatusTextMap = {
+  [ISqlExecuteResultStatus.SUCCESS]: '执行成功',
+  [ISqlExecuteResultStatus.FAILED]: '执行失败',
+  [ISqlExecuteResultStatus.CANCELED]: '执行取消',
+  [ISqlExecuteResultStatus.RUNNING]: '执行中',
+  [ISqlExecuteResultStatus.CREATED]: '待执行',
 };

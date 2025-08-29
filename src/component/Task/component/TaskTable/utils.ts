@@ -14,7 +14,7 @@ export const getCronCycle = (triggerConfig: ICycleTaskTriggerConfig) => {
 
 export const getStatusFilters = (status: {
   [key: string]: {
-    text: string;
+    text: string | JSX.Element;
   };
 }) => {
   return Object.keys(status)

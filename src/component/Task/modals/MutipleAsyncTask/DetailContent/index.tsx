@@ -97,12 +97,7 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
               defaultMessage: '风险等级',
             })}
           >
-            <ODCRiskLevelLabel
-              iconMode
-              levelMap
-              level={task?.riskLevel?.level}
-              content={task?.riskLevel?.name}
-            />
+            <ODCRiskLevelLabel iconMode levelMap level={task?.riskLevel?.level} />
           </Descriptions.Item>
         </Descriptions>
         <Divider />

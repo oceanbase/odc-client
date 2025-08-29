@@ -23,6 +23,7 @@ import styles from './index.less';
 import Sider from './layout/Sider';
 import { TaskPageMode } from './interface';
 import CreateModals from '@/component/Task/modals/CreateModals';
+import { useEffect } from 'react';
 
 interface IProps {
   projectId?: number;
@@ -30,12 +31,21 @@ interface IProps {
 }
 const TaskManagerPage: React.FC<IProps> = (props) => {
   const { projectId, mode } = props;
-  const [search] = useSearchParams();
-  const defaultTaskId = search.get('taskId');
-  const defaultTaskType = search.get('taskType') as TaskType;
-  const defaultOrganizationId = search.get('organizationId');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const defaultTaskId = searchParams.get('taskId');
+  const defaultTaskType = searchParams.get('taskType') as TaskType;
+  const defaultOrganizationId = searchParams.get('organizationId');
   const currentOrganizationId = login.organizationId;
   const isOrganizationMatch = toInteger(defaultOrganizationId) === toInteger(currentOrganizationId);
+
+  useEffect(() => {
+    setTimeout(() => {
+      searchParams.delete('taskId');
+      searchParams.delete('taskType');
+      searchParams.delete('organizationId');
+      setSearchParams(searchParams);
+    }, 100);
+  }, []);
 
   return (
     <div className={styles.task}>

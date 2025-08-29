@@ -115,7 +115,7 @@ interface ICommonTaskDetailModalProps extends ITaskDetailModalProps {
 }
 const TaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) {
   const {
-    width = 750,
+    width = 950,
     visible,
     task,
     taskTools,
@@ -211,14 +211,7 @@ const TaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) 
         >
           {hasInfo && (
             <Radio.Button value={TaskDetailType.INFO} key={TaskDetailType.INFO}>
-              {
-                formatMessage({
-                  id: 'odc.component.CommonTaskDetailModal.TaskInformation',
-                  defaultMessage: '任务信息',
-                })
-
-                /* 任务信息 */
-              }
+              基本信息
             </Radio.Button>
           )}
 

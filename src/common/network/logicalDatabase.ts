@@ -1,4 +1,10 @@
-import { IResponse, IResponseData } from '@/d.ts';
+import {
+  ILogicDatabaseChangeExecuteRecord,
+  IResponse,
+  IResponseData,
+  ISqlExecuteResultStatus,
+  LogicDatabaseChangeExecuteRecordStats,
+} from '@/d.ts';
 import { PreviewLogicalTableTopologiesErrorEnum } from '@/d.ts/database';
 import {
   ILogicalDatabase,
@@ -8,6 +14,8 @@ import {
   ITopology,
 } from '@/d.ts/logicalDatabase';
 import request from '@/util/request';
+import { omit } from 'lodash';
+import type { IResponseDataWithStats } from '@/common/network/task';
 
 export async function extractLogicalTables(logicalDatabaseId: number) {
   const res = await request.post(
@@ -121,13 +129,16 @@ export async function previewSqls(
 }
 
 /* 查看某个物理库sql执行详情 */
-/* schedule->task(仅有一个task)->physicalDatabases(逻辑库特殊的资源) */
 export async function getPhysicalExecuteDetails(
   flowInstanceId: number,
   physicalDatabaseId: number,
+  statuses?: ISqlExecuteResultStatus[],
 ): Promise<ISchemaChangeRecord> {
   const res = await request.get(
     `/api/v2/logicaldatabase/flowTasks/${flowInstanceId}/physicalDatabases/${physicalDatabaseId}`,
+    {
+      params: { statuses },
+    },
   );
   return res?.data;
 }
@@ -151,5 +162,22 @@ export async function skipPhysicalSqlExecute(
   const res = await request.post(
     `/api/v2/logicaldatabase/flowTasks/${flowInstanceId}/physicalDatabases/${physicalDatabaseId}/skipCurrentStatement`,
   );
+  return res?.data;
+}
+
+export async function getLogicDatabaseChangeExecuteRecordList(params: {
+  id: number;
+  size: number;
+  page: number;
+  statuses?: string[];
+  databaseKeyword?: string;
+  datasourceKeyword?: string;
+}): Promise<
+  IResponseDataWithStats<ILogicDatabaseChangeExecuteRecord, LogicDatabaseChangeExecuteRecordStats>
+> {
+  const { id } = params;
+  const res = await request.get(`api/v2/logicaldatabase/${id}`, {
+    params: omit(params, 'id'),
+  });
   return res?.data;
 }
