@@ -156,7 +156,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     }
 
     const maxRowsValueFromSpaceConfig = Number(
-      setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit'),
+      setting.spaceConfigurations?.['odc.sqlexecute.default.queryLimit'],
     );
 
     if (resultSetExportData) {

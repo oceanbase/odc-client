@@ -61,7 +61,7 @@ export const rules = {
     },
     {
       validator: (_, value) => {
-        const max = setting.getSpaceConfigByKey('odc.sqlexecute.default.maxQueryLimit');
+        const max = setting.spaceConfigurations?.['odc.sqlexecute.default.maxQueryLimit'];
         if (value !== undefined && Number(value) > max) {
           return Promise.reject(
             formatMessage(

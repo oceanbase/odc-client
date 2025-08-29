@@ -4,7 +4,7 @@ import { getSystemConfig } from '@/common/network/other';
 
 export const validForQueryQueryNumber = (value) => {
   const sessionQueryLimit = sessionStorage.getItem(`maxQueryLimit-${getCurrentOrganizationId()}`);
-  const queryLimit = setting.getSpaceConfigByKey('odc.sqlexecute.default.maxQueryLimit');
+  const queryLimit = setting.spaceConfigurations?.['odc.sqlexecute.default.maxQueryLimit'];
   if (!value) {
     return Promise.reject(
       formatMessage({
