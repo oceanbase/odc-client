@@ -41,6 +41,8 @@ import {
   IGetFlowScheduleTodoParams,
   IStat,
   IAsyncTaskResultSet,
+  IMultipleAsyncExecuteRecord,
+  MultipleAsyncExecuteRecordStats,
   ICycleTaskRecord,
 } from '@/d.ts';
 import { IProject } from '@/d.ts/project';
@@ -63,6 +65,7 @@ import {
 import odc from '@/plugins/odc';
 import { TaskSearchType } from '@/component/Task/interface';
 import { ScheduleType } from '@/d.ts/schedule';
+import { omit } from 'lodash';
 
 /**
  * 根据函数获取ddl sql
@@ -806,5 +809,24 @@ export async function getBatchCancelLog(terminateId: string): Promise<string> {
   const res = await request.get(
     `/api/v2/flow/flowInstances/asyncCancelLog?terminateId=${terminateId}`,
   );
+  return res?.data;
+}
+
+export interface IResponseDataWithStats<T, S = any> extends IResponseData<T> {
+  stats: S;
+}
+
+/** 多库变更-执行记录列表 */
+export async function getMultipleAsyncExecuteRecordList(params: {
+  id: number;
+  size: number;
+  page: number;
+  statuses?: string[];
+  keyword?: string;
+}): Promise<IResponseDataWithStats<IMultipleAsyncExecuteRecord, MultipleAsyncExecuteRecordStats>> {
+  const { id } = params;
+  const res = await request.get(`/api/v2/flow/flowInstances/${id}/tasks/multiAsyncResults`, {
+    params: omit(params, 'id'),
+  });
   return res?.data;
 }

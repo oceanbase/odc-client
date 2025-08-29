@@ -2529,6 +2529,39 @@ export interface ISubTaskRecords {
   sqlExecutionResultMap: Record<string, sqlExecutionResultMap>;
 }
 
+export interface IMultipleAsyncExecuteRecord {
+  affectedRows: number;
+  completeTime: number;
+  containQuery: boolean;
+  databaseDatasourceName: string;
+  databaseId: number;
+  executionTime: number;
+  failCount: number;
+  order: number;
+  database: IDatabase;
+  records: string[];
+  rollbackPlanResult: {
+    databaseId2RollbackResult: any;
+    error: any;
+    generated: boolean;
+    resultFileDownloadUrl: string;
+    resultFileId: string;
+    success: boolean;
+  };
+  status: TaskStatus;
+  successCount: number;
+  zipFileDownloadUrl: string;
+}
+
+export interface ILogicDatabaseChangeExecuteRecord {
+  dataSourceName: string;
+  physicalDatabaseName: string;
+  physicalDatabaseId: number;
+  id: number;
+  order: number;
+  status: string;
+}
+
 export interface sqlExecutionResultMap {
   completed: boolean;
   order: number;
@@ -4092,4 +4125,25 @@ interface UnfinishedTaskType {
 export type UnfinishedTickets = {
   unfinishedFlowInstances: UnfinishedTaskType[];
   unfinishedSchedules: UnfinishedTaskType[];
+};
+
+export type MultipleAsyncExecuteRecordStats = {
+  statusCount: {
+    count: {
+      EXECUTION_FAILED?: number;
+      EXECUTION_SUCCEEDED?: number;
+      WAIT_FOR_EXECUTION?: number;
+      EXECUTING?: number;
+    };
+  };
+};
+
+export type LogicDatabaseChangeExecuteRecordStats = {
+  statusCount: {
+    count: {
+      SUCCESS?: number;
+      FAILED?: number;
+      EXECUTING?: number;
+    };
+  };
 };
