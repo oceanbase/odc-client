@@ -252,10 +252,10 @@ const ScheduleTable: React.FC<IProps> = (props) => {
       title: '作业',
       dataIndex: 'scheduleId',
       width: 500,
-      render: (id, record) => {
+      render: (id, record: IScheduleRecord<ScheduleRecordParameters>) => {
         return (
           <ScheduleNameColumns
-            record={record as IScheduleRecord<ScheduleRecordParameters>}
+            record={record}
             delList={delList}
             onDetailVisible={onDetailVisible}
             mode={mode}
@@ -267,8 +267,8 @@ const ScheduleTable: React.FC<IProps> = (props) => {
       title: '数据库',
       dataIndex: 'database',
       width: 120,
-      render: (type, record) => {
-        return <DatabaseColumn record={record as IScheduleRecord<ScheduleRecordParameters>} />;
+      render: (type, record: IScheduleRecord<ScheduleRecordParameters>) => {
+        return <DatabaseColumn record={record} />;
       },
     },
     ...(scheduleTabType === SchedulePageType.ALL
@@ -277,7 +277,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
             title: '类型',
             dataIndex: 'type',
             width: 100,
-            render: (type, record) => {
+            render: (type) => {
               return <>{SchedulePageTextMap[type] || type || '-'}</>;
             },
           },
@@ -290,7 +290,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
       }),
       dataIndex: 'status',
       width: 150,
-      render: (status, record) => {
+      render: (status, record: IScheduleRecord<ScheduleRecordParameters>) => {
         return (
           <div>
             <div>
@@ -313,7 +313,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
       title: '操作',
       dataIndex: 'actions',
       width: 140,
-      render: (_, record) => {
+      render: (_, record: IScheduleRecord<ScheduleRecordParameters>) => {
         return (
           <ScheduleActions
             schedule={record}

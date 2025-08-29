@@ -1,14 +1,8 @@
-import {
-  ScheduleType,
-  SchedulePageType,
-  IScheduleRecord,
-  ScheduleRecordParameters,
-  ScheduleStatus,
-} from '@/d.ts/schedule';
+import { ScheduleType, IScheduleRecord, ScheduleRecordParameters } from '@/d.ts/schedule';
 import React, { useEffect, useState } from 'react';
 import { listChangeLog } from '@/common/network/schedule';
 import { formatMessage } from '@/util/intl';
-import { TaskOperationType, TaskRecord, TaskRecordParameters, Operation, TaskType } from '@/d.ts';
+import { TaskOperationType, Operation, ScheduleChangeStatus } from '@/d.ts';
 import { getFormatDateTime } from '@/util/utils';
 import StatusItem from '@/component/Task/component/TaskDetailModal/status';
 import Action from '@/component/Action';
@@ -20,27 +14,12 @@ import { ScheduleStore } from '@/store/schedule';
 import { useLoop } from '@/util/hooks/useLoop';
 
 export const operationTypeMap = {
-  [TaskOperationType.CREATE]: formatMessage({
-    id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.CreateATask',
-    defaultMessage: '创建任务',
-  }), //创建任务
-  [TaskOperationType.UPDATE]: formatMessage({
-    id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.EditTask',
-    defaultMessage: '编辑任务',
-  }), //编辑任务
-  [TaskOperationType.PAUSE]: formatMessage({
-    id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.DisableATask',
-    defaultMessage: '停用任务',
-  }), //停用任务
-  [TaskOperationType.TERMINATE]: formatMessage({
-    id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.TerminateATask',
-    defaultMessage: '终止任务',
-  }), //终止任务
-  [TaskOperationType.RESUME]: formatMessage({
-    id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.EnableTasks',
-    defaultMessage: '启用任务',
-  }), //启用任务
-  [TaskOperationType.DELETE]: '删除任务',
+  [TaskOperationType.CREATE]: '创建作业',
+  [TaskOperationType.UPDATE]: '编辑作业', //编辑任务
+  [TaskOperationType.PAUSE]: '停用作业', //停用任务
+  [TaskOperationType.TERMINATE]: '终止作业', //终止任务
+  [TaskOperationType.RESUME]: '启用作业', //启用任务
+  [TaskOperationType.DELETE]: '删除作业',
 };
 
 interface ScheduleExecuteRecordProps {
@@ -96,15 +75,15 @@ const ScheduleExecuteRecord: React.FC<ScheduleExecuteRecordProps> = ({
   }) => {
     return [
       {
-        dataIndex: 'id',
+        dataIndex: 'type',
         title: formatMessage({
           id: 'odc.component.CommonTaskDetailModal.TaskOperationRecord.EventOperations',
           defaultMessage: '事件操作',
         }), //事件操作
         ellipsis: true,
         width: 140,
-        render: (id, record) => {
-          return <span>{operationTypeMap?.[record.type]}</span>;
+        render: (type) => {
+          return <span>{operationTypeMap?.[type]}</span>;
         },
       },
 
@@ -117,7 +96,7 @@ const ScheduleExecuteRecord: React.FC<ScheduleExecuteRecordProps> = ({
         ellipsis: true,
         sorter: (a, b) => a.createTime - b.createTime,
         width: 180,
-        render: (createTime) => getFormatDateTime(createTime),
+        render: (createTime: number) => getFormatDateTime(createTime),
       },
 
       {
@@ -128,7 +107,7 @@ const ScheduleExecuteRecord: React.FC<ScheduleExecuteRecordProps> = ({
         }), //审批状态
         ellipsis: true,
         width: 140,
-        render: (status, record) => {
+        render: (status: ScheduleChangeStatus) => {
           return <StatusItem status={status} />;
         },
       },
@@ -141,7 +120,7 @@ const ScheduleExecuteRecord: React.FC<ScheduleExecuteRecordProps> = ({
         }), //操作
         ellipsis: true,
         width: 92,
-        render: (_, record) => {
+        render: (_, record: Operation) => {
           return (
             <>
               <Action.Link

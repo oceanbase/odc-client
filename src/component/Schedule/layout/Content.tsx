@@ -32,6 +32,7 @@ import {
   getSubTaskList,
   getScheduleList,
   SubTaskListParams,
+  getScheduleDetail,
 } from '@/common/network/schedule';
 import { getDefaultParam, getDefaultSubTaskParam } from '../helper';
 import { getPreTime } from '@/util/utils';
@@ -186,6 +187,7 @@ const Content: React.FC<IProps> = (props) => {
       size: pageSize,
       startTime: params.timeRange === 'ALL' ? undefined : String(getPreTime(7)),
       endTime: params.timeRange === 'ALL' ? undefined : String(getPreTime(0)),
+      approveByCurrentUser: false,
     };
     if (typeof params?.timeRange === 'number') {
       apiParams.startTime = String(getPreTime(params?.timeRange));
@@ -196,7 +198,8 @@ const Content: React.FC<IProps> = (props) => {
       apiParams.endTime = String(params?.executeDate?.[1]?.valueOf());
     }
     if (params.tab === ScheduleTab.approveByCurrentUser) {
-      apiParams.approveStatus = [ApprovalStatus.APPROVING];
+      apiParams.approveStatus = [];
+      apiParams.approveByCurrentUser = true;
     }
     return apiParams;
   };
@@ -293,10 +296,11 @@ const Content: React.FC<IProps> = (props) => {
     });
   };
 
-  const openDefaultSchedule = () => {
+  const openDefaultSchedule = async () => {
     const { defaultScheduleId, defaultScheduleType, defaultSubTaskId } = props;
     if (defaultScheduleId) {
-      if (!schedlueConfig[defaultScheduleType]?.enabled()) {
+      const data = await getScheduleDetail(defaultScheduleId, true);
+      if (!schedlueConfig[defaultScheduleType]?.enabled() || !data) {
         message.error('无当前作业查看权限');
         return;
       }

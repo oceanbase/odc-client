@@ -89,6 +89,10 @@ export const getTaskTypeOptions = () => {
       label: TaskTypeMap[TaskType.MULTIPLE_ASYNC],
       value: TaskType.MULTIPLE_ASYNC,
     },
+    {
+      label: TaskTypeMap[TaskType.LOGICAL_DATABASE_CHANGE],
+      value: TaskType.LOGICAL_DATABASE_CHANGE,
+    },
   ];
 
   return newTaskTypeOptions;
