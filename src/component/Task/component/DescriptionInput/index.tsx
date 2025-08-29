@@ -46,7 +46,7 @@ const DescriptionInput = () => {
         placeholder={
           login.isPrivateSpace()
             ? defaultPlaceholder
-            : setting.getSpaceConfigByKey('odc.task.default.taskDescriptionPrompt') ||
+            : setting.spaceConfigurations?.['odc.task.default.taskDescriptionPrompt'] ||
               defaultPlaceholder
         }
       />

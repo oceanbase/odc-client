@@ -456,10 +456,10 @@ const CreateModal: React.FC<IProps> = (props) => {
       retryTimes: 0,
       parameters: {
         orderedDatabaseIds: [[undefined]],
-        queryLimit: Number(setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')),
+        queryLimit: Number(setting.spaceConfigurations?.['odc.sqlexecute.default.queryLimit']),
         generateRollbackPlan:
           multipleAsyncTaskData?.task?.parameters?.generateRollbackPlan ||
-          setting.getSpaceConfigByKey('odc.task.default.rollbackPlanEnabled') === 'true',
+          setting.spaceConfigurations?.['odc.task.default.rollbackPlanEnabled'] === 'true',
       },
     };
     if (multipleAsyncTaskData?.task) {

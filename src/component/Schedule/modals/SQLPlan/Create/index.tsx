@@ -162,7 +162,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
   const loadInitialDataFromSpaceConfig = () => {
     form.setFieldValue(
       'queryLimit',
-      Number(setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')),
+      Number(setting.spaceConfigurations?.['odc.sqlexecute.default.queryLimit']),
     );
   };
 

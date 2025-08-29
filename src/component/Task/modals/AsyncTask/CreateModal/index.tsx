@@ -474,11 +474,11 @@ const CreateModal: React.FC<IProps> = (props) => {
 
   const loadInitialDataFromSpaceConfig = () => {
     const initialFormData = {
-      queryLimit: Number(setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')),
+      queryLimit: Number(setting.spaceConfigurations?.['odc.sqlexecute.default.queryLimit']),
       generateRollbackPlan:
-        setting.getSpaceConfigByKey('odc.task.default.rollbackPlanEnabled') === 'true',
+        setting.spaceConfigurations?.['odc.task.default.rollbackPlanEnabled'] === 'true',
       executionStrategy:
-        setting.getSpaceConfigByKey('odc.task.databaseChange.executionStrategy') ||
+        setting.spaceConfigurations?.['odc.task.databaseChange.executionStrategy'] ||
         TaskExecStrategy.MANUAL,
     };
     form.setFieldsValue(initialFormData);

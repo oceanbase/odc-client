@@ -157,9 +157,9 @@ const StructDataFormItem: React.FC<IProps> = function (props) {
                       }),
                       value: true,
                       disabled:
-                        setting?.getSpaceConfigByKey(
-                          'odc.task.default.importTaskStructureReplacementEnabled',
-                        ) === 'false', // 动态禁用逻辑
+                        setting?.spaceConfigurations?.[
+                          'odc.task.default.importTaskStructureReplacementEnabled'
+                        ] === 'false', // 动态禁用逻辑
                     },
                   ]}
                 />

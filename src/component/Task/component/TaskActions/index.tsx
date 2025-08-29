@@ -656,8 +656,9 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
       visible: widthPermission(
         (hasPermission) => {
           const allowDownloadResultSets =
-            settingStore.getSpaceConfigByKey('odc.task.databaseChange.allowDownloadResultSets') ===
-            'true';
+            settingStore.spaceConfigurations?.[
+              'odc.task.databaseChange.allowDownloadResultSets'
+            ] === 'true';
           return (
             hasPermission &&
             allowDownloadResultSets &&
@@ -693,7 +694,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
       visible: widthPermission(
         (hasPermission) => {
           const allowShowResultSets =
-            settingStore.getSpaceConfigByKey('odc.task.databaseChange.allowShowResultSets') ===
+            settingStore.spaceConfigurations?.['odc.task.databaseChange.allowShowResultSets'] ===
             'true';
           return (
             hasPermission &&

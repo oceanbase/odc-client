@@ -37,7 +37,7 @@ interface IProps {
 const SQLConfig: React.FC<IProps> = function (props) {
   const { session, pageKey } = useContext(SQLConfigContext);
   const [queryLimitValue, setQueryLimitValue] = useState(
-    Number(setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')),
+    Number(setting.spaceConfigurations?.['odc.sqlexecute.default.queryLimit']),
   );
   const [showSessionParam, setShowSessionParam] = useState(false);
   const [visible, setVisible] = useState(false);

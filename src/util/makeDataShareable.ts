@@ -16,12 +16,24 @@
 
 import { reaction } from 'mobx';
 import login from '@/store/login';
+import { getCurrentOrganizationId } from '@/store/setting';
+
+enum EShareableIdentifierType {
+  USER = 'user',
+  ORGANIZATION = 'organization',
+}
 
 interface IShareableOptions {
   /**
    * 共享数据的唯一标识符
    */
   channelName: string;
+  /**
+   * 标识符类型，决定使用userId还是organizationId进行过滤
+   * - 'user': 使用 login.user?.id (默认)
+   * - 'organization': 使用 getCurrentOrganizationId()
+   */
+  identifierType: EShareableIdentifierType;
 }
 
 /**
@@ -31,6 +43,7 @@ interface IShareableOptions {
 class ShareableDataManager {
   private channels = new Map<string, BroadcastChannel>();
   private subscriptions = new Map<string, Set<(data: any) => void>>();
+  private channelIdentifierTypes = new Map<string, EShareableIdentifierType>();
 
   /**
    * 获取或创建BroadcastChannel
@@ -42,17 +55,39 @@ class ShareableDataManager {
 
       // 监听来自其他窗口/标签页的消息
       channel.addEventListener('message', (event) => {
-        const { type, data, userId } = event.data;
+        const { type, data, userId, organizationId } = event.data;
         if (type === 'data_update') {
-          // 验证用户ID匹配，确保只接收同一用户的数据
-          const currentUserId = login.user?.id;
-          if (currentUserId && userId === currentUserId) {
-            this.notifySubscribers(channelName, data);
-          } else if (currentUserId) {
-            // 用户ID不匹配，忽略消息
-            console.log(
-              `[makeDataShareable] Ignoring message from different user. Current: ${currentUserId}, Message: ${userId}`,
-            );
+          const identifierType = this.channelIdentifierTypes.get(channelName);
+          if (!identifierType) {
+            return;
+          }
+          switch (identifierType) {
+            case EShareableIdentifierType.ORGANIZATION:
+              // 验证organizationId匹配，确保只接收同一组织的数据
+              const currentOrganizationId = getCurrentOrganizationId();
+              if (currentOrganizationId && organizationId === currentOrganizationId) {
+                this.notifySubscribers(channelName, data);
+              } else if (currentOrganizationId) {
+                // organizationId不匹配，忽略消息
+                console.log(
+                  `[makeDataShareable] Ignoring message from different organization. Current: ${currentOrganizationId}, Message: ${organizationId}`,
+                );
+              }
+              break;
+            case EShareableIdentifierType.USER:
+              // 验证用户ID匹配，确保只接收同一用户的数据
+              const currentUserId = login.user?.id;
+              if (currentUserId && userId === currentUserId) {
+                this.notifySubscribers(channelName, data);
+              } else if (currentUserId) {
+                // 用户ID不匹配，忽略消息
+                console.log(
+                  `[makeDataShareable] Ignoring message from different user. Current: ${currentUserId}, Message: ${userId}`,
+                );
+              }
+              break;
+            default:
+              break;
           }
         }
       });
@@ -75,18 +110,42 @@ class ShareableDataManager {
    */
   public broadcastUpdate(channelName: string, data: any) {
     const channel = this.getChannel(channelName);
-    channel.postMessage({
+    const identifierType = this.channelIdentifierTypes.get(channelName);
+    if (!identifierType) {
+      return;
+    }
+
+    const message: any = {
       type: 'data_update',
       data,
-      userId: login.user?.id, // 添加用户ID
       timestamp: Date.now(),
-    });
+    };
+
+    switch (identifierType) {
+      case EShareableIdentifierType.ORGANIZATION:
+        message.organizationId = getCurrentOrganizationId();
+        break;
+      case EShareableIdentifierType.USER:
+        message.userId = login.user?.id;
+        break;
+      default:
+        break;
+    }
+
+    channel.postMessage(message);
   }
 
   /**
    * 订阅数据变化
    */
-  public subscribe(channelName: string, callback: (data: any) => void): () => void {
+  public subscribe(
+    channelName: string,
+    callback: (data: any) => void,
+    identifierType: EShareableIdentifierType = EShareableIdentifierType.USER,
+  ): () => void {
+    // 设置频道的标识符类型
+    this.channelIdentifierTypes.set(channelName, identifierType);
+
     if (!this.subscriptions.has(channelName)) {
       this.subscriptions.set(channelName, new Set());
     }
@@ -102,6 +161,7 @@ class ShareableDataManager {
         subscribers.delete(callback);
         if (subscribers.size === 0) {
           this.subscriptions.delete(channelName);
+          this.channelIdentifierTypes.delete(channelName);
           this.closeChannel(channelName);
         }
       }
@@ -148,21 +208,28 @@ export function makeDataShareable<T extends object>(
   propertyKey: keyof T,
   options: IShareableOptions,
 ): () => void {
-  const { channelName } = options;
+  const { channelName, identifierType } = options;
+  if (!identifierType) {
+    return () => {};
+  }
 
   // 标记当前实例正在更新，避免循环广播
   let isUpdating = false;
 
   // 订阅来自其他窗口的数据更新
-  const unsubscribeExternal = shareableManager.subscribe(channelName, (newData) => {
-    if (isUpdating) return; // 避免循环更新
+  const unsubscribeExternal = shareableManager.subscribe(
+    channelName,
+    (newData) => {
+      if (isUpdating) return; // 避免循环更新
 
-    if (newData !== null && newData !== target[propertyKey]) {
-      isUpdating = true;
-      target[propertyKey] = newData;
-      isUpdating = false;
-    }
-  });
+      if (newData !== null && newData !== target[propertyKey]) {
+        isUpdating = true;
+        target[propertyKey] = newData;
+        isUpdating = false;
+      }
+    },
+    identifierType,
+  );
 
   // 监听本地属性变化并广播
   const disposeReaction = reaction(
@@ -188,5 +255,5 @@ export function cleanupAllShareableData() {
   shareableManager.destroy();
 }
 
-export { IShareableOptions };
+export { IShareableOptions, EShareableIdentifierType };
 export default shareableManager;
