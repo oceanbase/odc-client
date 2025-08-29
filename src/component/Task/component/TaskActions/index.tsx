@@ -725,11 +725,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
       action: eventMap[TaskActionsEnum.CLONE],
       icon: <CopyOutlined />,
       showScene: [actionShowScene.list, actionShowScene.detail],
-      visible: widthPermission(
-        (hasPermission) => hasPermission,
-        [IOperationTypeRole.CREATOR],
-        IRoles,
-      ),
+      visible: widthPermission((hasPermission) => hasPermission, [], IRoles),
     },
     {
       key: TaskActionsEnum.SHARE,
@@ -768,7 +764,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
       action: eventMap[TaskActionsEnum.REJECT],
       visible: widthPermission(
         (hasPermission) => {
-          return hasPermission && task?.approvable && !login.isPrivateSpace();
+          return hasPermission && !login.isPrivateSpace();
         },
         [IOperationTypeRole.APPROVER],
         IRoles,

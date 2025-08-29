@@ -37,6 +37,7 @@ export interface ScheduleListParams {
   page?: number;
   size?: number;
   sort?: string;
+  approveByCurrentUser?: boolean;
 }
 
 export interface SubTaskListParams {
@@ -88,6 +89,7 @@ export const createSchedule = async (data: createScheduleRecord<createSchedueleP
  */
 export const getScheduleDetail = async (
   id: number,
+  ignoreError: boolean = false,
 ): Promise<IScheduleRecord<ScheduleRecordParameters>> => {
   const res = await request.get(`/api/v2/schedule/schedules/${id}`);
   return res?.data;
@@ -98,8 +100,12 @@ export const getScheduleDetail = async (
  * @param id
  * @returns
  */
-export const deleteSchedule = async (id: number) => {
-  const res = await request.delete(`/api/v2/schedule/schedules/${id}`);
+export const deleteSchedule = async (id: number, projectId: number) => {
+  const res = await request.delete(`/api/v2/schedule/schedules/${id}`, {
+    params: {
+      projectId,
+    },
+  });
   return res;
 };
 

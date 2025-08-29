@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { TaskDetail, TaskRecordParameters } from '@/d.ts';
 import { Button, Popover, Spin } from 'antd';
 import MiniTaskFlow from '../MiniFlow';
 import { getTaskDetail } from '@/common/network/task';
 import { useRequest } from 'ahooks';
 import { IScheduleRecord, ScheduleRecordParameters } from '@/d.ts/schedule';
+import { operationTypeMap } from '../ScheduleExecuteRecord';
+import { formatMessage } from '@/util/intl';
 
 interface IProps {
   onDetail: () => void;
@@ -15,6 +17,22 @@ const ScheduleMiniFlowSpan: React.FC<IProps> = ({ onDetail, record }) => {
   const candidateApproversName = candidateApprovers?.map((item) => item.name)?.join(', ');
   const [popoverOpen, setPopoverOpen] = useState(false);
 
+  const operationTypeDescription = useMemo(() => {
+    return (
+      <div style={{ margin: '6px 0px' }}>
+        <span>
+          {
+            formatMessage({
+              id: 'odc.component.CommonTaskDetailModal.FlowModal.ActionEvents',
+              defaultMessage: '操作事件：',
+            }) /*操作事件：*/
+          }
+        </span>
+        <span>{operationTypeMap?.[record?.operationType]}</span>
+      </div>
+    );
+  }, [record?.operationType]);
+
   return (
     <Popover
       zIndex={999}
@@ -23,6 +41,7 @@ const ScheduleMiniFlowSpan: React.FC<IProps> = ({ onDetail, record }) => {
       onOpenChange={setPopoverOpen}
       content={
         <div style={{ width: '300px', minHeight: '100px', minWidth: '200px' }}>
+          {operationTypeDescription}
           <Content Id={approveInstanceId} onDetail={onDetail} visible={popoverOpen} />
         </div>
       }

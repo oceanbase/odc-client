@@ -3,6 +3,7 @@ import { Radio } from 'antd';
 import { ScheduleTab } from '@/component/Schedule/interface';
 import ParamsContext from '@/component/Schedule/context/ParamsContext';
 import { useSearchParams } from '@umijs/max';
+import styles from './index.less';
 
 const Tabs = () => {
   const context = useContext(ParamsContext);
@@ -33,6 +34,7 @@ const Tabs = () => {
         },
       ]}
       defaultValue={ScheduleTab.all}
+      className={styles.tab}
       optionType="button"
     />
   );

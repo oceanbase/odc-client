@@ -6,6 +6,7 @@ import {
   TaskErrorStrategy,
   ShardingStrategy,
   SyncTableStructureEnum,
+  TaskOperationType,
 } from '@/d.ts';
 export enum ScheduleType {
   /** 数据归档 */
@@ -147,6 +148,7 @@ export interface IScheduleRecord<T> {
     targetDataBaseInfo?: IDatabase;
   };
   latestChangedLogId?: number;
+  operationType?: TaskOperationType;
 }
 export type ScheduleRecordParameters =
   | IPartitionPlan

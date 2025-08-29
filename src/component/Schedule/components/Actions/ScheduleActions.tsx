@@ -344,8 +344,8 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       okText: '删除',
       centered: true,
       onOk: async () => {
-        setDelList?.([...delList, scheduleId]);
-        const res = await deleteSchedule(scheduleId);
+        // setDelList?.([...delList, scheduleId]);
+        const res = await deleteSchedule(scheduleId, schedule?.project.id);
         if (res?.data) {
           message.success('任务需要重新审批，审批通过后此任务将删除');
           onReloadList?.();
@@ -488,11 +488,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       label: ScheduleActionsTextMap[ScheduleActionsEnum.CLONE],
       icon: <CopyOutlined />,
       action: eventMap[ScheduleActionsEnum.CLONE],
-      visible: widthPermission(
-        (hasPermission) => hasPermission,
-        [IOperationTypeRole.CREATOR],
-        IRoles,
-      ),
+      visible: widthPermission((hasPermission) => hasPermission, [], IRoles),
     },
     {
       key: ScheduleActionsEnum.SHARE,
@@ -521,7 +517,11 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       icon: <CloseCircleOutlined />,
       visible: widthPermission(
         (hasPermission) => hasPermission,
-        [IOperationTypeRole.CREATOR],
+        [
+          IOperationTypeRole.CREATOR,
+          IOperationTypeRole.PROJECT_OWNER,
+          IOperationTypeRole.PROJECT_DBA,
+        ],
         IRoles,
       ),
     },
