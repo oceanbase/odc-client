@@ -14,6 +14,7 @@ import { getLocalFormatDateTime } from '@/util/utils';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
+import { downLoadRollbackPlanFile } from '@/common/network/task';
 interface IProps {
   visible: boolean;
   onClose: () => void;
@@ -24,6 +25,11 @@ interface IProps {
 
 const MultipAsyncExecuteDetailDrawer = (props: IProps) => {
   const { visible, onClose, executeRecord, task, stats } = props;
+
+  const downLoadRollbackPlan = async () => {
+    await downLoadRollbackPlanFile(task?.id, executeRecord?.database?.id);
+  };
+
   return (
     <Drawer open={visible} onClose={onClose} title="执行详情" width={800}>
       <Descriptions column={1}>
@@ -75,10 +81,8 @@ const MultipAsyncExecuteDetailDrawer = (props: IProps) => {
                   }) /*回滚内容*/
                 }
               </span>
-              {executeRecord?.rollbackPlanResult?.resultFileDownloadUrl && (
-                <DownloadFileAction
-                  url={executeRecord?.rollbackPlanResult?.resultFileDownloadUrl}
-                />
+              {executeRecord?.rollbackPlanResult?.generated && (
+                <a onClick={downLoadRollbackPlan}>下载备份回滚方案</a>
               )}
             </Space>
           }
