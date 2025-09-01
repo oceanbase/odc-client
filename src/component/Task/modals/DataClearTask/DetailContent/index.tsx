@@ -323,24 +323,6 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
           />
         </Descriptions.Item>
         <Descriptions.Item
-          label={
-            formatMessage({
-              id: 'src.component.Task.DataClearTask.DetailContent.2D1A14AB',
-              defaultMessage: '使用主键清理',
-            }) /*"使用主键清理"*/
-          }
-        >
-          {jobParameters?.deleteByUniqueKey
-            ? formatMessage({
-                id: 'src.component.Task.DataClearTask.DetailContent.D2882643',
-                defaultMessage: '是',
-              })
-            : formatMessage({
-                id: 'src.component.Task.DataClearTask.DetailContent.834E7D89',
-                defaultMessage: '否',
-              })}
-        </Descriptions.Item>
-        <Descriptions.Item
           label={formatMessage({
             id: 'src.component.Task.DataClearTask.DetailContent.D4D1227C',
             defaultMessage: '指定任务时长',
