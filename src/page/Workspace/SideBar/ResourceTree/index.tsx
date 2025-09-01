@@ -46,7 +46,6 @@ import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawe
 import StatusIcon from '@/component/StatusIcon/DataSourceIcon';
 import NewDatasourceDrawer from '@/page/Datasource/Datasource/NewDatasourceDrawer';
 import { GroupNodeToResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/const';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
 import {
   getGroupKey,
   getSecondGroupKey,

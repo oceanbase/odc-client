@@ -26,6 +26,7 @@ const CustomDropdown = ({
   setAddDSVisiable,
   userStore,
   sync,
+  isHover,
 }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const treeContext = useContext(ResourceTreeContext);
@@ -112,8 +113,8 @@ const CustomDropdown = ({
       <span
         onContextMenu={handleContextMenu}
         className={classNames(styles.dataSourceTitle, {
-          [styles.mr12]: !userStore?.isPrivateSpace(),
-          [styles.mr24]: userStore?.isPrivateSpace(),
+          [styles.mr12]: !userStore?.isPrivateSpace() && isHover,
+          [styles.mr24]: userStore?.isPrivateSpace() && isHover,
         })}
         onClick={() => {
           if (!node?.disabled) {
@@ -153,7 +154,7 @@ const DataSourceNodeMenu = (props: IProps) => {
     reload,
   } = props;
   const dataSource = node.data;
-
+  const [hover, setHover] = useState(false);
   async function sync(id: number | string) {
     const isSuccess = await syncDatasource(toInteger(id));
     if (isSuccess) {
@@ -182,8 +183,15 @@ const DataSourceNodeMenu = (props: IProps) => {
             display: 'flex',
             justifyContent: 'space-between',
           }}
+          onMouseEnter={() => {
+            setHover(true);
+          }}
+          onMouseLeave={() => {
+            setHover(false);
+          }}
         >
           <CustomDropdown
+            isHover={hover}
             node={node}
             login={userStore}
             deleteDataSource={deleteDataSource}
@@ -204,7 +212,7 @@ const DataSourceNodeMenu = (props: IProps) => {
             />
           </div>
           {dataSource && (
-            <div className={treeStyles.menuActions} style={{ marginRight: '6px' }}>
+            <div className={treeStyles.menuActions}>
               {!isConnectTypeBeFileSystemGroup(dataSource.type) && (
                 <SearchOutlined
                   className={treeStyles.menuActions}

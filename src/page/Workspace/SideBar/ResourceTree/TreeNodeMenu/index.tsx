@@ -28,7 +28,7 @@ import styles from './index.less';
 import { IMenuItemConfig, IProps } from './type';
 import { EnvColorMap } from '@/constant';
 import classNames from 'classnames';
-import { ReactNode, useContext, useMemo } from 'react';
+import { ReactNode, useContext, useMemo, useState } from 'react';
 import { menuAccessWrap } from './config/database';
 import IconLoadingWrapper from './IconLoadingWrapper';
 import { ItemType } from 'antd/es/menu/interface';
@@ -60,6 +60,7 @@ const TreeNodeMenu = (props: IProps) => {
   const { type = '', dbSession, node, pollingDatabase } = props;
   const treeContext = useContext(ResourceTreeContext);
   const { setCurrentObject, groupMode } = treeContext || {};
+  const [hover, setHover] = useState(false);
 
   const showTip = useMemo(() => {
     return ![DatabaseGroup.dataSource].includes(groupMode);
@@ -80,7 +81,8 @@ const TreeNodeMenu = (props: IProps) => {
   );
   if (type === ResourceNodeType.Database) {
     isShowGlobalSearchEntrance =
-      isShowGlobalSearchEntrance && Boolean(node?.data?.authorizedPermissionTypes?.length);
+      isShowGlobalSearchEntrance &&
+      (Boolean(node?.data?.authorizedPermissionTypes?.length) || login?.isPrivateSpace());
   }
 
   /**
@@ -89,6 +91,12 @@ const TreeNodeMenu = (props: IProps) => {
    */
   const titleNode = (
     <span
+      onMouseEnter={() => {
+        setHover(true);
+      }}
+      onMouseLeave={() => {
+        setHover(false);
+      }}
       onDoubleClick={(e) => {
         e.stopPropagation();
         if (!dbSession && type !== ResourceNodeType.Database) {
@@ -96,7 +104,10 @@ const TreeNodeMenu = (props: IProps) => {
         }
         node.doubleClick?.(dbSession, node);
       }}
-      className={classNames('ant-tree-title', styles.fullWidthTitle)}
+      className={classNames('ant-tree-title', styles.fullWidthTitle, {
+        [styles.p12]: !login?.isPrivateSpace() && hover,
+        [styles.p24]: login?.isPrivateSpace() && hover,
+      })}
       onClick={() => {
         setCurrentObject?.({
           value: node.key,
