@@ -830,3 +830,13 @@ export async function getMultipleAsyncExecuteRecordList(params: {
   });
   return res?.data;
 }
+
+export async function downLoadRollbackPlanFile(id: number, databaseId: number): Promise<string> {
+  const res = await request.get(`/api/v2/flow/flowInstances/${id}/tasks/rollbackPlan/download`, {
+    params: {
+      databaseId,
+      download: true,
+    },
+  });
+  return res?.data;
+}
