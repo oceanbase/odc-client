@@ -95,7 +95,6 @@ const defaultValue = {
   tables: [null],
   rowLimit: 100,
   dataSizeLimit: 1,
-  deleteByUniqueKey: true,
 };
 interface IProps {
   modalStore?: ModalStore;
@@ -169,7 +168,6 @@ const CreateModal: React.FC<IProps> = (props) => {
       shardingStrategy,
       tables,
       variables,
-      deleteByUniqueKey,
       needCheckBeforeDelete,
       targetDatabaseId,
       timeoutMillis,
@@ -187,7 +185,6 @@ const CreateModal: React.FC<IProps> = (props) => {
         return i;
       }),
       shardingStrategy,
-      deleteByUniqueKey,
       variables: getVariableValue(variables),
       archiveRange: fullDatabase ? IArchiveRange.ALL : IArchiveRange.PORTION,
       triggerStrategy,
@@ -312,7 +309,6 @@ const CreateModal: React.FC<IProps> = (props) => {
           shardingStrategy,
           rowLimit,
           dataSizeLimit,
-          deleteByUniqueKey,
           timeoutMillis,
           needCheckBeforeDelete,
           targetDatabaseId,
@@ -334,7 +330,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           scheduleTaskParameters: {
             fullDatabase: archiveRange === IArchiveRange.ALL,
             databaseId,
-            deleteByUniqueKey,
+            deleteByUniqueKey: true,
             variables: getVariables(variables),
             shardingStrategy,
             tables:
@@ -678,18 +674,6 @@ const CreateModal: React.FC<IProps> = (props) => {
               <TaskdurationItem form={form} />
               <ShardingStrategyItem form={form} />
               <ThrottleFormItem isShowDataSizeLimit={true} />
-              <Form.Item
-                label={
-                  formatMessage({
-                    id: 'src.component.Task.DataClearTask.CreateModal.99D8FCD6',
-                    defaultMessage: '使用主键清理',
-                  }) /*"使用主键清理"*/
-                }
-                name="deleteByUniqueKey"
-                rules={rules.deleteByUniqueKey}
-              >
-                <Radio.Group options={deleteByUniqueKeyOptions} />
-              </Form.Item>
             </FormItemPanel>
             <DescriptionInput />
           </Form>
