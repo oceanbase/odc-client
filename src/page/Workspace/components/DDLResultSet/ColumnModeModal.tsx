@@ -170,6 +170,7 @@ const ColumnModeModal: React.FC<IProps> = function (props) {
           enableColumnRecord={false}
           enableRowRecord={false}
           readonly={true}
+          minHeight="350px"
         />
       </ResultContext.Provider>
 
