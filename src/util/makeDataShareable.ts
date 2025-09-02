@@ -35,29 +35,49 @@ class ShareableDataManager {
   /**
    * 获取或创建BroadcastChannel
    */
-  private getChannel(channelName: string): BroadcastChannel {
-    if (!this.channels.has(channelName)) {
-      const channel = new BroadcastChannel(channelName);
-      this.channels.set(channelName, channel);
-
-      // 监听来自其他窗口/标签页的消息
-      channel.addEventListener('message', (event) => {
-        const { type, data, userId } = event.data;
-        if (type === 'data_update') {
-          // 验证用户ID匹配，确保只接收同一用户的数据
-          const currentUserId = login.user?.id;
-          if (currentUserId && userId === currentUserId) {
-            this.notifySubscribers(channelName, data);
-          } else if (currentUserId) {
-            // 用户ID不匹配，忽略消息
-            console.log(
-              `[makeDataShareable] Ignoring message from different user. Current: ${currentUserId}, Message: ${userId}`,
-            );
-          }
+  private getChannel(channelName: string): BroadcastChannel | null {
+    try {
+      if (!this.channels.has(channelName)) {
+        // 检查 BroadcastChannel 是否可用
+        if (typeof BroadcastChannel === 'undefined') {
+          console.warn('[makeDataShareable] BroadcastChannel is not available in this environment');
+          return null;
         }
-      });
+
+        const channel = new BroadcastChannel(channelName);
+        this.channels.set(channelName, channel);
+
+        // 监听来自其他窗口/标签页的消息
+        channel.addEventListener('message', (event) => {
+          try {
+            const { type, data, userId } = event.data;
+            if (type === 'data_update') {
+              // 验证用户ID匹配，确保只接收同一用户的数据
+              const currentUserId = login.user?.id;
+              if (currentUserId && userId === currentUserId) {
+                this.notifySubscribers(channelName, data);
+              } else if (currentUserId) {
+                // 用户ID不匹配，忽略消息
+                console.log(
+                  `[makeDataShareable] Ignoring message from different user. Current: ${currentUserId}, Message: ${userId}`,
+                );
+              }
+            }
+          } catch (error) {
+            console.error('[makeDataShareable] Error processing message:', error);
+          }
+        });
+
+        // 监听错误事件
+        channel.addEventListener('messageerror', (event) => {
+          console.error('[makeDataShareable] Message error:', event);
+        });
+      }
+      return this.channels.get(channelName)!;
+    } catch (error) {
+      console.error('[makeDataShareable] Failed to create/get channel:', error);
+      return null;
     }
-    return this.channels.get(channelName)!;
   }
 
   /**
@@ -71,16 +91,44 @@ class ShareableDataManager {
   }
 
   /**
+   * 安全序列化数据，确保可以被 BroadcastChannel 克隆
+   */
+  private safeSerialize(data: any): any {
+    try {
+      // 使用 JSON 序列化和反序列化来确保数据可克隆
+      return JSON.parse(JSON.stringify(data));
+    } catch (error) {
+      console.warn('[makeDataShareable] Failed to serialize data:', error);
+      // 如果序列化失败，返回 null 并记录警告
+      return null;
+    }
+  }
+
+  /**
    * 广播数据更新
    */
   public broadcastUpdate(channelName: string, data: any) {
-    const channel = this.getChannel(channelName);
-    channel.postMessage({
-      type: 'data_update',
-      data,
-      userId: login.user?.id, // 添加用户ID
-      timestamp: Date.now(),
-    });
+    try {
+      const channel = this.getChannel(channelName);
+
+      // 如果 channel 不可用，直接返回
+      if (!channel) {
+        return;
+      }
+
+      const safeData = this.safeSerialize(data);
+
+      if (safeData !== null) {
+        channel.postMessage({
+          type: 'data_update',
+          data: safeData,
+          userId: login.user?.id, // 添加用户ID
+          timestamp: Date.now(),
+        });
+      }
+    } catch (error) {
+      console.error('[makeDataShareable] Failed to broadcast update:', error);
+    }
   }
 
   /**
@@ -124,7 +172,11 @@ class ShareableDataManager {
    */
   public destroy() {
     this.channels.forEach((channel) => {
-      channel.close();
+      try {
+        channel.close();
+      } catch (error) {
+        console.error('[makeDataShareable] Error closing channel:', error);
+      }
     });
     this.channels.clear();
     this.subscriptions.clear();
@@ -157,20 +209,48 @@ export function makeDataShareable<T extends object>(
   const unsubscribeExternal = shareableManager.subscribe(channelName, (newData) => {
     if (isUpdating) return; // 避免循环更新
 
-    if (newData !== null && newData !== target[propertyKey]) {
-      isUpdating = true;
-      target[propertyKey] = newData;
-      isUpdating = false;
+    if (newData !== null) {
+      // 深度比较数据是否真正发生变化
+      try {
+        const newSerialized = JSON.stringify(newData);
+        const currentSerialized = JSON.stringify(target[propertyKey]);
+
+        if (newSerialized !== currentSerialized) {
+          isUpdating = true;
+          target[propertyKey] = newData;
+          isUpdating = false;
+        }
+      } catch (error) {
+        // 如果序列化失败，直接比较引用
+        if (newData !== target[propertyKey]) {
+          isUpdating = true;
+          target[propertyKey] = newData;
+          isUpdating = false;
+        }
+      }
     }
   });
 
   // 监听本地属性变化并广播
   const disposeReaction = reaction(
     () => target[propertyKey],
-    (newValue) => {
+    (newValue, previousValue) => {
       if (isUpdating) return; // 避免循环广播
 
-      shareableManager.broadcastUpdate(channelName, newValue);
+      // 只有在值真正发生变化时才广播
+      try {
+        const newSerialized = JSON.stringify(newValue);
+        const prevSerialized = JSON.stringify(previousValue);
+
+        if (newSerialized !== prevSerialized) {
+          shareableManager.broadcastUpdate(channelName, newValue);
+        }
+      } catch (error) {
+        // 如果序列化失败，直接比较引用
+        if (newValue !== previousValue) {
+          shareableManager.broadcastUpdate(channelName, newValue);
+        }
+      }
     },
   );
 
