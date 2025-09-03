@@ -240,6 +240,12 @@ const TaskFlow: React.FC<IProps> = (props) => {
 
       //执行
       let statusContent = nodeStatusMap[TaskFlowNodeType.SERVICE_TASK][status];
+      // 如果flow是EXECUTING_ABNORMAL，节点状态校正显示为执行异常
+      // see dima issue 2025041700108316372
+      if (task?.status === TaskStatus.EXECUTION_ABNORMAL) {
+        statusContent =
+          nodeStatusMap[TaskFlowNodeType.SERVICE_TASK][TaskNodeStatus.EXECUTING_ABNORMAL];
+      }
       switch (status) {
         case TaskNodeStatus.CREATED: {
           _node = {
