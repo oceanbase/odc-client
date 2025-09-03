@@ -47,6 +47,7 @@ export default function convertValueToSQLString(value: string | null, dataType: 
     case 'TINYTEXT':
     case 'MEDIUMTEXT':
     case 'LONGTEXT':
+    case 'TIMESTAMP':
     case 'TEXT': {
       return MySQLString(value);
     }
