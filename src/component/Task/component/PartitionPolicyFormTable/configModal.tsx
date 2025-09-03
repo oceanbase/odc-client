@@ -350,7 +350,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
     }
   }, [configs]);
 
-  const submitBtn = useMemo(() => {
+  const submitBtn = () => {
     const isSingleGenerateCount = generateCount === 1;
     const isSingleGenerateCountMessage = formatMessage({
       id: 'src.component.Task.component.PartitionPolicyFormTable.B988E243',
@@ -445,7 +445,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
         }
       </Button>
     );
-  }, [isBatch, generateCount]);
+  };
 
   return (
     <Drawer
@@ -499,7 +499,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               }
             </Button>
           </Tooltip>
-          {submitBtn}
+          {submitBtn()}
         </Space>
       }
     >
