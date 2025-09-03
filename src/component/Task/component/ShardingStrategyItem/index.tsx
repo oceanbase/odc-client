@@ -20,7 +20,10 @@ const ShardingStrategyItem: React.FC<IProps> = ({ form }) => {
 
   return (
     <Form.Item
-      extra={'若使用全表扫描方式进行数据搜索，处理过程将更加稳定但性能可能会受到影响'}
+      extra={formatMessage({
+        id: 'src.component.Task.component.ShardingStrategyItem.B6EB2F37',
+        defaultMessage: '若使用全表扫描方式进行数据搜索，处理过程将更加稳定但性能可能会受到影响',
+      })}
       name="shardingStrategy"
       rules={[
         {
@@ -33,7 +36,10 @@ const ShardingStrategyItem: React.FC<IProps> = ({ form }) => {
       ]}
     >
       <Checkbox checked={fullTableSearch} onChange={handleChange}>
-        通过全表扫描进行数据搜索
+        {formatMessage({
+          id: 'src.component.Task.component.ShardingStrategyItem.61BD0252',
+          defaultMessage: '通过全表扫描进行数据搜索',
+        })}
       </Checkbox>
     </Form.Item>
   );

@@ -207,7 +207,10 @@ const databaseSettings: IODCSetting[] = [
     },
   },
   {
-    label: '结果集展示',
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.user.20C5DFB4',
+      defaultMessage: '结果集展示',
+    }),
     key: 'odc.sqlexecute.querySqlResultDisplayMode',
     locationKey: 'querySqlResultDisplayMode',
     group: databaseGroup,
@@ -220,19 +223,34 @@ const databaseSettings: IODCSetting[] = [
             {
               label: (
                 <RadioWithTooltip
-                  title="最近查询结果覆盖上一次查询结果，若要查看多次执行结果需手动固定结果集（在结果集页签右键操作）。"
-                  label="覆盖"
+                  title={formatMessage({
+                    id: 'src.component.ODCSetting.config.user.2D4F8470',
+                    defaultMessage:
+                      '最近查询结果覆盖上一次查询结果，若要查看多次执行结果需手动固定结果集（在结果集页签右键操作）。',
+                  })}
+                  label={formatMessage({
+                    id: 'src.component.ODCSetting.config.user.C8FE70F6',
+                    defaultMessage: '覆盖',
+                  })}
                 />
               ),
+
               value: EquerySqlResultDisplayMode.OVERWRITE,
             },
             {
               label: (
                 <RadioWithTooltip
-                  title="多次查询结果追加展示，需手动关闭结果集页签才会关闭。"
-                  label="追加"
+                  title={formatMessage({
+                    id: 'src.component.ODCSetting.config.user.FACA6552',
+                    defaultMessage: '多次查询结果追加展示，需手动关闭结果集页签才会关闭。',
+                  })}
+                  label={formatMessage({
+                    id: 'src.component.ODCSetting.config.user.5BCACB4C',
+                    defaultMessage: '追加',
+                  })}
                 />
               ),
+
               value: EquerySqlResultDisplayMode.APPEND,
             },
           ]}
