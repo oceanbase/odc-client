@@ -47,7 +47,7 @@ export const ScheduleTextMap = {
 };
 
 export const ScheduleStatusTextMap = {
-  [ScheduleStatus.CREATING]: '创建中',
+  [ScheduleStatus.CREATING]: '已创建',
   [ScheduleStatus.PAUSE]: '已禁用',
   [ScheduleStatus.ENABLED]: '已启用',
   [ScheduleStatus.TERMINATED]: '已终止',

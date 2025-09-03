@@ -321,10 +321,11 @@ const ConnectionPopover: React.FC<{
               fontFamily: 'PingFangSC-Semibold',
               color: 'var(--text-color-primary)',
               fontWeight: 'bold',
-              width: '280px',
+              width: 'max-content',
               overflow: 'hidden',
               whiteSpace: 'nowrap',
               textOverflow: 'ellipsis',
+              maxWidth: '280px',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center' }}>

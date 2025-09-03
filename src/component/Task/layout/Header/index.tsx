@@ -1,5 +1,5 @@
 import { Space } from 'antd';
-import { ReloadOutlined } from '@ant-design/icons';
+import { SyncOutlined } from '@ant-design/icons';
 import Search from './Search';
 import Filter from './Filter';
 import Sort from './Sort';
@@ -18,7 +18,7 @@ const Header = () => {
       <Filter />
       <Sort />
       <FilterIcon border isActive={false}>
-        <ReloadOutlined onClick={() => context?.reload?.()} />
+        <SyncOutlined onClick={() => context?.reload?.()} />
       </FilterIcon>
     </Space>
   );

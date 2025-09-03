@@ -46,6 +46,7 @@ const ScheduleTypeFilter = ({ isScheduleView }: { isScheduleView: boolean }) => 
         options={scheduleTypeOptions || []}
         style={{ width: '100%' }}
         value={selectValue}
+        mode="multiple"
         allowClear
         onChange={handleSelectType}
       />

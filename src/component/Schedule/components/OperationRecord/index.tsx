@@ -19,6 +19,8 @@ import { useLoop } from '@/util/hooks/useLoop';
 import CommonTable from '@/component/CommonTable';
 import { CommonTableMode, ITableLoadOptions } from '@/component/CommonTable/interface';
 import { IResponseData } from '@/d.ts';
+import { SubTypeTextMap } from '@/constant/scheduleTask';
+import styles from './index.less';
 
 const getConnectionColumns = (params: {
   reloadList: () => void;
@@ -38,7 +40,7 @@ const getConnectionColumns = (params: {
       render: (id, record) => {
         return (
           <span
-            style={{ color: '#1890ff', cursor: 'pointer' }}
+            className={styles.hoverLink}
             onClick={() => {
               onOpenDetail(record, true);
             }}
@@ -54,7 +56,7 @@ const getConnectionColumns = (params: {
       title: '任务类型',
       ellipsis: true,
       width: 200,
-      render: (type) => ScheduleTextMap[type],
+      render: (type) => SubTypeTextMap[type],
     },
 
     {
@@ -183,6 +185,7 @@ const OperationRecord: React.FC<IProps> = (props) => {
           showToolbar={false}
           tableProps={{
             rowKey: 'id',
+            rowClassName: styles.tableRow,
             dataSource: subTaskRes?.contents,
             columns: getConnectionColumns({
               onOpenDetail: handleDetailVisible,

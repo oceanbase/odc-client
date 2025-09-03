@@ -97,7 +97,9 @@ const Filter: React.FC = () => {
     return (
       <div>
         <div>作业类型：</div>
-        <div className={styles.ml6}>{SchedulePageTextMap[_type]}</div>
+        <div className={styles.ml6}>
+          {_type.map((item) => SchedulePageTextMap[item]).join('，')}
+        </div>
       </div>
     );
   }, [isScheduleView, type, subTaskType]);
@@ -215,6 +217,7 @@ const Filter: React.FC = () => {
         status: [],
         projectIds: [],
         type: undefined,
+        approveStatus: [],
       });
     } else {
       setsubTaskParams?.({

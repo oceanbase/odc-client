@@ -241,9 +241,6 @@ const TaskProgressModal: React.FC<IProps> = ({ modalOpen, setModalOpen, data, ta
             </Space>
           </Space>
         </Descriptions.Item>
-        <Descriptions.Item label={'DML 预计影响行数'}>
-          {result?.completedSqlCount}
-        </Descriptions.Item>
         <Descriptions.Item label={'数据源'}>{result?.database?.dataSource?.name}</Descriptions.Item>
       </Descriptions>
       {result?.sqlExecuteResults && (

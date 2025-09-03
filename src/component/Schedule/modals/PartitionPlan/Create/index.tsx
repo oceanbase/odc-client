@@ -736,7 +736,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
               }}
               onInit={(db) => setCreateScheduleDatabase(db)}
             />
-            {hasPartitionPlan && (
+            {hasPartitionPlan && isEdit && (
               <Alert
                 message={'当前数据库已存在分区计划，审批通过后覆盖原有分区计划'}
                 type="warning"
@@ -757,6 +757,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
                 className={styles.tableWrapper}
               >
                 <PartitionPolicyFormTable
+                  isEdit={isEdit}
                   databaseId={databaseId}
                   sessionId={sessionId}
                   tableConfigs={tableConfigs}

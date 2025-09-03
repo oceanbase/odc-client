@@ -88,7 +88,7 @@ export interface IPagination {
 export interface IScheduleParam {
   searchValue: string;
   searchType: ScheduleSearchType;
-  type: ScheduleType;
+  type: ScheduleType[];
   status: ScheduleStatus[];
   projectIds: number[];
   sort: string;
@@ -101,7 +101,7 @@ export interface IScheduleParam {
 export interface ISubTaskParam {
   searchValue: string;
   searchType: SubTaskSearchType;
-  type: ScheduleType;
+  type: ScheduleType[];
   status: ScheduleTaskStatus[];
   projectIds: number[];
   sort: string;

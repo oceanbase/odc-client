@@ -338,7 +338,8 @@ const ScheduleTable: React.FC<IProps> = (props) => {
       render: (id, record) => {
         return (
           <div
-            style={{ color: '#1890ff', cursor: 'pointer', padding: '10px 0px 10px 0px' }}
+            className={styles.hoverLink}
+            style={{ padding: '10px 0px 10px 0px' }}
             onClick={() => {
               onSubTaskDetailVisible?.(record, true);
             }}
@@ -371,8 +372,9 @@ const ScheduleTable: React.FC<IProps> = (props) => {
                   gap: '4px',
                   maxWidth: '100%',
                   width: 'max-content',
+                  cursor: 'pointer',
                 }}
-                className={classNames(styles.tip, styles.hoverLink)}
+                className={classNames(styles.tip)}
               >
                 <div className={styles.ellipsis}>{scheduleName}</div>
                 <div>#{record?.scheduleId}</div>
@@ -380,6 +382,15 @@ const ScheduleTable: React.FC<IProps> = (props) => {
             </Tooltip>
           </div>
         );
+      },
+    },
+    {
+      dataIndex: 'database',
+      title: '数据库',
+      ellipsis: true,
+      width: 280,
+      render: (database, record) => {
+        return <DatabaseColumn record={record} isSubTaskList />;
       },
     },
     ...(mode === SchedulePageMode.PROJECT || login.isPrivateSpace()
@@ -684,6 +695,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
         enabledReload={false}
         tableProps={{
           className: styles.scheduleTable,
+          rowClassName: styles.tableRow,
           columns: isScheduleView ? columns : subTaskColumns,
           loading,
           rowKey: isScheduleView ? 'scheduleId' : 'id',

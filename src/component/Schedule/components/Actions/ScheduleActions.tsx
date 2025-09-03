@@ -3,6 +3,8 @@ import {
   ScheduleActionsEnum,
   ScheduleDetailType,
   IOperationTypeRole,
+  ISqlPlanParameters,
+  IPartitionPlan,
 } from '@/d.ts/schedule';
 import { ScheduleActionsTextMap, ScheduleTextMap } from '@/constant/schedule';
 import { useContext, useEffect, useMemo, useState } from 'react';
@@ -37,6 +39,10 @@ import { ScheduleStatus2Actions } from '@/component/Schedule/const';
 import { widthPermission } from '@/util/utils';
 import useOperationPermissions from '@/util/hooks/useOperationPermissions';
 import ProjectContext from '@/page/Project/ProjectContext';
+import { getPartitionPlanTables } from '@/common/network/task';
+import sessionManagerStore from '@/store/sessionManager';
+import SessionStore from '@/store/sessionManager/session';
+import { IPartitionPlanTable, IResponseData } from '@/d.ts';
 
 export interface scheduleActions {
   key: ScheduleActionsEnum;
@@ -144,6 +150,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
         if (res?.data) {
           message.success('任务需要重新审批，审批通过后此任务将终止');
           onReloadList?.();
+          resetActiveBtnKey();
         } else {
           resetActiveBtnKey();
         }
@@ -194,6 +201,9 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
             }),
           );
           onReloadList?.();
+          resetActiveBtnKey();
+        } else {
+          resetActiveBtnKey();
         }
       },
     });
@@ -239,6 +249,9 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
             }),
           );
           onReloadList?.();
+          resetActiveBtnKey();
+        } else {
+          resetActiveBtnKey();
         }
       },
     });
@@ -296,19 +309,16 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       case ScheduleType.SQL_PLAN: {
         scheduleStore.setSQLPlanData(true, mode, {
           id: schedule?.scheduleId,
-          databaseId: schedule?.database?.id,
+          databaseId:
+            schedule?.attributes?.databaseInfo?.id ||
+            (schedule?.parameters as ISqlPlanParameters)?.databaseId,
           type: 'RETRY',
           projectId,
         });
         break;
       }
       case ScheduleType.PARTITION_PLAN: {
-        scheduleStore.setPartitionPlanData(true, mode, {
-          id: schedule?.scheduleId,
-          databaseId: schedule?.database?.id,
-          type: 'RETRY',
-          projectId,
-        });
+        await _handleClonePartitionPlan();
         break;
       }
       case ScheduleType.DATA_DELETE: {
@@ -319,6 +329,57 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
         });
         break;
       }
+    }
+  };
+
+  const _handleClonePartitionPlan = async () => {
+    const session = await sessionManagerStore.createSession(
+      null,
+      schedule?.attributes?.databaseInfo?.id ||
+        (schedule?.parameters as IPartitionPlan)?.databaseId,
+    );
+    let res: IResponseData<IPartitionPlanTable>;
+    if (session !== 'NotFound') {
+      res = await getPartitionPlanTables(
+        (session as SessionStore)?.sessionId,
+        schedule?.attributes?.databaseInfo?.id ||
+          (schedule?.parameters as IPartitionPlan)?.databaseId,
+      );
+    }
+
+    const hasPartitionPlanTableConfigs = res?.contents?.filter(
+      (item) => item?.containsCreateStrategy || item?.containsDropStrategy,
+    );
+    if (hasPartitionPlanTableConfigs?.length) {
+      const count = hasPartitionPlanTableConfigs?.length;
+      Modal.confirm({
+        title: `当前任务中有 ${count} 张表存在有效的分区策略，仅克隆未配置表的分区策略`,
+        cancelText: formatMessage({
+          id: 'odc.TaskManagePage.component.TaskTools.Cancel',
+          defaultMessage: '取消',
+        }),
+        okText: '确认',
+        centered: true,
+        onOk: async () => {
+          scheduleStore.setPartitionPlanData(true, mode, {
+            id: schedule?.scheduleId,
+            databaseId:
+              schedule?.attributes?.databaseInfo?.id ||
+              (schedule?.parameters as IPartitionPlan)?.databaseId,
+            type: 'RETRY',
+            projectId,
+          });
+        },
+      });
+    } else {
+      scheduleStore.setPartitionPlanData(true, mode, {
+        id: schedule?.scheduleId,
+        databaseId:
+          schedule?.attributes?.databaseInfo?.id ||
+          (schedule?.parameters as IPartitionPlan)?.databaseId,
+        type: 'RETRY',
+        projectId,
+      });
     }
   };
 
@@ -378,6 +439,9 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
           message.success('撤销成功');
           onReloadList?.();
           onClose?.();
+          resetActiveBtnKey();
+        } else {
+          resetActiveBtnKey();
         }
       },
     });
@@ -501,16 +565,6 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
 
   const APPROVAL_ACTIONS: Array<scheduleActions> = [
     {
-      key: ScheduleActionsEnum.PASS,
-      label: ScheduleActionsTextMap[ScheduleActionsEnum.PASS],
-      action: eventMap[ScheduleActionsEnum.PASS],
-      visible: widthPermission(
-        (hasPermission) => hasPermission,
-        [IOperationTypeRole.APPROVER],
-        IRoles,
-      ),
-    },
-    {
       key: ScheduleActionsEnum.REVOKE,
       label: ScheduleActionsTextMap[ScheduleActionsEnum.REVOKE],
       action: eventMap[ScheduleActionsEnum.REVOKE],
@@ -529,6 +583,16 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       key: ScheduleActionsEnum.REFUSE,
       label: ScheduleActionsTextMap[ScheduleActionsEnum.REFUSE],
       action: eventMap[ScheduleActionsEnum.REFUSE],
+      visible: widthPermission(
+        (hasPermission) => hasPermission,
+        [IOperationTypeRole.APPROVER],
+        IRoles,
+      ),
+    },
+    {
+      key: ScheduleActionsEnum.PASS,
+      label: ScheduleActionsTextMap[ScheduleActionsEnum.PASS],
+      action: eventMap[ScheduleActionsEnum.PASS],
       visible: widthPermission(
         (hasPermission) => hasPermission,
         [IOperationTypeRole.APPROVER],

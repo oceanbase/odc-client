@@ -52,11 +52,6 @@
     }
   }
 }
-.hoverLink:hover {
-  color: #1890ff !important;
-  cursor: pointer;
-}
-
 .tip {
   color: var(--text-color-secondary);
 }
@@ -74,6 +69,13 @@
         }
       }
     }
+  }
+}
+
+.tableRow:hover {
+  .hoverLink {
+    color: #1890ff !important;
+    cursor: pointer;
   }
 }
 
@@ -114,6 +116,24 @@
   overflow: hidden;
   white-space: nowrap;
 }
+
+.mw110 {
+  max-width: 108px !important;
+}
+
+.scheduleDatabaseColumn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
+.subTaskDatabaseColumn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
 .mr4 {
   margin-right: 4px;
 }

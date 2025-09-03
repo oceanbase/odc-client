@@ -26,7 +26,7 @@ export interface ScheduleListParams {
   id?: number;
   name?: string;
   status?: ScheduleStatus[];
-  type?: ScheduleType;
+  type?: ScheduleType[];
   startTime?: string;
   endTime?: string;
   creator?: string;
@@ -50,7 +50,7 @@ export interface SubTaskListParams {
   scheduleId: number;
   scheduleName: string;
   status: ScheduleTaskStatus[];
-  scheduleType: ScheduleType;
+  scheduleType: ScheduleType[];
   startTime?: string;
   creator?: string;
   endTime?: string;

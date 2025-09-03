@@ -1,5 +1,4 @@
 import { Space } from 'antd';
-import { ReloadOutlined } from '@ant-design/icons';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import Sort from '@/component/Schedule/layout/Header/Sort';
 import Tabs from './Tabs';
@@ -9,6 +8,7 @@ import Filter from './Filter/index';
 import ParamsContext from '@/component/Schedule/context/ParamsContext';
 import { useContext } from 'react';
 import SubTaskSearch from './SubTaskSearch';
+import { SyncOutlined } from '@ant-design/icons';
 
 const Header = () => {
   const context = useContext(ParamsContext);
@@ -20,7 +20,7 @@ const Header = () => {
       <Filter />
       <Sort />
       <FilterIcon border isActive={false}>
-        <ReloadOutlined onClick={() => context?.reload?.()} />
+        <SyncOutlined onClick={() => context?.reload?.()} />
       </FilterIcon>
       <Segment />
     </Space>

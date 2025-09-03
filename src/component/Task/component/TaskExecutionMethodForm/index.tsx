@@ -38,6 +38,9 @@ const TaskExecutionMethodForm: React.FC<IProps> = ({ taskType }) => {
     <>
       <Form.Item label={label} name="executionStrategy" required>
         <Radio.Group>
+          <Radio value={TaskExecStrategy.MANUAL}>
+            {taskExecStrategyMap?.[TaskExecStrategy.MANUAL]}
+          </Radio>
           <Radio value={TaskExecStrategy.AUTO}>
             {taskExecStrategyMap?.[TaskExecStrategy.AUTO]}
           </Radio>
@@ -46,9 +49,6 @@ const TaskExecutionMethodForm: React.FC<IProps> = ({ taskType }) => {
               {taskExecStrategyMap?.[TaskExecStrategy.TIMER]}
             </Radio>
           ) : null}
-          <Radio value={TaskExecStrategy.MANUAL}>
-            {taskExecStrategyMap?.[TaskExecStrategy.MANUAL]}
-          </Radio>
         </Radio.Group>
       </Form.Item>
       <Form.Item noStyle shouldUpdate>
