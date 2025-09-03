@@ -2662,7 +2662,6 @@ export enum MigrationInsertAction {
 }
 
 export enum ShardingStrategy {
-  AUTO = 'AUTO',
   FIXED_LENGTH = 'FIXED_LENGTH',
   MATCH = 'MATCH',
 }

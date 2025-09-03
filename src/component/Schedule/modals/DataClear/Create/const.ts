@@ -10,15 +10,6 @@ export const rules = {
       }), //请选择
     },
   ],
-  deleteByUniqueKey: [
-    {
-      required: true,
-      message: formatMessage({
-        id: 'src.component.Task.DataClearTask.CreateModal.23542D89',
-        defaultMessage: '请选择',
-      }), //'请选择'
-    },
-  ],
   unit: ({ required }) => {
     return [
       {

@@ -110,7 +110,7 @@ const ApprovalModal: React.FC<IProps> = inject('taskStore')(
         onCancel={handleCancel}
         zIndex={zIndex}
       >
-        <Space direction="vertical" size={20}>
+        <Space direction="vertical" size={20} className={styles.block}>
           <Space>
             <span>
               {

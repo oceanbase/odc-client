@@ -110,7 +110,7 @@ const defaultValue = {
   archiveRange: IArchiveRange.PORTION,
   tables: [null],
   migrationInsertAction: MigrationInsertAction.INSERT_DUPLICATE_UPDATE,
-  shardingStrategy: ShardingStrategy.AUTO,
+  shardingStrategy: ShardingStrategy.MATCH,
   rowLimit: 1000,
   dataSizeLimit: 10,
 };
@@ -723,6 +723,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               <MaxAllowedDirtyRowCount />
               <TaskdurationItem form={form} />
               <SynchronizationItem form={form} targetDatabase={targetDatabase} />
+              <ShardingStrategyItem form={form} />
               <Form.Item
                 label={
                   formatMessage({
@@ -735,7 +736,6 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               >
                 <Radio.Group options={InsertActionOptions} />
               </Form.Item>
-              <ShardingStrategyItem />
               <ThrottleFormItem isShowDataSizeLimit={true} />
             </FormItemPanel>
           </Form>

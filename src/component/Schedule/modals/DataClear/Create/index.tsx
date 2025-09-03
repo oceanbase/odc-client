@@ -71,7 +71,7 @@ const deleteByUniqueKeyOptions = [
 const defaultValue = {
   triggerStrategy: TaskExecStrategy.TIMER,
   archiveRange: IArchiveRange.PORTION,
-  shardingStrategy: ShardingStrategy.AUTO,
+  shardingStrategy: ShardingStrategy.MATCH,
   tables: [null],
   rowLimit: 1000,
   dataSizeLimit: 10,
@@ -153,7 +153,6 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       shardingStrategy,
       tables,
       variables,
-      deleteByUniqueKey,
       needCheckBeforeDelete,
       targetDatabaseId,
       timeoutMillis,
@@ -171,7 +170,6 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
         return i;
       }),
       shardingStrategy,
-      deleteByUniqueKey,
       variables: getVariableValue(variables),
       archiveRange: fullDatabase ? IArchiveRange.ALL : IArchiveRange.PORTION,
       triggerStrategy,
@@ -326,7 +324,6 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           shardingStrategy,
           rowLimit,
           dataSizeLimit,
-          deleteByUniqueKey,
           timeoutMillis,
           needCheckBeforeDelete,
           targetDatabaseId,
@@ -341,7 +338,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
         });
         const parameters: createDataDeleteParameters = {
           databaseId,
-          deleteByUniqueKey,
+          deleteByUniqueKey: true,
           fullDatabase: archiveRange === IArchiveRange.ALL,
           needCheckBeforeDelete,
           rateLimit: {
@@ -602,20 +599,8 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               <DirtyRowAction dependentField="needCheckBeforeDelete" />
               <MaxAllowedDirtyRowCount />
               <TaskdurationItem form={form} />
-              <ShardingStrategyItem />
+              <ShardingStrategyItem form={form} />
               <ThrottleFormItem isShowDataSizeLimit={true} />
-              <Form.Item
-                label={
-                  formatMessage({
-                    id: 'src.component.Task.DataClearTask.CreateModal.99D8FCD6',
-                    defaultMessage: '使用主键清理',
-                  }) /*"使用主键清理"*/
-                }
-                name="deleteByUniqueKey"
-                rules={rules.deleteByUniqueKey}
-              >
-                <Radio.Group options={deleteByUniqueKeyOptions} />
-              </Form.Item>
             </FormItemPanel>
           </Form>
         </Spin>

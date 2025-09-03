@@ -14,7 +14,6 @@ import {
   DirtyRowActionLabelMap,
 } from '@/component/ExecuteSqlDetailModal/constant';
 import setting from '@/store/setting';
-import { shardingStrategyOptions } from '@/component/Task/component/ShardingStrategyItem';
 import { updateLimiterConfig } from '@/common/network/schedule';
 import {
   IDataClearParametersSubTaskParameters,
@@ -24,6 +23,7 @@ import {
 import { SubTypeTextMap } from '@/constant/scheduleTask';
 import EllipsisText from '@/component/EllipsisText';
 import login from '@/store/login';
+import { ShardingStrategy } from '@/d.ts';
 
 interface IProps {
   schedule: IScheduleRecord<IDataClearParameters>;
@@ -179,15 +179,8 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
             )}
           </Descriptions.Item>
         ) : null}
-        <Descriptions.Item
-          label={formatMessage({
-            id: 'src.component.Task.DataClearTask.DetailContent.E977DA21',
-            defaultMessage: '搜索策略',
-          })}
-          span={1}
-        >
-          {shardingStrategyOptions.find((item) => item.value === parameters?.shardingStrategy)
-            ?.label || '-'}
+        <Descriptions.Item label={'通过全表扫描进行数据搜索'} span={1}>
+          {parameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH ? '是' : '否'}
         </Descriptions.Item>
         <Descriptions.Item
           label={
