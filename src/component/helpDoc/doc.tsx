@@ -674,15 +674,6 @@ export default {
     </p>
   ),
 
-  TaskShardingStrategy: (
-    <p>
-      {formatMessage({
-        id: 'src.component.helpDoc.7A52D62F',
-        defaultMessage: '检索目标记录行的方式',
-      })}
-    </p>
-  ),
-
   TaskLmitData: (
     <p>
       {
