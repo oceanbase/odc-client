@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { PageStore } from '@/store/page';
 import { ScheduleStore } from '@/store/schedule';
 import { inject, observer } from 'mobx-react';
@@ -9,6 +9,7 @@ import styles from '@/component/Schedule/index.less';
 import classNames from 'classnames';
 import { Tooltip, Typography } from 'antd';
 import { SchedulePageMode } from '../interface';
+import { getFirstEnabledSchedule } from '../helper';
 const { Text } = Typography;
 
 interface IProps {
@@ -31,6 +32,13 @@ const Sider: React.FC<IProps> = (props) => {
     scheduleStore.setSchedulePageType(value);
     scheduleStore.setSelectedRowKeys([]);
   };
+
+  useEffect(() => {
+    scheduleStore.setSchedulePageType(getFirstEnabledSchedule()?.pageType);
+    return () => {
+      scheduleStore.setSchedulePageType(getFirstEnabledSchedule()?.pageType);
+    };
+  }, []);
 
   return (
     <div className={`${styles.schedlueSider} ${className}`}>

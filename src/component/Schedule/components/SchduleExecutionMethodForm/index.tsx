@@ -27,6 +27,14 @@ const SchduleExecutionMethodForm = forwardRef<
     <>
       <Form.Item name="triggerStrategy" required>
         <Radio.Group>
+          <Radio.Button value={TaskExecStrategy.TIMER}>
+            {
+              formatMessage({
+                id: 'odc.DataArchiveTask.CreateModal.PeriodicExecution',
+                defaultMessage: '周期执行',
+              }) /*周期执行*/
+            }
+          </Radio.Button>
           <Radio.Button value={TaskExecStrategy.START_NOW}>
             {
               formatMessage({
@@ -41,14 +49,6 @@ const SchduleExecutionMethodForm = forwardRef<
                 id: 'odc.DataArchiveTask.CreateModal.ScheduledExecution',
                 defaultMessage: '定时执行',
               }) /*定时执行*/
-            }
-          </Radio.Button>
-          <Radio.Button value={TaskExecStrategy.TIMER}>
-            {
-              formatMessage({
-                id: 'odc.DataArchiveTask.CreateModal.PeriodicExecution',
-                defaultMessage: '周期执行',
-              }) /*周期执行*/
             }
           </Radio.Button>
         </Radio.Group>

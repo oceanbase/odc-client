@@ -77,7 +77,7 @@ const LogicDatabaseChangeExecute = (props: IProps) => {
   };
 
   const handleLogicalDatabaseTaskStop = async (data: ILogicDatabaseChangeExecuteRecord) => {
-    const res = await stopPhysicalSqlExecute(data?.id, data?.physicalDatabaseId);
+    const res = await stopPhysicalSqlExecute(task?.id, data?.physicalDatabaseId);
     if (res) {
       message.success(
         formatMessage({
@@ -96,7 +96,7 @@ const LogicDatabaseChangeExecute = (props: IProps) => {
   };
 
   const handleLogicalDatabaseTaskSkip = async (data: ILogicDatabaseChangeExecuteRecord) => {
-    const res = await skipPhysicalSqlExecute(data?.id, data?.physicalDatabaseId);
+    const res = await skipPhysicalSqlExecute(task?.id, data?.physicalDatabaseId);
     if (res) {
       message.success(
         formatMessage({

@@ -138,6 +138,8 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
       );
       props?.onReloadList?.();
       props?.onReload?.();
+    } else {
+      setActiveBtnKey(undefined);
     }
   };
 
@@ -153,6 +155,9 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
       );
       closeTaskDetail();
       props?.onReloadList?.();
+      setActiveBtnKey(undefined);
+    } else {
+      setActiveBtnKey(undefined);
     }
   };
 

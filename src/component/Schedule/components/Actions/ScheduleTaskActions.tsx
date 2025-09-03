@@ -90,6 +90,9 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
     if (res?.data) {
       message.success('执行成功');
       onReloadList?.();
+      resetActiveBtnKey();
+    } else {
+      resetActiveBtnKey();
     }
   };
 
@@ -109,6 +112,9 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
         if (res?.data) {
           message.success('暂停成功');
           onReloadList?.();
+          resetActiveBtnKey();
+        } else {
+          resetActiveBtnKey();
         }
       },
     });
@@ -120,6 +126,9 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
     if (res?.data) {
       message.success('恢复成功');
       onReloadList?.();
+      resetActiveBtnKey();
+    } else {
+      resetActiveBtnKey();
     }
   };
 
@@ -129,6 +138,9 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
     if (res?.data) {
       message.success('重试成功');
       onReloadList?.();
+      resetActiveBtnKey();
+    } else {
+      resetActiveBtnKey();
     }
   };
 
@@ -148,6 +160,9 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
         if (res?.data) {
           message.success('终止成功');
           onReloadList?.();
+          resetActiveBtnKey();
+        } else {
+          resetActiveBtnKey();
         }
       },
     });

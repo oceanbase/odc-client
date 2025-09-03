@@ -31,7 +31,7 @@ export const SubTypeTextMap = {
     defaultMessage: '数据归档',
   }),
   [SubTaskType.PARTITION_PLAN]: '分区计划',
-  [SubTaskType.SQL_PLAN]: '数据库变更',
+  [SubTaskType.SQL_PLAN]: 'SQL 计划',
   [SubTaskType.DATA_DELETE]: formatMessage({
     id: 'odc.component.CommonDetailModal.TaskExecuteRecord.DataCleansing',
     defaultMessage: '数据清理',

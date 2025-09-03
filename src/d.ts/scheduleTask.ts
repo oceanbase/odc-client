@@ -168,6 +168,7 @@ export interface scheduleTask<T, K> {
   attributes?: {
     sourceDataBaseInfo?: IDatabase;
     targetDataBaseInfo?: IDatabase;
+    databaseInfo?: IDatabase;
   };
 }
 

@@ -34,7 +34,8 @@ import {
   SubTaskListParams,
   getScheduleDetail,
 } from '@/common/network/schedule';
-import { getDefaultParam, getDefaultSubTaskParam } from '../helper';
+import datasourceStatus from '@/store/datasourceStatus';
+import { getDataSourceIdList, getDefaultParam, getDefaultSubTaskParam } from '../helper';
 import { getPreTime } from '@/util/utils';
 import { schedlueConfig } from '@/page/Schedule/const';
 import ApprovalModal from '@/component/Task/component/ApprovalModal';
@@ -173,7 +174,7 @@ const Content: React.FC<IProps> = (props) => {
       tenantId: params.searchType === ScheduleSearchType.TENANT ? params.searchValue : '',
       type:
         scheduleStore?.schedulePageType !== SchedulePageType.ALL
-          ? (scheduleStore?.schedulePageType as unknown as ScheduleType)
+          ? [scheduleStore?.schedulePageType as unknown as ScheduleType]
           : params.type,
       status: params.status?.length ? params.status : [],
       sort: params.sort,
@@ -211,6 +212,10 @@ const Content: React.FC<IProps> = (props) => {
       return;
     }
     const res = await getScheduleList(apiParams);
+    const shouldUpdateDataSourceIds = getDataSourceIdList(res?.contents);
+    if (shouldUpdateDataSourceIds?.length) {
+      datasourceStatus.asyncUpdateStatus(shouldUpdateDataSourceIds);
+    }
     setLoading(false);
     setState({
       schedule: res,
@@ -258,7 +263,7 @@ const Content: React.FC<IProps> = (props) => {
       scheduleStore?.schedulePageType &&
       scheduleStore?.schedulePageType !== SchedulePageType.ALL
     ) {
-      apiParams.scheduleType = scheduleStore?.schedulePageType as unknown as ScheduleType;
+      apiParams.scheduleType = [scheduleStore?.schedulePageType as unknown as ScheduleType];
     }
     return apiParams;
   };
@@ -270,6 +275,10 @@ const Content: React.FC<IProps> = (props) => {
       return;
     }
     const res = await getSubTaskList(apiParams);
+    const shouldUpdateDataSourceIds = getDataSourceIdList(res?.contents);
+    if (shouldUpdateDataSourceIds?.length) {
+      datasourceStatus.asyncUpdateStatus(shouldUpdateDataSourceIds);
+    }
     setLoading(false);
     setSubTaskState({
       subTask: res,

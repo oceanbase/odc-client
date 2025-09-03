@@ -1,4 +1,4 @@
-import { IOperationTypeRole, ScheduleActionsEnum, ScheduleType } from '@/d.ts/schedule';
+import { IScheduleRecord, ScheduleRecordParameters, ScheduleType } from '@/d.ts/schedule';
 import { schedlueConfig } from '@/page/Schedule/const';
 import {
   IScheduleParam,
@@ -20,6 +20,7 @@ import {
   SUB_TASK_EXECUTE_DATE_KEY,
 } from './components/ScheduleTable';
 import dayjs from 'dayjs';
+import { IScheduleTaskExecutionDetail, scheduleTask, SubTaskParameters } from '@/d.ts/scheduleTask';
 
 export const getFirstEnabledSchedule = () => {
   return Object.values(schedlueConfig).find((item) => item.enabled());
@@ -133,4 +134,25 @@ export const getDefaultSubTaskParam: () => ISubTaskParam = () => {
     _defaultParam.executeDate = [dayjs(start), dayjs(end)];
   }
   return _defaultParam;
+};
+
+export const getDataSourceIdList = (
+  scheduleList:
+    | IScheduleRecord<ScheduleRecordParameters>[]
+    | scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>[],
+) => {
+  const ids = new Set<number>();
+  scheduleList?.forEach((item) => {
+    if (item?.attributes?.sourceDataBaseInfo?.dataSource?.id) {
+      ids.add(item?.attributes?.sourceDataBaseInfo.dataSource?.id);
+    }
+    if (item?.attributes?.targetDataBaseInfo?.dataSource?.id) {
+      ids.add(item?.attributes?.targetDataBaseInfo?.dataSource?.id);
+    }
+
+    if (item?.attributes?.databaseInfo?.dataSource?.id) {
+      ids.add(item?.attributes?.databaseInfo?.dataSource?.id);
+    }
+  });
+  return Array.from(ids);
 };

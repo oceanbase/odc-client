@@ -395,6 +395,7 @@ const TaskTable: React.FC<IProps> = (props) => {
         }}
         enabledReload={false}
         tableProps={{
+          rowClassName: styles.tableRow,
           className: styles.commonTable,
           loading,
           columns: columns,

@@ -26,7 +26,7 @@ import {
   FilterOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
-import { Checkbox, Space, Tooltip } from 'antd';
+import { Button, Checkbox, Space, Tooltip } from 'antd';
 import React, { useRef, useState } from 'react';
 import { ITableConfig } from '@/component/Schedule/modals/PartitionPlan/Create';
 import { getStrategyLabel } from '../PartitionPolicyTable';
@@ -45,6 +45,7 @@ interface IProps {
   theme?: string;
   onLoad?: () => Promise<any>;
   onPlansConfigChange?: (values: ITableConfig[]) => void;
+  isEdit?: boolean;
 }
 
 interface ITableFilter {
@@ -84,6 +85,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     theme,
     onLoad,
     onPlansConfigChange,
+    isEdit = false,
   } = props;
   const [visible, setVisible] = useState(false);
   const [activeConfigKeys, setActiveConfigKeys] = useState([]);
@@ -130,13 +132,21 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
             {(record?.containsCreateStrategy || record?.containsDropStrategy) && (
               <Tooltip
                 title={
-                  formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyFormTable.6C03EDE8',
-                    defaultMessage: '当前表已存在分区策略，重新设置后将覆盖原有策略',
-                  }) /*"当前表已存在分区策略，重新设置后将覆盖原有策略"*/
+                  isEdit
+                    ? formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.6C03EDE8',
+                        defaultMessage: '当前表已存在分区策略，重新设置后将覆盖原有策略',
+                      })
+                    : '当前表已存在有效的分区策略，不可重复设置'
                 }
               >
-                <ExclamationCircleFilled style={{ color: 'var(--icon-orange-color)' }} />
+                <ExclamationCircleFilled
+                  style={
+                    isEdit
+                      ? { color: 'var(--icon-orange-color)' }
+                      : { color: 'var(--icon-color-disable)' }
+                  }
+                />
               </Tooltip>
             )}
           </Space>
@@ -183,13 +193,18 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
 
             <Tooltip
               title={
-                formatMessage({
-                  id: 'src.component.Task.component.PartitionPolicyFormTable.A0E5BE83',
-                  defaultMessage: '设置分区策略',
-                }) /*"设置分区策略"*/
+                isDisable(record)
+                  ? '当前表已存在有效的分区策略，不可重复设置'
+                  : formatMessage({
+                      id: 'src.component.Task.component.PartitionPolicyFormTable.A0E5BE83',
+                      defaultMessage: '设置分区策略',
+                    }) /*"设置分区策略"*/
               }
             >
-              <EditOutlined
+              <Button
+                icon={<EditOutlined />}
+                type="text"
+                disabled={isDisable(record)}
                 onClick={() => {
                   handleConfig(record?.__id);
                 }}
@@ -290,6 +305,13 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     setIsOnlyNoSetTable(e.target.checked);
   };
 
+  /**
+   * 新建时是否禁用选择、设置分区策略
+   */
+  const isDisable = (record: ITableConfig) => {
+    return (record?.containsCreateStrategy || record?.containsDropStrategy) && !isEdit;
+  };
+
   return (
     <div>
       <CommonTable
@@ -330,13 +352,16 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
           },
           renderCell(checked, record, index, node: React.ReactElement) {
             if (node?.props?.disabled) {
+              console.log(record);
               return (
                 <Tooltip
                   title={
-                    formatMessage({
-                      id: 'src.component.Task.component.PartitionPolicyFormTable.E009861F',
-                      defaultMessage: '该表的分区和已经勾选的表分区不同，无法批量设置',
-                    }) /*"该表的分区和已经勾选的表分区不同，无法批量设置"*/
+                    isDisable(record as ITableConfig)
+                      ? '当前表已存在有效的分区策略，不可重复设置'
+                      : formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.E009861F',
+                          defaultMessage: '该表的分区和已经勾选的表分区不同，无法批量设置',
+                        }) /*"该表的分区和已经勾选的表分区不同，无法批量设置"*/
                   }
                 >
                   {node}
@@ -346,9 +371,10 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
             return node;
           },
           getCheckboxProps: (record: ITableConfig) => {
-            const disabled =
+            let disabled =
               !!selectedConfigs?.length &&
               record?.partitionMode !== selectedConfigs?.[0]?.partitionMode;
+            disabled = isDisable(record);
             return { disabled };
           },
           options: [

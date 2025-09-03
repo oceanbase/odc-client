@@ -17,6 +17,9 @@ interface IProps {
 }
 const PartitionPlanHeader: React.FC<IProps> = (props) => {
   const { schedule } = props;
+  if (!schedule.parameters.droppingTrigger) {
+    return null;
+  }
   const [type, setType] = useState<PartitionTypeExecutionMethod>(
     PartitionTypeExecutionMethod.CreatePartition,
   );
@@ -38,7 +41,7 @@ const PartitionPlanHeader: React.FC<IProps> = (props) => {
   }, [type]);
 
   return (
-    <>
+    <div>
       <Segmented
         value={type}
         onChange={(value) => {
@@ -48,21 +51,16 @@ const PartitionPlanHeader: React.FC<IProps> = (props) => {
         options={[
           {
             value: PartitionTypeExecutionMethod.CreatePartition,
-            label: '创建分区',
+            label: '创建分区调度策略',
           },
           {
             value: PartitionTypeExecutionMethod.DropPartition,
-            label: '删除分区',
+            label: '删除分区调度策略',
           },
-        ].filter((item) => {
-          if (!schedule.parameters.droppingTrigger) {
-            return item.value === PartitionTypeExecutionMethod.CreatePartition;
-          }
-          return true;
-        })}
+        ]}
       />
       <ExecutionInfoContainer trigger={trigger} fireTimes={fireTimes} type={schedule?.type} />
-    </>
+    </div>
   );
 };
 
