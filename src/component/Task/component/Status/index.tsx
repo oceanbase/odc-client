@@ -136,7 +136,10 @@ export const nodeStatus = {
       status: 'error',
     },
     [TaskNodeStatus.EXECUTING_ABNORMAL]: {
-      text: '执行异常',
+      text: formatMessage({
+        id: 'src.component.Task.component.Status.F318D350',
+        defaultMessage: '执行异常',
+      }),
       status: 'error',
     },
     [TaskNodeStatus.FAILED]: {

@@ -285,10 +285,21 @@ const DataClearTaskContent: React.FC<IProps> = (props) => {
           </Descriptions.Item>
         ) : null}
         <Descriptions.Item
-          label={'通过全表扫描进行数据搜索'}
+          label={formatMessage({
+            id: 'src.component.Task.modals.DataClearTask.DetailContent.E35B6945',
+            defaultMessage: '通过全表扫描进行数据搜索',
+          })}
           span={isCycleTriggerStrategy(triggerConfig?.triggerStrategy) ? 2 : 1}
         >
-          {jobParameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH ? '是' : '否'}
+          {jobParameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH
+            ? formatMessage({
+                id: 'src.component.Task.modals.DataClearTask.DetailContent.A75CE867',
+                defaultMessage: '是',
+              })
+            : formatMessage({
+                id: 'src.component.Task.modals.DataClearTask.DetailContent.CB4C9BFB',
+                defaultMessage: '否',
+              })}
         </Descriptions.Item>
         <Descriptions.Item
           label={

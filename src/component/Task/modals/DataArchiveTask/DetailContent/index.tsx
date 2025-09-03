@@ -320,8 +320,22 @@ const DataArchiveTaskContent: React.FC<IProps> = (props) => {
         >
           {insertActionLabel || '-'}
         </Descriptions.Item>
-        <Descriptions.Item label={'通过全表扫描进行数据搜索'} span={isCycleStrategy ? 2 : 1}>
-          {jobParameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH ? '是' : '否'}
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.modals.DataArchiveTask.DetailContent.44776A6F',
+            defaultMessage: '通过全表扫描进行数据搜索',
+          })}
+          span={isCycleStrategy ? 2 : 1}
+        >
+          {jobParameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH
+            ? formatMessage({
+                id: 'src.component.Task.modals.DataArchiveTask.DetailContent.D405684B',
+                defaultMessage: '是',
+              })
+            : formatMessage({
+                id: 'src.component.Task.modals.DataArchiveTask.DetailContent.53EB9D22',
+                defaultMessage: '否',
+              })}
         </Descriptions.Item>
         <Descriptions.Item
           label={formatMessage({
