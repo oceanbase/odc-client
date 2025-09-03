@@ -14,7 +14,6 @@ import {
 import { kbToMb, mbToKb } from '@/util/utils';
 import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
 import { InsertActionOptions } from '@/component/Schedule/modals/DataArchive/Create';
-import { shardingStrategyOptions } from '@/component/Task/component/ShardingStrategyItem';
 import { SyncTableStructureConfig } from '@/component/Task/const';
 import ThrottleEditableCell from '@/component/Task/component/ThrottleEditableCell';
 import setting from '@/store/setting';
@@ -27,6 +26,7 @@ import {
 import { SubTypeTextMap } from '@/constant/scheduleTask';
 import EllipsisText from '@/component/EllipsisText';
 import login from '@/store/login';
+import { ShardingStrategy } from '@/d.ts';
 interface IProps {
   schedule: IScheduleRecord<IDataArchiveParameters>;
   subTask?: scheduleTask<
@@ -224,15 +224,8 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
         >
           {insertActionLabel || '-'}
         </Descriptions.Item>
-        <Descriptions.Item
-          label={formatMessage({
-            id: 'src.component.Task.DataArchiveTask.DetailContent.4844C10F',
-            defaultMessage: '搜索策略',
-          })}
-          span={1}
-        >
-          {shardingStrategyOptions.find((item) => item.value === parameters?.shardingStrategy)
-            ?.label || '-'}
+        <Descriptions.Item label={'通过全表扫描进行数据搜索'} span={1}>
+          {parameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH ? '是' : '否'}
         </Descriptions.Item>
         <Descriptions.Item
           label={formatMessage({

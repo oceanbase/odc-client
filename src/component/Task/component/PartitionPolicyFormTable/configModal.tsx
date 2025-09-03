@@ -405,7 +405,6 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
           })} /*返回*/
         >
           <Button type="primary">
-            {' '}
             {
               formatMessage({
                 id: 'odc.components.PartitionPolicyTable.configModal.Ok',
