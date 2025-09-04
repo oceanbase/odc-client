@@ -93,7 +93,7 @@ export const ConsoleTextConfig = {
       formatMessage({ id: 'src.page.Console.32807E76', defaultMessage: '其他' }),
     ],
     statusType: ['PENDING', 'EXECUTING', 'EXECUTION_SUCCESS', 'EXECUTION_FAILURE', 'OTHER'],
-    statusColor: ['#73d13d', '#ff6667', '#40a9ff', '#91d5ff', '#e0e0e0'],
+    statusColor: ['#91d5ff', '#40a9ff', '#73d13d', '#ff6667', '#e0e0e0'],
     scheduleTitle: [
       formatMessage({ id: 'src.page.Console.B92D6192', defaultMessage: '数据归档' }),
       formatMessage({ id: 'src.page.Console.E2F84D37', defaultMessage: '数据清理' }),
