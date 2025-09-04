@@ -165,11 +165,15 @@ const ConsoleMain = () => {
     if (String(timeValue) === 'ALL') {
       return {};
     }
-    if (String(timeValue) === 'custom' && dateValue?.[0] && dateValue?.[1]) {
-      return {
-        startTime: dateValue[0].valueOf(),
-        endTime: dateValue[1].valueOf(),
-      };
+    if (String(timeValue) === 'custom') {
+      if (dateValue?.[0] && dateValue?.[1]) {
+        return {
+          startTime: dateValue[0].valueOf(),
+          endTime: dateValue[1].valueOf(),
+        };
+      } else {
+        return {};
+      }
     }
     return {
       startTime: Date.now() - 1000 * 60 * 60 * 24 * Number(timeValue),
