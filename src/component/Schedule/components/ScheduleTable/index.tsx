@@ -52,7 +52,7 @@ import { isProjectArchived } from '@/page/Project/helper';
 import { IPagination } from '@/component/Schedule/interface';
 import ScheduleMiniFlowSpan from '../ScheduleMiniFlowSpan';
 import DatabaseColumn from './DatabaseColumn';
-import { useScheduleSelection } from '@/component/Schedule/hooks/useScheduleSelection';
+import { useScheduleSelection } from '@/component/Schedule/hooks';
 
 export const SCHEDULE_EXECUTE_TIME_KEY = 'schedule:executeTime';
 export const SCHEDULE_EXECUTE_DATE_KEY = 'schedule:executeDate';
@@ -86,7 +86,6 @@ interface IProps {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   onApprovalVisible?: (status: boolean, id: number) => void;
   mode?: SchedulePageMode;
-  defaultScheduleStatus?: ScheduleStatus;
   params: IScheduleParam;
   subTaskParams: ISubTaskParam;
   setParams: React.Dispatch<React.SetStateAction<IScheduleParam>>;
@@ -112,7 +111,6 @@ const ScheduleTable: React.FC<IProps> = (props) => {
     setLoading,
     loading,
     onApprovalVisible,
-    defaultScheduleStatus,
     mode,
     params,
     subTaskParams,
@@ -144,15 +142,6 @@ const ScheduleTable: React.FC<IProps> = (props) => {
     ScheduleRes: scheduleRes,
     tableRef,
   });
-
-  useEffect(() => {
-    if (defaultScheduleStatus) {
-      setParams({
-        ...params,
-        status: [defaultScheduleStatus as ScheduleStatus],
-      });
-    }
-  }, [defaultScheduleStatus]);
 
   useEffect(() => {
     if (isScheduleView && scheduleRes) {

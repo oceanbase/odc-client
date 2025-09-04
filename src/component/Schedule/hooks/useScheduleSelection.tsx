@@ -26,7 +26,7 @@ interface UseTaskSelectionProps {
   tableRef: React.RefObject<ITableInstance>;
 }
 
-export const useScheduleSelection = ({
+const useScheduleSelection = ({
   scheduleStore,
   scheduleTabType,
   ScheduleRes,
@@ -113,3 +113,5 @@ export const useScheduleSelection = ({
     clearSelection,
   };
 };
+
+export default useScheduleSelection;

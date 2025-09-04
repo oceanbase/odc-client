@@ -26,7 +26,8 @@ import TaskTable from '../component/TaskTable';
 import { IPagination, ITaskParam, TaskPageMode, TaskTab } from '@/component/Task/interface';
 import { IState } from '@/component/Task/interface';
 import ApprovalModal from '@/component/Task/component/ApprovalModal';
-import { getDefaultParam } from '../helper';
+import { getDefaultParam, getFirstEnabledTask } from '../helper';
+import useTaskSearchParams from '../hooks/useTaskSearchParams';
 
 interface IProps {
   taskStore?: TaskStore;
@@ -35,8 +36,6 @@ interface IProps {
   pageKey?: TaskPageType;
   tabHeight?: number;
   projectId?: number;
-  defaultTaskId?: number;
-  defaultTaskType?: TaskType;
   mode?: TaskPageMode;
 }
 
@@ -49,6 +48,10 @@ const Content: React.FC<IProps> = (props) => {
     userStore,
     mode = TaskPageMode.COMMON,
   } = props;
+  const {
+    searchParams: { defaultTaskId, defaultTaskType, defaultTab },
+    resetSearchParams,
+  } = useTaskSearchParams();
   const taskTabType = pageKey || taskStore?.taskPageType;
   const location = useLocation();
   const isSqlworkspace = location?.pathname?.includes('/sqlworkspace');
@@ -190,8 +193,21 @@ const Content: React.FC<IProps> = (props) => {
     taskModalActions?.[type]?.();
   };
 
+  const resolveUrlSearchParams = async () => {
+    defaultTaskId && (await openDefaultTask());
+    if (defaultTaskType) {
+      taskStore.changeTaskPageType(defaultTaskType as undefined as TaskPageType);
+    } else {
+      const firstEnabledTask = getFirstEnabledTask();
+      taskStore.changeTaskPageType(firstEnabledTask?.pageType);
+    }
+    setParams({
+      tab: defaultTab || params?.tab,
+    });
+    resetSearchParams();
+  };
+
   const openDefaultTask = async () => {
-    const { defaultTaskId, defaultTaskType } = props;
     if (defaultTaskId) {
       const data = await getTaskDetail(defaultTaskId, true);
       if (!data) {
@@ -212,7 +228,7 @@ const Content: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    openDefaultTask();
+    resolveUrlSearchParams();
   }, []);
 
   return (

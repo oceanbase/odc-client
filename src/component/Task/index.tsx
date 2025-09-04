@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import { TaskType } from '@/d.ts';
-import login from '@/store/login';
-import { useSearchParams } from '@umijs/max';
-import { toInteger } from 'lodash';
 import Content from './layout/Content';
 import styles from './index.less';
 import Sider from './layout/Sider';
 import { TaskPageMode } from './interface';
 import CreateModals from '@/component/Task/modals/CreateModals';
-import { useEffect } from 'react';
 
 interface IProps {
   projectId?: number;
@@ -31,33 +26,13 @@ interface IProps {
 }
 const TaskManagerPage: React.FC<IProps> = (props) => {
   const { projectId, mode } = props;
-  const [searchParams, setSearchParams] = useSearchParams();
-  const defaultTaskId = searchParams.get('taskId');
-  const defaultTaskType = searchParams.get('taskType') as TaskType;
-  const defaultOrganizationId = searchParams.get('organizationId');
-  const currentOrganizationId = login.organizationId;
-  const isOrganizationMatch = toInteger(defaultOrganizationId) === toInteger(currentOrganizationId);
-
-  useEffect(() => {
-    setTimeout(() => {
-      searchParams.delete('taskId');
-      searchParams.delete('taskType');
-      searchParams.delete('organizationId');
-      setSearchParams(searchParams);
-    }, 100);
-  }, []);
 
   return (
     <div className={styles.task}>
       <div className={styles.sider}>
         <Sider mode={mode} />
       </div>
-      <Content
-        mode={mode}
-        projectId={projectId}
-        defaultTaskId={isOrganizationMatch ? toInteger(defaultTaskId) : null}
-        defaultTaskType={defaultTaskType}
-      />
+      <Content mode={mode} projectId={projectId} />
       <CreateModals projectId={projectId} theme={'white'} />
     </div>
   );
