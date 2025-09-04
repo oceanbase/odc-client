@@ -10,6 +10,8 @@ import { TaskExecStrategy, TaskStatus, TaskType } from '@/d.ts';
 import { Divider } from 'antd';
 import { IStat } from '@/d.ts';
 import { ScheduleStatus, ScheduleType } from '@/d.ts/schedule';
+import { Perspective } from '@/component/Schedule/interface';
+import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
 
 const ScheduleItem = ({
   title,
@@ -54,7 +56,7 @@ const ScheduleItem = ({
         <CounterCard
           onClick={() => {
             // 跳转到调度管理页面的执行视角
-            navigate(`/schedule?scheduleType=${type}&perspective=execution`);
+            navigate(`/schedule?scheduleType=${type}&perspective=${Perspective.executionView}`);
           }}
           title={formatMessage({
             id: 'src.page.Console.components.ScheduleItem.1ADBD842',
@@ -65,7 +67,9 @@ const ScheduleItem = ({
         <CounterCard
           onClick={() => {
             // 跳转到调度管理页面的执行视角，并过滤执行失败的任务
-            navigate(`/schedule?scheduleType=${type}&perspective=execution&subTaskStatus=FAILED`);
+            navigate(
+              `/schedule?scheduleType=${type}&perspective=${Perspective.executionView}&subTaskStatus=${ScheduleTaskStatus.FAILED}`,
+            );
           }}
           title={formatMessage({
             id: 'src.page.Console.components.ScheduleItem.6F6BDC9E',

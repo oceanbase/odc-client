@@ -32,6 +32,7 @@ import { ScheduleTaskStatus2Actions } from '@/component/Schedule/const';
 import useOperationPermissions from '@/util/hooks/useOperationPermissions';
 import { widthPermission } from '@/util/utils';
 import { IOperationTypeRole } from '@/d.ts/schedule';
+import { Perspective } from '../../interface';
 
 interface ScheduleActionsIProps {
   subTask: scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>;
@@ -74,7 +75,7 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
     const url =
       location.origin +
       location.pathname +
-      `#/schedule?scheduleId=${scheduleId}&subTaskId=${subTask.id}&organizationId=${login.organizationId}&scheduleType=${subTask.type}`;
+      `#/schedule?scheduleId=${scheduleId}&subTaskId=${subTask.id}&organizationId=${login.organizationId}&scheduleType=${subTask.type}&perspective=${Perspective.executionView}`;
     copy(url);
     message.success(
       formatMessage({

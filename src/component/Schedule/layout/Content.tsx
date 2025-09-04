@@ -48,6 +48,7 @@ import {
 } from '@/d.ts/scheduleTask';
 import { IPagination } from '@/component/Schedule/interface';
 import { getFirstEnabledSchedule } from '../helper';
+import useScheduleSearchParams from '../hooks/useScheduleSearchParams';
 
 interface IProps {
   scheduleStore?: ScheduleStore;
@@ -56,26 +57,23 @@ interface IProps {
   pageKey?: SchedulePageType;
   tabHeight?: number;
   projectId?: number;
-  defaultScheduleId?: number;
-  defaultScheduleType?: ScheduleType;
-  defaultSubTaskId?: number;
-  defaultPerspective?: string;
-  defaultSubTaskStatus?: string;
+
   mode?: SchedulePageMode;
-  defaultScheduleStatus?: ScheduleStatus;
 }
 const Content: React.FC<IProps> = (props) => {
+  const { pageKey, scheduleStore, projectId, userStore, mode = SchedulePageMode.COMMON } = props;
   const {
-    pageKey,
-    scheduleStore,
-    projectId,
-    userStore,
-    mode = SchedulePageMode.COMMON,
-    defaultScheduleStatus,
-    defaultScheduleType,
-    defaultPerspective,
-    defaultSubTaskStatus,
-  } = props;
+    searchParams: {
+      defaultPerspective,
+      defaultScheduleId,
+      defaultScheduleType,
+      defaultSubTaskId,
+      defaultScheduleStatus,
+      defaultSubTaskStatus,
+      defaultTab,
+    },
+    resetSearchParams,
+  } = useScheduleSearchParams();
   /** 作业视角state */
   const [state, setState] = useSetState<IState>({
     detailId: scheduleStore?.defaultOpenScheduleId,
@@ -97,7 +95,9 @@ const Content: React.FC<IProps> = (props) => {
   const [params, setParams] = useSetState<IScheduleParam>(getDefaultParam());
   const [subTaskParams, setsubTaskParams] = useSetState<ISubTaskParam>(getDefaultSubTaskParam());
   const [perspective, setPerspective] = useState<Perspective>(
-    defaultPerspective === 'execution' ? Perspective.executionView : Perspective.scheduleView,
+    defaultPerspective === Perspective.executionView
+      ? Perspective.executionView
+      : Perspective.scheduleView,
   );
   const [pagination, setPagination] = useState<IPagination>({
     current: 1,
@@ -117,33 +117,6 @@ const Content: React.FC<IProps> = (props) => {
     return pageKey || scheduleStore?.schedulePageType;
   }, [pageKey, scheduleStore?.schedulePageType]);
   const [loading, setLoading] = useState<boolean>(false);
-
-  // 根据URL参数设置默认过滤条件
-  useEffect(() => {
-    if (perspective === Perspective.executionView) {
-      const newSubTaskParams = { ...subTaskParams };
-
-      // 设置调度类型过滤
-      if (defaultScheduleType) {
-        newSubTaskParams.type = [defaultScheduleType];
-      }
-
-      // 设置执行状态过滤
-      if (defaultSubTaskStatus === 'FAILED') {
-        newSubTaskParams.status = [ScheduleTaskStatus.FAILED];
-      }
-
-      setsubTaskParams(newSubTaskParams);
-    } else if (perspective === Perspective.scheduleView) {
-      // 作业视角的过滤条件
-      if (defaultScheduleType) {
-        setParams({
-          ...params,
-          type: [defaultScheduleType],
-        });
-      }
-    }
-  }, [defaultSubTaskStatus, defaultScheduleType, perspective]);
 
   const handleDetailVisible = (
     schedule,
@@ -344,37 +317,50 @@ const Content: React.FC<IProps> = (props) => {
     });
   };
 
-  const openDefaultSchedule = async () => {
-    const { defaultScheduleId, defaultScheduleType, defaultSubTaskId } = props;
-    if (defaultScheduleId) {
-      const data = await getScheduleDetail(defaultScheduleId, true);
-      if (!schedlueConfig[defaultScheduleType]?.enabled() || !data) {
-        message.error('无当前作业查看权限');
-        return;
-      }
-      if (defaultSubTaskId) {
-        setSubTaskState({
-          detailId: defaultSubTaskId,
-          detailVisible: true,
-          scheduleId: defaultScheduleId,
-        });
-      } else {
-        setState({
-          detailId: defaultScheduleId,
-          scheduleType: defaultScheduleType,
-          detailVisible: true,
-        });
-      }
-    } else if (defaultScheduleType) {
+  const resolveUrlSearchParams = async () => {
+    defaultScheduleId && (await openDefaultSchedule());
+    if (defaultScheduleType) {
       scheduleStore?.setSchedulePageType(defaultScheduleType as unknown as SchedulePageType);
     } else {
       const firstEnabledSchedule = getFirstEnabledSchedule();
       scheduleStore?.setSchedulePageType(firstEnabledSchedule?.pageType);
     }
+    setParams({
+      status: defaultScheduleStatus ? [defaultScheduleStatus as ScheduleStatus] : params?.status,
+      tab: defaultTab || params?.tab,
+    });
+    setsubTaskParams({
+      status: defaultSubTaskStatus
+        ? [defaultSubTaskStatus as ScheduleTaskStatus]
+        : subTaskParams?.status,
+    });
+    resetSearchParams?.();
+  };
+
+  const openDefaultSchedule = async () => {
+    const data = await getScheduleDetail(defaultScheduleId, true);
+    if (!schedlueConfig[defaultScheduleType]?.enabled() || !data) {
+      message.error('无当前作业查看权限');
+      return;
+    }
+
+    if (defaultSubTaskId) {
+      setSubTaskState({
+        detailId: defaultSubTaskId,
+        detailVisible: true,
+        scheduleId: defaultScheduleId,
+      });
+    } else {
+      setState({
+        detailId: defaultScheduleId,
+        scheduleType: defaultScheduleType,
+        detailVisible: true,
+      });
+    }
   };
 
   useEffect(() => {
-    openDefaultSchedule();
+    resolveUrlSearchParams();
   }, []);
 
   return (
@@ -394,7 +380,6 @@ const Content: React.FC<IProps> = (props) => {
           setLoading={setLoading}
           loading={loading}
           mode={mode}
-          defaultScheduleStatus={defaultScheduleStatus}
           params={params}
           subTaskParams={subTaskParams}
           setParams={setParams}
