@@ -40,7 +40,12 @@ import { getPreTime } from '@/util/utils';
 import { schedlueConfig } from '@/page/Schedule/const';
 import ApprovalModal from '@/component/Task/component/ApprovalModal';
 import { message } from 'antd';
-import { IScheduleTaskExecutionDetail, scheduleTask, SubTaskParameters } from '@/d.ts/scheduleTask';
+import {
+  IScheduleTaskExecutionDetail,
+  scheduleTask,
+  SubTaskParameters,
+  ScheduleTaskStatus,
+} from '@/d.ts/scheduleTask';
 import { IPagination } from '@/component/Schedule/interface';
 import { getFirstEnabledSchedule } from '../helper';
 
@@ -54,6 +59,8 @@ interface IProps {
   defaultScheduleId?: number;
   defaultScheduleType?: ScheduleType;
   defaultSubTaskId?: number;
+  defaultPerspective?: string;
+  defaultSubTaskStatus?: string;
   mode?: SchedulePageMode;
   defaultScheduleStatus?: ScheduleStatus;
 }
@@ -65,6 +72,9 @@ const Content: React.FC<IProps> = (props) => {
     userStore,
     mode = SchedulePageMode.COMMON,
     defaultScheduleStatus,
+    defaultScheduleType,
+    defaultPerspective,
+    defaultSubTaskStatus,
   } = props;
   /** 作业视角state */
   const [state, setState] = useSetState<IState>({
@@ -86,7 +96,9 @@ const Content: React.FC<IProps> = (props) => {
 
   const [params, setParams] = useSetState<IScheduleParam>(getDefaultParam());
   const [subTaskParams, setsubTaskParams] = useSetState<ISubTaskParam>(getDefaultSubTaskParam());
-  const [perspective, setPerspective] = useState<Perspective>(Perspective.scheduleView);
+  const [perspective, setPerspective] = useState<Perspective>(
+    defaultPerspective === 'execution' ? Perspective.executionView : Perspective.scheduleView,
+  );
   const [pagination, setPagination] = useState<IPagination>({
     current: 1,
     pageSize: 0,
@@ -105,6 +117,33 @@ const Content: React.FC<IProps> = (props) => {
     return pageKey || scheduleStore?.schedulePageType;
   }, [pageKey, scheduleStore?.schedulePageType]);
   const [loading, setLoading] = useState<boolean>(false);
+
+  // 根据URL参数设置默认过滤条件
+  useEffect(() => {
+    if (perspective === Perspective.executionView) {
+      const newSubTaskParams = { ...subTaskParams };
+
+      // 设置调度类型过滤
+      if (defaultScheduleType) {
+        newSubTaskParams.type = [defaultScheduleType];
+      }
+
+      // 设置执行状态过滤
+      if (defaultSubTaskStatus === 'FAILED') {
+        newSubTaskParams.status = [ScheduleTaskStatus.FAILED];
+      }
+
+      setsubTaskParams(newSubTaskParams);
+    } else if (perspective === Perspective.scheduleView) {
+      // 作业视角的过滤条件
+      if (defaultScheduleType) {
+        setParams({
+          ...params,
+          type: [defaultScheduleType],
+        });
+      }
+    }
+  }, [defaultSubTaskStatus, defaultScheduleType, perspective]);
 
   const handleDetailVisible = (
     schedule,

@@ -21,6 +21,8 @@ const ScheduleManage: React.FC<IProps> = (props) => {
   const defaultOrganizationId = searchParams.get('organizationId');
   const defaultSubTaskId = searchParams.get('subTaskId');
   const defaultScheduleStatus = searchParams.get('scheduleStatus');
+  const defaultPerspective = searchParams.get('perspective');
+  const defaultSubTaskStatus = searchParams.get('subTaskStatus');
   const currentOrganizationId = login.organizationId;
   const isOrganizationMatch = toInteger(defaultOrganizationId) === toInteger(currentOrganizationId);
 
@@ -31,6 +33,8 @@ const ScheduleManage: React.FC<IProps> = (props) => {
       searchParams.delete('organizationId');
       searchParams.delete('subTaskId');
       searchParams.delete('scheduleStatus');
+      searchParams.delete('perspective');
+      searchParams.delete('subTaskStatus');
       setSearchParams(searchParams);
     }, 100);
   }, []);
@@ -45,6 +49,8 @@ const ScheduleManage: React.FC<IProps> = (props) => {
         defaultScheduleType={defaultScheduleType}
         defaultSubTaskId={toInteger(defaultSubTaskId)}
         defaultScheduleStatus={defaultScheduleStatus as ScheduleStatus}
+        defaultPerspective={defaultPerspective}
+        defaultSubTaskStatus={defaultSubTaskStatus}
         mode={mode}
         projectId={projectId}
       />

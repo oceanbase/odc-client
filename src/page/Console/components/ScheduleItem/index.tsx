@@ -53,7 +53,8 @@ const ScheduleItem = ({
         <Divider className={styles.countersDivider} />
         <CounterCard
           onClick={() => {
-            navigate(`/schedule?scheduleType=${type}`);
+            // 跳转到调度管理页面的执行视角
+            navigate(`/schedule?scheduleType=${type}&perspective=execution`);
           }}
           title={formatMessage({
             id: 'src.page.Console.components.ScheduleItem.1ADBD842',
@@ -63,10 +64,8 @@ const ScheduleItem = ({
         />
         <CounterCard
           onClick={() => {
-            // 跳转到调度管理页面，设置特定类型和已启用状态过滤
-            navigate(
-              `/schedule?scheduleStatus=${ScheduleStatus.EXECUTION_FAILED}&scheduleType=${type}`,
-            );
+            // 跳转到调度管理页面的执行视角，并过滤执行失败的任务
+            navigate(`/schedule?scheduleType=${type}&perspective=execution&subTaskStatus=FAILED`);
           }}
           title={formatMessage({
             id: 'src.page.Console.components.ScheduleItem.6F6BDC9E',
