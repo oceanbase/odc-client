@@ -148,12 +148,16 @@ const ConsoleMain = () => {
   const boardVisible = useMemo(() => {
     const isChecked = (key: ELayoutKey) => checkedKeys.includes(key);
 
+    const hasTaskOrScheduleChecked =
+      TaskTypes.some((type) => checkedKeys.includes(type)) ||
+      getOrderedScheduleTypes().some((type) => checkedKeys.includes(type));
+
     return {
       [ELayoutKey.AboutUs]: isChecked(ELayoutKey.AboutUs),
       [ELayoutKey.BestPractices]: isChecked(ELayoutKey.BestPractices),
       [ELayoutKey.QuickStart]: isChecked(ELayoutKey.QuickStart),
       [ELayoutKey.RecentDatabases]: isChecked(ELayoutKey.RecentDatabases),
-      [ELayoutKey.TaskOverview]: isChecked(ELayoutKey.TaskOverview),
+      [ELayoutKey.TaskOverview]: hasTaskOrScheduleChecked,
     };
   }, [checkedKeys]);
 
