@@ -7,8 +7,8 @@ import { PersonalizeLayoutContext } from '@/page/Console/PersonalizeLayoutContex
 const BarChart = ({ data }) => {
   const { status, statusColor, statusType } = ConsoleTextConfig.schdules;
   const chartRef = useRef(null);
-  const { checkedKeys: allCheckedKeys } = useContext(PersonalizeLayoutContext);
-  const checkedKeys = TaskTypes.filter((item) => allCheckedKeys.includes(item));
+  const { checkedKeys: allCheckedKeys, getOrderedTaskTypes } = useContext(PersonalizeLayoutContext);
+  const checkedKeys = getOrderedTaskTypes().filter((item) => allCheckedKeys.includes(item));
 
   useEffect(() => {
     if (chartRef.current) {

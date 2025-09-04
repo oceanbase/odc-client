@@ -13,7 +13,7 @@ import Icon, { ClockCircleOutlined } from '@ant-design/icons';
 import LabelWithIcon from '../../component/LabelWithIcon';
 import ScheduleItem from './components/ScheduleItem';
 import BarChart from './components/BarChart';
-import { ConsoleTextConfig, ScheduleTitle, ScheduleTypes, ELayoutKey, TaskTypes } from './const';
+import { ConsoleTextConfig, ScheduleTitle, ELayoutKey, TaskTypes } from './const';
 import styles from './index.less';
 import RecentlyDatabase from './components/RecentlyDatabase';
 import { useNavigate } from '@umijs/max';
@@ -82,7 +82,7 @@ const ConsoleMain = () => {
     return null;
   });
 
-  const { checkedKeys } = useContext(PersonalizeLayoutContext);
+  const { checkedKeys, getOrderedScheduleTypes } = useContext(PersonalizeLayoutContext);
   const cacheProjectId = localStorage.getItem(cacheProjectIdKey);
 
   const [selectedProjectId, setSelectedProjectId] = useState(
@@ -180,11 +180,17 @@ const ConsoleMain = () => {
   }, [checkedKeys]);
 
   const schedules = useMemo(() => {
-    return ScheduleTypes.filter((item) => checkedKeys.includes(item)).map((type) => ({
-      title: ScheduleTitle[type],
-      type,
-    }));
-  }, [checkedKeys]);
+    // Get ordered schedule types from dragged tree structure
+    const orderedTypes = getOrderedScheduleTypes();
+
+    // Filter by checked keys and map to schedule objects
+    return orderedTypes
+      .filter((item) => checkedKeys.includes(item))
+      .map((type) => ({
+        title: ScheduleTitle[type],
+        type,
+      }));
+  }, [checkedKeys, getOrderedScheduleTypes]);
 
   return (
     <>

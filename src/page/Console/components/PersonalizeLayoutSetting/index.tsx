@@ -133,9 +133,16 @@ export const loadTreeState = (): SavedTreeState | null => {
 const TreeSetting = () => {
   // Load initial state from localStorage or use defaults
   const savedState = loadTreeState();
-  const { checkedKeys, setCheckedKeys } = useContext(PersonalizeLayoutContext);
+  const {
+    checkedKeys,
+    setCheckedKeys,
+    treeData: contextTreeData,
+    setTreeData,
+  } = useContext(PersonalizeLayoutContext);
 
-  const [gData, setGData] = useState<TreeDataNode[]>(savedState?.treeData || treeData);
+  const [gData, setGData] = useState<TreeDataNode[]>(
+    contextTreeData || savedState?.treeData || treeData,
+  );
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>(
     savedState?.expandedKeys || defaultExpandedKeys,
   );
@@ -150,6 +157,7 @@ const TreeSetting = () => {
       expandedKeys,
     };
     saveTreeState(stateToSave);
+    setTreeData(gData);
   }, [gData, checkedKeys, expandedKeys]);
 
   const onExpand: TreeProps['onExpand'] = (expandedKeysValue) => {
@@ -253,6 +261,8 @@ const TreeSetting = () => {
     setExpandedKeys(defaultExpandedKeys);
     setCheckedKeys(defaultCheckedKeys);
     setAutoExpandParent(true);
+    // Also reset context treeData
+    setTreeData(treeData);
   };
 
   return (
