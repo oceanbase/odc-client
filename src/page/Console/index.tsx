@@ -153,6 +153,7 @@ const ConsoleMain = () => {
       [ELayoutKey.BestPractices]: isChecked(ELayoutKey.BestPractices),
       [ELayoutKey.QuickStart]: isChecked(ELayoutKey.QuickStart),
       [ELayoutKey.RecentDatabases]: isChecked(ELayoutKey.RecentDatabases),
+      [ELayoutKey.TaskOverview]: isChecked(ELayoutKey.TaskOverview),
     };
   }, [checkedKeys]);
 
@@ -210,122 +211,126 @@ const ConsoleMain = () => {
           <Spin spinning={scheduleLoading && taskLoading} className={styles.topAreaFilter}>
             <div className={styles.top}>
               {boardVisible[ELayoutKey.QuickStart] && <QuickStart />}
-              <div className={schedules.length > 2 ? styles.schedules : styles.schedulesVertical}>
-                <Card className={styles.card}>
-                  <div className={styles.header}>
-                    <div className={styles.consoleCardTitle}>任务概览</div>
-                    <div>
-                      <Select
-                        className={styles.filter}
-                        prefix={<ClockCircleOutlined style={{ fontSize: 14 }} />}
-                        defaultValue={timeValue || TimeOptions[0].value}
-                        options={TimeOptions}
-                        onChange={(value: number) => {
-                          setTimeValue(value);
-                          localStorage.setItem(cacheTimeKey, JSON.stringify(value));
-                        }}
-                      />
-                      {String(timeValue) === 'custom' && (
-                        <RangePicker
-                          suffixIcon={null}
-                          value={dateValue}
-                          onChange={(value) => {
-                            setDateValue(value);
-                            // 将 Dayjs 对象转换为时间戳进行存储
-                            const dateForStorage = value
-                              ? [value[0]?.valueOf(), value[1]?.valueOf()]
-                              : null;
-                            localStorage.setItem(cacheDateKey, JSON.stringify(dateForStorage));
+              {boardVisible[ELayoutKey.TaskOverview] && (
+                <div className={schedules.length > 2 ? styles.schedules : styles.schedulesVertical}>
+                  <Card className={styles.card}>
+                    <div className={styles.header}>
+                      <div className={styles.consoleCardTitle}>任务概览</div>
+                      <div>
+                        <Select
+                          className={styles.filter}
+                          prefix={<ClockCircleOutlined style={{ fontSize: 14 }} />}
+                          defaultValue={timeValue || TimeOptions[0].value}
+                          options={TimeOptions}
+                          onChange={(value: number) => {
+                            setTimeValue(value);
+                            localStorage.setItem(cacheTimeKey, JSON.stringify(value));
                           }}
                         />
-                      )}
-                      <Select
-                        className={styles.filter}
-                        placeholder="请选择项目"
-                        style={{ maxWidth: 200, border: 'none' }}
-                        options={[{ label: '全部项目', value: -1 }, ...projectOptions]}
-                        defaultValue={cacheProjectId ? Number(cacheProjectId) : -1}
-                        onChange={(value) => {
-                          setSelectedProjectId(value === -1 ? undefined : value);
-                          localStorage.setItem(cacheProjectIdKey, value + '');
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className={styles.jobsCounter}>
-                    <div className={styles.counterGrid}>
-                      <ScheduleCounter
-                        title="待审批工单"
-                        counter={todosData?.FLOW?.count?.FLOW_WAIT_ME_APPROVAL}
-                        onClick={() => {
-                          navigate(`/${IPageType.Task}?tab=${TaskTab.approveByCurrentUser}`);
-                        }}
-                      />
-                      <ScheduleCounter
-                        title="待执行工单"
-                        counter={todosData?.FLOW?.count?.FLOW_WAIT_ME_EXECUTION}
-                        onClick={() => {
-                          navigate(`/${IPageType.Task}?tab=${TaskTab.executionByCurrentUser}`);
-                        }}
-                      />
-                      <ScheduleCounter
-                        title="待审批作业"
-                        counter={todosData?.SCHEDULE?.count?.SCHEDULE_WAIT_ME_APPROVAL}
-                        onClick={() => {
-                          navigate(
-                            `/${IPageType.Schedule}?tab=${ScheduleTab.approveByCurrentUser}`,
-                          );
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div
-                    className={
-                      schedules.length > 2 ? styles.chartsContainer : styles.chartsContainerVertical
-                    }
-                  >
-                    <div className={styles.barChartSection}>
-                      <BarChart data={taskResData} />
-                    </div>
-                    {checkedKeys.some((item) => showJobDivider.includes(item as ScheduleType)) && (
-                      <Divider type="vertical" className={styles.divider} />
-                    )}
-                    <div className={styles.pieChartSection}>
-                      <div className={styles.scheduleItems}>
-                        {schedules.map((item, index) => {
-                          return (
-                            <ScheduleItem
-                              key={index}
-                              title={item.title}
-                              progress={schedulesData?.[item.type]}
-                              type={item.type}
-                            />
-                          );
-                        })}
+                        {String(timeValue) === 'custom' && (
+                          <RangePicker
+                            suffixIcon={null}
+                            value={dateValue}
+                            onChange={(value) => {
+                              setDateValue(value);
+                              // 将 Dayjs 对象转换为时间戳进行存储
+                              const dateForStorage = value
+                                ? [value[0]?.valueOf(), value[1]?.valueOf()]
+                                : null;
+                              localStorage.setItem(cacheDateKey, JSON.stringify(dateForStorage));
+                            }}
+                          />
+                        )}
+                        <Select
+                          className={styles.filter}
+                          placeholder="请选择项目"
+                          style={{ maxWidth: 200, border: 'none' }}
+                          options={[{ label: '全部项目', value: -1 }, ...projectOptions]}
+                          defaultValue={cacheProjectId ? Number(cacheProjectId) : -1}
+                          onChange={(value) => {
+                            setSelectedProjectId(value === -1 ? undefined : value);
+                            localStorage.setItem(cacheProjectIdKey, value + '');
+                          }}
+                        />
                       </div>
                     </div>
-                  </div>
-                  <div className={styles.legend}>
-                    {status.map((item, index) => {
-                      return (
-                        <LabelWithIcon
-                          key={index}
-                          icon={
-                            <span
-                              className={styles.icon}
-                              style={{
-                                backgroundColor: statusColor[index],
-                              }}
-                            />
-                          }
-                          label={<span className={styles.label}>{item}</span>}
-                          gap={8}
+                    <div className={styles.jobsCounter}>
+                      <div className={styles.counterGrid}>
+                        <ScheduleCounter
+                          title="待审批工单"
+                          counter={todosData?.FLOW?.count?.FLOW_WAIT_ME_APPROVAL}
+                          onClick={() => {
+                            navigate(`/${IPageType.Task}?tab=${TaskTab.approveByCurrentUser}`);
+                          }}
                         />
-                      );
-                    })}
-                  </div>
-                </Card>
-              </div>
+                        <ScheduleCounter
+                          title="待执行工单"
+                          counter={todosData?.FLOW?.count?.FLOW_WAIT_ME_EXECUTION}
+                          onClick={() => {
+                            navigate(`/${IPageType.Task}?tab=${TaskTab.executionByCurrentUser}`);
+                          }}
+                        />
+                        <ScheduleCounter
+                          title="待审批作业"
+                          counter={todosData?.SCHEDULE?.count?.SCHEDULE_WAIT_ME_APPROVAL}
+                          onClick={() => {
+                            navigate(
+                              `/${IPageType.Schedule}?tab=${ScheduleTab.approveByCurrentUser}`,
+                            );
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div
+                      className={
+                        schedules.length > 2
+                          ? styles.chartsContainer
+                          : styles.chartsContainerVertical
+                      }
+                    >
+                      <div className={styles.barChartSection}>
+                        <BarChart data={taskResData} />
+                      </div>
+                      {checkedKeys.some((item) =>
+                        showJobDivider.includes(item as ScheduleType),
+                      ) && <Divider type="vertical" className={styles.divider} />}
+                      <div className={styles.pieChartSection}>
+                        <div className={styles.scheduleItems}>
+                          {schedules.map((item, index) => {
+                            return (
+                              <ScheduleItem
+                                key={index}
+                                title={item.title}
+                                progress={schedulesData?.[item.type]}
+                                type={item.type}
+                              />
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                    <div className={styles.legend}>
+                      {status.map((item, index) => {
+                        return (
+                          <LabelWithIcon
+                            key={index}
+                            icon={
+                              <span
+                                className={styles.icon}
+                                style={{
+                                  backgroundColor: statusColor[index],
+                                }}
+                              />
+                            }
+                            label={<span className={styles.label}>{item}</span>}
+                            gap={8}
+                          />
+                        );
+                      })}
+                    </div>
+                  </Card>
+                </div>
+              )}
             </div>
           </Spin>
           <Row className={styles.bottom}>
