@@ -7,8 +7,15 @@ import { PersonalizeLayoutContext } from '@/page/Console/PersonalizeLayoutContex
 const BarChart = ({ data }) => {
   const { status, statusColor, statusType } = ConsoleTextConfig.schdules;
   const chartRef = useRef(null);
-  const { checkedKeys: allCheckedKeys, getOrderedTaskTypes } = useContext(PersonalizeLayoutContext);
+  const {
+    checkedKeys: allCheckedKeys,
+    getOrderedTaskTypes,
+    getOrderedScheduleTypes,
+  } = useContext(PersonalizeLayoutContext);
   const checkedKeys = getOrderedTaskTypes().filter((item) => allCheckedKeys.includes(item));
+  const checkedSchedules = getOrderedScheduleTypes().filter((item) =>
+    allCheckedKeys.includes(item),
+  );
 
   useEffect(() => {
     if (chartRef.current) {
@@ -92,7 +99,7 @@ const BarChart = ({ data }) => {
             fontSize: 12,
             color: '#666',
             formatter: function (value, index) {
-              if (checkedKeys.length > 8) {
+              if (checkedKeys.length > 8 && checkedSchedules?.length > 0) {
                 return index % 2 ? '' : value;
               }
               return value;
