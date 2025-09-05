@@ -161,6 +161,10 @@ const ConsoleMain = () => {
     };
   }, [checkedKeys]);
 
+  const hasTaskChecked = useMemo(() => {
+    return TaskTypes.some((type) => checkedKeys.includes(type));
+  }, [checkedKeys]);
+
   const timeSetting = useMemo(() => {
     if (String(timeValue) === 'ALL') {
       return {};
@@ -302,14 +306,25 @@ const ConsoleMain = () => {
                           : styles.chartsContainerVertical
                       }
                     >
-                      <div className={styles.barChartSection}>
-                        <BarChart data={taskResData} />
-                      </div>
-                      {checkedKeys.some((item) =>
-                        showJobDivider.includes(item as ScheduleType),
-                      ) && <Divider type="vertical" className={styles.divider} />}
-                      <div className={styles.pieChartSection}>
-                        <div className={styles.scheduleItems}>
+                      {hasTaskChecked && (
+                        <div className={styles.barChartSection}>
+                          <BarChart data={taskResData} />
+                        </div>
+                      )}
+                      {hasTaskChecked &&
+                        checkedKeys.some((item) =>
+                          showJobDivider.includes(item as ScheduleType),
+                        ) && <Divider type="vertical" className={styles.divider} />}
+                      <div
+                        className={
+                          hasTaskChecked ? styles.pieChartSection : styles.pieChartSectionFull
+                        }
+                      >
+                        <div
+                          className={
+                            hasTaskChecked ? styles.scheduleItems : styles.scheduleItemsHorizontal
+                          }
+                        >
                           {schedules.map((item, index) => {
                             return (
                               <ScheduleItem
