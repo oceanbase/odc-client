@@ -7,6 +7,7 @@ import { useLocation } from '@umijs/max';
 import type { ITableInstance } from '@/component/CommonTable/interface';
 import { useEffect, useRef, useState } from 'react';
 import { getPreTime } from '@/util/utils';
+import dayjs from 'dayjs';
 import { getTaskDetail } from '@/common/network/task';
 import tracert from '@/util/tracert';
 import { formatMessage } from '@/util/intl';
@@ -49,7 +50,15 @@ const Content: React.FC<IProps> = (props) => {
     mode = TaskPageMode.COMMON,
   } = props;
   const {
-    searchParams: { defaultTaskId, defaultTaskType, defaultTab },
+    searchParams: {
+      defaultTaskId,
+      defaultTaskType,
+      defaultTab,
+      timeValue,
+      startTime,
+      endTime,
+      projectId: urlProjectId,
+    },
     resetSearchParams,
   } = useTaskSearchParams();
   const taskTabType = pageKey || taskStore?.taskPageType;
@@ -201,9 +210,29 @@ const Content: React.FC<IProps> = (props) => {
       const firstEnabledTask = getFirstEnabledTask();
       taskStore.changeTaskPageType(firstEnabledTask?.pageType);
     }
-    setParams({
+
+    // Apply URL filter parameters
+    const newParams: Partial<ITaskParam> = {
       tab: defaultTab || params?.tab,
-    });
+    };
+
+    // Apply time filter from URL
+    if (timeValue !== null) {
+      newParams.timeRange = timeValue;
+    }
+
+    // Apply custom date range from URL
+    if (startTime !== null && endTime !== null) {
+      newParams.timeRange = 'custom';
+      newParams.executeDate = [dayjs(startTime), dayjs(endTime)];
+    }
+
+    // Apply project filter from URL
+    if (urlProjectId !== null) {
+      newParams.projectId = [String(urlProjectId)];
+    }
+
+    setParams(newParams);
     resetSearchParams();
   };
 

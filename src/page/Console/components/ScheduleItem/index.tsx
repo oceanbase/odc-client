@@ -12,15 +12,22 @@ import { IStat } from '@/d.ts';
 import { ScheduleStatus, ScheduleType } from '@/d.ts/schedule';
 import { Perspective } from '@/component/Schedule/interface';
 import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
+import dayjs, { Dayjs } from 'dayjs';
 
 const ScheduleItem = ({
   title,
   progress,
   type,
+  timeValue,
+  dateValue,
+  selectedProjectId,
 }: {
   title: string;
   progress: IStat;
   type: ScheduleType;
+  timeValue: number | string;
+  dateValue: [Dayjs, Dayjs] | null;
+  selectedProjectId: number | undefined;
 }) => {
   const { count } = progress || {};
   const { PENDING, EXECUTING, EXECUTION_FAILURE, EXECUTION_SUCCESS, OTHER, ENABLED } = count || {};
@@ -31,6 +38,29 @@ const ScheduleItem = ({
     (EXECUTION_SUCCESS || 0) +
     (OTHER || 0);
   const navigate = useNavigate();
+
+  const buildNavigateUrlWithFilters = (baseUrl: string) => {
+    const params = new URLSearchParams(baseUrl.split('?')[1] || '');
+
+    // Add time filter
+    if (timeValue) {
+      params.set('timeValue', String(timeValue));
+    }
+
+    // Add custom date range if applicable
+    if (String(timeValue) === 'custom' && dateValue?.[0] && dateValue?.[1]) {
+      params.set('startTime', String(dateValue[0].valueOf()));
+      params.set('endTime', String(dateValue[1].valueOf()));
+    }
+
+    // Add project filter
+    if (selectedProjectId) {
+      params.set('projectId', String(selectedProjectId));
+    }
+
+    const basePath = baseUrl.split('?')[0];
+    return `${basePath}?${params.toString()}`;
+  };
 
   return (
     <div className={styles.scheduleItem}>
@@ -44,7 +74,11 @@ const ScheduleItem = ({
         <CounterCard
           onClick={() => {
             // 跳转到调度管理页面，设置特定类型和已启用状态过滤
-            navigate(`/schedule?scheduleStatus=${ScheduleStatus.ENABLED}&scheduleType=${type}`);
+            navigate(
+              buildNavigateUrlWithFilters(
+                `/schedule?scheduleStatus=${ScheduleStatus.ENABLED}&scheduleType=${type}`,
+              ),
+            );
           }}
           title={formatMessage({
             id: 'src.page.Console.components.ScheduleItem.4E8811DF',
@@ -56,7 +90,11 @@ const ScheduleItem = ({
         <CounterCard
           onClick={() => {
             // 跳转到调度管理页面的执行视角
-            navigate(`/schedule?scheduleType=${type}&perspective=${Perspective.executionView}`);
+            navigate(
+              buildNavigateUrlWithFilters(
+                `/schedule?scheduleType=${type}&perspective=${Perspective.executionView}`,
+              ),
+            );
           }}
           title={formatMessage({
             id: 'src.page.Console.components.ScheduleItem.1ADBD842',
@@ -66,9 +104,16 @@ const ScheduleItem = ({
         />
         <CounterCard
           onClick={() => {
-            // 跳转到调度管理页面的执行视角，并过滤执行失败的任务
+            // 跳转到调度管理页面的执行视角，并过滤执行失败的任务（包括FAILED、ABNORMAL、EXEC_TIMEOUT）
+            const failedStatuses = [
+              ScheduleTaskStatus.FAILED,
+              ScheduleTaskStatus.ABNORMAL,
+              ScheduleTaskStatus.EXEC_TIMEOUT,
+            ].join(',');
             navigate(
-              `/schedule?scheduleType=${type}&perspective=${Perspective.executionView}&subTaskStatus=${ScheduleTaskStatus.FAILED}`,
+              buildNavigateUrlWithFilters(
+                `/schedule?scheduleType=${type}&perspective=${Perspective.executionView}&subTaskStatus=${failedStatuses}`,
+              ),
             );
           }}
           title={formatMessage({
