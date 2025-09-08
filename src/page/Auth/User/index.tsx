@@ -46,6 +46,7 @@ import React from 'react';
 import { ResourceContext } from '../context';
 import DetailContent from './component/DetailContent';
 import FormModal from './component/FormModal';
+import AccessKeyManageModal from './component/AccessKeyManageModal';
 import styles from './index.less';
 import login from '@/store/login';
 
@@ -60,6 +61,8 @@ interface IState {
   user: IManagerUser;
   formModalVisible: boolean;
   detailModalVisible: boolean;
+  accessKeyModalVisible: boolean;
+  selectedUserId: number;
 }
 
 interface IManagerBatchUser extends IManagerUser {
@@ -97,6 +100,8 @@ class UserPage extends React.PureComponent<IProps, IState> {
     user: null,
     formModalVisible: false,
     detailModalVisible: false,
+    accessKeyModalVisible: false,
+    selectedUserId: null,
   };
 
   private getPageColumns = (roles: any[]) => {
@@ -123,7 +128,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
         title: formatMessage({ id: 'odc.components.UserPage.Role', defaultMessage: '角色' }), // 角色
         dataIndex: 'roles',
         ellipsis: true,
-        width: 200,
+        width: 220,
         key: 'roles',
         filters: [{ name: <EmptyLabel />, id: 0 }].concat(roles ?? []).map(({ name, id }) => {
           return {
@@ -212,7 +217,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
 
       {
         title: formatMessage({ id: 'odc.components.UserPage.Operation', defaultMessage: '操作' }), // 操作
-        width: 132,
+        width: 212,
         key: 'action',
         fixed: 'right' as FixedType,
         render: (value, record) => {
@@ -251,6 +256,22 @@ class UserPage extends React.PureComponent<IProps, IState> {
                       })
                       /* 编辑 */
                     }
+                  </Action.Link>
+                </Action.Group>
+              </Acess>
+              <Acess
+                {...createPermission(IManagerResourceType.user, actionTypes.update, record.id)}
+                key="accessKey"
+              >
+                <Action.Group>
+                  <Action.Link
+                    key="accessKey"
+                    disabled={disabledOp}
+                    onClick={async () => {
+                      this.openAccessKeyModal(record.id);
+                    }}
+                  >
+                    管理 AccessKey
                   </Action.Link>
                 </Action.Group>
               </Acess>
@@ -312,6 +333,20 @@ class UserPage extends React.PureComponent<IProps, IState> {
   private handleCloseDetailModal = () => {
     this.setState({
       detailModalVisible: false,
+    });
+  };
+
+  private openAccessKeyModal = (userId: number) => {
+    this.setState({
+      accessKeyModalVisible: true,
+      selectedUserId: userId,
+    });
+  };
+
+  private handleCloseAccessKeyModal = () => {
+    this.setState({
+      accessKeyModalVisible: false,
+      selectedUserId: null,
     });
   };
 
@@ -411,8 +446,17 @@ class UserPage extends React.PureComponent<IProps, IState> {
   }
 
   render() {
-    const { formModalVisible, detailModalVisible, editId, detailId, users, roles, user } =
-      this.state;
+    const {
+      formModalVisible,
+      detailModalVisible,
+      accessKeyModalVisible,
+      editId,
+      detailId,
+      selectedUserId,
+      users,
+      roles,
+      user,
+    } = this.state;
     const disabledOp = this.isMe(user);
     const canAcessCreate = canAcess({
       resourceIdentifier: IManagerResourceType.user,
@@ -663,6 +707,12 @@ class UserPage extends React.PureComponent<IProps, IState> {
               handleCloseAndReload={this.handleCloseAndReload}
             />
           )}
+        />
+
+        <AccessKeyManageModal
+          visible={accessKeyModalVisible}
+          userId={selectedUserId}
+          onClose={this.handleCloseAccessKeyModal}
         />
       </>
     );
