@@ -204,6 +204,29 @@ const ConsoleMain = () => {
       }));
   }, [checkedKeys, getOrderedScheduleTypes]);
 
+  const buildNavigateUrlWithFilters = (basePath: string, tab: string) => {
+    const params = new URLSearchParams();
+    params.set('tab', tab);
+
+    // Add time filter
+    if (timeValue) {
+      params.set('timeValue', String(timeValue));
+    }
+
+    // Add custom date range if applicable
+    if (String(timeValue) === 'custom' && dateValue?.[0] && dateValue?.[1]) {
+      params.set('startTime', String(dateValue[0].valueOf()));
+      params.set('endTime', String(dateValue[1].valueOf()));
+    }
+
+    // Add project filter
+    if (selectedProjectId) {
+      params.set('projectId', String(selectedProjectId));
+    }
+
+    return `${basePath}?${params.toString()}`;
+  };
+
   return (
     <>
       <div className={styles.consoleBackgroud} />
@@ -278,14 +301,24 @@ const ConsoleMain = () => {
                           title="待审批工单"
                           counter={todosData?.FLOW?.count?.FLOW_WAIT_ME_APPROVAL}
                           onClick={() => {
-                            navigate(`/${IPageType.Task}?tab=${TaskTab.approveByCurrentUser}`);
+                            navigate(
+                              buildNavigateUrlWithFilters(
+                                `/${IPageType.Task}`,
+                                TaskTab.approveByCurrentUser,
+                              ),
+                            );
                           }}
                         />
                         <ScheduleCounter
                           title="待执行工单"
                           counter={todosData?.FLOW?.count?.FLOW_WAIT_ME_EXECUTION}
                           onClick={() => {
-                            navigate(`/${IPageType.Task}?tab=${TaskTab.executionByCurrentUser}`);
+                            navigate(
+                              buildNavigateUrlWithFilters(
+                                `/${IPageType.Task}`,
+                                TaskTab.executionByCurrentUser,
+                              ),
+                            );
                           }}
                         />
                         <ScheduleCounter
@@ -293,7 +326,10 @@ const ConsoleMain = () => {
                           counter={todosData?.SCHEDULE?.count?.SCHEDULE_WAIT_ME_APPROVAL}
                           onClick={() => {
                             navigate(
-                              `/${IPageType.Schedule}?tab=${ScheduleTab.approveByCurrentUser}`,
+                              buildNavigateUrlWithFilters(
+                                `/${IPageType.Schedule}`,
+                                ScheduleTab.approveByCurrentUser,
+                              ),
                             );
                           }}
                         />
@@ -332,6 +368,9 @@ const ConsoleMain = () => {
                                 title={item.title}
                                 progress={schedulesData?.[item.type]}
                                 type={item.type}
+                                timeValue={timeValue}
+                                dateValue={dateValue}
+                                selectedProjectId={selectedProjectId}
                               />
                             );
                           })}

@@ -13,8 +13,12 @@ const useScheduleSearchParams = () => {
   const defaultSubTaskId = searchParams.get('subTaskId');
   const defaultScheduleStatus = searchParams.get('scheduleStatus');
   const defaultPerspective = searchParams.get('perspective') as Perspective;
-  const defaultSubTaskStatus = searchParams.get('subTaskStatus') as ScheduleTaskStatus;
+  const defaultSubTaskStatus = searchParams.get('subTaskStatus');
   const defaultTab = searchParams.get('tab') as ScheduleTab;
+  const timeValue = searchParams.get('timeValue');
+  const startTime = searchParams.get('startTime');
+  const endTime = searchParams.get('endTime');
+  const projectId = searchParams.get('projectId');
   const currentOrganizationId = login.organizationId;
   const isOrganizationMatch = toInteger(defaultOrganizationId) === toInteger(currentOrganizationId);
 
@@ -28,6 +32,11 @@ const useScheduleSearchParams = () => {
       searchParams.delete('perspective');
       searchParams.delete('subTaskStatus');
       searchParams.delete('tab');
+      // Delete filter parameters passed from Console
+      searchParams.delete('timeValue');
+      searchParams.delete('startTime');
+      searchParams.delete('endTime');
+      searchParams.delete('projectId');
       setSearchParams(searchParams);
     });
   };
@@ -40,6 +49,10 @@ const useScheduleSearchParams = () => {
       defaultPerspective,
       defaultSubTaskStatus,
       defaultTab,
+      timeValue: timeValue ? (isNaN(Number(timeValue)) ? timeValue : Number(timeValue)) : null,
+      startTime: startTime ? Number(startTime) : null,
+      endTime: endTime ? Number(endTime) : null,
+      projectId: projectId ? Number(projectId) : null,
     },
     resetSearchParams,
   };

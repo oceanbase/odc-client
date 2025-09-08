@@ -37,6 +37,7 @@ import {
 import datasourceStatus from '@/store/datasourceStatus';
 import { getDataSourceIdList, getDefaultParam, getDefaultSubTaskParam } from '../helper';
 import { getPreTime } from '@/util/utils';
+import dayjs from 'dayjs';
 import { schedlueConfig } from '@/page/Schedule/const';
 import ApprovalModal from '@/component/Task/component/ApprovalModal';
 import { message } from 'antd';
@@ -71,6 +72,10 @@ const Content: React.FC<IProps> = (props) => {
       defaultScheduleStatus,
       defaultSubTaskStatus,
       defaultTab,
+      timeValue,
+      startTime,
+      endTime,
+      projectId: urlProjectId,
     },
     resetSearchParams,
   } = useScheduleSearchParams();
@@ -325,15 +330,55 @@ const Content: React.FC<IProps> = (props) => {
       const firstEnabledSchedule = getFirstEnabledSchedule();
       scheduleStore?.setSchedulePageType(firstEnabledSchedule?.pageType);
     }
-    setParams({
+
+    // Apply URL filter parameters
+    const newParams: Partial<IScheduleParam> = {
       status: defaultScheduleStatus ? [defaultScheduleStatus as ScheduleStatus] : params?.status,
       tab: defaultTab || params?.tab,
-    });
-    setsubTaskParams({
+    };
+
+    // Apply time filter from URL
+    if (timeValue !== null) {
+      newParams.timeRange = timeValue;
+    }
+
+    // Apply custom date range from URL
+    if (startTime !== null && endTime !== null) {
+      newParams.timeRange = 'custom';
+      newParams.executeDate = [dayjs(startTime), dayjs(endTime)];
+    }
+
+    // Apply project filter from URL
+    if (urlProjectId !== null) {
+      newParams.projectIds = [String(urlProjectId)] as any;
+    }
+
+    setParams(newParams);
+
+    // Apply URL filter parameters to subTaskParams as well
+    const newSubTaskParams: Partial<ISubTaskParam> = {
       status: defaultSubTaskStatus
-        ? [defaultSubTaskStatus as ScheduleTaskStatus]
+        ? defaultSubTaskStatus.split(',').map((status) => status.trim() as ScheduleTaskStatus)
         : subTaskParams?.status,
-    });
+    };
+
+    // Apply time filter from URL to subTaskParams
+    if (timeValue !== null) {
+      newSubTaskParams.timeRange = timeValue;
+    }
+
+    // Apply custom date range from URL to subTaskParams
+    if (startTime !== null && endTime !== null) {
+      newSubTaskParams.timeRange = 'custom';
+      newSubTaskParams.executeDate = [dayjs(startTime), dayjs(endTime)];
+    }
+
+    // Apply project filter from URL to subTaskParams
+    if (urlProjectId !== null) {
+      newSubTaskParams.projectIds = [String(urlProjectId)] as any;
+    }
+
+    setsubTaskParams(newSubTaskParams);
     resetSearchParams?.();
   };
 
