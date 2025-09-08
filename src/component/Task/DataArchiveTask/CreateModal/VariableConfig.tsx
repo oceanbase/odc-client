@@ -82,7 +82,7 @@ export const timeUnitOptions = [
 ];
 
 const ENABLE_PATTERN_OPERATOR = false;
-const timeFormatOptions = ['yyyy-MM-dd', 'yyyyMMdd'].map((item) => ({
+const timeFormatOptions = ['yyyy-MM-dd', 'yyyyMMdd', 'yyyy-MM-01'].map((item) => ({
   label: item,
   value: item,
 }));
