@@ -44,6 +44,19 @@ class ShareableDataManager {
   private channels = new Map<string, BroadcastChannel>();
   private subscriptions = new Map<string, Set<(data: any) => void>>();
   private channelIdentifierTypes = new Map<string, EShareableIdentifierType>();
+  /**
+   * 安全序列化数据，确保可以被 BroadcastChannel 克隆
+   */
+  private safeSerialize(data: any): any {
+    try {
+      // 使用 JSON 序列化和反序列化来确保数据可克隆
+      return JSON.parse(JSON.stringify(data));
+    } catch (error) {
+      console.warn('[makeDataShareable] Failed to serialize data:', error);
+      // 如果序列化失败，返回 null 并记录警告
+      return null;
+    }
+  }
 
   /**
    * 获取或创建BroadcastChannel
@@ -115,9 +128,16 @@ class ShareableDataManager {
       return;
     }
 
+    // 使用 safeSerialize 确保数据可以被安全传输
+    const safeData = this.safeSerialize(data);
+    if (safeData === null) {
+      // 如果序列化失败，直接返回，不发送消息
+      return;
+    }
+
     const message: any = {
       type: 'data_update',
-      data,
+      data: safeData,
       timestamp: Date.now(),
     };
 
@@ -222,10 +242,29 @@ export function makeDataShareable<T extends object>(
     (newData) => {
       if (isUpdating) return; // 避免循环更新
 
-      if (newData !== null && newData !== target[propertyKey]) {
-        isUpdating = true;
-        target[propertyKey] = newData;
-        isUpdating = false;
+      if (newData !== null) {
+        // 使用深度比较来检查数据是否真正发生变化
+        try {
+          const newSerialized = JSON.stringify(newData);
+          const currentSerialized = JSON.stringify(target[propertyKey]);
+
+          if (newSerialized !== currentSerialized) {
+            isUpdating = true;
+            target[propertyKey] = newData;
+            isUpdating = false;
+          }
+        } catch (error) {
+          // 如果序列化失败，回退到引用比较
+          console.warn(
+            '[makeDataShareable] Failed to compare data, falling back to reference comparison:',
+            error,
+          );
+          if (newData !== target[propertyKey]) {
+            isUpdating = true;
+            target[propertyKey] = newData;
+            isUpdating = false;
+          }
+        }
       }
     },
     identifierType,
@@ -234,10 +273,27 @@ export function makeDataShareable<T extends object>(
   // 监听本地属性变化并广播
   const disposeReaction = reaction(
     () => target[propertyKey],
-    (newValue) => {
+    (newValue, previousValue) => {
       if (isUpdating) return; // 避免循环广播
 
-      shareableManager.broadcastUpdate(channelName, newValue);
+      // 使用深度比较来检查数据是否真正发生变化
+      try {
+        const newSerialized = JSON.stringify(newValue);
+        const prevSerialized = JSON.stringify(previousValue);
+
+        if (newSerialized !== prevSerialized) {
+          shareableManager.broadcastUpdate(channelName, newValue);
+        }
+      } catch (error) {
+        // 如果序列化失败，回退到引用比较
+        console.warn(
+          '[makeDataShareable] Failed to compare values, falling back to reference comparison:',
+          error,
+        );
+        if (newValue !== previousValue) {
+          shareableManager.broadcastUpdate(channelName, newValue);
+        }
+      }
     },
   );
 
