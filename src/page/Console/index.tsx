@@ -344,7 +344,12 @@ const ConsoleMain = () => {
                     >
                       {hasTaskChecked && (
                         <div className={styles.barChartSection}>
-                          <BarChart data={taskResData} />
+                          <BarChart
+                            data={taskResData}
+                            selectedProjectId={selectedProjectId}
+                            timeValue={timeValue}
+                            dateValue={dateValue}
+                          />
                         </div>
                       )}
                       {hasTaskChecked &&

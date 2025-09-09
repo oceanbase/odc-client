@@ -42,17 +42,17 @@ const PieChart = ({ progress }) => {
             const [contentWidth, contentHeight] = contentSize; // Tooltip 的宽高
             const [viewWidth, viewHeight] = viewSize; // 视图宽高
 
-            let x = mouseX + 10; // 在右侧 10px 开始
+            let x = mouseX - contentWidth - 10; // 在左侧 10px 开始
             let y = mouseY - contentHeight - 10; // 在上方 10px 开始
-
-            // 如果 tooltip 会超出屏幕右侧，则调整到左侧
-            if (x + contentWidth > viewWidth) {
-              x = mouseX - contentWidth - 10;
-            }
 
             // 如果 tooltip 会超出屏幕左侧，则调整到右侧
             if (x < 0) {
               x = mouseX + 10;
+            }
+
+            // 如果 tooltip 会超出屏幕右侧，则调整到左侧
+            if (x + contentWidth > viewWidth) {
+              x = mouseX - contentWidth - 10;
             }
 
             // 如果 tooltip 会超出屏幕顶部，则下移
@@ -77,16 +77,18 @@ const PieChart = ({ progress }) => {
               const offsetX = Math.cos(angle) * radius;
               const offsetY = Math.sin(angle) * radius;
 
-              // 计算 tooltip 的位置
-              x = centerX + offsetX + 10;
-              y = centerY + offsetY + 10;
+              // 优先计算左侧位置
+              x = centerX + offsetX - contentWidth - 10;
+              y = centerY + offsetY - contentHeight / 2;
 
               // 检查 tooltip 是否超出视图边界并调整位置
-              if (x + contentWidth > viewWidth) {
-                x = centerX + offsetX - contentWidth - 10;
-              }
               if (x < 0) {
+                // 如果左侧放不下，则放在右侧
                 x = centerX + offsetX + 10;
+              }
+              if (x + contentWidth > viewWidth) {
+                // 如果右侧也放不下，则放在左侧并允许部分超出
+                x = centerX + offsetX - contentWidth - 10;
               }
               if (y + contentHeight > viewHeight) {
                 y = centerY + offsetY - contentHeight - 10;

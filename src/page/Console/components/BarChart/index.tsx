@@ -3,10 +3,29 @@ import * as echarts from 'echarts';
 import { ConsoleTextConfig, TaskTitle, TaskTypes } from '../../const';
 import './index.less';
 import { PersonalizeLayoutContext } from '@/page/Console/PersonalizeLayoutContext';
+import { useNavigate } from '@umijs/max';
 
-const BarChart = ({ data }) => {
+const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
   const { status, statusColor, statusType } = ConsoleTextConfig.schdules;
   const chartRef = useRef(null);
+  const navigate = useNavigate();
+
+  // 状态映射：Console状态 -> 任务页面状态
+  const statusMapping = {
+    PENDING: ['APPROVING', 'WAIT_FOR_EXECUTION'],
+    EXECUTING: ['EXECUTING'],
+    EXECUTION_SUCCESS: ['EXECUTION_SUCCEEDED', 'EXECUTION_SUCCEEDED_WITH_ERRORS', 'COMPLETED'],
+    EXECUTION_FAILURE: [
+      'REJECTED',
+      'EXECUTION_FAILED',
+      'ROLLBACK_FAILED',
+      'CANCELLED',
+      'APPROVAL_EXPIRED',
+      'WAIT_FOR_EXECUTION_EXPIRED',
+      'EXECUTION_EXPIRED',
+    ],
+    OTHER: ['ROLLBACK_SUCCEEDED'],
+  };
   const {
     checkedKeys: allCheckedKeys,
     getOrderedTaskTypes,
@@ -42,12 +61,42 @@ const BarChart = ({ data }) => {
           axisPointer: {
             type: 'shadow',
           },
+          enterable: true,
+          hideDelay: 300,
+          position: function (point, params, dom, rect, size) {
+            const [mouseX, mouseY] = point;
+            const { contentSize, viewSize } = size;
+            const [contentWidth, contentHeight] = contentSize;
+            const [viewWidth, viewHeight] = viewSize;
+
+            // 计算固定位置 - 在柱状图右侧或上方
+            let x = mouseX + 20; // 距离鼠标右侧20px
+            let y = mouseY - contentHeight - 10; // 距离鼠标上方10px
+
+            // 如果tooltip会超出右边界，则放到左侧
+            if (x + contentWidth > viewWidth) {
+              x = mouseX - contentWidth - 20;
+            }
+
+            // 如果tooltip会超出上边界，则放到下方
+            if (y < 0) {
+              y = mouseY + 10;
+            }
+
+            // 如果tooltip会超出下边界，则上移
+            if (y + contentHeight > viewHeight) {
+              y = viewHeight - contentHeight - 10;
+            }
+
+            return [x, y];
+          },
           formatter: function (params) {
             let total = 0;
             params.forEach((item) => {
               total += item.value;
             });
 
+            const taskType = checkedKeys[params[0].dataIndex];
             let result = `<div class="bar-chart-tooltip">`;
 
             // 标题
@@ -56,7 +105,7 @@ const BarChart = ({ data }) => {
             // 任务总计
             result +=
               total > 0
-                ? `<div class="bar-chart-tooltip-total">
+                ? `<div class="bar-chart-tooltip-total" data-task-type="${taskType}" data-click-type="total">
               <span>任务总计</span>
               <span class="bar-chart-tooltip-total-number">${total}  <span class="bar-chart-tooltip-total-arrow">></span></span>
             
@@ -67,8 +116,12 @@ const BarChart = ({ data }) => {
             params.forEach((item) => {
               if (item.value > 0) {
                 result += `
-                  <div class="bar-chart-tooltip-item">
-                    <div class="bar-chart-tooltip-item-dot" style="background: ${item.color};"></div>
+                  <div class="bar-chart-tooltip-item" data-task-type="${taskType}" data-status="${
+                  statusType[item.seriesIndex]
+                }" data-click-type="detail">
+                    <div class="bar-chart-tooltip-item-dot" style="background: ${
+                      item.color
+                    };"></div>
                     <span class="bar-chart-tooltip-item-name">${item.seriesName}</span>
                     <span class="bar-chart-tooltip-item-value">${item.value}</span>
                     <span class="bar-chart-tooltip-item-arrow">></span>
@@ -138,6 +191,57 @@ const BarChart = ({ data }) => {
 
       chart.setOption(option);
 
+      const handleTooltipClick = (event) => {
+        const target = event.target;
+        if (!target) return;
+
+        let clickableElement = target.closest('[data-click-type]');
+        if (!clickableElement) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const taskType = clickableElement.getAttribute('data-task-type');
+        const clickType = clickableElement.getAttribute('data-click-type');
+        const status = clickableElement.getAttribute('data-status');
+
+        if (taskType) {
+          let url = '/task';
+          const searchParams = new URLSearchParams();
+
+          searchParams.append('taskTypes', taskType);
+
+          if (clickType === 'detail' && status) {
+            // 使用状态映射将Console状态转换为任务页面状态
+            const mappedStatuses = statusMapping[status] || [status];
+            searchParams.append('statuses', mappedStatuses.join(','));
+          }
+
+          if (selectedProjectId !== undefined) {
+            searchParams.append('projectId', selectedProjectId.toString());
+          }
+
+          if (dateValue && Array.isArray(dateValue) && dateValue.length === 2) {
+            searchParams.append('startTime', dateValue[0].valueOf().toString());
+            searchParams.append('endTime', dateValue[1].valueOf().toString());
+          } else if (timeValue !== undefined) {
+            searchParams.append('timeRange', timeValue.toString());
+          }
+
+          const queryString = searchParams.toString();
+          if (queryString) {
+            url += `?${queryString}`;
+          }
+
+          navigate(url);
+        }
+      };
+
+      const tooltipContainer = chart.getDom();
+      if (tooltipContainer) {
+        tooltipContainer.addEventListener('click', handleTooltipClick);
+      }
+
       // 自适应大小
       const resizeObserver = new ResizeObserver(() => {
         chart.resize();
@@ -145,11 +249,15 @@ const BarChart = ({ data }) => {
       resizeObserver.observe(chartRef.current);
 
       return () => {
+        // 清理事件监听器
+        if (tooltipContainer) {
+          tooltipContainer.removeEventListener('click', handleTooltipClick);
+        }
         resizeObserver.disconnect();
         chart.dispose();
       };
     }
-  }, [data, checkedKeys]);
+  }, [data, checkedKeys, selectedProjectId, timeValue, dateValue, navigate]);
 
   return <div ref={chartRef} className="bar-chart-wrapper" />;
 };
