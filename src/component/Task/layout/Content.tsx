@@ -28,6 +28,7 @@ import { IPagination, ITaskParam, TaskPageMode, TaskTab } from '@/component/Task
 import { IState } from '@/component/Task/interface';
 import ApprovalModal from '@/component/Task/component/ApprovalModal';
 import { getDefaultParam, getFirstEnabledTask } from '../helper';
+import { TaskConfig } from '@/common/task';
 import useTaskSearchParams from '../hooks/useTaskSearchParams';
 
 interface IProps {
@@ -55,9 +56,12 @@ const Content: React.FC<IProps> = (props) => {
       defaultTaskType,
       defaultTab,
       timeValue,
+      timeRange,
       startTime,
       endTime,
       projectId: urlProjectId,
+      taskTypes: urlTaskTypes,
+      statuses: urlStatuses,
     },
     resetSearchParams,
   } = useTaskSearchParams();
@@ -205,7 +209,15 @@ const Content: React.FC<IProps> = (props) => {
   const resolveUrlSearchParams = async () => {
     defaultTaskId && (await openDefaultTask());
     if (defaultTaskType) {
-      taskStore.changeTaskPageType(defaultTaskType as undefined as TaskPageType);
+      // 将 TaskType 映射到对应的 TaskPageType
+      const taskConfig = TaskConfig[defaultTaskType];
+      const taskPageType = taskConfig?.pageType;
+      if (taskPageType) {
+        taskStore.changeTaskPageType(taskPageType);
+      } else {
+        const firstEnabledTask = getFirstEnabledTask();
+        taskStore.changeTaskPageType(firstEnabledTask?.pageType);
+      }
     } else {
       const firstEnabledTask = getFirstEnabledTask();
       taskStore.changeTaskPageType(firstEnabledTask?.pageType);
@@ -219,6 +231,8 @@ const Content: React.FC<IProps> = (props) => {
     // Apply time filter from URL
     if (timeValue !== null) {
       newParams.timeRange = timeValue;
+    } else if (timeRange !== null) {
+      newParams.timeRange = timeRange;
     }
 
     // Apply custom date range from URL
@@ -230,6 +244,16 @@ const Content: React.FC<IProps> = (props) => {
     // Apply project filter from URL
     if (urlProjectId !== null) {
       newParams.projectId = [String(urlProjectId)];
+    }
+
+    // Apply task types filter from URL
+    if (urlTaskTypes !== null && urlTaskTypes.length > 0) {
+      newParams.taskTypes = urlTaskTypes;
+    }
+
+    // Apply task statuses filter from URL
+    if (urlStatuses !== null && urlStatuses.length > 0) {
+      newParams.taskStatus = urlStatuses;
     }
 
     setParams(newParams);
