@@ -428,6 +428,46 @@ const ConsoleMain = () => {
                   : styles.docWrapperVertical
               }
             >
+              {boardVisible[ELayoutKey.BestPractices] && (
+                <Card
+                  className={
+                    boardVisible[ELayoutKey.AboutUs] ? styles.practice : styles.practiceLargeVerion
+                  }
+                >
+                  <div className={styles.consoleCardTitle}>
+                    {formatMessage({ id: 'src.page.Console.41EC22B4', defaultMessage: '最佳实践' })}
+
+                    <span
+                      className={styles.showMore}
+                      onClick={() => {
+                        window.open(
+                          odc.appConfig.docs.url
+                            ? getOBDocsUrl('100.sql-development-common-techniques.html')
+                            : getLocalDocs('100.sql-development-common-techniques.html'),
+                        );
+                      }}
+                    >
+                      {formatMessage({ id: 'src.page.Console.E60EAE10', defaultMessage: '更多 >' })}
+                    </span>
+                  </div>
+                  {articles?.map((article) => {
+                    return (
+                      <div
+                        className={styles.article}
+                        onClick={() => {
+                          window.open(
+                            odc.appConfig.docs.url
+                              ? getOBDocsUrl(article.fragmentIdentifier)
+                              : getLocalDocs(article.fragmentIdentifier),
+                          );
+                        }}
+                      >
+                        {article.title}
+                      </div>
+                    );
+                  })}
+                </Card>
+              )}
               {boardVisible[ELayoutKey.AboutUs] && (
                 <Card
                   className={
@@ -476,46 +516,6 @@ const ConsoleMain = () => {
                       }
                     />
                   </div>
-                </Card>
-              )}
-              {boardVisible[ELayoutKey.BestPractices] && (
-                <Card
-                  className={
-                    boardVisible[ELayoutKey.AboutUs] ? styles.practice : styles.practiceLargeVerion
-                  }
-                >
-                  <div className={styles.consoleCardTitle}>
-                    {formatMessage({ id: 'src.page.Console.41EC22B4', defaultMessage: '最佳实践' })}
-
-                    <span
-                      className={styles.showMore}
-                      onClick={() => {
-                        window.open(
-                          odc.appConfig.docs.url
-                            ? getOBDocsUrl('100.sql-development-common-techniques.html')
-                            : getLocalDocs('100.sql-development-common-techniques.html'),
-                        );
-                      }}
-                    >
-                      {formatMessage({ id: 'src.page.Console.E60EAE10', defaultMessage: '更多 >' })}
-                    </span>
-                  </div>
-                  {articles?.map((article) => {
-                    return (
-                      <div
-                        className={styles.article}
-                        onClick={() => {
-                          window.open(
-                            odc.appConfig.docs.url
-                              ? getOBDocsUrl(article.fragmentIdentifier)
-                              : getLocalDocs(article.fragmentIdentifier),
-                          );
-                        }}
-                      >
-                        {article.title}
-                      </div>
-                    );
-                  })}
                 </Card>
               )}
             </Col>
