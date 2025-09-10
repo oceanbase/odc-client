@@ -124,7 +124,7 @@ const Filter: React.FC<IProps> = () => {
         </div>
       </>
     );
-  }, [executeDate]);
+  }, [executeDate, timeRange]);
 
   const tipContent = () => {
     return (
