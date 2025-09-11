@@ -28,11 +28,11 @@ export const PersonalizeLayoutProvider: React.FC<PersonalizeLayoutProviderProps>
   children,
 }) => {
   const [checkedKeys, setCheckedKeys] = useLocalStorageState<React.Key[]>(
-    `personalizeLayoutCheckedKeys-${login.organizationId}`,
+    `personalizeLayoutCheckedKeys-${login.user?.id}`,
   );
 
   const [treeData, setTreeData] = useLocalStorageState<TreeDataNode[]>(
-    `personalizeLayoutTreeData-${login.organizationId}`,
+    `personalizeLayoutTreeData-${login.user?.id}`,
   );
 
   // Helper function to extract ordered types from tree data
