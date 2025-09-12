@@ -358,6 +358,7 @@ const TaskTable: React.FC<IProps> = (props) => {
             setParams,
             projectList: resProjects?.contents,
             mode,
+            taskTabType,
             reload: () => {
               setLoading(true);
               loadData(params, pagination);

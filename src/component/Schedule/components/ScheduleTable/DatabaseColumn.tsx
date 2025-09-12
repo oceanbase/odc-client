@@ -21,6 +21,7 @@ const DatabaseColumn: React.FC<IProps> = (props) => {
     <div className={isSubTaskList ? styles.subTaskDatabaseColumn : styles.scheduleDatabaseColumn}>
       {record?.attributes?.databaseInfo && (
         <Popover
+          destroyOnHidden
           title={
             <ConnectionPopover
               showRemark
@@ -37,6 +38,7 @@ const DatabaseColumn: React.FC<IProps> = (props) => {
       )}
       {record?.attributes?.sourceDataBaseInfo && (
         <Popover
+          destroyOnHidden
           title={
             <ConnectionPopover
               showRemark
@@ -60,6 +62,7 @@ const DatabaseColumn: React.FC<IProps> = (props) => {
         isSubTaskList && <Divider type="vertical" />}
       {record?.attributes?.targetDataBaseInfo && (
         <Popover
+          destroyOnHidden
           title={
             <ConnectionPopover
               showRemark

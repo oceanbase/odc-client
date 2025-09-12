@@ -3,6 +3,7 @@ import { IProject } from '@/d.ts/project';
 import { ITaskParam, TaskPageMode, TaskTab } from '@/component/Task/interface';
 import { IScheduleParam } from '@/component/Schedule/interface';
 import { SchedulePageType } from '@/d.ts/schedule';
+import { TaskPageType } from '@/d.ts';
 
 export const defaultParam: ITaskParam = {
   searchValue: undefined,
@@ -23,8 +24,8 @@ interface IParamsContext {
   ) => void;
   projectList: IProject[];
   reload?: () => void;
-  scheduleTabType?: SchedulePageType;
   mode?: TaskPageMode;
+  taskTabType?: TaskPageType;
 }
 
 const ParamsContext: React.Context<IParamsContext> = React.createContext({

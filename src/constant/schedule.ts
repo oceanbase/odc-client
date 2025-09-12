@@ -17,10 +17,7 @@ export const SchedulePageTextMap = {
     id: 'odc.component.Task.helper.DataCleansing',
     defaultMessage: '数据清理',
   }),
-  [SchedulePageType.SQL_PLAN]: formatMessage({
-    id: 'odc.TaskManagePage.component.helper.SqlPlan',
-    defaultMessage: 'SQL 计划',
-  }),
+  [SchedulePageType.SQL_PLAN]: ' SQL 计划',
   [SchedulePageType.PARTITION_PLAN]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.PartitionPlan',
     defaultMessage: '分区计划',

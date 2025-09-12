@@ -39,6 +39,7 @@ import {
   ScheduleDetailType,
   ScheduleStatus,
 } from '@/d.ts/schedule';
+import type { FixedType } from 'rc-table/es/interface';
 import classNames from 'classnames';
 import { getFormatDateTime } from '@/util/utils';
 import ScheduleTaskStatusLabel from '../ScheduleTaskStatusLabel';
@@ -240,6 +241,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
     {
       title: '作业',
       dataIndex: 'scheduleId',
+      key: 'scheduleId',
       width: 500,
       render: (id, record: IScheduleRecord<ScheduleRecordParameters>) => {
         return (
@@ -255,6 +257,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
     {
       title: '数据库',
       dataIndex: 'database',
+      key: 'database',
       width: 120,
       render: (type, record: IScheduleRecord<ScheduleRecordParameters>) => {
         return <DatabaseColumn record={record} />;
@@ -265,6 +268,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
           {
             title: '类型',
             dataIndex: 'type',
+            key: 'type',
             width: 100,
             render: (type) => {
               return <>{SchedulePageTextMap[type] || type || '-'}</>;
@@ -278,6 +282,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
         defaultMessage: '状态',
       }),
       dataIndex: 'status',
+      key: 'status',
       width: 150,
       render: (status, record: IScheduleRecord<ScheduleRecordParameters>) => {
         return (
@@ -301,6 +306,8 @@ const ScheduleTable: React.FC<IProps> = (props) => {
     {
       title: '操作',
       dataIndex: 'actions',
+      key: 'actions',
+      fixed: 'right' as FixedType,
       width: 140,
       render: (_, record: IScheduleRecord<ScheduleRecordParameters>) => {
         return (
@@ -321,6 +328,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
   const subTaskColumns = [
     {
       dataIndex: 'id',
+      key: 'id',
       title: '执行记录ID',
       ellipsis: true,
       width: 80,
@@ -340,9 +348,10 @@ const ScheduleTable: React.FC<IProps> = (props) => {
     },
     {
       dataIndex: 'scheduleName',
+      key: 'scheduleName',
       title: '所属作业',
       ellipsis: true,
-      width: 220,
+      width: 260,
       render: (scheduleName, record) => {
         return (
           <div>
@@ -375,9 +384,10 @@ const ScheduleTable: React.FC<IProps> = (props) => {
     },
     {
       dataIndex: 'database',
+      key: 'database',
       title: '数据库',
       ellipsis: true,
-      width: 280,
+      width: 160,
       render: (database, record) => {
         return <DatabaseColumn record={record} isSubTaskList />;
       },
@@ -387,32 +397,39 @@ const ScheduleTable: React.FC<IProps> = (props) => {
       : [
           {
             dataIndex: 'project',
+            key: 'project',
             title: '项目',
             ellipsis: true,
-            width: 200,
+            width: 120,
             render: (project) => project?.name,
           },
         ]),
-
-    {
-      dataIndex: 'type',
-      title: '类型',
-      ellipsis: true,
-      width: 120,
-      render: (type) => SubTypeTextMap[type],
-    },
+    ...(scheduleTabType === SchedulePageType.ALL
+      ? [
+          {
+            dataIndex: 'type',
+            key: 'type',
+            title: '类型',
+            ellipsis: true,
+            width: 120,
+            render: (type) => SubTypeTextMap[type],
+          },
+        ]
+      : []),
     {
       dataIndex: 'createTime',
+      key: 'createTime',
       title: formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskRecord.CreationTime',
         defaultMessage: '创建时间',
       }), //创建时间
       ellipsis: true,
-      width: 180,
+      width: 150,
       render: (createTime) => getFormatDateTime(createTime),
     },
     {
       dataIndex: 'status',
+      key: 'status',
       title: '状态',
       ellipsis: true,
       width: 140,
@@ -422,10 +439,12 @@ const ScheduleTable: React.FC<IProps> = (props) => {
     },
     {
       dataIndex: 'action',
+      key: 'action',
       title: formatMessage({
         id: 'odc.component.CommonTaskDetailModal.TaskRecord.Operation',
         defaultMessage: '操作',
       }), //操作
+      fixed: 'right' as FixedType,
       ellipsis: true,
       width: 140,
       render: (_, record) => {
@@ -632,7 +651,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
             params,
             setParams,
             projectList: resProjects?.contents,
-            scheduleTabType: scheduleTabType,
+            scheduleTabType,
             perspective,
             setPerspective,
             subTaskParams,

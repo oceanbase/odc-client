@@ -80,11 +80,11 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [initialSQL, setInitialSQL] = useState<string>();
 
   const isInitSqlContent = useMemo(() => {
-    if (logicDatabaseInfo?.taskId) {
+    if (logicDatabaseInfo?.taskId || logicDatabaseInfo?.ddl) {
       return !!initialSQL;
     }
     return true;
-  }, [logicDatabaseInfo?.taskId, initialSQL]);
+  }, [logicDatabaseInfo?.taskId, logicDatabaseInfo?.ddl, initialSQL]);
 
   const loadEditData = async (taskId) => {
     const dataRes = (await getTaskDetail(taskId)) as TaskDetail<ILogicalDatabaseAsyncTaskParams>;
@@ -111,6 +111,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     if (logicDatabaseInfo?.ddl) {
       form?.setFieldValue('sqlContent', logicDatabaseInfo?.ddl);
       form?.setFieldValue('databaseId', logicDatabaseInfo?.databaseId);
+      setInitialSQL(logicDatabaseInfo?.ddl);
     }
   }, [logicDatabaseInfo?.ddl]);
 
@@ -126,6 +127,7 @@ const CreateModal: React.FC<IProps> = (props) => {
 
   const hadleReset = () => {
     form.resetFields(null);
+    setInitialSQL(undefined);
     setSqlContentType(SQLContentType.TEXT);
     setHasEdit(false);
   };

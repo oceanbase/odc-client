@@ -299,7 +299,9 @@ const MultipAsyncExecute: React.FC<MultipAsyncExecuteProps> = (props) => {
       EXECUTING = 0,
     } = multipAsyncExecuteRecordRes?.stats?.statusCount?.count ?? {};
     return (
-      <div>{`以下 ${WAIT_FOR_EXECUTION} 个数据库待执行，${EXECUTING} 个数据库执行中， ${EXECUTION_SUCCEEDED} 个数据库执行成功，${EXECUTION_FAILED}个数据库执行失败`}</div>
+      <div
+        style={{ marginBottom: 6 }}
+      >{`以下 ${WAIT_FOR_EXECUTION} 个数据库待执行，${EXECUTING} 个数据库执行中， ${EXECUTION_SUCCEEDED} 个数据库执行成功，${EXECUTION_FAILED}个数据库执行失败`}</div>
     );
   }, [multipAsyncExecuteRecordRes?.stats]);
 

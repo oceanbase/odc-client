@@ -2,6 +2,7 @@ import { Segmented, Tooltip } from 'antd';
 import { useContext } from 'react';
 import { Perspective } from '@/component/Schedule/interface';
 import ParamsContext from '@/component/Schedule/context/ParamsContext';
+import styles from './index.less';
 
 const Segment = () => {
   const context = useContext(ParamsContext);
@@ -13,6 +14,7 @@ const Segment = () => {
         setLoading(true);
         setPerspective(value);
       }}
+      className={styles.segmented}
       options={[
         {
           value: Perspective.scheduleView,

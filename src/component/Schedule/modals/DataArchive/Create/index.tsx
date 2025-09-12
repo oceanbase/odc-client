@@ -45,6 +45,7 @@ import { openSchedulesPage } from '@/store/helper/page';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { ConnectTypeText } from '@/constant/label';
 import SchduleExecutionMethodForm from '@/component/Schedule/components/SchduleExecutionMethodForm';
+import { getInitScheduleName } from '@/component/Task/component/CreateTaskConfirmModal/helper';
 
 export enum IArchiveRange {
   PORTION = 'portion',
@@ -209,7 +210,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
         dayOfMonth: days,
         dayOfWeek: days,
       };
-      setCrontab(crontab);
+      crontabRef.current?.setValue(crontab);
     }
     if (triggerStrategy === TaskExecStrategy.START_AT) {
       formData.startAt = dayjs(startAt);
@@ -743,7 +744,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       </AnchorContainer>
       <SQLPreviewModal
         database={targetDatabase}
-        initName={isEdit ? form.getFieldValue('scheduleName') : undefined}
+        initName={getInitScheduleName(form.getFieldValue('scheduleName'), dataArchiveData?.type)}
         isEdit={isEdit}
         sql={previewSql}
         visible={previewModalVisible}

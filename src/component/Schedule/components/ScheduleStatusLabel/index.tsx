@@ -7,15 +7,19 @@ import {
   LoadingOutlined,
   StopFilled,
   PauseCircleOutlined,
+  EllipsisOutlined,
 } from '@ant-design/icons';
 import { Space } from 'antd';
 
 const ScheduleStatusInfo = {
   [ScheduleStatus.CREATING]: {
     icon: (
-      <LoadingOutlined
+      <EllipsisOutlined
         style={{
-          color: 'var(--icon-blue-color)',
+          background: 'var(--icon-blue-color)',
+          borderRadius: '14px',
+          color: '#ffffff',
+          fontSize: 13,
         }}
       />
     ),

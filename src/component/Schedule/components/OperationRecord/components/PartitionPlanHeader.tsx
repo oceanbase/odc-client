@@ -1,4 +1,4 @@
-import { Segmented } from 'antd';
+import { Segmented, Space } from 'antd';
 import { IScheduleRecord, IPartitionPlan } from '@/d.ts/schedule';
 import React, { useEffect, useState } from 'react';
 import { ICycleTaskTriggerConfig } from '@/d.ts';
@@ -17,9 +17,6 @@ interface IProps {
 }
 const PartitionPlanHeader: React.FC<IProps> = (props) => {
   const { schedule } = props;
-  if (!schedule.parameters.droppingTrigger) {
-    return null;
-  }
   const [type, setType] = useState<PartitionTypeExecutionMethod>(
     PartitionTypeExecutionMethod.CreatePartition,
   );
@@ -41,26 +38,34 @@ const PartitionPlanHeader: React.FC<IProps> = (props) => {
   }, [type]);
 
   return (
-    <div>
-      <Segmented
-        value={type}
-        onChange={(value) => {
-          setType(value);
-        }}
-        className={styles.segmented}
-        options={[
-          {
-            value: PartitionTypeExecutionMethod.CreatePartition,
-            label: '创建分区调度策略',
-          },
-          {
-            value: PartitionTypeExecutionMethod.DropPartition,
-            label: '删除分区调度策略',
-          },
-        ]}
+    <Space className={styles.infoContainer}>
+      {schedule.parameters.droppingTrigger && (
+        <Segmented
+          value={type}
+          onChange={(value) => {
+            setType(value);
+          }}
+          className={styles.segmented}
+          options={[
+            {
+              value: PartitionTypeExecutionMethod.CreatePartition,
+              label: '创建分区调度策略',
+            },
+            {
+              value: PartitionTypeExecutionMethod.DropPartition,
+              label: '删除分区调度策略',
+            },
+          ]}
+        />
+      )}
+
+      <ExecutionInfoContainer
+        trigger={trigger}
+        fireTimes={fireTimes}
+        type={schedule?.type}
+        useStyleContainer={false}
       />
-      <ExecutionInfoContainer trigger={trigger} fireTimes={fireTimes} type={schedule?.type} />
-    </div>
+    </Space>
   );
 };
 

@@ -57,21 +57,32 @@ const Filter: React.FC = () => {
     );
   };
 
+  /* 作业视角、执行视角的高亮条件 */
   const isActive = useMemo(() => {
-    if (isScheduleView && tab !== ScheduleTab.approveByCurrentUser) {
-      return (
-        Boolean(status.length) ||
-        Boolean(projectIds.length) ||
-        Boolean(type) ||
-        Boolean(approveStatus.length)
-      );
-    } else if (isScheduleView && tab === ScheduleTab.approveByCurrentUser) {
-      return Boolean(status.length) || Boolean(projectIds.length) || Boolean(type);
+    let _isActive = false;
+    if (isScheduleView) {
+      if (tab === ScheduleTab.approveByCurrentUser) {
+        _isActive =
+          Boolean(status.length) ||
+          Boolean(projectIds.length) ||
+          Boolean(type) ||
+          timeRange !== 'ALL';
+      } else {
+        _isActive =
+          Boolean(status.length) ||
+          Boolean(projectIds.length) ||
+          Boolean(type) ||
+          Boolean(approveStatus.length) ||
+          timeRange !== 'ALL';
+      }
     } else {
-      return (
-        Boolean(subTaskStatus.length) || Boolean(subTaskProjectIds.length) || Boolean(subTaskType)
-      );
+      _isActive =
+        Boolean(subTaskStatus.length) ||
+        Boolean(subTaskProjectIds.length) ||
+        Boolean(subTaskType) ||
+        timeRange !== 7;
     }
+    return _isActive;
   }, [
     status.length,
     projectIds.length,
@@ -81,6 +92,7 @@ const Filter: React.FC = () => {
     approveStatus.length,
     subTaskProjectIds.length,
     subTaskType,
+    timeRange,
   ]);
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -93,7 +105,7 @@ const Filter: React.FC = () => {
 
   const typeTipContent = useMemo(() => {
     const _type = isScheduleView ? type : subTaskType;
-    if (!_type) return null;
+    if (!_type || !isAll) return null;
     return (
       <div>
         <div>作业类型：</div>
@@ -102,7 +114,7 @@ const Filter: React.FC = () => {
         </div>
       </div>
     );
-  }, [isScheduleView, type, subTaskType]);
+  }, [isScheduleView, type, subTaskType, isAll]);
 
   const projectTipContent = useMemo(() => {
     const _projectId = isScheduleView ? projectIds : subTaskProjectIds;

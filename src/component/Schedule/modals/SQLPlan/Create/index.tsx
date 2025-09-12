@@ -40,9 +40,8 @@ import { history } from '@umijs/max';
 import { ScheduleStore } from '@/store/schedule';
 import CreateTaskConfirmModal from '@/component/Task/component/CreateTaskConfirmModal';
 import { createSchedule, updateSchedule } from '@/common/network/schedule';
-import { FieldTimeOutlined } from '@ant-design/icons';
-import { disabledDate, disabledTime } from '@/util/utils';
 import { getScheduleDetail } from '@/common/network/schedule';
+import { getInitScheduleName } from '@/component/Task/component/CreateTaskConfirmModal/helper';
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 import dayjs from 'dayjs';
 import {
@@ -149,7 +148,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
         dayOfMonth: days,
         dayOfWeek: days,
       };
-      setCrontab(crontab);
+      crontabRef?.current?.setValue(crontab);
     }
     if (triggerStrategy === TaskExecStrategy.START_AT) {
       formData.startAt = dayjs(startAt);
@@ -304,15 +303,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
               /*编辑 SQL 计划*/
             }
           </div>
-          <div>
-            {
-              formatMessage({
-                id: 'odc.components.CreateSQLPlanTaskModal.TheTaskNeedsToBe',
-                defaultMessage: '任务需要重新审批，审批通过后此任务将重新执行',
-              })
-              /*任务需要重新审批，审批通过后此任务将重新执行*/
-            }
-          </div>
+          <div>作业需要重新审批，审批通过后此作业将自动启用</div>
         </>
       ),
 
@@ -825,7 +816,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
       </div>
       <CreateTaskConfirmModal
         database={createScheduleDatabase}
-        initName={form.getFieldValue('scheduleName')}
+        initName={getInitScheduleName(form.getFieldValue('scheduleName'), sqlPlanData?.type)}
         open={open}
         isSchedule
         setOpen={setOpen}

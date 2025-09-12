@@ -1,4 +1,4 @@
-import { Drawer, Radio, Spin, Tag } from 'antd';
+import { Drawer, Radio, Spin, Tag, Tooltip } from 'antd';
 import styles from './index.less';
 import { ScheduleDetailType } from '@/d.ts/schedule';
 import OperationRecord from '../OperationRecord';
@@ -81,7 +81,9 @@ const CommonTaskDetailModal: React.FC<ICommonScheduleDetailModalProps> = (props)
         <div className={styles.title}>
           <div className={styles.detailName}>
             <div className={styles.scheduleName}>{schedule?.scheduleName}</div>
-            <div className={styles.ml4}>详情</div>
+            <Tooltip title={schedule?.scheduleName} overlayClassName={styles.scheduleNameTooltip}>
+              <div className={styles.ml4}>详情</div>
+            </Tooltip>
           </div>
           {schedule?.approvable && (
             <Tag color="blue" className={styles.ProcessingTag}>

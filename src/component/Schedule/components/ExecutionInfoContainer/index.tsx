@@ -16,10 +16,11 @@ interface ExecutionInfoContainer {
   trigger: ICycleTaskTriggerConfig;
   fireTimes?: number[];
   type: ScheduleType;
+  useStyleContainer?: boolean;
 }
 
 const ExecutionInfoContainer: React.FC<ExecutionInfoContainer> = (props) => {
-  const { trigger, fireTimes, type } = props;
+  const { trigger, fireTimes, type, useStyleContainer = true } = props;
   const scheduleExecStrategyMap = getScheduleExecStrategyMap(type);
 
   const isCycle = useMemo(() => {
@@ -27,7 +28,7 @@ const ExecutionInfoContainer: React.FC<ExecutionInfoContainer> = (props) => {
   }, [trigger?.triggerStrategy]);
 
   return (
-    <Space className={styles.infoContainer}>
+    <Space className={useStyleContainer ? styles.infoContainer : undefined}>
       <Descriptions column={2}>
         <Descriptions.Item
           label={formatMessage({

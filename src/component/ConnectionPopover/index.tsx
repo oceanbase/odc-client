@@ -293,7 +293,13 @@ const ConnectionPopover: React.FC<{
                 defaultMessage: '类型：{ConnectTypeTextType}',
               },
 
-              { ConnectTypeTextType: <Typography.Text>{ConnectTypeText(type)}</Typography.Text> },
+              {
+                ConnectTypeTextType: (
+                  <Typography.Text style={{ fontWeight: 'normal' }}>
+                    {ConnectTypeText(type)}
+                  </Typography.Text>
+                ),
+              },
             )
 
             /*类型：{ConnectTypeTextType}*/
@@ -375,7 +381,11 @@ const ConnectionPopover: React.FC<{
               },
 
               {
-                connectionDbUser: <Typography.Text>{connection?.username ?? '-'}</Typography.Text>,
+                connectionDbUser: (
+                  <Typography.Text style={{ fontWeight: 'normal' }}>
+                    {connection?.username ?? '-'}
+                  </Typography.Text>
+                ),
               },
             )
 
