@@ -154,7 +154,7 @@ export default function withConfirmModal(WrappedComponent: any) {
               ]}
             >
               <div className="ant-modal-confirm-body">
-                <QuestionCircleFilled style={{ color: 'rgb(250, 173, 20)' }} />
+                <QuestionCircleFilled style={{ color: 'rgb(250, 173, 20)', paddingRight: '4px' }} />
                 <span className="ant-modal-confirm-title">{unsavedModalTitle}</span>
                 <div className="ant-modal-confirm-content">{unsavedModalContent}</div>
               </div>
