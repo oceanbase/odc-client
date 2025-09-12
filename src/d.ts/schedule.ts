@@ -13,10 +13,10 @@ export enum ScheduleType {
   DATA_ARCHIVE = 'DATA_ARCHIVE',
   /** 数据清理 */
   DATA_DELETE = 'DATA_DELETE',
-  /** 分区计划 */
-  PARTITION_PLAN = 'PARTITION_PLAN',
   /** sql 计划 */
   SQL_PLAN = 'SQL_PLAN',
+  /** 分区计划 */
+  PARTITION_PLAN = 'PARTITION_PLAN',
 }
 
 /**

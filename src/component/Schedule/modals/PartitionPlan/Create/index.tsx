@@ -61,6 +61,7 @@ import { PageStore } from '@/store/page';
 import { SchedulePageMode } from '@/component/Schedule/interface';
 import { openSchedulesPage } from '@/store/helper/page';
 import SchduleExecutionMethodForm from '@/component/Schedule/components/SchduleExecutionMethodForm';
+import { getInitScheduleName } from '@/component/Task/component/CreateTaskConfirmModal/helper';
 
 const { Paragraph, Text } = Typography;
 
@@ -646,7 +647,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
           dayOfMonth: days,
           dayOfWeek: days,
         };
-        setCrontab(crontab);
+        crontabRef?.current?.setValue(crontab);
       }
       if (triggerStrategy === TaskExecStrategy.START_AT) {
         formData.startAt = dayjs(startAt) as any;
@@ -931,7 +932,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
       </div>
       <CreateTaskConfirmModal
         database={createScheduleDatabase}
-        initName={form.getFieldValue('scheduleName')}
+        initName={getInitScheduleName(form.getFieldValue('scheduleName'), partitionPlanData?.type)}
         open={open}
         isSchedule
         setOpen={setOpen}

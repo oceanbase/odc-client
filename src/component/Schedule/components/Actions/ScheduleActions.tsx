@@ -130,12 +130,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       title: `确定要终止${scheduleTypeText}吗`,
       content: (
         <>
-          <div>
-            {formatMessage({
-              id: 'src.component.Task.component.ActionBar.5E24502A',
-              defaultMessage: '任务终止后将不可恢复',
-            })}
-          </div>
+          <div>作业终止后将不可恢复</div>
         </>
       ),
       cancelText: formatMessage({
@@ -148,7 +143,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
         setActiveBtnKey(ScheduleActionsEnum.STOP);
         const res = await terminateSchedule(scheduleId);
         if (res?.data) {
-          message.success('任务需要重新审批，审批通过后此任务将终止');
+          message.success('作业务需要重新审批，审批通过后此作业将终止');
           onReloadList?.();
           resetActiveBtnKey();
         } else {
@@ -174,14 +169,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
               { TaskTypeMapTaskType: ScheduleTextMap[schedule?.type] },
             )}
           </div>
-          <div>
-            {
-              formatMessage({
-                id: 'odc.TaskManagePage.component.TaskTools.TheTaskNeedsToBe',
-                defaultMessage: '任务需要重新审批，审批通过后此任务将禁用',
-              }) /*任务需要重新审批，审批通过后此任务将禁用*/
-            }
-          </div>
+          <div>作业需要重新审批，审批通过后此作业将禁用</div>
         </>
       ),
       cancelText: formatMessage({
@@ -194,12 +182,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
         setActiveBtnKey(ScheduleActionsEnum.DISABLE);
         const res = await pauseSchedule(scheduleId);
         if (res?.data) {
-          message.success(
-            formatMessage({
-              id: 'odc.TaskManagePage.component.TaskTools.TheTaskNeedsToBe',
-              defaultMessage: '任务需要重新审批，审批通过后此任务将禁用',
-            }),
-          );
+          message.success('提交成功');
           onReloadList?.();
           resetActiveBtnKey();
         } else {
@@ -224,12 +207,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
               }) /*启用 SQL 计划*/
             }
           </div>
-          <div>
-            {formatMessage({
-              id: 'odc.TaskManagePage.component.TaskTools.TheTaskNeedsToBe.1',
-              defaultMessage: '任务需要重新审批，审批通过后此任务将启用',
-            })}
-          </div>
+          <div>作业需要重新审批，审批通过后此作业将启用</div>
         </>
       ),
       cancelText: formatMessage({
@@ -242,12 +220,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
         setActiveBtnKey(ScheduleActionsEnum.ENABLE);
         const res = await resumeSchedule(scheduleId);
         if (res?.data) {
-          message.success(
-            formatMessage({
-              id: 'odc.TaskManagePage.component.TaskTools.TheTaskNeedsToBe.1',
-              defaultMessage: '任务需要重新审批，审批通过后此任务将启用',
-            }),
-          );
+          message.success('提交成功');
           onReloadList?.();
           resetActiveBtnKey();
         } else {
@@ -353,7 +326,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
     if (hasPartitionPlanTableConfigs?.length) {
       const count = hasPartitionPlanTableConfigs?.length;
       Modal.confirm({
-        title: `当前任务中有 ${count} 张表存在有效的分区策略，仅克隆未配置表的分区策略`,
+        title: `当前作业中有 ${count} 张表存在有效的分区策略，仅克隆未配置表的分区策略`,
         cancelText: formatMessage({
           id: 'odc.TaskManagePage.component.TaskTools.Cancel',
           defaultMessage: '取消',
@@ -390,12 +363,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       title: `确定要删除此${scheduleTypeText}吗`,
       content: (
         <>
-          <div>
-            {formatMessage({
-              id: 'odc.TaskManagePage.component.TaskTools.TheTaskNeedsToBe',
-              defaultMessage: '任务需要重新审批，审批通过后此任务将删除',
-            })}
-          </div>
+          <div>作业需要重新审批，审批通过后此作业将不再显示</div>
         </>
       ),
       cancelText: formatMessage({
@@ -408,7 +376,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
         // setDelList?.([...delList, scheduleId]);
         const res = await deleteSchedule(scheduleId, schedule?.project.id);
         if (res?.data) {
-          message.success('任务需要重新审批，审批通过后此任务将删除');
+          message.success('提交成功');
           onReloadList?.();
           onClose?.();
         }

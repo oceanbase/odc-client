@@ -8,6 +8,7 @@ const ScheduleSearchTypeText = {
   [ScheduleSearchType.SCHEDULENAME]: '作业名称',
   [ScheduleSearchType.SCHEDULEID]: '作业ID',
   [ScheduleSearchType.CREATOR]: '创建人',
+  [ScheduleSearchType.DATABASE]: '数据库',
   [ScheduleSearchType.DATASOURCE]: formatMessage({
     id: 'odc.component.RecordPopover.column.DataSource',
     defaultMessage: '数据源',

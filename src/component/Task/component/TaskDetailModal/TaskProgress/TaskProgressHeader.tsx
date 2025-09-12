@@ -23,7 +23,7 @@ const TaskProgressHeader: React.FC<{
       }
     });
     return (
-      <div>
+      <div style={{ marginBottom: 6 }}>
         {formatMessage(
           {
             id: 'src.component.Task.component.CommonDetailModal.TaskProgress.4F56B34E',
@@ -36,7 +36,7 @@ const TaskProgressHeader: React.FC<{
     );
   }
   return (
-    <div>
+    <div style={{ marginBottom: 12 }}>
       {formatMessage(
         {
           id: 'src.component.Task.component.CommonDetailModal.E75BF608',

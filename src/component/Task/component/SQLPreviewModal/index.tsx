@@ -97,7 +97,16 @@ function SQLPreviewModal(props: {
         </div>
         <Form form={form} layout="vertical" requiredMark="optional">
           <Form.Item
-            rules={[{ required: true, message: '请输入作业名称' }]}
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (!value || value.trim() === '') {
+                    return Promise.reject(new Error('请输入作业名称'));
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
             name={'Name'}
             label={'作业名称'}
           >

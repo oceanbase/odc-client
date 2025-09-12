@@ -9,8 +9,6 @@ import dayjs, { Dayjs } from 'dayjs';
 
 const { RangePicker } = DatePicker;
 
-export const TIME_OPTION_ALL_TASK = 'ALL';
-
 export const TimeOptions = [
   {
     label: formatMessage({ id: 'odc.component.TimeSelect.LastDays', defaultMessage: '最近 7 天' }), //最近 7 天
@@ -41,7 +39,7 @@ export const TimeOptions = [
   },
   {
     label: formatMessage({ id: 'src.component.TimeSelect.9E6CA23B', defaultMessage: '全部' }),
-    value: TIME_OPTION_ALL_TASK,
+    value: 'ALL',
   },
   {
     label: formatMessage({ id: 'odc.component.TimeSelect.Custom', defaultMessage: '自定义' }), //自定义

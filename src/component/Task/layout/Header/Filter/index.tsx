@@ -12,20 +12,22 @@ import styles from '../index.less';
 import { TaskPageTextMap } from '@/constant/task';
 import { status } from '@/component/Task/component/Status';
 import { TimeOptions } from '../DateSelect';
+import { TaskPageType } from '@/d.ts';
 
 interface IProps {}
 
 const Filter: React.FC<IProps> = () => {
   const context = useContext(ParamsContext);
-  const { params, setParams, projectList, mode } = context;
+  const { params, setParams, projectList, mode, taskTabType } = context;
   const { taskStatus, projectId, taskTypes, timeRange, executeDate, tab } = params as ITaskParam;
   const [open, setOpen] = useState<boolean>(false);
   const [hover, setHover] = useState<boolean>(false);
+  const isAll = taskTabType === TaskPageType.ALL;
 
   const filterContent = () => {
     return (
       <div>
-        <TaskTypeFilter />
+        {isAll && <TaskTypeFilter />}
         {tab === TaskTab.executionByCurrentUser ? '' : <TaskStatusFilter />}
         {mode !== TaskPageMode.PROJECT ? <ProjectFilter /> : null}
         <div style={{ marginTop: '16px' }}>创建时间范围</div>
@@ -47,7 +49,7 @@ const Filter: React.FC<IProps> = () => {
   };
 
   const typeTipContent = useMemo(() => {
-    if (!taskTypes.length) return null;
+    if (!taskTypes.length || !isAll) return null;
     return (
       <div>
         <div>工单类型：</div>
@@ -63,7 +65,7 @@ const Filter: React.FC<IProps> = () => {
         </div>
       </div>
     );
-  }, [taskTypes]);
+  }, [taskTypes, isAll]);
 
   const statusTipContent = useMemo(() => {
     if (!taskStatus.length) return null;

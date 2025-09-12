@@ -75,7 +75,7 @@ export const TaskActionsTextMap = {
   [TaskActionsEnum.STOP]: '终止',
   [TaskActionsEnum.ROLLBACK]: '回滚',
   [TaskActionsEnum.EXECUTE]: '执行',
-  [TaskActionsEnum.PASS]: '通过',
+  [TaskActionsEnum.PASS]: '同意',
   [TaskActionsEnum.AGAIN]: '重试',
   [TaskActionsEnum.DOWNLOAD]: '下载',
   [TaskActionsEnum.REJECT]: '拒绝',

@@ -127,7 +127,6 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
       }), //'分区表'
       key: 'tableName',
       dataIndex: 'tableName',
-      width: 164,
       ellipsis: true,
       filterDropdown: (props) => {
         return (
@@ -164,6 +163,7 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
       key: 'containsStrategy',
       dataIndex: 'containsStrategy',
       ellipsis: true,
+      width: 180,
       render: (_, record) => {
         const label = getStrategyLabelByConfig(record);
         return (

@@ -189,6 +189,7 @@ const Content: React.FC<IProps> = (props) => {
       creator: params.searchType === ScheduleSearchType.CREATOR ? params.searchValue : '',
       clusterId: params.searchType === ScheduleSearchType.CLUSTER ? params.searchValue : '',
       tenantId: params.searchType === ScheduleSearchType.TENANT ? params.searchValue : '',
+      databaseName: params.searchType === ScheduleSearchType.DATABASE ? params.searchValue : '',
       type:
         scheduleStore?.schedulePageType !== SchedulePageType.ALL
           ? [scheduleStore?.schedulePageType as unknown as ScheduleType]
