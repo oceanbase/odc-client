@@ -110,7 +110,7 @@ export const ConsoleTextConfig = {
     helps: [
       {
         title: formatMessage({ id: 'src.page.Console.D66A7480', defaultMessage: '下载新版' }),
-        url: 'https://www.oceanbase.com/download',
+        url: 'softwarecenter',
         icon: <Icon component={DownloadSvg} style={{ color: '#006AFF', fontSize: 14 }} />,
       },
       {
