@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { IDatabase } from '@/d.ts/database';
 import { listDatabases } from '@/common/network/database';
-import { SearchType } from '../Header/Search';
+import { DatabaseSearchType } from '@/d.ts/database';
 import { IFilterParams } from '../ParamContext';
 import ProjectContext from '../../ProjectContext';
 import datasourceStatus from '@/store/datasourceStatus';
@@ -35,9 +35,9 @@ const useData = (id) => {
   const [openObjectStorage, setOpenObjectStorage] = useState<boolean>(false);
   const [openManageLogicDatabase, setOpenManageLogicDatabase] = useState<boolean>(false);
   const [database, setDatabase] = useState<IDatabase>(null);
-  const [searchValue, setSearchValue] = useState<{ value: string; type: SearchType }>({
+  const [searchValue, setSearchValue] = useState<{ value: string; type: DatabaseSearchType }>({
     value: null,
-    type: SearchType.DATABASE,
+    type: DatabaseSearchType.SCHEMA_NAME,
   });
 
   const { loading, run: fetchDatabases } = useRequest(listDatabases, {
@@ -55,15 +55,13 @@ const useData = (id) => {
       projectId: parseInt(id),
       page: 1,
       size: 99999,
-      name: searchValue?.value,
+      fuzzyKeyword: searchValue?.value,
       environmentId: environmentId,
       includesPermittedAction: true,
       includesDbOwner: true,
       type,
       connectType,
-      dataSourceName: searchValue?.type === SearchType.DATASOURCE ? searchValue?.value : null,
-      clusterName: searchValue?.type === SearchType.CLUSTER ? searchValue?.value : null,
-      tenantName: searchValue?.type === SearchType.TENANT ? searchValue?.value : null,
+      searchType: searchValue?.type,
     });
     if (res) {
       datasourceStatus.asyncUpdateStatus(

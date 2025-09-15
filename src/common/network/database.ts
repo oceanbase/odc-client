@@ -21,13 +21,13 @@ import notification from '@/util/notification';
 import request from '@/util/request';
 import { getDropSQL } from '@/util/sql';
 import { executeSQL } from './sql';
+import { DatabaseSearchType } from '@/d.ts/database';
 
-interface listDatabasesParams {
+export interface listDatabasesParams {
   projectId?: number;
   dataSourceId?: number;
   page?: number;
   size?: number;
-  name?: string;
   environmentId?: number[];
   /** 是否包含未分配项目的数据库 */
   containsUnassigned?: boolean;
@@ -37,9 +37,8 @@ interface listDatabasesParams {
   includesDbOwner?: boolean;
   type?: DBType[];
   connectType?: ConnectType[];
-  dataSourceName?: string;
-  clusterName?: string;
-  tenantName?: string;
+  fuzzyKeyword?: string;
+  searchType?: DatabaseSearchType;
 }
 
 export async function listDatabases(
