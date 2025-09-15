@@ -5,38 +5,16 @@ import { formatMessage } from '@/util/intl';
 import { SearchOutlined } from '@ant-design/icons';
 import styles from '../index.less';
 import SessionContext from '@/page/Workspace/components/SessionContextWrap/context';
+import { DatabaseSearchType } from '@/d.ts/database';
+import { DatabaseSearchTypeText } from '@/constant/database';
 
 interface IProps {
-  searchValue: { value: string; type: SearchType };
-  setSearchvalue: (v: string, type: SearchType) => void;
+  searchValue: { value: string; type: DatabaseSearchType };
+  setSearchvalue: (v: string, type: DatabaseSearchType) => void;
   searchValueByDataSource: string;
   setSearchValueByDataSource: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export enum SearchType {
-  DATABASE = 'DATABASE',
-  DATASOURCE = 'DATASOURCE',
-  CLUSTER = 'CLUSTER',
-  TENANT = 'TENANT',
-}
-export const SearchTypeText = {
-  [SearchType.DATABASE]: formatMessage({
-    id: 'src.component.ODCSetting.config.9EC92943',
-    defaultMessage: '数据库',
-  }), //'数据库'
-  [SearchType.DATASOURCE]: formatMessage({
-    id: 'odc.component.RecordPopover.column.DataSource',
-    defaultMessage: '数据源',
-  }), //数据源
-  [SearchType.CLUSTER]: formatMessage({
-    id: 'odc.Connecion.ConnectionList.ParamContext.Cluster',
-    defaultMessage: '集群',
-  }), //集群
-  [SearchType.TENANT]: formatMessage({
-    id: 'odc.Connecion.ConnectionList.ParamContext.Tenant',
-    defaultMessage: '租户',
-  }), //租户
-};
 const splitKey = '_$$$odc$$$_';
 
 const RemoveSplitInput = forwardRef(function RemoveSplitInput({ value, ...rest }: any, ref) {
@@ -53,7 +31,7 @@ const RemoveSplitInput = forwardRef(function RemoveSplitInput({ value, ...rest }
       prefix={<SearchOutlined style={{ color: 'var(--icon-color-normal)' }} />}
       suffix={
         <span style={{ paddingRight: 15, color: 'var(--text-color-hint)' }}>
-          {SearchTypeText[type]}
+          {DatabaseSearchTypeText[type]}
         </span>
       }
       {...rest}
@@ -87,32 +65,28 @@ const Search: React.FC<IProps> = function (props) {
       return;
     }
     setOptions(
-      [SearchType.DATABASE, SearchType.DATASOURCE, SearchType.CLUSTER, SearchType.TENANT]?.map(
-        (v) => {
-          return {
-            value: value + splitKey + v,
-            label: (
+      Object.values(DatabaseSearchType)?.map((v) => {
+        return {
+          value: value + splitKey + v,
+          label: (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                style={{
+                  flex: 1,
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                }}
               >
-                <div
-                  style={{
-                    flex: 1,
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {value}
-                </div>
-                <div style={{ flexShrink: 0, flexGrow: 0, color: 'var(--text-color-hint)' }}>
-                  {SearchTypeText[v]}
-                </div>
+                {value}
               </div>
-            ),
-          };
-        },
-      ),
+              <div style={{ flexShrink: 0, flexGrow: 0, color: 'var(--text-color-hint)' }}>
+                {DatabaseSearchTypeText[v]}
+              </div>
+            </div>
+          ),
+        };
+      }),
     );
     return;
   }
