@@ -358,9 +358,10 @@ export async function getTaskFlowList(): Promise<any[]> {
  * 获取待我审批的任务流程信息
  */
 export async function getTaskMetaInfo(): Promise<{
-  pendingApprovalInstanceIds: number[];
+  approvingFlowIds: number[];
+  approvingFlowScheduleIds: number[];
 }> {
-  const result = await request.get('/api/v2/flow/flowInstances/getMetaInfo');
+  const result = await request.get('/api/v2/schedule/getMetaInfo');
   return result?.data;
 }
 

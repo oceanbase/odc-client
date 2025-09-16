@@ -16,7 +16,7 @@ import { formatMessage } from '@/util/intl';
  */
 
 import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
-import { Modal, Form, Input } from 'antd';
+import { Modal, Form, Input, Alert } from 'antd';
 import { useEffect, useState } from 'react';
 import { IDatabase } from '@/d.ts/database';
 import { getDefaultName } from '../CreateTaskConfirmModal/helper';
@@ -29,8 +29,22 @@ function SQLPreviewModal(props: {
   database?: IDatabase;
   isEdit: boolean;
   initName?: string;
+  hideSqlPreview?: boolean;
+  tips?: string;
+  modelHeight?: number;
 }) {
-  const { sql, visible, onClose, onOk, database, isEdit = false, initName } = props;
+  const {
+    sql,
+    visible,
+    onClose,
+    onOk,
+    database,
+    isEdit = false,
+    initName,
+    hideSqlPreview = false,
+    tips,
+    modelHeight = 400,
+  } = props;
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();
 
@@ -49,18 +63,10 @@ function SQLPreviewModal(props: {
 
   return (
     <Modal
-      title={
-        <span style={{ fontWeight: 400 }}>
-          {formatMessage({
-            id: 'src.component.Task.component.SQLPreviewModal.9967DB7D' /*归档 SQL 预览（变量以当前时间代入，具体执行按实际配置替换），点击"确认"按钮继续提交申请*/,
-            defaultMessage:
-              '归档 SQL 预览（变量以当前时间代入，具体执行按实际配置替换），点击"确认"按钮继续提交申请',
-          })}
-        </span>
-      }
+      title={<span style={{ fontWeight: 400 }}>预览 SQL</span>}
       width={760}
       bodyStyle={{
-        height: 400,
+        height: modelHeight,
       }}
       open={visible}
       onCancel={onClose}
@@ -85,16 +91,20 @@ function SQLPreviewModal(props: {
           height: '100%',
         }}
       >
-        <div
-          style={{
-            flex: 1,
-            position: 'relative',
-            border: '1px solid var(--odc-border-color)',
-            marginBottom: '16px',
-          }}
-        >
-          <SQLCodePreviewer readOnly language="sql" value={sql} />
-        </div>
+        <Alert message={tips} type="info" showIcon style={{ marginBottom: '16px' }} />
+        {!hideSqlPreview && (
+          <div
+            style={{
+              flex: 1,
+              position: 'relative',
+              border: '1px solid var(--odc-border-color)',
+              marginBottom: '16px',
+            }}
+          >
+            <SQLCodePreviewer readOnly language="sql" value={sql} />
+          </div>
+        )}
+
         <Form form={form} layout="vertical" requiredMark="optional">
           <Form.Item
             rules={[

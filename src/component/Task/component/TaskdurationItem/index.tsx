@@ -50,7 +50,7 @@ const TaskDurationItem: React.FC<IProps> = ({ form }) => {
                       ),
               },
             ]}
-            initialValue={1}
+            initialValue={2}
           >
             <InputNumber
               min={0}

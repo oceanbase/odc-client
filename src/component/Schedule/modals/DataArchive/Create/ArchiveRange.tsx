@@ -17,12 +17,21 @@
 import { ITable } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { PlusOutlined, SettingOutlined, SettingFilled, DeleteOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Form, Input, Radio, Select, Typography, Tooltip, Divider } from 'antd';
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  Radio,
+  Select,
+  Typography,
+  Tooltip,
+  Divider,
+  Popover,
+} from 'antd';
 import classNames from 'classnames';
-import { useEffect, useState } from 'react';
 import ArchiveRangeTip from '@/component/Schedule/components/ArchiveRangeTip';
-import { PartitionTextArea } from '@/component/Task/component/PartitionTextArea';
-import { IArchiveRange } from './index';
+import { IArchiveRange } from '@/d.ts';
 import styles from './index.less';
 import BatchSelectionPopover from '@/component/BatchSelectionPopover';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
@@ -32,27 +41,42 @@ import useJoinTableConfig from '@/component/Task/component/JoinTableConfigsModal
 import { rules } from './const';
 const MAX_TABLES_COUNT = 100;
 const { Text, Link } = Typography;
+import { cloneDeep, isString } from 'lodash';
 
 interface IProps {
   tables: ITable[];
   enabledTargetTable?: boolean;
   checkPartition?: boolean;
   targetDatabase?: IDatabase;
+  databaseId?: number;
 }
+
+export const IArchiveRangeTextMap: Record<IArchiveRange, string> = {
+  [IArchiveRange.PORTION]: formatMessage({
+    id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.PartialArchive',
+    defaultMessage: '部分归档',
+  }),
+  [IArchiveRange.ALL]: formatMessage({
+    id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.ArchiveTheEntireDatabase',
+    defaultMessage: '整库归档',
+  }),
+};
+
 const ArchiveRange: React.FC<IProps> = (props) => {
-  const { tables, enabledTargetTable = false, checkPartition, targetDatabase } = props;
+  const {
+    tables: propsTables,
+    enabledTargetTable = false,
+    checkPartition,
+    targetDatabase,
+    databaseId,
+  } = props;
   const form = Form.useFormInstance();
-  const [enablePartition, setEnablePartition] = useState<boolean>(checkPartition);
-  const tablesOptions = tables?.map((item) => ({
+  const tablesOptions = propsTables?.map((item) => ({
     label: item.tableName,
     value: item.tableName,
   }));
 
   const { visible, currentIndex, open, close, handleSubmit } = useJoinTableConfig(form);
-
-  useEffect(() => {
-    setEnablePartition(checkPartition);
-  }, [checkPartition]);
 
   const handleConfirm = (
     checkList: any[],
@@ -72,23 +96,63 @@ const ArchiveRange: React.FC<IProps> = (props) => {
     });
   };
 
+  const getSettingTip = (name) => {
+    const data = form.getFieldValue(['tables', name]);
+    const { joinTableConfigs, partitions: _partitions, tableName } = data || {};
+    if (!_partitions && !joinTableConfigs?.length) return null;
+    const partitions = isString(_partitions)
+      ? _partitions
+          ?.replace(/[\r\n]+/g, '')
+          ?.split(',')
+          ?.filter(Boolean)
+      : _partitions;
+    // 目前只有join类型，所以先写死join
+    return (
+      <div>
+        {joinTableConfigs?.length ? (
+          <div style={{ marginBottom: 8 }}>
+            <div style={{ color: 'var(--text-color-hint)' }}>关联表</div>
+            {joinTableConfigs?.map((item) => {
+              return (
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <div>{tableName}</div>
+                  <div>join</div>
+                  <div>{item?.tableName}</div>
+                  <div>on</div>
+                  <div>{item?.joinCondition}</div>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+
+        {partitions?.length ? (
+          <>
+            <div style={{ color: 'var(--text-color-hint)' }}>指定扫描分区</div>
+            {partitions?.map((item, index) => (
+              <>
+                <span>{item}</span>
+                {index !== partitions?.length - 1 && <span>;</span>}
+              </>
+            ))}
+          </>
+        ) : null}
+      </div>
+    );
+  };
+
   return (
     <>
-      <Form.Item /*归档范围*/ name="archiveRange" required>
+      <Form.Item /*归档范围*/ name="archiveRange" required style={{ marginBottom: '0px' }}>
         <Radio.Group
+          optionType="button"
           options={[
             {
-              label: formatMessage({
-                id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.PartialArchive',
-                defaultMessage: '部分归档',
-              }) /*部分归档*/,
+              label: IArchiveRangeTextMap[IArchiveRange.PORTION],
               value: IArchiveRange.PORTION,
             },
             {
-              label: formatMessage({
-                id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.ArchiveTheEntireDatabase',
-                defaultMessage: '整库归档',
-              }) /*整库归档*/,
+              label: IArchiveRangeTextMap[IArchiveRange.ALL],
               value: IArchiveRange.ALL,
             },
           ]}
@@ -99,31 +163,10 @@ const ArchiveRange: React.FC<IProps> = (props) => {
           const archiveRange = getFieldValue('archiveRange') || [];
           const tables = getFieldValue('tables') || [];
           if (archiveRange !== IArchiveRange.PORTION) {
-            return null;
+            return <>包括当前数据库内所有表及新增表</>;
           }
           return (
             <div className={styles.tableHeader}>
-              <div className={styles.tableHeaderExtra}>
-                <div>
-                  {formatMessage({
-                    id: 'src.component.Task.DataArchiveTask.CreateModal.877C68FB',
-                    defaultMessage: '归档设置',
-                  })}
-                </div>
-                <div style={{ paddingBottom: 4 }}>
-                  <Checkbox
-                    checked={enablePartition}
-                    onChange={() => {
-                      setEnablePartition(!enablePartition);
-                    }}
-                  >
-                    {formatMessage({
-                      id: 'src.component.Task.DataArchiveTask.CreateModal.AEEF3B7C',
-                      defaultMessage: '指定分区',
-                    })}
-                  </Checkbox>
-                </div>
-              </div>
               <div
                 className={classNames(styles.tables, styles.title, {
                   [styles.delete]: tables?.length > 1,
@@ -137,6 +180,19 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                     }) /* 归档表 */
                   }
                 </div>
+                {enabledTargetTable && (
+                  <div className={styles.tableTitle}>
+                    {isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
+                      ? formatMessage({
+                          id: 'src.component.Task.DataArchiveTask.CreateModal.79D75776',
+                          defaultMessage: '目标文件',
+                        })
+                      : formatMessage({
+                          id: 'src.component.Task.DataArchiveTask.CreateModal.94BCB0E1',
+                          defaultMessage: '目标表',
+                        })}
+                  </div>
+                )}
                 <div className={styles.tableTitle}>
                   <div style={{ display: 'inline-flex', gap: 4 }}>
                     <span>
@@ -165,23 +221,6 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                     />
                   </div>
                 </div>
-                {enabledTargetTable && (
-                  <div className={styles.tableTitle}>
-                    {formatMessage({
-                      id: 'src.component.Task.DataArchiveTask.CreateModal.CC365F6B',
-                      defaultMessage: '高级设置',
-                    })}
-
-                    <Text type="secondary">
-                      {
-                        formatMessage({
-                          id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Optional',
-                          defaultMessage: '(可选)',
-                        }) /*(可选)*/
-                      }
-                    </Text>
-                  </div>
-                )}
               </div>
               <Form.List name="tables">
                 {(fields, { add, remove }) => {
@@ -213,62 +252,17 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                               }
                             />
                           </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'conditionExpression']}
-                            className={styles.pr6}
-                          >
-                            <Input
-                              placeholder={formatMessage({
-                                id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.EnterAFilterCondition',
-                                defaultMessage: '请输入过滤条件',
-                              })} /*请输入过滤条件*/
-                              addonAfter={
-                                <>
-                                  <JoinTableConfigModal
-                                    visible={visible && currentIndex === index}
-                                    initialValues={form.getFieldValue(['tables', index])}
-                                    onCancel={close}
-                                    onOk={handleSubmit}
-                                  />
-
-                                  <Tooltip
-                                    title={formatMessage({
-                                      id: 'src.component.Task.DataArchiveTask.CreateModal.1389EA71',
-                                      defaultMessage: '过滤条件设置（如关联表）',
-                                    })}
-                                  >
-                                    <div onClick={() => open(index)} style={{ cursor: 'pointer' }}>
-                                      {form.getFieldValue(['tables', name, 'joinTableConfigs'])
-                                        ?.length ? (
-                                        <SettingFilled style={{ color: '#1890ff' }} />
-                                      ) : (
-                                        <SettingOutlined />
-                                      )}
-                                    </div>
-                                  </Tooltip>
-                                </>
-                              }
-                            />
-                          </Form.Item>
                           {enabledTargetTable && (
                             <div
-                              style={{ display: 'flex', flexDirection: 'column' }}
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                paddingRight: '6px',
+                              }}
                               className={styles.multiInputBox}
                             >
                               <Form.Item {...restField} name={[name, 'targetTableName']}>
                                 <Input
-                                  addonBefore={
-                                    isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
-                                      ? formatMessage({
-                                          id: 'src.component.Task.DataArchiveTask.CreateModal.79D75776',
-                                          defaultMessage: '目标文件',
-                                        })
-                                      : formatMessage({
-                                          id: 'src.component.Task.DataArchiveTask.CreateModal.94BCB0E1',
-                                          defaultMessage: '目标表',
-                                        })
-                                  }
                                   placeholder={
                                     formatMessage({
                                       id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
@@ -277,13 +271,38 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                                   }
                                 />
                               </Form.Item>
-
-                              {enablePartition && (
-                                <PartitionTextArea {...restField} name={[name, 'partitions']} />
-                              )}
                             </div>
                           )}
 
+                          <Form.Item {...restField} name={[name, 'conditionExpression']}>
+                            <Input
+                              placeholder={'请输入 SQLWhere 条件语句，可引用自定义变量'}
+                              addonAfter={
+                                <>
+                                  <JoinTableConfigModal
+                                    visible={visible && currentIndex === index}
+                                    name={name}
+                                    initialValues={form.getFieldValue(['tables', index])}
+                                    onCancel={close}
+                                    onOk={handleSubmit}
+                                    databaseId={databaseId}
+                                  />
+
+                                  <Popover content={getSettingTip(name)} destroyOnHidden>
+                                    <div onClick={() => open(index)} style={{ cursor: 'pointer' }}>
+                                      {form.getFieldValue(['tables', name, 'joinTableConfigs'])
+                                        ?.length ||
+                                      form.getFieldValue(['tables', name, 'partitions']) ? (
+                                        <SettingFilled style={{ color: '#1890ff' }} />
+                                      ) : (
+                                        <SettingOutlined />
+                                      )}
+                                    </div>
+                                  </Popover>
+                                </>
+                              }
+                            />
+                          </Form.Item>
                           {fields?.length > 1 && (
                             <Tooltip
                               title={formatMessage({

@@ -674,7 +674,9 @@ export default {
     </p>
   ),
 
-  TaskShardingStrategy: <p>检索目标记录行的方式</p>,
+  TimingforCleanAfterArchive: <p>待数据全部完成归档后再开始进行数据清理</p>,
+  TimingforCleanAfterCleanUp: <p>按分片归档，分片归档完成后即时进行清理</p>,
+  ExecutionTimeoutSchedulingStrategy: <p>任务超时之后下一轮调度对于超时任务的处理逻辑</p>,
 
   TaskLmitData: (
     <p>

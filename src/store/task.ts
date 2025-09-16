@@ -48,6 +48,12 @@ export class TaskStore {
   public pendingApprovalInstanceIds: number[];
 
   /**
+   * 待我审批的调度作业
+   */
+  @observable
+  public pendingApprovalScheduleIds: number[];
+
+  /**
    * 任务列表
    */
   @observable
@@ -138,7 +144,8 @@ export class TaskStore {
   @action
   public getTaskMetaInfo = async () => {
     const res = await getTaskMetaInfo();
-    this.pendingApprovalInstanceIds = res?.pendingApprovalInstanceIds ?? [];
+    this.pendingApprovalInstanceIds = res?.approvingFlowIds ?? [];
+    this.pendingApprovalScheduleIds = res?.approvingFlowScheduleIds ?? [];
   };
 
   @action

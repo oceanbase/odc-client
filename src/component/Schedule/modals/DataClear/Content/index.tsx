@@ -24,6 +24,11 @@ import { SubTypeTextMap } from '@/constant/scheduleTask';
 import EllipsisText from '@/component/EllipsisText';
 import login from '@/store/login';
 import { ShardingStrategy } from '@/d.ts';
+import { executeTimeoutStrategyOptions } from '@/component/Schedule/components/ExecuteTimeoutSchedulingStrategy';
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import Icon from '@ant-design/icons';
+import { CleanRangeTextMap } from '../Create/ArchiveRange';
+import { IArchiveRange } from '@/d.ts';
 
 interface IProps {
   schedule: IScheduleRecord<IDataClearParameters>;
@@ -33,6 +38,15 @@ interface IProps {
 const DataClearScheduleContent: React.FC<IProps> = (props) => {
   const { schedule, onReload, subTask } = props;
   const { parameters } = schedule || {};
+  const sourceDataSourceStyle = getDataSourceStyleByConnectType(
+    parameters?.database.dataSource?.type,
+  );
+  const targetDataSourceStyle = getDataSourceStyleByConnectType(
+    parameters?.targetDatabase.dataSource?.type,
+  );
+
+  const CleaningRange =
+    CleanRangeTextMap[parameters?.fullDatabase ? IArchiveRange.ALL : IArchiveRange.PORTION];
 
   const handleRowLimit = async (rowLimit, handleClose) => {
     const res = await updateLimiterConfig(schedule?.scheduleId, {
@@ -89,7 +103,19 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
           />
         </Descriptions.Item>
         <Descriptions.Item label={'源端数据源'}>
-          <EllipsisText content={parameters?.database?.dataSource?.name} />
+          <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+            <Icon
+              component={sourceDataSourceStyle?.icon?.component}
+              style={{
+                color: sourceDataSourceStyle?.icon?.color,
+                fontSize: 16,
+                marginRight: 4,
+              }}
+            />
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              <EllipsisText content={parameters?.database?.dataSource?.name} />
+            </div>
+          </div>
         </Descriptions.Item>
         <Descriptions.Item label={'清理前进行数据校验'}>
           {parameters?.needCheckBeforeDelete ? '是' : '否'}
@@ -106,7 +132,19 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
               />
             </Descriptions.Item>
             <Descriptions.Item label={'目标端数据源'}>
-              <EllipsisText content={parameters?.targetDatabase?.dataSource?.name} />
+              <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                <Icon
+                  component={targetDataSourceStyle?.icon?.component}
+                  style={{
+                    color: targetDataSourceStyle?.icon?.color,
+                    fontSize: 16,
+                    marginRight: 4,
+                  }}
+                />
+                <div style={{ flex: 1, overflow: 'hidden' }}>
+                  <EllipsisText content={parameters?.targetDatabase?.dataSource?.name} />
+                </div>
+              </div>
             </Descriptions.Item>
           </>
         )}
@@ -117,6 +155,28 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
         )}
       </Descriptions>
       <Divider style={{ marginTop: 16 }} />
+      <SimpleTextItem
+        showSplit={false}
+        label={
+          <>
+            <span>清理范围：</span>
+            <span style={{ color: 'var(--text-color-primary)' }}>{CleaningRange}</span>
+          </>
+        }
+        /*清理范围*/ content={
+          <div
+            style={{
+              margin: '8px 0 12px',
+            }}
+          >
+            <ArchiveRange
+              tables={parameters?.tables}
+              needCheckBeforeDelete={parameters?.needCheckBeforeDelete}
+            />
+          </div>
+        }
+        direction="column"
+      />
       <SimpleTextItem
         label={formatMessage({
           id: 'odc.DataClearTask.DetailContent.VariableConfiguration',
@@ -133,26 +193,27 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
         }
         direction="column"
       />
-      <SimpleTextItem
-        label={formatMessage({
-          id: 'odc.DataClearTask.DetailContent.CleaningRange',
-          defaultMessage: '清理范围',
-        })}
-        /*清理范围*/ content={
-          <div
-            style={{
-              margin: '8px 0 12px',
-            }}
-          >
-            <ArchiveRange
-              tables={parameters?.tables}
-              needCheckBeforeDelete={parameters?.needCheckBeforeDelete}
-            />
-          </div>
-        }
-        direction="column"
-      />
+
       <Descriptions column={2}>
+        <Descriptions.Item label={'通过全表扫描进行数据搜索'} span={1}>
+          {parameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH ? '是' : '否'}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.DataClearTask.DetailContent.D4D1227C',
+            defaultMessage: '指定任务时长',
+          })}
+          span={1}
+        >
+          {parameters?.timeoutMillis ? milliSecondsToHour(parameters?.timeoutMillis) + 'h' : '-'}
+        </Descriptions.Item>
+        <Descriptions.Item label={'执行超时调度策略'} span={1}>
+          {
+            executeTimeoutStrategyOptions?.find(
+              (item) => item.value === parameters?.scheduleIgnoreTimeoutTask,
+            )?.label
+          }
+        </Descriptions.Item>
         {parameters?.needCheckBeforeDelete ? (
           <Descriptions.Item
             label={formatMessage({
@@ -179,9 +240,7 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
             )}
           </Descriptions.Item>
         ) : null}
-        <Descriptions.Item label={'通过全表扫描进行数据搜索'} span={1}>
-          {parameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH ? '是' : '否'}
-        </Descriptions.Item>
+
         <Descriptions.Item
           label={
             formatMessage({
@@ -214,36 +273,9 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
             onOk={handleDataSizeLimit}
           />
         </Descriptions.Item>
-        <Descriptions.Item
-          label={
-            formatMessage({
-              id: 'src.component.Task.DataClearTask.DetailContent.2D1A14AB',
-              defaultMessage: '使用主键清理',
-            }) /*"使用主键清理"*/
-          }
-        >
-          {parameters?.deleteByUniqueKey
-            ? formatMessage({
-                id: 'src.component.Task.DataClearTask.DetailContent.D2882643',
-                defaultMessage: '是',
-              })
-            : formatMessage({
-                id: 'src.component.Task.DataClearTask.DetailContent.834E7D89',
-                defaultMessage: '否',
-              })}
-        </Descriptions.Item>
-        <Descriptions.Item
-          label={formatMessage({
-            id: 'src.component.Task.DataClearTask.DetailContent.D4D1227C',
-            defaultMessage: '指定任务时长',
-          })}
-          span={1}
-        >
-          {parameters?.timeoutMillis ? milliSecondsToHour(parameters?.timeoutMillis) + 'h' : '-'}
-        </Descriptions.Item>
       </Descriptions>
       <Divider style={{ marginTop: 16 }} />
-      <Descriptions>
+      <Descriptions column={2}>
         <Descriptions.Item
           label={
             formatMessage({

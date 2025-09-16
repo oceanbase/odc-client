@@ -17,17 +17,29 @@
 import { ITable } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { PlusOutlined, SettingOutlined, SettingFilled, DeleteOutlined } from '@ant-design/icons';
-import { Tooltip, Button, Checkbox, Form, Input, Radio, Select, Typography, Divider } from 'antd';
+import {
+  Tooltip,
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  Radio,
+  Select,
+  Typography,
+  Divider,
+  Popover,
+} from 'antd';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import ArchiveRangeTip from '@/component/Schedule/components/ArchiveRangeTip';
 import { PartitionTextArea } from '@/component/Task/component/PartitionTextArea';
-import { IArchiveRange } from './index';
+import { IArchiveRange } from '@/d.ts';
 import BatchSelectionPopover from '@/component/BatchSelectionPopover';
 import styles from './index.less';
 import JoinTableConfigModal from '@/component/Task/component/JoinTableConfigsModal';
 import useJoinTableConfig from '@/component/Task/component/JoinTableConfigsModal/useJoinTableConfig';
 import { rules } from './const';
+import { cloneDeep, isString } from 'lodash';
 
 const { Text, Link } = Typography;
 const MAX_TABLES_COUNT = 100;
@@ -36,12 +48,25 @@ interface IProps {
   tables: ITable[];
   needCheckBeforeDelete?: boolean;
   checkPartition?: boolean;
+  databaseId?: number;
 }
+
+export const CleanRangeTextMap: Record<IArchiveRange, string> = {
+  [IArchiveRange.PORTION]: formatMessage({
+    id: 'odc.DataClearTask.CreateModal.ArchiveRange.PartialCleaning',
+    defaultMessage: '部分清理',
+  }),
+  [IArchiveRange.ALL]: formatMessage({
+    id: 'odc.DataClearTask.CreateModal.ArchiveRange.CleanUpTheEntireDatabase',
+    defaultMessage: '整库清理',
+  }),
+};
+
 const ArchiveRange: React.FC<IProps> = (props) => {
-  const { tables, needCheckBeforeDelete = false, checkPartition } = props;
+  const { tables: propsTables, needCheckBeforeDelete = false, checkPartition, databaseId } = props;
   const form = Form.useFormInstance();
   const [enablePartition, setEnablePartition] = useState<boolean>(checkPartition);
-  const tablesOptions = tables?.map((item) => ({
+  const tablesOptions = propsTables?.map((item) => ({
     label: item.tableName,
     value: item.tableName,
   }));
@@ -52,6 +77,49 @@ const ArchiveRange: React.FC<IProps> = (props) => {
   useEffect(() => {
     setEnablePartition(checkPartition);
   }, [checkPartition]);
+
+  const getSettingTip = (name) => {
+    const data = form.getFieldValue(['tables', name]);
+    const { joinTableConfigs, partitions: _partitions, tableName } = data || {};
+    if (!_partitions && !joinTableConfigs?.length) return null;
+    const partitions = isString(_partitions)
+      ? _partitions
+          ?.replace(/[\r\n]+/g, '')
+          ?.split(',')
+          ?.filter(Boolean)
+      : _partitions;
+    return (
+      <div>
+        {joinTableConfigs?.length ? (
+          <div style={{ marginBottom: 8 }}>
+            <div style={{ color: 'var(--text-color-hint)' }}>关联表</div>
+            {joinTableConfigs?.map((item) => {
+              return (
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <div>{tableName}</div>
+                  <div>join</div>
+                  <div>{item?.tableName}</div>
+                  <div>on</div>
+                  <div>{item?.joinCondition}</div>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+        <div style={{ color: 'var(--text-color-hint)' }}>指定扫描分区</div>
+        {partitions?.length ? (
+          <>
+            {partitions?.map((item, index) => (
+              <>
+                <span>{item}</span>
+                {index !== partitions?.length - 1 && <span>;</span>}
+              </>
+            ))}
+          </>
+        ) : null}
+      </div>
+    );
+  };
 
   const handleConfirm = (
     checkList: any[],
@@ -78,22 +146,18 @@ const ArchiveRange: React.FC<IProps> = (props) => {
           defaultMessage: '清理范围',
         })}
         /*清理范围*/ name="archiveRange"
+        style={{ marginBottom: '0px' }}
         required
       >
         <Radio.Group
+          optionType="button"
           options={[
             {
-              label: formatMessage({
-                id: 'odc.DataClearTask.CreateModal.ArchiveRange.PartialCleaning',
-                defaultMessage: '部分清理',
-              }) /*部分清理*/,
+              label: CleanRangeTextMap[IArchiveRange.PORTION],
               value: IArchiveRange.PORTION,
             },
             {
-              label: formatMessage({
-                id: 'odc.DataClearTask.CreateModal.ArchiveRange.CleanUpTheEntireDatabase',
-                defaultMessage: '整库清理',
-              }) /*整库清理*/,
+              label: CleanRangeTextMap[IArchiveRange.ALL],
               value: IArchiveRange.ALL,
             },
           ]}
@@ -103,32 +167,11 @@ const ArchiveRange: React.FC<IProps> = (props) => {
         {({ getFieldValue }) => {
           const archiveRange = getFieldValue('archiveRange') || [];
           if (archiveRange !== IArchiveRange.PORTION) {
-            return null;
+            return <>包括当前数据库内所有表及新增表</>;
           }
           const tables = getFieldValue('tables') || [];
           return (
             <div className={styles.tableHeader}>
-              <div className={styles.tableHeaderExtra}>
-                <div>
-                  {formatMessage({
-                    id: 'src.component.Task.DataClearTask.CreateModal.00BCFBA3',
-                    defaultMessage: '清理设置',
-                  })}
-                </div>
-                <div style={{ paddingBottom: 4 }}>
-                  <Checkbox
-                    checked={enablePartition}
-                    onChange={() => {
-                      setEnablePartition(!enablePartition);
-                    }}
-                  >
-                    {formatMessage({
-                      id: 'src.component.Task.DataClearTask.CreateModal.76AAE59E',
-                      defaultMessage: '指定分区',
-                    })}
-                  </Checkbox>
-                </div>
-              </div>
               <div
                 className={classNames(styles.tables, {
                   [styles.delete]: tables?.length > 1,
@@ -141,6 +184,13 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                     defaultMessage: '清理表',
                   })}
                 </div>
+                {hasAdvancedOptionCol && (
+                  <div className={styles.tableTitle}>
+                    <span style={{ padding: '3px 8px', display: 'inline-flex', gap: '4px' }}>
+                      目标表
+                    </span>
+                  </div>
+                )}
                 <div className={styles.tableTitle}>
                   <div style={{ display: 'inline-flex', gap: 4, padding: '3px 0px' }}>
                     {
@@ -168,26 +218,6 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                     />
                   </div>
                 </div>
-                {hasAdvancedOptionCol && (
-                  <div className={styles.tableTitle}>
-                    <span style={{ padding: '3px 8px', display: 'inline-flex', gap: '4px' }}>
-                      <span>
-                        {formatMessage({
-                          id: 'src.component.Task.DataClearTask.CreateModal.85DFDA54',
-                          defaultMessage: '高级设置',
-                        })}
-                      </span>
-                      <Text type="secondary">
-                        {
-                          formatMessage({
-                            id: 'odc.DataArchiveTask.CreateModal.ArchiveRange.Optional',
-                            defaultMessage: '(可选)',
-                          }) /*(可选)*/
-                        }
-                      </Text>
-                    </span>
-                  </div>
-                )}
               </div>
               <Form.List name="tables">
                 {(fields, { add, remove }) => {
@@ -221,58 +251,18 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                               }
                             />
                           </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'conditionExpression']}
-                            className={classNames({
-                              [styles.pr6]: needCheckBeforeDelete || enablePartition,
-                            })}
-                          >
-                            <Input
-                              placeholder={formatMessage({
-                                id: 'odc.DataClearTask.CreateModal.ArchiveRange.EnterACleanupCondition',
-                                defaultMessage: '请输入清理条件',
-                              })} /*请输入清理条件*/
-                              addonAfter={
-                                <>
-                                  <JoinTableConfigModal
-                                    visible={visible && currentIndex === index}
-                                    initialValues={form.getFieldValue(['tables', index])}
-                                    onCancel={close}
-                                    onOk={handleSubmit}
-                                  />
-
-                                  <Tooltip
-                                    title={formatMessage({
-                                      id: 'src.component.Task.DataClearTask.CreateModal.BB3EA37A',
-                                      defaultMessage: '过滤条件设置（如关联表）',
-                                    })}
-                                  >
-                                    <div onClick={() => open(index)} style={{ cursor: 'pointer' }}>
-                                      {form.getFieldValue(['tables', name, 'joinTableConfigs'])
-                                        ?.length ? (
-                                        <SettingFilled style={{ color: '#1890ff' }} />
-                                      ) : (
-                                        <SettingOutlined />
-                                      )}
-                                    </div>
-                                  </Tooltip>
-                                </>
-                              }
-                            />
-                          </Form.Item>
                           {(needCheckBeforeDelete || enablePartition) && (
                             <div
-                              style={{ display: 'flex', flexDirection: 'column' }}
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                paddingRight: '6px',
+                              }}
                               className={styles.multiInputBox}
                             >
                               {needCheckBeforeDelete && (
                                 <Form.Item {...restField} name={[name, 'targetTableName']}>
                                   <Input
-                                    addonBefore={formatMessage({
-                                      id: 'src.component.Task.DataClearTask.CreateModal.7E1F34E7',
-                                      defaultMessage: '目标表',
-                                    })}
                                     placeholder={
                                       formatMessage({
                                         id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
@@ -288,6 +278,38 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                               )}
                             </div>
                           )}
+                          <Form.Item {...restField} name={[name, 'conditionExpression']}>
+                            <Input
+                              placeholder={formatMessage({
+                                id: 'odc.DataClearTask.CreateModal.ArchiveRange.EnterACleanupCondition',
+                                defaultMessage: '请输入清理条件',
+                              })} /*请输入清理条件*/
+                              addonAfter={
+                                <>
+                                  <JoinTableConfigModal
+                                    name={name}
+                                    visible={visible && currentIndex === index}
+                                    initialValues={form.getFieldValue(['tables', index])}
+                                    onCancel={close}
+                                    onOk={handleSubmit}
+                                    databaseId={databaseId}
+                                  />
+
+                                  <Popover destroyOnHidden content={getSettingTip(name)}>
+                                    <div onClick={() => open(index)} style={{ cursor: 'pointer' }}>
+                                      {form.getFieldValue(['tables', name, 'joinTableConfigs'])
+                                        ?.length ||
+                                      form.getFieldValue(['tables', name, 'partitions']) ? (
+                                        <SettingFilled style={{ color: '#1890ff' }} />
+                                      ) : (
+                                        <SettingOutlined />
+                                      )}
+                                    </div>
+                                  </Popover>
+                                </>
+                              }
+                            />
+                          </Form.Item>
 
                           {fields?.length > 1 && (
                             <Tooltip

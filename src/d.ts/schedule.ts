@@ -7,6 +7,7 @@ import {
   ShardingStrategy,
   SyncTableStructureEnum,
   TaskOperationType,
+  IJoinTableConfigs,
 } from '@/d.ts';
 export enum ScheduleType {
   /** 数据归档 */
@@ -196,6 +197,15 @@ export type ISqlPlanParameters = {
   rollbackSqlObjectNames: null;
 };
 
+export type dmlParametersTables = {
+  conditionExpression: string;
+  tableName: string;
+  targetTableName: string;
+  joinTableConfigs?: IJoinTableConfigs[];
+  partitions?: string[] | string;
+  tempTableName: string;
+};
+
 export type IDataClearParameters = {
   cpuLimit: number;
   database: IDatabase;
@@ -212,7 +222,7 @@ export type IDataClearParameters = {
   readThreadCount: number;
   scanBatchSize: number;
   shardingStrategy: ShardingStrategy;
-  tables: any[];
+  tables: dmlParametersTables[];
   targetDatabase?: IDatabase;
   targetDatabaseId: number;
   timeoutMillis: number;
@@ -221,6 +231,7 @@ export type IDataClearParameters = {
     pattern: string;
   }[];
   writeThreadCount: number;
+  scheduleIgnoreTimeoutTask: boolean;
 };
 
 export type IDataArchiveParameters = {
@@ -247,7 +258,7 @@ export type IDataArchiveParameters = {
   sourceDatabaseId: number;
   sourceDatabaseName: string;
   syncTableStructure: SyncTableStructureEnum[];
-  tables: any[];
+  tables: dmlParametersTables[];
   targetDataBaseId: number;
   targetDataSourceName: string;
   targetDatabase: IDatabase;
@@ -255,6 +266,7 @@ export type IDataArchiveParameters = {
   timeoutMillis: number;
   variables: any[];
   writeThreadCount: number;
+  scheduleIgnoreTimeoutTask: boolean;
 };
 
 export type createScheduleRecord<T> = {
@@ -319,6 +331,7 @@ export type createDataDeleteParameters = {
     name: string;
     pattern: string;
   }[];
+  scheduleIgnoreTimeoutTask: boolean;
 };
 
 export type createDataArchiveParameters = {
@@ -341,4 +354,5 @@ export type createDataArchiveParameters = {
   variables: any[];
   sourceDatabaseId: number;
   triggerConfig: ICycleTaskTriggerConfig;
+  scheduleIgnoreTimeoutTask: boolean;
 };

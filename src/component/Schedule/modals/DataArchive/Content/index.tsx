@@ -27,6 +27,12 @@ import { SubTypeTextMap } from '@/constant/scheduleTask';
 import EllipsisText from '@/component/EllipsisText';
 import login from '@/store/login';
 import { ShardingStrategy } from '@/d.ts';
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import Icon from '@ant-design/icons';
+import { executeTimeoutStrategyOptions } from '@/component/Schedule/components/ExecuteTimeoutSchedulingStrategy';
+import { IArchiveRangeTextMap } from '../Create/ArchiveRange';
+import { IArchiveRange } from '@/d.ts';
+
 interface IProps {
   schedule: IScheduleRecord<IDataArchiveParameters>;
   subTask?: scheduleTask<
@@ -41,6 +47,14 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
   const insertActionLabel = InsertActionOptions?.find(
     (item) => item.value === parameters?.migrationInsertAction,
   )?.label;
+  const sourceDataSourceStyle = getDataSourceStyleByConnectType(
+    parameters?.sourceDatabase.dataSource?.type,
+  );
+  const targetDataSourceStyle = getDataSourceStyleByConnectType(
+    parameters?.targetDatabase.dataSource?.type,
+  );
+  const archiveRange =
+    IArchiveRangeTextMap[parameters?.fullDatabase ? IArchiveRange.ALL : IArchiveRange.PORTION];
 
   const handleRowLimit = async (rowLimit, handleClose) => {
     const res = await updateLimiterConfig(schedule?.scheduleId, {
@@ -97,7 +111,19 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
           />
         </Descriptions.Item>
         <Descriptions.Item label={'源端数据源'}>
-          <EllipsisText content={parameters?.sourceDatabase?.dataSource?.name} />
+          <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+            <Icon
+              component={sourceDataSourceStyle?.icon?.component}
+              style={{
+                color: sourceDataSourceStyle?.icon?.color,
+                fontSize: 16,
+                marginRight: 4,
+              }}
+            />
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              <EllipsisText content={parameters?.sourceDatabase?.dataSource?.name} />
+            </div>
+          </div>
         </Descriptions.Item>
         <Descriptions.Item label={'目标数据库'}>
           <EllipsisText
@@ -106,7 +132,19 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
           />
         </Descriptions.Item>
         <Descriptions.Item label={'目标端数据源'}>
-          <EllipsisText content={parameters?.targetDatabase?.dataSource?.name} />
+          <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+            <Icon
+              component={targetDataSourceStyle?.icon?.component}
+              style={{
+                color: targetDataSourceStyle?.icon?.color,
+                fontSize: 16,
+                marginRight: 4,
+              }}
+            />
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              <EllipsisText content={parameters?.targetDatabase?.dataSource?.name} />
+            </div>
+          </div>
         </Descriptions.Item>
         {!login.isPrivateSpace() && (
           <Descriptions.Item label={'项目'}>
@@ -115,6 +153,25 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
         )}
       </Descriptions>
       <Divider style={{ marginTop: 16 }} />
+      <SimpleTextItem
+        showSplit={false}
+        label={
+          <>
+            <span>归档范围：</span>
+            <span style={{ color: 'var(--text-color-primary)' }}>{archiveRange}</span>
+          </>
+        }
+        content={
+          <div
+            style={{
+              margin: '8px 0 12px',
+            }}
+          >
+            <ArchiveRange tables={parameters?.tables} />
+          </div>
+        }
+        direction="column"
+      />
       <SimpleTextItem
         label={formatMessage({
           id: 'odc.DataArchiveTask.DetailContent.VariableConfiguration',
@@ -131,22 +188,7 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
         }
         direction="column"
       />
-      <SimpleTextItem
-        label={formatMessage({
-          id: 'odc.DataArchiveTask.DetailContent.ArchiveScope',
-          defaultMessage: '归档范围',
-        })}
-        content={
-          <div
-            style={{
-              margin: '8px 0 12px',
-            }}
-          >
-            <ArchiveRange tables={parameters?.tables} />
-          </div>
-        }
-        direction="column"
-      />
+
       <Descriptions column={2} style={{ paddingBottom: 12 }}>
         <Descriptions.Item
           label={formatMessage({
@@ -186,6 +228,20 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
             }
           </Descriptions.Item>
         )}
+        <Descriptions.Item label={'通过全表扫描进行数据搜索'} span={1}>
+          {parameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH ? '是' : '否'}
+        </Descriptions.Item>
+        <Descriptions.Item label={'目标表结构同步'} span={1}>
+          {parameters?.syncTableStructure?.length
+            ? formatMessage({
+                id: 'src.component.Task.DataArchiveTask.DetailContent.FFC5907D',
+                defaultMessage: '是',
+              })
+            : formatMessage({
+                id: 'src.component.Task.DataArchiveTask.DetailContent.855EA40A',
+                defaultMessage: '否',
+              })}
+        </Descriptions.Item>
         {parameters?.deleteAfterMigration ? (
           <Descriptions.Item
             label={formatMessage({
@@ -214,20 +270,6 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
         ) : null}
 
         <Descriptions.Item
-          label={
-            formatMessage({
-              id: 'odc.src.component.Task.DataArchiveTask.DetailContent.InsertionStrategy',
-              defaultMessage: '插入策略',
-            }) /* 插入策略 */
-          }
-          span={1}
-        >
-          {insertActionLabel || '-'}
-        </Descriptions.Item>
-        <Descriptions.Item label={'通过全表扫描进行数据搜索'} span={1}>
-          {parameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH ? '是' : '否'}
-        </Descriptions.Item>
-        <Descriptions.Item
           label={formatMessage({
             id: 'src.component.Task.DataArchiveTask.DetailContent.4443BB83',
             defaultMessage: '指定任务时长',
@@ -236,37 +278,16 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
         >
           {parameters?.timeoutMillis ? milliSecondsToHour(parameters?.timeoutMillis) + 'h' : '-'}
         </Descriptions.Item>
-        <Descriptions.Item
-          label={formatMessage({
-            id: 'src.component.Task.DataArchiveTask.DetailContent.5F68CAE7',
-            defaultMessage: '开启目标表结构同步',
-          })}
-          span={1}
-        >
-          {parameters?.syncTableStructure?.length
-            ? formatMessage({
-                id: 'src.component.Task.DataArchiveTask.DetailContent.FFC5907D',
-                defaultMessage: '是',
-              })
-            : formatMessage({
-                id: 'src.component.Task.DataArchiveTask.DetailContent.855EA40A',
-                defaultMessage: '否',
-              })}
+
+        <Descriptions.Item label={'执行超时调度策略'} span={1}>
+          {
+            executeTimeoutStrategyOptions?.find(
+              (item) => item.value === parameters?.scheduleIgnoreTimeoutTask,
+            )?.label
+          }
         </Descriptions.Item>
-        <Descriptions.Item
-          label={formatMessage({
-            id: 'src.component.Task.DataArchiveTask.DetailContent.BC448D6A',
-            defaultMessage: '同步范围',
-          })}
-          span={1}
-        >
-          {parameters?.syncTableStructure && parameters?.syncTableStructure?.length
-            ? parameters?.syncTableStructure
-                ?.map((i) => {
-                  return SyncTableStructureConfig[i].label;
-                })
-                .join(',')
-            : '-'}
+        <Descriptions.Item label={'数据插入策略'} span={1}>
+          {insertActionLabel || '-'}
         </Descriptions.Item>
         <Descriptions.Item
           label={
@@ -307,7 +328,7 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
           marginTop: 16,
         }}
       />
-      <Descriptions>
+      <Descriptions column={2}>
         <Descriptions.Item
           label={
             formatMessage({

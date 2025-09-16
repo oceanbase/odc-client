@@ -50,6 +50,7 @@ import {
 import { IPagination } from '@/component/Schedule/interface';
 import { getFirstEnabledSchedule } from '../helper';
 import useScheduleSearchParams from '../hooks/useScheduleSearchParams';
+import { PageStore } from '@/store/page';
 
 interface IProps {
   scheduleStore?: ScheduleStore;
@@ -58,11 +59,18 @@ interface IProps {
   pageKey?: SchedulePageType;
   tabHeight?: number;
   projectId?: number;
-
+  pageStore?: PageStore;
   mode?: SchedulePageMode;
 }
 const Content: React.FC<IProps> = (props) => {
-  const { pageKey, scheduleStore, projectId, userStore, mode = SchedulePageMode.COMMON } = props;
+  const {
+    pageKey,
+    scheduleStore,
+    projectId,
+    userStore,
+    mode = SchedulePageMode.COMMON,
+    pageStore,
+  } = props;
   const {
     searchParams: {
       defaultPerspective,
@@ -220,6 +228,12 @@ const Content: React.FC<IProps> = (props) => {
       apiParams.approveStatus = [];
       apiParams.approveByCurrentUser = true;
     }
+    if (
+      mode === SchedulePageMode.MULTI_PAGE &&
+      pageStore?.activePageKey !== SchedulePageType?.ALL
+    ) {
+      apiParams.type = [pageStore?.activePageKey as unknown as ScheduleType];
+    }
     return apiParams;
   };
 
@@ -283,6 +297,12 @@ const Content: React.FC<IProps> = (props) => {
     ) {
       apiParams.scheduleType = [scheduleStore?.schedulePageType as unknown as ScheduleType];
     }
+    if (
+      mode === SchedulePageMode.MULTI_PAGE &&
+      pageStore?.activePageKey !== SchedulePageType?.ALL
+    ) {
+      apiParams.scheduleType = [pageStore?.activePageKey as unknown as ScheduleType];
+    }
     return apiParams;
   };
 
@@ -327,7 +347,7 @@ const Content: React.FC<IProps> = (props) => {
     defaultScheduleId && (await openDefaultSchedule());
     if (defaultScheduleType) {
       scheduleStore?.setSchedulePageType(defaultScheduleType as unknown as SchedulePageType);
-    } else {
+    } else if (!scheduleStore?.schedulePageType) {
       const firstEnabledSchedule = getFirstEnabledSchedule();
       scheduleStore?.setSchedulePageType(firstEnabledSchedule?.pageType);
     }
@@ -464,4 +484,4 @@ const Content: React.FC<IProps> = (props) => {
   );
 };
 
-export default inject('scheduleStore', 'modalStore')(observer(Content));
+export default inject('scheduleStore', 'modalStore', 'pageStore')(observer(Content));

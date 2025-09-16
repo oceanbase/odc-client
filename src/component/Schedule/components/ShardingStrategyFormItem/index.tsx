@@ -1,6 +1,7 @@
 import { formatMessage } from '@/util/intl';
 import { Checkbox, CheckboxChangeEvent, Form, FormInstance, Radio, Space } from 'antd';
 import { ShardingStrategy } from '@/d.ts';
+import HelpDoc from '@/component/helpDoc';
 import { useState, useEffect, useMemo } from 'react';
 
 interface IProps {
@@ -38,5 +39,4 @@ const ShardingStrategyItem: React.FC<IProps> = ({ form }) => {
     </Form.Item>
   );
 };
-
 export default ShardingStrategyItem;

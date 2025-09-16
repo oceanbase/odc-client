@@ -3,7 +3,13 @@ import { previewSqlStatements } from '@/common/network/task';
 import { createSchedule, updateSchedule, getScheduleDetail } from '@/common/network/schedule';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
 import FormItemPanel from '@/component/FormItemPanel';
-import { ICycleTaskTriggerConfig, ITable, TaskExecStrategy, ShardingStrategy } from '@/d.ts';
+import {
+  ICycleTaskTriggerConfig,
+  ITable,
+  TaskExecStrategy,
+  ShardingStrategy,
+  IArchiveRange,
+} from '@/d.ts';
 import { history } from '@umijs/max';
 import {
   IDataClearParameters,
@@ -29,7 +35,7 @@ import { getVariableValue } from '@/component/Schedule/modals/DataArchive/Create
 import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig from './VariableConfig';
-import ShardingStrategyItem from '@/component/Task/component/ShardingStrategyItem';
+import ShardingStrategyItem from '@/component/Schedule/components/ShardingStrategyFormItem';
 import { useRequest } from 'ahooks';
 import DirtyRowAction from '@/component/Task/component/DirtyRowAction';
 import MaxAllowedDirtyRowCount from '@/component/Task/component/MaxAllowedDirtyRowCount';
@@ -40,34 +46,14 @@ import { PageStore } from '@/store/page';
 import { SchedulePageMode } from '@/component/Schedule/interface';
 import { openSchedulesPage } from '@/store/helper/page';
 import SchduleExecutionMethodForm from '@/component/Schedule/components/SchduleExecutionMethodForm';
+import ExecuteTimeoutSchedulingStrategy from '@/component/Schedule/components/ExecuteTimeoutSchedulingStrategy';
 import { getInitScheduleName } from '@/component/Task/component/CreateTaskConfirmModal/helper';
 
-export enum IArchiveRange {
-  PORTION = 'portion',
-  ALL = 'all',
-}
 export const variable = {
   name: '',
   format: '',
   pattern: [null],
 };
-
-const deleteByUniqueKeyOptions = [
-  {
-    label: formatMessage({
-      id: 'src.component.Task.DataClearTask.CreateModal.ED9CFF17',
-      defaultMessage: '是',
-    }), //'是'
-    value: true,
-  },
-  {
-    label: formatMessage({
-      id: 'src.component.Task.DataClearTask.CreateModal.CC3EF591',
-      defaultMessage: '否',
-    }), //'否'
-    value: false,
-  },
-];
 
 const defaultValue = {
   triggerStrategy: TaskExecStrategy.TIMER,
@@ -77,6 +63,7 @@ const defaultValue = {
   rowLimit: 1000,
   dataSizeLimit: 10,
   deleteByUniqueKey: true,
+  scheduleIgnoreTimeoutTask: true,
 };
 const getVariables = (
   value: {
@@ -154,6 +141,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       shardingStrategy,
       tables,
       variables,
+      scheduleIgnoreTimeoutTask,
       needCheckBeforeDelete,
       targetDatabaseId,
       timeoutMillis,
@@ -181,6 +169,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       dirtyRowAction,
       maxAllowedDirtyRowCount,
       scheduleName,
+      scheduleIgnoreTimeoutTask,
     };
 
     if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
@@ -328,6 +317,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           timeoutMillis,
           needCheckBeforeDelete,
           targetDatabaseId,
+          scheduleIgnoreTimeoutTask,
         } = values;
         _tables?.map((i) => {
           i.partitions = Array.isArray(i.partitions)
@@ -342,6 +332,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           deleteByUniqueKey: true,
           fullDatabase: archiveRange === IArchiveRange.ALL,
           needCheckBeforeDelete,
+          scheduleIgnoreTimeoutTask,
           rateLimit: {
             rowLimit,
             dataSizeLimit: mbToKb(dataSizeLimit),
@@ -401,31 +392,26 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       .validateFields()
       .then(async (values) => {
         const { variables, tables: _tables, archiveRange } = values;
-        _tables?.map((i) => {
-          i.partitions = Array.isArray(i.partitions)
-            ? i.partitions
-            : i?.partitions
-                ?.replace(/[\r\n]+/g, '')
-                ?.split(',')
-                ?.filter(Boolean);
-        });
-        const parameters = {
-          variables: getVariables(variables),
-          tables:
-            archiveRange === IArchiveRange.ALL
-              ? tables?.map((item) => {
-                  return {
-                    tableName: item?.tableName,
-                    conditionExpression: '',
-                    targetTableName: '',
-                  };
-                })
-              : _tables,
-        };
-        const sqls = await previewSqlStatements(parameters);
-        if (sqls) {
+        if (archiveRange !== IArchiveRange.ALL) {
+          _tables?.map((i) => {
+            i.partitions = Array.isArray(i.partitions)
+              ? i.partitions
+              : i?.partitions
+                  ?.replace(/[\r\n]+/g, '')
+                  ?.split(',')
+                  ?.filter(Boolean);
+          });
+          const parameters = {
+            variables: getVariables(variables),
+            tables: _tables,
+          };
+          const sqls = await previewSqlStatements(parameters);
+          if (sqls) {
+            setPreviewModalVisible(true);
+            setPreviewSQL(sqls?.join('\n'));
+          }
+        } else {
           setPreviewModalVisible(true);
-          setPreviewSQL(sqls?.join('\n'));
         }
       })
       .catch((errorInfo) => {
@@ -531,11 +517,37 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               onChange={handleDBChange}
               onInit={(db) => setCreateScheduleDatabase(db)}
             />
+            <Form.Item name="needCheckBeforeDelete" valuePropName="checked">
+              <Checkbox>
+                {formatMessage({
+                  id: 'src.component.Task.DataClearTask.CreateModal.70A4982D',
+                  defaultMessage: '清理前是否需要校验',
+                })}
+              </Checkbox>
+            </Form.Item>
+            <Form.Item noStyle shouldUpdate>
+              {({ getFieldValue }) => {
+                const needCheckBeforeDelete = getFieldValue('needCheckBeforeDelete');
+                return (
+                  needCheckBeforeDelete && (
+                    <DatabaseSelect
+                      scheduleType={ScheduleType.DATA_DELETE}
+                      label={formatMessage({
+                        id: 'odc.DataArchiveTask.CreateModal.TargetDatabase',
+                        defaultMessage: '目标数据库',
+                      })} /*目标数据库*/
+                      name="targetDatabaseId"
+                      projectId={projectId}
+                      placeholder={'请选择进行数据校验的数据库'}
+                    />
+                  )
+                );
+              }}
+            </Form.Item>
 
             <h3 id="clearRange" className={styles.title}>
               清理范围
             </h3>
-
             <Space direction="vertical" size={24} style={{ width: '100%' }}>
               <Form.Item noStyle shouldUpdate>
                 {({ getFieldValue }) => {
@@ -545,6 +557,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
                       tables={tables}
                       needCheckBeforeDelete={needCheckBeforeDelete}
                       checkPartition={enablePartition}
+                      databaseId={databaseId}
                     />
                   );
                 }}
@@ -566,47 +579,23 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               作业设置
             </h3>
 
-            <FormItemPanel keepExpand>
-              <Form.Item name="needCheckBeforeDelete" valuePropName="checked">
-                <Checkbox>
-                  {formatMessage({
-                    id: 'src.component.Task.DataClearTask.CreateModal.70A4982D',
-                    defaultMessage: '清理前是否需要校验',
-                  })}
-                </Checkbox>
-              </Form.Item>
-              <Form.Item noStyle shouldUpdate>
-                {({ getFieldValue }) => {
-                  const needCheckBeforeDelete = getFieldValue('needCheckBeforeDelete');
-                  return (
-                    needCheckBeforeDelete && (
-                      <DatabaseSelect
-                        scheduleType={ScheduleType.DATA_DELETE}
-                        label={formatMessage({
-                          id: 'odc.DataArchiveTask.CreateModal.TargetDatabase',
-                          defaultMessage: '目标数据库',
-                        })} /*目标数据库*/
-                        name="targetDatabaseId"
-                        projectId={projectId}
-                        placeholder={formatMessage({
-                          id: 'src.component.Task.DataClearTask.CreateModal.EA952FEA',
-                          defaultMessage: '仅支持选择同一项目内数据库',
-                        })}
-                      />
-                    )
-                  );
-                }}
-              </Form.Item>
-              <DirtyRowAction dependentField="needCheckBeforeDelete" />
-              <MaxAllowedDirtyRowCount />
-              <TaskdurationItem form={form} />
-              <ShardingStrategyItem form={form} />
-              <ThrottleFormItem isShowDataSizeLimit={true} />
-            </FormItemPanel>
+            <DirtyRowAction dependentField="needCheckBeforeDelete" />
+            <ShardingStrategyItem form={form} />
+            <MaxAllowedDirtyRowCount />
+            <TaskdurationItem form={form} />
+            <ExecuteTimeoutSchedulingStrategy />
+            <ThrottleFormItem isShowDataSizeLimit={true} />
           </Form>
         </Spin>
       </AnchorContainer>
       <SQLPreviewModal
+        hideSqlPreview={form.getFieldValue('archiveRange') === IArchiveRange.ALL}
+        tips={
+          form.getFieldValue('archiveRange') === IArchiveRange.ALL
+            ? '整库清理不支持预览 SQL'
+            : '请确认以下 SQL，变量以当前时间代入，具体执行按实际配置替换，可点击提交按钮继续提交任务'
+        }
+        modelHeight={form.getFieldValue('archiveRange') === IArchiveRange.ALL ? 130 : 400}
         database={createScheduleDatabase}
         initName={getInitScheduleName(form.getFieldValue('scheduleName'), dataClearData?.type)}
         isEdit={isEdit}

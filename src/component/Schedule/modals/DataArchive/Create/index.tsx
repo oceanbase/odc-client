@@ -6,6 +6,7 @@ import { IDatabase } from '@/d.ts/database';
 import { useRequest } from 'ahooks';
 import HelpDoc from '@/component/helpDoc';
 import {
+  IArchiveRange,
   ICycleTaskTriggerConfig,
   ITable,
   MigrationInsertAction,
@@ -27,7 +28,7 @@ import SynchronizationItem from '@/component/Task/component/SynchronizationItem'
 import TaskdurationItem from '@/component/Task/component/TaskdurationItem';
 import ThrottleFormItem from '@/component/Task/component/ThrottleFormItem';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
-import ShardingStrategyItem from '@/component/Task/component/ShardingStrategyItem';
+import ShardingStrategyItem from '@/component/Schedule/components/ShardingStrategyFormItem';
 import DirtyRowAction from '@/component/Task/component/DirtyRowAction';
 import MaxAllowedDirtyRowCount from '@/component/Task/component/MaxAllowedDirtyRowCount';
 import AnchorContainer from '@/component/AnchorContainer';
@@ -45,29 +46,41 @@ import { openSchedulesPage } from '@/store/helper/page';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { ConnectTypeText } from '@/constant/label';
 import SchduleExecutionMethodForm from '@/component/Schedule/components/SchduleExecutionMethodForm';
+import ExecuteTimeoutSchedulingStrategy from '@/component/Schedule/components/ExecuteTimeoutSchedulingStrategy';
 import { getInitScheduleName } from '@/component/Task/component/CreateTaskConfirmModal/helper';
 
-export enum IArchiveRange {
-  PORTION = 'portion',
-  ALL = 'all',
-}
 export const InsertActionOptions = [
   {
-    label: formatMessage({
-      id: 'odc.src.component.Task.DataArchiveTask.CreateModal.IgnoreWhenRepeated',
-      defaultMessage: '重复时忽略',
-    }), //'重复时忽略'
+    label: '重复时忽略插入',
     value: MigrationInsertAction.INSERT_IGNORE,
   },
   {
-    label: formatMessage({
-      id: 'odc.src.component.Task.DataArchiveTask.CreateModal.UpdateWhenRepeated',
-      defaultMessage: '重复时更新',
-    }), //'重复时更新'
+    label: '重复时更新目标表端数据',
     value: MigrationInsertAction.INSERT_DUPLICATE_UPDATE,
   },
 ];
 
+export const cleanUpTimingOptions = [
+  {
+    label: (
+      <div>
+        归档完成后
+        <HelpDoc leftText isTip doc="TimingforCleanAfterArchive"></HelpDoc>
+      </div>
+    ),
+    value: 'afterArchive',
+  },
+
+  {
+    label: (
+      <div>
+        边归档边清理
+        <HelpDoc leftText isTip doc="TimingforCleanAfterCleanUp"></HelpDoc>
+      </div>
+    ),
+    value: 'afterCleanUp',
+  },
+];
 export const variable = {
   name: '',
   format: '',
@@ -110,7 +123,8 @@ const defaultValue = {
   triggerStrategy: TaskExecStrategy.TIMER,
   archiveRange: IArchiveRange.PORTION,
   tables: [null],
-  migrationInsertAction: MigrationInsertAction.INSERT_DUPLICATE_UPDATE,
+  migrationInsertAction: MigrationInsertAction.INSERT_IGNORE,
+  scheduleIgnoreTimeoutTask: true,
   shardingStrategy: ShardingStrategy.MATCH,
   rowLimit: 1000,
   dataSizeLimit: 10,
@@ -164,6 +178,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       deleteAfterMigration,
       deleteTemporaryTable,
       migrationInsertAction,
+      scheduleIgnoreTimeoutTask,
       shardingStrategy,
       rateLimit,
       tables,
@@ -184,6 +199,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       deleteAfterMigration,
       deleteTemporaryTable,
       migrationInsertAction,
+      scheduleIgnoreTimeoutTask,
       shardingStrategy,
       tables: tables?.map((i) => {
         i.partitions = (i?.partitions as [])?.join(',');
@@ -337,6 +353,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           deleteAfterMigration,
           triggerStrategy,
           migrationInsertAction,
+          scheduleIgnoreTimeoutTask,
           shardingStrategy,
           archiveRange,
           rowLimit,
@@ -356,6 +373,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           deleteAfterMigration,
           fullDatabase: archiveRange === IArchiveRange.ALL,
           migrationInsertAction,
+          scheduleIgnoreTimeoutTask,
           rateLimit: {
             rowLimit,
             dataSizeLimit: mbToKb(dataSizeLimit),
@@ -417,31 +435,27 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       .validateFields()
       .then(async (values) => {
         const { variables, tables: _tables, archiveRange } = values;
-        _tables?.map((i) => {
-          i.partitions = Array.isArray(i.partitions)
-            ? i.partitions
-            : i?.partitions
-                ?.replace(/[\r\n]+/g, '')
-                ?.split(',')
-                ?.filter(Boolean);
-        });
-        const parameters = {
-          variables: getVariables(variables),
-          tables:
-            archiveRange === IArchiveRange.ALL
-              ? tables?.map((item) => {
-                  return {
-                    tableName: item?.tableName,
-                    conditionExpression: '',
-                    targetTableName: '',
-                  };
-                })
-              : _tables,
-        };
-        const sqls = await previewSqlStatements(parameters);
-        if (sqls) {
+        if (archiveRange !== IArchiveRange.ALL) {
+          _tables?.map((i) => {
+            i.partitions = Array.isArray(i.partitions)
+              ? i.partitions
+              : i?.partitions
+                  ?.replace(/[\r\n]+/g, '')
+                  ?.split(',')
+                  ?.filter(Boolean);
+          });
+          const parameters = {
+            variables: getVariables(variables),
+            tables: _tables,
+          };
+
+          const sqls = await previewSqlStatements(parameters);
+          if (sqls) {
+            setPreviewModalVisible(true);
+            setPreviewSQL(sqls?.join('\n'));
+          }
+        } else {
           setPreviewModalVisible(true);
-          setPreviewSQL(sqls?.join('\n'));
         }
       })
       .catch((errorInfo) => {
@@ -626,11 +640,60 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
                     },
                   },
                 ]}
+                placeholder="仅支持选择同一项目内数据库"
                 onChange={handleTargetDatabaseChange}
                 name="targetDataBaseId"
                 projectId={projectId}
               />
             </Space>
+            <Form.Item
+              name="deleteAfterMigration"
+              valuePropName="checked"
+              style={{ marginBottom: 24 }}
+              extra={
+                <span>
+                  {
+                    isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
+                      ? formatMessage({
+                          id: 'src.component.Task.DataArchiveTask.CreateModal.5A19F0AB',
+                          defaultMessage: '若您进行清理，默认立即清理且不做备份',
+                        })
+                      : formatMessage({
+                          id: 'odc.DataArchiveTask.CreateModal.IfYouCleanUpThe',
+                          defaultMessage:
+                            '若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚',
+                        }) /*若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚*/
+                  }
+                </span>
+              }
+            >
+              <Checkbox
+                onChange={(e) => {
+                  setIsdeleteAfterMigration(e.target.checked);
+                }}
+              >
+                <Space>
+                  {
+                    formatMessage({
+                      id: 'odc.DataArchiveTask.CreateModal.CleanUpArchivedDataFrom',
+                      defaultMessage: '清理源端已归档数据',
+                    }) /*清理源端已归档数据*/
+                  }
+                </Space>
+              </Checkbox>
+            </Form.Item>
+            {/* <Form.Item shouldUpdate noStyle>
+              {({ getFieldValue }) => {
+                const deleteAfterMigration = getFieldValue('deleteAfterMigration');
+                if (deleteAfterMigration) {
+                  return (
+                    <Form.Item label="清理时机" name="aaaaaa2" required>
+                      <Radio.Group options={cleanUpTimingOptions} />
+                    </Form.Item>
+                  );
+                }
+              }}
+            </Form.Item> */}
 
             <h3 id="archiveRange" className={styles.title}>
               归档范围
@@ -642,6 +705,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
                 tables={tables}
                 checkPartition={enablePartition}
                 targetDatabase={targetDatabase}
+                databaseId={databaseId}
               />
 
               <VariableConfig form={form} />
@@ -683,66 +747,32 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               作业设置
             </h3>
 
-            <FormItemPanel keepExpand>
-              <Form.Item
-                name="deleteAfterMigration"
-                valuePropName="checked"
-                style={{ marginBottom: 24 }}
-                extra={
-                  <span>
-                    {
-                      isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
-                        ? formatMessage({
-                            id: 'src.component.Task.DataArchiveTask.CreateModal.5A19F0AB',
-                            defaultMessage: '若您进行清理，默认立即清理且不做备份',
-                          })
-                        : formatMessage({
-                            id: 'odc.DataArchiveTask.CreateModal.IfYouCleanUpThe',
-                            defaultMessage:
-                              '若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚',
-                          }) /*若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚*/
-                    }
-                  </span>
-                }
-              >
-                <Checkbox
-                  onChange={(e) => {
-                    setIsdeleteAfterMigration(e.target.checked);
-                  }}
-                >
-                  <Space>
-                    {
-                      formatMessage({
-                        id: 'odc.DataArchiveTask.CreateModal.CleanUpArchivedDataFrom',
-                        defaultMessage: '清理源端已归档数据',
-                      }) /*清理源端已归档数据*/
-                    }
-                  </Space>
-                </Checkbox>
-              </Form.Item>
-              <DirtyRowAction dependentField="deleteAfterMigration" />
-              <MaxAllowedDirtyRowCount />
-              <TaskdurationItem form={form} />
-              <SynchronizationItem form={form} targetDatabase={targetDatabase} />
-              <ShardingStrategyItem form={form} />
-              <Form.Item
-                label={
-                  formatMessage({
-                    id: 'odc.src.component.Task.DataArchiveTask.CreateModal.InsertionStrategy',
-                    defaultMessage: '插入策略',
-                  }) /* 插入策略 */
-                }
-                name="migrationInsertAction"
-                rules={rules.migrationInsertAction}
-              >
-                <Radio.Group options={InsertActionOptions} />
-              </Form.Item>
-              <ThrottleFormItem isShowDataSizeLimit={true} />
-            </FormItemPanel>
+            <SynchronizationItem form={form} targetDatabase={targetDatabase} />
+            <DirtyRowAction dependentField="deleteAfterMigration" />
+            <ShardingStrategyItem form={form} />
+            <Form.Item
+              label={'数据插入策略'}
+              name="migrationInsertAction"
+              rules={rules.migrationInsertAction}
+            >
+              <Radio.Group options={InsertActionOptions} />
+            </Form.Item>
+            <MaxAllowedDirtyRowCount />
+            <TaskdurationItem form={form} />
+
+            <ExecuteTimeoutSchedulingStrategy />
+            <ThrottleFormItem isShowDataSizeLimit={true} />
           </Form>
         </Spin>
       </AnchorContainer>
       <SQLPreviewModal
+        hideSqlPreview={form.getFieldValue('archiveRange') === IArchiveRange.ALL}
+        tips={
+          form.getFieldValue('archiveRange') === IArchiveRange.ALL
+            ? '整库归档不支持预览 SQL'
+            : '请确认以下 SQL，变量以当前时间代入，具体执行按实际配置替换，可点击提交按钮继续提交任务'
+        }
+        modelHeight={form.getFieldValue('archiveRange') === IArchiveRange.ALL ? 130 : 400}
         database={targetDatabase}
         initName={getInitScheduleName(form.getFieldValue('scheduleName'), dataArchiveData?.type)}
         isEdit={isEdit}
