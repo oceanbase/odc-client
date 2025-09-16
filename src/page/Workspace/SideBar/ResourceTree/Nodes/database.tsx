@@ -29,6 +29,7 @@ import { TypeTreeData } from './type';
 import { ViewTreeData } from './view';
 import { MaterializedViewTreeData } from './materializedView';
 import { ExternalTableTreeData } from './externalTables';
+import { ExternalResourceTreeData } from './externalResource';
 
 import { ReactComponent as DatabaseSvg } from '@/svgr/database.svg';
 import { openNewSQLPage } from '@/store/helper/page';
@@ -92,6 +93,9 @@ export function DataBaseTreeData(
     isPhysicalDatabase(dbSession?.odcDatabase) &&
     MaterializedViewTreeData(dbSession, database);
 
+  const externalResourceTreeData =
+    isPhysicalDatabase(dbSession?.odcDatabase) && ExternalResourceTreeData(dbSession, database);
+
   return {
     title: dbName,
     key: database?.id,
@@ -125,6 +129,7 @@ export function DataBaseTreeData(
           synonymTreeData,
           publicSynonymTreeData,
           materializedViewTreeData,
+          externalResourceTreeData,
         ].filter(Boolean)
       : null,
   };

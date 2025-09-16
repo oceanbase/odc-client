@@ -63,8 +63,14 @@ const TreeNodeMenu = (props: IProps) => {
   const [hover, setHover] = useState(false);
 
   const showTip = useMemo(() => {
-    return ![DatabaseGroup.dataSource].includes(groupMode);
-  }, [groupMode]);
+    // 外部资源节点不展示 tip
+    const isExternalResourceNode = [
+      ResourceNodeType.ExternalResourceRoot,
+      ResourceNodeType.ExternalResource,
+    ].includes(type as ResourceNodeType);
+
+    return ![DatabaseGroup.dataSource].includes(groupMode) && !isExternalResourceNode;
+  }, [groupMode, type]);
 
   // menuKey 用来定制menu
   const menuKey = node?.menuKey;

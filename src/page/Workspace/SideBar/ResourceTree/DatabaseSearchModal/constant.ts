@@ -12,6 +12,7 @@ import {
   openViewViewPage,
   openExternalTableTableViewPage,
   openMaterializedViewViewPage,
+  openExternalResourceViewPage,
 } from '@/store/helper/page';
 import { PropsTab, TopTab } from '@/page/Workspace/components/TablePage';
 import { TopTab as PackageTopTab } from '@/page/Workspace/components/PackagePage';
@@ -26,6 +27,7 @@ const mysqlObjectType = [
   DbObjectType.view,
   DbObjectType.procedure,
   DbObjectType.materialized_view,
+  DbObjectType.external_resource,
 ];
 
 const pgObjectType = [
@@ -50,6 +52,7 @@ const oracleObjectType = [
   DbObjectType.sequence,
   DbObjectType.synonym,
   DbObjectType.materialized_view,
+  DbObjectType.external_resource,
 ];
 
 export const objectTypeConfig = {
@@ -185,6 +188,13 @@ export const DbObjectTypeMap = {
     getOpenTab: (object, databaseId) => {
       const databaseName = object?.dbObject?.database?.name || object?.database?.name;
       return [object?.name, TopTab.PROPS, PropsTab.DDL, databaseId, databaseName];
+    },
+  },
+  [DbObjectType.external_resource]: {
+    label: '外部资源',
+    openPage: (object) => openExternalResourceViewPage,
+    getOpenTab: (object, databaseId) => {
+      return [object?.name, 'INFO', databaseId];
     },
   },
 };

@@ -337,6 +337,12 @@ const getObjectShouldExpandedKeysByPage = (params: {
       currentResourceNodeType = ResourceNodeType.MaterializedView;
       break;
     }
+    case PageType.EXTERNAL_RESOURCE: {
+      shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-externalResource`);
+      currentKey = `${db.id}-${db.name}-externalResource-${page?.params?.resourceName}`;
+      currentResourceNodeType = ResourceNodeType.ExternalResource;
+      break;
+    }
     case PageType.SEQUENCE: {
       shouldExpandedKeys.push(db.id, `${db.id}-${db.name}-sequence`);
       currentKey = `${db.id}-${db.name}-sequence-${page?.params?.sequenceName}`;

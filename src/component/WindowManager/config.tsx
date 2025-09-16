@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Icon from '@ant-design/icons';
+import Icon, { FileFilled } from '@ant-design/icons';
 
 import { PageType } from '@/d.ts';
 import CreateTablePage from '@/page/Workspace/components/CreateTable';
@@ -28,6 +28,7 @@ import TablePage from '@/page/Workspace/components/TablePage';
 
 import ViewPage from '@/page/Workspace/components/ViewPage';
 import MaterializedViewPage from '@/page/Workspace/components/MaterializedViewPage';
+import ExternalResourcePage from '@/page/Workspace/components/ExternalResourcePage';
 import withConfirmModal from './factory';
 // @ts-ignore
 import { ReactComponent as ConsoleSQLSvg } from '@/svgr/Console-SQL.svg';
@@ -180,6 +181,13 @@ export const pageMap = {
     component: withConfirmModal(MaterializedViewPage),
     icon: <Icon component={ViewSvg} />,
     color: 'var(--icon-color-5)',
+  },
+
+  /** 外部资源详情页 */
+  [PageType.EXTERNAL_RESOURCE]: {
+    component: withConfirmModal(ExternalResourcePage),
+    icon: <FileFilled />,
+    color: 'var(--text-color-hint)',
   },
 
   // 函数创建页

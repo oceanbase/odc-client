@@ -15,6 +15,7 @@
  */
 
 export * from './exportAndImport';
+export * from './externalResource';
 export * from './function';
 export * from './procedure';
 export * from './script';

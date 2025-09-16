@@ -55,6 +55,44 @@ class ShowFunctionBaseInfoForm extends Component<IProps> {
             content: model.definer,
           },
 
+          model.externalResourceProperties?.file
+            ? {
+                label: '资源来源',
+                content: model.externalResourceProperties.file,
+              }
+            : null,
+          model.externalResourceProperties?.createType
+            ? {
+                label: '资源类型',
+                content: model.externalResourceProperties.createType,
+              }
+            : null,
+          model.externalResourceProperties?.inner_type
+            ? {
+                label: '内置类型',
+                content: model.externalResourceProperties.inner_type,
+              }
+            : null,
+          model.externalResourceProperties?.language
+            ? {
+                label: '语言',
+                content: model.externalResourceProperties.language,
+              }
+            : null,
+          model.externalResourceProperties?.symbol
+            ? {
+                label: '入口类',
+                content: model.externalResourceProperties.symbol,
+              }
+            : null,
+
+          model.externalResourceProperties?.createType
+            ? {
+                label: '资源类型',
+                content: model.externalResourceProperties.createType,
+              }
+            : null,
+
           model.createTime > 0
             ? {
                 label: formatMessage({

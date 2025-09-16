@@ -785,3 +785,23 @@ export const maskAPIKey = (apiKey: string) => {
 
   return `${firstPart}${maskedPart}${lastPart}`; // 拼接结果
 };
+
+export function getLanguageFromResourceType(type?: string): string {
+  if (!type) return 'text';
+
+  const lowerType = type.toLowerCase();
+  if (lowerType.includes('java') || lowerType.includes('jar')) {
+    return 'java';
+  } else if (lowerType.includes('python') || lowerType.includes('py')) {
+    return 'python';
+  } else if (lowerType.includes('javascript') || lowerType.includes('js')) {
+    return 'javascript';
+  } else if (lowerType.includes('sql')) {
+    return 'sql';
+  } else if (lowerType.includes('xml')) {
+    return 'xml';
+  } else if (lowerType.includes('json')) {
+    return 'json';
+  }
+  return 'text';
+}
