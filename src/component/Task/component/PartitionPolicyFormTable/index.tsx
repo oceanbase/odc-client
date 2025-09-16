@@ -289,7 +289,9 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
   function handleFilter(data: ITableConfig[]) {
     const { tableName } = filters ?? {};
     return data
-      ?.filter((item) => (isOnlyNoSetTable ? !item?.strategies?.length : true))
+      ?.filter((item) =>
+        isOnlyNoSetTable ? !item?.containsCreateStrategy && !item?.containsDropStrategy : true,
+      )
       ?.filter((item) => {
         const searchText = tableName?.[0]?.toLocaleLowerCase?.() ?? '';
         return searchText ? item.tableName?.toLocaleLowerCase().indexOf(searchText) > -1 : true;
@@ -352,7 +354,6 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
           },
           renderCell(checked, record, index, node: React.ReactElement) {
             if (node?.props?.disabled) {
-              console.log(record);
               return (
                 <Tooltip
                   title={

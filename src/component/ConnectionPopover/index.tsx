@@ -294,11 +294,7 @@ const ConnectionPopover: React.FC<{
               },
 
               {
-                ConnectTypeTextType: (
-                  <Typography.Text style={{ fontWeight: 'normal' }}>
-                    {ConnectTypeText(type)}
-                  </Typography.Text>
-                ),
+                ConnectTypeTextType: <Typography.Text>{ConnectTypeText(type)}</Typography.Text>,
               },
             )
 
@@ -317,6 +313,7 @@ const ConnectionPopover: React.FC<{
       style={{
         lineHeight: '20px',
         maxWidth: '280px',
+        fontWeight: 'normal',
       }}
     >
       <Space direction="vertical">
@@ -381,11 +378,7 @@ const ConnectionPopover: React.FC<{
               },
 
               {
-                connectionDbUser: (
-                  <Typography.Text style={{ fontWeight: 'normal' }}>
-                    {connection?.username ?? '-'}
-                  </Typography.Text>
-                ),
+                connectionDbUser: <Typography.Text>{connection?.username ?? '-'}</Typography.Text>,
               },
             )
 

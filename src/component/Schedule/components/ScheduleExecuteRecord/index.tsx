@@ -148,7 +148,7 @@ const ScheduleExecuteRecord: React.FC<ScheduleExecuteRecordProps> = ({
         })}
         dataSource={opRecord}
         disablePagination
-        scroll={null}
+        scroll={{}}
       />
       <ScheduleExecuteRecordDetail
         schedule={schedule}

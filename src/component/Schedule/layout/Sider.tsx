@@ -34,10 +34,9 @@ const Sider: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    scheduleStore.setSchedulePageType(getFirstEnabledSchedule()?.pageType);
-    return () => {
+    if (!scheduleStore?.schedulePageType) {
       scheduleStore.setSchedulePageType(getFirstEnabledSchedule()?.pageType);
-    };
+    }
   }, []);
 
   return (

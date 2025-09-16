@@ -97,9 +97,9 @@ const ScheduleTaskStatusInfo = {
   },
   [ScheduleTaskStatus.CANCELED]: {
     icon: (
-      <CloseCircleFilled
+      <StopFilled
         style={{
-          color: 'var(--function-red6-color)',
+          color: 'var(--icon-color-disable)',
         }}
       />
     ),

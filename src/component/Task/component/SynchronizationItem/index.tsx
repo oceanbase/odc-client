@@ -23,16 +23,8 @@ const SynchronizationItem: React.FC<IProps> = ({ form, targetDatabase }) => {
     <>
       <Form.Item
         name="syncTableStructure"
-        extra={
-          !syncTableStructure
-            ? formatMessage({
-                id: 'src.component.Task.component.SynchronizationItem.809B14B8',
-                defaultMessage:
-                  '任务调度前进行一次表结构比对，若源端和目标端表结构不一致，将跳过该表',
-              })
-            : ''
-        }
-        style={{ marginBottom: syncTableStructure ? 8 : 24 }}
+        extra={'源端目标端结构不一致时，目标端自动同步源端结构，未勾选时将不做处理'}
+        style={{ marginBottom: 24 }}
       >
         <Tooltip
           title={
@@ -59,14 +51,11 @@ const SynchronizationItem: React.FC<IProps> = ({ form, targetDatabase }) => {
               }
             }}
           >
-            {formatMessage({
-              id: 'src.component.Task.component.SynchronizationItem.3B43C19D',
-              defaultMessage: '开启目标表结构同步',
-            })}
+            目标表结构同步
           </Checkbox>
         </Tooltip>
       </Form.Item>
-      {syncTableStructure && (
+      {/* {syncTableStructure && (
         <Space size={4} align="center">
           <Form.Item
             label={formatMessage({
@@ -81,7 +70,7 @@ const SynchronizationItem: React.FC<IProps> = ({ form, targetDatabase }) => {
             <Checkbox.Group options={SyncTableStructureOptions} />
           </Form.Item>
         </Space>
-      )}
+      )} */}
     </>
   );
 };

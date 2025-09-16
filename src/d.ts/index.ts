@@ -4166,3 +4166,8 @@ export type LogicDatabaseChangeExecuteRecordStats = {
     };
   };
 };
+
+export enum IArchiveRange {
+  PORTION = 'portion',
+  ALL = 'all',
+}
