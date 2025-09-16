@@ -19,6 +19,8 @@ import { IDatabase } from '@/d.ts/database';
 import SessionStore from '@/store/sessionManager/session';
 import { ResourceNodeType, TreeDataNode } from '../type';
 import { IExternalResource } from '@/d.ts/externalResoruce';
+import { openExternalResourceViewPage } from '@/store/helper/page';
+import { message } from 'antd';
 
 export function ExternalResourceTreeData(
   dbSession: SessionStore,
@@ -75,5 +77,18 @@ export function ExternalResourceTreeNodeData(
       />
     ),
     tip: `${resource.type} - ${resource.url}`,
+    doubleClick(session, node) {
+      const externalResource: IExternalResource = node.data;
+      if (session?.odcDatabase?.id) {
+        openExternalResourceViewPage(
+          externalResource.name,
+          'INFO',
+          session.odcDatabase.id,
+          session.database?.dbName,
+        );
+      } else {
+        message.error('会话信息不完整，无法查看外部资源');
+      }
+    },
   };
 }
