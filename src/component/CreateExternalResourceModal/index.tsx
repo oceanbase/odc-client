@@ -99,6 +99,7 @@ const CreateExternalResourceModal: React.FC<IProps> = ({ modalStore }) => {
 
       // 上传文件并创建外部资源
       await uploadFileAndCreateResource(selectedFile, values);
+      message.success('创建成功');
       if (session?.database?.getExternalResourceList) {
         await session.database.getExternalResourceList();
       }

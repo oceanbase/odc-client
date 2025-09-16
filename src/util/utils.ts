@@ -805,3 +805,18 @@ export function getLanguageFromResourceType(type?: string): string {
   }
   return 'text';
 }
+
+/**
+ * 检查内容大小是否在 1MB 限制内
+ * @param content 文件内容
+ * @returns 是否在限制内
+ */
+export const isContentSizeWithinLimit = (content: string): boolean => {
+  if (!content) return true;
+
+  // 使用 TextEncoder 计算准确的字节数
+  const byteSize = new TextEncoder().encode(content).length;
+  const maxSize = 1024 * 1024; // 1MB
+
+  return byteSize <= maxSize;
+};

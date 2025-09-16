@@ -31,7 +31,7 @@ import { formatMessage } from '@/util/intl';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
-import { getLanguageFromResourceType } from '@/util/utils';
+import { getLanguageFromResourceType, isContentSizeWithinLimit } from '@/util/utils';
 
 const ToolbarButton = Toolbar.Button;
 const { Content } = Layout;
@@ -238,7 +238,7 @@ class ExternalResourcePage extends Component<
               key: PropsTab.CONTENT,
               label: '内容',
               children: (
-                <>
+                <div className={styles.content}>
                   <Toolbar>
                     <ToolbarButton
                       text="下载"
@@ -256,34 +256,26 @@ class ExternalResourcePage extends Component<
                       onClick={() => this.reloadExternalResource(resourceName)}
                     />
                   </Toolbar>
-                  <div className={styles.content}>
-                    {loading ? (
-                      <Card loading />
-                    ) : resourceInfo?.content ? (
-                      <div
-                        style={{
-                          height: '100%',
-                          border: '1px solid var(--odc-border-color)',
-                          borderRadius: '6px',
-                          overflow: 'hidden',
-                        }}
-                      >
-                        <MonacoEditor
-                          defaultValue={resourceInfo.content}
-                          language={getLanguageFromResourceType(resourceInfo.type)}
-                          readOnly={true}
-                          showLineNumbers={true}
-                        />
-                      </div>
-                    ) : (
-                      <Empty
-                        className={styles.empty}
-                        description="当前内容暂不支持在线查看内容，请选择下载文件"
-                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  {loading ? (
+                    <Card loading />
+                  ) : resourceInfo?.content && isContentSizeWithinLimit(resourceInfo.content) ? (
+                    <div className={styles.editorContainer}>
+                      <MonacoEditor
+                        defaultValue={resourceInfo.content}
+                        language={getLanguageFromResourceType(resourceInfo.type)}
+                        readOnly={true}
+                        showLineNumbers={true}
                       />
-                    )}
-                  </div>
-                </>
+                    </div>
+                  ) : (
+                    <Empty
+                      className={styles.empty}
+                      description="当前内容暂不支持在线查看内容，请选择下载文件"
+                      image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    />
+                  )}
+                  <div className={styles.tips}>仅支持在线查看 1MB 数据，如需查看全部请下载文件</div>
+                </div>
               ),
             },
           ]}
