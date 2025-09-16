@@ -155,6 +155,11 @@ interface IStructureComparisonTaskData {
   taskId?: number;
 }
 
+interface ICreateExternalResourceData {
+  databaseId?: number;
+  dbName?: string;
+}
+
 interface IWorkSpaceExecuteSQLModalProps {
   tip: string;
   sql: string;
@@ -337,6 +342,8 @@ export class ModalStore {
   public createFunctionModalData = {
     databaseId: null,
     dbName: '',
+    fromExternalResource: false,
+    externalResourceName: null,
   };
 
   @action
@@ -344,11 +351,15 @@ export class ModalStore {
     isShow: boolean = true,
     databaseId?: number,
     dbName?: string,
+    fromExternalResource: boolean = false,
+    externalResourceName?: string,
   ) {
     this.createFunctionModalVisible = isShow;
     this.createFunctionModalData = {
       databaseId,
       dbName,
+      fromExternalResource,
+      externalResourceName,
     };
   }
 
@@ -461,10 +472,33 @@ export class ModalStore {
     dbName: '',
   };
 
+  /** create external resource */
+  @observable
+  public createExternalResourceModalVisible: boolean = false;
+
+  @observable
+  public createExternalResourceModalData: ICreateExternalResourceData = {
+    databaseId: null,
+    dbName: '',
+  };
+
   @action
   public changeCreateTypeModalVisible(v: boolean, databaseId?: number, dbName?: string) {
     this.createTypeModalVisible = v;
     this.createTypeModalData = {
+      databaseId,
+      dbName,
+    };
+  }
+
+  @action
+  public changeCreateExternalResourceModalVisible(
+    v: boolean,
+    databaseId?: number,
+    dbName?: string,
+  ) {
+    this.createExternalResourceModalVisible = v;
+    this.createExternalResourceModalData = {
       databaseId,
       dbName,
     };
@@ -682,6 +716,8 @@ export class ModalStore {
     this.databaseSearchModalVisible = false;
     this.executeSqlDetailModalVisible = false;
     this.executeSqlDetailData = null;
+    this.createExternalResourceModalVisible = false;
+    this.createExternalResourceModalData = null;
   }
 }
 

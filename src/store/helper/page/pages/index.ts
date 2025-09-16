@@ -505,6 +505,25 @@ export class SQLResultSetPage extends Page {
     };
   }
 }
+export class ExternalResourcePage extends Page {
+  public pageParams: {
+    databaseId: number;
+    resourceName: string;
+    propsTab: string;
+  };
+  constructor(databaseId: number, resourceName: string, propsTab: string = 'INFO') {
+    super();
+    this.pageType = PageType.EXTERNAL_RESOURCE;
+    this.pageKey = `externalResourcePage-resourceName:${resourceName}-dbid:${databaseId}`;
+    this.pageTitle = resourceName;
+    this.pageParams = {
+      databaseId,
+      resourceName,
+      propsTab,
+    };
+  }
+}
+
 export class OBClientPage extends Page {
   public pageParams: {
     time: number;

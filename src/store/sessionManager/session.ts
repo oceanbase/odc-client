@@ -53,6 +53,11 @@ class SessionStore {
   @observable
   public collations: string[] = [];
   @observable
+  public supports: {
+    support: boolean;
+    supportType: string;
+  }[];
+  @observable
   public dataTypes: IDataType[] = [];
 
   public snippets: ISnippet[] = [];
@@ -209,6 +214,7 @@ class SessionStore {
         this.dataTypes = data.dataTypeUnits;
         this.charsets = data.charsets;
         this.collations = data.collations;
+        this.supports = data.supports;
         await this.initSupportFeature(data.supports);
         this.isAlive = true;
         return await this.initSessionBaseInfo();

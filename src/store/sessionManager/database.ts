@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { getFunctionByFuncName, getProcedureByProName } from '@/common/network';
+import {
+  removeExternalResource,
+  downloadExternalResourceFile,
+  getExternalResourceList,
+  getFunctionByFuncName,
+  getProcedureByProName,
+  loadExternalResourceDetail,
+} from '@/common/network';
 import {
   generateDatabaseSid,
   generateDatabaseSidByDataBaseId,
@@ -44,6 +51,7 @@ import { formatMessage } from '@/util/intl';
 import request from '@/util/request';
 import { action, observable, runInAction } from 'mobx';
 import { DBType } from '@/d.ts/database';
+import { IExternalResource } from '@/d.ts/externalResoruce';
 
 class DatabaseStore {
   static a() {
@@ -87,6 +95,9 @@ class DatabaseStore {
 
   @observable.shallow
   public types: Array<Partial<IType>> = [];
+
+  @observable.shallow
+  public externalResources: Array<Partial<IExternalResource>> = [];
 
   private static setRefreshKey(key: string) {
     runInAction(() => {
@@ -419,6 +430,90 @@ class DatabaseStore {
     DatabaseStore.resetRefreshKey();
 
     this.types = types || [];
+  }
+
+  @action
+  public async getExternalResourceList() {
+    DatabaseStore.setRefreshKey(`${this.databaseId}-${this.dbName}-externalResource`);
+    const externalResources = await getExternalResourceList(this.dbName, this.sessionId);
+    DatabaseStore.resetRefreshKey();
+
+    runInAction(() => {
+      this.externalResources = externalResources;
+    });
+  }
+
+  @action
+  public async loadExternalResource(resourceInfo: Partial<IExternalResource>) {
+    try {
+      const { name: resourceName } = resourceInfo;
+      const resourceData = await loadExternalResourceDetail(
+        resourceName,
+        this.dbName,
+        this.sessionId,
+      );
+
+      if (resourceData) {
+        // 更新当前资源的详细信息
+        const idx = this.externalResources.findIndex((r) => r.name === resourceName);
+        if (idx > -1) {
+          const newExternalResources = [...this.externalResources];
+          newExternalResources[idx] = {
+            ...newExternalResources[idx],
+            ...resourceData,
+          };
+          runInAction(() => {
+            this.externalResources = newExternalResources;
+          });
+        }
+        return resourceData;
+      } else {
+        console.error('加载外部资源详情失败');
+      }
+    } catch (error) {
+      console.error('加载外部资源详情异常:', error);
+    }
+    return null;
+  }
+
+  @action
+  public async downloadExternalResource(resourceInfo: IExternalResource) {
+    try {
+      const { name: resourceName } = resourceInfo;
+      return await downloadExternalResourceFile(resourceName, this.dbName, this.sessionId);
+    } catch (error) {
+      console.error('下载外部资源异常:', error);
+      return false;
+    }
+  }
+
+  @action
+  public async deleteExternalResource(resourceInfo: IExternalResource) {
+    try {
+      const { name: resourceName } = resourceInfo;
+      const detail = await loadExternalResourceDetail(resourceName, this.dbName, this.sessionId);
+      const success = await removeExternalResource(
+        resourceName,
+        this.dbName,
+        this.sessionId,
+        detail.type,
+      );
+
+      if (success) {
+        // 从本地数组中移除该资源
+        runInAction(() => {
+          this.externalResources = this.externalResources.filter((r) => r.name !== resourceName);
+        });
+        console.log('删除外部资源成功');
+        return true;
+      } else {
+        console.error('删除外部资源失败');
+        return false;
+      }
+    } catch (error) {
+      console.error('删除外部资源异常:', error);
+      return false;
+    }
   }
 
   @action

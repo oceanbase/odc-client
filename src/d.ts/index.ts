@@ -1012,6 +1012,8 @@ export enum PageType {
   /** 物化视图 */
   MATERIALIZED_VIEW = 'MATERIALIZED_VIEW',
   CREATE_MATERIALIZED_VIEW = 'CREATE_MATERIALIZED_VIEW',
+  /** 外部资源 */
+  EXTERNAL_RESOURCE = 'EXTERNAL_RESOURCE',
 }
 
 export interface IPage {
@@ -1332,6 +1334,7 @@ export interface ITablePartition extends IEditable {
 export interface IFunction {
   ddl: string;
   definer: string;
+  functionType: 'custom' | 'external';
   funName: string;
   returnType: string;
   status: string;
@@ -1344,6 +1347,14 @@ export interface IFunction {
     varName: string;
     varType: string;
   }[];
+  externalResourceProperties?: {
+    file?: string;
+    symbol?: string;
+    url?: string;
+    createType?: string;
+    inner_type?: string;
+    language?: string;
+  };
 }
 
 export enum ParamMode {
@@ -1702,6 +1713,7 @@ export enum DbObjectType {
   external_table = 'EXTERNAL_TABLE',
   logical_table = 'LOGICAL_TABLE',
   materialized_view = 'MATERIALIZED_VIEW',
+  external_resource = 'EXTERNAL_RESOURCE',
 }
 
 export interface IResultTimerStage {
@@ -2474,6 +2486,14 @@ export enum ResourceTreeNodeMenuKeys {
   EXTERNAL_TABLE_SYNCHRONIZATION_TABLE = 'EXTERNAL_TABLE_SYNCHRONIZATION_TABLE',
   //
   CREATE_MATERIALIZED_VIEW = 'CREATE_MATERIALIZED_VIEW',
+  // external resource
+  CREATE_EXTERNAL_RESOURCE = 'CREATE_EXTERNAL_RESOURCE',
+  VIEW_EXTERNAL_RESOURCE = 'VIEW_EXTERNAL_RESOURCE',
+  EDIT_EXTERNAL_RESOURCE = 'EDIT_EXTERNAL_RESOURCE',
+  DELETE_EXTERNAL_RESOURCE = 'DELETE_EXTERNAL_RESOURCE',
+  DOWNLOAD_EXTERNAL_RESOURCE = 'DOWNLOAD_EXTERNAL_RESOURCE',
+  CREATE_EXTERNAL_FUNCTION = 'CREATE_EXTERNAL_FUNCTION',
+  REFRESH = 'REFRESH',
 }
 
 export interface TaskRecord<P> {

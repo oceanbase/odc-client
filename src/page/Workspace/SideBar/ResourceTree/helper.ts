@@ -211,6 +211,23 @@ export async function loadNode(
       await dbSession.database.getMaterializedViewList();
       break;
     }
+    case ResourceNodeType.ExternalResourceRoot: {
+      const dbSession = sessionManagerStore.sessionMap.get(sessionId);
+      if (!dbSession) {
+        break;
+      }
+      await dbSession.database.getExternalResourceList();
+      break;
+    }
+    case ResourceNodeType.ExternalResource: {
+      const externalResource = data;
+      const dbSession = sessionManagerStore.sessionMap.get(sessionId);
+      if (!dbSession) {
+        break;
+      }
+      await dbSession.database.loadExternalResource(externalResource);
+      break;
+    }
     case ResourceNodeType.MaterializedView: {
       const materializedViewInfo = (data as IMaterializedView)?.info;
       const dbSession = sessionManagerStore.sessionMap.get(sessionId);

@@ -72,6 +72,7 @@ import { message } from 'antd';
 import page from '../../page';
 import {
   BatchCompilePage,
+  ExternalResourcePage,
   FunctionPage,
   OBClientPage,
   PackageViewPage,
@@ -616,6 +617,25 @@ export function openTypeViewPage(
   dbName?: string,
 ) {
   page.openPage(new TypePage(databaseId, typeName, propsTab));
+}
+
+/** 外部资源详情页面 */
+export function openExternalResourceViewPage(
+  resourceName: string,
+  propsTab: string = 'INFO',
+  databaseId: number,
+  dbName?: string,
+) {
+  page.openPage(new ExternalResourcePage(databaseId, resourceName, propsTab));
+}
+
+/** 外部资源内容页面 */
+export function openExternalResourceContentPage(
+  resourceName: string,
+  databaseId: number,
+  dbName?: string,
+) {
+  page.openPage(new ExternalResourcePage(databaseId, resourceName, 'CONTENT'));
 }
 /** 编辑类型页面 */
 
