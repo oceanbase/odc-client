@@ -17,10 +17,11 @@ interface ExecutionInfoContainer {
   fireTimes?: number[];
   type: ScheduleType;
   useStyleContainer?: boolean;
+  lastExecuteTime: number;
 }
 
 const ExecutionInfoContainer: React.FC<ExecutionInfoContainer> = (props) => {
-  const { trigger, fireTimes, type, useStyleContainer = true } = props;
+  const { trigger, fireTimes, type, lastExecuteTime, useStyleContainer = true } = props;
   const scheduleExecStrategyMap = getScheduleExecStrategyMap(type);
 
   const isCycle = useMemo(() => {
@@ -57,7 +58,7 @@ const ExecutionInfoContainer: React.FC<ExecutionInfoContainer> = (props) => {
         )}
         {isCycle && (
           <Descriptions.Item label={'最近执行时间'}>
-            <span>{getFormatDateTime(fireTimes?.[0])}</span>
+            <span>{lastExecuteTime ? getFormatDateTime(lastExecuteTime) : '-'}</span>
           </Descriptions.Item>
         )}
         {isCycle && (

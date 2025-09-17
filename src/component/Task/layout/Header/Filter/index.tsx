@@ -28,7 +28,7 @@ const Filter: React.FC<IProps> = () => {
     return (
       <div>
         {isAll && <TaskTypeFilter />}
-        {tab === TaskTab.executionByCurrentUser ? '' : <TaskStatusFilter />}
+        {tab === TaskTab.all ? <TaskStatusFilter /> : ''}
         {mode !== TaskPageMode.PROJECT ? <ProjectFilter /> : null}
         <div style={{ marginTop: '16px' }}>创建时间范围</div>
         <DateSelect />

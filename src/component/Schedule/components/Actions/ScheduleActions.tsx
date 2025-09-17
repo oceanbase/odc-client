@@ -440,7 +440,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       action: eventMap[ScheduleActionsEnum.STOP],
       icon: <CloseCircleOutlined />,
       visible: widthPermission(
-        (hasPermission) => hasPermission,
+        (hasPermission) => hasPermission && !schedule?.approvable,
         [
           IOperationTypeRole.CREATOR,
           IOperationTypeRole.PROJECT_DBA,
@@ -455,7 +455,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       action: eventMap[ScheduleActionsEnum.DISABLE],
       icon: <PauseCircleOutlined />,
       visible: widthPermission(
-        (hasPermission) => hasPermission,
+        (hasPermission) => hasPermission && !schedule?.approvable,
         [
           IOperationTypeRole.CREATOR,
           IOperationTypeRole.PROJECT_DBA,
@@ -469,7 +469,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       label: ScheduleActionsTextMap[ScheduleActionsEnum.ENABLE],
       action: eventMap[ScheduleActionsEnum.ENABLE],
       visible: widthPermission(
-        (hasPermission) => hasPermission,
+        (hasPermission) => hasPermission && !schedule?.approvable,
         [
           IOperationTypeRole.CREATOR,
           IOperationTypeRole.PROJECT_DBA,
@@ -483,7 +483,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       label: ScheduleActionsTextMap[ScheduleActionsEnum.EDIT],
       action: eventMap[ScheduleActionsEnum.EDIT],
       visible: widthPermission(
-        (hasPermission) => hasPermission,
+        (hasPermission) => hasPermission && !schedule?.approvable,
         [
           IOperationTypeRole.CREATOR,
           IOperationTypeRole.PROJECT_DBA,
@@ -498,7 +498,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       icon: <DeleteOutlined />,
       action: eventMap[ScheduleActionsEnum.DELETE],
       visible: widthPermission(
-        (hasPermission) => hasPermission,
+        (hasPermission) => hasPermission && !schedule?.approvable,
         [
           IOperationTypeRole.CREATOR,
           IOperationTypeRole.PROJECT_DBA,

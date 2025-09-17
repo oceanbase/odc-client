@@ -181,7 +181,9 @@ const ConnectionPopover: React.FC<{
                 />
 
                 <DataBaseStatusIcon item={database} />
-                <div className={styles.ellipsis} title={database?.name}>{`${database?.name}`}</div>
+                <div className={styles.ellipsis} title={database?.name}>
+                  22{`${database?.name}`}
+                </div>
               </div>
             </div>
           </Tooltip>
@@ -317,36 +319,36 @@ const ConnectionPopover: React.FC<{
       }}
     >
       <Space direction="vertical">
-        <Tooltip title={database?.name}>
-          <div
-            style={{
-              marginBottom: 4,
-              fontFamily: 'PingFangSC-Semibold',
-              color: 'var(--text-color-primary)',
-              fontWeight: 'bold',
-              width: 'max-content',
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
-              textOverflow: 'ellipsis',
-              maxWidth: '280px',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <RiskLevelLabel
-                content={connection?.environmentName || database?.environment?.name}
-                color={
-                  connection?.environmentStyle?.toLowerCase() ||
-                  database?.environment?.style?.toLowerCase()
-                }
-              />
+        <div
+          style={{
+            marginBottom: 4,
+            fontFamily: 'PingFangSC-Semibold',
+            color: 'var(--text-color-primary)',
+            fontWeight: 'bold',
+            width: 'max-content',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            maxWidth: '280px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <RiskLevelLabel
+              content={connection?.environmentName || database?.environment?.name}
+              color={
+                connection?.environmentStyle?.toLowerCase() ||
+                database?.environment?.style?.toLowerCase()
+              }
+            />
 
-              <DataBaseStatusIcon item={database} />
+            <DataBaseStatusIcon item={database} />
+            <Tooltip title={database?.name}>
               <span style={{ marginLeft: '6px', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                 {database?.name}
               </span>
-            </div>
+            </Tooltip>
           </div>
-        </Tooltip>
+        </div>
         {dataSourceDescription}
         {projectDescription}
         {renderConnectionMode()}

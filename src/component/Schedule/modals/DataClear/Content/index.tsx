@@ -39,10 +39,10 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
   const { schedule, onReload, subTask } = props;
   const { parameters } = schedule || {};
   const sourceDataSourceStyle = getDataSourceStyleByConnectType(
-    parameters?.database.dataSource?.type,
+    parameters?.database?.dataSource?.type,
   );
   const targetDataSourceStyle = getDataSourceStyleByConnectType(
-    parameters?.targetDatabase.dataSource?.type,
+    parameters?.targetDatabase?.dataSource?.type,
   );
 
   const CleaningRange =

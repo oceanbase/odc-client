@@ -21,9 +21,17 @@ interface IProps {
 }
 const PartitionScheduleContent: React.FC<IProps> = (props) => {
   const { schedule, subTask } = props;
-  const { parameters } = schedule || {};
 
-  const executionTimeout = milliSecondsToHour(parameters?.timeoutMillis);
+  let createTime, executionTimeout, parameters;
+  if (subTask) {
+    parameters = subTask?.parameters;
+    executionTimeout = milliSecondsToHour(subTask?.parameters?.timeoutMillis);
+    createTime = subTask?.createTime;
+  } else {
+    parameters = schedule?.parameters;
+    executionTimeout = milliSecondsToHour(schedule?.parameters?.timeoutMillis);
+    createTime = schedule?.createTime;
+  }
 
   return (
     <>
@@ -53,11 +61,11 @@ const PartitionScheduleContent: React.FC<IProps> = (props) => {
         >
           <EllipsisText
             needTooltip={false}
-            content={<DatabaseLabel database={parameters?.databaseInfo} />}
+            content={<DatabaseLabel database={schedule?.parameters?.databaseInfo} />}
           />
         </Descriptions.Item>
         <Descriptions.Item label={'数据源'}>
-          <EllipsisText content={parameters?.databaseInfo?.dataSource?.name} />
+          <EllipsisText content={schedule?.parameters?.databaseInfo?.dataSource?.name} />
         </Descriptions.Item>
         {!login.isPrivateSpace() && (
           <Descriptions.Item label={'项目'}>
@@ -116,7 +124,7 @@ const PartitionScheduleContent: React.FC<IProps> = (props) => {
             }) /* 创建时间 */
           }
         >
-          {getFormatDateTime(schedule?.createTime)}
+          {getFormatDateTime(createTime)}
         </Descriptions.Item>
       </Descriptions>
     </>
