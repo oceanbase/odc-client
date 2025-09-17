@@ -168,13 +168,17 @@ const OperationRecord: React.FC<IProps> = (props) => {
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {schedule?.type === ScheduleType.PARTITION_PLAN && (
-        <PartitionPlanHeader schedule={schedule as IScheduleRecord<IPartitionPlan>} />
+        <PartitionPlanHeader
+          schedule={schedule as IScheduleRecord<IPartitionPlan>}
+          lastExecuteTime={subTaskRes?.contents[0]?.createTime}
+        />
       )}
       {schedule?.type !== ScheduleType.PARTITION_PLAN && (
         <ExecutionInfoContainer
           type={schedule?.type}
           trigger={schedule?.triggerConfig}
           fireTimes={schedule?.nextFireTimes}
+          lastExecuteTime={subTaskRes?.contents[0]?.createTime}
         />
       )}
       <div style={{ flex: 1 }}>

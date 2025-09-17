@@ -2,7 +2,6 @@ import { IScheduleRecord, ISqlPlanParameters, ScheduleType } from '@/d.ts/schedu
 import { Descriptions, Divider } from 'antd';
 import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { formatMessage } from '@/util/intl';
 import { SQLContent } from '@/component/SQLContent';
@@ -35,8 +34,16 @@ interface IProps {
 }
 const SQLPlanScheduleContent: React.FC<IProps> = (props) => {
   const { schedule, theme, subTask } = props;
-  const { parameters } = schedule || {};
-  const executionTimeout = milliSecondsToHour(parameters?.timeoutMillis);
+  let parameters, executionTimeout, createTime;
+  if (subTask) {
+    parameters = subTask?.parameters;
+    executionTimeout = milliSecondsToHour(subTask?.parameters?.timeoutMillis);
+    createTime = subTask?.createTime;
+  } else {
+    parameters = schedule?.parameters;
+    executionTimeout = milliSecondsToHour(schedule?.parameters?.timeoutMillis);
+    createTime = schedule?.createTime;
+  }
 
   return (
     <>
@@ -56,11 +63,11 @@ const SQLPlanScheduleContent: React.FC<IProps> = (props) => {
         <Descriptions.Item label={'数据库'}>
           <EllipsisText
             needTooltip={false}
-            content={<DatabaseLabel database={parameters?.databaseInfo} />}
+            content={<DatabaseLabel database={schedule?.parameters?.databaseInfo} />}
           />
         </Descriptions.Item>
         <Descriptions.Item label={'数据源'}>
-          <EllipsisText content={parameters?.databaseInfo?.dataSource?.name} />
+          <EllipsisText content={schedule?.parameters?.databaseInfo?.dataSource?.name} />
         </Descriptions.Item>
         {!login.isPrivateSpace() && (
           <Descriptions.Item label={'项目'}>
@@ -68,34 +75,34 @@ const SQLPlanScheduleContent: React.FC<IProps> = (props) => {
           </Descriptions.Item>
         )}
       </Descriptions>
+
       <Divider style={{ marginTop: 16 }} />
-      {parameters && (
-        <SimpleTextItem
-          label={formatMessage({
-            id: 'odc.component.DetailModal.sqlPlan.SqlContent',
-            defaultMessage: 'SQL 内容',
-          })}
-          /*SQL 内容*/
-          content={
-            <div style={{ margin: '8px 0' }}>
-              <SQLContent
-                theme={theme}
-                type={ScheduleType.SQL_PLAN}
-                sqlContent={parameters?.sqlContent}
-                sqlObjectIds={parameters?.sqlObjectIds}
-                sqlObjectNames={parameters?.sqlObjectNames}
-                taskId={schedule?.scheduleId}
-                language={
-                  getDataSourceModeConfigByConnectionMode(
-                    parameters?.databaseInfo?.dataSource?.dialectType,
-                  )?.sql?.language
-                }
-              />
-            </div>
-          }
-          direction="column"
-        />
-      )}
+
+      <SimpleTextItem
+        label={formatMessage({
+          id: 'odc.component.DetailModal.sqlPlan.SqlContent',
+          defaultMessage: 'SQL 内容',
+        })}
+        /*SQL 内容*/
+        content={
+          <div style={{ margin: '8px 0' }}>
+            <SQLContent
+              theme={theme}
+              type={ScheduleType.SQL_PLAN}
+              sqlContent={parameters?.sqlContent}
+              sqlObjectIds={parameters?.sqlObjectIds}
+              sqlObjectNames={parameters?.sqlObjectNames}
+              taskId={schedule?.scheduleId}
+              language={
+                getDataSourceModeConfigByConnectionMode(
+                  schedule?.parameters?.databaseInfo?.dataSource?.dialectType,
+                )?.sql?.language
+              }
+            />
+          </div>
+        }
+        direction="column"
+      />
 
       <Descriptions column={2}>
         <Descriptions.Item
@@ -179,7 +186,7 @@ const SQLPlanScheduleContent: React.FC<IProps> = (props) => {
           })}
           /*创建时间*/
         >
-          {getFormatDateTime(schedule?.createTime)}
+          {getFormatDateTime(createTime)}
         </Descriptions.Item>
       </Descriptions>
     </>

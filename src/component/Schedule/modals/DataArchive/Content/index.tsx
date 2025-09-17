@@ -48,10 +48,10 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
     (item) => item.value === parameters?.migrationInsertAction,
   )?.label;
   const sourceDataSourceStyle = getDataSourceStyleByConnectType(
-    parameters?.sourceDatabase.dataSource?.type,
+    parameters?.sourceDatabase?.dataSource?.type,
   );
   const targetDataSourceStyle = getDataSourceStyleByConnectType(
-    parameters?.targetDatabase.dataSource?.type,
+    parameters?.targetDatabase?.dataSource?.type,
   );
   const archiveRange =
     IArchiveRangeTextMap[parameters?.fullDatabase ? IArchiveRange.ALL : IArchiveRange.PORTION];

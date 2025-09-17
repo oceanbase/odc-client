@@ -1,12 +1,15 @@
 import { Operation } from '@/d.ts';
-import { Drawer, Space, Radio, Button } from 'antd';
+import { Drawer, Space, Radio, Button, Modal, message } from 'antd';
 import { useState } from 'react';
 import { formatMessage } from '@/util/intl';
 import ChangeDetail from './ChangeDetail';
 import ApprovalRecord from './ApprovalRecord';
-import { IScheduleRecord, ScheduleRecordParameters } from '@/d.ts/schedule';
+import { IOperationTypeRole, IScheduleRecord, ScheduleRecordParameters } from '@/d.ts/schedule';
 import ApprovalModal from '@/component/Task/component/ApprovalModal';
-import { useLoop } from '@/util/hooks/useLoop';
+import useOperationPermissions from '@/util/hooks/useOperationPermissions';
+import { widthPermission } from '@/util/utils';
+import { ScheduleTextMap } from '@/constant/schedule';
+import { revokeTask } from '@/common/network/task';
 
 enum ExecuteRecordDetailType {
   DETAIL = 'DETAIL',
@@ -31,6 +34,41 @@ const ScheduleExecuteRecordDetail: React.FC<ScheduleExecuteRecordDetailProps> = 
     setApprovalVisible(visible);
     setApprovalStatus(approvalStatus);
   };
+  const { IRoles } = useOperationPermissions({
+    currentUserResourceRoles:
+      schedule?.currentUserResourceRoles || schedule?.project?.currentUserResourceRoles || [],
+    approvable: schedule?.approvable,
+    createrId: schedule?.creator?.id,
+  });
+
+  const haveRevokePermission = widthPermission(
+    (hasPermission) => hasPermission,
+    [IOperationTypeRole.CREATOR, IOperationTypeRole.PROJECT_OWNER, IOperationTypeRole.PROJECT_DBA],
+    IRoles,
+  )();
+
+  const handleRevoke = async () => {
+    const { approveInstanceId } = schedule;
+    const scheduleTypeText = ScheduleTextMap[schedule?.type];
+    Modal.confirm({
+      title: `确定要撤销此${scheduleTypeText}审批吗`,
+      content: <div>审批撤销后，作业将进入终止态</div>,
+      cancelText: formatMessage({
+        id: 'odc.TaskManagePage.component.TaskTools.Cancel',
+        defaultMessage: '取消',
+      }), //取消
+      okText: '确定',
+      centered: true,
+      onOk: async () => {
+        const res = await revokeTask(approveInstanceId);
+        if (res) {
+          message.success('撤销成功');
+          onClose?.();
+          onReload?.();
+        }
+      },
+    });
+  };
 
   return (
     <Drawer
@@ -41,17 +79,7 @@ const ScheduleExecuteRecordDetail: React.FC<ScheduleExecuteRecordDetailProps> = 
       width={1000}
       footer={
         schedule?.approvable && (
-          <Space style={{ flexDirection: 'row-reverse', width: '100%' }}>
-            <Button
-              onClick={() => {
-                handleApprovalVisible(false, true);
-              }}
-            >
-              {formatMessage({
-                id: 'odc.src.component.Task.component.CommonDetailModal.Reject',
-                defaultMessage: '拒绝',
-              })}
-            </Button>
+          <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
             <Button
               type="primary"
               onClick={() => {
@@ -63,6 +91,18 @@ const ScheduleExecuteRecordDetail: React.FC<ScheduleExecuteRecordDetailProps> = 
                 defaultMessage: '通过',
               })}
             </Button>
+            <Button
+              onClick={() => {
+                handleApprovalVisible(false, true);
+              }}
+            >
+              {formatMessage({
+                id: 'odc.src.component.Task.component.CommonDetailModal.Reject',
+                defaultMessage: '拒绝',
+              })}
+            </Button>
+
+            {haveRevokePermission && <Button onClick={handleRevoke}>撤销审批</Button>}
           </Space>
         )
       }

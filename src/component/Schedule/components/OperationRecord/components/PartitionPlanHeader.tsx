@@ -14,9 +14,10 @@ enum PartitionTypeExecutionMethod {
 
 interface IProps {
   schedule: IScheduleRecord<IPartitionPlan>;
+  lastExecuteTime: number;
 }
 const PartitionPlanHeader: React.FC<IProps> = (props) => {
-  const { schedule } = props;
+  const { schedule, lastExecuteTime } = props;
   const [type, setType] = useState<PartitionTypeExecutionMethod>(
     PartitionTypeExecutionMethod.CreatePartition,
   );
@@ -64,6 +65,7 @@ const PartitionPlanHeader: React.FC<IProps> = (props) => {
         fireTimes={fireTimes}
         type={schedule?.type}
         useStyleContainer={false}
+        lastExecuteTime={lastExecuteTime}
       />
     </Space>
   );
