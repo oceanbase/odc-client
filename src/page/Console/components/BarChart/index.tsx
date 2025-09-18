@@ -221,7 +221,12 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
             searchParams.append('projectId', selectedProjectId.toString());
           }
 
-          if (dateValue && Array.isArray(dateValue) && dateValue.length === 2) {
+          if (
+            String(timeValue) === 'custom' &&
+            dateValue &&
+            Array.isArray(dateValue) &&
+            dateValue.length === 2
+          ) {
             searchParams.append('startTime', dateValue[0].valueOf().toString());
             searchParams.append('endTime', dateValue[1].valueOf().toString());
           } else if (timeValue !== undefined) {
