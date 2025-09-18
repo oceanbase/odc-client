@@ -25,7 +25,7 @@ import { IProject, ProjectRole } from '@/d.ts/project';
 import type { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
-import { Button, message, Popconfirm, Space, Tag } from 'antd';
+import { Button, Space, Tag } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ProjectContext from '../ProjectContext';
@@ -70,6 +70,9 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
   const [manageModalVisiable, setManageModalVisiable] = useState(false);
   const [editUserId, setEditUserId] = useState<number>(null);
   const [detailId, setDetailId] = useState<number>(null);
+  const [openDepResourceModal, setOpenDepResourceModal] = useState(false);
+  const [deleteUserId, setDeleteUserId] = useState<number>(null);
+  const [deleteUserName, setDeleteUserName] = useState<string>('');
   const dataSource: (IProject['members'][0] & {
     roles: ProjectRole[];
     globalRoles: ProjectRole[];
@@ -103,22 +106,21 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
   useEffect(() => {
     tracert.expo('a3112.b64002.c330860');
   }, []);
-  async function deleteUser(id: number) {
+  async function deleteUser(id: number, name: string) {
+    setDeleteUserId(id);
+    setDeleteUserName(name);
     const isSuccess = await deleteProjectMember({
       projectId: context?.project?.id,
-      userId: id,
+      userId: deleteUserId,
     });
     if (isSuccess) {
-      message.success(
-        formatMessage({
-          id: 'odc.Project.User.DeletedSuccessfully',
-          defaultMessage: '删除成功',
-        }), //删除成功
-      );
-
+      setOpenDepResourceModal(false);
+      setDeleteUserId(null);
+      setDeleteUserName('');
       context.reloadProject();
     }
   }
+
   async function updateUser(id: number) {
     setEditUserId(id);
   }
@@ -187,7 +189,7 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
           id: 'odc.Project.User.Remove',
           defaultMessage: '移除',
         }),
-        action: () => deleteUser(record.id),
+        action: () => deleteUser(record.id, record.name),
         confirmText: formatMessage({
           id: 'odc.Project.User.AreYouSureYouWant',
           defaultMessage: '是否确定删除该成员？',

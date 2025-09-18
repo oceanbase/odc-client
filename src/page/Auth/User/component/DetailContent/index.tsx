@@ -20,15 +20,22 @@ import { canAcess } from '@/component/Acess';
 import ChangePasswordModal from '@/component/ChangePasswordModal';
 import DisplayTable from '@/component/DisplayTable';
 import RoleList, { useRoleListByIds } from '@/component/Manage/RoleList';
+import RelativeResourceModal from '@/component/RelativeResourceModal';
 import type { IManagerRole, IManagerUser } from '@/d.ts';
 import { actionTypes, IManagerDetailTabs, IManagerResourceType } from '@/d.ts';
 import odc from '@/plugins/odc';
 import { formatMessage } from '@/util/intl';
 import { getFormatDateTime } from '@/util/utils';
-import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Button, Descriptions, Divider, message, Modal, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { getAuthLabelString, resourceAuthMap, ResourceManagementAction } from '../../../utils';
+import { getResourceDependencies } from '@/util/request/relativeResource';
+import { ExclamationCircleFilled } from '@ant-design/icons';
+import useResourceDepNotification, {
+  EResourceType,
+  EStatus,
+} from '@/util/hooks/useResourceDepNotification';
+import { EEntityType } from '@/d.ts/relativeResource';
 
 const authFilters = [
   {
@@ -99,54 +106,56 @@ const UserDetail: React.FC<{
     extraProperties,
   } = data;
   const [visible, setVisible] = useState(false);
+  const [openDepResourceModal, setOpenDepResourceModal] = useState(false);
   const relatedRoles = useRoleListByIds(roles, roleIds);
+  const { contextHolder, openNotification } = useResourceDepNotification();
 
   const handleDeleteUser = async () => {
+    openNotification({ name, type: EResourceType.USER, status: EStatus.LOADING });
     const res = await deleteUser(id);
     if (res) {
-      message.success(
-        formatMessage({
-          id: 'odc.components.UserPage.component.Deleted',
-          defaultMessage: '删除成功',
-        }), // 删除成功
-      );
+      openNotification({ name, type: EResourceType.USER, status: EStatus.SUCCESS });
       handleCloseAndReload();
     } else {
-      message.error(
-        formatMessage({
-          id: 'odc.components.UserPage.component.UnableToDelete',
-          defaultMessage: '删除失败',
-        }),
-        // 删除失败
-      );
+      openNotification({ name, type: EResourceType.USER, status: EStatus.FAILED });
     }
   };
 
-  const handleDelete = () => {
-    Modal.confirm({
-      title: formatMessage({
-        id: 'odc.components.UserPage.component.AreYouSureYouWant',
-        defaultMessage: '是否确定删除用户？',
-      }),
-      // 确定要删除用户吗？
-      icon: <ExclamationCircleFilled style={{ color: '#faad14' }} />,
-      content: formatMessage({
-        id: 'odc.components.UserPage.component.AfterAUserIsDeleted',
-        defaultMessage: '删除用户后，用户将无法登录系统，相关数据也无法恢复',
-      }), // 删除用户后，用户将无法登录系统，相关数据也无法恢复
-      cancelText: formatMessage({
-        id: 'odc.components.UserPage.component.Cancel',
-        defaultMessage: '取消',
-      }),
-      // 取消
-      okText: formatMessage({
-        id: 'odc.components.UserPage.component.Determine',
-        defaultMessage: '确定',
-      }),
-      // 确定
-      centered: true,
-      onOk: handleDeleteUser,
-    });
+  const handleDelete = async () => {
+    const res = await getResourceDependencies({ userId: id });
+    const total =
+      res?.flowDependencies?.length ||
+      0 + res?.scheduleDependencies?.length ||
+      0 + res?.scheduleTaskDependencies?.length ||
+      0;
+    if (total > 0) {
+      setOpenDepResourceModal(true);
+    } else {
+      Modal.confirm({
+        title: formatMessage({
+          id: 'odc.components.UserPage.component.AreYouSureYouWant',
+          defaultMessage: '是否确定删除用户？',
+        }),
+        // 确定要删除用户吗？
+        icon: <ExclamationCircleFilled style={{ color: '#faad14' }} />,
+        content: formatMessage({
+          id: 'odc.components.UserPage.component.AfterAUserIsDeleted',
+          defaultMessage: '删除用户后，用户将无法登录系统，相关数据也无法恢复',
+        }), // 删除用户后，用户将无法登录系统，相关数据也无法恢复
+        cancelText: formatMessage({
+          id: 'odc.components.UserPage.component.Cancel',
+          defaultMessage: '取消',
+        }),
+        // 取消
+        okText: formatMessage({
+          id: 'odc.components.UserPage.component.Determine',
+          defaultMessage: '确定',
+        }),
+        // 确定
+        centered: true,
+        onOk: handleDeleteUser,
+      });
+    }
   };
 
   const handleSubmit = async ({ password }) => {
@@ -184,6 +193,7 @@ const UserDetail: React.FC<{
 
   return (
     <>
+      {contextHolder}
       <Descriptions column={1}>
         <Descriptions.Item
           contentStyle={{ whiteSpace: 'pre' }}
@@ -328,6 +338,19 @@ const UserDetail: React.FC<{
           isExternal
         />
       )}
+
+      <RelativeResourceModal
+        mode={EEntityType.USER}
+        open={openDepResourceModal}
+        id={id}
+        title={`确定要删除用户 ${name} 吗？`}
+        onCancel={() => setOpenDepResourceModal(false)}
+        customSuccessHandler={async () => {
+          await handleDeleteUser();
+          setOpenDepResourceModal(false);
+          handleCloseAndReload();
+        }}
+      />
     </>
   );
 };

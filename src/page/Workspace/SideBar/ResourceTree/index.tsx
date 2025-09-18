@@ -57,6 +57,7 @@ import useDataSourceDrawer from './hooks/useDataSourceDrawer';
 import DataSourceNodeMenu from '@/page/Workspace/SideBar/ResourceTree/TreeNodeMenu/dataSource';
 import { isString } from 'lodash';
 import DatabaseSelectEmpty from '@/component/Empty/DatabaseSelectEmpty';
+import RelativeResourceModal from '@/component/RelativeResourceModal';
 import { ReactComponent as ProjectSvg } from '@/svgr/project_space.svg';
 import Icon from '@ant-design/icons';
 
@@ -98,6 +99,10 @@ const ResourceTree: React.FC<IProps> = function ({
     copyDatasourceId,
     setCopyDatasourceId,
     deleteDataSource,
+    deleteModalOpen,
+    deleteDataSourceInfo,
+    handleDeleteSuccess,
+    handleDeleteCancel,
   } = useDataSourceDrawer();
   const treeContext = useContext(ResourceTreeContext);
   const {
@@ -115,6 +120,7 @@ const ResourceTree: React.FC<IProps> = function ({
   } = treeContext;
   const [wrapperHeight, setWrapperHeight] = useState(0);
   const clockRef = useRef(null);
+  const dataSourceName = deleteDataSourceInfo?.name || '-';
   const [envs, setEnvs] = useState<number[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [connectTypes, setConnectTypes] = useState<ConnectType[]>([]);
@@ -504,6 +510,13 @@ const ResourceTree: React.FC<IProps> = function ({
           setCopyDatasourceId(null);
         }}
         onSuccess={dataSourceChangeReload}
+      />
+
+      <RelativeResourceModal
+        open={deleteModalOpen}
+        id={deleteDataSourceInfo?.id}
+        title={`数据源 ${dataSourceName} 存在以下未完成的工单和作业，暂不支持删除`}
+        onCancel={handleDeleteCancel}
       />
     </>
   );
