@@ -33,10 +33,7 @@ export const ScheduleTextMap = {
     id: 'odc.component.Task.helper.DataCleansing',
     defaultMessage: '数据清理',
   }),
-  [ScheduleType.SQL_PLAN]: formatMessage({
-    id: 'odc.TaskManagePage.component.helper.SqlPlan',
-    defaultMessage: 'SQL 计划',
-  }),
+  [ScheduleType.SQL_PLAN]: ' SQL 计划',
   [ScheduleType.PARTITION_PLAN]: formatMessage({
     id: 'odc.TaskManagePage.component.TaskTable.PartitionPlan',
     defaultMessage: '分区计划',

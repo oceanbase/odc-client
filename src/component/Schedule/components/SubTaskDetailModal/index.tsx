@@ -110,6 +110,7 @@ const SubTaskDetailModal: React.FC<ICommonSubTaskDetailModalProps> = (props) => 
       width={width}
       onClose={onClose}
       rootClassName={styles.detailDrawer}
+      destroyOnHidden
       title={
         <div className={styles.title}>
           <span>{`#${subTask?.id} 执行详情`}</span>

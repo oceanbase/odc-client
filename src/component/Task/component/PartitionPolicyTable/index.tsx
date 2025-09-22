@@ -163,7 +163,7 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
       key: 'containsStrategy',
       dataIndex: 'containsStrategy',
       ellipsis: true,
-      width: 180,
+      width: 370,
       render: (_, record) => {
         const label = getStrategyLabelByConfig(record);
         return (

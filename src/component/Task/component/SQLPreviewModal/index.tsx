@@ -105,7 +105,7 @@ function SQLPreviewModal(props: {
           </div>
         )}
 
-        <Form form={form} layout="vertical" requiredMark="optional">
+        <Form form={form} layout="vertical">
           <Form.Item
             rules={[
               {

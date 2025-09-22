@@ -1,13 +1,16 @@
 import { Space } from 'antd';
 import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
-import {
+import Icon, {
   CheckCircleFilled,
   CloseCircleFilled,
-  ExclamationCircleFilled,
   LoadingOutlined,
   StopFilled,
 } from '@ant-design/icons';
 import { ScheduleTaskStatusTextMap } from '@/constant/scheduleTask';
+import { ReactComponent as ProcessingSvg } from '@/svgr/processing.svg';
+import { ReactComponent as PausingSvg } from '@/svgr/pausing.svg';
+import { ReactComponent as WaitingYellowSvg } from '@/svgr/waiting_yellow.svg';
+import { ReactComponent as ExecutionTimeoutSvg } from '@/svgr/executionTimeout.svg';
 
 interface IProps {
   status: ScheduleTaskStatus;
@@ -15,13 +18,7 @@ interface IProps {
 
 const ScheduleTaskStatusInfo = {
   [ScheduleTaskStatus.PREPARING]: {
-    icon: (
-      <LoadingOutlined
-        style={{
-          color: 'var(--icon-blue-color)',
-        }}
-      />
-    ),
+    icon: <Icon component={ProcessingSvg} style={{ fontSize: 14 }} />,
   },
   [ScheduleTaskStatus.RUNNING]: {
     icon: (
@@ -33,40 +30,16 @@ const ScheduleTaskStatusInfo = {
     ),
   },
   [ScheduleTaskStatus.ABNORMAL]: {
-    icon: (
-      <CloseCircleFilled
-        style={{
-          color: 'var(--function-red6-color)',
-        }}
-      />
-    ),
+    icon: <Icon component={ExecutionTimeoutSvg} style={{ fontSize: 14 }} />,
   },
   [ScheduleTaskStatus.PAUSING]: {
-    icon: (
-      <LoadingOutlined
-        style={{
-          color: 'var(--icon-blue-color)',
-        }}
-      />
-    ),
+    icon: <Icon component={PausingSvg} style={{ fontSize: 14 }} />,
   },
   [ScheduleTaskStatus.PAUSED]: {
-    icon: (
-      <CheckCircleFilled
-        style={{
-          color: 'var(--icon-green-color)',
-        }}
-      />
-    ),
+    icon: <Icon component={WaitingYellowSvg} style={{ fontSize: 14 }} />,
   },
   [ScheduleTaskStatus.RESUMING]: {
-    icon: (
-      <LoadingOutlined
-        style={{
-          color: 'var(--icon-blue-color)',
-        }}
-      />
-    ),
+    icon: <Icon component={ProcessingSvg} style={{ fontSize: 14 }} />,
   },
   [ScheduleTaskStatus.CANCELING]: {
     icon: (
@@ -79,9 +52,9 @@ const ScheduleTaskStatusInfo = {
   },
   [ScheduleTaskStatus.FAILED]: {
     icon: (
-      <StopFilled
+      <CloseCircleFilled
         style={{
-          color: 'var(--icon-color-disable)',
+          color: 'var(--function-red6-color)',
         }}
       />
     ),
@@ -126,7 +99,7 @@ const ScheduleTaskStatusLabel: React.FC<IProps> = ({ status }) => {
       size={5}
     >
       {statusObj ? (
-        <>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           {statusObj?.icon}
           <span
             style={{
@@ -137,7 +110,7 @@ const ScheduleTaskStatusLabel: React.FC<IProps> = ({ status }) => {
           >
             {ScheduleTaskStatusTextMap[status]}
           </span>
-        </>
+        </div>
       ) : null}
     </Space>
   );

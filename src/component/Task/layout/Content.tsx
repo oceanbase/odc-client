@@ -24,7 +24,13 @@ import {
 } from '@/d.ts';
 import { message } from 'antd';
 import TaskTable from '../component/TaskTable';
-import { IPagination, ITaskParam, TaskPageMode, TaskTab } from '@/component/Task/interface';
+import {
+  IPagination,
+  ITaskParam,
+  TaskDetailType,
+  TaskPageMode,
+  TaskTab,
+} from '@/component/Task/interface';
 import { IState } from '@/component/Task/interface';
 import ApprovalModal from '@/component/Task/component/ApprovalModal';
 import { getDefaultParam, getFirstEnabledTask } from '../helper';
@@ -77,6 +83,7 @@ const Content: React.FC<IProps> = (props) => {
     detailVisible: !!taskStore?.defaultOpenTaskId,
     tasks: null,
     status: null,
+    taskDetailType: TaskDetailType.INFO,
   });
 
   const [pagination, setPagination] = useState<IPagination>({
@@ -186,6 +193,7 @@ const Content: React.FC<IProps> = (props) => {
   const handleDetailVisible = (
     task: TaskRecord<TaskRecordParameters>,
     visible: boolean = false,
+    taskDetailType?: TaskDetailType,
   ) => {
     const { id, type } = task ?? {};
     const detailId =
@@ -196,6 +204,7 @@ const Content: React.FC<IProps> = (props) => {
       detailId,
       detailType: (task as TaskRecord<TaskRecordParameters>)?.type || TaskType.ASYNC,
       detailVisible: visible,
+      taskDetailType: taskDetailType ? taskDetailType : TaskDetailType.INFO,
     });
   };
 
@@ -218,7 +227,7 @@ const Content: React.FC<IProps> = (props) => {
         const firstEnabledTask = getFirstEnabledTask();
         taskStore.changeTaskPageType(firstEnabledTask?.pageType);
       }
-    } else {
+    } else if (!taskStore?.taskPageType) {
       const firstEnabledTask = getFirstEnabledTask();
       taskStore.changeTaskPageType(firstEnabledTask?.pageType);
     }
@@ -318,6 +327,7 @@ const Content: React.FC<IProps> = (props) => {
         visible={state.detailVisible}
         onDetailVisible={handleDetailVisible}
         onReloadList={reloadList}
+        taskDetailType={state.taskDetailType}
       />
       <ApprovalModal
         id={approvalState.detailId}

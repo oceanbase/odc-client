@@ -55,6 +55,7 @@ interface IProps {
   enabledAction?: boolean;
   theme?: string;
   onReloadList?: () => void;
+  taskDetailType?: TaskDetailType;
   onDetailVisible: (task: TaskDetail<TaskRecordParameters>, visible: boolean) => void;
   onApprovalVisible?: (status: boolean, id: number) => void;
 }
@@ -78,7 +79,15 @@ const taskContentMap = {
 };
 
 const DetailModal: React.FC<IProps> = React.memo((props) => {
-  const { type, visible, detailId, enabledAction = true, theme, onApprovalVisible } = props;
+  const {
+    type,
+    visible,
+    detailId,
+    enabledAction = true,
+    theme,
+    onApprovalVisible,
+    taskDetailType = TaskDetailType.INFO,
+  } = props;
   const [task, setTask] = useState<TaskDetail<TaskRecordParameters>>(null);
   const [detailType, setDetailType] = useState<TaskDetailType>(TaskDetailType.INFO);
   const [log, setLog] = useState<ILog>(null);
@@ -285,6 +294,10 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       />
     ) : null,
   };
+
+  useEffect(() => {
+    setDetailType(taskDetailType);
+  }, [taskDetailType]);
 
   return (
     <TaskDetailModal

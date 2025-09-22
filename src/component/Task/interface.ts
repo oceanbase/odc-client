@@ -73,6 +73,7 @@ export interface IState {
   detailVisible: boolean;
   status: TaskStatus;
   tasks: IResponseData<TaskRecord<TaskRecordParameters>>;
+  taskDetailType?: TaskDetailType;
 }
 
 export enum TaskSearchType {

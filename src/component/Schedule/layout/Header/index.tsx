@@ -9,6 +9,7 @@ import ParamsContext from '@/component/Schedule/context/ParamsContext';
 import { useContext } from 'react';
 import SubTaskSearch from './SubTaskSearch';
 import { SyncOutlined } from '@ant-design/icons';
+import login from '@/store/login';
 
 const Header = () => {
   const context = useContext(ParamsContext);
@@ -16,7 +17,7 @@ const Header = () => {
   return (
     <Space size={5} style={{ lineHeight: 1 }}>
       {context.isScheduleView ? <Search /> : <SubTaskSearch />}
-      {context.isScheduleView ? <Tabs /> : undefined}
+      {context.isScheduleView && !login.isPrivateSpace() ? <Tabs /> : undefined}
       <Filter />
       <Sort />
       <FilterIcon border isActive={false}>

@@ -88,23 +88,23 @@ export const OscMaxDataSizeLimit = 1000;
 
 export const getTaskExecStrategyMap = (type: TaskType) => {
   switch (type) {
-    case TaskType.STRUCTURE_COMPARISON:
-    case TaskType.MULTIPLE_ASYNC: {
-      return {
-        [TaskExecStrategy.AUTO]: formatMessage({
-          id: 'src.component.Task.9B79BD20',
-          defaultMessage: '自动执行',
-        }), //'自动执行'
-        [TaskExecStrategy.MANUAL]: formatMessage({
-          id: 'src.component.Task.0B2B1D60',
-          defaultMessage: '手动执行',
-        }), //'手动执行'
-        [TaskExecStrategy.TIMER]: formatMessage({
-          id: 'odc.components.TaskManagePage.ScheduledExecution',
-          defaultMessage: '定时执行',
-        }), //定时执行
-      };
-    }
+    // case TaskType.STRUCTURE_COMPARISON:
+    // case TaskType.MULTIPLE_ASYNC: {
+    //   return {
+    //     [TaskExecStrategy.AUTO]: formatMessage({
+    //       id: 'src.component.Task.9B79BD20',
+    //       defaultMessage: '自动执行',
+    //     }), //'自动执行'
+    //     [TaskExecStrategy.MANUAL]: formatMessage({
+    //       id: 'src.component.Task.0B2B1D60',
+    //       defaultMessage: '手动执行',
+    //     }), //'手动执行'
+    //     [TaskExecStrategy.TIMER]: formatMessage({
+    //       id: 'odc.components.TaskManagePage.ScheduledExecution',
+    //       defaultMessage: '定时执行',
+    //     }), //定时执行
+    //   };
+    // }
     default:
       return {
         [TaskExecStrategy.AUTO]: formatMessage({

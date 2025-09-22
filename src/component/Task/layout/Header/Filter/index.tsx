@@ -13,6 +13,7 @@ import { TaskPageTextMap } from '@/constant/task';
 import { status } from '@/component/Task/component/Status';
 import { TimeOptions } from '../DateSelect';
 import { TaskPageType } from '@/d.ts';
+import login from '@/store/login';
 
 interface IProps {}
 
@@ -29,7 +30,7 @@ const Filter: React.FC<IProps> = () => {
       <div>
         {isAll && <TaskTypeFilter />}
         {tab === TaskTab.all ? <TaskStatusFilter /> : ''}
-        {mode !== TaskPageMode.PROJECT ? <ProjectFilter /> : null}
+        {mode !== TaskPageMode.PROJECT && !login.isPrivateSpace() ? <ProjectFilter /> : null}
         <div style={{ marginTop: '16px' }}>创建时间范围</div>
         <DateSelect />
       </div>

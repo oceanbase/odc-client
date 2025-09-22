@@ -127,6 +127,7 @@ export interface IScheduleRecord<T> {
     accountName: string;
   }[];
   currentUserResourceRoles: ProjectRole[];
+  approveByCurrentUser?: boolean;
   approvable?: boolean;
   approveInstanceId?: number;
   description?: string;
@@ -343,7 +344,7 @@ export type createDataArchiveParameters = {
     dataSizeLimit: number;
   };
   shardingStrategy?: ShardingStrategy;
-  syncTableStructure: SyncTableStructureEnum[];
+  syncTableStructure?: SyncTableStructureEnum[];
   tables: {
     tableName: string;
     conditionExpression: string;

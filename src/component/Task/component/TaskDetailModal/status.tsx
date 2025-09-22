@@ -13,7 +13,7 @@ const statusMap = {
 
   [ScheduleChangeStatus.SUCCESS]: {
     icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
-    text: '审批完成',
+    text: '审批通过',
   },
 
   [ScheduleChangeStatus.FAILED]: {
@@ -41,15 +41,15 @@ const statusMap = {
   },
   [ScheduleChangeStatus.APPROVE_CANCELED]: {
     icon: <ExclamationCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
-    text: '审批失败',
+    text: '审批撤销',
   },
   [ScheduleChangeStatus.APPROVE_EXPIRED]: {
     icon: <ExclamationCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
-    text: '审批过期',
+    text: '审批超时',
   },
   [ScheduleChangeStatus.APPROVE_REJECTED]: {
     icon: <ExclamationCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
-    text: '审批拒绝',
+    text: '审批不通过',
   },
 };
 

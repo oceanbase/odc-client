@@ -3,6 +3,7 @@ import { Radio } from 'antd';
 import { TaskTab } from '@/component/Task/interface';
 import ParamsContext from '@/component/Task/context/ParamsContext';
 import styles from './index.less';
+import login from '@/store/login';
 
 const Tabs = () => {
   const context = useContext(ParamsContext);
@@ -29,7 +30,12 @@ const Tabs = () => {
           label: '待我执行',
           value: TaskTab.executionByCurrentUser,
         },
-      ]}
+      ]?.filter((item) => {
+        if (login.isPrivateSpace() && item.value === TaskTab.approveByCurrentUser) {
+          return false;
+        }
+        return true;
+      })}
       defaultValue={TaskTab.all}
       className={styles.tab}
       optionType="button"

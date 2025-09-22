@@ -52,9 +52,6 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
         >
           <EllipsisText content={<DatabaseLabel database={task?.database} />} needTooltip={false} />
         </Descriptions.Item>
-        <Descriptions.Item label={'数据源'}>
-          <EllipsisText content={task?.database?.dataSource?.name} />
-        </Descriptions.Item>
         {!login.isPrivateSpace() && (
           <Descriptions.Item label={'项目'}>
             <EllipsisText content={task?.project?.name} />

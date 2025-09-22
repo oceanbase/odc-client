@@ -448,6 +448,13 @@ const CreateModal: React.FC<IProps> = (props) => {
                 options={[
                   {
                     label: formatMessage({
+                      id: 'src.component.Task.MutipleAsyncTask.CreateModal.A8CB0B6F',
+                      defaultMessage: '手动执行',
+                    }),
+                    value: TaskExecStrategy.MANUAL,
+                  },
+                  {
+                    label: formatMessage({
                       id: 'odc.DataClearTask.CreateModal.ExecuteNow',
                       defaultMessage: '立即执行',
                     }),
@@ -459,13 +466,6 @@ const CreateModal: React.FC<IProps> = (props) => {
                       defaultMessage: '定时执行',
                     }),
                     value: TaskExecStrategy.TIMER,
-                  },
-                  {
-                    label: formatMessage({
-                      id: 'src.component.Task.MutipleAsyncTask.CreateModal.A8CB0B6F',
-                      defaultMessage: '手动执行',
-                    }),
-                    value: TaskExecStrategy.MANUAL,
                   },
                 ]}
                 optionType="button"

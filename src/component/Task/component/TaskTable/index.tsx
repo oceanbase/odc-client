@@ -1,45 +1,40 @@
 import CommonTable from '@/component/CommonTable';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
-import { CommonTableMode, IOperationOptionType } from '@/component/CommonTable/interface';
-import StatusLabel, { status } from '@/component/Task/component/Status';
+import { CommonTableMode } from '@/component/CommonTable/interface';
+import StatusLabel from '@/component/Task/component/Status';
 import type { IResponseData, TaskRecord, TaskRecordParameters } from '@/d.ts';
-import { TaskPageType, TaskType } from '@/d.ts';
+import { TaskPageType } from '@/d.ts';
 import type { PageStore } from '@/store/page';
 import type { TaskStore } from '@/store/task';
 import { useLoop } from '@/util/hooks/useLoop';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
-import { flatten } from 'lodash';
-import Icon, { DownOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, DatePicker, Tooltip, Popover, Space, Typography, Dropdown } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
+import { Button, Popover, Space, Typography, Dropdown } from 'antd';
 import { inject, observer } from 'mobx-react';
-import dayjs from 'dayjs';
-import React, { useEffect, useRef, useState, useContext, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useContext, useCallback, useMemo } from 'react';
 import styles from '@/component/Task/index.less';
 import { listProjects } from '@/common/network/project';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { isProjectArchived } from '@/page/Project/helper';
-import { useRequest, useSetState } from 'ahooks';
-import useURLParams from '@/util/hooks/useUrlParams';
+import { useRequest } from 'ahooks';
 import { useTaskGroup } from '../../hooks';
 import { TaskConfig } from '@/common/task';
 import Header from '../../layout/Header';
 import TableCard from '@/component/Table/TableCard';
-import ParamsContext, { defaultParam } from '../../context/ParamsContext';
+import ParamsContext from '../../context/ParamsContext';
 import { debounce } from 'lodash';
-import { ITaskParam, TaskPageMode, IPagination } from '@/component/Task/interface';
+import { ITaskParam, TaskPageMode, IPagination, TaskDetailType } from '@/component/Task/interface';
 import { TaskPageTextMap } from '@/constant/task';
 import { useTaskSelection } from '@/component/Task/component/TaskTable/useTaskSelection';
 import useUrlAction, { URL_ACTION } from '@/util/hooks/useUrlAction';
 import { getTerminateConfig } from '@/component/Task/component/AsyncTaskOperationButton/helper';
 import { AsyncTaskOperationButton } from '@/component/Task/component/AsyncTaskOperationButton';
-import ImportModal from '@/component/Task/component/ImportModal';
-import { useImport } from '@/component/Task/component/ImportModal/useImport';
 import TaskNameColumn from './TaskNameColumn';
 import odc from '@/plugins/odc';
 import TaskActions from '../TaskActions';
 import { taskTypeThatCanBeTerminate } from '@/constant/triangularization';
 import { TASK_EXECUTE_DATE_KEY, TASK_EXECUTE_TIME_KEY } from './const';
+import ScheduleMiniFlowSpan from '@/component/Schedule/components/ScheduleMiniFlowSpan';
 const { Text } = Typography;
 
 interface IProps {
@@ -51,7 +46,11 @@ interface IProps {
   mode?: TaskPageMode;
   getTaskList: (args: ITableLoadOptions, pagination: IPagination) => Promise<any>;
   onReloadList: () => void;
-  onDetailVisible: (task: TaskRecord<TaskRecordParameters>, visible: boolean) => void;
+  onDetailVisible: (
+    task: TaskRecord<TaskRecordParameters>,
+    visible: boolean,
+    taskDetailType?: TaskDetailType,
+  ) => void;
   onChange?: (args: ITableLoadOptions) => void;
   onMenuClick?: (type: TaskPageType) => void;
   disableProjectCol?: boolean;
@@ -232,7 +231,23 @@ const TaskTable: React.FC<IProps> = (props) => {
       dataIndex: 'status',
       width: 100,
       render: (status, record) => {
-        return <StatusLabel status={status} type={record?.type} />;
+        return (
+          <div>
+            <StatusLabel status={status} type={record?.type} />
+            {record?.approvable && (
+              <ScheduleMiniFlowSpan
+                record={{ ...record, approveInstanceId: record?.id }}
+                onDetail={() => {
+                  props.onDetailVisible(
+                    record as TaskRecord<TaskRecordParameters>,
+                    true,
+                    TaskDetailType.FLOW,
+                  );
+                }}
+              />
+            )}
+          </div>
+        );
       },
     },
     {

@@ -100,7 +100,7 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
         {!subTask && (
           <>
             <Descriptions.Item label={'ID'}>{schedule?.scheduleId}</Descriptions.Item>
-            <Descriptions.Item label={'类型'}>数据清理</Descriptions.Item>
+            <Descriptions.Item label={'类型'}>数据归档</Descriptions.Item>
           </>
         )}
 
@@ -231,7 +231,7 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
         <Descriptions.Item label={'通过全表扫描进行数据搜索'} span={1}>
           {parameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH ? '是' : '否'}
         </Descriptions.Item>
-        <Descriptions.Item label={'目标表结构同步'} span={1}>
+        {/* <Descriptions.Item label={'目标表结构同步'} span={1}>
           {parameters?.syncTableStructure?.length
             ? formatMessage({
                 id: 'src.component.Task.DataArchiveTask.DetailContent.FFC5907D',
@@ -241,7 +241,7 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
                 id: 'src.component.Task.DataArchiveTask.DetailContent.855EA40A',
                 defaultMessage: '否',
               })}
-        </Descriptions.Item>
+        </Descriptions.Item> */}
         {parameters?.deleteAfterMigration ? (
           <Descriptions.Item
             label={formatMessage({
@@ -289,38 +289,42 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
         <Descriptions.Item label={'数据插入策略'} span={1}>
           {insertActionLabel || '-'}
         </Descriptions.Item>
-        <Descriptions.Item
-          label={
-            formatMessage({
-              id: 'odc.src.component.Task.DataArchiveTask.DetailContent.RestrictedFlow',
-              defaultMessage: '行限流',
-            }) /* 行限流 */
-          }
-        >
-          <ThrottleEditableCell
-            suffix="Rows/s"
-            min={0}
-            max={setting.maxSingleTaskRowLimit}
-            defaultValue={parameters?.rateLimit?.rowLimit}
-            onOk={handleRowLimit}
-          />
-        </Descriptions.Item>
-        <Descriptions.Item
-          label={
-            formatMessage({
-              id: 'odc.src.component.Task.DataArchiveTask.DetailContent.DataSizeLimit',
-              defaultMessage: '数据大小限流',
-            }) //'数据大小限流'
-          }
-        >
-          <ThrottleEditableCell
-            suffix="MB/s"
-            min={1}
-            max={setting.maxSingleTaskDataSizeLimit}
-            defaultValue={kbToMb(parameters?.rateLimit?.dataSizeLimit)}
-            onOk={handleDataSizeLimit}
-          />
-        </Descriptions.Item>
+        {parameters?.rateLimit?.rowLimit && (
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'odc.src.component.Task.DataArchiveTask.DetailContent.RestrictedFlow',
+                defaultMessage: '行限流',
+              }) /* 行限流 */
+            }
+          >
+            <ThrottleEditableCell
+              suffix="Rows/s"
+              min={0}
+              max={setting.maxSingleTaskRowLimit}
+              defaultValue={parameters?.rateLimit?.rowLimit}
+              onOk={handleRowLimit}
+            />
+          </Descriptions.Item>
+        )}
+        {parameters?.rateLimit?.dataSizeLimit && (
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'odc.src.component.Task.DataArchiveTask.DetailContent.DataSizeLimit',
+                defaultMessage: '数据大小限流',
+              }) //'数据大小限流'
+            }
+          >
+            <ThrottleEditableCell
+              suffix="MB/s"
+              min={1}
+              max={setting.maxSingleTaskDataSizeLimit}
+              defaultValue={kbToMb(parameters?.rateLimit?.dataSizeLimit)}
+              onOk={handleDataSizeLimit}
+            />
+          </Descriptions.Item>
+        )}
       </Descriptions>
 
       <Divider

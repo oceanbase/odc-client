@@ -26,7 +26,6 @@ import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
 import DatabaseSelect from '@/component/Task/component/DatabaseSelect';
 import SQLPreviewModal from '@/component/Task/component/SQLPreviewModal';
-import SynchronizationItem from '@/component/Task/component/SynchronizationItem';
 import TaskdurationItem from '@/component/Task/component/TaskdurationItem';
 import ThrottleFormItem from '@/component/Task/component/ThrottleFormItem';
 import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
@@ -186,7 +185,6 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       tables,
       variables,
       timeoutMillis,
-      syncTableStructure,
       dirtyRowAction,
       maxAllowedDirtyRowCount,
       fullDatabase,
@@ -212,7 +210,6 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       triggerStrategy,
       startAt: undefined,
       timeoutMillis: milliSecondsToHour(timeoutMillis),
-      syncTableStructure,
       dirtyRowAction,
       maxAllowedDirtyRowCount,
       scheduleName,
@@ -367,7 +364,6 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           rowLimit,
           dataSizeLimit,
           timeoutMillis,
-          syncTableStructure,
         } = values;
         _tables?.map((i) => {
           i.partitions = Array.isArray(i.partitions)
@@ -387,7 +383,6 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
             dataSizeLimit: mbToKb(dataSizeLimit),
           },
           shardingStrategy,
-          syncTableStructure,
           tables:
             archiveRange === IArchiveRange.ALL
               ? tables?.map((item) => {
@@ -543,9 +538,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
    * 仅目标端为对象存储时支持 删除归档过程中产生的临时表
    */
   useEffect(() => {
-    if (isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)) {
-      form.setFieldValue('syncTableStructure', undefined);
-    } else {
+    if (!isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)) {
       form.setFieldValue('deleteTemporaryTable', undefined);
     }
   }, [targetDatabase]);
@@ -755,7 +748,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               作业设置
             </h3>
 
-            <SynchronizationItem form={form} targetDatabase={targetDatabase} />
+            {/* <SynchronizationItem form={form} targetDatabase={targetDatabase} /> */}
             <DirtyRowAction dependentField="deleteAfterMigration" />
             <ShardingStrategyItem form={form} />
             <Form.Item
