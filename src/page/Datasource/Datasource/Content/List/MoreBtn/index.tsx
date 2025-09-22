@@ -112,7 +112,7 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
             type: EResourceType.DATASOURCE,
             status: EStatus.LOADING,
           });
-          const isSuccess = await deleteConnection(connection.id.toString());
+          const isSuccess = await deleteConnection(connection.id.toString(), true);
           if (isSuccess) {
             context.reloadTable();
             openNotification({
