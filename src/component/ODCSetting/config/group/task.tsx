@@ -17,7 +17,11 @@ import { formatMessage } from '@/util/intl';
 import { IODCSetting, ODCSettingGroup } from '../../config';
 import RadioItem from '../../Item/RadioItem';
 import TextAreaItem from '../../Item/TextItem';
+import InputIntegerItem from '../../Item/InputIntegerItem';
+import SelectItem from '../../Item/SelectItem';
 import { getExecutionStrategyConfig, getDatabaseChangeResultSetsConfig } from '../common';
+import { getTaskExecStrategyTextMap } from '@/component/Task/const';
+import { TaskExecStrategy } from '@/d.ts';
 
 const taskGroup: ODCSettingGroup = {
   label: formatMessage({
@@ -160,6 +164,15 @@ const taskSetting: IODCSetting[] = [
   },
   ...getDatabaseChangeResultSetsConfig(taskGroup),
   ...getExecutionStrategyConfig(taskGroup),
+  {
+    label: '作业任务最小调度间隔',
+    key: 'odc.schedule.minSchedulingIntervalMinutes',
+    group: taskGroup,
+    storeType: 'server',
+    render: (value, onChange) => {
+      return <InputIntegerItem value={value} onChange={onChange} min="1" unit="分钟" />;
+    },
+  },
   {
     label: formatMessage({
       id: 'src.component.ODCSetting.config.group.0ACF68C5',

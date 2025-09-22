@@ -79,7 +79,7 @@ const SchduleExecutionMethodForm = forwardRef<
             return (
               <>
                 <ExecuteFailTip />
-                <Form.Item>
+                <Form.Item name="crontab">
                   <Crontab ref={ref} initialValue={crontab} onValueChange={handleCrontabChange} />
                 </Form.Item>
               </>

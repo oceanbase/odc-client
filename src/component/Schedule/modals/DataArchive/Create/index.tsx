@@ -1,6 +1,8 @@
 import { getTableListByDatabaseName } from '@/common/network/table';
 import { previewSqlStatements } from '@/common/network/task';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
+import { convertCronToMinutes } from '@/component/Crontab/utils';
+import { validateCrontabInterval } from '@/util/schedule';
 import FormItemPanel from '@/component/FormItemPanel';
 import { IDatabase } from '@/d.ts/database';
 import { useRequest } from 'ahooks';
@@ -267,6 +269,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
   };
   const handleCrontabChange = (crontab) => {
     setCrontab(crontab);
+    validateCrontabInterval(crontab, form, 'crontab');
   };
   const handleCreate = async (data: Partial<createScheduleRecord<createDataArchiveParameters>>) => {
     const res = await createSchedule(data);
@@ -341,6 +344,11 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     setPreviewSQL('');
   };
   const handleSubmit = (scheduleName?: string) => {
+    // 校验 crontab 间隔分钟数
+    if (!validateCrontabInterval(crontab, form, 'crontab')) {
+      return;
+    }
+
     form
       .validateFields()
       .then(async (values) => {

@@ -2,6 +2,8 @@ import { getPartitionPlanTables } from '@/common/network/task';
 import { createSchedule, updateSchedule, getScheduleDetail } from '@/common/network/schedule';
 import Crontab from '@/component/Crontab';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
+import { convertCronToMinutes } from '@/component/Crontab/utils';
+import { validateCrontabInterval } from '@/util/schedule';
 import FormItemPanel from '@/component/FormItemPanel';
 import {
   IPartitionPlanKeyType,
@@ -62,7 +64,6 @@ import { SchedulePageMode } from '@/component/Schedule/interface';
 import { openSchedulesPage } from '@/store/helper/page';
 import SchduleExecutionMethodForm from '@/component/Schedule/components/SchduleExecutionMethodForm';
 import { getInitScheduleName } from '@/component/Task/component/CreateTaskConfirmModal/helper';
-
 const { Paragraph, Text } = Typography;
 
 const historyPartitionKeyInvokers = [
@@ -338,9 +339,25 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
     } else {
       setCrontab(crontab);
     }
+
+    // 校验 crontab 间隔分钟数
+    const fieldName = isCustomStrategy ? 'dropCrontab' : 'crontab';
+    validateCrontabInterval(crontab, form, fieldName);
   };
 
   const handleSubmit = async (scheduleName?: string) => {
+    // 校验 crontab 间隔分钟数
+    if (!validateCrontabInterval(crontab, form, 'crontab')) {
+      return;
+    }
+
+    // 校验 dropCrontab 间隔分钟数（如果启用了自定义删除策略）
+    if (form.getFieldValue('isCustomStrategy') && dropCrontab?.cronString) {
+      if (!validateCrontabInterval(dropCrontab, form, 'dropCrontab')) {
+        return;
+      }
+    }
+
     try {
       const values = await form.validateFields();
       if (!scheduleName) {
@@ -804,7 +821,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
               </Checkbox>
             </Form.Item>
             {isCustomStrategy && (
-              <Form.Item>
+              <Form.Item name="dropCrontab">
                 <Crontab
                   ref={crontabDropRef}
                   title={
