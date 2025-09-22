@@ -18,6 +18,9 @@ const ScheduleMiniFlowSpan: React.FC<IProps> = ({ onDetail, record }) => {
   const [popoverOpen, setPopoverOpen] = useState(false);
 
   const operationTypeDescription = useMemo(() => {
+    if (!record?.operationType) {
+      return null;
+    }
     return (
       <div style={{ margin: '6px 0px' }}>
         <span>

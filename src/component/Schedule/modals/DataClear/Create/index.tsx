@@ -267,14 +267,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               }) /*编辑数据清理*/
             }
           </div>
-          <div>
-            {
-              formatMessage({
-                id: 'odc.DataClearTask.CreateModal.TheTaskNeedsToBe',
-                defaultMessage: '任务需要重新审批，审批通过后此任务将重新执行',
-              }) /*任务需要重新审批，审批通过后此任务将重新执行*/
-            }
-          </div>
+          <div>作业需要重新审批，审批通过后此作业将重新执行</div>
         </>
       ),
 
@@ -591,7 +584,6 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
             <ShardingStrategyItem form={form} />
             <MaxAllowedDirtyRowCount />
             <TaskdurationItem form={form} />
-            <ExecuteTimeoutSchedulingStrategy />
             <ThrottleFormItem isShowDataSizeLimit={true} />
           </Form>
         </Spin>

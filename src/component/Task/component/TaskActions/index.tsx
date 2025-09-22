@@ -112,10 +112,12 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
   const disabledApproval =
     task?.status === TaskStatus.WAIT_FOR_CONFIRM && !isDetailModal ? true : disabledSubmit;
 
+  /** 工单不需要从approveByCurrentUser判断当前用户是否可以审批，直接传true即可 */
   const { IRoles } = useOperationPermissions({
     currentUserResourceRoles: task?.project?.currentUserResourceRoles || [],
     approvable: task?.approvable,
     createrId: task?.creator?.id,
+    approveByCurrentUser: true,
   });
 
   const closeTaskDetail = async () => {
@@ -409,9 +411,10 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
   const confirmRollback = async (type: RollbackType) => {
     setOpenRollback(false);
     closeTaskDetail();
+    const detailRes = await getTaskDetail(task?.id);
     props.modalStore.changeCreateAsyncTaskModal(true, {
       type,
-      task: task as TaskDetail<IAsyncTaskParams>,
+      task: detailRes as TaskDetail<IAsyncTaskParams>,
       databaseId: task?.database?.id,
       objectId: result?.rollbackPlanResult?.resultFileDownloadUrl,
       parentFlowInstanceId: task?.id,
@@ -738,7 +741,11 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
       showScene: [actionShowScene.list, actionShowScene.detail],
       action: eventMap[TaskActionsEnum.SHARE],
       icon: <ShareAltOutlined />,
-      visible: widthPermission((hasPermission) => hasPermission, [], IRoles),
+      visible: widthPermission(
+        (hasPermission) => hasPermission && !login?.isPrivateSpace(),
+        [],
+        IRoles,
+      ),
     },
     {
       key: TaskActionsEnum.PASS,

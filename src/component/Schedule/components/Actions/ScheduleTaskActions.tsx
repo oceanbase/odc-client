@@ -267,7 +267,11 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
       label: ScheduleTaskActionsTextMap[ScheduleTaskActionsEnum.SHARE],
       action: eventMap[ScheduleTaskActionsEnum.SHARE],
       icon: <ShareAltOutlined />,
-      visible: widthPermission((hasPermission) => hasPermission, [], IRoles),
+      visible: widthPermission(
+        (hasPermission) => hasPermission && !login?.isPrivateSpace(),
+        [],
+        IRoles,
+      ),
     },
   ];
 

@@ -10,6 +10,7 @@ import useOperationPermissions from '@/util/hooks/useOperationPermissions';
 import { widthPermission } from '@/util/utils';
 import { ScheduleTextMap } from '@/constant/schedule';
 import { revokeTask } from '@/common/network/task';
+import login from '@/store/login';
 
 enum ExecuteRecordDetailType {
   DETAIL = 'DETAIL',
@@ -26,7 +27,11 @@ interface ScheduleExecuteRecordDetailProps {
 
 const ScheduleExecuteRecordDetail: React.FC<ScheduleExecuteRecordDetailProps> = (props) => {
   const { visible, onClose, operation, schedule, onReload } = props;
-  const [detailType, setDetailType] = useState(ExecuteRecordDetailType.DETAIL);
+  const [detailType, setDetailType] = useState(
+    login?.isPrivateSpace()
+      ? ExecuteRecordDetailType.CHANGE_DETAIL
+      : ExecuteRecordDetailType.DETAIL,
+  );
 
   const [approvalVisible, setApprovalVisible] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState(false);
@@ -39,11 +44,18 @@ const ScheduleExecuteRecordDetail: React.FC<ScheduleExecuteRecordDetailProps> = 
       schedule?.currentUserResourceRoles || schedule?.project?.currentUserResourceRoles || [],
     approvable: schedule?.approvable,
     createrId: schedule?.creator?.id,
+    approveByCurrentUser: schedule?.approveByCurrentUser,
   });
 
   const haveRevokePermission = widthPermission(
     (hasPermission) => hasPermission,
     [IOperationTypeRole.CREATOR, IOperationTypeRole.PROJECT_OWNER, IOperationTypeRole.PROJECT_DBA],
+    IRoles,
+  )();
+
+  const haveApprovalPermission = widthPermission(
+    (hasPermission) => hasPermission,
+    [IOperationTypeRole.APPROVER],
     IRoles,
   )();
 
@@ -78,29 +90,34 @@ const ScheduleExecuteRecordDetail: React.FC<ScheduleExecuteRecordDetailProps> = 
       title="操作记录详情"
       width={1000}
       footer={
-        schedule?.approvable && (
+        schedule?.approvable &&
+        (haveRevokePermission || haveApprovalPermission) && (
           <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
-            <Button
-              type="primary"
-              onClick={() => {
-                handleApprovalVisible(true, true);
-              }}
-            >
-              {formatMessage({
-                id: 'odc.src.component.Task.component.CommonDetailModal.Pass',
-                defaultMessage: '通过',
-              })}
-            </Button>
-            <Button
-              onClick={() => {
-                handleApprovalVisible(false, true);
-              }}
-            >
-              {formatMessage({
-                id: 'odc.src.component.Task.component.CommonDetailModal.Reject',
-                defaultMessage: '拒绝',
-              })}
-            </Button>
+            {haveApprovalPermission && (
+              <>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    handleApprovalVisible(true, true);
+                  }}
+                >
+                  {formatMessage({
+                    id: 'odc.src.component.Task.component.CommonDetailModal.Pass',
+                    defaultMessage: '通过',
+                  })}
+                </Button>
+                <Button
+                  onClick={() => {
+                    handleApprovalVisible(false, true);
+                  }}
+                >
+                  {formatMessage({
+                    id: 'odc.src.component.Task.component.CommonDetailModal.Reject',
+                    defaultMessage: '拒绝',
+                  })}
+                </Button>
+              </>
+            )}
 
             {haveRevokePermission && <Button onClick={handleRevoke}>撤销审批</Button>}
           </Space>
@@ -109,12 +126,17 @@ const ScheduleExecuteRecordDetail: React.FC<ScheduleExecuteRecordDetailProps> = 
     >
       <div>
         <Radio.Group value={detailType} onChange={(e) => setDetailType(e.target.value)}>
-          <Radio.Button value={ExecuteRecordDetailType.DETAIL} key={ExecuteRecordDetailType.DETAIL}>
-            {formatMessage({
-              id: 'src.component.Task.component.CommonDetailModal.3D4F5474',
-              defaultMessage: '审批记录',
-            })}
-          </Radio.Button>
+          {!login?.isPrivateSpace() && (
+            <Radio.Button
+              value={ExecuteRecordDetailType.DETAIL}
+              key={ExecuteRecordDetailType.DETAIL}
+            >
+              {formatMessage({
+                id: 'src.component.Task.component.CommonDetailModal.3D4F5474',
+                defaultMessage: '审批记录',
+              })}
+            </Radio.Button>
+          )}
           <Radio.Button
             value={ExecuteRecordDetailType.CHANGE_DETAIL}
             key={ExecuteRecordDetailType.CHANGE_DETAIL}

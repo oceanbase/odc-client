@@ -64,6 +64,14 @@ export default function JoinTableConfigModal({
     setTableCanSetPartition(!!table?.partitions?.partType);
   };
 
+  useEffect(() => {
+    if (multiTableJoin) {
+      form.setFieldValue('filterType', 'filterType');
+    } else {
+      form.setFieldValue('filterType', undefined);
+    }
+  }, [multiTableJoin]);
+
   return (
     <Modal
       title={formatMessage({
@@ -97,25 +105,6 @@ export default function JoinTableConfigModal({
         </div>
         {multiTableJoin && (
           <>
-            <Form.Item
-              label={formatMessage({
-                id: 'src.component.Task.component.JoinTableConfigsModal.829861F8',
-                defaultMessage: '过滤条件类型',
-              })}
-              name="filterType"
-            >
-              <Select
-                options={[
-                  {
-                    label: formatMessage({
-                      id: 'src.component.Task.component.JoinTableConfigsModal.24B9E931',
-                      defaultMessage: '关联表',
-                    }),
-                    value: 'relationTable',
-                  },
-                ]}
-              />
-            </Form.Item>
             <Form.List name="joinTableConfigs">
               {(fields: FormListFieldData[], { add, remove }) => (
                 <div className={styles.container}>

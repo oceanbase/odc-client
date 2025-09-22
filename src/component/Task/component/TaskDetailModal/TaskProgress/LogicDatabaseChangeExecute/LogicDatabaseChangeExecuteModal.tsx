@@ -204,6 +204,30 @@ const TaskProgressModal: React.FC<IProps> = ({ modalOpen, setModalOpen, data, ta
     }
   }, [modalOpen]);
 
+  const header = useMemo(() => {
+    let executeCount = 0;
+    let successCount = 0;
+    let failedCount = 0;
+    result?.sqlExecuteResults?.forEach((i) => {
+      switch (i?.status) {
+        case ISqlExecuteResultStatus.RUNNING:
+          executeCount++;
+          break;
+        case ISqlExecuteResultStatus.SUCCESS:
+          successCount++;
+          break;
+        case ISqlExecuteResultStatus.FAILED:
+          failedCount++;
+          break;
+      }
+    });
+    return (
+      <div style={{ marginBottom: 6 }}>
+        {`以下 ${executeCount} 行变更记录执行中， ${successCount} 行变更记录执行成功， ${failedCount} 行变更记录执行失败`}
+      </div>
+    );
+  }, [result?.sqlExecuteResults]);
+
   return (
     <Drawer
       title={formatMessage({
@@ -219,37 +243,28 @@ const TaskProgressModal: React.FC<IProps> = ({ modalOpen, setModalOpen, data, ta
     >
       <Descriptions column={1} style={{ marginBottom: '12px' }}>
         <Descriptions.Item label={'数据库'}>
-          <Space size={0}>
-            <Space size={4}>
-              <Icon
-                component={
-                  getDataSourceStyleByConnectType(result?.database?.dataSource?.type)?.icon
-                    ?.component
-                }
-                style={{
-                  color: getDataSourceStyleByConnectType(result?.database?.dataSource?.type)?.icon
-                    ?.color,
-                  fontSize: 16,
-                  marginRight: 4,
-                }}
-              />
+          <div style={{ alignItems: 'center', display: 'flex', gap: '4px' }}>
+            <Icon
+              component={
+                getDataSourceStyleByConnectType(result?.database?.dataSource?.type)?.icon?.component
+              }
+              style={{
+                color: getDataSourceStyleByConnectType(result?.database?.dataSource?.type)?.icon
+                  ?.color,
+                fontSize: 16,
+                marginRight: 4,
+              }}
+            />
 
-              <div>{result?.database?.name}</div>
-              <div style={{ color: 'var(--neutral-black45-color)' }}>
-                {result?.database?.dataSource?.name}
-              </div>
-            </Space>
-          </Space>
+            <div>{result?.database?.name}</div>
+            <div style={{ color: 'var(--neutral-black45-color)' }}>
+              {result?.database?.dataSource?.name}
+            </div>
+          </div>
         </Descriptions.Item>
         <Descriptions.Item label={'数据源'}>{result?.database?.dataSource?.name}</Descriptions.Item>
       </Descriptions>
-      {result?.sqlExecuteResults && (
-        <TaskProgressHeader
-          isLogicalDb
-          subTasks={result?.sqlExecuteResults}
-          pendingExectionDatabases={0}
-        />
-      )}
+      {header}
       <CommonTable
         stripe={false}
         mode={CommonTableMode.SMALL}

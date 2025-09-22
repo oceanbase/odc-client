@@ -199,7 +199,8 @@ const Content: React.FC<IProps> = (props) => {
       tenantId: params.searchType === ScheduleSearchType.TENANT ? params.searchValue : '',
       databaseName: params.searchType === ScheduleSearchType.DATABASE ? params.searchValue : '',
       type:
-        scheduleStore?.schedulePageType !== SchedulePageType.ALL
+        scheduleStore?.schedulePageType !== SchedulePageType.ALL &&
+        mode !== SchedulePageMode.MULTI_PAGE
           ? [scheduleStore?.schedulePageType as unknown as ScheduleType]
           : params.type,
       status: params.status?.length ? params.status : [],
@@ -293,7 +294,8 @@ const Content: React.FC<IProps> = (props) => {
     }
     if (
       scheduleStore?.schedulePageType &&
-      scheduleStore?.schedulePageType !== SchedulePageType.ALL
+      scheduleStore?.schedulePageType !== SchedulePageType.ALL &&
+      mode !== SchedulePageMode.MULTI_PAGE
     ) {
       apiParams.scheduleType = [scheduleStore?.schedulePageType as unknown as ScheduleType];
     }

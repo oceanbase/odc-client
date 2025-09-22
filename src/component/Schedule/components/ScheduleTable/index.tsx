@@ -128,7 +128,6 @@ const ScheduleTable: React.FC<IProps> = (props) => {
   const [importProjectId, setImportProjectId] = useState<string>();
   const { isSubmitImport, debounceSubmit } = useImport(props.onReloadList, importProjectId);
   const [importModalVisible, setImportModalVisible] = useState<boolean>(false);
-  const { activePageKey } = pageStore;
   const [delList, setDelList] = useState<number[]>([]);
   const { project } = useContext(ProjectContext) || {};
   const projectArchived = isProjectArchived(project);
@@ -169,7 +168,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
       perspective: Perspective,
       propsPagination: IPagination,
     ) => {
-      if (mode === SchedulePageMode.MULTI_PAGE && activePageKey !== scheduleTabType) {
+      if (mode === SchedulePageMode.MULTI_PAGE && pageStore.activePageKey !== scheduleTabType) {
         destory();
         return;
       }

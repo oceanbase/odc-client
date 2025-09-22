@@ -311,7 +311,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
       // 最后一个节点特殊处理（仅任务执行成功后才进行）
       if (index === nodeList?.length - 1 && index >= 1) {
         // 回滚成功 | 回滚失败
-        if ([TaskStatus.ROLLBACK_FAILED, TaskStatus.ROLLBACK_SUCCEEDED].includes(task.status)) {
+        if ([TaskStatus.ROLLBACK_FAILED, TaskStatus.ROLLBACK_SUCCEEDED].includes(task?.status)) {
           _node = {
             title: formatMessage({
               id: 'odc.component.CommonTaskDetailModal.TaskFlow.RollBack',
@@ -320,7 +320,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
             //回滚
             operator,
             status,
-            statusContent: statusMap[task.status],
+            statusContent: statusMap[task?.status],
             completeTime,
             hasCompleteTimeLabel: true,
             hasOperatorLabel: true,
@@ -348,10 +348,10 @@ const TaskFlow: React.FC<IProps> = (props) => {
     .map(handleApproval)
     .map(handleTask);
   if (
-    (task?.type === TaskType.ASYNC && task.status === TaskStatus.COMPLETED) ||
-    (task?.type === TaskType.ASYNC && task.status === TaskStatus.EXECUTION_SUCCEEDED) ||
-    (task?.type === TaskType.LOGICAL_DATABASE_CHANGE && task.status === TaskStatus.COMPLETED) ||
-    (task?.type !== TaskType.ASYNC && task.status === TaskStatus.EXECUTION_SUCCEEDED)
+    (task?.type === TaskType.ASYNC && task?.status === TaskStatus.COMPLETED) ||
+    (task?.type === TaskType.ASYNC && task?.status === TaskStatus.EXECUTION_SUCCEEDED) ||
+    (task?.type === TaskType.LOGICAL_DATABASE_CHANGE && task?.status === TaskStatus.COMPLETED) ||
+    (task?.type !== TaskType.ASYNC && task?.status === TaskStatus.EXECUTION_SUCCEEDED)
   ) {
     currentNodeIndex = taskFlow.length + 1;
   } else {
@@ -410,7 +410,7 @@ const TaskFlow: React.FC<IProps> = (props) => {
 
                 /*处理时间*/
               >
-                {getLocalFormatDateTime(task.createTime)}
+                {getLocalFormatDateTime(task?.createTime)}
               </Descriptions.Item>
             </Descriptions>
           </Space>

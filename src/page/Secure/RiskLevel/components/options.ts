@@ -93,6 +93,10 @@ export const getTaskTypeOptions = () => {
       label: TaskTypeMap[TaskType.LOGICAL_DATABASE_CHANGE],
       value: TaskType.LOGICAL_DATABASE_CHANGE,
     },
+    {
+      label: TaskTypeMap[TaskType.ONLINE_SCHEMA_CHANGE],
+      value: TaskType.ONLINE_SCHEMA_CHANGE,
+    },
   ];
 
   return newTaskTypeOptions;

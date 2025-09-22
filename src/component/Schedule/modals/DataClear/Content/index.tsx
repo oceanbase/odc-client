@@ -240,39 +240,42 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
             )}
           </Descriptions.Item>
         ) : null}
-
-        <Descriptions.Item
-          label={
-            formatMessage({
-              id: 'odc.src.component.Task.DataClearTask.DetailContent.RestrictedFlow',
-              defaultMessage: '行限流',
-            }) /* 行限流 */
-          }
-        >
-          <ThrottleEditableCell
-            suffix="Rows/s"
-            min={0}
-            max={setting.maxSingleTaskRowLimit}
-            defaultValue={parameters?.rateLimit?.rowLimit}
-            onOk={handleRowLimit}
-          />
-        </Descriptions.Item>
-        <Descriptions.Item
-          label={
-            formatMessage({
-              id: 'odc.src.component.Task.DataClearTask.DetailContent.DataSizeLimit',
-              defaultMessage: '数据大小限流',
-            }) //'数据大小限流'
-          }
-        >
-          <ThrottleEditableCell
-            suffix="MB/s"
-            min={1}
-            max={setting.maxSingleTaskDataSizeLimit}
-            defaultValue={kbToMb(parameters?.rateLimit?.dataSizeLimit)}
-            onOk={handleDataSizeLimit}
-          />
-        </Descriptions.Item>
+        {parameters?.rateLimit?.rowLimit && (
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'odc.src.component.Task.DataClearTask.DetailContent.RestrictedFlow',
+                defaultMessage: '行限流',
+              }) /* 行限流 */
+            }
+          >
+            <ThrottleEditableCell
+              suffix="Rows/s"
+              min={0}
+              max={setting.maxSingleTaskRowLimit}
+              defaultValue={parameters?.rateLimit?.rowLimit}
+              onOk={handleRowLimit}
+            />
+          </Descriptions.Item>
+        )}
+        {parameters?.rateLimit?.dataSizeLimit && (
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'odc.src.component.Task.DataClearTask.DetailContent.DataSizeLimit',
+                defaultMessage: '数据大小限流',
+              }) //'数据大小限流'
+            }
+          >
+            <ThrottleEditableCell
+              suffix="MB/s"
+              min={1}
+              max={setting.maxSingleTaskDataSizeLimit}
+              defaultValue={kbToMb(parameters?.rateLimit?.dataSizeLimit)}
+              onOk={handleDataSizeLimit}
+            />
+          </Descriptions.Item>
+        )}
       </Descriptions>
       <Divider style={{ marginTop: 16 }} />
       <Descriptions column={2}>

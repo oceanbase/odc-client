@@ -19,6 +19,7 @@ import { TimeOptions } from '@/component/Schedule/layout/Header/DateSelect';
 import { SchedulePageMode, ScheduleTab } from '../../../interface';
 import ApprovalStatusFilter from './approvalStatusFilter';
 import styles from '../index.less';
+import login from '@/store/login';
 
 const Filter: React.FC = () => {
   const context = useContext(ParamsContext);
@@ -49,8 +50,12 @@ const Filter: React.FC = () => {
       <div>
         {isAll && <ScheduleTypeFilter isScheduleView={isScheduleView} />}
         {isScheduleView ? <ScheduleStatusFilter /> : <ScheduleTaskStatusFilter />}
-        {isScheduleView && tab !== ScheduleTab.approveByCurrentUser ? <ApprovalStatusFilter /> : ''}
-        {mode !== SchedulePageMode.PROJECT && <ProjectFilter isScheduleView={isScheduleView} />}
+        {isScheduleView && tab !== ScheduleTab.approveByCurrentUser && !login.isPrivateSpace() && (
+          <ApprovalStatusFilter />
+        )}
+        {mode !== SchedulePageMode.PROJECT && !login.isPrivateSpace() && (
+          <ProjectFilter isScheduleView={isScheduleView} />
+        )}
         <div style={{ marginTop: '16px' }}>创建时间范围</div>
         <DateSelect isScheduleView={isScheduleView} />
       </div>

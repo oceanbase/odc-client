@@ -58,9 +58,18 @@ const CreateTaskConfirmModal: React.FC<IProps> = ({
       }}
       destroyOnClose
     >
-      <Form form={form} layout="vertical" requiredMark="optional">
+      <Form form={form} layout="vertical">
         <Form.Item
-          rules={[{ required: true, message: info?.rulesMessage }]}
+          rules={[
+            {
+              validator: (_, value) => {
+                if (!value || value.trim() === '') {
+                  return Promise.reject(new Error('请输入作业名称'));
+                }
+                return Promise.resolve();
+              },
+            },
+          ]}
           name={'Name'}
           label={info?.label}
         >

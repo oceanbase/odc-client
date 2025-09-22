@@ -1,46 +1,29 @@
 import { ScheduleStatus, ScheduleType, ScheduleActionsEnum } from '@/d.ts/schedule';
 import { ScheduleStatusTextMap } from '@/constant/schedule';
-import {
+import Icon, {
   CheckCircleFilled,
   CloseCircleFilled,
   ExclamationCircleFilled,
   LoadingOutlined,
+  CaretRightOutlined,
   StopFilled,
   PauseCircleOutlined,
   EllipsisOutlined,
 } from '@ant-design/icons';
 import { Space } from 'antd';
+import { ReactComponent as WaitingBlueSvg } from '@/svgr/waiting_blue.svg';
+import { ReactComponent as ScheduleEnabledSvg } from '@/svgr/scheduleEnabled.svg';
+import { ReactComponent as SchedulePauseSvg } from '@/svgr/schedulePause.svg';
 
 const ScheduleStatusInfo = {
   [ScheduleStatus.CREATING]: {
-    icon: (
-      <EllipsisOutlined
-        style={{
-          background: 'var(--icon-blue-color)',
-          borderRadius: '14px',
-          color: '#ffffff',
-          fontSize: 13,
-        }}
-      />
-    ),
+    icon: <Icon component={WaitingBlueSvg} style={{ fontSize: 14, marginRight: '4px' }} />,
   },
   [ScheduleStatus.PAUSE]: {
-    icon: (
-      <PauseCircleOutlined
-        style={{
-          color: 'var(--icon-color-disable)',
-        }}
-      />
-    ),
+    icon: <Icon component={SchedulePauseSvg} style={{ fontSize: 14, marginRight: '4px' }} />,
   },
   [ScheduleStatus.ENABLED]: {
-    icon: (
-      <CheckCircleFilled
-        style={{
-          color: 'var(--icon-green-color)',
-        }}
-      />
-    ),
+    icon: <Icon component={ScheduleEnabledSvg} style={{ fontSize: 14, marginRight: '4px' }} />,
   },
   [ScheduleStatus.TERMINATED]: {
     icon: (
@@ -94,7 +77,7 @@ const ScheduleStatusLabel: React.FC<IProps> = ({ status }) => {
       size={5}
     >
       {statusObj ? (
-        <>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           {statusObj?.icon}
           <span
             style={{
@@ -105,7 +88,7 @@ const ScheduleStatusLabel: React.FC<IProps> = ({ status }) => {
           >
             {ScheduleStatusTextMap[status]}
           </span>
-        </>
+        </div>
       ) : null}
     </Space>
   );

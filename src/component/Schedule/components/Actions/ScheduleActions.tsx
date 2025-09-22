@@ -93,6 +93,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       schedule?.currentUserResourceRoles || schedule?.project?.currentUserResourceRoles || [],
     approvable: schedule?.approvable,
     createrId: schedule?.creator?.id,
+    approveByCurrentUser: schedule?.approveByCurrentUser,
   });
 
   useEffect(() => {
@@ -374,7 +375,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       centered: true,
       onOk: async () => {
         // setDelList?.([...delList, scheduleId]);
-        const res = await deleteSchedule(scheduleId, schedule?.project.id);
+        const res = await deleteSchedule(scheduleId, schedule?.project?.id);
         if (res?.data) {
           message.success('提交成功');
           onReloadList?.();
@@ -527,7 +528,11 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       label: ScheduleActionsTextMap[ScheduleActionsEnum.SHARE],
       icon: <ShareAltOutlined />,
       action: eventMap[ScheduleActionsEnum.SHARE],
-      visible: widthPermission((hasPermission) => hasPermission, [], IRoles),
+      visible: widthPermission(
+        (hasPermission) => hasPermission && !login?.isPrivateSpace(),
+        [],
+        IRoles,
+      ),
     },
   ];
 
