@@ -112,7 +112,7 @@ const UserDetail: React.FC<{
 
   const handleDeleteUser = async () => {
     openNotification({ name, type: EResourceType.USER, status: EStatus.LOADING });
-    const res = await deleteUser(id);
+    const res = await deleteUser(id, true);
     if (res) {
       openNotification({ name, type: EResourceType.USER, status: EStatus.SUCCESS });
       handleCloseAndReload();

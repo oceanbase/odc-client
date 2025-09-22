@@ -62,8 +62,12 @@ export async function createUser(data: Partial<IManagerUser>[]): Promise<IManage
 /**
  * 删除用户详情
  */
-export async function deleteUser(id: number): Promise<IManagerUser> {
-  const result = await request.delete(`/api/v2/iam/users/${id}`);
+export async function deleteUser(id: number, ignoreError: boolean = false): Promise<IManagerUser> {
+  const result = await request.delete(`/api/v2/iam/users/${id}`, {
+    params: {
+      ignoreError,
+    },
+  });
   return result?.data;
 }
 

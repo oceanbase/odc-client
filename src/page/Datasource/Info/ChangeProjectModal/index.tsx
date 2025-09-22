@@ -84,7 +84,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
       type: EResourceType.DATABASE,
       status: EStatus.LOADING,
     });
-    const isSuccess = await updateDataBase([database?.id], value.project, value.ownerIds);
+    const isSuccess = await updateDataBase([database?.id], value.project, value.ownerIds, true);
     if (isSuccess) {
       setOpenDepResourceModal(false);
       openNotification({

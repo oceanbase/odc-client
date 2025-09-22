@@ -70,12 +70,16 @@ export async function updateDataBase(
   databaseIds: number[],
   projectId: number,
   ownerIds: number[],
+  ignoreError: boolean = false,
 ): Promise<Boolean> {
   const res = await request.post(`/api/v2/database/databases/transfer`, {
     data: {
       databaseIds,
       projectId,
       ownerIds,
+    },
+    params: {
+      ignoreError,
     },
   });
   return res?.data;
