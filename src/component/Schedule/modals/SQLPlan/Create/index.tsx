@@ -3,6 +3,8 @@ import { createTask, getAsyncTaskUploadUrl } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import Crontab from '@/component/Crontab';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
+import { convertCronToMinutes } from '@/component/Crontab/utils';
+import { validateCrontabInterval } from '@/util/schedule';
 import FormItemPanel from '@/component/FormItemPanel';
 import ODCDragger from '@/component/OSSDragger2';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
@@ -225,6 +227,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
 
   const handleCrontabChange = (crontab) => {
     setCrontab(crontab);
+    validateCrontabInterval(crontab, form, 'crontab');
   };
 
   const getFileIdAndNames = (files: UploadFile[]) => {
@@ -327,6 +330,11 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
   };
 
   const handleSubmit = async (scheduleName?: string) => {
+    // 校验 crontab 间隔分钟数
+    if (!validateCrontabInterval(crontab, form, 'crontab')) {
+      return;
+    }
+
     form
       .validateFields()
       .then(async (values) => {

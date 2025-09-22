@@ -320,6 +320,29 @@ export const getCronExecuteCycleByObject = (
   return cycleValue?.join(' ');
 };
 
+/**
+ * 将cron表达式转换为分钟间隔
+ * @param cronString cron表达式
+ * @returns 间隔分钟数，如果无法确定则返回null
+ */
+export const convertCronToMinutes = (cronString: string): number | null => {
+  if (!cronString) return null;
+
+  try {
+    const interval = parser.parseExpression(cronString);
+    const next1 = interval.next();
+    const next2 = interval.next();
+
+    const diffMs = next2.getTime() - next1.getTime();
+    const diffMinutes = Math.round(diffMs / (1000 * 60));
+
+    return diffMinutes;
+  } catch (error) {
+    console.warn('Failed to convert cron to minutes:', error);
+    return null;
+  }
+};
+
 export const getCronExecuteCycle = (cronString: string, fieldStrs: string[]) => {
   const [second, minute, hour, dayOfMonth, month, dayOfWeek] = cronString?.split(' ');
   const [secondStr, minuteStr, hourStr, dayOfMonthStr, monthStr, dayOfWeekStr] = fieldStrs;
