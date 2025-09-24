@@ -134,8 +134,8 @@ export const KEY_CODE_MAP: Record<number, KeyCode> = {
 };
 
 const convertMap = {
-  [KeyCode.Ctrl]: KeyMod.CtrlCmd,
-  [KeyCode.Meta]: KeyMod.CtrlCmd,
+  [KeyCode.Ctrl]: isMac() ? KeyMod.WinCtrl : KeyMod.CtrlCmd,
+  [KeyCode.Meta]: isMac() ? KeyMod.CtrlCmd : KeyMod.WinCtrl,
   [KeyCode.Shift]: KeyMod.Shift,
   [KeyCode.Alt]: KeyMod.Alt,
 };
@@ -146,12 +146,17 @@ export function getKeyCodeText(code: string) {
     if (acc.length) {
       acc.push('+');
     }
-    if (parseInt(cur) === KeyCode.Meta) {
+    const keyCodeValue = parseInt(cur);
+    if (keyCodeValue === KeyCode.Meta) {
       if (isMac()) {
         acc.push('⌘');
       } else {
         acc.push('Win');
       }
+      return acc;
+    }
+    if (keyCodeValue === KeyCode.Ctrl) {
+      acc.push('Ctrl'); // 在所有平台都显示为 Ctrl
       return acc;
     }
     acc.push(KeyCode[cur]);
