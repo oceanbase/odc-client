@@ -208,15 +208,24 @@ const SQLResultSet: React.FC<IProps> = function (props) {
         ? [
             {
               key: MenuKey.CLOSE_CURRENT,
-              label: '关闭该结果集',
+              label: formatMessage({
+                id: 'src.page.Workspace.components.SQLResultSet.36FAD6DF',
+                defaultMessage: '关闭该结果集',
+              }),
             },
             {
               key: MenuKey.CLOSE_OTHERS,
-              label: '关闭其它结果集',
+              label: formatMessage({
+                id: 'src.page.Workspace.components.SQLResultSet.A460FEDE',
+                defaultMessage: '关闭其它结果集',
+              }),
             },
             {
               key: MenuKey.CLOSE_ALL,
-              label: '关闭所有结果集',
+              label: formatMessage({
+                id: 'src.page.Workspace.components.SQLResultSet.989D6FA1',
+                defaultMessage: '关闭所有结果集',
+              }),
             },
           ]
         : [
