@@ -16,7 +16,6 @@ export function validateCrontabInterval(
   form: FormInstance,
   fieldName: string = 'crontab',
 ): boolean {
-  console.log('111', form.getFieldsValue());
   if (!crontab?.cronString) {
     return true;
   }
