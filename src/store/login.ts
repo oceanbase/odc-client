@@ -215,9 +215,12 @@ export class UserStore {
         currentPassword: encrypt(data.currentPassword),
       });
     }
-    const result = await request.post(`/api/v2/iam/users/${data.username}/activate`, {
-      data,
-    });
+    const result = await request.post(
+      `/api/v2/iam/users/${encodeURIComponent(data.username)}/activate`,
+      {
+        data,
+      },
+    );
     return result && result.data;
   }
 

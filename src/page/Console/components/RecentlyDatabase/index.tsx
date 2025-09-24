@@ -202,44 +202,46 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
                   <LabelWithIcon
                     gap={4}
                     label={
-                      <span
-                        onClick={() => {
-                          if (!existed || disabledAllOperations || needToApplyDatabaseAuth) {
-                            return;
-                          }
-                          gotoSQLWorkspace(
-                            record?.project?.id,
-                            record?.dataSource?.id,
-                            record?.id,
-                            null,
-                            '',
-                            isLogicalDatabase(record),
-                          );
-                        }}
-                        style={{
-                          display: 'inline-block',
-                          maxWidth: '100%',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                          cursor:
-                            !existed || disabledAllOperations || needToApplyDatabaseAuth
-                              ? 'default'
-                              : 'pointer',
-                        }}
+                      <Tooltip
+                        styles={{ body: { whiteSpace: 'nowrap', width: 'fit-content' } }}
+                        title={renderTooltipContent({
+                          type: needToApplyProjectAuth
+                            ? ETootipType.PROJECT
+                            : needToApplyDatabaseAuth
+                            ? ETootipType.DATABASE
+                            : '',
+
+                          record,
+                        })}
                       >
-                        {value}
-                        {!existed && (
-                          <HelpDoc
-                            leftText
-                            isTip={false}
-                            title={formatMessage({
-                              id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
-                              defaultMessage: '当前数据库不存在',
-                            })} /*当前数据库不存在*/
-                          />
-                        )}
-                      </span>
+                        <span
+                          onClick={() => {
+                            if (!existed || disabledAllOperations || needToApplyDatabaseAuth) {
+                              return;
+                            }
+                            gotoSQLWorkspace(
+                              record?.project?.id,
+                              record?.dataSource?.id,
+                              record?.id,
+                              null,
+                              '',
+                              isLogicalDatabase(record),
+                            );
+                          }}
+                        >
+                          {value}
+                          {!existed && (
+                            <HelpDoc
+                              leftText
+                              isTip={false}
+                              title={formatMessage({
+                                id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
+                                defaultMessage: '当前数据库不存在',
+                              })} /*当前数据库不存在*/
+                            />
+                          )}
+                        </span>
+                      </Tooltip>
                     }
                     icon={
                       record?.type === 'LOGICAL' ? (
@@ -298,7 +300,14 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
                   label={
                     <Tooltip
                       styles={{ body: { whiteSpace: 'nowrap', width: 'fit-content' } }}
-                      title={tooltipTitle}
+                      title={renderTooltipContent({
+                        type: needToApplyProjectAuth
+                          ? ETootipType.PROJECT
+                          : needToApplyDatabaseAuth
+                          ? ETootipType.DATABASE
+                          : '',
+                        record,
+                      })}
                     >
                       <span>{value}</span>
                     </Tooltip>

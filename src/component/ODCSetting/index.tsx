@@ -27,6 +27,7 @@ import {
   Row,
   Space,
   Tabs,
+  Tooltip,
   Typography,
 } from 'antd';
 import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -90,6 +91,38 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   const [spaceType, setSpaceType] = useState(ESpaceType.USER);
   const isAdmin = odc.appConfig.manage.user.isODCOrganizationConfig?.(login.user);
   const [searchValue, setSearchValue] = useState('');
+
+  const spaceTypeOptions = useMemo(() => {
+    const options = [
+      {
+        label: formatMessage({ id: 'src.component.ODCSetting.6BCFD6DD', defaultMessage: '用户' }),
+        value: ESpaceType.USER,
+        className: styles.user,
+      },
+    ];
+
+    if (login.isPrivateSpace()) {
+      options.push({
+        label: formatMessage({
+          id: 'src.component.ODCSetting.47586FD4',
+          defaultMessage: '个人空间',
+        }),
+        value: ESpaceType.PERSONAL,
+        className: styles.space,
+      });
+    } else if (isAdmin) {
+      options.push({
+        label: formatMessage({
+          id: 'src.component.ODCSetting.AC147B83',
+          defaultMessage: '团队空间',
+        }),
+        value: ESpaceType.GROUP,
+        className: styles.space,
+      });
+    }
+
+    return options;
+  }, [isAdmin]);
 
   const getData = useCallback(
     (type: ESpaceType) => {
@@ -644,24 +677,13 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
           defaultValue={ESpaceType.USER}
           onChange={(e) => setSpaceType(e.target.value)}
         >
-          <Radio.Button className={styles.user} value={ESpaceType.USER}>
-            {formatMessage({ id: 'src.component.ODCSetting.6BCFD6DD', defaultMessage: '用户' })}
-          </Radio.Button>
-          {login.isPrivateSpace() ? (
-            <Radio.Button className={styles.space} value={ESpaceType.PERSONAL}>
-              {formatMessage({
-                id: 'src.component.ODCSetting.47586FD4',
-                defaultMessage: '个人空间',
-              })}
-            </Radio.Button>
-          ) : isAdmin ? (
-            <Radio.Button className={styles.space} value={ESpaceType.GROUP}>
-              {formatMessage({
-                id: 'src.component.ODCSetting.AC147B83',
-                defaultMessage: '团队空间',
-              })}
-            </Radio.Button>
-          ) : null}
+          {spaceTypeOptions.map((option) => (
+            <Tooltip key={option.value} title={option.label}>
+              <Radio.Button className={option.className} value={option.value}>
+                {option.label}
+              </Radio.Button>
+            </Tooltip>
+          ))}
         </Radio.Group>
         <Search
           className={styles.search}
