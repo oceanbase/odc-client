@@ -126,17 +126,6 @@ export function getAllHourValue() {
     .map((item, i) => i);
 }
 
-export function getAllFields() {
-  return [
-    CronInputName.second,
-    CronInputName.minute,
-    CronInputName.hour,
-    CronInputName.dayOfMonth,
-    CronInputName.month,
-    CronInputName.dayOfWeek,
-  ];
-}
-
 export function validateCronFields(value: string) {
   let error = null;
   try {
