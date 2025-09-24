@@ -83,7 +83,7 @@ const getFieldProps: (
     ? {
         status: 'error',
         [position]: (
-          <Tooltip title={error?.join('')}>
+          <Tooltip title={error?.join?.('')}>
             <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />
           </Tooltip>
         ),
@@ -112,9 +112,15 @@ const RuleFormItem: React.FC<TableFormProps> = (props) => {
         const fromCurrentTime = getFieldBySecondName('fromCurrentTime');
         const incrementFieldType = getFieldBySecondName('incrementFieldType');
         const incrementFieldTypeInDate = getFieldBySecondName('incrementFieldTypeInDate');
-        const generateExprError = getFieldBySecondName('generateExpr');
-        const intervalGenerateExprError = getFieldBySecondName('intervalGenerateExpr');
-        const intervalError = getFieldBySecondName('interval');
+        const generateExprError = getFieldError(
+          getPartitionKeyConfigsFormItemName({ name: field.name, key: 'generateExpr' }),
+        );
+        const intervalGenerateExprError = getFieldError(
+          getPartitionKeyConfigsFormItemName({ name: field.name, key: 'intervalGenerateExpr' }),
+        );
+        const intervalError = getFieldError(
+          getPartitionKeyConfigsFormItemName({ name: field.name, key: 'interval' }),
+        );
 
         const validateInput = (error) => {
           setIntervalErrorInBlur(error);
