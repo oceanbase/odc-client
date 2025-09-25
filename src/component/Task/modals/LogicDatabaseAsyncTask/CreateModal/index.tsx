@@ -63,10 +63,11 @@ interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
   theme?: string;
+  reloadList?: () => void;
 }
 
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore, theme } = props;
+  const { modalStore, theme, reloadList } = props;
   const { logicDatabaseInfo } = modalStore;
   const [form] = Form.useForm();
   const editorRef = useRef<CommonIDE>();
@@ -191,6 +192,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         const res = await createTask(data);
         if (res) {
           handleCancel(false);
+          reloadList?.();
           setConfirmLoading(false);
           message.success(
             formatMessage({
@@ -393,11 +395,9 @@ const CreateModal: React.FC<IProps> = (props) => {
                 editorProps={{
                   theme,
                 }}
-                placeholder={formatMessage({
-                  id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.56CD71B9',
-                  defaultMessage:
-                    '使用逻辑表表达式需要在表达式上加上`号，如：`db_[00-31].test_[00-31]`,否则将无法识别逻辑表拓扑',
-                })}
+                placeholder={
+                  '使用逻辑表表达式需要在表达式上加上`号，如：`db_[00-31]`.`test_[00-31]`,否则将无法识别逻辑表拓扑'
+                }
               />
             )}
           </Form.Item>

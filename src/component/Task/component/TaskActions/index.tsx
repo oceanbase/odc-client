@@ -109,8 +109,6 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
   const [openRollback, setOpenRollback] = useState(false);
   const [activeBtnKey, setActiveBtnKey] = useState<TaskActionsEnum>();
   const isSqlworkspace = location?.hash?.includes('sqlworkspace');
-  const disabledApproval =
-    task?.status === TaskStatus.WAIT_FOR_CONFIRM && !isDetailModal ? true : disabledSubmit;
 
   /** 工单不需要从approveByCurrentUser判断当前用户是否可以审批，直接传true即可 */
   const { IRoles } = useOperationPermissions({
@@ -759,15 +757,6 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
         [IOperationTypeRole.APPROVER],
         IRoles,
       ),
-      disabledTooltip: () => {
-        return disabledApproval
-          ? formatMessage({
-              id: 'odc.TaskManagePage.component.TaskTools.SetPartitionPoliciesForAll',
-              defaultMessage: '请设置所有Range分区表的分区策略',
-            })
-          : //请设置所有Range分区表的分区策略
-            null;
-      },
     },
     {
       key: TaskActionsEnum.REJECT,
@@ -798,7 +787,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
       return show;
     });
     return _actions;
-  }, [task?.status, task?.approvable]);
+  }, [task?.status, task?.approvable, task?.rollbackable]);
 
   const menuItems: MenuProps['items'] = useMemo(() => {
     let items: MenuProps['items'] = actions

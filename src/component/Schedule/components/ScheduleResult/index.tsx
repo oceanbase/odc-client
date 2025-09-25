@@ -21,7 +21,7 @@ interface ScheduleResultProps {
 const ScheduleResult: React.FC<ScheduleResultProps> = (props) => {
   const { subTask } = props;
   let result = null;
-  switch (subTask.type) {
+  switch (subTask?.type) {
     case SubTaskType.DATA_ARCHIVE:
     case SubTaskType.DATA_DELETE:
     case SubTaskType.DATA_ARCHIVE_ROLLBACK:

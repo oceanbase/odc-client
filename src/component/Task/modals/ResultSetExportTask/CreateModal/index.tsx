@@ -50,9 +50,10 @@ interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
   theme?: string;
+  reloadList?: () => void;
 }
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId, theme } = props;
+  const { modalStore, projectId, theme, reloadList } = props;
 
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
@@ -91,6 +92,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       });
     } else {
       modalStore.changeCreateResultSetExportTaskModal(false);
+
       hadleReset();
     }
   };
@@ -139,6 +141,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         setConfirmLoading(true);
         const res = await createTask(data);
         handleCancel(false);
+        reloadList?.();
         setConfirmLoading(false);
         if (res) {
           openTasksPage(TaskPageType.EXPORT_RESULT_SET);

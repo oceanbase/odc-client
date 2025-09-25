@@ -85,7 +85,6 @@ const TaskTable: React.FC<IProps> = (props) => {
   const { results: menus } = useTaskGroup({ taskItems: Object.values(TaskConfig) });
   const { project } = useContext(ProjectContext) || {};
   const projectArchived = isProjectArchived(project);
-  const { activePageKey } = pageStore;
   const isAll = TaskPageType.ALL === taskTabType;
   const [hoverInNewTaskMenuBtn, setHoverInNewTaskMenuBtn] = useState(false);
   const [hoverInNewTaskMenu, setHoverInNewTaskMenu] = useState(false);
@@ -93,10 +92,11 @@ const TaskTable: React.FC<IProps> = (props) => {
 
   const { loop: loadData, destory } = useLoop((count) => {
     return async (args, propsPagination) => {
-      if (mode === TaskPageMode.MULTI_PAGE && activePageKey !== taskTabType) {
+      if (mode === TaskPageMode.MULTI_PAGE && pageStore?.activePageKey !== taskTabType) {
         destory();
         return;
       }
+
       if (propsPagination?.pageSize) {
         setPagination(propsPagination);
       }
@@ -104,6 +104,10 @@ const TaskTable: React.FC<IProps> = (props) => {
       setLoading(false);
     };
   }, 6000);
+
+  useEffect(() => {
+    loadData(params, pagination);
+  }, [pageStore?.activePageKey]);
 
   useEffect(() => {
     setLoading(true);
@@ -114,7 +118,6 @@ const TaskTable: React.FC<IProps> = (props) => {
         props.onMenuClick(TaskPageType.DATAMOCK);
       },
     });
-    loadData(params, pagination);
     return () => {
       destory?.();
     };
@@ -124,13 +127,10 @@ const TaskTable: React.FC<IProps> = (props) => {
     defaultParams: [null, 1, 400],
   });
 
-  const handleChangeParams = useCallback(
-    debounce((params, pagination) => {
-      setLoading(true);
-      loadData(params, pagination);
-    }, 150),
-    [pagination, params],
-  );
+  const handleChangeParams = useCallback((params, pagination) => {
+    setLoading(true);
+    loadData(params, pagination);
+  }, []);
 
   useEffect(() => {
     setPagination({

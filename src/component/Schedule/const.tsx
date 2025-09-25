@@ -46,7 +46,7 @@ const ScheduleStatus2Actions = {
   [ScheduleStatus.EXECUTION_FAILED]: [],
 };
 
-/** 作业类任务状态对应的操作 */
+/** 作业子任务状态对应的操作 */
 const ScheduleTaskStatus2Actions = {
   [ScheduleTaskStatus.PREPARING]: [
     ScheduleTaskActionsEnum.VIEW,
@@ -74,7 +74,6 @@ const ScheduleTaskStatus2Actions = {
     ScheduleTaskActionsEnum.VIEW,
     ScheduleTaskActionsEnum.SHARE,
     ScheduleTaskActionsEnum.RESTORE,
-    ScheduleTaskActionsEnum.STOP,
   ],
   [ScheduleTaskStatus.RESUMING]: [
     ScheduleTaskActionsEnum.VIEW,
@@ -89,7 +88,11 @@ const ScheduleTaskStatus2Actions = {
   [ScheduleTaskStatus.FAILED]: [ScheduleTaskActionsEnum.VIEW, ScheduleTaskActionsEnum.SHARE],
   [ScheduleTaskStatus.EXEC_TIMEOUT]: [ScheduleTaskActionsEnum.VIEW, ScheduleTaskActionsEnum.SHARE],
   [ScheduleTaskStatus.CANCELED]: [ScheduleTaskActionsEnum.VIEW, ScheduleTaskActionsEnum.SHARE],
-  [ScheduleTaskStatus.DONE]: [ScheduleTaskActionsEnum.VIEW, ScheduleTaskActionsEnum.SHARE],
+  [ScheduleTaskStatus.DONE]: [
+    ScheduleTaskActionsEnum.VIEW,
+    ScheduleTaskActionsEnum.SHARE,
+    ScheduleTaskActionsEnum.ROLLBACK,
+  ],
 };
 
 export { ScheduleStatus2Actions, ScheduleTaskStatus2Actions };

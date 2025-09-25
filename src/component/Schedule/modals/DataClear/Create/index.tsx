@@ -579,9 +579,8 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
             <h3 id="scheduleSetting" className={styles.title}>
               作业设置
             </h3>
-
-            <DirtyRowAction dependentField="needCheckBeforeDelete" />
             <ShardingStrategyItem form={form} />
+            <DirtyRowAction dependentField="needCheckBeforeDelete" />
             <MaxAllowedDirtyRowCount />
             <TaskdurationItem form={form} />
             <ThrottleFormItem isShowDataSizeLimit={true} />

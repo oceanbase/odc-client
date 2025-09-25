@@ -160,7 +160,9 @@ export const nodeStatus = {
     },
   },
 };
-export const status = {
+export const status: Partial<
+  Record<TaskStatus, { icon: React.ReactNode; text: string; desc?: React.ReactNode }>
+> = {
   [TaskStatus.APPROVING]: {
     icon: (
       <ExclamationCircleFilled
@@ -184,18 +186,16 @@ export const status = {
         }}
       />
     ),
-    text: (
-      <>
-        执行成功
-        <Tooltip title="执行时存在错误，已跳过">
-          <ExclamationCircleOutlined
-            style={{
-              color: 'rgb(250, 173, 20)',
-              marginLeft: 4,
-            }}
-          />
-        </Tooltip>
-      </>
+    text: '执行成功',
+    desc: (
+      <Tooltip title="执行时存在错误，已跳过">
+        <ExclamationCircleOutlined
+          style={{
+            color: 'rgb(250, 173, 20)',
+            marginLeft: 4,
+          }}
+        />
+      </Tooltip>
     ),
   },
 
@@ -445,7 +445,9 @@ export const status = {
 };
 
 // 周期任务状态
-export const cycleStatus = {
+export const cycleStatus: Partial<
+  Record<TaskStatus, { icon: React.ReactNode; text: string; desc?: React.ReactNode }>
+> = {
   [TaskStatus.APPROVING]: {
     icon: (
       <ExclamationCircleFilled
@@ -583,7 +585,9 @@ export const cycleStatus = {
 };
 
 // 子任务状态（仅周期任务 + 无锁结构变更）
-export const subTaskStatus = {
+export const subTaskStatus: Partial<
+  Record<SubTaskStatus, { icon: React.ReactNode; text: string; desc?: React.ReactNode }>
+> = {
   [SubTaskStatus.DONE]: {
     icon: (
       <CheckCircleFilled
@@ -813,6 +817,7 @@ const StatusLabel: React.FC<IProps> = (props) => {
     {
       icon: React.ReactNode;
       text: string | React.ReactNode;
+      desc?: React.ReactNode;
     }
   > = statusMap[StatusNodeType.FLOW_TASK];
   if (isSubTask) {
@@ -835,7 +840,7 @@ const StatusLabel: React.FC<IProps> = (props) => {
           overflow: 'hidden',
           maxWidth: '100%',
         }}
-        size={5}
+        size={0}
       >
         {statusObj ? (
           <>
@@ -845,9 +850,12 @@ const StatusLabel: React.FC<IProps> = (props) => {
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 maxWidth: '100%',
+                marginLeft: 4,
+                marginRight: 4,
               }}
             >
               {statusObj.text}
+              {statusObj?.desc}
             </span>
             {!isNil(progress) && _status === TaskStatus.EXECUTING ? ` (${progress}%) ` : null}
           </>

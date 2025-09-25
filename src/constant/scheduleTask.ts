@@ -23,6 +23,7 @@ export const ScheduleTaskActionsTextMap = {
   [ScheduleTaskActionsEnum.PAUSE]: '暂停',
   [ScheduleTaskActionsEnum.RESTORE]: '恢复',
   [ScheduleTaskActionsEnum.RETRY]: '重试',
+  [ScheduleTaskActionsEnum.ROLLBACK]: '回滚',
 };
 
 export const SubTypeTextMap = {

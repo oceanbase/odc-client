@@ -43,7 +43,7 @@ const ScheduleCreatePage: React.FC<IProps> = ({ scheduleStore }) => {
               style={{ marginRight: '6px' }}
               onClick={() => {
                 history?.back();
-                scheduleStore?.resetScheduleCreateData();
+                scheduleStore.resetScheduleCreateData();
               }}
             />
             {isEdit ? '编辑' + title + '作业' : '新建' + title + '作业'}

@@ -295,7 +295,7 @@ export const listChangeLog = async (id: number): Promise<IResponseData<Operation
  * @returns
  */
 export const startScheduleTask = async (scheduleId: number, taskId: number) => {
-  const res = await request.put(`/api/v2/schedules/${scheduleId}/tasks/${taskId}/start`);
+  const res = await request.put(`/api/v2/schedule/schedules/${scheduleId}/tasks/${taskId}/start`);
   return res;
 };
 
@@ -306,7 +306,9 @@ export const startScheduleTask = async (scheduleId: number, taskId: number) => {
  * @returns
  */
 export const rollbackScheduleTask = async (scheduleId: number, taskId: number) => {
-  const res = await request.put(`/api/v2/schedules/${scheduleId}/tasks/${taskId}/rollback`);
+  const res = await request.post(
+    `/api/v2/schedule/schedules/${scheduleId}/tasks/${taskId}/rollback`,
+  );
   return res;
 };
 

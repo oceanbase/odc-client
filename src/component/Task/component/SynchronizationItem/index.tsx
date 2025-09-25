@@ -23,7 +23,7 @@ const SynchronizationItem: React.FC<IProps> = ({ form, targetDatabase }) => {
     <>
       <Form.Item
         name="syncTableStructure"
-        extra={'源端目标端结构不一致时，目标端自动同步源端结构，未勾选时将不做处理'}
+        extra={'若目标数据库中不存在归档表，则根据源端数据库中的表结构自动创建'}
         style={{ marginBottom: 24 }}
       >
         <Tooltip
@@ -51,7 +51,7 @@ const SynchronizationItem: React.FC<IProps> = ({ form, targetDatabase }) => {
               }
             }}
           >
-            目标表结构同步
+            目标表结构不存在时自动创建
           </Checkbox>
         </Tooltip>
       </Form.Item>

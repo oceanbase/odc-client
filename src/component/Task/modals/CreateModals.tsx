@@ -32,25 +32,26 @@ import LogicDatabaseAsyncTask from './LogicDatabaseAsyncTask';
 interface IProps {
   projectId?: number;
   theme?: 'dark' | 'white';
+  reloadList?: () => void;
 }
 
 const CreateModals: React.FC<IProps> = (props) => {
-  const { projectId, theme } = props;
+  const { projectId, theme, reloadList } = props;
   return (
     <>
-      <AsyncTaskCreateModal projectId={projectId} theme={theme} />
-      <DataMockerTaskCreateModal projectId={projectId} />
-      <ExportTaskCreateModal projectId={projectId} />
-      <ImportTaskCreateModal projectId={projectId} />
-      <ShadowSyncTaskCreateModal projectId={projectId} />
-      <ApplyPermissionCreateModal projectId={projectId} />
+      <AsyncTaskCreateModal projectId={projectId} theme={theme} reloadList={reloadList} />
+      <DataMockerTaskCreateModal projectId={projectId} reloadList={reloadList} />
+      <ExportTaskCreateModal projectId={projectId} reloadList={reloadList} />
+      <ImportTaskCreateModal projectId={projectId} reloadList={reloadList} />
+      <ShadowSyncTaskCreateModal projectId={projectId} reloadList={reloadList} />
+      <ApplyPermissionCreateModal projectId={projectId} reloadList={reloadList} />
       <AlterDDLTaskCreateModal projectId={projectId} theme={theme} />
-      <ResultSetExportTask projectId={projectId} theme={theme} />
-      <ApplyDatabasePermissionCreateModal projectId={projectId} />
-      <ApplyTablePermissionCreateModal projectId={projectId} />
-      <StructureComparisonTask projectId={projectId} />
-      <MutipleAsyncTask projectId={projectId} theme={theme} />
-      <LogicDatabaseAsyncTask projectId={projectId} theme={theme} />
+      <ResultSetExportTask projectId={projectId} theme={theme} reloadList={reloadList} />
+      <ApplyDatabasePermissionCreateModal projectId={projectId} reloadList={reloadList} />
+      <ApplyTablePermissionCreateModal projectId={projectId} reloadList={reloadList} />
+      <StructureComparisonTask projectId={projectId} reloadList={reloadList} />
+      <MutipleAsyncTask projectId={projectId} theme={theme} reloadList={reloadList} />
+      <LogicDatabaseAsyncTask projectId={projectId} theme={theme} reloadList={reloadList} />
     </>
   );
 };

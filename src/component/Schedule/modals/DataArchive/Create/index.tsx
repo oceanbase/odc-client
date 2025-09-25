@@ -3,6 +3,7 @@ import { previewSqlStatements } from '@/common/network/task';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
 import { convertCronToMinutes } from '@/component/Crontab/utils';
 import { validateCrontabInterval } from '@/util/schedule';
+
 import FormItemPanel from '@/component/FormItemPanel';
 import { IDatabase } from '@/d.ts/database';
 import { useRequest } from 'ahooks';
@@ -49,6 +50,7 @@ import { ConnectTypeText } from '@/constant/label';
 import SchduleExecutionMethodForm from '@/component/Schedule/components/SchduleExecutionMethodForm';
 import ExecuteTimeoutSchedulingStrategy from '@/component/Schedule/components/ExecuteTimeoutSchedulingStrategy';
 import { getInitScheduleName } from '@/component/Task/component/CreateTaskConfirmModal/helper';
+import SynchronizationItem from '@/component/Task/component/SynchronizationItem';
 
 export const InsertActionOptions = [
   {
@@ -225,7 +227,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
         dayOfMonth: days,
         dayOfWeek: days,
       };
-      crontabRef.current?.setValue(crontab);
+      crontabRef?.current?.setValue(crontab);
     }
     if (triggerStrategy === TaskExecStrategy.START_AT) {
       formData.startAt = dayjs(startAt);
@@ -306,14 +308,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               }) /*编辑数据归档*/
             }
           </div>
-          <div>
-            {
-              formatMessage({
-                id: 'odc.DataArchiveTask.CreateModal.TheTaskNeedsToBe',
-                defaultMessage: '任务需要重新审批，审批通过后此任务将重新执行',
-              }) /*任务需要重新审批，审批通过后此任务将重新执行*/
-            }
-          </div>
+          <div>作业需要重新审批，审批通过后此作业将重新执行</div>
         </>
       ),
 
@@ -538,7 +533,9 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
    * 仅目标端为对象存储时支持 删除归档过程中产生的临时表
    */
   useEffect(() => {
-    if (!isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)) {
+    if (isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)) {
+      form.setFieldValue('syncTableStructure', undefined);
+    } else {
       form.setFieldValue('deleteTemporaryTable', undefined);
     }
   }, [targetDatabase]);
@@ -647,42 +644,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
                 projectId={projectId}
               />
             </Space>
-            <Form.Item
-              name="deleteAfterMigration"
-              valuePropName="checked"
-              style={{ marginBottom: 24 }}
-              extra={
-                <span>
-                  {
-                    isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
-                      ? formatMessage({
-                          id: 'src.component.Task.DataArchiveTask.CreateModal.5A19F0AB',
-                          defaultMessage: '若您进行清理，默认立即清理且不做备份',
-                        })
-                      : formatMessage({
-                          id: 'odc.DataArchiveTask.CreateModal.IfYouCleanUpThe',
-                          defaultMessage:
-                            '若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚',
-                        }) /*若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚*/
-                  }
-                </span>
-              }
-            >
-              <Checkbox
-                onChange={(e) => {
-                  setIsdeleteAfterMigration(e.target.checked);
-                }}
-              >
-                <Space>
-                  {
-                    formatMessage({
-                      id: 'odc.DataArchiveTask.CreateModal.CleanUpArchivedDataFrom',
-                      defaultMessage: '清理源端已归档数据',
-                    }) /*清理源端已归档数据*/
-                  }
-                </Space>
-              </Checkbox>
-            </Form.Item>
+
             {/* <Form.Item shouldUpdate noStyle>
               {({ getFieldValue }) => {
                 const deleteAfterMigration = getFieldValue('deleteAfterMigration');
@@ -747,10 +709,46 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
             <h3 id="scheduleSetting" className={styles.title}>
               作业设置
             </h3>
-
-            {/* <SynchronizationItem form={form} targetDatabase={targetDatabase} /> */}
-            <DirtyRowAction dependentField="deleteAfterMigration" />
+            <SynchronizationItem form={form} targetDatabase={targetDatabase} />
             <ShardingStrategyItem form={form} />
+
+            <Form.Item
+              name="deleteAfterMigration"
+              valuePropName="checked"
+              style={{ marginBottom: 24 }}
+              extra={
+                <span>
+                  {
+                    isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)
+                      ? formatMessage({
+                          id: 'src.component.Task.DataArchiveTask.CreateModal.5A19F0AB',
+                          defaultMessage: '若您进行清理，默认立即清理且不做备份',
+                        })
+                      : formatMessage({
+                          id: 'odc.DataArchiveTask.CreateModal.IfYouCleanUpThe',
+                          defaultMessage:
+                            '若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚',
+                        }) /*若您进行清理，默认立即清理且不做备份；清理任务完成后支持回滚*/
+                  }
+                </span>
+              }
+            >
+              <Checkbox
+                onChange={(e) => {
+                  setIsdeleteAfterMigration(e.target.checked);
+                }}
+              >
+                <Space>
+                  {
+                    formatMessage({
+                      id: 'odc.DataArchiveTask.CreateModal.CleanUpArchivedDataFrom',
+                      defaultMessage: '清理源端已归档数据',
+                    }) /*清理源端已归档数据*/
+                  }
+                </Space>
+              </Checkbox>
+            </Form.Item>
+            <DirtyRowAction dependentField="deleteAfterMigration" />
             <Form.Item
               label={'数据插入策略'}
               name="migrationInsertAction"
@@ -760,8 +758,6 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
             </Form.Item>
             <MaxAllowedDirtyRowCount />
             <TaskdurationItem form={form} />
-
-            <ExecuteTimeoutSchedulingStrategy />
             <ThrottleFormItem isShowDataSizeLimit={true} />
           </Form>
         </Spin>

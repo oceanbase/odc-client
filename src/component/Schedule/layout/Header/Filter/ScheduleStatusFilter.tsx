@@ -1,14 +1,14 @@
 import ParamsContext from '@/component/Schedule/context/ParamsContext';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo, useRef } from 'react';
 import { ScheduleStatus } from '@/d.ts/schedule';
 import { Button, Divider, Select } from 'antd';
 import { ScheduleStatusTextMap } from '@/constant/schedule';
+import styles from './index.less';
 
 const ScheduleStatusFilter = () => {
   const context = useContext(ParamsContext);
   const { params, setParams } = context || {};
   const { status } = params || {};
-
   const handleSelectStatus = (value) => {
     setParams?.({ status: value });
   };
@@ -46,20 +46,27 @@ const ScheduleStatusFilter = () => {
             <>
               {menu}
               <Divider style={{ margin: '0px' }} />
-              <div>
-                <Button
-                  type="link"
-                  onClick={() => handleSelectStatus(statusOptions?.map((item) => item.value))}
-                >
-                  全选
-                </Button>
-                {status?.length ? (
-                  <Button type="link" onClick={() => handleSelectStatus([])}>
+              <div className={styles.customBatchContainer}>
+                {params?.status?.length !== statusOptions?.length ? (
+                  <div
+                    className={styles.customBatch}
+                    onClick={() => {
+                      handleSelectStatus(statusOptions?.map((item) => item.value));
+                    }}
+                  >
+                    全选
+                  </div>
+                ) : null}
+                {params?.status?.length ? (
+                  <div
+                    className={styles.customBatch}
+                    onClick={() => {
+                      handleSelectStatus([]);
+                    }}
+                  >
                     清空
-                  </Button>
-                ) : (
-                  ''
-                )}
+                  </div>
+                ) : null}
               </div>
             </>
           );

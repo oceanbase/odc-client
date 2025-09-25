@@ -1,9 +1,10 @@
 import React, { useContext, useEffect } from 'react';
-import { Radio } from 'antd';
+import { Badge, Radio } from 'antd';
 import { TaskTab } from '@/component/Task/interface';
 import ParamsContext from '@/component/Task/context/ParamsContext';
 import styles from './index.less';
 import login from '@/store/login';
+import taskStore from '@/store/task';
 
 const Tabs = () => {
   const context = useContext(ParamsContext);
@@ -23,7 +24,16 @@ const Tabs = () => {
           value: TaskTab.all,
         },
         {
-          label: '待我审批',
+          label: (
+            <Badge
+              count={taskStore.pendingApprovalInstanceIds?.length ?? 0}
+              offset={[8, -3]}
+              size="small"
+              style={{ zIndex: 999 }}
+            >
+              <div>待我审批</div>
+            </Badge>
+          ),
           value: TaskTab.approveByCurrentUser,
         },
         {

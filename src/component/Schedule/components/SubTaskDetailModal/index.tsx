@@ -86,6 +86,7 @@ interface ICommonSubTaskDetailModalProps {
   logType: CommonTaskLogType;
   opRecord: Operation[];
   handleLogTypeChange: (type: CommonTaskLogType) => void;
+  loading?: boolean;
 }
 
 const SubTaskDetailModal: React.FC<ICommonSubTaskDetailModalProps> = (props) => {
@@ -102,6 +103,7 @@ const SubTaskDetailModal: React.FC<ICommonSubTaskDetailModalProps> = (props) => 
     logType,
     handleLogTypeChange,
     opRecord,
+    loading,
   } = props;
 
   return (
@@ -111,6 +113,7 @@ const SubTaskDetailModal: React.FC<ICommonSubTaskDetailModalProps> = (props) => 
       onClose={onClose}
       rootClassName={styles.detailDrawer}
       destroyOnHidden
+      loading={loading}
       title={
         <div className={styles.title}>
           <span>{`#${subTask?.id} 执行详情`}</span>

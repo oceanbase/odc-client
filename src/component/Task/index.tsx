@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import Content from './layout/Content';
+import Content, { ContentRef } from './layout/Content';
 import styles from './index.less';
 import Sider from './layout/Sider';
 import { TaskPageMode } from './interface';
 import CreateModals from '@/component/Task/modals/CreateModals';
+import { useRef } from 'react';
 
 interface IProps {
   projectId?: number;
@@ -26,14 +27,19 @@ interface IProps {
 }
 const TaskManagerPage: React.FC<IProps> = (props) => {
   const { projectId, mode } = props;
+  const contentRef = useRef<ContentRef>(null);
+
+  const handleRefreshContent = () => {
+    contentRef.current?.reloadList?.();
+  };
 
   return (
     <div className={styles.task}>
       <div className={styles.sider}>
         <Sider mode={mode} />
       </div>
-      <Content mode={mode} projectId={projectId} />
-      <CreateModals projectId={projectId} theme={'white'} />
+      <Content ref={contentRef} mode={mode} projectId={projectId} />
+      <CreateModals projectId={projectId} theme={'white'} reloadList={handleRefreshContent} />
     </div>
   );
 };

@@ -46,9 +46,10 @@ import dayjs from 'dayjs';
 interface IProps {
   projectId?: number;
   modalStore?: ModalStore;
+  reloadList?: () => void;
 }
 
-const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) => {
+const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore, reloadList }) => {
   const { structureComparisonVisible, structureComparisonTaskData } = modalStore;
 
   const [form] = useForm<CreateStructureComparisonTaskRecord>();
@@ -76,6 +77,7 @@ const StructureComparisonTask: React.FC<IProps> = ({ projectId, modalStore }) =>
         }),
       );
       modalStore.changeStructureComparisonModal(false);
+      reloadList?.();
       openTasksPage(TaskPageType.STRUCTURE_COMPARISON);
       return;
     }

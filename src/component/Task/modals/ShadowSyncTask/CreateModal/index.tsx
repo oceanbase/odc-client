@@ -33,6 +33,7 @@ import dayjs from 'dayjs';
 interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
+  reloadList?: () => void;
 }
 
 enum StepKeys {
@@ -71,7 +72,7 @@ const defaultData: IShaodwSyncData = {
   errorStrategy: ErrorStrategy.ABORT,
 };
 
-const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
+const CreateModal: React.FC<IProps> = function ({ modalStore, projectId, reloadList }) {
   const [isChanged, setIsChanged] = useState(false);
   const [stepIdx, setStepIdx] = useState(0);
   const [nextLoading, setNextLoading] = useState(false);
@@ -110,6 +111,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
     });
     setIsChanged(false);
     setStepIdx(0);
+    setNextLoading(false);
   };
 
   function close(force: boolean = false) {
@@ -179,6 +181,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
       return;
     }
     close(true);
+    reloadList?.();
     openTasksPage(TaskPageType.SHADOW);
   }
   return (

@@ -2,6 +2,7 @@ import { formatMessage } from '@/util/intl';
 import { Checkbox, Form, FormInstance, InputNumber, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
+import ExecuteTimeoutSchedulingStrategy from '@/component/Schedule/components/ExecuteTimeoutSchedulingStrategy';
 
 interface IProps {
   form: FormInstance<any>;
@@ -67,6 +68,7 @@ const TaskDurationItem: React.FC<IProps> = ({ form }) => {
           </span>
         </Space>
       )}
+      {hasTaskDuration && <ExecuteTimeoutSchedulingStrategy />}
     </>
   );
 };

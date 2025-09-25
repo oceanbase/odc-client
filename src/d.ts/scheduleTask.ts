@@ -48,6 +48,8 @@ export enum ScheduleTaskActionsEnum {
   RESTORE = 'RESTORE',
   /** 重试(数据归档、数据清理)*/
   RETRY = 'RETRY',
+  /** 回滚(数据归档)*/
+  ROLLBACK = 'ROLLBACK',
 }
 
 export type IScheduleTaskExecutionDetail =
@@ -147,7 +149,7 @@ export type IDataArchiveParametersSubTaskParameters = Record<string, any>;
 export interface scheduleTask<T, K> {
   createTime: number;
   id: number;
-  jobGroup: ScheduleType;
+  jobGroup: SubTaskType;
   status: ScheduleTaskStatus;
   type: SubTaskType;
   updateTime: number;

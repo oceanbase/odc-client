@@ -276,6 +276,13 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
             if (prevContainsDropStrategy) {
               strategies.push(TaskPartitionStrategy.DROP);
             }
+          } else {
+            if (containsCreateStrategy) {
+              strategies.push(TaskPartitionStrategy.CREATE);
+            }
+            if (containsDropStrategy) {
+              strategies.push(TaskPartitionStrategy.DROP);
+            }
           }
           return {
             __id: index,
