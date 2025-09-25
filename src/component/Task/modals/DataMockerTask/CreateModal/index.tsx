@@ -33,11 +33,12 @@ import { getDefaultRuleByGenerator } from './RuleContent';
 interface IProps extends Pick<DrawerProps, 'visible'> {
   modalStore?: ModalStore;
   projectId?: number;
+  reloadList?: () => void;
 }
 
 const CreateModal: React.FC<IProps> = inject('modalStore')(
   observer((props) => {
-    const { modalStore, projectId } = props;
+    const { modalStore, projectId, reloadList } = props;
     const { dataMockerData } = modalStore;
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [dbMode, setDbMode] = useState<ConnectionMode>(null);
@@ -164,6 +165,7 @@ const CreateModal: React.FC<IProps> = inject('modalStore')(
             }),
           );
           onClose();
+          reloadList?.();
           openTasksPage(TaskPageType.DATAMOCK);
         }
       } catch (e) {

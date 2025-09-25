@@ -16,16 +16,18 @@ import {
   resumeScheduleTask,
   startScheduleTask,
   stopScheduleTask,
+  rollbackScheduleTask,
 } from '@/common/network/schedule';
 import { formatMessage } from '@/util/intl';
 import copy from 'copy-to-clipboard';
 import login from '@/store/login';
 import { scheduleTask } from '@/d.ts/scheduleTask';
-import {
+import Icon, {
   EllipsisOutlined,
   BarsOutlined,
   ShareAltOutlined,
   CloseCircleOutlined,
+  ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import { MenuProps } from 'antd';
 import { ScheduleTaskStatus2Actions } from '@/component/Schedule/const';
@@ -33,6 +35,7 @@ import useOperationPermissions from '@/util/hooks/useOperationPermissions';
 import { widthPermission } from '@/util/utils';
 import { IOperationTypeRole } from '@/d.ts/schedule';
 import { Perspective } from '../../interface';
+import { ReactComponent as RollbackSvg } from '@/svgr/Roll-back.svg';
 
 interface ScheduleActionsIProps {
   subTask: scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>;
@@ -169,6 +172,47 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
     });
   };
 
+  const _handleRollback = async () => {
+    Modal.confirm({
+      title: formatMessage({
+        id: 'odc.component.CommonDetailModal.TaskTools.AreYouSureYouWant',
+        defaultMessage: '是否确定回滚任务？',
+      }),
+      //确定回滚任务吗？
+      icon: <ExclamationCircleOutlined />,
+      content: formatMessage({
+        id: 'odc.component.CommonDetailModal.TaskTools.TasksThatHaveBeenExecuted',
+        defaultMessage: '任务回滚后已执行的任务将重置',
+      }),
+      //任务回滚后已执行的任务将重置
+      okText: formatMessage({
+        id: 'odc.component.CommonDetailModal.TaskTools.Confirm',
+        defaultMessage: '确认',
+      }),
+      //确认
+      cancelText: formatMessage({
+        id: 'odc.component.CommonDetailModal.TaskTools.Cancel',
+        defaultMessage: '取消',
+      }),
+      //取消
+      onOk: _confirmRollback,
+    });
+  };
+
+  const _confirmRollback = async () => {
+    setActiveBtnKey(ScheduleTaskActionsEnum.ROLLBACK);
+    const res = await rollbackScheduleTask(scheduleId, subTask?.id);
+    console.log(res);
+
+    if (res?.data) {
+      message.success('回滚成功');
+      onReloadList?.();
+      resetActiveBtnKey();
+    } else {
+      resetActiveBtnKey();
+    }
+  };
+
   const eventMap = {
     [ScheduleTaskActionsEnum.STOP]: _handleStop,
     [ScheduleTaskActionsEnum.EXECUTE]: _handleExecute,
@@ -177,6 +221,7 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
     [ScheduleTaskActionsEnum.RETRY]: _handleRetry,
     [ScheduleTaskActionsEnum.VIEW]: _handleView,
     [ScheduleTaskActionsEnum.SHARE]: _handleShare,
+    [ScheduleTaskActionsEnum.ROLLBACK]: _handleRollback,
   };
 
   const ALL_ACTIONS = [
@@ -187,6 +232,22 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
       icon: <CloseCircleOutlined />,
       visible: widthPermission(
         (hasPermission) => hasPermission,
+        [
+          IOperationTypeRole.CREATOR,
+          IOperationTypeRole.PROJECT_DBA,
+          IOperationTypeRole.PROJECT_OWNER,
+        ],
+        IRoles,
+      ),
+    },
+    {
+      key: ScheduleTaskActionsEnum.ROLLBACK,
+      label: ScheduleTaskActionsTextMap[ScheduleTaskActionsEnum.ROLLBACK],
+      action: eventMap[ScheduleTaskActionsEnum.ROLLBACK],
+      icon: <Icon component={RollbackSvg} />,
+      allowScheduleType: [SubTaskType.DATA_ARCHIVE],
+      visible: widthPermission(
+        (hasPermission) => hasPermission && subTask.jobGroup === SubTaskType.DATA_ARCHIVE,
         [
           IOperationTypeRole.CREATOR,
           IOperationTypeRole.PROJECT_DBA,

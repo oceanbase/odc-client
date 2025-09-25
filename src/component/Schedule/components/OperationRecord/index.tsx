@@ -10,7 +10,12 @@ import {
 import PartitionPlanHeader from './components/PartitionPlanHeader';
 import ScheduleTaskActions from '../Actions/ScheduleTaskActions';
 import { listScheduleTasks } from '@/common/network/schedule';
-import { IScheduleTaskExecutionDetail, scheduleTask, SubTaskParameters } from '@/d.ts/scheduleTask';
+import {
+  IScheduleTaskExecutionDetail,
+  scheduleTask,
+  ScheduleTaskDetailType,
+  SubTaskParameters,
+} from '@/d.ts/scheduleTask';
 import ScheduleTaskStatusLabel from '../ScheduleTaskStatusLabel';
 import SubTaskDetailModal from '@/component/Schedule/layout/SubTaskDetail';
 import ExecutionInfoContainer from '@/component/Schedule/components/ExecutionInfoContainer';
@@ -207,6 +212,7 @@ const OperationRecord: React.FC<IProps> = (props) => {
       </div>
 
       <SubTaskDetailModal
+        detailTabType={ScheduleTaskDetailType.EXECUTE_RESULT}
         visible={detailVisible}
         onClose={() => setDetailVisible(false)}
         detailId={detailId}

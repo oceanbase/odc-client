@@ -9,6 +9,7 @@ export interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
   theme?: string;
+  reloadList?: () => void;
 }
 export enum ErrorStrategy {
   CONTINUE = 'CONTINUE',

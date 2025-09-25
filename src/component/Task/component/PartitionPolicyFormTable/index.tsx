@@ -308,7 +308,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
   };
 
   /**
-   * 新建时是否禁用选择、设置分区策略
+   * 新建,如果该表有有效的分区策略，无法重新设置新的策略
    */
   const isDisable = (record: ITableConfig) => {
     return (record?.containsCreateStrategy || record?.containsDropStrategy) && !isEdit;
@@ -375,7 +375,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
             let disabled =
               !!selectedConfigs?.length &&
               record?.partitionMode !== selectedConfigs?.[0]?.partitionMode;
-            disabled = isDisable(record);
+            disabled = disabled || isDisable(record);
             return { disabled };
           },
           options: [
@@ -401,7 +401,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
           },
           scroll: {
             x: 650,
-            y: 240,
+            y: 290,
           },
         }}
       />

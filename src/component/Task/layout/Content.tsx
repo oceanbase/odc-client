@@ -5,7 +5,7 @@ import { UserStore } from '@/store/login';
 import { ModalStore } from '@/store/modal';
 import { useLocation } from '@umijs/max';
 import type { ITableInstance } from '@/component/CommonTable/interface';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { getPreTime } from '@/util/utils';
 import dayjs from 'dayjs';
 import { getTaskDetail } from '@/common/network/task';
@@ -47,7 +47,11 @@ interface IProps {
   mode?: TaskPageMode;
 }
 
-const Content: React.FC<IProps> = (props) => {
+export interface ContentRef {
+  reloadList: () => void;
+}
+
+const Content = forwardRef<ContentRef, IProps>((props, ref) => {
   const {
     pageKey,
     taskStore,
@@ -289,6 +293,10 @@ const Content: React.FC<IProps> = (props) => {
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    reloadList,
+  }));
+
   useEffect(() => {
     resolveUrlSearchParams();
   }, []);
@@ -338,6 +346,6 @@ const Content: React.FC<IProps> = (props) => {
       />
     </TaskDetailContext.Provider>
   );
-};
+});
 
 export default inject('userStore', 'taskStore', 'modalStore')(observer(Content));

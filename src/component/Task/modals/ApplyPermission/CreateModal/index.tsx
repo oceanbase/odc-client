@@ -88,9 +88,11 @@ export const projectRoleMap = {
 interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
+  reloadList?: () => void;
 }
+
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId } = props;
+  const { modalStore, projectId, reloadList } = props;
   const [form] = Form.useForm();
   const [roles, setRoles] = useState<any[]>([]);
   const [hasEdit, setHasEdit] = useState(false);
@@ -204,6 +206,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         setConfirmLoading(true);
         const res = await createTask(data);
         handleCancel(false);
+        reloadList?.();
         setConfirmLoading(false);
         if (res) {
           message.success(

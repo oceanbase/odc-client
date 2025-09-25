@@ -272,10 +272,6 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                                   />
                                 </Form.Item>
                               )}
-
-                              {enablePartition && (
-                                <PartitionTextArea {...restField} name={[name, 'partitions']} />
-                              )}
                             </div>
                           )}
                           <Form.Item {...restField} name={[name, 'conditionExpression']}>

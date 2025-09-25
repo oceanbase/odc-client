@@ -53,7 +53,7 @@ import dayjs from 'dayjs';
 const MAX_FILE_SIZE = 1024 * 1024 * 256;
 
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore, theme } = props;
+  const { modalStore, theme, reloadList } = props;
   const { multipleAsyncTaskData, multipleDatabaseChangeOpen } = modalStore;
   const [form] = Form.useForm();
   const editorRef = useRef<CommonIDE>();
@@ -388,6 +388,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         setConfirmLoading(true);
         const res = await createTask(data);
         handleCancel(false);
+        reloadList?.();
         setConfirmLoading(false);
         if (res) {
           message.success(

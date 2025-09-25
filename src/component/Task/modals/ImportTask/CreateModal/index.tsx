@@ -49,6 +49,7 @@ const steps: {
 export interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
+  reloadList?: () => void;
 }
 export interface IState {
   stepIndex: number;
@@ -68,7 +69,7 @@ export interface IState {
 }
 
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId } = props;
+  const { modalStore, projectId, reloadList } = props;
   const _formRef = React.useRef<any>();
   const [defaultConfig, setDefaultConfig] = useState<IState['formData']>(null);
 
@@ -216,6 +217,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               initDefaultConfig();
             }
             modalStore?.changeImportModal(false);
+            reloadList?.();
             setState((prev) => ({
               ...prev,
               setIsSaveDefaultConfig: false,

@@ -52,13 +52,20 @@ interface IProps {
   detailId: number;
   onClose: () => void;
   scheduleId: number;
+  detailTabType?: ScheduleTaskDetailType;
 }
 
 const SubTaskDetail: React.FC<IProps> = (props) => {
-  const { visible, onClose, detailId, scheduleId } = props;
+  const {
+    visible,
+    onClose,
+    detailId,
+    scheduleId,
+    detailTabType = ScheduleTaskDetailType.INFO,
+  } = props;
   const [subTask, setSubTask] =
     useState<scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>>(null);
-  const [detailType, setDetailType] = useState<ScheduleTaskDetailType>(ScheduleTaskDetailType.INFO);
+  const [detailType, setDetailType] = useState<ScheduleTaskDetailType>(detailTabType);
   const [log, setLog] = useState<ILog>(null);
   const [result, setResult] = useState<ITaskResult>(null);
   const [logType, setLogType] = useState<CommonTaskLogType>(CommonTaskLogType.ALL);
@@ -70,10 +77,12 @@ const SubTaskDetail: React.FC<IProps> = (props) => {
   const { loop: loadData, destory } = useLoop((count) => {
     return async () => {
       if (subTask?.status && loopStatus?.includes(subTask?.status)) {
+        setLoading(false);
         destory();
         return;
       }
       const res = await detailScheduleTask(scheduleId, detailId);
+      setLoading(false);
       setSubTask(res);
     };
   }, 6500);
@@ -89,7 +98,8 @@ const SubTaskDetail: React.FC<IProps> = (props) => {
 
   const loadTaskData = async () => {
     switch (detailType) {
-      case ScheduleTaskDetailType.INFO: {
+      case ScheduleTaskDetailType.INFO:
+      case ScheduleTaskDetailType.EXECUTE_RESULT: {
         if (!subTask) {
           loadData();
         }
@@ -112,11 +122,13 @@ const SubTaskDetail: React.FC<IProps> = (props) => {
     setLog(null);
     setResult(null);
     setSchedule(null);
+    setLoading(false);
     destory();
   };
 
   const getSchedule = async () => {
     const res = await getScheduleDetail(scheduleId);
+    setLoading(false);
     setSchedule(res);
   };
 
@@ -197,9 +209,14 @@ const SubTaskDetail: React.FC<IProps> = (props) => {
       break;
   }
 
+  useEffect(() => {
+    setDetailType(detailTabType);
+  }, [detailTabType]);
+
   return (
     <SubTaskDetailModal
       log={log}
+      loading={loading}
       opRecord={opRecord}
       result={result}
       logType={logType}

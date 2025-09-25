@@ -58,9 +58,10 @@ const defaultValue = {
 interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
+  reloadList?: () => void;
 }
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore } = props;
+  const { modalStore, reloadList } = props;
   const { applyDatabasePermissionVisible, applyDatabasePermissionData } = modalStore;
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
@@ -130,6 +131,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         setConfirmLoading(true);
         const res = await createTask(data);
         handleCancel(false);
+        reloadList?.();
         setConfirmLoading(false);
         if (res) {
           message.success(

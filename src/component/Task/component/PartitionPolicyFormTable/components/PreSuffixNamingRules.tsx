@@ -7,7 +7,7 @@ import { PartitionBound } from '@/constant';
 
 const PreSuffixNamingRules = ({ partitionKeyOptions }) => {
   return (
-    <Space size={8} align="start">
+    <Space size={8} align="start" style={{ width: '100%', flexWrap: 'wrap' }}>
       <Form.Item
         validateFirst
         className={styles.noMarginBottom}

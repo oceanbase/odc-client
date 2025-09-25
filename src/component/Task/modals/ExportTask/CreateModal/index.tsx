@@ -48,6 +48,7 @@ const steps: {
 export interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
+  reloadList?: () => void;
 }
 
 export interface IState {
@@ -58,7 +59,7 @@ export interface IState {
 }
 
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId } = props;
+  const { modalStore, projectId, reloadList } = props;
   const _formRef = React.useRef<any>();
   const [defaultConfig, setDefaultConfig] = useState<ExportFormData>(null);
   const [state, setState] = useState<IState>({
@@ -288,6 +289,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               initDefaultConfig();
             }
             handleClose();
+            reloadList?.();
             openTasksPage(TaskPageType.EXPORT);
           }
         } finally {

@@ -67,6 +67,7 @@ interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
   theme?: string;
+  reloadList?: () => void;
 }
 enum ErrorStrategy {
   CONTINUE = 'CONTINUE',
@@ -91,7 +92,7 @@ const getFilesByIds = (ids: string[], names: string[]) => {
   });
 };
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId, theme } = props;
+  const { modalStore, projectId, theme, reloadList } = props;
   const { createAsyncTaskVisible, asyncTaskData } = modalStore;
   const [form] = Form.useForm();
   const editorRef = useRef<CommonIDE>();
@@ -439,6 +440,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         setConfirmLoading(true);
         const res = await createTask(data);
         handleCancel(false);
+        reloadList?.();
         setConfirmLoading(false);
         if (res) {
           openTasksPage(TaskPageType.ASYNC);
@@ -514,6 +516,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       databaseId: asyncTaskData?.databaseId,
     });
   }, [asyncTaskData?.databaseId]);
+
   return (
     <Drawer
       destroyOnClose

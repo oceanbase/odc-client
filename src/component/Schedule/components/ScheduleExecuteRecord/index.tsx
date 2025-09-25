@@ -51,8 +51,8 @@ const ScheduleExecuteRecord: React.FC<ScheduleExecuteRecordProps> = ({
     return async () => {
       if (schedule?.scheduleId) {
         const res = await listChangeLog(schedule?.scheduleId);
-        if (scheduleStore?.openOperationId) {
-          const opRecord = res?.contents.find((item) => item.id === scheduleStore?.openOperationId);
+        if (scheduleStore.openOperationId) {
+          const opRecord = res?.contents.find((item) => item.id === scheduleStore.openOperationId);
           scheduleStore.setOpenOperationId(null);
           if (opRecord) {
             handleDetailVisible(opRecord, true);

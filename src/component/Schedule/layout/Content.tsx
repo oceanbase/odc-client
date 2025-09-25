@@ -89,9 +89,9 @@ const Content: React.FC<IProps> = (props) => {
   } = useScheduleSearchParams();
   /** 作业视角state */
   const [state, setState] = useSetState<IState>({
-    detailId: scheduleStore?.defaultOpenScheduleId,
-    scheduleType: scheduleStore?.defauleOpenScheduleType,
-    detailVisible: !!scheduleStore?.defaultOpenScheduleId,
+    detailId: scheduleStore.defaultOpenScheduleId,
+    scheduleType: scheduleStore.defauleOpenScheduleType,
+    detailVisible: !!scheduleStore.defaultOpenScheduleId,
     detailType: null,
     schedule: null,
     status: null,
@@ -99,8 +99,8 @@ const Content: React.FC<IProps> = (props) => {
 
   /** 执行视角state */
   const [subTaskState, setSubTaskState] = useSetState<ISubTaskState>({
-    detailId: scheduleStore?.defaultOpenScheduleId,
-    detailVisible: !!scheduleStore?.defaultOpenScheduleId,
+    detailId: scheduleStore.defaultOpenScheduleId,
+    detailVisible: !!scheduleStore.defaultOpenScheduleId,
     subTask: null,
     scheduleId: null,
   });
@@ -127,8 +127,8 @@ const Content: React.FC<IProps> = (props) => {
   const theme = isSqlworkspace ? null : 'vs';
   const tableRef = useRef<ITableInstance>();
   const scheduleTabType = useMemo(() => {
-    return pageKey || scheduleStore?.schedulePageType;
-  }, [pageKey, scheduleStore?.schedulePageType]);
+    return pageKey || scheduleStore.schedulePageType;
+  }, [pageKey, scheduleStore.schedulePageType]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleDetailVisible = (
@@ -199,9 +199,9 @@ const Content: React.FC<IProps> = (props) => {
       tenantId: params.searchType === ScheduleSearchType.TENANT ? params.searchValue : '',
       databaseName: params.searchType === ScheduleSearchType.DATABASE ? params.searchValue : '',
       type:
-        scheduleStore?.schedulePageType !== SchedulePageType.ALL &&
+        scheduleStore.schedulePageType !== SchedulePageType.ALL &&
         mode !== SchedulePageMode.MULTI_PAGE
-          ? [scheduleStore?.schedulePageType as unknown as ScheduleType]
+          ? [scheduleStore.schedulePageType as unknown as ScheduleType]
           : params.type,
       status: params.status?.length ? params.status : [],
       sort: params.sort,
@@ -293,11 +293,11 @@ const Content: React.FC<IProps> = (props) => {
       apiParams.endTime = String(params?.executeDate?.[1]?.valueOf());
     }
     if (
-      scheduleStore?.schedulePageType &&
-      scheduleStore?.schedulePageType !== SchedulePageType.ALL &&
+      scheduleStore.schedulePageType &&
+      scheduleStore.schedulePageType !== SchedulePageType.ALL &&
       mode !== SchedulePageMode.MULTI_PAGE
     ) {
-      apiParams.scheduleType = [scheduleStore?.schedulePageType as unknown as ScheduleType];
+      apiParams.scheduleType = [scheduleStore.schedulePageType as unknown as ScheduleType];
     }
     if (
       mode === SchedulePageMode.MULTI_PAGE &&
@@ -348,10 +348,10 @@ const Content: React.FC<IProps> = (props) => {
   const resolveUrlSearchParams = async () => {
     defaultScheduleId && (await openDefaultSchedule());
     if (defaultScheduleType) {
-      scheduleStore?.setSchedulePageType(defaultScheduleType as unknown as SchedulePageType);
-    } else if (!scheduleStore?.schedulePageType) {
+      scheduleStore.setSchedulePageType(defaultScheduleType as unknown as SchedulePageType);
+    } else if (!scheduleStore.schedulePageType) {
       const firstEnabledSchedule = getFirstEnabledSchedule();
-      scheduleStore?.setSchedulePageType(firstEnabledSchedule?.pageType);
+      scheduleStore.setSchedulePageType(firstEnabledSchedule?.pageType);
     }
 
     // Apply URL filter parameters

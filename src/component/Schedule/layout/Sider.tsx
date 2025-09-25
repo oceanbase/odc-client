@@ -23,7 +23,7 @@ const Sider: React.FC<IProps> = (props) => {
   const pageKey =
     mode === SchedulePageMode.MULTI_PAGE
       ? pageStore?.activePageKey
-      : scheduleStore?.schedulePageType;
+      : scheduleStore.schedulePageType;
 
   const handleClick = (value: SchedulePageType) => {
     if (mode === SchedulePageMode.MULTI_PAGE) {
@@ -34,7 +34,7 @@ const Sider: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    if (!scheduleStore?.schedulePageType) {
+    if (!scheduleStore.schedulePageType) {
       scheduleStore.setSchedulePageType(getFirstEnabledSchedule()?.pageType);
     }
   }, []);
