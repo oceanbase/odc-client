@@ -44,7 +44,9 @@ const Sider: React.FC<IProps> = (props) => {
       },
     });
 
-    if (!res && !taskStore?.taskPageType) taskStore.changeTaskPageType(firstEnabledTask?.pageType);
+    if ((!res && !taskStore?.taskPageType) || mode === TaskPageMode.PROJECT) {
+      taskStore.changeTaskPageType(firstEnabledTask?.pageType);
+    }
   }, []);
 
   const handleClick = (value: TaskPageType) => {

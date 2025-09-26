@@ -37,7 +37,6 @@ import {
   IScheduleRecord,
   ScheduleRecordParameters,
   ScheduleDetailType,
-  ScheduleStatus,
 } from '@/d.ts/schedule';
 import type { FixedType } from 'rc-table/es/interface';
 import classNames from 'classnames';
@@ -54,11 +53,10 @@ import { IPagination } from '@/component/Schedule/interface';
 import ScheduleMiniFlowSpan from '../ScheduleMiniFlowSpan';
 import DatabaseColumn from './DatabaseColumn';
 import { useScheduleSelection } from '@/component/Schedule/hooks';
+import { persistenceParams } from '@/component/Schedule/helper';
 
-export const SCHEDULE_EXECUTE_TIME_KEY = 'schedule:executeTime';
-export const SCHEDULE_EXECUTE_DATE_KEY = 'schedule:executeDate';
-export const SUB_TASK_EXECUTE_TIME_KEY = 'subTask:executeTime';
-export const SUB_TASK_EXECUTE_DATE_KEY = 'subTask:executeDate';
+export const SCHEDULE_PARAMS_PERSISTENCE_KEY = 'schedule:paramsPersistence';
+export const SCHEDULETASK_PARAMS_PERSISTENCE_KEY = 'scheduleTask:paramsPersistence';
 
 interface IProps {
   tableRef: React.RefObject<ITableInstance>;
@@ -143,21 +141,6 @@ const ScheduleTable: React.FC<IProps> = (props) => {
     tableRef,
   });
 
-  useEffect(() => {
-    if (isScheduleView && scheduleRes) {
-      setPagination({
-        current: scheduleRes?.page?.number,
-        pageSize: scheduleRes?.page?.size ? scheduleRes.page.size : pagination?.pageSize,
-      });
-    }
-    if (!isScheduleView && scheduleTaskRes) {
-      setPagination({
-        current: scheduleTaskRes?.page?.number,
-        pageSize: scheduleTaskRes?.page?.size ? scheduleTaskRes.page.size : pagination?.pageSize,
-      });
-    }
-  }, [scheduleTaskRes, scheduleRes, isScheduleView]);
-
   const { data: resProjects } = useRequest(listProjects, {
     defaultParams: [null, 1, 400],
   });
@@ -196,16 +179,14 @@ const ScheduleTable: React.FC<IProps> = (props) => {
 
   useEffect(() => {
     if (isScheduleView) {
-      params.timeRange &&
-        localStorage.setItem(SCHEDULE_EXECUTE_TIME_KEY, JSON.stringify(params.timeRange));
-      params.executeDate &&
-        localStorage.setItem(SCHEDULE_EXECUTE_DATE_KEY, JSON.stringify(params.executeDate));
+      if (mode !== SchedulePageMode.PROJECT) {
+        persistenceParams(isScheduleView, params);
+      }
       handleChangeParams(params, perspective, { ...pagination, current: 1 });
     } else {
-      subTaskParams.timeRange &&
-        localStorage.setItem(SUB_TASK_EXECUTE_TIME_KEY, JSON.stringify(subTaskParams.timeRange));
-      subTaskParams.executeDate &&
-        localStorage.setItem(SUB_TASK_EXECUTE_DATE_KEY, JSON.stringify(subTaskParams.executeDate));
+      if (mode !== SchedulePageMode.PROJECT) {
+        persistenceParams(isScheduleView, subTaskParams);
+      }
       handleChangeParams(subTaskParams, perspective, { ...pagination, current: 1 });
     }
   }, [params, scheduleTabType, subTaskParams]);

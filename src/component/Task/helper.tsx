@@ -19,12 +19,10 @@ import { DatabasePermissionType } from '@/d.ts/database';
 import { formatMessage } from '@/util/intl';
 export { TaskTypeMap } from '@/component/Task/component/TaskTable/const';
 import { TaskConfig, allTaskPageConfig } from '@/common/task';
-import { ITaskParam, TaskTab } from './interface';
-import {
-  TASK_EXECUTE_DATE_KEY,
-  TASK_EXECUTE_TIME_KEY,
-} from '@/component/Task/component/TaskTable/const';
+import { ITaskParam, TaskCreateTimeSort, TaskPageMode, TaskTab } from './interface';
 import dayjs from 'dayjs';
+import { TASK_PARAMS_PERSISTENCE_KEY } from './component/TaskTable/const';
+import { isString } from 'lodash';
 
 // 423 屏蔽 SysFormItem 配置
 export const ENABLED_SYS_FROM_ITEM = false;
@@ -78,23 +76,43 @@ export const getFirstEnabledTask = () => {
   return [allTaskPageConfig, ...Object.values(TaskConfig)]?.find((item) => item.enabled());
 };
 
-export const getDefaultParam: () => ITaskParam = () => {
+export const getDefaultParam: (mode: TaskPageMode) => ITaskParam = (mode) => {
+  const prevParams =
+    (mode !== TaskPageMode.PROJECT &&
+      JSON.parse(localStorage.getItem(TASK_PARAMS_PERSISTENCE_KEY))) ??
+    {};
+
   const _defaultParam: ITaskParam = {
     searchValue: undefined,
     searchType: undefined,
-    taskTypes: [],
-    taskStatus: [],
-    projectId: [],
-    sort: '',
-    tab: TaskTab.all,
-    timeRange: 7,
+    taskTypes:
+      isString(prevParams?.taskTypes) && !!prevParams?.taskTypes
+        ? JSON.parse(prevParams?.taskTypes)
+        : [],
+    taskStatus:
+      isString(prevParams.taskStatus) && !!prevParams.taskStatus
+        ? JSON.parse(prevParams.taskStatus)
+        : [],
+    projectId:
+      isString(prevParams?.projectId) && !!prevParams?.projectId
+        ? JSON.parse(prevParams?.projectId)
+        : [],
+    sort:
+      isString(prevParams?.sort) && !!prevParams?.sort
+        ? JSON.parse(prevParams?.sort)
+        : TaskCreateTimeSort.DESC,
+    tab: isString(prevParams?.tab) && !!prevParams?.tab ? JSON.parse(prevParams?.tab) : TaskTab.all,
+    timeRange:
+      isString(prevParams?.timeRange) && !!prevParams?.timeRange
+        ? JSON.parse(prevParams?.timeRange)
+        : 7,
     executeDate: [undefined, undefined],
   };
-  _defaultParam.timeRange =
-    JSON.parse(localStorage.getItem(TASK_EXECUTE_TIME_KEY)) ?? _defaultParam.timeRange;
-  const [start, end] = JSON.parse(localStorage?.getItem(TASK_EXECUTE_DATE_KEY)) ?? [null, null];
-  if (!!start && !!end) {
-    _defaultParam.executeDate = [dayjs(start), dayjs(end)];
+  if (isString(prevParams?.executeDate) && !!prevParams?.executeDate) {
+    const [start, end] = JSON.parse(prevParams?.executeDate) ?? [null, null];
+    if (!!start && !!end) {
+      _defaultParam.executeDate = [dayjs(start), dayjs(end)];
+    }
   }
   return _defaultParam;
 };
@@ -139,4 +157,17 @@ export const getExpireTimeLabel = (expireTime) => {
         defaultMessage: '永不过期',
       })
     : label;
+};
+
+export const persistenceTaskParams = (params: ITaskParam) => {
+  const _params = {
+    timeRange: JSON.stringify(params.timeRange),
+    executeDate: JSON.stringify(params.executeDate),
+    tab: JSON.stringify(params.tab),
+    taskTypes: JSON.stringify(params.taskTypes),
+    taskStatus: JSON.stringify(params.taskStatus),
+    projectId: JSON.stringify(params.projectId),
+    sort: JSON.stringify(params.sort),
+  };
+  localStorage.setItem(TASK_PARAMS_PERSISTENCE_KEY, JSON.stringify(_params));
 };

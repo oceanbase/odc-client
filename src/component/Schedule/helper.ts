@@ -3,8 +3,10 @@ import { schedlueConfig } from '@/page/Schedule/const';
 import {
   IScheduleParam,
   ISubTaskParam,
+  ScheduleCreateTimeSort,
   SchedulePageMode,
   ScheduleTab,
+  ScheduleTaskCreateTimeSort,
   ScheduleTaskTab,
 } from './interface';
 import { history } from '@umijs/max';
@@ -14,12 +16,11 @@ import { TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { IPageType } from '@/d.ts/_index';
 import {
-  SCHEDULE_EXECUTE_TIME_KEY,
-  SCHEDULE_EXECUTE_DATE_KEY,
-  SUB_TASK_EXECUTE_TIME_KEY,
-  SUB_TASK_EXECUTE_DATE_KEY,
+  SCHEDULE_PARAMS_PERSISTENCE_KEY,
+  SCHEDULETASK_PARAMS_PERSISTENCE_KEY,
 } from './components/ScheduleTable';
 import dayjs from 'dayjs';
+import { isString } from 'lodash';
 import { IScheduleTaskExecutionDetail, scheduleTask, SubTaskParameters } from '@/d.ts/scheduleTask';
 
 export const getFirstEnabledSchedule = () => {
@@ -93,46 +94,86 @@ export const getScheduleExecStrategyMap = (type: ScheduleType) => {
   }
 };
 
-export const getDefaultParam: () => IScheduleParam = () => {
+export const getDefaultScheduleParam: (mode: SchedulePageMode) => IScheduleParam = (mode) => {
+  const prevParams =
+    (mode !== SchedulePageMode.PROJECT &&
+      JSON.parse(localStorage.getItem(SCHEDULE_PARAMS_PERSISTENCE_KEY))) ??
+    {};
+
   const _defaultParam: IScheduleParam = {
     searchValue: undefined,
     searchType: undefined,
-    type: undefined,
-    status: [],
-    projectIds: [],
-    sort: '',
-    tab: ScheduleTab.all,
-    approveStatus: [],
-    timeRange: 7,
-    executeDate: [null, null],
+    type: isString(prevParams?.type) && !!prevParams?.type ? JSON.parse(prevParams?.type) : [],
+    status:
+      isString(prevParams?.status) && !!prevParams?.status ? JSON.parse(prevParams?.status) : [],
+    projectIds:
+      isString(prevParams?.projectIds) && !!prevParams?.projectIds
+        ? JSON.parse(prevParams?.projectIds)
+        : [],
+    sort:
+      isString(prevParams?.sort) && !!prevParams?.sort
+        ? JSON.parse(prevParams?.sort)
+        : ScheduleCreateTimeSort.DESC,
+    tab:
+      isString(prevParams?.tab) && !!prevParams?.tab
+        ? JSON.parse(prevParams?.tab)
+        : ScheduleTab.all,
+    approveStatus:
+      isString(prevParams?.approveStatus) && !!prevParams?.approveStatus
+        ? JSON.parse(prevParams?.approveStatus)
+        : [],
+    timeRange:
+      isString(prevParams?.timeRange) && !!prevParams?.timeRange
+        ? JSON.parse(prevParams?.timeRange)
+        : 7,
+    executeDate: [undefined, undefined],
   };
-  _defaultParam.timeRange =
-    JSON.parse(localStorage.getItem(SCHEDULE_EXECUTE_TIME_KEY)) ?? _defaultParam.timeRange;
-  const [start, end] = JSON.parse(localStorage?.getItem(SCHEDULE_EXECUTE_DATE_KEY)) ?? [null, null];
-  if (!!start && !!end) {
-    _defaultParam.executeDate = [dayjs(start), dayjs(end)];
+  if (isString(prevParams?.executeDate) && !!prevParams?.executeDate) {
+    const [start, end] = JSON.parse(prevParams?.executeDate) ?? [undefined, undefined];
+    if (!!start && !!end) {
+      _defaultParam.executeDate = [dayjs(start), dayjs(end)];
+    }
   }
   return _defaultParam;
 };
 
-export const getDefaultSubTaskParam: () => ISubTaskParam = () => {
+export const getDefaultSubTaskParam: (mode: SchedulePageMode) => ISubTaskParam = (mode) => {
+  const prevParams =
+    (mode !== SchedulePageMode.PROJECT &&
+      JSON.parse(localStorage.getItem(SCHEDULETASK_PARAMS_PERSISTENCE_KEY))) ??
+    {};
+
   const _defaultParam: ISubTaskParam = {
     searchValue: undefined,
     searchType: undefined,
-    type: undefined,
-    status: [],
-    projectIds: [],
-    sort: '',
-    tab: ScheduleTaskTab.all,
-    timeRange: 'ALL',
+    type: isString(prevParams?.type) && !!prevParams?.type ? JSON.parse(prevParams?.type) : [],
+    status:
+      isString(prevParams?.status) && !!prevParams?.status ? JSON.parse(prevParams?.status) : [],
+    projectIds:
+      isString(prevParams?.projectIds) && !!prevParams?.projectIds
+        ? JSON.parse(prevParams?.projectIds)
+        : [],
+    sort:
+      isString(prevParams?.sort) && !!prevParams?.sort
+        ? JSON.parse(prevParams?.sort)
+        : ScheduleTaskCreateTimeSort.DESC,
+    tab:
+      isString(prevParams?.tab) && !!prevParams?.tab
+        ? JSON.parse(prevParams?.tab)
+        : ScheduleTaskTab.all,
+    timeRange:
+      isString(prevParams?.timeRange) && !!prevParams?.timeRange
+        ? JSON.parse(prevParams?.timeRange)
+        : 'ALL',
     executeDate: [undefined, undefined],
   };
-  _defaultParam.timeRange =
-    JSON.parse(localStorage.getItem(SUB_TASK_EXECUTE_TIME_KEY)) ?? _defaultParam.timeRange;
-  const [start, end] = JSON.parse(localStorage?.getItem(SUB_TASK_EXECUTE_DATE_KEY)) ?? [null, null];
-  if (!!start && !!end) {
-    _defaultParam.executeDate = [dayjs(start), dayjs(end)];
+  if (isString(prevParams?.executeDate) && !!prevParams?.executeDate) {
+    const [start, end] = JSON.parse(prevParams?.executeDate) ?? [undefined, undefined];
+    if (!!start && !!end) {
+      _defaultParam.executeDate = [dayjs(start), dayjs(end)];
+    }
   }
+
   return _defaultParam;
 };
 
@@ -155,4 +196,42 @@ export const getDataSourceIdList = (
     }
   });
   return Array.from(ids);
+};
+
+export const persistenceParams = async (
+  isScheduleView: boolean,
+  params: IScheduleParam | ISubTaskParam,
+) => {
+  if (isScheduleView) {
+    persistenceScheduleParams(params as IScheduleParam);
+  } else {
+    persistenceSubTaskParams(params as ISubTaskParam);
+  }
+};
+
+const persistenceScheduleParams = async (params: IScheduleParam) => {
+  const _params = {
+    timeRange: JSON.stringify(params.timeRange),
+    executeDate: JSON.stringify(params.executeDate),
+    tab: JSON.stringify(params.tab),
+    type: JSON.stringify(params.type),
+    status: JSON.stringify(params.status),
+    projectIds: JSON.stringify(params.projectIds),
+    sort: JSON.stringify(params.sort),
+    approveStatus: JSON.stringify(params.approveStatus),
+  };
+  localStorage.setItem(SCHEDULE_PARAMS_PERSISTENCE_KEY, JSON.stringify(_params));
+};
+
+const persistenceSubTaskParams = async (params: ISubTaskParam) => {
+  const _params = {
+    timeRange: JSON.stringify(params.timeRange),
+    executeDate: JSON.stringify(params.executeDate),
+    tab: JSON.stringify(params.tab),
+    type: JSON.stringify(params.type),
+    status: JSON.stringify(params.status),
+    projectIds: JSON.stringify(params.projectIds),
+    sort: JSON.stringify(params.sort),
+  };
+  localStorage.setItem(SCHEDULETASK_PARAMS_PERSISTENCE_KEY, JSON.stringify(_params));
 };

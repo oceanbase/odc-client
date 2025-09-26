@@ -35,7 +35,7 @@ import {
   getScheduleDetail,
 } from '@/common/network/schedule';
 import datasourceStatus from '@/store/datasourceStatus';
-import { getDataSourceIdList, getDefaultParam, getDefaultSubTaskParam } from '../helper';
+import { getDataSourceIdList, getDefaultScheduleParam, getDefaultSubTaskParam } from '../helper';
 import { getPreTime } from '@/util/utils';
 import dayjs from 'dayjs';
 import { schedlueConfig } from '@/page/Schedule/const';
@@ -105,8 +105,10 @@ const Content: React.FC<IProps> = (props) => {
     scheduleId: null,
   });
 
-  const [params, setParams] = useSetState<IScheduleParam>(getDefaultParam());
-  const [subTaskParams, setsubTaskParams] = useSetState<ISubTaskParam>(getDefaultSubTaskParam());
+  const [params, setParams] = useSetState<IScheduleParam>(getDefaultScheduleParam(mode));
+  const [subTaskParams, setsubTaskParams] = useSetState<ISubTaskParam>(
+    getDefaultSubTaskParam(mode),
+  );
   const [perspective, setPerspective] = useState<Perspective>(
     defaultPerspective === Perspective.executionView
       ? Perspective.executionView
@@ -430,6 +432,25 @@ const Content: React.FC<IProps> = (props) => {
   useEffect(() => {
     resolveUrlSearchParams();
   }, []);
+
+  useEffect(() => {
+    if (perspective === Perspective.scheduleView && subTaskState?.subTask) {
+      setPagination({
+        current: subTaskState?.subTask?.page?.number,
+        pageSize: subTaskState?.subTask?.page?.size
+          ? subTaskState?.subTask?.page?.size
+          : pagination?.pageSize,
+      });
+    }
+    if (perspective !== Perspective.scheduleView && subTaskState?.subTask) {
+      setPagination({
+        current: subTaskState?.subTask?.page?.number,
+        pageSize: subTaskState?.subTask?.page?.size
+          ? subTaskState?.subTask.page.size
+          : pagination?.pageSize,
+      });
+    }
+  }, [subTaskState.subTask, state.schedule, perspective]);
 
   return (
     <>

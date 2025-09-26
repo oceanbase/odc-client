@@ -74,30 +74,31 @@ const Filter: React.FC = () => {
           timeRange !== 'ALL';
       } else {
         _isActive =
-          Boolean(status.length) ||
-          Boolean(projectIds.length) ||
-          Boolean(type) ||
-          Boolean(approveStatus.length) ||
+          Boolean(status?.length) ||
+          Boolean(projectIds?.length) ||
+          Boolean(type?.length) ||
+          Boolean(approveStatus?.length) ||
           timeRange !== 'ALL';
       }
     } else {
       _isActive =
-        Boolean(subTaskStatus.length) ||
-        Boolean(subTaskProjectIds.length) ||
-        Boolean(subTaskType) ||
-        timeRange !== 7;
+        Boolean(subTaskStatus?.length) ||
+        Boolean(subTaskProjectIds?.length) ||
+        Boolean(subTaskType?.length) ||
+        subTaskTimeRange !== 7;
     }
     return _isActive;
   }, [
-    status.length,
-    projectIds.length,
-    type,
+    status?.length,
+    projectIds?.length,
+    type?.length,
     isScheduleView,
-    subTaskStatus.length,
-    approveStatus.length,
+    subTaskStatus?.length,
+    approveStatus?.length,
     subTaskProjectIds.length,
-    subTaskType,
+    subTaskType?.length,
     timeRange,
+    subTaskTimeRange,
   ]);
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -235,12 +236,14 @@ const Filter: React.FC = () => {
         projectIds: [],
         type: undefined,
         approveStatus: [],
+        timeRange: 'ALL',
       });
     } else {
       setsubTaskParams?.({
         status: [],
         projectIds: [],
         type: undefined,
+        timeRange: 7,
       });
     }
   };

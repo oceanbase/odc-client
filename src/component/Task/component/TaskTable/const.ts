@@ -70,5 +70,4 @@ export const TaskTypeMap = {
   }),
 };
 
-export const TASK_EXECUTE_TIME_KEY = 'task:executeTime';
-export const TASK_EXECUTE_DATE_KEY = 'task:executeDate';
+export const TASK_PARAMS_PERSISTENCE_KEY = 'task:paramsPersistence';

@@ -25,7 +25,7 @@ import { ScheduleStore } from '@/store/schedule';
 import { ModalStore } from '@/store/modal';
 import { SchedulePageMode } from '../../interface';
 import styles from './index.less';
-import { revokeTask } from '@/common/network/task';
+import { stopTask } from '@/common/network/task';
 import {
   EllipsisOutlined,
   BarsOutlined,
@@ -403,7 +403,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       centered: true,
       onOk: async () => {
         setActiveBtnKey(ScheduleActionsEnum.REVOKE);
-        const res = await revokeTask(approveInstanceId);
+        const res = await stopTask(approveInstanceId);
         if (res) {
           message.success('撤销成功');
           onReloadList?.();

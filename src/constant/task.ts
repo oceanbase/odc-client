@@ -73,6 +73,7 @@ export const TaskActionsTextMap = {
   [TaskActionsEnum.CLONE]: '克隆',
   [TaskActionsEnum.SHARE]: '分享',
   [TaskActionsEnum.STOP]: '终止',
+  [TaskActionsEnum.REVOKE]: '撤销审批',
   [TaskActionsEnum.ROLLBACK]: '回滚',
   [TaskActionsEnum.EXECUTE]: '执行',
   [TaskActionsEnum.PASS]: '同意',

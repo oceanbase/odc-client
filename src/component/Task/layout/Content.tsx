@@ -94,7 +94,7 @@ const Content = forwardRef<ContentRef, IProps>((props, ref) => {
     current: 1,
     pageSize: 0,
   });
-  const [params, setParams] = useSetState<ITaskParam>(getDefaultParam());
+  const [params, setParams] = useSetState<ITaskParam>(getDefaultParam(mode));
 
   const [approvalState, setApprovalState] = useSetState({
     visible: false,
@@ -300,6 +300,13 @@ const Content = forwardRef<ContentRef, IProps>((props, ref) => {
   useEffect(() => {
     resolveUrlSearchParams();
   }, []);
+
+  useEffect(() => {
+    setPagination({
+      current: state?.tasks?.page?.number,
+      pageSize: state?.tasks?.page?.size ? state?.tasks?.page?.size : pagination?.pageSize,
+    });
+  }, [state?.tasks]);
 
   return (
     <TaskDetailContext.Provider
