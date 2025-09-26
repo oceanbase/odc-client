@@ -56,6 +56,7 @@ import RollBackModal from '../RollbackConfirmModal';
 import { IOperationTypeRole } from '@/d.ts/schedule';
 import { ReactComponent as RollbackSvg } from '@/svgr/Roll-back.svg';
 import Icon from '@ant-design/icons';
+import { TaskTypeMap } from '../TaskTable/const';
 
 interface TaskActionsProps {
   modalStore?: ModalStore;
@@ -423,12 +424,38 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
     props.onDetailVisible(task as TaskRecord<TaskRecordParameters>, true);
   };
 
+  const _revokeTask = async () => {
+    const taskTypeText = TaskTypeMap[task?.type];
+    Modal.confirm({
+      title: `确定要撤销此${taskTypeText}审批吗`,
+      content: <div>审批撤销后，任务将进入终止态</div>,
+      cancelText: formatMessage({
+        id: 'odc.TaskManagePage.component.TaskTools.Cancel',
+        defaultMessage: '取消',
+      }), //取消
+      okText: '确定',
+      centered: true,
+      onOk: async () => {
+        setActiveBtnKey(TaskActionsEnum.REVOKE);
+        const res = await stopTask(task.id);
+        if (res) {
+          message.success('撤销成功');
+          props?.onReloadList?.();
+          props?.onReload?.();
+        } else {
+          setActiveBtnKey(undefined);
+        }
+      },
+    });
+  };
+
   const eventMap: Record<TaskActionsEnum, () => void> = {
     [TaskActionsEnum.ROLLBACK]: _rollbackTask,
     [TaskActionsEnum.STOP]: _stopTask,
     [TaskActionsEnum.EXECUTE]: _executeTask,
     [TaskActionsEnum.PASS]: () => _approvalTask(true),
     [TaskActionsEnum.REJECT]: () => _approvalTask(false),
+    [TaskActionsEnum.REVOKE]: () => _revokeTask(),
 
     [TaskActionsEnum.AGAIN]: _againTask,
     [TaskActionsEnum.DOWNLOAD]: _download,
@@ -450,6 +477,22 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
       action: eventMap[TaskActionsEnum.STOP],
       icon: <CloseCircleOutlined />,
       showScene: [actionShowScene.list, actionShowScene.detail],
+      visible: widthPermission(
+        (hasPermission) => hasPermission,
+        [
+          IOperationTypeRole.CREATOR,
+          IOperationTypeRole.PROJECT_DBA,
+          IOperationTypeRole.PROJECT_OWNER,
+        ],
+        IRoles,
+      ),
+    },
+    {
+      key: TaskActionsEnum.REVOKE,
+      label: TaskActionsTextMap[TaskActionsEnum.REVOKE],
+      action: eventMap[TaskActionsEnum.REVOKE],
+      showScene: [actionShowScene.list, actionShowScene.detail],
+      icon: <CloseCircleOutlined />,
       visible: widthPermission(
         (hasPermission) => hasPermission,
         [
@@ -702,12 +745,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
           const allowShowResultSets =
             settingStore.spaceConfigurations?.['odc.task.databaseChange.allowShowResultSets'] ===
             'true';
-          return (
-            hasPermission &&
-            task?.type === TaskType.ASYNC &&
-            result?.containQuery &&
-            allowShowResultSets
-          );
+          return hasPermission && result?.containQuery && allowShowResultSets;
         },
         [
           IOperationTypeRole.CREATOR,

@@ -310,17 +310,9 @@ export async function approveTask(id: number, comment: string): Promise<boolean>
   return !!res?.data;
 }
 /**
- * 终止任务
+ * 终止/撤销任务
  */
 export async function stopTask(id: number): Promise<boolean> {
-  const res = await request.post(`/api/v2/flow/flowInstances/${id}/cancel`);
-  return !!res?.data;
-}
-
-/**
- * 撤销任务（创建者）
- */
-export async function revokeTask(id: number): Promise<boolean> {
   const res = await request.post(`/api/v2/flow/flowInstances/${id}/cancel`);
   return !!res?.data;
 }

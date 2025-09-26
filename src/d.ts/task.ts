@@ -89,9 +89,11 @@ export enum TaskActionsEnum {
   ROLLBACK = 'ROLLBACK',
   /** 终止 */
   STOP = 'STOP',
+  /** 撤销审批 */
+  REVOKE = 'REVOKE',
 
   // 以下详情页才会展示
-  /** 下载 SQL */
+  /** 下载 */
   DOWNLOAD = 'DOWNLOAD',
   /** 发起结构同步 */
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',

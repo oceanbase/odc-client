@@ -76,6 +76,11 @@ export interface IState {
   taskDetailType?: TaskDetailType;
 }
 
+export enum TaskCreateTimeSort {
+  ASC = 'createTime,asc',
+  DESC = 'createTime,desc',
+}
+
 export enum TaskSearchType {
   ID = 'ID',
   DESCRIPTION = 'DESCRIPTION',
@@ -87,7 +92,7 @@ export enum TaskSearchType {
 }
 
 export enum TaskTab {
-  all = ' all',
+  all = 'all',
   executionByCurrentUser = 'executionByCurrentUser',
   approveByCurrentUser = 'approveByCurrentUser',
 }
@@ -98,7 +103,7 @@ export interface ITaskParam {
   taskTypes: string[];
   taskStatus: string[];
   projectId: string[];
-  sort: string;
+  sort: TaskCreateTimeSort;
   timeRange: number | string;
   executeDate?: [Dayjs, Dayjs];
   tab?: TaskTab;

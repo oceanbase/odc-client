@@ -214,10 +214,9 @@ export const TaskStatus2Actions: Partial<Record<TaskStatus, TaskActionsEnum[]>> 
   [TaskStatus.APPROVING]: [
     ..._commonActions,
     ..._AsyncTaskActions,
-
     TaskActionsEnum.PASS,
     TaskActionsEnum.REJECT,
-    TaskActionsEnum.STOP,
+    TaskActionsEnum.REVOKE,
   ],
   [TaskStatus.WAIT_FOR_EXECUTION]: [
     ..._commonActions,

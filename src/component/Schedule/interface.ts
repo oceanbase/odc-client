@@ -85,13 +85,23 @@ export interface IPagination {
   pageSize: number;
 }
 
+export enum ScheduleCreateTimeSort {
+  ASC = 'createTime,asc',
+  DESC = 'createTime,desc',
+}
+
+export enum ScheduleTaskCreateTimeSort {
+  ASC = 'fireTime,asc',
+  DESC = 'fireTime,desc',
+}
+
 export interface IScheduleParam {
   searchValue: string;
   searchType: ScheduleSearchType;
   type: ScheduleType[];
   status: ScheduleStatus[];
   projectIds: number[];
-  sort: string;
+  sort: ScheduleCreateTimeSort;
   timeRange: number | string;
   executeDate?: [Dayjs, Dayjs];
   approveStatus?: ApprovalStatus[];
@@ -104,7 +114,7 @@ export interface ISubTaskParam {
   type: ScheduleType[];
   status: ScheduleTaskStatus[];
   projectIds: number[];
-  sort: string;
+  sort: ScheduleTaskCreateTimeSort;
   timeRange: number | string;
   executeDate?: [Dayjs, Dayjs];
   tab?: ScheduleTaskTab;

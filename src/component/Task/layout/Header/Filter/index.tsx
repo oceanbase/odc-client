@@ -104,7 +104,7 @@ const Filter: React.FC<IProps> = () => {
         </div>
       </div>
     );
-  }, [projectId]);
+  }, [projectId, projectList]);
 
   const dateTipContent = useMemo(() => {
     return (
@@ -145,6 +145,7 @@ const Filter: React.FC<IProps> = () => {
       taskStatus: [],
       projectId: [],
       taskTypes: [],
+      timeRange: 7,
     });
   };
 

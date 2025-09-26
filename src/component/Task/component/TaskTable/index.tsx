@@ -33,8 +33,9 @@ import TaskNameColumn from './TaskNameColumn';
 import odc from '@/plugins/odc';
 import TaskActions from '../TaskActions';
 import { taskTypeThatCanBeTerminate } from '@/constant/triangularization';
-import { TASK_EXECUTE_DATE_KEY, TASK_EXECUTE_TIME_KEY } from './const';
 import ScheduleMiniFlowSpan from '@/component/Schedule/components/ScheduleMiniFlowSpan';
+import { persistenceTaskParams } from '../../helper';
+import dayjs from 'dayjs';
 const { Text } = Typography;
 
 interface IProps {
@@ -133,17 +134,9 @@ const TaskTable: React.FC<IProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    setPagination({
-      current: taskList?.page?.number,
-      pageSize: taskList?.page?.size ? taskList?.page?.size : pagination?.pageSize,
-    });
-  }, [taskList]);
-
-  useEffect(() => {
-    params.timeRange &&
-      localStorage.setItem(TASK_EXECUTE_TIME_KEY, JSON.stringify(params.timeRange));
-    params.executeDate &&
-      localStorage.setItem(TASK_EXECUTE_DATE_KEY, JSON.stringify(params.executeDate));
+    if (mode !== TaskPageMode.PROJECT) {
+      persistenceTaskParams(params);
+    }
     handleChangeParams(params, {
       ...pagination,
       current: 1,
