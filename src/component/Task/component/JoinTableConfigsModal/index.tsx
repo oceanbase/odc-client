@@ -29,6 +29,7 @@ export default function JoinTableConfigModal({
   const [multiTableJoin, setMultiTableJoin] = useState(false);
   const [partition, setPartition] = useState(false);
   const [tableCanSetPartition, setTableCanSetPartition] = useState(false);
+  const [partitionOptions, setPartitionOptions] = useState<{ label: string; value: string }[]>([]);
   const { session, database } = useDBSession(databaseId);
   const getInitialValues = () => {
     return {
@@ -62,6 +63,12 @@ export default function JoinTableConfigModal({
       false,
     );
     setTableCanSetPartition(!!table?.partitions?.partType);
+    setPartitionOptions(
+      table?.partitions?.partitions?.map((item) => ({
+        label: item?.name,
+        value: item?.name,
+      })),
+    );
   };
 
   useEffect(() => {
@@ -244,12 +251,19 @@ export default function JoinTableConfigModal({
             </div>
             {partition && (
               <Form.Item name={'partitions'}>
-                <TextArea
-                  autoSize={{ maxRows: 3 }}
-                  placeholder={formatMessage({
-                    id: 'src.component.Task.component.PartitionTextArea.51B4FB10',
-                    defaultMessage: '请输入分区名称，多个分区间用英文逗号隔开',
-                  })}
+                <Select
+                  showSearch
+                  placeholder="请输入"
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  options={partitionOptions}
+                  onChange={(value) => {
+                    setPartition(value);
+                  }}
+                  mode="multiple"
+                  style={{ width: '100%' }}
+                  allowClear
                 />
               </Form.Item>
             )}

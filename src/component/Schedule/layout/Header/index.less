@@ -23,9 +23,14 @@
 }
 
 .tab {
+  display: flex;
+  flex-wrap: nowrap;
   :global {
     .ant-radio-button-wrapper {
       height: 26px;
+      .ant-radio-button-label {
+        white-space: nowrap;
+      }
     }
   }
 }

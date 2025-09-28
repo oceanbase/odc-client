@@ -43,6 +43,7 @@ const Search = () => {
           searchType: searchType as ScheduleSearchType,
         });
       }}
+      style={{ minWidth: 160 }}
     />
   );
 };
