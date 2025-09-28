@@ -12,7 +12,7 @@ const Header = () => {
   const context = useContext(ParamsContext);
 
   return (
-    <Space size={5} style={{ lineHeight: 1 }}>
+    <Space size={5} style={{ lineHeight: 1, marginLeft: 4 }}>
       <Search />
       <Tabs />
       <Filter />

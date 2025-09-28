@@ -203,10 +203,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       migrationInsertAction,
       scheduleIgnoreTimeoutTask,
       shardingStrategy,
-      tables: tables?.map((i) => {
-        i.partitions = (i?.partitions as [])?.join(',');
-        return i;
-      }),
+      tables,
       variables: getVariableValue(variables),
       archiveRange: fullDatabase ? IArchiveRange.ALL : IArchiveRange.PORTION,
       triggerStrategy,
@@ -349,7 +346,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           databaseId,
           targetDataBaseId,
           variables,
-          tables: _tables,
+          tables,
           deleteAfterMigration,
           triggerStrategy,
           migrationInsertAction,
@@ -360,14 +357,6 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           dataSizeLimit,
           timeoutMillis,
         } = values;
-        _tables?.map((i) => {
-          i.partitions = Array.isArray(i.partitions)
-            ? i.partitions
-            : i?.partitions
-                ?.replace(/[\r\n]+/g, '')
-                ?.split(',')
-                ?.filter(Boolean);
-        });
         const parameters: createDataArchiveParameters = {
           deleteAfterMigration,
           fullDatabase: archiveRange === IArchiveRange.ALL,
@@ -387,7 +376,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
                     targetTableName: '',
                   };
                 })
-              : _tables,
+              : tables,
           targetDataBaseId,
           timeoutMillis: hourToMilliSeconds(timeoutMillis),
           variables: getVariables(variables),
@@ -434,14 +423,6 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       .then(async (values) => {
         const { variables, tables: _tables, archiveRange } = values;
         if (archiveRange !== IArchiveRange.ALL) {
-          _tables?.map((i) => {
-            i.partitions = Array.isArray(i.partitions)
-              ? i.partitions
-              : i?.partitions
-                  ?.replace(/[\r\n]+/g, '')
-                  ?.split(',')
-                  ?.filter(Boolean);
-          });
           const parameters = {
             variables: getVariables(variables),
             tables: _tables,

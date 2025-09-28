@@ -1,7 +1,7 @@
 import { SearchOutlined } from '@ant-design/icons';
 import type { BaseSelectRef } from 'rc-select';
 import FilterIcon from '@/component/Button/FIlterIcon';
-import { AutoComplete, Input } from 'antd';
+import { AutoComplete, Input, Tooltip } from 'antd';
 import React, { forwardRef, useRef, useState } from 'react';
 import { formatMessage } from '@/util/intl';
 
@@ -38,6 +38,7 @@ interface InputSelectProps {
   selectTypeOptions: { label: string; value: React.Key }[];
   searchValue: string;
   searchType: React.Key;
+  style?: React.CSSProperties;
 }
 
 const InputSelect: React.FC<InputSelectProps> = (props) => {
@@ -45,7 +46,7 @@ const InputSelect: React.FC<InputSelectProps> = (props) => {
   const [forceVisible, setForceVisible] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
   const ref = useRef<BaseSelectRef>(null);
-  const { onSelect, selectTypeOptions = [], searchValue, searchType } = props;
+  const { onSelect, selectTypeOptions = [], searchValue, searchType, style } = props;
   const [value, setValue] = useState(searchValue ? `${searchValue}${splitKey}${searchType}` : '');
 
   const getOptions = (value) => {
@@ -61,16 +62,18 @@ const InputSelect: React.FC<InputSelectProps> = (props) => {
           value: _value + splitKey + item.value,
           label: (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div
-                style={{
-                  flex: 1,
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis',
-                }}
-              >
-                {_value}
-              </div>
+              <Tooltip title={_value} placement="topLeft">
+                <div
+                  style={{
+                    flex: 1,
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {_value}
+                </div>
+              </Tooltip>
               <div style={{ flexShrink: 0, flexGrow: 0, color: 'var(--text-color-hint)' }}>
                 {item.label}
               </div>
@@ -103,6 +106,7 @@ const InputSelect: React.FC<InputSelectProps> = (props) => {
       ref={ref}
       defaultActiveFirstOption={false}
       options={options}
+      style={style}
       autoFocus={forceVisible}
       onBlur={(e) => {
         if (!searchValue && !value) {

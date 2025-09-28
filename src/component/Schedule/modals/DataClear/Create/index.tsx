@@ -156,10 +156,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       databaseId,
       rowLimit: rateLimit?.rowLimit,
       dataSizeLimit: kbToMb(rateLimit?.dataSizeLimit),
-      tables: tables?.map((i) => {
-        i.partitions = (i?.partitions as [])?.join(',');
-        return i;
-      }),
+      tables,
       shardingStrategy,
       variables: getVariableValue(variables),
       archiveRange: fullDatabase ? IArchiveRange.ALL : IArchiveRange.PORTION,
@@ -320,14 +317,6 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           targetDatabaseId,
           scheduleIgnoreTimeoutTask,
         } = values;
-        _tables?.map((i) => {
-          i.partitions = Array.isArray(i.partitions)
-            ? i.partitions
-            : i?.partitions
-                ?.replace(/[\r\n]+/g, '')
-                ?.split(',')
-                ?.filter(Boolean);
-        });
         const parameters: createDataDeleteParameters = {
           databaseId,
           deleteByUniqueKey: true,
@@ -392,19 +381,11 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     form
       .validateFields()
       .then(async (values) => {
-        const { variables, tables: _tables, archiveRange } = values;
+        const { variables, tables, archiveRange } = values;
         if (archiveRange !== IArchiveRange.ALL) {
-          _tables?.map((i) => {
-            i.partitions = Array.isArray(i.partitions)
-              ? i.partitions
-              : i?.partitions
-                  ?.replace(/[\r\n]+/g, '')
-                  ?.split(',')
-                  ?.filter(Boolean);
-          });
           const parameters = {
             variables: getVariables(variables),
-            tables: _tables,
+            tables,
           };
           const sqls = await previewSqlStatements(parameters);
           if (sqls) {
