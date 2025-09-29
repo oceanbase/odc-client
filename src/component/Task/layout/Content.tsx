@@ -146,7 +146,7 @@ const Content = forwardRef<ContentRef, IProps>((props, ref) => {
     const apiParams = {
       fuzzySearchKeyword: searchValue,
       searchType,
-      status: tab === TaskTab.executionByCurrentUser ? [TaskStatus.WAIT_FOR_EXECUTION] : taskStatus,
+      status: taskStatus,
       taskTypes: isAll ? taskTypes : taskTabType,
       projectId: projectId || projectIdList || undefined,
       startTime: timeRange === 'ALL' ? undefined : String(getPreTime(7)),
@@ -158,10 +158,16 @@ const Content = forwardRef<ContentRef, IProps>((props, ref) => {
       approveByCurrentUser: [TaskTab.all, TaskTab.approveByCurrentUser].includes(tab),
       containsAll: tab === TaskTab.all,
     };
+    if (tab === TaskTab.executionByCurrentUser) {
+      apiParams.status = [TaskStatus.WAIT_FOR_EXECUTION];
+    } else if (tab === TaskTab.approveByCurrentUser) {
+      apiParams.status = [];
+    }
     if (typeof timeRange === 'number') {
       apiParams.startTime = String(getPreTime(timeRange));
       apiParams.endTime = String(getPreTime(0));
     }
+
     if (timeRange === 'custom' && executeDate?.filter(Boolean)?.length === 2) {
       apiParams.startTime = String(executeDate?.[0]?.valueOf());
       apiParams.endTime = String(executeDate?.[1]?.valueOf());

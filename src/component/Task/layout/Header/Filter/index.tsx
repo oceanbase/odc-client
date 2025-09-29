@@ -69,7 +69,8 @@ const Filter: React.FC<IProps> = () => {
   }, [taskTypes, isAll]);
 
   const statusTipContent = useMemo(() => {
-    if (!taskStatus.length) return null;
+    // 如果选择了待我审批或者待我执行，则不显示状态
+    if (!taskStatus.length || tab !== TaskTab.all) return null;
     return (
       <div>
         <div>状态：</div>
@@ -85,7 +86,7 @@ const Filter: React.FC<IProps> = () => {
         </div>
       </div>
     );
-  }, [taskStatus]);
+  }, [taskStatus, tab]);
 
   const projectTipContent = useMemo(() => {
     if (!projectId.length) return null;
