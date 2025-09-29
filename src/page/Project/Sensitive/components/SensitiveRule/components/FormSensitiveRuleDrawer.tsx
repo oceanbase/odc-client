@@ -31,116 +31,170 @@ const FormSensitiveRuleDrawer = ({
   handleFormDrawerClose,
   isEdit,
   selectedRecord,
+  projectId,
 }) => {
   const [formRef] = useForm();
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
   const [script, setScript] = useState<string>('');
   const [hasValidated, setHasValidated] = useState<boolean>(false);
+  const [currentType, setCurrentType] = useState(SensitiveRuleType.PATH);
   const handleSubmit = async () => {
-    const rawData = await formRef.validateFields().catch();
-    const { enabled, maskingAlgorithmId, name, type, regExp = {}, description } = rawData;
-    if (type === SensitiveRuleType.GROOVY && script?.length === 0) {
-      setHasValidated(true);
-      return;
-    }
-    let data: Partial<ISensitiveRule> = {
-      enabled,
-      maskingAlgorithmId,
-      name,
-      type,
-      projectId: context.projectId,
-      description,
-    };
-    const wrapPath = (origin: string) => {
-      if (origin?.includes(',')) {
-        return origin?.split(',')?.map((o) => o.trim());
+    try {
+      const rawData = await formRef.validateFields();
+      const { enabled, maskingAlgorithmId, name, type, regExp = {}, description } = rawData;
+      if (type === SensitiveRuleType.GROOVY && script?.length === 0) {
+        setHasValidated(true);
+        return;
       }
-      return origin === '' ? [] : [origin];
-    };
-    switch (type) {
-      case SensitiveRuleType.PATH: {
+      let data: Partial<ISensitiveRule> = {
+        enabled,
+        name,
+        type,
+        projectId: projectId,
+        description,
+      };
+
+      // 在编辑模式下，保留原有记录的所有字段
+      if (isEdit && selectedRecord) {
         data = {
-          ...data,
-          pathIncludes: wrapPath(
-            Array.isArray(rawData.pathIncludes)
-              ? rawData?.pathIncludes?.join(',')
-              : rawData.pathIncludes,
-          ),
-          pathExcludes: wrapPath(
-            Array.isArray(rawData.pathExcludes)
-              ? rawData?.pathExcludes?.join(',')
-              : rawData.pathExcludes,
-          ),
+          ...selectedRecord, // 保留原有字段
+          enabled,
+          name,
+          type,
+          description,
+          // 清空其他类型的字段，避免冲突
+          pathIncludes: [],
+          pathExcludes: [],
+          databaseRegexExpression: '',
+          tableRegexExpression: '',
+          columnRegexExpression: '',
+          columnCommentRegexExpression: '',
+          groovyScript: '',
+          aiSensitiveTypes: [],
+          aiCustomPrompt: '',
         };
-        break;
       }
-      case SensitiveRuleType.REGEX: {
-        const resRegExp = {};
-        Object.keys(regExp)?.forEach((key) => {
-          if (regExp?.[key]?.checked?.length > 0) {
-            resRegExp[`${key}`] = regExp[key].regExp;
-          }
+
+      // AI类型使用默认脱敏算法
+      if (type === SensitiveRuleType.AI) {
+        // 为AI类型设置默认脱敏算法（取第一个可用的算法）
+        const defaultValue = sensitiveContext?.maskingAlgorithmOptions?.[0]?.value;
+        data.maskingAlgorithmId = defaultValue ? Number(defaultValue) : null;
+      } else {
+        data.maskingAlgorithmId = maskingAlgorithmId;
+      }
+      const wrapPath = (origin: string) => {
+        if (origin?.includes(',')) {
+          return origin?.split(',')?.map((o) => o.trim());
+        }
+        return origin === '' ? [] : [origin];
+      };
+      switch (type) {
+        case SensitiveRuleType.PATH: {
+          data = {
+            ...data,
+            pathIncludes: wrapPath(
+              Array.isArray(rawData.pathIncludes)
+                ? rawData?.pathIncludes?.join(',')
+                : rawData.pathIncludes,
+            ),
+            pathExcludes: wrapPath(
+              Array.isArray(rawData.pathExcludes)
+                ? rawData?.pathExcludes?.join(',')
+                : rawData.pathExcludes,
+            ),
+          };
+          break;
+        }
+        case SensitiveRuleType.REGEX: {
+          const resRegExp = {};
+          Object.keys(regExp)?.forEach((key) => {
+            if (regExp?.[key]?.checked?.length > 0) {
+              resRegExp[`${key}`] = regExp[key].regExp;
+            }
+          });
+          data = {
+            ...data,
+            ...resRegExp,
+          };
+          break;
+        }
+        case SensitiveRuleType.GROOVY: {
+          data = {
+            ...data,
+            groovyScript: script,
+          };
+          break;
+        }
+        case SensitiveRuleType.AI: {
+          data = {
+            ...data,
+            aiSensitiveTypes: rawData.aiSensitiveTypes || [],
+            aiCustomPrompt: rawData.aiCustomPrompt || '',
+          };
+          break;
+        }
+      }
+      if (isEdit) {
+        console.log('提交编辑数据:', {
+          projectId,
+          selectedRecordId: selectedRecord.id,
+          data,
         });
-        data = {
-          ...data,
-          ...resRegExp,
-        };
-        break;
-      }
-      case SensitiveRuleType.GROOVY: {
-        data = {
-          ...data,
-          groovyScript: script,
-        };
-        break;
-      }
-    }
-    if (isEdit) {
-      const result = await updateSensitiveRule(
-        context.projectId,
-        selectedRecord.id,
-        data as ISensitiveRule,
-      );
-      if (result) {
-        message.success(
-          formatMessage({
-            id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.UpdatedSuccessfully',
-            defaultMessage: '更新成功',
-          }), //更新成功
+
+        const result = await updateSensitiveRule(
+          projectId,
+          selectedRecord.id,
+          data as ISensitiveRule,
         );
 
-        handleFormDrawerClose(formRef.resetFields);
+        console.log('API调用结果:', result);
+
+        if (result) {
+          message.success(
+            formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.UpdatedSuccessfully',
+              defaultMessage: '更新成功',
+            }), //更新成功
+          );
+
+          handleFormDrawerClose(formRef.resetFields);
+        } else {
+          message.error(
+            formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.UpdateFailed',
+              defaultMessage: '更新失败',
+            }), //更新失败
+          );
+        }
       } else {
-        message.error(
-          formatMessage({
-            id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.UpdateFailed',
-            defaultMessage: '更新失败',
-          }), //更新失败
-        );
-      }
-    } else {
-      const result = await createSensitiveRule(context.projectId, data);
-      if (result) {
-        message.success(
-          formatMessage({
-            id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.New',
-            defaultMessage: '新建成功',
-          }), //新建成功
-        );
+        const result = await createSensitiveRule(projectId, data);
+        if (result) {
+          message.success(
+            formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.New',
+              defaultMessage: '新建成功',
+            }), //新建成功
+          );
 
-        handleFormDrawerClose();
-      } else {
-        message.error(
-          formatMessage({
-            id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.FailedToCreate',
-            defaultMessage: '新建失败',
-          }), //新建失败
-        );
+          handleFormDrawerClose();
+        } else {
+          message.error(
+            formatMessage({
+              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.FailedToCreate',
+              defaultMessage: '新建失败',
+            }), //新建失败
+          );
+        }
       }
+
+      setHasValidated(false);
+    } catch (error) {
+      console.error('表单验证或提交失败:', error);
+      // 如果是表单验证失败，不显示错误消息，让表单自己处理
+      // 如果是其他错误，可以在这里处理
     }
-
-    setHasValidated(false);
   };
   const onCancel = () => {
     return Modal.confirm({
@@ -173,7 +227,11 @@ const FormSensitiveRuleDrawer = ({
   };
 
   useEffect(() => {
-    if (isEdit) {
+    if (!formDrawerVisible) {
+      return;
+    }
+
+    if (isEdit && selectedRecord) {
       const {
         name,
         enabled,
@@ -187,12 +245,15 @@ const FormSensitiveRuleDrawer = ({
         columnRegexExpression = '',
         columnCommentRegexExpression = '',
         description = '',
+        aiSensitiveTypes = [],
+        aiCustomPrompt = '',
       } = selectedRecord;
       const hasDatabaseRegexExpression = !!databaseRegexExpression;
       const hasTableRegexExpression = !!tableRegexExpression;
       const hasColumnRegexExpression = !!columnRegexExpression;
       const hasColumnCommentRegexExpression = !!columnCommentRegexExpression;
-      setScript(groovyScript);
+      setScript(groovyScript || '');
+      setCurrentType(SensitiveRuleType[type]);
       formRef.setFieldsValue({
         name,
         enabled,
@@ -240,9 +301,13 @@ const FormSensitiveRuleDrawer = ({
         },
         maskingAlgorithmId: maskingAlgorithmId,
         description,
+        aiSensitiveTypes,
+        aiCustomPrompt,
       });
-    } else {
+    } else if (!isEdit) {
+      // 新建模式下重置表单
       setScript('');
+      setCurrentType(SensitiveRuleType.PATH);
       formRef.setFieldsValue({
         name: undefined,
         enabled: true,
@@ -290,9 +355,11 @@ const FormSensitiveRuleDrawer = ({
         },
         maskingAlgorithmId: undefined,
         description: '',
+        aiSensitiveTypes: [],
+        aiCustomPrompt: '',
       });
     }
-  }, [formDrawerVisible, isEdit, selectedRecord]);
+  }, [isEdit, selectedRecord, formDrawerVisible]);
   return (
     <Drawer
       open={formDrawerVisible}
@@ -417,79 +484,82 @@ const FormSensitiveRuleDrawer = ({
             hasValidated,
             setScript,
             originType: isEdit ? SensitiveRuleType[selectedRecord.type] : undefined,
+            onTypeChange: setCurrentType,
           }}
         />
 
-        <Form.Item
-          label={
-            formatMessage({
-              id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.DesensitizationAlgorithm',
-              defaultMessage: '脱敏算法',
-            }) //脱敏算法
-          }
-          name={'maskingAlgorithmId'}
-          required
-          rules={[
-            {
-              required: true,
-              message: formatMessage({
-                id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.SelectADesensitizationAlgorithm',
-                defaultMessage: '请选择脱敏算法',
-              }), //请选择脱敏算法
-            },
-          ]}
-        >
-          <Select
-            placeholder={
+        {currentType !== SensitiveRuleType.AI && (
+          <Form.Item
+            label={
               formatMessage({
-                id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.PleaseSelect',
-                defaultMessage: '请选择',
-              }) //请选择
+                id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.DesensitizationAlgorithm',
+                defaultMessage: '脱敏算法',
+              }) //脱敏算法
             }
-            style={{
-              width: '262px',
-            }}
-            optionLabelProp="label"
+            name={'maskingAlgorithmId'}
+            required
+            rules={[
+              {
+                required: true,
+                message: formatMessage({
+                  id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.SelectADesensitizationAlgorithm',
+                  defaultMessage: '请选择脱敏算法',
+                }), //请选择脱敏算法
+              },
+            ]}
           >
-            {sensitiveContext?.maskingAlgorithmOptions?.map((option, index) => {
-              const target = sensitiveContext?.maskingAlgorithms?.find(
-                (maskingAlgorithm) => maskingAlgorithm?.id === option?.value,
-              );
-              return (
-                <Select.Option value={option?.value} key={index} label={option?.label}>
-                  <PopoverContainer
-                    key={index}
-                    title={option?.label}
-                    descriptionsData={[
-                      {
-                        label: formatMessage({
-                          id: 'odc.src.page.Project.Sensitive.components.SensitiveRule.components.DesensitizationMethod',
-                          defaultMessage: '脱敏方式',
-                        }), //'脱敏方式'
-                        value: maskRuleTypeMap?.[target?.type],
-                      },
-                      {
-                        label: formatMessage({
-                          id: 'odc.src.page.Project.Sensitive.components.SensitiveRule.components.TestData',
-                          defaultMessage: '测试数据',
-                        }), //'测试数据'
-                        value: target?.sampleContent,
-                      },
-                      {
-                        label: formatMessage({
-                          id: 'odc.src.page.Project.Sensitive.components.SensitiveRule.components.Preview',
-                          defaultMessage: '结果预览',
-                        }), //'结果预览'
-                        value: target?.maskedContent,
-                      },
-                    ]}
-                    children={() => <div>{option?.label}</div>}
-                  />
-                </Select.Option>
-              );
-            })}
-          </Select>
-        </Form.Item>
+            <Select
+              placeholder={
+                formatMessage({
+                  id: 'odc.SensitiveRule.components.FormSensitiveRuleDrawer.PleaseSelect',
+                  defaultMessage: '请选择',
+                }) //请选择
+              }
+              style={{
+                width: '262px',
+              }}
+              optionLabelProp="label"
+            >
+              {sensitiveContext?.maskingAlgorithmOptions?.map((option, index) => {
+                const target = sensitiveContext?.maskingAlgorithms?.find(
+                  (maskingAlgorithm) => maskingAlgorithm?.id === option?.value,
+                );
+                return (
+                  <Select.Option value={option?.value} key={index} label={option?.label}>
+                    <PopoverContainer
+                      key={index}
+                      title={option?.label}
+                      descriptionsData={[
+                        {
+                          label: formatMessage({
+                            id: 'odc.src.page.Project.Sensitive.components.SensitiveRule.components.DesensitizationMethod',
+                            defaultMessage: '脱敏方式',
+                          }), //'脱敏方式'
+                          value: maskRuleTypeMap?.[target?.type],
+                        },
+                        {
+                          label: formatMessage({
+                            id: 'odc.src.page.Project.Sensitive.components.SensitiveRule.components.TestData',
+                            defaultMessage: '测试数据',
+                          }), //'测试数据'
+                          value: target?.sampleContent,
+                        },
+                        {
+                          label: formatMessage({
+                            id: 'odc.src.page.Project.Sensitive.components.SensitiveRule.components.Preview',
+                            defaultMessage: '结果预览',
+                          }), //'结果预览'
+                          value: target?.maskedContent,
+                        },
+                      ]}
+                      children={() => <div>{option?.label}</div>}
+                    />
+                  </Select.Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+        )}
         <Form.Item
           label={
             formatMessage({

@@ -1,0 +1,96 @@
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 3px;
+  transition: all 0.15s ease;
+  font-size: 12px;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    transform: none;
+  }
+}
+
+.tooltipContent {
+  max-width: 300px;
+  background: #fff;
+  color: #000;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e8e8e8;
+  padding: 12px;
+
+  .tooltipTitle {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #000;
+  }
+
+  .tooltipItem {
+    margin-bottom: 4px;
+    color: #333;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .tooltipDetails {
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid #e8e8e8;
+
+    .tooltipSubtitle {
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #333;
+      font-size: 12px;
+    }
+
+    .tooltipDetailItem {
+      margin-bottom: 4px;
+      font-size: 12px;
+      color: #666;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+.summary {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+}
+
+.scanInfo {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #999;
+  font-style: italic;
+}
+
+// Tooltip 全局样式覆盖
+:global(.ant-tooltip-inner) {
+  .tooltipContent {
+    background: #fff !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid #e8e8e8 !important;
+    padding: 12px !important;
+  }
+}
+
+// 响应式调整
+@media (max-width: 768px) {
+  .tooltipContent {
+    max-width: 250px;
+  }
+}

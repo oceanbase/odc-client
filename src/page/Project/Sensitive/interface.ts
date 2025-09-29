@@ -16,6 +16,7 @@
 
 import { ConnectType } from '@/d.ts';
 import { ESensitiveColumnType } from '@/d.ts/sensitiveColumn';
+import { SensitiveRuleType } from '@/d.ts/sensitiveRule';
 import { formatMessage } from '@/util/intl';
 export enum AddSensitiveColumnType {
   Manual,
@@ -24,7 +25,7 @@ export enum AddSensitiveColumnType {
 export interface SelectItemProps {
   label: string;
   value: string | number;
-  type?: ConnectType;
+  type?: ConnectType | SensitiveRuleType;
   disabled?: boolean;
 }
 
@@ -71,4 +72,5 @@ export const DetectRuleTypeMap = {
   PATH: formatMessage({ id: 'odc.Project.Sensitive.interface.Path', defaultMessage: '路径' }), //路径
   REGEX: formatMessage({ id: 'odc.Project.Sensitive.interface.Regular', defaultMessage: '正则' }), //正则
   GROOVY: formatMessage({ id: 'odc.Project.Sensitive.interface.Script', defaultMessage: '脚本' }), //脚本
+  AI: formatMessage({ id: 'odc.Project.Sensitive.interface.AI', defaultMessage: 'AI' }), //AI
 };

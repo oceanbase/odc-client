@@ -227,6 +227,105 @@ const renderByType = (type: SensitiveRuleType, params?: any) => {
         </>
       );
     }
+    case SensitiveRuleType.AI: {
+      const { aiSensitiveTypes = [], aiCustomPrompt = '' } = params;
+
+      // 敏感类别映射表
+      const sensitiveTypeMap = {
+        'personal-name-chinese': formatMessage({
+          id: 'odc.SensitiveRule.components.DetectWay.PersonalNameChinese',
+          defaultMessage: '个人姓名(汉字类型)',
+        }),
+        'personal-name-alphabet': formatMessage({
+          id: 'odc.SensitiveRule.components.DetectWay.PersonalNameAlphabet',
+          defaultMessage: '个人姓名(字母类型)',
+        }),
+        nickname: formatMessage({
+          id: 'odc.SensitiveRule.components.DetectWay.Nickname',
+          defaultMessage: '昵称',
+        }),
+        email: formatMessage({
+          id: 'odc.SensitiveRule.components.DetectWay.Email',
+          defaultMessage: '邮箱',
+        }),
+        address: formatMessage({
+          id: 'odc.SensitiveRule.components.DetectWay.Address',
+          defaultMessage: '地址',
+        }),
+        'phone-number': formatMessage({
+          id: 'odc.SensitiveRule.components.DetectWay.PhoneNumber',
+          defaultMessage: '手机号码',
+        }),
+        'fixed-line-phone-number': formatMessage({
+          id: 'odc.SensitiveRule.components.DetectWay.FixedLinePhoneNumber',
+          defaultMessage: '固定电话',
+        }),
+        'certificate-number': formatMessage({
+          id: 'odc.SensitiveRule.components.DetectWay.CertificateNumber',
+          defaultMessage: '证件号码',
+        }),
+        'bank-card-number': formatMessage({
+          id: 'odc.SensitiveRule.components.DetectWay.BankCardNumber',
+          defaultMessage: '银行卡号',
+        }),
+        'license-plate-number': formatMessage({
+          id: 'odc.SensitiveRule.components.DetectWay.LicensePlateNumber',
+          defaultMessage: '车牌号',
+        }),
+        'device-id': formatMessage({
+          id: 'odc.SensitiveRule.components.DetectWay.DeviceId',
+          defaultMessage: '设备唯一识别号',
+        }),
+        ip: formatMessage({
+          id: 'odc.SensitiveRule.components.DetectWay.IpAddress',
+          defaultMessage: 'IP 地址',
+        }),
+        mac: formatMessage({
+          id: 'odc.SensitiveRule.components.DetectWay.MacAddress',
+          defaultMessage: 'MAC 地址',
+        }),
+      };
+
+      const displayTypes = aiSensitiveTypes
+        ?.map((type) => sensitiveTypeMap[type] || type)
+        .join(', ');
+
+      return (
+        <>
+          <Descriptions.Item
+            label={
+              formatMessage({
+                id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.SensitiveTypes',
+                defaultMessage: '敏感类别',
+              }) //敏感类别
+            }
+          >
+            {displayTypes || '-'}
+          </Descriptions.Item>
+
+          {aiCustomPrompt && (
+            <Descriptions.Item
+              label={
+                formatMessage({
+                  id: 'odc.SensitiveRule.components.ViewSensitiveRuleDrawer.CustomPrompt',
+                  defaultMessage: '自定义提示词',
+                }) //自定义提示词
+              }
+            >
+              <div
+                style={{
+                  maxWidth: '400px',
+                  wordBreak: 'break-word',
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
+                {aiCustomPrompt}
+              </div>
+            </Descriptions.Item>
+          )}
+        </>
+      );
+    }
   }
 };
 const ViewSensitiveRuleDrawer = ({
@@ -337,7 +436,9 @@ const ViewSensitiveRuleDrawer = ({
             }) //脱敏算法
           }
         >
-          {maskingAlgorithmIdMap[record?.maskingAlgorithmId]}
+          {record?.type === SensitiveRuleType.AI
+            ? '-'
+            : maskingAlgorithmIdMap[record?.maskingAlgorithmId]}
         </Descriptions.Item>
         <Descriptions.Item
           label={

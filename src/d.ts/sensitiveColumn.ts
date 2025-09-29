@@ -42,3 +42,11 @@ export interface ISensitiveColumn {
   updateTime: number;
   organizationId: number;
 }
+
+// 敏感列信息接口，用于扫描结果
+export interface ISensitiveColumnInfo {
+  columnName: string;
+  sensitivityLevel: 'HIGH' | 'MEDIUM' | 'LOW';
+  reason: string;
+  confidence: number;
+}

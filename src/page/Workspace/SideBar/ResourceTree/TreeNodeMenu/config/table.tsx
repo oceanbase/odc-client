@@ -37,6 +37,7 @@ import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
 import { isLogicalDatabase } from '@/util/database';
 import { DatabasePermissionType } from '@/d.ts/database';
+import { sensitiveColumnScanner } from '@/service/sensitiveColumnScanner';
 export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TableRoot]: [
     {
@@ -83,6 +84,8 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
           return;
         }
         await session.database.getTableList();
+        // 刷新表列表时清除整个数据库的敏感列缓存
+        sensitiveColumnScanner.clearCacheByDatabase(session?.database?.dbName);
       },
     },
   ],
@@ -457,6 +460,8 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       async run(session, node) {
         const table = node.data as ITableModel;
         await session.database.loadTable(table.info);
+        // 刷新单个表时清除该表的敏感列缓存
+        sensitiveColumnScanner.clearCache(table.info?.tableName, session?.database?.dbName);
       },
     },
   ],
@@ -497,6 +502,8 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       async run(session, node) {
         const table = node.data as ITableModel;
         await session.database.loadTable(table.info);
+        // 刷新表列时清除该表的敏感列缓存
+        sensitiveColumnScanner.clearCache(table.info?.tableName, session?.database?.dbName);
       },
     },
   ],
@@ -537,6 +544,8 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       async run(session, node) {
         const table = node.data as ITableModel;
         await session.database.loadTable(table.info);
+        // 刷新表索引时清除该表的敏感列缓存
+        sensitiveColumnScanner.clearCache(table.info?.tableName, session?.database?.dbName);
       },
     },
   ],
@@ -577,6 +586,8 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       async run(session, node) {
         const table = node.data as ITableModel;
         await session.database.loadTable(table.info);
+        // 刷新表分区时清除该表的敏感列缓存
+        sensitiveColumnScanner.clearCache(table.info?.tableName, session?.database?.dbName);
       },
     },
   ],
@@ -617,6 +628,8 @@ export const tableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[
       async run(session, node) {
         const table = node.data as ITableModel;
         await session.database.loadTable(table.info);
+        // 刷新表约束时清除该表的敏感列缓存
+        sensitiveColumnScanner.clearCache(table.info?.tableName, session?.database?.dbName);
       },
     },
   ],

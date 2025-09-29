@@ -38,7 +38,12 @@
 }
 
 .bigTable {
+  width: 100%;
+  table-layout: fixed;
   :global {
+    .ant-table {
+      width: 100%;
+    }
     .ant-table-thead {
       .ant-table-cell {
         box-sizing: border-box;
@@ -64,6 +69,8 @@
       .ant-table-cell {
         padding: 10px 16px;
         line-height: 20px;
+        word-wrap: break-word;
+        word-break: break-all;
       }
     }
   }

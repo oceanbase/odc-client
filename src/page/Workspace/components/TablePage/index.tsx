@@ -24,6 +24,7 @@ import { Radio, Space, Spin, Tabs } from 'antd';
 import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import sensitiveColumnScanner from '@/service/sensitiveColumnScanner';
 import { ITableModel } from '../CreateTable/interface';
 import TableColumns from './Columns';
 import TableConstraints from './Constraints';
@@ -38,6 +39,7 @@ import TableData from './TableData';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
 import Toolbar from '@/component/Toolbar';
+import SensitiveColumnIndicator from '@/component/SensitiveColumnIndicator';
 import { TablePage as TablePageModel } from '@/store/helper/page/pages';
 import modal from '@/store/modal';
 import { SessionManagerStore } from '@/store/sessionManager';
@@ -142,6 +144,8 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
 
   const refresh = useCallback(async () => {
     await fetchTable();
+    // 刷新表信息时清除该表的敏感列缓存
+    sensitiveColumnScanner.clearCache(params.tableName, session?.database?.dbName);
   }, [params.tableName, session]);
 
   useEffect(() => {
@@ -207,6 +211,20 @@ const TablePage: React.FC<IProps> = function ({ params, pageStore, pageKey, sett
             )}
           </Radio.Group>
           <Space>
+            {/* 敏感列标识 - 在表结构查看时显示 */}
+            <SensitiveColumnIndicator
+              tableName={params.tableName}
+              databaseName={session?.database?.dbName}
+              sessionId={session?.sessionId}
+              columns={table?.columns?.map((col) => ({
+                columnName: (col as any).columnName || (col as any).name,
+                columnType: (col as any).dataType || (col as any).type || 'VARCHAR',
+              }))}
+              triggerSource="TABLE_VIEW"
+              autoScan={true}
+              showDetails={true}
+              size="default"
+            />
             {settingStore.enableDBExport &&
             getDataSourceModeConfig(session?.connection?.type)?.features?.task?.includes(
               TaskType.EXPORT,

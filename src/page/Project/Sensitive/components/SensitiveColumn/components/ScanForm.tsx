@@ -18,6 +18,7 @@ import {
   getScanningResults,
   ScannResultType,
   startScanning,
+  stopScanning,
 } from '@/common/network/sensitiveColumn';
 import { ESensitiveColumnType, ISensitiveColumn } from '@/d.ts/sensitiveColumn';
 import ProjectContext from '@/page/Project/ProjectContext';
@@ -25,7 +26,13 @@ import { maskRuleTypeMap } from '@/page/Secure/MaskingAlgorithm';
 import { ReactComponent as TableOutlined } from '@/svgr/menuTable.svg';
 import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
 import { formatMessage } from '@/util/intl';
-import Icon, { CheckCircleFilled, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
+import Icon, {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  DeleteOutlined,
+  StopOutlined,
+  SyncOutlined,
+} from '@ant-design/icons';
 import {
   Button,
   Collapse,
@@ -80,6 +87,7 @@ const ScanForm = (props: IScanFormProps, ref) => {
   const [activeKeys, setActiveKeys] = useState<string | string[]>(['0']);
   const [sensitiveColumnMap, setSensitiveColumnMap] = useState<Map<string, any>>(new Map());
   const reset = () => {
+    clearTimeout(timer.current);
     setTaskId(null);
     setScanStatus(null);
     setScanLoading(false);
@@ -142,10 +150,26 @@ const ScanForm = (props: IScanFormProps, ref) => {
       setScanStatus(ScannResultType.CREATED);
     }
   };
+
+  const handleStopScan = async () => {
+    if (taskId) {
+      try {
+        await stopScanning(projectContext.projectId, taskId);
+        clearTimeout(timer.current);
+        setScanLoading(false);
+        setScanStatus(ScannResultType.CANCELLED);
+      } catch (error) {
+        console.error('停止扫描失败:', error);
+      }
+    }
+  };
   const handleScanning = async (taskId: string) => {
     const rawData = await getScanningResults(projectContext.projectId, taskId);
     const { status, sensitiveColumns, allTableCount, finishedTableCount } = rawData;
-    if ([ScannResultType.FAILED, ScannResultType.SUCCESS].includes(status)) {
+    if (
+      [ScannResultType.FAILED, ScannResultType.SUCCESS, ScannResultType.CANCELLED].includes(status)
+    ) {
+      clearTimeout(timer.current);
       const dataSourceMap = new Map();
       setSensitiveColumns(sensitiveColumns);
       sensitiveColumns?.forEach((d) => {
@@ -218,8 +242,14 @@ const ScanForm = (props: IScanFormProps, ref) => {
         });
       });
       setFormData(scanTableData);
-      setSuccessful(true);
-      setScanStatus(ScannResultType.SUCCESS);
+
+      // 根据实际扫描状态设置UI状态
+      if (status === ScannResultType.SUCCESS) {
+        setSuccessful(true);
+      } else {
+        setSuccessful(false);
+      }
+      setScanStatus(status);
       setPercent(Math.floor((finishedTableCount * 100) / allTableCount));
       await _formRef.setFieldsValue({
         scanTableData,
@@ -234,7 +264,6 @@ const ScanForm = (props: IScanFormProps, ref) => {
       setPercent(Math.floor((finishedTableCount * 100) / allTableCount));
       timer.current = setTimeout(() => {
         handleScanning(taskId);
-        clearTimeout(timer.current);
       }, 500);
     }
   };
@@ -326,7 +355,7 @@ const ScanForm = (props: IScanFormProps, ref) => {
     };
   });
   useEffect(() => {
-    if (taskId && [ScannResultType.CREATED, ScannResultType.RUNNING].includes(scanStatus)) {
+    if (taskId && scanStatus === ScannResultType.CREATED) {
       handleScanning(taskId);
     }
     return () => {
@@ -355,7 +384,9 @@ const ScanForm = (props: IScanFormProps, ref) => {
         <ScanButton
           scanLoading={scanLoading}
           successful={successful}
+          scanStatus={scanStatus}
           handleStartScan={handleStartScan}
+          handleStopScan={handleStopScan}
         />
       </Form>
       <PreviewHeader
@@ -386,6 +417,7 @@ const ScanForm = (props: IScanFormProps, ref) => {
               hasScan={hasScan}
               scanLoading={scanLoading}
               successful={successful}
+              scanStatus={scanStatus}
               empty={true}
             />
           ) : (
@@ -410,7 +442,16 @@ const EmptyOrSpin: React.FC<{
   percent: number;
   successful: boolean;
   scanLoading: boolean;
-}> = ({ empty = false, isSearch = false, scanLoading, hasScan, percent, successful }) => {
+  scanStatus?: ScannResultType;
+}> = ({
+  empty = false,
+  isSearch = false,
+  scanLoading,
+  hasScan,
+  percent,
+  successful,
+  scanStatus,
+}) => {
   const gentDescription = () => {
     if (hasScan && isSearch && isSearch) {
       return formatMessage({
@@ -425,6 +466,12 @@ const EmptyOrSpin: React.FC<{
       }); //'选中数据库目前暂无可选敏感列'
     }
     if (hasScan && !successful) {
+      if (scanStatus === ScannResultType.CANCELLED) {
+        return formatMessage({
+          id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ScanCancelled',
+          defaultMessage: '扫描已取消',
+        }); //'扫描已取消'
+      }
       return formatMessage({
         id: 'odc.src.page.Project.Sensitive.components.SensitiveColumn.components.ScanFailure',
         defaultMessage: '扫描失败',
@@ -475,8 +522,10 @@ const EmptyOrSpin: React.FC<{
 const ScanButton: React.FC<{
   scanLoading: boolean;
   successful: boolean;
+  scanStatus: ScannResultType;
   handleStartScan: () => void;
-}> = ({ scanLoading, successful, handleStartScan }) => {
+  handleStopScan: () => void;
+}> = ({ scanLoading, successful, scanStatus, handleStartScan, handleStopScan }) => {
   return (
     <Space>
       <Button
@@ -496,6 +545,14 @@ const ScanButton: React.FC<{
               }) //开始扫描
         }
       </Button>
+      {scanLoading && (
+        <Button onClick={handleStopScan} danger>
+          {formatMessage({
+            id: 'odc.SensitiveColumn.components.ScanForm.StopScanning',
+            defaultMessage: '停止扫描',
+          })}
+        </Button>
+      )}
       {successful && (
         <Space>
           <CheckCircleFilled
@@ -510,6 +567,42 @@ const ScanButton: React.FC<{
                 id: 'odc.SensitiveColumn.components.ScanForm.ScanCompleted',
                 defaultMessage: '扫描完成',
               }) /*扫描完成*/
+            }
+          </div>
+        </Space>
+      )}
+      {scanStatus === ScannResultType.FAILED && (
+        <Space>
+          <CloseCircleFilled
+            style={{
+              color: '#ff4d4f',
+            }}
+          />
+
+          <div>
+            {
+              formatMessage({
+                id: 'odc.SensitiveColumn.components.ScanForm.ScanFailed',
+                defaultMessage: '扫描失败',
+              }) /*扫描失败*/
+            }
+          </div>
+        </Space>
+      )}
+      {scanStatus === ScannResultType.CANCELLED && (
+        <Space>
+          <StopOutlined
+            style={{
+              color: '#faad14',
+            }}
+          />
+
+          <div>
+            {
+              formatMessage({
+                id: 'odc.SensitiveColumn.components.ScanForm.ScanCancelled',
+                defaultMessage: '扫描已取消',
+              }) /*扫描已取消*/
             }
           </div>
         </Space>
@@ -811,7 +904,16 @@ const EmptyCollapse: React.FC<{
   hasScan?: boolean;
   scanLoading?: boolean;
   successful?: boolean;
-}> = ({ empty = false, isSearch = false, percent, hasScan, scanLoading, successful }) => {
+  scanStatus?: ScannResultType;
+}> = ({
+  empty = false,
+  isSearch = false,
+  percent,
+  hasScan,
+  scanLoading,
+  successful,
+  scanStatus,
+}) => {
   return (
     <Collapse defaultActiveKey={['0']} className={styles.collapse}>
       <Collapse.Panel
@@ -848,6 +950,7 @@ const EmptyCollapse: React.FC<{
           hasScan={hasScan}
           scanLoading={scanLoading}
           successful={successful}
+          scanStatus={scanStatus}
         />
       </Collapse.Panel>
     </Collapse>
@@ -874,7 +977,13 @@ const CollapseItemContent: React.FC<{
   handleScanTableDataDeleteByTableName,
 }) => {
   return scanTableData?.length === 0 ? (
-    <EmptyCollapse empty={true} hasScan={true} successful={true} isSearch={true} />
+    <EmptyCollapse
+      empty={true}
+      hasScan={true}
+      successful={true}
+      isSearch={true}
+      scanStatus={ScannResultType.SUCCESS}
+    />
   ) : (
     <Collapse
       defaultActiveKey={activeKeys}
@@ -910,6 +1019,8 @@ const CollapseItemContent: React.FC<{
                 handleScanTableDataDelete,
               )}
               dataSource={dataSource}
+              scroll={{ x: 540 }}
+              tableLayout="fixed"
               pagination={{
                 showSizeChanger: false,
                 pageSize: 10,
