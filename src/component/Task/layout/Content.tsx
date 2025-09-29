@@ -238,7 +238,7 @@ const Content = forwardRef<ContentRef, IProps>((props, ref) => {
 
     // Apply URL filter parameters
     const newParams: Partial<ITaskParam> = {
-      tab: defaultTab || params?.tab,
+      tab: defaultTaskType ? TaskTab.all : defaultTab || params?.tab,
     };
 
     // Apply time filter from URL
