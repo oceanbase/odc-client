@@ -18,6 +18,8 @@ import { AIQuestionType } from '@/d.ts/ai';
 import login from '@/store/login';
 import request from '@/util/request';
 import { message } from 'antd';
+import Cookies from 'js-cookie';
+import { getLocale } from '@umijs/max';
 interface IModifySyncProps {
   input: string;
   fileName: string;
@@ -38,9 +40,14 @@ enum ESseEventStatus {
   FAILED = 'FAILED',
 }
 
-async function fetchPostSSE(url, data, options = {}) {
+async function fetchPostSSE(url, data, options: { headers?: Record<string, string> } = {}) {
   const controller = new AbortController();
   let accumulatedContent = '';
+
+  // Generate request ID similar to other requests
+  const requestId =
+    Math.random().toString(36).substring(2).toUpperCase() +
+    Math.random().toString(36).substring(2).toUpperCase();
 
   try {
     const response = await fetch(url, {
@@ -48,10 +55,14 @@ async function fetchPostSSE(url, data, options = {}) {
       headers: {
         Accept: 'text/event-stream',
         'Content-Type': 'application/json',
-        // ...options.headers
+        'X-XSRF-TOKEN': Cookies?.get('XSRF-TOKEN') || '',
+        'Accept-Language': getLocale(),
+        'X-Request-ID': requestId,
+        ...options.headers,
       },
       body: JSON.stringify(data),
       signal: controller.signal,
+      credentials: 'include',
       ...options,
     });
 
