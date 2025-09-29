@@ -359,7 +359,7 @@ const Content: React.FC<IProps> = (props) => {
     // Apply URL filter parameters
     const newParams: Partial<IScheduleParam> = {
       status: defaultScheduleStatus ? [defaultScheduleStatus as ScheduleStatus] : params?.status,
-      tab: defaultTab || params?.tab,
+      tab: defaultScheduleStatus ? ScheduleTab.all : defaultTab || params?.tab,
     };
 
     // Apply time filter from URL
