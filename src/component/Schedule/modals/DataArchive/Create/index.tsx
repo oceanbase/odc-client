@@ -469,6 +469,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     handleCheckTargetConnectTypeIsAllow(sourceDatabase, db);
   };
 
+  /** 检查链路是否被支持 */
   const handleCheckTargetConnectTypeIsAllow = (
     sourceDatabase: IDatabase,
     targetDatabase: IDatabase,
@@ -578,7 +579,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
                 })}
                 /*源端数据库*/ projectId={projectId}
                 onChange={handleSourceDatabaseChange}
-                onInit={(db) => setTargetDatabase(db)}
+                onInit={(db) => setSourceDatabase(db)}
                 filters={{
                   hideFileSystem: true,
                 }}
@@ -621,6 +622,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
                 ]}
                 placeholder="仅支持选择同一项目内数据库"
                 onChange={handleTargetDatabaseChange}
+                onInit={(db) => setTargetDatabase(db)}
                 name="targetDataBaseId"
                 projectId={projectId}
               />
