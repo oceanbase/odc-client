@@ -64,7 +64,7 @@ const TreeSelector: React.FC<IProps> = React.memo((props) => {
   });
   useEffect(() => {
     loadTreeData(props.viewUnits);
-  }, []);
+  }, [props.viewUnits]);
 
   const handleSelectAll = (e, onItemSelectAll) => {
     const { checked } = e.target;
