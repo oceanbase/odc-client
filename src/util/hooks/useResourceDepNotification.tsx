@@ -36,7 +36,7 @@ const getTitle = (name: string) => ({
   },
 });
 
-const getContent = (name: string) => ({
+const getContent = (projectName?: string) => ({
   [EResourceType.DATASOURCE]: {
     [EStatus.LOADING]: '删除前将终止所有相关未完成的工单和作业，请等待。',
     [EStatus.SUCCESS]: '数据源已删除，未完成的工单和作业已终止。',
@@ -44,7 +44,9 @@ const getContent = (name: string) => ({
   },
   [EResourceType.DATABASE]: {
     [EStatus.LOADING]: '修改前将终止相关未完成的工单和作业，请等待。',
-    [EStatus.SUCCESS]: `数据库已迁移至项目 ${name} 中，未完成的工单和作业已终止。`,
+    [EStatus.SUCCESS]: projectName
+      ? `数据库已移出当前项目，并迁移至项目 ${projectName} 中，未完成的工单和作业已终止。`
+      : '数据库已移出当前项目，并未分配项目，未完成的工单和作业已终止',
     [EStatus.FAILED]: '部分未完成的工单和作业未被终止，请检查。',
   },
   [EResourceType.USER]: {
@@ -66,14 +68,15 @@ interface IOpenNotificationProps {
   name: string;
   type: EResourceType;
   status: EStatus;
+  projectName?: string;
 }
 
 const useResourceDepNotification = () => {
   const [api, contextHolder] = notification.useNotification();
-  const openNotification = ({ name, type, status }: IOpenNotificationProps) => {
+  const openNotification = ({ name, type, status, projectName }: IOpenNotificationProps) => {
     api.open({
       message: <Typography.Title level={5}>{getTitle(name)[type][status]}</Typography.Title>,
-      description: getContent(name)[type][status],
+      description: getContent(projectName)[type][status],
       icon: iconConfig[status],
     });
   };
