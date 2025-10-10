@@ -224,6 +224,47 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
 
   const [activeKey, setActiveKey] = useState(data.keys().next().value);
 
+  const radioButtons = useMemo(() => {
+    const radioOptions = [
+      {
+        label: formatMessage({ id: 'src.component.ODCSetting.6BCFD6DD', defaultMessage: '用户' }),
+        value: ESpaceType.USER,
+        className: styles.user,
+      },
+    ];
+
+    if (login.isPrivateSpace()) {
+      radioOptions.push({
+        label: formatMessage({
+          id: 'src.component.ODCSetting.47586FD4',
+          defaultMessage: '个人空间',
+        }),
+        value: ESpaceType.PERSONAL,
+        className: styles.space,
+      });
+    } else if (isAdmin) {
+      radioOptions.push({
+        label: formatMessage({
+          id: 'src.component.ODCSetting.AC147B83',
+          defaultMessage: '团队空间',
+        }),
+        value: ESpaceType.GROUP,
+        className: styles.space,
+      });
+    }
+
+    return radioOptions.map((option) => (
+      <Tooltip key={option.value} title={option.label} placement="top">
+        <Radio.Button
+          className={`${option.className} ${styles.buttonWithTooltip}`}
+          value={option.value}
+        >
+          <span className={styles.buttonText}>{option.label}</span>
+        </Radio.Button>
+      </Tooltip>
+    ));
+  }, [login, isAdmin]);
+
   const initState = useCallback(() => {
     const initKey = data.keys().next().value;
     if (searchValue) {
@@ -676,6 +717,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
           className={styles.tabs}
           defaultValue={ESpaceType.USER}
           onChange={(e) => setSpaceType(e.target.value)}
+          optionType="button"
         >
           {spaceTypeOptions.map((option) => (
             <Tooltip key={option.value} title={option.label}>
