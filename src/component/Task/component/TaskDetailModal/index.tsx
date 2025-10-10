@@ -181,10 +181,10 @@ const TaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) 
   };
 
   useEffect(() => {
-    if (visible) {
+    if (visible && task?.projectId) {
       handleFetchDatabaseList();
     }
-  }, [visible]);
+  }, [visible, task?.projectId]);
 
   return (
     <Drawer

@@ -2577,9 +2577,10 @@ export interface ILogicDatabaseChangeExecuteRecord {
   dataSourceName: string;
   physicalDatabaseName: string;
   physicalDatabaseId: number;
-  id: number;
-  order: number;
   status: string;
+  completedSqlCount: number;
+  totalSqlCount: number;
+  physicalDatabase?: IDatabase;
 }
 
 export interface sqlExecutionResultMap {

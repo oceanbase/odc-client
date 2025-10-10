@@ -24,7 +24,7 @@ import {
 } from '@/d.ts';
 import { SchemaChangeRecordStatus } from '@/d.ts/logicalDatabase';
 import { formatMessage } from '@/util/intl';
-import {
+import Icon, {
   CheckCircleFilled,
   CloseCircleFilled,
   EllipsisOutlined,
@@ -36,6 +36,7 @@ import {
 import { Space, Tooltip } from 'antd';
 import { isNil } from 'lodash';
 import React from 'react';
+import { ReactComponent as WaitingYellowSvg } from '@/svgr/waiting_yellow.svg';
 export const nodeStatus = {
   [TaskFlowNodeType.APPROVAL_TASK]: {
     [TaskNodeStatus.PENDING]: {
@@ -697,17 +698,7 @@ export const logicDBChangeTaskStatus = {
     }),
   },
   [SchemaChangeRecordStatus.PENDING]: {
-    icon: (
-      <EllipsisOutlined
-        style={{
-          color: '#ffffff',
-          background: 'rgb(250, 173, 20)',
-          borderRadius: '14px',
-          padding: 1,
-          fontSize: 13,
-        }}
-      />
-    ),
+    icon: <Icon component={WaitingYellowSvg} style={{ fontSize: 14 }} />,
 
     text: formatMessage({
       id: 'src.component.Task.component.Status.1B9301A5',
