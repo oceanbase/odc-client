@@ -25,13 +25,9 @@ import { getFormatDateTime } from '@/util/utils';
 import { FilterOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
+import { getStatusFilters } from '../TaskTable/utils';
 
-const statusFilters = Object.keys(status).map((key) => {
-  return {
-    text: status?.[key].text,
-    value: key,
-  };
-});
+const taskStatusFilters = getStatusFilters(status);
 
 function getDatabaseFilters(databases: { databaseName: string }[]) {
   const databaseFilters: {
@@ -105,7 +101,7 @@ const getConnectionColumns = (params: {
       }), //任务状态
       ellipsis: true,
       width: 140,
-      filters: statusFilters,
+      filters: taskStatusFilters,
       filterIcon: <FilterOutlined />,
       onFilter: (value: string, record) => {
         return value === record.status;

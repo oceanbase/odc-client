@@ -17,13 +17,13 @@ import { ReactComponent as SchedulePauseSvg } from '@/svgr/schedulePause.svg';
 
 const ScheduleStatusInfo = {
   [ScheduleStatus.CREATING]: {
-    icon: <Icon component={WaitingBlueSvg} style={{ fontSize: 14, marginRight: '4px' }} />,
+    icon: <Icon component={WaitingBlueSvg} style={{ fontSize: 14 }} />,
   },
   [ScheduleStatus.PAUSE]: {
-    icon: <Icon component={SchedulePauseSvg} style={{ fontSize: 14, marginRight: '4px' }} />,
+    icon: <Icon component={SchedulePauseSvg} style={{ fontSize: 14 }} />,
   },
   [ScheduleStatus.ENABLED]: {
-    icon: <Icon component={ScheduleEnabledSvg} style={{ fontSize: 14, marginRight: '4px' }} />,
+    icon: <Icon component={ScheduleEnabledSvg} style={{ fontSize: 14 }} />,
   },
   [ScheduleStatus.TERMINATED]: {
     icon: (

@@ -89,8 +89,6 @@ export enum TaskActionsEnum {
   ROLLBACK = 'ROLLBACK',
   /** 终止 */
   STOP = 'STOP',
-  /** 撤销审批 */
-  REVOKE = 'REVOKE',
 
   // 以下详情页才会展示
   /** 下载 */
