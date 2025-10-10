@@ -1,15 +1,6 @@
-import { ScheduleStatus, ScheduleType, ScheduleActionsEnum } from '@/d.ts/schedule';
+import { ScheduleStatus } from '@/d.ts/schedule';
 import { ScheduleStatusTextMap } from '@/constant/schedule';
-import Icon, {
-  CheckCircleFilled,
-  CloseCircleFilled,
-  ExclamationCircleFilled,
-  LoadingOutlined,
-  CaretRightOutlined,
-  StopFilled,
-  PauseCircleOutlined,
-  EllipsisOutlined,
-} from '@ant-design/icons';
+import Icon, { CheckCircleFilled, CloseCircleFilled, StopFilled } from '@ant-design/icons';
 import { Space } from 'antd';
 import { ReactComponent as WaitingBlueSvg } from '@/svgr/waiting_blue.svg';
 import { ReactComponent as ScheduleEnabledSvg } from '@/svgr/scheduleEnabled.svg';

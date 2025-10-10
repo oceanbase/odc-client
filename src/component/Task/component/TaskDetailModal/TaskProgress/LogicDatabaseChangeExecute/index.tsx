@@ -34,7 +34,7 @@ interface IProps {
 const LogicDatabaseChangeExecute = (props: IProps) => {
   const { task, databaseList } = props;
   const tableRef = useRef();
-  const [subTasks, setSubTasks] = useState([]);
+  const [subTasks, setSubTasks] = useState<ILogicDatabaseChangeExecuteRecord[]>([]);
   const [result, setResult] = useState<ILogicDatabaseChangeExecuteRecord>(null);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [listParams, setListParams] = useState<ITableLoadOptions>(null);
@@ -54,7 +54,7 @@ const LogicDatabaseChangeExecute = (props: IProps) => {
       datasourceKeyword?: string;
     }) => {
       if (!params?.size) return;
-      const rawData = [];
+      const rawData: ILogicDatabaseChangeExecuteRecord[] = [];
       const res = await getLogicDatabaseChangeExecuteRecordList({
         id: task.id,
         ...params,
@@ -230,9 +230,14 @@ const LogicDatabaseChangeExecute = (props: IProps) => {
         filteredValue: filters?.status || null,
         render: (value, row: ILogicDatabaseChangeExecuteRecord) => {
           return (
-            <Space>
+            <Space size={2}>
               {logicDBChangeTaskStatus[value]?.icon}
               {logicDBChangeTaskStatus[value]?.text}
+              {row?.completedSqlCount && row?.totalSqlCount && (
+                <span>
+                  ({row?.completedSqlCount}/{row?.totalSqlCount})
+                </span>
+              )}
             </Space>
           );
         },
@@ -294,7 +299,7 @@ const LogicDatabaseChangeExecute = (props: IProps) => {
           className: styles.subTaskTable,
           columns: initColumns(listParams),
           dataSource: subTasks,
-          rowKey: 'id',
+          rowKey: 'physicalDatabaseId',
           scroll: {
             x: 650,
           },
