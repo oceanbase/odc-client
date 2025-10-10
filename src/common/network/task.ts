@@ -310,7 +310,7 @@ export async function approveTask(id: number, comment: string): Promise<boolean>
   return !!res?.data;
 }
 /**
- * 终止/撤销任务
+ * 终止任务
  */
 export async function stopTask(id: number): Promise<boolean> {
   const res = await request.post(`/api/v2/flow/flowInstances/${id}/cancel`);

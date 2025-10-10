@@ -25,7 +25,6 @@ import {
   ScheduleSearchType,
   SubTaskSearchType,
   ScheduleTab,
-  ApprovalStatus,
 } from '../interface';
 import {
   ScheduleListParams,
