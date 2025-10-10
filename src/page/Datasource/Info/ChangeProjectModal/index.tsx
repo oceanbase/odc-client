@@ -79,6 +79,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
   };
   const handleChangeProject = async (): Promise<void> => {
     const value = await form.validateFields();
+    const selectedProject = data?.contents?.find((project) => project.id === value.project);
     openNotification({
       name: database?.name,
       type: EResourceType.DATABASE,
@@ -91,6 +92,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
         name: database?.name,
         type: EResourceType.DATABASE,
         status: EStatus.SUCCESS,
+        projectName: selectedProject?.name,
       });
       onClose();
       onSuccess();
