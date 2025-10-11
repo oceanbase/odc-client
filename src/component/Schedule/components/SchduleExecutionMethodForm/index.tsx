@@ -64,7 +64,12 @@ const SchduleExecutionMethodForm = forwardRef<
                   id: 'odc.DataArchiveTask.CreateModal.ExecutionTime',
                   defaultMessage: '执行时间',
                 })}
-                required
+                rules={[
+                  {
+                    required: true,
+                    message: '请选择执行时间',
+                  },
+                ]}
               >
                 <DatePicker
                   showTime
