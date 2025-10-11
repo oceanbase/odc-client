@@ -5,6 +5,8 @@
 
   .content {
     flex: 1;
+    overflow-x: auto;
+    height: max-content;
   }
 
   .anchor {
@@ -15,5 +17,6 @@
     top: 0;
     align-self: flex-start;
     max-width: 200px;
+    flex-shrink: 0; // 防止anchor被压缩
   }
 }

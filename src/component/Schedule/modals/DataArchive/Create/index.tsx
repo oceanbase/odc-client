@@ -227,7 +227,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       crontabRef?.current?.setValue(crontab);
     }
     if (triggerStrategy === TaskExecStrategy.START_AT) {
-      formData.startAt = dayjs(startAt);
+      formData.startAt = startAt ? dayjs(startAt) : dayjs().add(1, 'hour');
     }
     await form.setFieldsValue(formData);
     setTargetDatabase(parameters.targetDatabase);

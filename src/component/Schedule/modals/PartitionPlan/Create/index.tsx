@@ -683,7 +683,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
         crontabRef?.current?.setValue(crontab);
       }
       if (triggerStrategy === TaskExecStrategy.START_AT) {
-        formData.startAt = dayjs(startAt) as any;
+        formData.startAt = startAt ? dayjs(startAt) : dayjs().add(1, 'hour');
       }
     }
     if (droppingTrigger) {
