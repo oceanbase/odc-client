@@ -613,14 +613,20 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
   };
   useEffect(() => {
     if (tableConfigs?.length) {
-      // 如果除了目前存在效策略的表外，没有设置其他表的分区策略，则禁用提交
-      const disabledSubmit = !tableConfigs?.filter(
-        (item) =>
-          item.strategies?.length && !item.containsDropStrategy && !item.containsCreateStrategy,
-      )?.length;
+      let disabledSubmit = false;
+      // 编辑时，如果没有设置任一张表的分区策略，则禁用提交
+      if (isEdit) {
+        disabledSubmit = !tableConfigs?.filter((item) => item.strategies?.length)?.length;
+      } else {
+        // 新建时，如果除了目前存在效策略的表外，没有设置其他表的分区策略，则禁用提交
+        disabledSubmit = !tableConfigs?.filter(
+          (item) =>
+            item.strategies?.length && !item.containsDropStrategy && !item.containsCreateStrategy,
+        )?.length;
+      }
       setDisabledSubmit(disabledSubmit);
     }
-  }, [tableConfigs]);
+  }, [tableConfigs, isEdit]);
 
   useEffect(() => {
     loadData();
