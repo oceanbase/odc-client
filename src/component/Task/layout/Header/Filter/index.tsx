@@ -38,8 +38,13 @@ const Filter: React.FC<IProps> = () => {
   };
 
   const isActive = useMemo(() => {
-    return Boolean(taskStatus.length) || Boolean(projectId.length) || Boolean(taskTypes.length);
-  }, [taskStatus.length, projectId.length, taskTypes.length]);
+    return (
+      Boolean(taskStatus.length) ||
+      Boolean(projectId.length) ||
+      Boolean(taskTypes.length) ||
+      timeRange !== 7
+    );
+  }, [taskStatus.length, projectId.length, taskTypes.length, timeRange]);
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);

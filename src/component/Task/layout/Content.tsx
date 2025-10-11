@@ -154,7 +154,7 @@ const Content = forwardRef<ContentRef, IProps>((props, ref) => {
       sort,
       page: current,
       size: pageSize,
-      createdByCurrentUser: true,
+      createdByCurrentUser: tab === TaskTab.all,
       approveByCurrentUser: [TaskTab.all, TaskTab.approveByCurrentUser].includes(tab),
       containsAll: tab === TaskTab.all,
     };
