@@ -372,7 +372,12 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
         return;
       }
       const { databaseId, timeoutMillis, errorStrategy, triggerStrategy, startAt } = values;
-      const validTableConfigs = tableConfigs?.filter((config) => config?.strategies?.length);
+      const validTableConfigs = tableConfigs?.filter(
+        (config) =>
+          config?.strategies?.length &&
+          !config.containsDropStrategy &&
+          !config.containsCreateStrategy,
+      );
       const validHistoryOriginTableConfigs = historyOriginTableConfigs?.filter((item) => {
         return !validTableConfigs?.some((config) => config?.tableName === item?.tableName);
       });
@@ -608,7 +613,11 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
   };
   useEffect(() => {
     if (tableConfigs?.length) {
-      const disabledSubmit = tableConfigs?.some((item) => !item.strategies);
+      // 如果除了目前存在效策略的表外，没有设置其他表的分区策略，则禁用提交
+      const disabledSubmit = !tableConfigs?.filter(
+        (item) =>
+          item.strategies?.length && !item.containsDropStrategy && !item.containsCreateStrategy,
+      )?.length;
       setDisabledSubmit(disabledSubmit);
     }
   }, [tableConfigs]);
@@ -926,16 +935,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
               }) /*取消*/
             }
           </Button>
-          <Tooltip
-            title={
-              disabledSubmit
-                ? formatMessage({
-                    id: 'odc.components.PartitionDrawer.SetPartitionPoliciesForAll',
-                    defaultMessage: '请设置所有 Range 分区表的分区策略',
-                  }) //请设置所有 Range 分区表的分区策略
-                : null
-            }
-          >
+          <Tooltip title={disabledSubmit ? '请设置 Range 分区表的分区策略' : null}>
             <Button
               disabled={disabledSubmit}
               type="primary"
