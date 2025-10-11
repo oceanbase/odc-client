@@ -68,9 +68,11 @@ export enum ScheduleTaskTab {
   approveByCurrentUser = 'approveByCurrentUser',
 }
 
-export enum ApprovalStatus {
+export enum ScheduleApprovalStatus {
   APPROVING = 'APPROVING',
-  APPROVE_FAILED = 'APPROVE_FAILED',
+  APPROVE_EXPIRED = 'APPROVE_EXPIRED',
+  APPROVE_CANCELED = 'APPROVE_CANCELED',
+  APPROVE_REJECTED = 'APPROVE_REJECTED',
 }
 
 export enum Perspective {
@@ -104,7 +106,7 @@ export interface IScheduleParam {
   sort: ScheduleCreateTimeSort;
   timeRange: number | string;
   executeDate?: [Dayjs, Dayjs];
-  approveStatus?: ApprovalStatus[];
+  approveStatus?: ScheduleApprovalStatus[];
   tab?: ScheduleTab;
 }
 
