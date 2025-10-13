@@ -284,62 +284,6 @@ const ModelSelect: React.FC<ModelSelectProps> = ({
                 )}
               </Form.Item>
             </Col>
-            {/* <Col offset={0}>
-              <Form.Item
-                required
-                layout="vertical"
-                className={styles.field}
-                label={renderLabel({
-                  label: '系统推理模型',
-                  tooltip: '设置 AI 服务使用的默认聊天模型，用于对话 Agent，需要支持工具调用',
-                })}
-                rules={[{ required: true, message: '请选择 Embedding 模型' }]}
-              >
-                {isEditing(ESelectType.CHAT) ? (
-                  <div className={styles.modelEditWrapper}>
-                    <Form.Item name="chat" className={styles.selectField}>
-                      <Select
-                        placeholder="请选择"
-                        className={styles.selectInput}
-                        notFoundContent={<LargeModelSelectEmpty />}
-                        optionRender={(option) => renderOption(option)}
-                        options={llmOptions}
-                        styles={{ popup: { root: { maxHeight: 360, overflowY: 'scroll' } } }}
-                      />
-                    </Form.Item>
-                    {chatValue && (
-                      <div className={styles.editOperations}>
-                        <CheckOutlined
-                          style={{ color: '#0ac185' }}
-                          onClick={() => handleSaveField(EFiledType.CHAT)}
-                        />
-                        <CloseOutlined
-                          style={{ color: '#f93939' }}
-                          onClick={() => {
-                            setCurrentEditingSelect(ESelectType.NONE);
-                          }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <>
-                    {renderContent(chatValue) || (
-                      <Typography.Text type="secondary">(暂未选择模型)</Typography.Text>
-                    )}
-                    {renderModelStatusWarning(
-                      defaultModelStatuses?.chatStatus || EModelSatus.SUCCESS,
-                    )}
-                    <EditOutlined
-                      className={styles.edit}
-                      onClick={() => {
-                        setCurrentEditingSelect(ESelectType.CHAT);
-                      }}
-                    />
-                  </>
-                )}
-              </Form.Item>
-            </Col> */}
             <Col offset={0}>
               <Form.Item
                 layout="vertical"

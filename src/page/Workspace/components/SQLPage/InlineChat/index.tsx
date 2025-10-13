@@ -214,15 +214,23 @@ export default function InlineChat({
     })),
   }));
 
+  const isInitialized = useRef(false);
+
   useEffect(() => {
-    if (setting.AIConfig?.defaultLlmModel) {
-      const modelName = setting.AIConfig?.defaultLlmModel;
-      setSelectedModel(modelName);
-    } else if (selectOptions.length > 0) {
-      const modelName = `${selectOptions[0].label}/${selectOptions[0].options[0].value}`;
-      setSelectedModel(modelName);
+    // 只在第一次加载模型时设置默认值，避免覆盖用户选择
+    if (!isInitialized.current && allModels.length > 0) {
+      isInitialized.current = true;
+      if (setting.AIConfig?.defaultLlmModel) {
+        setSelectedModel(setting.AIConfig.defaultLlmModel);
+      } else {
+        // 选择第一个可用的模型
+        const firstEnabledModel = allModels.find((model) => model.enabled);
+        if (firstEnabledModel) {
+          setSelectedModel(`${firstEnabledModel.providerName}/${firstEnabledModel.modelName}`);
+        }
+      }
     }
-  }, [selectOptions, setting.AIConfig?.defaultLlmModel]);
+  }, [allModels.length, setting.AIConfig?.defaultLlmModel]);
 
   const renderLargeModelSelect = () => {
     if (modelsLoading) {
@@ -270,7 +278,7 @@ export default function InlineChat({
             <Select
               variant="borderless"
               dropdownAlign={{ offset: [0, 0] }}
-              defaultValue={selectedModel}
+              value={selectedModel}
               onChange={setSelectedModel}
               onOpenChange={(open) => {
                 setIsShowModelSelect(open);
