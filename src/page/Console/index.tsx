@@ -14,7 +14,7 @@ import styles from './index.less';
 import RecentlyDatabase from './components/RecentlyDatabase';
 import { useNavigate } from '@umijs/max';
 import { getFlowScheduleTodo, getTaskStat } from '@/common/network/task';
-import { IGetFlowScheduleTodoParams, ITaskStatParam } from '@/d.ts';
+import { IGetFlowScheduleTodoParams, ITaskStatParam, TaskPageType } from '@/d.ts';
 import { getScheduleStat } from '@/common/network/schedule';
 import { IPageType } from '@/d.ts/_index';
 import { TaskTab } from '@/component/Task/interface';
@@ -30,7 +30,7 @@ import { TimeOptions } from '@/component/TimeSelect';
 
 import { listProjects } from '@/common/network/project';
 import QuickStart from './components/QuickStart';
-import { ScheduleType } from '@/d.ts/schedule';
+import { ScheduleType, SchedulePageType } from '@/d.ts/schedule';
 import { ReactComponent as SendSvg } from '@/svgr/send-fill.svg';
 import { ReactComponent as HatSvg } from '@/svgr/hat.svg';
 import { ReactComponent as QuestionSvg } from '@/svgr/question.svg';
@@ -311,10 +311,7 @@ const ConsoleMain = () => {
                           counter={todosData?.FLOW?.count?.FLOW_WAIT_ME_APPROVAL}
                           onClick={() => {
                             navigate(
-                              buildNavigateUrlWithFilters(
-                                `/${IPageType.Task}`,
-                                TaskTab.approveByCurrentUser,
-                              ),
+                              `/${IPageType.Task}?tab=${TaskTab.approveByCurrentUser}&taskType=${TaskPageType.ALL}`,
                             );
                           }}
                         />
@@ -323,10 +320,7 @@ const ConsoleMain = () => {
                           counter={todosData?.FLOW?.count?.FLOW_WAIT_ME_EXECUTION}
                           onClick={() => {
                             navigate(
-                              buildNavigateUrlWithFilters(
-                                `/${IPageType.Task}`,
-                                TaskTab.executionByCurrentUser,
-                              ),
+                              `/${IPageType.Task}?tab=${TaskTab.executionByCurrentUser}&taskType=${TaskPageType.ALL}`,
                             );
                           }}
                         />
@@ -335,10 +329,7 @@ const ConsoleMain = () => {
                           counter={todosData?.SCHEDULE?.count?.SCHEDULE_WAIT_ME_APPROVAL}
                           onClick={() => {
                             navigate(
-                              buildNavigateUrlWithFilters(
-                                `/${IPageType.Schedule}`,
-                                ScheduleTab.approveByCurrentUser,
-                              ),
+                              `/${IPageType.Schedule}?tab=${ScheduleTab.approveByCurrentUser}&scheduleType=${SchedulePageType.ALL}`,
                             );
                           }}
                         />

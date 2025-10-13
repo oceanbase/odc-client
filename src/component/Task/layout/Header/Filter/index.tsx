@@ -83,7 +83,7 @@ const Filter: React.FC<IProps> = () => {
           {taskStatus.map((item, idx) => {
             return (
               <>
-                <>{status[item].text}</>
+                <>{status[item]?.text}</>
                 {comma(idx, taskStatus.length)}
               </>
             );
