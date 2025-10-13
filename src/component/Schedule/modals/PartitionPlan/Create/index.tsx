@@ -212,6 +212,9 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
     resetFields: () => void;
   }>();
   const [preTableConfigs, setPreTableConfigs] = useState<IPartitionTableConfig[]>([]);
+  const [allPartitionPlanTableConfigs, setAllPartitionPlanTableConfigs] = useState<
+    IPartitionTableConfig[]
+  >([]);
   const { createScheduleDatabase, setCreateScheduleDatabase } =
     useContext(CreateScheduleContext) || {};
 
@@ -231,6 +234,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
       const allPartitionPlanTableConfigs = res?.contents
         ?.map((item) => item?.partitionPlanTableConfig)
         ?.filter(Boolean);
+      setAllPartitionPlanTableConfigs(allPartitionPlanTableConfigs);
       const createdOriginTableConfigs = allPartitionPlanTableConfigs?.filter(
         ({ partitionKeyConfigs }) => {
           return partitionKeyConfigs?.some(
@@ -372,12 +376,17 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
         return;
       }
       const { databaseId, timeoutMillis, errorStrategy, triggerStrategy, startAt } = values;
-      const validTableConfigs = tableConfigs?.filter(
-        (config) =>
-          config?.strategies?.length &&
-          !config.containsDropStrategy &&
-          !config.containsCreateStrategy,
-      );
+      let validTableConfigs;
+      if (isEdit) {
+        validTableConfigs = tableConfigs?.filter((config) => config?.strategies?.length);
+      } else {
+        validTableConfigs = tableConfigs?.filter(
+          (config) =>
+            config?.strategies?.length &&
+            !config.containsDropStrategy &&
+            !config.containsCreateStrategy,
+        );
+      }
       const validHistoryOriginTableConfigs = historyOriginTableConfigs?.filter((item) => {
         return !validTableConfigs?.some((config) => config?.tableName === item?.tableName);
       });
@@ -797,6 +806,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
                 className={styles.tableWrapper}
               >
                 <PartitionPolicyFormTable
+                  allPartitionPlanTableConfigs={allPartitionPlanTableConfigs}
                   isEdit={isEdit}
                   databaseId={databaseId}
                   sessionId={sessionId}
