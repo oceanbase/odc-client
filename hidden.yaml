@@ -61,8 +61,8 @@ importers:
         specifier: ^3.2.0
         version: 3.2.0
       '@oceanbase-odc/ob-react-data-grid':
-        specifier: ^4.0.0
-        version: 4.0.0(antd@5.26.1(date-fns@2.30.0)(luxon@3.6.1)(moment@2.30.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        specifier: ^4.1.0
+        version: 4.1.1(antd@5.26.1(date-fns@2.30.0)(luxon@3.6.1)(moment@2.30.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       '@sentry/react':
         specifier: ^7.88.0
         version: 7.120.3(react@17.0.2)
@@ -2061,8 +2061,8 @@ packages:
   '@oceanbase-odc/ob-parser-js@3.2.0':
     resolution: {integrity: sha512-RVXju7AO1s8YucFPdkpgccxoL30TzUHLkx7VxYpz0MRcMNxdWRgp8q6YozNJf2QO/VjFYJn6SQdG6suNPSR7zg==}
 
-  '@oceanbase-odc/ob-react-data-grid@4.0.0':
-    resolution: {integrity: sha512-CYmeqa+Ocpwt8PpzEiihgT0NS3bDz7futJT5QPUczZJG/rtfOLKpnbZ/CacMDAKRQob3Sdo6dSB0yAk0nfa3BA==}
+  '@oceanbase-odc/ob-react-data-grid@4.1.1':
+    resolution: {integrity: sha512-2FvEVJu8Y5OgRv68Pj+DziaKSVReI/SsU7TtQXeF27H8d7ViAe/u07f/cdHkHFhnzVXt9sEG4hg+zVzn8ZKZlQ==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
       antd: ^5.0.0
@@ -12705,7 +12705,7 @@ snapshots:
       antlr4: 4.8.0
       lodash: 4.17.21
 
-  '@oceanbase-odc/ob-react-data-grid@4.0.0(antd@5.26.1(date-fns@2.30.0)(luxon@3.6.1)(moment@2.30.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react-dom@17.0.2(react@17.0.2))(react@17.0.2)':
+  '@oceanbase-odc/ob-react-data-grid@4.1.1(antd@5.26.1(date-fns@2.30.0)(luxon@3.6.1)(moment@2.30.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react-dom@17.0.2(react@17.0.2))(react@17.0.2)':
     dependencies:
       '@juggle/resize-observer': 3.4.0
       antd: 5.26.1(date-fns@2.30.0)(luxon@3.6.1)(moment@2.30.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
