@@ -50,7 +50,7 @@ const useTaskSearchParams = () => {
       timeRange: timeRange ? (isNaN(Number(timeRange)) ? timeRange : Number(timeRange)) : null,
       startTime: startTime ? Number(startTime) : null,
       endTime: endTime ? Number(endTime) : null,
-      projectId: projectId ? Number(projectId) : null,
+      projectId: projectId ? projectId : null,
       taskTypes: taskTypesStr ? taskTypesStr.split(',') : null,
       statuses: statusesStr ? statusesStr.split(',') : null,
     },

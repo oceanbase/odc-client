@@ -244,7 +244,7 @@ const Content = forwardRef<ContentRef, IProps>((props, ref) => {
 
     // Apply URL filter parameters
     const newParams: Partial<ITaskParam> = {
-      tab: defaultTaskType ? TaskTab.all : defaultTab || params?.tab,
+      tab: defaultTab || params?.tab,
     };
 
     // Apply time filter from URL
@@ -262,7 +262,12 @@ const Content = forwardRef<ContentRef, IProps>((props, ref) => {
 
     // Apply project filter from URL
     if (urlProjectId !== null) {
-      newParams.projectId = [String(urlProjectId)];
+      if (urlProjectId === 'clear') {
+        // 清空项目筛选
+        newParams.projectId = [];
+      } else {
+        newParams.projectId = [urlProjectId];
+      }
     }
 
     // Apply task types filter from URL
