@@ -15,6 +15,7 @@
  */
 
 import { modifySync } from '@/common/network/ai';
+import { getMaterializedView } from '@/common/network/materializedView';
 import { getTableColumnList, getTableInfo } from '@/common/network/table';
 import { getView } from '@/common/network/view';
 import { ConnectionMode, ITableColumn } from '@/d.ts';
@@ -135,6 +136,8 @@ export function getModelService(
          */
         const isVirtualTable = realTableName?.includes('__all_virtual_');
         const isView = db?.views?.includes(realTableName);
+        const isExternalTable = db?.external_table?.includes(realTableName);
+        const isMaterializedView = db?.materialized_view?.includes(realTableName);
         if (isTable) {
           const columns = await getTableColumnList(realTableName, dbName, sessionFunc()?.sessionId);
           // 表
@@ -142,8 +145,7 @@ export function getModelService(
             columnName: column.name,
             columnType: column.type,
           }));
-        }
-        if (isVirtualTable) {
+        } else if (isVirtualTable) {
           const columns = await getTableColumnList(
             realTableName,
             'oceanbase',
@@ -154,13 +156,28 @@ export function getModelService(
             columnName: column.name,
             columnType: column.type,
           }));
-        }
-        if (isView) {
+        } else if (isView) {
           // 视图
           const view = await getView(realTableName, sessionFunc()?.sessionId, dbName);
           return view?.columns?.map((column: ITableColumn) => ({
             columnName: column.columnName,
             columnType: column.dataType,
+          }));
+        } else if (isExternalTable) {
+          const table = await getTableInfo(realTableName, dbName, sessionFunc()?.sessionId, true);
+          return table?.columns?.map((column: TableColumn) => ({
+            columnName: column.name,
+            columnType: column.type,
+          }));
+        } else if (isMaterializedView) {
+          const mView = await getMaterializedView({
+            materializedViewName: realTableName,
+            sessionId: sessionFunc()?.sessionId,
+            dbName,
+          });
+          return mView?.columns?.map((column: TableColumn) => ({
+            columnName: column.name,
+            columnType: column.type,
           }));
         }
       }
