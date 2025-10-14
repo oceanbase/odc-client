@@ -278,6 +278,7 @@ export type createScheduleRecord<T> = {
   parameters?: T;
   triggerConfig?: ICycleTaskTriggerConfig;
   description?: string;
+  allowConcurrent?: boolean;
 };
 
 export type createSchedueleParameters =

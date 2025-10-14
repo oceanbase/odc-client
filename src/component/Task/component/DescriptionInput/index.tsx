@@ -39,6 +39,14 @@ const DescriptionInput = () => {
             defaultMessage: '描述不超过 200 个字符',
           }), //描述不超过 200 个字符
         },
+        {
+          validator: (_, value) => {
+            if (value && value.trim() === '') {
+              return Promise.reject(new Error('描述不允许只有空格，请输入描述'));
+            }
+            return Promise.resolve();
+          },
+        },
       ]}
     >
       <Input.TextArea

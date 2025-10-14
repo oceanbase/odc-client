@@ -9,7 +9,7 @@ import ApprovalModal from '@/component/Task/component/ApprovalModal';
 import useOperationPermissions from '@/util/hooks/useOperationPermissions';
 import { widthPermission } from '@/util/utils';
 import { ScheduleTextMap } from '@/constant/schedule';
-import { revokeTask } from '@/common/network/task';
+import { stopTask } from '@/common/network/task';
 import login from '@/store/login';
 
 enum ExecuteRecordDetailType {
@@ -72,7 +72,7 @@ const ScheduleExecuteRecordDetail: React.FC<ScheduleExecuteRecordDetailProps> = 
       okText: '确定',
       centered: true,
       onOk: async () => {
-        const res = await revokeTask(approveInstanceId);
+        const res = await stopTask(approveInstanceId);
         if (res) {
           message.success('撤销成功');
           onClose?.();

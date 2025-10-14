@@ -1,7 +1,7 @@
 import ParamsContext from '@/component/Task/context/ParamsContext';
 import { useContext, useMemo } from 'react';
 import { Divider, Select } from 'antd';
-import { status } from '@/component/Task/component/Status';
+import { flowStatusSelectOptions, status } from '@/component/Task/component/Status';
 import { TaskStatus } from '@/d.ts';
 import styles from './index.less';
 
@@ -12,7 +12,7 @@ const TaskStatusFilter = () => {
 
   const taskStatusFilters = useMemo(() => {
     return Object.keys(status)
-      ?.filter((key) => key !== TaskStatus.WAIT_FOR_CONFIRM)
+      ?.filter((key) => flowStatusSelectOptions.includes(key as TaskStatus))
       .map((key) => ({
         label: status[key].text,
         value: key,

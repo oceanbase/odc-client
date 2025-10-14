@@ -164,11 +164,12 @@ export const ConsoleTextConfig = {
   },
   aboutUs: {
     helps: [
-      formatMessage({ id: 'src.page.Console.D66A7480', defaultMessage: '下载新版' }),
       formatMessage({ id: 'src.page.Console.B27ADAC6', defaultMessage: '产品动态' }),
-      formatMessage({ id: 'src.page.Console.9B6E647E', defaultMessage: '反馈建议' }),
+      '社区问答',
+      '帮助文档',
+      '版本信息',
     ],
-    urlKeys: ['softwarecenter', 'releaseNote', 'issues'],
+    urlKeys: ['releaseNote', 'ask', 'helpDocs', 'versions'],
     QRUrl:
       'https://qr.dingtalk.com/action/joingroup?code=v1,k1,HovdSAqfBdRGqRk2jQ0TDu1eMvQ+BB6rt8mFHeIqi/A=&_dt_no_comment=1&origin=11',
   },

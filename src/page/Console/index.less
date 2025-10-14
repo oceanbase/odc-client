@@ -212,7 +212,8 @@
         padding-left: 8px;
 
         .aboutUs,
-        .aboutUsLargeVersion {
+        .aboutUsLargeVersion,
+        .aboutUsMiniVersion {
           height: 174px;
           :global {
             .ant-card-body {
@@ -220,8 +221,25 @@
             }
           }
         }
+        .aboutUs {
+          .aboutUsContent {
+            flex-direction: row;
+            flex-wrap: wrap;
+          }
+        }
+        .aboutUsMiniVersion {
+          height: 92px;
+          width: 100%;
+          .aboutUsHelpDocItem {
+            display: inline-flex;
+            width: 128px;
+          }
+        }
         .aboutUsLargeVersion {
           height: 521px;
+          .aboutUsHelpDocItem {
+            display: flex;
+          }
           .aboutUsContent {
             flex-direction: column;
             gap: 78px;
@@ -263,6 +281,8 @@
         }
 
         .aboutUsHelpDocItem {
+          display: inline-flex;
+          width: 128px;
           height: 20px;
           margin-top: 20px;
           &:nth-child(1) {
@@ -325,8 +345,8 @@
         }
         .practice {
           flex: 1;
-          margin-top: 0;
           height: 206px;
+          margin-bottom: 0;
           overflow-y: hidden;
           &:nth-child(2) {
             margin-top: 0px;

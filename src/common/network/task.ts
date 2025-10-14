@@ -318,14 +318,6 @@ export async function stopTask(id: number): Promise<boolean> {
 }
 
 /**
- * 撤销任务（创建者）
- */
-export async function revokeTask(id: number): Promise<boolean> {
-  const res = await request.post(`/api/v2/flow/flowInstances/${id}/cancel`);
-  return !!res?.data;
-}
-
-/**
  * 执行任务
  */
 export async function executeTask(id: number): Promise<boolean> {

@@ -4,11 +4,7 @@ import { useMount, useRequest } from 'ahooks';
 import dayjs, { Dayjs } from 'dayjs';
 import { Card, Col, Divider, Row, Select, Spin, Typography, DatePicker } from 'antd';
 import odc from '@/plugins/odc';
-import { getImg } from '@/util/intl';
-
-import { ReactComponent as DownloadSvg } from '@/svgr/download-fill.svg';
-import { ReactComponent as GithubSvg } from '@/svgr/github.svg';
-import { ReactComponent as SendSvg } from '@/svgr/send-fill.svg';
+import ModalHelpAbout from '@/component/HelpMenus/components/ModalHelpAbout';
 import Icon, { ClockCircleOutlined } from '@ant-design/icons';
 import LabelWithIcon from '../../component/LabelWithIcon';
 import ScheduleItem from './components/ScheduleItem';
@@ -18,19 +14,12 @@ import styles from './index.less';
 import RecentlyDatabase from './components/RecentlyDatabase';
 import { useNavigate } from '@umijs/max';
 import { getFlowScheduleTodo, getTaskStat } from '@/common/network/task';
-import {
-  IGetFlowScheduleTodoParams,
-  ITaskStatParam,
-  TaskPageType,
-  TaskType,
-  TaskStatus,
-} from '@/d.ts';
+import { IGetFlowScheduleTodoParams, ITaskStatParam, TaskPageType } from '@/d.ts';
 import { getScheduleStat } from '@/common/network/schedule';
 import { IPageType } from '@/d.ts/_index';
 import { TaskTab } from '@/component/Task/interface';
 import { ScheduleTab } from '@/component/Schedule/interface';
 import login from '@/store/login';
-import QrCodeWithIcon from './components/QRCodeWithIcon';
 import ScheduleCounter from './components/ScheduleCounter';
 import PersonalizeLayoutSetting, { showJobDivider } from './components/PersonalizeLayoutSetting';
 import {
@@ -41,7 +30,11 @@ import { TimeOptions } from '@/component/TimeSelect';
 
 import { listProjects } from '@/common/network/project';
 import QuickStart from './components/QuickStart';
-import { ScheduleStatus, ScheduleType } from '@/d.ts/schedule';
+import { ScheduleType, SchedulePageType } from '@/d.ts/schedule';
+import { ReactComponent as SendSvg } from '@/svgr/send-fill.svg';
+import { ReactComponent as HatSvg } from '@/svgr/hat.svg';
+import { ReactComponent as QuestionSvg } from '@/svgr/question.svg';
+import { ReactComponent as InfoSvg } from '@/svgr/info.svg';
 
 const { RangePicker } = DatePicker;
 const cacheProjectIdKey = `odc-front-page-project-${login.organizationId}`;
@@ -49,9 +42,10 @@ const cacheTimeKey = `odc-front-page-time-${login.organizationId}`;
 const cacheDateKey = `odc-front-page-date-${login.organizationId}`;
 
 const aboutUsIcons = [
-  <Icon component={DownloadSvg} style={{ color: '#006AFF', fontSize: 14 }} />,
-  <Icon component={SendSvg} style={{ color: '#52c41a', fontSize: 14 }} />,
-  <Icon component={GithubSvg} style={{ fontSize: 14 }} />,
+  <Icon component={SendSvg} style={{ color: '#52c41a', fontSize: 13 }} />,
+  <Icon component={QuestionSvg} style={{ fontSize: 13 }} />,
+  <Icon component={HatSvg} style={{ fontSize: 13 }} />,
+  <Icon component={InfoSvg} style={{ fontSize: 13 }} />,
 ];
 
 const ConsoleMain = () => {
@@ -59,6 +53,21 @@ const ConsoleMain = () => {
   const { status, statusColor } = ConsoleTextConfig.schdules;
   const cacheTimeValue = localStorage.getItem(cacheTimeKey);
   const cacheDateValue = localStorage.getItem(cacheDateKey);
+  const [showModalAbout, setShowModalAbout] = useState(false);
+
+  const handleAboutUsClick = (help: string, index: number) => {
+    switch (help) {
+      case 'helpDocs':
+        window.open(odc.appConfig.docs.url || getLocalDocs());
+        break;
+      case 'versions':
+        setShowModalAbout(true);
+        break;
+      default:
+        window.open(getOBDocsUrl(aboutUs.urlKeys[index]));
+        break;
+    }
+  };
 
   const [timeValue, setTimeValue] = useState<number | string>(() => {
     if (!cacheTimeValue) return 7;
@@ -302,10 +311,7 @@ const ConsoleMain = () => {
                           counter={todosData?.FLOW?.count?.FLOW_WAIT_ME_APPROVAL}
                           onClick={() => {
                             navigate(
-                              buildNavigateUrlWithFilters(
-                                `/${IPageType.Task}`,
-                                TaskTab.approveByCurrentUser,
-                              ),
+                              `/${IPageType.Task}?tab=${TaskTab.approveByCurrentUser}&taskType=${TaskPageType.ALL}`,
                             );
                           }}
                         />
@@ -314,10 +320,7 @@ const ConsoleMain = () => {
                           counter={todosData?.FLOW?.count?.FLOW_WAIT_ME_EXECUTION}
                           onClick={() => {
                             navigate(
-                              buildNavigateUrlWithFilters(
-                                `/${IPageType.Task}`,
-                                TaskTab.executionByCurrentUser,
-                              ),
+                              `/${IPageType.Task}?tab=${TaskTab.executionByCurrentUser}&taskType=${TaskPageType.ALL}`,
                             );
                           }}
                         />
@@ -326,10 +329,7 @@ const ConsoleMain = () => {
                           counter={todosData?.SCHEDULE?.count?.SCHEDULE_WAIT_ME_APPROVAL}
                           onClick={() => {
                             navigate(
-                              buildNavigateUrlWithFilters(
-                                `/${IPageType.Schedule}`,
-                                ScheduleTab.approveByCurrentUser,
-                              ),
+                              `/${IPageType.Schedule}?tab=${ScheduleTab.approveByCurrentUser}&scheduleType=${SchedulePageType.ALL}`,
                             );
                           }}
                         />
@@ -473,7 +473,9 @@ const ConsoleMain = () => {
                   className={
                     boardVisible[ELayoutKey.BestPractices]
                       ? styles.aboutUs
-                      : styles.aboutUsLargeVersion
+                      : boardVisible[ELayoutKey.RecentDatabases]
+                      ? styles.aboutUsLargeVersion
+                      : styles.aboutUsMiniVersion
                   }
                 >
                   <div className={styles.consoleCardTitle}>
@@ -483,7 +485,7 @@ const ConsoleMain = () => {
                     <div className={styles.docsWrapper}>
                       {aboutUs.helps.map((help, index) => {
                         return (
-                          <div className={styles.aboutUsHelpDocItem}>
+                          <div key={index} className={styles.aboutUsHelpDocItem}>
                             <LabelWithIcon
                               gap={9}
                               icon={aboutUsIcons[index]}
@@ -491,7 +493,7 @@ const ConsoleMain = () => {
                                 <div
                                   className={styles.docs}
                                   onClick={() => {
-                                    window.open(getOBDocsUrl(aboutUs.urlKeys[index]));
+                                    handleAboutUsClick(aboutUs.urlKeys[index], index);
                                   }}
                                 >
                                   {help}
@@ -502,19 +504,6 @@ const ConsoleMain = () => {
                         );
                       })}
                     </div>
-                    <LabelWithIcon
-                      align={['vertical', 'center']}
-                      icon={<QrCodeWithIcon />}
-                      gap={4}
-                      label={
-                        <Typography.Text type="secondary">
-                          {formatMessage({
-                            id: 'src.page.Console.30113922',
-                            defaultMessage: '钉钉群：67365031753',
-                          })}
-                        </Typography.Text>
-                      }
-                    />
                   </div>
                 </Card>
               )}
@@ -522,6 +511,13 @@ const ConsoleMain = () => {
           </Row>
         </div>
       </div>
+
+      <ModalHelpAbout
+        showModal={showModalAbout}
+        onCancel={() => {
+          setShowModalAbout(false);
+        }}
+      />
     </>
   );
 };

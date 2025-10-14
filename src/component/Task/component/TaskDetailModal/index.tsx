@@ -22,7 +22,7 @@ import { ITaskResult, TaskDetail, TaskRecordParameters, TaskType, CommonTaskLogT
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { ShareAltOutlined } from '@ant-design/icons';
-import { Drawer, message, Radio, Spin } from 'antd';
+import { Drawer, message, Radio, Spin, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
 import TaskFlow from './TaskFlow';
@@ -181,10 +181,10 @@ const TaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) 
   };
 
   useEffect(() => {
-    if (visible) {
+    if (visible && task?.projectId) {
       handleFetchDatabaseList();
     }
-  }, [visible]);
+  }, [visible, task?.projectId]);
 
   return (
     <Drawer
@@ -193,10 +193,12 @@ const TaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) 
       onClose={onClose}
       title={
         <div className={styles.title}>
-          {formatMessage({
-            id: 'odc.component.CommonTaskDetailModal.TaskDetails',
-            defaultMessage: '任务详情',
-          })}
+          <div className={styles.detailName}>
+            <div className={styles.scheduleName}>{task?.description}</div>
+            <Tooltip title={task?.description} overlayClassName={styles.scheduleNameTooltip}>
+              <div className={styles.ml4}>详情</div>
+            </Tooltip>
+          </div>
         </div>
       }
       /* 任务详情 */ destroyOnClose

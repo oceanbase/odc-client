@@ -45,7 +45,7 @@ const statusMap = {
   },
   [ScheduleChangeStatus.APPROVE_EXPIRED]: {
     icon: <ExclamationCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
-    text: '审批超时',
+    text: '审批过期',
   },
   [ScheduleChangeStatus.APPROVE_REJECTED]: {
     icon: <ExclamationCircleFilled style={{ color: 'var(--function-red6-color)' }} />,

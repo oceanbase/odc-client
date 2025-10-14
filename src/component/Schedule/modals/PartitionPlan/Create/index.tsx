@@ -212,6 +212,9 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
     resetFields: () => void;
   }>();
   const [preTableConfigs, setPreTableConfigs] = useState<IPartitionTableConfig[]>([]);
+  const [allPartitionPlanTableConfigs, setAllPartitionPlanTableConfigs] = useState<
+    IPartitionTableConfig[]
+  >([]);
   const { createScheduleDatabase, setCreateScheduleDatabase } =
     useContext(CreateScheduleContext) || {};
 
@@ -231,6 +234,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
       const allPartitionPlanTableConfigs = res?.contents
         ?.map((item) => item?.partitionPlanTableConfig)
         ?.filter(Boolean);
+      setAllPartitionPlanTableConfigs(allPartitionPlanTableConfigs);
       const createdOriginTableConfigs = allPartitionPlanTableConfigs?.filter(
         ({ partitionKeyConfigs }) => {
           return partitionKeyConfigs?.some(
@@ -372,7 +376,17 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
         return;
       }
       const { databaseId, timeoutMillis, errorStrategy, triggerStrategy, startAt } = values;
-      const validTableConfigs = tableConfigs?.filter((config) => config?.strategies?.length);
+      let validTableConfigs;
+      if (isEdit) {
+        validTableConfigs = tableConfigs?.filter((config) => config?.strategies?.length);
+      } else {
+        validTableConfigs = tableConfigs?.filter(
+          (config) =>
+            config?.strategies?.length &&
+            !config.containsDropStrategy &&
+            !config.containsCreateStrategy,
+        );
+      }
       const validHistoryOriginTableConfigs = historyOriginTableConfigs?.filter((item) => {
         return !validTableConfigs?.some((config) => config?.tableName === item?.tableName);
       });
@@ -608,10 +622,20 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
   };
   useEffect(() => {
     if (tableConfigs?.length) {
-      const disabledSubmit = tableConfigs?.some((item) => !item.strategies);
+      let disabledSubmit = false;
+      // 编辑时，如果没有设置任一张表的分区策略，则禁用提交
+      if (isEdit) {
+        disabledSubmit = !tableConfigs?.filter((item) => item.strategies?.length)?.length;
+      } else {
+        // 新建时，如果除了目前存在效策略的表外，没有设置其他表的分区策略，则禁用提交
+        disabledSubmit = !tableConfigs?.filter(
+          (item) =>
+            item.strategies?.length && !item.containsDropStrategy && !item.containsCreateStrategy,
+        )?.length;
+      }
       setDisabledSubmit(disabledSubmit);
     }
-  }, [tableConfigs]);
+  }, [tableConfigs, isEdit]);
 
   useEffect(() => {
     loadData();
@@ -674,7 +698,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
         crontabRef?.current?.setValue(crontab);
       }
       if (triggerStrategy === TaskExecStrategy.START_AT) {
-        formData.startAt = dayjs(startAt) as any;
+        formData.startAt = startAt ? dayjs(startAt) : dayjs().add(1, 'hour');
       }
     }
     if (droppingTrigger) {
@@ -782,6 +806,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
                 className={styles.tableWrapper}
               >
                 <PartitionPolicyFormTable
+                  allPartitionPlanTableConfigs={allPartitionPlanTableConfigs}
                   isEdit={isEdit}
                   databaseId={databaseId}
                   sessionId={sessionId}
@@ -926,16 +951,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
               }) /*取消*/
             }
           </Button>
-          <Tooltip
-            title={
-              disabledSubmit
-                ? formatMessage({
-                    id: 'odc.components.PartitionDrawer.SetPartitionPoliciesForAll',
-                    defaultMessage: '请设置所有 Range 分区表的分区策略',
-                  }) //请设置所有 Range 分区表的分区策略
-                : null
-            }
-          >
+          <Tooltip title={disabledSubmit ? '请设置 Range 分区表的分区策略' : null}>
             <Button
               disabled={disabledSubmit}
               type="primary"

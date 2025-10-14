@@ -25,7 +25,6 @@ import {
   ScheduleSearchType,
   SubTaskSearchType,
   ScheduleTab,
-  ApprovalStatus,
 } from '../interface';
 import {
   ScheduleListParams,
@@ -35,7 +34,7 @@ import {
   getScheduleDetail,
 } from '@/common/network/schedule';
 import datasourceStatus from '@/store/datasourceStatus';
-import { getDataSourceIdList, getDefaultParam, getDefaultSubTaskParam } from '../helper';
+import { getDataSourceIdList, getDefaultScheduleParam, getDefaultSubTaskParam } from '../helper';
 import { getPreTime } from '@/util/utils';
 import dayjs from 'dayjs';
 import { schedlueConfig } from '@/page/Schedule/const';
@@ -105,8 +104,10 @@ const Content: React.FC<IProps> = (props) => {
     scheduleId: null,
   });
 
-  const [params, setParams] = useSetState<IScheduleParam>(getDefaultParam());
-  const [subTaskParams, setsubTaskParams] = useSetState<ISubTaskParam>(getDefaultSubTaskParam());
+  const [params, setParams] = useSetState<IScheduleParam>(getDefaultScheduleParam(mode));
+  const [subTaskParams, setsubTaskParams] = useSetState<ISubTaskParam>(
+    getDefaultSubTaskParam(mode),
+  );
   const [perspective, setPerspective] = useState<Perspective>(
     defaultPerspective === Perspective.executionView
       ? Perspective.executionView
@@ -373,7 +374,12 @@ const Content: React.FC<IProps> = (props) => {
 
     // Apply project filter from URL
     if (urlProjectId !== null) {
-      newParams.projectIds = [String(urlProjectId)] as any;
+      if (urlProjectId === 'clear') {
+        // 清空项目筛选
+        newParams.projectIds = [];
+      } else {
+        newParams.projectIds = [urlProjectId] as any;
+      }
     }
 
     setParams(newParams);
@@ -398,7 +404,13 @@ const Content: React.FC<IProps> = (props) => {
 
     // Apply project filter from URL to subTaskParams
     if (urlProjectId !== null) {
-      newSubTaskParams.projectIds = [String(urlProjectId)] as any;
+      if (urlProjectId === 'clear') {
+        // 清空项目筛选
+        newSubTaskParams.projectIds = [];
+      } else {
+        newSubTaskParams.projectIds = [urlProjectId] as any;
+      }
+      debugger;
     }
 
     setsubTaskParams(newSubTaskParams);
@@ -430,6 +442,25 @@ const Content: React.FC<IProps> = (props) => {
   useEffect(() => {
     resolveUrlSearchParams();
   }, []);
+
+  useEffect(() => {
+    if (perspective === Perspective.scheduleView && subTaskState?.subTask) {
+      setPagination({
+        current: subTaskState?.subTask?.page?.number,
+        pageSize: subTaskState?.subTask?.page?.size
+          ? subTaskState?.subTask?.page?.size
+          : pagination?.pageSize,
+      });
+    }
+    if (perspective !== Perspective.scheduleView && subTaskState?.subTask) {
+      setPagination({
+        current: subTaskState?.subTask?.page?.number,
+        pageSize: subTaskState?.subTask?.page?.size
+          ? subTaskState?.subTask.page.size
+          : pagination?.pageSize,
+      });
+    }
+  }, [subTaskState.subTask, state.schedule, perspective]);
 
   return (
     <>

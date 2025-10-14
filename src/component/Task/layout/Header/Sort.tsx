@@ -1,25 +1,21 @@
-import { formatMessage } from '@/util/intl';
 import React, { useContext, useState } from 'react';
 import { Dropdown } from 'antd';
 import { inject, observer } from 'mobx-react';
-import { UserStore } from '@/store/login';
-import { ReactComponent as GroupSvg } from '@/svgr/group.svg';
-import Icon from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { DatabaseGroup } from '@/d.ts/database';
 import { SortAscendingOutlined } from '@ant-design/icons';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import ParamsContext from '@/component/Task/context/ParamsContext';
+import { TaskCreateTimeSort } from '../../interface';
 
 interface IProps {}
 
 const items: MenuProps['items'] = [
   {
-    key: 'createTime,asc',
+    key: TaskCreateTimeSort.ASC,
     label: '按创建时间排序',
   },
   {
-    key: 'createTime,desc',
+    key: TaskCreateTimeSort.DESC,
     label: '按创建时间降序',
   },
 ];

@@ -12,7 +12,7 @@ const ScheduleManage: React.FC<IProps> = (props) => {
   const { projectId, mode = SchedulePageMode.COMMON } = props;
 
   return (
-    <div className={styles.task}>
+    <div className={styles.schedule}>
       <div className={styles.sider}>
         <Sider mode={mode} />
       </div>

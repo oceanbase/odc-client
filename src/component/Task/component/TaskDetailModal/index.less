@@ -224,7 +224,9 @@
     }
   }
 }
-
+.scheduleNameTooltip {
+  max-width: 500px !important;
+}
 .result-desc {
   :global {
     .ant-descriptions-header {
@@ -252,8 +254,19 @@
   justify-content: space-between;
   padding-right: 15px;
 
-  .share {
-    font-size: 12px;
+  .detailName {
+    cursor: pointer;
+    max-width: calc(100% - 100px);
+    display: flex;
+    .scheduleName {
+      flex: 1;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .ml4 {
+      margin-left: 2px;
+    }
   }
 }
 

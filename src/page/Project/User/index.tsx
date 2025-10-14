@@ -70,9 +70,6 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
   const [manageModalVisiable, setManageModalVisiable] = useState(false);
   const [editUserId, setEditUserId] = useState<number>(null);
   const [detailId, setDetailId] = useState<number>(null);
-  const [openDepResourceModal, setOpenDepResourceModal] = useState(false);
-  const [deleteUserId, setDeleteUserId] = useState<number>(null);
-  const [deleteUserName, setDeleteUserName] = useState<string>('');
   const dataSource: (IProject['members'][0] & {
     roles: ProjectRole[];
     globalRoles: ProjectRole[];
@@ -107,16 +104,11 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
     tracert.expo('a3112.b64002.c330860');
   }, []);
   async function deleteUser(id: number, name: string) {
-    setDeleteUserId(id);
-    setDeleteUserName(name);
     const isSuccess = await deleteProjectMember({
       projectId: context?.project?.id,
-      userId: deleteUserId,
+      userId: id,
     });
     if (isSuccess) {
-      setOpenDepResourceModal(false);
-      setDeleteUserId(null);
-      setDeleteUserName('');
       context.reloadProject();
     }
   }

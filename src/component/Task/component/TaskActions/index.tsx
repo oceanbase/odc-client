@@ -56,6 +56,7 @@ import RollBackModal from '../RollbackConfirmModal';
 import { IOperationTypeRole } from '@/d.ts/schedule';
 import { ReactComponent as RollbackSvg } from '@/svgr/Roll-back.svg';
 import Icon from '@ant-design/icons';
+import { TaskTypeMap } from '../TaskTable/const';
 
 interface TaskActionsProps {
   modalStore?: ModalStore;
@@ -460,6 +461,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
         IRoles,
       ),
     },
+
     {
       key: TaskActionsEnum.ROLLBACK,
       label: TaskActionsTextMap[TaskActionsEnum.ROLLBACK],
@@ -702,12 +704,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
           const allowShowResultSets =
             settingStore.spaceConfigurations?.['odc.task.databaseChange.allowShowResultSets'] ===
             'true';
-          return (
-            hasPermission &&
-            task?.type === TaskType.ASYNC &&
-            result?.containQuery &&
-            allowShowResultSets
-          );
+          return hasPermission && result?.containQuery && allowShowResultSets;
         },
         [
           IOperationTypeRole.CREATOR,

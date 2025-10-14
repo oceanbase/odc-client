@@ -68,9 +68,11 @@ export enum ScheduleTaskTab {
   approveByCurrentUser = 'approveByCurrentUser',
 }
 
-export enum ApprovalStatus {
+export enum ScheduleApprovalStatus {
   APPROVING = 'APPROVING',
-  APPROVE_FAILED = 'APPROVE_FAILED',
+  APPROVE_EXPIRED = 'APPROVE_EXPIRED',
+  APPROVE_CANCELED = 'APPROVE_CANCELED',
+  APPROVE_REJECTED = 'APPROVE_REJECTED',
 }
 
 export enum Perspective {
@@ -85,16 +87,26 @@ export interface IPagination {
   pageSize: number;
 }
 
+export enum ScheduleCreateTimeSort {
+  ASC = 'createTime,asc',
+  DESC = 'createTime,desc',
+}
+
+export enum ScheduleTaskCreateTimeSort {
+  ASC = 'fireTime,asc',
+  DESC = 'fireTime,desc',
+}
+
 export interface IScheduleParam {
   searchValue: string;
   searchType: ScheduleSearchType;
   type: ScheduleType[];
   status: ScheduleStatus[];
   projectIds: number[];
-  sort: string;
+  sort: ScheduleCreateTimeSort;
   timeRange: number | string;
   executeDate?: [Dayjs, Dayjs];
-  approveStatus?: ApprovalStatus[];
+  approveStatus?: ScheduleApprovalStatus[];
   tab?: ScheduleTab;
 }
 
@@ -104,7 +116,7 @@ export interface ISubTaskParam {
   type: ScheduleType[];
   status: ScheduleTaskStatus[];
   projectIds: number[];
-  sort: string;
+  sort: ScheduleTaskCreateTimeSort;
   timeRange: number | string;
   executeDate?: [Dayjs, Dayjs];
   tab?: ScheduleTaskTab;
