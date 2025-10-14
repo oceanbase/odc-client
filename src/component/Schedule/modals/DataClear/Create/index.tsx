@@ -415,7 +415,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       message.success('预检查完成，暂时没有发现问题');
     } else {
       message.warning(
-        `预检查完成，，发现${warningList?.length}个警告，发现${errorList?.length}个错误。`,
+        `预检查完成，发现${warningList?.length}个警告，发现${errorList?.length}个错误。`,
       );
     }
     setConfirmLoading(false);
