@@ -32,6 +32,7 @@ import { getDefaultValue } from './util';
 import { IModel } from '@/d.ts/llm';
 import { VendorsConfig } from '@/page/ExternalIntegration/LargeModel/constant';
 import setting from '@/store/setting';
+import { createEditorDiffDecorator, EditorDiffDecorator, LineType } from '@/util/editorDiff';
 
 interface IProps {
   dispose: () => void;
@@ -65,6 +66,13 @@ export default function InlineChat({
   const [lock, setLock] = useState(false);
   const [isShowModelSelect, setIsShowModelSelect] = useState(false);
 
+  // diff展示相关状态
+  const [originalSelectedText, setOriginalSelectedText] = useState<string>('');
+  const [generatedText, setGeneratedText] = useState<string>('');
+  const [originalSelectionRange, setOriginalSelectionRange] = useState<monaco.IRange | null>(null);
+  const diffDecoratorRef = useRef<EditorDiffDecorator | null>(null);
+  const [separatedDiffApplied, setSeparatedDiffApplied] = useState<boolean>(false);
+
   // 使用传入的 modelsData 或者本地状态作为备选
   const allModels = modelsData?.allModels || [];
   const modelsLoading = modelsData?.modelsLoading || false;
@@ -83,6 +91,11 @@ export default function InlineChat({
   });
 
   useEffect(() => {
+    // 初始化diff装饰器
+    if (editor && !diffDecoratorRef.current) {
+      diffDecoratorRef.current = createEditorDiffDecorator(editor);
+    }
+
     if (mode === AIQuestionType.SQL_MODIFIER || mode === AIQuestionType.NL_2_SQL) {
       setTimeout(() => {
         inputRef.current?.focus();
@@ -93,6 +106,11 @@ export default function InlineChat({
     return () => {
       if (needRollback.current) {
         rollback();
+      }
+      // 清理diff装饰器
+      if (diffDecoratorRef.current) {
+        diffDecoratorRef.current.dispose();
+        diffDecoratorRef.current = null;
       }
     };
   }, []);
@@ -109,6 +127,7 @@ export default function InlineChat({
     const selection = editor.getSelection();
     const start = editor.getModel()?.getOffsetAt(selection?.getStartPosition());
     const end = Math.max(editor.getModel()?.getOffsetAt(selection?.getEndPosition()) - 1, 0);
+    const selectedText = editor.getModel()?.getValueInRange(selection) || '';
     let submitMode = mode;
     if (
       submitMode === AIQuestionType.SQL_MODIFIER &&
@@ -116,6 +135,17 @@ export default function InlineChat({
     ) {
       submitMode = AIQuestionType.NL_2_SQL;
     }
+
+    // 保存原始选择范围，用于diff装饰
+    const selectionRange = selection
+      ? new monaco.Range(
+          selection.startLineNumber,
+          selection.startColumn,
+          selection.endLineNumber,
+          selection.endColumn,
+        )
+      : null;
+
     const data = await fetchCompletion({
       input: value,
       fileName: '',
@@ -132,26 +162,104 @@ export default function InlineChat({
       const oldModel = editor.getModel();
       const newModel = monaco.editor.createModel(oldModel.getValue(), oldModel.getLanguageId());
       fullEditor?.getOriginalEditor()?.setModel(newModel);
-      editor.executeEdits('source', [
-        {
-          range: editor.getSelection(),
-          text: data,
-        },
-      ]);
+
+      // 保存diff展示需要的数据
+      setOriginalSelectedText(selectedText);
+      setGeneratedText(data);
+      setOriginalSelectionRange(selectionRange);
+
+      // 应用分离的diff展示（仅在修改场景下）
+      if (
+        diffDecoratorRef.current &&
+        selectedText &&
+        data &&
+        selectedText !== data &&
+        submitMode !== AIQuestionType.NL_2_SQL &&
+        selectionRange
+      ) {
+        // 使用分离的diff展示
+        const diffInfo = diffDecoratorRef.current.insertSeparatedDiff(
+          selectedText,
+          data,
+          selectionRange,
+        );
+        if (diffInfo) {
+          setSeparatedDiffApplied(true);
+        }
+      } else {
+        // 对于补全场景（NL_2_SQL），直接替换内容
+        editor.executeEdits('source', [
+          {
+            range: editor.getSelection(),
+            text: data,
+          },
+        ]);
+      }
+
       setApplied(true);
     }
   }
   function rollback() {
-    editor.trigger('myapp', 'undo', null);
+    if (separatedDiffApplied && diffDecoratorRef.current) {
+      const diffInfo = diffDecoratorRef.current.getSeparatedDiffInfo();
+      if (diffInfo && originalSelectionRange) {
+        const model = editor.getModel();
+        if (model) {
+          let rollbackRange: monaco.Range;
+
+          if (diffInfo?.lineInfo?.length > 0) {
+            const lineNumbers = diffInfo.lineInfo.map((line) => line.lineNumber);
+            const minLineNumber = Math.min(...lineNumbers);
+            const maxLineNumber = Math.max(...lineNumbers);
+
+            rollbackRange = new monaco.Range(minLineNumber, 1, maxLineNumber + 1, 1);
+          }
+
+          editor.executeEdits('rollback-separated-diff', [
+            {
+              range: rollbackRange,
+              text: originalSelectedText,
+            },
+          ]);
+        }
+      }
+      setSeparatedDiffApplied(false);
+    } else {
+      // 常规的undo操作
+      editor.trigger('myapp', 'undo', null);
+    }
+
     fullEditor?.getOriginalEditor()?.setModel(editor.getModel());
     setApplied(false);
     needRollback.current = false;
+    // 清空diff展示数据
+    setOriginalSelectedText('');
+    setGeneratedText('');
+    setOriginalSelectionRange(null);
+    // 清除编辑器装饰
+    if (diffDecoratorRef.current) {
+      diffDecoratorRef.current.clearDecorations();
+    }
   }
   function submit() {
+    if (separatedDiffApplied && diffDecoratorRef.current) {
+      // 对于分离的diff，DELETE行是虚拟的，不需要删除操作
+      // ADD和ORIGINAL行已经在编辑器中，直接清理装饰即可
+      setSeparatedDiffApplied(false);
+    }
+
     const model = editor.getModel();
     fullEditor?.getOriginalEditor()?.getModel().setValue(model.getValue());
     fullEditor?.getOriginalEditor()?.setModel(model);
     needRollback.current = false;
+    // 清空diff展示数据
+    setOriginalSelectedText('');
+    setGeneratedText('');
+    setOriginalSelectionRange(null);
+    // 清除编辑器装饰
+    if (diffDecoratorRef.current) {
+      diffDecoratorRef.current.clearDecorations();
+    }
     dispose();
   }
 
