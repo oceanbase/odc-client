@@ -87,7 +87,7 @@ async function executeSqlInOldH2(sql: string): Promise<string> {
   const { stdout, stderr } = (await execAsync(
     `"${JAVA_PATH}" -cp "${OLD_H2_JAR_PATH}" org.h2.tools.Shell -url "${OLD_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -sql "${sql}"`,
   )) as ExecResult;
-  if (stderr) {
+  if (stderr && /error/i.test(stderr)) {
     log.error('[old]execute sql error: ', stderr);
     return null;
   }
@@ -103,7 +103,7 @@ async function executeSqlInNewH2(sql: string): Promise<string> {
   const { stdout, stderr } = (await execAsync(
     `"${JAVA_PATH}" -cp "${NEW_H2_JAR_PATH}" org.h2.tools.Shell -url "${NEW_H2_URL}" -user "${DB_USERNAME}" -password "${DB_PASSWORD}" -sql "${sql}"`,
   )) as ExecResult;
-  if (stderr) {
+  if (stderr && /error/i.test(stderr)) {
     log.error('[new]execute sql error: ', stderr);
     return null;
   }
