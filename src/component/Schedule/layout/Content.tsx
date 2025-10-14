@@ -358,7 +358,7 @@ const Content: React.FC<IProps> = (props) => {
     // Apply URL filter parameters
     const newParams: Partial<IScheduleParam> = {
       status: defaultScheduleStatus ? [defaultScheduleStatus as ScheduleStatus] : params?.status,
-      tab: defaultScheduleStatus ? ScheduleTab.all : defaultTab || params?.tab,
+      tab: defaultTab || params?.tab,
     };
 
     // Apply time filter from URL
@@ -374,7 +374,12 @@ const Content: React.FC<IProps> = (props) => {
 
     // Apply project filter from URL
     if (urlProjectId !== null) {
-      newParams.projectIds = [String(urlProjectId)] as any;
+      if (urlProjectId === 'clear') {
+        // 清空项目筛选
+        newParams.projectIds = [];
+      } else {
+        newParams.projectIds = [urlProjectId] as any;
+      }
     }
 
     setParams(newParams);
@@ -399,7 +404,13 @@ const Content: React.FC<IProps> = (props) => {
 
     // Apply project filter from URL to subTaskParams
     if (urlProjectId !== null) {
-      newSubTaskParams.projectIds = [String(urlProjectId)] as any;
+      if (urlProjectId === 'clear') {
+        // 清空项目筛选
+        newSubTaskParams.projectIds = [];
+      } else {
+        newSubTaskParams.projectIds = [urlProjectId] as any;
+      }
+      debugger;
     }
 
     setsubTaskParams(newSubTaskParams);

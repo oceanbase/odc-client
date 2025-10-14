@@ -52,7 +52,7 @@ const useScheduleSearchParams = () => {
       timeValue: timeValue ? (isNaN(Number(timeValue)) ? timeValue : Number(timeValue)) : null,
       startTime: startTime ? Number(startTime) : null,
       endTime: endTime ? Number(endTime) : null,
-      projectId: projectId ? Number(projectId) : null,
+      projectId: projectId ? projectId : null,
     },
     resetSearchParams,
   };

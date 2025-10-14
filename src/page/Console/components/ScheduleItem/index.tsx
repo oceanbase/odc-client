@@ -13,6 +13,7 @@ import { ScheduleStatus, ScheduleType } from '@/d.ts/schedule';
 import { Perspective } from '@/component/Schedule/interface';
 import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
 import dayjs, { Dayjs } from 'dayjs';
+import { TaskTab } from '@/component/Task/interface';
 
 const ScheduleItem = ({
   title,
@@ -56,6 +57,8 @@ const ScheduleItem = ({
     // Add project filter
     if (selectedProjectId) {
       params.set('projectId', String(selectedProjectId));
+    } else {
+      params.set('projectId', 'clear');
     }
 
     const basePath = baseUrl.split('?')[0];
@@ -112,7 +115,7 @@ const ScheduleItem = ({
             ].join(',');
             navigate(
               buildNavigateUrlWithFilters(
-                `/schedule?scheduleType=${type}&perspective=${Perspective.executionView}&subTaskStatus=${failedStatuses}`,
+                `/schedule?scheduleType=${type}&perspective=${Perspective.executionView}&subTaskStatus=${failedStatuses}&tab=${TaskTab.all}`,
               ),
             );
           }}
