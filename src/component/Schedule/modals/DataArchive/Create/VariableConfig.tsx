@@ -20,7 +20,7 @@ import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import type { FormInstance } from 'antd';
 import { AutoComplete, Button, Form, Input, InputNumber, Select, Space, Tooltip } from 'antd';
 import classNames from 'classnames';
-import { variable } from './index';
+import { variable } from './helper';
 import styles from './index.less';
 import { rules } from './const';
 export const timeUnitOptions = [

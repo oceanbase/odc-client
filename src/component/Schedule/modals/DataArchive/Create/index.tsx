@@ -16,12 +16,17 @@ import {
   ShardingStrategy,
   TaskExecStrategy,
 } from '@/d.ts';
-import { createSchedule, updateSchedule, getScheduleDetail } from '@/common/network/schedule';
-import { SchedulePageType, ScheduleType } from '@/d.ts/schedule';
+import {
+  createSchedule,
+  updateSchedule,
+  getScheduleDetail,
+  DmlPreCheck,
+} from '@/common/network/schedule';
+import { dmlPreCheckResult, SchedulePageType, ScheduleType } from '@/d.ts/schedule';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
 import { hourToMilliSeconds, kbToMb, mbToKb, milliSecondsToHour } from '@/util/utils';
-import { Button, Checkbox, Form, Modal, Radio, Space, Spin, message } from 'antd';
+import { Button, Checkbox, Form, Modal, Popover, Radio, Space, Spin, Tooltip, message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
@@ -50,18 +55,9 @@ import { ConnectTypeText } from '@/constant/label';
 import SchduleExecutionMethodForm from '@/component/Schedule/components/SchduleExecutionMethodForm';
 import ExecuteTimeoutSchedulingStrategy from '@/component/Schedule/components/ExecuteTimeoutSchedulingStrategy';
 import { getInitScheduleName } from '@/component/Task/component/CreateTaskConfirmModal/helper';
+import { InsertActionOptions, getVariables, getVariableValue } from './helper';
+import PreCheckTip from '@/component/Schedule/components/PreCheckTip';
 import SynchronizationItem from '@/component/Task/component/SynchronizationItem';
-
-export const InsertActionOptions = [
-  {
-    label: '重复时忽略插入',
-    value: MigrationInsertAction.INSERT_IGNORE,
-  },
-  {
-    label: '重复时更新目标表端数据',
-    value: MigrationInsertAction.INSERT_DUPLICATE_UPDATE,
-  },
-];
 
 export const cleanUpTimingOptions = [
   {
@@ -95,32 +91,6 @@ export const variable = {
     },
   ],
 };
-const getVariables = (
-  value: {
-    name: string;
-    format: string;
-    pattern: {
-      operator: string;
-      step: number;
-      unit: string;
-    }[];
-  }[],
-) => {
-  return value?.map(({ name, format, pattern }) => {
-    let _pattern = null;
-    try {
-      _pattern = pattern
-        ?.map((item) => {
-          return `${item.operator}${item.step ?? 0}${item.unit}`;
-        })
-        ?.join(' ');
-    } catch (error) {}
-    return {
-      name,
-      pattern: `${format}|${_pattern}`,
-    };
-  });
-};
 
 const defaultValue = {
   triggerStrategy: TaskExecStrategy.TIMER,
@@ -151,6 +121,13 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
   const [sourceDatabase, setSourceDatabase] = useState<IDatabase>();
   const [form] = Form.useForm();
   const databaseId = Form.useWatch('databaseId', form);
+  const [preCheckResult, setPreCheckResult] = useState<{
+    errorList: dmlPreCheckResult[];
+    warningList: dmlPreCheckResult[];
+  }>({
+    errorList: [],
+    warningList: [],
+  });
   const { session: sourceDBSession, database: sourceDB } = useDBSession(databaseId);
   const { run: fetchScheduleDetail, loading } = useRequest(getScheduleDetail, { manual: true });
   const loadTables = async () => {
@@ -332,12 +309,11 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     setPreviewModalVisible(false);
     setPreviewSQL('');
   };
-  const handleSubmit = (scheduleName?: string) => {
+  const handleSubmit = (scheduleName?: string, isPreCheck = false) => {
     // 校验 crontab 间隔分钟数
     if (!validateCrontabInterval(crontab, form, 'crontab')) {
       return;
     }
-
     form
       .validateFields()
       .then(async (values) => {
@@ -406,7 +382,9 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           parameters,
         };
         setConfirmLoading(true);
-        if (isEdit) {
+        if (isPreCheck) {
+          handleDmlPreCheck(data, isEdit);
+        } else if (isEdit) {
           handleEditAndConfirm(data);
         } else {
           handleCreate(data);
@@ -456,12 +434,49 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     setHasEdit(false);
     setTargetDatabase(null);
     setSourceDatabase(null);
+    setPreCheckResult({
+      errorList: [],
+      warningList: [],
+    });
   };
 
   const handleSourceDatabaseChange = (v, db) => {
     form.setFieldValue('tables', [null]);
     setSourceDatabase(db);
     handleCheckTargetConnectTypeIsAllow(db, targetDatabase);
+  };
+
+  const handleDmlPreCheck = async (
+    data: createScheduleRecord<createDataArchiveParameters>,
+    isEdit: boolean,
+  ) => {
+    const params = {
+      scheduleId: undefined,
+      createScheduleReq: undefined,
+      updateScheduleReq: undefined,
+    };
+    if (isEdit) {
+      params.scheduleId = dataArchiveEditId;
+      params.updateScheduleReq = data;
+    } else {
+      params.createScheduleReq = data;
+    }
+    const res = await DmlPreCheck(params);
+    const errorList = res?.filter((item) => item.level === 'ERROR');
+    const warningList = res?.filter((item) => item.level === 'WARN');
+
+    if (!res?.length) {
+      message.success('预检查完成，暂时没有发现问题');
+    } else {
+      message.warning(
+        `预检查完成，，发现${warningList?.length}个警告，发现${errorList?.length}个错误。`,
+      );
+    }
+    setConfirmLoading(false);
+    setPreCheckResult({
+      errorList,
+      warningList,
+    });
   };
 
   const handleTargetDatabaseChange = (v, db) => {
@@ -542,7 +557,12 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           {
             key: 'archiveRange',
             href: '#archiveRange',
-            title: '归档范围',
+            title: (
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ marginRight: '4px' }}>归档范围</div>
+                <PreCheckTip preCheckResult={preCheckResult} showTip={false} />
+              </div>
+            ),
           },
           {
             key: 'executionMethod',
@@ -761,15 +781,25 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
         onClose={handleCloseSQLPreviewModal}
         onOk={(scheduleName) => handleConfirmTask(scheduleName)}
       />
+
       <div
         style={{ padding: '16px 16px 0px 24px', borderTop: '1px solid var(--table-border-color)' }}
       >
         <Space>
-          <Button
-            onClick={() => {
-              handleCancel(hasEdit);
-            }}
-          >
+          <Tooltip title={preCheckResult?.errorList?.length ? '存在错误，请先解决错误' : undefined}>
+            <Button
+              type="primary"
+              loading={confirmLoading || loading}
+              onClick={handleSQLPreview}
+              disabled={Boolean(preCheckResult?.errorList?.length)}
+            >
+              下一步：预览SQL
+            </Button>
+          </Tooltip>
+          <Button onClick={() => handleSubmit(undefined, true)} loading={confirmLoading}>
+            预检查
+          </Button>
+          <Button onClick={() => handleCancel(hasEdit)}>
             {
               formatMessage({
                 id: 'odc.DataArchiveTask.CreateModal.Cancel',
@@ -777,56 +807,11 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               }) /*取消*/
             }
           </Button>
-          <Button type="primary" loading={confirmLoading || loading} onClick={handleSQLPreview}>
-            {
-              isEdit
-                ? formatMessage({
-                    id: 'odc.DataArchiveTask.CreateModal.Save',
-                    defaultMessage: '保存',
-                  }) //保存
-                : formatMessage({
-                    id: 'odc.DataArchiveTask.CreateModal.Create',
-                    defaultMessage: '新建',
-                  }) //新建
-            }
-          </Button>
+          <PreCheckTip preCheckResult={preCheckResult} />
         </Space>
       </div>
     </div>
   );
-};
-
-export const getVariableValue = (
-  value: {
-    name: string;
-    pattern: string;
-  }[],
-) => {
-  var reg = /([+-])?(\d+)?(.+)?/;
-  return value?.map(({ name, pattern }) => {
-    const [format, _pattern] = pattern?.split('|');
-    let patternValue = {
-      operator: '',
-      step: '',
-      unit: '',
-    };
-    if (_pattern) {
-      const res = _pattern?.match(reg);
-      const operator = res[1] ?? '';
-      const step = res[2] ?? '';
-      const unit = timeUnitOptions.map((item) => item.value).includes(res[3]) ? res[3] : '';
-      patternValue = {
-        operator,
-        step,
-        unit,
-      };
-    }
-    return {
-      name,
-      format,
-      pattern: [patternValue],
-    };
-  });
 };
 
 export default inject('scheduleStore', 'pageStore')(observer(Create));
