@@ -1,4 +1,4 @@
-import { ApprovalStatus } from '@/component/Schedule/interface';
+import { ScheduleApprovalStatus } from '@/component/Schedule/interface';
 import {
   SchedulePageType,
   ScheduleStatus,
@@ -66,6 +66,14 @@ export const ScheduleActionsTextMap = {
 };
 
 export const ApprovalStatusTextMap = {
-  [ApprovalStatus.APPROVING]: '审批中',
-  [ApprovalStatus.APPROVE_FAILED]: '审批失败',
+  [ScheduleApprovalStatus.APPROVING]: '审批中',
+  [ScheduleApprovalStatus.APPROVE_EXPIRED]: formatMessage({
+    id: 'odc.component.TaskStatus.ApprovalExpired.1',
+    defaultMessage: '审批过期',
+  }),
+  [ScheduleApprovalStatus.APPROVE_CANCELED]: '审批撤销',
+  [ScheduleApprovalStatus.APPROVE_REJECTED]: formatMessage({
+    id: 'odc.component.TaskStatus.ApprovalFailed',
+    defaultMessage: '审批不通过',
+  }),
 };

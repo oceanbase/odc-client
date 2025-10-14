@@ -98,14 +98,8 @@ const ArchiveRange: React.FC<IProps> = (props) => {
 
   const getSettingTip = (name) => {
     const data = form.getFieldValue(['tables', name]);
-    const { joinTableConfigs, partitions: _partitions, tableName } = data || {};
-    if (!_partitions && !joinTableConfigs?.length) return null;
-    const partitions = isString(_partitions)
-      ? _partitions
-          ?.replace(/[\r\n]+/g, '')
-          ?.split(',')
-          ?.filter(Boolean)
-      : _partitions;
+    const { joinTableConfigs, partitions, tableName } = data || {};
+    if (!partitions && !joinTableConfigs?.length) return null;
     // 目前只有join类型，所以先写死join
     return (
       <div>

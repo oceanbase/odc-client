@@ -2577,9 +2577,10 @@ export interface ILogicDatabaseChangeExecuteRecord {
   dataSourceName: string;
   physicalDatabaseName: string;
   physicalDatabaseId: number;
-  id: number;
-  order: number;
   status: string;
+  completedSqlCount: number;
+  totalSqlCount: number;
+  physicalDatabase?: IDatabase;
 }
 
 export interface sqlExecutionResultMap {
@@ -3195,7 +3196,10 @@ export enum TaskStatus {
   ROLLBACK_SUCCEEDED = 'ROLLBACK_SUCCEEDED', // 已回滚
   CANCELLED = 'CANCELLED', // 已终止
   COMPLETED = 'COMPLETED', // 已完成
-  WAIT_FOR_CONFIRM = 'WAIT_FOR_CONFIRM', // 确认分区策略
+  /** 预检查中 */
+  PRE_CHECK_EXECUTING = 'PRE_CHECK_EXECUTING',
+  /** 排队中 */
+  WAIT_FOR_SCHEDULE_EXECUTION = 'WAIT_FOR_SCHEDULE_EXECUTION',
   // 其他： 前端不感知
   CREATED = 'CREATED', // 前端一般不感知，接口调用快的时候，可能会遇到（山露: 建议加上, 和 EXECUTING 一样的处理）
   APPROVED = 'APPROVED',

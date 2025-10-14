@@ -91,7 +91,7 @@ export enum TaskActionsEnum {
   STOP = 'STOP',
 
   // 以下详情页才会展示
-  /** 下载 SQL */
+  /** 下载 */
   DOWNLOAD = 'DOWNLOAD',
   /** 发起结构同步 */
   STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',

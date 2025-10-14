@@ -47,6 +47,7 @@ const Search = () => {
           searchType: searchType as TaskSearchType,
         });
       }}
+      style={{ minWidth: 160 }}
     />
   );
 };

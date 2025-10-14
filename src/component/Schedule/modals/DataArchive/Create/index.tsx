@@ -203,10 +203,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       migrationInsertAction,
       scheduleIgnoreTimeoutTask,
       shardingStrategy,
-      tables: tables?.map((i) => {
-        i.partitions = (i?.partitions as [])?.join(',');
-        return i;
-      }),
+      tables,
       variables: getVariableValue(variables),
       archiveRange: fullDatabase ? IArchiveRange.ALL : IArchiveRange.PORTION,
       triggerStrategy,
@@ -230,7 +227,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       crontabRef?.current?.setValue(crontab);
     }
     if (triggerStrategy === TaskExecStrategy.START_AT) {
-      formData.startAt = dayjs(startAt);
+      formData.startAt = startAt ? dayjs(startAt) : dayjs().add(1, 'hour');
     }
     await form.setFieldsValue(formData);
     setTargetDatabase(parameters.targetDatabase);
@@ -349,7 +346,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           databaseId,
           targetDataBaseId,
           variables,
-          tables: _tables,
+          tables,
           deleteAfterMigration,
           triggerStrategy,
           migrationInsertAction,
@@ -360,14 +357,6 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           dataSizeLimit,
           timeoutMillis,
         } = values;
-        _tables?.map((i) => {
-          i.partitions = Array.isArray(i.partitions)
-            ? i.partitions
-            : i?.partitions
-                ?.replace(/[\r\n]+/g, '')
-                ?.split(',')
-                ?.filter(Boolean);
-        });
         const parameters: createDataArchiveParameters = {
           deleteAfterMigration,
           fullDatabase: archiveRange === IArchiveRange.ALL,
@@ -387,7 +376,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
                     targetTableName: '',
                   };
                 })
-              : _tables,
+              : tables,
           targetDataBaseId,
           timeoutMillis: hourToMilliSeconds(timeoutMillis),
           variables: getVariables(variables),
@@ -434,14 +423,6 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       .then(async (values) => {
         const { variables, tables: _tables, archiveRange } = values;
         if (archiveRange !== IArchiveRange.ALL) {
-          _tables?.map((i) => {
-            i.partitions = Array.isArray(i.partitions)
-              ? i.partitions
-              : i?.partitions
-                  ?.replace(/[\r\n]+/g, '')
-                  ?.split(',')
-                  ?.filter(Boolean);
-          });
           const parameters = {
             variables: getVariables(variables),
             tables: _tables,
@@ -488,6 +469,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     handleCheckTargetConnectTypeIsAllow(sourceDatabase, db);
   };
 
+  /** 检查链路是否被支持 */
   const handleCheckTargetConnectTypeIsAllow = (
     sourceDatabase: IDatabase,
     targetDatabase: IDatabase,
@@ -597,7 +579,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
                 })}
                 /*源端数据库*/ projectId={projectId}
                 onChange={handleSourceDatabaseChange}
-                onInit={(db) => setTargetDatabase(db)}
+                onInit={(db) => setSourceDatabase(db)}
                 filters={{
                   hideFileSystem: true,
                 }}
@@ -640,6 +622,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
                 ]}
                 placeholder="仅支持选择同一项目内数据库"
                 onChange={handleTargetDatabaseChange}
+                onInit={(db) => setTargetDatabase(db)}
                 name="targetDataBaseId"
                 projectId={projectId}
               />

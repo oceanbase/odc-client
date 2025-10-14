@@ -112,7 +112,6 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     TaskStatus.APPROVING,
     TaskStatus.WAIT_FOR_EXECUTION,
     TaskStatus.EXECUTING,
-    TaskStatus.WAIT_FOR_CONFIRM,
     TaskStatus.CREATED,
     TaskStatus.APPROVED,
     TaskStatus.ENABLED,

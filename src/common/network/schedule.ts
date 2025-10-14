@@ -14,7 +14,7 @@ import {
 } from '@/d.ts/scheduleTask';
 import { Operation, IResponseData, CommonTaskLogType, ITaskStatParam, IStat } from '@/d.ts';
 import { scheduleTask, IScheduleTaskRecord } from '@/d.ts/scheduleTask';
-import { ApprovalStatus } from '@/component/Schedule/interface';
+import { ScheduleApprovalStatus } from '@/component/Schedule/interface';
 import { omit } from 'lodash';
 import { IScheduleTerminateCmd, IScheduleTerminateResult } from '@/d.ts/importTask';
 export interface ScheduleListParams {
@@ -30,7 +30,7 @@ export interface ScheduleListParams {
   startTime?: string;
   endTime?: string;
   creator?: string;
-  approveStatus?: ApprovalStatus[];
+  approveStatus?: ScheduleApprovalStatus[];
   projectUniqueIdentifier?: string;
   projectIds?: number[];
   triggerStrategy?: 'DAY' | 'WEEK' | 'MONTH' | 'CRON' | 'START_NOW' | 'START_AT';

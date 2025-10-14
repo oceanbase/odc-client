@@ -1,0 +1,50 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* 编辑器分离diff装饰样式 */
+
+/* 原始内容背景（将被替换的内容） */
+.editor-diff-deleted {
+  background-color: #ffd6d6 !important;
+  opacity: 0.8 !important;
+}
+
+/* AI生成的新内容背景 */
+.editor-diff-added {
+  background-color: #dbf0e9 !important;
+}
+
+/* AI生成的新内容背景 */
+.editor-diff-original {
+  background-color: #f3f6fc !important;
+}
+
+/* 分隔符样式 */
+.editor-diff-separator {
+  background-color: rgba(0, 123, 255, 0.1) !important;
+  color: #007bff !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  font-style: italic !important;
+}
+
+/* 删除行的 viewZone 样式 */
+.editor-diff-deleted-zone {
+  background-color: #ffd6d6 !important;
+  font-family: monospace !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}

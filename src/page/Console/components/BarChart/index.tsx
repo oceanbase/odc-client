@@ -4,6 +4,7 @@ import { ConsoleTextConfig, TaskTitle, TaskTypes } from '../../const';
 import './index.less';
 import { PersonalizeLayoutContext } from '@/page/Console/PersonalizeLayoutContext';
 import { useNavigate } from '@umijs/max';
+import { TaskTab } from '@/component/Task/interface';
 
 const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
   const { status, statusColor, statusType } = ConsoleTextConfig.schdules;
@@ -210,6 +211,7 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
           const searchParams = new URLSearchParams();
 
           searchParams.append('taskTypes', taskType);
+          searchParams.append('tab', TaskTab.all);
 
           if (clickType === 'detail' && status) {
             // 使用状态映射将Console状态转换为任务页面状态
@@ -219,6 +221,8 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
 
           if (selectedProjectId !== undefined) {
             searchParams.append('projectId', selectedProjectId.toString());
+          } else {
+            searchParams.append('projectId', 'clear');
           }
 
           if (

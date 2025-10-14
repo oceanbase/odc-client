@@ -1,7 +1,7 @@
 import ParamsContext from '@/component/Schedule/context/ParamsContext';
 import { useContext, useMemo } from 'react';
 import { Select } from 'antd';
-import { ApprovalStatus } from '@/component/Schedule/interface';
+import { ScheduleApprovalStatus } from '@/component/Schedule/interface';
 import { ApprovalStatusTextMap } from '@/constant/schedule';
 
 const ApprovalStatusFilter = () => {
@@ -14,7 +14,7 @@ const ApprovalStatusFilter = () => {
   };
 
   const ApprovalStatusOptions = useMemo(() => {
-    return Object.keys(ApprovalStatus).map((item) => {
+    return Object.keys(ScheduleApprovalStatus).map((item) => {
       return {
         label: ApprovalStatusTextMap?.[item],
         value: item,

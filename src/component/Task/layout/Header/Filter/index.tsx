@@ -38,8 +38,13 @@ const Filter: React.FC<IProps> = () => {
   };
 
   const isActive = useMemo(() => {
-    return Boolean(taskStatus.length) || Boolean(projectId.length) || Boolean(taskTypes.length);
-  }, [taskStatus.length, projectId.length, taskTypes.length]);
+    return (
+      Boolean(taskStatus.length) ||
+      Boolean(projectId.length) ||
+      Boolean(taskTypes.length) ||
+      timeRange !== 7
+    );
+  }, [taskStatus.length, projectId.length, taskTypes.length, timeRange]);
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -69,7 +74,8 @@ const Filter: React.FC<IProps> = () => {
   }, [taskTypes, isAll]);
 
   const statusTipContent = useMemo(() => {
-    if (!taskStatus.length) return null;
+    // 如果选择了待我审批或者待我执行，则不显示状态
+    if (!taskStatus.length || tab !== TaskTab.all) return null;
     return (
       <div>
         <div>状态：</div>
@@ -77,7 +83,7 @@ const Filter: React.FC<IProps> = () => {
           {taskStatus.map((item, idx) => {
             return (
               <>
-                <>{status[item].text}</>
+                <>{status[item]?.text}</>
                 {comma(idx, taskStatus.length)}
               </>
             );
@@ -85,7 +91,7 @@ const Filter: React.FC<IProps> = () => {
         </div>
       </div>
     );
-  }, [taskStatus]);
+  }, [taskStatus, tab]);
 
   const projectTipContent = useMemo(() => {
     if (!projectId.length) return null;
@@ -104,7 +110,7 @@ const Filter: React.FC<IProps> = () => {
         </div>
       </div>
     );
-  }, [projectId]);
+  }, [projectId, projectList]);
 
   const dateTipContent = useMemo(() => {
     return (
@@ -145,6 +151,7 @@ const Filter: React.FC<IProps> = () => {
       taskStatus: [],
       projectId: [],
       taskTypes: [],
+      timeRange: 7,
     });
   };
 

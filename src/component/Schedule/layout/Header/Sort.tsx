@@ -5,27 +5,28 @@ import type { MenuProps } from 'antd';
 import { SortAscendingOutlined } from '@ant-design/icons';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import ParamsContext from '@/component/Schedule/context/ParamsContext';
+import { ScheduleCreateTimeSort, ScheduleTaskCreateTimeSort } from '../../interface';
 
 interface IProps {}
 
 const items: MenuProps['items'] = [
   {
-    key: 'createTime,asc',
+    key: ScheduleCreateTimeSort.ASC,
     label: '按创建时间排序',
   },
   {
-    key: 'createTime,desc',
+    key: ScheduleCreateTimeSort.DESC,
     label: '按创建时间降序',
   },
 ];
 
 const subTaskItems: MenuProps['items'] = [
   {
-    key: 'fireTime,asc',
+    key: ScheduleTaskCreateTimeSort.ASC,
     label: '按执行时间排序',
   },
   {
-    key: 'fireTime,desc',
+    key: ScheduleTaskCreateTimeSort.DESC,
     label: '按执行时间降序',
   },
 ];
