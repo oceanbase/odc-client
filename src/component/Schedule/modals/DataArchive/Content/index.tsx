@@ -13,7 +13,7 @@ import {
 } from '@/component/ExecuteSqlDetailModal/constant';
 import { kbToMb, mbToKb } from '@/util/utils';
 import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
-import { InsertActionOptions } from '@/component/Schedule/modals/DataArchive/Create';
+import { InsertActionOptions } from '@/component/Schedule/modals/DataArchive/Create/helper';
 import { SyncTableStructureConfig } from '@/component/Task/const';
 import ThrottleEditableCell from '@/component/Task/component/ThrottleEditableCell';
 import setting from '@/store/setting';
