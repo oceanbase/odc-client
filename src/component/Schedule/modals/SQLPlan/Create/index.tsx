@@ -1,13 +1,10 @@
 import { getDataSourceModeConfig } from '@/common/datasource';
-import { createTask, getAsyncTaskUploadUrl } from '@/common/network/task';
+import { getAsyncTaskUploadUrl } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
-import Crontab from '@/component/Crontab';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
-import { convertCronToMinutes } from '@/component/Crontab/utils';
 import { validateCrontabInterval } from '@/util/schedule';
 import FormItemPanel from '@/component/FormItemPanel';
 import ODCDragger from '@/component/OSSDragger2';
-import DescriptionInput from '@/component/Task/component/DescriptionInput';
 import { SQLContentType, TaskExecStrategy } from '@/d.ts';
 import login from '@/store/login';
 import { CreateScheduleContext } from '@/component/Schedule/context/createScheduleContext';
@@ -15,18 +12,7 @@ import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
 import { getLocale } from '@umijs/max';
 import { openSchedulesPage } from '@/store/helper/page';
-import {
-  AutoComplete,
-  Button,
-  DatePicker,
-  Form,
-  InputNumber,
-  message,
-  Modal,
-  Radio,
-  Space,
-  Spin,
-} from 'antd';
+import { AutoComplete, Button, Form, InputNumber, message, Modal, Radio, Space, Spin } from 'antd';
 import type { UploadFile } from 'antd/lib/upload/interface';
 import Cookies from 'js-cookie';
 import { inject, observer } from 'mobx-react';
@@ -112,12 +98,13 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
   const loadEditData = async (editId: number) => {
     const dataRes = (await fetchScheduleDetail(editId)) as IScheduleRecord<ISqlPlanParameters>;
     setCreateScheduleDatabase(dataRes?.parameters?.databaseInfo);
-    const { parameters, triggerConfig, ...rest } = dataRes;
+    const { parameters, allowConcurrent, triggerConfig, ...rest } = dataRes;
     const { triggerStrategy, cronExpression, hours, days, startAt } = triggerConfig ?? {};
     const sqlContentType = parameters?.sqlObjectIds ? SQLContentType.FILE : SQLContentType.TEXT;
     const formData = {
       ...rest,
       ...parameters,
+      allowConcurrent,
       triggerStrategy,
       startAt: null,
       sqlContentType,
@@ -348,6 +335,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
           delimiter,
           errorStrategy,
           triggerStrategy,
+          allowConcurrent,
           startAt,
         } = values;
         const sqlFileIdAndNames = getFileIdAndNames(sqlFiles);
@@ -402,6 +390,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
         const data: createScheduleRecord<createSqlPlanParameters> = {
           name: scheduleName,
           type: ScheduleType.SQL_PLAN,
+          allowConcurrent,
           parameters,
           triggerConfig: null,
         };
