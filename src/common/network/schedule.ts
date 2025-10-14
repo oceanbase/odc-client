@@ -5,6 +5,9 @@ import {
   createScheduleRecord,
   createSchedueleParameters,
   ScheduleStatus,
+  createDataArchiveParameters,
+  createDataDeleteParameters,
+  dmlPreCheckResult,
 } from '@/d.ts/schedule';
 import request from '@/util/request';
 import {
@@ -364,4 +367,21 @@ export const resumeScheduleTask = async (scheduleId: number, taskId: number) => 
 export const pauseScheduleTask = async (scheduleId: number, taskId: number) => {
   const res = await request.post(`/api/v2/schedule/schedules/${scheduleId}/tasks/${taskId}/pause`);
   return res;
+};
+
+/**
+ * dml预检查
+ * createScheduleReq 和 updateScheduleReq 必须且只能填写其中一个
+ * @param params
+ * @returns
+ */
+export const DmlPreCheck = async (params: {
+  scheduleId: number;
+  createScheduleReq: createScheduleRecord<createDataArchiveParameters | createDataDeleteParameters>;
+  updateScheduleReq: createScheduleRecord<createDataArchiveParameters | createDataDeleteParameters>;
+}): Promise<dmlPreCheckResult[]> => {
+  const res = await request.post(`/api/v2/schedule/schedules/check`, {
+    data: params,
+  });
+  return res?.data;
 };
