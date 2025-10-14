@@ -1,6 +1,11 @@
 import { getTableListByDatabaseName } from '@/common/network/table';
 import { previewSqlStatements } from '@/common/network/task';
-import { createSchedule, updateSchedule, getScheduleDetail } from '@/common/network/schedule';
+import {
+  createSchedule,
+  updateSchedule,
+  getScheduleDetail,
+  DmlPreCheck,
+} from '@/common/network/schedule';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
 import { convertCronToMinutes } from '@/component/Crontab/utils';
 import { validateCrontabInterval } from '@/util/schedule';
@@ -20,11 +25,12 @@ import {
   createScheduleRecord,
   createDataDeleteParameters,
   SchedulePageType,
+  dmlPreCheckResult,
 } from '@/d.ts/schedule';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
 import { hourToMilliSeconds, kbToMb, mbToKb, milliSecondsToHour } from '@/util/utils';
-import { Button, Checkbox, Form, Modal, Radio, Space, Spin, message } from 'antd';
+import { Button, Checkbox, Form, Modal, Radio, Space, Spin, Tooltip, message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import { CreateScheduleContext } from '@/component/Schedule/context/createScheduleContext';
 import dayjs from 'dayjs';
@@ -33,7 +39,7 @@ import DatabaseSelect from '@/component/Task/component/DatabaseSelect';
 import SQLPreviewModal from '@/component/Task/component/SQLPreviewModal';
 import TaskdurationItem from '@/component/Task/component/TaskdurationItem';
 import ThrottleFormItem from '@/component/Task/component/ThrottleFormItem';
-import { getVariableValue } from '@/component/Schedule/modals/DataArchive/Create';
+import { getVariableValue } from '@/component/Schedule/modals/DataArchive/Create/helper';
 import ArchiveRange from './ArchiveRange';
 import styles from './index.less';
 import VariableConfig from './VariableConfig';
@@ -50,6 +56,7 @@ import { openSchedulesPage } from '@/store/helper/page';
 import SchduleExecutionMethodForm from '@/component/Schedule/components/SchduleExecutionMethodForm';
 import ExecuteTimeoutSchedulingStrategy from '@/component/Schedule/components/ExecuteTimeoutSchedulingStrategy';
 import { getInitScheduleName } from '@/component/Task/component/CreateTaskConfirmModal/helper';
+import PreCheckTip from '@/component/Schedule/components/PreCheckTip';
 
 export const variable = {
   name: '',
@@ -124,6 +131,13 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     const tables = await getTableListByDatabaseName(session?.sessionId, databaseName);
     setTables(tables);
   };
+  const [preCheckResult, setPreCheckResult] = useState<{
+    errorList: dmlPreCheckResult[];
+    warningList: dmlPreCheckResult[];
+  }>({
+    errorList: [],
+    warningList: [],
+  });
 
   const { run: fetchScheduleDetail, loading } = useRequest(getScheduleDetail, { manual: true });
   const { createScheduleDatabase, setCreateScheduleDatabase } =
@@ -293,12 +307,11 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     setPreviewSQL('');
   };
 
-  const handleSubmit = (scheduleName?: string) => {
+  const handleSubmit = (scheduleName?: string, isPreCheck = false) => {
     // 校验 crontab 间隔分钟数
     if (!validateCrontabInterval(crontab, form, 'crontab')) {
       return;
     }
-
     form
       .validateFields()
       .then(async (values) => {
@@ -366,7 +379,9 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           triggerConfig: parameters.triggerConfig,
         };
         setConfirmLoading(true);
-        if (isEdit) {
+        if (isPreCheck) {
+          handleDmlPreCheck(data, isEdit);
+        } else if (isEdit) {
           handleEditAndConfirm(data);
         } else {
           handleCreate(data);
@@ -377,6 +392,39 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
         console.error(JSON.stringify(errorInfo));
       });
   };
+
+  const handleDmlPreCheck = async (
+    data: createScheduleRecord<createDataDeleteParameters>,
+    isEdit: boolean,
+  ) => {
+    const params = {
+      scheduleId: undefined,
+      createScheduleReq: undefined,
+      updateScheduleReq: undefined,
+    };
+    if (isEdit) {
+      params.scheduleId = editScheduleId;
+      params.updateScheduleReq = data;
+    } else {
+      params.createScheduleReq = data;
+    }
+    const res = await DmlPreCheck(params);
+    const errorList = res?.filter((item) => item.level === 'ERROR');
+    const warningList = res?.filter((item) => item.level === 'WARN');
+    if (!res?.length) {
+      message.success('预检查完成，暂时没有发现问题');
+    } else {
+      message.warning(
+        `预检查完成，，发现${warningList?.length}个警告，发现${errorList?.length}个错误。`,
+      );
+    }
+    setConfirmLoading(false);
+    setPreCheckResult({
+      errorList,
+      warningList,
+    });
+  };
+
   const handleSQLPreview = () => {
     form
       .validateFields()
@@ -414,6 +462,10 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     setCrontab(null);
     setHasEdit(false);
     setCreateScheduleDatabase(undefined);
+    setPreCheckResult({
+      errorList: [],
+      warningList: [],
+    });
   };
 
   const handleDBChange = (v, db) => {
@@ -462,7 +514,12 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           {
             key: 'clearRange',
             href: '#clearRange',
-            title: '清理范围',
+            title: (
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ marginRight: '4px' }}>清理范围</div>
+                <PreCheckTip preCheckResult={preCheckResult} showTip={false} />
+              </div>
+            ),
           },
           {
             key: 'executionMethod',
@@ -588,6 +645,19 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
         style={{ padding: '16px 16px 0px 24px', borderTop: '1px solid var(--table-border-color)' }}
       >
         <Space>
+          <Tooltip title={preCheckResult?.errorList?.length ? '存在错误，请先解决错误' : undefined}>
+            <Button
+              type="primary"
+              loading={confirmLoading || loading}
+              onClick={handleSQLPreview}
+              disabled={Boolean(preCheckResult?.errorList?.length)}
+            >
+              下一步：预览SQL
+            </Button>
+          </Tooltip>
+          <Button onClick={() => handleSubmit(undefined, true)} loading={confirmLoading}>
+            预检查
+          </Button>
           <Button
             onClick={() => {
               handleCancel(hasEdit);
@@ -600,19 +670,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               }) /*取消*/
             }
           </Button>
-          <Button type="primary" loading={confirmLoading || loading} onClick={handleSQLPreview}>
-            {
-              isEdit
-                ? formatMessage({
-                    id: 'odc.DataClearTask.CreateModal.Save',
-                    defaultMessage: '保存',
-                  }) //保存
-                : formatMessage({
-                    id: 'odc.DataClearTask.CreateModal.Create',
-                    defaultMessage: '新建',
-                  }) //新建
-            }
-          </Button>
+          <PreCheckTip preCheckResult={preCheckResult} />
         </Space>
       </div>
     </div>

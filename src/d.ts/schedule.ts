@@ -358,3 +358,9 @@ export type createDataArchiveParameters = {
   triggerConfig: ICycleTaskTriggerConfig;
   scheduleIgnoreTimeoutTask: boolean;
 };
+
+export type dmlPreCheckResult = {
+  error: boolean;
+  level: 'ERROR' | 'WARN';
+  message: string;
+};
