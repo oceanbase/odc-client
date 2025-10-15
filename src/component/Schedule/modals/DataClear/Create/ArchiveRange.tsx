@@ -66,10 +66,21 @@ const ArchiveRange: React.FC<IProps> = (props) => {
   const { tables: propsTables, needCheckBeforeDelete = false, checkPartition, databaseId } = props;
   const form = Form.useFormInstance();
   const [enablePartition, setEnablePartition] = useState<boolean>(checkPartition);
-  const tablesOptions = propsTables?.map((item) => ({
-    label: item.tableName,
-    value: item.tableName,
-  }));
+  const getTablesOptions = () => {
+    const _selectedTables =
+      form
+        .getFieldValue('tables')
+        ?.filter((item) => item?.tableName)
+        ?.map((item) => item?.tableName) ?? [];
+    const _options = propsTables?.map((item) => {
+      return {
+        label: item.tableName,
+        value: item.tableName,
+        disabled: _selectedTables?.includes(item.tableName),
+      };
+    });
+    return _options;
+  };
 
   const hasAdvancedOptionCol = enablePartition || needCheckBeforeDelete;
   const { visible, currentIndex, open, close, handleSubmit } = useJoinTableConfig(form);
@@ -239,7 +250,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                                 id: 'odc.DataClearTask.CreateModal.ArchiveRange.PleaseSelect',
                                 defaultMessage: '请选择',
                               })}
-                              /*请选择*/ options={tablesOptions}
+                              /*请选择*/ options={getTablesOptions()}
                               filterOption={(input, option) =>
                                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                               }
@@ -340,7 +351,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             <BatchSelectionPopover
                               maxCount={MAX_TABLES_COUNT - fields?.length}
                               disabled={disabledAddFields}
-                              options={tablesOptions}
+                              options={getTablesOptions()}
                               handleConfirm={(checkList) => handleConfirm(checkList, add, remove)}
                             />
                           </Button>

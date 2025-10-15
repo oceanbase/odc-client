@@ -10,6 +10,7 @@ interface BatchSelectionPopoverProps {
   options: {
     label: string;
     value: string;
+    disabled?: boolean;
   }[];
   handleConfirm: (selectedList: any[]) => void;
   disabled?: boolean;
@@ -93,11 +94,16 @@ const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
         <div className={`${styles.flexBetween} ${styles.p12}`}>
           <Checkbox
             checked={
-              filterCheckedList.length && filterOptions?.length === filterCheckedList?.length
+              filterCheckedList.length &&
+              filterOptions?.filter((item) => !item?.disabled)?.length === filterCheckedList?.length
             }
-            disabled={!filterOptions?.length}
+            disabled={!filterOptions?.filter((item) => !item?.disabled)?.length}
             onChange={(e: CheckboxChangeEvent) => {
-              setCheckedList(e.target.checked ? filterOptions?.map((item) => item?.value) : []);
+              setCheckedList(
+                e.target.checked
+                  ? filterOptions?.filter((item) => !item?.disabled)?.map((item) => item?.value)
+                  : [],
+              );
             }}
           >
             {formatMessage({
@@ -136,6 +142,7 @@ const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
               <Checkbox
                 value={item.value}
                 className={styles.w100}
+                disabled={item?.disabled}
                 checked={checkedList?.indexOf(item.value) !== -1}
                 onChange={(e) => {
                   if (e.target.checked) {
