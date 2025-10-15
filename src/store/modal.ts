@@ -83,6 +83,7 @@ interface GolbalSearchData {
   dataSourceId?: number;
   initSearchKey?: string;
   initStatus: SearchStatus;
+  activeKey?: string; // 指定打开搜索弹窗时应该选中的tab（对象类型）
 }
 
 export interface IMultipleAsyncTaskData {

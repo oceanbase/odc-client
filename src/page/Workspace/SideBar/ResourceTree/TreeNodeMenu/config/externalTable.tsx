@@ -34,7 +34,12 @@ import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
 import tracert from '@/util/tracert';
-import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  QuestionCircleFilled,
+  ReloadOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { hasTableChangePermission, hasTableExportPermission } from '../index';
@@ -44,9 +49,24 @@ import { isLogicalDatabase } from '@/util/database';
 import { DatabasePermissionType } from '@/d.ts/database';
 import request from '@/util/request';
 import DatabaseStore from '@/store/sessionManager/database';
+import { openGlobalSearch } from '../../const';
 
 export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.ExternalTableRoot]: [
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.externalTable.GlobalSearch',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
+      },
+    },
     {
       key: 'REFRESH',
       text: formatMessage({
@@ -88,6 +108,20 @@ export const externalTableMenusConfig: Partial<Record<ResourceNodeType, IMenuIte
           session?.odcDatabase?.id,
           node?.data?.info?.tableId,
         );
+      },
+    },
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.externalTable.GlobalSearch',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
       },
     },
     {

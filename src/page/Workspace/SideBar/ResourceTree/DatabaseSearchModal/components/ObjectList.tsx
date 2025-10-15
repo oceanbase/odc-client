@@ -111,6 +111,7 @@ const ObjectList = ({ modalStore }: Iprops) => {
                 })}
 
                 <a
+                  className={styles.syncMetadata}
                   onClick={async () => {
                     const data = await fetchSyncAll?.();
                     if (data?.data) {
@@ -124,10 +125,7 @@ const ObjectList = ({ modalStore }: Iprops) => {
                     }
                   }}
                 >
-                  {formatMessage({
-                    id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.37A2B88B',
-                    defaultMessage: '同步数据库',
-                  })}
+                  同步元数据库
                 </a>
                 {formatMessage({
                   id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.6B9FDF51',

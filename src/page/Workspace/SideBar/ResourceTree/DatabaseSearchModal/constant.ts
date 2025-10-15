@@ -200,9 +200,6 @@ export const DbObjectTypeMap = {
 };
 
 export enum SearchStatus {
-  /** 默认 */
-  defalut = 'defalut',
-
   /** 搜索数据库 */
   forDatabase = 'forDatabase',
   /**搜索数据源 */

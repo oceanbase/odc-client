@@ -25,12 +25,14 @@ import {
   DownloadOutlined,
   DeleteOutlined,
   FunctionOutlined,
+  SearchOutlined,
 } from '@ant-design/icons';
 import { IMenuItemConfig } from '../type';
 import { formatMessage } from '@/util/intl';
 import { openExternalResourceViewPage } from '@/store/helper/page';
 import { downloadExternalResourceFile } from '@/common/network/externalResource';
 import { IExternalResource } from '@/d.ts/externalResoruce';
+import { openGlobalSearch } from '../../const';
 
 export const externalResourceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.ExternalResourceRoot]: [
@@ -45,6 +47,20 @@ export const externalResourceMenusConfig: Partial<Record<ResourceNodeType, IMenu
           session?.odcDatabase?.id,
           session?.database?.dbName,
         );
+      },
+    },
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.externalResource.GlobalSearch',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
       },
     },
     {
@@ -78,6 +94,20 @@ export const externalResourceMenusConfig: Partial<Record<ResourceNodeType, IMenu
         } else {
           message.error('会话信息不完整，无法查看外部资源');
         }
+      },
+    },
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.externalResource.GlobalSearch',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
       },
     },
     {

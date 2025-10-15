@@ -35,9 +35,15 @@ import modal from '@/store/modal';
 import pageStore from '@/store/page';
 import { ReactComponent as BatchCompileSvg } from '@/svgr/batch-compile-all.svg';
 import { downloadPLDDL } from '@/util/sqlExport';
-import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  QuestionCircleFilled,
+  ReloadOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { isSupportExport, isSupportPLEdit } from './helper';
+import { openGlobalSearch } from '../../const';
 
 export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TriggerRoot]: [
@@ -79,6 +85,20 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       },
     },
     {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.trigger.GlobalSearch',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
+      },
+    },
+    {
       key: 'REFRESH',
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Refresh', defaultMessage: '刷新' }), //刷新
@@ -113,7 +133,20 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         );
       },
     },
-
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.trigger.GlobalSearch',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
+      },
+    },
     {
       key: 'EDIT_TRIGGER',
       text: [

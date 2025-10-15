@@ -41,7 +41,7 @@ const DatabaseSearch: React.FC<IProps> = (props) => {
       suffix={getShortcut}
       onSearch={() => {
         modalStore.changeDatabaseSearchModalVisible(true, {
-          initStatus: SearchStatus.defalut,
+          initStatus: SearchStatus.forDatabase,
           initSearchKey: searchValue,
         });
       }}

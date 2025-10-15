@@ -84,10 +84,7 @@ const CustomDropdown = ({
         },
         userStore.isPrivateSpace()
           ? {
-              label: formatMessage({
-                id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.884084AB',
-                defaultMessage: '同步数据库',
-              }),
+              label: '同步元数据库',
               key: 'sync',
               onClick: (e) =>
                 handleMenuClick(e, () => {
@@ -279,10 +276,7 @@ const DataSourceNodeMenu = (props: IProps) => {
                   </Action.Link>
 
                   <Action.Link onClick={() => sync(dataSource.id)} key={'sync'}>
-                    {formatMessage({
-                      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.884084AB',
-                      defaultMessage: '同步数据库',
-                    })}
+                    同步元数据库
                   </Action.Link>
                 </Action.Group>
               )}

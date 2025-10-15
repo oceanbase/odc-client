@@ -32,12 +32,18 @@ import { ReactComponent as BatchCompileSvg } from '@/svgr/batch-compile-all.svg'
 import { triggerActionAfterPLPageCreated } from '@/util/events';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
-import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  QuestionCircleFilled,
+  ReloadOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { hasChangePermission, hasExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
 import { isSupportExport, isSupportPLEdit } from './helper';
+import { openGlobalSearch } from '../../const';
 
 export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.ProcedureRoot]: [
@@ -86,6 +92,20 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
       },
     },
     {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.procedure.GlobalSearch',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
+      },
+    },
+    {
       key: 'REFRESH',
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Refresh', defaultMessage: '刷新' }), //刷新
@@ -120,7 +140,20 @@ export const procedureMenusConfig: Partial<Record<ResourceNodeType, IMenuItemCon
         );
       },
     },
-
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.procedure.GlobalSearch',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
+      },
+    },
     {
       key: 'EDIT',
       text: [
