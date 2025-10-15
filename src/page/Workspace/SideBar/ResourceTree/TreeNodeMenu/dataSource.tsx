@@ -175,8 +175,9 @@ const DataSourceNodeMenu = (props: IProps) => {
       <Popover
         showArrow={false}
         destroyOnHidden
-        overlayClassName={styles.connectionPopover}
+        classNames={{ root: styles.connectionPopover }}
         placement="right"
+        align={{ offset: [30, 0] }}
         content={!!dataSource && <ConnectionPopover connection={dataSource} />}
       >
         <div
