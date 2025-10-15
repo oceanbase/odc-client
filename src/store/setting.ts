@@ -288,6 +288,10 @@ export class SettingStore {
       channelName: `space-config`,
       identifierType: EShareableIdentifierType.ORGANIZATION,
     });
+    makeDataShareable(this, 'AIConfig', {
+      channelName: `ai-config`,
+      identifierType: EShareableIdentifierType.ORGANIZATION,
+    });
   }
 
   @action
