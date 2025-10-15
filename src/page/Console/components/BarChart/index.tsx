@@ -7,25 +7,29 @@ import { useNavigate } from '@umijs/max';
 import { TaskTab } from '@/component/Task/interface';
 
 const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
-  const { status, statusColor, statusType } = ConsoleTextConfig.schdules;
+  const { taskStatus, taskStatusColor, taskStatusType } = ConsoleTextConfig.schdules;
   const chartRef = useRef(null);
   const navigate = useNavigate();
 
   // 状态映射：Console状态 -> 任务页面状态
   const statusMapping = {
-    PENDING: ['CREATED', 'APPROVING', 'WAIT_FOR_EXECUTION', 'WAIT_FOR_CONFIRM'],
     EXECUTING: ['EXECUTING'],
-    EXECUTION_SUCCESS: ['EXECUTION_SUCCEEDED', 'COMPLETED'],
-    EXECUTION_FAILURE: [
+    EXECUTION_SUCCESS: ['EXECUTION_SUCCEEDED', 'EXECUTION_SUCCEEDED_WITH_ERRORS'],
+    ACCESS_FAILURE: [
+      'PRE_CHECK_FAILED',
       'REJECTED',
       'APPROVAL_EXPIRED',
-      'EXECUTION_FAILED',
-      'EXECUTION_ABNORMAL',
-      'PRE_CHECK_FAILED',
       'WAIT_FOR_EXECUTION_EXPIRED',
-      'EXECUTION_EXPIRED',
     ],
-    OTHER: ['ROLLBACK_SUCCEEDED'],
+    EXECUTION_INTERRUPTION: ['EXECUTION_ABNORMAL', 'EXECUTION_FAILED', 'EXECUTION_EXPIRED'],
+    OTHER: [
+      'CREATED',
+      'PRE_CHECK_EXECUTING',
+      'APPROVING',
+      'WAIT_FOR_SCHEDULE_EXECUTION',
+      'WAIT_FOR_EXECUTION',
+      'CANCELLED',
+    ],
   };
   const {
     checkedKeys: allCheckedKeys,
@@ -41,18 +45,17 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
     if (chartRef.current) {
       const chart = echarts.init(chartRef.current);
 
-      // 处理数据 - 使用与饼图相同的4个任务类型
-      const seriesData = status.map((statusName, i) => {
+      const seriesData = taskStatus.map((statusName, i) => {
         return {
           name: statusName,
           type: 'bar',
           stack: '总量',
           barWidth: 20,
           itemStyle: {
-            color: statusColor[i],
+            color: taskStatusColor[i],
           },
           data: checkedKeys.map((type) => {
-            return data?.[type]?.count?.[statusType[i]] || 0;
+            return data?.[type]?.count?.[taskStatusType[i]] || 0;
           }),
         };
       });
@@ -118,7 +121,7 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
               if (item.value > 0) {
                 result += `
                   <div class="bar-chart-tooltip-item" data-task-type="${taskType}" data-status="${
-                  statusType[item.seriesIndex]
+                  taskStatusType[item.seriesIndex]
                 }" data-click-type="detail">
                     <div class="bar-chart-tooltip-item-dot" style="background: ${
                       item.color
@@ -141,7 +144,7 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
         grid: {
           left: '3%',
           right: '4%',
-          bottom: '15%',
+          bottom: '0%',
           top: '5%',
           containLabel: true,
         },

@@ -265,6 +265,9 @@ const Content = forwardRef<ContentRef, IProps>((props, ref) => {
       if (urlProjectId === 'clear') {
         // 清空项目筛选
         newParams.projectId = [];
+        newParams.timeRange = 'ALL';
+        newParams.executeDate = [dayjs(), dayjs()];
+        newParams.taskTypes = [];
       } else {
         newParams.projectId = [urlProjectId];
       }

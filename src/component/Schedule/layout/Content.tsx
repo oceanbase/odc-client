@@ -377,6 +377,9 @@ const Content: React.FC<IProps> = (props) => {
       if (urlProjectId === 'clear') {
         // 清空项目筛选
         newParams.projectIds = [];
+        newParams.timeRange = 'ALL';
+        newParams.executeDate = [dayjs(), dayjs()];
+        newParams.status = [];
       } else {
         newParams.projectIds = [urlProjectId] as any;
       }
@@ -386,9 +389,12 @@ const Content: React.FC<IProps> = (props) => {
 
     // Apply URL filter parameters to subTaskParams as well
     const newSubTaskParams: Partial<ISubTaskParam> = {
-      status: defaultSubTaskStatus
-        ? defaultSubTaskStatus.split(',').map((status) => status.trim() as ScheduleTaskStatus)
-        : subTaskParams?.status,
+      status:
+        defaultSubTaskStatus === ''
+          ? []
+          : defaultSubTaskStatus
+          ? defaultSubTaskStatus.split(',').map((status) => status.trim() as ScheduleTaskStatus)
+          : subTaskParams?.status,
     };
 
     // Apply time filter from URL to subTaskParams
@@ -407,6 +413,9 @@ const Content: React.FC<IProps> = (props) => {
       if (urlProjectId === 'clear') {
         // 清空项目筛选
         newSubTaskParams.projectIds = [];
+        newSubTaskParams.timeRange = 'ALL';
+        newSubTaskParams.executeDate = [dayjs(), dayjs()];
+        newSubTaskParams.status = [];
       } else {
         newSubTaskParams.projectIds = [urlProjectId] as any;
       }

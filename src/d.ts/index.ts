@@ -2780,7 +2780,6 @@ export interface ITodos {
 
 export interface IGetFlowScheduleTodoParams {
   currentOrganizatonId: number;
-  projectId?: number;
 }
 
 export enum SubTaskExecuteType {
