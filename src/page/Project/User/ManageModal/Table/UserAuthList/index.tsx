@@ -240,6 +240,7 @@ const UserAuthList: React.FC<IProps> = (props) => {
         rowSelecter={
           isOwner || isDBA
             ? {
+                selectAllText: '全选当前页',
                 options: [
                   {
                     okText: formatMessage({
