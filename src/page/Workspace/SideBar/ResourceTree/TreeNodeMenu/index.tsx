@@ -34,11 +34,6 @@ import IconLoadingWrapper from './IconLoadingWrapper';
 import { ItemType } from 'antd/es/menu/interface';
 
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import { SearchOutlined } from '@ant-design/icons';
-import {
-  isSupportQuickOpenGlobalSearchNodes,
-  isGroupNode,
-} from '@/page/Workspace/SideBar/ResourceTree/const';
 import { openGlobalSearch } from '@/page/Workspace/SideBar/ResourceTree/const';
 import login from '@/store/login';
 
@@ -79,17 +74,10 @@ const TreeNodeMenu = (props: IProps) => {
   /**
    * 非database的情况下，必须存在session
    */
-  const isSessionValid = type === ResourceNodeType.Database || dbSession;
-
-  let isShowGlobalSearchEntrance = isSupportQuickOpenGlobalSearchNodes(
-    type as ResourceNodeType,
-    node.key,
-  );
-  if (type === ResourceNodeType.Database) {
-    isShowGlobalSearchEntrance =
-      isShowGlobalSearchEntrance &&
-      (Boolean(node?.data?.authorizedPermissionTypes?.length) || login?.isPrivateSpace());
-  }
+  const isSessionValid =
+    [ResourceNodeType.Database, ResourceNodeType.GroupNodeProject].includes(
+      type as ResourceNodeType,
+    ) || dbSession;
 
   /**
    * 只有dbobjecttype的情况下才可以拖动，因为编辑器需要type才能做出对应的响应
@@ -130,19 +118,6 @@ const TreeNodeMenu = (props: IProps) => {
       {node.tip && showTip ? (
         <span style={{ color: 'var(--text-color-hint)', paddingLeft: 5 }}>{node.tip}</span>
       ) : null}
-      {isGroupNode(type) && isShowGlobalSearchEntrance ? (
-        <Tooltip title="全局搜索">
-          <SearchOutlined
-            className={treeStyles.menuActions}
-            onClick={(e) => {
-              openGlobalSearch(node);
-              e.stopPropagation();
-            }}
-          />
-        </Tooltip>
-      ) : (
-        ''
-      )}
     </span>
   );
 
@@ -266,8 +241,6 @@ const TreeNodeMenu = (props: IProps) => {
                 >
                   {item?.key === 'REFRESH' ? (
                     <IconLoadingWrapper icon={item.icon || InfoCircleFilled} />
-                  ) : item?.key === 'GLOBAL_SEARCH' ? (
-                    <SearchOutlined />
                   ) : (
                     <Icon component={item.icon || InfoCircleFilled} />
                   )}
@@ -276,18 +249,6 @@ const TreeNodeMenu = (props: IProps) => {
             );
           })
           .filter(Boolean)}
-        {isShowGlobalSearchEntrance ? (
-          <Tooltip title="全局搜索">
-            <SearchOutlined
-              onClick={(e) => {
-                openGlobalSearch(node);
-                e.stopPropagation();
-              }}
-            />
-          </Tooltip>
-        ) : (
-          ''
-        )}
         {ellipsisItemsProp?.length ? (
           <Dropdown
             menu={{

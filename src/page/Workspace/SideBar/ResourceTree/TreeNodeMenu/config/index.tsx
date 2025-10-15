@@ -28,6 +28,7 @@ import { typeMenusConfig } from './type';
 import { viewMenusConfig } from './view';
 import { materializedViewConfig } from './materializedView';
 import { externalResourceMenusConfig } from './externalResource';
+import { groupNodeMenusConfig } from './groupNode';
 
 export default {
   ...tableMenusConfig,
@@ -44,4 +45,5 @@ export default {
   ...externalTableMenusConfig,
   ...materializedViewConfig,
   ...externalResourceMenusConfig,
+  ...groupNodeMenusConfig,
 };
