@@ -16,7 +16,7 @@
 
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { syncObject } from '@/common/network/database';
-import { IManagerResourceType, TaskPageType, TaskType } from '@/d.ts';
+import { actionTypes, IManagerResourceType, TaskPageType, TaskType } from '@/d.ts';
 import { DatabasePermissionType, DBObjectSyncStatus, IDatabase } from '@/d.ts/database';
 import { openNewDefaultPLPage, openNewSQLPage, openOBClientPage } from '@/store/helper/page';
 import { default as login, default as userStore } from '@/store/login';
@@ -28,12 +28,13 @@ import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
 import { getLocalFormatDateTime } from '@/util/utils';
-import { LoadingOutlined } from '@ant-design/icons';
+import { LoadingOutlined, SearchOutlined } from '@ant-design/icons';
 import { message, Tooltip, Typography } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
 import { ScheduleType } from '@/d.ts/schedule';
 import { SchedulePageMode } from '@/component/Schedule/interface';
+import { openGlobalSearch } from '../../const';
 
 const { Text } = Typography;
 
@@ -112,6 +113,20 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       run(session, node) {
         const database: IDatabase = node.data;
         openNewDefaultPLPage(null, node.cid, database?.name);
+      },
+    },
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.externalResource.GlobalSearch',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
       },
     },
     {

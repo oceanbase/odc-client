@@ -8,62 +8,6 @@ import { SearchStatus } from '@/page/Workspace/SideBar/ResourceTree/DatabaseSear
 import { TreeDataNode } from '@/page/Workspace/SideBar/ResourceTree/type';
 import React, { useContext, useEffect } from 'react';
 
-const isSupportQuickOpenGlobalSearchNodes = (type: ResourceNodeType, key) => {
-  let isSupport = false;
-  switch (type) {
-    case ResourceNodeType.Database: {
-      isSupport = true;
-      break;
-    }
-    case ResourceNodeType.GroupNodeDataSource: {
-      const [, , mapId] = key.split('-');
-      if (Number(mapId) !== 0) {
-        isSupport = true;
-      }
-      break;
-    }
-    case ResourceNodeType.GroupNodeProject: {
-      isSupport = true;
-      break;
-    }
-    case ResourceNodeType.SecondGroupNodeDataSource: {
-      const [, , , mapId] = key.split('-');
-      if (Number(mapId) !== 0) {
-        isSupport = true;
-      }
-      break;
-    }
-    // 数据库子节点的Root节点和具体资源节点都通过menuItem显示搜索，不在actionsRender中显示
-    // case ResourceNodeType.TableRoot:
-    // case ResourceNodeType.ViewRoot:
-    // case ResourceNodeType.FunctionRoot:
-    // case ResourceNodeType.ProcedureRoot:
-    // case ResourceNodeType.PackageRoot:
-    // case ResourceNodeType.TriggerRoot:
-    // case ResourceNodeType.TypeRoot:
-    // case ResourceNodeType.SequenceRoot:
-    // case ResourceNodeType.SynonymRoot:
-    // case ResourceNodeType.PublicSynonymRoot:
-    // case ResourceNodeType.MaterializedViewRoot:
-    // case ResourceNodeType.ExternalTableRoot:
-    // case ResourceNodeType.ExternalResourceRoot:
-    // case ResourceNodeType.Table:
-    // case ResourceNodeType.View:
-    // case ResourceNodeType.Function:
-    // case ResourceNodeType.Procedure:
-    // case ResourceNodeType.Package:
-    // case ResourceNodeType.Trigger:
-    // case ResourceNodeType.Type:
-    // case ResourceNodeType.Sequence:
-    // case ResourceNodeType.Synonym:
-    // case ResourceNodeType.PublicSynonym:
-    // case ResourceNodeType.MaterializedView:
-    // case ResourceNodeType.ExternalTable:
-    // case ResourceNodeType.ExternalResource:
-  }
-  return isSupport;
-};
-
 const isGroupNode = (type) => {
   return [
     ResourceNodeType.GroupNodeProject,
@@ -650,7 +594,6 @@ export {
   getSecondGroupKey,
   getShouldExpandedGroupKeys,
   getShouldExpandedKeysByObject,
-  isSupportQuickOpenGlobalSearchNodes,
   getShouldExpandedKeysByPage,
   isGroupNode,
   GroupNodeToResourceNodeType,

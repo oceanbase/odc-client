@@ -82,6 +82,15 @@ const CustomDropdown = ({
               deleteDataSource(name as string, node.data.id as string);
             }),
         },
+        {
+          label: '全局搜索',
+          key: 'globalSearch',
+          onClick: (e) => {
+            handleMenuClick(e, () => {
+              openGlobalSearch(node);
+            });
+          },
+        },
         userStore.isPrivateSpace()
           ? {
               label: '同步元数据库',
@@ -112,12 +121,13 @@ const CustomDropdown = ({
       onVisibleChange={setDropdownVisible}
       placement="bottomLeft"
     >
-      <span
+      <div
         onContextMenu={handleContextMenu}
         className={classNames(styles.dataSourceTitle, {
           [styles.mr12]: !userStore?.isPrivateSpace() && isHover,
           [styles.mr24]: userStore?.isPrivateSpace() && isHover,
         })}
+        style={{ flex: 1 }}
         onClick={() => {
           if (!node?.disabled) {
             setCurrentObject?.({
@@ -128,7 +138,7 @@ const CustomDropdown = ({
         }}
       >
         {node.title}
-      </span>
+      </div>
     </Dropdown>
   );
 };
@@ -225,8 +235,11 @@ const DataSourceNodeMenu = (props: IProps) => {
                       userStore.isPrivateSpace()
                         ? {
                             marginRight: '12px',
+                            fontSize: '14px',
                           }
-                        : {}
+                        : {
+                            fontSize: '14px',
+                          }
                     }
                     onClick={(e) => {
                       openGlobalSearch(node);
