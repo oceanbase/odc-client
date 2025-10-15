@@ -328,6 +328,7 @@ const TreeNodeMenu = (props: IProps) => {
       <Popover
         showArrow={false}
         placement="right"
+        align={{ offset: [30, 0] }}
         destroyOnHidden
         content={
           node.type === ResourceNodeType.Database ? (
