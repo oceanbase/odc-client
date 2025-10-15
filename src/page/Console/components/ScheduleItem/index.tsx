@@ -92,10 +92,10 @@ const ScheduleItem = ({
         <Divider className={styles.countersDivider} />
         <CounterCard
           onClick={() => {
-            // 跳转到调度管理页面的执行视角
+            // 跳转到调度管理页面的执行视角，清空状态筛选以显示所有执行记录
             navigate(
               buildNavigateUrlWithFilters(
-                `/schedule?scheduleType=${type}&perspective=${Perspective.executionView}`,
+                `/schedule?scheduleType=${type}&perspective=${Perspective.executionView}&subTaskStatus=`,
               ),
             );
           }}

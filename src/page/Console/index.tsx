@@ -50,7 +50,7 @@ const aboutUsIcons = [
 
 const ConsoleMain = () => {
   const { aboutUs, bestPractice } = ConsoleTextConfig;
-  const { status, statusColor } = ConsoleTextConfig.schdules;
+  const { status, statusColor, taskStatus, taskStatusColor } = ConsoleTextConfig.schdules;
   const cacheTimeValue = localStorage.getItem(cacheTimeKey);
   const cacheDateValue = localStorage.getItem(cacheDateKey);
   const [showModalAbout, setShowModalAbout] = useState(false);
@@ -134,7 +134,6 @@ const ConsoleMain = () => {
   useEffect(() => {
     runGetFlowScheduleTodo({
       currentOrganizatonId: login.organizationId,
-      projectId: selectedProjectId,
     });
     runGetScheduleStat({
       currentOrganizationId: login.organizationId,
@@ -266,44 +265,8 @@ const ConsoleMain = () => {
                   <Card className={styles.card}>
                     <div className={styles.header}>
                       <div className={styles.consoleCardTitle}>任务概览</div>
-                      <div>
-                        <Select
-                          className={styles.filter}
-                          prefix={<ClockCircleOutlined style={{ fontSize: 14 }} />}
-                          defaultValue={timeValue || TimeOptions[0].value}
-                          options={TimeOptions}
-                          onChange={(value: number) => {
-                            setTimeValue(value);
-                            localStorage.setItem(cacheTimeKey, JSON.stringify(value));
-                          }}
-                        />
-                        {String(timeValue) === 'custom' && (
-                          <RangePicker
-                            suffixIcon={null}
-                            value={dateValue}
-                            onChange={(value) => {
-                              setDateValue(value);
-                              // 将 Dayjs 对象转换为时间戳进行存储
-                              const dateForStorage = value
-                                ? [value[0]?.valueOf(), value[1]?.valueOf()]
-                                : null;
-                              localStorage.setItem(cacheDateKey, JSON.stringify(dateForStorage));
-                            }}
-                          />
-                        )}
-                        <Select
-                          className={styles.filter}
-                          placeholder="请选择项目"
-                          style={{ maxWidth: 200, border: 'none' }}
-                          options={[{ label: '全部项目', value: -1 }, ...projectOptions]}
-                          defaultValue={cacheProjectId ? Number(cacheProjectId) : -1}
-                          onChange={(value) => {
-                            setSelectedProjectId(value === -1 ? undefined : value);
-                            localStorage.setItem(cacheProjectIdKey, value + '');
-                          }}
-                        />
-                      </div>
                     </div>
+
                     <div className={styles.jobsCounter}>
                       <div className={styles.counterGrid}>
                         <ScheduleCounter
@@ -311,7 +274,7 @@ const ConsoleMain = () => {
                           counter={todosData?.FLOW?.count?.FLOW_WAIT_ME_APPROVAL}
                           onClick={() => {
                             navigate(
-                              `/${IPageType.Task}?tab=${TaskTab.approveByCurrentUser}&taskType=${TaskPageType.ALL}`,
+                              `/${IPageType.Task}?tab=${TaskTab.approveByCurrentUser}&taskType=${TaskPageType.ALL}&projectId=clear`,
                             );
                           }}
                         />
@@ -320,7 +283,7 @@ const ConsoleMain = () => {
                           counter={todosData?.FLOW?.count?.FLOW_WAIT_ME_EXECUTION}
                           onClick={() => {
                             navigate(
-                              `/${IPageType.Task}?tab=${TaskTab.executionByCurrentUser}&taskType=${TaskPageType.ALL}`,
+                              `/${IPageType.Task}?tab=${TaskTab.executionByCurrentUser}&taskType=${TaskPageType.ALL}&projectId=clear`,
                             );
                           }}
                         />
@@ -329,11 +292,48 @@ const ConsoleMain = () => {
                           counter={todosData?.SCHEDULE?.count?.SCHEDULE_WAIT_ME_APPROVAL}
                           onClick={() => {
                             navigate(
-                              `/${IPageType.Schedule}?tab=${ScheduleTab.approveByCurrentUser}&scheduleType=${SchedulePageType.ALL}`,
+                              `/${IPageType.Schedule}?tab=${ScheduleTab.approveByCurrentUser}&scheduleType=${SchedulePageType.ALL}&projectId=clear`,
                             );
                           }}
                         />
                       </div>
+                    </div>
+                    <div className={styles.filterContainer}>
+                      <Select
+                        className={styles.filter}
+                        prefix={<ClockCircleOutlined style={{ fontSize: 14 }} />}
+                        defaultValue={timeValue || TimeOptions[0].value}
+                        options={TimeOptions}
+                        onChange={(value: number) => {
+                          setTimeValue(value);
+                          localStorage.setItem(cacheTimeKey, JSON.stringify(value));
+                        }}
+                      />
+                      {String(timeValue) === 'custom' && (
+                        <RangePicker
+                          suffixIcon={null}
+                          value={dateValue}
+                          onChange={(value) => {
+                            setDateValue(value);
+                            // 将 Dayjs 对象转换为时间戳进行存储
+                            const dateForStorage = value
+                              ? [value[0]?.valueOf(), value[1]?.valueOf()]
+                              : null;
+                            localStorage.setItem(cacheDateKey, JSON.stringify(dateForStorage));
+                          }}
+                        />
+                      )}
+                      <Select
+                        className={styles.filter}
+                        placeholder="请选择项目"
+                        style={{ maxWidth: 200, border: 'none' }}
+                        options={[{ label: '全部项目', value: -1 }, ...projectOptions]}
+                        defaultValue={cacheProjectId ? Number(cacheProjectId) : -1}
+                        onChange={(value) => {
+                          setSelectedProjectId(value === -1 ? undefined : value);
+                          localStorage.setItem(cacheProjectIdKey, value + '');
+                        }}
+                      />
                     </div>
                     <div
                       className={
@@ -350,6 +350,25 @@ const ConsoleMain = () => {
                             timeValue={timeValue}
                             dateValue={dateValue}
                           />
+                          <div className={styles.legend}>
+                            {taskStatus.map((item, index) => {
+                              return (
+                                <LabelWithIcon
+                                  key={index}
+                                  icon={
+                                    <span
+                                      className={styles.taskLegendIcon}
+                                      style={{
+                                        backgroundColor: taskStatusColor[index],
+                                      }}
+                                    />
+                                  }
+                                  label={<span className={styles.label}>{item}</span>}
+                                  gap={8}
+                                />
+                              );
+                            })}
+                          </div>
                         </div>
                       )}
                       {hasTaskChecked &&
@@ -380,26 +399,31 @@ const ConsoleMain = () => {
                             );
                           })}
                         </div>
+                        {hasTaskChecked &&
+                          checkedKeys.some((item) =>
+                            showJobDivider.includes(item as ScheduleType),
+                          ) && (
+                            <div className={styles.legend}>
+                              {status.map((item, index) => {
+                                return (
+                                  <LabelWithIcon
+                                    key={index}
+                                    icon={
+                                      <span
+                                        className={styles.icon}
+                                        style={{
+                                          backgroundColor: statusColor[index],
+                                        }}
+                                      />
+                                    }
+                                    label={<span className={styles.label}>{item}</span>}
+                                    gap={8}
+                                  />
+                                );
+                              })}
+                            </div>
+                          )}
                       </div>
-                    </div>
-                    <div className={styles.legend}>
-                      {status.map((item, index) => {
-                        return (
-                          <LabelWithIcon
-                            key={index}
-                            icon={
-                              <span
-                                className={styles.icon}
-                                style={{
-                                  backgroundColor: statusColor[index],
-                                }}
-                              />
-                            }
-                            label={<span className={styles.label}>{item}</span>}
-                            gap={8}
-                          />
-                        );
-                      })}
                     </div>
                   </Card>
                 </div>
