@@ -131,13 +131,15 @@ const TreeNodeMenu = (props: IProps) => {
         <span style={{ color: 'var(--text-color-hint)', paddingLeft: 5 }}>{node.tip}</span>
       ) : null}
       {isGroupNode(type) && isShowGlobalSearchEntrance ? (
-        <SearchOutlined
-          className={treeStyles.menuActions}
-          onClick={(e) => {
-            openGlobalSearch(node);
-            e.stopPropagation();
-          }}
-        />
+        <Tooltip title="全局搜索">
+          <SearchOutlined
+            className={treeStyles.menuActions}
+            onClick={(e) => {
+              openGlobalSearch(node);
+              e.stopPropagation();
+            }}
+          />
+        </Tooltip>
       ) : (
         ''
       )}
@@ -275,12 +277,14 @@ const TreeNodeMenu = (props: IProps) => {
           })
           .filter(Boolean)}
         {isShowGlobalSearchEntrance ? (
-          <SearchOutlined
-            onClick={(e) => {
-              openGlobalSearch(node);
-              e.stopPropagation();
-            }}
-          />
+          <Tooltip title="全局搜索">
+            <SearchOutlined
+              onClick={(e) => {
+                openGlobalSearch(node);
+                e.stopPropagation();
+              }}
+            />
+          </Tooltip>
         ) : (
           ''
         )}
