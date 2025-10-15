@@ -247,16 +247,6 @@ const TreeNodeMenu = (props: IProps) => {
     let ellipsisItemsProp: ItemType[] = getMenuItems(ellipsisItems);
     return (
       <div className={treeStyles.menuActions}>
-        {isShowGlobalSearchEntrance ? (
-          <SearchOutlined
-            onClick={(e) => {
-              openGlobalSearch(node);
-              e.stopPropagation();
-            }}
-          />
-        ) : (
-          ''
-        )}
         {menuItems
           .map((item) => {
             const isHideItem = item.isHide ? item.isHide(dbSession, node) : false;
@@ -274,6 +264,8 @@ const TreeNodeMenu = (props: IProps) => {
                 >
                   {item?.key === 'REFRESH' ? (
                     <IconLoadingWrapper icon={item.icon || InfoCircleFilled} />
+                  ) : item?.key === 'GLOBAL_SEARCH' ? (
+                    <SearchOutlined />
                   ) : (
                     <Icon component={item.icon || InfoCircleFilled} />
                   )}
@@ -282,6 +274,16 @@ const TreeNodeMenu = (props: IProps) => {
             );
           })
           .filter(Boolean)}
+        {isShowGlobalSearchEntrance ? (
+          <SearchOutlined
+            onClick={(e) => {
+              openGlobalSearch(node);
+              e.stopPropagation();
+            }}
+          />
+        ) : (
+          ''
+        )}
         {ellipsisItemsProp?.length ? (
           <Dropdown
             menu={{

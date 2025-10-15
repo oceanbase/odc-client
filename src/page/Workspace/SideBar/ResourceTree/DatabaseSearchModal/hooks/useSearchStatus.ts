@@ -24,50 +24,65 @@ const useSearchStatus = (initSearchStatus: SearchStatus) => {
     dataSource?: IConnection;
   }) => {
     const { searchStatus, database, project, dataSource } = params || {};
+
+    // 如果只传入了 searchStatus（tab 切换），清空选中的对象
+    if (searchStatus && !database && !project && !dataSource) {
+      setDatabase(null);
+      setProject(null);
+      setDataSource(null);
+      update(searchStatus);
+      return;
+    }
+
+    // 如果明确传入了 searchStatus，直接更新
+    if (searchStatus) {
+      update(searchStatus);
+    }
+
     switch (status) {
-      case SearchStatus.defalut: {
-        if (!searchKey) {
+      case SearchStatus.forDatabase: {
+        if (database) {
           setDatabase(database);
-          update(SearchStatus.databaseforObject);
-        } else {
-          update(searchStatus);
           setCacheSearchKeyList([...cacheSearchKeyList, searchKey]);
+          setSearchKey('');
+          update(SearchStatus.databaseforObject);
         }
         break;
       }
-      case SearchStatus.forDatabase: {
-        update(SearchStatus.databaseforObject);
-        setDatabase(database);
-        setCacheSearchKeyList([...cacheSearchKeyList, searchKey]);
-        setSearchKey('');
-        break;
-      }
       case SearchStatus.forDataSource: {
-        update(SearchStatus.dataSourceforObject);
-        setDataSource(dataSource);
-        setCacheSearchKeyList([...cacheSearchKeyList, searchKey]);
-        setSearchKey('');
+        if (dataSource) {
+          setDataSource(dataSource);
+          setCacheSearchKeyList([...cacheSearchKeyList, searchKey]);
+          setSearchKey('');
+          update(SearchStatus.dataSourceforObject);
+        }
         break;
       }
       case SearchStatus.forProject: {
-        update(SearchStatus.projectforObject);
-        setProject(project);
-        setCacheSearchKeyList([...cacheSearchKeyList, searchKey]);
-        setSearchKey('');
+        if (project) {
+          setProject(project);
+          setCacheSearchKeyList([...cacheSearchKeyList, searchKey]);
+          setSearchKey('');
+          update(SearchStatus.projectforObject);
+        }
         break;
       }
       case SearchStatus.projectforObject: {
-        setDatabase(database);
-        update(SearchStatus.projectWithDatabaseforObject);
-        setCacheSearchKeyList([...cacheSearchKeyList, searchKey]);
-        setSearchKey('');
+        if (database) {
+          setDatabase(database);
+          setCacheSearchKeyList([...cacheSearchKeyList, searchKey]);
+          setSearchKey('');
+          update(SearchStatus.projectWithDatabaseforObject);
+        }
         break;
       }
       case SearchStatus.dataSourceforObject: {
-        setDatabase(database);
-        update(SearchStatus.dataSourceWithDatabaseforObject);
-        setCacheSearchKeyList([...cacheSearchKeyList, searchKey]);
-        setSearchKey('');
+        if (database) {
+          setDatabase(database);
+          setCacheSearchKeyList([...cacheSearchKeyList, searchKey]);
+          setSearchKey('');
+          update(SearchStatus.dataSourceWithDatabaseforObject);
+        }
         break;
       }
     }
@@ -79,8 +94,9 @@ const useSearchStatus = (initSearchStatus: SearchStatus) => {
         if (searchKey) {
           setSearchKey('');
         } else {
-          const _cacheSearchKeyList = cacheSearchKeyList;
-          setSearchKey(_cacheSearchKeyList.pop());
+          const _cacheSearchKeyList = [...cacheSearchKeyList];
+          const lastSearchKey = _cacheSearchKeyList.pop();
+          setSearchKey(lastSearchKey);
           setDatabase(null);
           setCacheSearchKeyList(_cacheSearchKeyList);
           update(SearchStatus.dataSourceforObject);
@@ -91,8 +107,9 @@ const useSearchStatus = (initSearchStatus: SearchStatus) => {
         if (searchKey) {
           setSearchKey('');
         } else {
-          const _cacheSearchKeyList = cacheSearchKeyList;
-          setSearchKey(_cacheSearchKeyList.pop());
+          const _cacheSearchKeyList = [...cacheSearchKeyList];
+          const lastSearchKey = _cacheSearchKeyList.pop();
+          setSearchKey(lastSearchKey);
           setCacheSearchKeyList(_cacheSearchKeyList);
           setDatabase(null);
           update(SearchStatus.projectforObject);
@@ -102,12 +119,10 @@ const useSearchStatus = (initSearchStatus: SearchStatus) => {
       case SearchStatus.databaseforObject: {
         if (searchKey) {
           setSearchKey('');
-        } else if (!cacheSearchKeyList.length || cacheSearchKeyList.length === 1) {
-          update(SearchStatus.defalut);
-          setDatabase(null);
         } else {
-          const _cacheSearchKeyList = cacheSearchKeyList;
-          setSearchKey(_cacheSearchKeyList.pop());
+          const _cacheSearchKeyList = [...cacheSearchKeyList];
+          const lastSearchKey = _cacheSearchKeyList.pop();
+          setSearchKey(lastSearchKey);
           setDatabase(null);
           setCacheSearchKeyList(_cacheSearchKeyList);
           update(SearchStatus.forDatabase);
@@ -118,9 +133,10 @@ const useSearchStatus = (initSearchStatus: SearchStatus) => {
         if (searchKey) {
           setSearchKey('');
         } else {
-          const _cacheSearchKeyList = cacheSearchKeyList;
+          const _cacheSearchKeyList = [...cacheSearchKeyList];
+          const lastSearchKey = _cacheSearchKeyList.pop();
           setProject(null);
-          setSearchKey(_cacheSearchKeyList.pop());
+          setSearchKey(lastSearchKey);
           setCacheSearchKeyList(_cacheSearchKeyList);
           update(SearchStatus.forProject);
         }
@@ -130,9 +146,10 @@ const useSearchStatus = (initSearchStatus: SearchStatus) => {
         if (searchKey) {
           setSearchKey('');
         } else {
-          const _cacheSearchKeyList = cacheSearchKeyList;
+          const _cacheSearchKeyList = [...cacheSearchKeyList];
+          const lastSearchKey = _cacheSearchKeyList.pop();
           setDataSource(null);
-          setSearchKey(_cacheSearchKeyList.pop());
+          setSearchKey(lastSearchKey);
           setCacheSearchKeyList(_cacheSearchKeyList);
           update(SearchStatus.forDataSource);
         }
@@ -141,17 +158,6 @@ const useSearchStatus = (initSearchStatus: SearchStatus) => {
       case SearchStatus.forDatabase:
       case SearchStatus.forDataSource:
       case SearchStatus.forProject: {
-        setDatabase(null);
-        setProject(null);
-        setDataSource(null);
-        update(SearchStatus.defalut);
-        const _cacheSearchKeyList = cacheSearchKeyList;
-        if (_cacheSearchKeyList.length) {
-          setSearchKey(_cacheSearchKeyList.pop());
-        }
-        break;
-      }
-      case SearchStatus.defalut: {
         setSearchKey('');
         break;
       }

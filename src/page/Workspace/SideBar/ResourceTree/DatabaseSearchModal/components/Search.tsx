@@ -98,7 +98,7 @@ const Search = ({ userStore, modalStore }: Iprops) => {
               style={{ color: 'var(--icon-blue-color)', fontSize: 16 }}
             />
 
-            <Tooltip title={project?.name} placement="top" overlayStyle={{ maxWidth: 280 }}>
+            <Tooltip title={project?.name} placement="top" styles={{ root: { maxWidth: 280 } }}>
               <span className={styles.selectTitle}>{project?.name}</span>
             </Tooltip>
           </span>
@@ -134,7 +134,9 @@ const Search = ({ userStore, modalStore }: Iprops) => {
   const inputPlaceholder = useMemo(() => {
     let text;
     switch (status) {
-      case SearchStatus.defalut: {
+      case SearchStatus.forDataSource:
+      case SearchStatus.forDatabase:
+      case SearchStatus.forProject: {
         if (userStore?.isPrivateSpace()) {
           text = formatMessage({
             id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.57B0EBE9',
@@ -185,7 +187,15 @@ const Search = ({ userStore, modalStore }: Iprops) => {
     if (objectloading) {
       return <LoadingOutlined {...props} />;
     }
-    if (status === SearchStatus.defalut && !searchKey) return undefined;
+    // 在初始状态且没有搜索关键词时，不显示关闭图标
+    if (
+      [SearchStatus.forDatabase, SearchStatus.forProject, SearchStatus.forDataSource].includes(
+        status,
+      ) &&
+      !searchKey
+    ) {
+      return null;
+    }
     return (
       <CloseCircleFilled
         {...props}

@@ -210,6 +210,7 @@ const List = ({ modalStore }: Iprops) => {
                   })}
 
                   <a
+                    className={styles.syncMetadata}
                     onClick={async () => {
                       const data = await fetchSyncAll?.();
                       if (data?.data) {
@@ -223,10 +224,7 @@ const List = ({ modalStore }: Iprops) => {
                       }
                     }}
                   >
-                    {formatMessage({
-                      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.884084AB',
-                      defaultMessage: '同步数据库',
-                    })}
+                    同步元数据库
                   </a>
                   {formatMessage({
                     id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.55AB56DF',
@@ -343,32 +341,8 @@ const List = ({ modalStore }: Iprops) => {
     }
   };
 
-  const searchInfo = useMemo(() => {
-    switch (status) {
-      case SearchStatus.forDataSource: {
-        return formatMessage({
-          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.40A85606',
-          defaultMessage: '数据源',
-        });
-      }
-      case SearchStatus.forProject: {
-        return formatMessage({
-          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.F8D1DA01',
-          defaultMessage: '项目',
-        });
-      }
-      default: {
-        return formatMessage({
-          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.BA1A0AD7',
-          defaultMessage: '数据库',
-        });
-      }
-    }
-  }, [status]);
-
   return (
     <div className={styles.content} style={{ maxHeight: '100%' }}>
-      <div className={styles.searchInfo}>{searchInfo}</div>
       {options?.length ? (
         <div style={{ height: '100%' }} ref={listRef}>
           <VirtualList

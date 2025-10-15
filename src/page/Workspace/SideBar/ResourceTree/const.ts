@@ -33,6 +33,33 @@ const isSupportQuickOpenGlobalSearchNodes = (type: ResourceNodeType, key) => {
       }
       break;
     }
+    // 数据库子节点的Root节点和具体资源节点都通过menuItem显示搜索，不在actionsRender中显示
+    // case ResourceNodeType.TableRoot:
+    // case ResourceNodeType.ViewRoot:
+    // case ResourceNodeType.FunctionRoot:
+    // case ResourceNodeType.ProcedureRoot:
+    // case ResourceNodeType.PackageRoot:
+    // case ResourceNodeType.TriggerRoot:
+    // case ResourceNodeType.TypeRoot:
+    // case ResourceNodeType.SequenceRoot:
+    // case ResourceNodeType.SynonymRoot:
+    // case ResourceNodeType.PublicSynonymRoot:
+    // case ResourceNodeType.MaterializedViewRoot:
+    // case ResourceNodeType.ExternalTableRoot:
+    // case ResourceNodeType.ExternalResourceRoot:
+    // case ResourceNodeType.Table:
+    // case ResourceNodeType.View:
+    // case ResourceNodeType.Function:
+    // case ResourceNodeType.Procedure:
+    // case ResourceNodeType.Package:
+    // case ResourceNodeType.Trigger:
+    // case ResourceNodeType.Type:
+    // case ResourceNodeType.Sequence:
+    // case ResourceNodeType.Synonym:
+    // case ResourceNodeType.PublicSynonym:
+    // case ResourceNodeType.MaterializedView:
+    // case ResourceNodeType.ExternalTable:
+    // case ResourceNodeType.ExternalResource:
   }
   return isSupport;
 };
@@ -490,8 +517,130 @@ const openGlobalSearch = (node: TreeDataNode) => {
       };
       break;
     }
+    // 数据库子节点的Root节点，定位到对应的数据库
+    case ResourceNodeType.TableRoot:
+    case ResourceNodeType.ViewRoot:
+    case ResourceNodeType.FunctionRoot:
+    case ResourceNodeType.ProcedureRoot:
+    case ResourceNodeType.PackageRoot:
+    case ResourceNodeType.TriggerRoot:
+    case ResourceNodeType.TypeRoot:
+    case ResourceNodeType.SequenceRoot:
+    case ResourceNodeType.SynonymRoot:
+    case ResourceNodeType.PublicSynonymRoot:
+    case ResourceNodeType.MaterializedViewRoot:
+    case ResourceNodeType.ExternalTableRoot:
+    case ResourceNodeType.ExternalResourceRoot: {
+      // 从key中解析数据库ID (格式: ${databaseId}-${dbName}-${type})
+      const databaseId = node.data?.id;
+      if (databaseId) {
+        params = {
+          initStatus: SearchStatus.databaseforObject,
+          databaseId: databaseId,
+        };
+      }
+      break;
+    }
+    // 具体的资源节点，定位到对应的数据库并预填搜索关键词和activeKey
+    case ResourceNodeType.Table:
+    case ResourceNodeType.ExternalTable: {
+      // 从key中解析数据库ID (格式: ${databaseId}-${dbName}-table-${tableName})
+      const keyParts = (node.key as string).split('-');
+      const databaseId = Number(keyParts[0]);
+      const tableName = node.data?.info?.tableName || node.title;
+      if (databaseId) {
+        params = {
+          initStatus: SearchStatus.databaseforObject,
+          databaseId: databaseId,
+          initSearchKey: tableName,
+          activeKey:
+            node.type === ResourceNodeType.ExternalTable
+              ? DbObjectType.external_table
+              : DbObjectType.table,
+        };
+      }
+      break;
+    }
+    case ResourceNodeType.View:
+    case ResourceNodeType.MaterializedView: {
+      const keyParts = (node.key as string).split('-');
+      const databaseId = Number(keyParts[0]);
+      const viewName = node.data?.viewName || node.title;
+      if (databaseId) {
+        params = {
+          initStatus: SearchStatus.databaseforObject,
+          databaseId: databaseId,
+          initSearchKey: viewName,
+          activeKey:
+            node.type === ResourceNodeType.MaterializedView
+              ? DbObjectType.materialized_view
+              : DbObjectType.view,
+        };
+      }
+      break;
+    }
+    case ResourceNodeType.Function: {
+      const keyParts = (node.key as string).split('-');
+      const databaseId = Number(keyParts[0]);
+      const funcName = node.data?.funName || node.title;
+      if (databaseId) {
+        params = {
+          initStatus: SearchStatus.databaseforObject,
+          databaseId: databaseId,
+          initSearchKey: funcName,
+          activeKey: DbObjectType.function,
+        };
+      }
+      break;
+    }
+    case ResourceNodeType.Procedure: {
+      const keyParts = (node.key as string).split('-');
+      const databaseId = Number(keyParts[0]);
+      const procName = node.data?.proName || node.title;
+      if (databaseId) {
+        params = {
+          initStatus: SearchStatus.databaseforObject,
+          databaseId: databaseId,
+          initSearchKey: procName,
+          activeKey: DbObjectType.procedure,
+        };
+      }
+      break;
+    }
+    case ResourceNodeType.Package:
+    case ResourceNodeType.Trigger:
+    case ResourceNodeType.Type:
+    case ResourceNodeType.Sequence:
+    case ResourceNodeType.Synonym:
+    case ResourceNodeType.PublicSynonym:
+    case ResourceNodeType.ExternalResource: {
+      const keyParts = (node.key as string).split('-');
+      const databaseId = Number(keyParts[0]);
+      const objectName = node.title;
+      // 根据节点类型映射到DbObjectType
+      const objectTypeMap = {
+        [ResourceNodeType.Package]: DbObjectType.package,
+        [ResourceNodeType.Trigger]: DbObjectType.trigger,
+        [ResourceNodeType.Type]: DbObjectType.type,
+        [ResourceNodeType.Sequence]: DbObjectType.sequence,
+        [ResourceNodeType.Synonym]: DbObjectType.synonym,
+        [ResourceNodeType.PublicSynonym]: DbObjectType.synonym,
+        [ResourceNodeType.ExternalResource]: DbObjectType.external_resource,
+      };
+      if (databaseId) {
+        params = {
+          initStatus: SearchStatus.databaseforObject,
+          databaseId: databaseId,
+          initSearchKey: objectName,
+          activeKey: objectTypeMap[node.type],
+        };
+      }
+      break;
+    }
   }
-  modalStore.changeDatabaseSearchModalVisible(true, params);
+  if (params) {
+    modalStore.changeDatabaseSearchModalVisible(true, params);
+  }
 };
 
 export {

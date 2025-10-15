@@ -7,11 +7,17 @@ import { openNewSQLPage } from '@/store/helper/page';
 import tracert from '@/util/tracert';
 import { formatMessage } from '@/util/intl';
 import { downloadPLDDL } from '@/util/sqlExport';
-import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  QuestionCircleFilled,
+  ReloadOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
 import { ResourceNodeType } from '../../type';
 import { hasTableChangePermission, hasTableExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
+import { openGlobalSearch } from '../../const';
 import { openMaterializedViewViewPage, openCreateMaterializedViewPage } from '@/store/helper/page';
 import { getMaterializedView } from '@/common/network/materializedView/index';
 import modalStore from '@/store/modal';
@@ -30,6 +36,20 @@ export const materializedViewConfig: Partial<Record<ResourceNodeType, IMenuItemC
       actionType: actionTypes.create,
       run(session, node) {
         openCreateMaterializedViewPage(session?.odcDatabase?.id);
+      },
+    },
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.materializedView.GlobalSearch',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
       },
     },
     {
@@ -61,6 +81,20 @@ export const materializedViewConfig: Partial<Record<ResourceNodeType, IMenuItemC
           session?.odcDatabase?.id,
           session?.odcDatabase?.name,
         );
+      },
+    },
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.materializedView.GlobalSearch',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
       },
     },
     {
