@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { formatMessage } from '@/util/intl';
 import { toInteger } from 'lodash';
-import { Badge, Button, Dropdown, Menu, Popover, Modal, message } from 'antd';
+import { Badge, Button, Dropdown, Menu, Popover, Modal, message, Tooltip } from 'antd';
 import styles from './index.less';
 import treeStyles from '../index.less';
 import ConnectionPopover from '@/component/ConnectionPopover';
@@ -217,20 +217,22 @@ const DataSourceNodeMenu = (props: IProps) => {
           {dataSource && (
             <div className={treeStyles.menuActions}>
               {!isConnectTypeBeFileSystemGroup(dataSource.type) && (
-                <SearchOutlined
-                  className={treeStyles.menuActions}
-                  style={
-                    userStore.isPrivateSpace()
-                      ? {
-                          marginRight: '12px',
-                        }
-                      : {}
-                  }
-                  onClick={(e) => {
-                    openGlobalSearch(node);
-                    e.stopPropagation();
-                  }}
-                />
+                <Tooltip title="全局搜索" placement="left">
+                  <SearchOutlined
+                    className={treeStyles.menuActions}
+                    style={
+                      userStore.isPrivateSpace()
+                        ? {
+                            marginRight: '12px',
+                          }
+                        : {}
+                    }
+                    onClick={(e) => {
+                      openGlobalSearch(node);
+                      e.stopPropagation();
+                    }}
+                  />
+                </Tooltip>
               )}
               {userStore.isPrivateSpace() && (
                 <Action.Group ellipsisIcon="vertical" size={0} destroyOnHidden>
