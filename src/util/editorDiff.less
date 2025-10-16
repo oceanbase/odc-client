@@ -44,7 +44,17 @@
 /* 删除行的 viewZone 样式 */
 .editor-diff-deleted-zone {
   background-color: #ffd6d6 !important;
-  font-family: monospace !important;
   width: 100% !important;
   box-sizing: border-box !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-diff-deleted-line {
+  display: flex;
+  align-items: center;
+}
+
+.deleted-line-content {
+  white-space: pre;
 }

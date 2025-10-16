@@ -158,6 +158,7 @@ const MonacoEditor: React.FC<IProps> = function (props) {
           delimiter() {
             return sessionRef.current?.params?.delimiter;
           },
+          editor: editorRef.current,
         },
         () => sessionRef.current,
       ),

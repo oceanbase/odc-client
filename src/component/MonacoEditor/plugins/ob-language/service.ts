@@ -32,7 +32,7 @@ function hasConnect(session: SessionStore) {
 let completionToken: number = 0;
 
 export function getModelService(
-  { modelId, delimiter },
+  { modelId, delimiter, editor },
   sessionFunc: () => SessionStore,
 ): IModelOptions {
   return {
@@ -74,6 +74,77 @@ export function getModelService(
           })
           .then((v) => {
             setting.isAIThinking = false;
+
+            // 当 AI 补全有返回值时，隐藏编辑器的建议提示框并标记状态
+            if (v && v.trim() && editor) {
+              try {
+                editor.trigger('ai-inline-completion', 'hideSuggestWidget', null);
+              } catch (e) {
+                // 忽略错误，建议框可能本来就不可见
+              }
+
+              // 标记有未接受的 AI 补全内容
+              setting.hasUnacceptedAICompletion = true;
+
+              // 监听编辑器事件，用于重置状态
+              const disposables: Array<{ dispose: () => void } | null> = [];
+              let isDisposed = false;
+
+              const resetState = () => {
+                if (isDisposed) return;
+                isDisposed = true;
+
+                setTimeout(() => {
+                  setting.hasUnacceptedAICompletion = false;
+                  // 清理所有事件监听器
+                  disposables.forEach((d) => {
+                    try {
+                      d?.dispose?.();
+                    } catch (e) {
+                      // 忽略清理错误
+                    }
+                  });
+                  disposables.length = 0;
+                }, 100);
+              };
+
+              try {
+                // 监听内容变化（用户接受补全或输入其他内容）
+                const contentChangeDisposable = editor.onDidChangeModelContent(() => {
+                  resetState();
+                });
+                if (contentChangeDisposable) {
+                  disposables.push(contentChangeDisposable);
+                }
+
+                // 监听光标移动（用户可能按 Esc 拒绝或移动到其他位置）
+                const cursorChangeDisposable = editor.onDidChangeCursorPosition(() => {
+                  resetState();
+                });
+                if (cursorChangeDisposable) {
+                  disposables.push(cursorChangeDisposable);
+                }
+
+                // 监听编辑器失焦
+                const blurDisposable = editor.onDidBlurEditorWidget(() => {
+                  resetState();
+                });
+                if (blurDisposable) {
+                  disposables.push(blurDisposable);
+                }
+              } catch (e) {
+                // 如果注册监听器失败，直接重置状态
+                console.error('Failed to register editor listeners:', e);
+                isDisposed = true;
+                setting.hasUnacceptedAICompletion = false;
+              }
+
+              // 10 秒后自动重置（防止状态卡住）
+              setTimeout(() => {
+                resetState();
+              }, 10000);
+            }
+
             return v;
           })
           .catch((e) => {
