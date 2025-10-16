@@ -89,7 +89,7 @@ export const ConsoleTextConfig = {
       '待调度',
       formatMessage({ id: 'src.page.Console.095A8212', defaultMessage: '执行中' }),
       formatMessage({ id: 'src.page.Console.4D58E4BD', defaultMessage: '执行成功' }),
-      formatMessage({ id: 'src.page.Console.0DE02703', defaultMessage: '执行失败' }),
+      '执行中断',
       formatMessage({ id: 'src.page.Console.32807E76', defaultMessage: '其他' }),
     ],
     taskStatus: [
