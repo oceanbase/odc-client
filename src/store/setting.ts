@@ -117,6 +117,12 @@ export class SettingStore {
   public isAIThinking: boolean = false;
 
   /**
+   * 是否有未被接受的 AI 补全内容
+   */
+  @observable
+  public hasUnacceptedAICompletion: boolean = false;
+
+  /**
    * 多库变更
    */
   @observable

@@ -321,6 +321,7 @@ export class EditorDiffDecorator {
       this.editor.changeViewZones((changeAccessor) => {
         const domNode = document.createElement('div');
         domNode.className = 'editor-diff-deleted-zone';
+        this.editor.applyFontInfo(domNode);
 
         lines.forEach((line) => {
           const lineElement = document.createElement('div');
@@ -334,8 +335,7 @@ export class EditorDiffDecorator {
           lineElement.appendChild(contentEl);
           domNode.appendChild(lineElement);
         });
-        const linesLen = lines.length;
-        const heightInLines = linesLen > 1 ? linesLen + (linesLen - 1) * 0.15 : linesLen;
+        const heightInLines = lines.length;
 
         const viewZoneId = changeAccessor.addZone({
           afterLineNumber: lineNumber - 1,

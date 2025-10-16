@@ -53,6 +53,7 @@ export function addAIHint(editor: IEditor) {
         this.domNode.style.color = '#C1CBE0';
         this.domNode.style.pointerEvents = 'none';
         this.domNode.style.fontStyle = 'italic';
+        editor.applyFontInfo(this.domNode);
       }
       return this.domNode;
     },
@@ -67,6 +68,15 @@ export function addAIHint(editor: IEditor) {
     const shouldShowHint = setting.AIConfig?.copilotEnabled;
 
     if (!shouldShowHint) {
+      if (isWidgetVisible) {
+        editor.removeContentWidget(hintWidget);
+        isWidgetVisible = false;
+      }
+      return;
+    }
+
+    // 未接受的 AI 补全内容时，隐藏提示（避免与 AI 补全内容重叠）
+    if (setting.hasUnacceptedAICompletion) {
       if (isWidgetVisible) {
         editor.removeContentWidget(hintWidget);
         isWidgetVisible = false;
@@ -119,11 +129,13 @@ export function addAIHint(editor: IEditor) {
     editor.onDidFocusEditorWidget(updateHint),
     editor.onDidBlurEditorWidget(updateHint),
     editor.onDidChangeModelContent(updateHint),
-    // 响应 AI 配置变化
+    // 响应 AI 配置变化、思考状态和补全状态
     reaction(
       () => ({
         aiEnabled: setting.AIEnabled,
         copilotEnabled: setting.AIConfig?.copilotEnabled,
+        isAIThinking: setting.isAIThinking,
+        hasUnacceptedAICompletion: setting.hasUnacceptedAICompletion,
       }),
       updateHint,
     ),
@@ -576,46 +588,19 @@ export function addAIAction(
       ? Math.min(selection.startLineNumber, selection.endLineNumber)
       : editor.getPosition()?.lineNumber;
     let viewZoneId = null;
+    const dom = document.createElement('div');
     editor.changeViewZones(function (changeAccessor) {
-      let domNode = document.createElement('div');
       viewZoneId = changeAccessor.addZone({
         afterLineNumber: begin - 1,
         heightInPx: 110,
-        domNode: domNode,
+        domNode: dom,
       });
     });
-    const dom = document.createElement('div');
-    let contentWidget = {
-      domNode: (function () {
-        const id = generateUniqKey();
-        let domNode = dom;
-        domNode.id = id;
-        domNode.style.height = '110px';
-        return domNode;
-      })(),
-      getId: function () {
-        return 'my.content.widget';
-      },
-      getDomNode: function () {
-        return this.domNode;
-      },
-      getPosition: function () {
-        return {
-          position: {
-            lineNumber: begin,
-            column: 0,
-          },
-          preference: [monaco.editor.ContentWidgetPositionPreference.ABOVE],
-        };
-      },
-    };
-    editor.addContentWidget(contentWidget);
     const root = { unmount: () => {} };
     let dispose: monaco.IDisposable;
     inlineChatDispose = () => {
       root?.unmount?.();
       dispose?.dispose?.();
-      editor.removeContentWidget(contentWidget);
       editor.changeViewZones(function (changeAccessor) {
         changeAccessor.removeZone(viewZoneId);
       });
@@ -628,6 +613,8 @@ export function addAIAction(
           height: 100,
           display: 'flex',
           alignItems: 'center',
+          position: 'relative',
+          zIndex: 100,
         }}
       >
         <InlineChat

@@ -85,10 +85,18 @@ async function fetchPostSSE(url, data, options: { headers?: Record<string, strin
       for (const event of events) {
         if (event.trim()) {
           const eventData = processSSEEvent(event);
-          if (eventData && eventData.data) {
+          if (eventData && eventData.data !== undefined && eventData.data !== null) {
             accumulatedContent += eventData.data;
           }
         }
+      }
+    }
+
+    // 处理 buffer 中剩余的最后一个事件
+    if (buffer.trim()) {
+      const eventData = processSSEEvent(buffer);
+      if (eventData && eventData.data !== undefined && eventData.data !== null) {
+        accumulatedContent += eventData.data;
       }
     }
   } catch (error) {
@@ -108,25 +116,46 @@ function processSSEEvent(rawEvent) {
 
   for (const line of rawEvent.split('\n')) {
     const [field, ...valueParts] = line.split(':');
-    const value = JSON.parse(valueParts.join(':').trim());
-    if (value.status === ESseEventStatus.FAILED) {
-      message.error(value.errorMessage);
-      return;
+    const valueStr = valueParts.join(':').trim();
+
+    // 跳过空行
+    if (!valueStr) {
+      continue;
     }
-    if (value.status === ESseEventStatus.COMPLETED && !value.content) {
-      return;
-    }
-    switch (field) {
-      case 'event':
-        event.type = value;
-        break;
-      case 'data':
-        event.data = value.content;
-        break;
-      case 'id':
-        event.id = value;
-        break;
-      // 可以处理其他字段如 retry
+
+    try {
+      const value = JSON.parse(valueStr);
+
+      // 处理错误状态
+      if (value.status === ESseEventStatus.FAILED) {
+        message.error(value.errorMessage);
+        return event; // 返回空 event 而不是 undefined
+      }
+
+      // 处理完成状态 - 即使没有 content 也应该返回 event
+      if (value.status === ESseEventStatus.COMPLETED && !value.content) {
+        return event; // 返回当前已累积的 event
+      }
+
+      switch (field) {
+        case 'event':
+          event.type = value;
+          break;
+        case 'data':
+          // 确保 content 存在才赋值
+          if (value.content !== undefined && value.content !== null) {
+            event.data = value.content;
+          }
+          break;
+        case 'id':
+          event.id = value;
+          break;
+        // 可以处理其他字段如 retry
+      }
+    } catch (error) {
+      console.error('Failed to parse SSE event data:', valueStr, error);
+      // 解析失败时继续处理下一行
+      continue;
     }
   }
 
