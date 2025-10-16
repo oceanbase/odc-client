@@ -11,7 +11,7 @@ const Tabs = () => {
   const { params, setParams } = context;
 
   const handleSelect = (e) => {
-    setParams({ tab: e.target.value as TaskTab });
+    setParams({ searchValue: undefined, searchType: undefined, tab: e.target.value as TaskTab });
   };
 
   return (

@@ -357,12 +357,6 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       defaultMessage:
         '当前预创建分区数量过小，若调度失败恐影响业务运行，建议调整预创建分区数量至2个及以上。',
     });
-
-    const isBatchMessage = formatMessage({
-      id: 'odc.components.PartitionPolicyTable.configModal.BatchSettingWillOverwriteThe',
-      defaultMessage: '批量设置将覆盖原有的策略，是否确定设置？',
-    });
-
     const renderConfirmButton = () => {
       return (
         <Button type="primary" onClick={handleOk}>
@@ -376,7 +370,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
       );
     };
 
-    if (isBatch || isSingleGenerateCount) {
+    if (isSingleGenerateCount) {
       return (
         <Popconfirm
           styles={{
@@ -384,16 +378,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
               width: '216px',
             },
           }}
-          title={
-            isSingleGenerateCount ? (
-              <>
-                <div>{isSingleGenerateCountMessage}</div>
-                <div>{isBatchMessage}</div>
-              </>
-            ) : (
-              isBatchMessage
-            )
-          } /*批量设置将覆盖原有的策略，是否确定设置？*/
+          title={<div>{isSingleGenerateCountMessage}</div>}
           onConfirm={handleOk}
           okText={formatMessage({
             id: 'odc.components.PartitionPolicyTable.configModal.Ok',
@@ -404,7 +389,7 @@ const ConfigDrawer: React.FC<IProps> = (props) => {
             defaultMessage: '返回',
           })} /*返回*/
         >
-          <Button type="primary">
+          <Button type="primary" onClick={handleOk}>
             {
               formatMessage({
                 id: 'odc.components.PartitionPolicyTable.configModal.Ok',

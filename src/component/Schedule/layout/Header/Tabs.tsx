@@ -9,7 +9,11 @@ const Tabs = () => {
   const { params, setParams } = context || {};
 
   const handleSelect = (e) => {
-    setParams?.({ tab: e.target.value as ScheduleTab });
+    setParams?.({
+      searchValue: undefined,
+      searchType: undefined,
+      tab: e.target.value as ScheduleTab,
+    });
   };
 
   return (

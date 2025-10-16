@@ -37,14 +37,14 @@ const Filter: React.FC<IProps> = () => {
     );
   };
 
-  const isActive = useMemo(() => {
+  const getisActive = () => {
     return (
       Boolean(taskStatus.length) ||
       Boolean(projectId.length) ||
       Boolean(taskTypes.length) ||
       timeRange !== 7
     );
-  }, [taskStatus.length, projectId.length, taskTypes.length, timeRange]);
+  };
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -94,7 +94,7 @@ const Filter: React.FC<IProps> = () => {
   }, [taskStatus, tab]);
 
   const projectTipContent = useMemo(() => {
-    if (!projectId.length) return null;
+    if (!projectId?.length) return null;
     return (
       <div>
         <div>所属项目：</div>
@@ -173,7 +173,7 @@ const Filter: React.FC<IProps> = () => {
       onOpenChange={handleOpenChange}
       trigger="click"
     >
-      <FilterIcon isActive={isActive} border>
+      <FilterIcon isActive={getisActive()} border>
         <Tooltip title={open ? undefined : tipContent} open={!open && hover}>
           <span onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
             <FilterOutlined />

@@ -125,7 +125,7 @@ export const getDefaultScheduleParam: (mode: SchedulePageMode) => IScheduleParam
     timeRange:
       isString(prevParams?.timeRange) && !!prevParams?.timeRange
         ? JSON.parse(prevParams?.timeRange)
-        : 7,
+        : 'ALL',
     executeDate: [undefined, undefined],
   };
   if (isString(prevParams?.executeDate) && !!prevParams?.executeDate) {
@@ -164,7 +164,7 @@ export const getDefaultSubTaskParam: (mode: SchedulePageMode) => ISubTaskParam =
     timeRange:
       isString(prevParams?.timeRange) && !!prevParams?.timeRange
         ? JSON.parse(prevParams?.timeRange)
-        : 'ALL',
+        : 7,
     executeDate: [undefined, undefined],
   };
   if (isString(prevParams?.executeDate) && !!prevParams?.executeDate) {
