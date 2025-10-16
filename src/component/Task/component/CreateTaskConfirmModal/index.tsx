@@ -13,6 +13,8 @@ interface IProps {
   isSchedule?: boolean;
 }
 
+export const MaximumCharacterLength = 200;
+
 const Message = {
   task: {
     title: '提交工单',
@@ -73,7 +75,7 @@ const CreateTaskConfirmModal: React.FC<IProps> = ({
           name={'Name'}
           label={info?.label}
         >
-          <Input maxLength={200} showCount />
+          <Input maxLength={MaximumCharacterLength} showCount />
         </Form.Item>
       </Form>
     </Modal>

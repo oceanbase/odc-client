@@ -292,7 +292,14 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
         break;
       }
       case ScheduleType.PARTITION_PLAN: {
-        await _handleClonePartitionPlan();
+        scheduleStore.setPartitionPlanData(true, mode, {
+          id: schedule?.scheduleId,
+          databaseId:
+            schedule?.attributes?.databaseInfo?.id ||
+            (schedule?.parameters as IPartitionPlan)?.databaseId,
+          type: 'RETRY',
+          projectId,
+        });
         break;
       }
       case ScheduleType.DATA_DELETE: {
@@ -303,57 +310,6 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
         });
         break;
       }
-    }
-  };
-
-  const _handleClonePartitionPlan = async () => {
-    const session = await sessionManagerStore.createSession(
-      null,
-      schedule?.attributes?.databaseInfo?.id ||
-        (schedule?.parameters as IPartitionPlan)?.databaseId,
-    );
-    let res: IResponseData<IPartitionPlanTable>;
-    if (session !== 'NotFound') {
-      res = await getPartitionPlanTables(
-        (session as SessionStore)?.sessionId,
-        schedule?.attributes?.databaseInfo?.id ||
-          (schedule?.parameters as IPartitionPlan)?.databaseId,
-      );
-    }
-
-    const hasPartitionPlanTableConfigs = res?.contents?.filter(
-      (item) => item?.containsCreateStrategy || item?.containsDropStrategy,
-    );
-    if (hasPartitionPlanTableConfigs?.length) {
-      const count = hasPartitionPlanTableConfigs?.length;
-      Modal.confirm({
-        title: `当前作业中有 ${count} 张表存在有效的分区策略，仅克隆未配置表的分区策略`,
-        cancelText: formatMessage({
-          id: 'odc.TaskManagePage.component.TaskTools.Cancel',
-          defaultMessage: '取消',
-        }),
-        okText: '确认',
-        centered: true,
-        onOk: async () => {
-          scheduleStore.setPartitionPlanData(true, mode, {
-            id: schedule?.scheduleId,
-            databaseId:
-              schedule?.attributes?.databaseInfo?.id ||
-              (schedule?.parameters as IPartitionPlan)?.databaseId,
-            type: 'RETRY',
-            projectId,
-          });
-        },
-      });
-    } else {
-      scheduleStore.setPartitionPlanData(true, mode, {
-        id: schedule?.scheduleId,
-        databaseId:
-          schedule?.attributes?.databaseInfo?.id ||
-          (schedule?.parameters as IPartitionPlan)?.databaseId,
-        type: 'RETRY',
-        projectId,
-      });
     }
   };
 

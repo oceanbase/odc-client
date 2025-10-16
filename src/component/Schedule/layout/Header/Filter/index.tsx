@@ -63,7 +63,7 @@ const Filter: React.FC = () => {
   };
 
   /* 作业视角、执行视角的高亮条件 */
-  const isActive = useMemo(() => {
+  const getIsActive = () => {
     let _isActive = false;
     if (isScheduleView) {
       if (tab === ScheduleTab.approveByCurrentUser) {
@@ -88,18 +88,7 @@ const Filter: React.FC = () => {
         subTaskTimeRange !== 7;
     }
     return _isActive;
-  }, [
-    status?.length,
-    projectIds?.length,
-    type?.length,
-    isScheduleView,
-    subTaskStatus?.length,
-    approveStatus?.length,
-    subTaskProjectIds.length,
-    subTaskType?.length,
-    timeRange,
-    subTaskTimeRange,
-  ]);
+  };
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -111,7 +100,7 @@ const Filter: React.FC = () => {
 
   const typeTipContent = useMemo(() => {
     const _type = isScheduleView ? type : subTaskType;
-    if (!_type || !isAll) return null;
+    if (!_type?.length || !isAll) return null;
     return (
       <div>
         <div>作业类型：</div>
@@ -138,7 +127,7 @@ const Filter: React.FC = () => {
         </div>
       </>
     );
-  }, [projectIds, subTaskProjectIds, isScheduleView]);
+  }, [projectIds, subTaskProjectIds, isScheduleView, projectList]);
 
   const statusTipContent = useMemo(() => {
     if (status?.length === 0) return null;
@@ -266,7 +255,7 @@ const Filter: React.FC = () => {
       onOpenChange={handleOpenChange}
       trigger="click"
     >
-      <FilterIcon isActive={isActive} border>
+      <FilterIcon isActive={getIsActive()} border>
         <Tooltip title={open ? undefined : tipContent()} open={!open && hover}>
           <span onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
             <FilterOutlined />

@@ -2,7 +2,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import type { BaseSelectRef } from 'rc-select';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import { AutoComplete, Input, Tooltip } from 'antd';
-import React, { forwardRef, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import { formatMessage } from '@/util/intl';
 
 const RemoveSplitInput = forwardRef(function RemoveSplitInput(
@@ -48,6 +48,14 @@ const InputSelect: React.FC<InputSelectProps> = (props) => {
   const ref = useRef<BaseSelectRef>(null);
   const { onSelect, selectTypeOptions = [], searchValue, searchType, style } = props;
   const [value, setValue] = useState(searchValue ? `${searchValue}${splitKey}${searchType}` : '');
+
+  useEffect(() => {
+    setValue(searchValue ? `${searchValue}${splitKey}${searchType}` : '');
+    if (!searchValue) {
+      setIsEmpty(true);
+      setForceVisible(false);
+    }
+  }, [searchValue, searchType]);
 
   const getOptions = (value) => {
     if (!value) {

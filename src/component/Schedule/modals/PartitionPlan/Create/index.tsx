@@ -2,7 +2,6 @@ import { getPartitionPlanTables } from '@/common/network/task';
 import { createSchedule, updateSchedule, getScheduleDetail } from '@/common/network/schedule';
 import Crontab from '@/component/Crontab';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
-import { convertCronToMinutes } from '@/component/Crontab/utils';
 import { validateCrontabInterval } from '@/util/schedule';
 import FormItemPanel from '@/component/FormItemPanel';
 import {
@@ -48,7 +47,9 @@ import { useRequest } from 'ahooks';
 import { rules } from './const';
 import { Rule } from 'antd/es/form';
 import AnchorContainer from '@/component/AnchorContainer';
-import CreateTaskConfirmModal from '@/component/Task/component/CreateTaskConfirmModal';
+import CreateTaskConfirmModal, {
+  MaximumCharacterLength,
+} from '@/component/Task/component/CreateTaskConfirmModal';
 import { ScheduleStore } from '@/store/schedule';
 import {
   IScheduleRecord,
@@ -63,7 +64,7 @@ import { PageStore } from '@/store/page';
 import { SchedulePageMode } from '@/component/Schedule/interface';
 import { openSchedulesPage } from '@/store/helper/page';
 import SchduleExecutionMethodForm from '@/component/Schedule/components/SchduleExecutionMethodForm';
-import { getInitScheduleName } from '@/component/Task/component/CreateTaskConfirmModal/helper';
+import { safeTruncateString } from '@/util/stringTruncate';
 const { Paragraph, Text } = Typography;
 
 const historyPartitionKeyInvokers = [
@@ -742,6 +743,29 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
     setTableConfigs(getCreatedTableConfigs(configs));
   };
 
+  const getPartitionPlanInitScheduleName = () => {
+    let validTableConfigsName: string[] = [];
+    if (isEdit) {
+      validTableConfigsName = tableConfigs
+        ?.filter((config) => config?.strategies?.length)
+        ?.map((config) => config?.tableName);
+    } else {
+      validTableConfigsName = tableConfigs
+        ?.filter(
+          (config) =>
+            config?.strategies?.length &&
+            !config.containsDropStrategy &&
+            !config.containsCreateStrategy,
+        )
+        ?.map((config) => config?.tableName);
+    }
+    let scheduleName = `[${createScheduleDatabase?.environment?.name}]${createScheduleDatabase?.name}_`;
+    validTableConfigsName?.forEach((name) => {
+      scheduleName = scheduleName + '[' + name + ']';
+    });
+    return safeTruncateString(MaximumCharacterLength, scheduleName);
+  };
+
   return (
     <div
       style={{
@@ -972,7 +996,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
       </div>
       <CreateTaskConfirmModal
         database={createScheduleDatabase}
-        initName={getInitScheduleName(form.getFieldValue('scheduleName'), partitionPlanData?.type)}
+        initName={getPartitionPlanInitScheduleName()}
         open={open}
         isSchedule
         setOpen={setOpen}
