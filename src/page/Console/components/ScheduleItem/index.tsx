@@ -10,7 +10,7 @@ import { TaskExecStrategy, TaskStatus, TaskType } from '@/d.ts';
 import { Divider } from 'antd';
 import { IStat } from '@/d.ts';
 import { ScheduleStatus, ScheduleType } from '@/d.ts/schedule';
-import { Perspective } from '@/component/Schedule/interface';
+import { Perspective, ScheduleTab } from '@/component/Schedule/interface';
 import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
 import dayjs, { Dayjs } from 'dayjs';
 import { TaskTab } from '@/component/Task/interface';
@@ -43,13 +43,18 @@ const ScheduleItem = ({
   const buildNavigateUrlWithFilters = (baseUrl: string) => {
     const params = new URLSearchParams(baseUrl.split('?')[1] || '');
 
-    // Add time filter
-    if (timeValue) {
+    // Add time filter (only if not already set in URL)
+    if (!params.has('timeValue') && timeValue) {
       params.set('timeValue', String(timeValue));
     }
 
-    // Add custom date range if applicable
-    if (String(timeValue) === 'custom' && dateValue?.[0] && dateValue?.[1]) {
+    // Add custom date range if applicable (only if timeValue not already in URL)
+    if (
+      !params.has('timeValue') &&
+      String(timeValue) === 'custom' &&
+      dateValue?.[0] &&
+      dateValue?.[1]
+    ) {
       params.set('startTime', String(dateValue[0].valueOf()));
       params.set('endTime', String(dateValue[1].valueOf()));
     }
@@ -76,10 +81,10 @@ const ScheduleItem = ({
       <div className={styles.counters}>
         <CounterCard
           onClick={() => {
-            // 跳转到调度管理页面，设置特定类型和已启用状态过滤
+            // 跳转到调度管理页面，设置特定类型和已启用状态过滤，定位到全局tab，时间选全部
             navigate(
               buildNavigateUrlWithFilters(
-                `/schedule?scheduleStatus=${ScheduleStatus.ENABLED}&scheduleType=${type}`,
+                `/schedule?scheduleStatus=${ScheduleStatus.ENABLED}&scheduleType=${type}&tab=${ScheduleTab.all}&timeValue=ALL`,
               ),
             );
           }}
@@ -108,21 +113,16 @@ const ScheduleItem = ({
         <CounterCard
           onClick={() => {
             // 跳转到调度管理页面的执行视角，并过滤执行失败的任务（包括FAILED、ABNORMAL、EXEC_TIMEOUT）
-            const failedStatuses = [
-              ScheduleTaskStatus.FAILED,
-              ScheduleTaskStatus.ABNORMAL,
-              ScheduleTaskStatus.EXEC_TIMEOUT,
-            ].join(',');
+            const failedStatuses = [ScheduleTaskStatus.FAILED, ScheduleTaskStatus.ABNORMAL].join(
+              ',',
+            );
             navigate(
               buildNavigateUrlWithFilters(
                 `/schedule?scheduleType=${type}&perspective=${Perspective.executionView}&subTaskStatus=${failedStatuses}&tab=${TaskTab.all}`,
               ),
             );
           }}
-          title={formatMessage({
-            id: 'src.page.Console.components.ScheduleItem.6F6BDC9E',
-            defaultMessage: '执行失败',
-          })}
+          title="执行中断"
           counter={EXECUTION_FAILURE || 0}
           status="failed"
         />

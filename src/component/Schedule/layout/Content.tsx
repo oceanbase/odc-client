@@ -419,7 +419,6 @@ const Content: React.FC<IProps> = (props) => {
       } else {
         newSubTaskParams.projectIds = [urlProjectId] as any;
       }
-      debugger;
     }
 
     setsubTaskParams(newSubTaskParams);
