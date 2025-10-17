@@ -23,21 +23,23 @@ import { UserStore } from '@/store/login';
 import { useLoop } from '@/util/hooks/useLoop';
 import { getLogicDatabaseChangeExecuteRecordList } from '@/common/network/logicalDatabase';
 import { CommonTableMode, ITableLoadOptions } from '@/component/CommonTable/interface';
+import { listDatabases } from '@/common/network/database';
+import { useRequest } from 'ahooks';
 const { Link } = Typography;
 
 interface IProps {
   task: TaskDetail<TaskRecordParameters>;
   userStore?: UserStore;
   theme?: string;
-  databaseList: IDatabase[];
 }
 const LogicDatabaseChangeExecute = (props: IProps) => {
-  const { task, databaseList } = props;
+  const { task } = props;
   const tableRef = useRef();
   const [subTasks, setSubTasks] = useState<ILogicDatabaseChangeExecuteRecord[]>([]);
   const [result, setResult] = useState<ILogicDatabaseChangeExecuteRecord>(null);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [listParams, setListParams] = useState<ITableLoadOptions>(null);
+  const [databaseList, setDatabaseList] = useState<IDatabase[]>([]);
   const [logicDatabaseExecuteRecordRes, setLogicDatabaseExecuteRecordRes] =
     useState<
       IResponseDataWithStats<
@@ -45,6 +47,29 @@ const LogicDatabaseChangeExecute = (props: IProps) => {
         LogicDatabaseChangeExecuteRecordStats
       >
     >();
+
+  const { run: fetchDatabaseList } = useRequest(listDatabases, {
+    manual: true,
+    defaultParams: [
+      {
+        projectId: task?.projectId,
+        page: 1,
+        size: 99999,
+      },
+    ],
+  });
+
+  const loadDatabaseList = async () => {
+    if (databaseList?.length) return databaseList;
+    const databaseRes = await fetchDatabaseList({
+      projectId: task?.projectId,
+      page: 1,
+      size: 99999,
+    });
+    setDatabaseList(databaseRes?.contents);
+    return databaseRes?.contents;
+  };
+
   const { loop: loadData, destory } = useLoop(() => {
     return async (params: {
       page: number;
@@ -52,15 +77,21 @@ const LogicDatabaseChangeExecute = (props: IProps) => {
       statuses?: string[];
       databaseKeyword?: string;
       datasourceKeyword?: string;
+      databaseList?: IDatabase[];
     }) => {
-      if (!params?.size) return;
       const rawData: ILogicDatabaseChangeExecuteRecord[] = [];
       const res = await getLogicDatabaseChangeExecuteRecordList({
         id: task.id,
-        ...params,
+        page: params?.page,
+        size: params?.size,
+        statuses: params?.statuses,
+        databaseKeyword: params?.databaseKeyword,
+        datasourceKeyword: params?.datasourceKeyword,
       });
       res?.contents?.forEach((item) => {
-        const physicalDatabase = databaseList?.find((i) => i?.id === item?.physicalDatabaseId);
+        const physicalDatabase = params?.databaseList?.find(
+          (i) => i?.id === item?.physicalDatabaseId,
+        );
         rawData.push({
           ...item,
           physicalDatabase: physicalDatabase,
@@ -115,9 +146,12 @@ const LogicDatabaseChangeExecute = (props: IProps) => {
   };
 
   const handleLoad = async (args?: ITableLoadOptions) => {
+    if (!args?.pageSize) return;
+    const _databaseList = await loadDatabaseList();
     loadData({
       page: 1,
       size: args?.pageSize,
+      databaseList: _databaseList,
     });
   };
 
@@ -128,13 +162,16 @@ const LogicDatabaseChangeExecute = (props: IProps) => {
   }, []);
 
   const handleChange = async (args?: ITableLoadOptions) => {
+    if (!args?.pageSize) return;
     setListParams(args);
+    const _databaseList = await loadDatabaseList();
     loadData({
       databaseKeyword: args?.filters?.physicalDatabase?.[0] || '',
       datasourceKeyword: args?.filters?.datasource?.[0] || '',
       statuses: args?.filters?.status || [],
       page: args?.pagination?.current || 1,
       size: args?.pageSize,
+      databaseList: _databaseList,
     });
   };
 

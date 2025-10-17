@@ -23,6 +23,8 @@ import SearchFilter from '@/component/SearchFilter';
 import { getStatusFilters } from '@/component/Task/component/TaskTable/utils';
 import { getMultipleAsyncExecuteRecordList, IResponseDataWithStats } from '@/common/network/task';
 import { MultipleAsyncExecuteRecordStats } from '@/d.ts';
+import { listDatabases } from '@/common/network/database';
+import { useRequest } from 'ahooks';
 
 interface MultipAsyncExecuteProps {
   taskStore?: TaskStore;
@@ -30,10 +32,9 @@ interface MultipAsyncExecuteProps {
   task: TaskDetail<TaskRecordParameters>;
   theme?: string;
   onReload: () => void;
-  databaseList: IDatabase[];
 }
 const MultipAsyncExecute: React.FC<MultipAsyncExecuteProps> = (props) => {
-  const { task, databaseList } = props;
+  const { task } = props;
   const [multipAsyncExecuteDetailDrawerVisible, setMultipAsyncExecuteDetailDrawerVisible] =
     useState<boolean>(false);
   const [multipAsyncExecuteRecord, setMultipAsyncExecuteRecord] =
@@ -50,10 +51,22 @@ const MultipAsyncExecute: React.FC<MultipAsyncExecuteProps> = (props) => {
   const taskStatusFilters = getStatusFilters(status);
   const columns = initColumns(listParams);
   const [loading, setLoading] = useState(false);
+  const [databaseList, setDatabaseList] = useState<IDatabase[]>([]);
   const handleMultipleAsyncOpen = async (record: IMultipleAsyncExecuteRecord) => {
     setMultipAsyncExecuteDetailDrawerVisible(true);
     setMultipAsyncExecuteRecord(record);
   };
+
+  const { run: fetchDatabaseList } = useRequest(listDatabases, {
+    manual: true,
+    defaultParams: [
+      {
+        projectId: task?.projectId,
+        page: 1,
+        size: 99999,
+      },
+    ],
+  });
 
   const filter2DArray = (arr: number[][], filter: (item: number) => boolean): number[][] => {
     return arr?.map((subArray) => subArray?.filter(filter));
@@ -69,6 +82,16 @@ const MultipAsyncExecute: React.FC<MultipAsyncExecuteProps> = (props) => {
       return;
     }
     setLoading(true);
+    let _databaseList = databaseList;
+    if (!_databaseList?.length) {
+      const databaseRes = await fetchDatabaseList({
+        projectId: task?.projectId,
+        page: 1,
+        size: 99999,
+      });
+      _databaseList = databaseRes?.contents;
+      setDatabaseList(_databaseList);
+    }
     const res = await getMultipleAsyncExecuteRecordList({
       id: task.id,
       page: params.page,
@@ -96,7 +119,7 @@ const MultipAsyncExecute: React.FC<MultipAsyncExecuteProps> = (props) => {
           rowSpan,
           needMerge,
           ...dbMap[_item_],
-          database: databaseList?.find((item) => item?.id === _item_),
+          database: _databaseList?.find((item) => item?.id === _item_),
         });
         rawCount++;
       });
