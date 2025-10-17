@@ -43,7 +43,6 @@ import ProjectSelectEmpty from '@/component/Empty/ProjectSelectEmpty';
 import { permissionOptions } from './utils';
 import { expireTimeOptions, rules } from './const';
 import { getExpireTime } from '@/component/Task/helper';
-import { useLoadProjects } from '@/component/Task/hooks';
 
 export * from './const';
 export * from './utils';
@@ -68,16 +67,21 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [showSelectTip, setShowSelectTip] = useState(false);
   const [showSelectLogicDBTip, setShowSelectLogicDBTip] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const { projectOptions, loadProjects } = useLoadProjects();
   const projectId = Form.useWatch('projectId', form);
-
+  const { run: getProjects, data: projects } = useRequest(listProjects, {
+    defaultParams: [null, null, null],
+  });
+  const projectOptions = projects?.contents?.map(({ name, id }) => ({
+    label: name,
+    value: id,
+  }));
   const disabledDate = (current) => {
     return current && current < dayjs().subtract(1, 'days').endOf('day');
   };
 
   useEffect(() => {
     if (applyDatabasePermissionVisible) {
-      loadProjects();
+      getProjects(null, null, null);
     }
   }, [applyDatabasePermissionVisible]);
   const handleFieldsChange = () => {
@@ -152,9 +156,6 @@ const CreateModal: React.FC<IProps> = (props) => {
   const loadEditData = async () => {
     const { task } = applyDatabasePermissionData;
     let tempProjectOptions = projectOptions;
-    if (tempProjectOptions?.length === 0) {
-      tempProjectOptions = await loadProjects();
-    }
     const {
       parameters: {
         project: { id: projectId },
