@@ -31,9 +31,10 @@ const ScheduleItem = ({
   selectedProjectId: number | undefined;
 }) => {
   const { count } = progress || {};
-  const { PENDING, EXECUTING, EXECUTION_FAILURE, EXECUTION_SUCCESS, OTHER, ENABLED } = count || {};
+  const { EXECUTION_TIMEOUT, EXECUTING, EXECUTION_FAILURE, EXECUTION_SUCCESS, OTHER, ENABLED } =
+    count || {};
   const totalCount =
-    (PENDING || 0) +
+    (EXECUTION_TIMEOUT || 0) +
     (EXECUTING || 0) +
     (EXECUTION_FAILURE || 0) +
     (EXECUTION_SUCCESS || 0) +

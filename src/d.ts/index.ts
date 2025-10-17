@@ -2755,7 +2755,7 @@ export interface IDatabaseHistoriesParam {
 
 export interface IStat {
   count: {
-    PENDING: number;
+    EXECUTION_TIMEOUT: number;
     EXECUTING: number;
     EXECUTION_FAILURE: number;
     EXECUTION_SUCCESS: number;
