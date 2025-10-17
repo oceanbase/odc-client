@@ -86,10 +86,10 @@ export const ConsoleTextConfig = {
   schdules: {
     keys: ['dataArchive', 'dataClear', 'partition', 'sqlPlan'],
     status: [
-      '待调度',
       formatMessage({ id: 'src.page.Console.095A8212', defaultMessage: '执行中' }),
       formatMessage({ id: 'src.page.Console.4D58E4BD', defaultMessage: '执行成功' }),
-      '执行中断',
+      '执行超时',
+      formatMessage({ id: 'src.page.Console.0DE02703', defaultMessage: '执行失败' }),
       formatMessage({ id: 'src.page.Console.32807E76', defaultMessage: '其他' }),
     ],
     taskStatus: [
@@ -108,8 +108,14 @@ export const ConsoleTextConfig = {
       'OTHER',
     ],
 
-    statusType: ['PENDING', 'EXECUTING', 'EXECUTION_SUCCESS', 'EXECUTION_FAILURE', 'OTHER'],
-    statusColor: ['#91d5ff', '#40a9ff', '#73d13d', '#ff6667', '#e0e0e0'],
+    statusType: [
+      'EXECUTING',
+      'EXECUTION_SUCCESS',
+      'EXECUTION_TIMEOUT',
+      'EXECUTION_FAILURE',
+      'OTHER',
+    ],
+    statusColor: ['#40a9ff', '#73d13d', '#ffc166', '#ff6667', '#e0e0e0'],
     scheduleTitle: [
       formatMessage({ id: 'src.page.Console.B92D6192', defaultMessage: '数据归档' }),
       formatMessage({ id: 'src.page.Console.E2F84D37', defaultMessage: '数据清理' }),
