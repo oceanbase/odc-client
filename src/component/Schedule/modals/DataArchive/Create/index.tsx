@@ -101,6 +101,7 @@ const defaultValue = {
   shardingStrategy: ShardingStrategy.MATCH,
   rowLimit: 1000,
   dataSizeLimit: 10,
+  createTargetTableIfNotExists: true,
 };
 
 interface IProps {
@@ -167,6 +168,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       dirtyRowAction,
       maxAllowedDirtyRowCount,
       fullDatabase,
+      createTargetTableIfNotExists,
     } = parameters;
     setEnablePartition(!!tables?.find((i) => i?.partitions?.length));
     setIsdeleteAfterMigration(deleteAfterMigration);
@@ -183,6 +185,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       tables,
       variables: getVariableValue(variables),
       archiveRange: fullDatabase ? IArchiveRange.ALL : IArchiveRange.PORTION,
+      createTargetTableIfNotExists,
       triggerStrategy,
       startAt: undefined,
       timeoutMillis: milliSecondsToHour(timeoutMillis),
@@ -332,6 +335,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           rowLimit,
           dataSizeLimit,
           timeoutMillis,
+          createTargetTableIfNotExists,
         } = values;
         const parameters: createDataArchiveParameters = {
           deleteAfterMigration,
@@ -355,6 +359,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               : tables,
           targetDataBaseId,
           timeoutMillis: hourToMilliSeconds(timeoutMillis),
+          createTargetTableIfNotExists,
           variables: getVariables(variables),
           sourceDatabaseId: databaseId,
           triggerConfig: {

@@ -231,8 +231,8 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
         <Descriptions.Item label={'通过全表扫描进行数据搜索'} span={1}>
           {parameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH ? '是' : '否'}
         </Descriptions.Item>
-        {/* <Descriptions.Item label={'目标表结构不存在时自动创建'} span={1}>
-          {parameters?.syncTableStructure?.length
+        <Descriptions.Item label={'目标表结构不存在时自动创建'} span={1}>
+          {parameters?.createTargetTableIfNotExists
             ? formatMessage({
                 id: 'src.component.Task.DataArchiveTask.DetailContent.FFC5907D',
                 defaultMessage: '是',
@@ -241,7 +241,7 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
                 id: 'src.component.Task.DataArchiveTask.DetailContent.855EA40A',
                 defaultMessage: '否',
               })}
-        </Descriptions.Item> */}
+        </Descriptions.Item>
         {parameters?.deleteAfterMigration ? (
           <Descriptions.Item
             label={formatMessage({
