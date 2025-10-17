@@ -467,12 +467,11 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
       params.createScheduleReq = data;
     }
     const res = await DmlPreCheck(params);
-    const errorList = res?.filter((item) => item.level === 'ERROR');
-    const warningList = res?.filter((item) => item.level === 'WARN');
-
-    if (!res?.length) {
+    const errorList = res?.filter((item) => item.level === 'ERROR') ?? [];
+    const warningList = res?.filter((item) => item.level === 'WARN') ?? [];
+    if (res && !res?.length) {
       message.success('预检查完成，暂时没有发现问题');
-    } else {
+    } else if (res && res?.length) {
       message.warning(
         `预检查完成，发现${warningList?.length}个警告，发现${errorList?.length}个错误。`,
       );

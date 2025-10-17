@@ -49,7 +49,6 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
     hasFlow,
     onLogTypeChange,
     onReload,
-    databaseList,
   } = props;
   let content = null;
 
@@ -87,9 +86,7 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
       content = <TaskRecord task={task} />;
       break;
     case TaskDetailType.PROGRESS:
-      content = (
-        <TaskProgress task={task} theme={theme} onReload={onReload} databaseList={databaseList} />
-      );
+      content = <TaskProgress task={task} theme={theme} onReload={onReload} />;
       break;
     default:
       break;
@@ -111,7 +108,6 @@ interface ICommonTaskDetailModalProps extends ITaskDetailModalProps {
     theme: string,
   ) => ITaskInfoProps['taskItems'];
   taskContent?: React.ReactNode;
-  databaseList?: IDatabase[];
 }
 const TaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) {
   const {
@@ -158,33 +154,6 @@ const TaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) 
     TaskType.APPLY_TABLE_PERMISSION,
     TaskType.LOGICAL_DATABASE_CHANGE,
   ].includes(task?.type);
-  const [databaseList, setDatabaseList] = useState<IDatabase[]>([]);
-
-  const { run: fetchDatabaseList } = useRequest(listDatabases, {
-    manual: true,
-    defaultParams: [
-      {
-        projectId: task?.projectId,
-        page: 1,
-        size: 99999,
-      },
-    ],
-  });
-
-  const handleFetchDatabaseList = async () => {
-    const res = await fetchDatabaseList({
-      projectId: task?.projectId,
-      page: 1,
-      size: 99999,
-    });
-    setDatabaseList(res?.contents);
-  };
-
-  useEffect(() => {
-    if (visible && task?.projectId) {
-      handleFetchDatabaseList();
-    }
-  }, [visible, task?.projectId]);
 
   return (
     <Drawer
@@ -284,7 +253,7 @@ const TaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) 
         </Radio.Group>
         <StatusLabel status={task?.status} progress={task?.progressPercentage} type={task?.type} />
       </div>
-      <TaskContent {...props} databaseList={databaseList} />
+      <TaskContent {...props} />
       <div className={styles.tools}>{taskTools}</div>
     </Drawer>
   );

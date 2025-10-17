@@ -30,21 +30,20 @@ interface IProps {
   task: TaskDetail<TaskRecordParameters>;
   theme?: string;
   onReload: () => void;
-  databaseList: IDatabase[];
 }
-const TaskProgress: React.FC<IProps> = (props) => {
+const TaskProgress: React.FC<IProps> = ({ task, theme, onReload }) => {
   let content = null;
-  switch (props?.task?.type) {
+  switch (task?.type) {
     case TaskType.MULTIPLE_ASYNC: {
-      content = <MultipAsyncExecute {...props} />;
+      content = <MultipAsyncExecute task={task} theme={theme} onReload={onReload} />;
       break;
     }
     case TaskType.ONLINE_SCHEMA_CHANGE: {
-      content = <OnlineSchemaChangeExecute {...props} />;
+      content = <OnlineSchemaChangeExecute task={task} theme={theme} />;
       break;
     }
     case TaskType.LOGICAL_DATABASE_CHANGE: {
-      content = <LogicDatabaseChangeExecute {...props} />;
+      content = <LogicDatabaseChangeExecute task={task} theme={theme} />;
       break;
     }
   }
