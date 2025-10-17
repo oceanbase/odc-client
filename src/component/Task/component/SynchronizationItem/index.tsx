@@ -11,18 +11,18 @@ interface IProps {
   targetDatabase?: IDatabase;
 }
 const SynchronizationItem: React.FC<IProps> = ({ form, targetDatabase }) => {
-  const [syncTableStructure, setSyncTableStructure] = useState<boolean>(false);
+  const [createTargetTableIfNotExists, setCreateTargetTableIfNotExists] = useState<boolean>(false);
 
-  const tempSyncTableStructure = Form.useWatch('syncTableStructure');
+  const tempCreateTargetTableIfNotExist = Form.useWatch('createTargetTableIfNotExists');
 
   useEffect(() => {
-    setSyncTableStructure(Boolean(form.getFieldValue('syncTableStructure')?.length));
-  }, [tempSyncTableStructure]);
+    setCreateTargetTableIfNotExists(Boolean(form.getFieldValue('createTargetTableIfNotExists')));
+  }, [tempCreateTargetTableIfNotExist]);
 
   return (
     <>
       <Form.Item
-        name="syncTableStructure"
+        name="createTargetTableIfNotExists"
         extra={'若目标数据库中不存在归档表，则根据源端数据库中的表结构自动创建'}
         style={{ marginBottom: 24 }}
       >
@@ -37,40 +37,16 @@ const SynchronizationItem: React.FC<IProps> = ({ form, targetDatabase }) => {
           }
         >
           <Checkbox
-            checked={syncTableStructure}
+            checked={createTargetTableIfNotExists}
             disabled={isConnectTypeBeFileSystemGroup(targetDatabase?.connectType)}
             onChange={(e) => {
-              setSyncTableStructure(e.target.checked);
-              if (e.target.checked) {
-                form.setFieldValue('syncTableStructure', [
-                  SyncTableStructureEnum.COLUMN,
-                  SyncTableStructureEnum.CONSTRAINT,
-                ]);
-              } else {
-                form.setFieldValue('syncTableStructure', undefined);
-              }
+              form.setFieldValue('createTargetTableIfNotExists', e.target.checked);
             }}
           >
             目标表结构不存在时自动创建
           </Checkbox>
         </Tooltip>
       </Form.Item>
-      {/* {syncTableStructure && (
-        <Space size={4} align="center">
-          <Form.Item
-            label={formatMessage({
-              id: 'src.component.Task.component.SynchronizationItem.ABA6445B',
-              defaultMessage: '同步范围',
-            })}
-            name="syncTableStructure"
-            initialValue={[SyncTableStructureEnum.COLUMN, SyncTableStructureEnum.CONSTRAINT]}
-            required
-            style={{ marginBottom: 24 }}
-          >
-            <Checkbox.Group options={SyncTableStructureOptions} />
-          </Form.Item>
-        </Space>
-      )} */}
     </>
   );
 };

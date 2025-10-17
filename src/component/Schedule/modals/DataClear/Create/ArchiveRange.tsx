@@ -65,7 +65,6 @@ export const CleanRangeTextMap: Record<IArchiveRange, string> = {
 const ArchiveRange: React.FC<IProps> = (props) => {
   const { tables: propsTables, needCheckBeforeDelete = false, checkPartition, databaseId } = props;
   const form = Form.useFormInstance();
-  const [enablePartition, setEnablePartition] = useState<boolean>(checkPartition);
   const getTablesOptions = () => {
     const _selectedTables =
       form
@@ -82,17 +81,12 @@ const ArchiveRange: React.FC<IProps> = (props) => {
     return _options;
   };
 
-  const hasAdvancedOptionCol = enablePartition || needCheckBeforeDelete;
   const { visible, currentIndex, open, close, handleSubmit } = useJoinTableConfig(form);
-
-  useEffect(() => {
-    setEnablePartition(checkPartition);
-  }, [checkPartition]);
 
   const getSettingTip = (name) => {
     const data = form.getFieldValue(['tables', name]);
     const { joinTableConfigs, partitions, tableName } = data || {};
-    if (!partitions && !joinTableConfigs?.length) return null;
+    if (!partitions?.length && !joinTableConfigs?.length) return null;
     return (
       <div>
         {joinTableConfigs?.length ? (
@@ -180,7 +174,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
               <div
                 className={classNames(styles.tables, {
                   [styles.delete]: tables?.length > 1,
-                  [styles.advancedOption]: needCheckBeforeDelete || enablePartition,
+                  [styles.advancedOption]: needCheckBeforeDelete,
                 })}
               >
                 <div className={styles.tableTitle} style={{ width: 160, padding: '3px 8px' }}>
@@ -189,7 +183,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                     defaultMessage: '清理表',
                   })}
                 </div>
-                {hasAdvancedOptionCol && (
+                {needCheckBeforeDelete && (
                   <div className={styles.tableTitle}>
                     <span style={{ padding: '3px 8px', display: 'inline-flex', gap: '4px' }}>
                       目标表
@@ -234,7 +228,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                           key={key}
                           className={classNames(styles.tables, {
                             [styles.delete]: fields?.length > 1,
-                            [styles.advancedOption]: hasAdvancedOptionCol,
+                            [styles.advancedOption]: needCheckBeforeDelete,
                           })}
                         >
                           <Form.Item
@@ -256,7 +250,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                               }
                             />
                           </Form.Item>
-                          {(needCheckBeforeDelete || enablePartition) && (
+                          {needCheckBeforeDelete && (
                             <div
                               style={{
                                 display: 'flex',
@@ -300,7 +294,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                                     <div onClick={() => open(index)} style={{ cursor: 'pointer' }}>
                                       {form.getFieldValue(['tables', name, 'joinTableConfigs'])
                                         ?.length ||
-                                      form.getFieldValue(['tables', name, 'partitions']) ? (
+                                      form.getFieldValue(['tables', name, 'partitions'])?.length ? (
                                         <SettingFilled style={{ color: '#1890ff' }} />
                                       ) : (
                                         <SettingOutlined />

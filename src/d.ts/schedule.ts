@@ -237,6 +237,7 @@ export type IDataClearParameters = {
 
 export type IDataArchiveParameters = {
   cpuLimit: number;
+  createTargetTableIfNotExists: boolean;
   deleteAfterMigration: boolean;
   deleteTemporaryTable: boolean;
   dirtyRowAction: string;
@@ -337,6 +338,7 @@ export type createDataDeleteParameters = {
 };
 
 export type createDataArchiveParameters = {
+  createTargetTableIfNotExists: boolean;
   deleteAfterMigration: boolean;
   fullDatabase: boolean;
   migrationInsertAction: string;

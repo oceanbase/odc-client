@@ -1,14 +1,15 @@
 import { IDLMJobParametersTables, ITable } from '@/d.ts';
-import { Modal, Form, Input, Button, Space, Select, Typography, Checkbox } from 'antd';
+import { Modal, Form, Input, Button, Space, Select, Typography, Checkbox, Tree } from 'antd';
 import { FormListFieldData } from 'antd/es/form/FormList';
 import styles from './index.less';
 import classNames from 'classnames';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { formatMessage } from '@/util/intl';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { getTableInfo } from '@/common/network/table';
-const { TextArea } = Input;
+import PartitionTreeSelecter from './partitionTreeSelecter';
+import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 
 export default function JoinTableConfigModal({
   visible,
@@ -29,7 +30,8 @@ export default function JoinTableConfigModal({
   const [multiTableJoin, setMultiTableJoin] = useState(false);
   const [partition, setPartition] = useState(false);
   const [tableCanSetPartition, setTableCanSetPartition] = useState(false);
-  const [partitionOptions, setPartitionOptions] = useState<{ label: string; value: string }[]>([]);
+  const [table, setTable] = useState<Partial<ITableModel>>(null);
+  const [selectedPartitions, setSelectedPartitions] = useState<string[]>([]);
   const { session, database } = useDBSession(databaseId);
   const getInitialValues = () => {
     return {
@@ -38,6 +40,7 @@ export default function JoinTableConfigModal({
         ? initialValues?.joinTableConfigs
         : [{ tableName: '', joinCondition: '' }],
       filterType: 'relationTable',
+      partitions: initialValues?.partitions || [],
     };
   };
 
@@ -48,6 +51,12 @@ export default function JoinTableConfigModal({
       setPartition(!!initialValues?.partitions);
     }
   }, [visible, initialValues]);
+
+  useEffect(() => {
+    if (form.getFieldValue('partitions')) {
+      setSelectedPartitions(form.getFieldValue('partitions'));
+    }
+  }, [form.getFieldValue('partitions')]);
 
   useEffect(() => {
     if (session?.sessionId && database && visible) {
@@ -62,13 +71,8 @@ export default function JoinTableConfigModal({
       session?.sessionId,
       false,
     );
+    setTable(table);
     setTableCanSetPartition(!!table?.partitions?.partType);
-    setPartitionOptions(
-      table?.partitions?.partitions?.map((item) => ({
-        label: item?.name,
-        value: item?.name,
-      })),
-    );
   };
 
   useEffect(() => {
@@ -241,29 +245,22 @@ export default function JoinTableConfigModal({
             </Form.Item>
           </>
         )}
-
         {tableCanSetPartition && (
           <>
-            <div>
+            <div style={{ marginBottom: 16 }}>
               <Checkbox onChange={(e) => setPartition(e.target.checked)} checked={partition}>
                 指定扫描分区
               </Checkbox>
             </div>
             {partition && (
               <Form.Item name={'partitions'}>
-                <Select
-                  showSearch
-                  placeholder="请输入"
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                  }
-                  options={partitionOptions}
+                <PartitionTreeSelecter
+                  table={table}
+                  selectedPartitions={selectedPartitions}
+                  setSelectedPartitions={setSelectedPartitions}
                   onChange={(value) => {
-                    setPartition(value);
+                    form.setFieldValue('partitions', value);
                   }}
-                  mode="multiple"
-                  style={{ width: '100%' }}
-                  allowClear
                 />
               </Form.Item>
             )}

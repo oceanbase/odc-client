@@ -111,7 +111,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
   const getSettingTip = (name) => {
     const data = form.getFieldValue(['tables', name]);
     const { joinTableConfigs, partitions, tableName } = data || {};
-    if (!partitions && !joinTableConfigs?.length) return null;
+    if (!partitions?.length && !joinTableConfigs?.length) return null;
     // 目前只有join类型，所以先写死join
     return (
       <div>
@@ -298,7 +298,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                                     <div onClick={() => open(index)} style={{ cursor: 'pointer' }}>
                                       {form.getFieldValue(['tables', name, 'joinTableConfigs'])
                                         ?.length ||
-                                      form.getFieldValue(['tables', name, 'partitions']) ? (
+                                      form.getFieldValue(['tables', name, 'partitions'])?.length ? (
                                         <SettingFilled style={{ color: '#1890ff' }} />
                                       ) : (
                                         <SettingOutlined />
