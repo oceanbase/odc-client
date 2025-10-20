@@ -123,7 +123,7 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
                   <div class="bar-chart-tooltip-item" data-task-type="${taskType}" data-status="${
                   taskStatusType[item.seriesIndex]
                 }" data-click-type="detail">
-                    <div class="bar-chart-tooltip-item-dot" style="background: ${
+                    <div class="bar-chart-tooltip-item-square" style="background: ${
                       item.color
                     };"></div>
                     <span class="bar-chart-tooltip-item-name">${item.seriesName}</span>
