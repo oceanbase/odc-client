@@ -52,7 +52,7 @@ const useTaskSearchParams = () => {
       endTime: endTime ? Number(endTime) : null,
       projectId: projectId ? projectId : null,
       taskTypes: taskTypesStr ? taskTypesStr.split(',') : null,
-      statuses: statusesStr ? statusesStr.split(',') : null,
+      statuses: statusesStr !== null ? (statusesStr ? statusesStr.split(',') : []) : null,
     },
     resetSearchParams,
   };

@@ -220,6 +220,9 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
             // 使用状态映射将Console状态转换为任务页面状态
             const mappedStatuses = statusMapping[status] || [status];
             searchParams.append('statuses', mappedStatuses.join(','));
+          } else if (clickType === 'total') {
+            // 点击任务总计时，清空状态过滤器
+            searchParams.append('statuses', '');
           }
 
           if (selectedProjectId !== undefined) {

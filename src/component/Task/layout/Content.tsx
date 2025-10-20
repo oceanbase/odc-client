@@ -262,12 +262,15 @@ const Content = forwardRef<ContentRef, IProps>((props, ref) => {
 
     // Apply project filter from URL
     if (urlProjectId !== null) {
-      if (urlProjectId === 'clear') {
+      if (urlProjectId === 'clearAll') {
         // 清空项目筛选
         newParams.projectId = [];
         newParams.timeRange = 'ALL';
         newParams.executeDate = [dayjs(), dayjs()];
         newParams.taskTypes = [];
+      } else if (urlProjectId === 'clear') {
+        // 清空项目筛选
+        newParams.projectId = [];
       } else {
         newParams.projectId = [urlProjectId];
       }
@@ -279,7 +282,7 @@ const Content = forwardRef<ContentRef, IProps>((props, ref) => {
     }
 
     // Apply task statuses filter from URL
-    if (urlStatuses !== null && urlStatuses.length > 0) {
+    if (urlStatuses !== null) {
       newParams.taskStatus = urlStatuses;
     }
 
