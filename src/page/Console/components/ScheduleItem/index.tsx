@@ -10,10 +10,9 @@ import { TaskExecStrategy, TaskStatus, TaskType } from '@/d.ts';
 import { Divider } from 'antd';
 import { IStat } from '@/d.ts';
 import { ScheduleStatus, ScheduleType } from '@/d.ts/schedule';
-import { Perspective, ScheduleTab } from '@/component/Schedule/interface';
+import { Perspective, ScheduleTab, ScheduleTaskTab } from '@/component/Schedule/interface';
 import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
 import dayjs, { Dayjs } from 'dayjs';
-import { TaskTab } from '@/component/Task/interface';
 
 const ScheduleItem = ({
   title,
@@ -119,7 +118,7 @@ const ScheduleItem = ({
             );
             navigate(
               buildNavigateUrlWithFilters(
-                `/schedule?scheduleType=${type}&perspective=${Perspective.executionView}&subTaskStatus=${failedStatuses}&tab=${TaskTab.all}`,
+                `/schedule?scheduleType=${type}&perspective=${Perspective.executionView}&subTaskStatus=${failedStatuses}&subTaskTab=${ScheduleTaskTab.all}`,
               ),
             );
           }}

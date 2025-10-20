@@ -25,6 +25,7 @@ import {
   ScheduleSearchType,
   SubTaskSearchType,
   ScheduleTab,
+  ScheduleTaskTab,
 } from '../interface';
 import {
   ScheduleListParams,
@@ -79,6 +80,7 @@ const Content: React.FC<IProps> = (props) => {
       defaultScheduleStatus,
       defaultSubTaskStatus,
       defaultTab,
+      defaultSubTaskTab,
       timeValue,
       startTime,
       endTime,
@@ -395,6 +397,7 @@ const Content: React.FC<IProps> = (props) => {
           : defaultSubTaskStatus
           ? defaultSubTaskStatus.split(',').map((status) => status.trim() as ScheduleTaskStatus)
           : subTaskParams?.status,
+      tab: (defaultSubTaskTab as ScheduleTaskTab) || subTaskParams?.tab,
     };
 
     // Apply time filter from URL to subTaskParams
