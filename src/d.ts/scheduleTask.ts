@@ -31,6 +31,8 @@ export enum ScheduleTaskStatus {
   CANCELED = 'CANCELED',
   /** 执行成功 */
   DONE = 'DONE',
+  /** 执行成功（告警） */
+  DONE_WITH_FAILED = 'DONE_WITH_FAILED',
 }
 
 export enum ScheduleTaskActionsEnum {

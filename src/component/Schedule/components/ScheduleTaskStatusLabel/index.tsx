@@ -1,8 +1,9 @@
-import { Space } from 'antd';
+import { Space, Tooltip } from 'antd';
 import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
 import Icon, {
   CheckCircleFilled,
   CloseCircleFilled,
+  InfoCircleOutlined,
   LoadingOutlined,
   StopFilled,
 } from '@ant-design/icons';
@@ -11,12 +12,15 @@ import { ReactComponent as ProcessingSvg } from '@/svgr/processing.svg';
 import { ReactComponent as PausingSvg } from '@/svgr/pausing.svg';
 import { ReactComponent as WaitingYellowSvg } from '@/svgr/waiting_yellow.svg';
 import { ReactComponent as ExecutionTimeoutSvg } from '@/svgr/executionTimeout.svg';
-
+import styles from './index.less';
 interface IProps {
   status: ScheduleTaskStatus;
 }
 
-const ScheduleTaskStatusInfo = {
+const ScheduleTaskStatusInfo: Record<
+  ScheduleTaskStatus,
+  { icon: React.ReactNode; desc?: React.ReactNode }
+> = {
   [ScheduleTaskStatus.PREPARING]: {
     icon: <Icon component={ProcessingSvg} style={{ fontSize: 14 }} />,
   },
@@ -86,6 +90,20 @@ const ScheduleTaskStatusInfo = {
       />
     ),
   },
+  [ScheduleTaskStatus.DONE_WITH_FAILED]: {
+    icon: (
+      <CheckCircleFilled
+        style={{
+          color: 'var(--icon-green-color)',
+        }}
+      />
+    ),
+    desc: (
+      <Tooltip title="执行时存在错误，已跳过">
+        <InfoCircleOutlined className={styles.warningIcon} />
+      </Tooltip>
+    ),
+  },
 };
 
 const ScheduleTaskStatusLabel: React.FC<IProps> = ({ status }) => {
@@ -110,6 +128,7 @@ const ScheduleTaskStatusLabel: React.FC<IProps> = ({ status }) => {
           >
             {ScheduleTaskStatusTextMap[status]}
           </span>
+          {statusObj?.desc}
         </div>
       ) : null}
     </Space>

@@ -1,8 +1,10 @@
 import ParamsContext from '@/component/Schedule/context/ParamsContext';
 import { useContext, useMemo, useState } from 'react';
-import { Button, Divider, Select } from 'antd';
+import { Button, Divider, Select, Tooltip } from 'antd';
 import { ScheduleTaskStatusTextMap } from '@/constant/scheduleTask';
 import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import styles from './index.less';
 
 const ScheduleTaskStatusFilter = () => {
   const context = useContext(ParamsContext);
@@ -11,8 +13,22 @@ const ScheduleTaskStatusFilter = () => {
 
   const statusOptions = useMemo(() => {
     return Object.keys(ScheduleTaskStatus).map((item) => {
+      const icon = (
+        <Tooltip title="执行时存在错误，已跳过">
+          <InfoCircleOutlined className={styles.warningIcon} />
+        </Tooltip>
+      );
+      const label =
+        item === ScheduleTaskStatus.DONE_WITH_FAILED ? (
+          <span>
+            {ScheduleTaskStatusTextMap?.[item]}
+            {icon}
+          </span>
+        ) : (
+          ScheduleTaskStatusTextMap?.[item]
+        );
       return {
-        label: ScheduleTaskStatusTextMap?.[item],
+        label,
         value: item,
       };
     });
