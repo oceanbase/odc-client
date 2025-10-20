@@ -15,6 +15,7 @@ const useScheduleSearchParams = () => {
   const defaultPerspective = searchParams.get('perspective') as Perspective;
   const defaultSubTaskStatus = searchParams.get('subTaskStatus');
   const defaultTab = searchParams.get('tab') as ScheduleTab;
+  const defaultSubTaskTab = searchParams.get('subTaskTab');
   const timeValue = searchParams.get('timeValue');
   const startTime = searchParams.get('startTime');
   const endTime = searchParams.get('endTime');
@@ -32,6 +33,7 @@ const useScheduleSearchParams = () => {
       searchParams.delete('perspective');
       searchParams.delete('subTaskStatus');
       searchParams.delete('tab');
+      searchParams.delete('subTaskTab');
       // Delete filter parameters passed from Console
       searchParams.delete('timeValue');
       searchParams.delete('startTime');
@@ -49,6 +51,7 @@ const useScheduleSearchParams = () => {
       defaultPerspective,
       defaultSubTaskStatus,
       defaultTab,
+      defaultSubTaskTab,
       timeValue: timeValue ? (isNaN(Number(timeValue)) ? timeValue : Number(timeValue)) : null,
       startTime: startTime ? Number(startTime) : null,
       endTime: endTime ? Number(endTime) : null,
