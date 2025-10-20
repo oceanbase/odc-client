@@ -13,6 +13,7 @@ export const ScheduleTaskStatusTextMap = {
   [ScheduleTaskStatus.EXEC_TIMEOUT]: '执行超时',
   [ScheduleTaskStatus.CANCELED]: '已终止',
   [ScheduleTaskStatus.DONE]: '执行成功',
+  [ScheduleTaskStatus.DONE_WITH_FAILED]: '执行成功',
 };
 
 export const ScheduleTaskActionsTextMap = {
