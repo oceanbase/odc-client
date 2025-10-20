@@ -381,6 +381,7 @@ const Content: React.FC<IProps> = (props) => {
         newParams.timeRange = 'ALL';
         newParams.executeDate = [dayjs(), dayjs()];
         newParams.status = [];
+        newParams.type = [];
       }
       if (urlProjectId === 'clear') {
         // 清空项目筛选，但不影响其他筛选条件
@@ -421,6 +422,7 @@ const Content: React.FC<IProps> = (props) => {
         newParams.timeRange = 'ALL';
         newParams.executeDate = [dayjs(), dayjs()];
         newParams.status = [];
+        newParams.type = [];
       } else if (urlProjectId === 'clear') {
         // 清空项目筛选，但不影响其他筛选条件
         newSubTaskParams.projectIds = [];
