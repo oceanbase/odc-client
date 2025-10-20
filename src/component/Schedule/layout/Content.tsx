@@ -376,12 +376,15 @@ const Content: React.FC<IProps> = (props) => {
 
     // Apply project filter from URL
     if (urlProjectId !== null) {
-      if (urlProjectId === 'clear') {
-        // 清空项目筛选
+      if (urlProjectId === 'clearAll') {
         newParams.projectIds = [];
         newParams.timeRange = 'ALL';
         newParams.executeDate = [dayjs(), dayjs()];
         newParams.status = [];
+      }
+      if (urlProjectId === 'clear') {
+        // 清空项目筛选，但不影响其他筛选条件
+        newParams.projectIds = [];
       } else {
         newParams.projectIds = [urlProjectId] as any;
       }
@@ -413,12 +416,14 @@ const Content: React.FC<IProps> = (props) => {
 
     // Apply project filter from URL to subTaskParams
     if (urlProjectId !== null) {
-      if (urlProjectId === 'clear') {
-        // 清空项目筛选
+      if (urlProjectId === 'clearAll') {
+        newParams.projectIds = [];
+        newParams.timeRange = 'ALL';
+        newParams.executeDate = [dayjs(), dayjs()];
+        newParams.status = [];
+      } else if (urlProjectId === 'clear') {
+        // 清空项目筛选，但不影响其他筛选条件
         newSubTaskParams.projectIds = [];
-        newSubTaskParams.timeRange = 'ALL';
-        newSubTaskParams.executeDate = [dayjs(), dayjs()];
-        newSubTaskParams.status = [];
       } else {
         newSubTaskParams.projectIds = [urlProjectId] as any;
       }
