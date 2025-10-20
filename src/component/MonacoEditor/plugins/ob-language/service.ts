@@ -75,14 +75,7 @@ export function getModelService(
           .then((v) => {
             setting.isAIThinking = false;
 
-            // 当 AI 补全有返回值时，隐藏编辑器的建议提示框并标记状态
             if (v && v.trim() && editor) {
-              try {
-                editor.trigger('ai-inline-completion', 'hideSuggestWidget', null);
-              } catch (e) {
-                // 忽略错误，建议框可能本来就不可见
-              }
-
               // 标记有未接受的 AI 补全内容
               setting.hasUnacceptedAICompletion = true;
 
