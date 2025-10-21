@@ -128,20 +128,38 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
   };
 
   const _stopTask = async () => {
-    setActiveBtnKey(TaskActionsEnum.STOP);
-    const res = await stopTask(task.id);
-    if (res) {
-      message.success(
-        formatMessage({
-          id: 'odc.components.TaskManagePage.TerminatedSuccessfully',
-          defaultMessage: '终止成功',
-        }),
-      );
-      props?.onReloadList?.();
-      props?.onReload?.();
-    } else {
-      setActiveBtnKey(undefined);
-    }
+    const taskTypeText = TaskTypeMap[task?.type];
+    Modal.confirm({
+      title: `确定要终止${taskTypeText}吗`,
+      content: (
+        <>
+          <div>任务终止后将不可恢复</div>
+        </>
+      ),
+      cancelText: formatMessage({
+        id: 'odc.TaskManagePage.component.TaskTools.Cancel',
+        defaultMessage: '取消',
+      }), //取消
+      okText: '终止',
+      centered: true,
+      okButtonProps: { variant: 'outlined', color: 'danger' },
+      onOk: async () => {
+        setActiveBtnKey(TaskActionsEnum.STOP);
+        const res = await stopTask(task.id);
+        if (res) {
+          message.success(
+            formatMessage({
+              id: 'odc.components.TaskManagePage.TerminatedSuccessfully',
+              defaultMessage: '终止成功',
+            }),
+          );
+          props?.onReloadList?.();
+          props?.onReload?.();
+        } else {
+          setActiveBtnKey(undefined);
+        }
+      },
+    });
   };
 
   const _executeTask = async () => {

@@ -334,6 +334,8 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           archiveRange,
           rowLimit,
           dataSizeLimit,
+          maxAllowedDirtyRowCount,
+          dirtyRowAction,
           timeoutMillis,
           createTargetTableIfNotExists,
         } = values;
@@ -342,6 +344,8 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           fullDatabase: archiveRange === IArchiveRange.ALL,
           migrationInsertAction,
           scheduleIgnoreTimeoutTask,
+          maxAllowedDirtyRowCount,
+          dirtyRowAction,
           rateLimit: {
             rowLimit,
             dataSizeLimit: mbToKb(dataSizeLimit),

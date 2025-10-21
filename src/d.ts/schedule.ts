@@ -1,3 +1,4 @@
+import { DirtyRowActionEnum } from '@/component/ExecuteSqlDetailModal/constant';
 import { IDatabase } from './database';
 import { IProject, ProjectRole } from './project';
 import {
@@ -335,6 +336,8 @@ export type createDataDeleteParameters = {
     pattern: string;
   }[];
   scheduleIgnoreTimeoutTask: boolean;
+  dirtyRowAction?: DirtyRowActionEnum;
+  maxAllowedDirtyRowCount?: number;
 };
 
 export type createDataArchiveParameters = {
@@ -359,6 +362,8 @@ export type createDataArchiveParameters = {
   sourceDatabaseId: number;
   triggerConfig: ICycleTaskTriggerConfig;
   scheduleIgnoreTimeoutTask: boolean;
+  dirtyRowAction?: DirtyRowActionEnum;
+  maxAllowedDirtyRowCount?: number;
 };
 
 export type dmlPreCheckResult = {

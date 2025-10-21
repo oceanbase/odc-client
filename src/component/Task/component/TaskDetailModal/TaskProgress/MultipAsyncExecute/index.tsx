@@ -25,6 +25,7 @@ import { getMultipleAsyncExecuteRecordList, IResponseDataWithStats } from '@/com
 import { MultipleAsyncExecuteRecordStats } from '@/d.ts';
 import { listDatabases } from '@/common/network/database';
 import { useRequest } from 'ahooks';
+import { useLoop } from '@/util/hooks/useLoop';
 
 interface MultipAsyncExecuteProps {
   taskStore?: TaskStore;
@@ -72,75 +73,90 @@ const MultipAsyncExecute: React.FC<MultipAsyncExecuteProps> = (props) => {
     return arr?.map((subArray) => subArray?.filter(filter));
   };
 
-  const loadData = async (params: {
-    page: number;
-    size: number;
-    keyword?: string;
-    statuses?: string[];
-  }) => {
-    if (!params.size) {
-      return;
-    }
-    setLoading(true);
-    let _databaseList = databaseList;
-    if (!_databaseList?.length) {
-      const databaseRes = await fetchDatabaseList({
-        projectId: task?.projectId,
-        page: 1,
-        size: 99999,
+  const { loop: loadData, destory } = useLoop(() => {
+    return async (params: {
+      page: number;
+      size: number;
+      keyword?: string;
+      statuses?: string[];
+      databaseList?: IDatabase[];
+    }) => {
+      const res = await getMultipleAsyncExecuteRecordList({
+        id: task.id,
+        page: params.page,
+        size: params.size,
+        keyword: params.keyword,
+        statuses: params.statuses,
       });
-      _databaseList = databaseRes?.contents;
-      setDatabaseList(_databaseList);
-    }
-    const res = await getMultipleAsyncExecuteRecordList({
-      id: task.id,
-      page: params.page,
-      size: params.size,
-      keyword: params.keyword,
-      statuses: params.statuses,
-    });
-    setLoading(false);
-    setMultipAsyncExecuteRecordRes(res);
-    const dbMap = res?.contents?.reduce((pre, cur) => {
-      pre[cur?.databaseId] = cur;
-      return pre;
-    }, {});
-    const orderedDatabaseIds = (task as TaskDetail<IMultipleAsyncTaskParams>)?.parameters
-      ?.orderedDatabaseIds;
-    const rawData = [];
-    let rawCount = 0;
-    filter2DArray(orderedDatabaseIds, (item) => !!dbMap?.[item])?.map((item, index) => {
-      item?.forEach((_item_, _index_) => {
-        const rowSpan = item?.length;
-        const needMerge = _index_ === 0;
-        rawData.push({
-          id: rawCount,
-          nodeIndex: index,
-          rowSpan,
-          needMerge,
-          ...dbMap[_item_],
-          database: _databaseList?.find((item) => item?.id === _item_),
+      setMultipAsyncExecuteRecordRes(res);
+      const dbMap = res?.contents?.reduce((pre, cur) => {
+        pre[cur?.databaseId] = cur;
+        return pre;
+      }, {});
+      const orderedDatabaseIds = (task as TaskDetail<IMultipleAsyncTaskParams>)?.parameters
+        ?.orderedDatabaseIds;
+      const rawData = [];
+      let rawCount = 0;
+      filter2DArray(orderedDatabaseIds, (item) => !!dbMap?.[item])?.map((item, index) => {
+        item?.forEach((_item_, _index_) => {
+          const rowSpan = item?.length;
+          const needMerge = _index_ === 0;
+          rawData.push({
+            id: rawCount,
+            nodeIndex: index,
+            rowSpan,
+            needMerge,
+            ...dbMap[_item_],
+            database: params?.databaseList?.find((item) => item?.id === _item_),
+          });
+          rawCount++;
         });
-        rawCount++;
       });
+      setMultipAsyncExecuteRecordList(rawData);
+    };
+  }, 6000);
+
+  useEffect(() => {
+    return () => {
+      console.log('in');
+      destory();
+    };
+  }, []);
+
+  const loadDatabaseList = async () => {
+    if (databaseList?.length) return databaseList;
+    const databaseRes = await fetchDatabaseList({
+      projectId: task?.projectId,
+      page: 1,
+      size: 99999,
     });
-    setMultipAsyncExecuteRecordList(rawData);
+    setDatabaseList(databaseRes?.contents);
+    return databaseRes?.contents;
   };
 
   const handleLoad = async (args?: ITableLoadOptions) => {
-    loadData({
+    if (!args?.pageSize) return;
+    setLoading(true);
+    const _databaseList = await loadDatabaseList();
+    await loadData({
       page: 1,
       size: args?.pageSize,
+      databaseList: _databaseList,
     });
+    setLoading(false);
   };
 
   const handleChange = async (args?: ITableLoadOptions) => {
+    if (!args?.pageSize) return;
+    setListParams(args);
+    const _databaseList = await loadDatabaseList();
     setListParams(args);
     loadData({
       keyword: args?.filters?.database?.[0] || '',
       statuses: args?.filters?.statuses || [],
       page: args?.pagination?.current || 1,
       size: args?.pageSize,
+      databaseList: _databaseList,
     });
   };
 
@@ -278,7 +294,7 @@ const MultipAsyncExecute: React.FC<MultipAsyncExecuteProps> = (props) => {
           return (
             <StatusLabel
               status={record?.status}
-              progress={Math.floor(record?.flowInstanceDetailResp?.progressPercentage)}
+              progress={Math.floor(record?.flowInstanceDetailResp?.progressPercentage ?? 0)}
             />
           );
         },
@@ -320,11 +336,13 @@ const MultipAsyncExecute: React.FC<MultipAsyncExecuteProps> = (props) => {
       EXECUTION_SUCCEEDED = 0,
       WAIT_FOR_EXECUTION = 0,
       EXECUTING = 0,
+      EXECUTION_SUCCEEDED_WITH_ERRORS = 0,
     } = multipAsyncExecuteRecordRes?.stats?.statusCount?.count ?? {};
+    const successCount = EXECUTION_SUCCEEDED_WITH_ERRORS + EXECUTION_SUCCEEDED;
     return (
       <div
         style={{ marginBottom: 6 }}
-      >{`以下 ${WAIT_FOR_EXECUTION} 个数据库待执行，${EXECUTING} 个数据库执行中， ${EXECUTION_SUCCEEDED} 个数据库执行成功，${EXECUTION_FAILED}个数据库执行失败`}</div>
+      >{`以下 ${WAIT_FOR_EXECUTION} 个数据库待执行，${EXECUTING} 个数据库执行中， ${successCount} 个数据库执行成功，${EXECUTION_FAILED}个数据库执行失败`}</div>
     );
   }, [multipAsyncExecuteRecordRes?.stats]);
 

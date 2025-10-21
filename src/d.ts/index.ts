@@ -4156,6 +4156,7 @@ export type MultipleAsyncExecuteRecordStats = {
       EXECUTION_SUCCEEDED?: number;
       WAIT_FOR_EXECUTION?: number;
       EXECUTING?: number;
+      EXECUTION_SUCCEEDED_WITH_ERRORS?: number;
     };
   };
 };

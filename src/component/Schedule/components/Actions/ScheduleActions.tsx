@@ -39,10 +39,6 @@ import { ScheduleStatus2Actions } from '@/component/Schedule/const';
 import { widthPermission } from '@/util/utils';
 import useOperationPermissions from '@/util/hooks/useOperationPermissions';
 import ProjectContext from '@/page/Project/ProjectContext';
-import { getPartitionPlanTables } from '@/common/network/task';
-import sessionManagerStore from '@/store/sessionManager';
-import SessionStore from '@/store/sessionManager/session';
-import { IPartitionPlanTable, IResponseData } from '@/d.ts';
 
 export interface scheduleActions {
   key: ScheduleActionsEnum;
@@ -139,6 +135,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
         defaultMessage: '取消',
       }), //取消
       okText: '终止',
+      okButtonProps: { variant: 'outlined', color: 'danger' },
       centered: true,
       onOk: async () => {
         setActiveBtnKey(ScheduleActionsEnum.STOP);
