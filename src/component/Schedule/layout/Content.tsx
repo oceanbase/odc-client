@@ -26,6 +26,7 @@ import {
   SubTaskSearchType,
   ScheduleTab,
   ScheduleTaskTab,
+  ScheduleApprovalStatus,
 } from '../interface';
 import {
   ScheduleListParams,
@@ -81,6 +82,7 @@ const Content: React.FC<IProps> = (props) => {
       defaultSubTaskStatus,
       defaultTab,
       defaultSubTaskTab,
+      defaultApproveStatus,
       timeValue,
       startTime,
       endTime,
@@ -362,6 +364,11 @@ const Content: React.FC<IProps> = (props) => {
       status: defaultScheduleStatus ? [defaultScheduleStatus as ScheduleStatus] : params?.status,
       tab: defaultTab || params?.tab,
     };
+
+    // Apply approve status filter from URL
+    if (defaultApproveStatus !== null) {
+      newParams.approveStatus = defaultApproveStatus as ScheduleApprovalStatus[];
+    }
 
     // Apply time filter from URL
     if (timeValue !== null) {
