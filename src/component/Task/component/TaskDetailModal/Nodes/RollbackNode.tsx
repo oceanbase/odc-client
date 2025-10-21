@@ -15,14 +15,14 @@
  */
 
 import UserPopover from '@/component/UserPopover';
-import { ITaskFlowNode, ITaskResult } from '@/d.ts';
+import { ITaskFlowNode, ITaskResult, TaskFlowNodeType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { Descriptions, Space } from 'antd';
 import { isEmpty } from 'lodash';
 import React from 'react';
 import { DownloadFileAction } from '@/component/Task/component/DownloadFileAction';
 import styles from '../index.less';
-
+import { nodeStatus as nodeStatusMap } from '@/component/Task/component/Status';
 interface IProps {
   taskId: number;
   node: Partial<ITaskFlowNode>;
@@ -32,8 +32,7 @@ interface IProps {
 const RollbackNode: React.FC<IProps> = function (props) {
   const { taskId, node, result } = props;
   const { operator, autoApprove } = node;
-  const resultData = result?.rollbackPlanResult;
-  const isEmptyResult = isEmpty(resultData);
+  const statusContent = nodeStatusMap[TaskFlowNodeType.SERVICE_TASK][node?.status];
 
   return (
     <>
@@ -63,87 +62,14 @@ const RollbackNode: React.FC<IProps> = function (props) {
             )}
           </Space>
         </Descriptions.Item>
-        {isEmptyResult ? (
-          <>
-            <Descriptions.Item
-              label={formatMessage({
-                id: 'odc.CommonDetailModal.Nodes.RollbackNode.ProcessingStatus',
-                defaultMessage: '处理状态',
-              })} /*处理状态*/
-            >
-              -
-            </Descriptions.Item>
-            <Descriptions.Item
-              label={formatMessage({
-                id: 'odc.CommonDetailModal.Nodes.RollbackNode.ProcessingResult',
-                defaultMessage: '处理结果',
-              })} /*处理结果*/
-            >
-              -
-            </Descriptions.Item>
-          </>
-        ) : (
-          <>
-            <Descriptions.Item
-              label={formatMessage({
-                id: 'odc.CommonDetailModal.Nodes.RollbackNode.ProcessingStatus',
-                defaultMessage: '处理状态',
-              })} /*处理状态*/
-            >
-              {
-                resultData?.success
-                  ? formatMessage({
-                      id: 'odc.CommonDetailModal.Nodes.RollbackNode.Success',
-                      defaultMessage: '成功',
-                    }) //成功
-                  : formatMessage({
-                      id: 'odc.CommonDetailModal.Nodes.RollbackNode.Failed',
-                      defaultMessage: '失败',
-                    }) //失败
-              }
-            </Descriptions.Item>
-            {resultData?.success ? (
-              <Descriptions.Item
-                label={formatMessage({
-                  id: 'odc.CommonDetailModal.Nodes.RollbackNode.ProcessingResult',
-                  defaultMessage: '处理结果',
-                })} /*处理结果*/
-              >
-                {resultData?.resultFileDownloadUrl ? (
-                  <Space>
-                    <span>
-                      {
-                        formatMessage({
-                          id: 'odc.CommonDetailModal.Nodes.RollbackNode.ARollbackSchemeIsSuccessfully',
-                          defaultMessage: '成功生成回滚方案',
-                        }) /*成功生成回滚方案*/
-                      }
-                    </span>
-                    <DownloadFileAction url={resultData?.resultFileDownloadUrl} />
-                  </Space>
-                ) : (
-                  <span>
-                    {
-                      formatMessage({
-                        id: 'odc.CommonDetailModal.Nodes.RollbackNode.UnableToGenerateRollbackScheme',
-                        defaultMessage: '无法生成回滚方案',
-                      }) /*无法生成回滚方案*/
-                    }
-                  </span>
-                )}
-              </Descriptions.Item>
-            ) : (
-              <Descriptions.Item
-                label={formatMessage({
-                  id: 'odc.CommonDetailModal.Nodes.RollbackNode.ErrorMessage',
-                  defaultMessage: '错误信息',
-                })} /*错误信息*/
-              >
-                {resultData?.error}
-              </Descriptions.Item>
-            )}
-          </>
-        )}
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'odc.CommonDetailModal.Nodes.RollbackNode.ProcessingStatus',
+            defaultMessage: '处理状态',
+          })} /*处理状态*/
+        >
+          {statusContent?.text ?? '-'}
+        </Descriptions.Item>
       </Descriptions>
     </>
   );

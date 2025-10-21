@@ -35,8 +35,18 @@ const InnerSelect: React.FC<{
   innerIndex: number;
   disabled: boolean;
   databaseOptions: DatabaseOption[];
+  innerFields: FormListFieldData[];
   innerRemove: (value: number) => void;
-}> = ({ rootName, innerName, outerName, innerIndex, disabled, databaseOptions, innerRemove }) => {
+}> = ({
+  rootName,
+  innerName,
+  outerName,
+  innerIndex,
+  disabled,
+  databaseOptions,
+  innerRemove,
+  innerFields,
+}) => {
   const ref = useRef(null);
   const form = Form.useFormInstance();
   const [searchValue, setSearchValue] = useState<string>();
@@ -288,14 +298,17 @@ const InnerSelect: React.FC<{
       }}
     >
       <Form.Item>
-        <Space>
+        <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
           <Icon
             component={DragSvg}
             className={styles.dragIcon}
-            style={{ cursor: 'move !important' }}
+            style={{ cursor: 'move !important', marginRight: 4 }}
           />
-
-          <Form.Item name={[innerName]} rules={rules.innerName({ databaseOptionMap })} noStyle>
+          <Form.Item
+            name={[innerName]}
+            rules={rules.innerName({ databaseOptionMap })}
+            style={{ flex: 1, padding: 0 }}
+          >
             <Popover
               trigger="click"
               placement="bottom"
@@ -329,7 +342,7 @@ const InnerSelect: React.FC<{
               <Select
                 showSearch
                 optionFilterProp="title"
-                style={{ width: 390 }}
+                style={{ flex: 1 }}
                 searchValue={searchValue}
                 onSearch={(searchValue) => setSearchValue(searchValue)}
                 placeholder={getPlaceholder()}
@@ -339,8 +352,10 @@ const InnerSelect: React.FC<{
               />
             </Popover>
           </Form.Item>
-          <DeleteOutlined onClick={() => innerRemove(innerName)} />
-        </Space>
+          {innerFields?.length > 1 && (
+            <DeleteOutlined onClick={() => innerRemove(innerName)} style={{ marginLeft: 4 }} />
+          )}
+        </div>
       </Form.Item>
     </div>
   );
@@ -393,6 +408,7 @@ const InnerSelecter: React.FC<{
           disabled={disabled}
           databaseOptions={databaseOptions}
           innerIndex={innerIndex}
+          innerFields={innerFields}
           outerName={outerName}
           innerName={innerName}
           innerRemove={innerRemove}

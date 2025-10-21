@@ -153,6 +153,7 @@ const TaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) 
     TaskType.APPLY_DATABASE_PERMISSION,
     TaskType.APPLY_TABLE_PERMISSION,
     TaskType.LOGICAL_DATABASE_CHANGE,
+    TaskType.MULTIPLE_ASYNC,
   ].includes(task?.type);
 
   return (

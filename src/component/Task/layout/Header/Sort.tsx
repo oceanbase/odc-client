@@ -12,7 +12,7 @@ interface IProps {}
 const items: MenuProps['items'] = [
   {
     key: TaskCreateTimeSort.ASC,
-    label: '按创建时间排序',
+    label: '按创建时间升序',
   },
   {
     key: TaskCreateTimeSort.DESC,

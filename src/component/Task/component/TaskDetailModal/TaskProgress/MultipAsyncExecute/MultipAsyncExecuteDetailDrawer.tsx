@@ -110,14 +110,14 @@ const MultipAsyncExecuteDetailDrawer = (props: IProps) => {
                 marginRight: '4px',
               }}
             />
-            {`${stats?.statusCount?.count?.EXECUTION_SUCCEEDED || 0}条SQL执行成功`}，
+            {`${executeRecord?.successCount || 0}条SQL执行成功`}，
             <CloseCircleFilled
               style={{
                 color: 'var(--function-red6-color)',
                 marginRight: '4px',
               }}
             />
-            {` ${stats?.statusCount?.count?.EXECUTION_FAILED || 0} 条SQL执行失败`}
+            {` ${executeRecord?.failCount || 0} 条SQL执行失败`}
           </div>
         </Descriptions.Item>
       </Descriptions>

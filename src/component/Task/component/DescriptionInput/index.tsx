@@ -20,10 +20,8 @@ import { formatMessage } from '@/util/intl';
 import { Form, Input } from 'antd';
 
 const DescriptionInput = () => {
-  const defaultPlaceholder = formatMessage({
-    id: 'odc.component.DescriptionInput.EnterADescriptionLessThan',
-    defaultMessage: '请输入描述，200字以内；未输入时，系统会根据对象和工单类型自动生成描述信息',
-  });
+  const defaultPlaceholder =
+    '请输入描述，200字以内，描述会作为任务标题；未输入时，系统会根据对象和工单类型自动生成描述信息。';
   return (
     <Form.Item
       label={formatMessage({

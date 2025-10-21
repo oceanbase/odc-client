@@ -329,6 +329,8 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           needCheckBeforeDelete,
           targetDatabaseId,
           scheduleIgnoreTimeoutTask,
+          dirtyRowAction,
+          maxAllowedDirtyRowCount,
         } = values;
         const parameters: createDataDeleteParameters = {
           databaseId,
@@ -336,6 +338,8 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           fullDatabase: archiveRange === IArchiveRange.ALL,
           needCheckBeforeDelete,
           scheduleIgnoreTimeoutTask,
+          dirtyRowAction,
+          maxAllowedDirtyRowCount,
           rateLimit: {
             rowLimit,
             dataSizeLimit: mbToKb(dataSizeLimit),
