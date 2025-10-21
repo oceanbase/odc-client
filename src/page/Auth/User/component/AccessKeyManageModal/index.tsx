@@ -133,7 +133,7 @@ const AccessKeyManageModal: React.FC<IProps> = ({ visible, userId, onClose }) =>
     {
       title: '操作',
       key: 'operation',
-      width: 24,
+      width: 48,
       render: (_, record) => (
         <Tooltip title={record?.status === EAccessKeyStatu.ACTIVE ? '启用状态暂不支持删除' : ''}>
           <Button
@@ -164,6 +164,9 @@ const AccessKeyManageModal: React.FC<IProps> = ({ visible, userId, onClose }) =>
       onCancel={onClose}
       destroyOnClose
       className={styles.accessKeyModal}
+      styles={{
+        body: { height: '440px' },
+      }}
     >
       <div className={styles.container}>
         <Alert
@@ -183,6 +186,7 @@ const AccessKeyManageModal: React.FC<IProps> = ({ visible, userId, onClose }) =>
             pagination={false}
             size="middle"
             className={styles.accessKeyTable}
+            locale={{ emptyText: null }}
           />
           <Tooltip title={accessKeys?.length >= 5 ? '最多可创建 5 个 AccessKey' : ''}>
             <Button

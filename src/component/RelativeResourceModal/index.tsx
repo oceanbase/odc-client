@@ -257,7 +257,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         dataIndex: 'scheduleName',
         key: 'scheduleName',
         ellipsis: true,
-        width: 184,
+        width: 194,
         render: (text: string, record: IResourceDependencyItem) => {
           return (
             <div className={styles.scheduleName}>
@@ -319,8 +319,8 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
     }
   }, [riskConfirmed]);
 
-  const radioOptions = useMemo(
-    () => [
+  const radioOptions = useMemo(() => {
+    const options = [
       {
         label: (
           <>
@@ -331,6 +331,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
           </>
         ),
         value: EResourceType.TASKS,
+        count: relatedResources.flowDependencies?.length || 0,
       },
       {
         label: (
@@ -342,6 +343,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
           </>
         ),
         value: EResourceType.JOBS,
+        count: relatedResources.scheduleDependencies?.length || 0,
       },
       {
         label: (
@@ -353,10 +355,19 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
           </>
         ),
         value: EResourceType.JOB_RECORDS,
+        count: relatedResources.scheduleTaskDependencies?.length || 0,
       },
-    ],
-    [relatedResources],
-  );
+    ];
+    // 只展示数量大于0的tab
+    return options.filter((option) => option.count > 0);
+  }, [relatedResources]);
+
+  // 自动切换到第一个有数据的tab
+  useEffect(() => {
+    if (radioOptions.length > 0 && !radioOptions.some((opt) => opt.value === activeTab)) {
+      setActiveTab(radioOptions[0].value);
+    }
+  }, [radioOptions, activeTab]);
 
   useEffect(() => {
     if (!open) {

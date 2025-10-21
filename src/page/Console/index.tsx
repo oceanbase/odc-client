@@ -257,7 +257,7 @@ const ConsoleMain = () => {
           <PersonalizeLayoutSetting />
         </div>
         <div className={styles.content}>
-          <Spin spinning={scheduleLoading && taskLoading} className={styles.topAreaFilter}>
+          <div className={styles.topAreaFilter}>
             <div className={styles.top}>
               {boardVisible[ELayoutKey.QuickStart] && <QuickStart />}
               {boardVisible[ELayoutKey.TaskOverview] && (
@@ -429,7 +429,7 @@ const ConsoleMain = () => {
                 </div>
               )}
             </div>
-          </Spin>
+          </div>
           <Row className={styles.bottom}>
             {boardVisible[ELayoutKey.RecentDatabases] && (
               <Col span={18} className={styles.recently}>

@@ -161,9 +161,22 @@ const APIKeyConfigModal = forwardRef<APIKeyConfigModalRef, APIKeyConfigModalProp
     const currentVendorType = (currentProvider?.provider as EVendorType) || EVendorType.DEEPSEEK;
     const currentVendorConfig = VendorsConfig[currentVendorType];
 
+    // 格式化字段标签
+    const formatLabel = (schema: any) => {
+      const label = schema.label?.[getServerLocalKey()];
+      if (label) {
+        return label;
+      }
+      // 如果没有配置 label，使用 variable，并对 api_key 做特殊处理
+      if (schema.variable === 'api_key') {
+        return 'API key';
+      }
+      return schema.variable;
+    };
+
     return (
       <Modal
-        destroyOnClose
+        destroyOnHidden
         footer={() => (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             {/* Help链接 */}
@@ -225,7 +238,7 @@ const APIKeyConfigModal = forwardRef<APIKeyConfigModalRef, APIKeyConfigModalProp
             {currentProvider?.providerCredentialSchema?.credentialFormSchemas?.map((schema) => (
               <Form.Item
                 key={schema.variable}
-                label={schema.label?.[getServerLocalKey()] || schema.variable}
+                label={formatLabel(schema)}
                 className={styles.formItem}
                 name={schema.variable}
                 initialValue={schema.defaultValue || undefined}
@@ -234,9 +247,7 @@ const APIKeyConfigModal = forwardRef<APIKeyConfigModalRef, APIKeyConfigModalProp
                     ? [
                         {
                           required: true,
-                          message: `${
-                            schema.label?.[getServerLocalKey()] || schema.variable
-                          } 不可为空`,
+                          message: `${formatLabel(schema)} 不可为空`,
                         },
                       ]
                     : []

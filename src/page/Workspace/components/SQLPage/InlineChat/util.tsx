@@ -460,15 +460,36 @@ export function addAIIcon(
       },
       getPosition: function () {
         const pos = getEmptyPosition(editor);
+        const model = editor.getModel();
+        const layoutInfo = editor.getLayoutInfo();
+        const lineCount = model?.getLineCount() || 0;
+
+        // 检查位置是否太靠近编辑器底部
+        // 如果控件位置在最后5行内，或者超出了可见区域，优先使用 ABOVE 定位
+        const isNearBottom = lineCount > 0 && pos.lineNumber > lineCount - 5;
+
+        // 获取视口信息来判断是否在可见区域底部
+        const visibleRanges = editor.getVisibleRanges();
+        const isInVisibleBottom =
+          visibleRanges.length > 0 &&
+          pos.lineNumber > visibleRanges[visibleRanges.length - 1].endLineNumber - 3;
+
         return {
           position: {
             lineNumber: pos.lineNumber,
             column: pos.column,
           },
-          preference: [
-            // editor.ContentWidgetPositionPreference.ABOVE,
-            monaco.editor.ContentWidgetPositionPreference.EXACT,
-          ],
+          preference:
+            isNearBottom || isInVisibleBottom
+              ? [
+                  // 靠近底部时，优先在上方显示
+                  monaco.editor.ContentWidgetPositionPreference.ABOVE,
+                  monaco.editor.ContentWidgetPositionPreference.BELOW,
+                ]
+              : [
+                  // 否则使用精确定位
+                  monaco.editor.ContentWidgetPositionPreference.EXACT,
+                ],
         };
       },
     };
@@ -480,8 +501,7 @@ export function addAIIcon(
       render(
         <div
           style={{
-            width: 300,
-            overflow: 'hidden',
+            display: 'inline-block',
           }}
         >
           <span
@@ -494,13 +514,16 @@ export function addAIIcon(
               alignItems: 'center',
               justifyContent: 'center',
               width: 'fit-content',
+              whiteSpace: 'nowrap',
             }}
           >
-            <Icon component={AIIcon} />
+            <Icon component={AIIcon} style={{ fontSize: 16 }} />
 
-            {/* <img src={AIIcon} className="odc-ai-inline-chat-icon" /> */}
-            <div style={{ display: 'flex', padding: '0px 8px' }}>
-              <span style={{ marginRight: 4, cursor: 'pointer' }} onClick={handleEdit}>
+            <div style={{ display: 'flex', padding: '0px 8px', alignItems: 'center' }}>
+              <span
+                style={{ marginRight: 4, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                onClick={handleEdit}
+              >
                 <span>编辑</span>
                 <span style={{ color: '#8592ad', margin: '0 4px' }}>{getKeyCodeText('57,41')}</span>
               </span>
