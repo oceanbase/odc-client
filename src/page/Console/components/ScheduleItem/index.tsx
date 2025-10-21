@@ -81,10 +81,10 @@ const ScheduleItem = ({
       <div className={styles.counters}>
         <CounterCard
           onClick={() => {
-            // 跳转到调度管理页面，设置特定类型和已启用状态过滤，定位到全局tab，时间选全部
+            // 跳转到调度管理页面，设置特定类型和已启用状态过滤，定位到全局tab，时间选全部，清空审批状态
             navigate(
               buildNavigateUrlWithFilters(
-                `/schedule?scheduleStatus=${ScheduleStatus.ENABLED}&scheduleType=${type}&tab=${ScheduleTab.all}&timeValue=ALL`,
+                `/schedule?scheduleStatus=${ScheduleStatus.ENABLED}&scheduleType=${type}&tab=${ScheduleTab.all}&timeValue=ALL&approveStatus=`,
               ),
             );
           }}
