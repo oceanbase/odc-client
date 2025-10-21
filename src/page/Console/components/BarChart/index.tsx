@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useContext, useMemo } from 'react';
+import React, { useRef, useEffect, useContext, useMemo, useState } from 'react';
 import * as echarts from 'echarts';
 import { ConsoleTextConfig, TaskTitle, TaskTypes } from '../../const';
 import './index.less';
@@ -10,6 +10,7 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
   const { taskStatus, taskStatusColor, taskStatusType } = ConsoleTextConfig.schdules;
   const chartRef = useRef(null);
   const navigate = useNavigate();
+  const [containerWidth, setContainerWidth] = useState(0);
 
   // 状态映射：Console状态 -> 任务页面状态
   const statusMapping = {
@@ -40,6 +41,14 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
   const checkedSchedules = getOrderedScheduleTypes().filter((item) =>
     allCheckedKeys.includes(item),
   );
+
+  // 计算是否需要隔一个显示标签
+  // 每个柱状图大约需要 60-80px 的宽度才能完整显示标签
+  const shouldSkipLabels = useMemo(() => {
+    const minWidthPerBar = 60; // 每个柱状图最小宽度
+    const totalNeededWidth = checkedKeys.length * minWidthPerBar;
+    return containerWidth > 0 && containerWidth < totalNeededWidth && checkedKeys.length > 8;
+  }, [containerWidth, checkedKeys.length]);
 
   useEffect(() => {
     if (chartRef.current) {
@@ -118,20 +127,18 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
 
             // 各状态详情
             params.forEach((item) => {
-              if (item.value > 0) {
-                result += `
-                  <div class="bar-chart-tooltip-item" data-task-type="${taskType}" data-status="${
-                  taskStatusType[item.seriesIndex]
-                }" data-click-type="detail">
-                    <div class="bar-chart-tooltip-item-square" style="background: ${
-                      item.color
-                    };"></div>
-                    <span class="bar-chart-tooltip-item-name">${item.seriesName}</span>
-                    <span class="bar-chart-tooltip-item-value">${item.value}</span>
-                    <span class="bar-chart-tooltip-item-arrow">></span>
-                  </div>
-                `;
-              }
+              result += `
+                <div class="bar-chart-tooltip-item" data-task-type="${taskType}" data-status="${
+                taskStatusType[item.seriesIndex]
+              }" data-click-type="detail">
+                  <div class="bar-chart-tooltip-item-square" style="background: ${
+                    item.color
+                  };"></div>
+                  <span class="bar-chart-tooltip-item-name">${item.seriesName}</span>
+                  <span class="bar-chart-tooltip-item-value">${item.value}</span>
+                  <span class="bar-chart-tooltip-item-arrow">></span>
+                </div>
+              `;
             });
 
             result += `</div>`;
@@ -152,15 +159,9 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
           type: 'category',
           data: checkedKeys.map((key) => TaskTitle[key]),
           axisLabel: {
-            interval: 0,
+            interval: shouldSkipLabels ? 1 : 0, // 根据容器宽度决定是否隔一个显示
             fontSize: 12,
             color: '#666',
-            formatter: function (value, index) {
-              if (checkedKeys.length > 8 && checkedSchedules?.length > 0) {
-                return index % 2 ? '' : value;
-              }
-              return value;
-            },
           },
           axisTick: {
             show: false,
@@ -257,8 +258,12 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
         tooltipContainer.addEventListener('click', handleTooltipClick);
       }
 
-      // 自适应大小
-      const resizeObserver = new ResizeObserver(() => {
+      // 自适应大小并更新容器宽度
+      const resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const width = entry.contentRect.width;
+          setContainerWidth(width);
+        }
         chart.resize();
       });
       resizeObserver.observe(chartRef.current);
@@ -272,7 +277,7 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
         chart.dispose();
       };
     }
-  }, [data, checkedKeys, selectedProjectId, timeValue, dateValue, navigate]);
+  }, [data, checkedKeys, selectedProjectId, timeValue, dateValue, navigate, shouldSkipLabels]);
 
   return <div ref={chartRef} className="bar-chart-wrapper" />;
 };

@@ -5,6 +5,7 @@ import Icon, {
   CloseOutlined,
   InfoCircleFilled,
   PauseCircleOutlined,
+  SearchOutlined,
   SendOutlined,
 } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
@@ -275,7 +276,7 @@ export default function InlineChat({
           }}
           className={styles.button}
         >
-          <PauseCircleOutlined />
+          <PauseCircleOutlined style={{ color: 'var(--icon-color-normal)' }} />
         </Button>
       );
     } else {
@@ -286,7 +287,14 @@ export default function InlineChat({
           onClick={() => send()}
           type="text"
         >
-          <SendOutlined />
+          <SendOutlined
+            style={{
+              color:
+                mode === AIQuestionType.SQL_MODIFIER && !value
+                  ? 'var(--icon-color-disable)'
+                  : 'var(--icon-color-normal)',
+            }}
+          />
         </Button>
       );
     }
@@ -391,8 +399,9 @@ export default function InlineChat({
               onOpenChange={(open) => {
                 setIsShowModelSelect(open);
               }}
+              dropdownMatchSelectWidth={false}
               popupRender={(menu) => (
-                <div>
+                <div style={{ width: 230 }}>
                   {/* 搜索框 */}
                   <div style={{ padding: '8px' }}>
                     <Input
@@ -401,13 +410,14 @@ export default function InlineChat({
                       value={searchValue}
                       onChange={(e) => setSearchValue(e.target.value)}
                       allowClear
+                      suffix={<SearchOutlined style={{ color: 'var(--icon-color-normal)' }} />}
                     />
                   </div>
                   {menu}
                 </div>
               )}
               placeholder="请选择模型"
-              style={{ width: 230 }}
+              className={styles.modelSelectDropdown}
               options={selectOptions}
               loading={modelsLoading}
               showSearch={false}

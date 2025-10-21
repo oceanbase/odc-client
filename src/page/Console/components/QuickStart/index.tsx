@@ -1,7 +1,7 @@
 import { formatMessage, getImg } from '@/util/intl';
 import { Card, Divider, Radio, Tooltip, Typography } from 'antd';
 import styles from './index.less';
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { ConsoleTextConfig, EQuickStartRole } from '../../const';
 import { gotoSQLWorkspace } from '@/util/route';
 import { URL_ACTION } from '@/util/hooks/useUrlAction';
@@ -12,7 +12,7 @@ import LabelWithIcon from '@/component/LabelWithIcon';
 import { ExperimentOutlined } from '@ant-design/icons';
 import modal from '@/store/modal';
 
-const QuickStart = () => {
+const QuickStart = memo(() => {
   const [currentQuickStartRole, setCurrentQuickStartRole] = useState(EQuickStartRole.Admin);
   const [currentQuickStartStep, setCurrentQuickStartStep] = useState(-1);
   const { quickStart } = ConsoleTextConfig;
@@ -150,6 +150,8 @@ const QuickStart = () => {
       </Card>
     </div>
   );
-};
+});
+
+QuickStart.displayName = 'QuickStart';
 
 export default QuickStart;

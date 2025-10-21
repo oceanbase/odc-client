@@ -412,6 +412,7 @@ const LargeModel = () => {
             <div className={styles.title}>
               启用 AI 服务
               <Switch
+                size="small"
                 className={styles.switch}
                 checked={setting.AIEnabled}
                 onChange={handleSwitchChange}

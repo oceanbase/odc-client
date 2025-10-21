@@ -52,7 +52,7 @@ const EditModal = forwardRef<EditModalRef, EditModalProps>(({ onRefresh }, ref) 
         const initialValues = {
           ...data.credential,
           model: data?.model,
-          type: data?.type,
+          modelType: data?.type, // 使用 modelType 字段名与表单字段一致
           description: data?.description,
         };
 

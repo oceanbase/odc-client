@@ -249,6 +249,13 @@ const ModelSelect: React.FC<ModelSelectProps> = ({
                         optionRender={(option) => renderOption(option)}
                         options={llmOptions}
                         styles={{ popup: { root: { maxHeight: 360, overflowY: 'scroll' } } }}
+                        showSearch
+                        filterOption={(input, option) => {
+                          const searchText = input.toLowerCase();
+                          // 从 option.value 中提取模型名称
+                          const modelName = (option?.value as string)?.split('/')[1] || '';
+                          return modelName.toLowerCase().includes(searchText);
+                        }}
                       />
                     </Form.Item>
                     {llmValue && (
@@ -309,6 +316,13 @@ const ModelSelect: React.FC<ModelSelectProps> = ({
                         options={embedingOptions}
                         optionRender={(option) => renderOption(option)}
                         styles={{ popup: { root: { maxHeight: 360, overflowY: 'scroll' } } }}
+                        showSearch
+                        filterOption={(input, option) => {
+                          const searchText = input.toLowerCase();
+                          // 从 option.value 中提取模型名称
+                          const modelName = (option?.value as string)?.split('/')[1] || '';
+                          return modelName.toLowerCase().includes(searchText);
+                        }}
                       />
                     </Form.Item>
                     {embeddingValue && (

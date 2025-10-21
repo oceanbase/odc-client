@@ -1,6 +1,6 @@
 .vendorCard {
   border: 1px solid var(--odc-border-color);
-  border-radius: 8px;
+  border-radius: 2px;
   font-size: 12px;
   padding: 0 20px;
   line-height: 20px;
@@ -17,7 +17,8 @@
     border: 1px solid #006aff;
 
     .contentSection .tagsAndRemark .remarkSection .addRemarkBtn {
-      display: inline-flex;
+      visibility: visible;
+      height: 22px;
     }
   }
 
@@ -91,7 +92,8 @@
         margin-right: 0;
         color: var(--text-color-hint);
         line-height: 20px;
-        height: 22px;
+        border-radius: 2px;
+        height: 20px;
       }
 
       .remarkSection {
@@ -105,7 +107,7 @@
         .addRemarkBtn {
           width: 22px;
           height: 22px;
-          display: none;
+          visibility: hidden;
           transition: all 0.2s ease;
 
           &:hover {
@@ -117,7 +119,7 @@
           }
 
           .addIcon {
-            font-size: 12px;
+            font-size: 11px;
           }
         }
       }
@@ -153,7 +155,7 @@
 
       .statusIcon {
         margin-right: 4px;
-        font-size: 16px;
+        font-size: 14px;
       }
     }
     .count {
