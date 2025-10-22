@@ -74,7 +74,8 @@ interface IParamContext {
   setSortType?: (v: SortType) => void;
   connectType: ConnectType[];
   setConnectType?: (v: ConnectType[]) => void;
-  reloadTable?: () => Promise<boolean>;
+  reloadTable?: () => void;
+  loading?: boolean;
   editDatasource?: (id: number) => void;
   setCopyDatasourceId?: (id: number) => void;
 }

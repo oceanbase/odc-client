@@ -99,6 +99,15 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
           >
             <ODCRiskLevelLabel iconMode levelMap level={task?.riskLevel?.level} />
           </Descriptions.Item>
+          <Descriptions.Item
+            span={2}
+            label={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.DetailContent.2ACDBED8',
+              defaultMessage: '描述',
+            })}
+          >
+            {task?.description || '-'}
+          </Descriptions.Item>
         </Descriptions>
         <Divider />
         <SimpleTextItem
@@ -232,16 +241,6 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
               })}
             </Descriptions.Item>
           )}
-
-          <Descriptions.Item
-            span={4}
-            label={formatMessage({
-              id: 'src.component.Task.MutipleAsyncTask.DetailContent.2ACDBED8',
-              defaultMessage: '描述',
-            })}
-          >
-            {task?.description || '-'}
-          </Descriptions.Item>
         </Descriptions>
         <Divider style={{ marginTop: 16 }} />
         <Descriptions column={4}>

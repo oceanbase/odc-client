@@ -104,9 +104,9 @@ const Filter: React.FC = () => {
     return (
       <div>
         <div>作业类型：</div>
-        <div className={styles.ml6}>
+        <span className={styles.value}>
           {_type.map((item) => SchedulePageTextMap[item]).join('，')}
-        </div>
+        </span>
       </div>
     );
   }, [isScheduleView, type, subTaskType, isAll]);
@@ -117,14 +117,14 @@ const Filter: React.FC = () => {
     return (
       <>
         <div>所属项目：</div>
-        <div className={styles.ml6}>
+        <span className={styles.value}>
           {_projectId.map((item, idx) => (
             <>
               {projectList?.find((projectItem) => projectItem?.id === Number(item))?.name}
               {comma(idx, _projectId.length)}
             </>
           ))}
-        </div>
+        </span>
       </>
     );
   }, [projectIds, subTaskProjectIds, isScheduleView, projectList]);
@@ -134,14 +134,14 @@ const Filter: React.FC = () => {
     return (
       <>
         <div>作业状态：</div>
-        <div className={styles.ml6}>
+        <span className={styles.value}>
           {status.map((item, idx) => (
             <>
               {ScheduleStatusTextMap[item]}
               {comma(idx, status.length)}
             </>
           ))}
-        </div>
+        </span>
       </>
     );
   }, [status]);
@@ -151,14 +151,14 @@ const Filter: React.FC = () => {
     return (
       <>
         <div>任务状态：</div>
-        <div className={styles.ml6}>
+        <span className={styles.value}>
           {subTaskStatus.map((item, idx) => (
             <>
               {ScheduleTaskStatusTextMap[item]}
               {comma(idx, subTaskStatus.length)}
             </>
           ))}
-        </div>
+        </span>
       </>
     );
   }, [subTaskStatus]);
@@ -170,16 +170,17 @@ const Filter: React.FC = () => {
     return (
       <>
         <div>创建时间范围：</div>
-        <div className={styles.ml6}>
+        <div>
           {_timeRange !== 'custom' ? (
-            <span>{TimeOptions.find((item) => item.value === _timeRange)?.label}</span>
+            <span className={styles.value}>
+              {TimeOptions.find((item) => item.value === _timeRange)?.label}
+            </span>
           ) : (
             ''
           )}
           {_timeRange === 'custom' && _executeDate?.filter(Boolean)?.length === 2 ? (
-            <span>
-              {_executeDate?.[0]?.format('YYYY-MM-DD HH:mm:ss')} ~
-              {_executeDate?.[1]?.format('YYYY-MM-DD HH:mm:ss')}
+            <span className={styles.value}>
+              {_executeDate?.[0]?.format('YYYY-MM-DD')} ~{_executeDate?.[1]?.format('YYYY-MM-DD')}
             </span>
           ) : (
             ''
@@ -194,14 +195,14 @@ const Filter: React.FC = () => {
     return (
       <>
         <div>审批状态：</div>
-        <div className={styles.ml6}>
+        <span className={styles.value}>
           {approveStatus.map((item, idx) => (
             <>
               {ApprovalStatusTextMap[item]}
               {comma(idx, approveStatus.length)}
             </>
           ))}
-        </div>
+        </span>
       </>
     );
   }, [approveStatus?.length, isScheduleView]);
@@ -256,7 +257,11 @@ const Filter: React.FC = () => {
       trigger="click"
     >
       <FilterIcon isActive={getIsActive()} border>
-        <Tooltip title={open ? undefined : tipContent()} open={!open && hover}>
+        <Tooltip
+          title={open ? undefined : tipContent()}
+          open={!open && hover}
+          overlayClassName={styles.filterTooltip}
+        >
           <span onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
             <FilterOutlined />
           </span>

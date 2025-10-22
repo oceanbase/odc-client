@@ -94,6 +94,9 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             <ODCRiskLevelLabel iconMode levelMap level={riskLevel?.level} />
           </Descriptions.Item>
         )}
+        <Descriptions.Item span={2} label={'描述'}>
+          {task?.description}
+        </Descriptions.Item>
       </Descriptions>
       <Divider />
       <div className={styles.format}>
@@ -303,18 +306,6 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             {getFormatDateTime(task?.executionTime)}
           </Descriptions.Item>
         )}
-
-        <Descriptions.Item
-          span={2}
-          label={
-            formatMessage({
-              id: 'odc.src.component.Task.AsyncTask.DetailContent.MissionDetails',
-              defaultMessage: '任务描述',
-            }) /* 任务描述 */
-          }
-        >
-          {task?.description}
-        </Descriptions.Item>
       </Descriptions>
       <Divider
         style={{

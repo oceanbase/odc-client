@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import { ReloadOutlined } from '@ant-design/icons';
 import { Space } from 'antd';
 import React, { useContext } from 'react';
 import ParamContext from '../ParamContext';
 import Filter from './Filter';
-import FilterIcon from './FIlterIcon';
-
-import styles from './index.less';
 import Search from './Search';
 import Sorter from './Sorter';
+import FilterIcon from '@/component/Button/FIlterIcon';
+import { SyncOutlined } from '@ant-design/icons';
 
 interface IProps {}
 
@@ -31,16 +29,17 @@ const Header: React.FC<IProps> = function () {
   const context = useContext(ParamContext);
 
   return (
-    <Space size={5} className={styles.right}>
+    <Space size={5} style={{ lineHeight: 1, paddingRight: 16 }}>
       <Search />
       <Filter />
       <Sorter />
       <FilterIcon
+        border
         onClick={() => {
           context.reloadTable?.();
         }}
       >
-        <ReloadOutlined />
+        <SyncOutlined spin={context?.loading} />
       </FilterIcon>
     </Space>
   );

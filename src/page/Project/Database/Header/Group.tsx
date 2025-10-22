@@ -6,8 +6,12 @@ import { DatabaseGroup } from '@/d.ts/database';
 import ParamContext from '../ParamContext';
 import { ReactComponent as GroupSvg } from '@/svgr/group.svg';
 import Icon from '@ant-design/icons';
+import FilterIcon from '@/component/Button/FIlterIcon';
+import styles from './index.less';
 
-interface IProps {}
+interface IProps {
+  border?: boolean;
+}
 
 const items: MenuProps['items'] = [
   {
@@ -54,7 +58,7 @@ const items: MenuProps['items'] = [
   },
 ];
 
-const Group: React.FC<IProps> = function () {
+const Group: React.FC<IProps> = function ({ border = false }) {
   const context = useContext(ParamContext);
 
   const handleSelectGroupBy = (e) => {
@@ -68,14 +72,20 @@ const Group: React.FC<IProps> = function () {
         onClick: handleSelectGroupBy,
       }}
     >
-      <Icon
-        component={GroupSvg}
-        style={
-          context.groupMode !== DatabaseGroup.none
-            ? { color: 'var(--icon-color-focus)', fontSize: 16 }
-            : { color: 'var(--icon-color-normal)', fontSize: 16 }
-        }
-      />
+      <FilterIcon
+        className={styles.groupIconContainer}
+        border={border}
+        isActive={context.groupMode !== DatabaseGroup.none}
+      >
+        <Icon
+          component={GroupSvg}
+          style={
+            context.groupMode !== DatabaseGroup.none
+              ? { color: 'var(--icon-color-focus)', fontSize: 16 }
+              : { color: 'var(--icon-color-normal)', fontSize: 16 }
+          }
+        />
+      </FilterIcon>
     </Dropdown>
   );
 };

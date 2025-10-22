@@ -63,9 +63,9 @@ const DateSelect = ({ isScheduleView }: { isScheduleView: boolean }) => {
 
   const handleSelectDate = (value) => {
     if (isScheduleView) {
-      setParams?.({ executeDate: value });
+      setParams?.({ executeDate: value ?? [undefined, undefined] });
     } else {
-      setsubTaskParams?.({ executeDate: value });
+      setsubTaskParams?.({ executeDate: value ?? [undefined, undefined] });
     }
   };
 
@@ -116,8 +116,8 @@ const DateSelect = ({ isScheduleView }: { isScheduleView: boolean }) => {
             size="small"
             suffixIcon={null}
             bordered={false}
-            showTime={{ format: 'HH:mm:ss' }}
-            format="YYYY-MM-DD HH:mm:ss"
+            // showTime={{ format: 'HH:mm:ss' }}
+            format="YYYY-MM-DD"
             disabledDate={(current) => {
               return current > dayjs();
             }}

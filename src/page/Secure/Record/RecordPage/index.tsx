@@ -33,6 +33,7 @@ import FormRecordExportModal from '../../components/FormRecordExportModal';
 import { SecureContext } from '../../context';
 import { getPageColumns } from './column';
 import { RecordContent } from './component';
+import DateSelect from '@/component/DateSelect';
 
 const { RangePicker } = DatePicker;
 
@@ -47,6 +48,7 @@ const RecordPage: React.FC<any> = () => {
   const [executeDate, setExecuteDate] = useState<[Dayjs, Dayjs]>([, dayjs()]);
   const [recordExportVisible, setRecordExportVisible] = useState(false);
   const [startIndex, setStartIndex] = useState(0);
+  const [timeRange, setTimeRange] = useState<number | string>(7);
   const userMap = users?.contents?.reduce((total, { name, accountName }) => {
     total[name] = {
       name,
@@ -72,14 +74,13 @@ const RecordPage: React.FC<any> = () => {
     setEventMeta(eventMeta);
   };
 
-  const loadData = async (args: ITableLoadOptions) => {
+  const loadData = async (args: ITableLoadOptions, timeRange?: string | number) => {
     const { filters, sorter, pagination, pageSize } = args ?? {};
     if (!pageSize) {
       return;
     }
     const {
       typeName: type,
-      executeTime = 7,
       actionName: action,
       connectionName,
       clientIpAddress,
@@ -104,11 +105,14 @@ const RecordPage: React.FC<any> = () => {
       size: pageSize,
     };
 
-    if (executeTime !== 'custom' && typeof executeTime === 'number') {
-      data.startTime = getPreTime(executeTime);
+    if (timeRange !== 'custom' && typeof timeRange === 'number') {
+      data.startTime = getPreTime(timeRange);
       data.endTime = getPreTime(0);
     }
-
+    if (timeRange === 'ALL') {
+      data.startTime = undefined;
+      data.endTime = undefined;
+    }
     // sorter
     data.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
     const startIndex = pageSize * (current - 1);
@@ -128,7 +132,7 @@ const RecordPage: React.FC<any> = () => {
   };
 
   const handleTableChange = (args: ITableLoadOptions) => {
-    loadData(args);
+    loadData(args, timeRange);
   };
 
   const handleRecordExportVisible = (visible: boolean = false) => {
@@ -153,33 +157,19 @@ const RecordPage: React.FC<any> = () => {
           enabledSearch: false,
           filters: [
             {
-              name: 'executeTime',
-              title: formatMessage({
-                id: 'odc.components.RecordPage.ExecutionTime.1',
-                defaultMessage: '执行时间：',
-              }),
-
-              //执行时间：
-              defaultValue: 7,
-              dropdownWidth: 160,
-              options: TimeOptions,
-            },
-
-            {
               render: (props: ITableLoadOptions) => {
-                const content = props?.filters?.executeTime === 'custom' && (
-                  <RangePicker
-                    defaultValue={executeDate}
-                    bordered={false}
-                    showTime={{ format: 'HH:mm:ss' }}
-                    format="YYYY-MM-DD HH:mm:ss"
+                return (
+                  <DateSelect
+                    timeRange={timeRange}
+                    executeDate={executeDate}
+                    active={timeRange !== 7}
                     onChange={(value) => {
-                      handleExecuteDateChange(value);
+                      setTimeRange(value);
+                      loadData(props, value);
                     }}
+                    onDateChange={handleExecuteDateChange}
                   />
                 );
-
-                return content;
               },
             },
           ],
@@ -207,7 +197,7 @@ const RecordPage: React.FC<any> = () => {
             },
           ],
         }}
-        onLoad={loadData}
+        onLoad={(args) => loadData(args, timeRange)}
         onChange={handleTableChange}
         tableProps={{
           columns: getPageColumns({

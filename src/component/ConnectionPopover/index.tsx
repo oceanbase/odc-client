@@ -117,34 +117,51 @@ const ConnectionPopover: React.FC<{
             >
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <RiskLevelLabel
-                  content={connection?.environmentName}
-                  color={connection?.environmentStyle?.toLowerCase()}
+                  content={connection?.environmentName || database?.environment?.name}
+                  color={
+                    connection?.environmentStyle?.toLowerCase() ||
+                    database?.environment?.style?.toLowerCase()
+                  }
                 />
                 <Icon
                   component={DBIcon?.component}
                   style={{ fontSize: 22, marginRight: 4, color: DBIcon?.color }}
-                />{' '}
-                {connection?.name}
+                />
+                <div className={styles.content}>{connection?.name}</div>
               </div>
             </div>
           </Tooltip>
           {renderConnectionMode()}
-          <div>
+          <div className={styles.label}>
             {formatMessage(
               {
                 id: 'src.component.ConnectionPopover.986CE021',
                 defaultMessage: '文件URL：{LogicalExpression0}',
               },
-              { LogicalExpression0: connection?.host ?? '-' },
+              {
+                LogicalExpression0: connection?.host ? (
+                  <span className={styles.content} style={{ color: 'black' }}>
+                    {connection?.host}
+                  </span>
+                ) : (
+                  '-'
+                ),
+              },
             )}
           </div>
-          <div>
+          <div className={styles.label}>
             {formatMessage(
               {
                 id: 'src.component.ConnectionPopover.4A02B634',
                 defaultMessage: '地域：{LogicalExpression0}',
               },
-              { LogicalExpression0: connection?.region ?? '-' },
+              {
+                LogicalExpression0: connection?.region ? (
+                  <span className={styles.content}>{connection?.region}</span>
+                ) : (
+                  '-'
+                ),
+              },
             )}
           </div>
         </Space>
@@ -182,7 +199,7 @@ const ConnectionPopover: React.FC<{
 
                 <DataBaseStatusIcon item={database} />
                 <div className={styles.ellipsis} title={database?.name}>
-                  22{`${database?.name}`}
+                  {`${database?.name}`}
                 </div>
               </div>
             </div>

@@ -34,11 +34,52 @@ import SessionContextWrap from '../SessionContextWrap';
 import SessionContext from '../SessionContextWrap/context';
 import SessionSelect from '../SessionContextWrap/SessionSelect';
 import styles from './index.less';
+import FilterIcon from '@/component/Button/FIlterIcon';
+import InputSelect from '@/component/InputSelect';
 
 const ToolbarButton = Toolbar.Button;
 
-const { Search } = Input;
-const { Content } = Layout;
+enum SessionListSearchType {
+  all = 'all',
+  sessionId = 'sessionId',
+  dbUser = 'dbUser',
+  database = 'database',
+  command = 'command',
+  srcIp = 'srcIp',
+  status = 'status',
+  obproxyIp = 'obproxyIp',
+  sql = 'sql',
+}
+
+const SessionListSearchTypeTextMap = {
+  [SessionListSearchType.all]: '全部',
+  [SessionListSearchType.sessionId]: formatMessage({
+    id: 'workspace.window.session.management.column.sessionId',
+    defaultMessage: '会话 ID',
+  }),
+  [SessionListSearchType.dbUser]: formatMessage({
+    id: 'workspace.window.session.management.column.dbUser',
+    defaultMessage: '用户',
+  }),
+  [SessionListSearchType.database]: formatMessage({
+    id: 'workspace.window.session.management.column.database',
+    defaultMessage: '数据库名',
+  }),
+  [SessionListSearchType.command]: formatMessage({
+    id: 'workspace.window.session.management.column.command',
+    defaultMessage: '命令',
+  }),
+  [SessionListSearchType.srcIp]: formatMessage({
+    id: 'workspace.window.session.management.column.srcIp',
+    defaultMessage: '来源',
+  }),
+  [SessionListSearchType.status]: formatMessage({
+    id: 'workspace.window.session.management.column.status',
+    defaultMessage: '状态',
+  }),
+  [SessionListSearchType.obproxyIp]: 'OB Proxy',
+  [SessionListSearchType.sql]: 'SQL',
+};
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
@@ -49,6 +90,11 @@ interface IProps {
 
 function SessionManagementPage(props: IProps) {
   const [searchKey, setSearchKey] = useState('');
+  const [searchType, setSearchType] = useState(undefined);
+  const selectTypeOptions = Object.keys(SessionListSearchType).map((item) => ({
+    value: item,
+    label: SessionListSearchTypeTextMap[item],
+  }));
   const [selectedRows, setSelectedRows] = useState<IDatabaseSession[]>([]);
   const [listLoading, setListLoading] = useState(false);
   const [sessionList, setSessionList] = useState<IDatabaseSession[]>([]);
@@ -73,19 +119,39 @@ function SessionManagementPage(props: IProps) {
     fetchDatabaseSessionList();
   }, [session?.sessionId]);
 
-  // 过滤搜索关键词
-  const filteredRows = sessionList?.filter((session) =>
-    [
-      `${session.sessionId}`,
-      session.dbUser,
-      session.database,
-      session.command,
-      session.srcIp,
-      session.status,
-      session.obproxyIp,
-      session.sql,
-    ].some((s) => s && s.toLowerCase().indexOf(searchKey.toLowerCase()) > -1),
-  );
+  const filteredRows = sessionList?.filter((session) => {
+    switch (searchType) {
+      case SessionListSearchType.all:
+        return [
+          `${session.sessionId}`,
+          session.dbUser,
+          session.database,
+          session.command,
+          session.srcIp,
+          session.status,
+          session.obproxyIp,
+          session.sql,
+        ].some((s) => s && s.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1);
+      case SessionListSearchType.sessionId:
+        return session.sessionId.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+      case SessionListSearchType.dbUser:
+        return session.dbUser.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+      case SessionListSearchType.database:
+        return session.database.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+      case SessionListSearchType.command:
+        return session.command.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+      case SessionListSearchType.srcIp:
+        return session.srcIp.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+      case SessionListSearchType.status:
+        return session.status.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+      case SessionListSearchType.obproxyIp:
+        return session.obproxyIp.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+      case SessionListSearchType.sql:
+        return session.sql.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+      default:
+        return true;
+    }
+  });
 
   const statusFilter = [...new Set(filteredRows?.map((item) => item.status) ?? [])]?.map(
     (item) => ({
@@ -262,9 +328,17 @@ function SessionManagementPage(props: IProps) {
     }
   };
 
-  const handleSearch = (searchKey: string) => {
-    setSearchKey(searchKey);
+  const handleSearch = ({
+    searchValue,
+    searchType,
+  }: {
+    searchValue: string;
+    searchType: SessionListSearchType;
+  }) => {
+    setSearchType(searchType);
+    setSearchKey(searchValue);
   };
+
   const handleRefresh = () => {
     fetchDatabaseSessionList();
   };
@@ -322,27 +396,16 @@ function SessionManagementPage(props: IProps) {
                 )}
               </Space>
             </div>
-            <div className="tools-right">
-              <Search
-                allowClear={true}
-                placeholder={formatMessage({
-                  id: 'workspace.window.session.button.search',
-                  defaultMessage: '搜索',
-                })}
-                onSearch={handleSearch}
-                // onChange={(e) => handleSearch(e.target.value)}
-                size="small"
-                className={styles.search}
+            <div className="tools-right" style={{ gap: 8 }}>
+              <InputSelect
+                searchValue={searchKey}
+                searchType={searchType}
+                selectTypeOptions={selectTypeOptions}
+                onSelect={handleSearch}
               />
-
-              <ToolbarButton
-                text={formatMessage({
-                  id: 'workspace.window.session.button.refresh',
-                  defaultMessage: '刷新',
-                })}
-                icon={<SyncOutlined />}
-                onClick={handleRefresh}
-              />
+              <FilterIcon border isActive={false}>
+                <SyncOutlined spin={listLoading} onClick={handleRefresh} />
+              </FilterIcon>
             </div>
           </Toolbar>
         </div>

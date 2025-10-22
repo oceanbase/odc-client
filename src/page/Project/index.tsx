@@ -184,8 +184,12 @@ const Index: React.FC<IProps> = function (props) {
   const isTitleASelectArchived = titleSelectType === ProjectTabType.ARCHIVED;
   const [hasLoginDatabaseAuth, setHasLoginDatabaseAuth] = useState(false);
 
+  const { run: _fetchProjectList, loading: projectListLoading } = useRequest(getProject, {
+    manual: true,
+  });
+
   async function fetchProject(projectId: number) {
-    const data = await getProject(projectId);
+    const data = await _fetchProjectList(projectId);
     if (data) {
       setProject(data);
       setTitleSelectType(data?.archived ? ProjectTabType.ARCHIVED : ProjectTabType.ALL);
@@ -373,6 +377,7 @@ const Index: React.FC<IProps> = function (props) {
           reloadProject,
           hasLoginDatabaseAuth,
           setHasLoginDatabaseAuth,
+          loading: projectListLoading,
         }}
       >
         <Component key={id} id={id} />

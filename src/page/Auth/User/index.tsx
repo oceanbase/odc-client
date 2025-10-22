@@ -49,6 +49,25 @@ import FormModal from './component/FormModal';
 import AccessKeyManageModal from './component/AccessKeyManageModal';
 import styles from './index.less';
 import login from '@/store/login';
+import InputSelect from '@/component/InputSelect';
+
+enum UserSearchType {
+  all = 'all',
+  name = 'name',
+  accountName = 'accountName',
+}
+
+const UserSearchTypeTextMap = {
+  [UserSearchType.all]: '全部',
+  [UserSearchType.name]: formatMessage({
+    id: 'odc.components.UserPage.Name',
+    defaultMessage: '姓名',
+  }),
+  [UserSearchType.accountName]: formatMessage({
+    id: 'odc.components.UserPage.Account',
+    defaultMessage: '账号',
+  }),
+};
 
 interface IProps {
   userStore?: UserStore;
@@ -63,6 +82,8 @@ interface IState {
   detailModalVisible: boolean;
   accessKeyModalVisible: boolean;
   selectedUserId: number;
+  searchType: UserSearchType;
+  searchValue: string;
 }
 
 interface IManagerBatchUser extends IManagerUser {
@@ -102,6 +123,8 @@ class UserPage extends React.PureComponent<IProps, IState> {
     detailModalVisible: false,
     accessKeyModalVisible: false,
     selectedUserId: null,
+    searchValue: undefined,
+    searchType: undefined,
   };
 
   private getPageColumns = (roles: any[]) => {
@@ -358,13 +381,17 @@ class UserPage extends React.PureComponent<IProps, IState> {
   };
 
   private loadData = async (args: ITableLoadOptions = {}) => {
-    const { searchValue = '', filters, sorter, pagination, pageSize } = args ?? {};
+    const { filters, sorter, pagination, pageSize } = args ?? {};
     const { roleIds, enabled } = filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
     const data: Record<string, any> = {
-      name: searchValue,
-      accountName: searchValue,
+      name: [UserSearchType.name, UserSearchType.all].includes(this.state.searchType)
+        ? this.state.searchValue
+        : undefined,
+      accountName: [UserSearchType.accountName, UserSearchType.all].includes(this.state.searchType)
+        ? this.state.searchValue
+        : undefined,
       roleId: roleIds,
       enabled,
       page: current,
@@ -441,6 +468,24 @@ class UserPage extends React.PureComponent<IProps, IState> {
     });
   };
 
+  private handleSearch = ({
+    searchValue,
+    searchType,
+  }: {
+    searchValue: string;
+    searchType: UserSearchType;
+  }) => {
+    this.setState(
+      {
+        searchValue,
+        searchType,
+      },
+      () => {
+        this.loadData();
+      },
+    );
+  };
+
   componentDidMount() {
     this.loadRoles();
   }
@@ -458,6 +503,10 @@ class UserPage extends React.PureComponent<IProps, IState> {
       user,
     } = this.state;
     const disabledOp = this.isMe(user);
+    const selectTypeOptions = Object.keys(UserSearchType).map((item) => ({
+      value: item,
+      label: UserSearchTypeTextMap[item],
+    }));
     const canAcessCreate = canAcess({
       resourceIdentifier: IManagerResourceType.user,
       action: actionTypes.create,
@@ -474,11 +523,31 @@ class UserPage extends React.PureComponent<IProps, IState> {
           enableResize
           titleContent={null}
           filterContent={{
-            searchPlaceholder: formatMessage({
-              id: 'odc.components.UserPage.EnterAUserOrAccount',
-              defaultMessage: '请输入用户/账号搜索',
-            }),
-            /* 请输入用户/账号搜索 */
+            enabledSearch: false,
+            filters: [
+              {
+                render: (params) => {
+                  return (
+                    <InputSelect
+                      searchValue={this.state.searchValue}
+                      searchType={this.state.searchType}
+                      selectTypeOptions={selectTypeOptions}
+                      onSelect={({ searchValue, searchType }) => {
+                        this.setState(
+                          {
+                            searchValue,
+                            searchType: searchType as UserSearchType,
+                          },
+                          () => {
+                            this.loadData(params);
+                          },
+                        );
+                      }}
+                    />
+                  );
+                },
+              },
+            ],
           }}
           operationContent={
             canAcessCreate

@@ -35,6 +35,7 @@ import UpdateUserModal from './UpdateUserModal';
 import { isProjectArchived } from '@/page/Project/helper';
 import { UserOperationKey, getOperatioFunc } from '@/d.ts/operation';
 import { renderTool } from '@/util/renderTool';
+import { SyncOutlined } from '@ant-design/icons';
 
 export const projectRoleTextMap = {
   [ProjectRole.OWNER]: formatMessage({
@@ -231,8 +232,8 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
     <TableCard
       title={projectArchived ? null : TableCardTitle}
       extra={
-        <FilterIcon onClick={context.reloadProject}>
-          <Reload />
+        <FilterIcon onClick={context.reloadProject} border>
+          <SyncOutlined spin={context?.loading} />
         </FilterIcon>
       }
     >

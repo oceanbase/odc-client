@@ -41,10 +41,35 @@ import SessionSelect from '../SessionContextWrap/SessionSelect';
 import RecyleConfigContext from './context/RecyleConfigContext';
 import styles from './index.less';
 import RecycleConfig from './RecyleConfig';
+import FilterIcon from '@/component/Button/FIlterIcon';
+import InputSelect from '@/component/InputSelect';
 
 const ToolbarButton = Toolbar.Button;
 
 const { Search } = Input;
+
+enum RecycleBinSearchType {
+  all = 'all',
+  id = 'id',
+  objName = 'objName',
+  objType = 'objType',
+}
+
+const RecycleBinSearchTypeTextMap = {
+  [RecycleBinSearchType.all]: '全部',
+  [RecycleBinSearchType.id]: formatMessage({
+    id: 'workspace.window.recyclebin.column.originName',
+    defaultMessage: '原名称',
+  }),
+  [RecycleBinSearchType.objName]: formatMessage({
+    id: 'workspace.window.recyclebin.column.objName',
+    defaultMessage: '对象名称',
+  }),
+  [RecycleBinSearchType.objType]: formatMessage({
+    id: 'workspace.window.recyclebin.column.objType',
+    defaultMessage: '对象类型',
+  }),
+};
 
 interface IProps {
   session: SessionStore;
@@ -65,6 +90,7 @@ class RecycleBin extends Component<
     showDeleteDrawer: boolean;
     showRestoreDrawer: boolean;
     recycleConfig: IRecycleConfig;
+    searchType: RecycleBinSearchType;
   }
 > {
   public readonly state = {
@@ -76,6 +102,7 @@ class RecycleBin extends Component<
     showDeleteDrawer: false,
     showRestoreDrawer: false,
     recycleConfig: null,
+    searchType: undefined,
   };
 
   private session: SessionStore;
@@ -237,8 +264,14 @@ class RecycleBin extends Component<
     });
   };
 
-  public handleSearch = (searchKey: string) => {
-    this.setState({ searchKey });
+  public handleSearch = ({
+    searchValue,
+    searchType,
+  }: {
+    searchValue: string;
+    searchType: RecycleBinSearchType;
+  }) => {
+    this.setState({ searchKey: searchValue, searchType });
   };
 
   public handleRowSelected = (ids: string[]) => {
@@ -277,12 +310,18 @@ class RecycleBin extends Component<
       showDeleteDrawer,
       showRestoreDrawer,
       searchKey,
+      searchType,
       listLoading,
       selectedObjectNames,
       recycleConfig,
     } = this.state;
 
     const { simpleHeader, theme } = this.props;
+
+    const selectTypeOptions = Object.keys(RecycleBinSearchType).map((item) => ({
+      value: item,
+      label: RecycleBinSearchTypeTextMap[item],
+    }));
 
     const columns: ColumnsType<IRecycleObject> = [
       {
@@ -371,11 +410,22 @@ class RecycleBin extends Component<
     ];
 
     // 查找原名称和对象名称，忽略大小写
-    const filteredRows = this.session?.recycleObjects.filter(
-      (p) =>
-        (p.id && p.id.toLowerCase().indexOf(searchKey.toLowerCase()) > -1) ||
-        (p.objName && p.objName.toLowerCase().indexOf(searchKey.toLowerCase()) > -1),
-    );
+    const filteredRows = this.session?.recycleObjects.filter((p) => {
+      switch (searchType) {
+        case RecycleBinSearchType.all:
+          return [p.id, p.objName, p.objType].some(
+            (s) => s && s.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1,
+          );
+        case RecycleBinSearchType.id:
+          return p.id && p.id.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+        case RecycleBinSearchType.objName:
+          return p.objName && p.objName.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+        case RecycleBinSearchType.objType:
+          return p.objType && p.objType.toLowerCase().indexOf(searchKey?.toLowerCase()) > -1;
+        default:
+          return true;
+      }
+    });
 
     return (
       <>
@@ -418,22 +468,13 @@ class RecycleBin extends Component<
                   />
                 </Space>
               </div>
-              <div className="tools-right">
-                <Search
-                  allowClear
-                  placeholder={formatMessage({
-                    id: 'workspace.window.session.button.search',
-                    defaultMessage: '搜索',
-                  })}
-                  onSearch={this.handleSearch}
-                  // onChange={(e) => this.handleSearch(e.target.value)}
-                  size="small"
-                  style={{
-                    height: 24,
-                  }}
-                  className={styles.search}
+              <div className="tools-right" style={{ gap: 8 }}>
+                <InputSelect
+                  searchValue={searchKey}
+                  searchType={searchType}
+                  selectTypeOptions={selectTypeOptions}
+                  onSelect={this.handleSearch}
                 />
-
                 <RecyleConfigContext.Provider
                   value={{
                     setting: recycleConfig,
@@ -441,26 +482,14 @@ class RecycleBin extends Component<
                   }}
                 >
                   <RecycleConfig>
-                    <ToolbarButton
-                      text={
-                        formatMessage({
-                          id: 'odc.components.RecycleBinPage.Settings',
-                          defaultMessage: '设置',
-                        })
-                        //设置
-                      }
-                      icon={<SettingOutlined />}
-                    />
+                    <FilterIcon border isActive={recycleConfig?.recyclebinEnabled}>
+                      <SettingOutlined />
+                    </FilterIcon>
                   </RecycleConfig>
                 </RecyleConfigContext.Provider>
-                <ToolbarButton
-                  text={formatMessage({
-                    id: 'workspace.window.session.button.refresh',
-                    defaultMessage: '刷新',
-                  })}
-                  icon={<SyncOutlined />}
-                  onClick={this.handleRefresh}
-                />
+                <FilterIcon border isActive={false}>
+                  <SyncOutlined spin={listLoading} onClick={this.handleRefresh} />
+                </FilterIcon>
               </div>
             </Toolbar>
           </div>

@@ -47,6 +47,7 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
   const [searchValue, setSearchValue] = useState('');
   const [visible, setVisible] = useState(false);
   const [database, setDatabase] = useState<IDatabase>(null);
+  const [loading, setLoading] = useState(false);
   const lastParams = useRef({
     pageSize: 0,
     current: 0,
@@ -64,12 +65,14 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
   const loadData = async (pageSize, current, name: string = searchValue) => {
     lastParams.current.pageSize = pageSize;
     lastParams.current.current = current;
+    setLoading(true);
     const res = await getDataSourceManageDatabase(
       parseInt(id),
       name,
       filterParams?.existed,
       filterParams?.belongsToProject,
     );
+    setLoading(false);
     if (res) {
       setData(res?.contents);
       setTotal(res?.page?.totalElements);
@@ -145,9 +148,10 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
               setSearchValue,
               filterParams,
               setFilterParams,
-              reload: () => {
+              loading,
+              reload: (name?: string) => {
                 lastParams.current.current = 1;
-                reload();
+                reload(name);
               },
             }}
           >

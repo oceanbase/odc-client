@@ -19,6 +19,7 @@ interface IParamContext {
   envList?: IEnvironment[];
   groupMode?: DatabaseGroup;
   setGroupMode?: React.Dispatch<React.SetStateAction<DatabaseGroup>>;
+  loading?: boolean;
 }
 
 const ParamContext: React.Context<IParamContext> = React.createContext({

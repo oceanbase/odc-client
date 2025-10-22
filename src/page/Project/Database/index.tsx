@@ -205,6 +205,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             setFilterParams,
             groupMode,
             setGroupMode,
+            loading,
             reload: () => {
               reload();
             },

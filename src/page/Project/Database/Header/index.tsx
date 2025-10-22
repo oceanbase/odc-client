@@ -1,12 +1,12 @@
-import { ReloadOutlined } from '@ant-design/icons';
 import { Space } from 'antd';
 import React, { useContext } from 'react';
 import ParamContext from '../ParamContext';
 import Filter from './Filter';
-import FilterIcon from '@/page/Datasource/Datasource/Header/FIlterIcon';
+import FilterIcon from '@/component/Button/FIlterIcon';
 import styles from './index.less';
 import Search from './Search';
 import Group from './Group';
+import { SyncOutlined } from '@ant-design/icons';
 
 interface IProps {}
 
@@ -14,16 +14,17 @@ const Header: React.FC<IProps> = function () {
   const context = useContext(ParamContext);
 
   return (
-    <Space size={5} className={styles.right}>
+    <Space size={5} style={{ lineHeight: 1 }}>
       <Search />
       <Filter />
-      <Group />
+      <Group border />
       <FilterIcon
+        border
         onClick={() => {
           context.reload?.();
         }}
       >
-        <ReloadOutlined />
+        <SyncOutlined spin={context?.loading} />
       </FilterIcon>
     </Space>
   );

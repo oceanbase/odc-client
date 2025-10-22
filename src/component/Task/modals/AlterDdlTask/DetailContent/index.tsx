@@ -218,6 +218,15 @@ export function getItems(
         ['数据源', <EllipsisText content={task?.database?.dataSource?.name} />],
         !login.isPrivateSpace() ? ['项目', <EllipsisText content={task?.project?.name} />] : null,
         hasFlow ? riskItem : null,
+        [
+          formatMessage({
+            id: 'odc.AlterDdlTask.DetailContent.Description',
+            defaultMessage: '描述',
+          }),
+          //描述
+          task?.description,
+          2,
+        ],
       ].filter(Boolean),
     },
     {
@@ -322,15 +331,6 @@ export function getItems(
               1,
             ]
           : null,
-        [
-          formatMessage({
-            id: 'odc.AlterDdlTask.DetailContent.Description',
-            defaultMessage: '描述',
-          }),
-          //描述
-          task?.description,
-          2,
-        ],
       ].filter(Boolean),
     },
     {

@@ -14,6 +14,7 @@ interface IParamsContext {
   reload?: () => void;
   mode?: TaskPageMode;
   taskTabType?: TaskPageType;
+  loading?: boolean;
 }
 
 const ParamsContext: React.Context<IParamsContext> = React.createContext({

@@ -164,7 +164,7 @@ const TaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) 
       title={
         <div className={styles.title}>
           <div className={styles.detailName}>
-            <div className={styles.scheduleName}>{task?.description}</div>
+            <div className={styles.taskName}>{task?.description}</div>
             <Tooltip title={task?.description} overlayClassName={styles.scheduleNameTooltip}>
               <div className={styles.ml4}>详情</div>
             </Tooltip>

@@ -32,6 +32,7 @@ import { useEffect, useRef, useState } from 'react';
 import NewSSODrawerButton from './NewSSODrawerButton';
 import EditSSODrawer from './NewSSODrawerButton/Edit';
 import SSODetailDrawer from './SSODetailDrawer';
+import { SyncOutlined } from '@ant-design/icons';
 
 export default function SSO() {
   const [list, setList] = useState<IResponseData<IManagerIntegration>>();
@@ -210,8 +211,8 @@ export default function SSO() {
       title={<NewSSODrawerButton onSuccess={() => reload()} />}
       extra={
         <>
-          <FilterIcon onClick={reload}>
-            <Reload />
+          <FilterIcon onClick={reload} border>
+            <SyncOutlined spin={loading} />
           </FilterIcon>
         </>
       }

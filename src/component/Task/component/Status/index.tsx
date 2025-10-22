@@ -184,6 +184,115 @@ export const flowStatusSelectOptions = [
 export const status: Partial<
   Record<TaskStatus, { icon: React.ReactNode; text: string; desc?: React.ReactNode }>
 > = {
+  [TaskStatus.APPROVING]: {
+    icon: (
+      <ExclamationCircleFilled
+        style={{
+          color: 'var(--icon-blue-color)',
+        }}
+      />
+    ),
+
+    text: formatMessage({
+      id: 'odc.component.TaskStatus.Approving',
+      defaultMessage: '审批中',
+    }), //审批中
+  },
+  [TaskStatus.WAIT_FOR_EXECUTION]: {
+    icon: (
+      <EllipsisOutlined
+        style={{
+          color: '#ffffff',
+          background: 'rgb(250, 173, 20)',
+          borderRadius: '11px',
+          padding: 1,
+          fontSize: 11,
+        }}
+      />
+    ),
+
+    text: formatMessage({
+      id: 'odc.component.TaskStatus.ToBeExecuted',
+      defaultMessage: '待执行',
+    }), //待执行
+  },
+  [TaskStatus.EXECUTING]: {
+    icon: (
+      <LoadingOutlined
+        style={{
+          color: 'var(--icon-blue-color)',
+        }}
+      />
+    ),
+
+    text: formatMessage({
+      id: 'odc.component.TaskStatus.Executing',
+      defaultMessage: '执行中',
+    }), //执行中
+  },
+
+  [TaskStatus.EXECUTION_SUCCEEDED_WITH_ERRORS]: {
+    icon: (
+      <CheckCircleFilled
+        style={{
+          color: 'var(--icon-green-color)',
+        }}
+      />
+    ),
+    text: '执行成功',
+    desc: (
+      <Tooltip title="执行时存在错误，已跳过">
+        <ExclamationCircleOutlined
+          style={{
+            color: 'rgb(250, 173, 20)',
+            marginLeft: 4,
+          }}
+        />
+      </Tooltip>
+    ),
+  },
+  [TaskStatus.EXECUTION_SUCCEEDED]: {
+    icon: (
+      <CheckCircleFilled
+        style={{
+          color: 'var(--icon-green-color)',
+        }}
+      />
+    ),
+
+    text: formatMessage({
+      id: 'odc.component.TaskStatus.ExecutionSucceeded',
+      defaultMessage: '执行成功',
+    }), //执行成功
+  },
+  [TaskStatus.EXECUTION_FAILED]: {
+    icon: (
+      <CloseCircleFilled
+        style={{
+          color: 'var(--function-red6-color)',
+        }}
+      />
+    ),
+
+    text: formatMessage({
+      id: 'odc.component.TaskStatus.Failed.2',
+      defaultMessage: '执行失败',
+    }), //执行失败
+  },
+  [TaskStatus.CANCELLED]: {
+    icon: (
+      <StopFilled
+        style={{
+          color: 'var(--icon-color-disable)',
+        }}
+      />
+    ),
+
+    text: formatMessage({
+      id: 'odc.component.TaskStatus.Terminated',
+      defaultMessage: '已终止',
+    }), //已终止
+  },
   [TaskStatus.CREATED]: {
     icon: (
       <LoadingOutlined
@@ -204,19 +313,19 @@ export const status: Partial<
     ),
     text: '预检查中',
   },
-  [TaskStatus.APPROVING]: {
+  [TaskStatus.PRE_CHECK_FAILED]: {
     icon: (
-      <ExclamationCircleFilled
+      <CloseCircleFilled
         style={{
-          color: 'var(--icon-blue-color)',
+          color: 'var(--function-red6-color)',
         }}
       />
     ),
 
     text: formatMessage({
-      id: 'odc.component.TaskStatus.Approving',
-      defaultMessage: '审批中',
-    }), //审批中
+      id: 'odc.src.component.Task.component.Status.PreExaminationFailure',
+      defaultMessage: '预检查失败',
+    }), //'预检查失败'
   },
   [TaskStatus.REJECTED]: {
     icon: (
@@ -260,24 +369,7 @@ export const status: Partial<
       defaultMessage: '排队中',
     }), //排队中
   },
-  [TaskStatus.WAIT_FOR_EXECUTION]: {
-    icon: (
-      <EllipsisOutlined
-        style={{
-          color: '#ffffff',
-          background: 'rgb(250, 173, 20)',
-          borderRadius: '14px',
-          padding: 1,
-          fontSize: 13,
-        }}
-      />
-    ),
 
-    text: formatMessage({
-      id: 'odc.component.TaskStatus.ToBeExecuted',
-      defaultMessage: '待执行',
-    }), //待执行
-  },
   [TaskStatus.WAIT_FOR_EXECUTION_EXPIRED]: {
     icon: (
       <StopFilled
@@ -294,54 +386,20 @@ export const status: Partial<
 
     //等待执行过期
   },
-  [TaskStatus.EXECUTING]: {
+
+  [TaskStatus.EXECUTION_EXPIRED]: {
     icon: (
-      <LoadingOutlined
+      <StopFilled
         style={{
-          color: 'var(--icon-blue-color)',
+          color: 'var(--icon-color-disable)',
         }}
       />
     ),
 
     text: formatMessage({
-      id: 'odc.component.TaskStatus.Executing',
-      defaultMessage: '执行中',
-    }), //执行中
-  },
-  [TaskStatus.EXECUTION_SUCCEEDED]: {
-    icon: (
-      <CheckCircleFilled
-        style={{
-          color: 'var(--icon-green-color)',
-        }}
-      />
-    ),
-
-    text: formatMessage({
-      id: 'odc.component.TaskStatus.ExecutionSucceeded',
-      defaultMessage: '执行成功',
-    }), //执行成功
-  },
-
-  [TaskStatus.EXECUTION_SUCCEEDED_WITH_ERRORS]: {
-    icon: (
-      <CheckCircleFilled
-        style={{
-          color: 'var(--icon-green-color)',
-        }}
-      />
-    ),
-    text: '执行成功',
-    desc: (
-      <Tooltip title="执行时存在错误，已跳过">
-        <ExclamationCircleOutlined
-          style={{
-            color: 'rgb(250, 173, 20)',
-            marginLeft: 4,
-          }}
-        />
-      </Tooltip>
-    ),
+      id: 'odc.component.TaskStatus.ExecutionExpiration',
+      defaultMessage: '执行过期',
+    }), //执行过期
   },
 
   [TaskStatus.EXECUTION_ABNORMAL]: {
@@ -359,63 +417,6 @@ export const status: Partial<
     }), //执行异常
   },
 
-  [TaskStatus.EXECUTION_FAILED]: {
-    icon: (
-      <CloseCircleFilled
-        style={{
-          color: 'var(--function-red6-color)',
-        }}
-      />
-    ),
-
-    text: formatMessage({
-      id: 'odc.component.TaskStatus.Failed.2',
-      defaultMessage: '执行失败',
-    }), //执行失败
-  },
-  [TaskStatus.EXECUTION_EXPIRED]: {
-    icon: (
-      <StopFilled
-        style={{
-          color: 'var(--icon-color-disable)',
-        }}
-      />
-    ),
-
-    text: formatMessage({
-      id: 'odc.component.TaskStatus.ExecutionExpiration',
-      defaultMessage: '执行过期',
-    }), //执行过期
-  },
-  [TaskStatus.CANCELLED]: {
-    icon: (
-      <StopFilled
-        style={{
-          color: 'var(--icon-color-disable)',
-        }}
-      />
-    ),
-
-    text: formatMessage({
-      id: 'odc.component.TaskStatus.Terminated',
-      defaultMessage: '已终止',
-    }), //已终止
-  },
-
-  [TaskStatus.PRE_CHECK_FAILED]: {
-    icon: (
-      <CloseCircleFilled
-        style={{
-          color: 'var(--function-red6-color)',
-        }}
-      />
-    ),
-
-    text: formatMessage({
-      id: 'odc.src.component.Task.component.Status.PreExaminationFailure',
-      defaultMessage: '预检查失败',
-    }), //'预检查失败'
-  },
   [TaskStatus.ROLLBACK_FAILED]: {
     icon: (
       <CloseCircleFilled

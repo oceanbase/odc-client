@@ -65,6 +65,7 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
         >
           <ODCRiskLevelLabel iconMode levelMap level={task?.riskLevel?.level} />
         </Descriptions.Item>
+        <Descriptions.Item label={'描述'}>{task?.description}</Descriptions.Item>
       </Descriptions>
       <Divider
         style={{
@@ -161,16 +162,6 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
               </Tooltip>
             )}
           </Space>
-        </Descriptions.Item>
-
-        <Descriptions.Item
-          span={4}
-          label={formatMessage({
-            id: 'src.component.Task.LogicDatabaseAsyncTask.DetailContent.2376CB1E',
-            defaultMessage: '任务描述',
-          })}
-        >
-          {task?.description}
         </Descriptions.Item>
       </Descriptions>
       <Divider

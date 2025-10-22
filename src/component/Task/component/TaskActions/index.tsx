@@ -141,8 +141,8 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
         defaultMessage: '取消',
       }), //取消
       okText: '终止',
+      okButtonProps: { color: 'danger', variant: 'outlined' },
       centered: true,
-      okButtonProps: { variant: 'outlined', color: 'danger' },
       onOk: async () => {
         setActiveBtnKey(TaskActionsEnum.STOP);
         const res = await stopTask(task.id);

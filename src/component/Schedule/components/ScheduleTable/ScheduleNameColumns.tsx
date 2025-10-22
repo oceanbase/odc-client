@@ -1,8 +1,6 @@
 import { IScheduleRecord, ScheduleDetailType, ScheduleRecordParameters } from '@/d.ts/schedule';
-import Icon from '@ant-design/icons';
 import classNames from 'classnames';
 import { Tooltip } from 'antd';
-import { ReactComponent as UserSvg } from '@/svgr/user.svg';
 import login from '@/store/login';
 import dayjs from 'dayjs';
 import { SchedulePageMode } from '@/component/Schedule/interface';
@@ -58,10 +56,6 @@ const ScheduleName: React.FC<IProps> = (props) => {
           placement="bottom"
         >
           <div className={styles.creator}>
-            <Icon
-              style={{ color: 'var(--icon-color-disable)', marginRight: 5 }}
-              component={UserSvg}
-            />
             <span>{record?.creator?.name}</span>
           </div>
         </Tooltip>

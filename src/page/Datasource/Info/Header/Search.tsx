@@ -1,48 +1,32 @@
-import { formatMessage } from '@/util/intl';
-import { SearchOutlined } from '@ant-design/icons';
-import { Input } from 'antd';
 import React, { useContext, useState } from 'react';
 import ParamContext from '../ParamContext';
-import FilterIcon from '@/page/Datasource/Datasource/Header/FIlterIcon';
+import InputSelect from '@/component/InputSelect';
 
+enum DatabaseSearchType {
+  database = 'database',
+}
 interface IProps {}
 
 const Search: React.FC<IProps> = function () {
   const context = useContext(ParamContext);
-  const [active, setIsActive] = useState(false);
+  const [searchType, setSearchType] = useState<DatabaseSearchType>(undefined);
+  const selectTypeOptions = [
+    {
+      label: '数据库',
+      value: DatabaseSearchType.database,
+    },
+  ];
 
-  const changeInput = (e) => {
-    context?.setSearchValue(e.target.value);
-  };
-
-  const handleBlur = () => {
-    if (!context?.searchValue) {
-      setIsActive(false);
-    }
-  };
-
-  if (!active) {
-    return (
-      <FilterIcon
-        onClick={() => {
-          setIsActive(true);
-        }}
-      >
-        <SearchOutlined />
-      </FilterIcon>
-    );
-  }
   return (
-    <Input.Search
-      prefix={<SearchOutlined />}
-      placeholder={formatMessage({
-        id: 'src.page.Datasource.Info.Header.B547D3A4',
-        defaultMessage: '搜索数据库',
-      })}
-      onChange={changeInput}
-      onBlur={handleBlur}
-      onSearch={(v) => {
-        context?.reload();
+    <InputSelect
+      searchValue={context?.searchValue}
+      searchType={searchType}
+      selectTypeOptions={selectTypeOptions}
+      onSelect={({ searchValue, searchType }) => {
+        setSearchType(searchType as DatabaseSearchType);
+        context?.setSearchValue(searchValue);
+        // 直接传递searchValue参数，确保使用最新的搜索值
+        context?.reload?.(searchValue);
       }}
     />
   );
