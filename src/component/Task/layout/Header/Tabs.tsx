@@ -5,6 +5,7 @@ import ParamsContext from '@/component/Task/context/ParamsContext';
 import styles from './index.less';
 import login from '@/store/login';
 import taskStore from '@/store/task';
+import { TaskPageType } from '@/d.ts';
 
 const Tabs = () => {
   const context = useContext(ParamsContext);
@@ -26,7 +27,11 @@ const Tabs = () => {
         {
           label: (
             <Badge
-              count={taskStore.pendingApprovalInstanceIds?.length ?? 0}
+              count={
+                taskStore?.taskPageType === TaskPageType.ALL
+                  ? taskStore.pendingApprovalInstanceIds?.length ?? 0
+                  : 0
+              }
               offset={[8, -3]}
               size="small"
               style={{ zIndex: 999 }}

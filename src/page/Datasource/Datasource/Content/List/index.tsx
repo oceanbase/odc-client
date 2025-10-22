@@ -198,8 +198,8 @@ const List: React.FC<IProps> = forwardRef(function (
     ref,
     () => {
       return {
-        reload() {
-          _fetchNextConnectList(true);
+        reload: async () => {
+          await _fetchNextConnectList(true);
         },
       };
     },

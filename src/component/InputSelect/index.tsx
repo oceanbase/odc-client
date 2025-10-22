@@ -2,8 +2,9 @@ import { SearchOutlined } from '@ant-design/icons';
 import type { BaseSelectRef } from 'rc-select';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import { AutoComplete, Input, Tooltip } from 'antd';
-import React, { forwardRef, useEffect, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { formatMessage } from '@/util/intl';
+import { debounce } from 'lodash';
 
 const RemoveSplitInput = forwardRef(function RemoveSplitInput(
   { value, selectTypeOptions, searchTypeLabel, ...rest }: any,
@@ -48,6 +49,13 @@ const InputSelect: React.FC<InputSelectProps> = (props) => {
   const ref = useRef<BaseSelectRef>(null);
   const { onSelect, selectTypeOptions = [], searchValue, searchType, style } = props;
   const [value, setValue] = useState(searchValue ? `${searchValue}${splitKey}${searchType}` : '');
+
+  const handleonSelect = useCallback(
+    debounce((params: { searchValue: string; searchType: React.Key }) => {
+      onSelect?.(params);
+    }, 50),
+    [onSelect],
+  );
 
   useEffect(() => {
     setValue(searchValue ? `${searchValue}${splitKey}${searchType}` : '');
@@ -106,7 +114,7 @@ const InputSelect: React.FC<InputSelectProps> = (props) => {
   }
 
   const searchTypeLabel = () => {
-    return selectTypeOptions?.find((item) => item.value === searchType)?.label;
+    return selectTypeOptions?.find((item) => item.value == searchType)?.label;
   };
 
   return (
@@ -123,10 +131,10 @@ const InputSelect: React.FC<InputSelectProps> = (props) => {
         if (value) {
           const _type = searchType || selectTypeOptions?.[0].value;
           const _serachValue = value?.split(splitKey)?.[0] || value;
-          onSelect?.({ searchValue: _serachValue, searchType: _type });
+          handleonSelect({ searchValue: _serachValue, searchType: _type });
         }
         if (isEmpty && !value) {
-          onSelect?.({ searchValue: undefined, searchType: undefined });
+          handleonSelect({ searchValue: undefined, searchType: undefined });
         }
       }}
       onChange={(v) => {
@@ -142,13 +150,13 @@ const InputSelect: React.FC<InputSelectProps> = (props) => {
         const arr = v?.split(splitKey);
         if (arr.length) {
           ref.current?.blur();
-          onSelect?.({ searchValue: arr[0], searchType: arr[1] as React.Key });
+          handleonSelect({ searchValue: arr[0], searchType: arr[1] as React.Key });
         }
       }}
       allowClear
       onClear={() => {
         if (searchValue) {
-          onSelect?.({ searchValue: undefined, searchType: undefined });
+          handleonSelect({ searchValue: undefined, searchType: undefined });
           setForceVisible(true);
         }
       }}

@@ -6,6 +6,9 @@ import { SortAscendingOutlined } from '@ant-design/icons';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import ParamsContext from '@/component/Task/context/ParamsContext';
 import { TaskCreateTimeSort } from '../../interface';
+import { ReactComponent as SortSvg } from '@/svgr/sort.svg';
+import { ReactComponent as SortActiveSvg } from '@/svgr/sort_active.svg';
+import Icon from '@ant-design/icons';
 
 interface IProps {}
 
@@ -37,7 +40,7 @@ const Sorter: React.FC<IProps> = function (props) {
       }}
     >
       <FilterIcon isActive={Boolean(sort)} border>
-        <SortAscendingOutlined />
+        <Icon component={Boolean(sort) ? SortActiveSvg : SortSvg} />
       </FilterIcon>
     </Dropdown>
   );

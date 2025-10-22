@@ -194,7 +194,6 @@ const TaskProgressModal: React.FC<IProps> = ({ modalOpen, setModalOpen, data, ta
 
   const handleChange = (args?: ITableLoadOptions) => {
     setListParams(args);
-    console.log(args);
     initData({ status: args?.filters?.status });
   };
 

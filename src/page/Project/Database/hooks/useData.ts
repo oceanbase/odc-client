@@ -37,7 +37,7 @@ const useData = (id) => {
   const [database, setDatabase] = useState<IDatabase>(null);
   const [searchValue, setSearchValue] = useState<{ value: string; type: DatabaseSearchType }>({
     value: null,
-    type: DatabaseSearchType.SCHEMA_NAME,
+    type: undefined,
   });
 
   const { loading, run: fetchDatabases } = useRequest(listDatabases, {

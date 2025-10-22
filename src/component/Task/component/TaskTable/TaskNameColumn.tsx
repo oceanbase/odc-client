@@ -2,8 +2,6 @@ import styles from '@/component/Task/index.less';
 import type { TaskRecord, TaskRecordParameters } from '@/d.ts';
 import { Tooltip } from 'antd';
 import dayjs from 'dayjs';
-import { ReactComponent as UserSvg } from '@/svgr/user.svg';
-import Icon from '@ant-design/icons';
 import classNames from 'classnames';
 import { formatMessage } from '@/util/intl';
 import { TaskPageMode } from '../../interface';
@@ -62,10 +60,6 @@ const TaskNameColumn = (props: IProps) => {
           placement="bottom"
         >
           <div className={styles.creator}>
-            <Icon
-              style={{ color: 'var(--icon-color-disable)', marginRight: 5 }}
-              component={UserSvg}
-            />
             <span>{record?.creator?.name}</span>
           </div>
         </Tooltip>

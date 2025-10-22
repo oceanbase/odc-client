@@ -10,7 +10,8 @@ interface IParamContext {
   setSearchValue?: (v: string) => void;
   filterParams?: IFilterParams;
   setFilterParams?: (params: IFilterParams) => void;
-  reload?: () => void;
+  reload?: (name?: string) => void;
+  loading?: boolean;
 }
 
 const ParamContext: React.Context<IParamContext> = React.createContext({

@@ -101,6 +101,7 @@ export const getItems = (
                   <ODCRiskLevelLabel iconMode levelMap level={task?.riskLevel?.level} />
                 </Descriptions.Item>
               )}
+              <Descriptions.Item label={'描述'}>{task?.description}</Descriptions.Item>
             </Descriptions>
 
             <Divider />
@@ -233,11 +234,6 @@ export const getItems = (
                   {getFormatDateTime(task?.executionTime)}
                 </Descriptions.Item>
               )}
-            </Descriptions>
-            <Descriptions column={2}>
-              <Descriptions.Item span={2} label={'任务描述'}>
-                {task?.description}
-              </Descriptions.Item>
             </Descriptions>
 
             <Divider

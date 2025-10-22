@@ -43,6 +43,18 @@ import DetailContent from './component/DetailContent';
 import FormModal from './component/FormModal';
 import { APPROVAL_TEMPLATE, SQL_INTERCEPTOR_TEMPLATE } from './constant';
 import styles from './index.less';
+import InputSelect from '@/component/InputSelect';
+
+enum SqlInterceptorSearchType {
+  name = 'name',
+}
+
+const SqlInterceptorSearchTypeTextMap = {
+  [SqlInterceptorSearchType.name]: formatMessage({
+    id: 'odc.ExternalIntegration.SqlInterceptor.ConfigurationName',
+    defaultMessage: '配置名称',
+  }),
+};
 
 const pageMeta = {
   [IPageType.ExternalIntegration_Sql]: {
@@ -77,8 +89,16 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const tableRef = useRef<ITableInstance>();
   const { title, type, template } = pageMeta[pageKey];
+  const [searchType, setSearchType] = useState(undefined);
+  const [searchValue, setSearchValue] = useState('');
+
+  const resetSearchInfo = () => {
+    setSearchType(undefined);
+    setSearchValue('');
+  };
 
   useEffect(() => {
+    resetSearchInfo();
     switch (type) {
       case IntegrationType.APPROVAL: {
         tracert.expo('a3112.b64009.c330925');
@@ -157,8 +177,13 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
     }
   };
 
-  const loadData = async (args: ITableLoadOptions) => {
-    const { searchValue = '', filters, sorter, pagination, pageSize } = args ?? {};
+  const loadData = async (
+    args: ITableLoadOptions,
+    searchInfo?: { searchValue: string; searchType: SqlInterceptorSearchType },
+  ) => {
+    const { filters, sorter, pagination, pageSize } = args ?? {};
+    if (!pageSize) return;
+    const { searchValue, searchType } = searchInfo ?? {};
     const { enabled } = filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
@@ -166,12 +191,14 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
     const data = {
       type,
       enabled,
-      name: searchValue,
+      name: [SqlInterceptorSearchType.name].includes(searchType as SqlInterceptorSearchType)
+        ? searchValue
+        : undefined,
       sort: column?.dataIndex,
       page: current,
       size: pageSize,
     };
-
+    console.log(data);
     // enabled filter
     data.enabled = enabled?.length ? enabled : undefined;
     // sorter
@@ -355,6 +382,11 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
     ];
   };
 
+  const selectTypeOptions = Object.keys(SqlInterceptorSearchType).map((item) => ({
+    value: item,
+    label: SqlInterceptorSearchTypeTextMap[item],
+  }));
+
   return (
     <>
       <CommonTable
@@ -374,10 +406,28 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
             : null
         }
         filterContent={{
-          searchPlaceholder: formatMessage({
-            id: 'odc.ExternalIntegration.SqlInterceptor.EnterAConfigurationName',
-            defaultMessage: '请输入配置名称',
-          }), //请输入配置名称
+          enabledSearch: false,
+          filters: [
+            {
+              render: (params) => {
+                return (
+                  <InputSelect
+                    searchValue={searchValue}
+                    searchType={searchType}
+                    selectTypeOptions={selectTypeOptions}
+                    onSelect={({ searchValue, searchType }) => {
+                      setSearchValue(searchValue);
+                      setSearchType(searchType as SqlInterceptorSearchType);
+                      loadData(params, {
+                        searchValue,
+                        searchType: searchType as SqlInterceptorSearchType,
+                      });
+                    }}
+                  />
+                );
+              },
+            },
+          ],
         }}
         operationContent={{
           options: [
@@ -402,8 +452,8 @@ const SqlInterceptor: React.FC<IProps> = (props) => {
             },
           ],
         }}
-        onLoad={loadData}
-        onChange={loadData}
+        onLoad={(params) => loadData(params, { searchValue, searchType })}
+        onChange={(params) => loadData(params, { searchValue, searchType })}
         tableProps={{
           columns: getPageColumns(),
           dataSource: list?.contents,

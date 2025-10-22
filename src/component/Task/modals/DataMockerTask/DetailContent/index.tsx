@@ -154,15 +154,6 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
               // 清除记录
               result?.clearCount,
             ],
-
-            [
-              formatMessage({
-                id: 'odc.DataMockerTask.DetailContent.Description',
-                defaultMessage: '描述',
-              }),
-              //描述
-              task?.description || '-',
-            ],
           ],
         };
         const { columns } = table;
@@ -194,6 +185,15 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
   } catch (e) {
     console.log(e);
   }
+
+  const flowInfo = [
+    formatMessage({
+      id: 'odc.component.DetailModal.dataMocker.RiskLevel',
+      defaultMessage: '风险等级',
+    }),
+    <ODCRiskLevelLabel iconMode level={task?.riskLevel?.level} levelMap />,
+  ];
+
   const res: {
     sectionName?: string;
     textItems: any[];
@@ -221,6 +221,15 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
         ],
         ['数据源', <EllipsisText content={task?.database?.dataSource?.name} />],
         !login.isPrivateSpace() ? ['项目', <EllipsisText content={task?.project?.name} />] : null,
+        hasFlow ? flowInfo : null,
+        [
+          formatMessage({
+            id: 'odc.DataMockerTask.DetailContent.Description',
+            defaultMessage: '描述',
+          }),
+          //描述
+          task?.description || '-',
+        ],
       ].filter(Boolean),
     },
     taskDetailItems,
@@ -257,22 +266,6 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
       getFormatDateTime(task?.executionTime),
     ]);
   }
-  if (hasFlow) {
-    const riskLevel = task?.riskLevel;
-    const flowInfo = [
-      [
-        formatMessage({
-          id: 'odc.component.DetailModal.dataMocker.RiskLevel',
-          defaultMessage: '风险等级',
-        }),
-        //风险等级
-        <ODCRiskLevelLabel iconMode level={task?.riskLevel?.level} levelMap />,
-      ],
-    ];
 
-    flowInfo.forEach((item) => {
-      res[0].textItems.push(item);
-    });
-  }
   return res;
 }

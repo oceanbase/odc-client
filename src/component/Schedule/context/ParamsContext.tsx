@@ -25,6 +25,7 @@ interface IParamsContext {
   reload?: () => void;
   mode?: SchedulePageMode;
   setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
+  loading?: boolean;
 }
 
 const ParamsContext: React.Context<IParamsContext> = React.createContext({

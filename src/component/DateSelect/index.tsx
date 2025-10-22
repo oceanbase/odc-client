@@ -3,7 +3,6 @@ import { ClockCircleOutlined } from '@ant-design/icons';
 import { Select, DatePicker } from 'antd';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import { formatMessage } from '@/util/intl';
-import ParamsContext from '@/component/Task/context/ParamsContext';
 import styles from './index.less';
 import dayjs, { Dayjs } from 'dayjs';
 
@@ -47,21 +46,31 @@ export const TimeOptions = [
   },
 ];
 
-const DateSelect = () => {
-  const context = useContext(ParamsContext);
-  const { params, setParams } = context;
-  const { timeRange, executeDate } = params;
+interface DateSelectProps {
+  timeRange: string | number;
+  executeDate: [Dayjs, Dayjs];
+  onChange: (value: string) => void;
+  onDateChange: (value: [Dayjs, Dayjs]) => void;
+  active: boolean;
+}
 
+const DateSelect = ({
+  timeRange,
+  executeDate,
+  onChange,
+  onDateChange,
+  active,
+}: DateSelectProps) => {
   const handleChange = (value) => {
-    setParams({ timeRange: value });
+    onChange(value);
   };
 
   const handleSelectDate = (value) => {
-    setParams({ executeDate: value });
+    onDateChange(value ?? [undefined, undefined]);
   };
 
   return (
-    <FilterIcon border isActive={false} style={{ padding: '0px' }}>
+    <FilterIcon border isActive={active} style={{ padding: '0px' }}>
       <div style={{ marginLeft: '6px', display: 'flex', height: '25px', alignItems: 'center' }}>
         <Select
           value={timeRange}
@@ -85,8 +94,8 @@ const DateSelect = () => {
             size="small"
             suffixIcon={null}
             bordered={false}
-            showTime={{ format: 'HH:mm:ss' }}
-            format="YYYY-MM-DD HH:mm:ss"
+            // showTime={{ format: 'HH:mm:ss' }}
+            format="YYYY-MM-DD"
             disabledDate={(current) => {
               return current > dayjs();
             }}

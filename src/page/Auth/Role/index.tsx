@@ -38,10 +38,24 @@ import { ResourceContext } from '../context';
 import DetailContent, { PermissionTypes } from './component/DetailContent';
 import FormModal from './component/FormModal';
 import styles from './index.less';
+import InputSelect from '@/component/InputSelect';
+
+enum RoleSearchType {
+  roleName = 'roleName',
+}
+
+const RoleSearchTypeTextMap = {
+  [RoleSearchType.roleName]: formatMessage({
+    id: 'odc.components.RolePage.RoleName',
+    defaultMessage: '角色名称',
+  }),
+};
 
 interface IProps {}
+
 interface IState {
   searchValue: string;
+  searchType: RoleSearchType;
   editId: number;
   currentRole: IManagerRole;
   detailId: number;
@@ -82,6 +96,7 @@ class RolePage extends React.PureComponent<IProps, IState> {
 
   readonly state = {
     searchValue: '',
+    searchType: undefined,
     editId: null,
     detailId: null,
     currentRole: null,
@@ -361,12 +376,17 @@ class RolePage extends React.PureComponent<IProps, IState> {
   };
 
   private handleFilterAndSort = (data: IManagerRole[]) => {
-    const { searchValue, filters, sorter } = this.state;
+    const { filters, sorter } = this.state;
     const { authTypes, enabled } = filters ?? {};
     const { order } = sorter ?? {};
     return data
       ?.filter((item) => {
-        return searchValue ? item.name.indexOf(searchValue) > -1 : true;
+        switch (this.state.searchType) {
+          case RoleSearchType.roleName:
+            return this.state.searchValue ? item.name.indexOf(this.state.searchValue) > -1 : true;
+          default:
+            return true;
+        }
       })
       ?.filter((item) => {
         return enabled ? enabled.includes(item.enabled) : true;
@@ -465,6 +485,19 @@ class RolePage extends React.PureComponent<IProps, IState> {
     this.openFormModal();
   };
 
+  private handleSearch = ({
+    searchValue,
+    searchType,
+  }: {
+    searchValue: string;
+    searchType: RoleSearchType;
+  }) => {
+    this.setState({
+      searchValue,
+      searchType,
+    });
+  };
+
   render() {
     const { formModalVisible, detailModalVisible, editId, detailId, copyId } = this.state;
     const { roles } = this.context;
@@ -472,18 +505,32 @@ class RolePage extends React.PureComponent<IProps, IState> {
       resourceIdentifier: IManagerResourceType.role,
       action: actionTypes.create,
     }).accessible;
+    const selectTypeOptions = Object.keys(RoleSearchType).map((item) => ({
+      value: item,
+      label: RoleSearchTypeTextMap[item],
+    }));
+
     return (
       <>
         <CommonTable
           enableResize
           titleContent={null}
           filterContent={{
-            searchPlaceholder: formatMessage({
-              id: 'odc.components.RolePage.EnterARoleName',
-              defaultMessage: '请输入角色名称',
-            }),
-
-            /* 请输入角色名称 */
+            enabledSearch: false,
+            filters: [
+              {
+                render: () => {
+                  return (
+                    <InputSelect
+                      searchValue={this.state.searchValue}
+                      searchType={this.state.searchType}
+                      selectTypeOptions={selectTypeOptions}
+                      onSelect={this.handleSearch}
+                    />
+                  );
+                },
+              },
+            ],
           }}
           operationContent={
             canAcessCreate

@@ -238,7 +238,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
       title: '数据库',
       dataIndex: 'database',
       key: 'database',
-      width: 120,
+      width: 180,
       render: (type, record: IScheduleRecord<ScheduleRecordParameters>) => {
         return <DatabaseColumn record={record} />;
       },
@@ -367,7 +367,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
       key: 'database',
       title: '数据库',
       ellipsis: true,
-      width: 160,
+      width: 180,
       render: (database, record) => {
         return <DatabaseColumn record={record} isSubTaskList />;
       },
@@ -636,6 +636,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
             setPerspective,
             subTaskParams,
             isScheduleView,
+            loading,
             setLoading,
             setsubTaskParams,
             reload: () => {

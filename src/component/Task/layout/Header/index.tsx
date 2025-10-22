@@ -18,7 +18,7 @@ const Header = () => {
       <Filter />
       <Sort />
       <FilterIcon border isActive={false}>
-        <SyncOutlined onClick={() => context?.reload?.()} />
+        <SyncOutlined onClick={() => context?.reload?.()} spin={context?.loading} />
       </FilterIcon>
     </Space>
   );

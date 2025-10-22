@@ -1,6 +1,7 @@
 import CommonTable from '@/component/CommonTable';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import { CommonTableMode } from '@/component/CommonTable/interface';
+import type { FixedType } from 'rc-table/es/interface';
 import StatusLabel from '@/component/Task/component/Status';
 import type { IResponseData, TaskRecord, TaskRecordParameters } from '@/d.ts';
 import { TaskPageType } from '@/d.ts';
@@ -246,7 +247,8 @@ const TaskTable: React.FC<IProps> = (props) => {
     {
       title: '操作',
       dataIndex: 'actions',
-      width: 200,
+      width: 144,
+      fixed: 'right' as FixedType,
       render: (_, record) => (
         <TaskActions
           task={record}
@@ -367,6 +369,7 @@ const TaskTable: React.FC<IProps> = (props) => {
             projectList: resProjects?.contents,
             mode,
             taskTabType,
+            loading,
             reload: () => {
               setLoading(true);
               loadData(params, pagination);
