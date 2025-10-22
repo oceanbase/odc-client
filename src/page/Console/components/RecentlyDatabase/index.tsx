@@ -194,6 +194,19 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
             return (
               <Tooltip title={outerTooltipTitle}>
                 <div
+                  onClick={() => {
+                    if (!existed || disabledAllOperations || needToApplyDatabaseAuth) {
+                      return;
+                    }
+                    gotoSQLWorkspace(
+                      record?.project?.id,
+                      record?.dataSource?.id,
+                      record?.id,
+                      null,
+                      '',
+                      isLogicalDatabase(record),
+                    );
+                  }}
                   className={existed ? recordWithActionClassName : ''}
                   style={
                     needToApplyDatabaseAuth ? { filter: 'grayScale(1)', color: '#00000040' } : {}
@@ -214,21 +227,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
                           record,
                         })}
                       >
-                        <span
-                          onClick={() => {
-                            if (!existed || disabledAllOperations || needToApplyDatabaseAuth) {
-                              return;
-                            }
-                            gotoSQLWorkspace(
-                              record?.project?.id,
-                              record?.dataSource?.id,
-                              record?.id,
-                              null,
-                              '',
-                              isLogicalDatabase(record),
-                            );
-                          }}
-                        >
+                        <span>
                           {value}
                           {!existed && (
                             <HelpDoc
