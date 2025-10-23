@@ -1,5 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import { Table, Tooltip, Spin } from 'antd';
+import { Table, Tooltip, Spin, Typography } from 'antd';
 import { useMount, useRequest } from 'ahooks';
 import { ConsoleTextConfig, EDatabaseTableColumnKey } from '../../const';
 import Icon from '@ant-design/icons';
@@ -299,16 +299,20 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
                   label={
                     <Tooltip
                       styles={{ body: { whiteSpace: 'nowrap', width: 'fit-content' } }}
-                      title={renderTooltipContent({
-                        type: needToApplyProjectAuth
-                          ? ETootipType.PROJECT
-                          : needToApplyDatabaseAuth
-                          ? ETootipType.DATABASE
-                          : '',
-                        record,
-                      })}
+                      title={
+                        renderTooltipContent({
+                          type: needToApplyProjectAuth
+                            ? ETootipType.PROJECT
+                            : needToApplyDatabaseAuth
+                            ? ETootipType.DATABASE
+                            : '',
+                          record,
+                        }) || value
+                      }
                     >
-                      <span>{value}</span>
+                      <Typography.Text style={{ width: 170 }} ellipsis>
+                        {value}
+                      </Typography.Text>
                     </Tooltip>
                   }
                   icon={
