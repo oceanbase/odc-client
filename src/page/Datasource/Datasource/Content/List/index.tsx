@@ -47,6 +47,7 @@ import { formatMessage } from '@/util/intl';
 import { history } from '@umijs/max';
 import { inject, observer } from 'mobx-react';
 import TitleButton from '../TitleButton';
+import ListHeader from '../ListHeader';
 
 interface IProps {
   width: number;
@@ -312,35 +313,38 @@ const List: React.FC<IProps> = forwardRef(function (
     );
   }
   return (
-    <InfiniteLoader
-      isRowLoaded={({ index }) => {
-        return index < connectionList?.length;
-      }}
-      rowCount={total}
-      loadMoreRows={async ({ startIndex, stopIndex }) => {
-        if (startIndex === 0) {
-          /**
-           * 这里代表初始化，因为上面已经初始化过数据了，所以就不再执行
-           */
-          return;
-        }
-        fetchNextConnectList();
-      }}
-    >
-      {({ onRowsRendered, registerChild }) => {
-        return (
-          <TableList
-            ref={registerChild}
-            onRowsRendered={onRowsRendered}
-            rowRenderer={rowRenderer}
-            rowHeight={40}
-            height={height}
-            width={width}
-            rowCount={total}
-          />
-        );
-      }}
-    </InfiniteLoader>
+    <div>
+      <ListHeader />
+      <InfiniteLoader
+        isRowLoaded={({ index }) => {
+          return index < connectionList?.length;
+        }}
+        rowCount={total}
+        loadMoreRows={async ({ startIndex, stopIndex }) => {
+          if (startIndex === 0) {
+            /**
+             * 这里代表初始化，因为上面已经初始化过数据了，所以就不再执行
+             */
+            return;
+          }
+          fetchNextConnectList();
+        }}
+      >
+        {({ onRowsRendered, registerChild }) => {
+          return (
+            <TableList
+              ref={registerChild}
+              onRowsRendered={onRowsRendered}
+              rowRenderer={rowRenderer}
+              rowHeight={40}
+              height={height}
+              width={width}
+              rowCount={total}
+            />
+          );
+        }}
+      </InfiniteLoader>
+    </div>
   );
 });
 
@@ -354,7 +358,7 @@ const ListWrap = inject(
 function AutoSizerWrap(props, ref) {
   return (
     <>
-      <AutoSizer>
+      <AutoSizer style={{ width: '100%' }}>
         {({ width, height }) => {
           return <ListWrap ref={ref} width={width} height={height} {...props} />;
         }}

@@ -74,11 +74,13 @@ export default forwardRef(function ListItem(
           </Tooltip>
         </div>
       )}
-
-      <div className={classNames(styles.block, styles.status)}>
-        <Icon component={ProjectSvg} style={{ color: 'var(--icon-blue-color)', fontSize: 16 }} />
+      <div className={classNames(styles.block, styles.name)}>
+        <Icon
+          component={ProjectSvg}
+          style={{ color: 'var(--icon-blue-color)', fontSize: 16, padding: '0px 8px 0px 12px' }}
+        />
+        {data.name}
       </div>
-      <div className={classNames(styles.block, styles.name)}>{data.name}</div>
       <div className={classNames(styles.block, styles.desc)}>{data.description || '-'}</div>
       <div className={classNames(styles.block, styles.users)}>
         <Icon style={{ color: 'var(--icon-color-disable)', marginRight: 5 }} component={UserSvg} />

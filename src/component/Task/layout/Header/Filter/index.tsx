@@ -47,7 +47,7 @@ const Filter: React.FC<IProps> = () => {
       Boolean(taskStatus.length) ||
       Boolean(projectId.length) ||
       Boolean(taskTypes.length) ||
-      timeRange !== 7
+      timeRange !== 'ALL'
     );
   };
 

@@ -285,7 +285,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               }) /*编辑数据归档*/
             }
           </div>
-          <div>作业需要重新审批，审批通过后此作业将重新执行</div>
+          <div>作业需要重新审批，审批通过后此作业将自动启动</div>
         </>
       ),
 

@@ -109,6 +109,9 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       TaskType.MULTIPLE_ASYNC,
     ].includes(type) && detailType !== TaskDetailType.FLOW;
   const isLoop = [
+    TaskStatus.PRE_CHECK_EXECUTING,
+    TaskStatus.WAIT_FOR_SCHEDULE_EXECUTION,
+    TaskStatus.WAIT_FOR_EXECUTION_EXPIRED,
     TaskStatus.APPROVING,
     TaskStatus.WAIT_FOR_EXECUTION,
     TaskStatus.EXECUTING,

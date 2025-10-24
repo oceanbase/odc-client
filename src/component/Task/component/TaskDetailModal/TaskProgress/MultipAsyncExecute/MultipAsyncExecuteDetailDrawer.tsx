@@ -7,7 +7,6 @@ import {
 import { Drawer, Descriptions, Space } from 'antd';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { SQLContent } from '@/component/SQLContent';
-import { DownloadFileAction } from '@/component/Task/component/DownloadFileAction';
 import { formatMessage } from '@/util/intl';
 import StatusLabel from '@/component/Task/component/Status';
 import { getLocalFormatDateTime } from '@/util/utils';
@@ -15,6 +14,7 @@ import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 import { downLoadRollbackPlanFile } from '@/common/network/task';
+import { useEffect, useState } from 'react';
 interface IProps {
   visible: boolean;
   onClose: () => void;
@@ -25,6 +25,16 @@ interface IProps {
 
 const MultipAsyncExecuteDetailDrawer = (props: IProps) => {
   const { visible, onClose, executeRecord, task, stats } = props;
+
+  const [executeFailContent, setExecuteFailContent] = useState<string>(undefined);
+  useEffect(() => {
+    if (visible) {
+      setExecuteFailContent(executeRecord?.records?.[0] || '-');
+    }
+    return () => {
+      setExecuteFailContent(undefined);
+    };
+  }, [visible]);
 
   const downLoadRollbackPlan = async () => {
     await downLoadRollbackPlanFile(task?.id, executeRecord?.database?.id);
@@ -121,24 +131,28 @@ const MultipAsyncExecuteDetailDrawer = (props: IProps) => {
           </div>
         </Descriptions.Item>
       </Descriptions>
-      <div style={{ marginTop: '16px' }}>
-        <SimpleTextItem
-          label="执行失败记录"
-          direction="column"
-          content={
-            <div>
-              <SQLContent
-                sqlContent={executeRecord?.records?.[0] || '-'}
-                sqlObjectIds={task?.parameters?.rollbackSqlObjectIds}
-                sqlObjectNames={task?.parameters?.rollbackSqlObjectNames}
-                taskId={task?.id}
-                showLineNumbers={false}
-                language={getDataSourceModeConfig(task?.database?.dataSource?.type)?.sql?.language}
-              />
-            </div>
-          }
-        />
-      </div>
+      {executeFailContent && (
+        <div style={{ marginTop: '16px' }}>
+          <SimpleTextItem
+            label="执行失败记录"
+            direction="column"
+            content={
+              <div>
+                <SQLContent
+                  sqlContent={executeFailContent}
+                  sqlObjectIds={task?.parameters?.rollbackSqlObjectIds}
+                  sqlObjectNames={task?.parameters?.rollbackSqlObjectNames}
+                  taskId={task?.id}
+                  showLineNumbers={false}
+                  language={
+                    getDataSourceModeConfig(task?.database?.dataSource?.type)?.sql?.language
+                  }
+                />
+              </div>
+            }
+          />
+        </div>
+      )}
     </Drawer>
   );
 };

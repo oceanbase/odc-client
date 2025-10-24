@@ -630,7 +630,7 @@ export default {
     </p>
   ),
 
-  dataArchiveVariablesDoc: <p>{dataArchiveVariablesDoc}</p>,
+  dataArchiveVariablesDoc: <p>定义变量、设置时间偏移量并在上文的目标表及过滤条件中引用</p>,
   dataClearVariablesDoc: <p>{dataClearVariablesDoc}</p>,
   schemaChangeSwapTable: (
     <p>

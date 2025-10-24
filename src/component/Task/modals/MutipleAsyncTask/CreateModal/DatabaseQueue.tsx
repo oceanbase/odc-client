@@ -313,8 +313,17 @@ const DatabaseQueue: React.FC<{
                 margin: 0,
               }}
               type="link"
-              onClick={() => {
-                setCreateTemplateModalOpen(true);
+              onClick={async () => {
+                const validateFieldsList = [];
+                const _validateFields = form.getFieldValue(['parameters', 'orderedDatabaseIds']);
+                _validateFields?.forEach?.((item, index) => {
+                  item?.forEach?.((j, itemIndex) => {
+                    validateFieldsList.push(['parameters', 'orderedDatabaseIds', index, itemIndex]);
+                  });
+                });
+                await form.validateFields(validateFieldsList).then(() => {
+                  setCreateTemplateModalOpen(true);
+                });
               }}
             >
               {formatMessage({
