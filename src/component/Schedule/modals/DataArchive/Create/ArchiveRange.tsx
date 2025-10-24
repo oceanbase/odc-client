@@ -269,12 +269,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             >
                               <Form.Item {...restField} name={[name, 'targetTableName']}>
                                 <Input
-                                  placeholder={
-                                    formatMessage({
-                                      id: 'src.component.Task.DataArchiveTask.CreateModal.271D9B51',
-                                      defaultMessage: '请输入',
-                                    }) /*"请输入"*/
-                                  }
+                                  placeholder={'请输入，若不输入默认使用归档表名作为目标表名'}
                                 />
                               </Form.Item>
                             </div>
@@ -282,7 +277,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
 
                           <Form.Item {...restField} name={[name, 'conditionExpression']}>
                             <Input
-                              placeholder={'请输入 SQLWhere 条件语句，可引用自定义变量'}
+                              placeholder={'请输入 SQL 的 Where 条件部分，可引用自定义变量'}
                               addonAfter={
                                 <>
                                   <JoinTableConfigModal

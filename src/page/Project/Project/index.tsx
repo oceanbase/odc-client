@@ -41,6 +41,7 @@ import { getSessionStorageKey } from '../helper';
 import { observer, inject } from 'mobx-react';
 import InputSelect from '@/component/InputSelect';
 import { SyncOutlined } from '@ant-design/icons';
+import ListHeader from './ListHeader';
 
 enum ProjectSearchType {
   projectName = 'projectName',
@@ -240,6 +241,7 @@ const Project: React.FC<IProps> = (props) => {
           </div>
         }
       >
+        <ListHeader projectTypeIsArchived={projectTypeIsArchived} />
         <div
           ref={domRef}
           style={{

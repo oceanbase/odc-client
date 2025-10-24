@@ -67,11 +67,31 @@
 }
 
 .detailDrawer {
+  .title {
+    display: flex;
+    width: 100%;
+
+    .detailName {
+      cursor: pointer;
+      max-width: calc(100% - 100px);
+      display: flex;
+      .taskName {
+        flex: 1;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .ml4 {
+        margin-left: 2px;
+      }
+    }
+  }
   :global {
     .ant-drawer-header {
       width: 100%;
       .ant-drawer-title {
         width: 100%;
+        overflow: hidden;
       }
     }
 
@@ -252,27 +272,6 @@
 
     .ant-descriptions-row:last-child > td {
       padding-bottom: 0;
-    }
-  }
-}
-
-.title {
-  display: flex;
-  justify-content: space-between;
-  padding-right: 15px;
-
-  .detailName {
-    cursor: pointer;
-    max-width: calc(100% - 100px);
-    display: flex;
-    .taskName {
-      flex: 1;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-    .ml4 {
-      margin-left: 2px;
     }
   }
 }

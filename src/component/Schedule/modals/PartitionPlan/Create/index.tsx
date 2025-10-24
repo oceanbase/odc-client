@@ -596,22 +596,62 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
         };
       }
       setConfirmLoading(true);
-      let resCount;
       if (isEdit) {
-        resCount = await updateSchedule(params);
+        handleEditAndConfirm(params);
       } else {
-        resCount = await createSchedule(params);
-      }
-      setConfirmLoading(false);
-      if (resCount?.data) {
-        onClose();
-        setCreateScheduleDatabase(undefined);
-        !isEdit && message.success('新建成功');
-        isEdit && message.success('修改成功');
+        handleCreate(params);
       }
     } catch (e) {
       console.log(e);
     }
+  };
+
+  const handleCreate = async (data: createScheduleRecord<createPartitionPlanParameters>) => {
+    const resResult = await createSchedule(data);
+    setConfirmLoading(false);
+    if (resResult?.data) {
+      onClose();
+      setCreateScheduleDatabase(undefined);
+      message.success('新建成功');
+    }
+  };
+
+  const handleEditAndConfirm = async (
+    data: createScheduleRecord<createPartitionPlanParameters>,
+  ) => {
+    Modal.confirm({
+      title: '是否确认修改此分区计划',
+      content: (
+        <>
+          <div>编辑分区计划</div>
+          <div>作业需要重新审批，审批通过后此作业将自动启动</div>
+        </>
+      ),
+
+      cancelText: formatMessage({
+        id: 'odc.DataClearTask.CreateModal.Cancel',
+        defaultMessage: '取消',
+      }),
+      //取消
+      okText: formatMessage({
+        id: 'odc.DataClearTask.CreateModal.Ok',
+        defaultMessage: '确定',
+      }),
+      //确定
+      centered: true,
+      onOk: async () => {
+        const resResult = await updateSchedule(data);
+        setConfirmLoading(false);
+        if (resResult?.data) {
+          onClose();
+          setCreateScheduleDatabase(undefined);
+          message.success('修改成功');
+        }
+      },
+      onCancel: () => {
+        setConfirmLoading(false);
+      },
+    });
   };
 
   const handlePlansConfigChange = (configs: any[]) => {
@@ -745,10 +785,9 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
 
   const getPartitionPlanInitScheduleName = () => {
     let validTableConfigsName: string[] = [];
+    let scheduleName = '';
     if (isEdit) {
-      validTableConfigsName = tableConfigs
-        ?.filter((config) => config?.strategies?.length)
-        ?.map((config) => config?.tableName);
+      scheduleName = form.getFieldValue('scheduleName');
     } else {
       validTableConfigsName = tableConfigs
         ?.filter(
@@ -758,11 +797,12 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
             !config.containsCreateStrategy,
         )
         ?.map((config) => config?.tableName);
+      scheduleName = `[${createScheduleDatabase?.environment?.name}]${createScheduleDatabase?.name}_`;
+      validTableConfigsName?.forEach((name) => {
+        scheduleName = scheduleName + '[' + name + ']';
+      });
     }
-    let scheduleName = `[${createScheduleDatabase?.environment?.name}]${createScheduleDatabase?.name}_`;
-    validTableConfigsName?.forEach((name) => {
-      scheduleName = scheduleName + '[' + name + ']';
-    });
+
     return safeTruncateString(MaximumCharacterLength, scheduleName);
   };
 

@@ -85,7 +85,7 @@ const Filter: React.FC = () => {
         Boolean(subTaskStatus?.length) ||
         Boolean(subTaskProjectIds?.length) ||
         Boolean(subTaskType?.length) ||
-        subTaskTimeRange !== 7;
+        subTaskTimeRange !== 'ALL';
     }
     return _isActive;
   };

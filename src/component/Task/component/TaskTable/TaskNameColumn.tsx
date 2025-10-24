@@ -20,14 +20,16 @@ const TaskNameColumn = (props: IProps) => {
   return (
     <div className={styles.taskNameColumn}>
       <div className={styles.columns}>
-        <span
-          className={classNames(styles.taskName, styles.hoverLink)}
-          onClick={() => {
-            onDetailVisible(record as TaskRecord<TaskRecordParameters>, true);
-          }}
-        >
-          {record?.description}
-        </span>
+        <Tooltip title={record?.description} overlayClassName={styles.taskNameTooltip}>
+          <span
+            className={classNames(styles.taskName, styles.hoverLink)}
+            onClick={() => {
+              onDetailVisible(record as TaskRecord<TaskRecordParameters>, true);
+            }}
+          >
+            {record?.description}
+          </span>
+        </Tooltip>
       </div>
       <div className={styles.columns}>
         <span
