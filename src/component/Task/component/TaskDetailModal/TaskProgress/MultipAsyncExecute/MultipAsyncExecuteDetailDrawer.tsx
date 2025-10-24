@@ -83,7 +83,12 @@ const MultipAsyncExecuteDetailDrawer = (props: IProps) => {
               type={'default'}
               key={TaskActionsEnum.DOWNLOAD_VIEW_RESULT}
               onClick={async () => {
-                downloadFile(executeRecord?.zipFileDownloadUrl);
+                downloadFile(
+                  executeRecord?.zipFileDownloadUrl +
+                    '?fileName=' +
+                    executeRecord?.zipFileId +
+                    '.zip',
+                );
               }}
               disabled={isExpired}
               tooltip={isExpired ? '文件下载链接已超时，请重新发起工单。' : undefined}

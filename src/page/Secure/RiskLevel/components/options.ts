@@ -51,17 +51,6 @@ export const getTaskTypeOptions = () => {
       value: TaskType.ASYNC,
     },
     {
-      label: ScheduleTextMap[ScheduleType.PARTITION_PLAN],
-      value: ScheduleType.PARTITION_PLAN,
-    },
-    {
-      label: formatMessage({
-        id: 'odc.src.page.Secure.RiskLevel.components.AutomaticRunning',
-        defaultMessage: '自动运行',
-      }), //'自动运行'
-      value: TaskType.ALTER_SCHEDULE,
-    },
-    {
       label: TaskTypeMap[TaskType.SHADOW],
       value: TaskType.SHADOW,
     },
