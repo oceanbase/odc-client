@@ -4,16 +4,23 @@ import {
   MultipleAsyncExecuteRecordStats,
   TaskDetail,
 } from '@/d.ts';
-import { Drawer, Descriptions, Space } from 'antd';
+import { Drawer, Descriptions, Space, message } from 'antd';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { SQLContent } from '@/component/SQLContent';
 import { formatMessage } from '@/util/intl';
 import StatusLabel from '@/component/Task/component/Status';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime, downloadFile, widthPermission } from '@/util/utils';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
-import { downLoadRollbackPlanFile } from '@/common/network/task';
+import { downLoadRollbackPlanFile, getAsyncResultSet } from '@/common/network/task';
+import styles from './index.less';
+import { ActionButton } from '@/component/Action/Item';
+import settingStore from '@/store/setting';
+import { TaskActionsEnum } from '@/d.ts/task';
+import Action from '@/component/Action';
+import useOperationPermissions from '@/util/hooks/useOperationPermissions';
+import { IOperationTypeRole } from '@/d.ts/schedule';
 import { useEffect, useState } from 'react';
 interface IProps {
   visible: boolean;
@@ -38,6 +45,55 @@ const MultipAsyncExecuteDetailDrawer = (props: IProps) => {
 
   const downLoadRollbackPlan = async () => {
     await downLoadRollbackPlanFile(task?.id, executeRecord?.database?.id);
+  };
+
+  const { IRoles } = useOperationPermissions({
+    currentUserResourceRoles: task?.project?.currentUserResourceRoles || [],
+    approvable: task?.approvable,
+    createrId: task?.creator?.id,
+    approveByCurrentUser: true,
+  });
+
+  const renderTools = () => {
+    const allowDownloadResultSets =
+      settingStore.spaceConfigurations?.['odc.task.databaseChange.allowDownloadResultSets'] ===
+      'true';
+    const downLoadViewResultVisible = widthPermission(
+      (hasPermission) =>
+        hasPermission &&
+        allowDownloadResultSets &&
+        settingStore.enableDataExport &&
+        executeRecord?.containQuery,
+      [
+        IOperationTypeRole.CREATOR,
+        IOperationTypeRole.PROJECT_OWNER,
+        IOperationTypeRole.PROJECT_DBA,
+      ],
+      IRoles,
+    )();
+
+    const isExpired =
+      Math.abs(Date.now() - executeRecord?.completeTime) >= 14 * 24 * 60 * 60 * 1000 || false;
+
+    return (
+      downLoadViewResultVisible && (
+        <div className={styles.tools}>
+          <Action.Group size={6}>
+            <ActionButton
+              type={'default'}
+              key={TaskActionsEnum.DOWNLOAD_VIEW_RESULT}
+              onClick={async () => {
+                downloadFile(executeRecord?.zipFileDownloadUrl);
+              }}
+              disabled={isExpired}
+              tooltip={isExpired ? '文件下载链接已超时，请重新发起工单。' : undefined}
+            >
+              下载查询结果
+            </ActionButton>
+          </Action.Group>
+        </div>
+      )
+    );
   };
 
   return (
@@ -153,6 +209,7 @@ const MultipAsyncExecuteDetailDrawer = (props: IProps) => {
           />
         </div>
       )}
+      {renderTools()}
     </Drawer>
   );
 };
