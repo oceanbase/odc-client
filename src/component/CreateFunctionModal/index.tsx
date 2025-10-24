@@ -289,13 +289,15 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                         id: 'workspace.window.createFunction.returnType',
                         defaultMessage: '返回类型',
                       })}
+                      required
                       rules={[
                         {
-                          required: true,
-                          message: formatMessage({
-                            id: 'workspace.window.createFunction.returnType.validation',
-                            defaultMessage: '请输入函数返回值',
-                          }),
+                          validator: (_, value) => {
+                            if (!value || value.trim() === '') {
+                              return Promise.reject('请输入返回类型');
+                            }
+                            return Promise.resolve();
+                          },
                         },
                       ]}
                     >
@@ -312,7 +314,8 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                           .map((a) => ({ value: a }))}
                         filterOption={(inputValue, option) =>
                           // @ts-ignore
-                          option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                          option.value.toUpperCase().indexOf(inputValue?.trim()?.toUpperCase()) !==
+                          -1
                         }
                       />
                     </Form.Item>
@@ -361,10 +364,15 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                       name="returnType"
                       label="返回类型"
                       className={styles.returnType}
+                      required
                       rules={[
                         {
-                          required: true,
-                          message: '请输入返回类型',
+                          validator: (_, value) => {
+                            if (!value || value.trim() === '') {
+                              return Promise.reject(new Error('请输入返回类型'));
+                            }
+                            return Promise.resolve();
+                          },
                         },
                       ]}
                     >
@@ -381,7 +389,8 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                           .map((a) => ({ value: a }))}
                         filterOption={(inputValue, option) =>
                           // @ts-ignore
-                          option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                          option.value.toUpperCase().indexOf(inputValue?.trim()?.toUpperCase()) !==
+                          -1
                         }
                       />
                     </Form.Item>

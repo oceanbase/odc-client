@@ -2571,6 +2571,7 @@ export interface IMultipleAsyncExecuteRecord {
   status: TaskStatus;
   successCount: number;
   zipFileDownloadUrl: string;
+  zipFileId: string;
 }
 
 export interface ILogicDatabaseChangeExecuteRecord {
