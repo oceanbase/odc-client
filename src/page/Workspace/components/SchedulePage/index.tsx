@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { SchedulePageType } from '@/d.ts/schedule';
 import { SchedulePageTextMap } from '@/constant/schedule';
 import styles from './index.less';
@@ -9,11 +10,20 @@ export const getScheduleTitleByParams = (params: { type: SchedulePageType }) => 
   let title = '';
   switch (type) {
     case SchedulePageType.ALL: {
-      title = '作业-所有作业';
+      title = formatMessage({
+        id: 'src.page.Workspace.components.SchedulePage.ED5F12A4',
+        defaultMessage: '作业-所有作业',
+      });
       break;
     }
     default: {
-      title = `作业-${SchedulePageTextMap[type]}`;
+      title = formatMessage(
+        {
+          id: 'src.page.Workspace.components.SchedulePage.25AC61E5',
+          defaultMessage: '作业-{SchedulePageTextMapType}',
+        },
+        { SchedulePageTextMapType: SchedulePageTextMap[type] },
+      );
       break;
     }
   }

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Button, Descriptions, Form, Input, message, Modal, Spin } from 'antd';
 import { VendorsConfig } from '../../constant';
 import { EVendorType } from '@/d.ts/llm';
@@ -32,7 +33,12 @@ const DescriptionModel = forwardRef<DescriptionModelRef, DescriptionModelProps>(
       {
         manual: true,
         onSuccess: () => {
-          message.success('备注保存成功');
+          message.success(
+            formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.component.DescriptionModel.481D97C5',
+              defaultMessage: '备注保存成功',
+            }),
+          );
           resetStates();
           // 刷新供应商信息
           if (onRefresh) {
@@ -40,7 +46,12 @@ const DescriptionModel = forwardRef<DescriptionModelRef, DescriptionModelProps>(
           }
         },
         onError: (error) => {
-          message.error('备注保存失败');
+          message.error(
+            formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.component.DescriptionModel.8B739B46',
+              defaultMessage: '备注保存失败',
+            }),
+          );
           console.error('保存备注失败:', error);
         },
       },
@@ -66,7 +77,12 @@ const DescriptionModel = forwardRef<DescriptionModelRef, DescriptionModelProps>(
 
     const handleConfirm = useCallback(async () => {
       if (!provider) {
-        message.error('未选择供应商');
+        message.error(
+          formatMessage({
+            id: 'src.page.ExternalIntegration.LargeModel.component.DescriptionModel.84A25AD1',
+            defaultMessage: '未选择供应商',
+          }),
+        );
         return;
       }
 
@@ -90,7 +106,10 @@ const DescriptionModel = forwardRef<DescriptionModelRef, DescriptionModelProps>(
       <Modal
         destroyOnClose
         open={isOpen}
-        title="添加备注"
+        title={formatMessage({
+          id: 'src.page.ExternalIntegration.LargeModel.component.DescriptionModel.F0A421FA',
+          defaultMessage: '添加备注',
+        })}
         onCancel={resetStates}
         footer={() => (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -112,10 +131,16 @@ const DescriptionModel = forwardRef<DescriptionModelRef, DescriptionModelProps>(
             {/* 按钮区域 */}
             <div>
               <Button onClick={resetStates} disabled={updateLoading} style={{ marginRight: 8 }}>
-                取消
+                {formatMessage({
+                  id: 'src.page.ExternalIntegration.LargeModel.component.DescriptionModel.282DAA7A',
+                  defaultMessage: '取消',
+                })}
               </Button>
               <Button type="primary" onClick={handleConfirm} loading={updateLoading}>
-                确定
+                {formatMessage({
+                  id: 'src.page.ExternalIntegration.LargeModel.component.DescriptionModel.432E152E',
+                  defaultMessage: '确定',
+                })}
               </Button>
             </div>
           </div>
@@ -125,7 +150,10 @@ const DescriptionModel = forwardRef<DescriptionModelRef, DescriptionModelProps>(
           layout="horizontal"
           items={[
             {
-              label: '模型供应商',
+              label: formatMessage({
+                id: 'src.page.ExternalIntegration.LargeModel.component.DescriptionModel.E248C42D',
+                defaultMessage: '模型供应商',
+              }),
               span: 4,
               children: (
                 <div className={styles.vendor}>
@@ -139,13 +167,27 @@ const DescriptionModel = forwardRef<DescriptionModelRef, DescriptionModelProps>(
 
         <Form layout="vertical" form={form} className={styles.form} requiredMark="optional">
           <Form.Item
-            label="备注"
+            label={formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.component.DescriptionModel.5C23FD1C',
+              defaultMessage: '备注',
+            })}
             name="description"
-            rules={[{ max: 200, message: '备注长度不能超过200个字符' }]}
+            rules={[
+              {
+                max: 200,
+                message: formatMessage({
+                  id: 'src.page.ExternalIntegration.LargeModel.component.DescriptionModel.4BA094AB',
+                  defaultMessage: '备注长度不能超过200个字符',
+                }),
+              },
+            ]}
           >
             <Input.TextArea
               rows={4}
-              placeholder="请输入供应商备注信息..."
+              placeholder={formatMessage({
+                id: 'src.page.ExternalIntegration.LargeModel.component.DescriptionModel.FE659B7A',
+                defaultMessage: '请输入供应商备注信息...',
+              })}
               showCount
               maxLength={200}
             />

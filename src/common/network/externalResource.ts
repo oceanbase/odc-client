@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -144,6 +145,9 @@ export async function createExternalResource({
     },
   );
   if (!response.data) {
-    throw new Error(response?.errMsg || '创建失败');
+    throw new Error(
+      response?.errMsg ||
+        formatMessage({ id: 'src.common.network.9A0D437C', defaultMessage: '创建失败' }),
+    );
   }
 }

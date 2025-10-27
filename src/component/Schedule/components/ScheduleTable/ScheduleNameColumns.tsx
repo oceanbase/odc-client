@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { IScheduleRecord, ScheduleDetailType, ScheduleRecordParameters } from '@/d.ts/schedule';
 import classNames from 'classnames';
 import { Tooltip } from 'antd';
@@ -49,8 +50,20 @@ const ScheduleName: React.FC<IProps> = (props) => {
         <Tooltip
           title={
             <>
-              <div>创建人：{record?.creator?.name}</div>
-              <div>账号：{record?.creator?.accountName}</div>
+              <div>
+                {formatMessage({
+                  id: 'src.component.Schedule.components.ScheduleTable.9ECB3B97',
+                  defaultMessage: '创建人：',
+                })}
+                {record?.creator?.name}
+              </div>
+              <div>
+                {formatMessage({
+                  id: 'src.component.Schedule.components.ScheduleTable.40E2EA2B',
+                  defaultMessage: '账号：',
+                })}
+                {record?.creator?.accountName}
+              </div>
             </>
           }
           placement="bottom"
@@ -59,14 +72,28 @@ const ScheduleName: React.FC<IProps> = (props) => {
             <span>{record?.creator?.name}</span>
           </div>
         </Tooltip>
-        <span>创建于 {dayjs(record?.createTime).format('YYYY-MM-DD HH:mm:ss')}</span>
+        <span>
+          {formatMessage({
+            id: 'src.component.Schedule.components.ScheduleTable.45B9F797',
+            defaultMessage: '创建于',
+          })}
+          {dayjs(record?.createTime).format('YYYY-MM-DD HH:mm:ss')}
+        </span>
         {login.isPrivateSpace() || mode === SchedulePageMode.PROJECT ? (
           ''
         ) : (
           <>
             ·
             <div className={styles.project}>
-              <Tooltip title={'所属项目：' + record?.project?.name} placement="bottom">
+              <Tooltip
+                title={
+                  formatMessage({
+                    id: 'src.component.Schedule.components.ScheduleTable.F9B3FB8F',
+                    defaultMessage: '所属项目：',
+                  }) + record?.project?.name
+                }
+                placement="bottom"
+              >
                 {record?.project?.name}
               </Tooltip>
             </div>

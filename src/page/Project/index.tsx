@@ -125,7 +125,7 @@ const tabs = [
     key: IPageType.Project_Task,
   },
   {
-    tab: '作业',
+    tab: formatMessage({ id: 'src.page.Project.3D88C3D8', defaultMessage: '作业' }),
     key: IPageType.Project_Schedule,
   },
   {

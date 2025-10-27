@@ -63,6 +63,7 @@ const TaskContent: React.FC<ICommonTaskDetailModalProps> = (props) => {
           isSplit={isSplit}
         />
       );
+
       break;
     case TaskDetailType.LOG:
       content = (
@@ -166,7 +167,12 @@ const TaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) 
           <div className={styles.detailName}>
             <div className={styles.taskName}>{task?.description}</div>
             <Tooltip title={task?.description} overlayClassName={styles.scheduleNameTooltip}>
-              <div className={styles.ml4}>详情</div>
+              <div className={styles.ml4}>
+                {formatMessage({
+                  id: 'src.component.Task.component.TaskDetailModal.51BC4B9B',
+                  defaultMessage: '详情',
+                })}
+              </div>
             </Tooltip>
           </div>
         </div>
@@ -183,7 +189,10 @@ const TaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) 
         >
           {hasInfo && (
             <Radio.Button value={TaskDetailType.INFO} key={TaskDetailType.INFO}>
-              基本信息
+              {formatMessage({
+                id: 'src.component.Task.component.TaskDetailModal.2165D87E',
+                defaultMessage: '基本信息',
+              })}
             </Radio.Button>
           )}
 
@@ -208,7 +217,10 @@ const TaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) 
             <Radio.Button value={TaskDetailType.PROGRESS} key={TaskDetailType.PROGRESS}>
               {
                 task?.type === TaskType.LOGICAL_DATABASE_CHANGE
-                  ? '执行详情'
+                  ? formatMessage({
+                      id: 'src.component.Task.component.TaskDetailModal.ABB6161A',
+                      defaultMessage: '执行详情',
+                    })
                   : formatMessage({
                       id: 'odc.component.CommonTaskDetailModal.ExecutionRecord',
                       defaultMessage: '执行记录',

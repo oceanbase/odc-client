@@ -111,7 +111,10 @@ export default function JoinTableConfigModal({
         </div>
         <div>
           <Checkbox onChange={(e) => setMultiTableJoin(e.target.checked)} checked={multiTableJoin}>
-            设置多表关联
+            {formatMessage({
+              id: 'src.component.Task.component.JoinTableConfigsModal.202578C2',
+              defaultMessage: '设置多表关联',
+            })}
           </Checkbox>
         </div>
         {multiTableJoin && (
@@ -120,7 +123,12 @@ export default function JoinTableConfigModal({
               {(fields: FormListFieldData[], { add, remove }) => (
                 <div className={styles.container}>
                   <div className={classNames(styles.tables, styles.header)}>
-                    <div className={styles.column}>关联方式</div>
+                    <div className={styles.column}>
+                      {formatMessage({
+                        id: 'src.component.Task.component.JoinTableConfigsModal.9BEC00E6',
+                        defaultMessage: '关联方式',
+                      })}
+                    </div>
                     <div className={styles.column}>
                       {formatMessage({
                         id: 'src.component.Task.component.JoinTableConfigsModal.B97ACBEB',
@@ -241,7 +249,12 @@ export default function JoinTableConfigModal({
               }
               name="conditionExpression"
             >
-              <Input placeholder={'请输入，可直接引用关联表名和字段'} />
+              <Input
+                placeholder={formatMessage({
+                  id: 'src.component.Task.component.JoinTableConfigsModal.87422202',
+                  defaultMessage: '请输入，可直接引用关联表名和字段',
+                })}
+              />
             </Form.Item>
           </>
         )}
@@ -249,7 +262,10 @@ export default function JoinTableConfigModal({
           <>
             <div style={{ marginBottom: 16 }}>
               <Checkbox onChange={(e) => setPartition(e.target.checked)} checked={partition}>
-                指定扫描分区
+                {formatMessage({
+                  id: 'src.component.Task.component.JoinTableConfigsModal.DF2329DD',
+                  defaultMessage: '指定扫描分区',
+                })}
               </Checkbox>
             </div>
             {partition && (

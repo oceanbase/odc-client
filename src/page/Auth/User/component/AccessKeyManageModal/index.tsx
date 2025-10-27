@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -55,7 +56,12 @@ const AccessKeyManageModal: React.FC<IProps> = ({ visible, userId, onClose }) =>
       const data = await getUserAccessKeys(userId);
       setAccessKeys(data);
     } catch (error) {
-      message.error('获取 AccessKey 列表失败');
+      message.error(
+        formatMessage({
+          id: 'src.page.Auth.User.component.AccessKeyManageModal.1F992449',
+          defaultMessage: '获取 AccessKey 列表失败',
+        }),
+      );
     } finally {
       setLoading(false);
     }
@@ -71,9 +77,29 @@ const AccessKeyManageModal: React.FC<IProps> = ({ visible, userId, onClose }) =>
 
       await loadAccessKeys();
 
-      message.success(enabled ? '启用成功' : '停用成功');
+      message.success(
+        enabled
+          ? formatMessage({
+              id: 'src.page.Auth.User.component.AccessKeyManageModal.AA5D359D',
+              defaultMessage: '启用成功',
+            })
+          : formatMessage({
+              id: 'src.page.Auth.User.component.AccessKeyManageModal.53F57084',
+              defaultMessage: '停用成功',
+            }),
+      );
     } catch (error) {
-      message.error(enabled ? '启用失败' : '停用失败');
+      message.error(
+        enabled
+          ? formatMessage({
+              id: 'src.page.Auth.User.component.AccessKeyManageModal.ED529DAC',
+              defaultMessage: '启用失败',
+            })
+          : formatMessage({
+              id: 'src.page.Auth.User.component.AccessKeyManageModal.9939C809',
+              defaultMessage: '停用失败',
+            }),
+      );
     }
   };
 
@@ -82,9 +108,19 @@ const AccessKeyManageModal: React.FC<IProps> = ({ visible, userId, onClose }) =>
       await deleteAccessKey(userId, accessKey);
 
       setAccessKeys((prev) => prev.filter((item) => item.accessKeyId !== accessKey));
-      message.success('删除成功');
+      message.success(
+        formatMessage({
+          id: 'src.page.Auth.User.component.AccessKeyManageModal.F52A5F0A',
+          defaultMessage: '删除成功',
+        }),
+      );
     } catch (error) {
-      message.error('删除失败');
+      message.error(
+        formatMessage({
+          id: 'src.page.Auth.User.component.AccessKeyManageModal.EA7090B2',
+          defaultMessage: '删除失败',
+        }),
+      );
     }
   };
 
@@ -95,7 +131,12 @@ const AccessKeyManageModal: React.FC<IProps> = ({ visible, userId, onClose }) =>
       setNewAccessKey(createdAccessKey);
       setSuccessModalVisible(true);
     } catch (error) {
-      message.error('创建失败');
+      message.error(
+        formatMessage({
+          id: 'src.page.Auth.User.component.AccessKeyManageModal.91AEEC1B',
+          defaultMessage: '创建失败',
+        }),
+      );
     }
   };
 
@@ -112,14 +153,20 @@ const AccessKeyManageModal: React.FC<IProps> = ({ visible, userId, onClose }) =>
       width: 348,
     },
     {
-      title: '创建时间',
+      title: formatMessage({
+        id: 'src.page.Auth.User.component.AccessKeyManageModal.FC09BF14',
+        defaultMessage: '创建时间',
+      }),
       dataIndex: 'createTime',
       key: 'createTime',
       width: 180,
       render: (createTime) => getFormatDateTime(createTime),
     },
     {
-      title: '启用状态',
+      title: formatMessage({
+        id: 'src.page.Auth.User.component.AccessKeyManageModal.4900BFB6',
+        defaultMessage: '启用状态',
+      }),
       dataIndex: 'status',
       key: 'status',
       width: 100,
@@ -131,18 +178,33 @@ const AccessKeyManageModal: React.FC<IProps> = ({ visible, userId, onClose }) =>
       ),
     },
     {
-      title: '操作',
+      title: formatMessage({
+        id: 'src.page.Auth.User.component.AccessKeyManageModal.7219654E',
+        defaultMessage: '操作',
+      }),
       key: 'operation',
       width: 48,
       render: (_, record) => (
-        <Tooltip title={record?.status === EAccessKeyStatu.ACTIVE ? '启用状态暂不支持删除' : ''}>
+        <Tooltip
+          title={
+            record?.status === EAccessKeyStatu.ACTIVE
+              ? formatMessage({
+                  id: 'src.page.Auth.User.component.AccessKeyManageModal.966089C0',
+                  defaultMessage: '启用状态暂不支持删除',
+                })
+              : ''
+          }
+        >
           <Button
             type="link"
             size="small"
             disabled={record?.status === EAccessKeyStatu.ACTIVE}
             onClick={() => handleDelete(record.userId, record.accessKeyId)}
           >
-            删除
+            {formatMessage({
+              id: 'src.page.Auth.User.component.AccessKeyManageModal.B46C9E4A',
+              defaultMessage: '删除',
+            })}
           </Button>
         </Tooltip>
       ),
@@ -158,7 +220,10 @@ const AccessKeyManageModal: React.FC<IProps> = ({ visible, userId, onClose }) =>
   return (
     <Modal
       open={visible}
-      title="管理 AccessKey"
+      title={formatMessage({
+        id: 'src.page.Auth.User.component.AccessKeyManageModal.BB773B07',
+        defaultMessage: '管理 AccessKey',
+      })}
       width={800}
       footer={null}
       onCancel={onClose}
@@ -173,7 +238,11 @@ const AccessKeyManageModal: React.FC<IProps> = ({ visible, userId, onClose }) =>
           type="info"
           showIcon
           icon={<InfoCircleFilled className={styles.infoIcon} />}
-          message="AccessKey ID 和 AccessKey Secret 是访问 ODC API 的凭证，具有账号下的完全权限，请妥善保管"
+          message={formatMessage({
+            id: 'src.page.Auth.User.component.AccessKeyManageModal.EFC0D43F',
+            defaultMessage:
+              'AccessKey ID 和 AccessKey Secret 是访问 ODC API 的凭证，具有账号下的完全权限，请妥善保管',
+          })}
           className={styles.alertTip}
         />
 
@@ -188,7 +257,17 @@ const AccessKeyManageModal: React.FC<IProps> = ({ visible, userId, onClose }) =>
             className={styles.accessKeyTable}
             locale={{ emptyText: null }}
           />
-          <Tooltip title={accessKeys?.length >= 5 ? '最多可创建 5 个 AccessKey' : ''}>
+
+          <Tooltip
+            title={
+              accessKeys?.length >= 5
+                ? formatMessage({
+                    id: 'src.page.Auth.User.component.AccessKeyManageModal.E7D566A5',
+                    defaultMessage: '最多可创建 5 个 AccessKey',
+                  })
+                : ''
+            }
+          >
             <Button
               type="dashed"
               className={
@@ -197,7 +276,11 @@ const AccessKeyManageModal: React.FC<IProps> = ({ visible, userId, onClose }) =>
               onClick={handleCreateAccessKey}
               disabled={accessKeys?.length >= 5}
             >
-              <PlusOutlined className={styles.icon} /> 创建 AccessKey{' '}
+              <PlusOutlined className={styles.icon} />
+              {formatMessage({
+                id: 'src.page.Auth.User.component.AccessKeyManageModal.1203EEC8',
+                defaultMessage: '创建 AccessKey',
+              })}{' '}
               <span className={styles.tips}>({accessKeys?.length}/5)</span>
             </Button>
           </Tooltip>

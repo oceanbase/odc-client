@@ -240,7 +240,10 @@ const UserAuthList: React.FC<IProps> = (props) => {
         rowSelecter={
           isOwner || isDBA
             ? {
-                selectAllText: '全选当前页',
+                selectAllText: formatMessage({
+                  id: 'src.page.Project.User.ManageModal.Table.UserAuthList.496C6069',
+                  defaultMessage: '全选当前页',
+                }),
                 options: [
                   {
                     okText: formatMessage({

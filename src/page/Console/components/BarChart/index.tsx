@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React, { useRef, useEffect, useContext, useMemo, useState } from 'react';
 import * as echarts from 'echarts';
 import { ConsoleTextConfig, TaskTitle, TaskTypes } from '../../const';
@@ -22,6 +23,7 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
       'APPROVAL_EXPIRED',
       'WAIT_FOR_EXECUTION_EXPIRED',
     ],
+
     EXECUTION_INTERRUPTION: ['EXECUTION_ABNORMAL', 'EXECUTION_FAILED', 'EXECUTION_EXPIRED'],
     OTHER: [
       'CREATED',
@@ -58,7 +60,10 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
         return {
           name: statusName,
           type: 'bar',
-          stack: '总量',
+          stack: formatMessage({
+            id: 'src.page.Console.components.BarChart.7BBE332D',
+            defaultMessage: '总量',
+          }),
           barWidth: 20,
           itemStyle: {
             color: taskStatusColor[i],
@@ -116,7 +121,10 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
             result += `<div class="bar-chart-tooltip-title">${params[0].name}</div>`;
 
             // 任务总计
-            const title = '任务总计';
+            const title = formatMessage({
+              id: 'src.page.Console.components.BarChart.1C57FA72',
+              defaultMessage: '任务总计',
+            });
             result +=
               total > 0
                 ? `<div class="bar-chart-tooltip-total" data-task-type="${taskType}" data-click-type="total">

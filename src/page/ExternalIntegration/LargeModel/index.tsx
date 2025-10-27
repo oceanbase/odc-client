@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import {
   Checkbox,
@@ -76,7 +77,16 @@ const LargeModel = () => {
           const providerModels = await getProviderModels(provider.provider);
           return providerModels;
         } catch (error) {
-          console.error(`获取${provider.provider}的模型失败:`, error);
+          console.error(
+            formatMessage(
+              {
+                id: 'src.page.ExternalIntegration.LargeModel.6F39B4A9',
+                defaultMessage: '获取{providerProvider}的模型失败:',
+              },
+              { providerProvider: provider.provider },
+            ),
+            error,
+          );
           return [];
         }
       });
@@ -222,12 +232,22 @@ const LargeModel = () => {
     {
       manual: true,
       onSuccess: () => {
-        message.success('模型已删除');
+        message.success(
+          formatMessage({
+            id: 'src.page.ExternalIntegration.LargeModel.1D98BE2A',
+            defaultMessage: '模型已删除',
+          }),
+        );
         fetchAllModels();
         fetchProviders();
       },
       onError: (error) => {
-        message.error('删除模型失败');
+        message.error(
+          formatMessage({
+            id: 'src.page.ExternalIntegration.LargeModel.0E823981',
+            defaultMessage: '删除模型失败',
+          }),
+        );
         console.error('删除模型失败:', error);
       },
     },
@@ -241,12 +261,35 @@ const LargeModel = () => {
       manual: true,
       onSuccess: (_, params) => {
         const [{ enabled }] = params;
-        message.success(`模型已${enabled ? '启用' : '禁用'}`);
+        message.success(
+          formatMessage(
+            {
+              id: 'src.page.ExternalIntegration.LargeModel.BDF17AAE',
+              defaultMessage: "模型已{enabled ? '启用' : '禁用'}",
+            },
+            {
+              ConditionalExpression0: enabled
+                ? formatMessage({
+                    id: 'src.page.ExternalIntegration.LargeModel.529B6611',
+                    defaultMessage: '启用',
+                  })
+                : formatMessage({
+                    id: 'src.page.ExternalIntegration.LargeModel.8A7E4399',
+                    defaultMessage: '禁用',
+                  }),
+            },
+          ),
+        );
         fetchAllModels();
         fetchProviders();
       },
       onError: (error) => {
-        message.error('操作失败');
+        message.error(
+          formatMessage({
+            id: 'src.page.ExternalIntegration.LargeModel.4EB7DD25',
+            defaultMessage: '操作失败',
+          }),
+        );
         console.error('切换模型状态失败:', error);
       },
     },
@@ -346,7 +389,10 @@ const LargeModel = () => {
     } else {
       return (
         <Popconfirm
-          title="确定要删除此模型吗？"
+          title={formatMessage({
+            id: 'src.page.ExternalIntegration.LargeModel.1F5830DE',
+            defaultMessage: '确定要删除此模型吗？',
+          })}
           open={deletePopconfirmOpen === modelKey}
           onConfirm={() => {
             deleteModel({
@@ -371,17 +417,42 @@ const LargeModel = () => {
 
   const handleDeleteModel = (modelInfo: IModel) => {
     Modal.confirm({
-      title: '确认要删除模型？',
+      title: formatMessage({
+        id: 'src.page.ExternalIntegration.LargeModel.6D4BBF49',
+        defaultMessage: '确认要删除模型？',
+      }),
       icon: <ExclamationCircleFilled style={{ color: '#faad14' }} />,
       content: (
         <>
-          <div>模型（{modelInfo.modelName}）已被设置为系统默认模型，</div>
-          <div>删除可能会影响使用，建议调整系统默认模型后删除。</div>
+          <div>
+            {formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.F385664D',
+              defaultMessage: '模型（',
+            })}
+            {modelInfo.modelName}
+            {formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.91CD645F',
+              defaultMessage: '）已被设置为系统默认模型，',
+            })}
+          </div>
+          <div>
+            {formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.3A7A6B0A',
+              defaultMessage: '删除可能会影响使用，建议调整系统默认模型后删除。',
+            })}
+          </div>
         </>
       ),
-      okText: '删除',
+
+      okText: formatMessage({
+        id: 'src.page.ExternalIntegration.LargeModel.03FC9D5D',
+        defaultMessage: '删除',
+      }),
       okType: 'danger',
-      cancelText: '取消',
+      cancelText: formatMessage({
+        id: 'src.page.ExternalIntegration.LargeModel.5ED4F750',
+        defaultMessage: '取消',
+      }),
       closable: true,
       onOk() {
         deleteModel({
@@ -410,7 +481,11 @@ const LargeModel = () => {
         <div className={styles.largeModelWrapper}>
           <div className={styles.aiConfig}>
             <div className={styles.title}>
-              启用 AI 服务
+              {formatMessage({
+                id: 'src.page.ExternalIntegration.LargeModel.47608560',
+                defaultMessage: '启用 AI 服务',
+              })}
+
               <Switch
                 size="small"
                 className={styles.switch}
@@ -421,7 +496,10 @@ const LargeModel = () => {
 
             {!setting.AIEnabled ? (
               <Typography.Text type="secondary" className={styles.tips}>
-                开启后，项目内成员可使用代码补全、嵌入式对话等 AI 数据研发能力
+                {formatMessage({
+                  id: 'src.page.ExternalIntegration.LargeModel.A08AD755',
+                  defaultMessage: '开启后，项目内成员可使用代码补全、嵌入式对话等 AI 数据研发能力',
+                })}
               </Typography.Text>
             ) : (
               <div style={{ marginTop: 8 }} className={styles.aiFeatures}>
@@ -435,7 +513,10 @@ const LargeModel = () => {
                     });
                   }}
                 >
-                  嵌入式对话
+                  {formatMessage({
+                    id: 'src.page.ExternalIntegration.LargeModel.C88EA7B4',
+                    defaultMessage: '嵌入式对话',
+                  })}
                 </Checkbox>
                 <Checkbox
                   checked={setting.AIConfig.completionEnabled}
@@ -447,14 +528,22 @@ const LargeModel = () => {
                     });
                   }}
                 >
-                  代码补全
+                  {formatMessage({
+                    id: 'src.page.ExternalIntegration.LargeModel.5605D3D8',
+                    defaultMessage: '代码补全',
+                  })}
                 </Checkbox>
               </div>
             )}
           </div>
 
           <div className={styles.modelConfig}>
-            <div className={styles.title}>系统默认模型</div>
+            <div className={styles.title}>
+              {formatMessage({
+                id: 'src.page.ExternalIntegration.LargeModel.DE880D1A',
+                defaultMessage: '系统默认模型',
+              })}
+            </div>
           </div>
           <ModelSelect
             allModels={allModels}
@@ -464,8 +553,14 @@ const LargeModel = () => {
             defaultModelStatuses={defaultModelStatuses}
             getModelOptions={getModelOptions}
           />
+
           <div className={styles.largeModel}>
-            <div className={styles.title}>模型供应商</div>
+            <div className={styles.title}>
+              {formatMessage({
+                id: 'src.page.ExternalIntegration.LargeModel.348A7584',
+                defaultMessage: '模型供应商',
+              })}
+            </div>
             <div className={styles.largeModelContent}>
               <List
                 className={styles.list}
@@ -492,9 +587,18 @@ const LargeModel = () => {
                   );
                 }}
               />
+
               <div className={styles.modelList}>
                 <div className={styles.title}>
-                  {selectedProvider ? `${filteredModelList?.length} 个模型` : ''}
+                  {selectedProvider
+                    ? formatMessage(
+                        {
+                          id: 'src.page.ExternalIntegration.LargeModel.C791CB6C',
+                          defaultMessage: '{filteredModelListLength} 个模型',
+                        },
+                        { filteredModelListLength: filteredModelList?.length },
+                      )
+                    : ''}
                 </div>
                 {filteredModelList?.length > 0 ? (
                   <List
@@ -518,6 +622,7 @@ const LargeModel = () => {
                               component={VendorsConfig[item?.providerName]?.icon}
                               className={styles.icon}
                             />
+
                             <Typography.Text className={styles.modelName} ellipsis>
                               {item.modelName}
                             </Typography.Text>
@@ -528,7 +633,14 @@ const LargeModel = () => {
                             {item?.contextSize && (
                               <Tag className={styles.tags}>{item.contextSize / 1000}K</Tag>
                             )}
-                            {item?.custom && <Tag className={styles.tags}>自定义</Tag>}
+                            {item?.custom && (
+                              <Tag className={styles.tags}>
+                                {formatMessage({
+                                  id: 'src.page.ExternalIntegration.LargeModel.40F9188D',
+                                  defaultMessage: '自定义',
+                                })}
+                              </Tag>
+                            )}
                           </div>
                           <div className={styles.operations}>
                             {item?.custom && (
@@ -537,10 +649,19 @@ const LargeModel = () => {
                                   onClick={() => handleEditModel(item)}
                                   className={styles.icon}
                                 />
+
                                 {renderDeleteIcon(item)}
                               </div>
                             )}
-                            <Tooltip title={item.deprecated && '模型已废弃不可启用'}>
+                            <Tooltip
+                              title={
+                                item.deprecated &&
+                                formatMessage({
+                                  id: 'src.page.ExternalIntegration.LargeModel.E2C4ABF7',
+                                  defaultMessage: '模型已废弃不可启用',
+                                })
+                              }
+                            >
                               <Switch
                                 checked={item.enabled && !item.deprecated}
                                 disabled={item.deprecated}

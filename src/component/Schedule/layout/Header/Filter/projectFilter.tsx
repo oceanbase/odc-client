@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import ParamsContext from '@/component/Schedule/context/ParamsContext';
 import { useContext, useMemo, useState } from 'react';
 import { Button, Divider, Select } from 'antd';
@@ -29,10 +30,18 @@ const ProjectFilter = ({ isScheduleView }: { isScheduleView: boolean }) => {
 
   return (
     <>
-      <div style={{ marginTop: '16px' }}>所属项目</div>
+      <div style={{ marginTop: '16px' }}>
+        {formatMessage({
+          id: 'src.component.Schedule.layout.Header.Filter.5873B80A',
+          defaultMessage: '所属项目',
+        })}
+      </div>
       <Select
         showSearch
-        placeholder="请输入"
+        placeholder={formatMessage({
+          id: 'src.component.Schedule.layout.Header.Filter.571604A0',
+          defaultMessage: '请输入',
+        })}
         filterOption={(input, option) =>
           (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
         }

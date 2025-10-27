@@ -473,7 +473,10 @@ export const getTerminateConfig: (
       ? checkIsScheduleTaskListCanBeTerminated
       : checkIsTaskListCanBeTerminated,
     checkStatusFailed: isSchedule
-      ? '请选择运行中的作业'
+      ? formatMessage({
+          id: 'src.component.Task.component.AsyncTaskOperationButton.7607AA16',
+          defaultMessage: '请选择运行中的作业',
+        })
       : formatMessage({
           id: 'src.component.Task.component.AsyncTaskOperationButton.E5D14CDC',
           defaultMessage:

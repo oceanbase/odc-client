@@ -240,7 +240,10 @@ const PartitionPolicyTable: React.FC<IProps> = (props) => {
         mode={CommonTableMode.SMALL}
         ref={tableRef}
         titleContent={{
-          title: '分区策略：',
+          title: formatMessage({
+            id: 'src.component.Task.component.PartitionPolicyTable.0B37A671',
+            defaultMessage: '分区策略：',
+          }),
         }}
         filterContent={{
           enabledSearch: false,

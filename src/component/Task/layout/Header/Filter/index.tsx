@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { CloseOutlined, FilterOutlined } from '@ant-design/icons';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import { useContext, useMemo, useState } from 'react';
@@ -30,7 +31,12 @@ const Filter: React.FC<IProps> = () => {
         {isAll && <TaskTypeFilter />}
         {tab === TaskTab.all ? <TaskStatusFilter /> : ''}
         {mode !== TaskPageMode.PROJECT && !login.isPrivateSpace() ? <ProjectFilter /> : null}
-        <div style={{ marginTop: '16px' }}>创建时间范围</div>
+        <div style={{ marginTop: '16px' }}>
+          {formatMessage({
+            id: 'src.component.Task.layout.Header.Filter.4C8E2DBD',
+            defaultMessage: '创建时间范围',
+          })}
+        </div>
         <DateSelect
           timeRange={timeRange}
           executeDate={executeDate}
@@ -63,7 +69,12 @@ const Filter: React.FC<IProps> = () => {
     if (!taskTypes.length || !isAll) return null;
     return (
       <div>
-        <div>工单类型：</div>
+        <div>
+          {formatMessage({
+            id: 'src.component.Task.layout.Header.Filter.55993403',
+            defaultMessage: '工单类型：',
+          })}
+        </div>
         <div className={styles.ml6}>
           {taskTypes.map((item, idx) => {
             return (
@@ -83,7 +94,12 @@ const Filter: React.FC<IProps> = () => {
     if (!taskStatus.length || tab !== TaskTab.all) return null;
     return (
       <div>
-        <div>状态：</div>
+        <div>
+          {formatMessage({
+            id: 'src.component.Task.layout.Header.Filter.621F0548',
+            defaultMessage: '状态：',
+          })}
+        </div>
         <div className={styles.ml6}>
           {taskStatus.map((item, idx) => {
             return (
@@ -102,7 +118,12 @@ const Filter: React.FC<IProps> = () => {
     if (!projectId?.length) return null;
     return (
       <div>
-        <div>所属项目：</div>
+        <div>
+          {formatMessage({
+            id: 'src.component.Task.layout.Header.Filter.D8D230B5',
+            defaultMessage: '所属项目：',
+          })}
+        </div>
         <div className={styles.ml6}>
           {projectId.map((item, idx) => {
             return (
@@ -120,7 +141,12 @@ const Filter: React.FC<IProps> = () => {
   const dateTipContent = useMemo(() => {
     return (
       <>
-        <div>创建时间范围：</div>
+        <div>
+          {formatMessage({
+            id: 'src.component.Task.layout.Header.Filter.019DE50F',
+            defaultMessage: '创建时间范围：',
+          })}
+        </div>
         <div>
           {timeRange !== 'custom' ? (
             <span style={{ color: '#b9bec9' }}>
@@ -168,9 +194,17 @@ const Filter: React.FC<IProps> = () => {
       content={filterContent}
       title={
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span>筛选</span>
+          <span>
+            {formatMessage({
+              id: 'src.component.Task.layout.Header.Filter.6F137D0C',
+              defaultMessage: '筛选',
+            })}
+          </span>
           <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={handleReset}>
-            清空
+            {formatMessage({
+              id: 'src.component.Task.layout.Header.Filter.5AC5266B',
+              defaultMessage: '清空',
+            })}
           </span>
         </div>
       }

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import {
   IScheduleTaskExecutionDetail,
   scheduleTask,
@@ -57,6 +58,7 @@ const TaskContent: React.FC<TaskContentProps> = (props) => {
           onLogTypeChange={handleLogTypeChange}
         />
       );
+
       break;
   }
 
@@ -116,7 +118,15 @@ const SubTaskDetailModal: React.FC<ICommonSubTaskDetailModalProps> = (props) => 
       loading={loading}
       title={
         <div className={styles.title}>
-          <span>{`#${subTask?.id} 执行详情`}</span>
+          <span>
+            {formatMessage(
+              {
+                id: 'src.component.Schedule.components.SubTaskDetailModal.E3DE0DB0',
+                defaultMessage: '#{subTaskId} 执行详情',
+              },
+              { subTaskId: subTask?.id },
+            )}
+          </span>
         </div>
       }
     >
@@ -128,22 +138,31 @@ const SubTaskDetailModal: React.FC<ICommonSubTaskDetailModalProps> = (props) => 
           }}
         >
           <Radio.Button value={ScheduleTaskDetailType.INFO} key={ScheduleTaskDetailType.INFO}>
-            基本信息
+            {formatMessage({
+              id: 'src.component.Schedule.components.SubTaskDetailModal.4F7A9991',
+              defaultMessage: '基本信息',
+            })}
           </Radio.Button>
           <Radio.Button
             value={ScheduleTaskDetailType.EXECUTE_RESULT}
             key={ScheduleTaskDetailType.EXECUTE_RESULT}
           >
-            执行结果
+            {formatMessage({
+              id: 'src.component.Schedule.components.SubTaskDetailModal.0251DA45',
+              defaultMessage: '执行结果',
+            })}
           </Radio.Button>
           {/* <Radio.Button
-            value={ScheduleTaskDetailType.OPERATION_RECORD}
-            key={ScheduleTaskDetailType.OPERATION_RECORD}
-          >
-            操作记录
-          </Radio.Button> */}
+             value={ScheduleTaskDetailType.OPERATION_RECORD}
+             key={ScheduleTaskDetailType.OPERATION_RECORD}
+            >
+             操作记录
+            </Radio.Button> */}
           <Radio.Button value={ScheduleTaskDetailType.LOG} key={ScheduleTaskDetailType.LOG}>
-            任务日志
+            {formatMessage({
+              id: 'src.component.Schedule.components.SubTaskDetailModal.E143FD68',
+              defaultMessage: '任务日志',
+            })}
           </Radio.Button>
         </Radio.Group>
         <ScheduleTaskStatusLabel status={subTask?.status} />
@@ -159,6 +178,7 @@ const SubTaskDetailModal: React.FC<ICommonSubTaskDetailModalProps> = (props) => 
         opRecord={opRecord}
         handleLogTypeChange={handleLogTypeChange}
       />
+
       <div className={styles.tools}>
         <ScheduleTaskActions
           subTask={subTask}

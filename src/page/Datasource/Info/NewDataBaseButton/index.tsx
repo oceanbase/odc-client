@@ -161,9 +161,17 @@ export default function NewDataBaseButton({
         /*新建数据库*/ onOk={submit}
         onCancel={close}
         footer={[
-          <Button onClick={close}>取消</Button>,
+          <Button onClick={close}>
+            {formatMessage({
+              id: 'src.page.Datasource.Info.NewDataBaseButton.F20F3628',
+              defaultMessage: '取消',
+            })}
+          </Button>,
           <Button type="primary" onClick={submit} loading={createDatabaseLoading}>
-            确定
+            {formatMessage({
+              id: 'src.page.Datasource.Info.NewDataBaseButton.D09B358D',
+              defaultMessage: '确定',
+            })}
           </Button>,
         ]}
         destroyOnHidden
@@ -193,7 +201,14 @@ export default function NewDataBaseButton({
               {
                 validator: (_, value) => {
                   if (!value || value.trim() === '') {
-                    return Promise.reject(new Error('请输入数据库名称'));
+                    return Promise.reject(
+                      new Error(
+                        formatMessage({
+                          id: 'src.page.Datasource.Info.NewDataBaseButton.2306C6C0',
+                          defaultMessage: '请输入数据库名称',
+                        }),
+                      ),
+                    );
                   }
                   return Promise.resolve();
                 },

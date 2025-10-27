@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React, { useContext, useState } from 'react';
 import ParamContext from '../ParamContext';
 import InputSelect from '@/component/InputSelect';
@@ -12,7 +13,10 @@ const Search: React.FC<IProps> = function () {
   const [searchType, setSearchType] = useState<DatabaseSearchType>(undefined);
   const selectTypeOptions = [
     {
-      label: '数据库',
+      label: formatMessage({
+        id: 'src.page.Datasource.Info.Header.E5DAC2D1',
+        defaultMessage: '数据库',
+      }),
       value: DatabaseSearchType.database,
     },
   ];

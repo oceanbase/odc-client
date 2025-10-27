@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, Form, Input } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -17,14 +18,32 @@ export const MaximumCharacterLength = 200;
 
 const Message = {
   task: {
-    title: '提交工单',
-    label: '工单名称',
-    rulesMessage: '请输入工单名称',
+    title: formatMessage({
+      id: 'src.component.Task.component.CreateTaskConfirmModal.A2EA4CF7',
+      defaultMessage: '提交工单',
+    }),
+    label: formatMessage({
+      id: 'src.component.Task.component.CreateTaskConfirmModal.88AFCCBD',
+      defaultMessage: '工单名称',
+    }),
+    rulesMessage: formatMessage({
+      id: 'src.component.Task.component.CreateTaskConfirmModal.F47AB23A',
+      defaultMessage: '请输入工单名称',
+    }),
   },
   schedule: {
-    title: '提交作业',
-    label: '作业名称',
-    rulesMessage: '请输入作业名称',
+    title: formatMessage({
+      id: 'src.component.Task.component.CreateTaskConfirmModal.2C060F14',
+      defaultMessage: '提交作业',
+    }),
+    label: formatMessage({
+      id: 'src.component.Task.component.CreateTaskConfirmModal.A0B19F05',
+      defaultMessage: '作业名称',
+    }),
+    rulesMessage: formatMessage({
+      id: 'src.component.Task.component.CreateTaskConfirmModal.3E0F7267',
+      defaultMessage: '请输入作业名称',
+    }),
   },
 };
 const CreateTaskConfirmModal: React.FC<IProps> = ({
@@ -66,7 +85,14 @@ const CreateTaskConfirmModal: React.FC<IProps> = ({
             {
               validator: (_, value) => {
                 if (!value || value.trim() === '') {
-                  return Promise.reject(new Error('请输入作业名称'));
+                  return Promise.reject(
+                    new Error(
+                      formatMessage({
+                        id: 'src.component.Task.component.CreateTaskConfirmModal.686F0604',
+                        defaultMessage: '请输入作业名称',
+                      }),
+                    ),
+                  );
                 }
                 return Promise.resolve();
               },

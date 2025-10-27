@@ -42,7 +42,10 @@ const Pages = {
 
 const tabs = [
   {
-    tab: '大模型集成',
+    tab: formatMessage({
+      id: 'src.page.ExternalIntegration.EC1D6164',
+      defaultMessage: '大模型集成',
+    }),
     key: IPageType.Large_Model,
   },
   {

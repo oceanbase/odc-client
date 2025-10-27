@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import ParamsContext from '@/component/Task/context/ParamsContext';
 import { useContext, useMemo } from 'react';
 import { Select } from 'antd';
@@ -20,10 +21,18 @@ const ProjectFilter = () => {
 
   return (
     <>
-      <div style={{ marginTop: '16px' }}>所属项目</div>
+      <div style={{ marginTop: '16px' }}>
+        {formatMessage({
+          id: 'src.component.Task.layout.Header.Filter.E875C4B7',
+          defaultMessage: '所属项目',
+        })}
+      </div>
       <Select
         showSearch
-        placeholder="请输入"
+        placeholder={formatMessage({
+          id: 'src.component.Task.layout.Header.Filter.9AF5F35E',
+          defaultMessage: '请输入',
+        })}
         filterOption={(input, option) =>
           (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
         }

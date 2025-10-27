@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React, { useContext, useEffect } from 'react';
 import { Radio } from 'antd';
 import { ScheduleTab } from '@/component/Schedule/interface';
@@ -22,11 +23,17 @@ const Tabs = () => {
       value={params?.tab}
       options={[
         {
-          label: '全部',
+          label: formatMessage({
+            id: 'src.component.Schedule.layout.Header.4060D379',
+            defaultMessage: '全部',
+          }),
           value: ScheduleTab.all,
         },
         {
-          label: '待我审批',
+          label: formatMessage({
+            id: 'src.component.Schedule.layout.Header.D7D546CD',
+            defaultMessage: '待我审批',
+          }),
           value: ScheduleTab.approveByCurrentUser,
         },
       ]}

@@ -117,7 +117,12 @@ const ArchiveRange: React.FC<IProps> = (props) => {
       <div>
         {joinTableConfigs?.length ? (
           <div style={{ marginBottom: 8 }}>
-            <div style={{ color: 'var(--text-color-hint)' }}>关联表</div>
+            <div style={{ color: 'var(--text-color-hint)' }}>
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Create.E7E46AC9',
+                defaultMessage: '关联表',
+              })}
+            </div>
             {joinTableConfigs?.map((item) => {
               return (
                 <div style={{ display: 'flex', gap: 8 }}>
@@ -134,7 +139,12 @@ const ArchiveRange: React.FC<IProps> = (props) => {
 
         {partitions?.length ? (
           <>
-            <div style={{ color: 'var(--text-color-hint)' }}>指定扫描分区</div>
+            <div style={{ color: 'var(--text-color-hint)' }}>
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Create.65A4A783',
+                defaultMessage: '指定扫描分区',
+              })}
+            </div>
             {partitions?.map((item, index) => (
               <>
                 <span>{item}</span>
@@ -169,7 +179,14 @@ const ArchiveRange: React.FC<IProps> = (props) => {
           const archiveRange = getFieldValue('archiveRange') || [];
           const tables = getFieldValue('tables') || [];
           if (archiveRange !== IArchiveRange.PORTION) {
-            return <>包括当前数据库内所有表及新增表</>;
+            return (
+              <>
+                {formatMessage({
+                  id: 'src.component.Schedule.modals.DataArchive.Create.D7AEEF6A',
+                  defaultMessage: '包括当前数据库内所有表及新增表',
+                })}
+              </>
+            );
           }
           return (
             <div className={styles.tableHeader}>
@@ -269,7 +286,10 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                             >
                               <Form.Item {...restField} name={[name, 'targetTableName']}>
                                 <Input
-                                  placeholder={'请输入，若不输入默认使用归档表名作为目标表名'}
+                                  placeholder={formatMessage({
+                                    id: 'src.component.Schedule.modals.DataArchive.Create.F9306B41',
+                                    defaultMessage: '请输入，若不输入默认使用归档表名作为目标表名',
+                                  })}
                                 />
                               </Form.Item>
                             </div>
@@ -277,7 +297,10 @@ const ArchiveRange: React.FC<IProps> = (props) => {
 
                           <Form.Item {...restField} name={[name, 'conditionExpression']}>
                             <Input
-                              placeholder={'请输入 SQL 的 Where 条件部分，可引用自定义变量'}
+                              placeholder={formatMessage({
+                                id: 'src.component.Schedule.modals.DataArchive.Create.FFDA9CD3',
+                                defaultMessage: '请输入 SQL 的 Where 条件部分，可引用自定义变量',
+                              })}
                               addonAfter={
                                 <>
                                   <JoinTableConfigModal
@@ -324,7 +347,19 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                           marginBottom: 0,
                         }}
                       >
-                        <Tooltip title={disabledAddFields ? `最多添加${MAX_TABLES_COUNT}个` : ''}>
+                        <Tooltip
+                          title={
+                            disabledAddFields
+                              ? formatMessage(
+                                  {
+                                    id: 'src.component.Schedule.modals.DataArchive.Create.8E6B7262',
+                                    defaultMessage: '最多添加{MAX_TABLES_COUNT}个',
+                                  },
+                                  { MAX_TABLES_COUNT },
+                                )
+                              : ''
+                          }
+                        >
                           <Button type="dashed" block disabled={disabledAddFields}>
                             <Button
                               onClick={() => add()}

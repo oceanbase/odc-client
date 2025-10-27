@@ -44,8 +44,20 @@ const TaskNameColumn = (props: IProps) => {
         <Tooltip
           title={
             <>
-              <div>创建人：{record?.creator?.name}</div>
-              <div>账号：{record?.creator?.accountName}</div>
+              <div>
+                {formatMessage({
+                  id: 'src.component.Task.component.TaskTable.9C004DBC',
+                  defaultMessage: '创建人：',
+                })}
+                {record?.creator?.name}
+              </div>
+              <div>
+                {formatMessage({
+                  id: 'src.component.Task.component.TaskTable.A5652E6B',
+                  defaultMessage: '账号：',
+                })}
+                {record?.creator?.accountName}
+              </div>
               {roleNames && (
                 <div className={styles.ellipsis} title={roleNames}>
                   {
@@ -65,14 +77,28 @@ const TaskNameColumn = (props: IProps) => {
             <span>{record?.creator?.name}</span>
           </div>
         </Tooltip>
-        <span>创建于 {dayjs(record?.createTime).format('YYYY-MM-DD HH:mm:ss')}</span>
+        <span>
+          {formatMessage({
+            id: 'src.component.Task.component.TaskTable.AEFECB70',
+            defaultMessage: '创建于',
+          })}
+          {dayjs(record?.createTime).format('YYYY-MM-DD HH:mm:ss')}
+        </span>
         {login.isPrivateSpace() || mode === TaskPageMode.PROJECT ? (
           ''
         ) : (
           <>
             ·
             <div className={styles.project}>
-              <Tooltip title={'所属项目：' + record?.project?.name} placement="bottom">
+              <Tooltip
+                title={
+                  formatMessage({
+                    id: 'src.component.Task.component.TaskTable.8C9C989A',
+                    defaultMessage: '所属项目：',
+                  }) + record?.project?.name
+                }
+                placement="bottom"
+              >
                 {record?.project?.name}
               </Tooltip>
             </div>

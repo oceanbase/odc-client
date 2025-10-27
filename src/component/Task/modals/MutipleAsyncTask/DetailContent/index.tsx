@@ -56,7 +56,14 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
       <>
         <Descriptions column={2} style={{ marginBottom: 16 }}>
           <Descriptions.Item label={'ID'}>{task?.id}</Descriptions.Item>
-          <Descriptions.Item label={'类型'}>{TaskTypeMap?.[task?.type]}</Descriptions.Item>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Task.modals.MutipleAsyncTask.DetailContent.089C6237',
+              defaultMessage: '类型',
+            })}
+          >
+            {TaskTypeMap?.[task?.type]}
+          </Descriptions.Item>
           <Descriptions.Item
             span={2}
             label={formatMessage({
@@ -86,7 +93,13 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
           </Descriptions.Item>
 
           {!login.isPrivateSpace() && (
-            <Descriptions.Item span={1} label={'项目'}>
+            <Descriptions.Item
+              span={1}
+              label={formatMessage({
+                id: 'src.component.Task.modals.MutipleAsyncTask.DetailContent.C3969824',
+                defaultMessage: '项目',
+              })}
+            >
               <EllipsisText content={task?.parameters?.databases?.[0]?.project?.name} />
             </Descriptions.Item>
           )}

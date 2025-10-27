@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import login from '@/store/login';
 import { IResourceDependencyItem } from '@/d.ts/relativeResource';
 import { getLocalFormatDateTime } from '@/util/utils';
@@ -19,9 +20,33 @@ export const TaskTitle = ({ record }: { record: IResourceDependencyItem }) => {
       <Tooltip
         title={
           <>
-            <div>{`姓名：${name} `} </div>
-            <div>{`账号：${accountName}`}</div>
-            <div>{`角色：${roleNamesText}`}</div>
+            <div>
+              {formatMessage(
+                {
+                  id: 'src.component.RelativeResourceModal.components.3FC45417',
+                  defaultMessage: '姓名：{name} ',
+                },
+                { name },
+              )}{' '}
+            </div>
+            <div>
+              {formatMessage(
+                {
+                  id: 'src.component.RelativeResourceModal.components.317CEDE8',
+                  defaultMessage: '账号：{accountName}',
+                },
+                { accountName },
+              )}
+            </div>
+            <div>
+              {formatMessage(
+                {
+                  id: 'src.component.RelativeResourceModal.components.FDAA583E',
+                  defaultMessage: '角色：{roleNamesText}',
+                },
+                { roleNamesText },
+              )}
+            </div>
           </>
         }
       >
@@ -29,11 +54,25 @@ export const TaskTitle = ({ record }: { record: IResourceDependencyItem }) => {
           {record?.creator?.accountName || ''}
         </Typography.Text>
       </Tooltip>
-      {` 创建于 ${createTimeText}`}
+      {formatMessage(
+        {
+          id: 'src.component.RelativeResourceModal.components.AD141E90',
+          defaultMessage: ' 创建于 {createTimeText}',
+        },
+        { createTimeText },
+      )}
       {login.isPrivateSpace() ? null : (
         <>
           {` · `}
-          <Tooltip title={`所属项目：${projectName}`}>
+          <Tooltip
+            title={formatMessage(
+              {
+                id: 'src.component.RelativeResourceModal.components.3BDB332B',
+                defaultMessage: '所属项目：{projectName}',
+              },
+              { projectName },
+            )}
+          >
             <Typography.Text type="secondary" ellipsis style={{ maxWidth: 180, cursor: 'pointer' }}>
               {projectName}
             </Typography.Text>

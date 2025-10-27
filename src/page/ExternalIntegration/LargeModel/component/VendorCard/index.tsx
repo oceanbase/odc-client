@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Button, Divider, Tag, Tooltip, Typography } from 'antd';
 import { EditOutlined, InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import Icon from '@ant-design/icons';
@@ -97,6 +98,7 @@ const VendorCard = ({
             className={styles.vendorIcon}
             component={VendorsConfig?.[provider?.provider]?.icon}
           />
+
           <div className={styles.vendorDetails}>
             <div className={styles.vendorTitle}>{title}</div>
           </div>
@@ -105,7 +107,12 @@ const VendorCard = ({
         {canConfigApiKey && (
           <div className={styles.configSection}>
             <Button onClick={handleConfigAPIKey} className={styles.configBtn}>
-              <span className={styles.apiKeyText}>配置 API KEY</span>
+              <span className={styles.apiKeyText}>
+                {formatMessage({
+                  id: 'src.page.ExternalIntegration.LargeModel.component.VendorCard.3C83974E',
+                  defaultMessage: '配置 API KEY',
+                })}
+              </span>
               <span className={styles.statusDot} style={createStatusDotStyle(!!apiKey)} />
             </Button>
           </div>
@@ -137,7 +144,12 @@ const VendorCard = ({
                 </Tooltip>
               </Tag>
             ) : (
-              <Tooltip title="添加备注">
+              <Tooltip
+                title={formatMessage({
+                  id: 'src.page.ExternalIntegration.LargeModel.component.VendorCard.060E6243',
+                  defaultMessage: '添加备注',
+                })}
+              >
                 <Button
                   type="dashed"
                   onClick={handleEditDescription}
@@ -159,7 +171,10 @@ const VendorCard = ({
         {supportsConfigurationMethod(provider, EConfigurationMethod.CUSTOMIZABLE_MODEL) && (
           <Button type="link" className={styles.addModelBtn} onClick={handleAddModel}>
             <PlusOutlined />
-            添加模型
+            {formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.component.VendorCard.CC14FA7B',
+              defaultMessage: '添加模型',
+            })}
           </Button>
         )}
       </div>

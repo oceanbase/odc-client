@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import CreatePage from '@/component/Schedule/modals/Create';
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import useURLParams from '@/util/hooks/useUrlParams';
@@ -46,9 +47,29 @@ const ScheduleCreatePage: React.FC<IProps> = ({ scheduleStore }) => {
                 scheduleStore.resetScheduleCreateData();
               }}
             />
-            {isEdit ? '编辑' + title + '作业' : '新建' + title + '作业'}
+
+            {isEdit
+              ? formatMessage({
+                  id: 'src.page.ScheduleCreatePage.1E232A3B',
+                  defaultMessage: '编辑',
+                }) +
+                title +
+                formatMessage({
+                  id: 'src.page.ScheduleCreatePage.A0C6CB63',
+                  defaultMessage: '作业',
+                })
+              : formatMessage({
+                  id: 'src.page.ScheduleCreatePage.74066CF4',
+                  defaultMessage: '新建',
+                }) +
+                title +
+                formatMessage({
+                  id: 'src.page.ScheduleCreatePage.94CAAB53',
+                  defaultMessage: '作业',
+                })}
           </>
         ),
+
         showDivider: true,
       }}
     >

@@ -67,7 +67,10 @@ const SchduleExecutionMethodForm = forwardRef<
                 rules={[
                   {
                     required: true,
-                    message: '请选择执行时间',
+                    message: formatMessage({
+                      id: 'src.component.Schedule.components.SchduleExecutionMethodForm.24EEDBAD',
+                      defaultMessage: '请选择执行时间',
+                    }),
                   },
                 ]}
               >

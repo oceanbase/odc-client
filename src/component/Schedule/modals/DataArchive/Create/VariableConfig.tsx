@@ -81,6 +81,7 @@ export const timeUnitOptions = [
     value: 'y',
   },
 ];
+
 const MAX_VARIABLES_COUNT = 100;
 const ENABLE_PATTERN_OPERATOR = false;
 const timeFormatOptions = ['yyyy-MM-dd', 'yyyyMMdd', 'yyyy-MM-01'].map((item) => ({
@@ -116,7 +117,10 @@ const VariableConfig: React.FC<IProps> = (props) => {
 
         <span className={styles.desc}>
           <HelpDoc leftText isTip doc="dataArchiveVariablesDoc">
-            变量可在归档配置的目标表及过滤条件中引用 (可选)
+            {formatMessage({
+              id: 'src.component.Schedule.modals.DataArchive.Create.02B4803D',
+              defaultMessage: '变量可在归档配置的目标表及过滤条件中引用 (可选)',
+            })}
           </HelpDoc>
         </span>
       </Space>
@@ -191,7 +195,10 @@ const VariableConfig: React.FC<IProps> = (props) => {
                   </Form.Item>
                   <Form.Item {...restField} name={[name, 'format']} className={styles.mb8}>
                     <AutoComplete
-                      placeholder={'请输入或选择一种时间格式'}
+                      placeholder={formatMessage({
+                        id: 'src.component.Schedule.modals.DataArchive.Create.522A41EB',
+                        defaultMessage: '请输入或选择一种时间格式',
+                      })}
                       options={timeFormatOptions}
                     />
                   </Form.Item>
@@ -300,7 +307,19 @@ const VariableConfig: React.FC<IProps> = (props) => {
                   width: '100%',
                 }}
               >
-                <Tooltip title={disabledAddFields ? `最多添加${MAX_VARIABLES_COUNT}个变量` : ''}>
+                <Tooltip
+                  title={
+                    disabledAddFields
+                      ? formatMessage(
+                          {
+                            id: 'src.component.Schedule.modals.DataArchive.Create.2A0767BA',
+                            defaultMessage: '最多添加{MAX_VARIABLES_COUNT}个变量',
+                          },
+                          { MAX_VARIABLES_COUNT },
+                        )
+                      : ''
+                  }
+                >
                   <Button
                     type="dashed"
                     onClick={() => add(variable)}

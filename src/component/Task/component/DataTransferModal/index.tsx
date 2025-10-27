@@ -540,7 +540,10 @@ class TaskContent extends React.Component<any, any> {
           </Col>
           <Col span={12}>
             <SimpleTextItem
-              label={'类型'}
+              label={formatMessage({
+                id: 'src.component.Task.component.DataTransferModal.474FFC64',
+                defaultMessage: '类型',
+              })}
               content={
                 {
                   IMPORT: formatMessage({
@@ -560,20 +563,29 @@ class TaskContent extends React.Component<any, any> {
           </Col>
           <Col span={12}>
             <SimpleTextItem
-              label={'数据库'}
+              label={formatMessage({
+                id: 'src.component.Task.component.DataTransferModal.60B4CB8C',
+                defaultMessage: '数据库',
+              })}
               content={<EllipsisText content={<DatabaseLabel database={task?.database} />} />}
             />
           </Col>
           <Col span={12}>
             <SimpleTextItem
-              label={'数据源'}
+              label={formatMessage({
+                id: 'src.component.Task.component.DataTransferModal.6213AE54',
+                defaultMessage: '数据源',
+              })}
               content={<EllipsisText content={task?.database?.dataSource?.name} />}
             />
           </Col>
           {!login.isPrivateSpace() && (
             <Col span={12}>
               <SimpleTextItem
-                label={'项目'}
+                label={formatMessage({
+                  id: 'src.component.Task.component.DataTransferModal.C18618E1',
+                  defaultMessage: '项目',
+                })}
                 content={<EllipsisText content={task?.project?.name} />}
               />
             </Col>
@@ -663,6 +675,7 @@ class TaskContent extends React.Component<any, any> {
             marginTop: 16,
           }}
         />
+
         <Row className={styles.spaceBlock}>
           <Col span={12}>
             <SimpleTextItem

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { FormInstance } from 'antd';
 import { convertCronToMinutes } from '@/component/Crontab/utils';
 import { ICrontab } from '@/component/Crontab/interface';
@@ -29,7 +30,12 @@ export function validateCrontabInterval(
     form.setFields([
       {
         name: fieldName,
-        errors: [`作业任务最小调度间隔不小于 ${limit} 分钟`],
+        errors: [
+          formatMessage(
+            { id: 'src.util.0BB62F3F', defaultMessage: '作业任务最小调度间隔不小于 {limit} 分钟' },
+            { limit },
+          ),
+        ],
       },
     ]);
     return false;

@@ -65,6 +65,7 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
               //执行方式
               taskExecStrategyMap[task?.executionStrategy],
             ],
+
             [
               formatMessage({
                 id: 'odc.TaskManagePage.DataMocker.TargetTable',
@@ -205,21 +206,45 @@ export function getItems(task: TaskDetail<IMockDataParams>, result: ITaskResult,
       textItems: [
         ['ID', task?.id],
         [
-          '类型',
+          formatMessage({
+            id: 'src.component.Task.modals.DataMockerTask.DetailContent.FD2C05D8',
+            defaultMessage: '类型',
+          }),
+
           formatMessage({
             id: 'odc.component.DetailModal.dataMocker.AnalogData',
             defaultMessage: '模拟数据',
           }),
         ],
+
         [
-          '数据库',
+          formatMessage({
+            id: 'src.component.Task.modals.DataMockerTask.DetailContent.23118E17',
+            defaultMessage: '数据库',
+          }),
+
           <EllipsisText
             content={<DatabaseLabel database={task?.database} />}
             needTooltip={false}
           />,
         ],
-        ['数据源', <EllipsisText content={task?.database?.dataSource?.name} />],
-        !login.isPrivateSpace() ? ['项目', <EllipsisText content={task?.project?.name} />] : null,
+
+        [
+          formatMessage({
+            id: 'src.component.Task.modals.DataMockerTask.DetailContent.4E09897B',
+            defaultMessage: '数据源',
+          }),
+          <EllipsisText content={task?.database?.dataSource?.name} />,
+        ],
+        !login.isPrivateSpace()
+          ? [
+              formatMessage({
+                id: 'src.component.Task.modals.DataMockerTask.DetailContent.7A02A0D1',
+                defaultMessage: '项目',
+              }),
+              <EllipsisText content={task?.project?.name} />,
+            ]
+          : null,
         hasFlow ? flowInfo : null,
         [
           formatMessage({

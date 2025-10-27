@@ -123,6 +123,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           defaultMessage: '全局搜索',
         }),
       ],
+
       icon: SearchOutlined,
       actionType: actionTypes.read,
       run(session, node) {
@@ -312,6 +313,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '多库变更',
             }),
           ],
+
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
@@ -338,6 +340,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '逻辑库变更',
             }),
           ],
+
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
@@ -433,7 +436,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     },
     {
       key: 'TASK_CYCLE_MENU',
-      text: ['作业调度'],
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.2F70937A',
+          defaultMessage: '作业调度',
+        }),
+      ],
 
       ellipsis: true,
       hasDivider(node) {
@@ -561,6 +569,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           defaultMessage: '权限申请',
         }),
       ],
+
       ellipsis: true,
       hasDivider: true,
       isHide(_, node) {
@@ -575,6 +584,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '申请库权限',
             }),
           ],
+
           ellipsis: true,
           run(session, node) {
             const database: IDatabase = node.data;

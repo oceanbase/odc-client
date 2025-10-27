@@ -114,6 +114,7 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
       SearchStatus.forProject,
       SearchStatus.forDataSource,
     ];
+
     if (tabStates.includes(status)) {
       return status;
     }
@@ -171,11 +172,17 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
     ) {
       positionText = (
         <div className={styles.positioninContentText}>
-          <span>定位到数据库:</span>
+          <span>
+            {formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.321F033D',
+              defaultMessage: '定位到数据库:',
+            })}
+          </span>
           <DataBaseStatusIcon item={database} />
           <EllipsisText content={database?.name} />
         </div>
       );
+
       action = () => {
         positionResourceTree?.({
           type: DbObjectType.database,
@@ -187,11 +194,17 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
     if ([SearchStatus.projectforObject].includes(status)) {
       positionText = (
         <div className={styles.positioninContentText}>
-          <span>定位到项目:</span>
+          <span>
+            {formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.1D04386B',
+              defaultMessage: '定位到项目:',
+            })}
+          </span>
           <Icon component={ProjectSvg} style={{ color: 'var(--icon-blue-color)', fontSize: 16 }} />
           <EllipsisText content={project?.name} />
         </div>
       );
+
       action = () => {
         positionProjectOrDataSource?.({
           status,
@@ -202,11 +215,17 @@ const DatabaseSearchModal = ({ modalStore, userStore }: IProps) => {
     if ([SearchStatus.dataSourceforObject].includes(status)) {
       positionText = (
         <div className={styles.positioninContentText}>
-          <span>定位到数据源:</span>
+          <span>
+            {formatMessage({
+              id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.ACC97A14',
+              defaultMessage: '定位到数据源:',
+            })}
+          </span>
           <StatusIcon item={dataSource} />
           <EllipsisText content={dataSource?.name} />
         </div>
       );
+
       action = () => {
         positionProjectOrDataSource?.({
           status,

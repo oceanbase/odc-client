@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import HelpDoc from '@/component/helpDoc';
 import { MigrationInsertAction } from '@/d.ts';
 import { timeUnitOptions } from './VariableConfig';
@@ -9,11 +10,17 @@ export enum PreCheckStatus {
 
 export const InsertActionOptions = [
   {
-    label: '重复时忽略插入',
+    label: formatMessage({
+      id: 'src.component.Schedule.modals.DataArchive.Create.43C7A315',
+      defaultMessage: '重复时忽略插入',
+    }),
     value: MigrationInsertAction.INSERT_IGNORE,
   },
   {
-    label: '重复时更新目标表端数据',
+    label: formatMessage({
+      id: 'src.component.Schedule.modals.DataArchive.Create.D77FF905',
+      defaultMessage: '重复时更新目标表端数据',
+    }),
     value: MigrationInsertAction.INSERT_DUPLICATE_UPDATE,
   },
 ];
@@ -22,20 +29,30 @@ export const cleanUpTimingOptions = [
   {
     label: (
       <div>
-        归档完成后
+        {formatMessage({
+          id: 'src.component.Schedule.modals.DataArchive.Create.C19360AA',
+          defaultMessage: '归档完成后',
+        })}
+
         <HelpDoc leftText isTip doc="TimingforCleanAfterArchive"></HelpDoc>
       </div>
     ),
+
     value: 'afterArchive',
   },
 
   {
     label: (
       <div>
-        边归档边清理
+        {formatMessage({
+          id: 'src.component.Schedule.modals.DataArchive.Create.31FD789E',
+          defaultMessage: '边归档边清理',
+        })}
+
         <HelpDoc leftText isTip doc="TimingforCleanAfterCleanUp"></HelpDoc>
       </div>
     ),
+
     value: 'afterCleanUp',
   },
 ];

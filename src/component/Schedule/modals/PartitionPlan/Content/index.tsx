@@ -39,13 +39,25 @@ const PartitionScheduleContent: React.FC<IProps> = (props) => {
         {subTask && (
           <>
             <Descriptions.Item label={'ID'}>{subTask?.id}</Descriptions.Item>
-            <Descriptions.Item label={'类型'}>{SubTypeTextMap[subTask?.type]}</Descriptions.Item>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.component.Schedule.modals.PartitionPlan.Content.996EB8FA',
+                defaultMessage: '类型',
+              })}
+            >
+              {SubTypeTextMap[subTask?.type]}
+            </Descriptions.Item>
           </>
         )}
         {!subTask && (
           <>
             <Descriptions.Item label={'ID'}>{schedule?.scheduleId}</Descriptions.Item>
-            <Descriptions.Item label={'类型'}>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.component.Schedule.modals.PartitionPlan.Content.17A00728',
+                defaultMessage: '类型',
+              })}
+            >
               {formatMessage({
                 id: 'odc.src.component.Task.PartitionTask.DetailContent.Partition',
                 defaultMessage: '分区计划',
@@ -64,11 +76,21 @@ const PartitionScheduleContent: React.FC<IProps> = (props) => {
             content={<DatabaseLabel database={schedule?.parameters?.databaseInfo} />}
           />
         </Descriptions.Item>
-        <Descriptions.Item label={'数据源'}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.modals.PartitionPlan.Content.9FD8BA70',
+            defaultMessage: '数据源',
+          })}
+        >
           <EllipsisText content={schedule?.parameters?.databaseInfo?.dataSource?.name} />
         </Descriptions.Item>
         {!login.isPrivateSpace() && (
-          <Descriptions.Item label={'项目'}>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Schedule.modals.PartitionPlan.Content.9756FE68',
+              defaultMessage: '项目',
+            })}
+          >
             <EllipsisText content={schedule?.project?.name} />
           </Descriptions.Item>
         )}

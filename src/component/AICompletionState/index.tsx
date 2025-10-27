@@ -16,7 +16,12 @@ export default observer(function AIState() {
     return null;
   } else if (!userAIEnabled) {
     return (
-      <Tooltip title="智能补全">
+      <Tooltip
+        title={formatMessage({
+          id: 'src.component.AICompletionState.F398AEAD',
+          defaultMessage: '智能补全',
+        })}
+      >
         <Icon
           onClick={() => {
             setting.enableAI();
@@ -28,7 +33,12 @@ export default observer(function AIState() {
     );
   } else {
     return (
-      <Tooltip title="智能补全生效中...">
+      <Tooltip
+        title={formatMessage({
+          id: 'src.component.AICompletionState.2F9A6C8F',
+          defaultMessage: '智能补全生效中...',
+        })}
+      >
         <span
           style={{
             display: 'inline-flex',

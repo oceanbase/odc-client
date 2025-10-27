@@ -39,7 +39,10 @@ const getConnectionColumns = (params: {
   return [
     {
       dataIndex: 'id',
-      title: '执行记录ID',
+      title: formatMessage({
+        id: 'src.component.Schedule.components.OperationRecord.BA04149E',
+        defaultMessage: '执行记录ID',
+      }),
       ellipsis: true,
       width: 80,
       render: (id, record) => {
@@ -58,7 +61,10 @@ const getConnectionColumns = (params: {
 
     {
       dataIndex: 'type',
-      title: '任务类型',
+      title: formatMessage({
+        id: 'src.component.Schedule.components.OperationRecord.D711C5BB',
+        defaultMessage: '任务类型',
+      }),
       ellipsis: true,
       width: 200,
       render: (type) => SubTypeTextMap[type],
@@ -77,7 +83,10 @@ const getConnectionColumns = (params: {
 
     {
       dataIndex: 'status',
-      title: '状态',
+      title: formatMessage({
+        id: 'src.component.Schedule.components.OperationRecord.FEE534E6',
+        defaultMessage: '状态',
+      }),
       ellipsis: true,
       width: 140,
       render: (status, record) => {

@@ -148,7 +148,10 @@ const ObjectList = ({ modalStore }: Iprops) => {
                     }
                   }}
                 >
-                  同步元数据库
+                  {formatMessage({
+                    id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.B042EF62',
+                    defaultMessage: '同步元数据库',
+                  })}
                 </a>
                 {formatMessage({
                   id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.6B9FDF51',
@@ -508,6 +511,7 @@ const ObjectList = ({ modalStore }: Iprops) => {
                               fontSize: 14,
                             }}
                           />
+
                           <span style={{ paddingRight: 4 }}>{object?.name}</span>
                           <span
                             style={{
@@ -560,6 +564,7 @@ const ObjectList = ({ modalStore }: Iprops) => {
                               fontSize: 14,
                             }}
                           />
+
                           <span style={{ paddingRight: 4 }}>{object?.name}</span>
                           <span
                             style={{

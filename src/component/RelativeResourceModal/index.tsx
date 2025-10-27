@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -108,17 +109,26 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
   const EResourceTypeConfig = useMemo(
     () => ({
       [EResourceType.TASKS]: {
-        emptyText: '暂无相关工单',
+        emptyText: formatMessage({
+          id: 'src.component.RelativeResourceModal.72872AE2',
+          defaultMessage: '暂无相关工单',
+        }),
         status: status,
         dataSource: relatedResources.flowDependencies,
       },
       [EResourceType.JOBS]: {
-        emptyText: '暂无相关作业',
+        emptyText: formatMessage({
+          id: 'src.component.RelativeResourceModal.B9BA2D67',
+          defaultMessage: '暂无相关作业',
+        }),
         status: cycleStatus,
         dataSource: relatedResources.scheduleDependencies,
       },
       [EResourceType.JOB_RECORDS]: {
-        emptyText: '暂无相关作业执行记录',
+        emptyText: formatMessage({
+          id: 'src.component.RelativeResourceModal.485821BD',
+          defaultMessage: '暂无相关作业执行记录',
+        }),
         status: subTaskStatus,
         dataSource: relatedResources.scheduleTaskDependencies,
       },
@@ -129,7 +139,10 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
   const columns = {
     [EResourceType.TASKS]: [
       {
-        title: '工单',
+        title: formatMessage({
+          id: 'src.component.RelativeResourceModal.B8A1781D',
+          defaultMessage: '工单',
+        }),
         dataIndex: 'name',
         key: 'name',
         ellipsis: true,
@@ -144,7 +157,12 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
             <div className={styles.taskName}>
               <Tooltip
                 title={
-                  hasProjectAuth ? '' : '暂无所属的项目访问权限，无法查看工单详情，请联系管理员'
+                  hasProjectAuth
+                    ? ''
+                    : formatMessage({
+                        id: 'src.component.RelativeResourceModal.94DC18D3',
+                        defaultMessage: '暂无所属的项目访问权限，无法查看工单详情，请联系管理员',
+                      })
                 }
               >
                 <div
@@ -162,7 +180,10 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         },
       },
       {
-        title: '类型',
+        title: formatMessage({
+          id: 'src.component.RelativeResourceModal.5B880931',
+          defaultMessage: '类型',
+        }),
         dataIndex: 'taskType',
         key: 'taskType',
         width: 120,
@@ -171,7 +192,10 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         },
       },
       {
-        title: '状态',
+        title: formatMessage({
+          id: 'src.component.RelativeResourceModal.B9D4375B',
+          defaultMessage: '状态',
+        }),
         dataIndex: 'status',
         key: 'status',
         width: 120,
@@ -185,9 +209,13 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         },
       },
     ],
+
     [EResourceType.JOBS]: [
       {
-        title: '作业',
+        title: formatMessage({
+          id: 'src.component.RelativeResourceModal.7729F15C',
+          defaultMessage: '作业',
+        }),
         dataIndex: 'name',
         key: 'name',
         ellipsis: true,
@@ -208,7 +236,10 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         },
       },
       {
-        title: '类型',
+        title: formatMessage({
+          id: 'src.component.RelativeResourceModal.F69A51C1',
+          defaultMessage: '类型',
+        }),
         dataIndex: 'type',
         key: 'type',
         width: 120,
@@ -218,7 +249,10 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
       },
 
       {
-        title: '状态',
+        title: formatMessage({
+          id: 'src.component.RelativeResourceModal.BFF43927',
+          defaultMessage: '状态',
+        }),
         dataIndex: 'status',
         key: 'status',
         width: 120,
@@ -232,6 +266,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         },
       },
     ],
+
     [EResourceType.JOB_RECORDS]: [
       {
         title: 'ID',
@@ -253,7 +288,10 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         },
       },
       {
-        title: '所属作业',
+        title: formatMessage({
+          id: 'src.component.RelativeResourceModal.2907F4AA',
+          defaultMessage: '所属作业',
+        }),
         dataIndex: 'scheduleName',
         key: 'scheduleName',
         ellipsis: true,
@@ -272,7 +310,10 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         },
       },
       {
-        title: '类型',
+        title: formatMessage({
+          id: 'src.component.RelativeResourceModal.7C27341A',
+          defaultMessage: '类型',
+        }),
         dataIndex: 'taskType',
         key: 'taskType',
         width: 120,
@@ -281,7 +322,10 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         },
       },
       {
-        title: '创建时间',
+        title: formatMessage({
+          id: 'src.component.RelativeResourceModal.06CBEECB',
+          defaultMessage: '创建时间',
+        }),
         dataIndex: 'createTime',
         key: 'createTime',
         width: 180,
@@ -290,7 +334,10 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         },
       },
       {
-        title: '状态',
+        title: formatMessage({
+          id: 'src.component.RelativeResourceModal.062D88D1',
+          defaultMessage: '状态',
+        }),
         dataIndex: 'status',
         key: 'status',
         width: 120,
@@ -324,40 +371,56 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
       {
         label: (
           <>
-            工单
+            {formatMessage({
+              id: 'src.component.RelativeResourceModal.10DD7927',
+              defaultMessage: '工单',
+            })}
+
             <Typography.Text className={styles.secondaryText} type="secondary">{`${
               relatedResources.flowDependencies?.length || 0
             }`}</Typography.Text>
           </>
         ),
+
         value: EResourceType.TASKS,
         count: relatedResources.flowDependencies?.length || 0,
       },
       {
         label: (
           <>
-            作业
+            {formatMessage({
+              id: 'src.component.RelativeResourceModal.D56E127B',
+              defaultMessage: '作业',
+            })}
+
             <Typography.Text className={styles.secondaryText} type="secondary">{`${
               relatedResources.scheduleDependencies?.length || 0
             }`}</Typography.Text>
           </>
         ),
+
         value: EResourceType.JOBS,
         count: relatedResources.scheduleDependencies?.length || 0,
       },
       {
         label: (
           <>
-            作业执行记录
+            {formatMessage({
+              id: 'src.component.RelativeResourceModal.4C4C5044',
+              defaultMessage: '作业执行记录',
+            })}
+
             <Typography.Text className={styles.secondaryText} type="secondary">{`${
               relatedResources.scheduleTaskDependencies?.length || 0
             }`}</Typography.Text>
           </>
         ),
+
         value: EResourceType.JOB_RECORDS,
         count: relatedResources.scheduleTaskDependencies?.length || 0,
       },
     ];
+
     // 只展示数量大于0的tab
     return options.filter((option) => option.count > 0);
   }, [relatedResources]);
@@ -391,6 +454,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
           });
         }}
       />
+
       <ScheduleDetail
         type={(currentRecord as IScheduleDependencyOverview)?.type}
         detailId={currentRecord?.id}
@@ -407,6 +471,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
           });
         }}
       />
+
       <SubTaskDetailModal
         scheduleId={(currentRecord as IScheduleTaskDependencyOverview)?.scheduleId}
         detailId={(currentRecord as IScheduleTaskDependencyOverview)?.id}
@@ -444,7 +509,12 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
             <Space>
               {entityConfig?.confirmText ? (
                 <>
-                  <Button onClick={onCancel}>取消</Button>
+                  <Button onClick={onCancel}>
+                    {formatMessage({
+                      id: 'src.component.RelativeResourceModal.A91419CF',
+                      defaultMessage: '取消',
+                    })}
+                  </Button>
                   <Button
                     variant="outlined"
                     color={entityConfig.actionType}
@@ -455,7 +525,12 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
                   </Button>
                 </>
               ) : (
-                <Button onClick={onCancel}>我知道了</Button>
+                <Button onClick={onCancel}>
+                  {formatMessage({
+                    id: 'src.component.RelativeResourceModal.88026966',
+                    defaultMessage: '我知道了',
+                  })}
+                </Button>
               )}
             </Space>
           </div>,
@@ -474,6 +549,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
                 onChange={(e) => setActiveTab(e.target.value)}
                 style={{ marginBottom: '16px' }}
               />
+
               <Table
                 dataSource={EResourceTypeConfig[activeTab].dataSource}
                 columns={columns[activeTab]}

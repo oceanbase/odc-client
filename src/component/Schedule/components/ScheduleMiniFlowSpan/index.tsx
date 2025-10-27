@@ -71,7 +71,11 @@ const ScheduleMiniFlowSpan: React.FC<IProps> = (props) => {
               textOverflow: 'ellipsis',
             }}
           >
-            审批中
+            {formatMessage({
+              id: 'src.component.Schedule.components.ScheduleMiniFlowSpan.EB2B586A',
+              defaultMessage: '审批中',
+            })}
+
             {candidateApproversName && `(${candidateApproversName})`}
           </div>
         )}
@@ -111,7 +115,10 @@ const Content = ({
     <Spin spinning={loading}>
       {task && <MiniTaskFlow task={task} />}
       <Button type="link" onClick={onDetail}>
-        查看详情
+        {formatMessage({
+          id: 'src.component.Schedule.components.ScheduleMiniFlowSpan.4F597A2D',
+          defaultMessage: '查看详情',
+        })}
       </Button>
     </Spin>
   );

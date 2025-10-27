@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React, { useContext } from 'react';
 import { Radio } from 'antd';
 import { ScheduleTaskTab } from '@/component/Schedule/interface';
@@ -17,11 +18,17 @@ const SubTaskTab = () => {
       value={subTaskParams?.tab}
       options={[
         {
-          label: '全部',
+          label: formatMessage({
+            id: 'src.component.Schedule.layout.Header.D90B833F',
+            defaultMessage: '全部',
+          }),
           value: ScheduleTaskTab.all,
         },
         {
-          label: '待我执行',
+          label: formatMessage({
+            id: 'src.component.Schedule.layout.Header.D0082435',
+            defaultMessage: '待我执行',
+          }),
           value: ScheduleTaskTab.approveByCurrentUser,
         },
       ]}

@@ -70,23 +70,43 @@ export const getItems = (
           <>
             <Descriptions column={2}>
               <Descriptions.Item label={'ID'}>{task?.id}</Descriptions.Item>
-              <Descriptions.Item label={'类型'}>
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.F1E2BECA',
+                  defaultMessage: '类型',
+                })}
+              >
                 {formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.ExportResultSet',
                   defaultMessage: '导出结果集',
                 })}
               </Descriptions.Item>
-              <Descriptions.Item label={'数据库'}>
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.5BD900DD',
+                  defaultMessage: '数据库',
+                })}
+              >
                 <EllipsisText
                   content={<DatabaseLabel database={task?.database} />}
                   needTooltip={false}
                 />
               </Descriptions.Item>
-              <Descriptions.Item label={'数据源'}>
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.A35BE7A7',
+                  defaultMessage: '数据源',
+                })}
+              >
                 <EllipsisText content={task?.database?.dataSource?.name} />
               </Descriptions.Item>
               {!login.isPrivateSpace() && (
-                <Descriptions.Item label={'项目'}>
+                <Descriptions.Item
+                  label={formatMessage({
+                    id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.F90030F6',
+                    defaultMessage: '项目',
+                  })}
+                >
                   <EllipsisText content={task?.project?.name} />
                 </Descriptions.Item>
               )}
@@ -101,7 +121,14 @@ export const getItems = (
                   <ODCRiskLevelLabel iconMode levelMap level={task?.riskLevel?.level} />
                 </Descriptions.Item>
               )}
-              <Descriptions.Item label={'描述'}>{task?.description}</Descriptions.Item>
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.B21DB390',
+                  defaultMessage: '描述',
+                })}
+              >
+                {task?.description}
+              </Descriptions.Item>
             </Descriptions>
 
             <Divider />
@@ -135,9 +162,24 @@ export const getItems = (
               }
               direction="column"
             />
+
             <Descriptions column={2}>
-              <Descriptions.Item label={'查询结果限制'}>{parameters?.maxRows}</Descriptions.Item>
-              <Descriptions.Item label={'文件名'}>{parameters?.fileName}</Descriptions.Item>
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.C16234FE',
+                  defaultMessage: '查询结果限制',
+                })}
+              >
+                {parameters?.maxRows}
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.C9C02270',
+                  defaultMessage: '文件名',
+                })}
+              >
+                {parameters?.fileName}
+              </Descriptions.Item>
               <Descriptions.Item
                 label={formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.FileFormat',
@@ -214,7 +256,14 @@ export const getItems = (
                       })}
                 </Descriptions.Item>
               )}
-              <Descriptions.Item label={'文件编码'}>{parameters?.fileEncoding}</Descriptions.Item>
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.22E75696',
+                  defaultMessage: '文件编码',
+                })}
+              >
+                {parameters?.fileEncoding}
+              </Descriptions.Item>
               <Descriptions.Item
                 label={formatMessage({
                   id: 'odc.src.component.Task.ResultSetExportTask.DetailContent.ImplementationModalities',
@@ -241,9 +290,22 @@ export const getItems = (
                 marginTop: 12,
               }}
             />
+
             <Descriptions column={2}>
-              <Descriptions.Item label={'创建人'}>{task?.creator?.name || '-'}</Descriptions.Item>
-              <Descriptions.Item label={'创建时间'}>
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.87C34066',
+                  defaultMessage: '创建人',
+                })}
+              >
+                {task?.creator?.name || '-'}
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={formatMessage({
+                  id: 'src.component.Task.modals.ResultSetExportTask.DetailContent.2E064ECC',
+                  defaultMessage: '创建时间',
+                })}
+              >
                 {getFormatDateTime(task?.createTime)}
               </Descriptions.Item>
             </Descriptions>

@@ -199,7 +199,10 @@ export const DbObjectTypeMap = {
     },
   },
   [DbObjectType.external_resource]: {
-    label: '外部资源',
+    label: formatMessage({
+      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.1E1D4898',
+      defaultMessage: '外部资源',
+    }),
     openPage: (object) => openExternalResourceViewPage,
     getOpenTab: (object, databaseId) => {
       return [object?.name, 'INFO', databaseId];
@@ -248,6 +251,7 @@ export const privateSpaceSupportSearchOptionList = [
   SearchStatus.forDatabase,
   SearchStatus.forDataSource,
 ];
+
 export const publicSpaceSupportSearchOptionList = [
   SearchStatus.forDatabase,
   SearchStatus.forProject,

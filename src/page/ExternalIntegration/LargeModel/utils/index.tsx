@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React from 'react';
 import { getServerLocalKey } from '@/util/intl';
 import { UI_COLORS, TEXT_CONSTANTS } from '../constant';
@@ -10,12 +11,40 @@ export const renderFormComponent = (schema: any) => {
   const key = getServerLocalKey();
   switch (type) {
     case ESchemaFieldType.SECRET_INPUT:
-      return <Input.Password placeholder={placeholder?.[key] || '请输入'} />;
+      return (
+        <Input.Password
+          placeholder={
+            placeholder?.[key] ||
+            formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.utils.99DEC505',
+              defaultMessage: '请输入',
+            })
+          }
+        />
+      );
     case ESchemaFieldType.TEXT_INPUT:
-      return <Input placeholder={placeholder?.[key] || '请输入'} />;
+      return (
+        <Input
+          placeholder={
+            placeholder?.[key] ||
+            formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.utils.A29C4AAC',
+              defaultMessage: '请输入',
+            })
+          }
+        />
+      );
     case ESchemaFieldType.SELECT:
       return (
-        <Select placeholder={placeholder?.[key] || '请选择'}>
+        <Select
+          placeholder={
+            placeholder?.[key] ||
+            formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.utils.F3184B73',
+              defaultMessage: '请选择',
+            })
+          }
+        >
           {options?.map((option: any) => (
             <Select.Option key={option.value} value={option.value}>
               {option.label?.[key] || option.value}
@@ -23,8 +52,19 @@ export const renderFormComponent = (schema: any) => {
           ))}
         </Select>
       );
+
     default:
-      return <Input placeholder={placeholder?.[key] || '请输入'} />;
+      return (
+        <Input
+          placeholder={
+            placeholder?.[key] ||
+            formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.utils.F2D0D42C',
+              defaultMessage: '请输入',
+            })
+          }
+        />
+      );
   }
 };
 
@@ -78,7 +118,13 @@ export const supportsConfigurationMethod = (
  * 格式化模型数量显示
  */
 export const formatModelCount = (count: number): string => {
-  return `${count} 个模型`;
+  return formatMessage(
+    {
+      id: 'src.page.ExternalIntegration.LargeModel.utils.6D8AD4F6',
+      defaultMessage: '{count} 个模型',
+    },
+    { count },
+  );
 };
 
 /**

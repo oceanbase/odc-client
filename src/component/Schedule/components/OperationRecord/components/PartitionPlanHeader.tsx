@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Segmented, Space } from 'antd';
 import { IScheduleRecord, IPartitionPlan } from '@/d.ts/schedule';
 import React, { useEffect, useState } from 'react';
@@ -50,11 +51,17 @@ const PartitionPlanHeader: React.FC<IProps> = (props) => {
           options={[
             {
               value: PartitionTypeExecutionMethod.CreatePartition,
-              label: '创建分区调度策略',
+              label: formatMessage({
+                id: 'src.component.Schedule.components.OperationRecord.components.DB6188CA',
+                defaultMessage: '创建分区调度策略',
+              }),
             },
             {
               value: PartitionTypeExecutionMethod.DropPartition,
-              label: '删除分区调度策略',
+              label: formatMessage({
+                id: 'src.component.Schedule.components.OperationRecord.components.C12F3E2D',
+                defaultMessage: '删除分区调度策略',
+              }),
             },
           ]}
         />

@@ -222,7 +222,14 @@ const TaskProgressModal: React.FC<IProps> = ({ modalOpen, setModalOpen, data, ta
     });
     return (
       <div style={{ marginBottom: 6 }}>
-        {`以下 ${executeCount} 行变更记录执行中， ${successCount} 行变更记录执行成功， ${failedCount} 行变更记录执行失败`}
+        {formatMessage(
+          {
+            id: 'src.component.Task.component.TaskDetailModal.TaskProgress.LogicDatabaseChangeExecute.2A29F7DA',
+            defaultMessage:
+              '以下 {executeCount} 行变更记录执行中， {successCount} 行变更记录执行成功， {failedCount} 行变更记录执行失败',
+          },
+          { executeCount, successCount, failedCount },
+        )}
       </div>
     );
   }, [result?.sqlExecuteResults]);
@@ -241,7 +248,12 @@ const TaskProgressModal: React.FC<IProps> = ({ modalOpen, setModalOpen, data, ta
       footer={null}
     >
       <Descriptions column={1} style={{ marginBottom: '12px' }}>
-        <Descriptions.Item label={'数据库'}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.component.TaskDetailModal.TaskProgress.LogicDatabaseChangeExecute.97548E04',
+            defaultMessage: '数据库',
+          })}
+        >
           <div style={{ alignItems: 'center', display: 'flex', gap: '4px' }}>
             <Icon
               component={
@@ -261,7 +273,14 @@ const TaskProgressModal: React.FC<IProps> = ({ modalOpen, setModalOpen, data, ta
             </div>
           </div>
         </Descriptions.Item>
-        <Descriptions.Item label={'数据源'}>{result?.database?.dataSource?.name}</Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.component.TaskDetailModal.TaskProgress.LogicDatabaseChangeExecute.9F19D48A',
+            defaultMessage: '数据源',
+          })}
+        >
+          {result?.database?.dataSource?.name}
+        </Descriptions.Item>
       </Descriptions>
       {header}
       <CommonTable

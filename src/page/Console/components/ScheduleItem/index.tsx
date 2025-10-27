@@ -94,6 +94,7 @@ const ScheduleItem = ({
           })}
           counter={ENABLED || 0}
         />
+
         <Divider className={styles.countersDivider} />
         <CounterCard
           onClick={() => {
@@ -110,6 +111,7 @@ const ScheduleItem = ({
           })}
           counter={totalCount}
         />
+
         <CounterCard
           onClick={() => {
             // 跳转到调度管理页面的执行视角，并过滤执行失败的任务（包括FAILED、ABNORMAL、EXEC_TIMEOUT）
@@ -122,7 +124,10 @@ const ScheduleItem = ({
               ),
             );
           }}
-          title="执行中断"
+          title={formatMessage({
+            id: 'src.page.Console.components.ScheduleItem.45AAE8DB',
+            defaultMessage: '执行中断',
+          })}
           counter={EXECUTION_FAILURE || 0}
           status="failed"
         />

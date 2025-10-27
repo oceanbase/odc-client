@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -66,7 +67,10 @@ const FileUpload = React.forwardRef<FileUploadRef, FileUploadProps>(
       onFileSelect,
       onRemove,
       customUpload,
-      uploadText = '点击或拖拽文件到此区域选择',
+      uploadText = formatMessage({
+        id: 'src.component.FileUpload.8BAE692D',
+        defaultMessage: '点击或拖拽文件到此区域选择',
+      }),
       hintText,
       disabled = false,
       className,
@@ -79,7 +83,13 @@ const FileUpload = React.forwardRef<FileUploadRef, FileUploadProps>(
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // 生成默认提示文本
-    const defaultHintText = `支持 ${accept.join(', ')} 文件，最大 ${maxSize}MB`;
+    const defaultHintText = formatMessage(
+      {
+        id: 'src.component.FileUpload.FCEB6784',
+        defaultMessage: '支持 {CallExpression0} 文件，最大 {maxSize}MB',
+      },
+      { CallExpression0: accept.join(', '), maxSize },
+    );
     const displayHintText = hintText || defaultHintText;
 
     // 生成 accept 属性
@@ -90,14 +100,26 @@ const FileUpload = React.forwardRef<FileUploadRef, FileUploadProps>(
       const isValidType = accept.some((ext) => ext.toLowerCase() === fileExtension);
 
       if (!isValidType) {
-        const errorMsg = `仅支持 ${accept.join('、')} 文件`;
+        const errorMsg = formatMessage(
+          {
+            id: 'src.component.FileUpload.A6036547',
+            defaultMessage: '仅支持 {CallExpression0} 文件',
+          },
+          { CallExpression0: accept.join('、') },
+        );
         message.error(errorMsg);
         return false;
       }
 
       const isLtMaxSize = file.size / 1024 / 1024 < maxSize;
       if (!isLtMaxSize) {
-        const errorMsg = `文件大小必须小于 ${maxSize}MB`;
+        const errorMsg = formatMessage(
+          {
+            id: 'src.component.FileUpload.CD84B515',
+            defaultMessage: '文件大小必须小于 {maxSize}MB',
+          },
+          { maxSize },
+        );
         message.error(errorMsg);
         return false;
       }
@@ -124,7 +146,13 @@ const FileUpload = React.forwardRef<FileUploadRef, FileUploadProps>(
         }
       } catch (error) {
         setUploadState(UploadState.ERROR);
-        const errorMsg = error instanceof Error ? error.message : '文件处理失败';
+        const errorMsg =
+          error instanceof Error
+            ? error.message
+            : formatMessage({
+                id: 'src.component.FileUpload.C5587C12',
+                defaultMessage: '文件处理失败',
+              });
         onError?.(file, errorMsg);
       }
     };
@@ -217,7 +245,10 @@ const FileUpload = React.forwardRef<FileUploadRef, FileUploadProps>(
       [UploadState.UPLOADING]: {
         icon: <Icon component={ObIcon} className={styles.uploadIcon} />,
         text: currentFile?.name || '-',
-        hint: '上传中...',
+        hint: formatMessage({
+          id: 'src.component.FileUpload.1C2570D1',
+          defaultMessage: '上传中...',
+        }),
       },
       [UploadState.SUCCESS]: {
         icon: <CheckCircleFilled className={`${styles.uploadIcon} ${styles.successIcon}`} />,
@@ -265,7 +296,7 @@ const FileUpload = React.forwardRef<FileUploadRef, FileUploadProps>(
             }}
             disabled={disabled}
           >
-            移除
+            {formatMessage({ id: 'src.component.FileUpload.912CDD9D', defaultMessage: '移除' })}
           </Button>
         )}
 

@@ -169,7 +169,10 @@ const Sider: React.FC<IProps> = function (props) {
               showDot={!!pendingApprovalScheduleIdsCount}
               label={
                 collapsed ? (
-                  '作业'
+                  formatMessage({
+                    id: 'src.layout.SpaceContainer.Sider.1E2E8F19',
+                    defaultMessage: '作业',
+                  })
                 ) : (
                   <Badge
                     showZero={false}
@@ -178,7 +181,10 @@ const Sider: React.FC<IProps> = function (props) {
                     offset={[-8, 5]}
                   >
                     <div style={{ width: '100px' }} className={styles.ticket}>
-                      {'作业'}
+                      {formatMessage({
+                        id: 'src.layout.SpaceContainer.Sider.A72CECD2',
+                        defaultMessage: '作业',
+                      })}
                     </div>
                   </Badge>
                 )

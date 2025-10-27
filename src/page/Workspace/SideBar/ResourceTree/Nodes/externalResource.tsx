@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -35,7 +36,10 @@ export function ExternalResourceTreeData(
   }
   const externalResources = dbSession?.database?.externalResources || [];
   const treeData: TreeDataNode = {
-    title: '外部资源',
+    title: formatMessage({
+      id: 'src.page.Workspace.SideBar.ResourceTree.Nodes.00A9EAFC',
+      defaultMessage: '外部资源',
+    }),
     key: `${database.id}-${dbName}-externalResource`,
     type: ResourceNodeType.ExternalResourceRoot,
     data: database,
@@ -76,6 +80,7 @@ export function ExternalResourceTreeNodeData(
         }}
       />
     ),
+
     tip: `${resource.type} - ${resource.url}`,
     doubleClick(session, node) {
       const externalResource: IExternalResource = node.data;
@@ -87,7 +92,12 @@ export function ExternalResourceTreeNodeData(
           session.database?.dbName,
         );
       } else {
-        message.error('会话信息不完整，无法查看外部资源');
+        message.error(
+          formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.Nodes.532D19CD',
+            defaultMessage: '会话信息不完整，无法查看外部资源',
+          }),
+        );
       }
     },
   };

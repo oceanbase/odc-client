@@ -181,6 +181,7 @@ export const flowStatusSelectOptions = [
   TaskStatus.CANCELLED,
   TaskStatus.PRE_CHECK_FAILED,
 ];
+
 export const status: Partial<
   Record<TaskStatus, { icon: React.ReactNode; text: string; desc?: React.ReactNode }>
 > = {
@@ -239,9 +240,18 @@ export const status: Partial<
         }}
       />
     ),
-    text: '执行成功',
+
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.53633125',
+      defaultMessage: '执行成功',
+    }),
     desc: (
-      <Tooltip title="执行时存在错误，已跳过">
+      <Tooltip
+        title={formatMessage({
+          id: 'src.component.Task.component.Status.447536E5',
+          defaultMessage: '执行时存在错误，已跳过',
+        })}
+      >
         <ExclamationCircleOutlined
           style={{
             color: 'rgb(250, 173, 20)',
@@ -301,7 +311,11 @@ export const status: Partial<
         }}
       />
     ),
-    text: '已创建',
+
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.298842FF',
+      defaultMessage: '已创建',
+    }),
   },
   [TaskStatus.PRE_CHECK_EXECUTING]: {
     icon: (
@@ -311,7 +325,11 @@ export const status: Partial<
         }}
       />
     ),
-    text: '预检查中',
+
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.A399E57D',
+      defaultMessage: '预检查中',
+    }),
   },
   [TaskStatus.PRE_CHECK_FAILED]: {
     icon: (
@@ -364,6 +382,7 @@ export const status: Partial<
         }}
       />
     ),
+
     text: formatMessage({
       id: 'odc.component.TaskStatus.Queuing',
       defaultMessage: '排队中',

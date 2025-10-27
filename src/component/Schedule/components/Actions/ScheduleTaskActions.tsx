@@ -92,7 +92,12 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
     setActiveBtnKey(ScheduleTaskActionsEnum.EXECUTE);
     const res = await startScheduleTask(scheduleId, subTask?.id);
     if (res?.data) {
-      message.success('执行成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Schedule.components.Actions.968049A4',
+          defaultMessage: '执行成功',
+        }),
+      );
       onReloadList?.();
       resetActiveBtnKey();
     } else {
@@ -102,19 +107,33 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
 
   const _handlePause = async () => {
     Modal.confirm({
-      title: '确定要暂停此任务吗',
-      content: '暂停后，任务任可重新恢复执行',
+      title: formatMessage({
+        id: 'src.component.Schedule.components.Actions.1E1D9DB1',
+        defaultMessage: '确定要暂停此任务吗',
+      }),
+      content: formatMessage({
+        id: 'src.component.Schedule.components.Actions.9CA4AF76',
+        defaultMessage: '暂停后，任务任可重新恢复执行',
+      }),
       cancelText: formatMessage({
         id: 'odc.TaskManagePage.component.TaskTools.Cancel',
         defaultMessage: '取消',
       }),
-      okText: '暂停',
+      okText: formatMessage({
+        id: 'src.component.Schedule.components.Actions.5E9B49C4',
+        defaultMessage: '暂停',
+      }),
       centered: true,
       onOk: async () => {
         setActiveBtnKey(ScheduleTaskActionsEnum.PAUSE);
         const res = await pauseScheduleTask(scheduleId, subTask.id);
         if (res?.data) {
-          message.success('暂停成功');
+          message.success(
+            formatMessage({
+              id: 'src.component.Schedule.components.Actions.177167BE',
+              defaultMessage: '暂停成功',
+            }),
+          );
           onReloadList?.();
           resetActiveBtnKey();
         } else {
@@ -128,7 +147,12 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
     setActiveBtnKey(ScheduleTaskActionsEnum.RESTORE);
     const res = await resumeScheduleTask(scheduleId, subTask?.id);
     if (res?.data) {
-      message.success('恢复成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Schedule.components.Actions.A222EA23',
+          defaultMessage: '恢复成功',
+        }),
+      );
       onReloadList?.();
       resetActiveBtnKey();
     } else {
@@ -140,7 +164,12 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
     setActiveBtnKey(ScheduleTaskActionsEnum.RETRY);
     const res = await resumeScheduleTask(scheduleId, subTask?.id);
     if (res?.data) {
-      message.success('重试成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Schedule.components.Actions.5791F1E6',
+          defaultMessage: '重试成功',
+        }),
+      );
       onReloadList?.();
       resetActiveBtnKey();
     } else {
@@ -150,19 +179,33 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
 
   const _handleStop = async () => {
     Modal.confirm({
-      title: '确定要终止此任务吗',
-      content: '终止后，此次任务将无法恢复',
+      title: formatMessage({
+        id: 'src.component.Schedule.components.Actions.1824201D',
+        defaultMessage: '确定要终止此任务吗',
+      }),
+      content: formatMessage({
+        id: 'src.component.Schedule.components.Actions.C4B4C276',
+        defaultMessage: '终止后，此次任务将无法恢复',
+      }),
       cancelText: formatMessage({
         id: 'odc.TaskManagePage.component.TaskTools.Cancel',
         defaultMessage: '取消',
       }), //取消
-      okText: '终止',
+      okText: formatMessage({
+        id: 'src.component.Schedule.components.Actions.7D0CA0EC',
+        defaultMessage: '终止',
+      }),
       centered: true,
       onOk: async () => {
         setActiveBtnKey(ScheduleTaskActionsEnum.STOP);
         const res = await stopScheduleTask(scheduleId, subTask?.id);
         if (res?.data) {
-          message.success('终止成功');
+          message.success(
+            formatMessage({
+              id: 'src.component.Schedule.components.Actions.802C2675',
+              defaultMessage: '终止成功',
+            }),
+          );
           onReloadList?.();
           resetActiveBtnKey();
         } else {
@@ -205,7 +248,12 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
     console.log(res);
 
     if (res?.data) {
-      message.success('回滚成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Schedule.components.Actions.D782397E',
+          defaultMessage: '回滚成功',
+        }),
+      );
       onReloadList?.();
       resetActiveBtnKey();
     } else {
@@ -237,6 +285,7 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
     },
@@ -253,6 +302,7 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
     },
@@ -267,6 +317,7 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
     },
@@ -282,6 +333,7 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
     },
@@ -297,6 +349,7 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
     },
@@ -312,6 +365,7 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
     },

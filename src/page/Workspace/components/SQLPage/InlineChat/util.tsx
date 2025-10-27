@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { modifySync } from '@/common/network/ai';
 import { IEditor, IFullEditor } from '@/component/MonacoEditor';
 import SessionStore from '@/store/sessionManager/session';
@@ -37,7 +38,10 @@ export function createStore(): IStore {
 }
 
 export function addAIHint(editor: IEditor) {
-  const hintText = '⌘+K 唤起 AI 内嵌对话';
+  const hintText = formatMessage({
+    id: 'src.page.Workspace.components.SQLPage.InlineChat.635426C0',
+    defaultMessage: '⌘+K 唤起 AI 内嵌对话',
+  });
 
   const hintWidget = {
     domNode: null,
@@ -273,7 +277,10 @@ export function addAIContextMenu(
     },
   });
   editor.addAction({
-    label: '🪄 SQL 改写',
+    label: formatMessage({
+      id: 'src.page.Workspace.components.SQLPage.InlineChat.721ABAD4',
+      defaultMessage: '🪄 SQL 改写',
+    }),
     id: 'sql-optimization',
     contextMenuGroupId: 'navigation',
     contextMenuOrder: 520,
@@ -524,15 +531,20 @@ export function addAIIcon(
                 style={{ marginRight: 4, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                 onClick={handleEdit}
               >
-                <span>编辑</span>
+                <span>
+                  {formatMessage({
+                    id: 'src.page.Workspace.components.SQLPage.InlineChat.C959B841',
+                    defaultMessage: '编辑',
+                  })}
+                </span>
                 <span style={{ color: '#8592ad', margin: '0 4px' }}>{getKeyCodeText('57,41')}</span>
               </span>
               {/* <span style={{ cursor: 'pointer' }} onClick={handleAddToConversation}>
-                <span>
-添加到对话
-                </span>
-                <span style={{ color: '#8592ad', marginLeft: 4 }}>{getKeyCodeText('57,42')}</span>
-              </span> */}
+                 <span>
+                添加到对话
+                 </span>
+                 <span style={{ color: '#8592ad', marginLeft: 4 }}>{getKeyCodeText('57,42')}</span>
+                </span> */}
             </div>
           </span>
         </div>,
@@ -557,7 +569,12 @@ export function addAIIcon(
           copilotStore?.addCodeBlock?.(str);
           editor.removeContentWidget(iconWidget);
         } else {
-          message.warning('选中 SQL 超过 2000 个字符，暂不支持添加到对话，请重新选择');
+          message.warning(
+            formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.FD0B4202',
+              defaultMessage: '选中 SQL 超过 2000 个字符，暂不支持添加到对话，请重新选择',
+            }),
+          );
         }
       } else {
         copilotStore.toggleVisibility();
@@ -682,10 +699,16 @@ export function addAIAction(
 export function getDefaultValue(mode: AIQuestionType) {
   switch (mode) {
     case AIQuestionType.SQL_DEBUGGING: {
-      return '修复语法问题';
+      return formatMessage({
+        id: 'src.page.Workspace.components.SQLPage.InlineChat.3A3302EF',
+        defaultMessage: '修复语法问题',
+      });
     }
     case AIQuestionType.SQL_OPTIMIZER: {
-      return '优化SQL';
+      return formatMessage({
+        id: 'src.page.Workspace.components.SQLPage.InlineChat.8BD32D06',
+        defaultMessage: '优化SQL',
+      });
     }
     default: {
       return '';

@@ -245,7 +245,12 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     setConfirmLoading(false);
     if (res?.data) {
       handleCancel(false);
-      message.success('新建成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Schedule.modals.DataClear.Create.2024084E',
+          defaultMessage: '新建成功',
+        }),
+      );
     }
   };
 
@@ -255,7 +260,12 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     setConfirmLoading(false);
     if (res?.data) {
       handleCancel(false);
-      message.success('修改成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Schedule.modals.DataClear.Create.3E1F4472',
+          defaultMessage: '修改成功',
+        }),
+      );
     }
   };
 
@@ -278,7 +288,12 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               }) /*编辑数据清理*/
             }
           </div>
-          <div>作业需要重新审批，审批通过后此作业将自动启动</div>
+          <div>
+            {formatMessage({
+              id: 'src.component.Schedule.modals.DataClear.Create.FBEB16F1',
+              defaultMessage: '作业需要重新审批，审批通过后此作业将自动启动',
+            })}
+          </div>
         </>
       ),
 
@@ -416,10 +431,22 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     const errorList = res?.filter((item) => item.level === 'ERROR') ?? [];
     const warningList = res?.filter((item) => item.level === 'WARN') ?? [];
     if (res && !res?.length) {
-      message.success('预检查完成，暂时没有发现问题');
+      message.success(
+        formatMessage({
+          id: 'src.component.Schedule.modals.DataClear.Create.C60B9168',
+          defaultMessage: '预检查完成，暂时没有发现问题',
+        }),
+      );
     } else if (res && res?.length) {
       message.warning(
-        `预检查完成，发现${warningList?.length}个警告，发现${errorList?.length}个错误。`,
+        formatMessage(
+          {
+            id: 'src.component.Schedule.modals.DataClear.Create.2DE30DDA',
+            defaultMessage:
+              '预检查完成，发现{warningListLength}个警告，发现{errorListLength}个错误。',
+          },
+          { warningListLength: warningList?.length, errorListLength: errorList?.length },
+        ),
       );
     }
     setConfirmLoading(false);
@@ -513,14 +540,22 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           {
             key: 'baseInfo',
             href: '#baseInfo',
-            title: '基本信息',
+            title: formatMessage({
+              id: 'src.component.Schedule.modals.DataClear.Create.59E5637D',
+              defaultMessage: '基本信息',
+            }),
           },
           {
             key: 'clearRange',
             href: '#clearRange',
             title: (
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={{ marginRight: '4px' }}>清理范围</div>
+                <div style={{ marginRight: '4px' }}>
+                  {formatMessage({
+                    id: 'src.component.Schedule.modals.DataClear.Create.82EC6E58',
+                    defaultMessage: '清理范围',
+                  })}
+                </div>
                 <PreCheckTip preCheckResult={preCheckResult} showTip={false} />
               </div>
             ),
@@ -528,12 +563,18 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           {
             key: 'executionMethod',
             href: '#executionMethod',
-            title: '执行方式',
+            title: formatMessage({
+              id: 'src.component.Schedule.modals.DataClear.Create.8FD7ADCE',
+              defaultMessage: '执行方式',
+            }),
           },
           {
             key: 'scheduleSetting',
             href: '#scheduleSetting',
-            title: '作业设置',
+            title: formatMessage({
+              id: 'src.component.Schedule.modals.DataClear.Create.701D95C9',
+              defaultMessage: '作业设置',
+            }),
           },
         ]}
       >
@@ -547,7 +588,10 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
             onFieldsChange={handleFieldsChange}
           >
             <h3 id="baseInfo" className={styles.title}>
-              基本信息
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Create.4C2FC0E1',
+                defaultMessage: '基本信息',
+              })}
             </h3>
 
             <DatabaseSelect
@@ -560,6 +604,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               onChange={handleDBChange}
               onInit={(db) => setCreateScheduleDatabase(db)}
             />
+
             <Form.Item name="needCheckBeforeDelete" valuePropName="checked">
               <Checkbox>
                 {formatMessage({
@@ -581,7 +626,10 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
                       })} /*目标数据库*/
                       name="targetDatabaseId"
                       projectId={projectId}
-                      placeholder={'请选择进行数据校验的数据库'}
+                      placeholder={formatMessage({
+                        id: 'src.component.Schedule.modals.DataClear.Create.2610E8D9',
+                        defaultMessage: '请选择进行数据校验的数据库',
+                      })}
                     />
                   )
                 );
@@ -589,7 +637,10 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
             </Form.Item>
 
             <h3 id="clearRange" className={styles.title}>
-              清理范围
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Create.C7198039',
+                defaultMessage: '清理范围',
+              })}
             </h3>
             <Space direction="vertical" size={24} style={{ width: '100%' }}>
               <Form.Item noStyle shouldUpdate>
@@ -609,7 +660,10 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
             </Space>
 
             <h3 id="executionMethod" className={styles.title}>
-              执行方式
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Create.6CD52231',
+                defaultMessage: '执行方式',
+              })}
             </h3>
 
             <SchduleExecutionMethodForm
@@ -619,7 +673,10 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
             />
 
             <h3 id="scheduleSetting" className={styles.title}>
-              作业设置
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Create.0E09ECB6',
+                defaultMessage: '作业设置',
+              })}
             </h3>
             <ShardingStrategyItem form={form} />
             <DirtyRowAction dependentField="needCheckBeforeDelete" />
@@ -633,8 +690,15 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
         hideSqlPreview={form.getFieldValue('archiveRange') === IArchiveRange.ALL}
         tips={
           form.getFieldValue('archiveRange') === IArchiveRange.ALL
-            ? '整库清理不支持预览 SQL'
-            : '请确认以下 SQL，变量以当前时间代入，具体执行按实际配置替换，可点击提交按钮继续提交任务'
+            ? formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Create.48620605',
+                defaultMessage: '整库清理不支持预览 SQL',
+              })
+            : formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Create.11DFC9DE',
+                defaultMessage:
+                  '请确认以下 SQL，变量以当前时间代入，具体执行按实际配置替换，可点击提交按钮继续提交任务',
+              })
         }
         modelHeight={form.getFieldValue('archiveRange') === IArchiveRange.ALL ? 130 : 400}
         database={createScheduleDatabase}
@@ -645,22 +709,38 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
         onClose={handleCloseSQLPreviewModal}
         onOk={(scheduleName) => handleConfirmTask(scheduleName)}
       />
+
       <div
         style={{ padding: '16px 16px 0px 24px', borderTop: '1px solid var(--table-border-color)' }}
       >
         <Space>
-          <Tooltip title={preCheckResult?.errorList?.length ? '存在错误，请先解决错误' : undefined}>
+          <Tooltip
+            title={
+              preCheckResult?.errorList?.length
+                ? formatMessage({
+                    id: 'src.component.Schedule.modals.DataClear.Create.05AA7AB9',
+                    defaultMessage: '存在错误，请先解决错误',
+                  })
+                : undefined
+            }
+          >
             <Button
               type="primary"
               loading={confirmLoading || loading}
               onClick={handleSQLPreview}
               disabled={Boolean(preCheckResult?.errorList?.length)}
             >
-              下一步：预览SQL
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Create.9DCDC28D',
+                defaultMessage: '下一步：预览SQL',
+              })}
             </Button>
           </Tooltip>
           <Button onClick={() => handleSubmit(undefined, true)} loading={confirmLoading}>
-            预检查
+            {formatMessage({
+              id: 'src.component.Schedule.modals.DataClear.Create.AE9150AD',
+              defaultMessage: '预检查',
+            })}
           </Button>
           <Button
             onClick={() => {

@@ -143,7 +143,10 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
                         id: 'src.component.Task.component.PartitionPolicyFormTable.6C03EDE8',
                         defaultMessage: '当前表已存在分区策略，重新设置后将覆盖原有策略',
                       })
-                    : '当前表已存在有效的分区策略，不可重复设置'
+                    : formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.E4416F26',
+                        defaultMessage: '当前表已存在有效的分区策略，不可重复设置',
+                      })
                 }
               >
                 <ExclamationCircleFilled
@@ -197,7 +200,12 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
               <div style={{ flex: 1 }}>-</div>
             )}
             {isDisable(record) ? (
-              <Tooltip title="查看分区策略">
+              <Tooltip
+                title={formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyFormTable.28A3C7C1',
+                  defaultMessage: '查看分区策略',
+                })}
+              >
                 <Button
                   icon={<Icon type="view" component={ViewSvg} />}
                   type="text"
@@ -373,7 +381,10 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
                 <Tooltip
                   title={
                     isDisable(record as ITableConfig)
-                      ? '当前表已存在有效的分区策略，不可重复设置'
+                      ? formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.281F6168',
+                          defaultMessage: '当前表已存在有效的分区策略，不可重复设置',
+                        })
                       : formatMessage({
                           id: 'src.component.Task.component.PartitionPolicyFormTable.E009861F',
                           defaultMessage: '该表的分区和已经勾选的表分区不同，无法批量设置',
@@ -433,6 +444,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
         }}
         dateTypes={dateTypes}
       />
+
       <DetailConfigDrawer
         visible={detailVisible}
         config={allPartitionPlanTableConfigs?.find((item) => item?.tableName === activeTableName)}

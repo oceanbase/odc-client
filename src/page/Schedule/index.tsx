@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import ScheduleManage from '@/component/Schedule';
 
@@ -6,7 +7,7 @@ const Schedule = () => {
     <PageContainer
       titleProps={{
         type: TitleType.TEXT,
-        title: '作业',
+        title: formatMessage({ id: 'src.page.Schedule.C94DD38F', defaultMessage: '作业' }),
         showDivider: true,
       }}
     >

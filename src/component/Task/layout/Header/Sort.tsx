@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React, { useContext, useState } from 'react';
 import { Dropdown } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -15,11 +16,17 @@ interface IProps {}
 const items: MenuProps['items'] = [
   {
     key: TaskCreateTimeSort.ASC,
-    label: '按创建时间升序',
+    label: formatMessage({
+      id: 'src.component.Task.layout.Header.D10FD400',
+      defaultMessage: '按创建时间升序',
+    }),
   },
   {
     key: TaskCreateTimeSort.DESC,
-    label: '按创建时间降序',
+    label: formatMessage({
+      id: 'src.component.Task.layout.Header.C84367F1',
+      defaultMessage: '按创建时间降序',
+    }),
   },
 ];
 

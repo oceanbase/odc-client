@@ -36,7 +36,13 @@ const ApplyPermissionTaskContent: React.FC<IProps> = (props) => {
         <Descriptions.Item label={'ID'} span={1}>
           {task?.id}
         </Descriptions.Item>
-        <Descriptions.Item label={'类型'} span={1}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.modals.ApplyPermission.DetailContent.57B68BF3',
+            defaultMessage: '类型',
+          })}
+          span={1}
+        >
           {
             formatMessage({
               id: 'odc.src.component.Task.ApplyPermission.DetailContent.ApplicationProjectPermissions',

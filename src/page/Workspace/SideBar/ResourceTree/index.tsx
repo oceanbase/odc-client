@@ -515,7 +515,13 @@ const ResourceTree: React.FC<IProps> = function ({
       <RelativeResourceModal
         open={deleteModalOpen}
         id={deleteDataSourceInfo?.id}
-        title={`数据源 ${dataSourceName} 存在以下未完成的工单和作业，暂不支持删除`}
+        title={formatMessage(
+          {
+            id: 'src.page.Workspace.SideBar.ResourceTree.538FAB36',
+            defaultMessage: '数据源 {dataSourceName} 存在以下未完成的工单和作业，暂不支持删除',
+          },
+          { dataSourceName },
+        )}
         onCancel={handleDeleteCancel}
       />
     </>

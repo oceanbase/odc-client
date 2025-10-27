@@ -343,7 +343,13 @@ const UserDetail: React.FC<{
         mode={EEntityType.USER}
         open={openDepResourceModal}
         id={id}
-        title={`确定要删除用户 ${name} 吗？`}
+        title={formatMessage(
+          {
+            id: 'src.page.Auth.User.component.DetailContent.C264E6A2',
+            defaultMessage: '确定要删除用户 {name} 吗？',
+          },
+          { name },
+        )}
         onCancel={() => setOpenDepResourceModal(false)}
         customSuccessHandler={async () => {
           await handleDeleteUser();

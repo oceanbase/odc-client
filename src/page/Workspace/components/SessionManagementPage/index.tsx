@@ -52,7 +52,10 @@ enum SessionListSearchType {
 }
 
 const SessionListSearchTypeTextMap = {
-  [SessionListSearchType.all]: '全部',
+  [SessionListSearchType.all]: formatMessage({
+    id: 'src.page.Workspace.components.SessionManagementPage.4CB01ED8',
+    defaultMessage: '全部',
+  }),
   [SessionListSearchType.sessionId]: formatMessage({
     id: 'workspace.window.session.management.column.sessionId',
     defaultMessage: '会话 ID',
@@ -403,6 +406,7 @@ function SessionManagementPage(props: IProps) {
                 selectTypeOptions={selectTypeOptions}
                 onSelect={handleSearch}
               />
+
               <FilterIcon border isActive={false}>
                 <SyncOutlined spin={listLoading} onClick={handleRefresh} />
               </FilterIcon>

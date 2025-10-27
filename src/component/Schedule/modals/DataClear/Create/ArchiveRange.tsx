@@ -91,7 +91,12 @@ const ArchiveRange: React.FC<IProps> = (props) => {
       <div>
         {joinTableConfigs?.length ? (
           <div style={{ marginBottom: 8 }}>
-            <div style={{ color: 'var(--text-color-hint)' }}>关联表</div>
+            <div style={{ color: 'var(--text-color-hint)' }}>
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Create.B5C6B671',
+                defaultMessage: '关联表',
+              })}
+            </div>
             {joinTableConfigs?.map((item) => {
               return (
                 <div style={{ display: 'flex', gap: 8 }}>
@@ -105,7 +110,12 @@ const ArchiveRange: React.FC<IProps> = (props) => {
             })}
           </div>
         ) : null}
-        <div style={{ color: 'var(--text-color-hint)' }}>指定扫描分区</div>
+        <div style={{ color: 'var(--text-color-hint)' }}>
+          {formatMessage({
+            id: 'src.component.Schedule.modals.DataClear.Create.C7AC172B',
+            defaultMessage: '指定扫描分区',
+          })}
+        </div>
         {partitions?.length ? (
           <>
             {partitions?.map((item, index) => (
@@ -166,7 +176,14 @@ const ArchiveRange: React.FC<IProps> = (props) => {
         {({ getFieldValue }) => {
           const archiveRange = getFieldValue('archiveRange') || [];
           if (archiveRange !== IArchiveRange.PORTION) {
-            return <>包括当前数据库内所有表及新增表</>;
+            return (
+              <>
+                {formatMessage({
+                  id: 'src.component.Schedule.modals.DataClear.Create.0D66C639',
+                  defaultMessage: '包括当前数据库内所有表及新增表',
+                })}
+              </>
+            );
           }
           const tables = getFieldValue('tables') || [];
           return (
@@ -186,7 +203,10 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                 {needCheckBeforeDelete && (
                   <div className={styles.tableTitle}>
                     <span style={{ padding: '3px 8px', display: 'inline-flex', gap: '4px' }}>
-                      目标表
+                      {formatMessage({
+                        id: 'src.component.Schedule.modals.DataClear.Create.2A1E166F',
+                        defaultMessage: '目标表',
+                      })}
                     </span>
                   </div>
                 )}
@@ -326,7 +346,19 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                           marginBottom: 0,
                         }}
                       >
-                        <Tooltip title={disabledAddFields ? `最多添加${MAX_TABLES_COUNT}个` : ''}>
+                        <Tooltip
+                          title={
+                            disabledAddFields
+                              ? formatMessage(
+                                  {
+                                    id: 'src.component.Schedule.modals.DataClear.Create.5FD24D65',
+                                    defaultMessage: '最多添加{MAX_TABLES_COUNT}个',
+                                  },
+                                  { MAX_TABLES_COUNT },
+                                )
+                              : ''
+                          }
+                        >
                           <Button type="dashed" block disabled={disabledAddFields}>
                             <Button
                               type="link"

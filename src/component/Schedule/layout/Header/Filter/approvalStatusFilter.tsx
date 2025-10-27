@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import ParamsContext from '@/component/Schedule/context/ParamsContext';
 import { useContext, useMemo } from 'react';
 import { Select } from 'antd';
@@ -24,10 +25,18 @@ const ApprovalStatusFilter = () => {
 
   return (
     <>
-      <div style={{ marginTop: '16px' }}>审批状态</div>
+      <div style={{ marginTop: '16px' }}>
+        {formatMessage({
+          id: 'src.component.Schedule.layout.Header.Filter.3F43CB55',
+          defaultMessage: '审批状态',
+        })}
+      </div>
       <Select
         showSearch
-        placeholder="请输入"
+        placeholder={formatMessage({
+          id: 'src.component.Schedule.layout.Header.Filter.038B3C24',
+          defaultMessage: '请输入',
+        })}
         filterOption={(input, option) =>
           (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
         }

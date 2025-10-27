@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import ParamsContext from '@/component/Schedule/context/ParamsContext';
 import { useContext, useMemo, useState } from 'react';
 import { Button, Divider, Select, Tooltip } from 'antd';
@@ -14,10 +15,16 @@ const ScheduleTaskStatusFilter = () => {
   const statusOptions = useMemo(() => {
     return Object.keys(ScheduleTaskStatus).map((item) => {
       const icon = (
-        <Tooltip title="执行时存在错误，已跳过">
+        <Tooltip
+          title={formatMessage({
+            id: 'src.component.Schedule.layout.Header.Filter.EA3A6052',
+            defaultMessage: '执行时存在错误，已跳过',
+          })}
+        >
           <InfoCircleOutlined className={styles.warningIcon} />
         </Tooltip>
       );
+
       const label =
         item === ScheduleTaskStatus.DONE_WITH_FAILED ? (
           <span>
@@ -27,6 +34,7 @@ const ScheduleTaskStatusFilter = () => {
         ) : (
           ScheduleTaskStatusTextMap?.[item]
         );
+
       return {
         label,
         value: item,
@@ -40,10 +48,18 @@ const ScheduleTaskStatusFilter = () => {
 
   return (
     <>
-      <div style={{ marginTop: '16px' }}>任务状态</div>
+      <div style={{ marginTop: '16px' }}>
+        {formatMessage({
+          id: 'src.component.Schedule.layout.Header.Filter.04A92C0E',
+          defaultMessage: '任务状态',
+        })}
+      </div>
       <Select
         showSearch
-        placeholder="请输入"
+        placeholder={formatMessage({
+          id: 'src.component.Schedule.layout.Header.Filter.3DC649C2',
+          defaultMessage: '请输入',
+        })}
         filterOption={(input, option) =>
           (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
         }
@@ -63,11 +79,17 @@ const ScheduleTaskStatusFilter = () => {
                   type="link"
                   onClick={() => handleSelectStatus(statusOptions?.map((item) => item.value))}
                 >
-                  全选
+                  {formatMessage({
+                    id: 'src.component.Schedule.layout.Header.Filter.A4B968CA',
+                    defaultMessage: '全选',
+                  })}
                 </Button>
                 {status?.length ? (
                   <Button type="link" onClick={() => handleSelectStatus([])}>
-                    清空
+                    {formatMessage({
+                      id: 'src.component.Schedule.layout.Header.Filter.7AA590D1',
+                      defaultMessage: '清空',
+                    })}
                   </Button>
                 ) : (
                   ''

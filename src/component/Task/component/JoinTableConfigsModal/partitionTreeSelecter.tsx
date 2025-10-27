@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { DataNode } from 'antd/lib/tree';
 import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -101,6 +102,7 @@ const PartitionTreeSelecter: React.FC<IProps> = ({
             }}
           />
         ),
+
         data: item,
         children: table?.subpartitions?.partitions
           ?.filter((subItem) => subItem?.parentName === item?.name)
@@ -118,6 +120,7 @@ const PartitionTreeSelecter: React.FC<IProps> = ({
                   }}
                 />
               ),
+
               key: subItem?.name,
               data: subItem,
               type: TreeNodeType.Subpartitions,
@@ -193,7 +196,15 @@ const PartitionTreeSelecter: React.FC<IProps> = ({
 
   function TreeRender() {
     if (!treeData?.length) {
-      return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无数据" />;
+      return (
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={formatMessage({
+            id: 'src.component.Task.component.JoinTableConfigsModal.AA14D2F6',
+            defaultMessage: '暂无数据',
+          })}
+        />
+      );
     }
     return (
       <Tree
@@ -236,13 +247,17 @@ const PartitionTreeSelecter: React.FC<IProps> = ({
         content={
           <div style={{ width: 300 }}>
             <Input
-              placeholder="搜索分区名称"
+              placeholder={formatMessage({
+                id: 'src.component.Task.component.JoinTableConfigsModal.9AF3D51B',
+                defaultMessage: '搜索分区名称',
+              })}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
               allowClear
               style={{ marginBottom: 8 }}
             />
+
             <div style={{ maxHeight: 300, overflow: 'auto' }}>{TreeRender()}</div>
           </div>
         }
@@ -254,7 +269,10 @@ const PartitionTreeSelecter: React.FC<IProps> = ({
           style={{ width: 300 }}
           mode="multiple"
           value={selectedPartitions}
-          placeholder="请选择"
+          placeholder={formatMessage({
+            id: 'src.component.Task.component.JoinTableConfigsModal.9A516A99',
+            defaultMessage: '请选择',
+          })}
           onChange={(value) => {
             setSelectedPartitions(value);
             onChange(value);

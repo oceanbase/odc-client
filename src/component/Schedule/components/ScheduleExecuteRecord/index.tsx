@@ -14,12 +14,30 @@ import { ScheduleStore } from '@/store/schedule';
 import { useLoop } from '@/util/hooks/useLoop';
 
 export const operationTypeMap = {
-  [TaskOperationType.CREATE]: '创建作业',
-  [TaskOperationType.UPDATE]: '编辑作业', //编辑任务
-  [TaskOperationType.PAUSE]: '停用作业', //停用任务
-  [TaskOperationType.TERMINATE]: '终止作业', //终止任务
-  [TaskOperationType.RESUME]: '启用作业', //启用任务
-  [TaskOperationType.DELETE]: '删除作业',
+  [TaskOperationType.CREATE]: formatMessage({
+    id: 'src.component.Schedule.components.ScheduleExecuteRecord.E618CDAE',
+    defaultMessage: '创建作业',
+  }),
+  [TaskOperationType.UPDATE]: formatMessage({
+    id: 'src.component.Schedule.components.ScheduleExecuteRecord.84429EDA',
+    defaultMessage: '编辑作业',
+  }), //编辑任务
+  [TaskOperationType.PAUSE]: formatMessage({
+    id: 'src.component.Schedule.components.ScheduleExecuteRecord.E16A6D89',
+    defaultMessage: '停用作业',
+  }), //停用任务
+  [TaskOperationType.TERMINATE]: formatMessage({
+    id: 'src.component.Schedule.components.ScheduleExecuteRecord.E7A3B97C',
+    defaultMessage: '终止作业',
+  }), //终止任务
+  [TaskOperationType.RESUME]: formatMessage({
+    id: 'src.component.Schedule.components.ScheduleExecuteRecord.D88590DC',
+    defaultMessage: '启用作业',
+  }), //启用任务
+  [TaskOperationType.DELETE]: formatMessage({
+    id: 'src.component.Schedule.components.ScheduleExecuteRecord.80CD6E81',
+    defaultMessage: '删除作业',
+  }),
 };
 
 interface ScheduleExecuteRecordProps {
@@ -128,7 +146,10 @@ const ScheduleExecuteRecord: React.FC<ScheduleExecuteRecordProps> = ({
                   params?.onOpenDetail(record, true);
                 }}
               >
-                查看
+                {formatMessage({
+                  id: 'src.component.Schedule.components.ScheduleExecuteRecord.F686ADB8',
+                  defaultMessage: '查看',
+                })}
               </Action.Link>
             </>
           );
@@ -150,6 +171,7 @@ const ScheduleExecuteRecord: React.FC<ScheduleExecuteRecordProps> = ({
         disablePagination
         scroll={{}}
       />
+
       <ScheduleExecuteRecordDetail
         schedule={schedule}
         visible={detailVisible}

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -61,7 +62,12 @@ const CreateExternalResourceModal: React.FC<IProps> = ({ modalStore }) => {
   // 上传文件并创建外部资源
   const uploadFileAndCreateResource = async (file: File, values: any): Promise<void> => {
     if (!session) {
-      throw new Error('会话信息不存在');
+      throw new Error(
+        formatMessage({
+          id: 'src.component.CreateExternalResourceModal.64C6727E',
+          defaultMessage: '会话信息不存在',
+        }),
+      );
     }
 
     const { sessionId } = session;
@@ -91,7 +97,12 @@ const CreateExternalResourceModal: React.FC<IProps> = ({ modalStore }) => {
       const values = await form.validateFields();
 
       if (!selectedFile) {
-        message.error('请选择文件');
+        message.error(
+          formatMessage({
+            id: 'src.component.CreateExternalResourceModal.86813D62',
+            defaultMessage: '请选择文件',
+          }),
+        );
         return;
       }
 
@@ -99,7 +110,12 @@ const CreateExternalResourceModal: React.FC<IProps> = ({ modalStore }) => {
 
       // 上传文件并创建外部资源
       await uploadFileAndCreateResource(selectedFile, values);
-      message.success('创建成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.CreateExternalResourceModal.114C70DC',
+          defaultMessage: '创建成功',
+        }),
+      );
       if (session?.database?.getExternalResourceList) {
         await session.database.getExternalResourceList();
       }
@@ -137,13 +153,23 @@ const CreateExternalResourceModal: React.FC<IProps> = ({ modalStore }) => {
       const isValidType =
         file.name.endsWith('.jar') || file.name.endsWith('.py') || file.name.endsWith('.zip');
       if (!isValidType) {
-        message.error('仅支持 .jar、.py、.zip 文件');
+        message.error(
+          formatMessage({
+            id: 'src.component.CreateExternalResourceModal.D225B039',
+            defaultMessage: '仅支持 .jar、.py、.zip 文件',
+          }),
+        );
         return false;
       }
 
       const isLt512M = file.size / 1024 / 1024 < 512;
       if (!isLt512M) {
-        message.error('文件大小必须小于 512MB');
+        message.error(
+          formatMessage({
+            id: 'src.component.CreateExternalResourceModal.284D7F2B',
+            defaultMessage: '文件大小必须小于 512MB',
+          }),
+        );
         return false;
       }
 
@@ -154,16 +180,25 @@ const CreateExternalResourceModal: React.FC<IProps> = ({ modalStore }) => {
 
   return (
     <Modal
-      title="新建外部资源"
+      title={formatMessage({
+        id: 'src.component.CreateExternalResourceModal.729A23DD',
+        defaultMessage: '新建外部资源',
+      })}
       width={720}
       open={createExternalResourceModalVisible}
       onCancel={handleCancel}
       footer={[
         <Button key="cancel" onClick={handleCancel}>
-          取消
+          {formatMessage({
+            id: 'src.component.CreateExternalResourceModal.65744D8C',
+            defaultMessage: '取消',
+          })}
         </Button>,
         <Button key="submit" type="primary" loading={uploading} onClick={handleSubmit}>
-          确定
+          {formatMessage({
+            id: 'src.component.CreateExternalResourceModal.09801A3C',
+            defaultMessage: '确定',
+          })}
         </Button>,
       ]}
       destroyOnHidden
@@ -181,40 +216,65 @@ const CreateExternalResourceModal: React.FC<IProps> = ({ modalStore }) => {
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
-              label="资源名称"
+              label={formatMessage({
+                id: 'src.component.CreateExternalResourceModal.E94BD378',
+                defaultMessage: '资源名称',
+              })}
               name="resourceName"
               rules={[
                 {
                   required: true,
-                  message: '请输入资源名称',
+                  message: formatMessage({
+                    id: 'src.component.CreateExternalResourceModal.C5346D85',
+                    defaultMessage: '请输入资源名称',
+                  }),
                 },
                 {
                   validator: (rule, value, callback) => {
                     if (value.length > 128) {
-                      callback('不超过 128 个字符');
+                      callback(
+                        formatMessage({
+                          id: 'src.component.CreateExternalResourceModal.F4084D68',
+                          defaultMessage: '不超过 128 个字符',
+                        }),
+                      );
                     }
                     callback();
                   },
                 },
               ]}
             >
-              <Input placeholder="请输入" />
+              <Input
+                placeholder={formatMessage({
+                  id: 'src.component.CreateExternalResourceModal.301A4A8B',
+                  defaultMessage: '请输入',
+                })}
+              />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item
-              label="资源类型"
+              label={formatMessage({
+                id: 'src.component.CreateExternalResourceModal.51930608',
+                defaultMessage: '资源类型',
+              })}
               name="resourceType"
               rules={[
                 {
                   required: true,
-                  message: '请输入或选择资源类型',
+                  message: formatMessage({
+                    id: 'src.component.CreateExternalResourceModal.04EC95D7',
+                    defaultMessage: '请输入或选择资源类型',
+                  }),
                 },
               ]}
             >
               <AutoComplete
                 options={resourceTypeOptions}
-                placeholder="请输入或选择"
+                placeholder={formatMessage({
+                  id: 'src.component.CreateExternalResourceModal.DEFDF4B5',
+                  defaultMessage: '请输入或选择',
+                })}
                 filterOption={(inputValue, option) =>
                   option?.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                 }
@@ -224,13 +284,21 @@ const CreateExternalResourceModal: React.FC<IProps> = ({ modalStore }) => {
         </Row>
 
         <Form.Item
-          label="上传文件"
+          label={formatMessage({
+            id: 'src.component.CreateExternalResourceModal.2700DC6C',
+            defaultMessage: '上传文件',
+          })}
           required
           rules={[
             {
               validator: (rule, value, callback) => {
                 if (value.size > 512 * 1024 * 1024) {
-                  return Promise.reject('文件不能大于 512 MB');
+                  return Promise.reject(
+                    formatMessage({
+                      id: 'src.component.CreateExternalResourceModal.C77A8263',
+                      defaultMessage: '文件不能大于 512 MB',
+                    }),
+                  );
                 }
                 return Promise.resolve();
               },
@@ -241,14 +309,36 @@ const CreateExternalResourceModal: React.FC<IProps> = ({ modalStore }) => {
             ref={fileUploadRef}
             accept={['.jar', '.py', '.zip']}
             maxSize={512}
-            uploadText="点击或拖拽文件到此区域选择"
-            hintText="支持 .jar, .py, .zip文件，最大 512MB"
+            uploadText={formatMessage({
+              id: 'src.component.CreateExternalResourceModal.CE766286',
+              defaultMessage: '点击或拖拽文件到此区域选择',
+            })}
+            hintText={formatMessage({
+              id: 'src.component.CreateExternalResourceModal.0CC31B42',
+              defaultMessage: '支持 .jar, .py, .zip文件，最大 512MB',
+            })}
             onSuccess={(file) => {
               setSelectedFile(file);
-              message.success(`文件 ${file.name} 选择成功`);
+              message.success(
+                formatMessage(
+                  {
+                    id: 'src.component.CreateExternalResourceModal.972F5731',
+                    defaultMessage: '文件 {fileName} 选择成功',
+                  },
+                  { fileName: file.name },
+                ),
+              );
             }}
             onError={(file, error) => {
-              message.error(`文件验证失败: ${error}`);
+              message.error(
+                formatMessage(
+                  {
+                    id: 'src.component.CreateExternalResourceModal.6630BC2B',
+                    defaultMessage: '文件验证失败: {error}',
+                  },
+                  { error },
+                ),
+              );
               setSelectedFile(null);
             }}
             onRemove={() => {
@@ -258,12 +348,29 @@ const CreateExternalResourceModal: React.FC<IProps> = ({ modalStore }) => {
         </Form.Item>
 
         <Form.Item
-          label="描述"
+          label={formatMessage({
+            id: 'src.component.CreateExternalResourceModal.8CA94C9F',
+            defaultMessage: '描述',
+          })}
           name="description"
           required
-          rules={[{ required: true, message: '请输入描述' }]}
+          rules={[
+            {
+              required: true,
+              message: formatMessage({
+                id: 'src.component.CreateExternalResourceModal.A7AAB1A9',
+                defaultMessage: '请输入描述',
+              }),
+            },
+          ]}
         >
-          <TextArea rows={3} placeholder="请输入" />
+          <TextArea
+            rows={3}
+            placeholder={formatMessage({
+              id: 'src.component.CreateExternalResourceModal.A787E01D',
+              defaultMessage: '请输入',
+            })}
+          />
         </Form.Item>
       </Form>
     </Modal>
