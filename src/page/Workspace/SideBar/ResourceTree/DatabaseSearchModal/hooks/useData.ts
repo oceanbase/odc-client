@@ -68,6 +68,9 @@ const useGlobalSearchData = (params: {
         return null;
       case DbObjectType.table:
         return [DbObjectType.logical_table, DbObjectType.table];
+      case DbObjectType.synonym:
+        // 同义词tab同时查询普通同义词和公共同义词
+        return [DbObjectType.synonym, DbObjectType.public_synonym];
       default:
         return activeKey;
     }

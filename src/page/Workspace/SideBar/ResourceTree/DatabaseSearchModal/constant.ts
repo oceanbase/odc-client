@@ -182,6 +182,14 @@ export const DbObjectTypeMap = {
       return [object?.name, SynonymType.COMMON, databaseId, databaseName];
     },
   },
+  [DbObjectType.public_synonym]: {
+    label: DbObjectTypeTextMap(DbObjectType.public_synonym),
+    openPage: (object) => openSynonymViewPage,
+    getOpenTab: (object, databaseId) => {
+      const databaseName = object?.dbObject?.database?.name || object?.database?.name;
+      return [object?.name, SynonymType.PUBLIC, databaseId, databaseName];
+    },
+  },
   [DbObjectType.materialized_view]: {
     label: DbObjectTypeTextMap(DbObjectType.materialized_view),
     openPage: (object) => openMaterializedViewViewPage,

@@ -4,7 +4,7 @@ import { CommonTableMode } from '@/component/CommonTable/interface';
 import type { FixedType } from 'rc-table/es/interface';
 import StatusLabel from '@/component/Task/component/Status';
 import type { IResponseData, TaskRecord, TaskRecordParameters } from '@/d.ts';
-import { TaskPageType } from '@/d.ts';
+import { TaskPageType, TaskStatus } from '@/d.ts';
 import type { PageStore } from '@/store/page';
 import type { TaskStore } from '@/store/task';
 import { useLoop } from '@/util/hooks/useLoop';
@@ -224,23 +224,26 @@ const TaskTable: React.FC<IProps> = (props) => {
       }),
       dataIndex: 'status',
       width: 100,
-      render: (status, record) => {
+      render: (status: TaskStatus, record) => {
         return (
-          <div>
+          <ScheduleMiniFlowSpan
+            isShowApprovableInfo={record?.approvable}
+            record={{ ...record, approveInstanceId: record?.id }}
+            isShowFLowPopover={[
+              TaskStatus.REJECTED,
+              TaskStatus.APPROVAL_EXPIRED,
+              TaskStatus.APPROVING,
+            ].includes(status)}
+            onDetail={() => {
+              props.onDetailVisible(
+                record as TaskRecord<TaskRecordParameters>,
+                true,
+                TaskDetailType.FLOW,
+              );
+            }}
+          >
             <StatusLabel status={status} type={record?.type} />
-            {record?.approvable && (
-              <ScheduleMiniFlowSpan
-                record={{ ...record, approveInstanceId: record?.id }}
-                onDetail={() => {
-                  props.onDetailVisible(
-                    record as TaskRecord<TaskRecordParameters>,
-                    true,
-                    TaskDetailType.FLOW,
-                  );
-                }}
-              />
-            )}
-          </div>
+          </ScheduleMiniFlowSpan>
         );
       },
     },

@@ -207,10 +207,12 @@ const TaskDetailModal: React.FC<ICommonTaskDetailModalProps> = function (props) 
           ]?.includes(task?.type) && (
             <Radio.Button value={TaskDetailType.PROGRESS} key={TaskDetailType.PROGRESS}>
               {
-                formatMessage({
-                  id: 'odc.component.CommonTaskDetailModal.ExecutionRecord',
-                  defaultMessage: '执行记录',
-                }) /*执行记录*/
+                task?.type === TaskType.LOGICAL_DATABASE_CHANGE
+                  ? '执行详情'
+                  : formatMessage({
+                      id: 'odc.component.CommonTaskDetailModal.ExecutionRecord',
+                      defaultMessage: '执行记录',
+                    }) /*执行记录*/
               }
             </Radio.Button>
           )}

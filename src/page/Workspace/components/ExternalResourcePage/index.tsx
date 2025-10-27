@@ -274,7 +274,11 @@ class ExternalResourcePage extends Component<
                       image={Empty.PRESENTED_IMAGE_SIMPLE}
                     />
                   )}
-                  <div className={styles.tips}>仅支持在线查看 1MB 数据，如需查看全部请下载文件</div>
+                  {resourceInfo?.content && isContentSizeWithinLimit(resourceInfo.content) ? (
+                    <div className={styles.tips}>
+                      仅支持在线查看 1MB 数据，如需查看全部请下载文件
+                    </div>
+                  ) : null}
                 </div>
               ),
             },
