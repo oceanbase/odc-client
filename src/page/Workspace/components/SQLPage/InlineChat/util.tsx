@@ -281,14 +281,14 @@ export function addAIContextMenu(
       id: 'src.page.Workspace.components.SQLPage.InlineChat.721ABAD4',
       defaultMessage: '🪄 SQL 改写',
     }),
-    id: 'sql-optimization',
+    id: 'sql-modifier',
     contextMenuGroupId: 'navigation',
     contextMenuOrder: 520,
     precondition: 'aiContext && selectionContext',
     keybindingContext: 'aiContext && selectionContext',
     keybindings: [],
     run() {
-      store['mode'] = AIQuestionType.SQL_OPTIMIZER;
+      store['mode'] = AIQuestionType.SQL_MODIFIER;
       showInlineChat();
     },
   });
