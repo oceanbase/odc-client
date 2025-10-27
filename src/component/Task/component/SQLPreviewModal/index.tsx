@@ -63,7 +63,14 @@ function SQLPreviewModal(props: {
 
   return (
     <Modal
-      title={<span style={{ fontWeight: 400 }}>预览 SQL</span>}
+      title={
+        <span style={{ fontWeight: 400 }}>
+          {formatMessage({
+            id: 'src.component.Task.component.SQLPreviewModal.F69B0894',
+            defaultMessage: '预览 SQL',
+          })}
+        </span>
+      }
       width={760}
       bodyStyle={{
         height: modelHeight,
@@ -111,14 +118,24 @@ function SQLPreviewModal(props: {
               {
                 validator: (_, value) => {
                   if (!value || value.trim() === '') {
-                    return Promise.reject(new Error('请输入作业名称'));
+                    return Promise.reject(
+                      new Error(
+                        formatMessage({
+                          id: 'src.component.Task.component.SQLPreviewModal.6CB54C6C',
+                          defaultMessage: '请输入作业名称',
+                        }),
+                      ),
+                    );
                   }
                   return Promise.resolve();
                 },
               },
             ]}
             name={'Name'}
-            label={'作业名称'}
+            label={formatMessage({
+              id: 'src.component.Task.component.SQLPreviewModal.7694B197',
+              defaultMessage: '作业名称',
+            })}
           >
             <Input maxLength={200} showCount />
           </Form.Item>

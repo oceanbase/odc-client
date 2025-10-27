@@ -20,8 +20,12 @@ import { formatMessage } from '@/util/intl';
 import { Form, Input } from 'antd';
 
 const DescriptionInput = () => {
-  const defaultPlaceholder =
-    '请输入描述，200字以内，描述会作为任务标题；未输入时，系统会根据对象和工单类型自动生成描述信息。';
+  const defaultPlaceholder = formatMessage({
+    id: 'src.component.Task.component.DescriptionInput.137F26EC',
+    defaultMessage:
+      '请输入描述，200字以内，描述会作为任务标题；未输入时，系统会根据对象和工单类型自动生成描述信息。',
+  });
+
   return (
     <Form.Item
       label={formatMessage({
@@ -40,7 +44,14 @@ const DescriptionInput = () => {
         {
           validator: (_, value) => {
             if (value && value.trim() === '') {
-              return Promise.reject(new Error('描述不允许只有空格，请输入描述'));
+              return Promise.reject(
+                new Error(
+                  formatMessage({
+                    id: 'src.component.Task.component.DescriptionInput.DBB60A02',
+                    defaultMessage: '描述不允许只有空格，请输入描述',
+                  }),
+                ),
+              );
             }
             return Promise.resolve();
           },

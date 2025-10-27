@@ -259,7 +259,12 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
     handleCancel(false);
     setConfirmLoading(false);
     if (res.data) {
-      message.success('新建成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Schedule.modals.SQLPlan.Create.09C29955',
+          defaultMessage: '新建成功',
+        }),
+      );
     }
   };
 
@@ -269,7 +274,12 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
     setConfirmLoading(false);
     if (res?.data) {
       handleCancel(false);
-      message.success('修改成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Schedule.modals.SQLPlan.Create.92181F4F',
+          defaultMessage: '修改成功',
+        }),
+      );
     }
   };
 
@@ -293,7 +303,12 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
               /*编辑 SQL 计划*/
             }
           </div>
-          <div>作业需要重新审批，审批通过后此作业将自动启用</div>
+          <div>
+            {formatMessage({
+              id: 'src.component.Schedule.modals.SQLPlan.Create.97060AA0',
+              defaultMessage: '作业需要重新审批，审批通过后此作业将自动启用',
+            })}
+          </div>
         </>
       ),
 
@@ -527,17 +542,26 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
           {
             key: 'baseInfo',
             href: '#baseInfo',
-            title: '基本信息',
+            title: formatMessage({
+              id: 'src.component.Schedule.modals.SQLPlan.Create.BB651904',
+              defaultMessage: '基本信息',
+            }),
           },
           {
             key: 'executionMethod',
             href: '#executionMethod',
-            title: '执行方式',
+            title: formatMessage({
+              id: 'src.component.Schedule.modals.SQLPlan.Create.D07E03AD',
+              defaultMessage: '执行方式',
+            }),
           },
           {
             key: 'scheduleSetting',
             href: '#scheduleSetting',
-            title: '作业设置',
+            title: formatMessage({
+              id: 'src.component.Schedule.modals.SQLPlan.Create.8AE58801',
+              defaultMessage: '作业设置',
+            }),
           },
         ]}
       >
@@ -551,7 +575,10 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
             onFieldsChange={handleFieldsChange}
           >
             <h3 id="baseInfo" className={styles.title}>
-              基本信息
+              {formatMessage({
+                id: 'src.component.Schedule.modals.SQLPlan.Create.9B43D6E5',
+                defaultMessage: '基本信息',
+              })}
             </h3>
 
             <DatabaseSelect
@@ -704,7 +731,10 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
             </Space>
 
             <h3 id="executionMethod" className={styles.title}>
-              执行方式
+              {formatMessage({
+                id: 'src.component.Schedule.modals.SQLPlan.Create.BE789CEF',
+                defaultMessage: '执行方式',
+              })}
             </h3>
 
             <SchduleExecutionMethodForm
@@ -714,7 +744,10 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
             />
 
             <h3 id="scheduleSetting" className={styles.title}>
-              作业设置
+              {formatMessage({
+                id: 'src.component.Schedule.modals.SQLPlan.Create.AC12A0D8',
+                defaultMessage: '作业设置',
+              })}
             </h3>
 
             <FormItemPanel /*任务设置*/ keepExpand>

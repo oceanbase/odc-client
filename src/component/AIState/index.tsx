@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
 
 import setting from '@/store/setting';
@@ -15,7 +16,12 @@ export default observer(function AIState() {
   const userAIEnabled = setting.enableAIInlineCompletion;
   if (setting.isAIThinking) {
     return (
-      <Tooltip title="AI 思考中...">
+      <Tooltip
+        title={formatMessage({
+          id: 'src.component.AIState.54DC5860',
+          defaultMessage: 'AI 思考中...',
+        })}
+      >
         <Spin
           indicator={<Lottie style={{ fontSize: 16 }} animationData={aiLoading} loop={true} />}
           className={classNames(styles.btn)}
@@ -25,13 +31,23 @@ export default observer(function AIState() {
   }
   if (!workspaceAIEnabled) {
     return (
-      <Tooltip title="当前工作空间内暂未启用 AI 服务，请联系管理员">
+      <Tooltip
+        title={formatMessage({
+          id: 'src.component.AIState.DBA1D779',
+          defaultMessage: '当前工作空间内暂未启用 AI 服务，请联系管理员',
+        })}
+      >
         <Icon component={AIDisableSvg} className={classNames(styles.btn, styles.disabled)} />
       </Tooltip>
     );
   } else if (!userAIEnabled) {
     return (
-      <Tooltip title="AI 服务未生效">
+      <Tooltip
+        title={formatMessage({
+          id: 'src.component.AIState.556886A5',
+          defaultMessage: 'AI 服务未生效',
+        })}
+      >
         <Icon
           onClick={() => {
             setting.enableAI();
@@ -43,7 +59,12 @@ export default observer(function AIState() {
     );
   } else {
     return (
-      <Tooltip title="AI 服务生效中，您可以选择使用建议的 AI 生成内容">
+      <Tooltip
+        title={formatMessage({
+          id: 'src.component.AIState.C00FC776',
+          defaultMessage: 'AI 服务生效中，您可以选择使用建议的 AI 生成内容',
+        })}
+      >
         <span
           style={{
             display: 'inline-flex',

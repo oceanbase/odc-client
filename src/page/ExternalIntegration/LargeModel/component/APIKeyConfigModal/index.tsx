@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Alert, Button, Descriptions, Form, Input, message, Modal, Spin } from 'antd';
 import { VendorsConfig } from '../../constant';
 import { EVendorType, ESchemaFieldType } from '@/d.ts/llm';
@@ -83,7 +84,12 @@ const APIKeyConfigModal = forwardRef<APIKeyConfigModalRef, APIKeyConfigModalProp
       {
         manual: true,
         onSuccess: () => {
-          message.success('配置 API Key 成功');
+          message.success(
+            formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.component.APIKeyConfigModal.9286C84B',
+              defaultMessage: '配置 API Key 成功',
+            }),
+          );
           resetStates();
           // 刷新供应商和模型列表
           if (onRefresh) {
@@ -91,7 +97,12 @@ const APIKeyConfigModal = forwardRef<APIKeyConfigModalRef, APIKeyConfigModalProp
           }
         },
         onError: (error) => {
-          message.error('配置 API Key 失败');
+          message.error(
+            formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.component.APIKeyConfigModal.1FEA1D0F',
+              defaultMessage: '配置 API Key 失败',
+            }),
+          );
           console.error('配置供应商失败:', error);
         },
       },
@@ -113,7 +124,12 @@ const APIKeyConfigModal = forwardRef<APIKeyConfigModalRef, APIKeyConfigModalProp
 
     const handleConfirm = useCallback(async () => {
       if (!currentProvider) {
-        message.error('未选择供应商');
+        message.error(
+          formatMessage({
+            id: 'src.page.ExternalIntegration.LargeModel.component.APIKeyConfigModal.CE259A54',
+            defaultMessage: '未选择供应商',
+          }),
+        );
         return;
       }
 
@@ -201,7 +217,10 @@ const APIKeyConfigModal = forwardRef<APIKeyConfigModalRef, APIKeyConfigModalProp
                 disabled={configureLoading || loadingCredential}
                 style={{ marginRight: 8 }}
               >
-                取消
+                {formatMessage({
+                  id: 'src.page.ExternalIntegration.LargeModel.component.APIKeyConfigModal.B07F7290',
+                  defaultMessage: '取消',
+                })}
               </Button>
               <Button
                 type="primary"
@@ -209,21 +228,36 @@ const APIKeyConfigModal = forwardRef<APIKeyConfigModalRef, APIKeyConfigModalProp
                 loading={configureLoading}
                 disabled={loadingCredential}
               >
-                确定
+                {formatMessage({
+                  id: 'src.page.ExternalIntegration.LargeModel.component.APIKeyConfigModal.BD4B6216',
+                  defaultMessage: '确定',
+                })}
               </Button>
             </div>
           </div>
         )}
         open={isOpen}
-        title="配置 API Key"
+        title={formatMessage({
+          id: 'src.page.ExternalIntegration.LargeModel.component.APIKeyConfigModal.5F3594BA',
+          defaultMessage: '配置 API Key',
+        })}
         onCancel={resetStates}
       >
-        <Spin spinning={loadingCredential} tip="正在加载现有配置...">
+        <Spin
+          spinning={loadingCredential}
+          tip={formatMessage({
+            id: 'src.page.ExternalIntegration.LargeModel.component.APIKeyConfigModal.37966192',
+            defaultMessage: '正在加载现有配置...',
+          })}
+        >
           <Descriptions
             layout="horizontal"
             items={[
               {
-                label: '模型供应商',
+                label: formatMessage({
+                  id: 'src.page.ExternalIntegration.LargeModel.component.APIKeyConfigModal.23E244F0',
+                  defaultMessage: '模型供应商',
+                }),
                 span: 4,
                 children: (
                   <div className={styles.vendor}>
@@ -234,6 +268,7 @@ const APIKeyConfigModal = forwardRef<APIKeyConfigModalRef, APIKeyConfigModalProp
               },
             ]}
           />
+
           <Form layout="vertical" form={form} className={styles.form} requiredMark="optional">
             {currentProvider?.providerCredentialSchema?.credentialFormSchemas?.map((schema) => (
               <Form.Item
@@ -247,7 +282,13 @@ const APIKeyConfigModal = forwardRef<APIKeyConfigModalRef, APIKeyConfigModalProp
                     ? [
                         {
                           required: true,
-                          message: `${formatLabel(schema)} 不可为空`,
+                          message: formatMessage(
+                            {
+                              id: 'src.page.ExternalIntegration.LargeModel.component.APIKeyConfigModal.53FF5C31',
+                              defaultMessage: '{CallExpression0} 不可为空',
+                            },
+                            { CallExpression0: formatLabel(schema) },
+                          ),
                         },
                       ]
                     : []

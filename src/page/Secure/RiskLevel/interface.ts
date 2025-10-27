@@ -54,7 +54,10 @@ export const ExpressionMap = {
     id: 'odc.src.page.Secure.RiskLevel.Environment',
     defaultMessage: '环境',
   }), //'环境'
-  [Expression.TASK_TYPE]: '工单类型',
+  [Expression.TASK_TYPE]: formatMessage({
+    id: 'src.page.Secure.RiskLevel.92D2ED86',
+    defaultMessage: '工单类型',
+  }),
   [Expression.SQL_CHECK_RESULT]: formatMessage({
     id: 'odc.src.page.Secure.RiskLevel.SQLExaminationResults',
     defaultMessage: 'SQL 检查结果',
@@ -67,7 +70,10 @@ export const ExpressionMap = {
     id: 'odc.src.page.Secure.RiskLevel.NameDatabase',
     defaultMessage: '数据库名称',
   }), //'数据库名称'
-  [Expression.SCHEDULE_TYPE]: '作业类型',
+  [Expression.SCHEDULE_TYPE]: formatMessage({
+    id: 'src.page.Secure.RiskLevel.F7BA8534',
+    defaultMessage: '作业类型',
+  }),
 };
 export enum EOperator {
   EQUALS = 'EQUALS',

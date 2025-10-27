@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { UserStore } from '@/store/login';
 import { ModalStore } from '@/store/modal';
@@ -445,7 +446,12 @@ const Content: React.FC<IProps> = (props) => {
   const openDefaultSchedule = async () => {
     const data = await getScheduleDetail(defaultScheduleId, true);
     if (!schedlueConfig[defaultScheduleType]?.enabled() || !data) {
-      message.error('无当前作业查看权限');
+      message.error(
+        formatMessage({
+          id: 'src.component.Schedule.layout.EDA67432',
+          defaultMessage: '无当前作业查看权限',
+        }),
+      );
       return;
     }
 
@@ -525,12 +531,14 @@ const Content: React.FC<IProps> = (props) => {
         onReloadList={reloadList}
         mode={mode}
       />
+
       <SubTaskDetailModal
         visible={subTaskState?.detailVisible}
         onClose={() => setSubTaskState({ detailVisible: false })}
         detailId={subTaskState.detailId}
         scheduleId={subTaskState?.scheduleId}
       />
+
       <ApprovalModal
         id={approvalState.detailId}
         visible={approvalState.visible}

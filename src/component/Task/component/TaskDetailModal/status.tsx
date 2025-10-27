@@ -13,7 +13,10 @@ const statusMap = {
 
   [ScheduleChangeStatus.SUCCESS]: {
     icon: <CheckCircleFilled style={{ color: 'var(--icon-green-color)' }} />,
-    text: '审批通过',
+    text: formatMessage({
+      id: 'src.component.Task.component.TaskDetailModal.42742344',
+      defaultMessage: '审批通过',
+    }),
   },
 
   [ScheduleChangeStatus.FAILED]: {
@@ -41,15 +44,24 @@ const statusMap = {
   },
   [ScheduleChangeStatus.APPROVE_CANCELED]: {
     icon: <ExclamationCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
-    text: '审批撤销',
+    text: formatMessage({
+      id: 'src.component.Task.component.TaskDetailModal.7BAD8A45',
+      defaultMessage: '审批撤销',
+    }),
   },
   [ScheduleChangeStatus.APPROVE_EXPIRED]: {
     icon: <ExclamationCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
-    text: '审批过期',
+    text: formatMessage({
+      id: 'src.component.Task.component.TaskDetailModal.BA303120',
+      defaultMessage: '审批过期',
+    }),
   },
   [ScheduleChangeStatus.APPROVE_REJECTED]: {
     icon: <ExclamationCircleFilled style={{ color: 'var(--function-red6-color)' }} />,
-    text: '审批不通过',
+    text: formatMessage({
+      id: 'src.component.Task.component.TaskDetailModal.9D255593',
+      defaultMessage: '审批不通过',
+    }),
   },
 };
 

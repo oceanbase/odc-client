@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { IDatabase } from '@/d.ts/database';
 import { MaximumCharacterLength } from '@/component/Task/component/CreateTaskConfirmModal';
 import { safeTruncateString } from '@/util/stringTruncate';
@@ -13,7 +14,13 @@ export const getInitScheduleName = (scheduleName: string, type: 'RETRY' | 'EDIT'
   let initScheduleName = undefined;
   if (scheduleName) {
     if (type === 'RETRY') {
-      initScheduleName = `[克隆]${scheduleName}`;
+      initScheduleName = formatMessage(
+        {
+          id: 'src.component.Task.component.CreateTaskConfirmModal.A4D01F9B',
+          defaultMessage: '[克隆]{scheduleName}',
+        },
+        { scheduleName },
+      );
     }
   }
   return safeTruncateString(MaximumCharacterLength, initScheduleName);

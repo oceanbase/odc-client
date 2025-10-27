@@ -551,7 +551,14 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
         </Modal>
         <Descriptions column={2}>
           <Descriptions.Item label={'ID'}>{task?.id}</Descriptions.Item>
-          <Descriptions.Item label={'类型'}>{TaskTypeMap?.[task?.type]}</Descriptions.Item>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Task.modals.StructureComparisonTask.DetailContent.BFD5B5A1',
+              defaultMessage: '类型',
+            })}
+          >
+            {TaskTypeMap?.[task?.type]}
+          </Descriptions.Item>
           <Descriptions.Item
             label={
               formatMessage({

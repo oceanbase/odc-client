@@ -23,7 +23,10 @@ const SynchronizationItem: React.FC<IProps> = ({ form, targetDatabase }) => {
     <>
       <Form.Item
         name="createTargetTableIfNotExists"
-        extra={'若目标数据库中不存在归档表，则根据源端数据库中的表结构自动创建'}
+        extra={formatMessage({
+          id: 'src.component.Task.component.SynchronizationItem.E0B0D399',
+          defaultMessage: '若目标数据库中不存在归档表，则根据源端数据库中的表结构自动创建',
+        })}
         style={{ marginBottom: 24 }}
       >
         <Tooltip
@@ -43,7 +46,10 @@ const SynchronizationItem: React.FC<IProps> = ({ form, targetDatabase }) => {
               form.setFieldValue('createTargetTableIfNotExists', e.target.checked);
             }}
           >
-            目标表结构不存在时自动创建
+            {formatMessage({
+              id: 'src.component.Task.component.SynchronizationItem.DFB3357C',
+              defaultMessage: '目标表结构不存在时自动创建',
+            })}
           </Checkbox>
         </Tooltip>
       </Form.Item>

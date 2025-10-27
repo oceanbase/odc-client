@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import {
   Alert,
   Button,
@@ -62,7 +63,12 @@ const EditModal = forwardRef<EditModalRef, EditModalProps>(({ onRefresh }, ref) 
         setInitialCredentials(data.credential || {});
       },
       onError: (error) => {
-        message.error('获取模型详情失败');
+        message.error(
+          formatMessage({
+            id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.63B49A33',
+            defaultMessage: '获取模型详情失败',
+          }),
+        );
         console.error('获取模型详情失败:', error);
       },
     },
@@ -75,7 +81,17 @@ const EditModal = forwardRef<EditModalRef, EditModalProps>(({ onRefresh }, ref) 
     {
       manual: true,
       onSuccess: () => {
-        message.success(model ? '模型更新成功' : '模型创建成功');
+        message.success(
+          model
+            ? formatMessage({
+                id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.E75D99B3',
+                defaultMessage: '模型更新成功',
+              })
+            : formatMessage({
+                id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.D46EA6D9',
+                defaultMessage: '模型创建成功',
+              }),
+        );
         resetStates();
         // 调用外部传入的刷新回调
         if (onRefresh) {
@@ -83,7 +99,17 @@ const EditModal = forwardRef<EditModalRef, EditModalProps>(({ onRefresh }, ref) 
         }
       },
       onError: (error) => {
-        message.error(model ? '模型更新失败' : '模型创建失败');
+        message.error(
+          model
+            ? formatMessage({
+                id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.181935E6',
+                defaultMessage: '模型更新失败',
+              })
+            : formatMessage({
+                id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.EC55EDAE',
+                defaultMessage: '模型创建失败',
+              }),
+        );
         console.error('模型操作失败:', error);
       },
     },
@@ -91,7 +117,12 @@ const EditModal = forwardRef<EditModalRef, EditModalProps>(({ onRefresh }, ref) 
 
   const handleConfirm = useCallback(async () => {
     if (!provider) {
-      message.error('未选择供应商');
+      message.error(
+        formatMessage({
+          id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.AACEB697',
+          defaultMessage: '未选择供应商',
+        }),
+      );
       return;
     }
 
@@ -206,7 +237,17 @@ const EditModal = forwardRef<EditModalRef, EditModalProps>(({ onRefresh }, ref) 
   return (
     <Modal
       open={isOpen}
-      title={model ? '编辑模型' : '添加模型'}
+      title={
+        model
+          ? formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.A14C59F5',
+              defaultMessage: '编辑模型',
+            })
+          : formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.53DF1720',
+              defaultMessage: '添加模型',
+            })
+      }
       onCancel={resetStates}
       footer={() => (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -232,7 +273,10 @@ const EditModal = forwardRef<EditModalRef, EditModalProps>(({ onRefresh }, ref) 
               disabled={createLoading || fetchingDetail}
               style={{ marginRight: 8 }}
             >
-              取消
+              {formatMessage({
+                id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.267BB6D4',
+                defaultMessage: '取消',
+              })}
             </Button>
             <Button
               type="primary"
@@ -240,18 +284,30 @@ const EditModal = forwardRef<EditModalRef, EditModalProps>(({ onRefresh }, ref) 
               loading={createLoading}
               disabled={fetchingDetail}
             >
-              确定
+              {formatMessage({
+                id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.5536B99E',
+                defaultMessage: '确定',
+              })}
             </Button>
           </div>
         </div>
       )}
     >
-      <Spin spinning={fetchingDetail} tip="正在加载模型详情...">
+      <Spin
+        spinning={fetchingDetail}
+        tip={formatMessage({
+          id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.B5E8D3DB',
+          defaultMessage: '正在加载模型详情...',
+        })}
+      >
         <Descriptions
           layout="horizontal"
           items={[
             {
-              label: '模型供应商',
+              label: formatMessage({
+                id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.E46B8C88',
+                defaultMessage: '模型供应商',
+              }),
               span: 4,
               children: (
                 <div className={styles.vendor}>
@@ -262,6 +318,7 @@ const EditModal = forwardRef<EditModalRef, EditModalProps>(({ onRefresh }, ref) 
             },
           ]}
         />
+
         <Form
           layout="vertical"
           className={styles.form}
@@ -273,10 +330,21 @@ const EditModal = forwardRef<EditModalRef, EditModalProps>(({ onRefresh }, ref) 
         >
           {/* 固定字段：模型类型 */}
           <Form.Item
-            label="模型类型"
+            label={formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.60E40AD9',
+              defaultMessage: '模型类型',
+            })}
             name="modelType"
             initialValue="CHAT"
-            rules={[{ required: true, message: '请选择模型类型' }]}
+            rules={[
+              {
+                required: true,
+                message: formatMessage({
+                  id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.49BB2DC9',
+                  defaultMessage: '请选择模型类型',
+                }),
+              },
+            ]}
             className={styles.formItem}
           >
             <Radio.Group disabled={!!model}>
@@ -289,17 +357,32 @@ const EditModal = forwardRef<EditModalRef, EditModalProps>(({ onRefresh }, ref) 
           {provider?.modelCredentialSchema?.model && (
             <Form.Item
               label={
-                provider.modelCredentialSchema.model.label?.[getServerLocalKey()] || '模型名称'
+                provider.modelCredentialSchema.model.label?.[getServerLocalKey()] ||
+                formatMessage({
+                  id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.F26B463F',
+                  defaultMessage: '模型名称',
+                })
               }
               name="model"
-              rules={[{ required: true, message: '请输入模型名称' }]}
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage({
+                    id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.466E1A22',
+                    defaultMessage: '请输入模型名称',
+                  }),
+                },
+              ]}
               className={styles.formItem}
             >
               <Input
                 disabled={!!model}
                 placeholder={
                   provider.modelCredentialSchema.model.placeholder?.[getServerLocalKey()] ||
-                  '请输入模型名称'
+                  formatMessage({
+                    id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.A965B08D',
+                    defaultMessage: '请输入模型名称',
+                  })
                 }
               />
             </Form.Item>
@@ -319,9 +402,16 @@ const EditModal = forwardRef<EditModalRef, EditModalProps>(({ onRefresh }, ref) 
                     ? [
                         {
                           required: true,
-                          message: `请输入${
-                            schema.label?.[getServerLocalKey()] || schema.variable
-                          }`,
+                          message: formatMessage(
+                            {
+                              id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.628F7FA0',
+                              defaultMessage: '请输入{LogicalExpression0}',
+                            },
+                            {
+                              LogicalExpression0:
+                                schema.label?.[getServerLocalKey()] || schema.variable,
+                            },
+                          ),
                         },
                       ]
                     : []
@@ -332,8 +422,22 @@ const EditModal = forwardRef<EditModalRef, EditModalProps>(({ onRefresh }, ref) 
               </Form.Item>
             ))}
 
-          <Form.Item label="备注" name="description" className={styles.formItem}>
-            <Input.TextArea placeholder="请输入备注信息" rows={3} maxLength={400} />
+          <Form.Item
+            label={formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.C440A8E5',
+              defaultMessage: '备注',
+            })}
+            name="description"
+            className={styles.formItem}
+          >
+            <Input.TextArea
+              placeholder={formatMessage({
+                id: 'src.page.ExternalIntegration.LargeModel.component.EditModal.F37D1D7B',
+                defaultMessage: '请输入备注信息',
+              })}
+              rows={3}
+              maxLength={400}
+            />
           </Form.Item>
         </Form>
       </Spin>

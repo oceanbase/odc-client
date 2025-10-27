@@ -197,7 +197,10 @@ const TaskTable: React.FC<IProps> = (props) => {
 
   const columns = [
     {
-      title: '工单',
+      title: formatMessage({
+        id: 'src.component.Task.component.TaskTable.0B05D93D',
+        defaultMessage: '工单',
+      }),
       dataIndex: 'id',
       width: 500,
       render: (id, record) => (
@@ -207,7 +210,10 @@ const TaskTable: React.FC<IProps> = (props) => {
     {
       ...(isAll
         ? {
-            title: '类型',
+            title: formatMessage({
+              id: 'src.component.Task.component.TaskTable.E387A226',
+              defaultMessage: '类型',
+            }),
             dataIndex: 'type',
             width: 150,
             render: (type, record) => {
@@ -248,7 +254,10 @@ const TaskTable: React.FC<IProps> = (props) => {
       },
     },
     {
-      title: '操作',
+      title: formatMessage({
+        id: 'src.component.Task.component.TaskTable.2CD36C69',
+        defaultMessage: '操作',
+      }),
       dataIndex: 'actions',
       width: 144,
       fixed: 'right' as FixedType,
@@ -288,7 +297,11 @@ const TaskTable: React.FC<IProps> = (props) => {
           }}
         >
           <>
-            新建
+            {formatMessage({
+              id: 'src.component.Task.component.TaskTable.C0A6F564',
+              defaultMessage: '新建',
+            })}
+
             <DownOutlined style={{ color: '#fff' }} />
           </>
         </Button>

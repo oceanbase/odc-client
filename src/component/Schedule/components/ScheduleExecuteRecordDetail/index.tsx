@@ -63,18 +63,39 @@ const ScheduleExecuteRecordDetail: React.FC<ScheduleExecuteRecordDetailProps> = 
     const { approveInstanceId } = schedule;
     const scheduleTypeText = ScheduleTextMap[schedule?.type];
     Modal.confirm({
-      title: `确定要撤销此${scheduleTypeText}审批吗`,
-      content: <div>审批撤销后，作业将进入终止态</div>,
+      title: formatMessage(
+        {
+          id: 'src.component.Schedule.components.ScheduleExecuteRecordDetail.8B454A63',
+          defaultMessage: '确定要撤销此{scheduleTypeText}审批吗',
+        },
+        { scheduleTypeText },
+      ),
+      content: (
+        <div>
+          {formatMessage({
+            id: 'src.component.Schedule.components.ScheduleExecuteRecordDetail.D5201676',
+            defaultMessage: '审批撤销后，作业将进入终止态',
+          })}
+        </div>
+      ),
       cancelText: formatMessage({
         id: 'odc.TaskManagePage.component.TaskTools.Cancel',
         defaultMessage: '取消',
       }), //取消
-      okText: '确定',
+      okText: formatMessage({
+        id: 'src.component.Schedule.components.ScheduleExecuteRecordDetail.B41D556A',
+        defaultMessage: '确定',
+      }),
       centered: true,
       onOk: async () => {
         const res = await stopTask(approveInstanceId);
         if (res) {
-          message.success('撤销成功');
+          message.success(
+            formatMessage({
+              id: 'src.component.Schedule.components.ScheduleExecuteRecordDetail.B871B1A9',
+              defaultMessage: '撤销成功',
+            }),
+          );
           onClose?.();
           onReload?.();
         }
@@ -87,7 +108,10 @@ const ScheduleExecuteRecordDetail: React.FC<ScheduleExecuteRecordDetailProps> = 
       visible={visible}
       onClose={onClose}
       destroyOnClose={true}
-      title="操作记录详情"
+      title={formatMessage({
+        id: 'src.component.Schedule.components.ScheduleExecuteRecordDetail.A96E23A3',
+        defaultMessage: '操作记录详情',
+      })}
       width={1000}
       footer={
         schedule?.approvable &&
@@ -119,7 +143,14 @@ const ScheduleExecuteRecordDetail: React.FC<ScheduleExecuteRecordDetailProps> = 
               </>
             )}
 
-            {haveRevokePermission && <Button onClick={handleRevoke}>撤销审批</Button>}
+            {haveRevokePermission && (
+              <Button onClick={handleRevoke}>
+                {formatMessage({
+                  id: 'src.component.Schedule.components.ScheduleExecuteRecordDetail.16496082',
+                  defaultMessage: '撤销审批',
+                })}
+              </Button>
+            )}
           </Space>
         )
       }

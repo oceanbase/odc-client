@@ -83,7 +83,10 @@ const CustomDropdown = ({
             }),
         },
         {
-          label: '全局搜索',
+          label: formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
+            defaultMessage: '全局搜索',
+          }),
           key: 'globalSearch',
           onClick: (e) => {
             handleMenuClick(e, () => {
@@ -93,7 +96,10 @@ const CustomDropdown = ({
         },
         userStore.isPrivateSpace()
           ? {
-              label: '同步元数据库',
+              label: formatMessage({
+                id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.FC246B27',
+                defaultMessage: '同步元数据库',
+              }),
               key: 'sync',
               onClick: (e) =>
                 handleMenuClick(e, () => {
@@ -112,6 +118,7 @@ const CustomDropdown = ({
       ))}
     </Menu>
   );
+
   return (
     <Dropdown
       overlay={menu}
@@ -215,6 +222,7 @@ const DataSourceNodeMenu = (props: IProps) => {
             userStore={userStore}
             sync={sync}
           />
+
           <div
             className={classNames(treeStyles.envTip, {
               [treeStyles.envTipPersonal]: userStore.isPrivateSpace(),
@@ -228,7 +236,13 @@ const DataSourceNodeMenu = (props: IProps) => {
           {dataSource && (
             <div className={treeStyles.menuActions}>
               {!isConnectTypeBeFileSystemGroup(dataSource.type) && (
-                <Tooltip title="全局搜索" placement="left">
+                <Tooltip
+                  title={formatMessage({
+                    id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.895ECBC1',
+                    defaultMessage: '全局搜索',
+                  })}
+                  placement="left"
+                >
                   <SearchOutlined
                     className={treeStyles.menuActions}
                     style={
@@ -263,8 +277,8 @@ const DataSourceNodeMenu = (props: IProps) => {
                         defaultMessage:
                           '\n                                  克隆\n                                ',
                       }) /* 
-                               克隆
-                               */
+                      克隆
+                      */
                     }
                   </Action.Link>
 
@@ -292,7 +306,10 @@ const DataSourceNodeMenu = (props: IProps) => {
                   </Action.Link>
 
                   <Action.Link onClick={() => sync(dataSource.id)} key={'sync'}>
-                    同步元数据库
+                    {formatMessage({
+                      id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.4C940744',
+                      defaultMessage: '同步元数据库',
+                    })}
                   </Action.Link>
                 </Action.Group>
               )}

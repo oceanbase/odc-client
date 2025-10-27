@@ -129,14 +129,22 @@ export function getItems(
         ['ID', task.id],
 
         [
-          '类型',
+          formatMessage({
+            id: 'src.component.Task.modals.ShadowSyncTask.DetailContent.0C34EABD',
+            defaultMessage: '类型',
+          }),
+
           formatMessage({
             id: 'odc.component.DetailModal.shadowSync.ShadowTableSynchronization',
             defaultMessage: '影子表同步',
           }), //影子表同步
         ],
         [
-          '数据库',
+          formatMessage({
+            id: 'src.component.Task.modals.ShadowSyncTask.DetailContent.30BF57FC',
+            defaultMessage: '数据库',
+          }),
+
           <EllipsisText
             content={<DatabaseLabel database={task?.database} />}
             needTooltip={false}
@@ -150,7 +158,16 @@ export function getItems(
           }), //'所属数据源'
           <EllipsisText content={task?.database?.dataSource?.name} />,
         ],
-        !login.isPrivateSpace() ? ['项目', <EllipsisText content={task?.project?.name} />] : null,
+
+        !login.isPrivateSpace()
+          ? [
+              formatMessage({
+                id: 'src.component.Task.modals.ShadowSyncTask.DetailContent.59AB26FA',
+                defaultMessage: '项目',
+              }),
+              <EllipsisText content={task?.project?.name} />,
+            ]
+          : null,
 
         hasFlow ? riskItem : null,
         [

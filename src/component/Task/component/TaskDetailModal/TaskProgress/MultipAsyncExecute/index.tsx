@@ -196,8 +196,17 @@ const MultipAsyncExecute: React.FC<MultipAsyncExecuteProps> = (props) => {
             }}
           />
         ),
+
         filterDropdown: (props) => {
-          return <SearchFilter {...props} placeholder={'请输入数据库'} />;
+          return (
+            <SearchFilter
+              {...props}
+              placeholder={formatMessage({
+                id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.5C0B6563',
+                defaultMessage: '请输入数据库',
+              })}
+            />
+          );
         },
         filteredValue: filters?.database || null,
         render: (_, record) => {
@@ -256,7 +265,10 @@ const MultipAsyncExecute: React.FC<MultipAsyncExecuteProps> = (props) => {
         },
       },
       {
-        title: 'DML 预估影响行数',
+        title: formatMessage({
+          id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.2388F450',
+          defaultMessage: 'DML 预估影响行数',
+        }),
         dataIndex: 'affectedRows',
         width: 150,
         render: (_, record) => {
@@ -264,7 +276,10 @@ const MultipAsyncExecute: React.FC<MultipAsyncExecuteProps> = (props) => {
         },
       },
       {
-        title: '执行时间',
+        title: formatMessage({
+          id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.B16735B2',
+          defaultMessage: '执行时间',
+        }),
         dataIndex: 'executionTime',
         width: 178,
         render: (_, record) => (
@@ -272,7 +287,10 @@ const MultipAsyncExecute: React.FC<MultipAsyncExecuteProps> = (props) => {
         ),
       },
       {
-        title: '结束时间',
+        title: formatMessage({
+          id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.0A7DCE47',
+          defaultMessage: '结束时间',
+        }),
         dataIndex: 'completeTime',
         width: 178,
         render: (_, record) => {
@@ -283,7 +301,10 @@ const MultipAsyncExecute: React.FC<MultipAsyncExecuteProps> = (props) => {
       },
       {
         dataIndex: 'status',
-        title: '状态',
+        title: formatMessage({
+          id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.9AA0D802',
+          defaultMessage: '状态',
+        }),
         ellipsis: true,
         key: 'statuses',
         fixed: 'right',
@@ -327,6 +348,7 @@ const MultipAsyncExecute: React.FC<MultipAsyncExecuteProps> = (props) => {
         },
       },
     ];
+
     return columns;
   }
 
@@ -340,9 +362,16 @@ const MultipAsyncExecute: React.FC<MultipAsyncExecuteProps> = (props) => {
     } = multipAsyncExecuteRecordRes?.stats?.statusCount?.count ?? {};
     const failCount = EXECUTION_SUCCEEDED_WITH_ERRORS + EXECUTION_FAILED;
     return (
-      <div
-        style={{ marginBottom: 6 }}
-      >{`以下 ${WAIT_FOR_EXECUTION} 个数据库待执行，${EXECUTING} 个数据库执行中， ${EXECUTION_SUCCEEDED} 个数据库执行成功，${failCount}个数据库执行失败`}</div>
+      <div style={{ marginBottom: 6 }}>
+        {formatMessage(
+          {
+            id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.893E29CC',
+            defaultMessage:
+              '以下 {WAIT_FOR_EXECUTION} 个数据库待执行，{EXECUTING} 个数据库执行中， {EXECUTION_SUCCEEDED} 个数据库执行成功，{failCount}个数据库执行失败',
+          },
+          { WAIT_FOR_EXECUTION, EXECUTING, EXECUTION_SUCCEEDED, failCount },
+        )}
+      </div>
     );
   }, [multipAsyncExecuteRecordRes?.stats]);
 

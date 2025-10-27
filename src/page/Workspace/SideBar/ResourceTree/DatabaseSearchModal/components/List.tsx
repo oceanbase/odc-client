@@ -224,7 +224,10 @@ const List = ({ modalStore }: Iprops) => {
                       }
                     }}
                   >
-                    同步元数据库
+                    {formatMessage({
+                      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.430627A1',
+                      defaultMessage: '同步元数据库',
+                    })}
                   </a>
                   {formatMessage({
                     id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.55AB56DF',

@@ -88,7 +88,15 @@ export class CreateSchedulePage extends Page {
   constructor(scheduleType: ScheduleType, title?: string) {
     super();
     this.pageKey = `createSchedulePage-${generateUniqKey()}`;
-    this.pageTitle = title || `新建${SchedulePageTextMap[scheduleType]}`;
+    this.pageTitle =
+      title ||
+      formatMessage(
+        {
+          id: 'src.store.helper.page.pages.5680C3BC',
+          defaultMessage: '新建{SchedulePageTextMapScheduleType}',
+        },
+        { SchedulePageTextMapScheduleType: SchedulePageTextMap[scheduleType] },
+      );
     this.pageType = PageType.CREATE_SCHEDULES;
     this.pageParams = {
       scheduleType,

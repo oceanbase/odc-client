@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React, { useContext, useEffect } from 'react';
 import { Badge, Radio } from 'antd';
 import { TaskTab } from '@/component/Task/interface';
@@ -21,7 +22,10 @@ const Tabs = () => {
       value={params.tab}
       options={[
         {
-          label: '全部',
+          label: formatMessage({
+            id: 'src.component.Task.layout.Header.79486BBD',
+            defaultMessage: '全部',
+          }),
           value: TaskTab.all,
         },
         {
@@ -36,13 +40,22 @@ const Tabs = () => {
               size="small"
               style={{ zIndex: 999 }}
             >
-              <div>待我审批</div>
+              <div>
+                {formatMessage({
+                  id: 'src.component.Task.layout.Header.AEB61F8E',
+                  defaultMessage: '待我审批',
+                })}
+              </div>
             </Badge>
           ),
+
           value: TaskTab.approveByCurrentUser,
         },
         {
-          label: '待我执行',
+          label: formatMessage({
+            id: 'src.component.Task.layout.Header.0A9C5505',
+            defaultMessage: '待我执行',
+          }),
           value: TaskTab.executionByCurrentUser,
         },
       ]?.filter((item) => {

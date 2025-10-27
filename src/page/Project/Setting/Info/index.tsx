@@ -212,11 +212,18 @@ export default function Info() {
           history.push('/project?archived=true');
         }}
       />
+
       <RelativeResourceModal
         mode={EEntityType.PROJECT}
         open={openArchiveModal}
         id={context?.project?.id}
-        title={`项目 ${projectName} 存在以下未完成的工单和作业，暂不支持归档`}
+        title={formatMessage(
+          {
+            id: 'src.page.Project.Setting.Info.2365AA93',
+            defaultMessage: '项目 {projectName} 存在以下未完成的工单和作业，暂不支持归档',
+          },
+          { projectName },
+        )}
         onCancel={() => setOpenArchiveModal(false)}
       />
     </div>

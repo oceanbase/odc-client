@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { SchedulePageTextMap } from '@/constant/schedule';
 import { SchedulePageType } from '@/d.ts/schedule';
 import CreatePage from '@/component/Schedule/modals/Create';
@@ -9,7 +10,13 @@ import { SchedulePageMode } from '@/component/Schedule/interface';
 
 export const getTitleByParams = (params: { scheduleType: SchedulePageType }) => {
   const { scheduleType } = params;
-  let title = `新建${SchedulePageTextMap[scheduleType]}`;
+  let title = formatMessage(
+    {
+      id: 'src.page.Workspace.components.CreateSchedule.284B8E81',
+      defaultMessage: '新建{SchedulePageTextMapScheduleType}',
+    },
+    { SchedulePageTextMapScheduleType: SchedulePageTextMap[scheduleType] },
+  );
   return title;
 };
 

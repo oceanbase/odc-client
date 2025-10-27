@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import Sider from '@/component/Schedule/layout/Sider';
 import tracert from '@/util/tracert';
 import React, { useEffect } from 'react';
@@ -16,7 +17,10 @@ const Schedule: React.FC<IProps> = () => {
       key="Schedule"
       tabs={[
         {
-          title: '作业',
+          title: formatMessage({
+            id: 'src.page.Workspace.SideBar.Schedule.45134F41',
+            defaultMessage: '作业',
+          }),
           key: 'Schedule',
           actions: [],
           render() {

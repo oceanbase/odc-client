@@ -47,9 +47,18 @@ export const TaskPageTextMap = {
     id: 'odc.component.Task.helper.LockFreeStructureChange',
     defaultMessage: '无锁结构变更',
   }),
-  [TaskPageType.APPLY_PROJECT_PERMISSION]: '项目权限',
-  [TaskPageType.APPLY_DATABASE_PERMISSION]: '库权限',
-  [TaskPageType.APPLY_TABLE_PERMISSION]: '表/视图权限',
+  [TaskPageType.APPLY_PROJECT_PERMISSION]: formatMessage({
+    id: 'src.constant.B5C6130E',
+    defaultMessage: '项目权限',
+  }),
+  [TaskPageType.APPLY_DATABASE_PERMISSION]: formatMessage({
+    id: 'src.constant.43A587C8',
+    defaultMessage: '库权限',
+  }),
+  [TaskPageType.APPLY_TABLE_PERMISSION]: formatMessage({
+    id: 'src.constant.94307EDC',
+    defaultMessage: '表/视图权限',
+  }),
 };
 
 export const TaskGroupTextMap = {
@@ -69,27 +78,63 @@ export const TaskGroupTextMap = {
 };
 
 export const TaskActionsTextMap = {
-  [TaskActionsEnum.VIEW]: '查看',
-  [TaskActionsEnum.CLONE]: '克隆',
-  [TaskActionsEnum.SHARE]: '分享',
-  [TaskActionsEnum.STOP]: '终止',
-  [TaskActionsEnum.ROLLBACK]: '回滚',
-  [TaskActionsEnum.EXECUTE]: '执行',
-  [TaskActionsEnum.PASS]: '同意',
-  [TaskActionsEnum.AGAIN]: '重试',
-  [TaskActionsEnum.DOWNLOAD]: '下载',
-  [TaskActionsEnum.REJECT]: '拒绝',
-  [TaskActionsEnum.DOWNLOAD_SQL]: '下载 SQL',
-  [TaskActionsEnum.STRUCTURE_COMPARISON]: '发起结构同步',
-  [TaskActionsEnum.OPEN_LOCAL_FOLDER]: '打开文件夹',
-  [TaskActionsEnum.DOWNLOAD_VIEW_RESULT]: '下载查询结果',
-  [TaskActionsEnum.VIEW_RESULT]: '查询结果',
+  [TaskActionsEnum.VIEW]: formatMessage({ id: 'src.constant.F2B0EACC', defaultMessage: '查看' }),
+  [TaskActionsEnum.CLONE]: formatMessage({ id: 'src.constant.A10A0980', defaultMessage: '克隆' }),
+  [TaskActionsEnum.SHARE]: formatMessage({ id: 'src.constant.10D30E47', defaultMessage: '分享' }),
+  [TaskActionsEnum.STOP]: formatMessage({ id: 'src.constant.CCE9B75C', defaultMessage: '终止' }),
+  [TaskActionsEnum.ROLLBACK]: formatMessage({
+    id: 'src.constant.FB3B422B',
+    defaultMessage: '回滚',
+  }),
+  [TaskActionsEnum.EXECUTE]: formatMessage({ id: 'src.constant.59F8EDCB', defaultMessage: '执行' }),
+  [TaskActionsEnum.PASS]: formatMessage({ id: 'src.constant.CC13E5E8', defaultMessage: '同意' }),
+  [TaskActionsEnum.AGAIN]: formatMessage({ id: 'src.constant.027E0B4B', defaultMessage: '重试' }),
+  [TaskActionsEnum.DOWNLOAD]: formatMessage({
+    id: 'src.constant.7ADCA81D',
+    defaultMessage: '下载',
+  }),
+  [TaskActionsEnum.REJECT]: formatMessage({ id: 'src.constant.0F0EB956', defaultMessage: '拒绝' }),
+  [TaskActionsEnum.DOWNLOAD_SQL]: formatMessage({
+    id: 'src.constant.12185358',
+    defaultMessage: '下载 SQL',
+  }),
+  [TaskActionsEnum.STRUCTURE_COMPARISON]: formatMessage({
+    id: 'src.constant.5E9EED46',
+    defaultMessage: '发起结构同步',
+  }),
+  [TaskActionsEnum.OPEN_LOCAL_FOLDER]: formatMessage({
+    id: 'src.constant.CB4131C9',
+    defaultMessage: '打开文件夹',
+  }),
+  [TaskActionsEnum.DOWNLOAD_VIEW_RESULT]: formatMessage({
+    id: 'src.constant.59F0A267',
+    defaultMessage: '下载查询结果',
+  }),
+  [TaskActionsEnum.VIEW_RESULT]: formatMessage({
+    id: 'src.constant.019A300D',
+    defaultMessage: '查询结果',
+  }),
 };
 
 export const SchemaChangeRecordStatusTextMap = {
-  [ISqlExecuteResultStatus.SUCCESS]: '执行成功',
-  [ISqlExecuteResultStatus.FAILED]: '执行失败',
-  [ISqlExecuteResultStatus.CANCELED]: '执行取消',
-  [ISqlExecuteResultStatus.RUNNING]: '执行中',
-  [ISqlExecuteResultStatus.CREATED]: '待执行',
+  [ISqlExecuteResultStatus.SUCCESS]: formatMessage({
+    id: 'src.constant.F701F798',
+    defaultMessage: '执行成功',
+  }),
+  [ISqlExecuteResultStatus.FAILED]: formatMessage({
+    id: 'src.constant.A1A40D9A',
+    defaultMessage: '执行失败',
+  }),
+  [ISqlExecuteResultStatus.CANCELED]: formatMessage({
+    id: 'src.constant.91B648D4',
+    defaultMessage: '执行取消',
+  }),
+  [ISqlExecuteResultStatus.RUNNING]: formatMessage({
+    id: 'src.constant.7F8CDA3C',
+    defaultMessage: '执行中',
+  }),
+  [ISqlExecuteResultStatus.CREATED]: formatMessage({
+    id: 'src.constant.0E6D946F',
+    defaultMessage: '待执行',
+  }),
 };

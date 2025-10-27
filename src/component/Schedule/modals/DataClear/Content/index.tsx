@@ -86,23 +86,50 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
         {subTask && (
           <>
             <Descriptions.Item label={'ID'}>{subTask?.id}</Descriptions.Item>
-            <Descriptions.Item label={'类型'}>{SubTypeTextMap[subTask?.type]}</Descriptions.Item>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Content.992D4FFD',
+                defaultMessage: '类型',
+              })}
+            >
+              {SubTypeTextMap[subTask?.type]}
+            </Descriptions.Item>
           </>
         )}
         {!subTask && (
           <>
             <Descriptions.Item label={'ID'}>{schedule?.scheduleId}</Descriptions.Item>
-            <Descriptions.Item label={'类型'}>数据清理</Descriptions.Item>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Content.06961463',
+                defaultMessage: '类型',
+              })}
+            >
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Content.C6045C7B',
+                defaultMessage: '数据清理',
+              })}
+            </Descriptions.Item>
           </>
         )}
 
-        <Descriptions.Item label={'源端数据库'}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.modals.DataClear.Content.62D13CD5',
+            defaultMessage: '源端数据库',
+          })}
+        >
           <EllipsisText
             needTooltip={false}
             content={<DatabaseLabel database={parameters?.database} />}
           />
         </Descriptions.Item>
-        <Descriptions.Item label={'源端数据源'}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.modals.DataClear.Content.8062EB44',
+            defaultMessage: '源端数据源',
+          })}
+        >
           <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
             <Icon
               component={sourceDataSourceStyle?.icon?.component}
@@ -112,26 +139,50 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
                 marginRight: 4,
               }}
             />
+
             <div style={{ flex: 1, overflow: 'hidden' }}>
               <EllipsisText content={parameters?.database?.dataSource?.name} />
             </div>
           </div>
         </Descriptions.Item>
-        <Descriptions.Item label={'清理前进行数据校验'}>
-          {parameters?.needCheckBeforeDelete ? '是' : '否'}
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.modals.DataClear.Content.0942CC0E',
+            defaultMessage: '清理前进行数据校验',
+          })}
+        >
+          {parameters?.needCheckBeforeDelete
+            ? formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Content.B2E5F3AB',
+                defaultMessage: '是',
+              })
+            : formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Content.F2D69EDF',
+                defaultMessage: '否',
+              })}
         </Descriptions.Item>
         <Descriptions.Item>
           <em></em>
         </Descriptions.Item>
         {parameters?.targetDatabase && (
           <>
-            <Descriptions.Item label={'目标数据库'}>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Content.6AF9487E',
+                defaultMessage: '目标数据库',
+              })}
+            >
               <EllipsisText
                 needTooltip={false}
                 content={<DatabaseLabel database={parameters?.targetDatabase} />}
               />
             </Descriptions.Item>
-            <Descriptions.Item label={'目标端数据源'}>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Content.DAAF1AE4',
+                defaultMessage: '目标端数据源',
+              })}
+            >
               <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                 <Icon
                   component={targetDataSourceStyle?.icon?.component}
@@ -141,6 +192,7 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
                     marginRight: 4,
                   }}
                 />
+
                 <div style={{ flex: 1, overflow: 'hidden' }}>
                   <EllipsisText content={parameters?.targetDatabase?.dataSource?.name} />
                 </div>
@@ -149,7 +201,12 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
           </>
         )}
         {!login.isPrivateSpace() && (
-          <Descriptions.Item label={'项目'}>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Schedule.modals.DataClear.Content.79BD9F19',
+              defaultMessage: '项目',
+            })}
+          >
             <EllipsisText content={schedule?.project?.name} />
           </Descriptions.Item>
         )}
@@ -159,7 +216,12 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
         showSplit={false}
         label={
           <>
-            <span>清理范围：</span>
+            <span>
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Content.1DC69AF1',
+                defaultMessage: '清理范围：',
+              })}
+            </span>
             <span style={{ color: 'var(--text-color-primary)' }}>{CleaningRange}</span>
           </>
         }
@@ -177,6 +239,7 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
         }
         direction="column"
       />
+
       <SimpleTextItem
         label={formatMessage({
           id: 'odc.DataClearTask.DetailContent.VariableConfiguration',
@@ -195,8 +258,22 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
       />
 
       <Descriptions column={2}>
-        <Descriptions.Item label={'通过全表扫描进行数据搜索'} span={1}>
-          {parameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH ? '是' : '否'}
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.modals.DataClear.Content.1FDAD35D',
+            defaultMessage: '通过全表扫描进行数据搜索',
+          })}
+          span={1}
+        >
+          {parameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH
+            ? formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Content.B76F6CE8',
+                defaultMessage: '是',
+              })
+            : formatMessage({
+                id: 'src.component.Schedule.modals.DataClear.Content.7DD8880D',
+                defaultMessage: '否',
+              })}
         </Descriptions.Item>
         <Descriptions.Item
           label={formatMessage({
@@ -207,7 +284,13 @@ const DataClearScheduleContent: React.FC<IProps> = (props) => {
         >
           {parameters?.timeoutMillis ? milliSecondsToHour(parameters?.timeoutMillis) + 'h' : '-'}
         </Descriptions.Item>
-        <Descriptions.Item label={'执行超时调度策略'} span={1}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.modals.DataClear.Content.6D66EA2E',
+            defaultMessage: '执行超时调度策略',
+          })}
+          span={1}
+        >
           {
             executeTimeoutStrategyOptions?.find(
               (item) => item.value === parameters?.scheduleIgnoreTimeoutTask,

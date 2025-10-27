@@ -260,7 +260,10 @@ const TaskApplyList: React.FC<IProps> = (props) => {
         rowSelecter={
           isOwner || isDBA
             ? {
-                selectAllText: '全选当前页',
+                selectAllText: formatMessage({
+                  id: 'src.page.Project.User.ManageModal.Database.TaskApplyList.0D360FEE',
+                  defaultMessage: '全选当前页',
+                }),
                 options: [
                   {
                     okText: formatMessage({

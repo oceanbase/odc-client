@@ -38,7 +38,12 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
     <>
       <Descriptions column={2} style={{ marginBottom: '16px' }}>
         <Descriptions.Item label={'ID'}>{task?.id}</Descriptions.Item>
-        <Descriptions.Item label={'类型'}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.modals.LogicDatabaseAsyncTask.DetailContent.44BD2C5D',
+            defaultMessage: '类型',
+          })}
+        >
           {formatMessage({
             id: 'src.component.Task.LogicDatabaseAsyncTask.DetailContent.E8885A6E',
             defaultMessage: '逻辑库变更',
@@ -53,7 +58,12 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
           <EllipsisText content={<DatabaseLabel database={task?.database} />} needTooltip={false} />
         </Descriptions.Item>
         {!login.isPrivateSpace() && (
-          <Descriptions.Item label={'项目'}>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Task.modals.LogicDatabaseAsyncTask.DetailContent.89AC160B',
+              defaultMessage: '项目',
+            })}
+          >
             <EllipsisText content={task?.project?.name} />
           </Descriptions.Item>
         )}
@@ -65,13 +75,21 @@ const LogicDatabaseAsyncTaskContent: React.FC<IProps> = (props) => {
         >
           <ODCRiskLevelLabel iconMode levelMap level={task?.riskLevel?.level} />
         </Descriptions.Item>
-        <Descriptions.Item label={'描述'}>{task?.description}</Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.modals.LogicDatabaseAsyncTask.DetailContent.59F30910',
+            defaultMessage: '描述',
+          })}
+        >
+          {task?.description}
+        </Descriptions.Item>
       </Descriptions>
       <Divider
         style={{
           marginTop: 4,
         }}
       />
+
       <SimpleTextItem
         label={formatMessage({
           id: 'src.component.Task.LogicDatabaseAsyncTask.DetailContent.97C2BA42',

@@ -58,7 +58,10 @@ enum UserSearchType {
 }
 
 const UserSearchTypeTextMap = {
-  [UserSearchType.all]: '全部',
+  [UserSearchType.all]: formatMessage({
+    id: 'src.page.Auth.User.D4FAC19B',
+    defaultMessage: '全部',
+  }),
   [UserSearchType.name]: formatMessage({
     id: 'odc.components.UserPage.Name',
     defaultMessage: '姓名',
@@ -294,7 +297,10 @@ class UserPage extends React.PureComponent<IProps, IState> {
                       this.openAccessKeyModal(record.id);
                     }}
                   >
-                    管理 AccessKey
+                    {formatMessage({
+                      id: 'src.page.Auth.User.C98D9F83',
+                      defaultMessage: '管理 AccessKey',
+                    })}
                   </Action.Link>
                 </Action.Group>
               </Acess>

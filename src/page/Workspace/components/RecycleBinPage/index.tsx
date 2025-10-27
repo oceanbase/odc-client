@@ -56,7 +56,10 @@ enum RecycleBinSearchType {
 }
 
 const RecycleBinSearchTypeTextMap = {
-  [RecycleBinSearchType.all]: '全部',
+  [RecycleBinSearchType.all]: formatMessage({
+    id: 'src.page.Workspace.components.RecycleBinPage.366F6AC3',
+    defaultMessage: '全部',
+  }),
   [RecycleBinSearchType.id]: formatMessage({
     id: 'workspace.window.recyclebin.column.originName',
     defaultMessage: '原名称',
@@ -475,6 +478,7 @@ class RecycleBin extends Component<
                   selectTypeOptions={selectTypeOptions}
                   onSelect={this.handleSearch}
                 />
+
                 <RecyleConfigContext.Provider
                   value={{
                     setting: recycleConfig,

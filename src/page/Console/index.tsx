@@ -275,13 +275,21 @@ const ConsoleMain = () => {
                 <div className={schedules.length > 2 ? styles.schedules : styles.schedulesVertical}>
                   <Card className={styles.card}>
                     <div className={styles.header}>
-                      <div className={styles.consoleCardTitle}>任务概览</div>
+                      <div className={styles.consoleCardTitle}>
+                        {formatMessage({
+                          id: 'src.page.Console.7B084A6B',
+                          defaultMessage: '任务概览',
+                        })}
+                      </div>
                     </div>
 
                     <div className={styles.jobsCounter}>
                       <div className={styles.counterGrid}>
                         <ScheduleCounter
-                          title="待审批工单"
+                          title={formatMessage({
+                            id: 'src.page.Console.F03B2F0A',
+                            defaultMessage: '待审批工单',
+                          })}
                           counter={todosData?.FLOW?.count?.FLOW_WAIT_ME_APPROVAL}
                           onClick={() => {
                             navigate(
@@ -289,8 +297,12 @@ const ConsoleMain = () => {
                             );
                           }}
                         />
+
                         <ScheduleCounter
-                          title="待执行工单"
+                          title={formatMessage({
+                            id: 'src.page.Console.728721B8',
+                            defaultMessage: '待执行工单',
+                          })}
                           counter={todosData?.FLOW?.count?.FLOW_WAIT_ME_EXECUTION}
                           onClick={() => {
                             navigate(
@@ -298,8 +310,12 @@ const ConsoleMain = () => {
                             );
                           }}
                         />
+
                         <ScheduleCounter
-                          title="待审批作业"
+                          title={formatMessage({
+                            id: 'src.page.Console.05FDDC9F',
+                            defaultMessage: '待审批作业',
+                          })}
                           counter={todosData?.SCHEDULE?.count?.SCHEDULE_WAIT_ME_APPROVAL}
                           onClick={() => {
                             navigate(
@@ -320,6 +336,7 @@ const ConsoleMain = () => {
                           localStorage.setItem(getCacheTimeKey(), JSON.stringify(value));
                         }}
                       />
+
                       {String(timeValue) === 'custom' && (
                         <RangePicker
                           suffixIcon={null}
@@ -336,9 +353,21 @@ const ConsoleMain = () => {
                       )}
                       <Select
                         className={styles.filter}
-                        placeholder="请选择项目"
+                        placeholder={formatMessage({
+                          id: 'src.page.Console.609E3208',
+                          defaultMessage: '请选择项目',
+                        })}
                         style={{ maxWidth: 200, border: 'none' }}
-                        options={[{ label: '全部项目', value: -1 }, ...projectOptions]}
+                        options={[
+                          {
+                            label: formatMessage({
+                              id: 'src.page.Console.C4433E9F',
+                              defaultMessage: '全部项目',
+                            }),
+                            value: -1,
+                          },
+                          ...projectOptions,
+                        ]}
                         value={selectDisplayValue}
                         onChange={(value) => {
                           setSelectDisplayValue(value);
@@ -362,6 +391,7 @@ const ConsoleMain = () => {
                             timeValue={timeValue}
                             dateValue={dateValue}
                           />
+
                           <div className={styles.legend}>
                             {taskStatus.map((item, index) => {
                               return (

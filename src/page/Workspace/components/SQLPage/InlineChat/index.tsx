@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { IEditor, IFullEditor } from '@/component/MonacoEditor';
 import SessionStore from '@/store/sessionManager/session';
 import * as monaco from 'monaco-editor';
@@ -122,7 +123,12 @@ export default function InlineChat({
       message.warning(tip);
     }
     if (editor.getValue()?.length > 5000) {
-      message.error('超过最大长度限制');
+      message.error(
+        formatMessage({
+          id: 'src.page.Workspace.components.SQLPage.InlineChat.53B70A41',
+          defaultMessage: '超过最大长度限制',
+        }),
+      );
       return;
     }
     const selection = editor.getSelection();
@@ -325,6 +331,7 @@ export default function InlineChat({
           <span style={{ marginLeft: 8 }}>{model.modelName}</span>
         </span>
       ),
+
       value: `${providerName}/${model.modelName}`,
       disabled: !model.enabled,
     })),
@@ -353,7 +360,10 @@ export default function InlineChat({
       return (
         <div className={styles.modelSelect}>
           <Typography.Text style={{ fontSize: 11, color: '#8592ad' }} type="secondary">
-            正在加载模型列表...
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.D511B31A',
+              defaultMessage: '正在加载模型列表...',
+            })}
           </Typography.Text>
         </div>
       );
@@ -363,7 +373,10 @@ export default function InlineChat({
       return (
         <div className={styles.modelSelect}>
           <Typography.Text style={{ fontSize: 11, color: '#8592ad' }} type="secondary">
-            暂无可用模型
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.0151BFDE',
+              defaultMessage: '暂无可用模型',
+            })}
           </Typography.Text>
           {modelsData?.onRefreshModels && (
             <Button
@@ -372,7 +385,10 @@ export default function InlineChat({
               onClick={modelsData.onRefreshModels}
               style={{ padding: '0 4px', fontSize: 11 }}
             >
-              重试
+              {formatMessage({
+                id: 'src.page.Workspace.components.SQLPage.InlineChat.9E9FF69B',
+                defaultMessage: '重试',
+              })}
             </Button>
           )}
         </div>
@@ -405,7 +421,10 @@ export default function InlineChat({
                   {/* 搜索框 */}
                   <div style={{ padding: '8px' }}>
                     <Input
-                      placeholder="搜索模型名称"
+                      placeholder={formatMessage({
+                        id: 'src.page.Workspace.components.SQLPage.InlineChat.9AF9D40F',
+                        defaultMessage: '搜索模型名称',
+                      })}
                       size="small"
                       value={searchValue}
                       onChange={(e) => setSearchValue(e.target.value)}
@@ -416,7 +435,10 @@ export default function InlineChat({
                   {menu}
                 </div>
               )}
-              placeholder="请选择模型"
+              placeholder={formatMessage({
+                id: 'src.page.Workspace.components.SQLPage.InlineChat.61CA189B',
+                defaultMessage: '请选择模型',
+              })}
               className={styles.modelSelectDropdown}
               options={selectOptions}
               loading={modelsLoading}
@@ -425,13 +447,21 @@ export default function InlineChat({
             />
           </Tooltip>
           {selectedModel && !isSelectedModelAvailable && (
-            <Tooltip title="当前模型不可用">
+            <Tooltip
+              title={formatMessage({
+                id: 'src.page.Workspace.components.SQLPage.InlineChat.7C8DE344',
+                defaultMessage: '当前模型不可用',
+              })}
+            >
               <InfoCircleFilled className={styles.warningIcon} />
             </Tooltip>
           )}
         </div>
         <Typography.Text style={{ fontSize: 11, color: '#8592ad' }} type="secondary">
-          AI 助手生成内容的准确性和完整性无法保证，仅供参考
+          {formatMessage({
+            id: 'src.page.Workspace.components.SQLPage.InlineChat.EC78C950',
+            defaultMessage: 'AI 助手生成内容的准确性和完整性无法保证，仅供参考',
+          })}
         </Typography.Text>
       </div>
     );
@@ -447,20 +477,34 @@ export default function InlineChat({
         <div className={styles.largeModelTip}>
           {icon}
           <span>
-            暂无可用模型，请前往
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.ECFC46AD',
+              defaultMessage: '暂无可用模型，请前往',
+            })}
             <span
               className={styles.tab}
               onClick={() => {
                 if (login.isPrivateSpace()) {
-                  message.warning('请前往团队空间');
+                  message.warning(
+                    formatMessage({
+                      id: 'src.page.Workspace.components.SQLPage.InlineChat.49146309',
+                      defaultMessage: '请前往团队空间',
+                    }),
+                  );
                   return;
                 }
                 history.push('/externalIntegration/approval');
               }}
             >
-              外部集成&gt;大模型集成
+              {formatMessage({
+                id: 'src.page.Workspace.components.SQLPage.InlineChat.E86DFDC7',
+                defaultMessage: '外部集成&gt;大模型集成',
+              })}
             </span>{' '}
-            进行模型设置
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.15F56B34',
+              defaultMessage: '进行模型设置',
+            })}
           </span>
         </div>
       );
@@ -468,7 +512,12 @@ export default function InlineChat({
       return (
         <div className={styles.largeModelTip}>
           {icon}
-          <span>暂无可用模型，请联系系统管理员进行模型设置</span>
+          <span>
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.E5E5864B',
+              defaultMessage: '暂无可用模型，请联系系统管理员进行模型设置',
+            })}
+          </span>
         </div>
       );
     }
@@ -486,10 +535,16 @@ export default function InlineChat({
             type="primary"
             onClick={submit}
           >
-            接受
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.E2B52A80',
+              defaultMessage: '接受',
+            })}
           </Button>
           <Button style={{ lineHeight: '28px', height: 28 }} onClick={rollback}>
-            忽略
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.A304E20C',
+              defaultMessage: '忽略',
+            })}
           </Button>
         </Space>
       );
@@ -503,7 +558,10 @@ export default function InlineChat({
     }
     return (
       <Typography.Text style={{ fontSize: 12, color: '#8592ad' }} type="secondary">
-        AI 生成中...
+        {formatMessage({
+          id: 'src.page.Workspace.components.SQLPage.InlineChat.BABDDD80',
+          defaultMessage: 'AI 生成中...',
+        })}
       </Typography.Text>
     );
   }
@@ -517,7 +575,10 @@ export default function InlineChat({
             })}
             bordered={false}
           >
-            SQL 优化
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.D3BE280E',
+              defaultMessage: 'SQL 优化',
+            })}
           </Tag>
         );
       }
@@ -529,7 +590,10 @@ export default function InlineChat({
               [styles.active]: isShowMode,
             })}
           >
-            SQL 纠错
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.E802098E',
+              defaultMessage: 'SQL 纠错',
+            })}
           </Tag>
         );
       }
@@ -541,7 +605,10 @@ export default function InlineChat({
               [styles.active]: isShowMode,
             })}
           >
-            SQL 改写
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.0F856913',
+              defaultMessage: 'SQL 改写',
+            })}
           </Tag>
         );
       }
@@ -553,7 +620,10 @@ export default function InlineChat({
               [styles.active]: isShowMode,
             })}
           >
-            SQL 生成
+            {formatMessage({
+              id: 'src.page.Workspace.components.SQLPage.InlineChat.97144878',
+              defaultMessage: 'SQL 生成',
+            })}
           </Tag>
         );
       }
@@ -593,25 +663,40 @@ export default function InlineChat({
                 {
                   type: 'group',
                   key: 'instruction',
-                  label: '指令',
+                  label: formatMessage({
+                    id: 'src.page.Workspace.components.SQLPage.InlineChat.C92A1DA8',
+                    defaultMessage: '指令',
+                  }),
                   children: [
                     {
-                      label: 'SQL 生成',
+                      label: formatMessage({
+                        id: 'src.page.Workspace.components.SQLPage.InlineChat.99A3D8A6',
+                        defaultMessage: 'SQL 生成',
+                      }),
                       key: AIQuestionType.NL_2_SQL,
                       onClick() {
                         console.log('click n2 sql');
                       },
                     },
                     {
-                      label: 'SQL 纠错',
+                      label: formatMessage({
+                        id: 'src.page.Workspace.components.SQLPage.InlineChat.1BE5C0BD',
+                        defaultMessage: 'SQL 纠错',
+                      }),
                       key: AIQuestionType.SQL_DEBUGGING,
                     },
                     {
-                      label: 'SQL 改写',
+                      label: formatMessage({
+                        id: 'src.page.Workspace.components.SQLPage.InlineChat.0B4815AF',
+                        defaultMessage: 'SQL 改写',
+                      }),
                       key: AIQuestionType.SQL_MODIFIER,
                     },
                     {
-                      label: 'SQL 优化',
+                      label: formatMessage({
+                        id: 'src.page.Workspace.components.SQLPage.InlineChat.49EE8FD5',
+                        defaultMessage: 'SQL 优化',
+                      }),
                       key: AIQuestionType.SQL_OPTIMIZER,
                     },
                   ],
@@ -642,7 +727,10 @@ export default function InlineChat({
                 }
                 setValue(e.target.value);
               }}
-              placeholder="请输入消息"
+              placeholder={formatMessage({
+                id: 'src.page.Workspace.components.SQLPage.InlineChat.2BB5093F',
+                defaultMessage: '请输入消息',
+              })}
               onCompositionStart={() => setLock(true)}
               onCompositionEnd={() => setLock(false)}
               onPressEnter={(e) => {

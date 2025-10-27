@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import ParamsContext from '@/component/Schedule/context/ParamsContext';
 import { useContext, useMemo } from 'react';
 import { schedlueConfig } from '@/page/Schedule/const';
@@ -36,10 +37,18 @@ const ScheduleTypeFilter = ({ isScheduleView }: { isScheduleView: boolean }) => 
 
   return (
     <>
-      <div style={{ marginTop: '16px' }}>作业类型</div>
+      <div style={{ marginTop: '16px' }}>
+        {formatMessage({
+          id: 'src.component.Schedule.layout.Header.Filter.451D3719',
+          defaultMessage: '作业类型',
+        })}
+      </div>
       <Select
         showSearch
-        placeholder="请输入"
+        placeholder={formatMessage({
+          id: 'src.component.Schedule.layout.Header.Filter.93897110',
+          defaultMessage: '请输入',
+        })}
         filterOption={(input, option) =>
           (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
         }

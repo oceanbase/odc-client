@@ -52,12 +52,22 @@ const ExecutionInfoContainer: React.FC<ExecutionInfoContainer> = (props) => {
           </Descriptions.Item>
         )}
         {isCycle && (
-          <Descriptions.Item label={'执行周期'}>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Schedule.components.ExecutionInfoContainer.4422CD46',
+              defaultMessage: '执行周期',
+            })}
+          >
             <span>{getCronCycle(trigger)}</span>
           </Descriptions.Item>
         )}
         {isCycle && (
-          <Descriptions.Item label={'最近执行时间'}>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Schedule.components.ExecutionInfoContainer.F9AB95B0',
+              defaultMessage: '最近执行时间',
+            })}
+          >
             <span>{lastExecuteTime ? getFormatDateTime(lastExecuteTime) : '-'}</span>
           </Descriptions.Item>
         )}

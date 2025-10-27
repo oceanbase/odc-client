@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Space, Tooltip } from 'antd';
 import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
 import Icon, {
@@ -98,8 +99,14 @@ const ScheduleTaskStatusInfo: Record<
         }}
       />
     ),
+
     desc: (
-      <Tooltip title="执行时存在错误，已跳过">
+      <Tooltip
+        title={formatMessage({
+          id: 'src.component.Schedule.components.ScheduleTaskStatusLabel.8941517C',
+          defaultMessage: '执行时存在错误，已跳过',
+        })}
+      >
         <InfoCircleOutlined className={styles.warningIcon} />
       </Tooltip>
     ),

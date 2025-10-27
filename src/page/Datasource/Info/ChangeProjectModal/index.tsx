@@ -218,7 +218,13 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
           id={database?.id}
           mode={EEntityType.DATABASE}
           dataSourceName={database?.dataSource?.name}
-          title={`确定要修改数据库 ${databaseName} 的所属项目吗？`}
+          title={formatMessage(
+            {
+              id: 'src.page.Datasource.Info.ChangeProjectModal.299E39A1',
+              defaultMessage: '确定要修改数据库 {databaseName} 的所属项目吗？',
+            },
+            { databaseName },
+          )}
           onCancel={() => setOpenDepResourceModal(false)}
           customSuccessHandler={handleChangeProject}
         />

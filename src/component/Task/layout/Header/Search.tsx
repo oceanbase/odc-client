@@ -5,9 +5,18 @@ import { TaskSearchType } from '@/component/Task/interface';
 import InputSelect from '@/component/InputSelect';
 
 export const TaskSearchTypeText = {
-  [TaskSearchType.DESCRIPTION]: '工单描述',
-  [TaskSearchType.ID]: '工单ID',
-  [TaskSearchType.CREATOR]: '创建人',
+  [TaskSearchType.DESCRIPTION]: formatMessage({
+    id: 'src.component.Task.layout.Header.3D3904FB',
+    defaultMessage: '工单描述',
+  }),
+  [TaskSearchType.ID]: formatMessage({
+    id: 'src.component.Task.layout.Header.6232C7A7',
+    defaultMessage: '工单ID',
+  }),
+  [TaskSearchType.CREATOR]: formatMessage({
+    id: 'src.component.Task.layout.Header.CA66FDDE',
+    defaultMessage: '创建人',
+  }),
   [TaskSearchType.DATABASE]: formatMessage({
     id: 'src.component.ODCSetting.config.9EC92943',
     defaultMessage: '数据库',

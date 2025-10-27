@@ -130,17 +130,32 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
   const _stopTask = async () => {
     const taskTypeText = TaskTypeMap[task?.type];
     Modal.confirm({
-      title: `确定要终止${taskTypeText}吗`,
+      title: formatMessage(
+        {
+          id: 'src.component.Task.component.TaskActions.6F27BFEE',
+          defaultMessage: '确定要终止{taskTypeText}吗',
+        },
+        { taskTypeText },
+      ),
       content: (
         <>
-          <div>任务终止后将不可恢复</div>
+          <div>
+            {formatMessage({
+              id: 'src.component.Task.component.TaskActions.CF476F55',
+              defaultMessage: '任务终止后将不可恢复',
+            })}
+          </div>
         </>
       ),
+
       cancelText: formatMessage({
         id: 'odc.TaskManagePage.component.TaskTools.Cancel',
         defaultMessage: '取消',
       }), //取消
-      okText: '终止',
+      okText: formatMessage({
+        id: 'src.component.Task.component.TaskActions.BB9A1C9D',
+        defaultMessage: '终止',
+      }),
       okButtonProps: { color: 'danger', variant: 'outlined' },
       centered: true,
       onOk: async () => {
@@ -476,6 +491,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
     },
@@ -496,6 +512,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
     },
@@ -513,6 +530,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
       disabledTooltip: () => {
@@ -543,6 +561,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
     },
@@ -565,6 +584,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
       disabledTooltip: () => {
@@ -591,6 +611,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
       disabledTooltip: () => {
@@ -623,6 +644,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
       disabledTooltip: () => {
@@ -669,6 +691,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
     },
@@ -697,6 +720,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
       disabledTooltip: () => {
@@ -729,6 +753,7 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
     },

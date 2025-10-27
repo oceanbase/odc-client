@@ -152,7 +152,10 @@ const VariableConfig: React.FC<IProps> = (props) => {
                     className={styles.mb8}
                   >
                     <AutoComplete
-                      placeholder={'请输入或选择一种时间格式'}
+                      placeholder={formatMessage({
+                        id: 'src.component.Schedule.modals.DataClear.Create.9C7B00C6',
+                        defaultMessage: '请输入或选择一种时间格式',
+                      })}
                       /*请选择*/ options={timeFormatOptions}
                     />
                   </Form.Item>
@@ -236,7 +239,19 @@ const VariableConfig: React.FC<IProps> = (props) => {
                   width: '100%',
                 }}
               >
-                <Tooltip title={disabledAddFields ? `最多添加${MAX_VARIABLES_COUNT}个变量` : ''}>
+                <Tooltip
+                  title={
+                    disabledAddFields
+                      ? formatMessage(
+                          {
+                            id: 'src.component.Schedule.modals.DataClear.Create.9E7FD1D0',
+                            defaultMessage: '最多添加{MAX_VARIABLES_COUNT}个变量',
+                          },
+                          { MAX_VARIABLES_COUNT },
+                        )
+                      : ''
+                  }
+                >
                   <Button
                     type="dashed"
                     onClick={() => add(variable)}

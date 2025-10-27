@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { Drawer, Radio, Spin, Tag, Tooltip } from 'antd';
 import styles from './index.less';
 import { ScheduleDetailType } from '@/d.ts/schedule';
@@ -82,13 +83,21 @@ const CommonTaskDetailModal: React.FC<ICommonScheduleDetailModalProps> = (props)
           <div className={styles.detailName}>
             <div className={styles.scheduleName}>{schedule?.scheduleName}</div>
             <Tooltip title={schedule?.scheduleName} overlayClassName={styles.scheduleNameTooltip}>
-              <div className={styles.ml4}>详情</div>
+              <div className={styles.ml4}>
+                {formatMessage({
+                  id: 'src.component.Schedule.components.ScheduleDetailModal.70F9BD00',
+                  defaultMessage: '详情',
+                })}
+              </div>
             </Tooltip>
           </div>
           {schedule?.approvable && (
             <Tag color="blue" className={styles.ProcessingTag}>
               <Icon component={ProcessingSvg} style={{ fontSize: 14, marginRight: '4px' }} />
-              审批中
+              {formatMessage({
+                id: 'src.component.Schedule.components.ScheduleDetailModal.25896752',
+                defaultMessage: '审批中',
+              })}
             </Tag>
           )}
         </div>
@@ -103,19 +112,28 @@ const CommonTaskDetailModal: React.FC<ICommonScheduleDetailModalProps> = (props)
           }}
         >
           <Radio.Button value={ScheduleDetailType.INFO} key={ScheduleDetailType.INFO}>
-            基本信息
+            {formatMessage({
+              id: 'src.component.Schedule.components.ScheduleDetailModal.8AB0B420',
+              defaultMessage: '基本信息',
+            })}
           </Radio.Button>
           <Radio.Button
             value={ScheduleDetailType.EXECUTE_RECORD}
             key={ScheduleDetailType.EXECUTE_RECORD}
           >
-            执行记录
+            {formatMessage({
+              id: 'src.component.Schedule.components.ScheduleDetailModal.54AC6A9F',
+              defaultMessage: '执行记录',
+            })}
           </Radio.Button>
           <Radio.Button
             value={ScheduleDetailType.OPERATION_RECORD}
             key={ScheduleDetailType.OPERATION_RECORD}
           >
-            操作记录
+            {formatMessage({
+              id: 'src.component.Schedule.components.ScheduleDetailModal.05126891',
+              defaultMessage: '操作记录',
+            })}
           </Radio.Button>
         </Radio.Group>
         <ScheduleStatusLabel status={schedule?.status} />
@@ -126,6 +144,7 @@ const CommonTaskDetailModal: React.FC<ICommonScheduleDetailModalProps> = (props)
         taskContent={taskContent}
         schedule={schedule}
       />
+
       {enabledAction && (
         <div className={styles.tools}>
           <ScheduleActions

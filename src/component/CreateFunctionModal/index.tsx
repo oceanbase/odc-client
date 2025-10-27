@@ -85,7 +85,12 @@ const CreateFunctionModal: React.FC<IProps> = inject(
         setExternalResources(session.database.externalResources || []);
       } catch (error) {
         console.error('加载外部资源列表失败:', error);
-        message.error('加载外部资源列表失败');
+        message.error(
+          formatMessage({
+            id: 'src.component.CreateFunctionModal.3EBD6970',
+            defaultMessage: '加载外部资源列表失败',
+          }),
+        );
       } finally {
         setLoadingResources(false);
       }
@@ -223,11 +228,17 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                 rules={[
                   {
                     required: true,
-                    message: '请输入函数类型',
+                    message: formatMessage({
+                      id: 'src.component.CreateFunctionModal.3DC5550E',
+                      defaultMessage: '请输入函数类型',
+                    }),
                   },
                 ]}
                 name="functionType"
-                label="函数类型"
+                label={formatMessage({
+                  id: 'src.component.CreateFunctionModal.BD4C83F5',
+                  defaultMessage: '函数类型',
+                })}
               >
                 <Radio.Group
                   optionType="button"
@@ -242,10 +253,30 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                   options={
                     supportExternalResource
                       ? [
-                          { label: '自定义函数', value: FunctionType.CUSTOM },
-                          { label: '外部自定义函数', value: FunctionType.EXTERNAL },
+                          {
+                            label: formatMessage({
+                              id: 'src.component.CreateFunctionModal.E38EBC78',
+                              defaultMessage: '自定义函数',
+                            }),
+                            value: FunctionType.CUSTOM,
+                          },
+                          {
+                            label: formatMessage({
+                              id: 'src.component.CreateFunctionModal.C184DF2B',
+                              defaultMessage: '外部自定义函数',
+                            }),
+                            value: FunctionType.EXTERNAL,
+                          },
                         ]
-                      : [{ label: '自定义函数', value: FunctionType.CUSTOM }]
+                      : [
+                          {
+                            label: formatMessage({
+                              id: 'src.component.CreateFunctionModal.E6A5443D',
+                              defaultMessage: '自定义函数',
+                            }),
+                            value: FunctionType.CUSTOM,
+                          },
+                        ]
                   }
                 />
               </Form.Item>
@@ -294,7 +325,12 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                         {
                           validator: (_, value) => {
                             if (!value || value.trim() === '') {
-                              return Promise.reject('请输入返回类型');
+                              return Promise.reject(
+                                formatMessage({
+                                  id: 'src.component.CreateFunctionModal.B7505B00',
+                                  defaultMessage: '请输入返回类型',
+                                }),
+                              );
                             }
                             return Promise.resolve();
                           },
@@ -325,6 +361,7 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                   connectType={session?.connection?.type}
                   dbType={DbObjectType.function}
                 />
+
                 <Form.Item
                   label={formatMessage({
                     id: 'odc.component.CreateFunctionModal.Parameter',
@@ -347,29 +384,50 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                   <Col span={18}>
                     <Form.Item
                       name="funName"
-                      label="函数名称"
+                      label={formatMessage({
+                        id: 'src.component.CreateFunctionModal.176C9E93',
+                        defaultMessage: '函数名称',
+                      })}
                       className={styles.funName}
                       rules={[
                         {
                           required: true,
-                          message: '请输入函数名称',
+                          message: formatMessage({
+                            id: 'src.component.CreateFunctionModal.7E12CC82',
+                            defaultMessage: '请输入函数名称',
+                          }),
                         },
                       ]}
                     >
-                      <Input placeholder="请输入" />
+                      <Input
+                        placeholder={formatMessage({
+                          id: 'src.component.CreateFunctionModal.9EBFCAA1',
+                          defaultMessage: '请输入',
+                        })}
+                      />
                     </Form.Item>
                   </Col>
                   <Col span={6}>
                     <Form.Item
                       name="returnType"
-                      label="返回类型"
+                      label={formatMessage({
+                        id: 'src.component.CreateFunctionModal.AC2087F3',
+                        defaultMessage: '返回类型',
+                      })}
                       className={styles.returnType}
                       required
                       rules={[
                         {
                           validator: (_, value) => {
                             if (!value || value.trim() === '') {
-                              return Promise.reject(new Error('请输入返回类型'));
+                              return Promise.reject(
+                                new Error(
+                                  formatMessage({
+                                    id: 'src.component.CreateFunctionModal.2C9C9094',
+                                    defaultMessage: '请输入返回类型',
+                                  }),
+                                ),
+                              );
                             }
                             return Promise.resolve();
                           },
@@ -399,13 +457,27 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                 <Row>
                   <Col span={6}>
                     <Form.Item
-                      label="资源来源"
+                      label={formatMessage({
+                        id: 'src.component.CreateFunctionModal.34C5DB76',
+                        defaultMessage: '资源来源',
+                      })}
                       name="resourceSource"
-                      rules={[{ required: true, message: '请选择资源来源' }]}
+                      rules={[
+                        {
+                          required: true,
+                          message: formatMessage({
+                            id: 'src.component.CreateFunctionModal.F7D89F63',
+                            defaultMessage: '请选择资源来源',
+                          }),
+                        },
+                      ]}
                       className={styles.resourceSource}
                     >
                       <Select
-                        placeholder="已添加的外部资源"
+                        placeholder={formatMessage({
+                          id: 'src.component.CreateFunctionModal.A0F3B840',
+                          defaultMessage: '已添加的外部资源',
+                        })}
                         className={styles.type}
                         value={resourceSource}
                         onChange={(value) => {
@@ -418,8 +490,20 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                           }
                         }}
                         options={[
-                          { label: '已添加的外部资源', value: 'external_resource' },
-                          { label: '自定义 URL', value: 'custom_url' },
+                          {
+                            label: formatMessage({
+                              id: 'src.component.CreateFunctionModal.5AA5505F',
+                              defaultMessage: '已添加的外部资源',
+                            }),
+                            value: 'external_resource',
+                          },
+                          {
+                            label: formatMessage({
+                              id: 'src.component.CreateFunctionModal.E60382AB',
+                              defaultMessage: '自定义 URL',
+                            }),
+                            value: 'custom_url',
+                          },
                         ]}
                       />
                     </Form.Item>
@@ -431,14 +515,25 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                         {
                           required: true,
                           message:
-                            resourceSource === 'external_resource' ? '请选择外部资源' : '请输入URL',
+                            resourceSource === 'external_resource'
+                              ? formatMessage({
+                                  id: 'src.component.CreateFunctionModal.419FC7DE',
+                                  defaultMessage: '请选择外部资源',
+                                })
+                              : formatMessage({
+                                  id: 'src.component.CreateFunctionModal.1FF735C2',
+                                  defaultMessage: '请输入URL',
+                                }),
                         },
                       ]}
                       className={styles.source}
                     >
                       {resourceSource === 'external_resource' ? (
                         <Select
-                          placeholder="外部资源对象名"
+                          placeholder={formatMessage({
+                            id: 'src.component.CreateFunctionModal.FB201755',
+                            defaultMessage: '外部资源对象名',
+                          })}
                           showSearch
                           loading={loadingResources}
                           filterOption={(input, option) =>
@@ -459,7 +554,11 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                                     );
                                   }}
                                 >
-                                  <PlusOutlined /> 新建
+                                  <PlusOutlined />
+                                  {formatMessage({
+                                    id: 'src.component.CreateFunctionModal.3DDDA240',
+                                    defaultMessage: '新建',
+                                  })}
                                 </div>
                               </div>
                             </div>
@@ -473,7 +572,13 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                             }))}
                         />
                       ) : (
-                        <Input placeholder="请输入外部资源URL" allowClear />
+                        <Input
+                          placeholder={formatMessage({
+                            id: 'src.component.CreateFunctionModal.E82833CA',
+                            defaultMessage: '请输入外部资源URL',
+                          })}
+                          allowClear
+                        />
                       )}
                     </Form.Item>
                   </Col>
@@ -482,23 +587,53 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                   <Col span={16}>
                     <Form.Item
                       name={['externalResourceProperties', 'symbol']}
-                      label="入口类"
+                      label={formatMessage({
+                        id: 'src.component.CreateFunctionModal.7FA77969',
+                        defaultMessage: '入口类',
+                      })}
                       className={styles.entryClass}
-                      rules={[{ required: true, message: '请输入入口类' }]}
+                      rules={[
+                        {
+                          required: true,
+                          message: formatMessage({
+                            id: 'src.component.CreateFunctionModal.97017E63',
+                            defaultMessage: '请输入入口类',
+                          }),
+                        },
+                      ]}
                     >
-                      <Input placeholder="请输入外部资源或 URL 中的类名" />
+                      <Input
+                        placeholder={formatMessage({
+                          id: 'src.component.CreateFunctionModal.C4D511D5',
+                          defaultMessage: '请输入外部资源或 URL 中的类名',
+                        })}
+                      />
                     </Form.Item>
                   </Col>
                   <Col span={8}>
                     <Form.Item
-                      label="类型"
+                      label={formatMessage({
+                        id: 'src.component.CreateFunctionModal.2E204C33',
+                        defaultMessage: '类型',
+                      })}
                       className={styles.externalType}
                       required
                       name={['externalResourceProperties', 'createType']}
-                      rules={[{ required: true, message: '请选择类型' }]}
+                      rules={[
+                        {
+                          required: true,
+                          message: formatMessage({
+                            id: 'src.component.CreateFunctionModal.1A63038D',
+                            defaultMessage: '请选择类型',
+                          }),
+                        },
+                      ]}
                     >
                       <AutoComplete
-                        placeholder="请输入或选择"
+                        placeholder={formatMessage({
+                          id: 'src.component.CreateFunctionModal.0515AFFC',
+                          defaultMessage: '请输入或选择',
+                        })}
                         options={[
                           { value: 'ODPSJAR', label: 'ODPSJAR' },
                           { value: 'UDAFJAR', label: 'UDAFJAR' },
@@ -510,7 +645,13 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                   </Col>
                 </Row>
 
-                <Form.Item className={styles.params} label="参数">
+                <Form.Item
+                  className={styles.params}
+                  label={formatMessage({
+                    id: 'src.component.CreateFunctionModal.3DF2CDC6',
+                    defaultMessage: '参数',
+                  })}
+                >
                   {session ? (
                     <FunctionOrProcedureParams
                       session={session}

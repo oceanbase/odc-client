@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { ReactComponent as NoModelSVG } from '@/svgr/noModels.svg';
 import Icon from '@ant-design/icons';
 import { Typography } from 'antd';
@@ -19,9 +20,19 @@ const LargeModelListEmpty = ({ selectedProvider, providers }: IProps) => {
   return (
     <div className={styles.largeModelListEmpty}>
       <Icon className={styles.icon} component={NoModelSVG} />
-      <Typography.Text className={styles.description}>暂无模型</Typography.Text>
+      <Typography.Text className={styles.description}>
+        {formatMessage({
+          id: 'src.component.Empty.LargeModelListEmpty.19445EB5',
+          defaultMessage: '暂无模型',
+        })}
+      </Typography.Text>
       {shouldShowApiKeyTip && (
-        <Typography.Text type="secondary">请先配置模型供应商的 API KEY 获取模型</Typography.Text>
+        <Typography.Text type="secondary">
+          {formatMessage({
+            id: 'src.component.Empty.LargeModelListEmpty.C3B17CD7',
+            defaultMessage: '请先配置模型供应商的 API KEY 获取模型',
+          })}
+        </Typography.Text>
       )}
     </div>
   );

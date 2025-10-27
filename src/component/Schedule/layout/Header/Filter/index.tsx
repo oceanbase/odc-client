@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { FilterOutlined } from '@ant-design/icons';
 import FilterIcon from '@/component/Button/FIlterIcon';
 import { useContext, useMemo, useState } from 'react';
@@ -56,7 +57,12 @@ const Filter: React.FC = () => {
         {mode !== SchedulePageMode.PROJECT && !login.isPrivateSpace() && (
           <ProjectFilter isScheduleView={isScheduleView} />
         )}
-        <div style={{ marginTop: '16px' }}>创建时间范围</div>
+        <div style={{ marginTop: '16px' }}>
+          {formatMessage({
+            id: 'src.component.Schedule.layout.Header.Filter.CDCCC32F',
+            defaultMessage: '创建时间范围',
+          })}
+        </div>
         <DateSelect isScheduleView={isScheduleView} />
       </div>
     );
@@ -103,7 +109,12 @@ const Filter: React.FC = () => {
     if (!_type?.length || !isAll) return null;
     return (
       <div>
-        <div>作业类型：</div>
+        <div>
+          {formatMessage({
+            id: 'src.component.Schedule.layout.Header.Filter.9059E108',
+            defaultMessage: '作业类型：',
+          })}
+        </div>
         <span className={styles.value}>
           {_type.map((item) => SchedulePageTextMap[item]).join('，')}
         </span>
@@ -116,7 +127,12 @@ const Filter: React.FC = () => {
     if (_projectId.length === 0 || mode === SchedulePageMode.PROJECT) return null;
     return (
       <>
-        <div>所属项目：</div>
+        <div>
+          {formatMessage({
+            id: 'src.component.Schedule.layout.Header.Filter.D010039A',
+            defaultMessage: '所属项目：',
+          })}
+        </div>
         <span className={styles.value}>
           {_projectId.map((item, idx) => (
             <>
@@ -133,7 +149,12 @@ const Filter: React.FC = () => {
     if (status?.length === 0) return null;
     return (
       <>
-        <div>作业状态：</div>
+        <div>
+          {formatMessage({
+            id: 'src.component.Schedule.layout.Header.Filter.7C9BD1C6',
+            defaultMessage: '作业状态：',
+          })}
+        </div>
         <span className={styles.value}>
           {status.map((item, idx) => (
             <>
@@ -150,7 +171,12 @@ const Filter: React.FC = () => {
     if (subTaskStatus?.length === 0) return null;
     return (
       <>
-        <div>任务状态：</div>
+        <div>
+          {formatMessage({
+            id: 'src.component.Schedule.layout.Header.Filter.9B694AF2',
+            defaultMessage: '任务状态：',
+          })}
+        </div>
         <span className={styles.value}>
           {subTaskStatus.map((item, idx) => (
             <>
@@ -169,7 +195,12 @@ const Filter: React.FC = () => {
 
     return (
       <>
-        <div>创建时间范围：</div>
+        <div>
+          {formatMessage({
+            id: 'src.component.Schedule.layout.Header.Filter.C7D62473',
+            defaultMessage: '创建时间范围：',
+          })}
+        </div>
         <div>
           {_timeRange !== 'custom' ? (
             <span className={styles.value}>
@@ -194,7 +225,12 @@ const Filter: React.FC = () => {
     if (!approveStatus?.length) return null;
     return (
       <>
-        <div>审批状态：</div>
+        <div>
+          {formatMessage({
+            id: 'src.component.Schedule.layout.Header.Filter.B31FC25F',
+            defaultMessage: '审批状态：',
+          })}
+        </div>
         <span className={styles.value}>
           {approveStatus.map((item, idx) => (
             <>
@@ -245,9 +281,17 @@ const Filter: React.FC = () => {
       content={filterContent}
       title={
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span>筛选</span>
+          <span>
+            {formatMessage({
+              id: 'src.component.Schedule.layout.Header.Filter.AAA4053F',
+              defaultMessage: '筛选',
+            })}
+          </span>
           <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={handleReset}>
-            清空
+            {formatMessage({
+              id: 'src.component.Schedule.layout.Header.Filter.CBE024B2',
+              defaultMessage: '清空',
+            })}
           </span>
         </div>
       }

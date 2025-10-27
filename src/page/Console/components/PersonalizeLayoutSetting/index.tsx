@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import { LayoutOutlined } from '@ant-design/icons';
 import { Button, Popover, Typography } from 'antd';
 import styles from './index.less';
@@ -18,51 +19,157 @@ export const TREE_STATE_KEY = `personalizeLayoutTreeState-${login.organizationId
 
 const treeData: TreeDataNode[] = [
   {
-    title: '快速上手',
+    title: formatMessage({
+      id: 'src.page.Console.components.PersonalizeLayoutSetting.60616B68',
+      defaultMessage: '快速上手',
+    }),
     key: ELayoutKey.QuickStart,
   },
   {
-    title: '任务概览',
+    title: formatMessage({
+      id: 'src.page.Console.components.PersonalizeLayoutSetting.9AADF50D',
+      defaultMessage: '任务概览',
+    }),
     key: ELayoutKey.TaskOverview,
     children: [
       {
-        title: '工单',
+        title: formatMessage({
+          id: 'src.page.Console.components.PersonalizeLayoutSetting.C6D4B325',
+          defaultMessage: '工单',
+        }),
         key: ELayoutKey.WorkOrder,
         children: [
-          { title: '导出', key: TaskType.EXPORT, isLeaf: true },
-          { title: '导出结果集', key: TaskType.EXPORT_RESULT_SET },
-          { title: '导入', key: TaskType.IMPORT },
-          { title: '模拟数据', key: TaskType.DATAMOCK },
-          { title: '数据库变更', key: TaskType.ASYNC },
-          { title: '多库变更', key: TaskType.MULTIPLE_ASYNC },
-          { title: '逻辑库变更', key: TaskType.LOGICAL_DATABASE_CHANGE },
-          { title: '影子表同步', key: TaskType.SHADOW },
-          { title: '结构比对', key: TaskType.STRUCTURE_COMPARISON },
-          { title: '无锁结构变更', key: TaskType.ONLINE_SCHEMA_CHANGE },
+          {
+            title: formatMessage({
+              id: 'src.page.Console.components.PersonalizeLayoutSetting.8F2D74D1',
+              defaultMessage: '导出',
+            }),
+            key: TaskType.EXPORT,
+            isLeaf: true,
+          },
+          {
+            title: formatMessage({
+              id: 'src.page.Console.components.PersonalizeLayoutSetting.521CB40A',
+              defaultMessage: '导出结果集',
+            }),
+            key: TaskType.EXPORT_RESULT_SET,
+          },
+          {
+            title: formatMessage({
+              id: 'src.page.Console.components.PersonalizeLayoutSetting.24132129',
+              defaultMessage: '导入',
+            }),
+            key: TaskType.IMPORT,
+          },
+          {
+            title: formatMessage({
+              id: 'src.page.Console.components.PersonalizeLayoutSetting.AADB81A4',
+              defaultMessage: '模拟数据',
+            }),
+            key: TaskType.DATAMOCK,
+          },
+          {
+            title: formatMessage({
+              id: 'src.page.Console.components.PersonalizeLayoutSetting.5861A687',
+              defaultMessage: '数据库变更',
+            }),
+            key: TaskType.ASYNC,
+          },
+          {
+            title: formatMessage({
+              id: 'src.page.Console.components.PersonalizeLayoutSetting.88174759',
+              defaultMessage: '多库变更',
+            }),
+            key: TaskType.MULTIPLE_ASYNC,
+          },
+          {
+            title: formatMessage({
+              id: 'src.page.Console.components.PersonalizeLayoutSetting.88E2DD8F',
+              defaultMessage: '逻辑库变更',
+            }),
+            key: TaskType.LOGICAL_DATABASE_CHANGE,
+          },
+          {
+            title: formatMessage({
+              id: 'src.page.Console.components.PersonalizeLayoutSetting.A32BDC1A',
+              defaultMessage: '影子表同步',
+            }),
+            key: TaskType.SHADOW,
+          },
+          {
+            title: formatMessage({
+              id: 'src.page.Console.components.PersonalizeLayoutSetting.F41B6349',
+              defaultMessage: '结构比对',
+            }),
+            key: TaskType.STRUCTURE_COMPARISON,
+          },
+          {
+            title: formatMessage({
+              id: 'src.page.Console.components.PersonalizeLayoutSetting.1FD0E67C',
+              defaultMessage: '无锁结构变更',
+            }),
+            key: TaskType.ONLINE_SCHEMA_CHANGE,
+          },
         ],
       },
       {
-        title: '作业',
+        title: formatMessage({
+          id: 'src.page.Console.components.PersonalizeLayoutSetting.8D88CF81',
+          defaultMessage: '作业',
+        }),
         key: ELayoutKey.Job,
         children: [
-          { title: '数据归档', key: ScheduleType.DATA_ARCHIVE },
-          { title: '数据清理', key: ScheduleType.DATA_DELETE },
-          { title: '分区计划', key: ScheduleType.PARTITION_PLAN },
-          { title: 'SQL 计划', key: ScheduleType.SQL_PLAN },
+          {
+            title: formatMessage({
+              id: 'src.page.Console.components.PersonalizeLayoutSetting.DB69DC53',
+              defaultMessage: '数据归档',
+            }),
+            key: ScheduleType.DATA_ARCHIVE,
+          },
+          {
+            title: formatMessage({
+              id: 'src.page.Console.components.PersonalizeLayoutSetting.930263C1',
+              defaultMessage: '数据清理',
+            }),
+            key: ScheduleType.DATA_DELETE,
+          },
+          {
+            title: formatMessage({
+              id: 'src.page.Console.components.PersonalizeLayoutSetting.520268CF',
+              defaultMessage: '分区计划',
+            }),
+            key: ScheduleType.PARTITION_PLAN,
+          },
+          {
+            title: formatMessage({
+              id: 'src.page.Console.components.PersonalizeLayoutSetting.BF17D26F',
+              defaultMessage: 'SQL 计划',
+            }),
+            key: ScheduleType.SQL_PLAN,
+          },
         ],
       },
     ],
   },
   {
-    title: '最近访问数据库',
+    title: formatMessage({
+      id: 'src.page.Console.components.PersonalizeLayoutSetting.D73F5C22',
+      defaultMessage: '最近访问数据库',
+    }),
     key: ELayoutKey.RecentDatabases,
   },
   {
-    title: '关于我们',
+    title: formatMessage({
+      id: 'src.page.Console.components.PersonalizeLayoutSetting.1D0C4D8D',
+      defaultMessage: '关于我们',
+    }),
     key: ELayoutKey.AboutUs,
   },
   {
-    title: '最佳实践',
+    title: formatMessage({
+      id: 'src.page.Console.components.PersonalizeLayoutSetting.1CD4C62D',
+      defaultMessage: '最佳实践',
+    }),
     key: ELayoutKey.BestPractices,
   },
 ];
@@ -268,9 +375,17 @@ const TreeSetting = () => {
   return (
     <div className={styles.customLayoutPanel}>
       <div className={styles.panelHeader}>
-        <Text className={styles.panelTitle}>自定义布局</Text>
+        <Text className={styles.panelTitle}>
+          {formatMessage({
+            id: 'src.page.Console.components.PersonalizeLayoutSetting.2D22CA01',
+            defaultMessage: '自定义布局',
+          })}
+        </Text>
         <Button type="link" size="small" onClick={handleReset}>
-          重置
+          {formatMessage({
+            id: 'src.page.Console.components.PersonalizeLayoutSetting.4D6E13D1',
+            defaultMessage: '重置',
+          })}
         </Button>
       </div>
       <div className={styles.panelContent}>

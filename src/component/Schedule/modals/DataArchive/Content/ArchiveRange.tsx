@@ -17,7 +17,12 @@ const ArchiveRange: React.FC<{
       <div>
         {joinTableConfigs?.length ? (
           <div style={{ marginBottom: 8 }}>
-            <div style={{ color: 'var(--text-color-hint)' }}>关联表</div>
+            <div style={{ color: 'var(--text-color-hint)' }}>
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Content.FE8B5FFD',
+                defaultMessage: '关联表',
+              })}
+            </div>
             {joinTableConfigs?.map((item) => {
               return (
                 <div style={{ display: 'flex', gap: 8 }}>
@@ -33,7 +38,12 @@ const ArchiveRange: React.FC<{
         ) : null}
         {partitions?.length ? (
           <>
-            <div style={{ color: 'var(--text-color-hint)' }}>指定扫描分区</div>
+            <div style={{ color: 'var(--text-color-hint)' }}>
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Content.1648CBAB',
+                defaultMessage: '指定扫描分区',
+              })}
+            </div>
             {(partitions as string[])?.map((item, index) => (
               <>
                 <span>{item}</span>
@@ -50,14 +60,20 @@ const ArchiveRange: React.FC<{
     {
       dataIndex: 'tableName',
       key: 'tableName',
-      title: '归档表',
+      title: formatMessage({
+        id: 'src.component.Schedule.modals.DataArchive.Content.B08F1053',
+        defaultMessage: '归档表',
+      }),
       ellipsis: true,
       width: 140,
     },
     {
       dataIndex: 'targetTableName',
       key: 'targetTableName',
-      title: '目标表',
+      title: formatMessage({
+        id: 'src.component.Schedule.modals.DataArchive.Content.0F1D0521',
+        defaultMessage: '目标表',
+      }),
       ellipsis: true,
       width: 140,
     },
@@ -113,14 +129,22 @@ const ArchiveRange: React.FC<{
     {
       dataIndex: 'setting',
       key: 'setting',
-      title: '高级设置',
+      title: formatMessage({
+        id: 'src.component.Schedule.modals.DataArchive.Content.2BCA0085',
+        defaultMessage: '高级设置',
+      }),
       ellipsis: true,
       width: 190,
       render: (_, record: dmlParametersTables) => {
         const showAction = record?.joinTableConfigs?.length || record?.partitions?.length;
         return showAction ? (
           <Popover content={getSettingTip(record)} destroyOnHidden>
-            <a>查看</a>
+            <a>
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Content.D09B03C7',
+                defaultMessage: '查看',
+              })}
+            </a>
           </Popover>
         ) : (
           '-'

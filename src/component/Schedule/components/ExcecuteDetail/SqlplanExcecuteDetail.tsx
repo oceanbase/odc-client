@@ -51,11 +51,28 @@ const SqlplanExcecuteDetail: React.FC<SqlplanExcecuteDetailProps> = ({ subTask }
   return (
     <div>
       <Descriptions column={1} style={{ marginBottom: '16px' }}>
-        <Descriptions.Item label="类型">{ScheduleTextMap[subTask.type]}</Descriptions.Item>
-        <Descriptions.Item label="创建时间">
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.components.ExcecuteDetail.4AD18C9F',
+            defaultMessage: '类型',
+          })}
+        >
+          {ScheduleTextMap[subTask.type]}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.components.ExcecuteDetail.2DB0714C',
+            defaultMessage: '创建时间',
+          })}
+        >
           {getFormatDateTime(subTask?.createTime)}
         </Descriptions.Item>
-        <Descriptions.Item label="状态">
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.components.ExcecuteDetail.A2DB5AC8',
+            defaultMessage: '状态',
+          })}
+        >
           <ScheduleTaskStatusLabel status={subTask.status} />
         </Descriptions.Item>
       </Descriptions>
@@ -82,14 +99,27 @@ const SqlplanExcecuteDetail: React.FC<SqlplanExcecuteDetailProps> = ({ subTask }
         }
         direction="column"
       />
+
       <Descriptions column={1} style={{ marginTop: '8px' }}>
-        <Descriptions.Item label="执行结果">
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.components.ExcecuteDetail.D0F75147',
+            defaultMessage: '执行结果',
+          })}
+        >
           {renderExecutionResult(
             subTask?.executionDetails?.succeedStatements || 0,
             subTask?.executionDetails?.failedStatements || 0,
           )}
         </Descriptions.Item>
-        <Descriptions.Item label="执行失败结果">{failedRecordsStr || '-'}</Descriptions.Item>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.components.ExcecuteDetail.AE328503',
+            defaultMessage: '执行失败结果',
+          })}
+        >
+          {failedRecordsStr || '-'}
+        </Descriptions.Item>
       </Descriptions>
     </div>
   );

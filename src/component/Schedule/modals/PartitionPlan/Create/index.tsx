@@ -612,7 +612,12 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
     if (resResult?.data) {
       onClose();
       setCreateScheduleDatabase(undefined);
-      message.success('新建成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Schedule.modals.PartitionPlan.Create.31F02848',
+          defaultMessage: '新建成功',
+        }),
+      );
     }
   };
 
@@ -620,11 +625,24 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
     data: createScheduleRecord<createPartitionPlanParameters>,
   ) => {
     Modal.confirm({
-      title: '是否确认修改此分区计划',
+      title: formatMessage({
+        id: 'src.component.Schedule.modals.PartitionPlan.Create.7A0112CF',
+        defaultMessage: '是否确认修改此分区计划',
+      }),
       content: (
         <>
-          <div>编辑分区计划</div>
-          <div>作业需要重新审批，审批通过后此作业将自动启动</div>
+          <div>
+            {formatMessage({
+              id: 'src.component.Schedule.modals.PartitionPlan.Create.E6971970',
+              defaultMessage: '编辑分区计划',
+            })}
+          </div>
+          <div>
+            {formatMessage({
+              id: 'src.component.Schedule.modals.PartitionPlan.Create.B9C33688',
+              defaultMessage: '作业需要重新审批，审批通过后此作业将自动启动',
+            })}
+          </div>
         </>
       ),
 
@@ -645,7 +663,12 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
         if (resResult?.data) {
           onClose();
           setCreateScheduleDatabase(undefined);
-          message.success('修改成功');
+          message.success(
+            formatMessage({
+              id: 'src.component.Schedule.modals.PartitionPlan.Create.DF48D0A9',
+              defaultMessage: '修改成功',
+            }),
+          );
         }
       },
       onCancel: () => {
@@ -820,24 +843,36 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
           {
             key: 'baseInfo',
             href: '#baseInfo',
-            title: '基本信息',
+            title: formatMessage({
+              id: 'src.component.Schedule.modals.PartitionPlan.Create.3CCF7439',
+              defaultMessage: '基本信息',
+            }),
           },
           {
             key: 'executionMethod',
             href: '#executionMethod',
-            title: '执行方式',
+            title: formatMessage({
+              id: 'src.component.Schedule.modals.PartitionPlan.Create.D474F866',
+              defaultMessage: '执行方式',
+            }),
           },
           {
             key: 'scheduleSetting',
             href: '#scheduleSetting',
-            title: '作业设置',
+            title: formatMessage({
+              id: 'src.component.Schedule.modals.PartitionPlan.Create.45245221',
+              defaultMessage: '作业设置',
+            }),
           },
         ]}
       >
         <Spin spinning={loading}>
           <Form form={form} layout="vertical" requiredMark="optional" initialValues={defaultValue}>
             <h3 id="baseInfo" className={styles.title}>
-              基本信息
+              {formatMessage({
+                id: 'src.component.Schedule.modals.PartitionPlan.Create.A386D98F',
+                defaultMessage: '基本信息',
+              })}
             </h3>
 
             <DatabaseSelect
@@ -849,9 +884,13 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
               }}
               onInit={(db) => setCreateScheduleDatabase(db)}
             />
+
             {hasPartitionPlan && isEdit && (
               <Alert
-                message={'当前数据库已存在分区计划，审批通过后覆盖原有分区计划'}
+                message={formatMessage({
+                  id: 'src.component.Schedule.modals.PartitionPlan.Create.04D96771',
+                  defaultMessage: '当前数据库已存在分区计划，审批通过后覆盖原有分区计划',
+                })}
                 type="warning"
                 style={{ marginBottom: '8px' }}
                 showIcon
@@ -884,7 +923,10 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
             <Divider />
 
             <h3 id="executionMethod" className={styles.title}>
-              执行方式
+              {formatMessage({
+                id: 'src.component.Schedule.modals.PartitionPlan.Create.A571D571',
+                defaultMessage: '执行方式',
+              })}
             </h3>
 
             <SchduleExecutionMethodForm
@@ -892,6 +934,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
               crontab={crontab}
               handleCrontabChange={handleCrontabChange}
             />
+
             <Form.Item name="isCustomStrategy" valuePropName="checked">
               <Checkbox disabled={triggerStrategy !== TaskExecStrategy.TIMER}>
                 <span>
@@ -935,7 +978,10 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
             )}
 
             <h3 id="scheduleSetting" className={styles.title}>
-              作业设置
+              {formatMessage({
+                id: 'src.component.Schedule.modals.PartitionPlan.Create.78FAC17A',
+                defaultMessage: '作业设置',
+              })}
             </h3>
 
             <FormItemPanel keepExpand>
@@ -1015,7 +1061,16 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
               }) /*取消*/
             }
           </Button>
-          <Tooltip title={disabledSubmit ? '请设置 Range 分区表的分区策略' : null}>
+          <Tooltip
+            title={
+              disabledSubmit
+                ? formatMessage({
+                    id: 'src.component.Schedule.modals.PartitionPlan.Create.8796A833',
+                    defaultMessage: '请设置 Range 分区表的分区策略',
+                  })
+                : null
+            }
+          >
             <Button
               disabled={disabledSubmit}
               type="primary"

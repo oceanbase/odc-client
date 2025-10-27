@@ -219,7 +219,10 @@ const ScheduleTable: React.FC<IProps> = (props) => {
 
   const columns = [
     {
-      title: '作业',
+      title: formatMessage({
+        id: 'src.component.Schedule.components.ScheduleTable.ED66F868',
+        defaultMessage: '作业',
+      }),
       dataIndex: 'scheduleId',
       key: 'scheduleId',
       width: 500,
@@ -235,7 +238,10 @@ const ScheduleTable: React.FC<IProps> = (props) => {
       },
     },
     {
-      title: '数据库',
+      title: formatMessage({
+        id: 'src.component.Schedule.components.ScheduleTable.6B913018',
+        defaultMessage: '数据库',
+      }),
       dataIndex: 'database',
       key: 'database',
       width: 180,
@@ -246,7 +252,10 @@ const ScheduleTable: React.FC<IProps> = (props) => {
     ...(scheduleTabType === SchedulePageType.ALL
       ? [
           {
-            title: '类型',
+            title: formatMessage({
+              id: 'src.component.Schedule.components.ScheduleTable.8A9EE1D4',
+              defaultMessage: '类型',
+            }),
             dataIndex: 'type',
             key: 'type',
             width: 100,
@@ -281,7 +290,10 @@ const ScheduleTable: React.FC<IProps> = (props) => {
       },
     },
     {
-      title: '操作',
+      title: formatMessage({
+        id: 'src.component.Schedule.components.ScheduleTable.9BA98317',
+        defaultMessage: '操作',
+      }),
       dataIndex: 'actions',
       key: 'actions',
       fixed: 'right' as FixedType,
@@ -306,7 +318,10 @@ const ScheduleTable: React.FC<IProps> = (props) => {
     {
       dataIndex: 'id',
       key: 'id',
-      title: '执行记录ID',
+      title: formatMessage({
+        id: 'src.component.Schedule.components.ScheduleTable.396B62AE',
+        defaultMessage: '执行记录ID',
+      }),
       ellipsis: true,
       width: 80,
       render: (id, record) => {
@@ -326,7 +341,10 @@ const ScheduleTable: React.FC<IProps> = (props) => {
     {
       dataIndex: 'scheduleName',
       key: 'scheduleName',
-      title: '所属作业',
+      title: formatMessage({
+        id: 'src.component.Schedule.components.ScheduleTable.59E20EEA',
+        defaultMessage: '所属作业',
+      }),
       ellipsis: true,
       width: 260,
       render: (scheduleName, record) => {
@@ -336,8 +354,20 @@ const ScheduleTable: React.FC<IProps> = (props) => {
               overlayClassName={styles.scheduleNameTooltip}
               title={
                 <>
-                  <div>所属作业：{scheduleName}</div>
-                  <div>作业ID：{record?.scheduleId}</div>
+                  <div>
+                    {formatMessage({
+                      id: 'src.component.Schedule.components.ScheduleTable.2EC4A25A',
+                      defaultMessage: '所属作业：',
+                    })}
+                    {scheduleName}
+                  </div>
+                  <div>
+                    {formatMessage({
+                      id: 'src.component.Schedule.components.ScheduleTable.B7E41B5A',
+                      defaultMessage: '作业ID：',
+                    })}
+                    {record?.scheduleId}
+                  </div>
                 </>
               }
             >
@@ -362,7 +392,10 @@ const ScheduleTable: React.FC<IProps> = (props) => {
     {
       dataIndex: 'database',
       key: 'database',
-      title: '数据库',
+      title: formatMessage({
+        id: 'src.component.Schedule.components.ScheduleTable.05AA08FD',
+        defaultMessage: '数据库',
+      }),
       ellipsis: true,
       width: 180,
       render: (database, record) => {
@@ -375,18 +408,25 @@ const ScheduleTable: React.FC<IProps> = (props) => {
           {
             dataIndex: 'project',
             key: 'project',
-            title: '项目',
+            title: formatMessage({
+              id: 'src.component.Schedule.components.ScheduleTable.61F03513',
+              defaultMessage: '项目',
+            }),
             ellipsis: true,
             width: 120,
             render: (project) => project?.name,
           },
         ]),
+
     ...(scheduleTabType === SchedulePageType.ALL
       ? [
           {
             dataIndex: 'type',
             key: 'type',
-            title: '类型',
+            title: formatMessage({
+              id: 'src.component.Schedule.components.ScheduleTable.9890F824',
+              defaultMessage: '类型',
+            }),
             ellipsis: true,
             width: 120,
             render: (type) => SubTypeTextMap[type],
@@ -407,7 +447,10 @@ const ScheduleTable: React.FC<IProps> = (props) => {
     {
       dataIndex: 'status',
       key: 'status',
-      title: '状态',
+      title: formatMessage({
+        id: 'src.component.Schedule.components.ScheduleTable.CD27AD0F',
+        defaultMessage: '状态',
+      }),
       ellipsis: true,
       width: 140,
       render: (status, record) => {
@@ -461,7 +504,11 @@ const ScheduleTable: React.FC<IProps> = (props) => {
           }}
         >
           <>
-            新建
+            {formatMessage({
+              id: 'src.component.Schedule.components.ScheduleTable.9209CAFC',
+              defaultMessage: '新建',
+            })}
+
             <DownOutlined style={{ color: '#fff' }} />
           </>
         </Button>
@@ -698,6 +745,7 @@ const ScheduleTable: React.FC<IProps> = (props) => {
           ![SchedulePageType.ALL]?.includes(scheduleTabType) && isScheduleView ? rowSelection : null
         }
       />
+
       <ImportModal
         taskType={scheduleTabType as any}
         open={importModalVisible}

@@ -65,18 +65,45 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
         <Descriptions.Item span={1} label={'ID'}>
           {task?.id}
         </Descriptions.Item>
-        <Descriptions.Item span={1} label={'类型'}>
-          数据库变更
+        <Descriptions.Item
+          span={1}
+          label={formatMessage({
+            id: 'src.component.Task.modals.AsyncTask.DetailContent.E0A6F474',
+            defaultMessage: '类型',
+          })}
+        >
+          {formatMessage({
+            id: 'src.component.Task.modals.AsyncTask.DetailContent.05AA31FE',
+            defaultMessage: '数据库变更',
+          })}
         </Descriptions.Item>
-        <Descriptions.Item span={1} label={'数据库'}>
+        <Descriptions.Item
+          span={1}
+          label={formatMessage({
+            id: 'src.component.Task.modals.AsyncTask.DetailContent.960A276C',
+            defaultMessage: '数据库',
+          })}
+        >
           <EllipsisText content={<DatabaseLabel database={task?.database} />} needTooltip={false} />
         </Descriptions.Item>
 
-        <Descriptions.Item span={2} label={'数据源'}>
+        <Descriptions.Item
+          span={2}
+          label={formatMessage({
+            id: 'src.component.Task.modals.AsyncTask.DetailContent.A914AFA2',
+            defaultMessage: '数据源',
+          })}
+        >
           <EllipsisText content={task?.database?.dataSource?.name} />
         </Descriptions.Item>
         {!login.isPrivateSpace() && (
-          <Descriptions.Item span={1} label={'项目'}>
+          <Descriptions.Item
+            span={1}
+            label={formatMessage({
+              id: 'src.component.Task.modals.AsyncTask.DetailContent.409488B1',
+              defaultMessage: '项目',
+            })}
+          >
             <EllipsisText content={task?.project?.name} />
           </Descriptions.Item>
         )}
@@ -94,7 +121,13 @@ const AsyncTaskContent: React.FC<IProps> = (props) => {
             <ODCRiskLevelLabel iconMode levelMap level={riskLevel?.level} />
           </Descriptions.Item>
         )}
-        <Descriptions.Item span={2} label={'描述'}>
+        <Descriptions.Item
+          span={2}
+          label={formatMessage({
+            id: 'src.component.Task.modals.AsyncTask.DetailContent.D4F05610',
+            defaultMessage: '描述',
+          })}
+        >
           {task?.description}
         </Descriptions.Item>
       </Descriptions>

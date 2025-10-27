@@ -179,7 +179,10 @@ export class SchedulePage extends Page {
     super();
     this.pageKey = type;
     this.pageType = PageType.SCHEDULES;
-    this.pageTitle = '作业';
+    this.pageTitle = formatMessage({
+      id: 'src.store.helper.page.pages.A23C5058',
+      defaultMessage: '作业',
+    });
     this.pageParams = {
       type,
     };

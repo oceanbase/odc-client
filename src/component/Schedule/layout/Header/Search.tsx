@@ -5,10 +5,22 @@ import { formatMessage } from '@/util/intl';
 import InputSelect from '@/component/InputSelect';
 
 const ScheduleSearchTypeText = {
-  [ScheduleSearchType.SCHEDULENAME]: '作业名称',
-  [ScheduleSearchType.SCHEDULEID]: '作业ID',
-  [ScheduleSearchType.CREATOR]: '创建人',
-  [ScheduleSearchType.DATABASE]: '数据库',
+  [ScheduleSearchType.SCHEDULENAME]: formatMessage({
+    id: 'src.component.Schedule.layout.Header.314AB098',
+    defaultMessage: '作业名称',
+  }),
+  [ScheduleSearchType.SCHEDULEID]: formatMessage({
+    id: 'src.component.Schedule.layout.Header.BDE9EEE6',
+    defaultMessage: '作业ID',
+  }),
+  [ScheduleSearchType.CREATOR]: formatMessage({
+    id: 'src.component.Schedule.layout.Header.D4F5ADDE',
+    defaultMessage: '创建人',
+  }),
+  [ScheduleSearchType.DATABASE]: formatMessage({
+    id: 'src.component.Schedule.layout.Header.4C818604',
+    defaultMessage: '数据库',
+  }),
   [ScheduleSearchType.DATASOURCE]: formatMessage({
     id: 'odc.component.RecordPopover.column.DataSource',
     defaultMessage: '数据源',

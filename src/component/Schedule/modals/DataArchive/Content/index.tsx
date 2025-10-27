@@ -39,6 +39,7 @@ interface IProps {
     IDataArchiveParametersSubTaskParameters,
     IDataArchiveSubTaskExecutionDetails
   >;
+
   onReload?: () => void;
 }
 const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
@@ -94,23 +95,50 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
         {subTask && (
           <>
             <Descriptions.Item label={'ID'}>{subTask?.id}</Descriptions.Item>
-            <Descriptions.Item label={'类型'}>{SubTypeTextMap[subTask?.type]}</Descriptions.Item>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Content.AFE79283',
+                defaultMessage: '类型',
+              })}
+            >
+              {SubTypeTextMap[subTask?.type]}
+            </Descriptions.Item>
           </>
         )}
         {!subTask && (
           <>
             <Descriptions.Item label={'ID'}>{schedule?.scheduleId}</Descriptions.Item>
-            <Descriptions.Item label={'类型'}>数据归档</Descriptions.Item>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Content.68A53EB0',
+                defaultMessage: '类型',
+              })}
+            >
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Content.14EC52FF',
+                defaultMessage: '数据归档',
+              })}
+            </Descriptions.Item>
           </>
         )}
 
-        <Descriptions.Item label={'源端数据库'}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.modals.DataArchive.Content.A2561D2B',
+            defaultMessage: '源端数据库',
+          })}
+        >
           <EllipsisText
             needTooltip={false}
             content={<DatabaseLabel database={parameters?.sourceDatabase} />}
           />
         </Descriptions.Item>
-        <Descriptions.Item label={'源端数据源'}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.modals.DataArchive.Content.5B95048D',
+            defaultMessage: '源端数据源',
+          })}
+        >
           <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
             <Icon
               component={sourceDataSourceStyle?.icon?.component}
@@ -120,18 +148,29 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
                 marginRight: 4,
               }}
             />
+
             <div style={{ flex: 1, overflow: 'hidden' }}>
               <EllipsisText content={parameters?.sourceDatabase?.dataSource?.name} />
             </div>
           </div>
         </Descriptions.Item>
-        <Descriptions.Item label={'目标数据库'}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.modals.DataArchive.Content.1DD57A8D',
+            defaultMessage: '目标数据库',
+          })}
+        >
           <EllipsisText
             needTooltip={false}
             content={<DatabaseLabel database={parameters?.targetDatabase} />}
           />
         </Descriptions.Item>
-        <Descriptions.Item label={'目标端数据源'}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.modals.DataArchive.Content.FADD0B68',
+            defaultMessage: '目标端数据源',
+          })}
+        >
           <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
             <Icon
               component={targetDataSourceStyle?.icon?.component}
@@ -141,13 +180,19 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
                 marginRight: 4,
               }}
             />
+
             <div style={{ flex: 1, overflow: 'hidden' }}>
               <EllipsisText content={parameters?.targetDatabase?.dataSource?.name} />
             </div>
           </div>
         </Descriptions.Item>
         {!login.isPrivateSpace() && (
-          <Descriptions.Item label={'项目'}>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Schedule.modals.DataArchive.Content.84D7E96B',
+              defaultMessage: '项目',
+            })}
+          >
             <EllipsisText content={schedule?.project?.name} />
           </Descriptions.Item>
         )}
@@ -157,7 +202,12 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
         showSplit={false}
         label={
           <>
-            <span>归档范围：</span>
+            <span>
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Content.FEE59C24',
+                defaultMessage: '归档范围：',
+              })}
+            </span>
             <span style={{ color: 'var(--text-color-primary)' }}>{archiveRange}</span>
           </>
         }
@@ -172,6 +222,7 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
         }
         direction="column"
       />
+
       <SimpleTextItem
         label={formatMessage({
           id: 'odc.DataArchiveTask.DetailContent.VariableConfiguration',
@@ -228,10 +279,30 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
             }
           </Descriptions.Item>
         )}
-        <Descriptions.Item label={'通过全表扫描进行数据搜索'} span={1}>
-          {parameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH ? '是' : '否'}
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.modals.DataArchive.Content.D21165F1',
+            defaultMessage: '通过全表扫描进行数据搜索',
+          })}
+          span={1}
+        >
+          {parameters?.shardingStrategy === ShardingStrategy.FIXED_LENGTH
+            ? formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Content.E9511375',
+                defaultMessage: '是',
+              })
+            : formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Content.AEE90D81',
+                defaultMessage: '否',
+              })}
         </Descriptions.Item>
-        <Descriptions.Item label={'目标表结构不存在时自动创建'} span={1}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.modals.DataArchive.Content.06B3A4F7',
+            defaultMessage: '目标表结构不存在时自动创建',
+          })}
+          span={1}
+        >
           {parameters?.createTargetTableIfNotExists
             ? formatMessage({
                 id: 'src.component.Task.DataArchiveTask.DetailContent.FFC5907D',
@@ -279,14 +350,26 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
           {parameters?.timeoutMillis ? milliSecondsToHour(parameters?.timeoutMillis) + 'h' : '-'}
         </Descriptions.Item>
 
-        <Descriptions.Item label={'执行超时调度策略'} span={1}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.modals.DataArchive.Content.F287E0AD',
+            defaultMessage: '执行超时调度策略',
+          })}
+          span={1}
+        >
           {
             executeTimeoutStrategyOptions?.find(
               (item) => item.value === parameters?.scheduleIgnoreTimeoutTask,
             )?.label
           }
         </Descriptions.Item>
-        <Descriptions.Item label={'数据插入策略'} span={1}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.modals.DataArchive.Content.D0E70B4B',
+            defaultMessage: '数据插入策略',
+          })}
+          span={1}
+        >
           {insertActionLabel || '-'}
         </Descriptions.Item>
         {parameters?.rateLimit?.rowLimit && (
@@ -332,6 +415,7 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
           marginTop: 16,
         }}
       />
+
       <Descriptions column={2}>
         <Descriptions.Item
           label={

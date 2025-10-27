@@ -69,6 +69,7 @@ const MultipAsyncExecuteDetailDrawer = (props: IProps) => {
         IOperationTypeRole.PROJECT_OWNER,
         IOperationTypeRole.PROJECT_DBA,
       ],
+
       IRoles,
     )();
 
@@ -91,9 +92,19 @@ const MultipAsyncExecuteDetailDrawer = (props: IProps) => {
                 );
               }}
               disabled={isExpired}
-              tooltip={isExpired ? '文件下载链接已超时，请重新发起工单。' : undefined}
+              tooltip={
+                isExpired
+                  ? formatMessage({
+                      id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.65E083B9',
+                      defaultMessage: '文件下载链接已超时，请重新发起工单。',
+                    })
+                  : undefined
+              }
             >
-              下载查询结果
+              {formatMessage({
+                id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.0FDDE85B',
+                defaultMessage: '下载查询结果',
+              })}
             </ActionButton>
           </Action.Group>
         </div>
@@ -102,29 +113,65 @@ const MultipAsyncExecuteDetailDrawer = (props: IProps) => {
   };
 
   return (
-    <Drawer open={visible} onClose={onClose} title="执行详情" width={800}>
+    <Drawer
+      open={visible}
+      onClose={onClose}
+      title={formatMessage({
+        id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.4EA982B6',
+        defaultMessage: '执行详情',
+      })}
+      width={800}
+    >
       <Descriptions column={1}>
-        <Descriptions.Item label="数据库">
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.3F34AFA1',
+            defaultMessage: '数据库',
+          })}
+        >
           <DatabaseLabel database={executeRecord?.database} />
         </Descriptions.Item>
-        <Descriptions.Item label="状态">
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.4436820F',
+            defaultMessage: '状态',
+          })}
+        >
           <StatusLabel status={executeRecord?.status} />
         </Descriptions.Item>
-        <Descriptions.Item label="DML 预计影响行数">
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.A7492802',
+            defaultMessage: 'DML 预计影响行数',
+          })}
+        >
           {executeRecord?.affectedRows}
         </Descriptions.Item>
-        <Descriptions.Item label="执行时间">
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.36F376DC',
+            defaultMessage: '执行时间',
+          })}
+        >
           {executeRecord?.executionTime
             ? getLocalFormatDateTime(executeRecord?.executionTime)
             : '-'}
         </Descriptions.Item>
-        <Descriptions.Item label="结束时间">
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.50289F7E',
+            defaultMessage: '结束时间',
+          })}
+        >
           {executeRecord?.completeTime ? getLocalFormatDateTime(executeRecord?.completeTime) : '-'}
         </Descriptions.Item>
       </Descriptions>
       <div style={{ marginTop: '16px' }}>
         <SimpleTextItem
-          label="变更内容"
+          label={formatMessage({
+            id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.8C154E54',
+            defaultMessage: '变更内容',
+          })}
           content={
             <SQLContent
               sqlContent={task?.parameters?.sqlContent || ''}
@@ -153,7 +200,12 @@ const MultipAsyncExecuteDetailDrawer = (props: IProps) => {
                 }
               </span>
               {executeRecord?.rollbackPlanResult?.generated && (
-                <a onClick={downLoadRollbackPlan}>下载备份回滚方案</a>
+                <a onClick={downLoadRollbackPlan}>
+                  {formatMessage({
+                    id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.D863646A',
+                    defaultMessage: '下载备份回滚方案',
+                  })}
+                </a>
               )}
             </Space>
           }
@@ -173,7 +225,12 @@ const MultipAsyncExecuteDetailDrawer = (props: IProps) => {
         />
       </div>
       <Descriptions style={{ marginTop: '16px' }}>
-        <Descriptions.Item label="执行结果">
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.9F24FBA9',
+            defaultMessage: '执行结果',
+          })}
+        >
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <CheckCircleFilled
               style={{
@@ -181,21 +238,37 @@ const MultipAsyncExecuteDetailDrawer = (props: IProps) => {
                 marginRight: '4px',
               }}
             />
-            {`${executeRecord?.successCount || 0}条SQL执行成功`}，
+            {formatMessage(
+              {
+                id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.355AEE49',
+                defaultMessage: '{LogicalExpression0}条SQL执行成功',
+              },
+              { LogicalExpression0: executeRecord?.successCount || 0 },
+            )}
+            ，
             <CloseCircleFilled
               style={{
                 color: 'var(--function-red6-color)',
                 marginRight: '4px',
               }}
             />
-            {` ${executeRecord?.failCount || 0} 条SQL执行失败`}
+            {formatMessage(
+              {
+                id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.BE6930E9',
+                defaultMessage: ' {LogicalExpression0} 条SQL执行失败',
+              },
+              { LogicalExpression0: executeRecord?.failCount || 0 },
+            )}
           </div>
         </Descriptions.Item>
       </Descriptions>
       {executeFailContent && (
         <div style={{ marginTop: '16px' }}>
           <SimpleTextItem
-            label="执行失败记录"
+            label={formatMessage({
+              id: 'src.component.Task.component.TaskDetailModal.TaskProgress.MultipAsyncExecute.68404E05',
+              defaultMessage: '执行失败记录',
+            })}
             direction="column"
             content={
               <div>

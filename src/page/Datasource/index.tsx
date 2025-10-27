@@ -94,7 +94,13 @@ const ExtraContent = ({
         open={deleteModalOpen}
         id={cid}
         dataSourceName={name}
-        title={`数据源 ${name} 存在以下未完成的工单和作业，暂不支持删除`}
+        title={formatMessage(
+          {
+            id: 'src.page.Datasource.1D897AFB',
+            defaultMessage: '数据源 {name} 存在以下未完成的工单和作业，暂不支持删除',
+          },
+          { name },
+        )}
         onCancel={handleDeleteCancel}
       />
     </>

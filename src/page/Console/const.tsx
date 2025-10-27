@@ -44,16 +44,40 @@ export const TaskTypes = [
 ];
 
 export const TaskTitle = {
-  [TaskType.EXPORT]: '导出',
-  [TaskType.EXPORT_RESULT_SET]: '导出结果集',
-  [TaskType.IMPORT]: '导入',
-  [TaskType.DATAMOCK]: '模拟数据',
-  [TaskType.ASYNC]: '数据库变更',
-  [TaskType.MULTIPLE_ASYNC]: '多库变更',
-  [TaskType.LOGICAL_DATABASE_CHANGE]: '逻辑库变更',
-  [TaskType.SHADOW]: '影子表同步',
-  [TaskType.STRUCTURE_COMPARISON]: '结构比对',
-  [TaskType.ONLINE_SCHEMA_CHANGE]: '无锁结构变更',
+  [TaskType.EXPORT]: formatMessage({ id: 'src.page.Console.14A62D75', defaultMessage: '导出' }),
+  [TaskType.EXPORT_RESULT_SET]: formatMessage({
+    id: 'src.page.Console.827D70F4',
+    defaultMessage: '导出结果集',
+  }),
+  [TaskType.IMPORT]: formatMessage({ id: 'src.page.Console.7FAA1AC3', defaultMessage: '导入' }),
+  [TaskType.DATAMOCK]: formatMessage({
+    id: 'src.page.Console.BC47035A',
+    defaultMessage: '模拟数据',
+  }),
+  [TaskType.ASYNC]: formatMessage({
+    id: 'src.page.Console.CD787177',
+    defaultMessage: '数据库变更',
+  }),
+  [TaskType.MULTIPLE_ASYNC]: formatMessage({
+    id: 'src.page.Console.083CE811',
+    defaultMessage: '多库变更',
+  }),
+  [TaskType.LOGICAL_DATABASE_CHANGE]: formatMessage({
+    id: 'src.page.Console.095E4794',
+    defaultMessage: '逻辑库变更',
+  }),
+  [TaskType.SHADOW]: formatMessage({
+    id: 'src.page.Console.9B9AA656',
+    defaultMessage: '影子表同步',
+  }),
+  [TaskType.STRUCTURE_COMPARISON]: formatMessage({
+    id: 'src.page.Console.FA7A89B2',
+    defaultMessage: '结构比对',
+  }),
+  [TaskType.ONLINE_SCHEMA_CHANGE]: formatMessage({
+    id: 'src.page.Console.82724F7E',
+    defaultMessage: '无锁结构变更',
+  }),
 };
 
 export const ScheduleTitle = {
@@ -88,17 +112,21 @@ export const ConsoleTextConfig = {
     status: [
       formatMessage({ id: 'src.page.Console.095A8212', defaultMessage: '执行中' }),
       formatMessage({ id: 'src.page.Console.4D58E4BD', defaultMessage: '执行成功' }),
-      '执行超时',
-      '执行中断',
+      formatMessage({ id: 'src.page.Console.AC6DADB0', defaultMessage: '执行超时' }),
+      formatMessage({ id: 'src.page.Console.D7644938', defaultMessage: '执行中断' }),
+
       formatMessage({ id: 'src.page.Console.32807E76', defaultMessage: '其他' }),
     ],
+
     taskStatus: [
       formatMessage({ id: 'src.page.Console.095A8212', defaultMessage: '执行中' }),
       formatMessage({ id: 'src.page.Console.4D58E4BD', defaultMessage: '执行成功' }),
-      '准入失败',
-      '执行中断',
+      formatMessage({ id: 'src.page.Console.770CA9E1', defaultMessage: '准入失败' }),
+      formatMessage({ id: 'src.page.Console.ABA79EEA', defaultMessage: '执行中断' }),
+
       formatMessage({ id: 'src.page.Console.32807E76', defaultMessage: '其他' }),
     ],
+
     taskStatusColor: ['#40a9ff', '#73d13d', '#ffa21a', '#ff6667', '#e0e0e0'],
     taskStatusType: [
       'EXECUTING',
@@ -115,6 +143,7 @@ export const ConsoleTextConfig = {
       'EXECUTION_FAILURE',
       'OTHER',
     ],
+
     statusColor: ['#40a9ff', '#73d13d', '#ffc166', '#ff6667', '#e0e0e0'],
     scheduleTitle: [
       formatMessage({ id: 'src.page.Console.B92D6192', defaultMessage: '数据归档' }),
@@ -187,10 +216,11 @@ export const ConsoleTextConfig = {
   aboutUs: {
     helps: [
       formatMessage({ id: 'src.page.Console.B27ADAC6', defaultMessage: '产品动态' }),
-      '社区问答',
-      '帮助文档',
-      '版本信息',
+      formatMessage({ id: 'src.page.Console.797E70B6', defaultMessage: '社区问答' }),
+      formatMessage({ id: 'src.page.Console.E07BCB43', defaultMessage: '帮助文档' }),
+      formatMessage({ id: 'src.page.Console.4602FA70', defaultMessage: '版本信息' }),
     ],
+
     urlKeys: ['releaseNote', 'ask', 'helpDocs', 'versions'],
     QRUrl:
       'https://qr.dingtalk.com/action/joingroup?code=v1,k1,HovdSAqfBdRGqRk2jQ0TDu1eMvQ+BB6rt8mFHeIqi/A=&_dt_no_comment=1&origin=11',

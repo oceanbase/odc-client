@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -37,13 +38,28 @@ const AccessKeySuccessModal: React.FC<IProps> = ({ visible, accessKey, onClose }
       const credentials = `AccessKey ID: ${accessKey.accessKeyId}\nAccessKey Secret: ${accessKey.secretAccessKey}`;
       const success = copy(credentials);
       if (success) {
-        message.success('复制成功');
+        message.success(
+          formatMessage({
+            id: 'src.page.Auth.User.component.AccessKeySuccessModal.F47C40C8',
+            defaultMessage: '复制成功',
+          }),
+        );
       } else {
-        message.error('复制失败');
+        message.error(
+          formatMessage({
+            id: 'src.page.Auth.User.component.AccessKeySuccessModal.BD6420F3',
+            defaultMessage: '复制失败',
+          }),
+        );
       }
     } catch (error) {
       console.error('复制失败:', error);
-      message.error('复制失败');
+      message.error(
+        formatMessage({
+          id: 'src.page.Auth.User.component.AccessKeySuccessModal.DA6E17A1',
+          defaultMessage: '复制失败',
+        }),
+      );
     } finally {
       setCopying(false);
     }
@@ -52,7 +68,10 @@ const AccessKeySuccessModal: React.FC<IProps> = ({ visible, accessKey, onClose }
   return (
     <Modal
       open={visible}
-      title="AccessKey 创建成功"
+      title={formatMessage({
+        id: 'src.page.Auth.User.component.AccessKeySuccessModal.3C167E75',
+        defaultMessage: 'AccessKey 创建成功',
+      })}
       width={520}
       footer={null}
       onCancel={onClose}
@@ -63,7 +82,10 @@ const AccessKeySuccessModal: React.FC<IProps> = ({ visible, accessKey, onClose }
         <Alert
           type="warning"
           showIcon
-          message="请妥善保管 AccessKey ID 和 Secret，当前弹窗关闭后将无法查询 Secret。"
+          message={formatMessage({
+            id: 'src.page.Auth.User.component.AccessKeySuccessModal.CE9FF9C8',
+            defaultMessage: '请妥善保管 AccessKey ID 和 Secret，当前弹窗关闭后将无法查询 Secret。',
+          })}
           className={styles.alertTip}
         />
 
@@ -88,7 +110,10 @@ const AccessKeySuccessModal: React.FC<IProps> = ({ visible, accessKey, onClose }
               onClick={handleCopyCredentials}
               className={styles.copyButton}
             >
-              复制 ID 和 Secret
+              {formatMessage({
+                id: 'src.page.Auth.User.component.AccessKeySuccessModal.7D2D9C22',
+                defaultMessage: '复制 ID 和 Secret',
+              })}
             </Button>
           </>
         )}

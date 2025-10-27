@@ -51,26 +51,58 @@ const SQLPlanScheduleContent: React.FC<IProps> = (props) => {
         {subTask && (
           <>
             <Descriptions.Item label={'ID'}>{subTask?.id}</Descriptions.Item>
-            <Descriptions.Item label={'类型'}>{SubTypeTextMap[subTask?.type]}</Descriptions.Item>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.component.Schedule.modals.SQLPlan.Content.9F0BCA7F',
+                defaultMessage: '类型',
+              })}
+            >
+              {SubTypeTextMap[subTask?.type]}
+            </Descriptions.Item>
           </>
         )}
         {!subTask && (
           <>
             <Descriptions.Item label={'ID'}>{schedule?.scheduleId}</Descriptions.Item>
-            <Descriptions.Item label={'类型'}>SQL 计划</Descriptions.Item>
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.component.Schedule.modals.SQLPlan.Content.AD1D59AD',
+                defaultMessage: '类型',
+              })}
+            >
+              {formatMessage({
+                id: 'src.component.Schedule.modals.SQLPlan.Content.B548056D',
+                defaultMessage: 'SQL 计划',
+              })}
+            </Descriptions.Item>
           </>
         )}
-        <Descriptions.Item label={'数据库'}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.modals.SQLPlan.Content.095FE231',
+            defaultMessage: '数据库',
+          })}
+        >
           <EllipsisText
             needTooltip={false}
             content={<DatabaseLabel database={schedule?.parameters?.databaseInfo} />}
           />
         </Descriptions.Item>
-        <Descriptions.Item label={'数据源'}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Schedule.modals.SQLPlan.Content.D9064552',
+            defaultMessage: '数据源',
+          })}
+        >
           <EllipsisText content={schedule?.parameters?.databaseInfo?.dataSource?.name} />
         </Descriptions.Item>
         {!login.isPrivateSpace() && (
-          <Descriptions.Item label={'项目'}>
+          <Descriptions.Item
+            label={formatMessage({
+              id: 'src.component.Schedule.modals.SQLPlan.Content.2A862DD9',
+              defaultMessage: '项目',
+            })}
+          >
             <EllipsisText content={schedule?.project?.name} />
           </Descriptions.Item>
         )}

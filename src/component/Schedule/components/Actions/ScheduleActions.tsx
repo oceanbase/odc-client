@@ -124,24 +124,44 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
     const { scheduleId } = schedule;
     const scheduleTypeText = ScheduleTextMap[schedule?.type];
     Modal.confirm({
-      title: `确定要终止${scheduleTypeText}吗`,
+      title: formatMessage(
+        {
+          id: 'src.component.Schedule.components.Actions.C772F4B6',
+          defaultMessage: '确定要终止{scheduleTypeText}吗',
+        },
+        { scheduleTypeText },
+      ),
       content: (
         <>
-          <div>作业终止后将不可恢复</div>
+          <div>
+            {formatMessage({
+              id: 'src.component.Schedule.components.Actions.21E08EC1',
+              defaultMessage: '作业终止后将不可恢复',
+            })}
+          </div>
         </>
       ),
+
       cancelText: formatMessage({
         id: 'odc.TaskManagePage.component.TaskTools.Cancel',
         defaultMessage: '取消',
       }), //取消
-      okText: '终止',
+      okText: formatMessage({
+        id: 'src.component.Schedule.components.Actions.8209C53D',
+        defaultMessage: '终止',
+      }),
       okButtonProps: { variant: 'outlined', color: 'danger' },
       centered: true,
       onOk: async () => {
         setActiveBtnKey(ScheduleActionsEnum.STOP);
         const res = await terminateSchedule(scheduleId);
         if (res?.data) {
-          message.success('作业务需要重新审批，审批通过后此作业将终止');
+          message.success(
+            formatMessage({
+              id: 'src.component.Schedule.components.Actions.AEDC2076',
+              defaultMessage: '作业务需要重新审批，审批通过后此作业将终止',
+            }),
+          );
           onReloadList?.();
           resetActiveBtnKey();
         } else {
@@ -155,7 +175,13 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
     const { scheduleId } = schedule;
     const scheduleTypeText = ScheduleTextMap[schedule?.type];
     Modal.confirm({
-      title: `确定要禁用此${scheduleTypeText}吗`,
+      title: formatMessage(
+        {
+          id: 'src.component.Schedule.components.Actions.97AEE0AF',
+          defaultMessage: '确定要禁用此{scheduleTypeText}吗',
+        },
+        { scheduleTypeText },
+      ),
       content: (
         <>
           <div>
@@ -167,20 +193,34 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
               { TaskTypeMapTaskType: ScheduleTextMap[schedule?.type] },
             )}
           </div>
-          <div>作业需要重新审批，审批通过后此作业将禁用</div>
+          <div>
+            {formatMessage({
+              id: 'src.component.Schedule.components.Actions.838A7A4A',
+              defaultMessage: '作业需要重新审批，审批通过后此作业将禁用',
+            })}
+          </div>
         </>
       ),
+
       cancelText: formatMessage({
         id: 'odc.TaskManagePage.component.TaskTools.Cancel',
         defaultMessage: '取消',
       }),
-      okText: '禁用',
+      okText: formatMessage({
+        id: 'src.component.Schedule.components.Actions.6E887831',
+        defaultMessage: '禁用',
+      }),
       centered: true,
       onOk: async () => {
         setActiveBtnKey(ScheduleActionsEnum.DISABLE);
         const res = await pauseSchedule(scheduleId);
         if (res?.data) {
-          message.success('提交成功');
+          message.success(
+            formatMessage({
+              id: 'src.component.Schedule.components.Actions.E6A6CEDD',
+              defaultMessage: '提交成功',
+            }),
+          );
           onReloadList?.();
           resetActiveBtnKey();
         } else {
@@ -194,7 +234,13 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
     const { scheduleId } = schedule;
     const scheduleTypeText = ScheduleTextMap[schedule?.type];
     Modal.confirm({
-      title: `确定要启用此${scheduleTypeText}吗`,
+      title: formatMessage(
+        {
+          id: 'src.component.Schedule.components.Actions.F8FC34CA',
+          defaultMessage: '确定要启用此{scheduleTypeText}吗',
+        },
+        { scheduleTypeText },
+      ),
       content: (
         <>
           <div>
@@ -205,20 +251,34 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
               }) /*启用 SQL 计划*/
             }
           </div>
-          <div>作业需要重新审批，审批通过后此作业将启用</div>
+          <div>
+            {formatMessage({
+              id: 'src.component.Schedule.components.Actions.726B120F',
+              defaultMessage: '作业需要重新审批，审批通过后此作业将启用',
+            })}
+          </div>
         </>
       ),
+
       cancelText: formatMessage({
         id: 'odc.TaskManagePage.component.TaskTools.Cancel',
         defaultMessage: '取消',
       }),
-      okText: '启用',
+      okText: formatMessage({
+        id: 'src.component.Schedule.components.Actions.1F847252',
+        defaultMessage: '启用',
+      }),
       centered: true,
       onOk: async () => {
         setActiveBtnKey(ScheduleActionsEnum.ENABLE);
         const res = await resumeSchedule(scheduleId);
         if (res?.data) {
-          message.success('提交成功');
+          message.success(
+            formatMessage({
+              id: 'src.component.Schedule.components.Actions.B4EDE88C',
+              defaultMessage: '提交成功',
+            }),
+          );
           onReloadList?.();
           resetActiveBtnKey();
         } else {
@@ -314,23 +374,43 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
     const { scheduleId } = schedule;
     const scheduleTypeText = ScheduleTextMap[schedule?.type];
     Modal.confirm({
-      title: `确定要删除此${scheduleTypeText}吗`,
+      title: formatMessage(
+        {
+          id: 'src.component.Schedule.components.Actions.42E0068A',
+          defaultMessage: '确定要删除此{scheduleTypeText}吗',
+        },
+        { scheduleTypeText },
+      ),
       content: (
         <>
-          <div>作业需要重新审批，审批通过后此作业将不再显示</div>
+          <div>
+            {formatMessage({
+              id: 'src.component.Schedule.components.Actions.C310B03F',
+              defaultMessage: '作业需要重新审批，审批通过后此作业将不再显示',
+            })}
+          </div>
         </>
       ),
+
       cancelText: formatMessage({
         id: 'odc.TaskManagePage.component.TaskTools.Cancel',
         defaultMessage: '取消',
       }), //取消
-      okText: '删除',
+      okText: formatMessage({
+        id: 'src.component.Schedule.components.Actions.4E564EA6',
+        defaultMessage: '删除',
+      }),
       centered: true,
       onOk: async () => {
         // setDelList?.([...delList, scheduleId]);
         const res = await deleteSchedule(scheduleId, schedule?.project?.id);
         if (res?.data) {
-          message.success('提交成功');
+          message.success(
+            formatMessage({
+              id: 'src.component.Schedule.components.Actions.D95A638C',
+              defaultMessage: '提交成功',
+            }),
+          );
           onReloadList?.();
           onClose?.();
         }
@@ -346,19 +426,40 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
     const { approveInstanceId } = schedule;
     const scheduleTypeText = ScheduleTextMap[schedule?.type];
     Modal.confirm({
-      title: `确定要撤销此${scheduleTypeText}审批吗`,
-      content: <div>审批撤销后，作业将进入终止态</div>,
+      title: formatMessage(
+        {
+          id: 'src.component.Schedule.components.Actions.207B99F4',
+          defaultMessage: '确定要撤销此{scheduleTypeText}审批吗',
+        },
+        { scheduleTypeText },
+      ),
+      content: (
+        <div>
+          {formatMessage({
+            id: 'src.component.Schedule.components.Actions.F67C72E0',
+            defaultMessage: '审批撤销后，作业将进入终止态',
+          })}
+        </div>
+      ),
       cancelText: formatMessage({
         id: 'odc.TaskManagePage.component.TaskTools.Cancel',
         defaultMessage: '取消',
       }), //取消
-      okText: '确定',
+      okText: formatMessage({
+        id: 'src.component.Schedule.components.Actions.C0DE1CB4',
+        defaultMessage: '确定',
+      }),
       centered: true,
       onOk: async () => {
         setActiveBtnKey(ScheduleActionsEnum.REVOKE);
         const res = await stopTask(approveInstanceId);
         if (res) {
-          message.success('撤销成功');
+          message.success(
+            formatMessage({
+              id: 'src.component.Schedule.components.Actions.AA7F7E98',
+              defaultMessage: '撤销成功',
+            }),
+          );
           onReloadList?.();
           onClose?.();
           resetActiveBtnKey();
@@ -400,6 +501,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
     },
@@ -415,6 +517,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
     },
@@ -429,6 +532,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
     },
@@ -443,6 +547,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
     },
@@ -458,6 +563,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
           IOperationTypeRole.PROJECT_DBA,
           IOperationTypeRole.PROJECT_OWNER,
         ],
+
         IRoles,
       ),
     },
@@ -502,6 +608,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
           IOperationTypeRole.PROJECT_OWNER,
           IOperationTypeRole.PROJECT_DBA,
         ],
+
         IRoles,
       ),
     },

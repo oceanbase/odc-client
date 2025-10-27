@@ -113,7 +113,12 @@ class ExternalResourcePage extends Component<
     const { session } = this.props;
 
     if (!session?.database?.loadExternalResource) {
-      message.error('无法加载外部资源');
+      message.error(
+        formatMessage({
+          id: 'src.page.Workspace.components.ExternalResourcePage.F0DDFCD6',
+          defaultMessage: '无法加载外部资源',
+        }),
+      );
       return;
     }
 
@@ -146,11 +151,21 @@ class ExternalResourcePage extends Component<
           },
         });
       } else {
-        message.error('无法获取外部资源详情');
+        message.error(
+          formatMessage({
+            id: 'src.page.Workspace.components.ExternalResourcePage.3A76AB8C',
+            defaultMessage: '无法获取外部资源详情',
+          }),
+        );
       }
     } catch (error) {
       console.error('加载外部资源详情失败:', error);
-      message.error('加载外部资源详情失败');
+      message.error(
+        formatMessage({
+          id: 'src.page.Workspace.components.ExternalResourcePage.87C47935',
+          defaultMessage: '加载外部资源详情失败',
+        }),
+      );
     } finally {
       this.setState({ loading: false });
     }
@@ -169,20 +184,40 @@ class ExternalResourcePage extends Component<
     const { session } = this.props;
 
     if (!resourceInfo || !session?.database?.downloadExternalResource) {
-      message.error('无法下载外部资源');
+      message.error(
+        formatMessage({
+          id: 'src.page.Workspace.components.ExternalResourcePage.7BC2AD8B',
+          defaultMessage: '无法下载外部资源',
+        }),
+      );
       return;
     }
 
     try {
       const success = await session.database.downloadExternalResource(resourceInfo);
       if (success) {
-        message.success('外部资源下载成功');
+        message.success(
+          formatMessage({
+            id: 'src.page.Workspace.components.ExternalResourcePage.9B750DF0',
+            defaultMessage: '外部资源下载成功',
+          }),
+        );
       } else {
-        message.error('外部资源下载失败');
+        message.error(
+          formatMessage({
+            id: 'src.page.Workspace.components.ExternalResourcePage.B940DDF5',
+            defaultMessage: '外部资源下载失败',
+          }),
+        );
       }
     } catch (error) {
       console.error('下载外部资源失败:', error);
-      message.error('下载外部资源失败');
+      message.error(
+        formatMessage({
+          id: 'src.page.Workspace.components.ExternalResourcePage.52A2768D',
+          defaultMessage: '下载外部资源失败',
+        }),
+      );
     }
   };
 
@@ -215,37 +250,58 @@ class ExternalResourcePage extends Component<
                     <ObjectInfoView
                       data={[
                         {
-                          label: '资源名称',
+                          label: formatMessage({
+                            id: 'src.page.Workspace.components.ExternalResourcePage.1B4BAD5A',
+                            defaultMessage: '资源名称',
+                          }),
                           content: resourceInfo.name,
                         },
                         {
-                          label: '资源类型',
+                          label: formatMessage({
+                            id: 'src.page.Workspace.components.ExternalResourcePage.25701460',
+                            defaultMessage: '资源类型',
+                          }),
                           content: resourceInfo.type || 'PYTHON_PY',
                         },
                         {
-                          label: '描述',
+                          label: formatMessage({
+                            id: 'src.page.Workspace.components.ExternalResourcePage.FAE52548',
+                            defaultMessage: '描述',
+                          }),
                           content: resourceInfo.description || '-',
                         },
                       ]}
                     />
                   ) : (
-                    <Empty description="无法加载外部资源信息" />
+                    <Empty
+                      description={formatMessage({
+                        id: 'src.page.Workspace.components.ExternalResourcePage.853BE24C',
+                        defaultMessage: '无法加载外部资源信息',
+                      })}
+                    />
                   )}
                 </div>
               ),
             },
             {
               key: PropsTab.CONTENT,
-              label: '内容',
+              label: formatMessage({
+                id: 'src.page.Workspace.components.ExternalResourcePage.2C5B1790',
+                defaultMessage: '内容',
+              }),
               children: (
                 <div className={styles.content}>
                   <Toolbar>
                     <ToolbarButton
-                      text="下载"
+                      text={formatMessage({
+                        id: 'src.page.Workspace.components.ExternalResourcePage.3C3245EA',
+                        defaultMessage: '下载',
+                      })}
                       icon={<CloudDownloadOutlined style={{ fontSize: 13 }} />}
                       onClick={this.handleDownload}
                       disabled={!resourceInfo}
                     />
+
                     <ToolbarButton
                       text={formatMessage({
                         id: 'workspace.window.session.button.refresh',
@@ -270,13 +326,19 @@ class ExternalResourcePage extends Component<
                   ) : (
                     <Empty
                       className={styles.empty}
-                      description="当前内容暂不支持在线查看内容，请选择下载文件"
+                      description={formatMessage({
+                        id: 'src.page.Workspace.components.ExternalResourcePage.AA3CFE7D',
+                        defaultMessage: '当前内容暂不支持在线查看内容，请选择下载文件',
+                      })}
                       image={Empty.PRESENTED_IMAGE_SIMPLE}
                     />
                   )}
                   {resourceInfo?.content && isContentSizeWithinLimit(resourceInfo.content) ? (
                     <div className={styles.tips}>
-                      仅支持在线查看 1MB 数据，如需查看全部请下载文件
+                      {formatMessage({
+                        id: 'src.page.Workspace.components.ExternalResourcePage.78356D88',
+                        defaultMessage: '仅支持在线查看 1MB 数据，如需查看全部请下载文件',
+                      })}
                     </div>
                   ) : null}
                 </div>

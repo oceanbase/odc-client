@@ -225,7 +225,13 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
       <RelativeResourceModal
         open={deleteModalOpen}
         id={connection.id}
-        title={`数据源 ${connection?.name} 存在以下未完成的工单和作业，暂不支持删除`}
+        title={formatMessage(
+          {
+            id: 'src.page.Datasource.Datasource.Content.List.MoreBtn.4702902F',
+            defaultMessage: '数据源 {connectionName} 存在以下未完成的工单和作业，暂不支持删除',
+          },
+          { connectionName: connection?.name },
+        )}
         onCancel={handleDeleteCancel}
       />
     </>

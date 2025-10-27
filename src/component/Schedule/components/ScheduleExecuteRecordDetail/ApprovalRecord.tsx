@@ -43,7 +43,12 @@ const FlowModal: React.FC<IProps> = function (props) {
         <span>{operationTypeMap?.[operationType]}</span>
       </div>
       <div style={{ margin: '12px 0px 12px 0px', display: 'flex', alignItems: 'center' }}>
-        <span>风险等级：</span>
+        <span>
+          {formatMessage({
+            id: 'src.component.Schedule.components.ScheduleExecuteRecordDetail.68A84F2D',
+            defaultMessage: '风险等级：',
+          })}
+        </span>
         <ODCRiskLevelLabel iconMode levelMap level={task?.riskLevel?.level} />
       </div>
       <Spin spinning={loading}>{task && <TaskFlow task={task} />}</Spin>

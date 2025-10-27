@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import React, { useContext, useMemo } from 'react';
 import { Dropdown } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -15,22 +16,34 @@ interface IProps {}
 const items: MenuProps['items'] = [
   {
     key: ScheduleCreateTimeSort.ASC,
-    label: '按创建时间升序',
+    label: formatMessage({
+      id: 'src.component.Schedule.layout.Header.0EF80738',
+      defaultMessage: '按创建时间升序',
+    }),
   },
   {
     key: ScheduleCreateTimeSort.DESC,
-    label: '按创建时间降序',
+    label: formatMessage({
+      id: 'src.component.Schedule.layout.Header.8112BEF7',
+      defaultMessage: '按创建时间降序',
+    }),
   },
 ];
 
 const subTaskItems: MenuProps['items'] = [
   {
     key: ScheduleTaskCreateTimeSort.ASC,
-    label: '按执行时间排序',
+    label: formatMessage({
+      id: 'src.component.Schedule.layout.Header.55909F89',
+      defaultMessage: '按执行时间排序',
+    }),
   },
   {
     key: ScheduleTaskCreateTimeSort.DESC,
-    label: '按执行时间降序',
+    label: formatMessage({
+      id: 'src.component.Schedule.layout.Header.0E347077',
+      defaultMessage: '按执行时间降序',
+    }),
   },
 ];
 

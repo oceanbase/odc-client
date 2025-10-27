@@ -165,12 +165,25 @@ const taskSetting: IODCSetting[] = [
   ...getDatabaseChangeResultSetsConfig(taskGroup),
   ...getExecutionStrategyConfig(taskGroup),
   {
-    label: '作业任务最小调度间隔',
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.group.0D37A072',
+      defaultMessage: '作业任务最小调度间隔',
+    }),
     key: 'odc.schedule.minSchedulingIntervalMinutes',
     group: taskGroup,
     storeType: 'server',
     render: (value, onChange) => {
-      return <InputIntegerItem value={value} onChange={onChange} min="1" unit="分钟" />;
+      return (
+        <InputIntegerItem
+          value={value}
+          onChange={onChange}
+          min="1"
+          unit={formatMessage({
+            id: 'src.component.ODCSetting.config.group.104E2D2F',
+            defaultMessage: '分钟',
+          })}
+        />
+      );
     },
   },
   {

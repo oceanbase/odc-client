@@ -116,7 +116,15 @@ const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
             type="primary"
             onClick={() => {
               if (maxCount && checkedList?.length > maxCount) {
-                message.warning(`最多还可以添加${maxCount}个`);
+                message.warning(
+                  formatMessage(
+                    {
+                      id: 'src.component.BatchSelectionPopover.8DFDBE89',
+                      defaultMessage: '最多还可以添加{maxCount}个',
+                    },
+                    { maxCount },
+                  ),
+                );
                 return;
               }
               handleConfirm(checkedList);

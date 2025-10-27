@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import ParamsContext from '@/component/Task/context/ParamsContext';
 import { useContext, useMemo } from 'react';
 import { Divider, Select } from 'antd';
@@ -25,10 +26,18 @@ const TaskStatusFilter = () => {
   };
   return (
     <>
-      <div style={{ marginTop: '16px' }}>工单状态</div>
+      <div style={{ marginTop: '16px' }}>
+        {formatMessage({
+          id: 'src.component.Task.layout.Header.Filter.906A92D9',
+          defaultMessage: '工单状态',
+        })}
+      </div>
       <Select
         showSearch
-        placeholder="请输入"
+        placeholder={formatMessage({
+          id: 'src.component.Task.layout.Header.Filter.2C9CC734',
+          defaultMessage: '请输入',
+        })}
         filterOption={(input, option) =>
           (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
         }
@@ -61,7 +70,10 @@ const TaskStatusFilter = () => {
                       handleSelectStatus(taskStatusFilters?.map((item) => item.value));
                     }}
                   >
-                    全选
+                    {formatMessage({
+                      id: 'src.component.Task.layout.Header.Filter.4CC5A46C',
+                      defaultMessage: '全选',
+                    })}
                   </div>
                 ) : null}
                 {params.taskStatus.length ? (
@@ -71,7 +83,10 @@ const TaskStatusFilter = () => {
                       handleSelectStatus([]);
                     }}
                   >
-                    清空
+                    {formatMessage({
+                      id: 'src.component.Task.layout.Header.Filter.8E3EB745',
+                      defaultMessage: '清空',
+                    })}
                   </div>
                 ) : null}
               </div>

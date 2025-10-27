@@ -63,23 +63,34 @@ export const cleanUpTimingOptions = [
   {
     label: (
       <div>
-        归档完成后
+        {formatMessage({
+          id: 'src.component.Schedule.modals.DataArchive.Create.D2A0EF44',
+          defaultMessage: '归档完成后',
+        })}
+
         <HelpDoc leftText isTip doc="TimingforCleanAfterArchive"></HelpDoc>
       </div>
     ),
+
     value: 'afterArchive',
   },
 
   {
     label: (
       <div>
-        边归档边清理
+        {formatMessage({
+          id: 'src.component.Schedule.modals.DataArchive.Create.DD61A932',
+          defaultMessage: '边归档边清理',
+        })}
+
         <HelpDoc leftText isTip doc="TimingforCleanAfterCleanUp"></HelpDoc>
       </div>
     ),
+
     value: 'afterCleanUp',
   },
 ];
+
 export const variable = {
   name: '',
   format: '',
@@ -252,7 +263,12 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     setConfirmLoading(false);
     if (res.data) {
       handleCancel(false);
-      message.success('新建成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Schedule.modals.DataArchive.Create.FB0BE505',
+          defaultMessage: '新建成功',
+        }),
+      );
     }
   };
 
@@ -262,7 +278,12 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     setConfirmLoading(false);
     if (res.data) {
       handleCancel(false);
-      message.success('修改成功');
+      message.success(
+        formatMessage({
+          id: 'src.component.Schedule.modals.DataArchive.Create.C5C8BC5F',
+          defaultMessage: '修改成功',
+        }),
+      );
     }
   };
 
@@ -285,7 +306,12 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               }) /*编辑数据归档*/
             }
           </div>
-          <div>作业需要重新审批，审批通过后此作业将自动启动</div>
+          <div>
+            {formatMessage({
+              id: 'src.component.Schedule.modals.DataArchive.Create.229CE5AD',
+              defaultMessage: '作业需要重新审批，审批通过后此作业将自动启动',
+            })}
+          </div>
         </>
       ),
 
@@ -474,10 +500,22 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
     const errorList = res?.filter((item) => item.level === 'ERROR') ?? [];
     const warningList = res?.filter((item) => item.level === 'WARN') ?? [];
     if (res && !res?.length) {
-      message.success('预检查完成，暂时没有发现问题');
+      message.success(
+        formatMessage({
+          id: 'src.component.Schedule.modals.DataArchive.Create.34E086B6',
+          defaultMessage: '预检查完成，暂时没有发现问题',
+        }),
+      );
     } else if (res && res?.length) {
       message.warning(
-        `预检查完成，发现${warningList?.length}个警告，发现${errorList?.length}个错误。`,
+        formatMessage(
+          {
+            id: 'src.component.Schedule.modals.DataArchive.Create.4A5CC995',
+            defaultMessage:
+              '预检查完成，发现{warningListLength}个警告，发现{errorListLength}个错误。',
+          },
+          { warningListLength: warningList?.length, errorListLength: errorList?.length },
+        ),
       );
     }
     setConfirmLoading(false);
@@ -560,14 +598,22 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           {
             key: 'baseInfo',
             href: '#baseInfo',
-            title: '基本信息',
+            title: formatMessage({
+              id: 'src.component.Schedule.modals.DataArchive.Create.C211D5A1',
+              defaultMessage: '基本信息',
+            }),
           },
           {
             key: 'archiveRange',
             href: '#archiveRange',
             title: (
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={{ marginRight: '4px' }}>归档范围</div>
+                <div style={{ marginRight: '4px' }}>
+                  {formatMessage({
+                    id: 'src.component.Schedule.modals.DataArchive.Create.77EF9606',
+                    defaultMessage: '归档范围',
+                  })}
+                </div>
                 <PreCheckTip preCheckResult={preCheckResult} showTip={false} />
               </div>
             ),
@@ -575,12 +621,18 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           {
             key: 'executionMethod',
             href: '#executionMethod',
-            title: '执行方式',
+            title: formatMessage({
+              id: 'src.component.Schedule.modals.DataArchive.Create.0B8E7D76',
+              defaultMessage: '执行方式',
+            }),
           },
           {
             key: 'scheduleSetting',
             href: '#scheduleSetting',
-            title: '作业设置',
+            title: formatMessage({
+              id: 'src.component.Schedule.modals.DataArchive.Create.95C65157',
+              defaultMessage: '作业设置',
+            }),
           },
         ]}
       >
@@ -594,7 +646,10 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
             onFieldsChange={handleFieldsChange}
           >
             <h3 id="baseInfo" className={styles.title}>
-              基本信息
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Create.B71961E8',
+                defaultMessage: '基本信息',
+              })}
             </h3>
 
             <Space align="start">
@@ -641,14 +696,24 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
                       );
                       if (!isTargetConnectTypeAllow) {
                         callback(
-                          `源端 ${sourceConnectTypeName} 类型 -> 目标端 ${targetConnectTypeName} 类型不在已支持的归档链路范围内`,
+                          formatMessage(
+                            {
+                              id: 'src.component.Schedule.modals.DataArchive.Create.B78BC98D',
+                              defaultMessage:
+                                '源端 {sourceConnectTypeName} 类型 -> 目标端 {targetConnectTypeName} 类型不在已支持的归档链路范围内',
+                            },
+                            { sourceConnectTypeName, targetConnectTypeName },
+                          ),
                         );
                       }
                       callback();
                     },
                   },
                 ]}
-                placeholder="仅支持选择同一项目内数据库"
+                placeholder={formatMessage({
+                  id: 'src.component.Schedule.modals.DataArchive.Create.ADCB2D7A',
+                  defaultMessage: '仅支持选择同一项目内数据库',
+                })}
                 onChange={handleTargetDatabaseChange}
                 onInit={(db) => setTargetDatabase(db)}
                 name="targetDataBaseId"
@@ -657,20 +722,23 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
             </Space>
 
             {/* <Form.Item shouldUpdate noStyle>
-              {({ getFieldValue }) => {
-                const deleteAfterMigration = getFieldValue('deleteAfterMigration');
-                if (deleteAfterMigration) {
-                  return (
-                    <Form.Item label="清理时机" name="aaaaaa2" required>
-                      <Radio.Group options={cleanUpTimingOptions} />
-                    </Form.Item>
-                  );
-                }
-              }}
-            </Form.Item> */}
+               {({ getFieldValue }) => {
+                 const deleteAfterMigration = getFieldValue('deleteAfterMigration');
+                 if (deleteAfterMigration) {
+                   return (
+                     <Form.Item label="清理时机" name="aaaaaa2" required>
+                       <Radio.Group options={cleanUpTimingOptions} />
+                     </Form.Item>
+                   );
+                 }
+               }}
+              </Form.Item> */}
 
             <h3 id="archiveRange" className={styles.title}>
-              归档范围
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Create.06596F8D',
+                defaultMessage: '归档范围',
+              })}
             </h3>
 
             <Space direction="vertical" size={24} style={{ width: '100%' }}>
@@ -708,7 +776,10 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
               )}
 
             <h3 id="executionMethod" className={styles.title}>
-              执行方式
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Create.D2654C80',
+                defaultMessage: '执行方式',
+              })}
             </h3>
 
             <SchduleExecutionMethodForm
@@ -718,7 +789,10 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
             />
 
             <h3 id="scheduleSetting" className={styles.title}>
-              作业设置
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Create.59B1E354',
+                defaultMessage: '作业设置',
+              })}
             </h3>
             <SynchronizationItem form={form} targetDatabase={targetDatabase} />
             <ShardingStrategyItem form={form} />
@@ -761,7 +835,10 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
             </Form.Item>
             <DirtyRowAction dependentField="deleteAfterMigration" />
             <Form.Item
-              label={'数据插入策略'}
+              label={formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Create.ED8584B7',
+                defaultMessage: '数据插入策略',
+              })}
               name="migrationInsertAction"
               rules={rules.migrationInsertAction}
             >
@@ -777,8 +854,15 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
         hideSqlPreview={form.getFieldValue('archiveRange') === IArchiveRange.ALL}
         tips={
           form.getFieldValue('archiveRange') === IArchiveRange.ALL
-            ? '整库归档不支持预览 SQL'
-            : '请确认以下 SQL，变量以当前时间代入，具体执行按实际配置替换，可点击提交按钮继续提交任务'
+            ? formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Create.B4BFD6ED',
+                defaultMessage: '整库归档不支持预览 SQL',
+              })
+            : formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Create.B240831D',
+                defaultMessage:
+                  '请确认以下 SQL，变量以当前时间代入，具体执行按实际配置替换，可点击提交按钮继续提交任务',
+              })
         }
         modelHeight={form.getFieldValue('archiveRange') === IArchiveRange.ALL ? 130 : 400}
         database={targetDatabase}
@@ -794,18 +878,33 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
         style={{ padding: '16px 16px 0px 24px', borderTop: '1px solid var(--table-border-color)' }}
       >
         <Space>
-          <Tooltip title={preCheckResult?.errorList?.length ? '存在错误，请先解决错误' : undefined}>
+          <Tooltip
+            title={
+              preCheckResult?.errorList?.length
+                ? formatMessage({
+                    id: 'src.component.Schedule.modals.DataArchive.Create.5CBD0C8E',
+                    defaultMessage: '存在错误，请先解决错误',
+                  })
+                : undefined
+            }
+          >
             <Button
               type="primary"
               loading={confirmLoading || loading}
               onClick={handleSQLPreview}
               disabled={Boolean(preCheckResult?.errorList?.length)}
             >
-              下一步：预览SQL
+              {formatMessage({
+                id: 'src.component.Schedule.modals.DataArchive.Create.C024C55B',
+                defaultMessage: '下一步：预览SQL',
+              })}
             </Button>
           </Tooltip>
           <Button onClick={() => handleSubmit(undefined, true)} loading={confirmLoading}>
-            预检查
+            {formatMessage({
+              id: 'src.component.Schedule.modals.DataArchive.Create.2A5C63C7',
+              defaultMessage: '预检查',
+            })}
           </Button>
           <Button onClick={() => handleCancel(hasEdit)}>
             {

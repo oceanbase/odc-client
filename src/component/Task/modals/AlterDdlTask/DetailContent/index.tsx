@@ -207,16 +207,40 @@ export function getItems(
         ['ID', task.id],
 
         [
-          '类型',
+          formatMessage({
+            id: 'src.component.Task.modals.AlterDdlTask.DetailContent.39A4BA43',
+            defaultMessage: '类型',
+          }),
+
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.LockFreeStructureChange',
             defaultMessage: '无锁结构变更',
           }), //无锁结构变更
         ],
-        ['数据库', <EllipsisText content={<DatabaseLabel database={task?.database} />} />],
+        [
+          formatMessage({
+            id: 'src.component.Task.modals.AlterDdlTask.DetailContent.BD4F1189',
+            defaultMessage: '数据库',
+          }),
+          <EllipsisText content={<DatabaseLabel database={task?.database} />} />,
+        ],
 
-        ['数据源', <EllipsisText content={task?.database?.dataSource?.name} />],
-        !login.isPrivateSpace() ? ['项目', <EllipsisText content={task?.project?.name} />] : null,
+        [
+          formatMessage({
+            id: 'src.component.Task.modals.AlterDdlTask.DetailContent.CE75FBB9',
+            defaultMessage: '数据源',
+          }),
+          <EllipsisText content={task?.database?.dataSource?.name} />,
+        ],
+        !login.isPrivateSpace()
+          ? [
+              formatMessage({
+                id: 'src.component.Task.modals.AlterDdlTask.DetailContent.E4E73727',
+                defaultMessage: '项目',
+              }),
+              <EllipsisText content={task?.project?.name} />,
+            ]
+          : null,
         hasFlow ? riskItem : null,
         [
           formatMessage({
@@ -239,6 +263,7 @@ export function getItems(
           }),
           LockStrategyLableMap[parameters?.forbiddenWriteType || LockStrategy.LOCK_USER],
         ],
+
         lockUsers
           ? [
               formatMessage({
@@ -285,6 +310,7 @@ export function getItems(
           //完成后源表清理策略
           ClearStrategyMap[parameters?.originTableCleanStrategy],
         ],
+
         [
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.ExecutionMethod',
@@ -328,6 +354,7 @@ export function getItems(
                 onOk={handleRowLimit}
                 readlOnly={!cantBeModified}
               />,
+
               1,
             ]
           : null,

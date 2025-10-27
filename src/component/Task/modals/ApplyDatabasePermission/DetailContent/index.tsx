@@ -87,7 +87,12 @@ const TaskContent: React.FC<IProps> = (props) => {
     <>
       <Descriptions column={2}>
         <Descriptions.Item label={'ID'}>{task?.id}</Descriptions.Item>
-        <Descriptions.Item label={'类型'}>
+        <Descriptions.Item
+          label={formatMessage({
+            id: 'src.component.Task.modals.ApplyDatabasePermission.DetailContent.5C73581C',
+            defaultMessage: '类型',
+          })}
+        >
           {
             formatMessage({
               id: 'src.component.Task.ApplyDatabasePermission.DetailContent.176A9CCE' /*申请库权限*/,
@@ -162,6 +167,7 @@ const TaskContent: React.FC<IProps> = (props) => {
           marginTop: 16,
         }}
       />
+
       <Descriptions column={2}>
         <Descriptions.Item
           label={

@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 import ParamsContext from '@/component/Schedule/context/ParamsContext';
 import { useContext, useMemo, useRef } from 'react';
 import { ScheduleStatus } from '@/d.ts/schedule';
@@ -29,10 +30,18 @@ const ScheduleStatusFilter = () => {
   }, []);
   return (
     <>
-      <div style={{ marginTop: '16px' }}>作业状态</div>
+      <div style={{ marginTop: '16px' }}>
+        {formatMessage({
+          id: 'src.component.Schedule.layout.Header.Filter.E43592D9',
+          defaultMessage: '作业状态',
+        })}
+      </div>
       <Select
         showSearch
-        placeholder="请输入"
+        placeholder={formatMessage({
+          id: 'src.component.Schedule.layout.Header.Filter.3333BBF3',
+          defaultMessage: '请输入',
+        })}
         filterOption={(input, option) =>
           (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
         }
@@ -54,7 +63,10 @@ const ScheduleStatusFilter = () => {
                       handleSelectStatus(statusOptions?.map((item) => item.value));
                     }}
                   >
-                    全选
+                    {formatMessage({
+                      id: 'src.component.Schedule.layout.Header.Filter.D39866EA',
+                      defaultMessage: '全选',
+                    })}
                   </div>
                 ) : null}
                 {params?.status?.length ? (
@@ -64,7 +76,10 @@ const ScheduleStatusFilter = () => {
                       handleSelectStatus([]);
                     }}
                   >
-                    清空
+                    {formatMessage({
+                      id: 'src.component.Schedule.layout.Header.Filter.11087720',
+                      defaultMessage: '清空',
+                    })}
                   </div>
                 ) : null}
               </div>

@@ -60,8 +60,7 @@ class DatabaseStore {
   @observable.shallow
   public tables: Array<Partial<ITableModel>> = [];
 
-  @observable
-  public static refreshKey: string = undefined;
+  @observable public static refreshKey: string = undefined;
 
   @observable.shallow
   public externalTableTables: Array<Partial<ITableModel>> = [];
