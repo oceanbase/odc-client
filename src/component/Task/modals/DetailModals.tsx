@@ -100,6 +100,11 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       node.nodeType === TaskFlowNodeType.APPROVAL_TASK || node.taskType === IFlowTaskType.PRE_CHECK,
   );
 
+  const taskRef = useRef<TaskDetail<TaskRecordParameters>>(task);
+  useEffect(() => {
+    taskRef.current = task;
+  }, [task]);
+
   const hasLog = true;
   const hasResult =
     ![
@@ -108,19 +113,21 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       TaskType.LOGICAL_DATABASE_CHANGE,
       TaskType.MULTIPLE_ASYNC,
     ].includes(type) && detailType !== TaskDetailType.FLOW;
-  const isLoop = [
-    TaskStatus.PRE_CHECK_EXECUTING,
-    TaskStatus.WAIT_FOR_SCHEDULE_EXECUTION,
-    TaskStatus.WAIT_FOR_EXECUTION_EXPIRED,
-    TaskStatus.APPROVING,
-    TaskStatus.WAIT_FOR_EXECUTION,
-    TaskStatus.EXECUTING,
-    TaskStatus.CREATED,
-    TaskStatus.APPROVED,
-    TaskStatus.ENABLED,
-    TaskStatus.PAUSE,
-    TaskStatus.CANCELLED,
-  ].includes(task?.status);
+  const shouldLoop = (task?: TaskDetail<TaskRecordParameters>) => {
+    return [
+      TaskStatus.PRE_CHECK_EXECUTING,
+      TaskStatus.WAIT_FOR_SCHEDULE_EXECUTION,
+      TaskStatus.WAIT_FOR_EXECUTION_EXPIRED,
+      TaskStatus.APPROVING,
+      TaskStatus.WAIT_FOR_EXECUTION,
+      TaskStatus.EXECUTING,
+      TaskStatus.CREATED,
+      TaskStatus.APPROVED,
+      TaskStatus.ENABLED,
+      TaskStatus.PAUSE,
+      TaskStatus.CANCELLED,
+    ].includes(task?.status);
+  };
   const clockRef = useRef(null);
   let taskContent = null;
   let getItems = null;
@@ -135,7 +142,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
   };
 
   const getLog = async function (args?: ITableLoadOptions) {
-    if (hasLog && (isLoop || log?.[logType] === undefined)) {
+    if (hasLog && (shouldLoop(taskRef?.current) || log?.[logType] === undefined)) {
       const data = await getTaskLog(detailId, logType);
       setLoading(false);
       setLog({
@@ -153,17 +160,18 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
 
   const loadData = async () => {
     clearTimeout(clockRef.current);
+    const shouldRequest = !taskRef?.current || shouldLoop(taskRef?.current);
     try {
-      if (!task || isLoop) {
+      if (shouldRequest) {
         getTask();
       }
       if (detailType === TaskDetailType.LOG) {
         getLog();
-      } else if (hasResult) {
+      } else if (hasResult && shouldRequest) {
         getResult();
       }
 
-      if (isLoop) {
+      if (shouldRequest) {
         clockRef.current = setTimeout(() => {
           loadData();
         }, 5000);
@@ -188,7 +196,7 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
     return () => {
       clearTimeout(clockRef.current);
     };
-  }, [detailId, visible, detailType, logType, task?.status]);
+  }, [detailId, visible, detailType, logType]);
 
   useEffect(() => {
     if (visible && detailId && !task) {

@@ -465,6 +465,20 @@ export const status: Partial<
       defaultMessage: '已回滚',
     }), //已回滚
   },
+  [TaskStatus.COMPLETED]: {
+    icon: (
+      <CheckCircleFilled
+        style={{
+          color: 'var(--icon-green-color)',
+        }}
+      />
+    ),
+
+    text: formatMessage({
+      id: 'odc.component.Status.Completed',
+      defaultMessage: '已完成',
+    }), //已完成
+  },
 };
 
 // 周期任务状态
