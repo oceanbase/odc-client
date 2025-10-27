@@ -54,10 +54,7 @@ export const ExpressionMap = {
     id: 'odc.src.page.Secure.RiskLevel.Environment',
     defaultMessage: '环境',
   }), //'环境'
-  [Expression.TASK_TYPE]: formatMessage({
-    id: 'odc.src.page.Secure.RiskLevel.Type',
-    defaultMessage: '任务类型',
-  }), //'任务类型'
+  [Expression.TASK_TYPE]: '工单类型',
   [Expression.SQL_CHECK_RESULT]: formatMessage({
     id: 'odc.src.page.Secure.RiskLevel.SQLExaminationResults',
     defaultMessage: 'SQL 检查结果',

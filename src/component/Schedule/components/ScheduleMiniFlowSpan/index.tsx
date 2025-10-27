@@ -11,8 +11,11 @@ import { formatMessage } from '@/util/intl';
 interface IProps {
   onDetail: () => void;
   record: IScheduleRecord<ScheduleRecordParameters>;
+  isShowApprovableInfo: boolean;
+  isShowFLowPopover: boolean;
 }
-const ScheduleMiniFlowSpan: React.FC<IProps> = ({ onDetail, record }) => {
+const ScheduleMiniFlowSpan: React.FC<IProps> = (props) => {
+  const { onDetail, record, isShowApprovableInfo, isShowFLowPopover } = props;
   const { candidateApprovers, approveInstanceId } = record;
   const candidateApproversName = candidateApprovers?.map((item) => item.name)?.join(', ');
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -42,24 +45,36 @@ const ScheduleMiniFlowSpan: React.FC<IProps> = ({ onDetail, record }) => {
       fresh={true}
       open={popoverOpen}
       onOpenChange={setPopoverOpen}
+      destroyOnHidden
       content={
-        <div style={{ width: '300px', minHeight: '100px', minWidth: '200px' }}>
-          {operationTypeDescription}
-          <Content Id={approveInstanceId} onDetail={onDetail} visible={popoverOpen} />
-        </div>
+        isShowFLowPopover ? (
+          <div style={{ width: '300px', minHeight: '100px', minWidth: '200px' }}>
+            {operationTypeDescription}
+            <Content Id={approveInstanceId} onDetail={onDetail} visible={popoverOpen} />
+          </div>
+        ) : null
       }
     >
       <div
         style={{
-          color: 'var(--text-color-secondary)',
-          maxWidth: '134px',
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
-          textOverflow: 'ellipsis',
+          width: 'max-content',
+          maxWidth: '100%',
         }}
       >
-        审批中
-        {candidateApproversName && `(${candidateApproversName})`}
+        {props.children}
+        {isShowApprovableInfo && (
+          <div
+            style={{
+              color: 'var(--text-color-secondary)',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            审批中
+            {candidateApproversName && `(${candidateApproversName})`}
+          </div>
+        )}
       </div>
     </Popover>
   );
