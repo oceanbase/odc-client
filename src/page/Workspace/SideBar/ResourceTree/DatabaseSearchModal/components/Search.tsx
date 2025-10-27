@@ -67,7 +67,7 @@ const Search = ({ userStore, modalStore }: Iprops) => {
             <Tooltip
               title={`${database?.name}(${database?.dataSource?.name})`}
               placement="top"
-              overlayStyle={{ maxWidth: 280 }}
+              styles={{ root: { maxWidth: 280 } }}
             >
               <span className={styles.selectTitle}>{database?.name}</span>
             </Tooltip>
@@ -81,7 +81,7 @@ const Search = ({ userStore, modalStore }: Iprops) => {
         <>
           <span className={styles.selectedDatabase}>
             <StatusIcon item={dataSource} />
-            <Tooltip title={dataSource?.name} placement="top" overlayStyle={{ maxWidth: 280 }}>
+            <Tooltip title={dataSource?.name} placement="top" styles={{ root: { maxWidth: 280 } }}>
               <span className={styles.selectTitle}>{dataSource?.name}</span>
             </Tooltip>
           </span>
