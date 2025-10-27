@@ -126,14 +126,8 @@ const CreateModal: React.FC<IProps> = (props) => {
 
   const loadEditData = async () => {
     const { task, type, objectId } = asyncTaskData;
-    const {
-      parameters,
-      projectId,
-      database: { id: databaseId },
-      description,
-      executionStrategy,
-      executionTime,
-    } = task;
+    const { parameters, projectId, database, description, executionStrategy, executionTime } = task;
+    const { id: databaseId } = database || {};
     const {
       delimiter,
       queryLimit,
