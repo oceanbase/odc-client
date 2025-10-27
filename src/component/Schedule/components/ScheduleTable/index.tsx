@@ -266,20 +266,17 @@ const ScheduleTable: React.FC<IProps> = (props) => {
       width: 150,
       render: (status, record: IScheduleRecord<ScheduleRecordParameters>) => {
         return (
-          <div>
-            <div>
-              <ScheduleStatusLabel status={status} />
-            </div>
-            {record?.approvable && record?.approveInstanceId && (
-              <ScheduleMiniFlowSpan
-                record={record}
-                onDetail={() => {
-                  onDetailVisible(record, true, ScheduleDetailType.OPERATION_RECORD);
-                  scheduleStore.setOpenOperationId(record?.latestChangedLogId);
-                }}
-              />
-            )}
-          </div>
+          <ScheduleMiniFlowSpan
+            record={record}
+            isShowApprovableInfo={Boolean(record?.approvable && record?.approveInstanceId)}
+            isShowFLowPopover={Boolean(record?.approvable && record?.approveInstanceId)}
+            onDetail={() => {
+              onDetailVisible(record, true, ScheduleDetailType.OPERATION_RECORD);
+              scheduleStore.setOpenOperationId(record?.latestChangedLogId);
+            }}
+          >
+            <ScheduleStatusLabel status={status} />
+          </ScheduleMiniFlowSpan>
         );
       },
     },

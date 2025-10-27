@@ -433,12 +433,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
     },
     {
       key: 'TASK_CYCLE_MENU',
-      text: [
-        formatMessage({
-          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.36AA3D8E',
-          defaultMessage: '定时任务',
-        }) /*'定时任务'*/,
-      ],
+      text: ['作业调度'],
 
       ellipsis: true,
       hasDivider(node) {
