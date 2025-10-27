@@ -652,9 +652,10 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
         const structureComparisonData =
           modalStore?.structureComparisonDataMap?.get(task?.id) || null;
         const disable =
-          task?.type === TaskType.STRUCTURE_COMPARISON &&
-          structureComparisonData &&
-          !['DONE', 'FAILED'].includes(structureComparisonData?.status);
+          (task?.type === TaskType.STRUCTURE_COMPARISON &&
+            structureComparisonData &&
+            !['DONE', 'FAILED'].includes(structureComparisonData?.status)) ||
+          !structureComparisonData;
         // 结构比对结果均为一致时，无须发起数据库变更任务。
         const noAction =
           'DONE' === structureComparisonData?.status &&

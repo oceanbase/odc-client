@@ -363,6 +363,9 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
       if (!(currentResult as any)?.taskId) {
         return;
       }
+      if (args && !args?.pageSize) {
+        return;
+      }
       const { filters, sorter, pagination, pageSize } = args ?? {};
       const { current = 1 } = pagination ?? {};
       const { dbObjectName, operationType } = filters ?? {};
@@ -396,7 +399,6 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
           setCurrentResult(currentResult);
           clearTimeout(timerRef.current);
           timerRef.current = null;
-          loadStructureComparisonResults();
         } else {
           modalStore?.updateStructureComparisonDataMap(task?.id, {
             database: null,
@@ -424,9 +426,6 @@ const StructureComparisonTaskContent: React.FC<IStructureComparisonTaskContentPr
     }, [detailModalOpen]);
 
     useEffect(() => {
-      if (visible) {
-        loop();
-      }
       return () => {
         clearTimeout(timerRef.current);
         timerRef.current = null;
