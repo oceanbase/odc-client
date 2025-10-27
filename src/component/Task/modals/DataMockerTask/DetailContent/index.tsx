@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import RiskLevelLabel from '@/component/RiskLevelLabel';
 import RuleConfigTable from '@/component/Task/modals/DataMockerTask/CreateModal/RuleConfigTable';
 import { convertServerColumnsToFormColumns } from '@/component/Task/modals/DataMockerTask/CreateModal/RuleContent';
 import { MockStrategyTextMap } from '@/component/Task/modals/DataMockerTask/CreateModal/type';

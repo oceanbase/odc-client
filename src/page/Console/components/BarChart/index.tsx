@@ -116,10 +116,11 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
             result += `<div class="bar-chart-tooltip-title">${params[0].name}</div>`;
 
             // 任务总计
+            const title = '任务总计';
             result +=
               total > 0
                 ? `<div class="bar-chart-tooltip-total" data-task-type="${taskType}" data-click-type="total">
-              <span>任务总计</span>
+              <span>${title}</span>
               <span class="bar-chart-tooltip-total-number">${total}  <span class="bar-chart-tooltip-total-arrow">></span></span>
             
             </div>`
