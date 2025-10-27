@@ -37,9 +37,9 @@ import { ReactComponent as QuestionSvg } from '@/svgr/question.svg';
 import { ReactComponent as InfoSvg } from '@/svgr/info.svg';
 
 const { RangePicker } = DatePicker;
-const cacheProjectIdKey = `odc-front-page-project-${login.organizationId}`;
-const cacheTimeKey = `odc-front-page-time-${login.organizationId}`;
-const cacheDateKey = `odc-front-page-date-${login.organizationId}`;
+const getCacheProjectIdKey = () => `odc-front-page-project-${login.user?.id}`;
+const getCacheTimeKey = () => `odc-front-page-time-${login.user?.id}`;
+const getCacheDateKey = () => `odc-front-page-date-${login.user?.id}`;
 
 const aboutUsIcons = [
   <Icon component={SendSvg} style={{ color: '#52c41a', fontSize: 13 }} />,
@@ -51,8 +51,8 @@ const aboutUsIcons = [
 const ConsoleMain = () => {
   const { aboutUs, bestPractice } = ConsoleTextConfig;
   const { status, statusColor, taskStatus, taskStatusColor } = ConsoleTextConfig.schdules;
-  const cacheTimeValue = localStorage.getItem(cacheTimeKey);
-  const cacheDateValue = localStorage.getItem(cacheDateKey);
+  const cacheTimeValue = localStorage.getItem(getCacheTimeKey());
+  const cacheDateValue = localStorage.getItem(getCacheDateKey());
   const [showModalAbout, setShowModalAbout] = useState(false);
 
   const handleAboutUsClick = (help: string, index: number) => {
@@ -92,11 +92,22 @@ const ConsoleMain = () => {
   });
 
   const { checkedKeys, getOrderedScheduleTypes } = useContext(PersonalizeLayoutContext);
-  const cacheProjectId = localStorage.getItem(cacheProjectIdKey);
+  const cacheProjectId = localStorage.getItem(getCacheProjectIdKey());
 
-  const [selectedProjectId, setSelectedProjectId] = useState(
-    cacheProjectId && Number(cacheProjectId) > -1 ? Number(cacheProjectId) : undefined,
-  );
+  const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>(() => {
+    if (cacheProjectId) {
+      const projectId = Number(cacheProjectId);
+      return projectId > -1 ? projectId : undefined;
+    }
+    return undefined;
+  });
+
+  const [selectDisplayValue, setSelectDisplayValue] = useState<number>(() => {
+    if (cacheProjectId) {
+      return Number(cacheProjectId);
+    }
+    return -1;
+  });
 
   const navigate = useNavigate();
 
@@ -306,7 +317,7 @@ const ConsoleMain = () => {
                         options={TimeOptions}
                         onChange={(value: number) => {
                           setTimeValue(value);
-                          localStorage.setItem(cacheTimeKey, JSON.stringify(value));
+                          localStorage.setItem(getCacheTimeKey(), JSON.stringify(value));
                         }}
                       />
                       {String(timeValue) === 'custom' && (
@@ -319,7 +330,7 @@ const ConsoleMain = () => {
                             const dateForStorage = value
                               ? [value[0]?.valueOf(), value[1]?.valueOf()]
                               : null;
-                            localStorage.setItem(cacheDateKey, JSON.stringify(dateForStorage));
+                            localStorage.setItem(getCacheDateKey(), JSON.stringify(dateForStorage));
                           }}
                         />
                       )}
@@ -328,10 +339,11 @@ const ConsoleMain = () => {
                         placeholder="请选择项目"
                         style={{ maxWidth: 200, border: 'none' }}
                         options={[{ label: '全部项目', value: -1 }, ...projectOptions]}
-                        defaultValue={cacheProjectId ? Number(cacheProjectId) : -1}
+                        value={selectDisplayValue}
                         onChange={(value) => {
+                          setSelectDisplayValue(value);
                           setSelectedProjectId(value === -1 ? undefined : value);
-                          localStorage.setItem(cacheProjectIdKey, value + '');
+                          localStorage.setItem(getCacheProjectIdKey(), value + '');
                         }}
                       />
                     </div>
