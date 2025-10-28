@@ -13,14 +13,21 @@ export const getDefaultName = (database: IDatabase) => {
 export const getInitScheduleName = (scheduleName: string, type: 'RETRY' | 'EDIT') => {
   let initScheduleName = undefined;
   if (scheduleName) {
-    if (type === 'RETRY') {
-      initScheduleName = formatMessage(
-        {
-          id: 'src.component.Task.component.CreateTaskConfirmModal.A4D01F9B',
-          defaultMessage: '[克隆]{scheduleName}',
-        },
-        { scheduleName },
-      );
+    switch (type) {
+      case 'RETRY':
+        initScheduleName = formatMessage(
+          {
+            id: 'src.component.Task.component.CreateTaskConfirmModal.A4D01F9B',
+            defaultMessage: '[克隆]{scheduleName}',
+          },
+          { scheduleName },
+        );
+        break;
+      case 'EDIT':
+        initScheduleName = scheduleName;
+        break;
+      default:
+        break;
     }
   }
   return safeTruncateString(MaximumCharacterLength, initScheduleName);
