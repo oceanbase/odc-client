@@ -164,6 +164,10 @@ const ScheduleTable: React.FC<IProps> = (props) => {
   }, 6000);
 
   useEffect(() => {
+    loadData(params, perspective, pagination);
+  }, [pageStore?.activePageKey]);
+
+  useEffect(() => {
     return () => {
       destory?.();
     };
