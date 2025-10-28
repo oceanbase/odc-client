@@ -182,6 +182,21 @@ export const flowStatusSelectOptions = [
   TaskStatus.PRE_CHECK_FAILED,
 ];
 
+export const PrivateSpaceflowStatusSelectOptions = [
+  TaskStatus.CREATED,
+  TaskStatus.PRE_CHECK_EXECUTING,
+  TaskStatus.WAIT_FOR_SCHEDULE_EXECUTION,
+  TaskStatus.WAIT_FOR_EXECUTION,
+  TaskStatus.EXECUTING,
+  TaskStatus.EXECUTION_SUCCEEDED,
+  TaskStatus.EXECUTION_SUCCEEDED_WITH_ERRORS,
+  TaskStatus.EXECUTION_ABNORMAL,
+  TaskStatus.EXECUTION_FAILED,
+  TaskStatus.EXECUTION_EXPIRED,
+  TaskStatus.CANCELLED,
+  TaskStatus.PRE_CHECK_FAILED,
+];
+
 export const status: Partial<
   Record<TaskStatus, { icon: React.ReactNode; text: string; desc?: React.ReactNode }>
 > = {

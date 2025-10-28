@@ -14,7 +14,7 @@ const ArchiveRange: React.FC<{
     const { joinTableConfigs, partitions, tableName } = value || {};
     if (!partitions?.length && !joinTableConfigs?.length) return null;
     return (
-      <div>
+      <div style={{ maxWidth: '250px', whiteSpace: 'normal', wordBreak: 'break-all' }}>
         {joinTableConfigs?.length ? (
           <div style={{ marginBottom: 8 }}>
             <div style={{ color: 'var(--text-color-hint)' }}>
@@ -138,7 +138,7 @@ const ArchiveRange: React.FC<{
       render: (_, record: dmlParametersTables) => {
         const showAction = record?.joinTableConfigs?.length || record?.partitions?.length;
         return showAction ? (
-          <Popover content={getSettingTip(record)} destroyOnHidden>
+          <Popover content={getSettingTip(record)} destroyOnHidden placement="top">
             <a>
               {formatMessage({
                 id: 'src.component.Schedule.modals.DataArchive.Content.D09B03C7',

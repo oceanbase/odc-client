@@ -1,6 +1,7 @@
 import { getCronExecuteCycleByObject, translator } from '@/component/Crontab';
 import { ICycleTaskTriggerConfig, TaskExecStrategy, TaskStatus } from '@/d.ts';
-import { flowStatusSelectOptions } from '../Status';
+import { flowStatusSelectOptions, PrivateSpaceflowStatusSelectOptions } from '../Status';
+import login from '@/store/login';
 
 export const getCronCycle = (triggerConfig: ICycleTaskTriggerConfig) => {
   const { triggerStrategy, days, hours, cronExpression } = triggerConfig;
@@ -20,7 +21,13 @@ export const getStatusFilters = (status: {
   };
 }) => {
   return Object.keys(status)
-    ?.filter((key) => flowStatusSelectOptions.includes(key as TaskStatus))
+    ?.filter((key) => {
+      if (login.isPrivateSpace()) {
+        return PrivateSpaceflowStatusSelectOptions.includes(key as TaskStatus);
+      } else {
+        return flowStatusSelectOptions.includes(key as TaskStatus);
+      }
+    })
     .map((key) => {
       return {
         text: (

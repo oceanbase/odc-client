@@ -48,6 +48,7 @@ import { history } from '@umijs/max';
 import { inject, observer } from 'mobx-react';
 import TitleButton from '../TitleButton';
 import ListHeader from '../ListHeader';
+import styles from '../index.less';
 
 interface IProps {
   width: number;
@@ -314,7 +315,6 @@ const List: React.FC<IProps> = forwardRef(function (
   }
   return (
     <div>
-      <ListHeader />
       <InfiniteLoader
         isRowLoaded={({ index }) => {
           return index < connectionList?.length;
@@ -340,6 +340,7 @@ const List: React.FC<IProps> = forwardRef(function (
               height={height}
               width={width}
               rowCount={total}
+              className={styles.tableList}
             />
           );
         }}
@@ -358,9 +359,10 @@ const ListWrap = inject(
 function AutoSizerWrap(props, ref) {
   return (
     <>
+      <ListHeader />
       <AutoSizer style={{ width: '100%' }}>
         {({ width, height }) => {
-          return <ListWrap ref={ref} width={width} height={height} {...props} />;
+          return <ListWrap ref={ref} width={width} height={height - 24} {...props} />;
         }}
       </AutoSizer>
     </>
