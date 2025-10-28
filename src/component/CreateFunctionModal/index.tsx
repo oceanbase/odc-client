@@ -126,41 +126,24 @@ const CreateFunctionModal: React.FC<IProps> = inject(
     );
 
     const save = useCallback(async () => {
-      const data = await form.validateFields();
-      if (!data) {
-        return;
+      // 获取参数数据
+      const params = paramsRef.current?.getRows() || [];
+
+      // 设置params值以触发验证
+      form.setFieldValue('params', params);
+
+      // 验证所有表单字段（包括params）
+      try {
+        const data = await form.validateFields();
+        if (!data) {
+          return;
+        }
+        data.params = params;
+        onSave(data);
+      } catch (error) {
+        // 验证失败，错误信息会自动显示在对应的Form.Item下方
+        console.log('Validation failed:', error);
       }
-      data.params = paramsRef.current?.getRows();
-      // // 校验函数参数
-      // if (!data.params || data.params.length === 0) {
-      //   return;
-      // }
-
-      // 有空的字段
-      if (data.params.filter((p: { paramName: any }) => !p.paramName).length > 0) {
-        message.error(
-          formatMessage({
-            id: 'workspace.window.createFunction.params.validation',
-            defaultMessage: '请填写参数名称',
-          }),
-        );
-
-        return;
-      }
-
-      // 有空的数据类型
-      if (data.params.filter((p: { dataType: any }) => !p.dataType).length > 0) {
-        message.error(
-          formatMessage({
-            id: 'workspace.window.createFunction.dataType.validation',
-            defaultMessage: '请填写数据类型',
-          }),
-        );
-
-        return;
-      }
-
-      onSave(data);
     }, [onSave, form, paramsRef]);
     useEffect(() => {
       if (visible) {
@@ -363,10 +346,50 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                 />
 
                 <Form.Item
+                  name="params"
                   label={formatMessage({
                     id: 'odc.component.CreateFunctionModal.Parameter',
                     defaultMessage: '参数',
                   })}
+                  rules={[
+                    {
+                      validator: async (_, value) => {
+                        const params = paramsRef.current?.getRows() || [];
+
+                        // 检查是否有空的参数名称
+                        const emptyParamNames = params.filter(
+                          (p: { paramName: any }) => !p.paramName || !p.paramName.trim(),
+                        );
+                        if (emptyParamNames.length > 0) {
+                          return Promise.reject(
+                            new Error(
+                              formatMessage({
+                                id: 'workspace.window.createFunction.params.validation',
+                                defaultMessage: '请填写参数名称',
+                              }),
+                            ),
+                          );
+                        }
+
+                        // 检查是否有空的数据类型
+                        const emptyDataTypes = params.filter(
+                          (p: { dataType: any }) => !p.dataType || !p.dataType.trim(),
+                        );
+                        if (emptyDataTypes.length > 0) {
+                          return Promise.reject(
+                            new Error(
+                              formatMessage({
+                                id: 'workspace.window.createFunction.dataType.validation',
+                                defaultMessage: '请填写数据类型',
+                              }),
+                            ),
+                          );
+                        }
+
+                        return Promise.resolve();
+                      },
+                    },
+                  ]}
                 >
                   {session ? (
                     <FunctionOrProcedureParams
@@ -482,8 +505,15 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                         value={resourceSource}
                         onChange={(value) => {
                           setResourceSource(value);
-                          // 清空资源选择字段
-                          form.setFieldValue('resourceSelection', undefined);
+                          // 清空资源选择字段的值
+                          form.setFieldValue(['externalResourceProperties', 'file'], undefined);
+                          // 清除资源选择字段的验证错误
+                          form.setFields([
+                            {
+                              name: ['externalResourceProperties', 'file'],
+                              errors: [],
+                            },
+                          ]);
                           // 如果选择了已添加的外部资源，加载资源列表
                           if (value === 'external_resource') {
                             loadExternalResources();
@@ -573,6 +603,7 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                         />
                       ) : (
                         <Input
+                          type="url"
                           placeholder={formatMessage({
                             id: 'src.component.CreateFunctionModal.E82833CA',
                             defaultMessage: '请输入外部资源URL',
@@ -646,11 +677,51 @@ const CreateFunctionModal: React.FC<IProps> = inject(
                 </Row>
 
                 <Form.Item
+                  name="params"
                   className={styles.params}
                   label={formatMessage({
                     id: 'src.component.CreateFunctionModal.3DF2CDC6',
                     defaultMessage: '参数',
                   })}
+                  rules={[
+                    {
+                      validator: async (_, value) => {
+                        const params = paramsRef.current?.getRows() || [];
+
+                        // 检查是否有空的参数名称
+                        const emptyParamNames = params.filter(
+                          (p: { paramName: any }) => !p.paramName || !p.paramName.trim(),
+                        );
+                        if (emptyParamNames.length > 0) {
+                          return Promise.reject(
+                            new Error(
+                              formatMessage({
+                                id: 'workspace.window.createFunction.params.validation',
+                                defaultMessage: '请填写参数名称',
+                              }),
+                            ),
+                          );
+                        }
+
+                        // 检查是否有空的数据类型
+                        const emptyDataTypes = params.filter(
+                          (p: { dataType: any }) => !p.dataType || !p.dataType.trim(),
+                        );
+                        if (emptyDataTypes.length > 0) {
+                          return Promise.reject(
+                            new Error(
+                              formatMessage({
+                                id: 'workspace.window.createFunction.dataType.validation',
+                                defaultMessage: '请填写数据类型',
+                              }),
+                            ),
+                          );
+                        }
+
+                        return Promise.resolve();
+                      },
+                    },
+                  ]}
                 >
                   {session ? (
                     <FunctionOrProcedureParams
