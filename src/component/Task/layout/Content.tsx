@@ -258,6 +258,9 @@ const Content = forwardRef<ContentRef, IProps>((props, ref) => {
     if (startTime !== null && endTime !== null) {
       newParams.timeRange = 'custom';
       newParams.executeDate = [dayjs(startTime), dayjs(endTime)];
+    } else {
+      // 如果URL没有提供自定义日期范围，清空之前的executeDate
+      newParams.executeDate = [undefined, undefined];
     }
 
     // Apply project filter from URL
