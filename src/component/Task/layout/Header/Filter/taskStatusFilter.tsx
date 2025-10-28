@@ -2,9 +2,14 @@ import { formatMessage } from '@/util/intl';
 import ParamsContext from '@/component/Task/context/ParamsContext';
 import { useContext, useMemo } from 'react';
 import { Divider, Select } from 'antd';
-import { flowStatusSelectOptions, status } from '@/component/Task/component/Status';
+import {
+  flowStatusSelectOptions,
+  PrivateSpaceflowStatusSelectOptions,
+  status,
+} from '@/component/Task/component/Status';
 import { TaskStatus } from '@/d.ts';
 import styles from './index.less';
+import login from '@/store/login';
 
 const TaskStatusFilter = () => {
   const context = useContext(ParamsContext);
@@ -13,7 +18,13 @@ const TaskStatusFilter = () => {
 
   const taskStatusFilters = useMemo(() => {
     return Object.keys(status)
-      ?.filter((key) => flowStatusSelectOptions.includes(key as TaskStatus))
+      ?.filter((key) => {
+        if (login.isPrivateSpace()) {
+          return PrivateSpaceflowStatusSelectOptions.includes(key as TaskStatus);
+        } else {
+          return flowStatusSelectOptions.includes(key as TaskStatus);
+        }
+      })
       .map((key) => ({
         label: status[key].text,
         value: key,

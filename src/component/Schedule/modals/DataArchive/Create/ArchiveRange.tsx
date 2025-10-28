@@ -114,7 +114,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
     if (!partitions?.length && !joinTableConfigs?.length) return null;
     // 目前只有join类型，所以先写死join
     return (
-      <div>
+      <div style={{ maxWidth: '250px', whiteSpace: 'normal', wordBreak: 'break-all' }}>
         {joinTableConfigs?.length ? (
           <div style={{ marginBottom: 8 }}>
             <div style={{ color: 'var(--text-color-hint)' }}>
@@ -312,7 +312,11 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                                     databaseId={databaseId}
                                   />
 
-                                  <Popover content={getSettingTip(name)} destroyOnHidden>
+                                  <Popover
+                                    content={getSettingTip(name)}
+                                    destroyOnHidden
+                                    placement="top"
+                                  >
                                     <div onClick={() => open(index)} style={{ cursor: 'pointer' }}>
                                       {form.getFieldValue(['tables', name, 'joinTableConfigs'])
                                         ?.length ||

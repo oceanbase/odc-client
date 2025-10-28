@@ -88,7 +88,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
     const { joinTableConfigs, partitions, tableName } = data || {};
     if (!partitions?.length && !joinTableConfigs?.length) return null;
     return (
-      <div>
+      <div style={{ maxWidth: '250px', whiteSpace: 'normal', wordBreak: 'break-all' }}>
         {joinTableConfigs?.length ? (
           <div style={{ marginBottom: 8 }}>
             <div style={{ color: 'var(--text-color-hint)' }}>
@@ -310,7 +310,11 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                                     databaseId={databaseId}
                                   />
 
-                                  <Popover destroyOnHidden content={getSettingTip(name)}>
+                                  <Popover
+                                    destroyOnHidden
+                                    content={getSettingTip(name)}
+                                    placement="top"
+                                  >
                                     <div onClick={() => open(index)} style={{ cursor: 'pointer' }}>
                                       {form.getFieldValue(['tables', name, 'joinTableConfigs'])
                                         ?.length ||
