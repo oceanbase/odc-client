@@ -42,21 +42,22 @@ const ScheduleItem = ({
 
   const buildNavigateUrlWithFilters = (baseUrl: string) => {
     const params = new URLSearchParams(baseUrl.split('?')[1] || '');
+    const urlTimeValue = params.get('timeValue');
 
-    // Add time filter (only if not already set in URL)
-    if (!params.has('timeValue') && timeValue) {
-      params.set('timeValue', String(timeValue));
-    }
-
-    // Add custom date range if applicable (only if timeValue not already in URL)
-    if (
-      !params.has('timeValue') &&
-      String(timeValue) === 'custom' &&
-      dateValue?.[0] &&
-      dateValue?.[1]
-    ) {
-      params.set('startTime', String(dateValue[0].valueOf()));
-      params.set('endTime', String(dateValue[1].valueOf()));
+    // Add time filter
+    // 工作台的时间筛选传递到作业页面, 但"已启用"按钮的 timeValue=ALL 保留（表示查看所有已启用作业，不按时间筛选）
+    if (timeValue !== undefined && timeValue !== null && urlTimeValue !== 'ALL') {
+      if (String(timeValue) === 'custom') {
+        // 自定义时间：设置 timeValue 为 custom，并添加具体的时间范围
+        params.set('timeValue', 'custom');
+        if (dateValue?.[0] && dateValue?.[1]) {
+          params.set('startTime', String(dateValue[0].valueOf()));
+          params.set('endTime', String(dateValue[1].valueOf()));
+        }
+      } else {
+        // 预设时间选项（7天、30天等）
+        params.set('timeValue', String(timeValue));
+      }
     }
 
     // Add project filter
