@@ -162,6 +162,13 @@ const Filter: React.FC<IProps> = () => {
           ) : (
             ''
           )}
+          {timeRange === 'custom' && !executeDate?.filter(Boolean)?.length ? (
+            <span className={styles.value}>
+              {formatMessage({ id: 'src.component.TimeSelect.9E6CA23B', defaultMessage: '全部' })}
+            </span>
+          ) : (
+            ''
+          )}
         </div>
       </>
     );

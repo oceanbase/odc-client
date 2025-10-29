@@ -12,7 +12,7 @@ const ProjectFilter = ({ isScheduleView }: { isScheduleView: boolean }) => {
   const projectOptions = useMemo(() => {
     return projectList?.map(({ name, id }) => ({
       label: name,
-      value: id?.toString(),
+      value: id,
     }));
   }, [projectList]);
 

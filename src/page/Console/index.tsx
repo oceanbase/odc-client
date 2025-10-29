@@ -293,7 +293,7 @@ const ConsoleMain = () => {
                           counter={todosData?.FLOW?.count?.FLOW_WAIT_ME_APPROVAL}
                           onClick={() => {
                             navigate(
-                              `/${IPageType.Task}?tab=${TaskTab.approveByCurrentUser}&taskType=${TaskPageType.ALL}&projectId=clearAll`,
+                              `/${IPageType.Task}?tab=${TaskTab.approveByCurrentUser}&taskType=${TaskPageType.ALL}&projectId=clearAll&timeRange=ALL`,
                             );
                           }}
                         />
@@ -306,7 +306,7 @@ const ConsoleMain = () => {
                           counter={todosData?.FLOW?.count?.FLOW_WAIT_ME_EXECUTION}
                           onClick={() => {
                             navigate(
-                              `/${IPageType.Task}?tab=${TaskTab.executionByCurrentUser}&taskType=${TaskPageType.ALL}&projectId=clearAll`,
+                              `/${IPageType.Task}?tab=${TaskTab.executionByCurrentUser}&taskType=${TaskPageType.ALL}&projectId=clearAll&timeRange=ALL`,
                             );
                           }}
                         />
@@ -319,7 +319,7 @@ const ConsoleMain = () => {
                           counter={todosData?.SCHEDULE?.count?.SCHEDULE_WAIT_ME_APPROVAL}
                           onClick={() => {
                             navigate(
-                              `/${IPageType.Schedule}?tab=${ScheduleTab.approveByCurrentUser}&scheduleType=${SchedulePageType.ALL}&projectId=clearAll`,
+                              `/${IPageType.Schedule}?tab=${ScheduleTab.approveByCurrentUser}&scheduleType=${SchedulePageType.ALL}&projectId=clearAll&timeRange=ALL`,
                             );
                           }}
                         />
