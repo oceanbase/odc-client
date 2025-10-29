@@ -55,9 +55,6 @@ import DatabaseColumn from './DatabaseColumn';
 import { useScheduleSelection } from '@/component/Schedule/hooks';
 import { persistenceParams } from '@/component/Schedule/helper';
 
-export const SCHEDULE_PARAMS_PERSISTENCE_KEY = 'schedule:paramsPersistence';
-export const SCHEDULETASK_PARAMS_PERSISTENCE_KEY = 'scheduleTask:paramsPersistence';
-
 interface IProps {
   tableRef: React.RefObject<ITableInstance>;
   scheduleStore?: ScheduleStore;
