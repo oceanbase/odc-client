@@ -1,7 +1,6 @@
 import { useSearchParams } from '@umijs/max';
-import { ScheduleType } from '@/d.ts/schedule';
+import { ScheduleStatus, ScheduleType } from '@/d.ts/schedule';
 import { Perspective, ScheduleTab } from '../interface';
-import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
 import login from '@/store/login';
 import { toInteger } from 'lodash';
 
@@ -11,7 +10,7 @@ const useScheduleSearchParams = () => {
   const defaultScheduleType = searchParams.get('scheduleType') as ScheduleType;
   const defaultOrganizationId = searchParams.get('organizationId');
   const defaultSubTaskId = searchParams.get('subTaskId');
-  const defaultScheduleStatus = searchParams.get('scheduleStatus');
+  const defaultScheduleStatus = searchParams.get('scheduleStatus') as ScheduleStatus;
   const defaultPerspective = searchParams.get('perspective') as Perspective;
   const defaultSubTaskStatus = searchParams.get('subTaskStatus');
   const defaultTab = searchParams.get('tab') as ScheduleTab;
@@ -51,7 +50,7 @@ const useScheduleSearchParams = () => {
       defaultSubTaskId: toInteger(defaultSubTaskId),
       defaultScheduleStatus,
       defaultPerspective,
-      defaultSubTaskStatus,
+      defaultSubTaskStatus: defaultSubTaskStatus ? defaultSubTaskStatus?.split(',') : [],
       defaultTab,
       defaultSubTaskTab,
       defaultApproveStatus:

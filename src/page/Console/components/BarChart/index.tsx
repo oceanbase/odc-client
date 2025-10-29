@@ -218,7 +218,6 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
         const taskType = clickableElement.getAttribute('data-task-type');
         const clickType = clickableElement.getAttribute('data-click-type');
         const status = clickableElement.getAttribute('data-status');
-
         if (taskType) {
           let url = '/task';
           const searchParams = new URLSearchParams();
@@ -232,13 +231,13 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
             searchParams.append('statuses', mappedStatuses.join(','));
           } else if (clickType === 'total') {
             // 点击任务总计时，清空状态过滤器
-            searchParams.append('statuses', '');
+            searchParams.append('statuses', 'clearAll');
           }
 
           if (selectedProjectId !== undefined) {
             searchParams.append('projectId', selectedProjectId.toString());
           } else {
-            searchParams.append('projectId', 'clear');
+            searchParams.append('projectId', 'clearAll');
           }
 
           if (
@@ -251,6 +250,8 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
             searchParams.append('endTime', dateValue[1].valueOf().toString());
           } else if (timeValue !== undefined) {
             searchParams.append('timeRange', timeValue.toString());
+            searchParams.append('startTime', '');
+            searchParams.append('endTime', '');
           }
 
           const queryString = searchParams.toString();

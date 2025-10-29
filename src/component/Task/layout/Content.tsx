@@ -171,6 +171,10 @@ const Content = forwardRef<ContentRef, IProps>((props, ref) => {
     if (timeRange === 'custom' && executeDate?.filter(Boolean)?.length === 2) {
       apiParams.startTime = String(executeDate?.[0]?.valueOf());
       apiParams.endTime = String(executeDate?.[1]?.valueOf());
+    } else if (timeRange === 'custom' && !executeDate?.filter(Boolean)?.length) {
+      // 选择自定义时间，但是没有选日期时，不传startTime和endTime请求全部数据
+      delete apiParams.startTime;
+      delete apiParams.endTime;
     }
 
     return apiParams;
@@ -241,55 +245,25 @@ const Content = forwardRef<ContentRef, IProps>((props, ref) => {
       const firstEnabledTask = getFirstEnabledTask();
       taskStore.changeTaskPageType(firstEnabledTask?.pageType);
     }
-
-    // Apply URL filter parameters
     const newParams: Partial<ITaskParam> = {
-      tab: defaultTab || params?.tab,
+      tab: defaultTab,
+      projectId: urlProjectId === 'clearAll' ? [] : [urlProjectId],
+      taskStatus: urlStatuses?.includes('clearAll') ? [] : urlStatuses,
+      timeRange: timeRange ? timeRange : 7,
+      taskTypes: defaultTaskType === 'ALL' ? [] : params.taskTypes,
+      executeDate:
+        timeRange === 'custom' && startTime && endTime
+          ? [dayjs(startTime), dayjs(endTime)]
+          : [undefined, undefined],
     };
-
-    // Apply time filter from URL
-    if (timeValue !== null) {
-      newParams.timeRange = timeValue;
-    } else if (timeRange !== null) {
-      newParams.timeRange = timeRange;
-    }
-
-    // Apply custom date range from URL
-    if (startTime !== null && endTime !== null) {
-      newParams.timeRange = 'custom';
-      newParams.executeDate = [dayjs(startTime), dayjs(endTime)];
-    } else {
-      // 如果URL没有提供自定义日期范围，清空之前的executeDate
-      newParams.executeDate = [undefined, undefined];
-    }
-
-    // Apply project filter from URL
-    if (urlProjectId !== null) {
-      if (urlProjectId === 'clearAll') {
-        // 清空项目筛选
-        newParams.projectId = [];
-        newParams.timeRange = 'ALL';
-        newParams.executeDate = [dayjs(), dayjs()];
-        newParams.taskTypes = [];
-      } else if (urlProjectId === 'clear') {
-        // 清空项目筛选
-        newParams.projectId = [];
-      } else {
-        newParams.projectId = [urlProjectId];
-      }
-    }
-
-    // Apply task types filter from URL
-    if (urlTaskTypes !== null && urlTaskTypes.length > 0) {
-      newParams.taskTypes = urlTaskTypes;
-    }
-
-    // Apply task statuses filter from URL
-    if (urlStatuses !== null) {
-      newParams.taskStatus = urlStatuses;
-    }
-
+    !urlStatuses && delete newParams.taskStatus;
+    !urlProjectId && delete newParams.projectId;
+    !timeRange && delete newParams.timeRange;
+    !defaultTab && delete newParams.tab;
+    !defaultTaskType && delete newParams.taskTypes;
+    timeRange !== 'custom' && delete newParams.executeDate;
     setParams(newParams);
+
     resetSearchParams();
   };
 
@@ -307,7 +281,7 @@ const Content = forwardRef<ContentRef, IProps>((props, ref) => {
       }
       setState({
         detailId: defaultTaskId,
-        detailType: defaultTaskType || TaskType.ASYNC,
+        detailType: (defaultTaskType as TaskType) || TaskType.ASYNC,
         detailVisible: true,
       });
     }

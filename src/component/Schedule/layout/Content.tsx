@@ -2,12 +2,7 @@ import { formatMessage } from '@/util/intl';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { UserStore } from '@/store/login';
 import { ModalStore } from '@/store/modal';
-import {
-  ScheduleType,
-  SchedulePageType,
-  ScheduleDetailType,
-  ScheduleStatus,
-} from '@/d.ts/schedule';
+import { ScheduleType, SchedulePageType, ScheduleDetailType } from '@/d.ts/schedule';
 import { inject, observer } from 'mobx-react';
 import { ScheduleStore } from '@/store/schedule';
 import { useSetState } from 'ahooks';
@@ -230,6 +225,10 @@ const Content: React.FC<IProps> = (props) => {
     if (params?.timeRange === 'custom' && params?.executeDate?.filter(Boolean)?.length === 2) {
       apiParams.startTime = String(params?.executeDate?.[0]?.valueOf());
       apiParams.endTime = String(params?.executeDate?.[1]?.valueOf());
+    } else if (params?.timeRange === 'custom' && !params?.executeDate?.filter(Boolean)?.length) {
+      // 选择自定义时间，但是没有选日期时，不传startTime和endTime请求全部数据
+      delete apiParams.startTime;
+      delete apiParams.endTime;
     }
     if (params.tab === ScheduleTab.approveByCurrentUser) {
       apiParams.approveStatus = [];
@@ -297,7 +296,12 @@ const Content: React.FC<IProps> = (props) => {
     if (params?.timeRange === 'custom' && params?.executeDate?.filter(Boolean)?.length === 2) {
       apiParams.startTime = String(params?.executeDate?.[0]?.valueOf());
       apiParams.endTime = String(params?.executeDate?.[1]?.valueOf());
+    } else if (params?.timeRange === 'custom' && !params?.executeDate?.filter(Boolean)?.length) {
+      // 选择自定义时间，但是没有选日期时，不传startTime和endTime请求全部数据
+      delete apiParams.startTime;
+      delete apiParams.endTime;
     }
+
     if (
       scheduleStore.schedulePageType &&
       scheduleStore.schedulePageType !== SchedulePageType.ALL &&
@@ -359,93 +363,49 @@ const Content: React.FC<IProps> = (props) => {
       const firstEnabledSchedule = getFirstEnabledSchedule();
       scheduleStore.setSchedulePageType(firstEnabledSchedule?.pageType);
     }
-
-    // Apply URL filter parameters
-    const newParams: Partial<IScheduleParam> = {
-      status: defaultScheduleStatus ? [defaultScheduleStatus as ScheduleStatus] : params?.status,
-      tab: defaultTab || params?.tab,
-    };
-
-    // Apply approve status filter from URL
-    if (defaultApproveStatus !== null) {
-      newParams.approveStatus = defaultApproveStatus as ScheduleApprovalStatus[];
-    }
-
-    // Apply time filter from URL
-    if (timeValue !== null) {
-      newParams.timeRange = timeValue;
-    }
-
-    // Apply custom date range from URL
-    if (startTime !== null && endTime !== null) {
-      newParams.timeRange = 'custom';
-      newParams.executeDate = [dayjs(startTime), dayjs(endTime)];
-    } else {
-      // 如果URL没有提供自定义日期范围，清空之前的executeDate
-      newParams.executeDate = [undefined, undefined];
-    }
-
-    // Apply project filter from URL
-    if (urlProjectId !== null) {
-      if (urlProjectId === 'clearAll') {
-        newParams.projectIds = [];
-        newParams.timeRange = 'ALL';
-        newParams.executeDate = [dayjs(), dayjs()];
-        newParams.status = [];
-        newParams.type = [];
-      }
-      if (urlProjectId === 'clear') {
-        // 清空项目筛选，但不影响其他筛选条件
-        newParams.projectIds = [];
-      } else {
-        newParams.projectIds = [urlProjectId] as any;
-      }
-    }
-
-    setParams(newParams);
-
-    // Apply URL filter parameters to subTaskParams as well
-    const newSubTaskParams: Partial<ISubTaskParam> = {
-      status:
-        defaultSubTaskStatus === ''
+    if (defaultPerspective === Perspective?.executionView) {
+      // 执行视角处理逻辑
+      const newSubTaskParams: Partial<ISubTaskParam> = {
+        tab: (defaultSubTaskTab as ScheduleTaskTab) || subTaskParams?.tab,
+        projectIds: urlProjectId === 'clearAll' ? [] : [Number(urlProjectId)],
+        timeRange: timeValue ? timeValue : 'ALL',
+        status: defaultSubTaskStatus?.includes('clearAll')
           ? []
-          : defaultSubTaskStatus
-          ? defaultSubTaskStatus.split(',').map((status) => status.trim() as ScheduleTaskStatus)
-          : subTaskParams?.status,
-      tab: (defaultSubTaskTab as ScheduleTaskTab) || subTaskParams?.tab,
-    };
-
-    // Apply time filter from URL to subTaskParams
-    if (timeValue !== null) {
-      newSubTaskParams.timeRange = timeValue;
-    }
-
-    // Apply custom date range from URL to subTaskParams
-    if (startTime !== null && endTime !== null) {
-      newSubTaskParams.timeRange = 'custom';
-      newSubTaskParams.executeDate = [dayjs(startTime), dayjs(endTime)];
+          : (defaultSubTaskStatus as ScheduleTaskStatus[]),
+        executeDate:
+          timeValue === 'custom' && startTime && endTime
+            ? [dayjs(startTime), dayjs(endTime)]
+            : [undefined, undefined],
+      };
+      !defaultSubTaskTab && delete newSubTaskParams.tab;
+      !urlProjectId && delete newSubTaskParams.projectIds;
+      !timeValue && delete newSubTaskParams.timeRange;
+      !defaultSubTaskStatus && delete newSubTaskParams.status;
+      timeValue !== 'custom' && delete newSubTaskParams.executeDate;
+      setsubTaskParams(newSubTaskParams);
     } else {
-      // 如果URL没有提供自定义日期范围，清空之前的executeDate
-      newSubTaskParams.executeDate = [undefined, undefined];
+      // 作业视角处理逻辑
+      const newParams: Partial<IScheduleParam> = {
+        tab: (defaultTab as ScheduleTab) || params?.tab,
+        projectIds: urlProjectId === 'clearAll' ? [] : [Number(urlProjectId)],
+        timeRange: timeValue ? timeValue : 'ALL',
+        status: defaultScheduleStatus?.includes('clearAll') ? [] : [defaultScheduleStatus],
+        approveStatus: defaultApproveStatus?.includes('clearAll')
+          ? []
+          : (defaultApproveStatus as ScheduleApprovalStatus[]),
+        type:
+          (defaultScheduleType as unknown as SchedulePageType) === SchedulePageType.ALL
+            ? []
+            : params?.type,
+      };
+      !defaultTab && delete newParams.tab;
+      !defaultApproveStatus && delete newParams.approveStatus;
+      !defaultScheduleStatus && delete newParams.status;
+      !urlProjectId && delete newParams.projectIds;
+      !timeValue && delete newParams.timeRange;
+      !defaultScheduleType && delete newParams.type;
+      setParams(newParams);
     }
-
-    // Apply project filter from URL to subTaskParams
-    if (urlProjectId !== null) {
-      if (urlProjectId === 'clearAll') {
-        newParams.projectIds = [];
-        newParams.timeRange = 'ALL';
-        newParams.executeDate = [dayjs(), dayjs()];
-        newParams.status = [];
-        newParams.type = [];
-      } else if (urlProjectId === 'clear') {
-        // 清空项目筛选，但不影响其他筛选条件
-        newSubTaskParams.projectIds = [];
-      } else {
-        newSubTaskParams.projectIds = [urlProjectId] as any;
-      }
-    }
-
-    setsubTaskParams(newSubTaskParams);
     resetSearchParams?.();
   };
 

@@ -64,7 +64,7 @@ const ScheduleItem = ({
     if (selectedProjectId) {
       params.set('projectId', String(selectedProjectId));
     } else {
-      params.set('projectId', 'clear');
+      params.set('projectId', 'clearAll');
     }
 
     const basePath = baseUrl.split('?')[0];
@@ -85,7 +85,7 @@ const ScheduleItem = ({
             // 跳转到调度管理页面，设置特定类型和已启用状态过滤，定位到全局tab，时间选全部，清空审批状态
             navigate(
               buildNavigateUrlWithFilters(
-                `/schedule?scheduleStatus=${ScheduleStatus.ENABLED}&scheduleType=${type}&tab=${ScheduleTab.all}&timeValue=ALL&approveStatus=`,
+                `/schedule?scheduleStatus=${ScheduleStatus.ENABLED}&scheduleType=${type}&tab=${ScheduleTab.all}&timeValue=ALL&approveStatus=clearAll`,
               ),
             );
           }}
@@ -102,7 +102,7 @@ const ScheduleItem = ({
             // 跳转到调度管理页面的执行视角，清空状态筛选以显示所有执行记录
             navigate(
               buildNavigateUrlWithFilters(
-                `/schedule?scheduleType=${type}&perspective=${Perspective.executionView}&subTaskStatus=`,
+                `/schedule?scheduleType=${type}&perspective=${Perspective.executionView}&subTaskStatus=clearAll`,
               ),
             );
           }}
@@ -116,12 +116,14 @@ const ScheduleItem = ({
         <CounterCard
           onClick={() => {
             // 跳转到调度管理页面的执行视角，并过滤执行失败的任务（包括FAILED、ABNORMAL、EXEC_TIMEOUT）
-            const failedStatuses = [ScheduleTaskStatus.FAILED, ScheduleTaskStatus.ABNORMAL].join(
-              ',',
-            );
+            const failedStatuses = [
+              ScheduleTaskStatus.FAILED,
+              ScheduleTaskStatus.ABNORMAL,
+              ScheduleTaskStatus.EXEC_TIMEOUT,
+            ].join(',');
             navigate(
               buildNavigateUrlWithFilters(
-                `/schedule?scheduleType=${type}&perspective=${Perspective.executionView}&subTaskStatus=${failedStatuses}&subTaskTab=${ScheduleTaskTab.all}`,
+                `/schedule?scheduleType=${type}&perspective=${Perspective.executionView}&subTaskStatus=${failedStatuses}&subTaskTab=${ScheduleTaskTab.all}&subTaskStatus=clearAll`,
               ),
             );
           }}

@@ -8,7 +8,7 @@ const useTaskSearchParams = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const defaultTaskId = searchParams.get('taskId');
-  const defaultTaskType = searchParams.get('taskType') as TaskType;
+  const defaultTaskType = searchParams.get('taskType');
   const taskTypesStr = searchParams.get('taskTypes');
   const resolvedDefaultTaskType =
     defaultTaskType || (taskTypesStr ? (taskTypesStr.split(',')[0] as TaskType) : null);
@@ -29,7 +29,6 @@ const useTaskSearchParams = () => {
       searchParams.delete('taskType');
       searchParams.delete('organizationId');
       searchParams.delete('tab');
-      // Delete filter parameters passed from Console
       searchParams.delete('timeValue');
       searchParams.delete('timeRange');
       searchParams.delete('startTime');
