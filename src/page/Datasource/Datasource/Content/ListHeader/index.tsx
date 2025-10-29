@@ -4,9 +4,11 @@ import classNames from 'classnames';
 import styles from './index.less';
 import { haveOCP } from '@/util/env';
 
-const ListHeader = () => {
+const ListHeader: React.FC<{
+  style?: React.CSSProperties;
+}> = ({ style }) => {
   return (
-    <div className={classNames(styles.header)}>
+    <div className={classNames(styles.header)} style={style}>
       <div className={classNames(itemStyles.connectionName, styles.headerColumn)}>
         {formatMessage({
           id: 'src.page.Datasource.Datasource.Content.ListHeader.8F42FB43',

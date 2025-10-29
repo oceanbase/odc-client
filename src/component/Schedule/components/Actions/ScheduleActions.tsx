@@ -39,6 +39,7 @@ import { ScheduleStatus2Actions } from '@/component/Schedule/const';
 import { widthPermission } from '@/util/utils';
 import useOperationPermissions from '@/util/hooks/useOperationPermissions';
 import ProjectContext from '@/page/Project/ProjectContext';
+import { TaskExecStrategy } from '@/d.ts';
 
 export interface scheduleActions {
   key: ScheduleActionsEnum;
@@ -243,14 +244,6 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       ),
       content: (
         <>
-          <div>
-            {
-              formatMessage({
-                id: 'odc.TaskManagePage.component.TaskTools.EnableSqlScheduling',
-                defaultMessage: '启用 SQL 计划',
-              }) /*启用 SQL 计划*/
-            }
-          </div>
           <div>
             {formatMessage({
               id: 'src.component.Schedule.components.Actions.726B120F',
@@ -511,7 +504,11 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       action: eventMap[ScheduleActionsEnum.DISABLE],
       icon: <PauseCircleOutlined />,
       visible: widthPermission(
-        (hasPermission) => hasPermission && !schedule?.approvable,
+        (hasPermission) =>
+          // 执行方式非周期不支持禁用
+          hasPermission &&
+          !schedule?.approvable &&
+          schedule?.triggerConfig?.triggerStrategy !== TaskExecStrategy?.START_NOW,
         [
           IOperationTypeRole.CREATOR,
           IOperationTypeRole.PROJECT_DBA,

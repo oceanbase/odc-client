@@ -40,6 +40,7 @@ import JoinTableConfigModal from '@/component/Task/component/JoinTableConfigsMod
 import useJoinTableConfig from '@/component/Task/component/JoinTableConfigsModal/useJoinTableConfig';
 import { rules } from './const';
 import { cloneDeep, isString } from 'lodash';
+import { getSettingTip } from '@/component/Schedule/helper';
 
 const { Text, Link } = Typography;
 const MAX_TABLES_COUNT = 100;
@@ -82,53 +83,6 @@ const ArchiveRange: React.FC<IProps> = (props) => {
   };
 
   const { visible, currentIndex, open, close, handleSubmit } = useJoinTableConfig(form);
-
-  const getSettingTip = (name) => {
-    const data = form.getFieldValue(['tables', name]);
-    const { joinTableConfigs, partitions, tableName } = data || {};
-    if (!partitions?.length && !joinTableConfigs?.length) return null;
-    return (
-      <div style={{ maxWidth: '250px', whiteSpace: 'normal', wordBreak: 'break-all' }}>
-        {joinTableConfigs?.length ? (
-          <div style={{ marginBottom: 8 }}>
-            <div style={{ color: 'var(--text-color-hint)' }}>
-              {formatMessage({
-                id: 'src.component.Schedule.modals.DataClear.Create.B5C6B671',
-                defaultMessage: '关联表',
-              })}
-            </div>
-            {joinTableConfigs?.map((item) => {
-              return (
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <div>{tableName}</div>
-                  <div>join</div>
-                  <div>{item?.tableName}</div>
-                  <div>on</div>
-                  <div>{item?.joinCondition}</div>
-                </div>
-              );
-            })}
-          </div>
-        ) : null}
-        <div style={{ color: 'var(--text-color-hint)' }}>
-          {formatMessage({
-            id: 'src.component.Schedule.modals.DataClear.Create.C7AC172B',
-            defaultMessage: '指定扫描分区',
-          })}
-        </div>
-        {partitions?.length ? (
-          <>
-            {partitions?.map((item, index) => (
-              <>
-                <span>{item}</span>
-                {index !== partitions?.length - 1 && <span>;</span>}
-              </>
-            ))}
-          </>
-        ) : null}
-      </div>
-    );
-  };
 
   const handleConfirm = (
     checkList: any[],
@@ -312,7 +266,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
 
                                   <Popover
                                     destroyOnHidden
-                                    content={getSettingTip(name)}
+                                    content={getSettingTip(form.getFieldValue(['tables', name]))}
                                     placement="top"
                                   >
                                     <div onClick={() => open(index)} style={{ cursor: 'pointer' }}>
