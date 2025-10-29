@@ -69,5 +69,3 @@ export const TaskTypeMap = {
     defaultMessage: '逻辑库变更',
   }),
 };
-
-export const TASK_PARAMS_PERSISTENCE_KEY = 'task:paramsPersistence';

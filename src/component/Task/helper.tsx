@@ -21,8 +21,11 @@ export { TaskTypeMap } from '@/component/Task/component/TaskTable/const';
 import { TaskConfig, allTaskPageConfig } from '@/common/task';
 import { ITaskParam, TaskCreateTimeSort, TaskPageMode, TaskTab } from './interface';
 import dayjs from 'dayjs';
-import { TASK_PARAMS_PERSISTENCE_KEY } from './component/TaskTable/const';
 import { isString } from 'lodash';
+import lruLocalStorageCacheStore, { PERSISTENCE_KEY } from '@/store/LRULocalCacheStore';
+import { IProject } from '@/d.ts/project';
+import userStore from '@/store/login';
+import { safeParseJson } from '@/util/utils';
 
 // 423 屏蔽 SysFormItem 配置
 export const ENABLED_SYS_FROM_ITEM = false;
@@ -76,40 +79,44 @@ export const getFirstEnabledTask = () => {
   return [allTaskPageConfig, ...Object.values(TaskConfig)]?.find((item) => item.enabled());
 };
 
-export const getDefaultParam: (mode: TaskPageMode) => ITaskParam = (mode) => {
+export const getDefaultParam: (mode: TaskPageMode, projectList?: IProject[]) => ITaskParam = (
+  mode,
+) => {
   const prevParams =
-    (mode !== TaskPageMode.PROJECT &&
-      JSON.parse(localStorage.getItem(TASK_PARAMS_PERSISTENCE_KEY))) ??
-    {};
-
+    mode !== TaskPageMode.PROJECT &&
+    lruLocalStorageCacheStore.getCacheValue<ITaskParam>(
+      PERSISTENCE_KEY.TASK_PARAMS_PERSISTENCE_LOCALKEY,
+      userStore,
+    );
   const _defaultParam: ITaskParam = {
     searchValue: undefined,
     searchType: undefined,
     taskTypes:
       isString(prevParams?.taskTypes) && !!prevParams?.taskTypes
-        ? JSON.parse(prevParams?.taskTypes)
+        ? safeParseJson(prevParams?.taskTypes)
         : [],
     taskStatus:
-      isString(prevParams.taskStatus) && !!prevParams.taskStatus
-        ? JSON.parse(prevParams.taskStatus)
+      isString(prevParams?.taskStatus) && !!prevParams?.taskStatus
+        ? safeParseJson(prevParams?.taskStatus)
         : [],
     projectId:
       isString(prevParams?.projectId) && !!prevParams?.projectId
-        ? JSON.parse(prevParams?.projectId)
+        ? safeParseJson(prevParams?.projectId)
         : [],
     sort:
       isString(prevParams?.sort) && !!prevParams?.sort
-        ? JSON.parse(prevParams?.sort)
+        ? safeParseJson(prevParams?.sort)
         : TaskCreateTimeSort.DESC,
-    tab: isString(prevParams?.tab) && !!prevParams?.tab ? JSON.parse(prevParams?.tab) : TaskTab.all,
+    tab:
+      isString(prevParams?.tab) && !!prevParams?.tab ? safeParseJson(prevParams?.tab) : TaskTab.all,
     timeRange:
       isString(prevParams?.timeRange) && !!prevParams?.timeRange
-        ? JSON.parse(prevParams?.timeRange)
+        ? safeParseJson(prevParams?.timeRange)
         : 7,
     executeDate: [undefined, undefined],
   };
   if (isString(prevParams?.executeDate) && !!prevParams?.executeDate) {
-    const [start, end] = JSON.parse(prevParams?.executeDate) ?? [null, null];
+    const [start, end] = safeParseJson(prevParams?.executeDate) ?? [null, null];
     if (!!start && !!end) {
       _defaultParam.executeDate = [dayjs(start), dayjs(end)];
     }
@@ -169,5 +176,11 @@ export const persistenceTaskParams = (params: ITaskParam) => {
     projectId: JSON.stringify(params.projectId),
     sort: JSON.stringify(params.sort),
   };
-  localStorage.setItem(TASK_PARAMS_PERSISTENCE_KEY, JSON.stringify(_params));
+  if (userStore?.user?.id) {
+    lruLocalStorageCacheStore.setCacheValue(
+      PERSISTENCE_KEY.TASK_PARAMS_PERSISTENCE_LOCALKEY,
+      userStore,
+      JSON.stringify(_params),
+    );
+  }
 };
