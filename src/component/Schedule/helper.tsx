@@ -1,4 +1,9 @@
-import { IScheduleRecord, ScheduleRecordParameters, ScheduleType } from '@/d.ts/schedule';
+import {
+  IScheduleRecord,
+  ScheduleRecordParameters,
+  ScheduleType,
+  dmlParametersTables,
+} from '@/d.ts/schedule';
 import { schedlueConfig } from '@/page/Schedule/const';
 import {
   IScheduleParam,
@@ -22,6 +27,7 @@ import {
 import dayjs from 'dayjs';
 import { isString } from 'lodash';
 import { IScheduleTaskExecutionDetail, scheduleTask, SubTaskParameters } from '@/d.ts/scheduleTask';
+import React from 'react';
 
 export const getFirstEnabledSchedule = () => {
   return Object.values(schedlueConfig).find((item) => item.enabled());
@@ -244,4 +250,50 @@ const persistenceSubTaskParams = async (params: ISubTaskParam) => {
     sort: JSON.stringify(params.sort),
   };
   localStorage.setItem(SCHEDULETASK_PARAMS_PERSISTENCE_KEY, JSON.stringify(_params));
+};
+
+export const getSettingTip = (value: dmlParametersTables): React.ReactNode => {
+  const { joinTableConfigs, partitions, tableName } = value || {};
+  if (!partitions?.length && !joinTableConfigs?.length) return null;
+  return (
+    <div style={{ maxWidth: '250px', whiteSpace: 'normal', wordBreak: 'break-all' }}>
+      {joinTableConfigs?.length ? (
+        <div style={{ marginBottom: 8 }}>
+          <div style={{ color: 'var(--text-color-hint)' }}>
+            {formatMessage({
+              id: 'src.component.Schedule.helper.joinTable',
+              defaultMessage: '关联表',
+            })}
+          </div>
+          {joinTableConfigs?.map((item, index) => {
+            return (
+              <div key={index} style={{ wordBreak: 'break-word' }}>
+                <span style={{ marginRight: 8 }}>{tableName}</span>
+                <span style={{ marginRight: 8 }}>join</span>
+                <span style={{ marginRight: 8 }}>{item?.tableName}</span>
+                <span style={{ marginRight: 8 }}>on</span>
+                <span>{item?.joinCondition}</span>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+      {partitions?.length ? (
+        <>
+          <div style={{ color: 'var(--text-color-hint)' }}>
+            {formatMessage({
+              id: 'src.component.Schedule.helper.partitions',
+              defaultMessage: '指定扫描分区',
+            })}
+          </div>
+          {(partitions as string[])?.map((item, index) => (
+            <React.Fragment key={index}>
+              <span>{item}</span>
+              {index !== partitions?.length - 1 && <span>;</span>}
+            </React.Fragment>
+          ))}
+        </>
+      ) : null}
+    </div>
+  );
 };

@@ -357,11 +357,9 @@ const DataArchiveScheduleContent: React.FC<IProps> = (props) => {
           })}
           span={1}
         >
-          {
-            executeTimeoutStrategyOptions?.find(
-              (item) => item.value === parameters?.scheduleIgnoreTimeoutTask,
-            )?.label
-          }
+          {executeTimeoutStrategyOptions?.find(
+            (item) => item.value === parameters?.scheduleIgnoreTimeoutTask,
+          )?.label ?? '-'}
         </Descriptions.Item>
         <Descriptions.Item
           label={formatMessage({

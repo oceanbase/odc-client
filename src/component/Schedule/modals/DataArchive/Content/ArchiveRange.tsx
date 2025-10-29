@@ -4,57 +4,12 @@ import { Button, Flex, Popover, Tooltip, Typography } from 'antd';
 import React from 'react';
 import { conditionExpressionColumns } from '@/component/Task/helper';
 import { dmlParametersTables } from '@/d.ts/schedule';
+import { getSettingTip } from '@/component/Schedule/helper';
 
 const ArchiveRange: React.FC<{
   tables: dmlParametersTables[];
 }> = (props) => {
   const { tables } = props;
-
-  const getSettingTip = (value: dmlParametersTables) => {
-    const { joinTableConfigs, partitions, tableName } = value || {};
-    if (!partitions?.length && !joinTableConfigs?.length) return null;
-    return (
-      <div style={{ maxWidth: '250px', whiteSpace: 'normal', wordBreak: 'break-all' }}>
-        {joinTableConfigs?.length ? (
-          <div style={{ marginBottom: 8 }}>
-            <div style={{ color: 'var(--text-color-hint)' }}>
-              {formatMessage({
-                id: 'src.component.Schedule.modals.DataArchive.Content.FE8B5FFD',
-                defaultMessage: '关联表',
-              })}
-            </div>
-            {joinTableConfigs?.map((item) => {
-              return (
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <div>{tableName}</div>
-                  <div>join</div>
-                  <div>{item?.tableName}</div>
-                  <div>on</div>
-                  <div>{item?.joinCondition}</div>
-                </div>
-              );
-            })}
-          </div>
-        ) : null}
-        {partitions?.length ? (
-          <>
-            <div style={{ color: 'var(--text-color-hint)' }}>
-              {formatMessage({
-                id: 'src.component.Schedule.modals.DataArchive.Content.1648CBAB',
-                defaultMessage: '指定扫描分区',
-              })}
-            </div>
-            {(partitions as string[])?.map((item, index) => (
-              <>
-                <span>{item}</span>
-                {index !== partitions?.length - 1 && <span>;</span>}
-              </>
-            ))}
-          </>
-        ) : null}
-      </div>
-    );
-  };
 
   const columns = [
     {

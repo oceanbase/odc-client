@@ -39,9 +39,9 @@ import { IDatabase } from '@/d.ts/database';
 import JoinTableConfigModal from '@/component/Task/component/JoinTableConfigsModal';
 import useJoinTableConfig from '@/component/Task/component/JoinTableConfigsModal/useJoinTableConfig';
 import { rules } from './const';
+import { getSettingTip } from '@/component/Schedule/helper';
 const MAX_TABLES_COUNT = 100;
 const { Text, Link } = Typography;
-import { cloneDeep, isString } from 'lodash';
 
 interface IProps {
   tables: ITable[];
@@ -106,55 +106,6 @@ const ArchiveRange: React.FC<IProps> = (props) => {
     checkList.forEach((item) => {
       add({ tableName: item });
     });
-  };
-
-  const getSettingTip = (name) => {
-    const data = form.getFieldValue(['tables', name]);
-    const { joinTableConfigs, partitions, tableName } = data || {};
-    if (!partitions?.length && !joinTableConfigs?.length) return null;
-    // 目前只有join类型，所以先写死join
-    return (
-      <div style={{ maxWidth: '250px', whiteSpace: 'normal', wordBreak: 'break-all' }}>
-        {joinTableConfigs?.length ? (
-          <div style={{ marginBottom: 8 }}>
-            <div style={{ color: 'var(--text-color-hint)' }}>
-              {formatMessage({
-                id: 'src.component.Schedule.modals.DataArchive.Create.E7E46AC9',
-                defaultMessage: '关联表',
-              })}
-            </div>
-            {joinTableConfigs?.map((item) => {
-              return (
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <div>{tableName}</div>
-                  <div>join</div>
-                  <div>{item?.tableName}</div>
-                  <div>on</div>
-                  <div>{item?.joinCondition}</div>
-                </div>
-              );
-            })}
-          </div>
-        ) : null}
-
-        {partitions?.length ? (
-          <>
-            <div style={{ color: 'var(--text-color-hint)' }}>
-              {formatMessage({
-                id: 'src.component.Schedule.modals.DataArchive.Create.65A4A783',
-                defaultMessage: '指定扫描分区',
-              })}
-            </div>
-            {partitions?.map((item, index) => (
-              <>
-                <span>{item}</span>
-                {index !== partitions?.length - 1 && <span>;</span>}
-              </>
-            ))}
-          </>
-        ) : null}
-      </div>
-    );
   };
 
   return (
@@ -313,7 +264,7 @@ const ArchiveRange: React.FC<IProps> = (props) => {
                                   />
 
                                   <Popover
-                                    content={getSettingTip(name)}
+                                    content={getSettingTip(form.getFieldValue(['tables', name]))}
                                     destroyOnHidden
                                     placement="top"
                                   >

@@ -395,11 +395,9 @@ const CreateModal: React.FC<IProps> = (props) => {
                 editorProps={{
                   theme,
                 }}
-                placeholder={formatMessage({
-                  id: 'src.component.Task.modals.LogicDatabaseAsyncTask.CreateModal.3ED610FC',
-                  defaultMessage:
-                    '使用逻辑表表达式需要在表达式上加上`号，如：`db_[00-31]`.`test_[00-31]`,否则将无法识别逻辑表拓扑',
-                })}
+                placeholder={
+                  '新建逻辑表时需使用表达式，表达式需要加上 ` 号，如 `db_[00-31].test_[00-31] `。修改已有逻辑表时可直接使用逻辑库名和逻辑表名进行修改，如 db.test。'
+                }
               />
             )}
           </Form.Item>

@@ -315,6 +315,7 @@ const List: React.FC<IProps> = forwardRef(function (
   }
   return (
     <div>
+      <ListHeader style={total * 40 >= height ? { paddingRight: '14px' } : {}} />
       <InfiniteLoader
         isRowLoaded={({ index }) => {
           return index < connectionList?.length;
@@ -359,7 +360,6 @@ const ListWrap = inject(
 function AutoSizerWrap(props, ref) {
   return (
     <>
-      <ListHeader />
       <AutoSizer style={{ width: '100%' }}>
         {({ width, height }) => {
           return <ListWrap ref={ref} width={width} height={height - 24} {...props} />;
