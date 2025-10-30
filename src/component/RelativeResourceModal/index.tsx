@@ -37,6 +37,7 @@ import {
   IResourceDependencyParams,
   IScheduleDependencyOverview,
   IScheduleTaskDependencyOverview,
+  propertyMap,
 } from '@/d.ts/relativeResource';
 import { getResourceDependencies } from '@/util/request/relativeResource';
 import styles from './index.less';
@@ -101,7 +102,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
       setRiskConfirmed(false);
       setShowRiskError(false); // 重置错误状态
       fetchRelatedTasks({
-        [mode]: id,
+        [propertyMap[mode]]: id,
       });
     }
   }, [open, id, mode]);
