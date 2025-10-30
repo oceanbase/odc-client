@@ -470,8 +470,6 @@ const openGlobalSearch = (node: TreeDataNode) => {
     case ResourceNodeType.TriggerRoot:
     case ResourceNodeType.TypeRoot:
     case ResourceNodeType.SequenceRoot:
-    case ResourceNodeType.SynonymRoot:
-    case ResourceNodeType.PublicSynonymRoot:
     case ResourceNodeType.MaterializedViewRoot:
     case ResourceNodeType.ExternalTableRoot:
     case ResourceNodeType.ExternalResourceRoot: {
@@ -481,6 +479,29 @@ const openGlobalSearch = (node: TreeDataNode) => {
         params = {
           initStatus: SearchStatus.databaseforObject,
           databaseId: databaseId,
+        };
+      }
+      break;
+    }
+    // 同义词Root节点，需要定位到对应的tab
+    case ResourceNodeType.SynonymRoot: {
+      const databaseId = node.data?.id;
+      if (databaseId) {
+        params = {
+          initStatus: SearchStatus.databaseforObject,
+          databaseId: databaseId,
+          activeKey: DbObjectType.synonym,
+        };
+      }
+      break;
+    }
+    case ResourceNodeType.PublicSynonymRoot: {
+      const databaseId = node.data?.id;
+      if (databaseId) {
+        params = {
+          initStatus: SearchStatus.databaseforObject,
+          databaseId: databaseId,
+          activeKey: DbObjectType.public_synonym,
         };
       }
       break;
@@ -568,7 +589,7 @@ const openGlobalSearch = (node: TreeDataNode) => {
         [ResourceNodeType.Type]: DbObjectType.type,
         [ResourceNodeType.Sequence]: DbObjectType.sequence,
         [ResourceNodeType.Synonym]: DbObjectType.synonym,
-        [ResourceNodeType.PublicSynonym]: DbObjectType.synonym,
+        [ResourceNodeType.PublicSynonym]: DbObjectType.public_synonym,
         [ResourceNodeType.ExternalResource]: DbObjectType.external_resource,
       };
       if (databaseId) {

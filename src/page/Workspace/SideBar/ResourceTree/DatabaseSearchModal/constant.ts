@@ -51,6 +51,7 @@ const oracleObjectType = [
   DbObjectType.type,
   DbObjectType.sequence,
   DbObjectType.synonym,
+  DbObjectType.public_synonym,
   DbObjectType.materialized_view,
   DbObjectType.external_resource,
 ];
