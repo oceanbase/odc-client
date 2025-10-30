@@ -71,7 +71,7 @@ export const Toolbar: React.FC<IProps> = (props) => {
       {operationContent?.isNeedOccupyElement && <div></div>}
       {operationContent && <OperationContent {...operationContent} onClick={onOperationClick} />}
       {titleContent && <TitleContent {...titleContent} onTabChange={onTabChange} />}
-      <Space split={isSplit ? '|' : null} size={8}>
+      <Space split={isSplit ? '|' : null} size={8} style={{ lineHeight: 1 }}>
         {cascaderContent && <Cascader {...cascaderContent} multiple maxTagCount="responsive" />}
         {urlTriggerValue && (
           <Tag

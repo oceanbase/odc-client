@@ -736,8 +736,8 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
   const loadEditData = async (editId: number) => {
     const detailRes = (await fetchScheduleDetail(editId)) as IScheduleRecord<IPartitionPlan>;
     setCreateScheduleDatabase(detailRes?.parameters?.databaseInfo);
-    const { parameters } = detailRes ?? {};
-    const { creationTrigger, droppingTrigger } = parameters ?? {};
+    const { parameters, triggerConfig } = detailRes ?? {};
+    const { droppingTrigger } = parameters ?? {};
     const formData = {
       ...parameters,
       isCustomStrategy: !!detailRes?.parameters?.droppingTrigger,
@@ -746,8 +746,8 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
       triggerStrategy: detailRes?.triggerConfig?.triggerStrategy,
       startAt: undefined,
     };
-    if (creationTrigger) {
-      const { triggerStrategy, cronExpression, hours, days, startAt } = creationTrigger ?? {};
+    if (triggerConfig) {
+      const { triggerStrategy, cronExpression, hours, days, startAt } = triggerConfig ?? {};
       if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
         formData.triggerStrategy = TaskExecStrategy.TIMER;
         const crontab = {

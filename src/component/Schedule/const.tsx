@@ -40,6 +40,26 @@ const ScheduleStatus2Actions = {
     ScheduleActionsEnum.CLONE,
     ScheduleActionsEnum.SHARE,
   ],
+  [ScheduleStatus.TERMINATION]: [
+    ScheduleActionsEnum.VIEW,
+    ScheduleActionsEnum.CLONE,
+    ScheduleActionsEnum.SHARE,
+  ],
+  [ScheduleStatus.APPROVING]: [
+    ScheduleActionsEnum.VIEW,
+    ScheduleActionsEnum.CLONE,
+    ScheduleActionsEnum.SHARE,
+  ],
+  [ScheduleStatus.APPROVAL_EXPIRED]: [
+    ScheduleActionsEnum.VIEW,
+    ScheduleActionsEnum.CLONE,
+    ScheduleActionsEnum.SHARE,
+  ],
+  [ScheduleStatus.REJECTED]: [
+    ScheduleActionsEnum.VIEW,
+    ScheduleActionsEnum.CLONE,
+    ScheduleActionsEnum.SHARE,
+  ],
   /** 删除不可见 */
   [ScheduleStatus.DELETED]: [],
 

@@ -1,6 +1,11 @@
 import { ScheduleStatus } from '@/d.ts/schedule';
 import { ScheduleStatusTextMap } from '@/constant/schedule';
-import Icon, { CheckCircleFilled, CloseCircleFilled, StopFilled } from '@ant-design/icons';
+import Icon, {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  ExclamationCircleFilled,
+  StopFilled,
+} from '@ant-design/icons';
 import { Space } from 'antd';
 import { ReactComponent as WaitingBlueSvg } from '@/svgr/waiting_blue.svg';
 import { ReactComponent as ScheduleEnabledSvg } from '@/svgr/scheduleEnabled.svg';
@@ -44,6 +49,42 @@ const ScheduleStatusInfo = {
     ),
   },
   [ScheduleStatus.EXECUTION_FAILED]: {
+    icon: (
+      <CloseCircleFilled
+        style={{
+          color: 'var(--function-red6-color)',
+        }}
+      />
+    ),
+  },
+  [ScheduleStatus.TERMINATION]: {
+    icon: (
+      <StopFilled
+        style={{
+          color: 'var(--icon-color-disable)',
+        }}
+      />
+    ),
+  },
+  [ScheduleStatus.APPROVING]: {
+    icon: (
+      <ExclamationCircleFilled
+        style={{
+          color: 'var(--icon-blue-color)',
+        }}
+      />
+    ),
+  },
+  [ScheduleStatus.APPROVAL_EXPIRED]: {
+    icon: (
+      <StopFilled
+        style={{
+          color: 'var(--icon-color-disable)',
+        }}
+      />
+    ),
+  },
+  [ScheduleStatus.REJECTED]: {
     icon: (
       <CloseCircleFilled
         style={{

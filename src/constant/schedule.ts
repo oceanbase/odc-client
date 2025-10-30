@@ -79,6 +79,22 @@ export const ScheduleStatusTextMap = {
     id: 'src.constant.15170AB3',
     defaultMessage: '已取消',
   }),
+  [ScheduleStatus.TERMINATION]: formatMessage({
+    id: 'src.constant.3A6D8681',
+    defaultMessage: '已终止',
+  }),
+  [ScheduleStatus.APPROVING]: formatMessage({
+    id: 'odc.component.TaskStatus.Approving',
+    defaultMessage: '审批中',
+  }),
+  [ScheduleStatus.APPROVAL_EXPIRED]: formatMessage({
+    id: 'odc.component.TaskStatus.ApprovalExpired.1',
+    defaultMessage: '审批过期',
+  }),
+  [ScheduleStatus.REJECTED]: formatMessage({
+    id: 'odc.component.TaskStatus.ApprovalFailed',
+    defaultMessage: '审批不通过',
+  }),
 };
 
 export const ScheduleActionsTextMap = {
