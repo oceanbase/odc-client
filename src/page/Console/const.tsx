@@ -114,7 +114,6 @@ export const ConsoleTextConfig = {
       formatMessage({ id: 'src.page.Console.4D58E4BD', defaultMessage: '执行成功' }),
       formatMessage({ id: 'src.page.Console.AC6DADB0', defaultMessage: '执行超时' }),
       formatMessage({ id: 'src.page.Console.D7644938', defaultMessage: '执行中断' }),
-
       formatMessage({ id: 'src.page.Console.32807E76', defaultMessage: '其他' }),
     ],
 
@@ -123,7 +122,6 @@ export const ConsoleTextConfig = {
       formatMessage({ id: 'src.page.Console.4D58E4BD', defaultMessage: '执行成功' }),
       formatMessage({ id: 'src.page.Console.770CA9E1', defaultMessage: '准入失败' }),
       formatMessage({ id: 'src.page.Console.ABA79EEA', defaultMessage: '执行中断' }),
-
       formatMessage({ id: 'src.page.Console.32807E76', defaultMessage: '其他' }),
     ],
 

@@ -115,12 +115,10 @@ const ScheduleItem = ({
 
         <CounterCard
           onClick={() => {
-            // 跳转到调度管理页面的执行视角，并过滤执行失败的任务（包括FAILED、ABNORMAL、EXEC_TIMEOUT）
-            const failedStatuses = [
-              ScheduleTaskStatus.FAILED,
-              ScheduleTaskStatus.ABNORMAL,
-              ScheduleTaskStatus.EXEC_TIMEOUT,
-            ].join(',');
+            // 跳转到调度管理页面的执行视角，并过滤执行失败的任务（包括FAILED、ABNORMAL）
+            const failedStatuses = [ScheduleTaskStatus.FAILED, ScheduleTaskStatus.ABNORMAL].join(
+              ',',
+            );
             navigate(
               buildNavigateUrlWithFilters(
                 `/schedule?scheduleType=${type}&perspective=${Perspective.executionView}&subTaskStatus=${failedStatuses}&subTaskTab=${ScheduleTaskTab.all}&subTaskStatus=clearAll`,
