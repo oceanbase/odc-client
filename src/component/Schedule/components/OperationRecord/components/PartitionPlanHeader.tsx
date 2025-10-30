@@ -22,17 +22,13 @@ const PartitionPlanHeader: React.FC<IProps> = (props) => {
   const [type, setType] = useState<PartitionTypeExecutionMethod>(
     PartitionTypeExecutionMethod.CreatePartition,
   );
-  const [trigger, setTrigger] = useState<ICycleTaskTriggerConfig>(
-    schedule?.parameters?.creationTrigger,
-  );
-  const [fireTimes, setFireTimes] = useState<number[]>(
-    schedule?.parameters?.createTriggerNextFireTimes || [],
-  );
+  const [trigger, setTrigger] = useState<ICycleTaskTriggerConfig>(schedule?.triggerConfig);
+  const [fireTimes, setFireTimes] = useState<number[]>(schedule?.nextFireTimes || []);
 
   useEffect(() => {
     if (type === PartitionTypeExecutionMethod.CreatePartition) {
-      setTrigger(schedule?.parameters?.creationTrigger);
-      setFireTimes(schedule?.parameters?.createTriggerNextFireTimes || []);
+      setTrigger(schedule?.triggerConfig);
+      setFireTimes(schedule?.nextFireTimes || []);
     } else {
       setTrigger(schedule?.parameters?.droppingTrigger);
       setFireTimes(schedule?.parameters?.dropTriggerNextFireTimes || []);

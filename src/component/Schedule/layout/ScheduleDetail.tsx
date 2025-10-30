@@ -27,7 +27,7 @@ const loopStatus = [
   ScheduleStatus.ENABLED,
   ScheduleStatus.PAUSE,
   ScheduleStatus.COMPLETED,
-  ScheduleStatus.TERMINATED,
+  ScheduleStatus.APPROVING,
 ];
 interface IProps {
   taskOpenRef?: React.RefObject<boolean>;
