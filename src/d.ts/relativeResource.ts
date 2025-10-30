@@ -8,11 +8,20 @@ export enum EResourceType {
   JOB_RECORDS = 'jobRecords',
 }
 export enum EEntityType {
-  PROJECT = 'projectId',
-  USER = 'userId',
-  DATABASE = 'databaseIds',
-  DATASOURCE = 'datasourceId',
+  PROJECT = 'PROJECT',
+  USER = 'USER',
+  DATABASE = 'DATABASE',
+  DATASOURCE = 'DATASOURCE',
+  MEMBER = 'MEMBER',
 }
+
+export const propertyMap = {
+  [EEntityType.PROJECT]: 'projectId',
+  [EEntityType.USER]: 'userId',
+  [EEntityType.DATABASE]: 'databaseIds',
+  [EEntityType.DATASOURCE]: 'datasourceId',
+  [EEntityType.MEMBER]: 'userId',
+};
 
 export interface IResourceDependency {
   scheduleDependencies: IScheduleDependencyOverview[];

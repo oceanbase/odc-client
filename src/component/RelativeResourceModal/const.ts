@@ -16,6 +16,12 @@ export const ENTITY_CONFIG: Record<EEntityType, IEntityConfig> = {
       defaultMessage: '请先手动终止以下工单和作业。',
     }),
   },
+  [EEntityType.MEMBER]: {
+    hasRelatedText: formatMessage({
+      id: 'src.component.RelativeResourceModal.CA1D1A34',
+      defaultMessage: '请先手动终止以下工单和作业。',
+    }),
+  },
   [EEntityType.USER]: {
     actionText: formatMessage({
       id: 'src.component.RelativeResourceModal.92AC3A13',

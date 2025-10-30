@@ -25,7 +25,7 @@ import { IProject, ProjectRole } from '@/d.ts/project';
 import type { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
-import { Button, Space, Tag } from 'antd';
+import { Button, Modal, Space, Tag } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ProjectContext from '../ProjectContext';
@@ -35,7 +35,10 @@ import UpdateUserModal from './UpdateUserModal';
 import { isProjectArchived } from '@/page/Project/helper';
 import { UserOperationKey, getOperatioFunc } from '@/d.ts/operation';
 import { renderTool } from '@/util/renderTool';
-import { SyncOutlined } from '@ant-design/icons';
+import { QuestionCircleFilled, SyncOutlined } from '@ant-design/icons';
+import RelativeResourceModal from '@/component/RelativeResourceModal';
+import { EEntityType } from '@/d.ts/relativeResource';
+import { getResourceDependencies } from '@/util/request/relativeResource';
 
 export const projectRoleTextMap = {
   [ProjectRole.OWNER]: formatMessage({
@@ -71,6 +74,9 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
   const [manageModalVisiable, setManageModalVisiable] = useState(false);
   const [editUserId, setEditUserId] = useState<number>(null);
   const [detailId, setDetailId] = useState<number>(null);
+  const [resourceModalVisible, setResourceModalVisible] = useState(false);
+  const [deleteUserId, setDeleteUserId] = useState<number>(null);
+  const [deleteUserName, setDeleteUserName] = useState<string>('');
   const dataSource: (IProject['members'][0] & {
     roles: ProjectRole[];
     globalRoles: ProjectRole[];
@@ -105,11 +111,59 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
     tracert.expo('a3112.b64002.c330860');
   }, []);
   async function deleteUser(id: number, name: string) {
+    // 先检测是否有资源依赖
+    const res = await getResourceDependencies({ userId: id });
+    const total =
+      (res?.flowDependencies?.length || 0) +
+      (res?.scheduleDependencies?.length || 0) +
+      (res?.scheduleTaskDependencies?.length || 0);
+
+    if (total > 0) {
+      // 有依赖项，显示资源依赖弹窗
+      setDeleteUserId(id);
+      setDeleteUserName(name);
+      setResourceModalVisible(true);
+    } else {
+      // 无依赖项，直接显示确认对话框
+      Modal.confirm({
+        title: `是否确认移除用户 ${name} ？`,
+        content: `移除后该用户将无法访问当前项目`,
+        okText: formatMessage({
+          id: 'app.button.ok',
+          defaultMessage: '确定',
+        }),
+        cancelText: formatMessage({
+          id: 'app.button.cancel',
+          defaultMessage: '取消',
+        }),
+        centered: true,
+        icon: <QuestionCircleFilled />,
+        okButtonProps: {
+          type: 'default',
+          danger: true,
+        },
+        onOk: async () => {
+          const isSuccess = await deleteProjectMember({
+            projectId: context?.project?.id,
+            userId: id,
+          });
+          if (isSuccess) {
+            context.reloadProject();
+          }
+        },
+      });
+    }
+  }
+
+  async function confirmDeleteUser() {
     const isSuccess = await deleteProjectMember({
       projectId: context?.project?.id,
-      userId: id,
+      userId: deleteUserId,
     });
     if (isSuccess) {
+      setResourceModalVisible(false);
+      setDeleteUserId(null);
+      setDeleteUserName('');
       context.reloadProject();
     }
   }
@@ -183,10 +237,6 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
           defaultMessage: '移除',
         }),
         action: () => deleteUser(record.id, record.name),
-        confirmText: formatMessage({
-          id: 'odc.Project.User.AreYouSureYouWant',
-          defaultMessage: '是否确定删除该成员？',
-        }),
         disableTooltip: () => {
           if (isGlobalRolesUser) {
             return formatMessage({
@@ -358,6 +408,19 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
         isOwner={isOwner}
         isDBA={isDBA}
         onClose={closeManageModal}
+      />
+
+      <RelativeResourceModal
+        open={resourceModalVisible}
+        id={deleteUserId}
+        title={`存在以下用户 ${deleteUserName} 创建的未完成的工单和作业，暂不支持移除`}
+        mode={EEntityType.MEMBER}
+        onCancel={() => {
+          setResourceModalVisible(false);
+          setDeleteUserId(null);
+          setDeleteUserName('');
+        }}
+        customSuccessHandler={confirmDeleteUser}
       />
     </TableCard>
   );
