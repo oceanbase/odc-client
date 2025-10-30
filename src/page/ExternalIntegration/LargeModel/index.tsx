@@ -261,25 +261,16 @@ const LargeModel = () => {
       manual: true,
       onSuccess: (_, params) => {
         const [{ enabled }] = params;
-        message.success(
-          formatMessage(
-            {
-              id: 'src.page.ExternalIntegration.LargeModel.BDF17AAE',
-              defaultMessage: "模型已{enabled ? '启用' : '禁用'}",
-            },
-            {
-              ConditionalExpression0: enabled
-                ? formatMessage({
-                    id: 'src.page.ExternalIntegration.LargeModel.529B6611',
-                    defaultMessage: '启用',
-                  })
-                : formatMessage({
-                    id: 'src.page.ExternalIntegration.LargeModel.8A7E4399',
-                    defaultMessage: '禁用',
-                  }),
-            },
-          ),
-        );
+        const status = enabled
+          ? formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.529B6611',
+              defaultMessage: '启用',
+            })
+          : formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.8A7E4399',
+              defaultMessage: '禁用',
+            });
+        message.success(`模型已${status}`);
         fetchAllModels();
         fetchProviders();
       },
