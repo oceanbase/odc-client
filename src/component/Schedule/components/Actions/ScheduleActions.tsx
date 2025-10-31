@@ -5,6 +5,7 @@ import {
   IOperationTypeRole,
   ISqlPlanParameters,
   IPartitionPlan,
+  ScheduleStatus,
 } from '@/d.ts/schedule';
 import { ScheduleActionsTextMap, ScheduleTextMap } from '@/constant/schedule';
 import { useContext, useEffect, useMemo, useState } from 'react';
@@ -417,6 +418,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
 
   const _handleRevoke = async () => {
     const { approveInstanceId } = schedule;
+    const isCreating = schedule?.status === ScheduleStatus.CREATING;
     const scheduleTypeText = ScheduleTextMap[schedule?.type];
     Modal.confirm({
       title: formatMessage(
@@ -428,10 +430,16 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       ),
       content: (
         <div>
-          {formatMessage({
-            id: 'src.component.Schedule.components.Actions.F67C72E0',
-            defaultMessage: '审批撤销后，作业将进入终止态',
-          })}
+          {isCreating ? (
+            <>
+              {formatMessage({
+                id: 'src.component.Schedule.components.Actions.F67C72E0',
+                defaultMessage: '审批撤销后，作业将进入终止态',
+              })}
+            </>
+          ) : (
+            <>撤销后，该变更审批将被驳回</>
+          )}
         </div>
       ),
       cancelText: formatMessage({
