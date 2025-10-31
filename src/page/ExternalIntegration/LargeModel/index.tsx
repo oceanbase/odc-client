@@ -261,16 +261,8 @@ const LargeModel = () => {
       manual: true,
       onSuccess: (_, params) => {
         const [{ enabled }] = params;
-        const status = enabled
-          ? formatMessage({
-              id: 'src.page.ExternalIntegration.LargeModel.529B6611',
-              defaultMessage: '启用',
-            })
-          : formatMessage({
-              id: 'src.page.ExternalIntegration.LargeModel.8A7E4399',
-              defaultMessage: '禁用',
-            });
-        message.success(`模型已${status}`);
+        const info = enabled ? '模型已启用' : '模型已禁用';
+        message.success(info);
         fetchAllModels();
         fetchProviders();
       },
