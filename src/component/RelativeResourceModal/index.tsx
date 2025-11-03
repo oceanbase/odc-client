@@ -168,7 +168,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
               >
                 <div
                   className={hasProjectAuth ? styles.title : styles.disabledTitle}
-                  onClick={handleClick}
+                  onClick={hasProjectAuth ? handleClick : () => {}}
                 >
                   {text || '-'}
                 </div>
