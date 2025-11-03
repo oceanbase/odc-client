@@ -152,27 +152,11 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
             setCurrentRecord(record);
             setDetailVisible(true);
           };
-          const hasProjectAuth = !!record?.project?.currentUserResourceRoles?.length;
-
           return (
             <div className={styles.taskName}>
-              <Tooltip
-                title={
-                  hasProjectAuth
-                    ? ''
-                    : formatMessage({
-                        id: 'src.component.RelativeResourceModal.94DC18D3',
-                        defaultMessage: '暂无所属的项目访问权限，无法查看工单详情，请联系管理员',
-                      })
-                }
-              >
-                <div
-                  className={hasProjectAuth ? styles.title : styles.disabledTitle}
-                  onClick={hasProjectAuth ? handleClick : () => {}}
-                >
-                  {text || '-'}
-                </div>
-              </Tooltip>
+              <div className={styles.title} onClick={handleClick}>
+                {text || '-'}
+              </div>
               <div>
                 <TaskTitle record={record} />
               </div>
