@@ -12,7 +12,6 @@ export enum EEntityType {
   USER = 'USER',
   DATABASE = 'DATABASE',
   DATASOURCE = 'DATASOURCE',
-  MEMBER = 'MEMBER',
 }
 
 export const propertyMap = {
@@ -20,7 +19,6 @@ export const propertyMap = {
   [EEntityType.USER]: 'userId',
   [EEntityType.DATABASE]: 'databaseIds',
   [EEntityType.DATASOURCE]: 'datasourceId',
-  [EEntityType.MEMBER]: 'userId',
 };
 
 export interface IResourceDependency {

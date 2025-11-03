@@ -117,7 +117,11 @@ const UserDetail: React.FC<{
       openNotification({ name, type: EResourceType.USER, status: EStatus.SUCCESS });
       handleCloseAndReload();
     } else {
-      openNotification({ name, type: EResourceType.USER, status: EStatus.FAILED });
+      openNotification({
+        name,
+        type: EResourceType.USER,
+        status: EStatus.FAILED,
+      });
     }
   };
 
