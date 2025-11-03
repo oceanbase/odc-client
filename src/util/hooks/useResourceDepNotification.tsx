@@ -133,14 +133,21 @@ interface IOpenNotificationProps {
   type: EResourceType;
   status: EStatus;
   projectName?: string;
+  message?: string;
 }
 
 const useResourceDepNotification = () => {
   const [api, contextHolder] = notification.useNotification();
-  const openNotification = ({ name, type, status, projectName }: IOpenNotificationProps) => {
+  const openNotification = ({
+    name,
+    type,
+    status,
+    projectName,
+    message,
+  }: IOpenNotificationProps) => {
     api.open({
       message: <Typography.Title level={5}>{getTitle(name)[type][status]}</Typography.Title>,
-      description: getContent(projectName)[type][status],
+      description: message || getContent(projectName)[type][status],
       icon: iconConfig[status],
     });
   };
