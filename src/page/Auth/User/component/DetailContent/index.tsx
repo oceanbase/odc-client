@@ -110,10 +110,10 @@ const UserDetail: React.FC<{
   const relatedRoles = useRoleListByIds(roles, roleIds);
   const { contextHolder, openNotification } = useResourceDepNotification();
 
-  const handleDeleteUser = async () => {
+  const handleDeleteUserWithNotification = async () => {
     openNotification({ name, type: EResourceType.USER, status: EStatus.LOADING });
-    const res = await deleteUser(id, true);
-    if (res?.data) {
+    const isSuccess = await deleteUser(id, true);
+    if (isSuccess) {
       openNotification({ name, type: EResourceType.USER, status: EStatus.SUCCESS });
       handleCloseAndReload();
     } else {
@@ -121,8 +121,14 @@ const UserDetail: React.FC<{
         name,
         type: EResourceType.USER,
         status: EStatus.FAILED,
-        message: res?.error?.message,
       });
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    const isSuccess = await deleteUser(id);
+    if (isSuccess) {
+      handleCloseAndReload();
     }
   };
 
@@ -357,7 +363,7 @@ const UserDetail: React.FC<{
         )}
         onCancel={() => setOpenDepResourceModal(false)}
         customSuccessHandler={async () => {
-          await handleDeleteUser();
+          await handleDeleteUserWithNotification();
           setOpenDepResourceModal(false);
           handleCloseAndReload();
         }}
