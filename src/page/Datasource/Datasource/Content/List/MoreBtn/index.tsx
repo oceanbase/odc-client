@@ -34,10 +34,6 @@ import RelativeResourceModal from '@/component/RelativeResourceModal';
 import ParamContext from '../../../ParamContext';
 import styles from './index.less';
 import { getResourceDependencies } from '@/util/request/relativeResource';
-import useResourceDepNotification, {
-  EResourceType,
-  EStatus,
-} from '@/util/hooks/useResourceDepNotification';
 interface IProps {
   connection: IConnection;
   modalStore?: ModalStore;
@@ -51,7 +47,6 @@ enum Actions {
 const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
   const context = useContext(ParamContext);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const { contextHolder, openNotification } = useResourceDepNotification();
   async function edit() {
     context.editDatasource?.(connection?.id);
   }
@@ -107,25 +102,9 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
         centered: true,
         icon: <QuestionCircleFilled />,
         onOk: async () => {
-          openNotification({
-            name: connection.name,
-            type: EResourceType.DATASOURCE,
-            status: EStatus.LOADING,
-          });
-          const isSuccess = await deleteConnection(connection.id.toString(), true);
+          const isSuccess = await deleteConnection(connection.id.toString());
           if (isSuccess) {
             context.reloadTable();
-            openNotification({
-              name: connection.name,
-              type: EResourceType.DATASOURCE,
-              status: EStatus.SUCCESS,
-            });
-          } else {
-            openNotification({
-              name: connection.name,
-              type: EResourceType.DATASOURCE,
-              status: EStatus.FAILED,
-            });
           }
         },
       });
@@ -186,7 +165,6 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
 
   return (
     <>
-      {contextHolder}
       <Dropdown
         menu={{
           items: items?.filter(Boolean),

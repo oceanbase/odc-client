@@ -77,7 +77,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
     setOwnerSelectStatus(false);
     form.resetFields();
   };
-  const handleChangeProject = async (): Promise<void> => {
+  const handleChangeProjectWithNotification = async (): Promise<void> => {
     const value = await form.validateFields();
     const selectedProject = data?.contents?.find((project) => project.id === value.project);
     openNotification({
@@ -102,6 +102,15 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
         type: EResourceType.DATABASE,
         status: EStatus.FAILED,
       });
+    }
+  };
+
+  const handleChangeProject = async (): Promise<void> => {
+    const value = await form.validateFields();
+    const isSuccess = await updateDataBase([database?.id], value.project, value.ownerIds);
+    if (isSuccess) {
+      onClose();
+      onSuccess();
     }
   };
 
@@ -226,7 +235,7 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
             { databaseName },
           )}
           onCancel={() => setOpenDepResourceModal(false)}
-          customSuccessHandler={handleChangeProject}
+          customSuccessHandler={handleChangeProjectWithNotification}
         />
       </Modal>
     </>
