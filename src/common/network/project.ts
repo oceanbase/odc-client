@@ -102,12 +102,12 @@ export async function setProjectAchived(params: {
 export async function deleteProjectMember(params: {
   projectId: number;
   userId: number;
-}): Promise<boolean> {
+}): Promise<{ data; error?: { message?: string } }> {
   const res = await request.delete(
     `/api/v2/collaboration/projects/${params?.projectId}/members/${params?.userId}`,
   );
 
-  return !!res?.data;
+  return res;
 }
 
 export async function updateProjectMember(params: {
