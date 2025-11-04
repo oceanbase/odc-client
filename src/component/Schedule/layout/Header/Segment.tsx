@@ -15,12 +15,12 @@ const Segment = () => {
         setLoading(true);
         setPerspective(value);
       }}
-      className={styles.segmented}
       options={[
         {
           value: Perspective.scheduleView,
           icon: (
             <Tooltip
+              overlayClassName={styles.filterTooltip}
               title={
                 <>
                   <div>
@@ -29,7 +29,7 @@ const Segment = () => {
                       defaultMessage: '作业视角',
                     })}
                   </div>
-                  <div>
+                  <div className={styles.value}>
                     {formatMessage({
                       id: 'src.component.Schedule.layout.Header.AFF59B24',
                       defaultMessage: '展示所有作业创建记录',
@@ -38,10 +38,18 @@ const Segment = () => {
                 </>
               }
             >
-              {formatMessage({
-                id: 'src.component.Schedule.layout.Header.72C38F88',
-                defaultMessage: '作业视角',
-              })}
+              <span
+                style={
+                  perspective === Perspective.scheduleView
+                    ? { color: 'var(--icon-blue-color)' }
+                    : {}
+                }
+              >
+                {formatMessage({
+                  id: 'src.component.Schedule.layout.Header.72C38F88',
+                  defaultMessage: '作业视角',
+                })}
+              </span>
             </Tooltip>
           ),
         },
@@ -50,6 +58,7 @@ const Segment = () => {
           value: Perspective.executionView,
           icon: (
             <Tooltip
+              overlayClassName={styles.filterTooltip}
               title={
                 <>
                   <div>
@@ -58,7 +67,7 @@ const Segment = () => {
                       defaultMessage: '执行视角',
                     })}
                   </div>
-                  <div>
+                  <div className={styles.value}>
                     {formatMessage({
                       id: 'src.component.Schedule.layout.Header.A4FB7B38',
                       defaultMessage: '展示所有作业的任务执行记录',
@@ -67,10 +76,18 @@ const Segment = () => {
                 </>
               }
             >
-              {formatMessage({
-                id: 'src.component.Schedule.layout.Header.BAD95B16',
-                defaultMessage: '执行视角',
-              })}
+              <span
+                style={
+                  perspective === Perspective.executionView
+                    ? { color: 'var(--icon-blue-color)' }
+                    : {}
+                }
+              >
+                {formatMessage({
+                  id: 'src.component.Schedule.layout.Header.BAD95B16',
+                  defaultMessage: '执行视角',
+                })}
+              </span>
             </Tooltip>
           ),
         },

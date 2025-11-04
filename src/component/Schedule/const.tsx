@@ -2,7 +2,7 @@ import { IOperationTypeRole, ScheduleStatus, ScheduleActionsEnum } from '@/d.ts/
 import { ScheduleTaskActionsEnum, ScheduleTaskStatus } from '@/d.ts/scheduleTask';
 
 /** 作业状态对应的操作 */
-const ScheduleStatus2Actions = {
+const ScheduleStatus2Actions: Record<ScheduleStatus, ScheduleActionsEnum[]> = {
   [ScheduleStatus.ENABLED]: [
     ScheduleActionsEnum.STOP,
     ScheduleActionsEnum.DISABLE,
@@ -14,11 +14,6 @@ const ScheduleStatus2Actions = {
     ScheduleActionsEnum.EDIT,
     ScheduleActionsEnum.ENABLE,
     ScheduleActionsEnum.STOP,
-    ScheduleActionsEnum.VIEW,
-    ScheduleActionsEnum.CLONE,
-    ScheduleActionsEnum.SHARE,
-  ],
-  [ScheduleStatus.CANCELED]: [
     ScheduleActionsEnum.VIEW,
     ScheduleActionsEnum.CLONE,
     ScheduleActionsEnum.SHARE,
@@ -40,34 +35,12 @@ const ScheduleStatus2Actions = {
     ScheduleActionsEnum.CLONE,
     ScheduleActionsEnum.SHARE,
   ],
-  [ScheduleStatus.TERMINATION]: [
-    ScheduleActionsEnum.VIEW,
-    ScheduleActionsEnum.CLONE,
-    ScheduleActionsEnum.SHARE,
-  ],
-  [ScheduleStatus.APPROVING]: [
-    ScheduleActionsEnum.VIEW,
-    ScheduleActionsEnum.CLONE,
-    ScheduleActionsEnum.SHARE,
-  ],
-  [ScheduleStatus.APPROVAL_EXPIRED]: [
-    ScheduleActionsEnum.VIEW,
-    ScheduleActionsEnum.CLONE,
-    ScheduleActionsEnum.SHARE,
-  ],
-  [ScheduleStatus.REJECTED]: [
-    ScheduleActionsEnum.VIEW,
-    ScheduleActionsEnum.CLONE,
-    ScheduleActionsEnum.SHARE,
-  ],
   /** 删除不可见 */
   [ScheduleStatus.DELETED]: [],
-
-  [ScheduleStatus.EXECUTION_FAILED]: [],
 };
 
 /** 作业子任务状态对应的操作 */
-const ScheduleTaskStatus2Actions = {
+const ScheduleTaskStatus2Actions: Record<ScheduleTaskStatus, ScheduleTaskActionsEnum[]> = {
   [ScheduleTaskStatus.PREPARING]: [
     ScheduleTaskActionsEnum.VIEW,
     ScheduleTaskActionsEnum.SHARE,
@@ -109,6 +82,11 @@ const ScheduleTaskStatus2Actions = {
   [ScheduleTaskStatus.EXEC_TIMEOUT]: [ScheduleTaskActionsEnum.VIEW, ScheduleTaskActionsEnum.SHARE],
   [ScheduleTaskStatus.CANCELED]: [ScheduleTaskActionsEnum.VIEW, ScheduleTaskActionsEnum.SHARE],
   [ScheduleTaskStatus.DONE]: [
+    ScheduleTaskActionsEnum.VIEW,
+    ScheduleTaskActionsEnum.SHARE,
+    ScheduleTaskActionsEnum.ROLLBACK,
+  ],
+  [ScheduleTaskStatus.DONE_WITH_FAILED]: [
     ScheduleTaskActionsEnum.VIEW,
     ScheduleTaskActionsEnum.SHARE,
     ScheduleTaskActionsEnum.ROLLBACK,

@@ -37,9 +37,6 @@ import { Space, Tooltip } from 'antd';
 import { isNil } from 'lodash';
 import React from 'react';
 import { ReactComponent as WaitingYellowSvg } from '@/svgr/waiting_yellow.svg';
-import { ScheduleStatus } from '@/d.ts/schedule';
-import { ReactComponent as WaitingBlueSvg } from '@/svgr/waiting_blue.svg';
-
 export const nodeStatus = {
   [TaskFlowNodeType.APPROVAL_TASK]: {
     [TaskNodeStatus.PENDING]: {
@@ -501,9 +498,9 @@ export const status: Partial<
 
 // 周期任务状态
 export const cycleStatus: Partial<
-  Record<ScheduleStatus, { icon: React.ReactNode; text: string; desc?: React.ReactNode }>
+  Record<TaskStatus, { icon: React.ReactNode; text: string; desc?: React.ReactNode }>
 > = {
-  [ScheduleStatus.APPROVING]: {
+  [TaskStatus.APPROVING]: {
     icon: (
       <ExclamationCircleFilled
         style={{
@@ -518,7 +515,7 @@ export const cycleStatus: Partial<
     }), //审批中
   },
 
-  [ScheduleStatus.REJECTED]: {
+  [TaskStatus.REJECTED]: {
     icon: (
       <CloseCircleFilled
         style={{
@@ -533,7 +530,7 @@ export const cycleStatus: Partial<
     }), //审批不通过
   },
 
-  [ScheduleStatus.APPROVAL_EXPIRED]: {
+  [TaskStatus.APPROVAL_EXPIRED]: {
     icon: (
       <StopFilled
         style={{
@@ -548,7 +545,7 @@ export const cycleStatus: Partial<
     }), //审批过期
   },
 
-  [ScheduleStatus.ENABLED]: {
+  [TaskStatus.ENABLED]: {
     icon: (
       <CheckCircleFilled
         style={{
@@ -563,7 +560,7 @@ export const cycleStatus: Partial<
     }), //已启用
   },
 
-  [ScheduleStatus.PAUSE]: {
+  [TaskStatus.PAUSE]: {
     icon: (
       <StopFilled
         style={{
@@ -578,7 +575,7 @@ export const cycleStatus: Partial<
     }), //已禁用
   },
 
-  [ScheduleStatus.TERMINATED]: {
+  [TaskStatus.TERMINATED]: {
     icon: (
       <StopFilled
         style={{
@@ -593,7 +590,7 @@ export const cycleStatus: Partial<
     }), //已终止
   },
 
-  [ScheduleStatus.COMPLETED]: {
+  [TaskStatus.COMPLETED]: {
     icon: (
       <CheckCircleFilled
         style={{
@@ -608,7 +605,7 @@ export const cycleStatus: Partial<
     }), //已完成
   },
 
-  [ScheduleStatus.EXECUTION_FAILED]: {
+  [TaskStatus.EXECUTION_FAILED]: {
     icon: (
       <CloseCircleFilled
         style={{
@@ -623,12 +620,19 @@ export const cycleStatus: Partial<
     }), //执行失败
   },
 
-  [ScheduleStatus.CREATING]: {
-    icon: <Icon component={WaitingBlueSvg} style={{ fontSize: 15 }} />,
+  [TaskStatus.CREATING]: {
+    icon: (
+      <LoadingOutlined
+        style={{
+          color: 'var(--icon-blue-color)',
+        }}
+      />
+    ),
+
     text: formatMessage({
-      id: 'odc.component.Status.Created',
-      defaultMessage: '已创建',
-    }), //已创建
+      id: 'src.component.Task.component.Status.3DCF46EC',
+      defaultMessage: '创建中',
+    }),
   },
 };
 
