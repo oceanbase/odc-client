@@ -7,11 +7,13 @@ const PieChart = ({ progress }) => {
   const { status, statusType, statusColor } = ConsoleTextConfig.schdules;
 
   const chartRef = useRef(null);
-  const { PENDING, EXECUTING, EXECUTION_FAILURE, EXECUTION_SUCCESS, OTHER } = progress || {};
+  const { PENDING, EXECUTING, EXECUTION_INTERRUPTION, EXEC_TIMEOUT, EXECUTION_SUCCESS, OTHER } =
+    progress || {};
   const total =
     (PENDING || 0) +
     (EXECUTING || 0) +
-    (EXECUTION_FAILURE || 0) +
+    (EXECUTION_INTERRUPTION || 0) +
+    (EXEC_TIMEOUT || 0) +
     (EXECUTION_SUCCESS || 0) +
     (OTHER || 0);
 

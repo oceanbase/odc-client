@@ -30,12 +30,12 @@ const ScheduleItem = ({
   selectedProjectId: number | undefined;
 }) => {
   const { count } = progress || {};
-  const { EXECUTION_TIMEOUT, EXECUTING, EXECUTION_FAILURE, EXECUTION_SUCCESS, OTHER, ENABLED } =
+  const { EXEC_TIMEOUT, EXECUTING, EXECUTION_INTERRUPTION, EXECUTION_SUCCESS, OTHER, ENABLED } =
     count || {};
   const totalCount =
-    (EXECUTION_TIMEOUT || 0) +
+    (EXEC_TIMEOUT || 0) +
     (EXECUTING || 0) +
-    (EXECUTION_FAILURE || 0) +
+    (EXECUTION_INTERRUPTION || 0) +
     (EXECUTION_SUCCESS || 0) +
     (OTHER || 0);
   const navigate = useNavigate();
@@ -129,7 +129,7 @@ const ScheduleItem = ({
             id: 'src.page.Console.components.ScheduleItem.45AAE8DB',
             defaultMessage: '执行中断',
           })}
-          counter={EXECUTION_FAILURE || 0}
+          counter={EXECUTION_INTERRUPTION || 0}
           status="failed"
         />
       </div>
