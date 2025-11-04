@@ -413,7 +413,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
   };
 
   const _handlePass = async () => {
-    onApprovalVisible(true, schedule?.approveInstanceId);
+    onApprovalVisible?.(true, schedule?.approveInstanceId);
   };
 
   const _handleRevoke = async () => {
@@ -472,7 +472,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
   };
 
   const _handleRefuse = async () => {
-    onApprovalVisible(false, schedule?.approveInstanceId);
+    onApprovalVisible?.(false, schedule?.approveInstanceId);
   };
 
   const eventMap = {

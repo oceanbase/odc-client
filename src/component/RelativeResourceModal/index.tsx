@@ -28,7 +28,7 @@ import {
   Button,
   Tooltip,
 } from 'antd';
-import { useRequest } from 'ahooks';
+import { useRequest, useSetState } from 'ahooks';
 import { TaskDetail, TaskRecordParameters, TaskStatus, TaskType } from '@/d.ts';
 import {
   IFlowDependencyOverview,
@@ -56,6 +56,7 @@ import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
 import ScheduleTaskStatusLabel from '../Schedule/components/ScheduleTaskStatusLabel';
 import { IScheduleRecord, ScheduleRecordParameters, ScheduleStatus } from '@/d.ts/schedule';
 import ScheduleStatusLabel from '../Schedule/components/ScheduleStatusLabel';
+import ApprovalModal from '@/component/Task/component/ApprovalModal';
 
 export interface DeleteDataSourceModalProps {
   open: boolean;
@@ -89,6 +90,12 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
   const [currentRecord, setCurrentRecord] = useState<IResourceDependencyItem | null>(null);
   const [showRiskError, setShowRiskError] = useState(false);
 
+  const [approvalState, setApprovalState] = useSetState({
+    visible: false,
+    approvalStatus: false,
+    detailId: null,
+  });
+
   // 获取相关工单
   const { run: fetchRelatedTasks, loading } = useRequest(
     (params: IResourceDependencyParams) => getResourceDependencies(params),
@@ -99,6 +106,20 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
       },
     },
   );
+
+  const handleApprovalVisible = (approvalStatus: boolean = false, id: number) => {
+    setApprovalState({
+      detailId: id,
+      approvalStatus,
+      visible: true,
+    });
+  };
+
+  const reloadList = () => {
+    fetchRelatedTasks({
+      [propertyMap[mode]]: id,
+    });
+  };
 
   useEffect(() => {
     if (open && id) {
@@ -430,11 +451,8 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         onDetailVisible={(task: TaskDetail<TaskRecordParameters>, visible: boolean) => {
           setDetailVisible(visible);
         }}
-        onReloadList={() => {
-          fetchRelatedTasks({
-            [mode]: id,
-          });
-        }}
+        onReloadList={reloadList}
+        onApprovalVisible={handleApprovalVisible}
       />
 
       <ScheduleDetail
@@ -447,11 +465,8 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         ) => {
           setScheduleDetailVisible(visible);
         }}
-        onReloadList={() => {
-          fetchRelatedTasks({
-            [mode]: id,
-          });
-        }}
+        onReloadList={reloadList}
+        onApprovalVisible={handleApprovalVisible}
       />
 
       <SubTaskDetailModal
@@ -547,6 +562,13 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
           </Spin>
         </div>
       </Modal>
+      <ApprovalModal
+        id={approvalState.detailId}
+        visible={approvalState.visible}
+        approvalStatus={approvalState.approvalStatus}
+        onReload={reloadList}
+        onCancel={() => setApprovalState({ visible: false })}
+      />
     </>
   );
 };
