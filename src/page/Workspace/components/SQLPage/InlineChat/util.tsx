@@ -624,6 +624,7 @@ export function addAIAction(
       }, 150);
     });
     const selection = editor.getSelection();
+    const selectedSQL = selection ? editor.getModel()?.getValueInRange(selection) || '' : '';
     const begin = selection
       ? Math.min(selection.startLineNumber, selection.endLineNumber)
       : editor.getPosition()?.lineNumber;
@@ -663,6 +664,7 @@ export function addAIAction(
           editor={editor}
           fullEditor={fullEditor}
           session={getSession()}
+          initialValue={selectedSQL}
           modelsData={modelsData}
         />
       </div>,
