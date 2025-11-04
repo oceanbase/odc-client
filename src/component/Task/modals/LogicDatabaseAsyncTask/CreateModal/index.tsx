@@ -56,6 +56,8 @@ import { openTasksPage } from '@/store/helper/page';
 import { rules } from './const';
 import { Rule } from 'antd/es/form';
 import { getTaskDetail } from '@/common/network/task';
+import login from '@/store/login';
+import { isClient } from '@/util/env';
 
 interface IProps {
   sqlStore?: SQLStore;
@@ -107,6 +109,13 @@ const CreateModal: React.FC<IProps> = (props) => {
     }
     form.setFieldsValue(formData);
   };
+  const executionMethodLabel =
+    login.isPrivateSpace() || isClient()
+      ? '执行方式'
+      : formatMessage({
+          id: 'odc.components.TaskTimer.ExecutionMethodAfterTheApproval',
+          defaultMessage: '执行方式：审批完成后',
+        });
 
   useEffect(() => {
     if (logicDatabaseInfo?.ddl) {
@@ -436,14 +445,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             })}
             /*任务设置*/ keepExpand
           >
-            <Form.Item
-              label={formatMessage({
-                id: 'odc.DataClearTask.CreateModal.ExecutionMethod',
-                defaultMessage: '执行方式',
-              })}
-              /*执行方式*/ name="triggerStrategy"
-              required
-            >
+            <Form.Item label={executionMethodLabel} name="triggerStrategy" required>
               <Radio.Group
                 options={[
                   {

@@ -22,7 +22,8 @@ import { DatePicker, Form, Radio } from 'antd';
 import React from 'react';
 import { disabledDate, disabledTime } from '@/util/utils';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
-
+import login from '@/store/login';
+import { observer } from 'mobx-react';
 interface IProps {
   taskType?: TaskType;
 }
@@ -30,10 +31,13 @@ interface IProps {
 const TaskExecutionMethodForm: React.FC<IProps> = ({ taskType }) => {
   const taskExecStrategyMap = getTaskExecStrategyMap(taskType);
 
-  const label = formatMessage({
-    id: 'odc.components.TaskTimer.ExecutionMethodAfterTheApproval',
-    defaultMessage: '执行方式：审批完成后',
-  });
+  const label =
+    login.isPrivateSpace() || isClient()
+      ? '执行方式'
+      : formatMessage({
+          id: 'odc.components.TaskTimer.ExecutionMethodAfterTheApproval',
+          defaultMessage: '执行方式：审批完成后',
+        });
   return (
     <>
       <Form.Item label={label} name="executionStrategy" required>
@@ -93,4 +97,4 @@ const TaskExecutionMethodForm: React.FC<IProps> = ({ taskType }) => {
   );
 };
 
-export default TaskExecutionMethodForm;
+export default observer(TaskExecutionMethodForm);
