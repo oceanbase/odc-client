@@ -47,17 +47,37 @@ const PartitionPlanHeader: React.FC<IProps> = (props) => {
           options={[
             {
               value: PartitionTypeExecutionMethod.CreatePartition,
-              label: formatMessage({
-                id: 'src.component.Schedule.components.OperationRecord.components.DB6188CA',
-                defaultMessage: '创建分区调度策略',
-              }),
+              label: (
+                <span
+                  style={
+                    type === PartitionTypeExecutionMethod.CreatePartition
+                      ? { color: 'var(--icon-blue-color)' }
+                      : {}
+                  }
+                >
+                  {formatMessage({
+                    id: 'src.component.Schedule.components.OperationRecord.components.DB6188CA',
+                    defaultMessage: '创建分区调度策略',
+                  })}
+                </span>
+              ),
             },
             {
               value: PartitionTypeExecutionMethod.DropPartition,
-              label: formatMessage({
-                id: 'src.component.Schedule.components.OperationRecord.components.C12F3E2D',
-                defaultMessage: '删除分区调度策略',
-              }),
+              label: (
+                <span
+                  style={
+                    type === PartitionTypeExecutionMethod.DropPartition
+                      ? { color: 'var(--icon-blue-color)' }
+                      : {}
+                  }
+                >
+                  {formatMessage({
+                    id: 'src.component.Schedule.components.OperationRecord.components.C12F3E2D',
+                    defaultMessage: '删除分区调度策略',
+                  })}
+                </span>
+              ),
             },
           ]}
         />

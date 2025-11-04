@@ -23,12 +23,7 @@ import { SchedulePageMode } from '../interface';
 import { useLoop } from '@/util/hooks/useLoop';
 import scheduleStore from '@/store/schedule';
 
-const loopStatus = [
-  ScheduleStatus.ENABLED,
-  ScheduleStatus.PAUSE,
-  ScheduleStatus.COMPLETED,
-  ScheduleStatus.APPROVING,
-];
+const loopStatus = [ScheduleStatus.ENABLED, ScheduleStatus.PAUSE, ScheduleStatus.CREATING];
 interface IProps {
   taskOpenRef?: React.RefObject<boolean>;
   type: ScheduleType;

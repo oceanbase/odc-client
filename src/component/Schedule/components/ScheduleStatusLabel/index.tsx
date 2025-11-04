@@ -30,65 +30,11 @@ const ScheduleStatusInfo = {
       />
     ),
   },
-  [ScheduleStatus.CANCELED]: {
-    icon: (
-      <StopFilled
-        style={{
-          color: 'var(--icon-color-disable)',
-        }}
-      />
-    ),
-  },
   [ScheduleStatus.COMPLETED]: {
     icon: (
       <CheckCircleFilled
         style={{
           color: 'var(--icon-green-color)',
-        }}
-      />
-    ),
-  },
-  [ScheduleStatus.EXECUTION_FAILED]: {
-    icon: (
-      <CloseCircleFilled
-        style={{
-          color: 'var(--function-red6-color)',
-        }}
-      />
-    ),
-  },
-  [ScheduleStatus.TERMINATION]: {
-    icon: (
-      <StopFilled
-        style={{
-          color: 'var(--icon-color-disable)',
-        }}
-      />
-    ),
-  },
-  [ScheduleStatus.APPROVING]: {
-    icon: (
-      <ExclamationCircleFilled
-        style={{
-          color: 'var(--icon-blue-color)',
-        }}
-      />
-    ),
-  },
-  [ScheduleStatus.APPROVAL_EXPIRED]: {
-    icon: (
-      <StopFilled
-        style={{
-          color: 'var(--icon-color-disable)',
-        }}
-      />
-    ),
-  },
-  [ScheduleStatus.REJECTED]: {
-    icon: (
-      <CloseCircleFilled
-        style={{
-          color: 'var(--function-red6-color)',
         }}
       />
     ),

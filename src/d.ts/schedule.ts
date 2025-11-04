@@ -82,20 +82,6 @@ export enum ScheduleStatus {
   COMPLETED = 'COMPLETED',
   /** 已删除 */
   DELETED = 'DELETED',
-  /** 已取消 */
-  CANCELED = 'CANCELED',
-
-  // 兼容历史状态
-  /** 执行超时 */
-  EXECUTION_FAILED = 'EXECUTION_FAILED',
-  /** 已终止 */
-  TERMINATION = 'TERMINATION',
-  /** 审批中 */
-  APPROVING = 'APPROVING',
-  /** 审批过期 */
-  APPROVAL_EXPIRED = 'APPROVAL_EXPIRED',
-  /** 审批不通过 */
-  REJECTED = 'REJECTED',
 }
 
 export enum ScheduleActionsEnum {

@@ -52,6 +52,8 @@ import SubTaskDetailModal from '@/component/Schedule/layout/SubTaskDetail';
 import { ScheduleTextMap } from '@/constant/schedule';
 import { SubTypeTextMap } from '@/constant/scheduleTask';
 import ScheduleDetail from '../Schedule/layout/ScheduleDetail';
+import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
+import ScheduleTaskStatusLabel from '../Schedule/components/ScheduleTaskStatusLabel';
 import { IScheduleRecord, ScheduleRecordParameters, ScheduleStatus } from '@/d.ts/schedule';
 import ScheduleStatusLabel from '../Schedule/components/ScheduleStatusLabel';
 
@@ -326,13 +328,8 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         dataIndex: 'status',
         key: 'status',
         width: 120,
-        render: (type: TaskStatus, record: IResourceDependencyItem) => {
-          return (
-            <div className={styles.statusColumn}>
-              {EResourceTypeConfig[activeTab].status[type]?.icon}
-              {EResourceTypeConfig[activeTab].status[type]?.text}
-            </div>
-          );
+        render: (type: ScheduleTaskStatus, record: IResourceDependencyItem) => {
+          return <ScheduleTaskStatusLabel status={type} />;
         },
       },
     ],
