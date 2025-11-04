@@ -83,7 +83,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
     onApprovalVisible,
   } = props;
   const { project } = useContext(ProjectContext) || {};
-  const projectId = project?.id;
+  const projectId = project?.id || schedule?.project?.id;
   const [activeBtnKey, setActiveBtnKey] = useState<ScheduleActionsEnum>(null);
 
   const { IRoles } = useOperationPermissions({

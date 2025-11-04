@@ -36,6 +36,7 @@ import useResourceDepNotification, {
   EStatus,
 } from '@/util/hooks/useResourceDepNotification';
 import { EEntityType } from '@/d.ts/relativeResource';
+import { SchedulePageMode } from '@/component/Schedule/interface';
 
 const authFilters = [
   {

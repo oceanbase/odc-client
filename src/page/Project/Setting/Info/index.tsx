@@ -26,6 +26,7 @@ import DeleteProjectModal from '@/page/Project/components/DeleteProjectModal.tsx
 import RelativeResourceModal from '@/component/RelativeResourceModal';
 import { getResourceDependencies } from '@/util/request/relativeResource';
 import { EEntityType } from '@/d.ts/relativeResource';
+import { SchedulePageMode } from '@/component/Schedule/interface';
 
 export default function Info() {
   const [form] = Form.useForm<Pick<IProject, 'name' | 'description'>>();
@@ -217,6 +218,7 @@ export default function Info() {
         mode={EEntityType.PROJECT}
         open={openArchiveModal}
         id={context?.project?.id}
+        scheduleDetailMode={SchedulePageMode.PROJECT}
         title={formatMessage(
           {
             id: 'src.page.Project.Setting.Info.2365AA93',

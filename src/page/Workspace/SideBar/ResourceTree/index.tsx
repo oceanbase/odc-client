@@ -60,6 +60,7 @@ import DatabaseSelectEmpty from '@/component/Empty/DatabaseSelectEmpty';
 import RelativeResourceModal from '@/component/RelativeResourceModal';
 import { ReactComponent as ProjectSvg } from '@/svgr/project_space.svg';
 import Icon from '@ant-design/icons';
+import { SchedulePageMode } from '@/component/Schedule/interface';
 
 interface IProps {
   sessionManagerStore?: SessionManagerStore;
@@ -522,6 +523,7 @@ const ResourceTree: React.FC<IProps> = function ({
           },
           { dataSourceName },
         )}
+        scheduleDetailMode={SchedulePageMode.MULTI_PAGE}
         onCancel={handleDeleteCancel}
       />
     </>

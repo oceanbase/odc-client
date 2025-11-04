@@ -42,7 +42,7 @@ import {
 import { getResourceDependencies } from '@/util/request/relativeResource';
 import styles from './index.less';
 import { cycleStatus, status, subTaskStatus } from '@/component/Task/component/Status';
-import DetailModal from '@/component/Task/modals/DetailModals';
+import DetailModals from '@/component/Task/modals/DetailModals';
 import { TaskTypeMap } from '../Task/helper';
 import { getLocalFormatDateTime } from '@/util/utils';
 import { ENTITY_CONFIG } from './const';
@@ -57,6 +57,8 @@ import ScheduleTaskStatusLabel from '../Schedule/components/ScheduleTaskStatusLa
 import { IScheduleRecord, ScheduleRecordParameters, ScheduleStatus } from '@/d.ts/schedule';
 import ScheduleStatusLabel from '../Schedule/components/ScheduleStatusLabel';
 import ApprovalModal from '@/component/Task/component/ApprovalModal';
+import { SchedulePageMode } from '../Schedule/interface';
+import CreateModals from '../Task/modals/CreateModals';
 
 export interface DeleteDataSourceModalProps {
   open: boolean;
@@ -65,6 +67,7 @@ export interface DeleteDataSourceModalProps {
   projectName?: string;
   title?: string;
   mode?: EEntityType;
+  scheduleDetailMode?: SchedulePageMode;
   onCancel: () => void;
   customSuccessHandler?: () => Promise<void>;
 }
@@ -75,6 +78,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
   title,
   mode = EEntityType.DATASOURCE,
   onCancel,
+  scheduleDetailMode = SchedulePageMode.COMMON,
   customSuccessHandler,
 }) => {
   const [activeTab, setActiveTab] = useState(EResourceType.TASKS);
@@ -444,7 +448,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
 
   return (
     <>
-      <DetailModal
+      <DetailModals
         type={(currentRecord as IFlowDependencyOverview)?.taskType}
         detailId={currentRecord?.id}
         visible={detailVisible}
@@ -454,7 +458,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         onReloadList={reloadList}
         onApprovalVisible={handleApprovalVisible}
       />
-
+      <CreateModals projectId={currentRecord?.project?.id} theme="dark" reloadList={reloadList} />
       <ScheduleDetail
         type={(currentRecord as IScheduleDependencyOverview)?.type}
         detailId={currentRecord?.id}
@@ -467,6 +471,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         }}
         onReloadList={reloadList}
         onApprovalVisible={handleApprovalVisible}
+        mode={scheduleDetailMode}
       />
 
       <SubTaskDetailModal
@@ -476,6 +481,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         onClose={() => {
           setExecuteDetailVisible(false);
         }}
+        onReloadList={reloadList}
       />
 
       <Modal
