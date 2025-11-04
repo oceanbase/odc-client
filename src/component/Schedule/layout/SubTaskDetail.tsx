@@ -53,6 +53,7 @@ interface IProps {
   onClose: () => void;
   scheduleId: number;
   detailTabType?: ScheduleTaskDetailType;
+  onReloadList?: () => void;
 }
 
 const SubTaskDetail: React.FC<IProps> = (props) => {
@@ -62,6 +63,7 @@ const SubTaskDetail: React.FC<IProps> = (props) => {
     detailId,
     scheduleId,
     detailTabType = ScheduleTaskDetailType.INFO,
+    onReloadList,
   } = props;
   const [subTask, setSubTask] =
     useState<scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>>(null);
@@ -229,6 +231,7 @@ const SubTaskDetail: React.FC<IProps> = (props) => {
       onDetailTypeChange={setDetailType}
       enabledAction={true}
       subTask={subTask}
+      onReloadList={onReloadList}
     />
   );
 };
