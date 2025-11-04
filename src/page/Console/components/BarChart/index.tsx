@@ -47,7 +47,7 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
   // 计算是否需要隔一个显示标签
   // 每个柱状图大约需要 60-80px 的宽度才能完整显示标签
   const shouldSkipLabels = useMemo(() => {
-    const minWidthPerBar = 60; // 每个柱状图最小宽度
+    const minWidthPerBar = 80; // 每个柱状图最小宽度
     const totalNeededWidth = checkedKeys.length * minWidthPerBar;
     return containerWidth > 0 && containerWidth < totalNeededWidth && checkedKeys.length > 8;
   }, [containerWidth, checkedKeys.length]);
@@ -240,14 +240,10 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
             searchParams.append('projectId', 'clearAll');
           }
 
-          if (
-            String(timeValue) === 'custom' &&
-            dateValue &&
-            Array.isArray(dateValue) &&
-            dateValue.length === 2
-          ) {
-            searchParams.append('startTime', dateValue[0].valueOf().toString());
-            searchParams.append('endTime', dateValue[1].valueOf().toString());
+          if (String(timeValue) === 'custom' && dateValue?.[0] && dateValue?.[1]) {
+            searchParams.append('timeRange', 'custom');
+            searchParams.append('startTime', String(dateValue[0].valueOf()));
+            searchParams.append('endTime', String(dateValue[1].valueOf()));
           } else if (timeValue !== undefined) {
             searchParams.append('timeRange', timeValue.toString());
             searchParams.append('startTime', '');
