@@ -42,6 +42,7 @@ interface IProps {
   session: SessionStore;
   mode: AIQuestionType;
   fullEditor: IFullEditor;
+  initialValue?: string;
   modelsData?: {
     allModels: IModel[];
     modelsLoading: boolean;
@@ -55,11 +56,12 @@ export default function InlineChat({
   session,
   mode: propMode,
   fullEditor,
+  initialValue,
   modelsData,
 }: IProps) {
   const inputRef = React.useRef<InputRef>(null);
   const [mode, setMode] = useState(propMode);
-  const [value, setValue] = useState<string>(getDefaultValue(propMode));
+  const [value, setValue] = useState<string>(initialValue || getDefaultValue(propMode));
   const [applied, setApplied] = useState(false);
   const [isShowMode, setIsShowMode] = useState(false);
   const needRollback = useRef(false);
