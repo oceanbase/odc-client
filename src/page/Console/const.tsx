@@ -137,8 +137,8 @@ export const ConsoleTextConfig = {
     statusType: [
       'EXECUTING',
       'EXECUTION_SUCCESS',
-      'EXECUTION_TIMEOUT',
-      'EXECUTION_FAILURE',
+      'EXEC_TIMEOUT',
+      'EXECUTION_INTERRUPTION',
       'OTHER',
     ],
 
