@@ -362,7 +362,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
 
   const entityConfig = useMemo(() => ENTITY_CONFIG[mode], [mode]);
 
-  const handleConfirm = useCallback(async () => {
+  const handleConfirm = async () => {
     if (!riskConfirmed) {
       setShowRiskError(true);
       return;
@@ -371,7 +371,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
     if (customSuccessHandler) {
       await customSuccessHandler();
     }
-  }, [riskConfirmed]);
+  };
 
   const radioOptions = useMemo(() => {
     const options = [
@@ -472,6 +472,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         onReloadList={reloadList}
         onApprovalVisible={handleApprovalVisible}
         mode={scheduleDetailMode}
+        hideCloneButton={true}
       />
 
       <SubTaskDetailModal

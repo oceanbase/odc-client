@@ -27,11 +27,13 @@ export async function getResourceDependencies(
   const result = await request.get('/api/v2/resourceDependency/', {
     params,
   });
-  return (
-    result?.data || {
-      scheduleDependencies: [],
-      scheduleTaskDependencies: [],
-      flowDependencies: [],
-    }
-  );
+  const data = result?.data || {
+    scheduleDependencies: [],
+    scheduleTaskDependencies: [],
+    flowDependencies: [],
+  };
+  return {
+    ...data,
+    successful: result?.successful,
+  };
 }

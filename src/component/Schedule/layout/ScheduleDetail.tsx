@@ -40,6 +40,7 @@ interface IProps {
   ) => void;
   onApprovalVisible?: (status: boolean, id: number) => void;
   mode?: SchedulePageMode;
+  hideCloneButton?: boolean;
 }
 
 const ScheduleDetail: React.FC<IProps> = React.memo((props) => {
@@ -51,6 +52,7 @@ const ScheduleDetail: React.FC<IProps> = React.memo((props) => {
     onApprovalVisible,
     detailType: propsDetailType,
     mode,
+    hideCloneButton,
   } = props;
   const [schedule, setSchedule] = useState<IScheduleRecord<ScheduleRecordParameters>>(null);
   const [detailType, setDetailType] = useState<ScheduleDetailType>(ScheduleDetailType.INFO);
@@ -157,6 +159,7 @@ const ScheduleDetail: React.FC<IProps> = React.memo((props) => {
       schedule={schedule}
       enabledAction={enabledAction}
       onApprovalVisible={onApprovalVisible}
+      hideCloneButton={hideCloneButton}
     />
   );
 });

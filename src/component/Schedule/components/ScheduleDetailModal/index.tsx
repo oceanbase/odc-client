@@ -56,6 +56,7 @@ interface ICommonScheduleDetailModalProps {
   onReloadList?: () => void;
   onApprovalVisible?: (status: boolean, id: number) => void;
   mode?: SchedulePageMode;
+  hideCloneButton?: boolean;
 }
 
 const CommonTaskDetailModal: React.FC<ICommonScheduleDetailModalProps> = (props) => {
@@ -70,6 +71,7 @@ const CommonTaskDetailModal: React.FC<ICommonScheduleDetailModalProps> = (props)
     enabledAction,
     onApprovalVisible,
     mode,
+    hideCloneButton,
   } = props;
 
   return (
@@ -154,6 +156,7 @@ const CommonTaskDetailModal: React.FC<ICommonScheduleDetailModalProps> = (props)
             isDetailModal={true}
             onApprovalVisible={onApprovalVisible}
             mode={mode}
+            hideCloneButton={hideCloneButton}
           />
         </div>
       )}

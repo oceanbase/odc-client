@@ -67,6 +67,7 @@ interface ScheduleActionsIProps {
   delList?: number[];
   setDelList?: React.Dispatch<React.SetStateAction<number[]>>;
   onApprovalVisible?: (status: boolean, id: number) => void;
+  hideCloneButton?: boolean;
 }
 
 const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
@@ -81,6 +82,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
     delList = [],
     setDelList,
     onApprovalVisible,
+    hideCloneButton,
   } = props;
   const { project } = useContext(ProjectContext) || {};
   const projectId = project?.id || schedule?.project?.id;
@@ -585,7 +587,7 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       label: ScheduleActionsTextMap[ScheduleActionsEnum.CLONE],
       icon: <CopyOutlined />,
       action: eventMap[ScheduleActionsEnum.CLONE],
-      visible: widthPermission((hasPermission) => hasPermission, [], IRoles),
+      visible: widthPermission((hasPermission) => hasPermission && !hideCloneButton, [], IRoles),
     },
     {
       key: ScheduleActionsEnum.SHARE,
