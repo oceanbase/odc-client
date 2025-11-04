@@ -142,7 +142,7 @@ const UserDetail: React.FC<{
       0;
     if (total > 0) {
       setOpenDepResourceModal(true);
-    } else {
+    } else if (res?.successful) {
       Modal.confirm({
         title: formatMessage({
           id: 'odc.components.UserPage.component.AreYouSureYouWant',

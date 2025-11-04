@@ -25,6 +25,7 @@ export interface IResourceDependency {
   scheduleDependencies: IScheduleDependencyOverview[];
   scheduleTaskDependencies: IScheduleTaskDependencyOverview[];
   flowDependencies: IFlowDependencyOverview[];
+  successful?: boolean;
 }
 
 export type IResourceDependencyItem =

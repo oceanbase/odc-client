@@ -104,14 +104,12 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
     tracert.expo('a3112.b64002.c330860');
   }, []);
   async function deleteUser(id: number, name: string) {
-    const res = await deleteProjectMember({
+    const isSuccess = await deleteProjectMember({
       projectId: context?.project?.id,
       userId: id,
     });
-    if (!!res?.data) {
+    if (isSuccess) {
       context.reloadProject();
-    } else {
-      message.error(res?.error?.message);
     }
   }
 
