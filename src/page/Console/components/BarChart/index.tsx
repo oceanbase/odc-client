@@ -1,5 +1,5 @@
 import { formatMessage, getEnvLocale } from '@/util/intl';
-import React, { useRef, useEffect, useContext, useMemo, useState } from 'react';
+import React, { useRef, useEffect, useContext, useMemo, useState, useCallback } from 'react';
 import * as echarts from 'echarts';
 import { ConsoleTextConfig, TaskTitle, TaskTypes } from '../../const';
 import './index.less';
@@ -34,25 +34,8 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
       'CANCELLED',
     ],
   };
-  const {
-    checkedKeys: allCheckedKeys,
-    getOrderedTaskTypes,
-    getOrderedScheduleTypes,
-  } = useContext(PersonalizeLayoutContext);
+  const { checkedKeys: allCheckedKeys, getOrderedTaskTypes } = useContext(PersonalizeLayoutContext);
   const checkedKeys = getOrderedTaskTypes().filter((item) => allCheckedKeys.includes(item));
-  const checkedSchedules = getOrderedScheduleTypes().filter((item) =>
-    allCheckedKeys.includes(item),
-  );
-
-  // 计算是否需要隔一个显示标签
-  // 每个柱状图大约需要 80px 的宽度才能完整显示标签
-  const shouldSkipLabels = useMemo(() => {
-    const locale = getEnvLocale();
-    const isEnglish = locale === 'en-US';
-    const minWidthPerBar = isEnglish ? 160 : 80; // 每个柱状图最小宽度
-    const totalNeededWidth = checkedKeys.length * minWidthPerBar;
-    return containerWidth > 0 && containerWidth < totalNeededWidth && checkedKeys.length >= 8;
-  }, [containerWidth, checkedKeys.length]);
 
   useEffect(() => {
     if (chartRef.current) {
@@ -130,9 +113,8 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
             result +=
               total > 0
                 ? `<div class="bar-chart-tooltip-total" data-task-type="${taskType}" data-click-type="total">
-              <span>${title}</span>
-              <span class="bar-chart-tooltip-total-number">${total}  <span class="bar-chart-tooltip-total-arrow">></span></span>
-            
+              <span class="bar-chart-tooltip-total-label">${title}</span>
+              <span class="bar-chart-tooltip-total-number">${total} <span class="bar-chart-tooltip-total-arrow">></span></span>
             </div>`
                 : '';
 
@@ -146,6 +128,7 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
                     item.color
                   };"></div>
                   <span class="bar-chart-tooltip-item-name">${item.seriesName}</span>
+                  <span></span>
                   <span class="bar-chart-tooltip-item-value">${item.value}</span>
                   <span class="bar-chart-tooltip-item-arrow">></span>
                 </div>
@@ -161,18 +144,51 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
         },
         grid: {
           left: '3%',
-          right: '4%',
-          bottom: '0%',
+          right: '3%',
+          bottom: '3%',
           top: '5%',
           containLabel: true,
         },
         xAxis: {
           type: 'category',
           data: checkedKeys.map((key) => TaskTitle[key]),
+          interval: 'auto',
           axisLabel: {
-            interval: shouldSkipLabels ? 1 : 0, // 根据容器宽度决定是否隔一个显示
+            interval: 'auto',
             fontSize: 12,
             color: '#666',
+            lineHeight: 16, // 设置行高
+            // 英文环境按词换行，中文环境按字符换行
+            formatter: function (value) {
+              const isEnglish = getEnvLocale() === 'en-US';
+              const maxLineLength = 12; // 每行最大字符数
+
+              if (value.length <= maxLineLength) {
+                return value;
+              }
+
+              // 英文按词换行，保持单词完整性
+              const words = value.split(/\s+/);
+              const lines = [];
+              let currentLine = '';
+
+              words.forEach((word) => {
+                if (currentLine.length === 0) {
+                  currentLine = word;
+                } else if ((currentLine + ' ' + word).length <= maxLineLength) {
+                  currentLine += ' ' + word;
+                } else {
+                  lines.push(currentLine);
+                  currentLine = word;
+                }
+              });
+
+              if (currentLine.length > 0) {
+                lines.push(currentLine);
+              }
+
+              return lines.join('\n');
+            },
           },
           axisTick: {
             show: false,
@@ -285,7 +301,7 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
         chart.dispose();
       };
     }
-  }, [data, checkedKeys, selectedProjectId, timeValue, dateValue, navigate, shouldSkipLabels]);
+  }, [data, checkedKeys, selectedProjectId, timeValue, dateValue]);
 
   return <div ref={chartRef} className="bar-chart-wrapper" />;
 };
