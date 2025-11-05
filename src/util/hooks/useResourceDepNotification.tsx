@@ -6,6 +6,7 @@ import {
   Loading3QuartersOutlined,
 } from '@ant-design/icons';
 import { notification, Typography } from 'antd';
+import React from 'react';
 
 export enum EStatus {
   LOADING = 'loading',
@@ -128,7 +129,7 @@ const iconConfig = {
   [EStatus.FAILED]: <CloseCircleFilled style={{ color: 'var(--code-red-color)', fontSize: 20 }} />,
 };
 
-interface IOpenNotificationProps {
+export interface IOpenNotificationProps {
   name: string;
   type: EResourceType;
   status: EStatus;
@@ -136,15 +137,32 @@ interface IOpenNotificationProps {
 }
 
 const useResourceDepNotification = () => {
-  const [api, contextHolder] = notification.useNotification();
+  const [api, contextHolder] = notification.useNotification({
+    getContainer: () => document.body,
+  });
   const openNotification = ({ name, type, status, projectName }: IOpenNotificationProps) => {
     api.open({
       message: <Typography.Title level={5}>{getTitle(name)[type][status]}</Typography.Title>,
       description: getContent(projectName)[type][status],
       icon: iconConfig[status],
+      duration: 0, // 不自动关闭
     });
   };
   return { contextHolder, openNotification };
+};
+
+export const openResourceDepNotification = ({
+  name,
+  type,
+  status,
+  projectName,
+}: IOpenNotificationProps) => {
+  notification.open({
+    message: <Typography.Title level={5}>{getTitle(name)[type][status]}</Typography.Title>,
+    description: getContent(projectName)[type][status],
+    icon: iconConfig[status],
+    duration: 0, // 不自动关闭
+  });
 };
 
 export default useResourceDepNotification;
