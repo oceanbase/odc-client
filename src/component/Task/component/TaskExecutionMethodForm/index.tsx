@@ -33,7 +33,10 @@ const TaskExecutionMethodForm: React.FC<IProps> = ({ taskType }) => {
 
   const label =
     login.isPrivateSpace() || isClient()
-      ? '执行方式'
+      ? formatMessage({
+          id: 'src.component.Task.component.TaskExecutionMethodForm.6190068F',
+          defaultMessage: '执行方式',
+        })
       : formatMessage({
           id: 'odc.components.TaskTimer.ExecutionMethodAfterTheApproval',
           defaultMessage: '执行方式：审批完成后',

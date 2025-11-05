@@ -261,7 +261,15 @@ const LargeModel = () => {
       manual: true,
       onSuccess: (_, params) => {
         const [{ enabled }] = params;
-        const info = enabled ? '模型已启用' : '模型已禁用';
+        const info = enabled
+          ? formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.997E7293',
+              defaultMessage: '模型已启用',
+            })
+          : formatMessage({
+              id: 'src.page.ExternalIntegration.LargeModel.1494980D',
+              defaultMessage: '模型已禁用',
+            });
         message.success(info);
         fetchAllModels();
         fetchProviders();
