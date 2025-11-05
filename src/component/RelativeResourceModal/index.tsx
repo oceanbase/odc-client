@@ -310,11 +310,11 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
         width: 194,
         render: (text: string, record: IResourceDependencyItem) => {
           return (
-            <div className={styles.scheduleName}>
+            <div className={styles.recordScheduleName}>
               <Typography.Text style={{ width: 118 }} ellipsis>
                 {text || '-'}
               </Typography.Text>
-              <Typography.Text type="secondary">
+              <Typography.Text className={styles.recordId} type="secondary">
                 {record?.id ? `#${record?.id}` : '-'}
               </Typography.Text>
             </div>

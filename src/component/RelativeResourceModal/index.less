@@ -11,6 +11,16 @@
       font-size: 12px;
       line-height: 20px;
       font-weight: 600;
+      &:hover {
+        color: var(--text-color-link);
+      }
+    }
+  }
+  .recordScheduleName {
+    display: flex;
+    flex-direction: row;
+    .recordId {
+      margin-left: 4px;
     }
   }
 
@@ -18,16 +28,9 @@
     display: flex;
     align-items: start;
     flex-direction: column;
-
-    .title {
-      font-size: 12px;
-      line-height: 20px;
-      font-weight: 600;
+    &:hover {
+      color: var(--text-color-link);
       cursor: pointer;
-
-      &:hover {
-        color: var(--text-color-link);
-      }
     }
   }
 
