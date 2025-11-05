@@ -182,10 +182,6 @@ const CaseTextArea = forwardRef<TextAreaRef, ICaseTextAreaProps>(function CaseTe
         const start = e.target.selectionStart,
           end = e.target.selectionEnd;
 
-        if (valueFilter) {
-          e.target.value = valueFilter(e.target.value);
-        }
-
         const { displayValue, onChangeValue } = handleChange(e);
         setInnerValue(displayValue);
 
@@ -204,6 +200,23 @@ const CaseTextArea = forwardRef<TextAreaRef, ICaseTextAreaProps>(function CaseTe
         if (typeof onChangeValue !== 'string') {
           onChange?.(onChangeValue as any);
         }
+      }}
+      onBlur={(e) => {
+        // 在失去焦点时应用valueFilter
+        if (valueFilter) {
+          const filteredValue = valueFilter(e.target.value);
+          if (filteredValue !== e.target.value) {
+            const filteredEvent = {
+              ...e,
+              target: {
+                ...e.target,
+                value: filteredValue,
+              },
+            };
+            onChange?.(filteredEvent);
+          }
+        }
+        rest.onBlur?.(e);
       }}
     />
   );
