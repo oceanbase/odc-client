@@ -177,6 +177,7 @@ export const TaskStatus2Actions: Partial<Record<TaskStatus, TaskActionsEnum[]>> 
   [TaskStatus.CREATED]: [..._commonActions, ..._AsyncTaskActions],
   [TaskStatus.EXECUTION_FAILED]: [..._commonActions, ..._AsyncTaskActions],
   [TaskStatus.ROLLBACK_FAILED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.ROLLBACKING]: [..._commonActions, ..._AsyncTaskActions],
   [TaskStatus.ROLLBACK_SUCCEEDED]: [..._commonActions, ..._AsyncTaskActions],
   [TaskStatus.CANCELLED]: [..._commonActions, ..._AsyncTaskActions],
   [TaskStatus.PRE_CHECK_FAILED]: [..._commonActions, ..._AsyncTaskActions],
