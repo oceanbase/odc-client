@@ -21,13 +21,20 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   color: #132039;
 
-  width: 160px;
+  // 自适应宽度，根据内容调整
+  min-width: 160px;
+  max-width: 300px;
+  width: max-content;
+  white-space: nowrap;
 
   &-title {
     font-size: 14px;
     font-weight: 500;
     margin-bottom: 8px;
     padding-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     &-arrow {
       color: #5c6b8a;
     }
@@ -37,9 +44,10 @@
     font-size: 13px;
     font-weight: 500;
     margin-bottom: 8px;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
     align-items: center;
-    justify-content: space-between;
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
@@ -49,16 +57,27 @@
       background-color: rgba(24, 144, 255, 0.1);
     }
 
-    &-number {
-      gap: 4px;
+    &-label {
+      white-space: nowrap;
     }
+
+    &-number {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
     &-arrow {
       color: #5c6b8a;
     }
   }
 
   &-item {
-    display: flex;
+    display: grid;
+    grid-template-columns: 8px auto 1fr auto auto;
+    gap: 8px;
     align-items: center;
     margin: 4px 0;
     font-size: 12px;
@@ -74,22 +93,22 @@
     &-square {
       width: 8px;
       height: 8px;
-      margin-right: 8px;
       flex-shrink: 0;
     }
 
     &-name {
-      flex: 1;
+      white-space: nowrap;
     }
 
     &-value {
       font-weight: 500;
-      margin-left: 8px;
+      text-align: right;
+      white-space: nowrap;
     }
 
     &-arrow {
-      margin-left: 4px;
       color: #5c6b8a;
+      white-space: nowrap;
     }
   }
 }
