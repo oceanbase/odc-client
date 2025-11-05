@@ -31,10 +31,8 @@ import React, { useEffect, useState } from 'react';
 import { getAuthLabelString, resourceAuthMap, ResourceManagementAction } from '../../../utils';
 import { getResourceDependencies } from '@/util/request/relativeResource';
 import { ExclamationCircleFilled } from '@ant-design/icons';
-import useResourceDepNotification, {
-  EResourceType,
-  EStatus,
-} from '@/util/hooks/useResourceDepNotification';
+import { openResourceDepNotification } from '@/util/hooks/useResourceDepNotification';
+import { EResourceType, EStatus } from '@/util/hooks/useResourceDepNotification';
 import { EEntityType } from '@/d.ts/relativeResource';
 import { SchedulePageMode } from '@/component/Schedule/interface';
 
@@ -109,16 +107,15 @@ const UserDetail: React.FC<{
   const [visible, setVisible] = useState(false);
   const [openDepResourceModal, setOpenDepResourceModal] = useState(false);
   const relatedRoles = useRoleListByIds(roles, roleIds);
-  const { contextHolder, openNotification } = useResourceDepNotification();
 
   const handleDeleteUserWithNotification = async () => {
-    openNotification({ name, type: EResourceType.USER, status: EStatus.LOADING });
+    openResourceDepNotification({ name, type: EResourceType.USER, status: EStatus.LOADING });
     const isSuccess = await deleteUser(id, true);
     if (isSuccess) {
-      openNotification({ name, type: EResourceType.USER, status: EStatus.SUCCESS });
+      openResourceDepNotification({ name, type: EResourceType.USER, status: EStatus.SUCCESS });
       handleCloseAndReload();
     } else {
-      openNotification({
+      openResourceDepNotification({
         name,
         type: EResourceType.USER,
         status: EStatus.FAILED,
@@ -205,7 +202,6 @@ const UserDetail: React.FC<{
 
   return (
     <>
-      {contextHolder}
       <Descriptions column={1}>
         <Descriptions.Item
           contentStyle={{ whiteSpace: 'pre' }}
