@@ -1,4 +1,4 @@
-import { formatMessage } from '@/util/intl';
+import { formatMessage, getEnvLocale } from '@/util/intl';
 import React, { useRef, useEffect, useContext, useMemo, useState } from 'react';
 import * as echarts from 'echarts';
 import { ConsoleTextConfig, TaskTitle, TaskTypes } from '../../const';
@@ -45,11 +45,13 @@ const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
   );
 
   // 计算是否需要隔一个显示标签
-  // 每个柱状图大约需要 60-80px 的宽度才能完整显示标签
+  // 每个柱状图大约需要 80px 的宽度才能完整显示标签
   const shouldSkipLabels = useMemo(() => {
-    const minWidthPerBar = 80; // 每个柱状图最小宽度
+    const locale = getEnvLocale();
+    const isEnglish = locale === 'en-US';
+    const minWidthPerBar = isEnglish ? 160 : 80; // 每个柱状图最小宽度
     const totalNeededWidth = checkedKeys.length * minWidthPerBar;
-    return containerWidth > 0 && containerWidth < totalNeededWidth && checkedKeys.length > 8;
+    return containerWidth > 0 && containerWidth < totalNeededWidth && checkedKeys.length >= 8;
   }, [containerWidth, checkedKeys.length]);
 
   useEffect(() => {
