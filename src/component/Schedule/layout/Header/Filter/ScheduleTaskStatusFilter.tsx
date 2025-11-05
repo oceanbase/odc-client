@@ -6,6 +6,7 @@ import { ScheduleTaskStatusTextMap } from '@/constant/scheduleTask';
 import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import styles from './index.less';
+import { ScheduleTaskStatusIconMap } from '@/constant/Icons';
 
 const ScheduleTaskStatusFilter = () => {
   const context = useContext(ParamsContext);
@@ -14,30 +15,17 @@ const ScheduleTaskStatusFilter = () => {
 
   const statusOptions = useMemo(() => {
     return Object.keys(ScheduleTaskStatus).map((item) => {
-      const icon = (
-        <Tooltip
-          title={formatMessage({
-            id: 'src.component.Schedule.layout.Header.Filter.EA3A6052',
-            defaultMessage: '执行时存在错误，已跳过',
-          })}
-        >
-          <InfoCircleOutlined className={styles.warningIcon} />
-        </Tooltip>
+      const label = (
+        <span>
+          {ScheduleTaskStatusTextMap?.[item]}
+          {ScheduleTaskStatusIconMap?.[item]}
+        </span>
       );
-
-      const label =
-        item === ScheduleTaskStatus.DONE_WITH_FAILED ? (
-          <span>
-            {ScheduleTaskStatusTextMap?.[item]}
-            {icon}
-          </span>
-        ) : (
-          ScheduleTaskStatusTextMap?.[item]
-        );
 
       return {
         label,
         value: item,
+        searchValue: ScheduleTaskStatusTextMap?.[item],
       };
     });
   }, []);
@@ -61,7 +49,7 @@ const ScheduleTaskStatusFilter = () => {
           defaultMessage: '请输入',
         })}
         filterOption={(input, option) =>
-          (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+          (option?.searchValue ?? '').toLowerCase().includes(input.toLowerCase())
         }
         value={status}
         mode="multiple"
