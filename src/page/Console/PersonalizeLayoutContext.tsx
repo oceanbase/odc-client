@@ -19,7 +19,6 @@ interface PersonalizeLayoutContextType {
 export const PersonalizeLayoutContext = createContext<PersonalizeLayoutContextType | undefined>(
   undefined,
 );
-
 interface PersonalizeLayoutProviderProps {
   children: ReactNode;
 }
