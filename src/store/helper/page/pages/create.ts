@@ -83,23 +83,31 @@ export class CreateMaterializedViewPage extends Page {
 export class CreateSchedulePage extends Page {
   public pageParams: {
     scheduleType: ScheduleType;
+    isEdit: boolean;
   };
 
-  constructor(scheduleType: ScheduleType, title?: string) {
+  constructor(scheduleType: ScheduleType, isEdit: boolean = false) {
     super();
     this.pageKey = `createSchedulePage-${generateUniqKey()}`;
-    this.pageTitle =
-      title ||
-      formatMessage(
-        {
-          id: 'src.store.helper.page.pages.5680C3BC',
-          defaultMessage: '新建{SchedulePageTextMapScheduleType}',
-        },
-        { SchedulePageTextMapScheduleType: SchedulePageTextMap[scheduleType] },
-      );
+    this.pageTitle = isEdit
+      ? formatMessage(
+          {
+            id: 'src.component.Schedule.5E23B919',
+            defaultMessage: '编辑{SchedulePageTextMapType}',
+          },
+          { SchedulePageTextMapType: SchedulePageTextMap[scheduleType] },
+        )
+      : formatMessage(
+          {
+            id: 'src.store.helper.page.pages.5680C3BC',
+            defaultMessage: '新建{SchedulePageTextMapScheduleType}',
+          },
+          { SchedulePageTextMapScheduleType: SchedulePageTextMap[scheduleType] },
+        );
     this.pageType = PageType.CREATE_SCHEDULES;
     this.pageParams = {
       scheduleType,
+      isEdit,
     };
   }
 }

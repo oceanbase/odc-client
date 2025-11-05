@@ -111,7 +111,7 @@ export function getPageTitleText(page: IPage) {
       return getScheduleTitleByParams(params);
     }
     case PageType.CREATE_SCHEDULES: {
-      return title || getCreateScheduleTitleByParams(params);
+      return getCreateScheduleTitleByParams(params);
     }
     default: {
       return title;

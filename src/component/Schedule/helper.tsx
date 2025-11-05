@@ -49,17 +49,7 @@ export const gotoCreateSchedulePage = (
       break;
     }
     case SchedulePageMode.MULTI_PAGE: {
-      isEdit &&
-        openCreateSchedulePage(
-          type,
-          formatMessage(
-            {
-              id: 'src.component.Schedule.5E23B919',
-              defaultMessage: '编辑{SchedulePageTextMapType}',
-            },
-            { SchedulePageTextMapType: SchedulePageTextMap[type] },
-          ),
-        );
+      isEdit && openCreateSchedulePage(type, true);
       !isEdit && openCreateSchedulePage(type);
       break;
     }

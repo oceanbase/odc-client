@@ -8,15 +8,26 @@ import { SessionManagerStore } from '@/store/sessionManager';
 import styles from './index.less';
 import { SchedulePageMode } from '@/component/Schedule/interface';
 
-export const getTitleByParams = (params: { scheduleType: SchedulePageType }) => {
-  const { scheduleType } = params;
-  let title = formatMessage(
-    {
-      id: 'src.page.Workspace.components.CreateSchedule.284B8E81',
-      defaultMessage: '新建{SchedulePageTextMapScheduleType}',
-    },
-    { SchedulePageTextMapScheduleType: SchedulePageTextMap[scheduleType] },
-  );
+export const getTitleByParams = (params: { scheduleType: SchedulePageType; isEdit: boolean }) => {
+  const { scheduleType, isEdit } = params;
+  let title;
+  if (isEdit) {
+    title = formatMessage(
+      {
+        id: 'src.component.Schedule.5E23B919',
+        defaultMessage: '编辑{SchedulePageTextMapType}',
+      },
+      { SchedulePageTextMapType: SchedulePageTextMap[scheduleType] },
+    );
+  } else {
+    title = formatMessage(
+      {
+        id: 'src.page.Workspace.components.CreateSchedule.284B8E81',
+        defaultMessage: '新建{SchedulePageTextMapScheduleType}',
+      },
+      { SchedulePageTextMapScheduleType: SchedulePageTextMap[scheduleType] },
+    );
+  }
   return title;
 };
 

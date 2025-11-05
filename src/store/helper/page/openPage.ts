@@ -271,8 +271,8 @@ export function openCreateMaterializedViewPage(dbId: number) {
 }
 
 /** 创建作业页面 */
-export function openCreateSchedulePage(scheduleType: ScheduleType, title?: string) {
-  page.openPage(new CreateSchedulePage(scheduleType, title));
+export function openCreateSchedulePage(scheduleType: ScheduleType, isEdit: boolean = false) {
+  page.openPage(new CreateSchedulePage(scheduleType, isEdit));
 }
 
 /**
