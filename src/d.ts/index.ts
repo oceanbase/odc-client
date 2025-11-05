@@ -3212,6 +3212,7 @@ export enum TaskStatus {
   PRE_CHECK_FAILED = 'PRE_CHECK_FAILED',
   CREATING = 'CREATING',
   EXECUTION_ABNORMAL = 'EXECUTION_ABNORMAL', // 执行异常
+  ROLLBACKING = 'ROLLBACKING',
 }
 
 export enum SubTaskStatus {

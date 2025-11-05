@@ -77,7 +77,9 @@ const ScheduleName: React.FC<IProps> = (props) => {
             id: 'src.component.Schedule.components.ScheduleTable.45B9F797',
             defaultMessage: '创建于',
           })}
-          {dayjs(record?.createTime).format('YYYY-MM-DD HH:mm:ss')}
+          <span style={{ marginLeft: 4 }}>
+            {dayjs(record?.createTime).format('YYYY-MM-DD HH:mm:ss')}
+          </span>
         </span>
         {login.isPrivateSpace() || mode === SchedulePageMode.PROJECT ? (
           ''

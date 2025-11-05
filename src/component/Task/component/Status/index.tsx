@@ -494,6 +494,16 @@ export const status: Partial<
       defaultMessage: '已完成',
     }), //已完成
   },
+  [TaskStatus.ROLLBACKING]: {
+    icon: (
+      <LoadingOutlined
+        style={{
+          color: 'var(--icon-blue-color)',
+        }}
+      />
+    ),
+    text: '回滚中',
+  },
 };
 
 // 周期任务状态
