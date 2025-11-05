@@ -11,13 +11,14 @@ import { TaskType } from '@/d.ts';
 import { ELayoutKey } from '../../const';
 import { PersonalizeLayoutContext } from '@/page/Console/PersonalizeLayoutContext';
 import { ScheduleType } from '@/d.ts/schedule';
+import { sortByPreservedOrder } from '@/util/utils';
 
 const { Text } = Typography;
 
 // localStorage key for saving tree state
 export const TREE_STATE_KEY = `personalizeLayoutTreeState-${login.organizationId}`;
 
-const treeData: TreeDataNode[] = [
+const getTreeData = () => [
   {
     title: formatMessage({
       id: 'src.page.Console.components.PersonalizeLayoutSetting.60616B68',
@@ -208,12 +209,70 @@ export const defaultCheckedKeys = [
 
 const defaultExpandedKeys = [ELayoutKey.TaskOverview];
 
-// Interface for saved state
+// Interface for saved state - only save draggable items order
 interface SavedTreeState {
-  treeData: TreeDataNode[];
+  workOrderKeys?: React.Key[]; // Order of 工单 children
+  jobKeys?: React.Key[]; // Order of 作业 children
   checkedKeys: React.Key[];
   expandedKeys: React.Key[];
 }
+
+// Extract work order and job keys from tree data
+const extractDraggableOrder = (
+  treeData: TreeDataNode[],
+): { workOrderKeys: React.Key[]; jobKeys: React.Key[] } => {
+  const taskOverview = treeData.find((node) => node.key === ELayoutKey.TaskOverview);
+  if (!taskOverview?.children) {
+    return { workOrderKeys: [], jobKeys: [] };
+  }
+
+  const workOrderNode = taskOverview.children.find((node) => node.key === ELayoutKey.WorkOrder);
+  const jobNode = taskOverview.children.find((node) => node.key === ELayoutKey.Job);
+
+  return {
+    workOrderKeys: workOrderNode?.children?.map((child) => child.key) || [],
+    jobKeys: jobNode?.children?.map((child) => child.key) || [],
+  };
+};
+
+// Apply saved order to tree data
+const applySavedOrder = (
+  treeData: TreeDataNode[],
+  savedState: SavedTreeState | null,
+): TreeDataNode[] => {
+  if (!savedState?.workOrderKeys && !savedState?.jobKeys) {
+    return treeData;
+  }
+
+  return treeData.map((node) => {
+    if (node.key !== ELayoutKey.TaskOverview || !node.children) {
+      return node;
+    }
+
+    return {
+      ...node,
+      children: node.children.map((child) => {
+        // Reorder WorkOrder children using utility function
+        if (child.key === ELayoutKey.WorkOrder && savedState.workOrderKeys && child.children) {
+          return {
+            ...child,
+            children: sortByPreservedOrder(child.children, savedState.workOrderKeys),
+          };
+        }
+
+        // Reorder Job children using utility function
+        if (child.key === ELayoutKey.Job && savedState.jobKeys && child.children) {
+          return {
+            ...child,
+            children: sortByPreservedOrder(child.children, savedState.jobKeys),
+          };
+        }
+
+        return child;
+      }),
+    };
+  });
+};
 
 // Helper function to save state to localStorage
 const saveTreeState = (state: SavedTreeState) => {
@@ -238,28 +297,33 @@ export const loadTreeState = (): SavedTreeState | null => {
 };
 
 const TreeSetting = () => {
-  // Load initial state from localStorage or use defaults
-  const savedState = loadTreeState();
-  const {
-    checkedKeys,
-    setCheckedKeys,
-    treeData: contextTreeData,
-    setTreeData,
-  } = useContext(PersonalizeLayoutContext);
+  const { checkedKeys, setCheckedKeys, setTreeData } = useContext(PersonalizeLayoutContext);
 
-  const [gData, setGData] = useState<TreeDataNode[]>(
-    contextTreeData || savedState?.treeData || treeData,
-  );
-  const [expandedKeys, setExpandedKeys] = useState<React.Key[]>(
-    savedState?.expandedKeys || defaultExpandedKeys,
-  );
+  // Load saved state once and share between states
+  const savedStateRef = React.useRef<SavedTreeState | null>(null);
+  if (!savedStateRef.current) {
+    savedStateRef.current = loadTreeState();
+  }
+
+  // Initialize gData only once on mount using function initialization
+  // Always use fresh tree data to ensure correct locale
+  const [gData, setGData] = useState<TreeDataNode[]>(() => {
+    const freshTreeData = getTreeData();
+    return applySavedOrder(freshTreeData, savedStateRef.current);
+  });
+
+  const [expandedKeys, setExpandedKeys] = useState<React.Key[]>(() => {
+    return savedStateRef?.current?.expandedKeys || defaultExpandedKeys;
+  });
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [autoExpandParent, setAutoExpandParent] = useState<boolean>(true);
 
   // Save state to localStorage whenever it changes
   useEffect(() => {
+    const { workOrderKeys, jobKeys } = extractDraggableOrder(gData);
     const stateToSave: SavedTreeState = {
-      treeData: gData,
+      workOrderKeys, // Only save work order children order
+      jobKeys, // Only save job children order
       checkedKeys,
       expandedKeys,
     };
@@ -364,12 +428,12 @@ const TreeSetting = () => {
       console.error('Failed to clear localStorage:', error);
     }
 
-    setGData(treeData);
+    setGData(getTreeData());
     setExpandedKeys(defaultExpandedKeys);
     setCheckedKeys(defaultCheckedKeys);
     setAutoExpandParent(true);
     // Also reset context treeData
-    setTreeData(treeData);
+    setTreeData(getTreeData());
   };
 
   return (
