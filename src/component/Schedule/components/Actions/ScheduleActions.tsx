@@ -440,10 +440,16 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
               })}
             </>
           ) : (
-            <>撤销后，该变更审批将被驳回</>
+            <>
+              {formatMessage({
+                id: 'src.component.Schedule.components.Actions.75F66A22',
+                defaultMessage: '撤销后，该变更审批将被驳回',
+              })}
+            </>
           )}
         </div>
       ),
+
       cancelText: formatMessage({
         id: 'odc.TaskManagePage.component.TaskTools.Cancel',
         defaultMessage: '取消',

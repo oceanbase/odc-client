@@ -111,7 +111,10 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
   const executionMethodLabel =
     login.isPrivateSpace() || isClient()
-      ? '执行方式'
+      ? formatMessage({
+          id: 'src.component.Task.modals.LogicDatabaseAsyncTask.CreateModal.1ADEB730',
+          defaultMessage: '执行方式',
+        })
       : formatMessage({
           id: 'odc.components.TaskTimer.ExecutionMethodAfterTheApproval',
           defaultMessage: '执行方式：审批完成后',
@@ -404,9 +407,11 @@ const CreateModal: React.FC<IProps> = (props) => {
                 editorProps={{
                   theme,
                 }}
-                placeholder={
-                  '新建逻辑表时需使用表达式，表达式需要加上 ` 号，如 `db_[00-31].test_[00-31] `。修改已有逻辑表时可直接使用逻辑库名和逻辑表名进行修改，如 db.test。'
-                }
+                placeholder={formatMessage({
+                  id: 'src.component.Task.modals.LogicDatabaseAsyncTask.CreateModal.0C5A3B76',
+                  defaultMessage:
+                    '新建逻辑表时需使用表达式，表达式需要加上 ` 号，如 `db_[00-31].test_[00-31] `。修改已有逻辑表时可直接使用逻辑库名和逻辑表名进行修改，如 db.test。',
+                })}
               />
             )}
           </Form.Item>
