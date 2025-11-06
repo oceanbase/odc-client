@@ -184,7 +184,9 @@ export default {
       description: (
         <Description description={description} requestId={requestId} {...extraMessage} />
       ),
-
+      style: {
+        whiteSpace: 'pre-line',
+      },
       duration,
       key,
       onClose: () => {
