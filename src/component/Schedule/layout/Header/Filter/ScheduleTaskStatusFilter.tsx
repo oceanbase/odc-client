@@ -4,31 +4,23 @@ import { useContext, useMemo, useState } from 'react';
 import { Button, Divider, Select, Tooltip } from 'antd';
 import { ScheduleTaskStatusTextMap } from '@/constant/scheduleTask';
 import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
-import { InfoCircleOutlined } from '@ant-design/icons';
-import styles from './index.less';
-import { ScheduleTaskStatusIconMap } from '@/constant/Icons';
+import { ScheduleTaskStatusInfo } from '@/component/Schedule/components/ScheduleTaskStatusLabel';
 
 const ScheduleTaskStatusFilter = () => {
   const context = useContext(ParamsContext);
   const { subTaskParams, setsubTaskParams } = context || {};
   const { status } = subTaskParams || {};
 
-  const statusOptions = useMemo(() => {
-    return Object.keys(ScheduleTaskStatus).map((item) => {
-      const label = (
-        <span>
-          {ScheduleTaskStatusTextMap?.[item]}
-          {ScheduleTaskStatusIconMap?.[item]}
-        </span>
-      );
-
-      return {
-        label,
-        value: item,
-        searchValue: ScheduleTaskStatusTextMap?.[item],
-      };
-    });
-  }, []);
+  const statusOptions: { label: string; value: ScheduleTaskStatus; desc: React.ReactNode }[] =
+    useMemo(() => {
+      return Object.values(ScheduleTaskStatus).map((item) => {
+        return {
+          label: ScheduleTaskStatusTextMap?.[item],
+          value: item,
+          desc: ScheduleTaskStatusInfo[item]?.desc,
+        };
+      });
+    }, []);
 
   const handleSelectStatus = (value) => {
     setsubTaskParams?.({ status: value });
@@ -49,8 +41,24 @@ const ScheduleTaskStatusFilter = () => {
           defaultMessage: '请输入',
         })}
         filterOption={(input, option) =>
-          (option?.searchValue ?? '').toLowerCase().includes(input.toLowerCase())
+          (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
         }
+        optionRender={(option) => {
+          return (
+            <div>
+              {option.label}
+              {option?.data?.desc}
+            </div>
+          );
+        }}
+        labelRender={(option) => {
+          return (
+            <div>
+              {option?.label}
+              {ScheduleTaskStatusInfo[option?.value]?.desc}
+            </div>
+          );
+        }}
         value={status}
         mode="multiple"
         options={statusOptions || []}

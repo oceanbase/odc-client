@@ -18,7 +18,7 @@ interface IProps {
   status: ScheduleTaskStatus;
 }
 
-const ScheduleTaskStatusInfo: Record<
+export const ScheduleTaskStatusInfo: Record<
   ScheduleTaskStatus,
   { icon: React.ReactNode; desc?: React.ReactNode }
 > = {

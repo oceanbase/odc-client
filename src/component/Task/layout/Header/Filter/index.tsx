@@ -105,6 +105,7 @@ const Filter: React.FC<IProps> = () => {
             return (
               <span className={styles.value}>
                 <>{status[item]?.text}</>
+                <>{status[item]?.desc}</>
                 {comma(idx, taskStatus.length)}
               </span>
             );
@@ -112,7 +113,7 @@ const Filter: React.FC<IProps> = () => {
         </div>
       </div>
     );
-  }, [taskStatus, tab]);
+  }, [taskStatus, tab, status]);
 
   const projectTipContent = useMemo(() => {
     if (!projectId?.length) return null;
