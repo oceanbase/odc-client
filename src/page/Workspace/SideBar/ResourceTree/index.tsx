@@ -100,10 +100,9 @@ const ResourceTree: React.FC<IProps> = function ({
     copyDatasourceId,
     setCopyDatasourceId,
     deleteDataSource,
-    deleteModalOpen,
     deleteDataSourceInfo,
-    handleDeleteSuccess,
     handleDeleteCancel,
+    openDepResourceModal,
   } = useDataSourceDrawer();
   const treeContext = useContext(ResourceTreeContext);
   const {
@@ -514,7 +513,7 @@ const ResourceTree: React.FC<IProps> = function ({
       />
 
       <RelativeResourceModal
-        open={deleteModalOpen}
+        open={openDepResourceModal}
         id={deleteDataSourceInfo?.id}
         title={formatMessage(
           {
