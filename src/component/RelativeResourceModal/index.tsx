@@ -181,20 +181,19 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
             setDetailVisible(true);
           };
           // 从删除用户打开的弹窗，不校验项目权限，直接按无权限展示
-          const hasProjectAuth =
-            mode === EEntityType.USER ? false : !!record?.project?.currentUserResourceRoles?.length;
+          const isDeleteUser = mode === EEntityType.USER;
+          const hasProjectAuth = isDeleteUser
+            ? false
+            : !!record?.project?.currentUserResourceRoles?.length;
+          const hint = isDeleteUser
+            ? '无访问权限，无法查看工单详情'
+            : formatMessage({
+                id: 'src.component.RelativeResourceModal.94DC18D3',
+                defaultMessage: '暂无所属的项目访问权限，无法查看工单详情，请联系管理员',
+              });
           return (
             <div className={styles.taskName}>
-              <Tooltip
-                title={
-                  hasProjectAuth
-                    ? ''
-                    : formatMessage({
-                        id: 'src.component.RelativeResourceModal.94DC18D3',
-                        defaultMessage: '暂无所属的项目访问权限，无法查看工单详情，请联系管理员',
-                      })
-                }
-              >
+              <Tooltip title={hasProjectAuth ? '' : hint}>
                 <div
                   className={hasProjectAuth ? styles.title : styles.disabledTitle}
                   onClick={hasProjectAuth ? handleClick : () => {}}
