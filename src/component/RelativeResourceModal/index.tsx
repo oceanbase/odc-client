@@ -173,8 +173,8 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
           id: 'src.component.RelativeResourceModal.B8A1781D',
           defaultMessage: '工单',
         }),
-        dataIndex: 'name',
-        key: 'name',
+        dataIndex: 'description',
+        key: 'description',
         ellipsis: true,
         render: (text: string, record: IResourceDependencyItem) => {
           const handleClick = () => {
