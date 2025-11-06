@@ -174,6 +174,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
           defaultMessage: '工单',
         }),
         dataIndex: 'description',
+        width: 433,
         key: 'description',
         ellipsis: true,
         render: (text: string, record: IResourceDependencyItem) => {
@@ -199,7 +200,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
                   className={hasProjectAuth ? styles.title : styles.disabledTitle}
                   onClick={hasProjectAuth ? handleClick : () => {}}
                 >
-                  {text || '-'}
+                  <Tooltip title={hasProjectAuth ? text : ''}>{text || '-'}</Tooltip>
                 </div>
               </Tooltip>
               <div>
