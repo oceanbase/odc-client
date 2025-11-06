@@ -21,6 +21,7 @@ import { SchedulePageMode, ScheduleTab } from '../../../interface';
 import ApprovalStatusFilter from './approvalStatusFilter';
 import styles from '../index.less';
 import login from '@/store/login';
+import { ScheduleTaskStatusInfo } from '@/component/Schedule/components/ScheduleTaskStatusLabel';
 
 const Filter: React.FC = () => {
   const context = useContext(ParamsContext);
@@ -181,13 +182,14 @@ const Filter: React.FC = () => {
           {subTaskStatus.map((item, idx) => (
             <>
               {ScheduleTaskStatusTextMap[item]}
+              {ScheduleTaskStatusInfo[item]?.desc}
               {comma(idx, subTaskStatus.length)}
             </>
           ))}
         </span>
       </>
     );
-  }, [subTaskStatus]);
+  }, [subTaskStatus, ScheduleTaskStatusInfo]);
 
   const dateTipContent = useMemo(() => {
     const _timeRange = isScheduleView ? timeRange : subTaskTimeRange;
