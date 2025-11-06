@@ -59,6 +59,7 @@ import ScheduleStatusLabel from '../Schedule/components/ScheduleStatusLabel';
 import ApprovalModal from '@/component/Task/component/ApprovalModal';
 import { SchedulePageMode } from '../Schedule/interface';
 import CreateModals from '../Task/modals/CreateModals';
+import login from '@/store/login';
 
 export interface DeleteDataSourceModalProps {
   open: boolean;
@@ -181,7 +182,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
             setDetailVisible(true);
           };
           // 从删除用户打开的弹窗，不校验项目权限，直接按无权限展示
-          const isDeleteUser = mode === EEntityType.USER;
+          const isDeleteUser = mode === EEntityType.USER || login.isPrivateSpace();
           const hasProjectAuth = isDeleteUser
             ? false
             : !!record?.project?.currentUserResourceRoles?.length;
