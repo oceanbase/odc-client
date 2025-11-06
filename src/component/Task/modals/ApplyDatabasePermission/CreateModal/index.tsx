@@ -70,6 +70,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   const projectId = Form.useWatch('projectId', form);
   const { run: getProjects, data: projects } = useRequest(listProjects, {
     defaultParams: [null, null, null],
+    manual: true,
   });
   const projectOptions = projects?.contents?.map(({ name, id }) => ({
     label: name,

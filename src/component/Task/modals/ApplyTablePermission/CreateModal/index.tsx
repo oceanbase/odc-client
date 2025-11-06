@@ -188,7 +188,8 @@ const CreateModal: React.FC<IProps> = (props) => {
     if (applyTablePermissionVisible) {
       getProjects(null, null, null);
     }
-  }, [applyTablePermissionVisible, getProjects]);
+  }, [applyTablePermissionVisible]);
+
   const handleFieldsChange = () => {
     setHasEdit(true);
   };
