@@ -65,6 +65,7 @@ import { SchedulePageMode } from '@/component/Schedule/interface';
 import { openSchedulesPage } from '@/store/helper/page';
 import SchduleExecutionMethodForm from '@/component/Schedule/components/SchduleExecutionMethodForm';
 import { safeTruncateString } from '@/util/stringTruncate';
+import login from '@/store/login';
 const { Paragraph, Text } = Typography;
 
 const historyPartitionKeyInvokers = [
@@ -638,10 +639,12 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
             })}
           </div>
           <div>
-            {formatMessage({
-              id: 'src.component.Schedule.modals.PartitionPlan.Create.B9C33688',
-              defaultMessage: '作业需要重新审批，审批通过后此作业将自动启动',
-            })}
+            {login.isPrivateSpace()
+              ? '提交后此作业将自动启动'
+              : formatMessage({
+                  id: 'src.component.Schedule.modals.PartitionPlan.Create.B9C33688',
+                  defaultMessage: '作业需要重新审批，审批通过后此作业将自动启动',
+                })}
           </div>
         </>
       ),

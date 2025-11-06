@@ -57,6 +57,7 @@ import SchduleExecutionMethodForm from '@/component/Schedule/components/SchduleE
 import ExecuteTimeoutSchedulingStrategy from '@/component/Schedule/components/ExecuteTimeoutSchedulingStrategy';
 import { getInitScheduleName } from '@/component/Task/component/CreateTaskConfirmModal/helper';
 import PreCheckTip from '@/component/Schedule/components/PreCheckTip';
+import login from '@/store/login';
 
 export const variable = {
   name: '',
@@ -289,10 +290,12 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
             }
           </div>
           <div>
-            {formatMessage({
-              id: 'src.component.Schedule.modals.DataClear.Create.FBEB16F1',
-              defaultMessage: '作业需要重新审批，审批通过后此作业将自动启动',
-            })}
+            {login.isPrivateSpace()
+              ? '提交后此作业将自动启动'
+              : formatMessage({
+                  id: 'src.component.Schedule.modals.DataClear.Create.FBEB16F1',
+                  defaultMessage: '作业需要重新审批，审批通过后此作业将自动启动',
+                })}
           </div>
         </>
       ),

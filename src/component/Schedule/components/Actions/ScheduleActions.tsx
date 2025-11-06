@@ -160,12 +160,20 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
         setActiveBtnKey(ScheduleActionsEnum.STOP);
         const res = await terminateSchedule(scheduleId);
         if (res?.data) {
-          message.success(
-            formatMessage({
-              id: 'src.component.Schedule.components.Actions.AEDC2076',
-              defaultMessage: '作业务需要重新审批，审批通过后此作业将终止',
-            }),
-          );
+          !login.isPrivateSpace() &&
+            message.success(
+              formatMessage({
+                id: 'src.component.Schedule.components.Actions.AEDC2076',
+                defaultMessage: '作业务需要重新审批，审批通过后此作业将终止',
+              }),
+            );
+          login.isPrivateSpace() &&
+            message.success(
+              formatMessage({
+                id: 'src.component.Schedule.components.Actions.802C2675',
+                defaultMessage: '终止成功',
+              }),
+            );
           onReloadList?.();
           resetActiveBtnKey();
         } else {
@@ -198,10 +206,12 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
             )}
           </div>
           <div>
-            {formatMessage({
-              id: 'src.component.Schedule.components.Actions.838A7A4A',
-              defaultMessage: '作业需要重新审批，审批通过后此作业将禁用',
-            })}
+            {login?.isPrivateSpace()
+              ? ''
+              : formatMessage({
+                  id: 'src.component.Schedule.components.Actions.838A7A4A',
+                  defaultMessage: '作业需要重新审批，审批通过后此作业将禁用',
+                })}
           </div>
         </>
       ),
@@ -247,12 +257,12 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       ),
       content: (
         <>
-          <div>
-            {formatMessage({
-              id: 'src.component.Schedule.components.Actions.726B120F',
-              defaultMessage: '作业需要重新审批，审批通过后此作业将启用',
-            })}
-          </div>
+          {login?.isPrivateSpace()
+            ? ''
+            : formatMessage({
+                id: 'src.component.Schedule.components.Actions.726B120F',
+                defaultMessage: '作业需要重新审批，审批通过后此作业将启用',
+              })}
         </>
       ),
 
@@ -379,12 +389,12 @@ const ScheduleActions: React.FC<ScheduleActionsIProps> = (props) => {
       ),
       content: (
         <>
-          <div>
-            {formatMessage({
-              id: 'src.component.Schedule.components.Actions.C310B03F',
-              defaultMessage: '作业需要重新审批，审批通过后此作业将不再显示',
-            })}
-          </div>
+          {login?.isPrivateSpace()
+            ? ''
+            : formatMessage({
+                id: 'src.component.Schedule.components.Actions.C310B03F',
+                defaultMessage: '作业需要重新审批，审批通过后此作业将不再显示',
+              })}
         </>
       ),
 

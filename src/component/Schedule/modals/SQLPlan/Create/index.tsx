@@ -304,10 +304,12 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
             }
           </div>
           <div>
-            {formatMessage({
-              id: 'src.component.Schedule.modals.SQLPlan.Create.97060AA0',
-              defaultMessage: '作业需要重新审批，审批通过后此作业将自动启用',
-            })}
+            {login.isPrivateSpace()
+              ? '提交后此作业将自动启动'
+              : formatMessage({
+                  id: 'src.component.Schedule.modals.SQLPlan.Create.97060AA0',
+                  defaultMessage: '作业需要重新审批，审批通过后此作业将自动启用',
+                })}
           </div>
         </>
       ),
