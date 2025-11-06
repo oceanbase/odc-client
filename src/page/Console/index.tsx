@@ -357,6 +357,7 @@ const ConsoleMain = () => {
                           id: 'src.page.Console.609E3208',
                           defaultMessage: '请选择项目',
                         })}
+                        popupMatchSelectWidth={false}
                         style={{ maxWidth: 200, border: 'none' }}
                         options={[
                           {
