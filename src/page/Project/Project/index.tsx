@@ -71,13 +71,16 @@ interface IProps {
 }
 
 const Project: React.FC<IProps> = (props) => {
+  const { userStore } = props;
   const domRef = useRef<HTMLDivElement>();
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedRows, setSelectedRows] = useState<Map<number, boolean>>(
     new Map<number, boolean>(),
   );
-  const { userStore } = props;
-  const [searchType, setSearchType] = useState<ProjectSearchType>(undefined);
+  const sessionStorageKey = getSessionStorageKey(userStore);
+  const [searchType, setSearchType] = useState<ProjectSearchType>(
+    sessionStorage.getItem(sessionStorageKey) ? ProjectSearchType.projectName : undefined,
+  );
   const [searchParams, setSearchParams] = useSearchParams();
   const [dataSource, setDataSource] = useState<IProject[]>([]);
   const [projectSearchName, setProjectSearchName] = useState(null);
@@ -88,7 +91,6 @@ const Project: React.FC<IProps> = (props) => {
 
   const [openDeleteProjectModal, setOpenDeleteProjectModal] = useState(false);
   const [selectProjectList, setSelectProjectList] = useState<SelectProject[]>([]);
-  const sessionStorageKey = getSessionStorageKey(userStore);
 
   const appendData = async (currentPage, dataSource, projectType, projectSearchName) => {
     setLoading(true);
@@ -212,7 +214,7 @@ const Project: React.FC<IProps> = (props) => {
             </Space>
             <Space size={12} style={{ lineHeight: 1 }}>
               <InputSelect
-                searchValue={projectSearchName}
+                searchValue={sessionStorage.getItem(sessionStorageKey) || projectSearchName}
                 searchType={searchType}
                 selectTypeOptions={[
                   {
