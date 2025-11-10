@@ -25,10 +25,11 @@ const useDataSourceDrawer = () => {
   const deleteDataSource = async (name: string, key: number) => {
     // 先检查是否有依赖项
     const res = await getResourceDependencies({ datasourceId: key });
+    const data = res?.data;
     const total =
-      (res?.flowDependencies?.length || 0) +
-      (res?.scheduleDependencies?.length || 0) +
-      (res?.scheduleTaskDependencies?.length || 0);
+      (data?.flowDependencies?.length || 0) +
+      (data?.scheduleDependencies?.length || 0) +
+      (data?.scheduleTaskDependencies?.length || 0);
 
     if (total > 0) {
       // 有依赖项，展示资源依赖弹窗

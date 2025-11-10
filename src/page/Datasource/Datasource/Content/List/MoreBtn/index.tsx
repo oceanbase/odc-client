@@ -69,10 +69,11 @@ const MoreBtn: React.FC<IProps> = function ({ connection, modalStore }) {
   }
   async function remove() {
     const res = await getResourceDependencies({ datasourceId: connection.id });
+    const data = res?.data;
     const total =
-      (res.flowDependencies?.length || 0) +
-      (res.scheduleDependencies?.length || 0) +
-      (res.scheduleTaskDependencies?.length || 0);
+      (data?.flowDependencies?.length || 0) +
+      (data?.scheduleDependencies?.length || 0) +
+      (data?.scheduleTaskDependencies?.length || 0);
     if (total > 0) {
       setDeleteModalOpen(true);
     } else {

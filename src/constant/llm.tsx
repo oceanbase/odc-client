@@ -63,6 +63,7 @@ export const modelListAvatarTooltip = {
     defaultMessage: '连接正常',
   }),
 };
+
 export const VendorsConfig = {
   [EVendorType.TONGYI]: {
     label: formatMessage({

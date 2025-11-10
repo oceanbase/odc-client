@@ -1,4 +1,3 @@
-import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -15,21 +14,18 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import {
-  Modal,
-  Radio,
-  Table,
-  Checkbox,
-  Space,
-  Typography,
-  Spin,
-  message,
-  Button,
-  Tooltip,
-} from 'antd';
+import React, { useState, useEffect, useMemo } from 'react';
+
 import { useRequest, useSetState } from 'ahooks';
+import { Modal, Radio, Table, Checkbox, Space, Typography, Spin, Button, Tooltip } from 'antd';
+
+import { formatMessage } from '@/util/intl';
+import { getLocalFormatDateTime } from '@/util/utils';
+import { getResourceDependencies } from '@/util/request/relativeResource';
+
 import { TaskDetail, TaskRecordParameters, TaskStatus, TaskType } from '@/d.ts';
+import { IScheduleRecord, ScheduleRecordParameters, ScheduleStatus } from '@/d.ts/schedule';
+import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
 import {
   IFlowDependencyOverview,
   IResourceDependency,
@@ -38,30 +34,30 @@ import {
   IScheduleDependencyOverview,
   IScheduleTaskDependencyOverview,
   propertyMap,
+  EEntityType,
+  EResourceType,
 } from '@/d.ts/relativeResource';
-import { getResourceDependencies } from '@/util/request/relativeResource';
-import styles from './index.less';
+
 import { cycleStatus, status, subTaskStatus } from '@/component/Task/component/Status';
 import DetailModals from '@/component/Task/modals/DetailModals';
-import { TaskTypeMap } from '../Task/helper';
-import { getLocalFormatDateTime } from '@/util/utils';
-import { ENTITY_CONFIG } from './const';
-import { TaskTitle } from './components/TaskTitle';
-import { EEntityType, EResourceType } from '@/d.ts/relativeResource';
+import CreateModals from '@/component/Task/modals/CreateModals';
+import ApprovalModal from '@/component/Task/component/ApprovalModal';
+import { TaskTypeMap } from '@/component/Task/helper';
 import SubTaskDetailModal from '@/component/Schedule/layout/SubTaskDetail';
+import ScheduleDetail from '@/component/Schedule/layout/ScheduleDetail';
+import ScheduleTaskStatusLabel from '@/component/Schedule/components/ScheduleTaskStatusLabel';
+import ScheduleStatusLabel from '@/component/Schedule/components/ScheduleStatusLabel';
+import { SchedulePageMode } from '@/component/Schedule/interface';
 import { ScheduleTextMap } from '@/constant/schedule';
 import { SubTypeTextMap } from '@/constant/scheduleTask';
-import ScheduleDetail from '../Schedule/layout/ScheduleDetail';
-import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
-import ScheduleTaskStatusLabel from '../Schedule/components/ScheduleTaskStatusLabel';
-import { IScheduleRecord, ScheduleRecordParameters, ScheduleStatus } from '@/d.ts/schedule';
-import ScheduleStatusLabel from '../Schedule/components/ScheduleStatusLabel';
-import ApprovalModal from '@/component/Task/component/ApprovalModal';
-import { SchedulePageMode } from '../Schedule/interface';
-import CreateModals from '../Task/modals/CreateModals';
+import { ENTITY_CONFIG } from './const';
+import { TaskTitle } from './components/TaskTitle';
+
 import login from '@/store/login';
 
-export interface DeleteDataSourceModalProps {
+import styles from './index.less';
+
+export interface IRelativeResourceModalProps {
   open: boolean;
   id?: number;
   dataSourceName?: string;
@@ -73,7 +69,7 @@ export interface DeleteDataSourceModalProps {
   customSuccessHandler?: () => Promise<void>;
 }
 
-const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
+const RelativeResourceModal: React.FC<IRelativeResourceModalProps> = ({
   open,
   id,
   title,
@@ -84,7 +80,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState(EResourceType.TASKS);
   const [riskConfirmed, setRiskConfirmed] = useState(false);
-  const [relatedResources, setRelatedResources] = useState<IResourceDependency>({
+  const [relatedResources, setRelatedResources] = useState<IResourceDependency['data']>({
     flowDependencies: [],
     scheduleDependencies: [],
     scheduleTaskDependencies: [],
@@ -106,8 +102,8 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
     (params: IResourceDependencyParams) => getResourceDependencies(params),
     {
       manual: true,
-      onSuccess: (data: IResourceDependency) => {
-        setRelatedResources(data);
+      onSuccess: (result: IResourceDependency) => {
+        setRelatedResources(result?.data);
       },
     },
   );
@@ -182,7 +178,7 @@ const RelativeResourceModal: React.FC<DeleteDataSourceModalProps> = ({
             setCurrentRecord(record);
             setDetailVisible(true);
           };
-          // 从删除用户打开的弹窗，不校验项目权限，直接按无权限展示
+          // 个人空间对应的资源依赖弹窗，不校验项目权限，直接按无权限展示
           const isDeleteUser = mode === EEntityType.USER || login.isPrivateSpace();
           const hasProjectAuth = isDeleteUser
             ? false

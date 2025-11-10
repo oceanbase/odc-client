@@ -247,7 +247,6 @@ export function makeDataShareable<T extends object>(
         try {
           const newSerialized = JSON.stringify(newData);
           const currentSerialized = JSON.stringify(target[propertyKey]);
-
           if (newSerialized !== currentSerialized) {
             isUpdating = true;
             target[propertyKey] = newData;

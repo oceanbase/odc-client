@@ -13,21 +13,37 @@ import { ScheduleStatus, ScheduleType } from '@/d.ts/schedule';
 import { Perspective, ScheduleTab, ScheduleTaskTab } from '@/component/Schedule/interface';
 import { ScheduleTaskStatus } from '@/d.ts/scheduleTask';
 import dayjs, { Dayjs } from 'dayjs';
+import React from 'react';
 
-const ScheduleItem = ({
+/**
+ * Schedule item component props
+ */
+interface IScheduleItemProps {
+  /** Schedule item title */
+  title: string;
+  /** Schedule statistics data */
+  progress: IStat;
+  /** Schedule type */
+  type: ScheduleType;
+  /** Time range value */
+  timeValue: number | string;
+  /** Custom date range */
+  dateValue: [Dayjs, Dayjs] | null;
+  /** Selected project ID */
+  selectedProjectId: number | undefined;
+}
+
+/**
+ * Schedule item component for displaying schedule statistics
+ * Shows enabled count, execution count, and failure count with navigation
+ */
+const ScheduleItem: React.FC<IScheduleItemProps> = ({
   title,
   progress,
   type,
   timeValue,
   dateValue,
   selectedProjectId,
-}: {
-  title: string;
-  progress: IStat;
-  type: ScheduleType;
-  timeValue: number | string;
-  dateValue: [Dayjs, Dayjs] | null;
-  selectedProjectId: number | undefined;
 }) => {
   const { count } = progress || {};
   const { EXEC_TIMEOUT, EXECUTING, EXECUTION_INTERRUPTION, EXECUTION_SUCCESS, OTHER, ENABLED } =

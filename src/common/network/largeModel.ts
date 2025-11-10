@@ -71,18 +71,6 @@ export async function postAPIKey(data: {
 }
 
 /**
- * 删除模型供应商
- */
-export async function deleteModelProvider(provider: string): Promise<void> {
-  const result = await request.delete('/api/v2/integration/llm/providers', {
-    params: {
-      provider,
-    },
-  });
-  return result?.data;
-}
-
-/**
  * 获取指定供应商的指定模型详情
  */
 export async function getModelDetail(provider: string, modelName: string): Promise<IModel> {

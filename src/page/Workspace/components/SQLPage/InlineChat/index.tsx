@@ -1,16 +1,10 @@
-import { formatMessage } from '@/util/intl';
-import { IEditor, IFullEditor } from '@/component/MonacoEditor';
-import SessionStore from '@/store/sessionManager/session';
-import * as monaco from 'monaco-editor';
-import Icon, {
-  CloseOutlined,
-  InfoCircleFilled,
-  PauseCircleOutlined,
-  SearchOutlined,
-  SendOutlined,
-} from '@ant-design/icons';
+import React, { useEffect, useRef, useState } from 'react';
+
 import { useRequest } from 'ahooks';
+import { observer } from 'mobx-react';
 import { history } from '@umijs/max';
+import * as monaco from 'monaco-editor';
+import classNames from 'classnames';
 import {
   Button,
   Dropdown,
@@ -23,18 +17,31 @@ import {
   Typography,
   message,
 } from 'antd';
-import classNames from 'classnames';
-import React, { useEffect, useRef, useState } from 'react';
-import styles from './index.less';
-import { AIQuestionType } from '@/d.ts/ai';
+import Icon, {
+  CloseOutlined,
+  InfoCircleFilled,
+  PauseCircleOutlined,
+  SearchOutlined,
+  SendOutlined,
+} from '@ant-design/icons';
+
+import { formatMessage } from '@/util/intl';
+import { createEditorDiffDecorator, EditorDiffDecorator } from '@/util/editorDiff';
+
 import { modifySync } from '@/common/network/ai';
-import login from '@/store/login';
-import odc from '@/plugins/odc';
-import { getDefaultValue } from './util';
+
+import { AIQuestionType } from '@/d.ts/ai';
 import { IModel } from '@/d.ts/llm';
-import { VendorsConfig } from '@/page/ExternalIntegration/LargeModel/constant';
+
+import { IEditor, IFullEditor } from '@/component/MonacoEditor';
+import { getDefaultValue } from './util';
+
+import login from '@/store/login';
+import SessionStore from '@/store/sessionManager/session';
 import setting from '@/store/setting';
-import { createEditorDiffDecorator, EditorDiffDecorator, LineType } from '@/util/editorDiff';
+
+import styles from './index.less';
+import { VendorsConfig } from '@/constant/llm';
 
 interface IProps {
   dispose: () => void;
@@ -43,21 +50,17 @@ interface IProps {
   mode: AIQuestionType;
   fullEditor: IFullEditor;
   initialValue?: string;
-  modelsData?: {
-    allModels: IModel[];
-    modelsLoading: boolean;
-    onRefreshModels?: () => void;
-  };
+  onRefreshModels?: () => void;
 }
 
-export default function InlineChat({
+const InlineChat = observer(function InlineChat({
   dispose,
   editor,
   session,
   mode: propMode,
   fullEditor,
   initialValue,
-  modelsData,
+  onRefreshModels,
 }: IProps) {
   const inputRef = React.useRef<InputRef>(null);
   const [mode, setMode] = useState(propMode);
@@ -72,14 +75,12 @@ export default function InlineChat({
 
   // diff展示相关状态
   const [originalSelectedText, setOriginalSelectedText] = useState<string>('');
-  const [generatedText, setGeneratedText] = useState<string>('');
   const [originalSelectionRange, setOriginalSelectionRange] = useState<monaco.IRange | null>(null);
   const diffDecoratorRef = useRef<EditorDiffDecorator | null>(null);
   const [separatedDiffApplied, setSeparatedDiffApplied] = useState<boolean>(false);
 
-  // 使用传入的 modelsData 或者本地状态作为备选
-  const allModels = modelsData?.allModels || [];
-  const modelsLoading = modelsData?.modelsLoading || false;
+  const allModels: IModel[] = setting?.allModels ?? [];
+  const modelsLoading: boolean = setting?.modelsLoading ?? false;
 
   const [selectedModel, setSelectedModel] = useState<string>(
     setting.AIConfig?.defaultLlmModel || '',
@@ -174,7 +175,6 @@ export default function InlineChat({
 
       // 保存diff展示需要的数据
       setOriginalSelectedText(selectedText);
-      setGeneratedText(data);
       setOriginalSelectionRange(selectionRange);
 
       // 应用分离的diff展示（仅在修改场景下）
@@ -243,7 +243,6 @@ export default function InlineChat({
     needRollback.current = false;
     // 清空diff展示数据
     setOriginalSelectedText('');
-    setGeneratedText('');
     setOriginalSelectionRange(null);
     // 清除编辑器装饰
     if (diffDecoratorRef.current) {
@@ -263,7 +262,6 @@ export default function InlineChat({
     needRollback.current = false;
     // 清空diff展示数据
     setOriginalSelectedText('');
-    setGeneratedText('');
     setOriginalSelectionRange(null);
     // 清除编辑器装饰
     if (diffDecoratorRef.current) {
@@ -284,7 +282,7 @@ export default function InlineChat({
           }}
           className={styles.button}
         >
-          <PauseCircleOutlined style={{ color: 'var(--icon-color-normal)' }} />
+          <PauseCircleOutlined className={styles.iconNormal} />
         </Button>
       );
     } else {
@@ -296,12 +294,11 @@ export default function InlineChat({
           type="text"
         >
           <SendOutlined
-            style={{
-              color:
-                mode === AIQuestionType.SQL_MODIFIER && !value
-                  ? 'var(--icon-color-disable)'
-                  : 'var(--icon-color-normal)',
-            }}
+            className={
+              mode === AIQuestionType.SQL_MODIFIER && !value
+                ? styles.sendButtonDisabled
+                : styles.sendButton
+            }
           />
         </Button>
       );
@@ -329,8 +326,8 @@ export default function InlineChat({
     options: models.map((model) => ({
       label: (
         <span className={styles.optionContainer}>
-          <Icon style={{ fontSize: 16 }} component={VendorsConfig[providerName]?.icon} />
-          <span style={{ marginLeft: 8 }}>{model.modelName}</span>
+          <Icon className={styles.iconLarge} component={VendorsConfig[providerName]?.icon} />
+          <span className={styles.modelNameText}>{model.modelName}</span>
         </span>
       ),
 
@@ -361,7 +358,7 @@ export default function InlineChat({
     if (modelsLoading) {
       return (
         <div className={styles.modelSelect}>
-          <Typography.Text style={{ fontSize: 11, color: '#8592ad' }} type="secondary">
+          <Typography.Text className={styles.textSecondarySmall} type="secondary">
             {formatMessage({
               id: 'src.page.Workspace.components.SQLPage.InlineChat.D511B31A',
               defaultMessage: '正在加载模型列表...',
@@ -374,18 +371,18 @@ export default function InlineChat({
     if (allModels?.length === 0) {
       return (
         <div className={styles.modelSelect}>
-          <Typography.Text style={{ fontSize: 11, color: '#8592ad' }} type="secondary">
+          <Typography.Text className={styles.textSecondarySmall} type="secondary">
             {formatMessage({
               id: 'src.page.Workspace.components.SQLPage.InlineChat.0151BFDE',
               defaultMessage: '暂无可用模型',
             })}
           </Typography.Text>
-          {modelsData?.onRefreshModels && (
+          {onRefreshModels && (
             <Button
               size="small"
               type="link"
-              onClick={modelsData.onRefreshModels}
-              style={{ padding: '0 4px', fontSize: 11 }}
+              onClick={onRefreshModels}
+              className={styles.refreshButton}
             >
               {formatMessage({
                 id: 'src.page.Workspace.components.SQLPage.InlineChat.9E9FF69B',
@@ -404,7 +401,7 @@ export default function InlineChat({
 
     return (
       <div className={styles.modelSelect}>
-        <div>
+        <div className={styles.leftWrapper}>
           <Tooltip
             trigger={isShowModelSelect ? 'click' : 'hover'}
             title={selectedModelInfo ? `${selectedModelInfo.modelName}` : ''}
@@ -419,9 +416,9 @@ export default function InlineChat({
               }}
               dropdownMatchSelectWidth={false}
               popupRender={(menu) => (
-                <div style={{ width: 230 }}>
+                <div className={styles.dropdownContainer}>
                   {/* 搜索框 */}
-                  <div style={{ padding: '8px' }}>
+                  <div className={styles.dropdownSearchWrapper}>
                     <Input
                       placeholder={formatMessage({
                         id: 'src.page.Workspace.components.SQLPage.InlineChat.9AF9D40F',
@@ -431,7 +428,7 @@ export default function InlineChat({
                       value={searchValue}
                       onChange={(e) => setSearchValue(e.target.value)}
                       allowClear
-                      suffix={<SearchOutlined style={{ color: 'var(--icon-color-normal)' }} />}
+                      suffix={<SearchOutlined className={styles.iconNormal} />}
                     />
                   </div>
                   {menu}
@@ -459,7 +456,7 @@ export default function InlineChat({
             </Tooltip>
           )}
         </div>
-        <Typography.Text style={{ fontSize: 11, color: '#8592ad' }} type="secondary">
+        <Typography.Text className={styles.textSecondarySmall} type="secondary">
           {formatMessage({
             id: 'src.page.Workspace.components.SQLPage.InlineChat.EC78C950',
             defaultMessage: 'AI 助手生成内容的准确性和完整性无法保证，仅供参考',
@@ -528,21 +525,13 @@ export default function InlineChat({
     if (applied) {
       return (
         <Space>
-          <Button
-            style={{
-              lineHeight: '28px',
-              height: 28,
-              backgroundImage: 'linear-gradient(111deg, #0080ff 0%, #002bff 100%)',
-            }}
-            type="primary"
-            onClick={submit}
-          >
+          <Button className={styles.acceptButton} type="primary" onClick={submit}>
             {formatMessage({
               id: 'src.page.Workspace.components.SQLPage.InlineChat.E2B52A80',
               defaultMessage: '接受',
             })}
           </Button>
-          <Button style={{ lineHeight: '28px', height: 28 }} onClick={rollback}>
+          <Button className={styles.rejectButton} onClick={rollback}>
             {formatMessage({
               id: 'src.page.Workspace.components.SQLPage.InlineChat.A304E20C',
               defaultMessage: '忽略',
@@ -559,7 +548,7 @@ export default function InlineChat({
       }
     }
     return (
-      <Typography.Text style={{ fontSize: 12, color: '#8592ad' }} type="secondary">
+      <Typography.Text className={styles.textSecondaryMedium} type="secondary">
         {formatMessage({
           id: 'src.page.Workspace.components.SQLPage.InlineChat.BABDDD80',
           defaultMessage: 'AI 生成中...',
@@ -767,4 +756,6 @@ export default function InlineChat({
       {renderTip()}
     </Space>
   );
-}
+});
+
+export default InlineChat;

@@ -1,17 +1,25 @@
 import { formatMessage } from '@/util/intl';
-import { TaskPageType } from '@/d.ts';
-import { ReactComponent as DownloadSvg } from '@/svgr/download-fill.svg';
-import { ReactComponent as GithubSvg } from '@/svgr/github.svg';
-import { ReactComponent as SendSvg } from '@/svgr/send-fill.svg';
 import Icon from '@ant-design/icons';
 import { TaskType } from '@/d.ts';
 import { ScheduleType } from '@/d.ts/schedule';
+import { ReactComponent as SendSvg } from '@/svgr/send-fill.svg';
+import { ReactComponent as HatSvg } from '@/svgr/hat.svg';
+import { ReactComponent as QuestionSvg } from '@/svgr/question.svg';
+import { ReactComponent as InfoSvg } from '@/svgr/info.svg';
 
+/**
+ * Quick start role types
+ */
 export enum EQuickStartRole {
+  /** Administrator role */
   Admin,
-  Develepor,
+  /** Developer role */
+  Developer,
 }
 
+/**
+ * Database table column keys for recently visited databases
+ */
 export enum EDatabaseTableColumnKey {
   Recently = 'recently',
   DataSource = 'datasource',
@@ -20,6 +28,9 @@ export enum EDatabaseTableColumnKey {
   Operation = 'operation',
 }
 
+/**
+ * Layout section keys for console page
+ */
 export enum ELayoutKey {
   QuickStart = 'quick-start',
   TaskOverview = 'task-overview',
@@ -30,6 +41,9 @@ export enum ELayoutKey {
   BestPractices = 'best-practices',
 }
 
+/**
+ * Supported task types for console statistics
+ */
 export const TaskTypes = [
   TaskType.EXPORT,
   TaskType.EXPORT_RESULT_SET,
@@ -43,6 +57,9 @@ export const TaskTypes = [
   TaskType.ONLINE_SCHEMA_CHANGE,
 ];
 
+/**
+ * Task type display titles
+ */
 export const TaskTitle = {
   [TaskType.EXPORT]: formatMessage({ id: 'src.page.Console.14A62D75', defaultMessage: '导出' }),
   [TaskType.EXPORT_RESULT_SET]: formatMessage({
@@ -80,6 +97,9 @@ export const TaskTitle = {
   }),
 };
 
+/**
+ * Schedule type display titles
+ */
 export const ScheduleTitle = {
   [ScheduleType.DATA_ARCHIVE]: formatMessage({
     id: 'src.page.Console.B92D6192',
@@ -99,6 +119,9 @@ export const ScheduleTitle = {
   }),
 };
 
+/**
+ * Supported schedule types for console statistics
+ */
 export const ScheduleTypes = [
   ScheduleType.DATA_ARCHIVE,
   ScheduleType.DATA_DELETE,
@@ -106,6 +129,9 @@ export const ScheduleTypes = [
   ScheduleType.SQL_PLAN,
 ];
 
+/**
+ * Console text configuration including schedules, quick start, recently visited, and about us sections
+ */
 export const ConsoleTextConfig = {
   schdules: {
     keys: ['dataArchive', 'dataClear', 'partition', 'sqlPlan'],
@@ -286,6 +312,9 @@ export const ConsoleTextConfig = {
   },
 };
 
+/**
+ * Grid configuration for layout
+ */
 export const gridConfig = {
   left: 16,
   right: 8,
@@ -293,9 +322,41 @@ export const gridConfig = {
   hide: 0,
 };
 
+/**
+ * Area layout configuration for different console sections
+ */
 export const areaLayout = {
   schedules: { schedule: gridConfig.all, guide: 0 },
   both: { schedule: gridConfig.left, guide: gridConfig.right },
   quickStart: { schedule: 0, guide: gridConfig.all },
   hideTop: { schedule: 0, guide: 0 },
 };
+
+// 状态映射：Console状态 -> 任务页面状态
+export const statusMapping = {
+  EXECUTING: ['EXECUTING'],
+  EXECUTION_SUCCESS: ['EXECUTION_SUCCEEDED', 'EXECUTION_SUCCEEDED_WITH_ERRORS'],
+  ACCESS_FAILURE: [
+    'PRE_CHECK_FAILED',
+    'REJECTED',
+    'APPROVAL_EXPIRED',
+    'WAIT_FOR_EXECUTION_EXPIRED',
+  ],
+
+  EXECUTION_INTERRUPTION: ['EXECUTION_ABNORMAL', 'EXECUTION_FAILED', 'EXECUTION_EXPIRED'],
+  OTHER: [
+    'CREATED',
+    'PRE_CHECK_EXECUTING',
+    'APPROVING',
+    'WAIT_FOR_SCHEDULE_EXECUTION',
+    'WAIT_FOR_EXECUTION',
+    'CANCELLED',
+  ],
+};
+
+export const aboutUsIcons = [
+  <Icon component={SendSvg} style={{ color: '#52c41a', fontSize: 13 }} />,
+  <Icon component={QuestionSvg} style={{ fontSize: 13 }} />,
+  <Icon component={HatSvg} style={{ fontSize: 13 }} />,
+  <Icon component={InfoSvg} style={{ fontSize: 13 }} />,
+];

@@ -1,12 +1,24 @@
 import { RightOutlined } from '@ant-design/icons';
 import styles from './index.less';
-interface IProps {
+import React from 'react';
+
+/**
+ * Schedule counter component props
+ */
+interface IScheduleCounterProps {
+  /** Counter title */
   title: string;
+  /** Counter value */
   counter: number;
+  /** Click handler */
   onClick?: () => void;
 }
 
-const ScheduleCounter = ({ title, counter, onClick }: IProps) => {
+/**
+ * Schedule counter component for displaying task/schedule counts
+ * Used in console page for quick navigation to filtered task/schedule lists
+ */
+const ScheduleCounter: React.FC<IScheduleCounterProps> = ({ title, counter, onClick }) => {
   return (
     <div className={styles.scheduleCounter}>
       <div className={styles.title}>{title || '-'}</div>

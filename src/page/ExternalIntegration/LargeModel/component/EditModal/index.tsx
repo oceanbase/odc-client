@@ -1,4 +1,6 @@
-import { formatMessage } from '@/util/intl';
+import { useCallback, useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+
+import { useRequest } from 'ahooks';
 import {
   Alert,
   Button,
@@ -11,17 +13,20 @@ import {
   Spin,
   message,
 } from 'antd';
-import { VendorsConfig } from '../../constant';
-import { EVendorType, ESchemaFieldType } from '@/d.ts/llm';
 import Icon, { ExportOutlined } from '@ant-design/icons';
-import styles from './index.less';
-import { useCallback, useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { createProviderModel, getModelDetail } from '@/util/request/largeModel';
-import { useRequest } from 'ahooks';
+
+import { formatMessage, getServerLocalKey } from '@/util/intl';
 import { encrypt } from '@/util/utils';
-import { getServerLocalKey } from '@/util/intl';
-import { renderFormComponent } from '../../utils';
+
+import { createProviderModel, getModelDetail } from '@/common/network/largeModel';
+
 import type { EditModalRef, EditModalProps, IModelProvider, IModel } from '@/d.ts/llm';
+import { EVendorType, ESchemaFieldType } from '@/d.ts/llm';
+
+import { VendorsConfig } from '@/constant/llm';
+import { renderFormComponent } from '../../utils';
+
+import styles from './index.less';
 
 const EditModal = forwardRef<EditModalRef, EditModalProps>(({ onRefresh }, ref) => {
   const [form] = Form.useForm();

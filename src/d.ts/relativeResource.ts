@@ -22,9 +22,11 @@ export const propertyMap = {
 };
 
 export interface IResourceDependency {
-  scheduleDependencies: IScheduleDependencyOverview[];
-  scheduleTaskDependencies: IScheduleTaskDependencyOverview[];
-  flowDependencies: IFlowDependencyOverview[];
+  data: {
+    scheduleDependencies: IScheduleDependencyOverview[];
+    scheduleTaskDependencies: IScheduleTaskDependencyOverview[];
+    flowDependencies: IFlowDependencyOverview[];
+  };
   successful?: boolean;
 }
 

@@ -62,10 +62,11 @@ export default function Info() {
 
   const handleProjectAchived = async () => {
     const res = await getResourceDependencies({ projectId: context.projectId });
+    const data = res?.data;
     const total =
-      res?.flowDependencies?.length ||
-      0 + res?.scheduleDependencies?.length ||
-      0 + res?.scheduleTaskDependencies?.length ||
+      data?.flowDependencies?.length ||
+      0 + data?.scheduleDependencies?.length ||
+      0 + data?.scheduleTaskDependencies?.length ||
       0;
     if (total > 0) {
       setOpenArchiveModal(true);

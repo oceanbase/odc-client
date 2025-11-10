@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import YamlEditor from '@/component/YamlEditor';
-import type { IManagerIntegration } from '@/d.ts';
-import { IManagerDetailTabs } from '@/d.ts';
+import React from 'react';
+
+import { Descriptions, Divider, Space } from 'antd';
+
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
-import { Descriptions, Divider, Space } from 'antd';
-import React from 'react';
+
+import type { IManagerIntegration } from '@/d.ts';
+import { IManagerDetailTabs } from '@/d.ts';
+
+import YamlEditor from '@/component/YamlEditor';
+
 import styles from '../../index.less';
 
 const Detail: React.FC<{

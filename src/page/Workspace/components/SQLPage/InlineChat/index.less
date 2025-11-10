@@ -67,7 +67,10 @@
 .tips {
   display: flex;
 }
-
+.leftWrapper {
+  display: flex;
+  align-items: center;
+}
 .warningIcon {
   color: #ffac33;
   font-size: 12px;
@@ -107,4 +110,62 @@
   font-size: 12px;
   display: flex;
   align-items: center;
+}
+
+// 图标样式
+.iconNormal {
+  color: var(--icon-color-normal);
+}
+
+.iconLarge {
+  font-size: 16px;
+}
+
+// 文本样式
+.textSecondarySmall {
+  font-size: 11px;
+  color: #8592ad;
+}
+
+.textSecondaryMedium {
+  font-size: 12px;
+  color: #8592ad;
+}
+
+.modelNameText {
+  margin-left: 8px;
+}
+
+// 按钮样式
+.sendButton {
+  color: var(--icon-color-normal);
+}
+
+.sendButtonDisabled {
+  color: var(--icon-color-disable);
+}
+
+.acceptButton {
+  line-height: 28px;
+  height: 28px;
+  background-image: linear-gradient(111deg, #0080ff 0%, #002bff 100%);
+}
+
+.rejectButton {
+  line-height: 28px;
+  height: 28px;
+}
+
+.refreshButton {
+  padding: 0 4px;
+  font-size: 11px;
+}
+
+// 下拉框样式
+.dropdownContainer {
+  width: 230px;
+}
+
+.dropdownSearchWrapper {
+  padding: 8px;
 }

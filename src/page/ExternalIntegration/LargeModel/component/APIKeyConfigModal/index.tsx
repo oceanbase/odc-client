@@ -1,16 +1,21 @@
-import { formatMessage } from '@/util/intl';
-import { Alert, Button, Descriptions, Form, Input, message, Modal, Spin } from 'antd';
-import { VendorsConfig } from '../../constant';
-import { EVendorType, ESchemaFieldType } from '@/d.ts/llm';
-import Icon, { ExportOutlined } from '@ant-design/icons';
-import styles from './index.less';
 import { useCallback, useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { encrypt, decrypt } from '@/util/utils';
-import { postAPIKey, getProviderCredential } from '@/util/request/largeModel';
+
 import { useRequest } from 'ahooks';
-import { getServerLocalKey } from '@/util/intl';
-import { renderFormComponent } from '../../utils';
+import { Alert, Button, Descriptions, Form, Input, message, Modal, Spin } from 'antd';
+import Icon, { ExportOutlined } from '@ant-design/icons';
+
+import { formatMessage, getServerLocalKey } from '@/util/intl';
+import { encrypt, decrypt } from '@/util/utils';
+
+import { postAPIKey, getProviderCredential } from '@/common/network/largeModel';
+
 import type { APIKeyConfigModalRef, APIKeyConfigModalProps, IModelProvider } from '@/d.ts/llm';
+import { EVendorType, ESchemaFieldType } from '@/d.ts/llm';
+
+import { VendorsConfig } from '@/constant/llm';
+import { renderFormComponent } from '../../utils';
+
+import styles from './index.less';
 
 const APIKeyConfigModal = forwardRef<APIKeyConfigModalRef, APIKeyConfigModalProps>(
   ({ onRefresh }, ref) => {

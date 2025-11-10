@@ -116,10 +116,11 @@ export default function ChangeProjectModal({ visible, database, close, onSuccess
 
   const handleConfirm = async () => {
     const res = await getResourceDependencies({ databaseIds: database?.id });
+    const data = res?.data;
     const total =
-      res?.flowDependencies?.length ||
-      0 + res?.scheduleDependencies?.length ||
-      0 + res?.scheduleTaskDependencies?.length ||
+      data?.flowDependencies?.length ||
+      0 + data?.scheduleDependencies?.length ||
+      0 + data?.scheduleTaskDependencies?.length ||
       0;
     if (total > 0) {
       setOpenDepResourceModal(true);
