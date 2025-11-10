@@ -251,12 +251,7 @@ const ConsoleMain = () => {
                 defaultMessage: '欢迎使用 OceanBase 开发者中心',
               })}
             </div>
-            <div className={styles.subTitle}>
-              {formatMessage({
-                id: 'src.page.Console.94172A72',
-                defaultMessage: '开源的数据库开发和数据库管控协同工具',
-              })}
-            </div>
+            <div className={styles.subTitle}>企业级数据库开发和数据库管控协同工具</div>
           </div>
           <PersonalizeLayoutSetting />
         </div>
