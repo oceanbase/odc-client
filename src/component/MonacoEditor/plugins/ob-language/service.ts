@@ -32,7 +32,7 @@ function hasConnect(session: SessionStore) {
 let completionToken: number = 0;
 
 export function getModelService(
-  { modelId, delimiter, editor },
+  { modelId, delimiter, editor, enableAICompletion = false },
   sessionFunc: () => SessionStore,
 ): IModelOptions {
   return {
@@ -42,6 +42,7 @@ export function getModelService(
     llm: {
       async completions(input, cursorPosition) {
         if (
+          !enableAICompletion ||
           !setting.enableAIInlineCompletion ||
           !setting.AIEnabled ||
           !input?.trim() ||

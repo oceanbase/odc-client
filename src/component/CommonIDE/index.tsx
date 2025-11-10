@@ -189,6 +189,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                   onValueChange={this.onSQLChange}
                   onEditorCreated={this.onEditorCreated}
                   placeholder={placeholder}
+                  actionGroupKey={toolbarGroupKey}
                   {...editorProps}
                 />
               </div>
@@ -260,6 +261,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                 onValueChange={this.onSQLChange}
                 onEditorCreated={this.onEditorCreated}
                 placeholder={placeholder}
+                actionGroupKey={toolbarGroupKey}
                 {...editorProps}
               />
             </div>

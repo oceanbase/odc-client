@@ -238,6 +238,7 @@ export default class ScriptPage extends PureComponent<IProps> {
               language={language}
               sessionStore={this.props.session}
               onValueChange={this.setStateForEditorValue}
+              actionGroupKey={this.props.toolbar?.actionGroupKey}
             />
           </DropWrapper>
           {this.props.Others}
