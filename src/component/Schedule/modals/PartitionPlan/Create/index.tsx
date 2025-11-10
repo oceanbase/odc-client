@@ -749,6 +749,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
       triggerStrategy: detailRes?.triggerConfig?.triggerStrategy,
       startAt: undefined,
     };
+    await form.setFieldsValue(formData);
     if (triggerConfig) {
       const { triggerStrategy, cronExpression, hours, days, startAt } = triggerConfig ?? {};
       if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
@@ -779,7 +780,6 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
         dayOfWeek: days,
       });
     }
-    await form.setFieldsValue(formData);
     setPreTableConfigs(parameters?.partitionTableConfigs);
     const configs = parameters?.partitionTableConfigs?.map((config, index) => ({
       ...config,
