@@ -35,7 +35,7 @@ export enum EAIFeatureType {
 }
 
 // 卡片数据接口
-export interface CardData {
+export interface ICardData {
   id: number;
   content: {
     title: string;

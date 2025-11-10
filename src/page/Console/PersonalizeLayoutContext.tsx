@@ -7,22 +7,42 @@ import type { TreeDataNode } from 'antd';
 import { TaskType } from '@/d.ts';
 import { ScheduleType } from '@/d.ts/schedule';
 
+/**
+ * Personalize layout context type
+ */
 interface PersonalizeLayoutContextType {
+  /** Checked keys in the layout tree */
   checkedKeys: React.Key[];
+  /** Update checked keys */
   setCheckedKeys: (keys: React.Key[]) => void;
+  /** Tree data structure */
   treeData: TreeDataNode[] | null;
+  /** Update tree data */
   setTreeData: (data: TreeDataNode[]) => void;
+  /** Get ordered task types based on user's drag configuration */
   getOrderedTaskTypes: () => TaskType[];
+  /** Get ordered schedule types based on user's drag configuration */
   getOrderedScheduleTypes: () => ScheduleType[];
 }
 
+/**
+ * Context for personalized console layout
+ */
 export const PersonalizeLayoutContext = createContext<PersonalizeLayoutContextType | undefined>(
   undefined,
 );
+
+/**
+ * Personalize layout provider props
+ */
 interface PersonalizeLayoutProviderProps {
   children: ReactNode;
 }
 
+/**
+ * Provider component for personalized console layout
+ * Manages user's layout preferences and stores them in localStorage
+ */
 export const PersonalizeLayoutProvider: React.FC<PersonalizeLayoutProviderProps> = ({
   children,
 }) => {

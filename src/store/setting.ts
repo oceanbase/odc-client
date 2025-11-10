@@ -29,8 +29,8 @@ import { message } from 'antd';
 import { action, observable, computed } from 'mobx';
 import login, { sessionKey } from '@/store/login';
 import { EShareableIdentifierType, makeDataShareable } from '@/util/makeDataShareable';
-import { IAIConfig } from '@/d.ts/llm';
-import { getAIConfig, updateAIConfig } from '@/util/request/largeModel';
+import { IAIConfig, IModel } from '@/d.ts/llm';
+import { getAIConfig, updateAIConfig } from '@/common/network/largeModel';
 
 export const themeKey = 'odc-theme';
 export const getCurrentOrganizationId = () => sessionStorage.getItem(sessionKey);
@@ -115,6 +115,15 @@ export class SettingStore {
 
   @observable
   public isAIThinking: boolean = false;
+
+  /**
+   * 所有可用的 AI 模型列表
+   */
+  @observable
+  public allModels: IModel[] = [];
+
+  @observable
+  public modelsLoading: boolean = false;
 
   /**
    * 是否有未被接受的 AI 补全内容
@@ -298,6 +307,10 @@ export class SettingStore {
       channelName: `ai-config`,
       identifierType: EShareableIdentifierType.ORGANIZATION,
     });
+    makeDataShareable(this, 'allModels', {
+      channelName: `all-models`,
+      identifierType: EShareableIdentifierType.ORGANIZATION,
+    });
   }
 
   @action
@@ -362,6 +375,16 @@ export class SettingStore {
     } catch {
       console.log('fail to update ai config');
     }
+  }
+
+  @action
+  public setAllModels(models: IModel[]) {
+    this.allModels = models;
+  }
+
+  @action
+  public setModelsLoading(loading: boolean) {
+    this.modelsLoading = loading;
   }
 
   @action

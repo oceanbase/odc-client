@@ -58,7 +58,7 @@ import { formatMessage } from '@/util/intl';
 import notification from '@/util/notification';
 import { splitSqlForHighlight } from '@/util/sql';
 import { generateAndDownloadFile, getCurrentSQL } from '@/util/utils';
-import { getModelProviders, getProviderModels } from '@/util/request/largeModel';
+import { getModelProviders, getProviderModels } from '@/common/network/largeModel';
 import { IModel } from '@/d.ts/llm';
 import { message, Spin } from 'antd';
 import { debounce, isNil } from 'lodash';
@@ -116,8 +116,6 @@ interface ISQLPageState {
   status: EStatus;
   hasExecuted: boolean;
   // AI Models 相关状态
-  allModels: IModel[];
-  modelsLoading: boolean;
   modelsLoaded: boolean;
   lastModelsLoadTime: number;
 }
@@ -174,8 +172,6 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
     hasExecuted: false,
     isSavingScript: false,
     // AI Models 初始状态
-    allModels: [],
-    modelsLoading: false,
     modelsLoaded: false,
     lastModelsLoadTime: 0,
   };
@@ -367,6 +363,7 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
    * @param forceRefresh 是否强制刷新，忽略缓存
    */
   private loadModels = async (forceRefresh: boolean = false): Promise<void> => {
+    const { settingStore } = this.props;
     // 检查是否需要重新加载（缓存策略：5分钟内不重复加载）
     const now = Date.now();
     const cacheExpiration = 5 * 60 * 1000; // 5分钟
@@ -379,12 +376,12 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       return;
     }
 
-    if (this.state.modelsLoading) {
+    if (settingStore.modelsLoading) {
       return; // 避免重复加载
     }
 
     try {
-      this.setState({ modelsLoading: true });
+      settingStore.setModelsLoading(true);
       const providersData = await getModelProviders();
 
       // 获取所有提供商的所有模型
@@ -404,15 +401,15 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       const modelsResults = await Promise.all(allModelsPromises);
       const flattenedModels = modelsResults.flat();
 
+      settingStore.setAllModels(flattenedModels);
       this.setState({
-        allModels: flattenedModels,
         modelsLoaded: true,
         lastModelsLoadTime: now,
-        modelsLoading: false,
       });
+      settingStore.setModelsLoading(false);
     } catch (error) {
       console.error('Failed to fetch providers:', error);
-      this.setState({ modelsLoading: false });
+      settingStore.setModelsLoading(false);
     }
   };
 
@@ -420,22 +417,18 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
    * AI 功能挂载
    */
   public initAI = async () => {
+    const { settingStore } = this.props;
     // 初始化时加载模型
-    if (!this.state.modelsLoaded && !this.state.modelsLoading) {
+    if (!this.state.modelsLoaded && !settingStore.modelsLoading) {
       await this.loadModels();
     }
     const store = createStore();
-    const modelsData = {
-      allModels: this.state.allModels,
-      modelsLoading: this.state.modelsLoading,
-      onRefreshModels: () => this.loadModels(true),
-    };
     const show = addAIAction(
       this.editor,
       () => this.getSession(),
       store,
       this.fullEditor,
-      modelsData,
+      () => this.loadModels(true),
     );
     const { dispose } = addAIIcon(this.editor, store, show, this.fullEditor);
     const disposeMenu = addAIContextMenu(

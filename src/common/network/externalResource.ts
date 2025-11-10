@@ -125,7 +125,7 @@ export async function removeExternalResource(
       },
     );
 
-    return res?.successful !== false;
+    return res?.successful;
   } catch (error) {
     console.error('删除外部资源失败:', error);
     return false;

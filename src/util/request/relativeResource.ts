@@ -32,8 +32,11 @@ export async function getResourceDependencies(
     scheduleTaskDependencies: [],
     flowDependencies: [],
   };
-  return {
-    ...data,
-    successful: result?.successful,
-  };
+  if (result.successful) {
+    return {
+      successful: result.successful,
+      data,
+    };
+  }
+  return result;
 }

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { AIQuestionType } from '@/d.ts/ai';
+import { AIQuestionType, ESseEventStatus } from '@/d.ts/ai';
 import login from '@/store/login';
-import request from '@/util/request';
-import { message } from 'antd';
 import Cookies from 'js-cookie';
 import { getLocale } from '@umijs/max';
+import notification from '@/util/notification';
+
 interface IModifySyncProps {
   input: string;
   fileName: string;
@@ -34,15 +34,61 @@ interface IModifySyncProps {
   sid: string;
 }
 
-enum ESseEventStatus {
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  FAILED = 'FAILED',
+/**
+ * SSE 事件对象
+ */
+interface ISSEEvent {
+  data: string;
+  type: string;
+  id: string | null;
 }
 
-async function fetchPostSSE(url, data, options: { headers?: Record<string, string> } = {}) {
+/**
+ * SSE 事件值对象（从 JSON 解析后的数据）
+ * 可能是字符串（用于 event/id 字段），也可能是包含业务数据的对象（用于 data 字段）
+ */
+interface ISSEEventValueObject {
+  status?: ESseEventStatus;
+  content?: string;
+  errorMessage?: string;
+  requestId?: string;
+  [key: string]: any;
+}
+
+type ISSEEventValue = string | number | ISSEEventValueObject;
+
+/**
+ * Fetch SSE 返回对象
+ */
+interface IFetchSSEResult {
+  close: () => void;
+  getAccumulatedContent: () => string;
+}
+
+/**
+ * Fetch SSE 选项
+ */
+interface IFetchSSEOptions {
+  headers?: Record<string, string>;
+}
+
+/**
+ * EventSource 只能发送 GET 请求，无法设置请求头，无法向服务端发送 DATA 参数。无法发 POST 请求，导致了 EventSource 无法适配大多数情况。所以可以利用 Fetch 模拟 SSE 实现。
+ * 参见：https://juejin.cn/post/7351426862508048425?searchId=202511101007353C7596C861189ACC3D71#heading-17
+ *
+ * @param url - 请求地址
+ * @param data - POST 请求数据
+ * @param options - 请求选项
+ * @returns 包含关闭连接和获取累积内容方法的对象
+ */
+async function fetchPostSSE(
+  url: string,
+  data: Record<string, any>,
+  options: IFetchSSEOptions = {},
+): Promise<IFetchSSEResult> {
   const controller = new AbortController();
   let accumulatedContent = '';
+  let hasShownNotification = false;
 
   // Generate request ID similar to other requests
   const requestId =
@@ -66,8 +112,40 @@ async function fetchPostSSE(url, data, options: { headers?: Record<string, strin
       ...options,
     });
 
-    if (!response.ok || !response.body) {
-      throw new Error(`SSE connection failed: ${response.status}`);
+    if (!response.ok) {
+      // 处理错误响应
+      let errorData: any = {};
+      try {
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          errorData = await response.json();
+        } else {
+          const text = await response.text();
+          errorData = { message: text || `HTTP ${response.status}` };
+        }
+      } catch (e) {
+        errorData = { message: `HTTP ${response.status}` };
+      }
+
+      // 提取错误信息
+      const errMsg =
+        errorData?.error?.message ||
+        errorData?.message ||
+        `Request failed with status ${response.status}`;
+
+      // 显示错误通知
+      notification.error({
+        track: errMsg,
+        supportRepeat: false,
+        requestId: requestId,
+      });
+      hasShownNotification = true;
+
+      throw new Error(errMsg);
+    }
+
+    if (!response.body) {
+      console.error('Response body is empty');
     }
 
     const reader = response.body.getReader();
@@ -100,8 +178,19 @@ async function fetchPostSSE(url, data, options: { headers?: Record<string, strin
       }
     }
   } catch (error) {
-    if (error.name !== 'AbortError') {
+    if (error.name === 'AbortError') {
+      // 用户主动取消，不显示错误
+      console.log('SSE request aborted');
+    } else {
       console.error('SSE Error:', error);
+      // 如果还没有显示过通知，则显示（处理网络错误等情况）
+      if (!hasShownNotification) {
+        notification.error({
+          track: error.message || 'Network error occurred',
+          supportRepeat: false,
+          requestId: requestId,
+        });
+      }
     }
   }
 
@@ -111,8 +200,14 @@ async function fetchPostSSE(url, data, options: { headers?: Record<string, strin
   };
 }
 
-function processSSEEvent(rawEvent) {
-  const event = { data: '', type: 'message', id: null };
+/**
+ * 处理 SSE 事件数据
+ *
+ * @param rawEvent - 原始 SSE 事件字符串
+ * @returns 解析后的 SSE 事件对象
+ */
+function processSSEEvent(rawEvent: string): ISSEEvent {
+  const event: ISSEEvent = { data: '', type: 'message', id: null };
 
   for (const line of rawEvent.split('\n')) {
     const [field, ...valueParts] = line.split(':');
@@ -124,37 +219,46 @@ function processSSEEvent(rawEvent) {
     }
 
     try {
-      const value = JSON.parse(valueStr);
+      const value: ISSEEventValue = JSON.parse(valueStr);
 
-      // 处理错误状态
-      if (value.status === ESseEventStatus.FAILED) {
-        message.error(value.errorMessage);
+      // 处理错误状态（只有对象类型才有 status）
+      if (typeof value === 'object' && value.status === ESseEventStatus.FAILED) {
+        // 错误信息可能在 errorMessage 或 content 字段中
+        const errMsg = value.errorMessage || value.content || 'Unknown error';
+
+        notification.error({
+          track: errMsg,
+          supportRepeat: false,
+          requestId: value.requestId,
+        });
+
         return event; // 返回空 event 而不是 undefined
       }
 
       // 处理完成状态 - 即使没有 content 也应该返回 event
-      if (value.status === ESseEventStatus.COMPLETED && !value.content) {
+      if (
+        typeof value === 'object' &&
+        value.status === ESseEventStatus.COMPLETED &&
+        !value.content
+      ) {
         return event; // 返回当前已累积的 event
       }
 
       switch (field) {
         case 'event':
-          event.type = value;
+          event.type = typeof value === 'string' ? value : String(value);
           break;
         case 'data':
-          // 确保 content 存在才赋值
-          if (value.content !== undefined && value.content !== null) {
+          if (typeof value === 'object' && value.content !== undefined && value.content !== null) {
             event.data = value.content;
           }
           break;
         case 'id':
-          event.id = value;
+          event.id = typeof value === 'string' ? value : String(value);
           break;
-        // 可以处理其他字段如 retry
       }
     } catch (error) {
       console.error('Failed to parse SSE event data:', valueStr, error);
-      // 解析失败时继续处理下一行
       continue;
     }
   }
@@ -162,8 +266,6 @@ function processSSEEvent(rawEvent) {
   return event;
 }
 
-// 关闭连接
-// connection.close();
 export async function modifySync({
   input,
   fileName,

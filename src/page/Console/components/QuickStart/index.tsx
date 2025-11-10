@@ -12,6 +12,10 @@ import LabelWithIcon from '@/component/LabelWithIcon';
 import { ExperimentOutlined } from '@ant-design/icons';
 import modal from '@/store/modal';
 
+/**
+ * Quick start guide component for console page
+ * Provides role-based quick start steps for administrators and developers
+ */
 const QuickStart = memo(() => {
   const [currentQuickStartRole, setCurrentQuickStartRole] = useState(EQuickStartRole.Admin);
   const [currentQuickStartStep, setCurrentQuickStartStep] = useState(-1);
@@ -32,13 +36,13 @@ const QuickStart = memo(() => {
     [`${EQuickStartRole.Admin}_3`]: () => {
       navigate(`/${IPageType.Task}?action=${URL_ACTION.newTask}`);
     },
-    [`${EQuickStartRole.Develepor}_0`]: () => {
+    [`${EQuickStartRole.Developer}_0`]: () => {
       navigate(`/${IPageType.Project}?action=${URL_ACTION.newApply}`);
     },
-    [`${EQuickStartRole.Develepor}_1`]: () => {
+    [`${EQuickStartRole.Developer}_1`]: () => {
       navigate(`/${IPageType.Task}?action=${URL_ACTION.newDataMock}&task=${TaskPageType.DATAMOCK}`);
     },
-    [`${EQuickStartRole.Develepor}_2`]: () => {
+    [`${EQuickStartRole.Developer}_2`]: () => {
       gotoSQLWorkspace();
     },
   };

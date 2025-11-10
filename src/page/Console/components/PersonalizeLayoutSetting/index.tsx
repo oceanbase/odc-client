@@ -16,7 +16,7 @@ import { sortByPreservedOrder } from '@/util/utils';
 const { Text } = Typography;
 
 // localStorage key for saving tree state
-export const TREE_STATE_KEY = `personalizeLayoutTreeState-${login.organizationId}`;
+export const TREE_STATE_KEY = `personalizeLayoutTreeState-${login.user?.id}`;
 
 const getTreeData = () => [
   {
@@ -209,15 +209,24 @@ export const defaultCheckedKeys = [
 
 const defaultExpandedKeys = [ELayoutKey.TaskOverview];
 
-// Interface for saved state - only save draggable items order
+/**
+ * Interface for saved tree state
+ * Only saves draggable items order to localStorage
+ */
 interface SavedTreeState {
-  workOrderKeys?: React.Key[]; // Order of 工单 children
-  jobKeys?: React.Key[]; // Order of 作业 children
+  /** Order of work order children */
+  workOrderKeys?: React.Key[];
+  /** Order of job children */
+  jobKeys?: React.Key[];
   checkedKeys: React.Key[];
   expandedKeys: React.Key[];
 }
 
-// Extract work order and job keys from tree data
+/**
+ * Extract work order and job keys from tree data
+ * @param treeData - Tree data structure
+ * @returns Object containing workOrderKeys and jobKeys arrays
+ */
 const extractDraggableOrder = (
   treeData: TreeDataNode[],
 ): { workOrderKeys: React.Key[]; jobKeys: React.Key[] } => {
@@ -235,7 +244,12 @@ const extractDraggableOrder = (
   };
 };
 
-// Apply saved order to tree data
+/**
+ * Apply saved order to tree data
+ * @param treeData - Original tree data
+ * @param savedState - Saved tree state from localStorage
+ * @returns Tree data with applied saved order
+ */
 const applySavedOrder = (
   treeData: TreeDataNode[],
   savedState: SavedTreeState | null,
@@ -274,7 +288,10 @@ const applySavedOrder = (
   });
 };
 
-// Helper function to save state to localStorage
+/**
+ * Save tree state to localStorage
+ * @param state - Tree state to save
+ */
 const saveTreeState = (state: SavedTreeState) => {
   try {
     localStorage.setItem(TREE_STATE_KEY, JSON.stringify(state));
@@ -283,7 +300,10 @@ const saveTreeState = (state: SavedTreeState) => {
   }
 };
 
-// Helper function to load state from localStorage
+/**
+ * Load tree state from localStorage
+ * @returns Saved tree state or null if not found
+ */
 export const loadTreeState = (): SavedTreeState | null => {
   try {
     const savedState = localStorage.getItem(TREE_STATE_KEY);
@@ -296,6 +316,10 @@ export const loadTreeState = (): SavedTreeState | null => {
   return null;
 };
 
+/**
+ * Tree setting component for customizing console layout
+ * Allows users to drag and reorder items and check/uncheck sections
+ */
 const TreeSetting = () => {
   const { checkedKeys, setCheckedKeys, setTreeData } = useContext(PersonalizeLayoutContext);
 
@@ -398,6 +422,11 @@ const TreeSetting = () => {
     setGData(data);
   };
 
+  /**
+   * Check if a tree node is draggable
+   * @param node - Tree node to check
+   * @returns True if node is draggable
+   */
   const isDraggable = (node: TreeDataNode) => {
     // Only allow "工单" and "作业" children to be dragged
     const key = node.key as TaskType;
@@ -420,6 +449,9 @@ const TreeSetting = () => {
     ].includes(key);
   };
 
+  /**
+   * Reset layout to default configuration
+   */
   const handleReset = () => {
     // Clear localStorage and reset to default state
     try {
@@ -473,6 +505,10 @@ const TreeSetting = () => {
   );
 };
 
+/**
+ * Personalize layout setting component
+ * Provides a popover with tree setting interface for customizing console layout
+ */
 const PersonalizeLayoutSetting = () => {
   return (
     <Popover

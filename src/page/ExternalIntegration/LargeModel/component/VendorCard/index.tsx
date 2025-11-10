@@ -1,9 +1,9 @@
-import { formatMessage } from '@/util/intl';
 import { Button, Divider, Tag, Tooltip, Typography } from 'antd';
 import { EditOutlined, InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import Icon from '@ant-design/icons';
-import styles from './index.less';
-import { VendorsConfig, TEXT_CONSTANTS } from '../../constant';
+
+import { formatMessage } from '@/util/intl';
+
 import {
   EConfigurationMethod,
   type EditModalRef,
@@ -11,12 +11,16 @@ import {
   type DescriptionModelRef,
   IModelProvider,
 } from '@/d.ts/llm';
+
+import { TEXT_CONSTANTS, VendorsConfig } from '@/constant/llm';
 import {
   stopPropagation,
   createStatusDotStyle,
   supportsConfigurationMethod,
   formatModelCount,
 } from '../../utils';
+
+import styles from './index.less';
 
 interface IProps {
   title: string;

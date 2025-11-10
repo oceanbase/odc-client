@@ -601,11 +601,7 @@ export function addAIAction(
   getSession: () => SessionStore,
   store: IStore,
   fullEditor: IFullEditor,
-  modelsData?: {
-    allModels: any[];
-    modelsLoading: boolean;
-    onRefreshModels?: () => void;
-  },
+  onRefreshModels?: () => void,
 ) {
   let inlineChatDispose;
   async function showInlineChat() {
@@ -665,7 +661,7 @@ export function addAIAction(
           fullEditor={fullEditor}
           session={getSession()}
           initialValue={selectedSQL}
-          modelsData={modelsData}
+          onRefreshModels={onRefreshModels}
         />
       </div>,
       dom,

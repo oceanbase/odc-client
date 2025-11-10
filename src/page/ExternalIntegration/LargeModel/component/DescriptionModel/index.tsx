@@ -1,14 +1,19 @@
-import { formatMessage } from '@/util/intl';
-import { Button, Descriptions, Form, Input, message, Modal, Spin } from 'antd';
-import { VendorsConfig } from '../../constant';
-import { EVendorType } from '@/d.ts/llm';
-import Icon, { ExportOutlined } from '@ant-design/icons';
-import styles from './index.less';
 import { useCallback, useEffect, forwardRef, useImperativeHandle, useState } from 'react';
-import { updateProviderDescription } from '@/util/request/largeModel';
+
 import { useRequest } from 'ahooks';
-import { getServerLocalKey } from '@/util/intl';
+import { Button, Descriptions, Form, Input, message, Modal, Spin } from 'antd';
+import Icon, { ExportOutlined } from '@ant-design/icons';
+
+import { formatMessage, getServerLocalKey } from '@/util/intl';
+
+import { updateProviderDescription } from '@/common/network/largeModel';
+
 import type { DescriptionModelRef, DescriptionModelProps, IModelProvider } from '@/d.ts/llm';
+import { EVendorType } from '@/d.ts/llm';
+
+import { VendorsConfig } from '@/constant/llm';
+
+import styles from './index.less';
 
 const DescriptionModel = forwardRef<DescriptionModelRef, DescriptionModelProps>(
   ({ onRefresh }, ref) => {

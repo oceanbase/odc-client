@@ -1,5 +1,5 @@
-import { formatMessage } from '@/util/intl';
 import React, { useCallback, useState, useEffect, useMemo, useContext } from 'react';
+
 import { observer, inject } from 'mobx-react';
 import {
   Button,
@@ -23,11 +23,16 @@ import Icon, {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import LargeModelSelectEmpty from '@/component/Empty/LargeModelSelectEmpty';
-import { modelSelectWarningTooltip, UI_SIZES, VendorsConfig } from '../../constant';
-import styles from './index.less';
+import { formatMessage } from '@/util/intl';
+
 import { EModelSatus, type ModelSelectProps } from '@/d.ts/llm';
+
+import LargeModelSelectEmpty from '@/component/Empty/LargeModelSelectEmpty';
+import { modelSelectWarningTooltip, UI_SIZES, VendorsConfig } from '@/constant/llm';
+
 import setting from '@/store/setting';
+
+import styles from './index.less';
 
 enum EFiledType {
   LLM = 'llm',

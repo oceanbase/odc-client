@@ -1,9 +1,12 @@
-import { formatMessage } from '@/util/intl';
 import React from 'react';
-import { getServerLocalKey } from '@/util/intl';
-import { UI_COLORS, TEXT_CONSTANTS } from '../constant';
-import { ESchemaFieldType, EConfigurationMethod, IModelProvider } from '@/d.ts/llm';
+
 import { Input, Select } from 'antd';
+
+import { formatMessage, getServerLocalKey } from '@/util/intl';
+
+import { ESchemaFieldType, EConfigurationMethod, IModelProvider } from '@/d.ts/llm';
+
+import { TEXT_CONSTANTS, UI_COLORS } from '@/constant/llm';
 
 // 生成表单组件的辅助函数
 export const renderFormComponent = (schema: any) => {

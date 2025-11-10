@@ -6,3 +6,9 @@ export enum AIQuestionType {
   SQL_FORMATTING = 'SQL_FORMATTING',
   SQL_COMPLETION = 'SQL_COMPLETION',
 }
+
+export enum ESseEventStatus {
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+}

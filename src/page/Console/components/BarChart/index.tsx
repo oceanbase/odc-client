@@ -1,39 +1,38 @@
 import { formatMessage, getEnvLocale } from '@/util/intl';
 import React, { useRef, useEffect, useContext, useMemo, useState, useCallback } from 'react';
 import * as echarts from 'echarts';
-import { ConsoleTextConfig, TaskTitle, TaskTypes } from '../../const';
+import { ConsoleTextConfig, statusMapping, TaskTitle, TaskTypes } from '../../const';
 import './index.less';
 import { PersonalizeLayoutContext } from '@/page/Console/PersonalizeLayoutContext';
 import { useNavigate } from '@umijs/max';
 import { TaskTab } from '@/component/Task/interface';
+import { IStat } from '@/d.ts';
+import { Dayjs } from 'dayjs';
 
-const BarChart = ({ data, selectedProjectId, timeValue, dateValue }) => {
+/**
+ * Bar chart props interface
+ */
+interface IBarChartProps {
+  /** Task statistics data grouped by task type */
+  data: Record<string, IStat>;
+  /** Selected project ID filter */
+  selectedProjectId: number | undefined;
+  /** Time range value (number of days or 'custom' or 'ALL') */
+  timeValue: number | string;
+  /** Custom date range for filtering */
+  dateValue: [Dayjs, Dayjs] | null;
+}
+
+/**
+ * Bar chart component for displaying task statistics
+ * Shows task status distribution across different task types
+ */
+const BarChart: React.FC<IBarChartProps> = ({ data, selectedProjectId, timeValue, dateValue }) => {
   const { taskStatus, taskStatusColor, taskStatusType } = ConsoleTextConfig.schdules;
   const chartRef = useRef(null);
   const navigate = useNavigate();
   const [containerWidth, setContainerWidth] = useState(0);
 
-  // 状态映射：Console状态 -> 任务页面状态
-  const statusMapping = {
-    EXECUTING: ['EXECUTING'],
-    EXECUTION_SUCCESS: ['EXECUTION_SUCCEEDED', 'EXECUTION_SUCCEEDED_WITH_ERRORS'],
-    ACCESS_FAILURE: [
-      'PRE_CHECK_FAILED',
-      'REJECTED',
-      'APPROVAL_EXPIRED',
-      'WAIT_FOR_EXECUTION_EXPIRED',
-    ],
-
-    EXECUTION_INTERRUPTION: ['EXECUTION_ABNORMAL', 'EXECUTION_FAILED', 'EXECUTION_EXPIRED'],
-    OTHER: [
-      'CREATED',
-      'PRE_CHECK_EXECUTING',
-      'APPROVING',
-      'WAIT_FOR_SCHEDULE_EXECUTION',
-      'WAIT_FOR_EXECUTION',
-      'CANCELLED',
-    ],
-  };
   const { checkedKeys: allCheckedKeys, getOrderedTaskTypes } = useContext(PersonalizeLayoutContext);
   const checkedKeys = getOrderedTaskTypes().filter((item) => allCheckedKeys.includes(item));
 

@@ -1,52 +1,45 @@
-import { formatMessage, getLocalDocs, getOBDocsUrl } from '@/util/intl';
 import { useContext, useEffect, useMemo, useState } from 'react';
+
 import { useMount, useRequest } from 'ahooks';
-import dayjs, { Dayjs } from 'dayjs';
-import { Card, Col, Divider, Row, Select, Spin, Typography, DatePicker } from 'antd';
-import odc from '@/plugins/odc';
-import ModalHelpAbout from '@/component/HelpMenus/components/ModalHelpAbout';
-import Icon, { ClockCircleOutlined } from '@ant-design/icons';
-import LabelWithIcon from '../../component/LabelWithIcon';
-import ScheduleItem from './components/ScheduleItem';
-import BarChart from './components/BarChart';
-import { ConsoleTextConfig, ScheduleTitle, ELayoutKey, TaskTypes } from './const';
-import styles from './index.less';
-import RecentlyDatabase from './components/RecentlyDatabase';
 import { useNavigate } from '@umijs/max';
+import dayjs, { Dayjs } from 'dayjs';
+import { Card, Col, Divider, Row, Select, DatePicker } from 'antd';
+import Icon, { ClockCircleOutlined } from '@ant-design/icons';
+
+import { formatMessage, getLocalDocs, getOBDocsUrl } from '@/util/intl';
+import odc from '@/plugins/odc';
+
 import { getFlowScheduleTodo, getTaskStat } from '@/common/network/task';
-import { IGetFlowScheduleTodoParams, ITaskStatParam, TaskPageType } from '@/d.ts';
 import { getScheduleStat } from '@/common/network/schedule';
+import { listProjects } from '@/common/network/project';
+
+import { IGetFlowScheduleTodoParams, ITaskStatParam, TaskPageType } from '@/d.ts';
 import { IPageType } from '@/d.ts/_index';
+import { ScheduleType, SchedulePageType } from '@/d.ts/schedule';
+
+import ModalHelpAbout from '@/component/HelpMenus/components/ModalHelpAbout';
+import LabelWithIcon from '@/component/LabelWithIcon';
 import { TaskTab } from '@/component/Task/interface';
 import { ScheduleTab } from '@/component/Schedule/interface';
-import login from '@/store/login';
-import ScheduleCounter from './components/ScheduleCounter';
-import PersonalizeLayoutSetting, { showJobDivider } from './components/PersonalizeLayoutSetting';
-import {
-  PersonalizeLayoutContext,
-  PersonalizeLayoutProvider,
-} from '@/page/Console/PersonalizeLayoutContext';
 import { TimeOptions } from '@/component/TimeSelect';
 
-import { listProjects } from '@/common/network/project';
+import ScheduleItem from './components/ScheduleItem';
+import BarChart from './components/BarChart';
+import RecentlyDatabase from './components/RecentlyDatabase';
+import ScheduleCounter from './components/ScheduleCounter';
+import PersonalizeLayoutSetting, { showJobDivider } from './components/PersonalizeLayoutSetting';
 import QuickStart from './components/QuickStart';
-import { ScheduleType, SchedulePageType } from '@/d.ts/schedule';
-import { ReactComponent as SendSvg } from '@/svgr/send-fill.svg';
-import { ReactComponent as HatSvg } from '@/svgr/hat.svg';
-import { ReactComponent as QuestionSvg } from '@/svgr/question.svg';
-import { ReactComponent as InfoSvg } from '@/svgr/info.svg';
+import { PersonalizeLayoutContext, PersonalizeLayoutProvider } from './PersonalizeLayoutContext';
+import { ConsoleTextConfig, ScheduleTitle, ELayoutKey, TaskTypes, aboutUsIcons } from './const';
+
+import login from '@/store/login';
+
+import styles from './index.less';
 
 const { RangePicker } = DatePicker;
 const getCacheProjectIdKey = () => `odc-front-page-project-${login.user?.id}`;
 const getCacheTimeKey = () => `odc-front-page-time-${login.user?.id}`;
 const getCacheDateKey = () => `odc-front-page-date-${login.user?.id}`;
-
-const aboutUsIcons = [
-  <Icon component={SendSvg} style={{ color: '#52c41a', fontSize: 13 }} />,
-  <Icon component={QuestionSvg} style={{ fontSize: 13 }} />,
-  <Icon component={HatSvg} style={{ fontSize: 13 }} />,
-  <Icon component={InfoSvg} style={{ fontSize: 13 }} />,
-];
 
 const ConsoleMain = () => {
   const { aboutUs, bestPractice } = ConsoleTextConfig;

@@ -1,5 +1,7 @@
-import { formatMessage } from '@/util/intl';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+
+import { useRequest } from 'ahooks';
+import { observer } from 'mobx-react';
 import {
   Checkbox,
   List,
@@ -13,37 +15,43 @@ import {
   Form,
   Spin,
 } from 'antd';
-import VendorCard from './component/VendorCard';
-import styles from './index.less';
-import ModelSelect from './component/ModelSelect';
-import { VendorsConfig } from './constant';
 import Icon, { DeleteOutlined, EditOutlined, ExclamationCircleFilled } from '@ant-design/icons';
-import EditModal from './component/EditModal';
-import APIKeyConfigModal from './component/APIKeyConfigModal';
-import DescriptionModel from './component/DescriptionModel';
+
+import { formatMessage } from '@/util/intl';
+
+import {
+  deleteProviderModel,
+  toggleProviderModel,
+  getProviderModels,
+  getModelProviders,
+} from '@/common/network/largeModel';
+
 import {
   type EditModalRef,
   type APIKeyConfigModalRef,
   type DescriptionModelRef,
   IModelProvider,
   IModel,
+  EModelSatus,
+  EAIFeatureType,
+  type ICardData,
 } from '@/d.ts/llm';
+
 import LargeModelListEmpty from '@/component/Empty/LargeModelListEmpty';
-import {
-  deleteProviderModel,
-  toggleProviderModel,
-  getProviderModels,
-  getModelProviders,
-} from '@/util/request/largeModel';
-import { useRequest } from 'ahooks';
-import { EModelSatus, EAIFeatureType, type CardData } from '@/d.ts/llm';
-import { observer } from 'mobx-react';
+import VendorCard from './component/VendorCard';
+import ModelSelect from './component/ModelSelect';
+import EditModal from './component/EditModal';
+import APIKeyConfigModal from './component/APIKeyConfigModal';
+import DescriptionModel from './component/DescriptionModel';
+import { VendorsConfig } from '@/constant/llm';
+
 import setting from '@/store/setting';
 
+import styles from './index.less';
+
 const LargeModel = () => {
-  const [items, setItems] = useState<CardData[]>([]);
+  const [items, setItems] = useState<ICardData[]>([]);
   const [providers, setProviders] = useState<IModelProvider[]>([]);
-  const [allModels, setAllModels] = useState<IModel[]>([]);
   const [filteredModelList, setFilteredModelList] = useState<IModel[]>([]);
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
   const [deletePopconfirmOpen, setDeletePopconfirmOpen] = useState<string | null>(null);
@@ -75,7 +83,10 @@ const LargeModel = () => {
       const modelPromises = providers.map(async (provider) => {
         try {
           const providerModels = await getProviderModels(provider.provider);
-          return providerModels;
+          return (providerModels || []).map((model) => ({
+            ...model,
+            providerName: provider.provider,
+          }));
         } catch (error) {
           console.error(
             formatMessage(
@@ -101,11 +112,13 @@ const LargeModel = () => {
     {
       manual: true,
       onSuccess: (data) => {
-        setAllModels(data || []);
+        const modelsData = data || [];
+        // 广播 allModels 到所有 tab
+        setting.setAllModels(modelsData);
       },
       onError: (error) => {
         console.error('获取模型列表失败:', error);
-        setAllModels([]);
+        setting.setAllModels([]);
       },
     },
   );
@@ -124,23 +137,23 @@ const LargeModel = () => {
 
   // 计算属性：聊天模型列表（过滤不支持函数调用的CHAT模型）
   const chatModels = useMemo(() => {
-    return allModels.filter((model) => {
+    return setting.allModels.filter((model) => {
       if (model.modelType === 'CHAT' && model.functionCallingSupport === false) {
         return false;
       }
       return model.modelType === 'CHAT';
     });
-  }, [allModels]);
+  }, [setting.allModels]);
 
   // 计算属性：嵌入模型列表
   const embeddingModels = useMemo(() => {
-    return allModels.filter((model) => model.modelType === 'EMBEDDING');
-  }, [allModels]);
+    return setting.allModels.filter((model) => model.modelType === 'EMBEDDING');
+  }, [setting.allModels]);
 
   // 计算属性：按供应商分组的模型
   const modelsByProvider = useMemo(() => {
     const map = new Map<string, IModel[]>();
-    allModels.forEach((model) => {
+    setting.allModels.forEach((model) => {
       const provider = model.providerName;
       if (!map.has(provider)) {
         map.set(provider, []);
@@ -148,7 +161,7 @@ const LargeModel = () => {
       map.get(provider)!.push(model);
     });
     return map;
-  }, [allModels]);
+  }, [setting.allModels]);
 
   // 计算属性：默认模型状态检查
   const defaultModelStatuses = useMemo(() => {
@@ -162,7 +175,7 @@ const LargeModel = () => {
         return EModelSatus.DELETED;
       }
 
-      const foundModel = allModels.find(
+      const foundModel = setting.allModels.find(
         (model) => model.providerName === providerName && model.modelName === modelName,
       );
 
@@ -186,7 +199,7 @@ const LargeModel = () => {
       chatStatus: checkModelStatus(setting.AIConfig?.defaultChatModel || ''),
       embeddingStatus: checkModelStatus(setting.AIConfig?.defaultEmbeddingModel || ''),
     };
-  }, [setting.AIConfig, allModels]);
+  }, [setting.AIConfig, setting.allModels]);
 
   // 获取模型选项（按供应商分组）
   const getModelOptions = useCallback(
@@ -286,10 +299,10 @@ const LargeModel = () => {
     },
   );
 
-  // 处理providers数据变化，转换为CardData格式
+  // 处理 providers 数据变化，转换为 ICardData 格式
   useEffect(() => {
     if (providers?.length > 0) {
-      const cardData: CardData[] = providers.map((provider, index) => ({
+      const cardData: ICardData[] = providers.map((provider, index) => ({
         id: index + 1,
         content: {
           title: VendorsConfig[provider.provider]?.label || provider.provider,
@@ -310,13 +323,13 @@ const LargeModel = () => {
 
   // 根据选中的供应商过滤模型列表
   useEffect(() => {
-    if (selectedProvider && allModels) {
-      const filtered = allModels.filter((model) => model.providerName === selectedProvider);
+    if (selectedProvider && setting.allModels) {
+      const filtered = setting.allModels.filter((model) => model.providerName === selectedProvider);
       setFilteredModelList(filtered);
     } else {
       setFilteredModelList([]);
     }
-  }, [selectedProvider, allModels]);
+  }, [selectedProvider, setting.allModels]);
 
   // 处理供应商卡片点击事件
   const handleVendorCardClick = (provider: string) => {
@@ -412,7 +425,7 @@ const LargeModel = () => {
         id: 'src.page.ExternalIntegration.LargeModel.6D4BBF49',
         defaultMessage: '确认要删除模型？',
       }),
-      icon: <ExclamationCircleFilled style={{ color: '#faad14' }} />,
+      icon: <ExclamationCircleFilled className={styles.warningIcon} />,
       content: (
         <>
           <div>
@@ -493,11 +506,10 @@ const LargeModel = () => {
                 })}
               </Typography.Text>
             ) : (
-              <div style={{ marginTop: 8 }} className={styles.aiFeatures}>
+              <div className={styles.aiFeatures}>
                 <Checkbox
                   checked={setting.AIConfig.copilotEnabled}
                   onChange={async (e) => {
-                    setting.AIConfig.copilotEnabled = e.target.checked;
                     await setting.updateAIConfig({
                       ...setting.AIConfig,
                       copilotEnabled: e.target.checked,
@@ -512,7 +524,6 @@ const LargeModel = () => {
                 <Checkbox
                   checked={setting.AIConfig.completionEnabled}
                   onChange={async (e) => {
-                    setting.AIConfig.completionEnabled = e.target.checked;
                     await setting.updateAIConfig({
                       ...setting.AIConfig,
                       completionEnabled: e.target.checked,
@@ -537,7 +548,7 @@ const LargeModel = () => {
             </div>
           </div>
           <ModelSelect
-            allModels={allModels}
+            allModels={setting.allModels}
             modelsLoading={modelsLoading}
             aiConfig={setting.AIConfig}
             updateLoading={setting.isAIThinking}
