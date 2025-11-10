@@ -24,7 +24,7 @@ import ProjectContext from '../../ProjectContext';
 import { isProjectArchived } from '@/page/Project/helper';
 import DeleteProjectModal from '@/page/Project/components/DeleteProjectModal.tsx';
 import RelativeResourceModal from '@/component/RelativeResourceModal';
-import { getResourceDependencies } from '@/util/request/relativeResource';
+import { getResourceDependencies } from '@/common/network/relativeResource';
 import { EEntityType } from '@/d.ts/relativeResource';
 import { SchedulePageMode } from '@/component/Schedule/interface';
 

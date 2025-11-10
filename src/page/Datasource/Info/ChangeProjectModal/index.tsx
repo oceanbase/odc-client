@@ -26,7 +26,7 @@ import ProjectSelect from './ProjectSelect';
 import { DatabaseOwnerSelect } from '@/page/Project/Database/components/DatabaseOwnerSelect';
 import { IProject } from '@/d.ts/project';
 import RelativeResourceModal from '@/component/RelativeResourceModal';
-import { getResourceDependencies } from '@/util/request/relativeResource';
+import { getResourceDependencies } from '@/common/network/relativeResource';
 import useResourceDepNotification, {
   EResourceType,
   EStatus,

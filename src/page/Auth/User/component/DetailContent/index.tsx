@@ -29,7 +29,7 @@ import { getFormatDateTime } from '@/util/utils';
 import { Button, Descriptions, Divider, message, Modal, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { getAuthLabelString, resourceAuthMap, ResourceManagementAction } from '../../../utils';
-import { getResourceDependencies } from '@/util/request/relativeResource';
+import { getResourceDependencies } from '@/common/network/relativeResource';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { openResourceDepNotification } from '@/util/hooks/useResourceDepNotification';
 import { EResourceType, EStatus } from '@/util/hooks/useResourceDepNotification';

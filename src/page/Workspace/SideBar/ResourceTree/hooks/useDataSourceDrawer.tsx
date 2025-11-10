@@ -3,7 +3,7 @@ import { message, Modal } from 'antd';
 import { formatMessage } from '@/util/intl';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import { deleteConnection } from '@/common/network/connection';
-import { getResourceDependencies } from '@/util/request/relativeResource';
+import { getResourceDependencies } from '@/common/network/relativeResource';
 
 const useDataSourceDrawer = () => {
   const [dataSourceDrawerVisiable, setDataSourceDrawerVisiable] = useState(false);

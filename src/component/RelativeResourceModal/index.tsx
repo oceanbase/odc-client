@@ -21,7 +21,7 @@ import { Modal, Radio, Table, Checkbox, Space, Typography, Spin, Button, Tooltip
 
 import { formatMessage } from '@/util/intl';
 import { getLocalFormatDateTime } from '@/util/utils';
-import { getResourceDependencies } from '@/util/request/relativeResource';
+import { getResourceDependencies } from '@/common/network/relativeResource';
 
 import { TaskDetail, TaskRecordParameters, TaskStatus, TaskType } from '@/d.ts';
 import { IScheduleRecord, ScheduleRecordParameters, ScheduleStatus } from '@/d.ts/schedule';

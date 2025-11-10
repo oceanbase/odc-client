@@ -33,7 +33,7 @@ import React, { useContext, useState } from 'react';
 import RelativeResourceModal from '@/component/RelativeResourceModal';
 import ParamContext from '../../../ParamContext';
 import styles from './index.less';
-import { getResourceDependencies } from '@/util/request/relativeResource';
+import { getResourceDependencies } from '@/common/network/relativeResource';
 interface IProps {
   connection: IConnection;
   modalStore?: ModalStore;
