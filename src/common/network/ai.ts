@@ -16,9 +16,8 @@
 
 import { AIQuestionType, ESseEventStatus } from '@/d.ts/ai';
 import login from '@/store/login';
-import Cookies from 'js-cookie';
-import { getLocale } from '@umijs/max';
 import notification from '@/util/notification';
+import request from '@/util/request/service';
 
 interface IModifySyncProps {
   input: string;
@@ -33,237 +32,117 @@ interface IModifySyncProps {
   stream?: boolean;
   sid: string;
 }
-
 /**
- * SSE 事件对象
+ * SSE 返回对象
  */
-interface ISSEEvent {
-  data: string;
-  type: string;
-  id: string | null;
-}
-
-/**
- * SSE 事件值对象（从 JSON 解析后的数据）
- * 可能是字符串（用于 event/id 字段），也可能是包含业务数据的对象（用于 data 字段）
- */
-interface ISSEEventValueObject {
-  status?: ESseEventStatus;
-  content?: string;
-  errorMessage?: string;
-  requestId?: string;
-  [key: string]: any;
-}
-
-type ISSEEventValue = string | number | ISSEEventValueObject;
-
-/**
- * Fetch SSE 返回对象
- */
-interface IFetchSSEResult {
+interface ISSEResult {
   close: () => void;
   getAccumulatedContent: () => string;
 }
 
 /**
- * Fetch SSE 选项
+ * SSE 选项
  */
-interface IFetchSSEOptions {
+interface ISSEOptions {
   headers?: Record<string, string>;
 }
 
 /**
- * EventSource 只能发送 GET 请求，无法设置请求头，无法向服务端发送 DATA 参数。无法发 POST 请求，导致了 EventSource 无法适配大多数情况。所以可以利用 Fetch 模拟 SSE 实现。
- * 参见：https://juejin.cn/post/7351426862508048425?searchId=202511101007353C7596C861189ACC3D71#heading-17
- *
- * @param url - 请求地址
+ * @param url - 请求地址（相对路径，会自动拼接 baseURL）
  * @param data - POST 请求数据
  * @param options - 请求选项
  * @returns 包含关闭连接和获取累积内容方法的对象
  */
-async function fetchPostSSE(
+async function postSSE(
   url: string,
   data: Record<string, any>,
-  options: IFetchSSEOptions = {},
-): Promise<IFetchSSEResult> {
-  const controller = new AbortController();
+  options: ISSEOptions = {},
+): Promise<ISSEResult> {
   let accumulatedContent = '';
   let hasShownNotification = false;
+  let buffer = '';
 
-  // Generate request ID similar to other requests
-  const requestId =
-    Math.random().toString(36).substring(2).toUpperCase() +
-    Math.random().toString(36).substring(2).toUpperCase();
+  const abortController = new AbortController();
 
   try {
-    const response = await fetch(url, {
-      method: 'POST',
+    await request.post(url, data, {
       headers: {
         Accept: 'text/event-stream',
-        'Content-Type': 'application/json',
-        'X-XSRF-TOKEN': Cookies?.get('XSRF-TOKEN') || '',
-        'Accept-Language': getLocale(),
-        'X-Request-ID': requestId,
         ...options.headers,
       },
-      body: JSON.stringify(data),
-      signal: controller.signal,
-      credentials: 'include',
-      ...options,
-    });
+      params: {
+        ignoreError: true, // 禁用拦截器的自动错误通知，我们手动处理
+      },
+      signal: abortController.signal,
+      onDownloadProgress: (progressEvent) => {
+        const { responseText } = progressEvent.event.target;
+        const newData = responseText.slice(buffer.length);
+        buffer += newData;
 
-    if (!response.ok) {
-      // 处理错误响应
-      let errorData: any = {};
-      try {
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-          errorData = await response.json();
-        } else {
-          const text = await response.text();
-          errorData = { message: text || `HTTP ${response.status}` };
-        }
-      } catch (e) {
-        errorData = { message: `HTTP ${response.status}` };
-      }
-
-      // 提取错误信息
-      const errMsg =
-        errorData?.error?.message ||
-        errorData?.message ||
-        `Request failed with status ${response.status}`;
-
-      // 显示错误通知
-      notification.error({
-        track: errMsg,
-        supportRepeat: false,
-        requestId: requestId,
-      });
-      hasShownNotification = true;
-
-      throw new Error(errMsg);
-    }
-
-    if (!response.body) {
-      console.error('Response body is empty');
-    }
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-      const events = buffer.split('\n\n');
-      buffer = events.pop() || '';
-
-      for (const event of events) {
-        if (event.trim()) {
-          const eventData = processSSEEvent(event);
-          if (eventData && eventData.data !== undefined && eventData.data !== null) {
-            accumulatedContent += eventData.data;
+        // 按照 SSE 格式分割事件（事件之间用 \n\n 分隔）
+        const events = buffer.split('\n\n').map((item) => {
+          const data = item.replace(/^data:\s*/, '').trim();
+          try {
+            return data ? JSON.parse(data) : '';
+          } catch (error) {
+            return '';
           }
-        }
-      }
-    }
+        });
 
-    // 处理 buffer 中剩余的最后一个事件
-    if (buffer.trim()) {
-      const eventData = processSSEEvent(buffer);
-      if (eventData && eventData.data !== undefined && eventData.data !== null) {
-        accumulatedContent += eventData.data;
-      }
-    }
+        // 保留剩余部分到下一次
+        buffer = events.pop() || '';
+
+        // 处理完整的事件
+        events.forEach((event) => {
+          if (event && typeof event === 'object') {
+            // 根据事件状态处理
+            if (event.status === ESseEventStatus.FAILED) {
+              // 错误处理
+              const errMsg = event.errorMessage || event.content || 'SSE processing error';
+              if (!hasShownNotification) {
+                notification.error({
+                  track: errMsg,
+                  supportRepeat: false,
+                  requestId: event.requestId,
+                });
+                hasShownNotification = true;
+              }
+            } else if (event.status === ESseEventStatus.COMPLETED) {
+              // 任务完成
+              if (event.content) {
+                accumulatedContent += event.content;
+              }
+            } else if (event.status === ESseEventStatus.IN_PROGRESS && event.content) {
+              // 处理中，累积内容
+              accumulatedContent += event.content;
+            }
+          }
+        });
+      },
+    });
   } catch (error) {
-    if (error.name === 'AbortError') {
+    // 检查是否为用户主动取消
+    if (error?.name === 'AbortError' || error?.name === 'CanceledError') {
       // 用户主动取消，不显示错误
-      console.log('SSE request aborted');
+      console.log('SSE request cancelled');
     } else {
       console.error('SSE Error:', error);
-      // 如果还没有显示过通知，则显示（处理网络错误等情况）
+      // 如果还没有显示过通知，则显示
       if (!hasShownNotification) {
+        const errMsg = error?.error?.message || 'Network error occurred';
         notification.error({
-          track: error.message || 'Network error occurred',
+          track: errMsg,
           supportRepeat: false,
-          requestId: requestId,
+          requestId: error?.response?.data?.requestId,
         });
       }
     }
   }
 
   return {
-    close: () => controller.abort(),
+    close: () => abortController.abort(),
     getAccumulatedContent: () => accumulatedContent,
   };
-}
-
-/**
- * 处理 SSE 事件数据
- *
- * @param rawEvent - 原始 SSE 事件字符串
- * @returns 解析后的 SSE 事件对象
- */
-function processSSEEvent(rawEvent: string): ISSEEvent {
-  const event: ISSEEvent = { data: '', type: 'message', id: null };
-
-  for (const line of rawEvent.split('\n')) {
-    const [field, ...valueParts] = line.split(':');
-    const valueStr = valueParts.join(':').trim();
-
-    // 跳过空行
-    if (!valueStr) {
-      continue;
-    }
-
-    try {
-      const value: ISSEEventValue = JSON.parse(valueStr);
-
-      // 处理错误状态（只有对象类型才有 status）
-      if (typeof value === 'object' && value.status === ESseEventStatus.FAILED) {
-        // 错误信息可能在 errorMessage 或 content 字段中
-        const errMsg = value.errorMessage || value.content || 'Unknown error';
-
-        notification.error({
-          track: errMsg,
-          supportRepeat: false,
-          requestId: value.requestId,
-        });
-
-        return event; // 返回空 event 而不是 undefined
-      }
-
-      // 处理完成状态 - 即使没有 content 也应该返回 event
-      if (
-        typeof value === 'object' &&
-        value.status === ESseEventStatus.COMPLETED &&
-        !value.content
-      ) {
-        return event; // 返回当前已累积的 event
-      }
-
-      switch (field) {
-        case 'event':
-          event.type = typeof value === 'string' ? value : String(value);
-          break;
-        case 'data':
-          if (typeof value === 'object' && value.content !== undefined && value.content !== null) {
-            event.data = value.content;
-          }
-          break;
-        case 'id':
-          event.id = typeof value === 'string' ? value : String(value);
-          break;
-      }
-    } catch (error) {
-      console.error('Failed to parse SSE event data:', valueStr, error);
-      continue;
-    }
-  }
-
-  return event;
 }
 
 export async function modifySync({
@@ -280,7 +159,7 @@ export async function modifySync({
   sid,
 }: IModifySyncProps): Promise<string> {
   if (!model) return;
-  const connection = await fetchPostSSE(
+  const connection = await postSSE(
     `/api/v2/copilot/chat/completions?currentOrganizationId=${login.organizationId}`,
     {
       input,
