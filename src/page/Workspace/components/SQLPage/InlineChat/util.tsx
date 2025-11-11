@@ -407,10 +407,11 @@ function getEmptyPosition(editor: IEditor) {
 export function addAIIcon(
   editor: IEditor,
   store: IStore,
-  showInlineChat: () => void,
+  showInlineChat: (() => void) | null,
   fullEditor: IFullEditor,
-): { dispose: () => void; hideIcon: () => void } {
+): { dispose: () => void; hideIcon: () => void; setAIOperating: (operating: boolean) => void } {
   let iconWidget;
+  let isAIOperating = false; // 标记是否正在进行AI操作
   const clearEditor = () => {
     if (iconWidget) {
       editor.removeContentWidget(iconWidget);
@@ -421,6 +422,10 @@ export function addAIIcon(
   const disposeEditor = editor.onDidChangeCursorSelection((e) => {
     clearEditor();
     if (!setting.AIConfig?.completionEnabled) {
+      return;
+    }
+    // AI操作期间不显示编辑按钮
+    if (isAIOperating) {
       return;
     }
     const selection = editor.getSelection();
@@ -449,8 +454,10 @@ export function addAIIcon(
         ? AIQuestionType.NL_2_SQL
         : AIQuestionType.SQL_MODIFIER;
       showInlineChat();
-      editor.removeContentWidget(iconWidget);
-      iconWidget = null;
+      if (iconWidget) {
+        editor.removeContentWidget(iconWidget);
+        iconWidget = null;
+      }
     };
     iconWidget = {
       domNode: (function () {
@@ -567,7 +574,9 @@ export function addAIIcon(
         copilotStore.toggleVisibility(true);
         if (str?.length <= 2000) {
           copilotStore?.addCodeBlock?.(str);
-          editor.removeContentWidget(iconWidget);
+          if (iconWidget) {
+            editor.removeContentWidget(iconWidget);
+          }
         } else {
           message.warning(
             formatMessage({
@@ -591,7 +600,15 @@ export function addAIIcon(
     clearEditor();
   }
 
-  return { dispose, hideIcon };
+  function setAIOperating(operating: boolean) {
+    isAIOperating = operating;
+    if (operating) {
+      // AI操作开始时清除已有的编辑按钮
+      clearEditor();
+    }
+  }
+
+  return { dispose, hideIcon, setAIOperating };
 }
 /**
  * 增加ai action，唤起对话窗
@@ -602,6 +619,7 @@ export function addAIAction(
   store: IStore,
   fullEditor: IFullEditor,
   onRefreshModels?: () => void,
+  setAIOperating?: (operating: boolean) => void,
 ) {
   let inlineChatDispose;
   async function showInlineChat() {
@@ -611,6 +629,10 @@ export function addAIAction(
     if (!setting.AIConfig?.copilotEnabled) {
       return;
     }
+
+    // 标记AI操作开始
+    setAIOperating?.(true);
+
     /**
      * 暂停50ms，避免monaco计算bug
      */
@@ -635,14 +657,17 @@ export function addAIAction(
     });
     const root = { unmount: () => {} };
     let dispose: monaco.IDisposable;
-    inlineChatDispose = () => {
+    const originalInlineChatDispose = () => {
       root?.unmount?.();
       dispose?.dispose?.();
       editor.changeViewZones(function (changeAccessor) {
         changeAccessor.removeZone(viewZoneId);
       });
       inlineChatDispose = null;
+      // AI操作结束
+      setAIOperating?.(false);
     };
+    inlineChatDispose = originalInlineChatDispose;
     render(
       <div
         style={{
@@ -656,7 +681,7 @@ export function addAIAction(
       >
         <InlineChat
           mode={store.mode}
-          dispose={inlineChatDispose}
+          dispose={originalInlineChatDispose}
           editor={editor}
           fullEditor={fullEditor}
           session={getSession()}
