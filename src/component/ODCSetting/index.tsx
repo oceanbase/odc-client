@@ -97,7 +97,6 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
       {
         label: formatMessage({ id: 'src.component.ODCSetting.6BCFD6DD', defaultMessage: '用户' }),
         value: ESpaceType.USER,
-        className: styles.user,
       },
     ];
 
@@ -108,7 +107,6 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
           defaultMessage: '个人空间',
         }),
         value: ESpaceType.PERSONAL,
-        className: styles.space,
       });
     } else if (isAdmin) {
       options.push({
@@ -117,7 +115,6 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
           defaultMessage: '团队空间',
         }),
         value: ESpaceType.GROUP,
-        className: styles.space,
       });
     }
 
@@ -223,47 +220,6 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
   }, [data]);
 
   const [activeKey, setActiveKey] = useState(data.keys().next().value);
-
-  const radioButtons = useMemo(() => {
-    const radioOptions = [
-      {
-        label: formatMessage({ id: 'src.component.ODCSetting.6BCFD6DD', defaultMessage: '用户' }),
-        value: ESpaceType.USER,
-        className: styles.user,
-      },
-    ];
-
-    if (login.isPrivateSpace()) {
-      radioOptions.push({
-        label: formatMessage({
-          id: 'src.component.ODCSetting.47586FD4',
-          defaultMessage: '个人空间',
-        }),
-        value: ESpaceType.PERSONAL,
-        className: styles.space,
-      });
-    } else if (isAdmin) {
-      radioOptions.push({
-        label: formatMessage({
-          id: 'src.component.ODCSetting.AC147B83',
-          defaultMessage: '团队空间',
-        }),
-        value: ESpaceType.GROUP,
-        className: styles.space,
-      });
-    }
-
-    return radioOptions.map((option) => (
-      <Tooltip key={option.value} title={option.label} placement="top">
-        <Radio.Button
-          className={`${option.className} ${styles.buttonWithTooltip}`}
-          value={option.value}
-        >
-          <span className={styles.buttonText}>{option.label}</span>
-        </Radio.Button>
-      </Tooltip>
-    ));
-  }, [login, isAdmin]);
 
   const initState = useCallback(() => {
     const initKey = data.keys().next().value;
@@ -529,7 +485,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                   return (
                     <React.Fragment key={group.key}>
                       <Space
-                        style={{ width: '100%', paddingLeft: 8, marginTop: 12 }}
+                        style={{ width: '100%', paddingLeft: 8, paddingRight: 24, marginTop: 12 }}
                         direction="vertical"
                       >
                         {!!group.label && (
@@ -537,10 +493,15 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                             {group.label}
                           </Typography.Text>
                         )}
-                        <Row style={{ paddingLeft: 12 }} gutter={20}>
+                        <Row style={{ paddingLeft: 12 }} gutter={16}>
                           {group.settings.map((set, index) => {
+                            // 如果是奇数个配置项，最后一个占满整行；否则使用设定的 span 或默认 12
+                            const isLastOddItem =
+                              group.settings.length % 2 === 1 &&
+                              index === group.settings.length - 1;
+                            const colSpan = set.span || (isLastOddItem ? 24 : 12);
                             return (
-                              <Col key={index} span={set.span || 10}>
+                              <Col key={index} span={colSpan}>
                                 <Form.Item
                                   label={
                                     <Space direction="vertical" size={2}>
@@ -575,7 +536,7 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
                 })
               ) : (
                 <Space
-                  style={{ width: '100%', paddingLeft: 8, marginTop: 9 }}
+                  style={{ width: '100%', paddingLeft: 8, paddingRight: 24, marginTop: 9 }}
                   direction="vertical"
                   size={'small'}
                 >
@@ -718,15 +679,8 @@ const ODCSetting: React.FC<IProps> = ({ modalStore }) => {
           defaultValue={ESpaceType.USER}
           onChange={(e) => setSpaceType(e.target.value)}
           optionType="button"
-        >
-          {spaceTypeOptions.map((option) => (
-            <Tooltip key={option.value} title={option.label}>
-              <Radio.Button className={option.className} value={option.value}>
-                {option.label}
-              </Radio.Button>
-            </Tooltip>
-          ))}
-        </Radio.Group>
+          options={spaceTypeOptions}
+        />
         <Search
           className={styles.search}
           placeholder={formatMessage({
