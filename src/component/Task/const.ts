@@ -169,7 +169,7 @@ const _AsyncTaskActions = [TaskActionsEnum.DOWNLOAD_VIEW_RESULT, TaskActionsEnum
 
 export const TaskStatus2Actions: Partial<Record<TaskStatus, TaskActionsEnum[]>> = {
   [TaskStatus.REJECTED]: [..._commonActions, ..._AsyncTaskActions],
-  [TaskStatus.PRE_CHECK_EXECUTING]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.PRE_CHECK_EXECUTING]: [..._commonActions, TaskActionsEnum.STOP, ..._AsyncTaskActions],
   [TaskStatus.WAIT_FOR_SCHEDULE_EXECUTION]: [..._commonActions, ..._AsyncTaskActions],
   [TaskStatus.APPROVAL_EXPIRED]: [..._commonActions, ..._AsyncTaskActions],
   [TaskStatus.WAIT_FOR_EXECUTION_EXPIRED]: [..._commonActions, ..._AsyncTaskActions],
