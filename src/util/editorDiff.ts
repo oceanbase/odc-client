@@ -186,7 +186,7 @@ export class EditorDiffDecorator {
 
     const originalTextArr = originalText.split('\n');
     const newTextArr = newText.split('\n');
-    let separatedContent = '';
+    const separatedContents: string[] = [];
     let lineInfo: ILineInfo[] = [];
     let currentLineNumber = selectionRange.startLineNumber;
     let originalLineNumber = 1; // 跟踪原始文本的行号
@@ -210,7 +210,7 @@ export class EditorDiffDecorator {
         // 处理新增的行
         newTextArr.slice(line, line + operation.add).forEach((content) => {
           if (!content) return;
-          separatedContent += `${content}\n`;
+          separatedContents.push(content);
           lineInfo.push({ lineNumber: currentLineNumber++, type: LineType.ADD, content });
         });
 
@@ -220,7 +220,7 @@ export class EditorDiffDecorator {
       } else {
         const content = originalTextArr[line];
         if (content) {
-          separatedContent += `${content}\n`;
+          separatedContents.push(content);
           lineInfo.push({
             lineNumber: currentLineNumber++,
             originalLineNumber: originalLineNumber,
@@ -232,6 +232,8 @@ export class EditorDiffDecorator {
         line++;
       }
     }
+
+    const separatedContent = separatedContents.join('\n');
 
     // 替换选中的内容
     this.editor.executeEdits('separated-diff', [
