@@ -100,15 +100,15 @@ const SpaceSelect: React.FC<ISpaceSelect> = (props) => {
       className={classNames(styles['space-switch'], {
         [styles.collapsed]: collapsed,
       })}
-      onDropdownVisibleChange={(v) => {
+      onOpenChange={(v) => {
         if (v) {
           tracert.expo('a3112.b46782.c330848');
         }
       }}
+      popupMatchSelectWidth={false}
       value={userStore?.organizationId}
       suffixIcon={<SwapOutlined />}
-      popupMatchSelectWidth={144}
-      style={{ width: collapsed ? 30 : 144 }}
+      style={{ width: collapsed ? 30 : 150 }}
       variant="borderless"
       menuItemSelectedIcon={<CheckOutlined />}
       onChange={handleChange}
