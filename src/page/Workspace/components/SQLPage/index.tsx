@@ -423,14 +423,17 @@ export class SQLPage extends Component<IProps, ISQLPageState> {
       await this.loadModels();
     }
     const store = createStore();
+    let iconControl;
     const show = addAIAction(
       this.editor,
       () => this.getSession(),
       store,
       this.fullEditor,
       () => this.loadModels(true),
+      (operating) => iconControl?.setAIOperating?.(operating),
     );
-    const { dispose } = addAIIcon(this.editor, store, show, this.fullEditor);
+    iconControl = addAIIcon(this.editor, store, show, this.fullEditor);
+    const { dispose } = iconControl;
     const disposeMenu = addAIContextMenu(
       this.editor,
       store,
