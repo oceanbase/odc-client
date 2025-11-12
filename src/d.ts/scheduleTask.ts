@@ -52,6 +52,8 @@ export enum ScheduleTaskActionsEnum {
   RETRY = 'RETRY',
   /** 回滚(数据归档)*/
   ROLLBACK = 'ROLLBACK',
+  /** 下载查询结果 */
+  DOWNLOAD_VIEW_RESULT = 'DOWNLOAD_VIEW_RESULT',
 }
 
 export type IScheduleTaskExecutionDetail =
@@ -97,6 +99,9 @@ export type IPartitionPlanSubTaskExecutionDetails = {
 };
 export type ISqlPlanSubTaskExecutionDetails = {
   cloudProvider?: string;
+  zipFileDownloadUrl?: string;
+  containQuery?: boolean;
+  zipFileId?: string;
   csvResultSetZipDownloadUrl?: string;
   errorRecordsFileDownloadUrl?: string;
   failedRecord?: string[];

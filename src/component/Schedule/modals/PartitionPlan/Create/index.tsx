@@ -741,6 +741,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
     setCreateScheduleDatabase(detailRes?.parameters?.databaseInfo);
     const { parameters, triggerConfig } = detailRes ?? {};
     const { droppingTrigger } = parameters ?? {};
+    const { triggerStrategy, cronExpression, hours, days, startAt } = triggerConfig ?? {};
     const formData = {
       ...parameters,
       isCustomStrategy: !!detailRes?.parameters?.droppingTrigger,
@@ -749,11 +750,15 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
       triggerStrategy: detailRes?.triggerConfig?.triggerStrategy,
       startAt: undefined,
     };
+    if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
+      formData.triggerStrategy = TaskExecStrategy.TIMER;
+    }
+    if (triggerStrategy === TaskExecStrategy.START_AT) {
+      formData.startAt = startAt ? dayjs(startAt) : dayjs().add(1, 'hour');
+    }
     await form.setFieldsValue(formData);
     if (triggerConfig) {
-      const { triggerStrategy, cronExpression, hours, days, startAt } = triggerConfig ?? {};
       if (![TaskExecStrategy.START_NOW, TaskExecStrategy.START_AT].includes(triggerStrategy)) {
-        formData.triggerStrategy = TaskExecStrategy.TIMER;
         const crontab = {
           mode:
             triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
@@ -765,19 +770,22 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
         };
         crontabRef?.current?.setValue(crontab);
       }
-      if (triggerStrategy === TaskExecStrategy.START_AT) {
-        formData.startAt = startAt ? dayjs(startAt) : dayjs().add(1, 'hour');
-      }
     }
     if (droppingTrigger) {
-      const { triggerStrategy, cronExpression, hours, days } = droppingTrigger ?? {};
+      const {
+        triggerStrategy: dropTriggerStrategy,
+        cronExpression: dropCronExpression,
+        hours: dropHours,
+        days: dropDays,
+      } = droppingTrigger ?? {};
       crontabDropRef.current?.setValue({
-        mode: triggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
-        dateType: triggerStrategy as any,
-        cronString: cronExpression,
-        hour: hours,
-        dayOfMonth: days,
-        dayOfWeek: days,
+        mode:
+          dropTriggerStrategy === TaskExecStrategy.CRON ? CrontabMode.custom : CrontabMode.default,
+        dateType: dropTriggerStrategy as any,
+        cronString: dropCronExpression,
+        hour: dropHours,
+        dayOfMonth: dropDays,
+        dayOfWeek: dropDays,
       });
     }
     setPreTableConfigs(parameters?.partitionTableConfigs);

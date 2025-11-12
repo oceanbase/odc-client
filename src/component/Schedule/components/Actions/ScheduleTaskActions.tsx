@@ -1,5 +1,6 @@
 import {
   IScheduleTaskExecutionDetail,
+  ISqlPlanSubTaskExecutionDetails,
   ScheduleTaskActionsEnum,
   ScheduleTaskStatus,
   SubTaskParameters,
@@ -32,10 +33,12 @@ import Icon, {
 import { MenuProps } from 'antd';
 import { ScheduleTaskStatus2Actions } from '@/component/Schedule/const';
 import useOperationPermissions from '@/util/hooks/useOperationPermissions';
-import { widthPermission } from '@/util/utils';
+import { downloadFile, widthPermission } from '@/util/utils';
 import { IOperationTypeRole } from '@/d.ts/schedule';
 import { Perspective } from '../../interface';
 import { ReactComponent as RollbackSvg } from '@/svgr/Roll-back.svg';
+import { SettingStore } from '@/store/setting';
+import { inject, observer } from 'mobx-react';
 
 interface ScheduleActionsIProps {
   subTask: scheduleTask<SubTaskParameters, IScheduleTaskExecutionDetail>;
@@ -47,9 +50,10 @@ interface ScheduleActionsIProps {
   ) => void;
   scheduleId?: number;
   icon?: JSX.Element;
+  settingStore?: SettingStore;
 }
 const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
-  const { onReloadList, subTask, isDetailModal, scheduleId } = props;
+  const { onReloadList, subTask, isDetailModal, scheduleId, settingStore } = props;
   const [activeBtnKey, setActiveBtnKey] = useState<ScheduleTaskActionsEnum>(null);
 
   /** 作业类任务不需要使用到审批人、创建者 */
@@ -261,6 +265,12 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
     }
   };
 
+  const _handleDownloadViewResult = async () => {
+    const { zipFileDownloadUrl, zipFileId } =
+      subTask?.executionDetails as ISqlPlanSubTaskExecutionDetails;
+    downloadFile(zipFileDownloadUrl);
+  };
+
   const eventMap = {
     [ScheduleTaskActionsEnum.STOP]: _handleStop,
     [ScheduleTaskActionsEnum.EXECUTE]: _handleExecute,
@@ -270,6 +280,7 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
     [ScheduleTaskActionsEnum.VIEW]: _handleView,
     [ScheduleTaskActionsEnum.SHARE]: _handleShare,
     [ScheduleTaskActionsEnum.ROLLBACK]: _handleRollback,
+    [ScheduleTaskActionsEnum.DOWNLOAD_VIEW_RESULT]: _handleDownloadViewResult,
   };
 
   const ALL_ACTIONS = [
@@ -370,12 +381,33 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
       ),
     },
     {
+      key: ScheduleTaskActionsEnum.DOWNLOAD_VIEW_RESULT,
+      label: ScheduleTaskActionsTextMap[ScheduleTaskActionsEnum.DOWNLOAD_VIEW_RESULT],
+      action: eventMap[ScheduleTaskActionsEnum.DOWNLOAD_VIEW_RESULT],
+      visible: widthPermission(
+        (hasPermission) => {
+          const allowDownloadResultSets =
+            settingStore.spaceConfigurations?.[
+              'odc.task.databaseChange.allowDownloadResultSets'
+            ] === 'true';
+          return (
+            hasPermission &&
+            allowDownloadResultSets &&
+            settingStore.enableDataExport &&
+            (subTask?.executionDetails as ISqlPlanSubTaskExecutionDetails)?.containQuery &&
+            isDetailModal
+          );
+        },
+        [],
+        IRoles,
+      ),
+    },
+    {
       key: ScheduleTaskActionsEnum.VIEW,
       label: ScheduleTaskActionsTextMap[ScheduleTaskActionsEnum.VIEW],
       action: eventMap[ScheduleTaskActionsEnum.VIEW],
       icon: <BarsOutlined />,
-      hideInDetail: true,
-      visible: widthPermission((hasPermission) => hasPermission, [], IRoles),
+      visible: widthPermission((hasPermission) => hasPermission && !isDetailModal, [], IRoles),
     },
     {
       key: ScheduleTaskActionsEnum.SHARE,
@@ -419,7 +451,7 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
       }
       return show;
     });
-  }, [subTask?.status]);
+  }, [subTask?.status, isDetailModal]);
 
   const menuItems: MenuProps['items'] = useMemo(() => {
     let items: MenuProps['items'] = actions
@@ -451,8 +483,6 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
         {actions?.map((tool) => {
           /** 有icon代表着在列表页会放在下拉菜单里 */
           if (!isDetailModal && tool.icon) return;
-          /** 屏蔽掉不展示在详情页的按钮 */
-          if (isDetailModal && tool.hideInDetail) return;
           return renderTool(tool);
         })}
       </Action.Group>
@@ -472,4 +502,5 @@ const ScheduleTaskActions: React.FC<ScheduleActionsIProps> = (props) => {
     </>
   );
 };
-export default ScheduleTaskActions;
+
+export default inject('settingStore')(observer(ScheduleTaskActions));
