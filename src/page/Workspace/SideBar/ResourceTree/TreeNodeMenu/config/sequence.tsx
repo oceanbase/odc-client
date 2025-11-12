@@ -60,7 +60,7 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       key: 'GLOBAL_SEARCH',
       text: [
         formatMessage({
-          id: 'odc.TreeNodeMenu.config.sequence.GlobalSearch',
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
           defaultMessage: '全局搜索',
         }),
       ],
@@ -107,7 +107,7 @@ export const sequenceMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       key: 'GLOBAL_SEARCH',
       text: [
         formatMessage({
-          id: 'odc.TreeNodeMenu.config.sequence.GlobalSearch',
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
           defaultMessage: '全局搜索',
         }),
       ],
