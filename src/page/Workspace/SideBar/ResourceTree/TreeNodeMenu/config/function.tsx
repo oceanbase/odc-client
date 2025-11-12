@@ -92,7 +92,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       key: 'GLOBAL_SEARCH',
       text: [
         formatMessage({
-          id: 'odc.TreeNodeMenu.config.function.GlobalSearch',
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
           defaultMessage: '全局搜索',
         }),
       ],
@@ -141,7 +141,7 @@ export const functionMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       key: 'GLOBAL_SEARCH',
       text: [
         formatMessage({
-          id: 'odc.TreeNodeMenu.config.function.GlobalSearch',
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
           defaultMessage: '全局搜索',
         }),
       ],

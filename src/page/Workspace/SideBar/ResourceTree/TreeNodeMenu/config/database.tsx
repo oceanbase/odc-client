@@ -119,7 +119,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       key: 'GLOBAL_SEARCH',
       text: [
         formatMessage({
-          id: 'odc.TreeNodeMenu.config.externalResource.GlobalSearch',
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
           defaultMessage: '全局搜索',
         }),
       ],

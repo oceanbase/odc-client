@@ -42,7 +42,7 @@ export const materializedViewConfig: Partial<Record<ResourceNodeType, IMenuItemC
       key: 'GLOBAL_SEARCH',
       text: [
         formatMessage({
-          id: 'odc.TreeNodeMenu.config.materializedView.GlobalSearch',
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
           defaultMessage: '全局搜索',
         }),
       ],
@@ -87,7 +87,7 @@ export const materializedViewConfig: Partial<Record<ResourceNodeType, IMenuItemC
       key: 'GLOBAL_SEARCH',
       text: [
         formatMessage({
-          id: 'odc.TreeNodeMenu.config.materializedView.GlobalSearch',
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
           defaultMessage: '全局搜索',
         }),
       ],
