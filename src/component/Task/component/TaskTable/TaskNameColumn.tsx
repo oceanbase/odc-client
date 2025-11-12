@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import { formatMessage } from '@/util/intl';
 import { TaskPageMode } from '../../interface';
 import login from '@/store/login';
+import { getFormatDateTime } from '@/util/utils';
 
 interface IProps {
   record: TaskRecord<TaskRecordParameters>;
@@ -82,7 +83,7 @@ const TaskNameColumn = (props: IProps) => {
             id: 'src.component.Task.component.TaskTable.AEFECB70',
             defaultMessage: '创建于',
           })}
-          {dayjs(record?.createTime).format('YYYY-MM-DD HH:mm:ss')}
+          <span style={{ marginLeft: 4 }}>{getFormatDateTime(record?.createTime)}</span>
         </span>
         {login.isPrivateSpace() || mode === TaskPageMode.PROJECT ? (
           ''

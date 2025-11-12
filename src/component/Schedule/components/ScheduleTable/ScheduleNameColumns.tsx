@@ -6,6 +6,7 @@ import login from '@/store/login';
 import dayjs from 'dayjs';
 import { SchedulePageMode } from '@/component/Schedule/interface';
 import styles from './index.less';
+import { getFormatDateTime } from '@/util/utils';
 
 interface IProps {
   record: IScheduleRecord<ScheduleRecordParameters>;
@@ -77,9 +78,7 @@ const ScheduleName: React.FC<IProps> = (props) => {
             id: 'src.component.Schedule.components.ScheduleTable.45B9F797',
             defaultMessage: '创建于',
           })}
-          <span style={{ marginLeft: 4 }}>
-            {dayjs(record?.createTime).format('YYYY-MM-DD HH:mm:ss')}
-          </span>
+          <span style={{ marginLeft: 4 }}>{getFormatDateTime(record?.createTime)}</span>
         </span>
         {login.isPrivateSpace() || mode === SchedulePageMode.PROJECT ? (
           ''
