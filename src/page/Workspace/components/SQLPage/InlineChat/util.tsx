@@ -277,7 +277,7 @@ export function addAIContextMenu(
     },
   });
   editor.addAction({
-    label: '🪄 SQL Tunning',
+    label: '🪄 SQL Optimization',
     id: 'sql-optimization',
     contextMenuGroupId: 'navigation',
     contextMenuOrder: 520,
