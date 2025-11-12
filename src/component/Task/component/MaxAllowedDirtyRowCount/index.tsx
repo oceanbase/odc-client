@@ -2,7 +2,10 @@ import { formatMessage } from '@/util/intl';
 import { Form, InputNumber } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
-import { DirtyRowActionEnum } from '@/component/ExecuteSqlDetailModal/constant';
+import {
+  DirtyRowActionEnum,
+  JAVA_LONG_MAX_VALUE,
+} from '@/component/ExecuteSqlDetailModal/constant';
 
 const MaxAllowedDirtyRowCount: React.FC = () => {
   const form = Form.useFormInstance();
@@ -30,8 +33,9 @@ const MaxAllowedDirtyRowCount: React.FC = () => {
       initialValue={0}
     >
       <InputNumber
-        min={0}
-        max={Number.MAX_SAFE_INTEGER}
+        stringMode
+        min="0"
+        max={JAVA_LONG_MAX_VALUE}
         controls={true}
         precision={0}
         addonAfter={formatMessage({
