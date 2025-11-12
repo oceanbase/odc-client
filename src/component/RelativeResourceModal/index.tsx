@@ -132,6 +132,12 @@ const RelativeResourceModal: React.FC<IRelativeResourceModalProps> = ({
     }
   }, [open, id, mode]);
 
+  // 判断是否可以访问详情：个人空间无权限，否则检查项目权限
+  const getCanAccessDetail = (record: IResourceDependencyItem): boolean => {
+    const isPersonalSpace = mode === EEntityType.USER || login.isPrivateSpace();
+    return isPersonalSpace ? false : !!record?.project?.currentUserResourceRoles?.length;
+  };
+
   const EResourceTypeConfig = useMemo(
     () => ({
       [EResourceType.TASKS]: {
@@ -178,12 +184,9 @@ const RelativeResourceModal: React.FC<IRelativeResourceModalProps> = ({
             setCurrentRecord(record);
             setDetailVisible(true);
           };
-          // 个人空间对应的资源依赖弹窗，不校验项目权限，直接按无权限展示
-          const isDeleteUser = mode === EEntityType.USER || login.isPrivateSpace();
-          const hasProjectAuth = isDeleteUser
-            ? false
-            : !!record?.project?.currentUserResourceRoles?.length;
-          const hint = isDeleteUser
+          const canAccessDetail = getCanAccessDetail(record);
+          const isPersonalSpace = mode === EEntityType.USER || login.isPrivateSpace();
+          const hint = isPersonalSpace
             ? '无访问权限，无法查看工单详情'
             : formatMessage({
                 id: 'src.component.RelativeResourceModal.94DC18D3',
@@ -191,12 +194,14 @@ const RelativeResourceModal: React.FC<IRelativeResourceModalProps> = ({
               });
           return (
             <div className={styles.taskName}>
-              <Tooltip title={hasProjectAuth ? '' : hint}>
+              <Tooltip title={canAccessDetail ? '' : hint}>
                 <div
-                  className={hasProjectAuth ? styles.title : styles.disabledTitle}
-                  onClick={hasProjectAuth ? handleClick : () => {}}
+                  className={canAccessDetail ? styles.title : styles.disabledTitle}
+                  onClick={canAccessDetail ? handleClick : () => {}}
                 >
-                  <Tooltip title={hasProjectAuth ? text : ''}>{text || '-'}</Tooltip>
+                  <Tooltip title={canAccessDetail ? text : ''}>
+                    <span className={styles.titleText}>{text || '-'}</span>
+                  </Tooltip>
                 </div>
               </Tooltip>
               <div>
@@ -247,14 +252,20 @@ const RelativeResourceModal: React.FC<IRelativeResourceModalProps> = ({
         key: 'name',
         ellipsis: true,
         render: (text: string, record: IResourceDependencyItem) => {
+          const canAccessDetail = getCanAccessDetail(record);
+
           const handleClick = () => {
+            if (!canAccessDetail) {
+              return;
+            }
             setCurrentRecord(record);
             setScheduleDetailVisible(true);
           };
-
           return (
             <div className={styles.scheduleName} onClick={handleClick}>
-              <div className={styles.title}>{text || '-'}</div>
+              <div className={canAccessDetail ? styles.title : styles.disabledTitle}>
+                {text || '-'}
+              </div>
               <div>
                 <TaskTitle record={record} />
               </div>
@@ -301,14 +312,19 @@ const RelativeResourceModal: React.FC<IRelativeResourceModalProps> = ({
         width: 92,
         ellipsis: true,
         render: (text: string, record: IResourceDependencyItem) => {
+          const canAccessDetail = getCanAccessDetail(record);
           const handleClick = () => {
+            if (!canAccessDetail) {
+              return;
+            }
             setCurrentRecord(record);
             setExecuteDetailVisible(true);
           };
-
           return (
             <div className={styles.taskName} onClick={handleClick}>
-              {text ? `#${text}` : '-'}
+              <div className={canAccessDetail ? styles.title : styles.disabledTitle}>
+                {text ? `#${text}` : '-'}
+              </div>
             </div>
           );
         },
