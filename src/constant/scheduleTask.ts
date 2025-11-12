@@ -85,6 +85,10 @@ export const ScheduleTaskActionsTextMap = {
     id: 'src.constant.44D5E598',
     defaultMessage: '回滚',
   }),
+  [ScheduleTaskActionsEnum.DOWNLOAD_VIEW_RESULT]: formatMessage({
+    id: 'src.constant.59F0A267',
+    defaultMessage: '下载查询结果',
+  }),
 };
 
 export const SubTypeTextMap = {

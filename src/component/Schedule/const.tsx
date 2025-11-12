@@ -85,11 +85,13 @@ const ScheduleTaskStatus2Actions: Record<ScheduleTaskStatus, ScheduleTaskActions
     ScheduleTaskActionsEnum.VIEW,
     ScheduleTaskActionsEnum.SHARE,
     ScheduleTaskActionsEnum.ROLLBACK,
+    ScheduleTaskActionsEnum.DOWNLOAD_VIEW_RESULT,
   ],
   [ScheduleTaskStatus.DONE_WITH_FAILED]: [
     ScheduleTaskActionsEnum.VIEW,
     ScheduleTaskActionsEnum.SHARE,
     ScheduleTaskActionsEnum.ROLLBACK,
+    ScheduleTaskActionsEnum.DOWNLOAD_VIEW_RESULT,
   ],
 };
 
