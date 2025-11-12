@@ -37,6 +37,7 @@ export default class PlaceholderContentWidget implements monaco.editor.IContentW
       this.domNode.style.width = 'max-content';
       this.domNode.textContent = this.placeholder;
       this.domNode.style.fontStyle = 'italic';
+      this.domNode.style.paddingRight = '14px';
       this.editor.applyFontInfo(this.domNode);
       this.domNode.style.color = 'grey';
     }
