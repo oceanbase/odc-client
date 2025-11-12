@@ -7,13 +7,18 @@
     align-items: start;
     flex-direction: column;
     cursor: pointer;
-    .title {
+    .title,
+    .disabledTitle {
       font-size: 12px;
       line-height: 20px;
       font-weight: 600;
-      &:hover {
-        color: var(--text-color-link);
-      }
+    }
+    .title:hover {
+      color: var(--text-color-link);
+    }
+    .disabledTitle {
+      color: var(--text-color-hint);
+      cursor: not-allowed;
     }
   }
   .recordScheduleName {
@@ -38,11 +43,14 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+
+      .titleText {
+        font-weight: 600;
+      }
     }
     .disabledTitle {
       font-size: 12px;
       line-height: 20px;
-      font-weight: 600;
       cursor: not-allowed;
       color: var(--text-color-hint);
     }
