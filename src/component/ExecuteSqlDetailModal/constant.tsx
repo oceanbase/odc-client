@@ -137,3 +137,7 @@ export const DirtyRowActionLabelMap = {
     defaultMessage: '任务失败',
   }),
 };
+
+// 跳过不清理数据不传的时候后端默认值是Long.max: 2^63 - 1, javaScript 的 Number.MAX_SAFE_INTEGER 是 2^53 - 1, 反显的时候会超出
+// 因此采用antd的stringMode属性 + string, 以支持超出 JavaScript 安全整数范围的大数
+export const JAVA_LONG_MAX_VALUE = '9223372036854775807';

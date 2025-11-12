@@ -373,8 +373,8 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           fullDatabase: archiveRange === IArchiveRange.ALL,
           migrationInsertAction,
           scheduleIgnoreTimeoutTask,
-          maxAllowedDirtyRowCount,
           dirtyRowAction,
+          ...(maxAllowedDirtyRowCount !== null ? { maxAllowedDirtyRowCount } : {}),
           rateLimit: {
             rowLimit,
             dataSizeLimit: mbToKb(dataSizeLimit),

@@ -357,7 +357,7 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           needCheckBeforeDelete,
           scheduleIgnoreTimeoutTask,
           dirtyRowAction,
-          maxAllowedDirtyRowCount,
+          ...(maxAllowedDirtyRowCount !== null ? { maxAllowedDirtyRowCount } : {}),
           rateLimit: {
             rowLimit,
             dataSizeLimit: mbToKb(dataSizeLimit),
