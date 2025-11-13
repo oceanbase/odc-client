@@ -243,7 +243,14 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     const tableName = tableConfigs?.find((item) => keys.includes(item.__id))?.tableName;
     const activeConfigs = tableConfigs?.filter((item) => keys.includes(item.__id));
     const res = await getPartitionPlanKeyDataTypes(sessionId, databaseId, tableName);
-    const createdTableConfig = createdTableConfigs?.find((item) => item?.tableName === tableName);
+    const currentTableConfigs = createdTableConfigs
+      ?.filter((item) => item?.tableName === tableName)
+      .sort((a, b) => {
+        return a?.hasOwnProperty('keepLatestCount') ? -1 : 1;
+      });
+    const createdTableConfig = currentTableConfigs?.length
+      ? Object.assign({}, ...currentTableConfigs)
+      : null;
     const isInit = activeConfigs?.some((item) => !item?.__isCreate);
     let partitionConfig = activeConfigs?.[0];
     if (!!createdTableConfig && isInit) {
