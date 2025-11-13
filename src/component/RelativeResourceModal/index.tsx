@@ -345,7 +345,9 @@ const RelativeResourceModal: React.FC<IRelativeResourceModalProps> = ({
                 {text || '-'}
               </Typography.Text>
               <Typography.Text className={styles.recordId} type="secondary">
-                {record?.id ? `#${record?.id}` : '-'}
+                {(record as IScheduleTaskDependencyOverview)?.scheduleId
+                  ? `#${(record as IScheduleTaskDependencyOverview)?.scheduleId}`
+                  : '-'}
               </Typography.Text>
             </div>
           );
