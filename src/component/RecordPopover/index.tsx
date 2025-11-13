@@ -144,6 +144,7 @@ const RecordPopover = forwardRef<any, any>((props, ref) => {
       }
       open={visible}
       onClose={handleCloseDrawer}
+      destroyOnHidden
     >
       <RecordTable
         tableRef={tableRef}

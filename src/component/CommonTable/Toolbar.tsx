@@ -97,7 +97,12 @@ export const Toolbar: React.FC<IProps> = (props) => {
           />
         )}
         {enabledReload && (
-          <FilterIcon border onClick={onReload}>
+          <FilterIcon
+            border
+            onClick={() => {
+              onReload();
+            }}
+          >
             <SyncOutlined className={styles.cursor} spin={loading} />
           </FilterIcon>
         )}
