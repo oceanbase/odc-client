@@ -20,6 +20,7 @@ import {
   getConnectionDetail,
   getConnectionList,
 } from '@/common/network/connection';
+import { getResourceDependencies } from '@/common/network/relativeResource';
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import { actionTypes } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
@@ -29,7 +30,7 @@ import { formatMessage } from '@/util/intl';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { history, Link, useNavigate, useParams } from '@umijs/max';
 import { useRequest } from 'ahooks';
-import { Button, Dropdown, message, Space } from 'antd';
+import { Button, Dropdown, message, Modal, Space } from 'antd';
 import { isNumber } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import RelativeResourceModal from '@/component/RelativeResourceModal';
@@ -49,19 +50,51 @@ const ExtraContent = ({
   const nav = useNavigate();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const handleDeleteClick = () => {
-    setDeleteModalOpen(true);
-  };
-
-  const handleDeleteSuccess = () => {
-    message.success(
-      formatMessage({
-        id: 'odc.page.Datasource.DeletedSuccessfully',
-        defaultMessage: '删除成功',
-      }), //删除成功
-    );
-    setDeleteModalOpen(false);
-    nav('/datasource');
+  const handleDeleteClick = async () => {
+    const res = await getResourceDependencies({ datasourceId: cid });
+    const data = res?.data;
+    const total =
+      (data?.flowDependencies?.length || 0) +
+      (data?.scheduleDependencies?.length || 0) +
+      (data?.scheduleTaskDependencies?.length || 0);
+    if (total > 0) {
+      setDeleteModalOpen(true);
+    } else {
+      Modal.confirm({
+        title: formatMessage(
+          {
+            id: 'odc.page.Datasource.ConfirmToDeleteName',
+            defaultMessage: '是否确认删除 {name}',
+          },
+          { name },
+        ),
+        content: formatMessage({
+          id: 'odc.src.page.Datasource.AfterDeletingYouWill',
+          defaultMessage: '删除后将无法访问该数据源',
+        }),
+        okText: formatMessage({
+          id: 'app.button.ok',
+          defaultMessage: '确定',
+        }),
+        cancelText: formatMessage({
+          id: 'app.button.cancel',
+          defaultMessage: '取消',
+        }),
+        centered: true,
+        async onOk() {
+          const isSuccess = await deleteConnection(cid?.toString());
+          if (isSuccess) {
+            message.success(
+              formatMessage({
+                id: 'odc.page.Datasource.DeletedSuccessfully',
+                defaultMessage: '删除成功',
+              }),
+            );
+            nav('/datasource');
+          }
+        },
+      });
+    }
   };
 
   const handleDeleteCancel = () => {
