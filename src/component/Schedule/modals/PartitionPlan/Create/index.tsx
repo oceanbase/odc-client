@@ -268,18 +268,14 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
             partitionMode,
           } = config;
           if (isEdit) {
-            const prevConfigs = preTableConfigs?.find((item) => item.tableName === tableName);
-            if (!prevConfigs) {
+            const prevConfigs = preTableConfigs?.filter((item) => item.tableName === tableName);
+            if (!prevConfigs?.length) {
               return false;
             }
-            const {
-              containsCreateStrategy: prevContainsCreateStrategy,
-              containsDropStrategy: prevContainsDropStrategy,
-            } = prevConfigs;
-            if (prevContainsCreateStrategy) {
+            if (prevConfigs?.some((item) => item.containsCreateStrategy)) {
               strategies.push(TaskPartitionStrategy.CREATE);
             }
-            if (prevContainsDropStrategy) {
+            if (prevConfigs?.some((item) => item.containsDropStrategy)) {
               strategies.push(TaskPartitionStrategy.DROP);
             }
           } else {
@@ -310,6 +306,7 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
           };
         })
         ?.filter(Boolean);
+      console.log(tableConfigs);
       setTableConfigs(tableConfigs as ITableConfig[]);
     }
   };
