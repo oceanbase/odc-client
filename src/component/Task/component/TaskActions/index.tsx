@@ -772,7 +772,11 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
       action: eventMap[TaskActionsEnum.CLONE],
       icon: <CopyOutlined />,
       showScene: [actionShowScene.list, actionShowScene.detail],
-      visible: widthPermission((hasPermission) => hasPermission, [], IRoles),
+      visible: widthPermission(
+        (hasPermission) => hasPermission && task?.type !== TaskType.ALTER_SCHEDULE,
+        [],
+        IRoles,
+      ),
     },
     {
       key: TaskActionsEnum.SHARE,
@@ -781,7 +785,8 @@ const TaskActions: React.FC<TaskActionsProps> = (props) => {
       action: eventMap[TaskActionsEnum.SHARE],
       icon: <ShareAltOutlined />,
       visible: widthPermission(
-        (hasPermission) => hasPermission && !login?.isPrivateSpace(),
+        (hasPermission) =>
+          hasPermission && !login?.isPrivateSpace() && task?.type !== TaskType.ALTER_SCHEDULE,
         [],
         IRoles,
       ),

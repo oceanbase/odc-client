@@ -226,7 +226,8 @@ const DetailModal: React.FC<IProps> = React.memo((props) => {
       taskContent = <DataTransferTaskContent task={task} result={result} hasFlow={hasFlow} />;
       break;
     }
-    case TaskType.ASYNC: {
+    case TaskType.ASYNC:
+    case TaskType.ALTER_SCHEDULE: {
       taskContent = (
         <AsyncTaskContent
           task={task as TaskDetail<IAsyncTaskParams>}
