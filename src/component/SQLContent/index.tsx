@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getTaskFile } from '@/common/network/task';
+import { getScheduleTaskFile, getTaskFile } from '@/common/network/task';
 import { TaskType } from '@/d.ts';
 import type { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
@@ -43,7 +43,12 @@ export class SQLContent extends React.PureComponent<{
 
   handleDownloadFile = async (index: number) => {
     const { taskId, sqlObjectIds, type = '', theme } = this.props;
-    const fileUrl = await getTaskFile(taskId, [sqlObjectIds?.[index]]);
+    let fileUrl: string[];
+    if (type === ScheduleType.SQL_PLAN) {
+      fileUrl = await getScheduleTaskFile(taskId, [sqlObjectIds?.[index]]);
+    } else {
+      fileUrl = await getTaskFile(taskId, [sqlObjectIds?.[index]]);
+    }
     fileUrl?.forEach((url) => {
       url && downloadFile(url);
     });

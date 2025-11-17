@@ -416,6 +416,22 @@ export async function getTaskFile(taskId: number, objectId: string[]): Promise<s
 }
 
 /**
+ * 下载文件
+ */
+export async function getScheduleTaskFile(
+  scheduleId: number,
+  objectId: string[],
+): Promise<string[]> {
+  const downloadInfo = await request.post(
+    `/api/v2/schedule/schedules/${scheduleId}/batchGetDownloadUrl`,
+    {
+      data: objectId,
+    },
+  );
+  return downloadInfo?.data?.contents ?? [];
+}
+
+/**
  * 下载文件（结构比对任务）
  * @param taskId
  * @param objectId
