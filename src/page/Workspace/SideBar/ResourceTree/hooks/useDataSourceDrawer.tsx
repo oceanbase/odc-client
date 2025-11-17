@@ -38,7 +38,13 @@ const useDataSourceDrawer = () => {
     } else if (res?.successful) {
       // 没有依赖项，按原本的 modal 展示
       Modal.confirm({
-        title: `确认删除数据源 ${name}?`,
+        title: formatMessage(
+          {
+            id: 'src.page.Workspace.SideBar.ResourceTree.hooks.CC09F723',
+            defaultMessage: '确认删除数据源 {name}?',
+          },
+          { name },
+        ),
         async onOk() {
           const isSuccess = await deleteConnection(key?.toString());
           if (isSuccess) {
