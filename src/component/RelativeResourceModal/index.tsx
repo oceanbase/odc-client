@@ -187,7 +187,10 @@ const RelativeResourceModal: React.FC<IRelativeResourceModalProps> = ({
           const canAccessDetail = getCanAccessDetail(record);
           const isPersonalSpace = mode === EEntityType.USER || login.isPrivateSpace();
           const hint = isPersonalSpace
-            ? '无访问权限，无法查看工单详情'
+            ? formatMessage({
+                id: 'src.component.RelativeResourceModal.3A1D5C81',
+                defaultMessage: '无访问权限，无法查看工单详情',
+              })
             : formatMessage({
                 id: 'src.component.RelativeResourceModal.94DC18D3',
                 defaultMessage: '暂无所属的项目访问权限，无法查看工单详情，请联系管理员',
@@ -490,6 +493,7 @@ const RelativeResourceModal: React.FC<IRelativeResourceModalProps> = ({
         onReloadList={reloadList}
         onApprovalVisible={handleApprovalVisible}
       />
+
       <CreateModals projectId={currentRecord?.project?.id} theme="dark" reloadList={reloadList} />
       <ScheduleDetail
         type={(currentRecord as IScheduleDependencyOverview)?.type}

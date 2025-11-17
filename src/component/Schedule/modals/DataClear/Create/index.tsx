@@ -291,7 +291,10 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           </div>
           <div>
             {login.isPrivateSpace()
-              ? '提交后此作业将自动启动'
+              ? formatMessage({
+                  id: 'src.component.Schedule.modals.DataClear.Create.E49A7793',
+                  defaultMessage: '提交后此作业将自动启动',
+                })
               : formatMessage({
                   id: 'src.component.Schedule.modals.DataClear.Create.FBEB16F1',
                   defaultMessage: '作业需要重新审批，审批通过后此作业将自动启动',

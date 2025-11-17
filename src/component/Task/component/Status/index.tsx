@@ -502,7 +502,11 @@ export const status: Partial<
         }}
       />
     ),
-    text: '回滚中',
+
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.E882A539',
+      defaultMessage: '回滚中',
+    }),
   },
 };
 

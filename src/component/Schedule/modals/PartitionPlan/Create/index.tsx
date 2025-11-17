@@ -637,7 +637,10 @@ const Create: React.FC<IProps> = ({ projectId, scheduleStore, pageStore, mode })
           </div>
           <div>
             {login.isPrivateSpace()
-              ? '提交后此作业将自动启动'
+              ? formatMessage({
+                  id: 'src.component.Schedule.modals.PartitionPlan.Create.1321BD1A',
+                  defaultMessage: '提交后此作业将自动启动',
+                })
               : formatMessage({
                   id: 'src.component.Schedule.modals.PartitionPlan.Create.B9C33688',
                   defaultMessage: '作业需要重新审批，审批通过后此作业将自动启动',

@@ -309,7 +309,10 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
           </div>
           <div>
             {login.isPrivateSpace()
-              ? '提交后此作业将自动启动'
+              ? formatMessage({
+                  id: 'src.component.Schedule.modals.DataArchive.Create.82742CA6',
+                  defaultMessage: '提交后此作业将自动启动',
+                })
               : formatMessage({
                   id: 'src.component.Schedule.modals.DataArchive.Create.229CE5AD',
                   defaultMessage: '作业需要重新审批，审批通过后此作业将自动启动',
@@ -725,17 +728,17 @@ const Create: React.FC<IProps> = ({ scheduleStore, projectId, pageStore, mode })
             </Space>
 
             {/* <Form.Item shouldUpdate noStyle>
-               {({ getFieldValue }) => {
-                 const deleteAfterMigration = getFieldValue('deleteAfterMigration');
-                 if (deleteAfterMigration) {
-                   return (
-                     <Form.Item label="清理时机" name="aaaaaa2" required>
-                       <Radio.Group options={cleanUpTimingOptions} />
-                     </Form.Item>
-                   );
-                 }
-               }}
-              </Form.Item> */}
+                {({ getFieldValue }) => {
+                  const deleteAfterMigration = getFieldValue('deleteAfterMigration');
+                  if (deleteAfterMigration) {
+                    return (
+                      <Form.Item label="清理时机" name="aaaaaa2" required>
+                        <Radio.Group options={cleanUpTimingOptions} />
+                      </Form.Item>
+                    );
+                  }
+                }}
+               </Form.Item> */}
 
             <h3 id="archiveRange" className={styles.title}>
               {formatMessage({
