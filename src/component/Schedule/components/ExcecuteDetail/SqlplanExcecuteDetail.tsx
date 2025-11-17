@@ -88,7 +88,7 @@ const SqlplanExcecuteDetail: React.FC<SqlplanExcecuteDetailProps> = ({ subTask }
               sqlContent={subTask?.parameters?.sqlContent}
               sqlObjectIds={subTask?.parameters?.sqlObjectIds}
               sqlObjectNames={subTask?.parameters?.sqlObjectNames}
-              taskId={subTask.id}
+              taskId={subTask.scheduleId}
               language={
                 getDataSourceModeConfigByConnectionMode(
                   subTask?.parameters?.databaseInfo?.dataSource?.dialectType,

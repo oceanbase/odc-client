@@ -616,13 +616,13 @@ const Create: React.FC<IProps> = ({ scheduleStore, pageStore, projectId, theme, 
                     }),
                     value: SQLContentType.TEXT,
                   },
-                  // {
-                  //   label: formatMessage({
-                  //     id: 'odc.components.CreateSQLPlanTaskModal.UploadAnAttachment',
-                  //     defaultMessage: '上传附件',
-                  //   }),
-                  //   value: SQLContentType.FILE,
-                  // },
+                  {
+                    label: formatMessage({
+                      id: 'odc.components.CreateSQLPlanTaskModal.UploadAnAttachment',
+                      defaultMessage: '上传附件',
+                    }),
+                    value: SQLContentType.FILE,
+                  },
                 ]}
               />
             </Form.Item>
