@@ -2104,7 +2104,6 @@
   "odc.component.Crontab.const.Seconds": "秒",
   "odc.Index.Sider.Logo.DeveloperCenter": "開發人員中心",
   "odc.components.CreateSQLPlanTaskModal.SelectSqlContent": "請選擇 SQL 內容",
-  "odc.components.CreateSQLPlanTaskModal.UploadAnAttachment": "上傳附件",
   "odc.component.TaskStatus.Enabled": "已啟用",
   "odc.components.CreateSQLPlanTaskModal.PleaseSelectTaskExecutionDuration": "請選擇任務執行時間長度超周期處理",
   "odc.component.Crontab.utils.BeginToEnd": "{begin}至{end}",
@@ -6665,5 +6664,13 @@
   "src.page.ExternalIntegration.LargeModel.1494980D": "模型已禁用",
   "src.component.Task.modals.LogicDatabaseAsyncTask.CreateModal.1ADEB730": "執行方式",
   "src.component.Task.modals.LogicDatabaseAsyncTask.CreateModal.0C5A3B76": "新建邏輯表時需使用表達式，表達式需加上 ` 號，如 `db_[00-31].test_[00-31] `。修改已有邏輯表時可直接使用邏輯庫名稱和邏輯表名進行修改，如 db.test。",
-  "src.component.Schedule.components.Actions.75F66A22": "撤銷後，該變更的審批將被駁回。"
+  "src.component.Schedule.components.Actions.75F66A22": "撤銷後，該變更的審批將被駁回。",
+  "src.page.Workspace.SideBar.ResourceTree.hooks.CC09F723": "確認刪除數據源 {name}?",
+  "src.page.Console.54B13288": "企業級資料庫開發與資料庫管理協同工具",
+  "src.component.Task.component.Status.E882A539": "回滾中",
+  "src.component.RelativeResourceModal.3A1D5C81": "無訪問權限，無法查看工單詳情",
+  "src.component.Schedule.modals.SQLPlan.Create.0B0E6068": "提交後此作業將自動啟動",
+  "src.component.Schedule.modals.PartitionPlan.Create.1321BD1A": "提交後此作業將自動啟動",
+  "src.component.Schedule.modals.DataClear.Create.E49A7793": "提交後此作業將自動啟動",
+  "src.component.Schedule.modals.DataArchive.Create.82742CA6": "提交後此作業將自動啟動"
 }
