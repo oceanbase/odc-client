@@ -67,6 +67,7 @@ const ScheduleTaskStatus2Actions: Record<ScheduleTaskStatus, ScheduleTaskActions
     ScheduleTaskActionsEnum.VIEW,
     ScheduleTaskActionsEnum.SHARE,
     ScheduleTaskActionsEnum.RESTORE,
+    ScheduleTaskActionsEnum.STOP,
   ],
   [ScheduleTaskStatus.RESUMING]: [
     ScheduleTaskActionsEnum.VIEW,
