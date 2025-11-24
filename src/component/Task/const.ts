@@ -178,7 +178,7 @@ export const TaskStatus2Actions: Partial<Record<TaskStatus, TaskActionsEnum[]>> 
   [TaskStatus.APPROVAL_EXPIRED]: [..._commonActions, ..._AsyncTaskActions],
   [TaskStatus.WAIT_FOR_EXECUTION_EXPIRED]: [..._commonActions, ..._AsyncTaskActions],
   [TaskStatus.EXECUTION_EXPIRED]: [..._commonActions, ..._AsyncTaskActions],
-  [TaskStatus.CREATED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.CREATED]: [..._commonActions, TaskActionsEnum.STOP, ..._AsyncTaskActions],
   [TaskStatus.EXECUTION_FAILED]: [..._commonActions, ..._AsyncTaskActions],
   [TaskStatus.ROLLBACK_FAILED]: [..._commonActions, ..._AsyncTaskActions],
   [TaskStatus.ROLLBACKING]: [..._commonActions, TaskActionsEnum.STOP, ..._AsyncTaskActions],
