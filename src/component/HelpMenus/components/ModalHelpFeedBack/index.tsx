@@ -17,7 +17,7 @@
 import { SettingStore } from '@/store/setting';
 import { ReactComponent as GithubSvg } from '@/svgr/github.svg';
 import { ReactComponent as ODCColorSvg } from '@/svgr/odc_logo_color.svg';
-import ipcInvoke from '@/util/client/service';
+import ipcInvoke from '@/util/business/client/service';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { Image, Modal } from 'antd';

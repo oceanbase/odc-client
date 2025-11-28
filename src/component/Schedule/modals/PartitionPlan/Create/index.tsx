@@ -2,7 +2,7 @@ import { getPartitionPlanTables } from '@/common/network/task';
 import { createSchedule, updateSchedule, getScheduleDetail } from '@/common/network/schedule';
 import Crontab from '@/component/Crontab';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
-import { validateCrontabInterval } from '@/util/schedule';
+import { validateCrontabInterval } from '@/util/ui/validRule';
 import FormItemPanel from '@/component/FormItemPanel';
 import {
   IPartitionPlanKeyType,
@@ -16,7 +16,7 @@ import {
 import { history } from '@umijs/max';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { formatMessage } from '@/util/intl';
-import { hourToMilliSeconds, milliSecondsToHour } from '@/util/utils';
+import { hourToMilliSeconds, milliSecondsToHour } from '@/util/data/dateTime';
 import {
   Alert,
   Button,
@@ -64,7 +64,7 @@ import { PageStore } from '@/store/page';
 import { SchedulePageMode } from '@/component/Schedule/interface';
 import { openSchedulesPage } from '@/store/helper/page';
 import SchduleExecutionMethodForm from '@/component/Schedule/components/SchduleExecutionMethodForm';
-import { safeTruncateString } from '@/util/stringTruncate';
+import { safeTruncateString } from '@/util/data/string';
 import login from '@/store/login';
 const { Paragraph, Text } = Typography;
 

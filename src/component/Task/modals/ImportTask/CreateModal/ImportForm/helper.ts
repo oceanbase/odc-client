@@ -18,7 +18,7 @@ import type { EXPORT_TYPE } from '@/d.ts';
 import { IMPORT_TYPE } from '@/d.ts';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { formatBytes } from '@/util/utils';
+import { formatBytes } from '@/util/data/byte';
 import { message, Upload } from 'antd';
 
 export const MAX_FILE_SIZE = isClient() ? -1 : 1024 * 1024 * 1024 * 2;

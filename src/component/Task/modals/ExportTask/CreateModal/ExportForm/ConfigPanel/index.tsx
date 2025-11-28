@@ -27,7 +27,7 @@ import { formatMessage } from '@/util/intl';
 import { AutoComplete, Checkbox, Col, Form, FormInstance, InputNumber, Row, Select } from 'antd';
 import React, { useContext } from 'react';
 import FormContext from '../FormContext';
-import { CRLFToSeparatorString } from '@/util/utils';
+import { CRLFToSeparatorString } from '@/util/data/string';
 import { rules } from '../../const';
 
 const FormItem = Form.Item;

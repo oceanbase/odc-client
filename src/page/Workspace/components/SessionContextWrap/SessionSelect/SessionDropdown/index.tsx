@@ -14,7 +14,7 @@ import { DataNode } from 'antd/lib/tree';
 import { toInteger } from 'lodash';
 import login, { UserStore } from '@/store/login';
 import { inject, observer } from 'mobx-react';
-import { isConnectTypeBeFileSystemGroup, isPgDataDataSource } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup, isPgDataDataSource } from '@/util/database/connection';
 import React, { Key, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import SessionContext from '../../context';
 import { DEFALT_HEIGHT, DEFALT_WIDTH } from '../const';

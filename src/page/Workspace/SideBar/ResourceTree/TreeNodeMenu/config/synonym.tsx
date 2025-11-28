@@ -23,7 +23,7 @@ import { openSynonymViewPage } from '@/store/helper/page';
 import modal from '@/store/modal';
 import page from '@/store/page';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import {
   PlusOutlined,
   QuestionCircleFilled,

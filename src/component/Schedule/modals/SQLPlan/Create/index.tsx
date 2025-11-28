@@ -2,7 +2,7 @@ import { getDataSourceModeConfig } from '@/common/datasource';
 import { getAsyncTaskUploadUrl } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import { CrontabDateType, CrontabMode, ICrontab } from '@/component/Crontab/interface';
-import { validateCrontabInterval } from '@/util/schedule';
+import { validateCrontabInterval } from '@/util/ui/validRule';
 import FormItemPanel from '@/component/FormItemPanel';
 import ODCDragger from '@/component/OSSDragger2';
 import { SQLContentType, TaskExecStrategy } from '@/d.ts';

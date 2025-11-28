@@ -19,7 +19,7 @@ import ODCDragger from '@/component/OSSDragger';
 import { DbObjsIcon } from '@/constant';
 import { ImportFormData, IMPORT_CONTENT, IMPORT_ENCODING, IMPORT_TYPE, DbObjectType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import Icon from '@ant-design/icons';
 import { Form, FormInstance, message, Select, Tree, Upload } from 'antd';
 import Cookies from 'js-cookie';
@@ -38,7 +38,7 @@ import { isClient } from '@/util/env';
 import { getLocale } from '@umijs/max';
 import FormContext from '../FormContext';
 import styles from './index.less';
-import { selectFolder } from '@/util/client';
+import { selectFolder } from '@/util/business/client';
 import { getImportFileMeta } from '@/common/network/exportAndImport';
 import { rules } from '../../const';
 

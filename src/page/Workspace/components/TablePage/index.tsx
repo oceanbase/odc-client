@@ -45,7 +45,7 @@ import { getQuoteTableName } from '@/util/utils';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import styles from './index.less';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 
 interface IProps {
   pageKey: string;

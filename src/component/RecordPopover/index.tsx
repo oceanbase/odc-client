@@ -18,7 +18,7 @@ import { getAuditList } from '@/common/network/manager';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import { AuditEventMetaMap } from '@/constant/record';
 import { formatMessage } from '@/util/intl';
-import { getPreTime } from '@/util/utils';
+import { getPreTime } from '@/util/data/dateTime';
 import { SyncOutlined } from '@ant-design/icons';
 import { Drawer, Space } from 'antd';
 import type { Dayjs } from 'dayjs';

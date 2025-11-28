@@ -1,6 +1,6 @@
 import ObjectInfoView from '@/component/ObjectInfoView';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import HelpDoc from '@/component/helpDoc';
 import { columnGroupsText } from '@/constant/label';
 import CommonTable from '@/component/CommonTable';

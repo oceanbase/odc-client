@@ -7,7 +7,7 @@ import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { AlignLeftOutlined, CloudDownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 
 const ToolbarButton = Toolbar.Button;
 

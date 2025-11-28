@@ -9,7 +9,7 @@ import SessionStore from '@/store/sessionManager/session';
 import type { RadioChangeEvent } from 'antd/lib/radio';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import { Layout, message, Radio, Spin, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';
 import DDLResultSet from '../DDLResultSet';

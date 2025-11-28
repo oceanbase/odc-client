@@ -17,7 +17,6 @@ const PreCheckTip: React.FC<IProps> = (props) => {
   if (errorList?.length === 0 && warningList?.length === 0) {
     return null;
   }
-  const total = errorList?.length + warningList?.length;
 
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>

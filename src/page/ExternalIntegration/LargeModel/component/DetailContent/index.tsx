@@ -19,7 +19,7 @@ import React from 'react';
 import { Descriptions, Divider, Space } from 'antd';
 
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 
 import type { IManagerIntegration } from '@/d.ts';
 import { IManagerDetailTabs } from '@/d.ts';

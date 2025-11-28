@@ -7,12 +7,12 @@ import { IConnection, DbObjectType } from '@/d.ts';
 import { ModalStore } from '@/store/modal';
 import { SEARCH_OBJECT_FROM_ALL_DATABASE } from '../constant';
 import { listDatabases } from '@/common/network/database';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { syncAll } from '@/common/network/database';
 import login from '@/store/login';
 import { getDataSourceModeConfig } from '@/common/datasource';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
-import { isPhysicalDatabase } from '@/util/database';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
+import { isPhysicalDatabase } from '@/util/database/database';
 
 const useGlobalSearchData = (params: {
   project: IProject;

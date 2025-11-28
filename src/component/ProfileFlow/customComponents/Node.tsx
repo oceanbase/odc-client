@@ -4,7 +4,7 @@ import { Progress, Tooltip } from 'antd';
 import Icon, { LoadingOutlined } from '@ant-design/icons';
 import styles from './index.less';
 import classNames from 'classnames';
-import { formatTimeTemplate } from '@/util/utils';
+import { formatTimeTemplate } from '@/util/data/dateTime';
 import BigNumber from 'bignumber.js';
 import { ReactComponent as WaitingSvg } from '@/svgr/Waiting.svg';
 import { IProfileNodeStatus } from '@/d.ts';

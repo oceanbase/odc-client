@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { isObjectColumn } from '@/util/column';
-import { convertColumnType } from '@/util/utils';
+import { isObjectColumn } from '@/util/database/column';
+import { convertColumnType } from '@/util/data/string';
 import MySQLNumber from './number';
 import MySQLString from './string';
 

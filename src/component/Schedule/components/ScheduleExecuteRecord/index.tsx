@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { listChangeLog } from '@/common/network/schedule';
 import { formatMessage } from '@/util/intl';
 import { TaskOperationType, Operation, ScheduleChangeStatus } from '@/d.ts';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import StatusItem from '@/component/Task/component/TaskDetailModal/status';
 import Action from '@/component/Action';
 import DisplayTable from '@/component/DisplayTable';

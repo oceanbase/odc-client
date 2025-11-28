@@ -2,11 +2,11 @@ import { IScheduleRecord, IDataClearParameters } from '@/d.ts/schedule';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
+import { getFormatDateTime, milliSecondsToHour } from '@/util/data/dateTime';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import VariableConfigTable from '@/component/Task/component/VariableConfigTable';
 import ArchiveRange from './ArchiveRange';
-import { kbToMb, mbToKb } from '@/util/utils';
+import { kbToMb, mbToKb } from '@/util/data/byte';
 import { Descriptions, Divider, message } from 'antd';
 import ThrottleEditableCell from '@/component/Task/component/ThrottleEditableCell';
 import {

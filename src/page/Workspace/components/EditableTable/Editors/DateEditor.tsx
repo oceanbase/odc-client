@@ -22,7 +22,7 @@ import { useCallback, useContext, useEffect, useRef } from 'react';
 import { getFormatNlsDateString } from '@/common/network/table';
 import InputBigNumber from '@/component/InputBigNumber';
 import { INlsObject } from '@/d.ts';
-import { getNlsValueKey } from '@/util/column';
+import { getNlsValueKey } from '@/util/database/column';
 import { isNil } from 'lodash';
 import { PickerMode } from 'rc-picker/es/interface';
 import ResultContext from '../../DDLResultSet/ResultContext';

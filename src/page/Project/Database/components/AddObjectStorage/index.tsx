@@ -9,7 +9,7 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { DatabaseOwnerSelect } from '../DatabaseOwnerSelect';
 import { updateDataBase, listDatabases } from '@/common/network/database';
 import { ConnectType, IConnection } from '@/d.ts';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 interface AddObjectStorageProps {
   open: boolean;
   projectId: number;

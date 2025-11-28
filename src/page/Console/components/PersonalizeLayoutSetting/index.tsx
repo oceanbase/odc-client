@@ -11,7 +11,7 @@ import { TaskType } from '@/d.ts';
 import { ELayoutKey } from '../../const';
 import { PersonalizeLayoutContext } from '@/page/Console/PersonalizeLayoutContext';
 import { ScheduleType } from '@/d.ts/schedule';
-import { sortByPreservedOrder } from '@/util/utils';
+import { sortByPreservedOrder } from '@/util/data/array';
 
 const { Text } = Typography;
 

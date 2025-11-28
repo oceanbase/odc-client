@@ -11,7 +11,7 @@ import { useWatch } from 'antd/lib/form/Form';
 import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import { flatArray } from '@/util/utils';
+import { flatArray } from '@/util/data/array';
 import styles from './index.less';
 import DatabaseSelectEmpty from '@/component/Empty/DatabaseSelectEmpty';
 import { IDatabase } from '@/d.ts/database';

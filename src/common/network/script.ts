@@ -16,10 +16,10 @@
 
 import { IScript, IScriptMeta } from '@/d.ts';
 import setting from '@/store/setting';
-import { uploadFileToOSS } from '@/util/aliyun';
+import { uploadFileToOSS } from '@/common/network/aliyun';
 import { formatMessage } from '@/util/intl';
 import request from '@/util/request';
-import { downloadFile } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
 import { message, Modal } from 'antd';
 import { isArray } from 'lodash';
 

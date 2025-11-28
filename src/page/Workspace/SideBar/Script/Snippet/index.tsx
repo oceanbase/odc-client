@@ -28,7 +28,7 @@ import { SQLConsoleResourceType } from '@/common/datasource/interface';
 import { SQLConsoleEmpty } from '@/component/Empty/SQLConsoleEmpty';
 import { ReactComponent as CodeSvg } from '@/svgr/Snippet.svg';
 import { formatMessage } from '@/util/intl';
-import { getWrapedSnippetBody } from '@/util/snippet';
+import { getWrapedSnippetBody } from '@/util/business/snippet';
 import tracert from '@/util/tracert';
 import copyToCB from 'copy-to-clipboard';
 import SnippetInfoToolTip from './Info';

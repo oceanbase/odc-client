@@ -33,7 +33,7 @@ import ManageModal from './ManageModal';
 import UpdateUserModal from './UpdateUserModal';
 import { isProjectArchived } from '@/page/Project/helper';
 import { UserOperationKey, getOperatioFunc } from '@/d.ts/operation';
-import { renderTool } from '@/util/renderTool';
+import { renderTool } from '@/util/ui/renderTool';
 import { SyncOutlined } from '@ant-design/icons';
 
 export const projectRoleTextMap = {

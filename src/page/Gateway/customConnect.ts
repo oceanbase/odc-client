@@ -23,7 +23,7 @@ import { AccountType, IRemoteCustomConnectionData } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import { SpaceType } from '@/d.ts/_index';
 import login from '@/store/login';
-import { resolveUnionDbUser } from '@/util/connection';
+import { resolveUnionDbUser } from '@/util/database/connection';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';

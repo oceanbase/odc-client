@@ -37,6 +37,9 @@ import {
 } from '../modals/Detail';
 import { useLoop } from '@/util/hooks/useLoop';
 
+/**
+ * 需要实时更新的状态
+ */
 const loopStatus = [
   ScheduleTaskStatus.PREPARING,
   ScheduleTaskStatus.RUNNING,

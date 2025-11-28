@@ -15,7 +15,7 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { valueFilter } from '@/util/utils';
+import { valueFilter } from '@/util/data/string';
 import { EditOutlined } from '@ant-design/icons';
 import type { EditorProps } from '@oceanbase-odc/ob-react-data-grid';
 import { Input, Modal } from 'antd';

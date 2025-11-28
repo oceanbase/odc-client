@@ -7,7 +7,7 @@ import { ScheduleType } from '@/d.ts/schedule';
 import React, { useMemo } from 'react';
 import { getCronCycle } from '@/component/Task/component/TaskTable/utils';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
-import { getFormatDateTime, getLocalFormatDateTime } from '@/util/utils';
+import { getFormatDateTime, getLocalFormatDateTime } from '@/util/data/dateTime';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import styles from './index.less';
 const { Panel } = Collapse;

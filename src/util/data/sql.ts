@@ -18,8 +18,8 @@ import { getDataSourceModeConfig } from '@/common/datasource';
 import { PLType } from '@/constant/plType';
 import { ConnectionMode, ConnectType, DbObjectType, IFormatPLSchema, IPLParam } from '@/d.ts';
 import dayjs from 'dayjs';
-import { Oracle } from './dataType';
-import { getQuoteTableName } from './utils';
+import { Oracle } from '@/util/database/dataType';
+import { getQuoteTableName } from '@/util/utils';
 
 /**
  * 把一段输入多行注释掉，并且在首行添加comment信息。

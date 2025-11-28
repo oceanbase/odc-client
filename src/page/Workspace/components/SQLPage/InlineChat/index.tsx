@@ -26,7 +26,7 @@ import Icon, {
 } from '@ant-design/icons';
 
 import { formatMessage } from '@/util/intl';
-import { createEditorDiffDecorator, EditorDiffDecorator } from '@/util/editorDiff';
+import { createEditorDiffDecorator, EditorDiffDecorator } from '@/util/ui/editor/editorDiff';
 
 import { modifySync } from '@/common/network/ai';
 

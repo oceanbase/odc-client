@@ -20,7 +20,7 @@ import {
   MviewUnits,
   StartStrategy,
 } from './interface';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import BaseInfo from './BaseInfo';
 import Columns from './Columns';
 import TableSelector from './TableSelector';

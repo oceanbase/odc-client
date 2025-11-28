@@ -17,7 +17,7 @@ import { IDatabase } from '@/d.ts/database';
 import MultipleLintResultTable from '@/page/Workspace/components/SQLResultSet/MultipleAsyncSQLLintTable';
 import { openTasksPage } from '@/store/helper/page';
 import login from '@/store/login';
-import utils, { IEditor } from '@/util/editor';
+import utils, { IEditor } from '@/util/ui/editor';
 import { formatMessage } from '@/util/intl';
 import { getLocale } from '@umijs/max';
 import {
@@ -41,7 +41,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import DatabaseQueue from './DatabaseQueue';
 import DrawerFooter from './DrawerFooter';
 import { IProps, items, SiderTabKeys } from './helper';
-import { flatArray } from '@/util/utils';
+import { flatArray } from '@/util/data/array';
 import styles from './index.less';
 import MoreSetting from './MoreSetting';
 import { MultipleAsyncContext } from './MultipleAsyncContext';

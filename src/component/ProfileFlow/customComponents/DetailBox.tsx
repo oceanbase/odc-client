@@ -1,5 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import { formatTimeTemplate } from '@/util/utils';
+import { formatTimeTemplate } from '@/util/data/dateTime';
 import { Divider, Progress, Radio, Select, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import classnames from 'classnames';

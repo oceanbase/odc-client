@@ -12,7 +12,7 @@ import {
 import { openTasksPage } from '@/store/helper/page';
 import login from '@/store/login';
 import { ModalStore } from '@/store/modal';
-import { selectFolder } from '@/util/client';
+import { selectFolder } from '@/util/business/client';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { safeParseJson } from '@/util/utils';

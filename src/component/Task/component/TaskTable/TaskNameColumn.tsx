@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import { formatMessage } from '@/util/intl';
 import { TaskPageMode } from '../../interface';
 import login from '@/store/login';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 
 interface IProps {
   record: TaskRecord<TaskRecordParameters>;

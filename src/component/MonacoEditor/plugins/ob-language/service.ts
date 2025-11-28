@@ -23,7 +23,7 @@ import { AIQuestionType } from '@/d.ts/ai';
 import { TableColumn } from '@/page/Workspace/components/CreateTable/interface';
 import SessionStore from '@/store/sessionManager/session';
 import setting from '@/store/setting';
-import { getRealNameInDatabase } from '@/util/sql';
+import { getRealNameInDatabase } from '@/util/data/sql';
 import type { IModelOptions } from '@oceanbase-odc/monaco-plugin-ob/dist/type';
 
 function hasConnect(session: SessionStore) {

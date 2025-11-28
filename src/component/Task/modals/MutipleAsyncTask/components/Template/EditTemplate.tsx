@@ -17,7 +17,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { checkDbExpiredByDataSourceStatus } from '../../CreateModal/DatabaseQueue';
-import { flatArray } from '@/util/utils';
+import { flatArray } from '@/util/data/array';
 import InnerSelecter, { DatabaseOption } from '../../CreateModal/InnerSelecter';
 import styles from './index.less';
 import { getDataSourceModeConfig } from '@/common/datasource';

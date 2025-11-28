@@ -22,7 +22,7 @@ import {
   type IApplyDatabasePermissionTaskParams,
   type TaskDetail,
 } from '@/d.ts';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { Descriptions, Divider, Alert, Space } from 'antd';
 import { permissionOptionsMap } from '../';
 import { getExpireTimeLabel } from '@/component/Task/helper';

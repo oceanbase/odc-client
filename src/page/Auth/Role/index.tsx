@@ -30,7 +30,7 @@ import type { IManagerRole } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { Button, message, Modal, Space, Switch } from 'antd';
 import type { FixedType } from 'rc-table/lib/interface';
 import React from 'react';

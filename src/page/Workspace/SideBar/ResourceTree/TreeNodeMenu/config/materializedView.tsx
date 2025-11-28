@@ -6,7 +6,7 @@ import { message, Modal } from 'antd';
 import { openNewSQLPage } from '@/store/helper/page';
 import tracert from '@/util/tracert';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import {
   PlusOutlined,
   QuestionCircleFilled,

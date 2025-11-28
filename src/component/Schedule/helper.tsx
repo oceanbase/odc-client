@@ -28,10 +28,21 @@ import lruLocalStorageCacheStore, { PERSISTENCE_KEY } from '@/store/LRULocalCach
 import userStore from '@/store/login';
 import { safeParseJson } from '@/util/utils';
 
+/**
+ * 获取第一个启用的作业
+ * @returns
+ */
 export const getFirstEnabledSchedule = () => {
   return Object.values(schedlueConfig).find((item) => item.enabled());
 };
 
+/**
+ * 跳转创建作业页面/打开创建页面窗口
+ * @param type
+ * @param mode
+ * @param isEdit
+ * @param projectId
+ */
 export const gotoCreateSchedulePage = (
   type: ScheduleType,
   mode?: SchedulePageMode,
@@ -60,6 +71,11 @@ export const gotoCreateSchedulePage = (
   }
 };
 
+/**
+ * 获取作业执行策略文案映射
+ * @param type
+ * @returns
+ */
 export const getScheduleExecStrategyMap = (type: ScheduleType) => {
   switch (type) {
     case ScheduleType.DATA_ARCHIVE:
@@ -99,6 +115,11 @@ export const getScheduleExecStrategyMap = (type: ScheduleType) => {
   }
 };
 
+/**
+ * 获取作业视角的列表页面参数
+ * @param mode
+ * @returns
+ */
 export const getDefaultScheduleParam: (mode: SchedulePageMode) => IScheduleParam = (mode) => {
   const prevParams =
     mode !== SchedulePageMode.PROJECT &&
@@ -144,6 +165,11 @@ export const getDefaultScheduleParam: (mode: SchedulePageMode) => IScheduleParam
   return _defaultParam;
 };
 
+/**
+ * 获取执行视角的列表页面参数
+ * @param mode
+ * @returns
+ */
 export const getDefaultSubTaskParam: (mode: SchedulePageMode) => ISubTaskParam = (mode) => {
   const prevParams =
     mode !== SchedulePageMode.PROJECT &&
@@ -186,6 +212,11 @@ export const getDefaultSubTaskParam: (mode: SchedulePageMode) => ISubTaskParam =
   return _defaultParam;
 };
 
+/**
+ * 获取去重的数据源ID列表
+ * @param scheduleList
+ * @returns
+ */
 export const getDataSourceIdList = (
   scheduleList:
     | IScheduleRecord<ScheduleRecordParameters>[]
@@ -207,6 +238,11 @@ export const getDataSourceIdList = (
   return Array.from(ids);
 };
 
+/**
+ * 保存作业（作业视角/执行视角）的列表页面参数
+ * @param isScheduleView 是否是作业视角
+ * @param params 列表页面参数
+ */
 export const persistenceParams = async (
   isScheduleView: boolean,
   params: IScheduleParam | ISubTaskParam,
@@ -218,6 +254,10 @@ export const persistenceParams = async (
   }
 };
 
+/**
+ * 持久化存储作业视角的列表页面参数
+ * @param params
+ */
 const persistenceScheduleParams = async (params: IScheduleParam) => {
   const _params = {
     timeRange: JSON.stringify(params.timeRange),
@@ -238,6 +278,10 @@ const persistenceScheduleParams = async (params: IScheduleParam) => {
   }
 };
 
+/**
+ * 持久化存储执行视角的列表页面参数
+ * @param params
+ */
 const persistenceSubTaskParams = async (params: ISubTaskParam) => {
   const _params = {
     timeRange: JSON.stringify(params.timeRange),
@@ -257,6 +301,11 @@ const persistenceSubTaskParams = async (params: ISubTaskParam) => {
   }
 };
 
+/**
+ * 获取dml任务高级设置的tip
+ * @param value
+ * @returns
+ */
 export const getSettingTip = (value: dmlParametersTables): React.ReactNode => {
   const { joinTableConfigs, partitions, tableName } = value || {};
   if (!partitions?.length && !joinTableConfigs?.length) return null;

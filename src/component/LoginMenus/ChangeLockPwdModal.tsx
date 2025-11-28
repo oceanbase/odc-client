@@ -15,7 +15,7 @@
  */
 
 import { SPACE_REGEX } from '@/constant';
-import { changeLockPwd, haveLockPwd } from '@/util/client';
+import { changeLockPwd, haveLockPwd } from '@/util/business/client';
 import { formatMessage } from '@/util/intl';
 import { Button, Form, Input, message, Modal, Space } from 'antd';
 import { useForm } from 'antd/es/form/Form';

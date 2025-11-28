@@ -16,7 +16,7 @@ import {
   nodeStatus as nodeStatusMap,
   status as statusMap,
 } from '@/component/Task/component/Status';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import styles from './index.less';
 import UserPopover from '@/component/UserPopover';
 import { getStatusDisplayInfo } from '@/component/Task/component/TaskDetailModal/Nodes/helper';

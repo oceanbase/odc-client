@@ -1,5 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import React, { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { Radio } from 'antd';
 import { ScheduleTab } from '@/component/Schedule/interface';
 import ParamsContext from '@/component/Schedule/context/ParamsContext';

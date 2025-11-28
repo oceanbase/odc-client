@@ -23,8 +23,8 @@ import {
 import HelpDoc from '@/component/helpDoc';
 import { IManagerIntegration, IManagerRole } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { hourToSeconds, secondsToHour } from '@/util/utils';
-import { validTrimEmptyWithWarn } from '@/util/valid';
+import { hourToSeconds, secondsToHour } from '@/util/data/dateTime';
+import { validTrimEmptyWithWarn } from '@/util/ui/validRule';
 import { Button, Drawer, Form, Input, InputNumber, message, Modal, Space } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import React, { useEffect, useState } from 'react';

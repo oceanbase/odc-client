@@ -3,7 +3,7 @@ import { Descriptions, Divider } from 'antd';
 import { formatMessage } from '@/util/intl';
 import PartitionPolicyTable from '@/component/Task/component/PartitionPolicyTable';
 import { ErrorStrategyMap } from '@/component/Task/const';
-import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
+import { getFormatDateTime, milliSecondsToHour } from '@/util/data/dateTime';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import {

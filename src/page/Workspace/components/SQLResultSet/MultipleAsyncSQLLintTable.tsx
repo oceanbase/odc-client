@@ -3,7 +3,7 @@ import { IDatabase } from '@/d.ts/database';
 import { ModalStore } from '@/store/modal';
 import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
-import { groupByPropertyName } from '@/util/utils';
+import { groupByPropertyName } from '@/util/data/array';
 import { Table } from 'antd';
 import classNames from 'classnames';
 import { useCallback, useEffect, useState } from 'react';

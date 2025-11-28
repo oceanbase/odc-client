@@ -34,7 +34,7 @@ import { PLType } from '@/constant/plType';
 import modal from '@/store/modal';
 import pageStore from '@/store/page';
 import { ReactComponent as BatchCompileSvg } from '@/svgr/batch-compile-all.svg';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import {
   PlusOutlined,
   QuestionCircleFilled,
