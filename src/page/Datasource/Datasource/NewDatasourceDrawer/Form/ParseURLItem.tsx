@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getOBUser, parser } from '@/util/dataSourceParser';
+import { getOBUser, parser } from '@/util/parser/dataSource';
 import { formatMessage } from '@/util/intl';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Form, Input, Spin } from 'antd';

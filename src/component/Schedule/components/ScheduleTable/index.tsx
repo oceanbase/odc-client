@@ -40,7 +40,7 @@ import {
 } from '@/d.ts/schedule';
 import type { FixedType } from 'rc-table/es/interface';
 import classNames from 'classnames';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import ScheduleTaskStatusLabel from '../ScheduleTaskStatusLabel';
 import { IResponseData } from '@/d.ts';
 import ScheduleTaskActions from '@/component/Schedule/components/Actions/ScheduleTaskActions';

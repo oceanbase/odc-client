@@ -31,7 +31,7 @@ import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
-import utils, { IEditor } from '@/util/editor';
+import utils, { IEditor } from '@/util/ui/editor';
 import { formatMessage } from '@/util/intl';
 import { getLocale } from '@umijs/max';
 import {

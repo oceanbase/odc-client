@@ -55,12 +55,16 @@ import { UserStore } from '@/store/login';
 import { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { SQLStore } from '@/store/sql';
-import editorUtils from '@/util/editor';
-import { IPLPageActionData, IPLPageCreatedEventData, ODCEventType } from '@/util/events/type';
+import editorUtils from '@/util/ui/editor';
+import {
+  IPLPageActionData,
+  IPLPageCreatedEventData,
+  ODCEventType,
+} from '@/util/communication/events/type';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import { getPLEntryName } from '@/util/parser';
-import { checkPLNameChanged } from '@/util/pl';
+import { checkPLNameChanged } from '@/util/database/dataType/pl';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Checkbox, message, Modal, Typography } from 'antd';
 import EventBus from 'eventbusjs';

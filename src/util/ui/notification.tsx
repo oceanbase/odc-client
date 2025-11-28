@@ -17,7 +17,7 @@
 import { formatMessage } from '@/util/intl';
 import { Modal, notification } from 'antd';
 import React, { useCallback, useState } from 'react';
-import { generateUniqKey } from './utils';
+import { generateUniqKey } from '@/util/utils';
 export interface DescriptionProps {
   description: string;
   requestId?: string | number;

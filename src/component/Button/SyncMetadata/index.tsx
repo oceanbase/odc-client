@@ -2,7 +2,7 @@ import { syncAll } from '@/common/network/database';
 import { DBObjectSyncStatus, IDatabase } from '@/d.ts/database';
 import { ReactComponent as SyncMetadataSvg } from '@/svgr/sync_metadata.svg';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { useEffect, useRef, useState, useContext } from 'react';

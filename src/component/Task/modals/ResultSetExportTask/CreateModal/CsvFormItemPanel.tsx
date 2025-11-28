@@ -20,7 +20,7 @@ import { formatMessage } from '@/util/intl';
 import { AutoComplete, Checkbox, Col, Form, Input, Row, Select } from 'antd';
 import React from 'react';
 import styles from './index.less';
-import { CRLFToSeparatorString } from '@/util/utils';
+import { CRLFToSeparatorString } from '@/util/data/string';
 import { rules } from './const';
 const { Option } = Select;
 const FormItem = Form.Item;

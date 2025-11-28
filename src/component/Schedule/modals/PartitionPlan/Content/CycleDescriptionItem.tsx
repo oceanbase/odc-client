@@ -2,7 +2,7 @@ import { formatMessage } from '@/util/intl';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { getCronCycle } from '@/component/Task/component/TaskTable/utils';
 import type { ICycleTaskTriggerConfig } from '@/d.ts';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Collapse, Descriptions, Space } from 'antd';
 import React from 'react';

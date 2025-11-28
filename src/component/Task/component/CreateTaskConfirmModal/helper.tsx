@@ -1,7 +1,7 @@
 import { formatMessage } from '@/util/intl';
 import { IDatabase } from '@/d.ts/database';
 import { MaximumCharacterLength } from '@/component/Task/component/CreateTaskConfirmModal';
-import { safeTruncateString } from '@/util/stringTruncate';
+import { safeTruncateString } from '@/util/data/string';
 
 /** 作业的默认生成规则 */
 export const getDefaultName = (database: IDatabase) => {

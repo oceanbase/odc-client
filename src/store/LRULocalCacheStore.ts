@@ -3,13 +3,6 @@ import { safeParseJson } from '@/util/utils';
 import { isArray } from 'lodash';
 import { UserStore } from '@/store/login';
 
-/**
- * 工单作业页面参数缓存
- */
-
-export const SCHEDULE_PARAMS_PERSISTENCE_KEY = 'schedule:paramsPersistenceLocalKey';
-export const SCHEDULETASK_PARAMS_PERSISTENCE_KEY = 'scheduleTask:paramsPersistenceLocalKey';
-
 export enum PERSISTENCE_KEY {
   /** 作业-作业视角参数缓存 */
   SCHEDULE_PARAMS_PERSISTENCE_LOCALKEY = 'schedule_params_persistence_localkey',

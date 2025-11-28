@@ -33,7 +33,8 @@ import Icon, {
 import { MenuProps } from 'antd';
 import { ScheduleTaskStatus2Actions } from '@/component/Schedule/const';
 import useOperationPermissions from '@/util/hooks/useOperationPermissions';
-import { downloadFile, widthPermission } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
+import { widthPermission } from '@/util/business/manage';
 import { IOperationTypeRole } from '@/d.ts/schedule';
 import { Perspective } from '../../interface';
 import { ReactComponent as RollbackSvg } from '@/svgr/Roll-back.svg';

@@ -28,7 +28,7 @@ import { IOperationOptionType } from '@/component/CommonTable/interface';
 import type { IManagerIntegration, IResponseData, ITaskFlow, ITaskFlowNode } from '@/d.ts';
 import { IManagerResourceType, IntegrationType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { secondsToHour } from '@/util/utils';
+import { secondsToHour } from '@/util/data/dateTime';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { message, Modal, Space } from 'antd';
 import type { FixedType } from 'rc-table/es/interface';

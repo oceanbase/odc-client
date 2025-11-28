@@ -16,7 +16,7 @@
 
 import Action from '@/component/Action';
 import { formatMessage } from '@/util/intl';
-import { downloadFile } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
 
 interface IProps {
   url: string;

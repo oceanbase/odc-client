@@ -10,7 +10,7 @@ import { getLocale } from '@umijs/max';
 import download from './download';
 import { formatMessage } from '@/util/intl';
 import { resolveODCError } from './errorResolve';
-import notification from '../notification';
+import notification from '@/util/ui/notification';
 import type { AxiosInstance, AxiosHeaders } from 'axios';
 import { cloneDeep } from 'lodash';
 import qs from 'qs';

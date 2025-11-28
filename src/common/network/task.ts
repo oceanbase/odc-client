@@ -49,7 +49,7 @@ import { IProject } from '@/d.ts/project';
 import { EOperationType, IComparisonResultData, IStructrueComparisonDetail } from '@/d.ts/task';
 import setting from '@/store/setting';
 import request from '@/util/request';
-import { downloadFile } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
 import { generateFunctionSid } from './pathUtil';
 import { IDatabase } from '@/d.ts/database';
 import { FileExportResponse, ScheduleExportListView } from '@/d.ts/migrateTask';

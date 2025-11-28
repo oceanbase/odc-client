@@ -7,7 +7,7 @@ import ApprovalRecord from './ApprovalRecord';
 import { IOperationTypeRole, IScheduleRecord, ScheduleRecordParameters } from '@/d.ts/schedule';
 import ApprovalModal from '@/component/Task/component/ApprovalModal';
 import useOperationPermissions from '@/util/hooks/useOperationPermissions';
-import { widthPermission } from '@/util/utils';
+import { widthPermission } from '@/util/business/manage';
 import { ScheduleTextMap } from '@/constant/schedule';
 import { stopTask } from '@/common/network/task';
 import login from '@/store/login';

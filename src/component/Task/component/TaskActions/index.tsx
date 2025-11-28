@@ -36,8 +36,9 @@ import {
   IMockDataParams,
   IApplyPermissionTaskParams,
 } from '@/d.ts';
-import { downloadFile, getLocalFormatDateTime, uniqueTools } from '@/util/utils';
-import ipcInvoke from '@/util/client/service';
+import { downloadFile } from '@/util/data/file';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
+import ipcInvoke from '@/util/business/client/service';
 import { openSQLResultSetViewPage } from '@/store/helper/page';
 import { TaskActionsTextMap } from '@/constant/task';
 import {
@@ -49,7 +50,7 @@ import {
 } from '@ant-design/icons';
 import { TaskStatus2Actions } from '@/component/Task/const';
 import { isClient } from '@/util/env';
-import { widthPermission } from '@/util/utils';
+import { widthPermission } from '@/util/business/manage';
 import Action from '@/component/Action';
 import styles from './index.less';
 import RollBackModal from '../RollbackConfirmModal';

@@ -24,7 +24,7 @@ import {
 import StructAnalysisResult from '@/component/Task/modals/ShadowSyncTask/CreateModal/StructConfigPanel/StructAnalysisResult';
 import { ConnectionMode, TaskDetail, TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';

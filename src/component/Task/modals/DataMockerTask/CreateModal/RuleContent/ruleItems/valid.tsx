@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { compareNumber } from '@/util/bigNumber';
+import { compareNumber } from '@/util/data/bigNumber';
 import { formatMessage } from '@/util/intl';
 import { Rule } from 'antd/lib/form';
 import { isNil } from 'lodash';

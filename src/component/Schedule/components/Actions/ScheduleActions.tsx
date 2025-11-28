@@ -37,7 +37,7 @@ import {
   PauseCircleOutlined,
 } from '@ant-design/icons';
 import { ScheduleStatus2Actions } from '@/component/Schedule/const';
-import { widthPermission } from '@/util/utils';
+import { widthPermission } from '@/util/business/manage';
 import useOperationPermissions from '@/util/hooks/useOperationPermissions';
 import ProjectContext from '@/page/Project/ProjectContext';
 import { TaskExecStrategy } from '@/d.ts';

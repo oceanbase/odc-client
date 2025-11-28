@@ -14,7 +14,7 @@ import { inject, observer } from 'mobx-react';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import { SearchOutlined } from '@ant-design/icons';
 import { openGlobalSearch } from '@/page/Workspace/SideBar/ResourceTree/const';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import { syncDatasource } from '@/common/network/connection';
 
 const CustomDropdown = ({

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '../intl';
+import { formatMessage } from '@/util/intl';
 
 export default {
   500: formatMessage({

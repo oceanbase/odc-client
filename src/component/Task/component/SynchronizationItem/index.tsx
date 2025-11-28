@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { SyncTableStructureEnum } from '@/d.ts';
 import { SyncTableStructureOptions } from '@/component/Task/const';
 import { IDatabase } from '@/d.ts/database';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 
 interface IProps {
   form: FormInstance<any>;

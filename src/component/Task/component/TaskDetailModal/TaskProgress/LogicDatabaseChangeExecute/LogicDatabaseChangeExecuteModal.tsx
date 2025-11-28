@@ -13,7 +13,7 @@ import {
   getResultText,
   getSqlExecuteResultStatusIcon,
 } from '@/page/Workspace/components/SQLResultSet/ExecuteHistory';
-import { formatTimeTemplate } from '@/util/utils';
+import { formatTimeTemplate } from '@/util/data/dateTime';
 import Icon, { InfoCircleOutlined } from '@ant-design/icons';
 import { Descriptions, Drawer, Modal, Space, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';

@@ -16,7 +16,7 @@ import { formatMessage } from '@/util/intl';
  */
 
 import { Alert, Button, Modal, Popover, Space, Switch, Table, Tooltip, message } from 'antd';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { useState, useEffect } from 'react';
 import type { ColumnsType } from 'antd/es/table';
 import {

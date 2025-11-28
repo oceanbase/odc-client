@@ -1,6 +1,6 @@
 import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { ChineseAndEnglishAndNumberAndUnderline } from '@/util/validRule';
+import { ChineseAndEnglishAndNumberAndUnderline } from '@/util/ui/validRule';
 
 export const rules = {
   ['csvFormat-columnSeparator']: [

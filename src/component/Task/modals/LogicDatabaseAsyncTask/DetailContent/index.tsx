@@ -2,7 +2,7 @@ import { formatMessage } from '@/util/intl';
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { SQLContent } from '@/component/SQLContent';
 import type { ILogicalDatabaseAsyncTaskParams, ITaskResult, TaskDetail } from '@/d.ts';
-import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
+import { getFormatDateTime, milliSecondsToHour } from '@/util/data/dateTime';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Descriptions, Divider, Space, Tooltip } from 'antd';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';

@@ -1,10 +1,10 @@
 import request from '@/util/request';
-import { encodeObjName } from '@/util/utils';
+import { encodeObjName } from '@/util/data/string';
 import { Base64 } from 'js-base64';
 import sessionManager from '@/store/sessionManager';
 import { convertMaterializedViewToTable, convertCreateMaterializedViewData } from './helper';
 import { IMaterializedView, MaterializedViewRecord, RefreshMethod } from '@/d.ts';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import { formatMessage } from '@/util/intl';
 
 export async function getMaterializedView(params: {

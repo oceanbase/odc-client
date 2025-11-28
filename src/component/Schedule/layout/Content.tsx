@@ -33,7 +33,7 @@ import {
 } from '@/common/network/schedule';
 import datasourceStatus from '@/store/datasourceStatus';
 import { getDataSourceIdList, getDefaultScheduleParam, getDefaultSubTaskParam } from '../helper';
-import { getPreTime } from '@/util/utils';
+import { getPreTime } from '@/util/data/dateTime';
 import dayjs from 'dayjs';
 import { schedlueConfig } from '@/page/Schedule/const';
 import ApprovalModal from '@/component/Task/component/ApprovalModal';

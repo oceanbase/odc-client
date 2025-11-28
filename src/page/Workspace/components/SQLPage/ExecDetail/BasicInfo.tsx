@@ -16,7 +16,7 @@
 
 import { ISQLExecuteDetail } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { Card, Descriptions, Tooltip as AntdTooltip } from 'antd';
 import classNames from 'classnames';
 import styles from './index.less';

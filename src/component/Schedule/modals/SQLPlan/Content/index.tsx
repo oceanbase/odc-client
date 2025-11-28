@@ -1,6 +1,6 @@
 import { IScheduleRecord, ISqlPlanParameters, ScheduleType } from '@/d.ts/schedule';
 import { Descriptions, Divider } from 'antd';
-import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
+import { getFormatDateTime, milliSecondsToHour } from '@/util/data/dateTime';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { formatMessage } from '@/util/intl';

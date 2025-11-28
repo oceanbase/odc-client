@@ -25,7 +25,7 @@ import {
   IChannelColumnsKeys,
 } from '@/d.ts/projectNotification';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { SearchOutlined } from '@ant-design/icons';
 import { Space, Switch } from 'antd';
 import { ColumnType } from 'antd/es/table';

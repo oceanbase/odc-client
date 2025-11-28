@@ -49,7 +49,8 @@ import {
 } from '@/d.ts/task';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
-import { downloadFile, getFormatDateTime } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { SearchOutlined } from '@ant-design/icons';
 import { ConfigProvider, Descriptions, Divider, Empty, Modal, Tabs } from 'antd';
 import { inject, observer } from 'mobx-react';

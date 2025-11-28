@@ -21,7 +21,7 @@ import TaskExecutionMethodForm from '@/component/Task/component/TaskExecutionMet
 import { ConnectionMode, ITable, TaskExecStrategy, TaskType } from '@/d.ts';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { SettingStore } from '@/store/setting';
-import { getColumnSizeMapFromColumns } from '@/util/column';
+import { getColumnSizeMapFromColumns } from '@/util/database/column';
 import { formatMessage } from '@/util/intl';
 import { useUpdate } from 'ahooks';
 import { Col, Divider, Form, InputNumber, Radio, Row, Select } from 'antd';

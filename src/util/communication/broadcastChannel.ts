@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import logger from './logger';
+import logger from '@/util/logger';
 /** @description 收集全局使用的频道，统一管理 */
 export enum ChannelMap {
   LDAP_TEST = 'LDAP_TEST',

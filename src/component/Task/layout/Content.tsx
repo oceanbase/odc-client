@@ -6,7 +6,7 @@ import { ModalStore } from '@/store/modal';
 import { useLocation } from '@umijs/max';
 import type { ITableInstance } from '@/component/CommonTable/interface';
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
-import { getPreTime } from '@/util/utils';
+import { getPreTime } from '@/util/data/dateTime';
 import dayjs from 'dayjs';
 import { getTaskDetail } from '@/common/network/task';
 import tracert from '@/util/tracert';

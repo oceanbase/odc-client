@@ -23,7 +23,11 @@ import { SchedulePageMode } from '../interface';
 import { useLoop } from '@/util/hooks/useLoop';
 import scheduleStore from '@/store/schedule';
 
+/**
+ * 需要实时更新的状态
+ */
 const loopStatus = [ScheduleStatus.ENABLED, ScheduleStatus.PAUSE, ScheduleStatus.CREATING];
+
 interface IProps {
   taskOpenRef?: React.RefObject<boolean>;
   type: ScheduleType;

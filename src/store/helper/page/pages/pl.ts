@@ -18,7 +18,7 @@ import { PLType } from '@/constant/plType';
 import { IFunction, IProcedure, ITrigger, IType, PageType } from '@/d.ts';
 import page from '@/store/page';
 import { formatMessage } from '@/util/intl';
-import { getPLScriptTemplate } from '@/util/sql';
+import { getPLScriptTemplate } from '@/util/data/sql';
 import { generateUniqKey } from '@/util/utils';
 import { Page } from './base';
 

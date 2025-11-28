@@ -32,7 +32,7 @@ import modalStore from '@/store/modal';
 import pageStore from '@/store/page';
 import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import tracert from '@/util/tracert';
 import {
   PlusOutlined,
@@ -45,7 +45,7 @@ import { ResourceNodeType } from '../../type';
 import { hasTableChangePermission, hasTableExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { DatabasePermissionType } from '@/d.ts/database';
 import request from '@/util/request';
 import DatabaseStore from '@/store/sessionManager/database';

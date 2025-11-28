@@ -15,7 +15,7 @@
  */
 
 import InputBigNumber from '@/component/InputBigNumber';
-import { getColumnMaxValue } from '@/util/column';
+import { getColumnMaxValue } from '@/util/database/column';
 import { formatMessage } from '@/util/intl';
 import { DatePicker, Form, Input, InputNumber, Select, Space } from 'antd';
 import { FormInstance } from 'antd/es/form/Form';

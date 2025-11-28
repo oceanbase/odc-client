@@ -40,7 +40,7 @@ import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { mbToB } from '@/util/utils';
+import { mbToB } from '@/util/data/byte';
 import {
   Alert,
   Button,

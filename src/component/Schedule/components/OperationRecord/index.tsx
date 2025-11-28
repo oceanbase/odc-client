@@ -1,5 +1,5 @@
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   IScheduleRecord,

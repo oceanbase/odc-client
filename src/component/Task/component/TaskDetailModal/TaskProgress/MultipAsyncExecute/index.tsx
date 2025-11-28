@@ -13,7 +13,7 @@ import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { Popover, Space } from 'antd';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import Icon, { SearchOutlined } from '@ant-design/icons';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import StatusLabel, { status } from '@/component/Task/component/Status';
 import Action from '@/component/Action';
 import { IDatabase } from '@/d.ts/database';

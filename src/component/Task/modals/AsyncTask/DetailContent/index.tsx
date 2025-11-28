@@ -20,7 +20,7 @@ import { SQLContent } from '@/component/SQLContent';
 import type { IAsyncTaskParams, ITaskResult, TaskDetail } from '@/d.ts';
 import { TaskExecStrategy, TaskFlowNodeType, TaskNodeStatus } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
+import { getFormatDateTime, milliSecondsToHour } from '@/util/data/dateTime';
 import { InfoCircleOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Descriptions, Divider, Space, Tooltip } from 'antd';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';

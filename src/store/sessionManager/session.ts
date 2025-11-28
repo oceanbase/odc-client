@@ -38,9 +38,9 @@ import { getBuiltinSnippets } from '@/common/network/snippet';
 import { ISnippet } from '../snippet';
 import { DBDefaultStoreType } from '@/d.ts/table';
 import { isString } from 'lodash';
-import { OBCompare, ODC_PROFILE_SUPPORT_VERSION } from '@/util/versionUtils';
+import { OBCompare, ODC_PROFILE_SUPPORT_VERSION } from '@/util/business/versionUtils';
 import { ConnectionMode } from '@/d.ts';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 
 const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';

@@ -18,7 +18,7 @@ import { deleteConnection } from '@/common/network/connection';
 import { actionTypes, IConnection } from '@/d.ts';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import {
   CopyOutlined,
   DeleteOutlined,

@@ -19,7 +19,7 @@ import { IResultSet, ISqlExecuteResultStatus } from '@/d.ts';
 import DDLResultSet from '@/page/Workspace/components/DDLResultSet';
 import SQLResultLog from '@/page/Workspace/components/SQLResultSet/SQLResultLog';
 import SessionStore from '@/store/sessionManager/session';
-import { IEditor } from '@/util/editor';
+import { IEditor } from '@/util/ui/editor';
 import { formatMessage } from '@/util/intl';
 import { Tabs, Tooltip } from 'antd';
 import classnames from 'classnames';

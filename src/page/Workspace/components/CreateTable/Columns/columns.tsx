@@ -17,7 +17,7 @@
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { IDataType } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
-import { dataTypesIns } from '@/util/dataType';
+import { dataTypesIns } from '@/util/database/dataType';
 import { formatMessage } from '@/util/intl';
 import { Column } from '@oceanbase-odc/ob-react-data-grid';
 import { isNil } from 'lodash';
@@ -31,7 +31,7 @@ import { TableColumn } from '../interface';
 import WrapCheckboxFormatetr from '../RdgFomatter/CheckboxFormatter';
 import WrapDisableFormatter from '../RdgFomatter/DisableFormatter';
 import { getTypeByColumnName } from './helper';
-import { valueFilter } from '@/util/utils';
+import { valueFilter } from '@/util/data/string';
 
 interface IColumnParams {
   session?: SessionStore;

@@ -6,7 +6,7 @@ import login from '@/store/login';
 import dayjs from 'dayjs';
 import { SchedulePageMode } from '@/component/Schedule/interface';
 import styles from './index.less';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 
 interface IProps {
   record: IScheduleRecord<ScheduleRecordParameters>;

@@ -5,7 +5,7 @@ import {
 } from '@/d.ts/scheduleTask';
 import { Descriptions } from 'antd';
 import { ScheduleTextMap } from '@/constant/schedule';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { SQLContent } from '@/component/SQLContent';
 import { formatMessage } from '@/util/intl';

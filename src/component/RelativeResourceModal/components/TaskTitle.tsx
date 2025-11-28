@@ -1,7 +1,7 @@
 import { formatMessage } from '@/util/intl';
 import login from '@/store/login';
 import { IResourceDependencyItem } from '@/d.ts/relativeResource';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { Tooltip, Typography } from 'antd';
 
 export const TaskTitle = ({ record }: { record: IResourceDependencyItem }) => {

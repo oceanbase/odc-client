@@ -6,13 +6,13 @@ import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
 import { formatMessage } from '@/util/intl';
 import VariableConfigTable from '@/component/Task/component/VariableConfigTable';
 import ArchiveRange from './ArchiveRange';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import {
   DirtyRowActionEnum,
   DirtyRowActionLabelMap,
 } from '@/component/ExecuteSqlDetailModal/constant';
-import { kbToMb, mbToKb } from '@/util/utils';
-import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
+import { kbToMb, mbToKb } from '@/util/data/byte';
+import { getFormatDateTime, milliSecondsToHour } from '@/util/data/dateTime';
 import { InsertActionOptions } from '@/component/Schedule/modals/DataArchive/Create/helper';
 import { SyncTableStructureConfig } from '@/component/Task/const';
 import ThrottleEditableCell from '@/component/Task/component/ThrottleEditableCell';

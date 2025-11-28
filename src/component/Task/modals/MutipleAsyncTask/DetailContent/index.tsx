@@ -11,7 +11,7 @@ import {
 } from '@/d.ts';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
+import { getFormatDateTime, milliSecondsToHour } from '@/util/data/dateTime';
 import Icon from '@ant-design/icons';
 import { Descriptions, Divider, Drawer, Space, Steps } from 'antd';
 import classNames from 'classnames';

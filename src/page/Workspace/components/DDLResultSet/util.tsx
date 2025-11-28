@@ -15,8 +15,8 @@
  */
 
 import { ConnectionMode, ResultSetColumn } from '@/d.ts';
-import { getNlsValueKey } from '@/util/column';
-import exportToSQL from '@/util/sqlExport';
+import { getNlsValueKey } from '@/util/database/column';
+import exportToSQL from '@/util/database/sqlExport';
 import { getBlobValueKey } from '@/util/utils';
 import { DataGridRef, getSelectedRangeData } from '@oceanbase-odc/ob-react-data-grid';
 import copy from 'copy-to-clipboard';

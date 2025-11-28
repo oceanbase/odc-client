@@ -3,11 +3,11 @@ import { DataBaseOperationKey, IOperation } from '@/d.ts/operation';
 import { formatMessage } from '@/util/intl';
 import modalStore from '@/store/modal';
 import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { gotoSQLWorkspace } from '@/util/route';
 import { IProject } from '@/d.ts/project';
 import { getDataSourceModeConfig } from '@/common/datasource';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import setting from '@/store/setting';
 
 type TGetDatabaseOperation = (params: { record: IDatabase; project: IProject }) => IOperation[];

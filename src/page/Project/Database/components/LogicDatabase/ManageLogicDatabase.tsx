@@ -17,7 +17,7 @@ import { IResponseData } from '@/d.ts';
 import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
 import { ILogicalDatabase, ILogicalTable, InconsistentPhysicalTable } from '@/d.ts/logicalDatabase';
 import { ReactComponent as NewOpenSvg } from '@/svgr/newopen.svg';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { gotoSQLWorkspace } from '@/util/route';
 import Icon, { ExclamationCircleFilled } from '@ant-design/icons';
 import {
@@ -35,7 +35,7 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import type { FixedType } from 'rc-table/es/interface';
 import datasourceStatus from '@/store/datasourceStatus';
 

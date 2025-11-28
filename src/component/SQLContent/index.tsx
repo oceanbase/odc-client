@@ -18,7 +18,7 @@ import { getScheduleTaskFile, getTaskFile } from '@/common/network/task';
 import { TaskType } from '@/d.ts';
 import type { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { downloadFile } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
 import { Button, Space } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';

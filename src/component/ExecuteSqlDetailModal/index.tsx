@@ -14,7 +14,7 @@ import { TraceTabsType } from '@/page/Workspace/components/Trace';
 import TraceComp from '@/page/Workspace/components/Trace/TraceComponent';
 import modal, { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
-import { downloadFile } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
 import { Button, Input, message, Modal, Radio, Space, Spin, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
