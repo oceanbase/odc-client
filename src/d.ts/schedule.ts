@@ -133,6 +133,8 @@ export interface IScheduleRecord<T> {
   project?: IProject;
   projectId: number;
   scheduleId: number;
+  // 分区计划有设置删除策略时，删除的执行记录对应的作业id
+  subScheduleId?: number;
   scheduleName?: string;
   database?: IDatabase;
   status: ScheduleStatus;

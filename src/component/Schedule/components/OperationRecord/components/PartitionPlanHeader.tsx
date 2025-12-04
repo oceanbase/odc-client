@@ -5,8 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { ICycleTaskTriggerConfig } from '@/d.ts';
 import ExecutionInfoContainer from '@/component/Schedule/components/ExecutionInfoContainer';
 import styles from '../index.less';
-
-enum PartitionTypeExecutionMethod {
+export enum PartitionTypeExecutionMethod {
   /** 创建分区 */
   CreatePartition = 'CreatePartition',
   /** 删除分区 */
@@ -16,9 +15,10 @@ enum PartitionTypeExecutionMethod {
 interface IProps {
   schedule: IScheduleRecord<IPartitionPlan>;
   lastExecuteTime: number;
+  onTabChange?: (type: PartitionTypeExecutionMethod) => void;
 }
 const PartitionPlanHeader: React.FC<IProps> = (props) => {
-  const { schedule, lastExecuteTime } = props;
+  const { schedule, lastExecuteTime, onTabChange } = props;
   const [type, setType] = useState<PartitionTypeExecutionMethod>(
     PartitionTypeExecutionMethod.CreatePartition,
   );
@@ -36,14 +36,15 @@ const PartitionPlanHeader: React.FC<IProps> = (props) => {
   }, [type]);
 
   return (
-    <Space className={styles.infoContainer}>
+    <div>
       {schedule.parameters.droppingTrigger && (
         <Segmented
           value={type}
           onChange={(value) => {
             setType(value);
+            onTabChange?.(value);
           }}
-          className={styles.segmented}
+          style={{ marginBottom: '6px' }}
           options={[
             {
               value: PartitionTypeExecutionMethod.CreatePartition,
@@ -82,15 +83,16 @@ const PartitionPlanHeader: React.FC<IProps> = (props) => {
           ]}
         />
       )}
-
-      <ExecutionInfoContainer
-        trigger={trigger}
-        fireTimes={fireTimes}
-        type={schedule?.type}
-        useStyleContainer={false}
-        lastExecuteTime={lastExecuteTime}
-      />
-    </Space>
+      <Space className={styles.infoContainer}>
+        <ExecutionInfoContainer
+          trigger={trigger}
+          fireTimes={fireTimes}
+          type={schedule?.type}
+          useStyleContainer={false}
+          lastExecuteTime={lastExecuteTime}
+        />
+      </Space>
+    </div>
   );
 };
 
