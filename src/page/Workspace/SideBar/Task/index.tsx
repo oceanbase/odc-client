@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import Sider from '@/component/Task/container/Sider';
+import Sider from '@/component/Task/layout/Sider';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
 import React, { useEffect } from 'react';
 import SideTabs from '../components/SideTabs';
 import styles from './index.less';
+import { TaskPageMode } from '@/component/Task/interface';
 
 interface IProps {}
 
@@ -36,7 +37,7 @@ const Task: React.FC<IProps> = () => {
           key: 'task',
           actions: [],
           render() {
-            return <Sider className={styles.taskSider} isPage={true} />;
+            return <Sider className={styles.taskSider} mode={TaskPageMode.MULTI_PAGE} />;
           },
         },
       ]}

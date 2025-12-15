@@ -24,18 +24,19 @@ import {
 } from '@/d.ts';
 import { SchemaChangeRecordStatus } from '@/d.ts/logicalDatabase';
 import { formatMessage } from '@/util/intl';
-import {
+import Icon, {
   CheckCircleFilled,
   CloseCircleFilled,
   EllipsisOutlined,
   ExclamationCircleFilled,
+  ExclamationCircleOutlined,
   LoadingOutlined,
   StopFilled,
 } from '@ant-design/icons';
 import { Space, Tooltip } from 'antd';
 import { isNil } from 'lodash';
 import React from 'react';
-import { isCycleTask } from '@/component/Task/helper';
+import { ReactComponent as WaitingYellowSvg } from '@/svgr/waiting_yellow.svg';
 export const nodeStatus = {
   [TaskFlowNodeType.APPROVAL_TASK]: {
     [TaskNodeStatus.PENDING]: {
@@ -160,7 +161,45 @@ export const nodeStatus = {
     },
   },
 };
-export const status = {
+
+// 筛选展示的工单状态
+export const flowStatusSelectOptions = [
+  TaskStatus.CREATED,
+  TaskStatus.PRE_CHECK_EXECUTING,
+  TaskStatus.APPROVING,
+  TaskStatus.REJECTED,
+  TaskStatus.APPROVAL_EXPIRED,
+  TaskStatus.WAIT_FOR_SCHEDULE_EXECUTION,
+  TaskStatus.WAIT_FOR_EXECUTION,
+  TaskStatus.WAIT_FOR_EXECUTION_EXPIRED,
+  TaskStatus.EXECUTING,
+  TaskStatus.EXECUTION_SUCCEEDED,
+  TaskStatus.EXECUTION_SUCCEEDED_WITH_ERRORS,
+  TaskStatus.EXECUTION_ABNORMAL,
+  TaskStatus.EXECUTION_FAILED,
+  TaskStatus.EXECUTION_EXPIRED,
+  TaskStatus.CANCELLED,
+  TaskStatus.PRE_CHECK_FAILED,
+];
+
+export const PrivateSpaceflowStatusSelectOptions = [
+  TaskStatus.CREATED,
+  TaskStatus.PRE_CHECK_EXECUTING,
+  TaskStatus.WAIT_FOR_SCHEDULE_EXECUTION,
+  TaskStatus.WAIT_FOR_EXECUTION,
+  TaskStatus.EXECUTING,
+  TaskStatus.EXECUTION_SUCCEEDED,
+  TaskStatus.EXECUTION_SUCCEEDED_WITH_ERRORS,
+  TaskStatus.EXECUTION_ABNORMAL,
+  TaskStatus.EXECUTION_FAILED,
+  TaskStatus.EXECUTION_EXPIRED,
+  TaskStatus.CANCELLED,
+  TaskStatus.PRE_CHECK_FAILED,
+];
+
+export const status: Partial<
+  Record<TaskStatus, { icon: React.ReactNode; text: string; desc?: React.ReactNode }>
+> = {
   [TaskStatus.APPROVING]: {
     icon: (
       <ExclamationCircleFilled
@@ -175,31 +214,15 @@ export const status = {
       defaultMessage: '审批中',
     }), //审批中
   },
-
-  [TaskStatus.WAIT_FOR_CONFIRM]: {
-    icon: (
-      <ExclamationCircleFilled
-        style={{
-          color: 'var(--icon-blue-color)',
-        }}
-      />
-    ),
-
-    text: formatMessage({
-      id: 'odc.component.TaskStatus.Approving',
-      defaultMessage: '审批中',
-    }), //审批中
-  },
-
   [TaskStatus.WAIT_FOR_EXECUTION]: {
     icon: (
       <EllipsisOutlined
         style={{
           color: '#ffffff',
           background: 'rgb(250, 173, 20)',
-          borderRadius: '14px',
+          borderRadius: '11px',
           padding: 1,
-          fontSize: 13,
+          fontSize: 11,
         }}
       />
     ),
@@ -209,22 +232,6 @@ export const status = {
       defaultMessage: '待执行',
     }), //待执行
   },
-
-  [TaskStatus.CREATED]: {
-    icon: (
-      <LoadingOutlined
-        style={{
-          color: 'var(--icon-blue-color)',
-        }}
-      />
-    ),
-
-    text: formatMessage({
-      id: 'odc.component.TaskStatus.Queuing',
-      defaultMessage: '排队中',
-    }), //排队中
-  },
-
   [TaskStatus.EXECUTING]: {
     icon: (
       <LoadingOutlined
@@ -240,6 +247,35 @@ export const status = {
     }), //执行中
   },
 
+  [TaskStatus.EXECUTION_SUCCEEDED_WITH_ERRORS]: {
+    icon: (
+      <CheckCircleFilled
+        style={{
+          color: 'var(--icon-green-color)',
+        }}
+      />
+    ),
+
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.53633125',
+      defaultMessage: '执行成功',
+    }),
+    desc: (
+      <Tooltip
+        title={formatMessage({
+          id: 'src.component.Task.component.Status.447536E5',
+          defaultMessage: '执行时存在错误，已跳过',
+        })}
+      >
+        <ExclamationCircleOutlined
+          style={{
+            color: 'rgb(250, 173, 20)',
+            marginLeft: 4,
+          }}
+        />
+      </Tooltip>
+    ),
+  },
   [TaskStatus.EXECUTION_SUCCEEDED]: {
     icon: (
       <CheckCircleFilled
@@ -254,7 +290,76 @@ export const status = {
       defaultMessage: '执行成功',
     }), //执行成功
   },
+  [TaskStatus.EXECUTION_FAILED]: {
+    icon: (
+      <CloseCircleFilled
+        style={{
+          color: 'var(--function-red6-color)',
+        }}
+      />
+    ),
 
+    text: formatMessage({
+      id: 'odc.component.TaskStatus.Failed.2',
+      defaultMessage: '执行失败',
+    }), //执行失败
+  },
+  [TaskStatus.CANCELLED]: {
+    icon: (
+      <StopFilled
+        style={{
+          color: 'var(--icon-color-disable)',
+        }}
+      />
+    ),
+
+    text: formatMessage({
+      id: 'odc.component.TaskStatus.Terminated',
+      defaultMessage: '已终止',
+    }), //已终止
+  },
+  [TaskStatus.CREATED]: {
+    icon: (
+      <LoadingOutlined
+        style={{
+          color: 'var(--icon-blue-color)',
+        }}
+      />
+    ),
+
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.298842FF',
+      defaultMessage: '已创建',
+    }),
+  },
+  [TaskStatus.PRE_CHECK_EXECUTING]: {
+    icon: (
+      <LoadingOutlined
+        style={{
+          color: 'var(--icon-blue-color)',
+        }}
+      />
+    ),
+
+    text: formatMessage({
+      id: 'src.component.Task.component.Status.A399E57D',
+      defaultMessage: '预检查中',
+    }),
+  },
+  [TaskStatus.PRE_CHECK_FAILED]: {
+    icon: (
+      <CloseCircleFilled
+        style={{
+          color: 'var(--function-red6-color)',
+        }}
+      />
+    ),
+
+    text: formatMessage({
+      id: 'odc.src.component.Task.component.Status.PreExaminationFailure',
+      defaultMessage: '预检查失败',
+    }), //'预检查失败'
+  },
   [TaskStatus.REJECTED]: {
     icon: (
       <CloseCircleFilled
@@ -269,22 +374,6 @@ export const status = {
       defaultMessage: '审批不通过',
     }), //审批不通过
   },
-
-  [TaskStatus.EXECUTION_EXPIRED]: {
-    icon: (
-      <StopFilled
-        style={{
-          color: 'var(--icon-color-disable)',
-        }}
-      />
-    ),
-
-    text: formatMessage({
-      id: 'odc.component.TaskStatus.ExecutionExpiration',
-      defaultMessage: '执行过期',
-    }), //执行过期
-  },
-
   [TaskStatus.APPROVAL_EXPIRED]: {
     icon: (
       <StopFilled
@@ -298,6 +387,21 @@ export const status = {
       id: 'odc.component.TaskStatus.ApprovalExpired.1',
       defaultMessage: '审批过期',
     }), //审批过期
+  },
+
+  [TaskStatus.WAIT_FOR_SCHEDULE_EXECUTION]: {
+    icon: (
+      <LoadingOutlined
+        style={{
+          color: 'var(--icon-blue-color)',
+        }}
+      />
+    ),
+
+    text: formatMessage({
+      id: 'odc.component.TaskStatus.Queuing',
+      defaultMessage: '排队中',
+    }), //排队中
   },
 
   [TaskStatus.WAIT_FOR_EXECUTION_EXPIRED]: {
@@ -317,35 +421,36 @@ export const status = {
     //等待执行过期
   },
 
-  [TaskStatus.EXECUTION_FAILED]: {
+  [TaskStatus.EXECUTION_EXPIRED]: {
     icon: (
-      <CloseCircleFilled
+      <StopFilled
         style={{
-          color: 'var(--function-red6-color)',
+          color: 'var(--icon-color-disable)',
         }}
       />
     ),
 
     text: formatMessage({
-      id: 'odc.component.TaskStatus.Failed.2',
-      defaultMessage: '执行失败',
-    }), //执行失败
+      id: 'odc.component.TaskStatus.ExecutionExpiration',
+      defaultMessage: '执行过期',
+    }), //执行过期
   },
 
-  [TaskStatus.PRE_CHECK_FAILED]: {
+  [TaskStatus.EXECUTION_ABNORMAL]: {
     icon: (
       <CloseCircleFilled
         style={{
-          color: 'var(--function-red6-color)',
+          color: 'var(--text-color-error)',
         }}
       />
     ),
 
     text: formatMessage({
-      id: 'odc.src.component.Task.component.Status.PreExaminationFailure',
-      defaultMessage: '预检查失败',
-    }), //'预检查失败'
+      id: 'src.component.Task.component.Status.F440C489',
+      defaultMessage: '执行异常',
+    }), //执行异常
   },
+
   [TaskStatus.ROLLBACK_FAILED]: {
     icon: (
       <CloseCircleFilled
@@ -375,22 +480,6 @@ export const status = {
       defaultMessage: '已回滚',
     }), //已回滚
   },
-
-  [TaskStatus.CANCELLED]: {
-    icon: (
-      <StopFilled
-        style={{
-          color: 'var(--icon-color-disable)',
-        }}
-      />
-    ),
-
-    text: formatMessage({
-      id: 'odc.component.TaskStatus.Terminated',
-      defaultMessage: '已终止',
-    }), //已终止
-  },
-
   [TaskStatus.COMPLETED]: {
     icon: (
       <CheckCircleFilled
@@ -401,28 +490,30 @@ export const status = {
     ),
 
     text: formatMessage({
-      id: 'odc.component.TaskStatus.Completed',
+      id: 'odc.component.Status.Completed',
       defaultMessage: '已完成',
     }), //已完成
   },
-  [TaskStatus.EXECUTION_ABNORMAL]: {
+  [TaskStatus.ROLLBACKING]: {
     icon: (
-      <CloseCircleFilled
+      <LoadingOutlined
         style={{
-          color: 'var(--text-color-error)',
+          color: 'var(--icon-blue-color)',
         }}
       />
     ),
 
     text: formatMessage({
-      id: 'src.component.Task.component.Status.F440C489',
-      defaultMessage: '执行异常',
-    }), //执行异常
+      id: 'src.component.Task.component.Status.E882A539',
+      defaultMessage: '回滚中',
+    }),
   },
 };
 
 // 周期任务状态
-export const cycleStatus = {
+export const cycleStatus: Partial<
+  Record<TaskStatus, { icon: React.ReactNode; text: string; desc?: React.ReactNode }>
+> = {
   [TaskStatus.APPROVING]: {
     icon: (
       <ExclamationCircleFilled
@@ -560,7 +651,9 @@ export const cycleStatus = {
 };
 
 // 子任务状态（仅周期任务 + 无锁结构变更）
-export const subTaskStatus = {
+export const subTaskStatus: Partial<
+  Record<SubTaskStatus, { icon: React.ReactNode; text: string; desc?: React.ReactNode }>
+> = {
   [SubTaskStatus.DONE]: {
     icon: (
       <CheckCircleFilled
@@ -668,17 +761,7 @@ export const logicDBChangeTaskStatus = {
     }),
   },
   [SchemaChangeRecordStatus.PENDING]: {
-    icon: (
-      <EllipsisOutlined
-        style={{
-          color: '#ffffff',
-          background: 'rgb(250, 173, 20)',
-          borderRadius: '14px',
-          padding: 1,
-          fontSize: 13,
-        }}
-      />
-    ),
+    icon: <Icon component={WaitingYellowSvg} style={{ fontSize: 14 }} />,
 
     text: formatMessage({
       id: 'src.component.Task.component.Status.1B9301A5',
@@ -789,13 +872,12 @@ const StatusLabel: React.FC<IProps> = (props) => {
     string,
     {
       icon: React.ReactNode;
-      text: string;
+      text: string | React.ReactNode;
+      desc?: React.ReactNode;
     }
   > = statusMap[StatusNodeType.FLOW_TASK];
   if (isSubTask) {
     statusInfo = statusMap[StatusNodeType.SUB_TASK];
-  } else if (isCycleTask(type)) {
-    statusInfo = statusMap[StatusNodeType.CYCLE_TASK];
   }
   const statusObj = statusInfo[_status];
   return (
@@ -814,7 +896,7 @@ const StatusLabel: React.FC<IProps> = (props) => {
           overflow: 'hidden',
           maxWidth: '100%',
         }}
-        size={5}
+        size={0}
       >
         {statusObj ? (
           <>
@@ -824,9 +906,12 @@ const StatusLabel: React.FC<IProps> = (props) => {
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 maxWidth: '100%',
+                marginLeft: 4,
+                marginRight: 4,
               }}
             >
               {statusObj.text}
+              {statusObj?.desc}
             </span>
             {!isNil(progress) && _status === TaskStatus.EXECUTING ? ` (${progress}%) ` : null}
           </>

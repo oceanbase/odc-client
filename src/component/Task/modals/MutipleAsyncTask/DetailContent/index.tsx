@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { getDataSourceModeConfig, getDataSourceStyleByConnectType } from '@/common/datasource';
 import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
@@ -11,7 +27,7 @@ import {
 } from '@/d.ts';
 import { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime, milliSecondsToHour } from '@/util/utils';
+import { getFormatDateTime, milliSecondsToHour } from '@/util/data/dateTime';
 import Icon from '@ant-design/icons';
 import { Descriptions, Divider, Drawer, Space, Steps } from 'antd';
 import classNames from 'classnames';
@@ -23,6 +39,7 @@ import { TaskTypeMap } from '@/component/Task/helper';
 import styles from './index.less';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
 import EllipsisText from '@/component/EllipsisText';
+import login from '@/store/login';
 const { Step } = Steps;
 interface IStructureComparisonTaskContentProps {
   modalStore?: ModalStore;
@@ -53,31 +70,18 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
     const taskExecStrategyMap = getTaskExecStrategyMap(task?.type);
     return (
       <>
-        <Descriptions column={4} style={{ marginBottom: 16 }}>
+        <Descriptions column={2} style={{ marginBottom: 16 }}>
+          <Descriptions.Item label={'ID'}>{task?.id}</Descriptions.Item>
           <Descriptions.Item
-            span={2}
-            label={
-              formatMessage({
-                id: 'src.component.Task.StructureComparisonTask.DetailContent.152888BE',
-                defaultMessage: '任务编号',
-              }) /*"任务编号"*/
-            }
-          >
-            {task?.id}
-          </Descriptions.Item>
-          <Descriptions.Item
-            span={2}
-            label={
-              formatMessage({
-                id: 'src.component.Task.StructureComparisonTask.DetailContent.5E3A8702',
-                defaultMessage: '任务类型',
-              }) /*"任务类型"*/
-            }
+            label={formatMessage({
+              id: 'src.component.Task.modals.MutipleAsyncTask.DetailContent.089C6237',
+              defaultMessage: '类型',
+            })}
           >
             {TaskTypeMap?.[task?.type]}
           </Descriptions.Item>
           <Descriptions.Item
-            span={4}
+            span={2}
             label={formatMessage({
               id: 'src.component.Task.MutipleAsyncTask.DetailContent.628C9DB4',
               defaultMessage: '数据库',
@@ -104,15 +108,17 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
             </a>
           </Descriptions.Item>
 
-          <Descriptions.Item
-            span={2}
-            label={formatMessage({
-              id: 'src.component.Task.MutipleAsyncTask.DetailContent.B6FF5C81',
-              defaultMessage: '所属项目',
-            })}
-          >
-            <EllipsisText content={task?.parameters?.databases?.[0]?.project?.name} />
-          </Descriptions.Item>
+          {!login.isPrivateSpace() && (
+            <Descriptions.Item
+              span={1}
+              label={formatMessage({
+                id: 'src.component.Task.modals.MutipleAsyncTask.DetailContent.C3969824',
+                defaultMessage: '项目',
+              })}
+            >
+              <EllipsisText content={task?.parameters?.databases?.[0]?.project?.name} />
+            </Descriptions.Item>
+          )}
           <Descriptions.Item
             span={2}
             label={formatMessage({
@@ -120,14 +126,19 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
               defaultMessage: '风险等级',
             })}
           >
-            <ODCRiskLevelLabel
-              iconMode
-              level={task?.riskLevel?.level}
-              content={task?.riskLevel?.name}
-            />
+            <ODCRiskLevelLabel iconMode levelMap level={task?.riskLevel?.level} />
+          </Descriptions.Item>
+          <Descriptions.Item
+            span={2}
+            label={formatMessage({
+              id: 'src.component.Task.MutipleAsyncTask.DetailContent.2ACDBED8',
+              defaultMessage: '描述',
+            })}
+          >
+            {task?.description || '-'}
           </Descriptions.Item>
         </Descriptions>
-        <Divider style={{ marginTop: 16 }} />
+        <Divider />
         <SimpleTextItem
           label={formatMessage({
             id: 'src.component.Task.MutipleAsyncTask.DetailContent.10038C15',
@@ -220,7 +231,20 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
           >
             {taskExecStrategyMap?.[task?.executionStrategy]}
           </Descriptions.Item>
-          {task?.executionStrategy === TaskExecStrategy.AUTO ? (
+          {task?.executionStrategy === TaskExecStrategy.TIMER && (
+            <Descriptions.Item
+              span={2}
+              label={
+                formatMessage({
+                  id: 'odc.src.component.Task.AsyncTask.DetailContent.ExecutionTime',
+                  defaultMessage: '执行时间',
+                }) /* 执行时间 */
+              }
+            >
+              {getFormatDateTime(task?.executionTime)}
+            </Descriptions.Item>
+          )}
+          {task?.executionStrategy === TaskExecStrategy.AUTO && (
             <Descriptions.Item
               span={2}
               label={formatMessage({
@@ -230,7 +254,8 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
             >
               {ErrorStrategy?.[task?.parameters?.autoErrorStrategy]}
             </Descriptions.Item>
-          ) : (
+          )}
+          {task?.executionStrategy === TaskExecStrategy.MANUAL && (
             <Descriptions.Item
               span={4}
               label={formatMessage({
@@ -245,16 +270,6 @@ const MutipleAsyncTaskContent: React.FC<IStructureComparisonTaskContentProps> = 
               })}
             </Descriptions.Item>
           )}
-
-          <Descriptions.Item
-            span={4}
-            label={formatMessage({
-              id: 'src.component.Task.MutipleAsyncTask.DetailContent.2ACDBED8',
-              defaultMessage: '描述',
-            })}
-          >
-            {task?.description || '-'}
-          </Descriptions.Item>
         </Descriptions>
         <Divider style={{ marginTop: 16 }} />
         <Descriptions column={4}>

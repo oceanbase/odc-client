@@ -18,7 +18,7 @@ import YamlEditor from '@/component/YamlEditor';
 import type { IManagerIntegration } from '@/d.ts';
 import { IManagerDetailTabs } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { Descriptions, Divider, Space } from 'antd';
 import React from 'react';
 import styles from '../../index.less';

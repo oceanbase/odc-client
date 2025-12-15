@@ -17,7 +17,7 @@
 import HelpDoc from '@/component/helpDoc';
 import { IMPORT_TYPE } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { CRLFToSeparatorString } from '@/util/utils';
+import { CRLFToSeparatorString } from '@/util/data/string';
 import { AutoComplete, Checkbox, Col, Form, Row, Select } from 'antd';
 import React from 'react';
 import { rules } from '../../const';

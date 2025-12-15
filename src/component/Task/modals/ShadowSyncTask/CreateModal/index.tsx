@@ -25,7 +25,7 @@ import SelectPanel from './SelectPanel';
 import StructConfigPanel from './StructConfigPanel';
 
 import { createTask, getTaskDetail } from '@/common/network/task';
-import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import { TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import styles from './index.less';
 import dayjs from 'dayjs';
@@ -33,6 +33,7 @@ import dayjs from 'dayjs';
 interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
+  reloadList?: () => void;
 }
 
 enum StepKeys {
@@ -66,12 +67,12 @@ const defaultData: IShaodwSyncData = {
   prefix: true,
   name: '_test_',
   originTableNames: new Set(),
-  executionStrategy: TaskExecStrategy.AUTO,
+  executionStrategy: TaskExecStrategy.MANUAL,
   executionTime: null,
   errorStrategy: ErrorStrategy.ABORT,
 };
 
-const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
+const CreateModal: React.FC<IProps> = function ({ modalStore, projectId, reloadList }) {
   const [isChanged, setIsChanged] = useState(false);
   const [stepIdx, setStepIdx] = useState(0);
   const [nextLoading, setNextLoading] = useState(false);
@@ -110,6 +111,7 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
     });
     setIsChanged(false);
     setStepIdx(0);
+    setNextLoading(false);
   };
 
   function close(force: boolean = false) {
@@ -179,7 +181,8 @@ const CreateModal: React.FC<IProps> = function ({ modalStore, projectId }) {
       return;
     }
     close(true);
-    openTasksPage(TaskPageType.SHADOW, TaskPageScope.CREATED_BY_CURRENT_USER);
+    reloadList?.();
+    openTasksPage(TaskPageType.SHADOW);
   }
   return (
     <Drawer

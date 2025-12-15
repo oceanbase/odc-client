@@ -1,6 +1,23 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { formatMessage } from '@/util/intl';
 import { ConnectType, IConnection, TaskStatus, TaskType } from '.';
 import { ODCCloudProvider } from './migrateTask';
+import { ScheduleType } from './schedule';
 
 export enum ScheduleNonImportableType {
   TYPE_NOT_MATCH = 'TYPE_NOT_MATCH',
@@ -21,7 +38,7 @@ export const ScheduleNonImportableTypeMap = {
 export interface IScheduleTaskImportRequest {
   bucketName: string;
   objectId: string;
-  scheduleType: TaskType;
+  scheduleType: ScheduleType;
   projectId: string;
   decryptKey: string;
   // 导入接口必须传
@@ -58,11 +75,11 @@ export interface IImportScheduleTaskView {
    * Project name of the system before export
    */
   originProjectName: string;
-  type: TaskType;
   databaseView: IImportDatabaseView; // 源端
   targetDatabaseView: IImportDatabaseView; // 目标端
   description: string;
   originStatus: TaskStatus;
+  type: TaskType | ScheduleType;
 }
 
 export interface IImportDatabaseView {

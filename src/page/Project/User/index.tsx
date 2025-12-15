@@ -17,7 +17,6 @@
 import { deleteProjectMember } from '@/common/network/project';
 import Action from '@/component/Action';
 import FilterIcon from '@/component/Button/FIlterIcon';
-import Reload from '@/component/Button/Reload';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
 import TooltipAction from '@/component/TooltipAction';
@@ -25,7 +24,7 @@ import { IProject, ProjectRole } from '@/d.ts/project';
 import type { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
-import { Button, message, Popconfirm, Space, Tag } from 'antd';
+import { Button, Space, Tag, message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ProjectContext from '../ProjectContext';
@@ -34,7 +33,8 @@ import ManageModal from './ManageModal';
 import UpdateUserModal from './UpdateUserModal';
 import { isProjectArchived } from '@/page/Project/helper';
 import { UserOperationKey, getOperatioFunc } from '@/d.ts/operation';
-import { renderTool } from '@/util/renderTool';
+import { renderTool } from '@/util/ui/renderTool';
+import { SyncOutlined } from '@ant-design/icons';
 
 export const projectRoleTextMap = {
   [ProjectRole.OWNER]: formatMessage({
@@ -103,22 +103,16 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
   useEffect(() => {
     tracert.expo('a3112.b64002.c330860');
   }, []);
-  async function deleteUser(id: number) {
+  async function deleteUser(id: number, name: string) {
     const isSuccess = await deleteProjectMember({
       projectId: context?.project?.id,
       userId: id,
     });
     if (isSuccess) {
-      message.success(
-        formatMessage({
-          id: 'odc.Project.User.DeletedSuccessfully',
-          defaultMessage: '删除成功',
-        }), //删除成功
-      );
-
       context.reloadProject();
     }
   }
+
   async function updateUser(id: number) {
     setEditUserId(id);
   }
@@ -187,11 +181,11 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
           id: 'odc.Project.User.Remove',
           defaultMessage: '移除',
         }),
-        action: () => deleteUser(record.id),
         confirmText: formatMessage({
           id: 'odc.Project.User.AreYouSureYouWant',
           defaultMessage: '是否确定删除该成员？',
         }),
+        action: () => deleteUser(record.id, record.name),
         disableTooltip: () => {
           if (isGlobalRolesUser) {
             return formatMessage({
@@ -237,8 +231,8 @@ const User: React.FC<IProps> = ({ id, userStore }) => {
     <TableCard
       title={projectArchived ? null : TableCardTitle}
       extra={
-        <FilterIcon onClick={context.reloadProject}>
-          <Reload />
+        <FilterIcon onClick={context.reloadProject} border>
+          <SyncOutlined spin={context?.loading} />
         </FilterIcon>
       }
     >

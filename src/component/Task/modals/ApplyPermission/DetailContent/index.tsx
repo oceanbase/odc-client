@@ -16,7 +16,7 @@ import { formatMessage } from '@/util/intl';
  */
 
 import type { IApplyPermissionTaskParams, TaskDetail } from '@/d.ts';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { Descriptions, Divider } from 'antd';
 import { projectRoleMap } from '../CreateModal';
 import EllipsisText from '@/component/EllipsisText';
@@ -33,23 +33,15 @@ const ApplyPermissionTaskContent: React.FC<IProps> = (props) => {
   return (
     <>
       <Descriptions column={2}>
-        <Descriptions.Item
-          label={
-            formatMessage({
-              id: 'odc.src.component.Task.ApplyPermission.DetailContent.TaskNumber',
-              defaultMessage: '任务编号',
-            }) /* 任务编号 */
-          }
-        >
+        <Descriptions.Item label={'ID'} span={1}>
           {task?.id}
         </Descriptions.Item>
         <Descriptions.Item
-          label={
-            formatMessage({
-              id: 'odc.src.component.Task.ApplyPermission.DetailContent.Type',
-              defaultMessage: '任务类型',
-            }) /* 任务类型 */
-          }
+          label={formatMessage({
+            id: 'src.component.Task.modals.ApplyPermission.DetailContent.57B68BF3',
+            defaultMessage: '类型',
+          })}
+          span={1}
         >
           {
             formatMessage({

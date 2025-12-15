@@ -27,7 +27,7 @@ import { UserStore } from '@/store/login';
 import { PageStore } from '@/store/page';
 import { SettingStore } from '@/store/setting';
 import { SQLStore } from '@/store/sql';
-import { haveLockPwd, initClientService, isLock } from '@/util/client';
+import { haveLockPwd, initClientService, isLock } from '@/util/business/client';
 import { isClient } from '@/util/env';
 import { Helmet, history, Outlet, useAppData, useLocation, useRouteData } from '@umijs/max';
 import classNames from 'classnames';

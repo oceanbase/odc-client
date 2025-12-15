@@ -22,9 +22,9 @@ import { DatabasePermissionType } from '@/d.ts/database';
 import modal from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import { message } from 'antd';
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 

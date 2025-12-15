@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
   AsyncTaskType,
   CloudProvider,
@@ -14,7 +30,7 @@ import {
   TaskStatus,
   TaskType,
 } from '@/d.ts';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import {
   status as TaskStatusMap,
   cycleStatus as scheduleTaskStatusMap,
@@ -26,8 +42,18 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import Icon, { ExclamationCircleFilled } from '@ant-design/icons';
 import { ConnectTypeText } from '@/constant/label';
 import { formatMessage } from '@/util/intl';
-import { statusThatCanBeExport, statusThatCanBeTerminate } from '../TaskTable/useTaskSelection';
+import {
+  taskStatusThatCanBeTerminate,
+  scheduleStatusThatCanBeExport,
+  SchedulestatusThatCanBeTerminate,
+} from '@/constant/triangularization';
 import { TaskTypeMap } from '../TaskTable/const';
+import {
+  IScheduleRecord,
+  ScheduleRecordParameters,
+  ScheduleStatus,
+  ScheduleType,
+} from '@/d.ts/schedule';
 
 export const DatabasePopover: React.FC<{
   connection: Partial<IConnection>;
@@ -315,13 +341,17 @@ export const getExportConfig: (
 
 export const getTerminateConfig: (
   datasource,
-) => Omit<IAsyncTaskOperationConfig, 'onReload' | 'dataSource'> = (datasource) => {
+  isSchedule?: boolean,
+) => Omit<IAsyncTaskOperationConfig, 'onReload' | 'dataSource'> = (
+  datasource,
+  isSchedule = false,
+) => {
   return {
     asyncTaskType: [
-      TaskType.SQL_PLAN,
-      TaskType.PARTITION_PLAN,
-      TaskType.DATA_ARCHIVE,
-      TaskType.DATA_DELETE,
+      ScheduleType.SQL_PLAN,
+      ScheduleType.PARTITION_PLAN,
+      ScheduleType.DATA_ARCHIVE,
+      ScheduleType.DATA_DELETE,
     ]?.includes(datasource?.[0]?.type)
       ? AsyncTaskType.terminateSchedule
       : AsyncTaskType.terminateTask,
@@ -455,39 +485,57 @@ export const getTerminateConfig: (
     confirmButtonType: 'danger',
     needRiskConfirm: true,
     needSelectSpace: false,
-    checkStatus: checkIsTaskListCanBeTerminated,
-    checkStatusFailed: formatMessage({
-      id: 'src.component.Task.component.AsyncTaskOperationButton.E5D14CDC',
-      defaultMessage:
-        '请选择运行中的任务（包括待执行、排队中、执行中）和正常调度的定时任务（包括已创建、已启用、已禁用）',
-    }),
+    checkStatus: isSchedule
+      ? checkIsScheduleTaskListCanBeTerminated
+      : checkIsTaskListCanBeTerminated,
+    checkStatusFailed: isSchedule
+      ? formatMessage({
+          id: 'src.component.Task.component.AsyncTaskOperationButton.7607AA16',
+          defaultMessage: '请选择运行中的作业',
+        })
+      : formatMessage({
+          id: 'src.component.Task.component.AsyncTaskOperationButton.E5D14CDC',
+          defaultMessage:
+            '请选择运行中的任务（包括待执行、排队中、执行中）和正常调度的定时任务（包括已创建、已启用、已禁用）',
+        }),
   };
 };
 
 // 是否为导出任务支持的周期任务
-export const isScheduleMigrateTask = (taskType: TaskType) => {
+export const isScheduleMigrateTask = (scheduleType: ScheduleType) => {
   return [
-    TaskType.DATA_ARCHIVE,
-    TaskType.DATA_DELETE,
-    TaskType.PARTITION_PLAN,
-    TaskType.SQL_PLAN,
-  ]?.includes(taskType);
+    ScheduleType.DATA_ARCHIVE,
+    ScheduleType.DATA_DELETE,
+    ScheduleType.PARTITION_PLAN,
+    ScheduleType.SQL_PLAN,
+  ]?.includes(scheduleType);
 };
 
 // 是否是能被导出的任务状态
-export const checkIsScheduleTaskListCanBeExported = (task: TaskRecord<TaskRecordParameters>) => {
-  return statusThatCanBeExport?.includes(task?.status);
+export const checkIsScheduleTaskListCanBeExported = (
+  task: IScheduleRecord<ScheduleRecordParameters>,
+) => {
+  return scheduleStatusThatCanBeExport?.includes(task?.status);
 };
 
 // 是否是能终止的任务状态
 export const checkIsTaskListCanBeTerminated = (task: TaskRecord<TaskRecordParameters>) => {
-  // 分区计划执行成功能够被终止
-  if (task?.type === TaskType.PARTITION_PLAN && task?.status === TaskStatus.EXECUTION_SUCCEEDED) {
-    return true;
-  }
-  return statusThatCanBeTerminate?.includes(task?.status);
+  return taskStatusThatCanBeTerminate?.includes(task?.status);
 };
 
+// 是否是能终止的作业状态
+const checkIsScheduleTaskListCanBeTerminated = (
+  schedule: IScheduleRecord<ScheduleRecordParameters>,
+) => {
+  // 分区计划执行成功能够被终止
+  if (
+    schedule?.type === ScheduleType.PARTITION_PLAN &&
+    schedule?.status === ScheduleStatus.COMPLETED
+  ) {
+    return true;
+  }
+  return SchedulestatusThatCanBeTerminate?.includes(schedule?.status);
+};
 /**
  * 从 URL 中提取 filename 参数的值
  * @param {string} url - 完整的 URL 字符串

@@ -17,9 +17,7 @@
 import { listProjects } from '@/common/network/project';
 import { Acess, createPermission } from '@/component/Acess';
 import FilterIcon from '@/component/Button/FIlterIcon';
-import Reload from '@/component/Button/Reload';
 import ProjectEmpty from '@/component/Empty/ProjectEmpty';
-import Search from '@/component/Input/Search';
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import ApplyPermissionButton from '@/component/Task/modals/ApplyPermission/CreateButton';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
@@ -41,6 +39,13 @@ import type { SelectProject } from '@/page/Project/components/DeleteProjectModal
 import { useSearchParams } from '@umijs/max';
 import { getSessionStorageKey } from '../helper';
 import { observer, inject } from 'mobx-react';
+import InputSelect from '@/component/InputSelect';
+import { SyncOutlined } from '@ant-design/icons';
+import ListHeader from './ListHeader';
+
+enum ProjectSearchType {
+  projectName = 'projectName',
+}
 
 export const titleOptions: {
   label: string;
@@ -66,12 +71,16 @@ interface IProps {
 }
 
 const Project: React.FC<IProps> = (props) => {
+  const { userStore } = props;
   const domRef = useRef<HTMLDivElement>();
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedRows, setSelectedRows] = useState<Map<number, boolean>>(
     new Map<number, boolean>(),
   );
-  const { userStore } = props;
+  const sessionStorageKey = getSessionStorageKey(userStore);
+  const [searchType, setSearchType] = useState<ProjectSearchType>(
+    sessionStorage.getItem(sessionStorageKey) ? ProjectSearchType.projectName : undefined,
+  );
   const [searchParams, setSearchParams] = useSearchParams();
   const [dataSource, setDataSource] = useState<IProject[]>([]);
   const [projectSearchName, setProjectSearchName] = useState(null);
@@ -82,7 +91,6 @@ const Project: React.FC<IProps> = (props) => {
 
   const [openDeleteProjectModal, setOpenDeleteProjectModal] = useState(false);
   const [selectProjectList, setSelectProjectList] = useState<SelectProject[]>([]);
-  const sessionStorageKey = getSessionStorageKey(userStore);
 
   const appendData = async (currentPage, dataSource, projectType, projectSearchName) => {
     setLoading(true);
@@ -204,38 +212,38 @@ const Project: React.FC<IProps> = (props) => {
                 </Button>
               )}
             </Space>
-            <Space size={12}>
-              <Search
-                defaultValue={sessionStorage.getItem(sessionStorageKey) || ''}
-                onSearch={(v) => {
-                  if (v) {
-                    sessionStorage.setItem(sessionStorageKey, v);
-                  } else {
-                    sessionStorage.removeItem(sessionStorageKey);
-                  }
-
-                  setProjectSearchName(v);
-                  reload(null, v);
-                }}
-                searchTypes={[
+            <Space size={12} style={{ lineHeight: 1 }}>
+              <InputSelect
+                searchValue={sessionStorage.getItem(sessionStorageKey) || projectSearchName}
+                searchType={searchType}
+                selectTypeOptions={[
                   {
                     label: formatMessage({
                       id: 'odc.Project.Project.ProjectName',
                       defaultMessage: '项目名称',
                     }),
-                    //项目名称
-                    value: 'projectName',
+                    value: ProjectSearchType?.projectName,
                   },
                 ]}
+                onSelect={({ searchValue, searchType }) => {
+                  if (searchValue) {
+                    sessionStorage.setItem(sessionStorageKey, searchValue);
+                  } else {
+                    sessionStorage.removeItem(sessionStorageKey);
+                  }
+                  setProjectSearchName(searchValue);
+                  setSearchType(searchType as ProjectSearchType);
+                  reload(null, searchValue);
+                }}
               />
-
-              <FilterIcon onClick={() => reload()}>
-                <Reload />
+              <FilterIcon onClick={() => reload()} border>
+                <SyncOutlined spin={loading} />
               </FilterIcon>
             </Space>
           </div>
         }
       >
+        <ListHeader projectTypeIsArchived={projectTypeIsArchived} />
         <div
           ref={domRef}
           style={{

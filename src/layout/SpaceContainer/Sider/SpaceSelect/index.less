@@ -9,13 +9,15 @@
   }
   :global {
     .ant-select-arrow {
-      display: none;
+      display: block;
+      margin-left: 4px;
+      visibility: hidden;
     }
   }
   &:not(.collapsed):hover {
     :global {
       .ant-select-arrow {
-        display: block;
+        visibility: visible;
       }
     }
   }

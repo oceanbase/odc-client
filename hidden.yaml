@@ -29,6 +29,9 @@ importers:
       electron-log:
         specifier: ~4.2.4
         version: 4.2.4
+      myers-diff:
+        specifier: ^2.1.0
+        version: 2.1.0
       qs:
         specifier: ^6.10.1
         version: 6.14.0
@@ -52,17 +55,17 @@ importers:
         specifier: ^3.2.2
         version: 3.2.2(react@17.0.2)
       '@oceanbase-odc/monaco-plugin-ob':
-        specifier: ~1.5.3
-        version: 1.5.3(monaco-editor@0.36.1)
+        specifier: ~1.6.4
+        version: 1.6.4(monaco-editor@0.36.1)
       '@oceanbase-odc/ob-intl-cli':
-        specifier: ^2.2.0
-        version: 2.2.0(chokidar@3.6.0)(encoding@0.1.13)(prettier@2.8.8)(typescript@5.9.2)
+        specifier: ^2.2.1
+        version: 2.2.1(chokidar@3.6.0)(encoding@0.1.13)(prettier@2.8.8)(typescript@5.9.2)
       '@oceanbase-odc/ob-parser-js':
-        specifier: ^3.1.2
-        version: 3.1.2
+        specifier: ^3.2.1
+        version: 3.2.1
       '@oceanbase-odc/ob-react-data-grid':
-        specifier: ^4.0.0
-        version: 4.0.0(antd@5.26.1(date-fns@2.30.0)(luxon@3.6.1)(moment@2.30.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        specifier: ^4.1.0
+        version: 4.1.1(antd@5.26.1(date-fns@2.30.0)(luxon@3.6.1)(moment@2.30.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       '@sentry/react':
         specifier: ^7.88.0
         version: 7.120.3(react@17.0.2)
@@ -210,6 +213,9 @@ importers:
       loglevel:
         specifier: ^1.8.0
         version: 1.9.2
+      lottie-react:
+        specifier: ^2.4.0
+        version: 2.4.1(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       markdown-it:
         specifier: ^13.0.1
         version: 13.0.2
@@ -2046,20 +2052,20 @@ packages:
     engines: {node: ^12.13.0 || ^14.15.0 || >=16.0.0}
     deprecated: This functionality has been moved to @npmcli/fs
 
-  '@oceanbase-odc/monaco-plugin-ob@1.5.3':
-    resolution: {integrity: sha512-Wbc/K7rMp3AWxEwgSgKhd5ix3+vCqCfXTuBLx1IbyzzGmwLRASVymEtzSlso7y0PfdgHVlI51gPdR775nUurAw==}
+  '@oceanbase-odc/monaco-plugin-ob@1.6.4':
+    resolution: {integrity: sha512-p+dS4B1zvdRCuNpoC6VfYGW/SOFhKHvn+Mu9+oJH46CswZpgkazBDQDYGEXz5SGLGxLKLRCi0EFLNlzVfTJApw==}
     peerDependencies:
       monaco-editor: ~0.38.0
 
-  '@oceanbase-odc/ob-intl-cli@2.2.0':
-    resolution: {integrity: sha512-qCJriKatOEwHICu9sGM5b7PYYtWxtVtB1V+P/ZBTwACXQHhQEgFlBCnt9CDAoMIOM9iDEeFvV13VSWt/kGW8ig==}
+  '@oceanbase-odc/ob-intl-cli@2.2.1':
+    resolution: {integrity: sha512-x0TxoxQVC7xk5w1Syu5I1RscNiwoPv/uIMLbCIAxhDFqB2lyc8uzb+6MNMij61wh/DisASrpLbEwwFZqSTfb4w==}
     hasBin: true
 
-  '@oceanbase-odc/ob-parser-js@3.1.2':
-    resolution: {integrity: sha512-BWtccGg7zR4q0Rc7J+byT4kyOVKtK1993oMW2myGH8pBSDRiagAZMjm5Af2tZUVbJs67UxV52SVDDnJ097NToA==}
+  '@oceanbase-odc/ob-parser-js@3.2.1':
+    resolution: {integrity: sha512-GFfI2SQ8CYl0REtfeDb4/qBePkLIjiflPIF52+r3vPmSj5Kkc/uebuwFyUQLCcmBq7pyeoZAVnrAOYO7p535Mg==}
 
-  '@oceanbase-odc/ob-react-data-grid@4.0.0':
-    resolution: {integrity: sha512-CYmeqa+Ocpwt8PpzEiihgT0NS3bDz7futJT5QPUczZJG/rtfOLKpnbZ/CacMDAKRQob3Sdo6dSB0yAk0nfa3BA==}
+  '@oceanbase-odc/ob-react-data-grid@4.1.1':
+    resolution: {integrity: sha512-2FvEVJu8Y5OgRv68Pj+DziaKSVReI/SsU7TtQXeF27H8d7ViAe/u07f/cdHkHFhnzVXt9sEG4hg+zVzn8ZKZlQ==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
       antd: ^5.0.0
@@ -6755,6 +6761,15 @@ packages:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
 
+  lottie-react@2.4.1:
+    resolution: {integrity: sha512-LQrH7jlkigIIv++wIyrOYFLHSKQpEY4zehPicL9bQsrt1rnoKRYCYgpCUe5maqylNtacy58/sQDZTkwMcTRxZw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  lottie-web@5.13.0:
+    resolution: {integrity: sha512-+gfBXl6sxXMPe8tKQm7qzLnUy5DUPJPKIyRHwtpCpyUEYjHYRJC/5gjUvdkuO2c3JllrPtHXH5UJJK8LRYl5yQ==}
+
   lower-case@2.0.2:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
 
@@ -7089,6 +7104,10 @@ packages:
 
   multimap@1.1.0:
     resolution: {integrity: sha512-0ZIR9PasPxGXmRsEF8jsDzndzHDj7tIav+JUmvIFB/WHswliFnquxECT/De7GR4yg99ky/NlRKJT82G1y271bw==}
+
+  myers-diff@2.1.0:
+    resolution: {integrity: sha512-6s/caiGUb5vNH9kq5HPw9t9OzAq6hTJ5V5N5Damd/npcp+stLg2LxQIcgJa9o51qbfTVgfth6/yVCoJvZY85BQ==}
+    engines: {node: '>=10'}
 
   mz@2.7.0:
     resolution: {integrity: sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==}
@@ -10879,7 +10898,7 @@ snapshots:
 
   '@babel/helper-annotate-as-pure@7.27.3':
     dependencies:
-      '@babel/types': 7.27.6
+      '@babel/types': 7.28.2
 
   '@babel/helper-compilation-targets@7.27.2':
     dependencies:
@@ -10937,15 +10956,15 @@ snapshots:
 
   '@babel/helper-member-expression-to-functions@7.27.1':
     dependencies:
-      '@babel/traverse': 7.27.4
-      '@babel/types': 7.27.6
+      '@babel/traverse': 7.28.3
+      '@babel/types': 7.28.2
     transitivePeerDependencies:
       - supports-color
 
   '@babel/helper-module-imports@7.27.1':
     dependencies:
-      '@babel/traverse': 7.27.4
-      '@babel/types': 7.27.6
+      '@babel/traverse': 7.28.3
+      '@babel/types': 7.28.2
     transitivePeerDependencies:
       - supports-color
 
@@ -10987,7 +11006,7 @@ snapshots:
 
   '@babel/helper-optimise-call-expression@7.27.1':
     dependencies:
-      '@babel/types': 7.27.6
+      '@babel/types': 7.28.2
 
   '@babel/helper-plugin-utils@7.27.1': {}
 
@@ -10996,7 +11015,7 @@ snapshots:
       '@babel/core': 7.27.4
       '@babel/helper-annotate-as-pure': 7.27.3
       '@babel/helper-wrap-function': 7.27.1
-      '@babel/traverse': 7.27.4
+      '@babel/traverse': 7.28.3
     transitivePeerDependencies:
       - supports-color
 
@@ -11005,7 +11024,7 @@ snapshots:
       '@babel/core': 7.27.4
       '@babel/helper-member-expression-to-functions': 7.27.1
       '@babel/helper-optimise-call-expression': 7.27.1
-      '@babel/traverse': 7.27.4
+      '@babel/traverse': 7.28.3
     transitivePeerDependencies:
       - supports-color
 
@@ -11014,7 +11033,7 @@ snapshots:
       '@babel/core': 7.28.3
       '@babel/helper-member-expression-to-functions': 7.27.1
       '@babel/helper-optimise-call-expression': 7.27.1
-      '@babel/traverse': 7.27.4
+      '@babel/traverse': 7.28.3
     transitivePeerDependencies:
       - supports-color
 
@@ -11027,8 +11046,8 @@ snapshots:
 
   '@babel/helper-skip-transparent-expression-wrappers@7.27.1':
     dependencies:
-      '@babel/traverse': 7.27.4
-      '@babel/types': 7.27.6
+      '@babel/traverse': 7.28.3
+      '@babel/types': 7.28.2
     transitivePeerDependencies:
       - supports-color
 
@@ -11041,8 +11060,8 @@ snapshots:
   '@babel/helper-wrap-function@7.27.1':
     dependencies:
       '@babel/template': 7.27.2
-      '@babel/traverse': 7.27.4
-      '@babel/types': 7.27.6
+      '@babel/traverse': 7.28.3
+      '@babel/types': 7.28.2
     transitivePeerDependencies:
       - supports-color
 
@@ -12640,14 +12659,14 @@ snapshots:
       mkdirp: 1.0.4
       rimraf: 3.0.2
 
-  '@oceanbase-odc/monaco-plugin-ob@1.5.3(monaco-editor@0.36.1)':
+  '@oceanbase-odc/monaco-plugin-ob@1.6.4(monaco-editor@0.36.1)':
     dependencies:
-      '@oceanbase-odc/ob-parser-js': 3.1.2
+      '@oceanbase-odc/ob-parser-js': 3.2.1
       antlr4: 4.8.0
       comlink: 4.4.2
       monaco-editor: 0.36.1
 
-  '@oceanbase-odc/ob-intl-cli@2.2.0(chokidar@3.6.0)(encoding@0.1.13)(prettier@2.8.8)(typescript@5.9.2)':
+  '@oceanbase-odc/ob-intl-cli@2.2.1(chokidar@3.6.0)(encoding@0.1.13)(prettier@2.8.8)(typescript@5.9.2)':
     dependencies:
       '@babel/core': 7.28.3
       '@babel/generator': 7.28.3
@@ -12688,12 +12707,12 @@ snapshots:
       - svelte-eslint-parser
       - typescript
 
-  '@oceanbase-odc/ob-parser-js@3.1.2':
+  '@oceanbase-odc/ob-parser-js@3.2.1':
     dependencies:
       antlr4: 4.8.0
       lodash: 4.17.21
 
-  '@oceanbase-odc/ob-react-data-grid@4.0.0(antd@5.26.1(date-fns@2.30.0)(luxon@3.6.1)(moment@2.30.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react-dom@17.0.2(react@17.0.2))(react@17.0.2)':
+  '@oceanbase-odc/ob-react-data-grid@4.1.1(antd@5.26.1(date-fns@2.30.0)(luxon@3.6.1)(moment@2.30.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(lodash@4.17.21)(react-dnd-html5-backend@11.1.3)(react-dnd@11.1.3(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react-dom@17.0.2(react@17.0.2))(react@17.0.2)':
     dependencies:
       '@juggle/resize-observer': 3.4.0
       antd: 5.26.1(date-fns@2.30.0)(luxon@3.6.1)(moment@2.30.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
@@ -18903,6 +18922,14 @@ snapshots:
     dependencies:
       js-tokens: 4.0.0
 
+  lottie-react@2.4.1(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+    dependencies:
+      lottie-web: 5.13.0
+      react: 17.0.2
+      react-dom: 17.0.2(react@17.0.2)
+
+  lottie-web@5.13.0: {}
+
   lower-case@2.0.2:
     dependencies:
       tslib: 2.8.1
@@ -19272,6 +19299,8 @@ snapshots:
   ms@2.1.3: {}
 
   multimap@1.1.0: {}
+
+  myers-diff@2.1.0: {}
 
   mz@2.7.0:
     dependencies:
@@ -20137,7 +20166,7 @@ snapshots:
       lodash: 4.17.21
       postcss: 8.5.6
 
-  postcss-syntax@0.36.2(postcss-html@0.36.0(postcss-syntax@0.36.2(postcss@8.5.6))(postcss@7.0.39))(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39):
+  postcss-syntax@0.36.2(postcss-html@0.36.0)(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39):
     dependencies:
       postcss: 7.0.39
     optionalDependencies:
@@ -22326,7 +22355,7 @@ snapshots:
       postcss-sass: 0.4.4
       postcss-scss: 2.1.1
       postcss-selector-parser: 6.1.2
-      postcss-syntax: 0.36.2(postcss-html@0.36.0(postcss-syntax@0.36.2(postcss@8.5.6))(postcss@7.0.39))(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39)
+      postcss-syntax: 0.36.2(postcss-html@0.36.0)(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39)
       postcss-value-parser: 4.2.0
       resolve-from: 5.0.0
       slash: 3.0.0

@@ -16,8 +16,8 @@
 
 import { getResourceRoles } from '@/common/network/manager';
 import { createTask } from '@/common/network/task';
-import { useLoadProjects } from '@/component/Task/hooks/useLoadProjects';
-import { TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import { useLoadProjects } from '@/component/Task/hooks';
+import { TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
 import { ProjectRole } from '@/d.ts/project';
 import { openTasksPage } from '@/store/helper/page';
 import type { ModalStore } from '@/store/modal';
@@ -88,9 +88,11 @@ export const projectRoleMap = {
 interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
+  reloadList?: () => void;
 }
+
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId } = props;
+  const { modalStore, projectId, reloadList } = props;
   const [form] = Form.useForm();
   const [roles, setRoles] = useState<any[]>([]);
   const [hasEdit, setHasEdit] = useState(false);
@@ -156,6 +158,10 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
 
   const loadEditData = async () => {
+    let tempProjectOptions = projectOptions;
+    if (tempProjectOptions?.length === 0) {
+      tempProjectOptions = await loadProjects();
+    }
     const { task } = applyPermissionData;
     const {
       parameters: {
@@ -165,7 +171,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       },
     } = task;
     const formData = {
-      projectId: projectOptions?.find(({ value }) => value === projectId) ? projectId : null,
+      projectId: tempProjectOptions?.find(({ value }) => value === projectId) ? projectId : null,
       applyReason,
       resourceRoleIds: resourceRoles?.map(({ id }) => id),
     };
@@ -200,6 +206,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         setConfirmLoading(true);
         const res = await createTask(data);
         handleCancel(false);
+        reloadList?.();
         setConfirmLoading(false);
         if (res) {
           message.success(
@@ -208,10 +215,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               defaultMessage: '工单创建成功',
             }),
           );
-          openTasksPage(
-            TaskPageType.APPLY_PROJECT_PERMISSION,
-            TaskPageScope.CREATED_BY_CURRENT_USER,
-          );
+          openTasksPage(TaskPageType.APPLY_PROJECT_PERMISSION);
         }
       })
       .catch((errorInfo) => {

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { createBatchImportTask, getCsvFileInfo } from '@/common/network';
 import { getTableColumnList } from '@/common/network/table';
 import HelpDoc from '@/component/helpDoc';
@@ -8,14 +24,14 @@ import {
   IMPORT_ENCODING,
   IMPORT_TYPE,
   TaskExecStrategy,
-  TaskPageScope,
   TaskPageType,
 } from '@/d.ts';
 import { openTasksPage } from '@/store/helper/page';
 import login from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import { formatMessage } from '@/util/intl';
-import { formatBytes, safeParseJson } from '@/util/utils';
+import { safeParseJson } from '@/util/utils';
+import { formatBytes } from '@/util/data/byte';
 import { Alert, Button, Checkbox, Drawer, message, Modal, Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -50,6 +66,7 @@ const steps: {
 export interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
+  reloadList?: () => void;
 }
 export interface IState {
   stepIndex: number;
@@ -69,7 +86,7 @@ export interface IState {
 }
 
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId } = props;
+  const { modalStore, projectId, reloadList } = props;
   const _formRef = React.useRef<any>();
   const [defaultConfig, setDefaultConfig] = useState<IState['formData']>(null);
 
@@ -78,7 +95,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       useSys: false,
       databaseId: modalStore.importModalData?.databaseId,
       taskId: modalStore.exportModalData?.taskId,
-      executionStrategy: defaultConfig?.executionStrategy ?? TaskExecStrategy.AUTO,
+      executionStrategy: defaultConfig?.executionStrategy ?? TaskExecStrategy.MANUAL,
       fileType: defaultConfig?.fileType ?? IMPORT_TYPE.ZIP,
       encoding: defaultConfig?.encoding ?? IMPORT_ENCODING.UTF8,
       importFileName: null,
@@ -217,11 +234,12 @@ const CreateModal: React.FC<IProps> = (props) => {
               initDefaultConfig();
             }
             modalStore?.changeImportModal(false);
+            reloadList?.();
             setState((prev) => ({
               ...prev,
               setIsSaveDefaultConfig: false,
             }));
-            openTasksPage(TaskPageType.IMPORT, TaskPageScope.CREATED_BY_CURRENT_USER);
+            openTasksPage(TaskPageType.IMPORT);
           }
         } catch (e) {
           console.error(e);
@@ -432,7 +450,7 @@ const CreateModal: React.FC<IProps> = (props) => {
             })
       }
       open={modalStore.importModalVisible}
-      destroyOnHidden
+      destroyOnClose
       width={520}
       onClose={handleConfirmClose}
     >

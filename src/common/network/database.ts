@@ -17,17 +17,17 @@
 import { DbObjectType, IResponseData, IManagerResourceType, ConnectType } from '@/d.ts';
 import { DBType, IDatabase, IDatabaseObject } from '@/d.ts/database';
 import sessionManager from '@/store/sessionManager';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import request from '@/util/request';
-import { getDropSQL } from '@/util/sql';
+import { getDropSQL } from '@/util/data/sql';
 import { executeSQL } from './sql';
+import { DatabaseSearchType } from '@/d.ts/database';
 
-interface listDatabasesParams {
+export interface listDatabasesParams {
   projectId?: number;
   dataSourceId?: number;
   page?: number;
   size?: number;
-  name?: string;
   environmentId?: number[];
   /** 是否包含未分配项目的数据库 */
   containsUnassigned?: boolean;
@@ -37,9 +37,8 @@ interface listDatabasesParams {
   includesDbOwner?: boolean;
   type?: DBType[];
   connectType?: ConnectType[];
-  dataSourceName?: string;
-  clusterName?: string;
-  tenantName?: string;
+  fuzzyKeyword?: string;
+  searchType?: DatabaseSearchType;
 }
 
 export async function listDatabases(
@@ -71,12 +70,16 @@ export async function updateDataBase(
   databaseIds: number[],
   projectId: number,
   ownerIds: number[],
+  ignoreError: boolean = false,
 ): Promise<Boolean> {
   const res = await request.post(`/api/v2/database/databases/transfer`, {
     data: {
       databaseIds,
       projectId,
       ownerIds,
+    },
+    params: {
+      ignoreError,
     },
   });
   return res?.data;

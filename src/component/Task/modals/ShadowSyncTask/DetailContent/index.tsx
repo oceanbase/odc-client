@@ -15,7 +15,7 @@
  */
 
 import { getShadowSyncAnalysisResult } from '@/common/network/task';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
+import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import {
   ErrorStrategy,
   IShadowSyncAnalysisResult,
@@ -24,12 +24,13 @@ import {
 import StructAnalysisResult from '@/component/Task/modals/ShadowSyncTask/CreateModal/StructConfigPanel/StructAnalysisResult';
 import { ConnectionMode, TaskDetail, TaskExecStrategy } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import { getTaskExecStrategyMap } from '@/component/Task/const';
 import EllipsisText from '@/component/EllipsisText';
+import login from '@/store/login';
 interface IShadowSyncParamters {
   errorStrategy: ErrorStrategy;
   connectionId: string;
@@ -108,7 +109,7 @@ export function getItems(
       defaultMessage: '风险等级',
     }),
     //风险等级
-    <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />,
+    <ODCRiskLevelLabel iconMode level={task?.riskLevel?.level} levelMap />,
   ];
 
   const isTimerExecution = task?.executionStrategy === TaskExecStrategy.TIMER;
@@ -125,19 +126,14 @@ export function getItems(
     {
       //@ts-ignore
       textItems: [
-        [
-          formatMessage({
-            id: 'odc.component.DetailModal.permission.TaskNumber',
-            defaultMessage: '任务编号',
-          }),
-          task.id,
-        ],
+        ['ID', task.id],
 
         [
           formatMessage({
-            id: 'odc.component.DetailModal.permission.TaskType',
-            defaultMessage: '任务类型',
+            id: 'src.component.Task.modals.ShadowSyncTask.DetailContent.0C34EABD',
+            defaultMessage: '类型',
           }),
+
           formatMessage({
             id: 'odc.component.DetailModal.shadowSync.ShadowTableSynchronization',
             defaultMessage: '影子表同步',
@@ -145,11 +141,14 @@ export function getItems(
         ],
         [
           formatMessage({
-            id: 'odc.component.DetailModal.dataMocker.Database',
-            defaultMessage: '所属数据库',
+            id: 'src.component.Task.modals.ShadowSyncTask.DetailContent.30BF57FC',
+            defaultMessage: '数据库',
           }),
-          //所属数据库
-          <DatabaseLabel database={task?.database} />,
+
+          <EllipsisText
+            content={<DatabaseLabel database={task?.database} />}
+            needTooltip={false}
+          />,
         ],
 
         [
@@ -159,6 +158,16 @@ export function getItems(
           }), //'所属数据源'
           <EllipsisText content={task?.database?.dataSource?.name} />,
         ],
+
+        !login.isPrivateSpace()
+          ? [
+              formatMessage({
+                id: 'src.component.Task.modals.ShadowSyncTask.DetailContent.59AB26FA',
+                defaultMessage: '项目',
+              }),
+              <EllipsisText content={task?.project?.name} />,
+            ]
+          : null,
 
         hasFlow ? riskItem : null,
         [

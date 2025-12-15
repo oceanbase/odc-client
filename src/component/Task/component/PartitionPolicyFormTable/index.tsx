@@ -18,22 +18,24 @@ import { getPartitionPlanKeyDataTypes } from '@/common/network/task';
 import CommonTable from '@/component/CommonTable';
 import { CommonTableMode, ITableLoadOptions } from '@/component/CommonTable/interface';
 import SearchFilter from '@/component/SearchFilter';
-import { PARTITION_KEY_INVOKER } from '@/d.ts';
+import { IPartitionTableConfig, PARTITION_KEY_INVOKER } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import {
+import Icon, {
   EditOutlined,
   ExclamationCircleFilled,
   FilterOutlined,
   SearchOutlined,
+  FolderOpenFilled,
 } from '@ant-design/icons';
-import { Checkbox, Space, Tooltip } from 'antd';
+import { Button, Checkbox, Space, Tooltip } from 'antd';
 import React, { useRef, useState } from 'react';
-import { ITableConfig } from '@/component/Task/modals/PartitionTask/CreateModal';
+import { ITableConfig } from '@/component/Schedule/modals/PartitionPlan/Create';
 import { getStrategyLabel } from '../PartitionPolicyTable';
 import ConfigDrawer from './configModal';
 import { NameRuleType, revertPartitionKeyInvokerByIncrementFieldType, START_DATE } from './const';
 import styles from './index.less';
-
+import { ReactComponent as ViewSvg } from '@/svgr/menuView.svg';
+import DetailConfigDrawer from '../PartitionPolicyTable/ConfigDrawer';
 const defaultIntervalPrecision = 3;
 
 interface IProps {
@@ -45,6 +47,8 @@ interface IProps {
   theme?: string;
   onLoad?: () => Promise<any>;
   onPlansConfigChange?: (values: ITableConfig[]) => void;
+  isEdit?: boolean;
+  allPartitionPlanTableConfigs?: IPartitionTableConfig[];
 }
 
 interface ITableFilter {
@@ -84,8 +88,12 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     theme,
     onLoad,
     onPlansConfigChange,
+    isEdit = false,
+    allPartitionPlanTableConfigs,
   } = props;
   const [visible, setVisible] = useState(false);
+  const [detailVisible, setDetailVisible] = useState(false);
+  const [activeTableName, setActiveTableName] = useState(undefined);
   const [activeConfigKeys, setActiveConfigKeys] = useState([]);
   const [selectedConfigKeys, setSelectedConfigKeys] = useState([]);
   const [isOnlyNoSetTable, setIsOnlyNoSetTable] = useState(false);
@@ -130,13 +138,24 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
             {(record?.containsCreateStrategy || record?.containsDropStrategy) && (
               <Tooltip
                 title={
-                  formatMessage({
-                    id: 'src.component.Task.component.PartitionPolicyFormTable.6C03EDE8',
-                    defaultMessage: '当前表已存在分区策略，重新设置后将覆盖原有策略',
-                  }) /*"当前表已存在分区策略，重新设置后将覆盖原有策略"*/
+                  isEdit
+                    ? formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.6C03EDE8',
+                        defaultMessage: '当前表已存在分区策略，重新设置后将覆盖原有策略',
+                      })
+                    : formatMessage({
+                        id: 'src.component.Task.component.PartitionPolicyFormTable.E4416F26',
+                        defaultMessage: '当前表已存在有效的分区策略，不可重复设置',
+                      })
                 }
               >
-                <ExclamationCircleFilled style={{ color: 'var(--icon-orange-color)' }} />
+                <ExclamationCircleFilled
+                  style={
+                    isEdit
+                      ? { color: 'var(--icon-orange-color)' }
+                      : { color: 'var(--icon-color-disable)' }
+                  }
+                />
               </Tooltip>
             )}
           </Space>
@@ -166,7 +185,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
         return (
           <div className={styles.rangConfig}>
             {label?.length ? (
-              <Space>
+              <Space style={{ flex: 1 }}>
                 <span>
                   {
                     formatMessage({
@@ -178,23 +197,42 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
                 <span>{label}</span>
               </Space>
             ) : (
-              <span>-</span>
+              <div style={{ flex: 1 }}>-</div>
             )}
-
-            <Tooltip
-              title={
-                formatMessage({
-                  id: 'src.component.Task.component.PartitionPolicyFormTable.A0E5BE83',
-                  defaultMessage: '设置分区策略',
-                }) /*"设置分区策略"*/
-              }
-            >
-              <EditOutlined
-                onClick={() => {
-                  handleConfig(record?.__id);
-                }}
-              />
-            </Tooltip>
+            {isDisable(record) ? (
+              <Tooltip
+                title={formatMessage({
+                  id: 'src.component.Task.component.PartitionPolicyFormTable.28A3C7C1',
+                  defaultMessage: '查看分区策略',
+                })}
+              >
+                <Button
+                  icon={<Icon type="view" component={ViewSvg} />}
+                  type="text"
+                  onClick={() => {
+                    setActiveTableName(record?.tableName);
+                    setDetailVisible(true);
+                  }}
+                />
+              </Tooltip>
+            ) : (
+              <Tooltip
+                title={
+                  formatMessage({
+                    id: 'src.component.Task.component.PartitionPolicyFormTable.A0E5BE83',
+                    defaultMessage: '设置分区策略',
+                  }) /*"设置分区策略"*/
+                }
+              >
+                <Button
+                  icon={<EditOutlined style={{ color: 'var(--text-color-primary)' }} />}
+                  type="text"
+                  onClick={() => {
+                    handleConfig(record?.__id);
+                  }}
+                />
+              </Tooltip>
+            )}
           </div>
         );
       },
@@ -205,15 +243,18 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
     const tableName = tableConfigs?.find((item) => keys.includes(item.__id))?.tableName;
     const activeConfigs = tableConfigs?.filter((item) => keys.includes(item.__id));
     const res = await getPartitionPlanKeyDataTypes(sessionId, databaseId, tableName);
-    const createdTableConfig = createdTableConfigs?.find((item) => item?.tableName === tableName);
+    const currentTableConfigs = createdTableConfigs
+      ?.filter((item) => item?.tableName === tableName)
+      .sort((a, b) => {
+        return a?.hasOwnProperty('keepLatestCount') ? -1 : 1;
+      });
+    const createdTableConfig = currentTableConfigs?.length
+      ? Object.assign({}, ...currentTableConfigs)
+      : null;
     const isInit = activeConfigs?.some((item) => !item?.__isCreate);
     let partitionConfig = activeConfigs?.[0];
     if (!!createdTableConfig && isInit) {
-      const isLengthEqual =
-        createdTableConfig?.option?.partitionKeyConfigs?.length === res?.contents?.length;
-      if (isLengthEqual) {
-        partitionConfig = createdTableConfig;
-      }
+      partitionConfig = createdTableConfig;
     }
     console.log('createdTableConfig', !!createdTableConfig, isInit);
     console.log('partitionConfig', partitionConfig);
@@ -223,7 +264,6 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
 
     const initNameRuleType = isInit && dateTypes ? NameRuleType.PRE_SUFFIX : NameRuleType.CUSTOM;
     const nameRuleType = createdTableConfig?.generateExpr ? NameRuleType.CUSTOM : initNameRuleType;
-
     const values = activeConfigs.map((item) => {
       return {
         generateCount: null,
@@ -279,7 +319,9 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
   function handleFilter(data: ITableConfig[]) {
     const { tableName } = filters ?? {};
     return data
-      ?.filter((item) => (isOnlyNoSetTable ? !item?.strategies?.length : true))
+      ?.filter((item) =>
+        isOnlyNoSetTable ? !item?.containsCreateStrategy && !item?.containsDropStrategy : true,
+      )
       ?.filter((item) => {
         const searchText = tableName?.[0]?.toLocaleLowerCase?.() ?? '';
         return searchText ? item.tableName?.toLocaleLowerCase().indexOf(searchText) > -1 : true;
@@ -293,6 +335,13 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
 
   const onChange = (e) => {
     setIsOnlyNoSetTable(e.target.checked);
+  };
+
+  /**
+   * 新建,如果该表有有效的分区策略，无法重新设置新的策略
+   */
+  const isDisable = (record: ITableConfig) => {
+    return (record?.containsCreateStrategy || record?.containsDropStrategy) && !isEdit;
   };
 
   return (
@@ -338,10 +387,15 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
               return (
                 <Tooltip
                   title={
-                    formatMessage({
-                      id: 'src.component.Task.component.PartitionPolicyFormTable.E009861F',
-                      defaultMessage: '该表的分区和已经勾选的表分区不同，无法批量设置',
-                    }) /*"该表的分区和已经勾选的表分区不同，无法批量设置"*/
+                    isDisable(record as ITableConfig)
+                      ? formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.281F6168',
+                          defaultMessage: '当前表已存在有效的分区策略，不可重复设置',
+                        })
+                      : formatMessage({
+                          id: 'src.component.Task.component.PartitionPolicyFormTable.E009861F',
+                          defaultMessage: '该表的分区和已经勾选的表分区不同，无法批量设置',
+                        }) /*"该表的分区和已经勾选的表分区不同，无法批量设置"*/
                   }
                 >
                   {node}
@@ -351,9 +405,10 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
             return node;
           },
           getCheckboxProps: (record: ITableConfig) => {
-            const disabled =
+            let disabled =
               !!selectedConfigs?.length &&
               record?.partitionMode !== selectedConfigs?.[0]?.partitionMode;
+            disabled = disabled || isDisable(record);
             return { disabled };
           },
           options: [
@@ -379,7 +434,7 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
           },
           scroll: {
             x: 650,
-            y: 240,
+            y: 290,
           },
         }}
       />
@@ -395,6 +450,14 @@ const PartitionPolicyFormTable: React.FC<IProps> = (props) => {
           setVisible(false);
         }}
         dateTypes={dateTypes}
+      />
+
+      <DetailConfigDrawer
+        visible={detailVisible}
+        config={allPartitionPlanTableConfigs?.find((item) => item?.tableName === activeTableName)}
+        onClose={() => {
+          setDetailVisible(false);
+        }}
       />
     </div>
   );

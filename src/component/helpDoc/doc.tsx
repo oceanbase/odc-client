@@ -630,7 +630,14 @@ export default {
     </p>
   ),
 
-  dataArchiveVariablesDoc: <p>{dataArchiveVariablesDoc}</p>,
+  dataArchiveVariablesDoc: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.F0D45A43',
+        defaultMessage: '定义变量、设置时间偏移量并在上文的目标表及过滤条件中引用',
+      })}
+    </p>
+  ),
   dataClearVariablesDoc: <p>{dataClearVariablesDoc}</p>,
   schemaChangeSwapTable: (
     <p>
@@ -671,6 +678,31 @@ export default {
           defaultMessage: '每秒操作数据总行限制',
         }) /* 每秒操作数据总行限制 */
       }
+    </p>
+  ),
+
+  TimingforCleanAfterArchive: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.6D63E347',
+        defaultMessage: '待数据全部完成归档后再开始进行数据清理',
+      })}
+    </p>
+  ),
+  TimingforCleanAfterCleanUp: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.8EDA4D85',
+        defaultMessage: '按分片归档，分片归档完成后即时进行清理',
+      })}
+    </p>
+  ),
+  ExecutionTimeoutSchedulingStrategy: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.86172CDC',
+        defaultMessage: '任务超时之后下一轮调度对于超时任务的处理逻辑',
+      })}
     </p>
   ),
 

@@ -18,7 +18,7 @@ import { getConnectionDetailResponse } from '@/common/network/connection';
 import { getDatabase } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import { toInteger } from 'lodash';
 import { action, observable, runInAction } from 'mobx';
 import SessionStore from './session';

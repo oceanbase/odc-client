@@ -93,6 +93,7 @@ export interface IOperationContent {
   isNeedOccupyElement?: boolean;
 }
 export interface IRowSelecter<T> extends TableRowSelection<T> {
+  selectAllText?: string;
   options: {
     okText: string;
     onOk: (keys: React.Key[]) => void;

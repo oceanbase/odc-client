@@ -294,6 +294,10 @@ const TaskApplyList: React.FC<IProps> = (props) => {
         rowSelecter={
           isOwner || isDBA
             ? {
+                selectAllText: formatMessage({
+                  id: 'src.page.Project.User.ManageModal.Table.TaskApplyList.88383CDB',
+                  defaultMessage: '全选当前页',
+                }),
                 options: [
                   {
                     okText: formatMessage({

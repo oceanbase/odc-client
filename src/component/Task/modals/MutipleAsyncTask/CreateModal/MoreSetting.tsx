@@ -1,5 +1,21 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import FormItemPanel from '@/component/FormItemPanel';
-import { TaskExecStrategy } from '@/d.ts';
+import { TaskExecStrategy, TaskType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { AutoComplete, Form, InputNumber, Radio, Space } from 'antd';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
@@ -8,6 +24,7 @@ import styles from './index.less';
 import setting from '@/store/setting';
 import { rules } from '../const';
 import { Rule } from 'antd/es/form';
+import TaskExecutionMethodForm from '@/component/Task/component/TaskExecutionMethodForm';
 
 const MoreSetting = () => {
   const form = Form.useFormInstance();
@@ -117,35 +134,8 @@ const MoreSetting = () => {
         })}
         keepExpand
       >
-        <Form.Item
-          label={formatMessage({
-            id: 'src.component.Task.MutipleAsyncTask.CreateModal.8B0566E4',
-            defaultMessage: '执行方式',
-          })}
-          name="executionStrategy"
-          initialValue={TaskExecStrategy.MANUAL}
-          rules={rules.executionStrategy}
-        >
-          <Radio.Group
-            options={[
-              {
-                label: formatMessage({
-                  id: 'src.component.Task.MutipleAsyncTask.CreateModal.D0E2C00B',
-                  defaultMessage: '自动执行',
-                }),
-                value: TaskExecStrategy.AUTO,
-              },
-              {
-                label: formatMessage({
-                  id: 'src.component.Task.MutipleAsyncTask.CreateModal.A8CB0B6F',
-                  defaultMessage: '手动执行',
-                }),
-                value: TaskExecStrategy.MANUAL,
-              },
-            ]}
-          />
-        </Form.Item>
-        {executionStrategy === TaskExecStrategy.AUTO ? (
+        <TaskExecutionMethodForm taskType={TaskType.MULTIPLE_ASYNC} />
+        {executionStrategy === TaskExecStrategy.AUTO && (
           <Form.Item
             label={formatMessage({
               id: 'src.component.Task.MutipleAsyncTask.CreateModal.0BBF7055',
@@ -174,7 +164,8 @@ const MoreSetting = () => {
               ]}
             />
           </Form.Item>
-        ) : (
+        )}
+        {executionStrategy === TaskExecStrategy.MANUAL && (
           <Form.Item
             required
             label={formatMessage({

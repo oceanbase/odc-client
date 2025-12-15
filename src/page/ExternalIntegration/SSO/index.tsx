@@ -24,7 +24,7 @@ import TableCard from '@/component/Table/TableCard';
 import { IManagerIntegration, IntegrationType, IResponseData } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { useRequest } from 'ahooks';
 import { message, Popconfirm } from 'antd';
 import { ColumnType } from 'antd/es/table';
@@ -32,6 +32,7 @@ import { useEffect, useRef, useState } from 'react';
 import NewSSODrawerButton from './NewSSODrawerButton';
 import EditSSODrawer from './NewSSODrawerButton/Edit';
 import SSODetailDrawer from './SSODetailDrawer';
+import { SyncOutlined } from '@ant-design/icons';
 
 export default function SSO() {
   const [list, setList] = useState<IResponseData<IManagerIntegration>>();
@@ -210,8 +211,8 @@ export default function SSO() {
       title={<NewSSODrawerButton onSuccess={() => reload()} />}
       extra={
         <>
-          <FilterIcon onClick={reload}>
-            <Reload />
+          <FilterIcon onClick={reload} border>
+            <SyncOutlined spin={loading} />
           </FilterIcon>
         </>
       }

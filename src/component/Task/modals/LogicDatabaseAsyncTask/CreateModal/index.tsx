@@ -17,15 +17,21 @@ import { createTask } from '@/common/network/task';
 import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
-import { SQLContentType, TaskExecStrategy, TaskPageScope, TaskPageType, TaskType } from '@/d.ts';
+import {
+  ILogicalDatabaseAsyncTaskParams,
+  SQLContentType,
+  TaskDetail,
+  TaskExecStrategy,
+  TaskPageType,
+  TaskType,
+} from '@/d.ts';
 import type { ModalStore } from '@/store/modal';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
-import utils, { IEditor } from '@/util/editor';
+import utils, { IEditor } from '@/util/ui/editor';
 import { formatMessage } from '@/util/intl';
 import { FieldTimeOutlined } from '@ant-design/icons';
-import { disabledDate, disabledTime } from '@/util/utils';
-import { ICycleTaskTriggerConfig, TaskOperationType } from '@/d.ts';
+import { disabledDate, disabledTime } from '@/util/data/dateTime';
 import {
   Alert,
   AutoComplete,
@@ -42,13 +48,16 @@ import {
 } from 'antd';
 import { inject, observer } from 'mobx-react';
 import dayjs from 'dayjs';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import DatabaseSelect from '@/component/Task/component/DatabaseSelect';
 import styles from './index.less';
 import PreviewSQLDrawer from './PreviewSQLDrawer';
 import { openTasksPage } from '@/store/helper/page';
 import { rules } from './const';
 import { Rule } from 'antd/es/form';
+import { getTaskDetail } from '@/common/network/task';
+import login from '@/store/login';
+import { isClient } from '@/util/env';
 
 interface IProps {
   sqlStore?: SQLStore;
@@ -56,12 +65,12 @@ interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
   theme?: string;
+  reloadList?: () => void;
 }
 
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId, theme } = props;
+  const { modalStore, theme, reloadList } = props;
   const { logicDatabaseInfo } = modalStore;
-  const task = logicDatabaseInfo?.task;
   const [form] = Form.useForm();
   const editorRef = useRef<CommonIDE>();
   const [sqlContentType, setSqlContentType] = useState(SQLContentType.TEXT);
@@ -69,35 +78,53 @@ const CreateModal: React.FC<IProps> = (props) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const databaseId = Form.useWatch('databaseId', form);
   const sqlContent = Form.useWatch('sqlContent', form);
-  const initialSQL = logicDatabaseInfo?.ddl || task?.jobParameters?.sqlContent;
   const delimiter = Form.useWatch('delimiter', form);
   const [previewOpen, setPreviewOpen] = useState<boolean>(false);
-  const loadEditData = async (task) => {
-    const {
-      jobParameters,
-      description,
-      triggerConfig: { triggerStrategy, startAt },
-    } = task;
-    const { databaseId, delimiter, sqlContent, timeoutMillis } = jobParameters;
+  const [initialSQL, setInitialSQL] = useState<string>();
+
+  const isInitSqlContent = useMemo(() => {
+    if (logicDatabaseInfo?.taskId || logicDatabaseInfo?.ddl) {
+      return !!initialSQL;
+    }
+    return true;
+  }, [logicDatabaseInfo?.taskId, logicDatabaseInfo?.ddl, initialSQL]);
+
+  const loadEditData = async (taskId) => {
+    const dataRes = (await getTaskDetail(taskId)) as TaskDetail<ILogicalDatabaseAsyncTaskParams>;
+    setInitialSQL(dataRes?.parameters?.sqlContent);
+    const { parameters, description, executionStrategy, executionTime } = dataRes;
+    const { databaseId, delimiter, sqlContent, timeoutMillis } = parameters;
     const formData = {
-      startAt: undefined,
+      executionTime: undefined,
       databaseId,
       description,
       delimiter,
       sqlContent,
       timeoutMillis: timeoutMillis / 1000 / 60 / 60,
-      triggerStrategy,
+      triggerStrategy: executionStrategy,
     };
-    if (triggerStrategy === TaskExecStrategy.START_AT) {
-      formData.startAt = startAt && startAt > new Date().getTime() ? dayjs(startAt) : null;
+    if (executionStrategy === TaskExecStrategy.TIMER) {
+      formData.executionTime =
+        executionTime && executionTime > new Date().getTime() ? dayjs(executionTime) : null;
     }
     form.setFieldsValue(formData);
   };
+  const executionMethodLabel =
+    login.isPrivateSpace() || isClient()
+      ? formatMessage({
+          id: 'src.component.Task.modals.LogicDatabaseAsyncTask.CreateModal.1ADEB730',
+          defaultMessage: '执行方式',
+        })
+      : formatMessage({
+          id: 'odc.components.TaskTimer.ExecutionMethodAfterTheApproval',
+          defaultMessage: '执行方式：审批完成后',
+        });
 
   useEffect(() => {
     if (logicDatabaseInfo?.ddl) {
       form?.setFieldValue('sqlContent', logicDatabaseInfo?.ddl);
       form?.setFieldValue('databaseId', logicDatabaseInfo?.databaseId);
+      setInitialSQL(logicDatabaseInfo?.ddl);
     }
   }, [logicDatabaseInfo?.ddl]);
 
@@ -113,6 +140,7 @@ const CreateModal: React.FC<IProps> = (props) => {
 
   const hadleReset = () => {
     form.resetFields(null);
+    setInitialSQL(undefined);
     setSqlContentType(SQLContentType.TEXT);
     setHasEdit(false);
   };
@@ -151,35 +179,24 @@ const CreateModal: React.FC<IProps> = (props) => {
           databaseId,
           sqlContent,
           timeoutMillis,
-          errorStrategy,
           description,
           delimiter,
           triggerStrategy,
-          startAt,
+          executionTime,
         } = values;
         const parameters = {
-          type: TaskType.LOGICAL_DATABASE_CHANGE,
-          operationType: TaskOperationType.CREATE,
-          scheduleTaskParameters: {
-            timeoutMillis: timeoutMillis ? timeoutMillis * 60 * 60 * 1000 : undefined,
-            errorStrategy,
-            sqlContent,
-            delimiter,
-            databaseId,
-          },
-          triggerConfig: {
-            triggerStrategy,
-          } as ICycleTaskTriggerConfig,
+          databaseId,
+          sqlContent,
+          delimiter,
+          timeoutMillis: timeoutMillis ? timeoutMillis * 60 * 60 * 1000 : undefined,
         };
-        if (triggerStrategy === TaskExecStrategy.START_AT) {
-          parameters.triggerConfig = {
-            triggerStrategy: TaskExecStrategy.START_AT,
-            startAt: startAt?.valueOf(),
-          };
-        }
+
         const data = {
           databaseId,
-          taskType: TaskType.ALTER_SCHEDULE,
+          executionStrategy: triggerStrategy,
+          executionTime:
+            triggerStrategy === TaskExecStrategy.TIMER ? executionTime?.valueOf() : undefined,
+          taskType: TaskType.LOGICAL_DATABASE_CHANGE,
           parameters,
           description,
         };
@@ -187,6 +204,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         const res = await createTask(data);
         if (res) {
           handleCancel(false);
+          reloadList?.();
           setConfirmLoading(false);
           message.success(
             formatMessage({
@@ -194,10 +212,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               defaultMessage: '创建成功',
             }),
           );
-          openTasksPage(
-            TaskPageType.LOGICAL_DATABASE_CHANGE,
-            TaskPageScope.CREATED_BY_CURRENT_USER,
-          );
+          openTasksPage(TaskPageType.LOGICAL_DATABASE_CHANGE);
         } else {
           setConfirmLoading(false);
         }
@@ -240,10 +255,10 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    if (task) {
-      loadEditData(task);
+    if (logicDatabaseInfo?.taskId) {
+      loadEditData(logicDatabaseInfo?.taskId);
     }
-  }, [task]);
+  }, [logicDatabaseInfo?.taskId]);
 
   return (
     <>
@@ -302,7 +317,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         <Form
           name="basic"
           initialValues={{
-            triggerStrategy: TaskExecStrategy.START_NOW,
+            triggerStrategy: TaskExecStrategy.MANUAL,
             databaseId: logicDatabaseInfo?.databaseId,
           }}
           layout="vertical"
@@ -380,23 +395,25 @@ const CreateModal: React.FC<IProps> = (props) => {
               paddingTop: 8,
             }}
           >
-            <CommonIDE
-              ref={editorRef}
-              initialSQL={initialSQL}
-              language={'sql'}
-              onEditorAfterCreatedCallback={onEditorAfterCreatedCallback}
-              onSQLChange={(sql) => {
-                handleSqlChange('sqlContent', sql);
-              }}
-              editorProps={{
-                theme,
-              }}
-              placeholder={formatMessage({
-                id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.56CD71B9',
-                defaultMessage:
-                  '使用逻辑表表达式需要在表达式上加上`号，如：`db_[00-31].test_[00-31]`,否则将无法识别逻辑表拓扑',
-              })}
-            />
+            {isInitSqlContent && (
+              <CommonIDE
+                ref={editorRef}
+                initialSQL={initialSQL}
+                language={'sql'}
+                onEditorAfterCreatedCallback={onEditorAfterCreatedCallback}
+                onSQLChange={(sql) => {
+                  handleSqlChange('sqlContent', sql);
+                }}
+                editorProps={{
+                  theme,
+                }}
+                placeholder={formatMessage({
+                  id: 'src.component.Task.modals.LogicDatabaseAsyncTask.CreateModal.0C5A3B76',
+                  defaultMessage:
+                    '新建逻辑表时需使用表达式，表达式需要加上 ` 号，如 `db_[00-31].test_[00-31] `。修改已有逻辑表时可直接使用逻辑库名和逻辑表名进行修改，如 db.test。',
+                })}
+              />
+            )}
           </Form.Item>
           <div
             style={{
@@ -433,29 +450,29 @@ const CreateModal: React.FC<IProps> = (props) => {
             })}
             /*任务设置*/ keepExpand
           >
-            <Form.Item
-              label={formatMessage({
-                id: 'odc.DataClearTask.CreateModal.ExecutionMethod',
-                defaultMessage: '执行方式',
-              })}
-              /*执行方式*/ name="triggerStrategy"
-              required
-            >
+            <Form.Item label={executionMethodLabel} name="triggerStrategy" required>
               <Radio.Group
                 options={[
+                  {
+                    label: formatMessage({
+                      id: 'src.component.Task.MutipleAsyncTask.CreateModal.A8CB0B6F',
+                      defaultMessage: '手动执行',
+                    }),
+                    value: TaskExecStrategy.MANUAL,
+                  },
                   {
                     label: formatMessage({
                       id: 'odc.DataClearTask.CreateModal.ExecuteNow',
                       defaultMessage: '立即执行',
                     }),
-                    value: TaskExecStrategy.START_NOW,
+                    value: TaskExecStrategy.AUTO,
                   },
                   {
                     label: formatMessage({
                       id: 'odc.DataClearTask.CreateModal.ScheduledExecution',
                       defaultMessage: '定时执行',
                     }),
-                    value: TaskExecStrategy.START_AT,
+                    value: TaskExecStrategy.TIMER,
                   },
                 ]}
                 optionType="button"
@@ -464,10 +481,10 @@ const CreateModal: React.FC<IProps> = (props) => {
             <Form.Item shouldUpdate noStyle>
               {({ getFieldValue }) => {
                 const triggerStrategy = getFieldValue('triggerStrategy') || [];
-                if (triggerStrategy === TaskExecStrategy.START_AT) {
+                if (triggerStrategy === TaskExecStrategy.TIMER) {
                   return (
                     <Form.Item
-                      name="startAt"
+                      name="executionTime"
                       label={formatMessage({
                         id: 'odc.DataArchiveTask.CreateModal.ExecutionTime',
                         defaultMessage: '执行时间',

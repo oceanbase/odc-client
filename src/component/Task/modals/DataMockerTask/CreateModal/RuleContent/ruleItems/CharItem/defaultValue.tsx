@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getColumnMaxValue } from '@/util/column';
+import { getColumnMaxValue } from '@/util/database/column';
 import BigNumber from 'bignumber.js';
 import dayjs from 'dayjs';
 import { CharRuleType } from './index';

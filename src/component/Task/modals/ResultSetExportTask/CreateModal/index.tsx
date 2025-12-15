@@ -19,13 +19,12 @@ import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import InputBigNumber from '@/component/InputBigNumber';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
-import TaskTimer from '@/component/Task/component/TimerSelect';
+import TaskExecutionMethodForm from '@/component/Task/component/TaskExecutionMethodForm';
 import {
   EXPORT_TYPE,
   IExportResultSetFileType,
   IMPORT_ENCODING,
   TaskExecStrategy,
-  TaskPageScope,
   TaskPageType,
   TaskType,
 } from '@/d.ts';
@@ -43,6 +42,7 @@ import styles from './index.less';
 import setting from '@/store/setting';
 import { rules } from './const';
 import dayjs from 'dayjs';
+import { stringSeparatorToCRLF } from '@/util/data/string';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -51,9 +51,10 @@ interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
   theme?: string;
+  reloadList?: () => void;
 }
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId, theme } = props;
+  const { modalStore, projectId, theme, reloadList } = props;
 
   const [form] = Form.useForm();
   const [hasEdit, setHasEdit] = useState(false);
@@ -92,6 +93,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       });
     } else {
       modalStore.changeCreateResultSetExportTaskModal(false);
+
       hadleReset();
     }
   };
@@ -117,7 +119,14 @@ const CreateModal: React.FC<IProps> = (props) => {
           sql,
           fileFormat,
           fileEncoding,
-          csvFormat,
+          csvFormat: {
+            ...csvFormat,
+            ...{
+              lineSeparator: csvFormat?.lineSeparator
+                ? stringSeparatorToCRLF(csvFormat?.lineSeparator)
+                : undefined,
+            },
+          },
           fileName,
           maxRows,
           tableName,
@@ -140,9 +149,10 @@ const CreateModal: React.FC<IProps> = (props) => {
         setConfirmLoading(true);
         const res = await createTask(data);
         handleCancel(false);
+        reloadList?.();
         setConfirmLoading(false);
         if (res) {
-          openTasksPage(TaskPageType.EXPORT_RESULT_SET, TaskPageScope.CREATED_BY_CURRENT_USER);
+          openTasksPage(TaskPageType.EXPORT_RESULT_SET);
         }
       })
       .catch((errorInfo) => {
@@ -157,7 +167,7 @@ const CreateModal: React.FC<IProps> = (props) => {
     }
 
     const maxRowsValueFromSpaceConfig = Number(
-      setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit'),
+      setting.spaceConfigurations?.['odc.sqlexecute.default.queryLimit'],
     );
 
     if (resultSetExportData) {
@@ -235,7 +245,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       <Form
         name="basic"
         initialValues={{
-          executionStrategy: TaskExecStrategy.AUTO,
+          executionStrategy: TaskExecStrategy.MANUAL,
           databaseId: null,
           tableName: null,
           fileFormat: EXPORT_TYPE.CSV,
@@ -383,7 +393,7 @@ const CreateModal: React.FC<IProps> = (props) => {
           }
           keepExpand
         >
-          <TaskTimer />
+          <TaskExecutionMethodForm />
         </FormItemPanel>
         <DescriptionInput />
       </Form>

@@ -19,6 +19,7 @@ import CreatePackageModal from '@/component/CreatePackageModal';
 import CreateProcedureModal from '@/component/CreateProcedureModal';
 import CreateSynonymModal from '@/component/CreateSynonymModal';
 import CreateTypeModal from '@/component/CreateTypeModal';
+import CreateExternalResourceModal from '@/component/CreateExternalResourceModal';
 import CreateModals from '@/component/Task/modals/CreateModals';
 import ExecuteSqlDetailModal from '@/component/ExecuteSqlDetailModal';
 import { ModalStore } from '@/store/modal';
@@ -41,6 +42,7 @@ const GlobalModals: React.FC<IProps> = function ({ modalStore }) {
       <CreateTypeModal />
       <CreateFunctionModal />
       <CreateProcedureModal />
+      <CreateExternalResourceModal />
       <CreateSequenceModal key={`${modalStore.createSequenceModalVisible}sequence`} />
       <CreateModals />
       <SelectDatabase />

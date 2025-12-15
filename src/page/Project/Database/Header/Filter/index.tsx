@@ -1,20 +1,40 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { ConnectTypeText, DBTypeText } from '@/constant/label';
 import { ConnectType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { CloseOutlined, FilterOutlined } from '@ant-design/icons';
-import { Popover, Space, Typography } from 'antd';
-import React, { useContext } from 'react';
+import { Popover, Space, Typography, Tooltip } from 'antd';
+import React, { useContext, useMemo, useState } from 'react';
 import ParamContext from '../../ParamContext';
-import FilterIcon from '@/page/Datasource/Datasource/Header/FIlterIcon';
 import { getAllConnectTypes, getAllDBTypes } from '@/common/datasource';
 import CheckboxTag from '@/component/CheckboxTag';
 import { DBType } from '@/d.ts/database';
 import settingStore from '@/store/setting';
+import FilterIcon from '@/component/Button/FIlterIcon';
+import styles from '../index.less';
 
 interface IProps {}
 
 const Filter: React.FC<IProps> = function ({}) {
   const context = useContext(ParamContext);
+  const { connectType, type, environmentId } = context?.filterParams;
+  const [open, setOpen] = useState<boolean>(false);
+  const [hover, setHover] = useState<boolean>(false);
   let displayDom = (
     <FilterIcon>
       <FilterOutlined />
@@ -28,38 +48,85 @@ const Filter: React.FC<IProps> = function ({}) {
       type: [],
     });
   }
-  const { connectType, type, environmentId } = context?.filterParams;
-  let selectedNames = [];
-  connectType?.forEach((c) => {
-    selectedNames.push(ConnectTypeText(c));
-  });
-  type?.forEach((c) => {
-    selectedNames.push(DBTypeText[c]);
-  });
-  environmentId?.forEach((c) => {
-    selectedNames.push(context?.envList?.find((i) => i?.id === c)?.name);
-  });
-  if (selectedNames.length) {
-    displayDom = (
-      <div
-        style={{
-          padding: '4px 8px',
-          lineHeight: '20px',
-          color: 'var(--text-color-secondary)',
-          background: 'var(--hover-color)',
-        }}
-      >
-        {selectedNames.slice(0, 3)?.join(';')}
-        {selectedNames?.length > 3 ? '...' : ''}
-        <span style={{ marginLeft: 3 }}>
-          {formatMessage({ id: 'odc.Header.Filter.Total', defaultMessage: '共' }) /*共*/}
-          {selectedNames?.length}
-          {formatMessage({ id: 'odc.Header.Filter.Item', defaultMessage: '项' }) /*项*/}
-        </span>
-        <CloseOutlined onClick={clear} style={{ cursor: 'pointer', marginLeft: 15 }} />
+
+  const handleOpenChange = (value: boolean) => {
+    setOpen(value);
+  };
+  const comma = (idx, length) => {
+    return idx !== length - 1 && <>，</>;
+  };
+  const tipContent = () => {
+    return (
+      <div>
+        {connectTypeTipContent}
+        {typeTipContent}
+        {environmentTipContent}
       </div>
     );
-  }
+  };
+  const connectTypeTipContent = useMemo(() => {
+    if (!connectType?.length) return null;
+    return (
+      <div>
+        <span>
+          {formatMessage({
+            id: 'src.page.Project.Database.Header.Filter.ADA9E6A7',
+            defaultMessage: '数据源类型',
+          })}
+        </span>
+        ：
+        {connectType?.map((name, index) => (
+          <>
+            <span key={name}>{ConnectTypeText?.(name)}</span>
+            {comma(index, connectType?.length)}
+          </>
+        ))}
+      </div>
+    );
+  }, [connectType]);
+  const typeTipContent = useMemo(() => {
+    if (!type?.length) return null;
+    return (
+      <div>
+        <span>
+          {formatMessage({
+            id: 'src.page.Project.Database.Header.Filter.BCBEF8AA',
+            defaultMessage: '数据库类型',
+          })}
+        </span>
+        ：
+        {type?.map((name, index) => (
+          <>
+            <span key={name}>{DBTypeText[name]}</span>
+            {comma(index, type?.length)}
+          </>
+        ))}
+      </div>
+    );
+  }, [type]);
+  const environmentTipContent = useMemo(() => {
+    if (!environmentId?.length) return null;
+    return (
+      <div>
+        <span>
+          {formatMessage({
+            id: 'src.page.Project.Database.Header.Filter.F048B0EE',
+            defaultMessage: '环境',
+          })}
+        </span>
+        ：
+        {environmentId?.map((name, index) => (
+          <>
+            <span key={name}>{context?.envList?.find((i) => i?.id === name)?.name}</span>
+            {comma(index, environmentId?.length)}
+          </>
+        ))}
+      </div>
+    );
+  }, [environmentId]);
+  const isActive = useMemo(() => {
+    return Boolean(connectType?.length || type?.length || environmentId?.length);
+  }, [connectType, type, environmentId]);
 
   return (
     <Popover
@@ -150,8 +217,26 @@ const Filter: React.FC<IProps> = function ({}) {
           </Space>
         </div>
       }
+      arrow={false}
+      open={open}
+      onOpenChange={handleOpenChange}
+      trigger="click"
     >
-      {displayDom}
+      <FilterIcon border isActive={isActive}>
+        <Tooltip
+          title={open ? undefined : tipContent()}
+          open={!open && hover && isActive}
+          overlayClassName={styles.filterTooltip}
+        >
+          <div
+            className={styles.filterIconContainer}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+          >
+            <FilterOutlined />
+          </div>
+        </Tooltip>
+      </FilterIcon>
     </Popover>
   );
 };

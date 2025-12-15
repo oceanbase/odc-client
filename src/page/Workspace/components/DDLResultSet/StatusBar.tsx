@@ -17,7 +17,7 @@
 import { ISqlExecuteResultTimer, ITableColumn, ResultSetColumn } from '@/d.ts';
 import { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
-import { formatTimeTemplate } from '@/util/utils';
+import { formatTimeTemplate } from '@/util/data/dateTime';
 import { Divider, Space, Typography } from 'antd';
 import BigNumber from 'bignumber.js';
 import { inject, observer } from 'mobx-react';

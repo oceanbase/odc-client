@@ -1,6 +1,21 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { formatMessage } from '@/util/intl';
 import { getSchedulePreviewResult, startSchedulePreviewTask } from '@/common/network/task';
-// import user from '@/store/user';
 import {
   IImportDatabaseView,
   IImportScheduleTaskView,
@@ -41,6 +56,8 @@ import NewDatasourceButton from '@/page/Datasource/Datasource/NewDatasourceDrawe
 import { listProjects } from '@/common/network/project';
 import { TaskTypeMap } from '../TaskTable/const';
 import styles from './index.less';
+import { ScheduleType } from '@/d.ts/schedule';
+import { ScheduleTextMap } from '@/constant/schedule';
 
 export const IMPORTABLE_TYPE = 'IMPORTABLE_TYPE';
 interface IImportModalProps {
@@ -51,7 +68,7 @@ interface IImportModalProps {
     previewData: IImportScheduleTaskView[],
     projectId?: string,
   ) => void;
-  taskType: TaskType;
+  taskType: ScheduleType;
 }
 
 export interface IDatasourceInfo {
@@ -293,7 +310,7 @@ const ImportModal: React.FC<IImportModalProps> = ({ open, onCancel, onOk, taskTy
             id: 'src.component.Task.component.ImportModal.1825A3A5',
             defaultMessage: '导入{TaskTypeMapTaskType}',
           },
-          { TaskTypeMapTaskType: TaskTypeMap[taskType] },
+          { TaskTypeMapTaskType: ScheduleTextMap[taskType] },
         )}
         destroyOnClose
         open={open}

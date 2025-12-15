@@ -38,3 +38,19 @@
   align-items: center;
   line-height: 22px;
 }
+
+.tableList {
+  :global {
+    .ReactVirtualized__Grid__innerScrollContainer {
+      > div {
+        .ant-skeleton {
+          .ant-skeleton-content {
+            .ant-skeleton-title {
+              width: 100% !important;
+            }
+          }
+        }
+      }
+    }
+  }
+}

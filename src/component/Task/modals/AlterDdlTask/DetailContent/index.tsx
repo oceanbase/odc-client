@@ -15,13 +15,14 @@
  */
 import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import { updateThrottleConfig } from '@/common/network/task';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
+import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
 import { SQLContent } from '@/component/SQLContent';
 import type { ITaskResult, TaskDetail } from '@/d.ts';
 import { TaskExecStrategy, TaskStatus } from '@/d.ts';
 import setting from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { bToMb, getFormatDateTime, mbToB } from '@/util/utils';
+import { bToMb, mbToB } from '@/util/data/byte';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { message, Typography } from 'antd';
 import React, { useMemo } from 'react';
 import { SimpleTextItem } from '@/component/Task/component/SimpleTextItem';
@@ -31,7 +32,9 @@ import { ClearStrategy, LockStrategy, LockStrategyLableMap } from '../CreateModa
 import { SwapTableType } from '../CreateModal/const';
 import { ProjectRole } from '@/d.ts/project';
 import userStore from '@/store/login';
+import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
 import EllipsisText from '@/component/EllipsisText';
+import login from '@/store/login';
 
 const { Text } = Typography;
 interface IDDLAlterParamters {
@@ -152,8 +155,7 @@ export function getItems(
       id: 'odc.AlterDdlTask.DetailContent.RiskLevel',
       defaultMessage: '风险等级',
     }),
-    //风险等级
-    <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />,
+    <ODCRiskLevelLabel iconMode level={task?.riskLevel?.level} levelMap />,
   ];
 
   const timerExecutionItem: [string, string] = [
@@ -203,21 +205,14 @@ export function getItems(
     {
       // @ts-ignore
       textItems: [
-        [
-          formatMessage({
-            id: 'odc.AlterDdlTask.DetailContent.TaskNumber',
-            defaultMessage: '任务编号',
-          }),
-          //任务编号
-          task.id,
-        ],
+        ['ID', task.id],
 
         [
           formatMessage({
-            id: 'odc.AlterDdlTask.DetailContent.TaskType',
-            defaultMessage: '任务类型',
+            id: 'src.component.Task.modals.AlterDdlTask.DetailContent.39A4BA43',
+            defaultMessage: '类型',
           }),
-          //任务类型
+
           formatMessage({
             id: 'odc.AlterDdlTask.DetailContent.LockFreeStructureChange',
             defaultMessage: '无锁结构变更',
@@ -225,21 +220,43 @@ export function getItems(
         ],
         [
           formatMessage({
-            id: 'odc.AlterDdlTask.DetailContent.Library',
-            defaultMessage: '所属库',
+            id: 'src.component.Task.modals.AlterDdlTask.DetailContent.BD4F1189',
+            defaultMessage: '数据库',
           }),
-          //所属库
-          <EllipsisText content={task?.database?.name} />,
+          <EllipsisText content={<DatabaseLabel database={task?.database} />} />,
         ],
 
         [
           formatMessage({
-            id: 'odc.src.component.Task.AlterDdlTask.DetailContent.DataSource',
-            defaultMessage: '所属数据源',
+            id: 'src.component.Task.modals.AlterDdlTask.DetailContent.CE75FBB9',
+            defaultMessage: '数据源',
           }),
-          //'所属数据源'
           <EllipsisText content={task?.database?.dataSource?.name} />,
         ],
+        !login.isPrivateSpace()
+          ? [
+              formatMessage({
+                id: 'src.component.Task.modals.AlterDdlTask.DetailContent.E4E73727',
+                defaultMessage: '项目',
+              }),
+              <EllipsisText content={task?.project?.name} />,
+            ]
+          : null,
+        hasFlow ? riskItem : null,
+        [
+          formatMessage({
+            id: 'odc.AlterDdlTask.DetailContent.Description',
+            defaultMessage: '描述',
+          }),
+          //描述
+          task?.description,
+          2,
+        ],
+      ].filter(Boolean),
+    },
+    {
+      // @ts-ignore
+      textItems: [
         [
           formatMessage({
             id: 'src.component.Task.AlterDdlTask.CreateModal.05BCC428',
@@ -247,7 +264,7 @@ export function getItems(
           }),
           LockStrategyLableMap[parameters?.forbiddenWriteType || LockStrategy.LOCK_USER],
         ],
-        hasFlow ? riskItem : null,
+
         lockUsers
           ? [
               formatMessage({
@@ -338,18 +355,10 @@ export function getItems(
                 onOk={handleRowLimit}
                 readlOnly={!cantBeModified}
               />,
+
               1,
             ]
           : null,
-        [
-          formatMessage({
-            id: 'odc.AlterDdlTask.DetailContent.Description',
-            defaultMessage: '描述',
-          }),
-          //描述
-          task?.description,
-          2,
-        ],
       ].filter(Boolean),
     },
     {
@@ -361,7 +370,6 @@ export function getItems(
           }),
           //创建人
           task?.creator?.name || '-',
-          2,
         ],
 
         [
@@ -371,7 +379,6 @@ export function getItems(
           }),
           //创建时间
           getFormatDateTime(task.createTime),
-          2,
         ],
       ],
     },

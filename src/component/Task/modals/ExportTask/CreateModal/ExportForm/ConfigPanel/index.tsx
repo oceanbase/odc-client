@@ -19,7 +19,7 @@ import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import SysFormItem from '@/component/SysFormItem';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
-import TaskTimer from '@/component/Task/component/TimerSelect';
+import TaskExecutionMethodForm from '@/component/Task/component/TaskExecutionMethodForm';
 import { ENABLED_SYS_FROM_ITEM } from '@/component/Task/helper';
 import { EXPORT_CONTENT, EXPORT_TYPE, IConnection, IMPORT_ENCODING } from '@/d.ts';
 import odc from '@/plugins/odc';
@@ -27,7 +27,7 @@ import { formatMessage } from '@/util/intl';
 import { AutoComplete, Checkbox, Col, Form, FormInstance, InputNumber, Row, Select } from 'antd';
 import React, { useContext } from 'react';
 import FormContext from '../FormContext';
-import { CRLFToSeparatorString } from '@/util/utils';
+import { CRLFToSeparatorString } from '@/util/data/string';
 import { rules } from '../../const';
 
 const FormItem = Form.Item;
@@ -436,7 +436,7 @@ const ConfigPanel: React.FC<IProps> = function ({ form, connection }) {
         })}
         /*任务设置*/ keepExpand
       >
-        <TaskTimer />
+        <TaskExecutionMethodForm />
       </FormItemPanel>
       {ENABLED_SYS_FROM_ITEM &&
         odc.appConfig.connection.sys &&

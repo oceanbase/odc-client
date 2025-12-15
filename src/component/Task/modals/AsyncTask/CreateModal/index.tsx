@@ -22,15 +22,8 @@ import FormItemPanel from '@/component/FormItemPanel';
 import ODCDragger from '@/component/OSSDragger2';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
-import TaskTimer from '@/component/Task/component/TimerSelect';
-import {
-  RollbackType,
-  SQLContentType,
-  TaskExecStrategy,
-  TaskPageScope,
-  TaskPageType,
-  TaskType,
-} from '@/d.ts';
+import TaskExecutionMethodForm from '@/component/Task/component/TaskExecutionMethodForm';
+import { RollbackType, SQLContentType, TaskExecStrategy, TaskPageType, TaskType } from '@/d.ts';
 import LintResultTable from '@/page/Workspace/components/SQLResultSet/LintResultTable';
 import { openTasksPage } from '@/store/helper/page';
 import login from '@/store/login';
@@ -38,7 +31,7 @@ import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import type { SQLStore } from '@/store/sql';
 import type { TaskStore } from '@/store/task';
-import utils, { IEditor } from '@/util/editor';
+import utils, { IEditor } from '@/util/ui/editor';
 import { formatMessage } from '@/util/intl';
 import { getLocale } from '@umijs/max';
 import {
@@ -74,6 +67,7 @@ interface IProps {
   modalStore?: ModalStore;
   projectId?: number;
   theme?: string;
+  reloadList?: () => void;
 }
 enum ErrorStrategy {
   CONTINUE = 'CONTINUE',
@@ -98,7 +92,7 @@ const getFilesByIds = (ids: string[], names: string[]) => {
   });
 };
 const CreateModal: React.FC<IProps> = (props) => {
-  const { modalStore, projectId, theme } = props;
+  const { modalStore, projectId, theme, reloadList } = props;
   const { createAsyncTaskVisible, asyncTaskData } = modalStore;
   const [form] = Form.useForm();
   const editorRef = useRef<CommonIDE>();
@@ -132,14 +126,8 @@ const CreateModal: React.FC<IProps> = (props) => {
 
   const loadEditData = async () => {
     const { task, type, objectId } = asyncTaskData;
-    const {
-      parameters,
-      projectId,
-      database: { id: databaseId },
-      description,
-      executionStrategy,
-      executionTime,
-    } = task;
+    const { parameters, projectId, database, description, executionStrategy, executionTime } = task;
+    const { id: databaseId } = database || {};
     const {
       delimiter,
       queryLimit,
@@ -446,9 +434,10 @@ const CreateModal: React.FC<IProps> = (props) => {
         setConfirmLoading(true);
         const res = await createTask(data);
         handleCancel(false);
+        reloadList?.();
         setConfirmLoading(false);
         if (res) {
-          openTasksPage(TaskPageType.ASYNC, TaskPageScope.CREATED_BY_CURRENT_USER);
+          openTasksPage(TaskPageType.ASYNC);
         }
       })
       .catch((errorInfo) => {
@@ -481,10 +470,12 @@ const CreateModal: React.FC<IProps> = (props) => {
 
   const loadInitialDataFromSpaceConfig = () => {
     const initialFormData = {
-      queryLimit: Number(setting.getSpaceConfigByKey('odc.sqlexecute.default.queryLimit')),
+      queryLimit: Number(setting.spaceConfigurations?.['odc.sqlexecute.default.queryLimit']),
       generateRollbackPlan:
-        setting.getSpaceConfigByKey('odc.task.default.rollbackPlanEnabled') === 'true',
-      executionStrategy: setting.getSpaceConfigByKey('odc.task.databaseChange.executionStrategy'),
+        setting.spaceConfigurations?.['odc.task.default.rollbackPlanEnabled'] === 'true',
+      executionStrategy:
+        setting.spaceConfigurations?.['odc.task.databaseChange.executionStrategy'] ||
+        TaskExecStrategy.MANUAL,
     };
     form.setFieldsValue(initialFormData);
   };
@@ -519,6 +510,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       databaseId: asyncTaskData?.databaseId,
     });
   }, [asyncTaskData?.databaseId]);
+
   return (
     <Drawer
       destroyOnClose
@@ -961,7 +953,7 @@ const CreateModal: React.FC<IProps> = (props) => {
               ]}
             />
           </Form.Item>
-          <TaskTimer />
+          <TaskExecutionMethodForm />
         </FormItemPanel>
         <Form.Item
           label={formatMessage({

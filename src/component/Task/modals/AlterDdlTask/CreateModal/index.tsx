@@ -26,13 +26,12 @@ import CommonIDE from '@/component/CommonIDE';
 import FormItemPanel from '@/component/FormItemPanel';
 import HelpDoc from '@/component/helpDoc';
 import DescriptionInput from '@/component/Task/component/DescriptionInput';
-import TaskTimer from '@/component/Task/component/TimerSelect';
+import TaskExecutionMethodForm from '@/component/Task/component/TaskExecutionMethodForm';
 import {
   IAlterScheduleTaskParams,
   IDatasourceUser,
   TaskDetail,
   TaskExecStrategy,
-  TaskPageScope,
   TaskPageType,
   TaskType,
 } from '@/d.ts';
@@ -41,7 +40,7 @@ import type { ModalStore } from '@/store/modal';
 import { useDBSession } from '@/store/sessionManager/hooks';
 import { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
-import { mbToB } from '@/util/utils';
+import { mbToB } from '@/util/data/byte';
 import {
   Alert,
   Button,
@@ -229,7 +228,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         setConfirmLoading(false);
         if (res) {
           handleCancel(false);
-          openTasksPage(TaskPageType.ONLINE_SCHEMA_CHANGE, TaskPageScope.CREATED_BY_CURRENT_USER);
+          openTasksPage(TaskPageType.ONLINE_SCHEMA_CHANGE);
         }
       })
       .catch((errorInfo) => {
@@ -453,7 +452,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
         <Form
           name="basic"
           initialValues={{
-            executionStrategy: TaskExecStrategy.AUTO,
+            executionStrategy: TaskExecStrategy.MANUAL,
           }}
           layout="vertical"
           requiredMark="optional"
@@ -672,7 +671,7 @@ const CreateDDLTaskModal: React.FC<IProps> = (props) => {
             })}
             /*任务设置*/ keepExpand
           >
-            <TaskTimer />
+            <TaskExecutionMethodForm />
             <Form.Item
               label={formatMessage({
                 id: 'odc.AlterDdlTask.CreateModal.TaskErrorHandling',

@@ -47,9 +47,8 @@ const SecretKeyInput = (props: { value: string; onChange: (value: string) => Pro
   };
 
   const resetSecretKeyItemState = async () => {
-    const storedSecurityKey = setting.getSpaceConfigByKey(
-      'odc.security.default.customDataSourceEncryptionKey',
-    );
+    const storedSecurityKey =
+      setting.spaceConfigurations?.['odc.security.default.customDataSourceEncryptionKey'];
     if (storedSecurityKey?.length > 0) {
       await updateSecretKey(storedSecurityKey);
     } else {

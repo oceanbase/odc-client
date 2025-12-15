@@ -1,17 +1,33 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { formatMessage } from '@/util/intl';
-import { Table, Tooltip, Spin } from 'antd';
+import { Table, Tooltip, Spin, Typography } from 'antd';
 import { useMount, useRequest } from 'ahooks';
 import { ConsoleTextConfig, EDatabaseTableColumnKey } from '../../const';
 import Icon from '@ant-design/icons';
-import LabelWithIcon from '../LabelWithIcon';
+import LabelWithIcon from '../../../../component/LabelWithIcon';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { IDatabaseHistoriesParam, TaskType } from '@/d.ts';
 import Action from '@/component/Action';
 import AsyncTaskCreateModal from '@/component/Task/modals/AsyncTask';
 import ExportTaskCreateModal from '@/component/Task/modals/ExportTask';
 import ImportTaskCreateModal from '@/component/Task/modals/ImportTask';
-import { renderTool } from '@/util/renderTool';
-import { isLogicalDatabase } from '@/util/database';
+import { renderTool } from '@/util/ui/renderTool';
+import { isLogicalDatabase } from '@/util/database/database';
 import { gotoSQLWorkspace } from '@/util/route';
 import { inject, observer } from 'mobx-react';
 import { ModalStore } from '@/store/modal';
@@ -172,18 +188,41 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
           case EDatabaseTableColumnKey.Recently:
             const databaseStyle = getDataSourceStyleByConnectType(record?.dataSource?.type);
             const existed = record?.existed;
+
+            // 获取权限相关的提示内容
+            const databasePermissionTooltip = renderTooltipContent({
+              type: needToApplyProjectAuth
+                ? ETootipType.PROJECT
+                : needToApplyDatabaseAuth
+                ? ETootipType.DATABASE
+                : '',
+              record,
+            });
+
+            // 外层 Tooltip 优先显示禁用原因，其次显示权限提示，最后显示数据库名称
+            const outerTooltipTitle = forbiddenAccessSQLConsole
+              ? formatMessage({
+                  id: 'src.page.Console.components.RecentlyDatabase.806E294C',
+                  defaultMessage: '对象存储暂不支持打开 SQL 控制台',
+                })
+              : databasePermissionTooltip || value;
+
             return (
-              <Tooltip
-                title={
-                  forbiddenAccessSQLConsole
-                    ? formatMessage({
-                        id: 'src.page.Console.components.RecentlyDatabase.806E294C',
-                        defaultMessage: '对象存储暂不支持打开 SQL 控制台',
-                      })
-                    : ''
-                }
-              >
+              <Tooltip title={outerTooltipTitle}>
                 <div
+                  onClick={() => {
+                    if (!existed || disabledAllOperations || needToApplyDatabaseAuth) {
+                      return;
+                    }
+                    gotoSQLWorkspace(
+                      record?.project?.id,
+                      record?.dataSource?.id,
+                      record?.id,
+                      null,
+                      '',
+                      isLogicalDatabase(record),
+                    );
+                  }}
                   className={existed ? recordWithActionClassName : ''}
                   style={
                     needToApplyDatabaseAuth ? { filter: 'grayScale(1)', color: '#00000040' } : {}
@@ -204,21 +243,7 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
                           record,
                         })}
                       >
-                        <span
-                          onClick={() => {
-                            if (!existed || disabledAllOperations || needToApplyDatabaseAuth) {
-                              return;
-                            }
-                            gotoSQLWorkspace(
-                              record?.project?.id,
-                              record?.dataSource?.id,
-                              record?.id,
-                              null,
-                              '',
-                              isLogicalDatabase(record),
-                            );
-                          }}
-                        >
+                        <span>
                           {value}
                           {!existed && (
                             <HelpDoc
@@ -270,6 +295,19 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
               );
             }
 
+            // 获取权限相关的提示内容
+            const permissionTooltip = renderTooltipContent({
+              type: needToApplyProjectAuth
+                ? ETootipType.PROJECT
+                : needToApplyDatabaseAuth
+                ? ETootipType.DATABASE
+                : '',
+              record,
+            });
+
+            // 如果有权限提示，显示权限提示；否则显示完整的数据源名称
+            const tooltipTitle = permissionTooltip || value;
+
             return (
               <div className={recordWithoutActionClassName}>
                 <LabelWithIcon
@@ -277,16 +315,20 @@ const RecentlyDatabase: React.FC<IProps> = ({ modalStore }) => {
                   label={
                     <Tooltip
                       styles={{ body: { whiteSpace: 'nowrap', width: 'fit-content' } }}
-                      title={renderTooltipContent({
-                        type: needToApplyProjectAuth
-                          ? ETootipType.PROJECT
-                          : needToApplyDatabaseAuth
-                          ? ETootipType.DATABASE
-                          : '',
-                        record,
-                      })}
+                      title={
+                        renderTooltipContent({
+                          type: needToApplyProjectAuth
+                            ? ETootipType.PROJECT
+                            : needToApplyDatabaseAuth
+                            ? ETootipType.DATABASE
+                            : '',
+                          record,
+                        }) || value
+                      }
                     >
-                      <span>{value}</span>
+                      <Typography.Text style={{ width: 170 }} ellipsis>
+                        {value}
+                      </Typography.Text>
                     </Tooltip>
                   }
                   icon={
