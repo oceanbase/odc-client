@@ -22,21 +22,21 @@ import LogicIcon from '@/component/logicIcon';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import MiniTable from '@/component/Table/MiniTable';
 import TableCard from '@/component/Table/TableCard';
-import AsyncTaskCreateModal from '@/component/Task/AsyncTask';
-import ExportTaskCreateModal from '@/component/Task/ExportTask';
-import ImportTaskCreateModal from '@/component/Task/ImportTask';
-import LogicDatabaseAsyncTask from '@/component/Task/LogicDatabaseAsyncTask';
-import MutipleAsyncTask from '@/component/Task/MutipleAsyncTask';
+import AsyncTaskCreateModal from '@/component/Task/modals/AsyncTask';
+import ExportTaskCreateModal from '@/component/Task/modals/ExportTask';
+import ImportTaskCreateModal from '@/component/Task/modals/ImportTask';
+import LogicDatabaseAsyncTask from '@/component/Task/modals/LogicDatabaseAsyncTask';
+import MutipleAsyncTask from '@/component/Task/modals/MutipleAsyncTask';
 import { IConnectionStatus, TaskType } from '@/d.ts';
 import { DatabasePermissionType, IDatabase } from '@/d.ts/database';
 import ChangeProjectModal from '@/page/Datasource/Info/ChangeProjectModal';
 import datasourceStatus from '@/store/datasourceStatus';
 import { ModalStore } from '@/store/modal';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
 import tracert from '@/util/tracert';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import Icon from '@ant-design/icons';
 import { Space, Tooltip, Typography, message } from 'antd';
 import { toInteger } from 'lodash';
@@ -46,14 +46,14 @@ import ProjectContext from '../ProjectContext';
 import AddDataBaseButton from './components/AddDataBaseButton';
 import ChangeOwnerModal from './components/ChangeOwnerModal';
 import { CreateLogicialDatabase, ManageLogicDatabase } from './components/LogicDatabase';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import AddObjectStorage from './components/AddObjectStorage';
 import Header from './Header';
 import styles from './index.less';
 import ParamContext, { IFilterParams } from './ParamContext';
 import StatusName from './StatusName';
 import { isProjectArchived } from '@/page/Project/helper';
-import { renderTool } from '@/util/renderTool';
+import { renderTool } from '@/util/ui/renderTool';
 import { DatabaseGroup, DBType } from '@/d.ts/database';
 import { CaretDownOutlined, CaretRightOutlined } from '@ant-design/icons';
 
@@ -205,6 +205,7 @@ const Database: React.FC<IProps> = ({ id, modalStore }) => {
             setFilterParams,
             groupMode,
             setGroupMode,
+            loading,
             reload: () => {
               reload();
             },

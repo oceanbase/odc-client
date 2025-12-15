@@ -18,10 +18,10 @@ import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { ConnectTypeText } from '@/constant/label';
 import { IConnection } from '@/d.ts';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import { IDatabase } from '@/d.ts/database';
 import { ClusterStore } from '@/store/cluster';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
@@ -117,34 +117,51 @@ const ConnectionPopover: React.FC<{
             >
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <RiskLevelLabel
-                  content={connection?.environmentName}
-                  color={connection?.environmentStyle?.toLowerCase()}
+                  content={connection?.environmentName || database?.environment?.name}
+                  color={
+                    connection?.environmentStyle?.toLowerCase() ||
+                    database?.environment?.style?.toLowerCase()
+                  }
                 />
                 <Icon
                   component={DBIcon?.component}
                   style={{ fontSize: 22, marginRight: 4, color: DBIcon?.color }}
-                />{' '}
-                {connection?.name}
+                />
+                <div className={styles.content}>{connection?.name}</div>
               </div>
             </div>
           </Tooltip>
           {renderConnectionMode()}
-          <div>
+          <div className={styles.label}>
             {formatMessage(
               {
                 id: 'src.component.ConnectionPopover.986CE021',
                 defaultMessage: '文件URL：{LogicalExpression0}',
               },
-              { LogicalExpression0: connection?.host ?? '-' },
+              {
+                LogicalExpression0: connection?.host ? (
+                  <span className={styles.content} style={{ color: 'black' }}>
+                    {connection?.host}
+                  </span>
+                ) : (
+                  '-'
+                ),
+              },
             )}
           </div>
-          <div>
+          <div className={styles.label}>
             {formatMessage(
               {
                 id: 'src.component.ConnectionPopover.4A02B634',
                 defaultMessage: '地域：{LogicalExpression0}',
               },
-              { LogicalExpression0: connection?.region ?? '-' },
+              {
+                LogicalExpression0: connection?.region ? (
+                  <span className={styles.content}>{connection?.region}</span>
+                ) : (
+                  '-'
+                ),
+              },
             )}
           </div>
         </Space>
@@ -181,7 +198,9 @@ const ConnectionPopover: React.FC<{
                 />
 
                 <DataBaseStatusIcon item={database} />
-                <div className={styles.ellipsis} title={database?.name}>{`${database?.name}`}</div>
+                <div className={styles.ellipsis} title={database?.name}>
+                  {`${database?.name}`}
+                </div>
               </div>
             </div>
           </Tooltip>
@@ -293,7 +312,9 @@ const ConnectionPopover: React.FC<{
                 defaultMessage: '类型：{ConnectTypeTextType}',
               },
 
-              { ConnectTypeTextType: <Typography.Text>{ConnectTypeText(type)}</Typography.Text> },
+              {
+                ConnectTypeTextType: <Typography.Text>{ConnectTypeText(type)}</Typography.Text>,
+              },
             )
 
             /*类型：{ConnectTypeTextType}*/
@@ -311,38 +332,40 @@ const ConnectionPopover: React.FC<{
       style={{
         lineHeight: '20px',
         maxWidth: '280px',
+        fontWeight: 'normal',
       }}
     >
       <Space direction="vertical">
-        <Tooltip title={database?.name}>
-          <div
-            style={{
-              marginBottom: 4,
-              fontFamily: 'PingFangSC-Semibold',
-              color: 'var(--text-color-primary)',
-              fontWeight: 'bold',
-              width: '280px',
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <RiskLevelLabel
-                content={connection?.environmentName || database?.environment?.name}
-                color={
-                  connection?.environmentStyle?.toLowerCase() ||
-                  database?.environment?.style?.toLowerCase()
-                }
-              />
+        <div
+          style={{
+            marginBottom: 4,
+            fontFamily: 'PingFangSC-Semibold',
+            color: 'var(--text-color-primary)',
+            fontWeight: 'bold',
+            width: 'max-content',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            maxWidth: '280px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <RiskLevelLabel
+              content={connection?.environmentName || database?.environment?.name}
+              color={
+                connection?.environmentStyle?.toLowerCase() ||
+                database?.environment?.style?.toLowerCase()
+              }
+            />
 
-              <DataBaseStatusIcon item={database} />
+            <DataBaseStatusIcon item={database} />
+            <Tooltip title={database?.name}>
               <span style={{ marginLeft: '6px', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                 {database?.name}
               </span>
-            </div>
+            </Tooltip>
           </div>
-        </Tooltip>
+        </div>
         {dataSourceDescription}
         {projectDescription}
         {renderConnectionMode()}

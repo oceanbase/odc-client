@@ -19,7 +19,7 @@ import DisplayTable from '@/component/DisplayTable';
 import Status from '@/component/Manage/Status';
 import type { IManagerRole, IManagerUser } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { validTrimEmptyWithWarn } from '@/util/valid';
+import { validTrimEmptyWithWarn } from '@/util/ui/validRule';
 import type { RadioChangeEvent } from 'antd';
 import { Button, Form, Input, Radio, Select, Space } from 'antd';
 import type { FormInstance } from 'antd/lib/form';

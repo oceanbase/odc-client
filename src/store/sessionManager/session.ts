@@ -38,9 +38,9 @@ import { getBuiltinSnippets } from '@/common/network/snippet';
 import { ISnippet } from '../snippet';
 import { DBDefaultStoreType } from '@/d.ts/table';
 import { isString } from 'lodash';
-import { OBCompare, ODC_PROFILE_SUPPORT_VERSION } from '@/util/versionUtils';
+import { OBCompare, ODC_PROFILE_SUPPORT_VERSION } from '@/util/business/versionUtils';
 import { ConnectionMode } from '@/d.ts';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 
 const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';
@@ -52,6 +52,11 @@ class SessionStore {
   public charsets: string[] = [];
   @observable
   public collations: string[] = [];
+  @observable
+  public supports: {
+    support: boolean;
+    supportType: string;
+  }[];
   @observable
   public dataTypes: IDataType[] = [];
 
@@ -209,6 +214,7 @@ class SessionStore {
         this.dataTypes = data.dataTypeUnits;
         this.charsets = data.charsets;
         this.collations = data.collations;
+        this.supports = data.supports;
         await this.initSupportFeature(data.supports);
         this.isAlive = true;
         return await this.initSessionBaseInfo();

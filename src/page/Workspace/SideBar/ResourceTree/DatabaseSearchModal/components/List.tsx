@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { IDatabase } from '@/d.ts/database';
@@ -210,6 +226,7 @@ const List = ({ modalStore }: Iprops) => {
                   })}
 
                   <a
+                    className={styles.syncMetadata}
                     onClick={async () => {
                       const data = await fetchSyncAll?.();
                       if (data?.data) {
@@ -224,8 +241,8 @@ const List = ({ modalStore }: Iprops) => {
                     }}
                   >
                     {formatMessage({
-                      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.884084AB',
-                      defaultMessage: '同步数据库',
+                      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.430627A1',
+                      defaultMessage: '同步元数据库',
                     })}
                   </a>
                   {formatMessage({
@@ -271,6 +288,7 @@ const List = ({ modalStore }: Iprops) => {
         <div
           key={'database' + db.id}
           onClick={(e) => {
+            if (!db?.authorizedPermissionTypes?.length) return;
             handlePosition(e, db);
             openSql?.(e, db);
           }}
@@ -342,32 +360,8 @@ const List = ({ modalStore }: Iprops) => {
     }
   };
 
-  const searchInfo = useMemo(() => {
-    switch (status) {
-      case SearchStatus.forDataSource: {
-        return formatMessage({
-          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.40A85606',
-          defaultMessage: '数据源',
-        });
-      }
-      case SearchStatus.forProject: {
-        return formatMessage({
-          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.F8D1DA01',
-          defaultMessage: '项目',
-        });
-      }
-      default: {
-        return formatMessage({
-          id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.BA1A0AD7',
-          defaultMessage: '数据库',
-        });
-      }
-    }
-  }, [status]);
-
   return (
     <div className={styles.content} style={{ maxHeight: '100%' }}>
-      <div className={styles.searchInfo}>{searchInfo}</div>
       {options?.length ? (
         <div style={{ height: '100%' }} ref={listRef}>
           <VirtualList

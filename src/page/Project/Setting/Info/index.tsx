@@ -22,16 +22,20 @@ import { Button, Form, Input, message, Popconfirm, Space, Modal, Tooltip } from 
 import { useContext, useEffect, useState } from 'react';
 import ProjectContext from '../../ProjectContext';
 import { isProjectArchived } from '@/page/Project/helper';
-import { getUnfinishedTickets } from '@/common/network/task';
-import TaskList from './TaskList';
 import DeleteProjectModal from '@/page/Project/components/DeleteProjectModal.tsx';
+import RelativeResourceModal from '@/component/RelativeResourceModal';
+import { getResourceDependencies } from '@/common/network/relativeResource';
+import { EEntityType } from '@/d.ts/relativeResource';
+import { SchedulePageMode } from '@/component/Schedule/interface';
 
 export default function Info() {
   const [form] = Form.useForm<Pick<IProject, 'name' | 'description'>>();
   const context = useContext(ProjectContext);
+  const projectName = context?.project?.name;
   const [isModify, setIsModify] = useState(false);
   const projectArchived = isProjectArchived(context.project);
   const [openDeleteProjectModal, setOpenDeleteProjectModal] = useState(false);
+  const [openArchiveModal, setOpenArchiveModal] = useState(false);
   const isProjectOwner = context?.project?.currentUserResourceRoles?.includes(ProjectRole.OWNER);
 
   useEffect(() => {
@@ -57,40 +61,15 @@ export default function Info() {
   }
 
   const handleProjectAchived = async () => {
-    const res = await getUnfinishedTickets(context.projectId);
-    const tatolUnfinishedTicketsCount =
-      res?.unfinishedFlowInstances?.length + res?.unfinishedSchedules?.length;
-    if (tatolUnfinishedTicketsCount > 0) {
-      Modal.error({
-        title: formatMessage({
-          id: 'src.page.Project.Setting.Info.D4D805EF',
-          defaultMessage: '项目存在未完成的工单，暂不支持归档',
-        }),
-        width: 500,
-        content: (
-          <>
-            <div style={{ color: 'var(--text-color-secondary)' }}>
-              {formatMessage(
-                {
-                  id: 'src.page.Project.Setting.Info.4EF2A2EA',
-                  defaultMessage: '以下 {tatolUnfinishedTicketsCount} 个工单未完成：',
-                },
-                { tatolUnfinishedTicketsCount },
-              )}
-            </div>
-            {res?.unfinishedFlowInstances?.length > 0 && (
-              <Space style={{ marginBottom: '12px' }}>
-                <TaskList dataSource={res?.unfinishedFlowInstances} />
-              </Space>
-            )}
-            {res?.unfinishedSchedules?.length > 0 && (
-              <Space>
-                <TaskList dataSource={res?.unfinishedSchedules} />
-              </Space>
-            )}
-          </>
-        ),
-      });
+    const res = await getResourceDependencies({ projectId: context.projectId });
+    const data = res?.data;
+    const total =
+      data?.flowDependencies?.length ||
+      0 + data?.scheduleDependencies?.length ||
+      0 + data?.scheduleTaskDependencies?.length ||
+      0;
+    if (total > 0) {
+      setOpenArchiveModal(true);
     } else {
       Modal.confirm({
         title: formatMessage({
@@ -103,12 +82,6 @@ export default function Info() {
               id: 'src.page.Project.Setting.Info.D29E85EF',
               defaultMessage: '项目归档后将不可恢复，但仍保留相关数据，',
             })}
-            <b>
-              {formatMessage({
-                id: 'src.page.Project.Setting.Info.C657656B',
-                defaultMessage: '若有分区计划类型工单，则会停用该工单，',
-              })}
-            </b>
             {formatMessage({
               id: 'src.page.Project.Setting.Info.5666645F',
               defaultMessage: '可前往归档项目中查看项目。',
@@ -240,6 +213,21 @@ export default function Info() {
         afterDelete={() => {
           history.push('/project?archived=true');
         }}
+      />
+
+      <RelativeResourceModal
+        mode={EEntityType.PROJECT}
+        open={openArchiveModal}
+        id={context?.project?.id}
+        scheduleDetailMode={SchedulePageMode.PROJECT}
+        title={formatMessage(
+          {
+            id: 'src.page.Project.Setting.Info.2365AA93',
+            defaultMessage: '项目 {projectName} 存在以下未完成的工单和作业，暂不支持归档',
+          },
+          { projectName },
+        )}
+        onCancel={() => setOpenArchiveModal(false)}
       />
     </div>
   );

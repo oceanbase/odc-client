@@ -29,6 +29,7 @@ import type {
   ITitleContent,
 } from './interface';
 import useURLParams from '@/util/hooks/useUrlParams';
+import FilterIcon from '../Button/FIlterIcon';
 
 interface IProps {
   loading: boolean;
@@ -70,7 +71,7 @@ export const Toolbar: React.FC<IProps> = (props) => {
       {operationContent?.isNeedOccupyElement && <div></div>}
       {operationContent && <OperationContent {...operationContent} onClick={onOperationClick} />}
       {titleContent && <TitleContent {...titleContent} onTabChange={onTabChange} />}
-      <Space split={isSplit ? '|' : null} size={16}>
+      <Space split={isSplit ? '|' : null} size={8} style={{ lineHeight: 1 }}>
         {cascaderContent && <Cascader {...cascaderContent} multiple maxTagCount="responsive" />}
         {urlTriggerValue && (
           <Tag
@@ -96,13 +97,14 @@ export const Toolbar: React.FC<IProps> = (props) => {
           />
         )}
         {enabledReload && (
-          <SyncOutlined
-            className={styles.cursor}
+          <FilterIcon
+            border
             onClick={() => {
               onReload();
             }}
-            spin={loading}
-          />
+          >
+            <SyncOutlined className={styles.cursor} spin={loading} />
+          </FilterIcon>
         )}
       </Space>
     </Space>

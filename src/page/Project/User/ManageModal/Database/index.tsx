@@ -105,6 +105,9 @@ const ManageModal: React.FC<IProps> = (props) => {
       page: current,
       size: pageSize,
     };
+    if (pageSize === 0) {
+      return;
+    }
     // sorter
     params.sort = column ? `${column.dataIndex},${order === 'ascend' ? 'asc' : 'desc'}` : undefined;
     const res = await getDatabasePermissions(params);
@@ -170,12 +173,6 @@ const ManageModal: React.FC<IProps> = (props) => {
       },
     });
   };
-
-  useEffect(() => {
-    if (projectId && userId) {
-      loadData();
-    }
-  }, [userId, projectId, authorizationType]);
 
   const handleSwitchUserTab = () => {
     if (authorizationType === PermissionSourceType.USER_AUTHORIZATION) {

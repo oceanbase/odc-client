@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { useMemo } from 'react';
 import {
   getMapIdByDB,
@@ -23,7 +39,7 @@ const useGroupData = (props: IProps) => {
     const datasourceGruop: Map<number, GroupWithDatabases[DatabaseGroup.dataSource]> = new Map();
     const clusterGroup: Map<string, GroupWithSecondGroup[DatabaseGroup.cluster]> = new Map();
     const projectGroup: Map<number, GroupWithDatabases[DatabaseGroup.project]> = new Map();
-    const tenantGroup: Map<string, GroupWithDatabases[DatabaseGroup.tenant]> = new Map();
+    const tenantGroup: Map<string, GroupWithSecondGroup[DatabaseGroup.tenant]> = new Map();
     const allDatabases: Map<number, IDatabase> = new Map();
     const filteredList = filter ? databaseList?.filter(filter) : databaseList;
     const allDatasources: IConnection[] = [];
@@ -152,19 +168,30 @@ const useGroupData = (props: IProps) => {
       // 租户分组
       {
         const { mapId, groupName, tip } = getMapIdByDB(db, DatabaseGroup.tenant);
-        const tenantDatabases: GroupWithDatabases[DatabaseGroup.tenant] = tenantGroup.get(
+        const tenantDatabases: GroupWithSecondGroup[DatabaseGroup.tenant] = tenantGroup.get(
           mapId,
         ) || {
           groupName,
           mapId,
           tip,
-          databases: [],
+          secondGroup: new Map(),
         };
+        const { mapId: secondGroupMapId, groupName: secondGroupgroupName } = getMapIdByDB(
+          db,
+          DatabaseGroup.dataSource,
+        );
+        const secondGroupDatabase: GroupWithDatabases[DatabaseGroup.dataSource] =
+          tenantDatabases.secondGroup.get(secondGroupMapId) || {
+            databases: [],
+            groupName: secondGroupgroupName,
+            mapId: secondGroupMapId,
+          };
         if (db.type === 'LOGICAL') {
-          tenantDatabases.databases.unshift(db);
+          secondGroupDatabase.databases.unshift(db);
         } else {
-          tenantDatabases.databases.push(db);
+          secondGroupDatabase.databases.push(db);
         }
+        tenantDatabases.secondGroup.set(secondGroupMapId, secondGroupDatabase);
         tenantGroup.set(mapId, tenantDatabases);
       }
     });

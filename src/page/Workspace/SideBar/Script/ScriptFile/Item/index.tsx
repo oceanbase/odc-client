@@ -29,7 +29,7 @@ import { IScriptMeta } from '@/d.ts';
 import { closePageByScriptIdAndType } from '@/store/helper/page';
 import login from '@/store/login';
 import setting from '@/store/setting';
-import { formatBytes } from '@/util/utils';
+import { formatBytes } from '@/util/data/byte';
 import copyToCB from 'copy-to-clipboard';
 import { toString } from 'lodash';
 

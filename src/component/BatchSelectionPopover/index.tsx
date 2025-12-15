@@ -1,6 +1,22 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { formatMessage } from '@/util/intl';
 import React, { useEffect, useState, useMemo } from 'react';
-import { Button, Checkbox, Popover, Spin, Empty, Input, Space } from 'antd';
+import { Button, Checkbox, Popover, Spin, Empty, Input, Space, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import styles from './index.less';
@@ -10,12 +26,15 @@ interface BatchSelectionPopoverProps {
   options: {
     label: string;
     value: string;
+    disabled?: boolean;
   }[];
   handleConfirm: (selectedList: any[]) => void;
+  disabled?: boolean;
+  maxCount?: number;
 }
 
 const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
-  const { options = [], handleConfirm } = props;
+  const { options = [], handleConfirm, disabled = false, maxCount } = props;
 
   const [checkedList, setCheckedList] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState<string>(undefined);
@@ -91,11 +110,16 @@ const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
         <div className={`${styles.flexBetween} ${styles.p12}`}>
           <Checkbox
             checked={
-              filterCheckedList.length && filterOptions?.length === filterCheckedList?.length
+              filterCheckedList.length &&
+              filterOptions?.filter((item) => !item?.disabled)?.length === filterCheckedList?.length
             }
-            disabled={!filterOptions?.length}
+            disabled={!filterOptions?.filter((item) => !item?.disabled)?.length}
             onChange={(e: CheckboxChangeEvent) => {
-              setCheckedList(e.target.checked ? filterOptions?.map((item) => item?.value) : []);
+              setCheckedList(
+                e.target.checked
+                  ? filterOptions?.filter((item) => !item?.disabled)?.map((item) => item?.value)
+                  : [],
+              );
             }}
           >
             {formatMessage({
@@ -107,6 +131,18 @@ const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
             size="small"
             type="primary"
             onClick={() => {
+              if (maxCount && checkedList?.length > maxCount) {
+                message.warning(
+                  formatMessage(
+                    {
+                      id: 'src.component.BatchSelectionPopover.8DFDBE89',
+                      defaultMessage: '最多还可以添加{maxCount}个',
+                    },
+                    { maxCount },
+                  ),
+                );
+                return;
+              }
               handleConfirm(checkedList);
               setOpen(false);
             }}
@@ -130,6 +166,7 @@ const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
               <Checkbox
                 value={item.value}
                 className={styles.w100}
+                disabled={item?.disabled}
                 checked={checkedList?.indexOf(item.value) !== -1}
                 onChange={(e) => {
                   if (e.target.checked) {
@@ -182,6 +219,7 @@ const BatchSelectionPopover: React.FC<BatchSelectionPopoverProps> = (props) => {
           onClick={() => {
             setOpen(true);
           }}
+          disabled={disabled}
         >
           {formatMessage({
             id: 'src.component.BatchSelectionPopover.F72B9B10',

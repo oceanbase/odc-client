@@ -151,3 +151,10 @@ export enum DatabaseGroup {
   /** 按租户 */
   tenant = 'Tenant',
 }
+
+export enum DatabaseSearchType {
+  SCHEMA_NAME = 'SCHEMA_NAME',
+  DATASOURCE_NAME = 'DATASOURCE_NAME',
+  CLUSTER_NAME = 'CLUSTER_NAME',
+  TENANT_NAME = 'TENANT_NAME',
+}

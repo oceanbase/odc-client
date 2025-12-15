@@ -1,0 +1,26 @@
+.PartitionTreeSelecter {
+  :global {
+    .ant-tree-switcher {
+      display: none;
+    }
+
+    .ant-tree-node-selected {
+      background-color: transparent !important;
+    }
+    .ant-tree-treenode-leaf {
+      .ant-tree-node-content-wrapper {
+        background-color: transparent !important;
+        .ant-tree-title {
+          > div > span:first-child {
+            margin-right: 10px !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+.item {
+  transition: background-color 0.3s;
+  flex: 1;
+}

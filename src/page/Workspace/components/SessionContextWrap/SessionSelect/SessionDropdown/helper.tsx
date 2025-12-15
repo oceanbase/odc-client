@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { IDatabase, DatabaseGroup } from '@/d.ts/database';
 import { getMapIdByDB } from '@/page/Workspace/SideBar/ResourceTree/helper';
 import { IConnection } from '@/d.ts';
@@ -58,9 +74,12 @@ const DatabaseGroupArr = [
 ];
 
 const hasSecondGroup = (group: DatabaseGroup) => {
-  return [DatabaseGroup.cluster, DatabaseGroup.environment, DatabaseGroup.connectType].includes(
-    group,
-  );
+  return [
+    DatabaseGroup.cluster,
+    DatabaseGroup.environment,
+    DatabaseGroup.connectType,
+    DatabaseGroup.tenant,
+  ].includes(group);
 };
 
 const getShouldExpandedGroupKeys = (params: {
@@ -96,7 +115,7 @@ const getShouldExpandedGroupKeys = (params: {
     getGroupKey(mapId, groupMode),
     getSecondGroupKey(mapId, secondMapId, groupMode),
   );
-  if ([DatabaseGroup.project, DatabaseGroup.dataSource, DatabaseGroup.tenant].includes(groupMode)) {
+  if ([DatabaseGroup.project, DatabaseGroup.dataSource].includes(groupMode)) {
     shouldExpandedKeys = shouldExpandedKeys.filter((item) => {
       if (isString(item)) {
         return !item.includes(TreeDataSecondGroupKey);

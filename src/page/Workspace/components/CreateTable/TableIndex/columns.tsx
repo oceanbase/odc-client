@@ -25,6 +25,7 @@ import { uniq } from 'lodash';
 import { useMemo } from 'react';
 import { WrapSelectEditor } from '../../EditableTable/Editors/SelectEditor';
 import { TextEditor } from '../../EditableTable/Editors/TextEditor';
+import { NoSpaceEditor } from '../../EditableTable/Editors/NoSpaceEditor';
 import { useTableConfig } from '../config';
 import {
   TableColumn,
@@ -134,7 +135,7 @@ export function useColumns(
       resizable: true,
       editable: true,
       formatter: NameFormatter,
-      editor: TextEditor,
+      editor: NoSpaceEditor,
     },
     config?.enableIndexScope && {
       key: 'scope',

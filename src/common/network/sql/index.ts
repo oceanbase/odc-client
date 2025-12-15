@@ -25,8 +25,8 @@ import {
   TraceSpan,
 } from '@/d.ts';
 import setting from '@/store/setting';
-import { uploadFileToOSS } from '@/util/aliyun';
-import notification from '@/util/notification';
+import { uploadFileToOSS } from '@/common/network/aliyun';
+import notification from '@/util/ui/notification';
 import request from '@/util/request';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
 import _executeSQL from './executeSQL';

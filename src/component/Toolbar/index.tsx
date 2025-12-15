@@ -36,6 +36,7 @@ import statefulIcon, { IConStatus } from './statefulIcon';
 const noop = () => {
   // TODO
 };
+
 function TButton({
   text,
   onClick = noop,

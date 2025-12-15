@@ -25,6 +25,7 @@ const RootNodeContent = ({
   rootNode,
   environmentMap,
   taskTypeIdMap,
+  scheduleTypeIdMap,
   sqlCheckResultIdMap,
   showActionButton,
 }) => {
@@ -50,6 +51,10 @@ const RootNodeContent = ({
       }
       case Expression.DATABASE_NAME: {
         valueMap = {};
+        break;
+      }
+      case Expression.SCHEDULE_TYPE: {
+        valueMap = scheduleTypeIdMap;
         break;
       }
       default: {

@@ -1,48 +1,34 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { useEffect, useState, useMemo } from 'react';
-import type {
-  TaskRecord,
-  TaskRecordParameters,
-  ICycleTaskRecord,
-  ISqlPlayJobParameters,
-  IDataArchiveJobParameters,
-  IResponseData,
-} from '@/d.ts';
+import type { TaskRecord, TaskRecordParameters, ICycleTaskRecord, IResponseData } from '@/d.ts';
 import { TaskPageType, TaskStatus } from '@/d.ts';
 import type { TaskStore } from '@/store/task';
 import type { ITableInstance } from '@/component/CommonTable/interface';
 import odc from '@/plugins/odc';
-
-export const statusThatCanBeExport = Object.keys(TaskStatus);
-
-export const statusThatCanBeTerminate = [
-  TaskStatus.CREATING,
-  TaskStatus.APPROVING,
-  TaskStatus.ENABLED,
-  TaskStatus.PAUSE,
-  TaskStatus.EXECUTING,
-  TaskStatus.WAIT_FOR_EXECUTION,
-  TaskStatus.CREATED,
-];
-
-export const taskTypeThatCanBeExport = [
-  TaskPageType.SQL_PLAN,
-  TaskPageType.DATA_ARCHIVE,
-  TaskPageType.DATA_DELETE,
-  TaskPageType.PARTITION_PLAN,
-];
+import { taskStatusThatCanBeTerminate } from '@/constant/triangularization';
 
 interface UseTaskSelectionProps {
   taskStore: TaskStore;
   taskTabType: TaskPageType;
-  taskList: IResponseData<
-    | TaskRecord<TaskRecordParameters>
-    | ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>
-  >;
+  taskList: IResponseData<TaskRecord<TaskRecordParameters>>;
   tableRef: React.RefObject<ITableInstance>;
 }
 
-const isSupportTaksExport = odc?.appConfig?.task?.isSupportTaksExport;
-const isSupportTaksImport = odc?.appConfig?.task?.isSupportTaksImport;
 const isSupportTaksTerminate = odc?.appConfig?.task?.isSupportTaksTerminate;
 
 export const useTaskSelection = ({
@@ -61,9 +47,7 @@ export const useTaskSelection = ({
   // 当任务列表数据变化时，清理无效的selectedRowKeys
   useEffect(() => {
     if (taskList?.contents?.length > 0 && taskStore.selectedRowKeys.length > 0) {
-      const rules = taskTypeThatCanBeExport.includes(taskTabType)
-        ? [...statusThatCanBeExport, ...statusThatCanBeTerminate]
-        : [...statusThatCanBeTerminate];
+      const rules = [...taskStatusThatCanBeTerminate];
 
       const validSelectedRowKeys = taskStore.selectedRowKeys.filter((keyId) => {
         const taskInCurrentList = taskList.contents.find((task) => task.id === keyId);
@@ -97,9 +81,7 @@ export const useTaskSelection = ({
   }, [taskStore.selectedRowKeys]);
 
   const rowSelection = useMemo(() => {
-    const rules = taskTypeThatCanBeExport.includes(taskTabType)
-      ? [...statusThatCanBeExport, ...statusThatCanBeTerminate]
-      : [...statusThatCanBeTerminate];
+    const rules = [...taskStatusThatCanBeTerminate];
 
     return {
       selectedRowKeys: taskStore.selectedRowKeys,
@@ -111,11 +93,7 @@ export const useTaskSelection = ({
         taskStore.setSelectedRowKeys(selectedRowKeys);
         setSelectedRow(selectedRows);
       },
-      getCheckboxProps: (
-        record:
-          | TaskRecord<TaskRecordParameters>
-          | ICycleTaskRecord<ISqlPlayJobParameters | IDataArchiveJobParameters>,
-      ) => {
+      getCheckboxProps: (record: TaskRecord<TaskRecordParameters> | ICycleTaskRecord<any>) => {
         return {
           disabled: !rules?.includes(record.status),
           name: record.id?.toString(),
@@ -132,10 +110,7 @@ export const useTaskSelection = ({
   return {
     selectedRow,
     setSelectedRow,
-    rowSelection:
-      isSupportTaksExport || isSupportTaksImport || isSupportTaksTerminate
-        ? rowSelection
-        : undefined,
+    rowSelection: isSupportTaksTerminate ? rowSelection : undefined,
     clearSelection,
   };
 };

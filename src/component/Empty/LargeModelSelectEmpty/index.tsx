@@ -1,0 +1,37 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { formatMessage } from '@/util/intl';
+import { ReactComponent as NoDataSVG } from '@/svgr/noData.svg';
+import styles from './index.less';
+import Icon from '@ant-design/icons';
+import { Typography } from 'antd';
+
+const LargeModelSelectEmpty = () => {
+  return (
+    <div className={styles.largeModelSelectEmpty}>
+      <Icon className={styles.icon} component={NoDataSVG} />
+      <Typography.Text type="secondary">
+        {formatMessage({
+          id: 'src.component.Empty.LargeModelSelectEmpty.A4765684',
+          defaultMessage: '暂无可用模型，请先配置模型供应商',
+        })}
+      </Typography.Text>
+    </div>
+  );
+};
+
+export default LargeModelSelectEmpty;

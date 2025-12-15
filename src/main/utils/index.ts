@@ -205,9 +205,6 @@ export function getJavaPath() {
     isDevelopment ? process.cwd() : process.resourcesPath || '',
     'libraries/jre',
   );
-  if (isMac) {
-    basePath = path.join(basePath, 'Home');
-  }
   if (!fs.existsSync(basePath)) {
     log.info(basePath, ' 检测不到 Jre，采用系统 Jre');
     return null;
@@ -254,6 +251,19 @@ export function getSetting(): Record<string, string> {
   } catch (e) {
     return null;
   }
+}
+
+export function getH2JarPath() {
+  let odcJarPath: string;
+  if (process.env.NODE_ENV === 'development') {
+    odcJarPath = path.join(process.cwd(), 'libraries', 'script');
+  } else {
+    odcJarPath = path.join(process.resourcesPath || '', 'libraries', 'script');
+  }
+  return {
+    v1: path.join(odcJarPath, 'h2-v1.jar'),
+    v2: path.join(odcJarPath, 'h2-v2.jar'),
+  };
 }
 
 export function getRendererPath() {

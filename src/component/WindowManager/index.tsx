@@ -31,7 +31,7 @@ import DraggableTabs from './DraggableTabs';
 import { getPageTitleText } from './helper';
 import styles from './index.less';
 import { isGroupNode } from '@/page/Workspace/SideBar/ResourceTree/const';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { isString } from 'lodash';
 import { ResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/type';
 
@@ -234,7 +234,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                 fontSize: 14,
               }}
             >
-              {pageMap[page.type].icon}
+              {pageMap[page.type]?.icon}
             </span>
             <span className={styles.title}>{pageTitle}</span>
             <span className={styles.extraStatusBox}>
@@ -298,7 +298,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                 fontSize: 14,
               }}
             >
-              {pageMap[page.type].icon}
+              {pageMap[page.type]?.icon}
             </span>
             {getPageTitleText(page)}
           </Space>
@@ -395,8 +395,8 @@ const WindowManager: React.FC<IProps> = function (props) {
         }
         items={pages
           .map((page) => {
-            const Page = pageMap[page.type].component;
-            const pageParams = Object.assign({}, pageMap[page.type].params || {}, page.params);
+            const Page = pageMap[page.type]?.component;
+            const pageParams = Object.assign({}, pageMap[page.type]?.params || {}, page.params);
             if (!Page) {
               return null;
             }

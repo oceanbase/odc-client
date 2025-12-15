@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { formatMessage } from '@/util/intl';
 import {
   getScheduleImportLog,
@@ -16,6 +32,7 @@ import { useDebounceFn } from 'ahooks';
 import React, { useState } from 'react';
 import { AsyncTaskType } from '@/d.ts/migrateTask';
 import { history } from '@umijs/max';
+import login from '@/store/login';
 
 const downloadLogFromString = (str: string) => {
   const blob = new Blob([str], { type: 'text/plain' });
@@ -62,20 +79,44 @@ export const useImport = (
           downloadLogFromString(res);
         };
         if (result?.every((i) => i.success)) {
+          const importedCount = result?.filter((i) => i?.remark === 'Have been imported.')?.length;
+          const importedDescription = importedCount
+            ? formatMessage(
+                {
+                  id: 'src.component.Task.component.ImportModal.A6892359',
+                  defaultMessage: '(包含 {importedCount} 个已导入的任务)',
+                },
+                { importedCount },
+              )
+            : '';
+          const privateSpaceDescription = formatMessage(
+            {
+              id: 'src.component.Task.component.ImportModal.AF106FF6',
+              defaultMessage: '{resultLength} 个作业导入成功{importedDescription}。',
+            },
+            { resultLength: result?.length, importedDescription },
+          );
           notification.success({
             message: formatMessage({
               id: 'src.component.Task.component.ImportModal.997B6AC7',
               defaultMessage: '导入定时任务已完成',
             }),
-            description: (
+            description: login.isPrivateSpace() ? (
+              privateSpaceDescription
+            ) : (
               <Typography.Text>
                 {formatMessage(
                   {
-                    id: 'src.component.Task.component.ImportModal.E256F212',
-                    defaultMessage: '{resultLength} 个作业导入成功。 建议手动为任务',
+                    id: 'src.component.Task.component.ImportModal.97A1A7A3',
+                    defaultMessage: '{resultLength} 个作业导入成功{importedDescription}。',
                   },
-                  { resultLength: result?.length },
+                  { resultLength: result?.length, importedDescription },
                 )}
+                {formatMessage({
+                  id: 'src.component.Task.component.ImportModal.1B653B27',
+                  defaultMessage: '建议手动为任务',
+                })}
+
                 <Typography.Link onClick={() => goNotification(projectId)}>
                   {formatMessage({
                     id: 'src.component.Task.component.ImportModal.8AD83BC8',
@@ -94,19 +135,59 @@ export const useImport = (
         } else {
           const successCount = result?.filter((i) => i?.success)?.length;
           const failedCount = result?.filter((i) => !i?.success)?.length;
+          const importedCount = result?.filter(
+            (i) => i?.success && i?.remark === 'Have been imported.',
+          )?.length;
+          const importedDescription = importedCount
+            ? formatMessage(
+                {
+                  id: 'src.component.Task.component.ImportModal.92D087FB',
+                  defaultMessage: '(包含 {importedCount} 个已导入的任务)',
+                },
+                { importedCount },
+              )
+            : '';
+          const privateSpaceDescription = (
+            <Typography.Text>
+              {formatMessage(
+                {
+                  id: 'src.component.Task.component.ImportModal.94BFD01C',
+                  defaultMessage:
+                    '{successCount} 个作业导入成功{importedDescription}, {failedCount} 个作业导入失败。可',
+                },
+                { successCount, importedDescription, failedCount },
+              )}
+              <Typography.Link
+                onClick={downloadLog}
+                style={{ padding: '0 4px', display: 'inline' }}
+              >
+                {formatMessage({
+                  id: 'src.component.Task.component.ImportModal.A23B9738',
+                  defaultMessage: '下载日志',
+                })}
+              </Typography.Link>
+              {formatMessage({
+                id: 'src.component.Task.component.ImportModal.997B48CD',
+                defaultMessage: '查看。',
+              })}
+            </Typography.Text>
+          );
+
           notification.warning({
             message: formatMessage({
-              id: 'src.component.Task.component.ImportModal.E12ACFFB',
-              defaultMessage: '导出定时任务已完成',
+              id: 'src.component.Task.component.ImportModal.997B6AC7',
+              defaultMessage: '导入定时任务已完成',
             }),
-            description: (
+            description: login.isPrivateSpace() ? (
+              privateSpaceDescription
+            ) : (
               <Typography.Text style={{ textAlign: 'center' }}>
                 {formatMessage(
                   {
-                    id: 'src.component.Task.component.ImportModal.47DA5967',
-                    defaultMessage: '{successCount} 个作业导入成功，',
+                    id: 'src.component.Task.component.ImportModal.AE88E265',
+                    defaultMessage: '{successCount} 个作业导入成功{importedDescription}, ',
                   },
-                  { successCount },
+                  { successCount, importedDescription },
                 )}
                 {formatMessage(
                   {
@@ -128,7 +209,6 @@ export const useImport = (
                   id: 'src.component.Task.component.ImportModal.60663407',
                   defaultMessage: '，保证任务异常能够被及时发现。如需了解导出详情，可',
                 })}
-
                 <Typography.Link
                   onClick={downloadLog}
                   style={{ padding: '0 4px', display: 'inline' }}

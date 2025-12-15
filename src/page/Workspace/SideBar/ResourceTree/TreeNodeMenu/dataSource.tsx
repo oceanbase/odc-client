@@ -1,7 +1,23 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useContext, useState } from 'react';
 import { formatMessage } from '@/util/intl';
 import { toInteger } from 'lodash';
-import { Badge, Button, Dropdown, Menu, Popover, Modal, message } from 'antd';
+import { Badge, Button, Dropdown, Menu, Popover, Modal, message, Tooltip } from 'antd';
 import styles from './index.less';
 import treeStyles from '../index.less';
 import ConnectionPopover from '@/component/ConnectionPopover';
@@ -14,7 +30,7 @@ import { inject, observer } from 'mobx-react';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import { SearchOutlined } from '@ant-design/icons';
 import { openGlobalSearch } from '@/page/Workspace/SideBar/ResourceTree/const';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import { syncDatasource } from '@/common/network/connection';
 
 const CustomDropdown = ({
@@ -23,9 +39,10 @@ const CustomDropdown = ({
   deleteDataSource,
   setCopyDatasourceId,
   setEditDatasourceId,
-  setAddDSVisiable,
+  setDataSourceDrawerVisiable,
   userStore,
   sync,
+  isHover,
 }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const treeContext = useContext(ResourceTreeContext);
@@ -51,7 +68,11 @@ const CustomDropdown = ({
             defaultMessage: '克隆',
           }),
           key: 'clone',
-          onClick: (e) => handleMenuClick(e, () => setCopyDatasourceId(node.data.id)),
+          onClick: (e) =>
+            handleMenuClick(e, () => {
+              setDataSourceDrawerVisiable(true);
+              setCopyDatasourceId(node.data.id);
+            }),
         },
         {
           label: formatMessage({
@@ -62,7 +83,7 @@ const CustomDropdown = ({
           onClick: (e) =>
             handleMenuClick(e, () => {
               setEditDatasourceId(node.data.id);
-              setAddDSVisiable(true);
+              setDataSourceDrawerVisiable(true);
             }),
         },
         {
@@ -77,11 +98,23 @@ const CustomDropdown = ({
               deleteDataSource(name as string, node.data.id as string);
             }),
         },
+        {
+          label: formatMessage({
+            id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
+            defaultMessage: '全局搜索',
+          }),
+          key: 'globalSearch',
+          onClick: (e) => {
+            handleMenuClick(e, () => {
+              openGlobalSearch(node);
+            });
+          },
+        },
         userStore.isPrivateSpace()
           ? {
               label: formatMessage({
-                id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.884084AB',
-                defaultMessage: '同步数据库',
+                id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.FC246B27',
+                defaultMessage: '同步元数据库',
               }),
               key: 'sync',
               onClick: (e) =>
@@ -101,17 +134,23 @@ const CustomDropdown = ({
       ))}
     </Menu>
   );
+
   return (
     <Dropdown
       overlay={menu}
       trigger={['contextMenu']}
       open={dropdownVisible}
+      destroyOnHidden
       onVisibleChange={setDropdownVisible}
       placement="bottomLeft"
     >
-      <span
+      <div
         onContextMenu={handleContextMenu}
-        className={styles.fullWidthTitle}
+        className={classNames(styles.dataSourceTitle, {
+          [styles.mr12]: !userStore?.isPrivateSpace() && isHover,
+          [styles.mr24]: userStore?.isPrivateSpace() && isHover,
+        })}
+        style={{ flex: 1 }}
         onClick={() => {
           if (!node?.disabled) {
             setCurrentObject?.({
@@ -122,7 +161,7 @@ const CustomDropdown = ({
         }}
       >
         {node.title}
-      </span>
+      </div>
     </Dropdown>
   );
 };
@@ -134,7 +173,7 @@ interface IProps {
   copyDatasourceId: number;
   setCopyDatasourceId: any;
   setEditDatasourceId: React.Dispatch<React.SetStateAction<number>>;
-  setAddDSVisiable: React.Dispatch<React.SetStateAction<boolean>>;
+  setDataSourceDrawerVisiable: React.Dispatch<React.SetStateAction<boolean>>;
   reload: () => void;
 }
 
@@ -144,13 +183,13 @@ const DataSourceNodeMenu = (props: IProps) => {
     userStore,
     setCopyDatasourceId,
     deleteDataSource,
-    setAddDSVisiable,
+    setDataSourceDrawerVisiable,
     setEditDatasourceId,
     copyDatasourceId,
     reload,
   } = props;
   const dataSource = node.data;
-
+  const [hover, setHover] = useState(false);
   async function sync(id: number | string) {
     const isSuccess = await syncDatasource(toInteger(id));
     if (isSuccess) {
@@ -168,8 +207,10 @@ const DataSourceNodeMenu = (props: IProps) => {
     <>
       <Popover
         showArrow={false}
-        overlayClassName={styles.connectionPopover}
+        destroyOnHidden
+        classNames={{ root: styles.connectionPopover }}
         placement="right"
+        align={{ offset: [30, 0] }}
         content={!!dataSource && <ConnectionPopover connection={dataSource} />}
       >
         <div
@@ -179,17 +220,25 @@ const DataSourceNodeMenu = (props: IProps) => {
             display: 'flex',
             justifyContent: 'space-between',
           }}
+          onMouseEnter={() => {
+            setHover(true);
+          }}
+          onMouseLeave={() => {
+            setHover(false);
+          }}
         >
           <CustomDropdown
+            isHover={hover}
             node={node}
             login={userStore}
             deleteDataSource={deleteDataSource}
             setCopyDatasourceId={setCopyDatasourceId}
             setEditDatasourceId={setEditDatasourceId}
-            setAddDSVisiable={setAddDSVisiable}
+            setDataSourceDrawerVisiable={setDataSourceDrawerVisiable}
             userStore={userStore}
             sync={sync}
           />
+
           <div
             className={classNames(treeStyles.envTip, {
               [treeStyles.envTipPersonal]: userStore.isPrivateSpace(),
@@ -201,28 +250,40 @@ const DataSourceNodeMenu = (props: IProps) => {
             />
           </div>
           {dataSource && (
-            <div className={treeStyles.menuActions} style={{ marginRight: '6px' }}>
+            <div className={treeStyles.menuActions}>
               {!isConnectTypeBeFileSystemGroup(dataSource.type) && (
-                <SearchOutlined
-                  className={treeStyles.menuActions}
-                  style={
-                    userStore.isPrivateSpace()
-                      ? {
-                          marginRight: '12px',
-                        }
-                      : {}
-                  }
-                  onClick={(e) => {
-                    openGlobalSearch(node);
-                    e.stopPropagation();
-                  }}
-                />
+                <Tooltip
+                  title={formatMessage({
+                    id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.895ECBC1',
+                    defaultMessage: '全局搜索',
+                  })}
+                  placement="left"
+                >
+                  <SearchOutlined
+                    className={treeStyles.menuActions}
+                    style={
+                      userStore.isPrivateSpace()
+                        ? {
+                            marginRight: '12px',
+                            fontSize: '14px',
+                          }
+                        : {
+                            fontSize: '14px',
+                          }
+                    }
+                    onClick={(e) => {
+                      openGlobalSearch(node);
+                      e.stopPropagation();
+                    }}
+                  />
+                </Tooltip>
               )}
               {userStore.isPrivateSpace() && (
-                <Action.Group ellipsisIcon="vertical" size={0}>
+                <Action.Group ellipsisIcon="vertical" size={0} destroyOnHidden>
                   <Action.Link
                     onClick={() => {
                       setCopyDatasourceId(dataSource.id);
+                      setDataSourceDrawerVisiable(true);
                     }}
                     key={'clone'}
                   >
@@ -232,15 +293,15 @@ const DataSourceNodeMenu = (props: IProps) => {
                         defaultMessage:
                           '\n                                  克隆\n                                ',
                       }) /* 
-                               克隆
-                               */
+                      克隆
+                      */
                     }
                   </Action.Link>
 
                   <Action.Link
                     onClick={() => {
                       setEditDatasourceId(dataSource.id);
-                      setAddDSVisiable(true);
+                      setDataSourceDrawerVisiable(true);
                     }}
                     key={'edit'}
                   >
@@ -262,8 +323,8 @@ const DataSourceNodeMenu = (props: IProps) => {
 
                   <Action.Link onClick={() => sync(dataSource.id)} key={'sync'}>
                     {formatMessage({
-                      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.components.884084AB',
-                      defaultMessage: '同步数据库',
+                      id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.4C940744',
+                      defaultMessage: '同步元数据库',
                     })}
                   </Action.Link>
                 </Action.Group>

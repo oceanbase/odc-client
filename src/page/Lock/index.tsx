@@ -22,7 +22,7 @@ import React, { useState } from 'react';
 
 import { ReactComponent as LogoOB } from '@/svgr/LogoOB.svg';
 
-import ipcInvoke from '@/util/client/service';
+import ipcInvoke from '@/util/business/client/service';
 import styles from './index.less';
 
 interface ILockProps {}

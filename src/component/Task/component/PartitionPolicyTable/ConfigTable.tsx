@@ -15,15 +15,15 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 import DisplayTable from '@/component/DisplayTable';
-import { intervalPrecisionOptions } from '@/component/Task/component/PartitionPolicyFormTable/configModal';
 import { IPartitionKeyConfig, PARTITION_KEY_INVOKER } from '@/d.ts';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { Descriptions, Tooltip } from 'antd';
 import React from 'react';
 import styles from './index.less';
 import {
   INCREAMENT_FIELD_TYPE,
   increamentFieldTypeLabelMap,
+  intervalPrecisionOptions,
 } from '../PartitionPolicyFormTable/const';
 
 const getFromCurrentTimeLabel = (fromCurrentTime: boolean, baseTimestampMillis: number) => {

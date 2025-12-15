@@ -17,11 +17,12 @@ import { listDatabases, updateDataBaseOwner } from '@/common/network/database';
 import { IDatabase } from '@/d.ts/database';
 import { formatMessage } from '@/util/intl';
 import { useRequest } from 'ahooks';
-import { Form, message, Modal, Select } from 'antd';
+import { Form, message, Modal, Select, Space, Typography } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import { DatabaseOwnerSelect } from '../DatabaseOwnerSelect';
 import styles from './index.less';
 import login from '@/store/login';
+import DatabaseIcon from '@/component/StatusIcon/DatabaseIcon';
 
 interface IProps {
   visible: boolean;
@@ -44,27 +45,32 @@ export default function ChangeOwnerModal({
   const { run: startUpdateDataBase, loading: saveOwnerLoading } = useRequest(updateDataBaseOwner, {
     manual: true,
   });
-  const [databaseOptions, setDatabaseOptions] = useState<{ label: string; value: number }[]>();
+  const [databaseOptions, setDatabaseOptions] =
+    useState<{ label: React.ReactNode; value: number }[]>();
   const [form] = Form.useForm<{ ownerIds: number[]; databaseList: number[] }>();
 
   const loadData = async () => {
-    const res = await listDatabases(
+    const res = await listDatabases({
       projectId,
-      null,
-      1,
-      99999,
-      null,
-      null,
-      login.isPrivateSpace(),
-      true,
-      true,
-    );
+      page: 1,
+      size: 99999,
+      containsUnassigned: login.isPrivateSpace(),
+      existed: true,
+      includesPermittedAction: true,
+    });
     if (res) {
       setDatabaseOptions(
         res?.contents?.map((i) => {
           return {
-            label: i.name,
+            label: (
+              <Space>
+                <DatabaseIcon item={i} />
+                {i.name}
+                <Typography.Text type="secondary">{i?.dataSource?.name}</Typography.Text>
+              </Space>
+            ),
             value: i.id,
+            name: i.name,
           };
         }),
       );
@@ -156,6 +162,7 @@ export default function ChangeOwnerModal({
                 defaultMessage: '请选择数据库',
               })}
               options={databaseOptions}
+              optionLabelProp="name"
             />
           </Form.Item>
         ) : (

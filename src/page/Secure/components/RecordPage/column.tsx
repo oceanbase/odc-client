@@ -21,7 +21,7 @@ import UserPopover from '@/component/UserPopover';
 import { AuditEventActionMap, AuditEventMetaMap, IUserMap } from '@/constant/record';
 import { AuditEventResult } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { FilterFilled, SearchOutlined } from '@ant-design/icons';
 import { DataNode } from 'antd/lib/tree';
 import { Status } from './component';

@@ -21,9 +21,11 @@ import { Form, Input } from 'antd';
 
 const DescriptionInput = () => {
   const defaultPlaceholder = formatMessage({
-    id: 'odc.component.DescriptionInput.EnterADescriptionLessThan',
-    defaultMessage: '请输入描述，200字以内；未输入时，系统会根据对象和工单类型自动生成描述信息',
+    id: 'src.component.Task.component.DescriptionInput.137F26EC',
+    defaultMessage:
+      '请输入描述，200字以内，描述会作为任务标题；未输入时，系统会根据对象和工单类型自动生成描述信息。',
   });
+
   return (
     <Form.Item
       label={formatMessage({
@@ -39,6 +41,21 @@ const DescriptionInput = () => {
             defaultMessage: '描述不超过 200 个字符',
           }), //描述不超过 200 个字符
         },
+        {
+          validator: (_, value) => {
+            if (value && value.trim() === '') {
+              return Promise.reject(
+                new Error(
+                  formatMessage({
+                    id: 'src.component.Task.component.DescriptionInput.DBB60A02',
+                    defaultMessage: '描述不允许只有空格，请输入描述',
+                  }),
+                ),
+              );
+            }
+            return Promise.resolve();
+          },
+        },
       ]}
     >
       <Input.TextArea
@@ -46,7 +63,7 @@ const DescriptionInput = () => {
         placeholder={
           login.isPrivateSpace()
             ? defaultPlaceholder
-            : setting.getSpaceConfigByKey('odc.task.default.taskDescriptionPrompt') ||
+            : setting.spaceConfigurations?.['odc.task.default.taskDescriptionPrompt'] ||
               defaultPlaceholder
         }
       />

@@ -65,6 +65,7 @@ export class ActionButton extends React.PureComponent<BaseProps> {
           danger={danger}
           disabled={disabled}
           onClick={(_) => {
+            if (disabled) return;
             if (enableLoading) {
               this.setState({ loading: true });
 
@@ -109,6 +110,7 @@ export class ActionLink extends React.PureComponent<BaseProps> {
         style={{ padding: 0 }}
         disabled={loading || disabled || this.state.disabled}
         onClick={(_) => {
+          if (loading || disabled || this.state.disabled) return;
           _.stopPropagation();
           _.preventDefault();
           const handle = onClick?.(_);
