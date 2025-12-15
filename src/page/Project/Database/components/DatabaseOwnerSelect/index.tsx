@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { formatMessage } from '@/util/intl';
 import { Form, Select, Checkbox, Row, Col, Tooltip } from 'antd';
 import { InfoCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
@@ -77,9 +93,10 @@ export const DatabaseOwnerSelect = ({
                   id: 'src.page.Project.Database.components.DatabaseOwnerSelect.tsx.34B8A74A',
                   defaultMessage: '库管理员是数据库和表的负责人，可以在审批流程中引用',
                 })}
-                overlayInnerStyle={{ width: 268 }}
+                color="#fff"
+                overlayInnerStyle={{ width: 268, color: '#132039' }}
               >
-                <QuestionCircleOutlined />
+                <QuestionCircleOutlined style={{ color: 'var(--icon-color-normal)' }} />
               </Tooltip>
             </span>
           }
@@ -123,7 +140,7 @@ export const DatabaseOwnerSelect = ({
                       style={{
                         padding: '0 8px',
                         fontSize: 12,
-                        color: 'var(--neutral-black45-color)',
+                        color: 'var(--text-color-hint)',
                       }}
                     >
                       {item?.role?.map((i) => projectRoleTextMap[i]).join(',')}

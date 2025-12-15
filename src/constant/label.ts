@@ -22,6 +22,8 @@ import {
   SQLLintMode,
   SQLSessionMode,
   DatasourceGroup,
+  RefreshMethod,
+  RefreshScheduleUnit,
 } from '@/d.ts';
 import { DBType, BooleanOptionType } from '@/d.ts/database';
 import { ColumnStoreType } from '@/d.ts/table';
@@ -99,6 +101,10 @@ export const DbObjectTypeTextMap = (type: DbObjectType) => {
     [DbObjectType.external_table]: formatMessage({
       id: 'src.constant.76471609',
       defaultMessage: '外表',
+    }),
+    [DbObjectType.materialized_view]: formatMessage({
+      id: 'src.constant.21170C84',
+      defaultMessage: '物化视图',
     }),
   };
   return textMap?.[type];
@@ -247,4 +253,39 @@ export const SQLSessionModeText = {
 export const columnGroupsText = {
   [ColumnStoreType.COLUMN]: formatMessage({ id: 'src.constant.CE5A59D0', defaultMessage: '列存' }),
   [ColumnStoreType.ROW]: formatMessage({ id: 'src.constant.481BAC23', defaultMessage: '行存' }),
+};
+
+export const refreshMethodText = {
+  [RefreshMethod.REFRESH_FAST]: formatMessage({
+    id: 'src.constant.68274E0D',
+    defaultMessage: '快速刷新',
+  }),
+  [RefreshMethod.REFRESH_FORCE]: formatMessage({
+    id: 'src.constant.DE4B7671',
+    defaultMessage: '强制刷新',
+  }),
+  [RefreshMethod.REFRESH_COMPLETE]: formatMessage({
+    id: 'src.constant.4CF50126',
+    defaultMessage: '完全刷新',
+  }),
+  [RefreshMethod.NEVER_REFRESH]: formatMessage({
+    id: 'src.constant.27F5ED49',
+    defaultMessage: '不需要刷新',
+  }),
+};
+
+export const refreshScheduleUnitText = {
+  [RefreshScheduleUnit.SECOND]: formatMessage({
+    id: 'src.constant.C526110B',
+    defaultMessage: '秒',
+  }),
+  [RefreshScheduleUnit.MINUTE]: formatMessage({
+    id: 'src.constant.35CC7FAB',
+    defaultMessage: '分',
+  }),
+  [RefreshScheduleUnit.HOUR]: formatMessage({ id: 'src.constant.A786DCEF', defaultMessage: '时' }),
+  [RefreshScheduleUnit.DAY]: formatMessage({ id: 'src.constant.F847D32E', defaultMessage: '天' }),
+  [RefreshScheduleUnit.WEEK]: formatMessage({ id: 'src.constant.15130867', defaultMessage: '周' }),
+  [RefreshScheduleUnit.MONTH]: formatMessage({ id: 'src.constant.7959241A', defaultMessage: '月' }),
+  [RefreshScheduleUnit.YEAR]: formatMessage({ id: 'src.constant.0DFA8CD7', defaultMessage: '年' }),
 };

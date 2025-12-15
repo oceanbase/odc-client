@@ -1,0 +1,173 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React, { useRef, useEffect } from 'react';
+import * as echarts from 'echarts';
+import { ConsoleTextConfig } from '../../const';
+import './index.less';
+
+const PieChart = ({ progress }) => {
+  const { status, statusType, statusColor } = ConsoleTextConfig.schdules;
+
+  const chartRef = useRef(null);
+  const { PENDING, EXECUTING, EXECUTION_INTERRUPTION, EXEC_TIMEOUT, EXECUTION_SUCCESS, OTHER } =
+    progress || {};
+  const total =
+    (PENDING || 0) +
+    (EXECUTING || 0) +
+    (EXECUTION_INTERRUPTION || 0) +
+    (EXEC_TIMEOUT || 0) +
+    (EXECUTION_SUCCESS || 0) +
+    (OTHER || 0);
+
+  useEffect(() => {
+    if (chartRef.current) {
+      const chart = echarts.init(chartRef.current);
+
+      const data = status.map((name, i) => {
+        const count = progress?.[statusType[i]] || 0;
+        return {
+          name,
+          value: count,
+          itemStyle: {
+            color: count > 0 ? statusColor[i] : '#0000000a',
+          },
+          tooltip: {
+            show: count > 0,
+          },
+        };
+      });
+
+      const option = {
+        tooltip: {
+          trigger: 'item',
+          position: (point, params, dom, rect, size) => {
+            const [mouseX, mouseY] = point;
+            const { contentSize, viewSize } = size; // `contentSize` 是 tooltip 的尺寸 [width, height]
+            const [contentWidth, contentHeight] = contentSize; // Tooltip 的宽高
+            const [viewWidth, viewHeight] = viewSize; // 视图宽高
+
+            let x = mouseX - contentWidth - 10; // 在左侧 10px 开始
+            let y = mouseY - contentHeight - 10; // 在上方 10px 开始
+
+            // 如果 tooltip 会超出屏幕左侧，则调整到右侧
+            if (x < 0) {
+              x = mouseX + 10;
+            }
+
+            // 如果 tooltip 会超出屏幕右侧，则调整到左侧
+            if (x + contentWidth > viewWidth) {
+              x = mouseX - contentWidth - 10;
+            }
+
+            // 如果 tooltip 会超出屏幕顶部，则下移
+            if (y < 0) {
+              y = mouseY + 10;
+            }
+
+            // 如果 tooltip 会超出屏幕底部，则上移
+            if (y + contentHeight > viewHeight) {
+              y = mouseY - contentHeight - 10;
+            }
+
+            // 确保 tooltip 不会遮挡饼图
+            const centerX = viewWidth / 2;
+            const centerY = viewHeight / 2;
+            const radius = Math.min(viewWidth, viewHeight) * 0.6; // 饼图半径
+            const distanceToCenter = Math.sqrt((mouseX - centerX) ** 2 + (mouseY - centerY) ** 2);
+
+            if (distanceToCenter < radius) {
+              // 如果鼠标在饼图内部，则将 tooltip 放置在饼图外部
+              const angle = Math.atan2(mouseY - centerY, mouseX - centerX);
+              const offsetX = Math.cos(angle) * radius;
+              const offsetY = Math.sin(angle) * radius;
+
+              // 优先计算左侧位置
+              x = centerX + offsetX - contentWidth - 10;
+              y = centerY + offsetY - contentHeight / 2;
+
+              // 检查 tooltip 是否超出视图边界并调整位置
+              if (x < 0) {
+                // 如果左侧放不下，则放在右侧
+                x = centerX + offsetX + 10;
+              }
+              if (x + contentWidth > viewWidth) {
+                // 如果右侧也放不下，则放在左侧并允许部分超出
+                x = centerX + offsetX - contentWidth - 10;
+              }
+              if (y + contentHeight > viewHeight) {
+                y = centerY + offsetY - contentHeight - 10;
+              }
+              if (y < 0) {
+                y = centerY + offsetY + 10;
+              }
+            }
+
+            return [x, y];
+          },
+          formatter: (params) => {
+            const value = params.value;
+            const name = params.name;
+            return `
+              <div class="tooltip">
+                <div class="tooltipItem">
+                  <div class="tooltipMarker" style="background: ${params.color};"></div>
+                  <div class="tooltipText">${name}<span class="tooltipCount">${value}</span></div>
+                </div>
+              </div>
+            `;
+          },
+          backgroundColor: 'transparent',
+          borderColor: 'transparent',
+          padding: 0,
+        },
+        series: [
+          {
+            type: 'pie',
+            radius: ['60%', '100%'],
+            center: ['50%', '50%'],
+            data,
+            label: {
+              show: false,
+            },
+            emphasis: {
+              itemStyle: {
+                opacity: 1,
+              },
+            },
+            blur: {
+              itemStyle: {
+                opacity: 0.5,
+              },
+            },
+            scale: 1,
+            hoverAnimation: false,
+          },
+        ],
+      };
+
+      chart.setOption(option);
+
+      return () => {
+        chart.dispose();
+      };
+    }
+  }, [progress, total]);
+
+  return <div ref={chartRef} className="chart-wrapper" />;
+};
+
+export default PieChart;

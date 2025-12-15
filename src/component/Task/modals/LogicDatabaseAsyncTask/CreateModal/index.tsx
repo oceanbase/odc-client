@@ -1,0 +1,546 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { createTask } from '@/common/network/task';
+import CommonIDE from '@/component/CommonIDE';
+import FormItemPanel from '@/component/FormItemPanel';
+import DescriptionInput from '@/component/Task/component/DescriptionInput';
+import {
+  ILogicalDatabaseAsyncTaskParams,
+  SQLContentType,
+  TaskDetail,
+  TaskExecStrategy,
+  TaskPageType,
+  TaskType,
+} from '@/d.ts';
+import type { ModalStore } from '@/store/modal';
+import type { SQLStore } from '@/store/sql';
+import type { TaskStore } from '@/store/task';
+import utils, { IEditor } from '@/util/ui/editor';
+import { formatMessage } from '@/util/intl';
+import { FieldTimeOutlined } from '@ant-design/icons';
+import { disabledDate, disabledTime } from '@/util/data/dateTime';
+import {
+  Alert,
+  AutoComplete,
+  Button,
+  DatePicker,
+  Drawer,
+  Form,
+  InputNumber,
+  message,
+  Modal,
+  Radio,
+  Space,
+  Tooltip,
+} from 'antd';
+import { inject, observer } from 'mobx-react';
+import dayjs from 'dayjs';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import DatabaseSelect from '@/component/Task/component/DatabaseSelect';
+import styles from './index.less';
+import PreviewSQLDrawer from './PreviewSQLDrawer';
+import { openTasksPage } from '@/store/helper/page';
+import { rules } from './const';
+import { Rule } from 'antd/es/form';
+import { getTaskDetail } from '@/common/network/task';
+import login from '@/store/login';
+import { isClient } from '@/util/env';
+
+interface IProps {
+  sqlStore?: SQLStore;
+  taskStore?: TaskStore;
+  modalStore?: ModalStore;
+  projectId?: number;
+  theme?: string;
+  reloadList?: () => void;
+}
+
+const CreateModal: React.FC<IProps> = (props) => {
+  const { modalStore, theme, reloadList } = props;
+  const { logicDatabaseInfo } = modalStore;
+  const [form] = Form.useForm();
+  const editorRef = useRef<CommonIDE>();
+  const [sqlContentType, setSqlContentType] = useState(SQLContentType.TEXT);
+  const [hasEdit, setHasEdit] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const databaseId = Form.useWatch('databaseId', form);
+  const sqlContent = Form.useWatch('sqlContent', form);
+  const delimiter = Form.useWatch('delimiter', form);
+  const [previewOpen, setPreviewOpen] = useState<boolean>(false);
+  const [initialSQL, setInitialSQL] = useState<string>();
+
+  const isInitSqlContent = useMemo(() => {
+    if (logicDatabaseInfo?.taskId || logicDatabaseInfo?.ddl) {
+      return !!initialSQL;
+    }
+    return true;
+  }, [logicDatabaseInfo?.taskId, logicDatabaseInfo?.ddl, initialSQL]);
+
+  const loadEditData = async (taskId) => {
+    const dataRes = (await getTaskDetail(taskId)) as TaskDetail<ILogicalDatabaseAsyncTaskParams>;
+    setInitialSQL(dataRes?.parameters?.sqlContent);
+    const { parameters, description, executionStrategy, executionTime } = dataRes;
+    const { databaseId, delimiter, sqlContent, timeoutMillis } = parameters;
+    const formData = {
+      executionTime: undefined,
+      databaseId,
+      description,
+      delimiter,
+      sqlContent,
+      timeoutMillis: timeoutMillis / 1000 / 60 / 60,
+      triggerStrategy: executionStrategy,
+    };
+    if (executionStrategy === TaskExecStrategy.TIMER) {
+      formData.executionTime =
+        executionTime && executionTime > new Date().getTime() ? dayjs(executionTime) : null;
+    }
+    form.setFieldsValue(formData);
+  };
+  const executionMethodLabel =
+    login.isPrivateSpace() || isClient()
+      ? formatMessage({
+          id: 'src.component.Task.modals.LogicDatabaseAsyncTask.CreateModal.1ADEB730',
+          defaultMessage: '执行方式',
+        })
+      : formatMessage({
+          id: 'odc.components.TaskTimer.ExecutionMethodAfterTheApproval',
+          defaultMessage: '执行方式：审批完成后',
+        });
+
+  useEffect(() => {
+    if (logicDatabaseInfo?.ddl) {
+      form?.setFieldValue('sqlContent', logicDatabaseInfo?.ddl);
+      form?.setFieldValue('databaseId', logicDatabaseInfo?.databaseId);
+      setInitialSQL(logicDatabaseInfo?.ddl);
+    }
+  }, [logicDatabaseInfo?.ddl]);
+
+  const handleSqlChange = (type: 'sqlContent', sql: string) => {
+    form?.setFieldsValue({
+      [type]: sql,
+    });
+    setHasEdit(true);
+  };
+  const handleFieldsChange = () => {
+    setHasEdit(true);
+  };
+
+  const hadleReset = () => {
+    form.resetFields(null);
+    setInitialSQL(undefined);
+    setSqlContentType(SQLContentType.TEXT);
+    setHasEdit(false);
+  };
+
+  const handleCancel = (hasEdit: boolean) => {
+    if (hasEdit) {
+      Modal.confirm({
+        title: formatMessage({
+          id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.0C94A1FF',
+          defaultMessage: '确认取消逻辑库变更吗？',
+        }),
+        centered: true,
+        onOk: () => {
+          modalStore.changeLogicialDatabaseModal(false);
+          hadleReset();
+        },
+        okText: formatMessage({
+          id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.CA071ACE',
+          defaultMessage: '确认',
+        }),
+        cancelText: formatMessage({
+          id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.4421F0D6',
+          defaultMessage: '取消',
+        }),
+      });
+    } else {
+      modalStore.changeLogicialDatabaseModal(false);
+      hadleReset();
+    }
+  };
+  const handleSubmit = () => {
+    form
+      .validateFields()
+      .then(async (values) => {
+        const {
+          databaseId,
+          sqlContent,
+          timeoutMillis,
+          description,
+          delimiter,
+          triggerStrategy,
+          executionTime,
+        } = values;
+        const parameters = {
+          databaseId,
+          sqlContent,
+          delimiter,
+          timeoutMillis: timeoutMillis ? timeoutMillis * 60 * 60 * 1000 : undefined,
+        };
+
+        const data = {
+          databaseId,
+          executionStrategy: triggerStrategy,
+          executionTime:
+            triggerStrategy === TaskExecStrategy.TIMER ? executionTime?.valueOf() : undefined,
+          taskType: TaskType.LOGICAL_DATABASE_CHANGE,
+          parameters,
+          description,
+        };
+        setConfirmLoading(true);
+        const res = await createTask(data);
+        if (res) {
+          handleCancel(false);
+          reloadList?.();
+          setConfirmLoading(false);
+          message.success(
+            formatMessage({
+              id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.E7B4AE89',
+              defaultMessage: '创建成功',
+            }),
+          );
+          openTasksPage(TaskPageType.LOGICAL_DATABASE_CHANGE);
+        } else {
+          setConfirmLoading(false);
+        }
+      })
+      .catch((errorInfo) => {
+        form.scrollToField(errorInfo?.errorFields?.[0]?.name);
+        console.error(JSON.stringify(errorInfo));
+      });
+  };
+
+  const onEditorAfterCreatedCallback = (editor: IEditor) => {
+    editor.onDidChangeCursorPosition(() => {
+      utils.removeHighlight(editor);
+    });
+  };
+  const oepnPreviewModal = async () => {
+    setPreviewOpen(true);
+  };
+
+  const getPreveiwSqlTooltip = () => {
+    if (!sqlContent) {
+      return formatMessage({
+        id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.170CC893',
+        defaultMessage: '未输入SQL，无可预览内容',
+      });
+    }
+    if (!databaseId) {
+      return formatMessage({
+        id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.76DCD3C0',
+        defaultMessage: '未选择逻辑库，无可预览内容',
+      });
+    }
+    if (!delimiter) {
+      return formatMessage({
+        id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.F1374DF3',
+        defaultMessage: '未选择分隔符，无可预览内容',
+      });
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    if (logicDatabaseInfo?.taskId) {
+      loadEditData(logicDatabaseInfo?.taskId);
+    }
+  }, [logicDatabaseInfo?.taskId]);
+
+  return (
+    <>
+      <Drawer
+        destroyOnClose
+        rootClassName={styles.asyncTask}
+        width={905}
+        title={formatMessage({
+          id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.6CD30B75',
+          defaultMessage: '新建逻辑库变更',
+        })}
+        footer={
+          <Space>
+            <Button
+              onClick={() => {
+                handleCancel(hasEdit);
+              }}
+            >
+              {formatMessage({
+                id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.77329812',
+                defaultMessage: '取消',
+              })}
+            </Button>
+            <Button type="primary" loading={confirmLoading} onClick={handleSubmit}>
+              {formatMessage({
+                id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.12C8523B',
+                defaultMessage: '新建',
+              })}
+            </Button>
+          </Space>
+        }
+        open={modalStore.logicDatabaseVisible}
+        onClose={() => {
+          handleCancel(hasEdit);
+        }}
+      >
+        <Alert
+          type="info"
+          showIcon
+          message={
+            <Space direction="vertical">
+              {formatMessage({
+                id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.435C79D4',
+                defaultMessage:
+                  '逻辑库变更仅支持 DDL 语句，多条 SQL 将依次在所有实际数据库上执行。',
+              })}
+              {formatMessage({
+                id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.C53810BF',
+                defaultMessage:
+                  '逻辑库变更内容暂不支持注释解析，编写注释可能会导致 SQL 语句解析异常。',
+              })}
+            </Space>
+          }
+        />
+
+        <Form
+          name="basic"
+          initialValues={{
+            triggerStrategy: TaskExecStrategy.MANUAL,
+            databaseId: logicDatabaseInfo?.databaseId,
+          }}
+          layout="vertical"
+          requiredMark="optional"
+          form={form}
+          onFieldsChange={handleFieldsChange}
+        >
+          <DatabaseSelect
+            isLogicalDatabase
+            label={formatMessage({
+              id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.9398BE2A',
+              defaultMessage: '逻辑库',
+            })}
+            type={TaskType.LOGICAL_DATABASE_CHANGE}
+          />
+
+          <Form.Item
+            label={formatMessage({
+              id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.844AC838',
+              defaultMessage: 'SQL 内容',
+            })}
+            required
+          >
+            <div
+              style={{
+                display: 'flex',
+                width: '100%',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Form.Item
+                noStyle
+                style={{
+                  display: 'block',
+                }}
+                name="sqlContentType"
+                initialValue={SQLContentType.TEXT}
+                rules={rules.sqlContentType}
+              >
+                <Radio.Group
+                  options={[
+                    {
+                      label: formatMessage({
+                        id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.0A3EB502',
+                        defaultMessage: 'SQL录入',
+                      }),
+                      value: SQLContentType.TEXT, // 对应原代码中的 <Radio.Button value={SQLContentType.TEXT}>
+                    },
+                  ]}
+                  optionType="button"
+                />
+              </Form.Item>
+              <Tooltip placement="left" title={getPreveiwSqlTooltip()}>
+                <Button
+                  type="link"
+                  disabled={!sqlContent || !databaseId || !delimiter}
+                  onClick={oepnPreviewModal}
+                >
+                  {formatMessage({
+                    id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.DE2BB1F6',
+                    defaultMessage: '预览实际 SQL',
+                  })}
+                </Button>
+              </Tooltip>
+            </div>
+          </Form.Item>
+          <Form.Item
+            name="sqlContent"
+            className={`${styles.sqlContent} ${
+              sqlContentType !== SQLContentType.TEXT && styles.hide
+            }`}
+            rules={rules.sqlContent({ required: sqlContentType === SQLContentType.TEXT })}
+            style={{
+              height: '280px',
+              paddingTop: 8,
+            }}
+          >
+            {isInitSqlContent && (
+              <CommonIDE
+                ref={editorRef}
+                initialSQL={initialSQL}
+                language={'sql'}
+                onEditorAfterCreatedCallback={onEditorAfterCreatedCallback}
+                onSQLChange={(sql) => {
+                  handleSqlChange('sqlContent', sql);
+                }}
+                editorProps={{
+                  theme,
+                }}
+                placeholder={formatMessage({
+                  id: 'src.component.Task.modals.LogicDatabaseAsyncTask.CreateModal.0C5A3B76',
+                  defaultMessage:
+                    '新建逻辑表时需使用表达式，表达式需要加上 ` 号，如 `db_[00-31].test_[00-31] `。修改已有逻辑表时可直接使用逻辑库名和逻辑表名进行修改，如 db.test。',
+                })}
+              />
+            )}
+          </Form.Item>
+          <div
+            style={{
+              display: 'flex',
+              columnGap: '24px',
+            }}
+          >
+            <Form.Item
+              name="delimiter"
+              label={formatMessage({
+                id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.03CE0FA3',
+                defaultMessage: '分隔符',
+              })}
+              initialValue=";"
+              required
+              rules={rules.delimiter}
+            >
+              <AutoComplete
+                style={{
+                  width: 128,
+                }}
+                options={[';', '/', '//', '$', '$$'].map((value) => {
+                  return {
+                    value,
+                  };
+                })}
+              />
+            </Form.Item>
+          </div>
+          <FormItemPanel
+            label={formatMessage({
+              id: 'odc.component.DataMockerDrawer.form.TaskSettings',
+              defaultMessage: '任务设置',
+            })}
+            /*任务设置*/ keepExpand
+          >
+            <Form.Item label={executionMethodLabel} name="triggerStrategy" required>
+              <Radio.Group
+                options={[
+                  {
+                    label: formatMessage({
+                      id: 'src.component.Task.MutipleAsyncTask.CreateModal.A8CB0B6F',
+                      defaultMessage: '手动执行',
+                    }),
+                    value: TaskExecStrategy.MANUAL,
+                  },
+                  {
+                    label: formatMessage({
+                      id: 'odc.DataClearTask.CreateModal.ExecuteNow',
+                      defaultMessage: '立即执行',
+                    }),
+                    value: TaskExecStrategy.AUTO,
+                  },
+                  {
+                    label: formatMessage({
+                      id: 'odc.DataClearTask.CreateModal.ScheduledExecution',
+                      defaultMessage: '定时执行',
+                    }),
+                    value: TaskExecStrategy.TIMER,
+                  },
+                ]}
+                optionType="button"
+              />
+            </Form.Item>
+            <Form.Item shouldUpdate noStyle>
+              {({ getFieldValue }) => {
+                const triggerStrategy = getFieldValue('triggerStrategy') || [];
+                if (triggerStrategy === TaskExecStrategy.TIMER) {
+                  return (
+                    <Form.Item
+                      name="executionTime"
+                      label={formatMessage({
+                        id: 'odc.DataArchiveTask.CreateModal.ExecutionTime',
+                        defaultMessage: '执行时间',
+                      })}
+                      /*执行时间*/ required
+                    >
+                      <DatePicker
+                        showTime
+                        suffixIcon={<FieldTimeOutlined />}
+                        disabledDate={disabledDate}
+                        disabledTime={disabledTime}
+                      />
+                    </Form.Item>
+                  );
+                }
+                return null;
+              }}
+            </Form.Item>
+          </FormItemPanel>
+          <Form.Item
+            label={formatMessage({
+              id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.64467306',
+              defaultMessage: '执行超时时间',
+            })}
+            required
+          >
+            <Form.Item
+              label={formatMessage({
+                id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.4899307D',
+                defaultMessage: '小时',
+              })}
+              name="timeoutMillis"
+              rules={rules.timeoutMillis as Rule[]}
+              initialValue={48}
+              noStyle
+            >
+              <InputNumber min={0} precision={1} />
+            </Form.Item>
+            <span className={styles.hour}>
+              {formatMessage({
+                id: 'src.component.Task.LogicDatabaseAsyncTask.CreateModal.CD58DA91',
+                defaultMessage: '小时',
+              })}
+            </span>
+          </Form.Item>
+          <DescriptionInput />
+        </Form>
+      </Drawer>
+      <PreviewSQLDrawer
+        sqlContent={sqlContent}
+        open={previewOpen}
+        delimiter={delimiter}
+        setOpen={setPreviewOpen}
+        databaseId={databaseId}
+      />
+    </>
+  );
+};
+export default inject('sqlStore', 'taskStore', 'modalStore')(observer(CreateModal));

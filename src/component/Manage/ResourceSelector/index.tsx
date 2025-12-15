@@ -28,7 +28,7 @@ const { Option } = Select;
 
 export const ALL_SELECTED_ID = 'ALL';
 export const ALL_I_HAVE_CREATED_ID = 'ALL_I_HAVE_CREATED_ID';
-export const ALL_SELECTED_VALUE = () => (odc?.createdByMeRolesSupport?.() ? '*' : null);
+export const ALL_SELECTED_VALUE = () => '*';
 export const ALL_I_HAVE_CREATED_VALUE = 'CREATOR';
 
 export const AllOption: IResourceOption = {
@@ -149,9 +149,7 @@ const ResourceItem: React.FC<{
   const disableSelectAll = allSelecteField?.type === type && allSelecteField?.index !== fieldName;
   const disableSelectAllICreated =
     allICreatedSelecteField?.type === type && allICreatedSelecteField?.index !== fieldName;
-  const allFieldOptions = odc?.createdByMeRolesSupport?.()
-    ? fieldOptions.concat([AllOption, AllIHaveCreatedOption])
-    : fieldOptions.concat([AllOption]);
+  const allFieldOptions = fieldOptions.concat([AllOption, AllIHaveCreatedOption]);
   const hasEnableKeys = actionOptions.some((item) => item?.enableKeys?.length);
   const enabledActionOptions = !hasEnableKeys
     ? actionOptions
@@ -269,8 +267,7 @@ const ResourceItem: React.FC<{
                                 }) //取消全部
                           }
                         </Button>
-                        {odc?.createdByMeRolesSupport?.() &&
-                        values?.[fieldName]?.resourceType !== IManagerResourceType.role ? (
+                        {values?.[fieldName]?.resourceType !== IManagerResourceType.role ? (
                           <Button
                             type="link"
                             disabled={disableSelectAllICreated}

@@ -41,7 +41,6 @@ export function showVersionModal(modalStore: ModalStore, id: number, settingStor
     const isNewUser = localLoginHistoy.isNewUser();
     if (isNewUser) {
       localLoginHistoy.registerUser();
-      settingStore.enableVersionTip && modalStore.changeVersionModalVisible(true);
     }
   }
 }
@@ -84,6 +83,7 @@ const VersionModal: React.FC<IProps> = (props) => {
       onCancel={onCancel}
       footer={null}
       width={720}
+      height={560}
       wrapClassName={styles.modal}
     >
       <div className={styles.box}>

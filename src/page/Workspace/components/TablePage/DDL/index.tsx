@@ -20,7 +20,7 @@ import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import { AlignLeftOutlined, CloudDownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import { observer } from 'mobx-react';
 import React, { useContext, useRef, useState } from 'react';

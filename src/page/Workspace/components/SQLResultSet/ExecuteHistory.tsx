@@ -19,7 +19,7 @@ import { ISqlExecuteResult, ISqlExecuteResultStatus, SqlType } from '@/d.ts';
 import type { SQLStore } from '@/store/sql';
 import { ReactComponent as WaitingSvg } from '@/svgr/Waiting.svg';
 import { formatMessage } from '@/util/intl';
-import { formatTimeTemplate } from '@/util/utils';
+import { formatTimeTemplate } from '@/util/data/dateTime';
 import Icon, {
   CheckCircleFilled,
   CloseCircleFilled,
@@ -30,7 +30,7 @@ import Icon, {
 import { Alert, message, Space, Table, Tooltip, Typography } from 'antd';
 import BigNumber from 'bignumber.js';
 import { inject, observer } from 'mobx-react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import DBTimeline from './DBTimeline';
 import styles from './index.less';
@@ -138,7 +138,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         width: isSmallMode ? 80 : 100,
         render: (_, record: ISqlExecuteResult) => {
           return record.timer
-            ? moment(
+            ? dayjs(
                 record.timer?.stages?.find((item) => item.stageName === 'Execute')?.startTimeMillis,
               ).format('HH:mm:ss')
             : '-';

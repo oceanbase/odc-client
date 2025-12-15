@@ -219,7 +219,6 @@ function getBooleanOptionsType(): string[] {
 }
 
 function getIsDBAvailableInDataSourceTypes(): string[] {
-  console.log(getBooleanOptionsType());
   return getBooleanOptionsType();
 }
 

@@ -92,4 +92,6 @@ export interface ISupportFeature {
    * 实时剖析
    */
   enableProfile: boolean;
+  /** 物化视图 */
+  enableMaterializedView: boolean;
 }

@@ -16,17 +16,23 @@
 
 import { downloadTaskFlow } from '@/common/network/task';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { getTaskExecStrategyMap } from '@/component/Task';
 import { FILE_DATA_TYPE, IMPORT_TYPE, TaskExecStrategy } from '@/d.ts';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
-import { Alert, Col, Divider, Row, Space, Tooltip } from 'antd';
+import { CRLFToSeparatorString } from '@/util/data/string';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
+import { Alert, Col, Divider, Row, Space, Tooltip, Tag } from 'antd';
 import React from 'react';
 import CsvTable from './csvTables';
 import styles from './index.less';
 import ObjTable from './ObjTables';
-import { getImportTypeLabel } from '../../ImportTask/CreateModal/ImportForm/helper';
+import { getImportTypeLabel } from '@/component/Task/modals/ImportTask/CreateModal/ImportForm/helper';
+import { getTaskExecStrategyMap } from '@/component/Task/const';
+import EllipsisText from '@/component/EllipsisText';
+import { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
+import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
+import login from '@/store/login';
+
 const SimpleTextItem: React.FC<{
   label: string;
   content: React.ReactNode;
@@ -45,7 +51,7 @@ const SimpleTextItem: React.FC<{
         style={{
           flexGrow: 0,
           flexShrink: 0,
-          color: 'var(--text-color-primary)',
+          color: 'var(--text-color-hint)',
         }}
       >
         {formatMessage(
@@ -60,9 +66,10 @@ const SimpleTextItem: React.FC<{
       </div>
       <div
         style={{
-          flexGrow: 1,
           wordBreak: 'break-all',
-          color: 'var(--text-color-secondary)',
+          color: 'var(--text-color-primary)',
+          overflow: 'hidden',
+          width: 'max-content',
         }}
       >
         {content}
@@ -170,7 +177,7 @@ class TaskContent extends React.Component<any, any> {
         formatMessage({
           id: 'odc.component.TaskDetailDrawer.TaskInfo.LineBreakSymbol',
           defaultMessage: '换行符号：',
-        }) + taskConfig?.csvConfig?.lineSeparator,
+        }) + CRLFToSeparatorString(taskConfig?.csvConfig?.lineSeparator),
       );
     }
     const fileFormatView = (
@@ -530,39 +537,13 @@ class TaskContent extends React.Component<any, any> {
 
         <Row>
           <Col span={12}>
-            <SimpleTextItem
-              label={formatMessage({
-                id: 'odc.component.DataTransferModal.TaskNo',
-                defaultMessage: '任务编号',
-              })}
-              /*任务编号*/ content={task?.id}
-            />
+            <SimpleTextItem label={'ID'} /*任务编号*/ content={task?.id} />
           </Col>
           <Col span={12}>
             <SimpleTextItem
               label={formatMessage({
-                id: 'odc.component.DataTransferModal.Database',
-                defaultMessage: '所属数据库',
-              })}
-              /*所属数据库*/ content={task?.database?.name || '-'}
-            />
-          </Col>
-          <Col span={12}>
-            <SimpleTextItem
-              label={
-                formatMessage({
-                  id: 'odc.src.component.Task.component.DataTransferModal.DataSource',
-                  defaultMessage: '所属数据源',
-                }) /* 所属数据源 */
-              }
-              content={task?.database?.dataSource?.name || '-'}
-            />
-          </Col>
-          <Col span={12}>
-            <SimpleTextItem
-              label={formatMessage({
-                id: 'odc.component.TaskDetailDrawer.TaskInfo.TaskType',
-                defaultMessage: '任务类型',
+                id: 'src.component.Task.component.DataTransferModal.474FFC64',
+                defaultMessage: '类型',
               })}
               content={
                 {
@@ -582,25 +563,52 @@ class TaskContent extends React.Component<any, any> {
             />
           </Col>
           <Col span={12}>
+            <SimpleTextItem
+              label={formatMessage({
+                id: 'src.component.Task.component.DataTransferModal.60B4CB8C',
+                defaultMessage: '数据库',
+              })}
+              content={<EllipsisText content={<DatabaseLabel database={task?.database} />} />}
+            />
+          </Col>
+          <Col span={12}>
+            <SimpleTextItem
+              label={formatMessage({
+                id: 'src.component.Task.component.DataTransferModal.6213AE54',
+                defaultMessage: '数据源',
+              })}
+              content={<EllipsisText content={task?.database?.dataSource?.name} />}
+            />
+          </Col>
+          {!login.isPrivateSpace() && (
+            <Col span={12}>
+              <SimpleTextItem
+                label={formatMessage({
+                  id: 'src.component.Task.component.DataTransferModal.C18618E1',
+                  defaultMessage: '项目',
+                })}
+                content={<EllipsisText content={task?.project?.name} />}
+              />
+            </Col>
+          )}
+          <Col span={12}>
             {hasFlow && (
               <SimpleTextItem
                 label={formatMessage({
                   id: 'odc.component.DataTransferModal.RiskLevel',
                   defaultMessage: '风险等级',
                 })}
-                /*风险等级*/ content={
-                  <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />
-                }
+                content={<ODCRiskLevelLabel iconMode levelMap level={riskLevel?.level} />}
               />
             )}
           </Col>
-          <Col span={12}>
+          <Col span={24}>
             <SimpleTextItem
               label={formatMessage({
-                id: 'odc.component.DataTransferModal.ExecutionMethod',
-                defaultMessage: '执行方式',
+                id: 'odc.component.DataTransferModal.Description',
+                defaultMessage: '描述',
               })}
-              /*执行方式*/ content={taskExecStrategyMap[task?.executionStrategy]}
+              /*描述*/ content={task?.description || '-'}
             />
           </Col>
           {task?.executionStrategy === TaskExecStrategy.TIMER && (
@@ -625,7 +633,7 @@ class TaskContent extends React.Component<any, any> {
         <>
           <Divider
             style={{
-              marginTop: 4,
+              marginTop: 16,
             }}
           />
 
@@ -653,16 +661,22 @@ class TaskContent extends React.Component<any, any> {
         </>
         {haveCsvMapping && <CsvTable data={taskConfig?.csvColumnMappings} />}
         <Row>
-          <Col span={24}>
+          <Col span={12}>
             <SimpleTextItem
               label={formatMessage({
-                id: 'odc.component.DataTransferModal.Description',
-                defaultMessage: '描述',
+                id: 'odc.component.DataTransferModal.ExecutionMethod',
+                defaultMessage: '执行方式',
               })}
-              /*描述*/ content={task?.description || '-'}
+              /*执行方式*/ content={taskExecStrategyMap[task?.executionStrategy]}
             />
           </Col>
         </Row>
+        <Divider
+          style={{
+            marginTop: 16,
+          }}
+        />
+
         <Row className={styles.spaceBlock}>
           <Col span={12}>
             <SimpleTextItem

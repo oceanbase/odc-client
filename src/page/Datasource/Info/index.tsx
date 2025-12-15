@@ -26,7 +26,7 @@ import { actionTypes } from '@/d.ts';
 import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import Icon, { EditOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Button, Input, message, Popconfirm, Space, Tooltip } from 'antd';
@@ -36,6 +36,7 @@ import ChangeProjectModal from './ChangeProjectModal';
 import NewDataBaseButton from './NewDataBaseButton';
 import Header from './Header';
 import ParamContext, { IFilterParams } from './ParamContext';
+import { getDataSourceStyleByConnectType } from '@/common/datasource';
 
 interface IProps {
   id: string;
@@ -46,6 +47,7 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
   const [searchValue, setSearchValue] = useState('');
   const [visible, setVisible] = useState(false);
   const [database, setDatabase] = useState<IDatabase>(null);
+  const [loading, setLoading] = useState(false);
   const lastParams = useRef({
     pageSize: 0,
     current: 0,
@@ -63,12 +65,14 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
   const loadData = async (pageSize, current, name: string = searchValue) => {
     lastParams.current.pageSize = pageSize;
     lastParams.current.current = current;
+    setLoading(true);
     const res = await getDataSourceManageDatabase(
       parseInt(id),
       name,
       filterParams?.existed,
       filterParams?.belongsToProject,
     );
+    setLoading(false);
     if (res) {
       setData(res?.contents);
       setTotal(res?.page?.totalElements);
@@ -144,9 +148,10 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
               setSearchValue,
               filterParams,
               setFilterParams,
-              reload: () => {
+              loading,
+              reload: (name?: string) => {
                 lastParams.current.current = 1;
-                reload();
+                reload(name);
               },
             }}
           >
@@ -168,21 +173,44 @@ const Info: React.FC<IProps> = ({ id, datasource }) => {
             //数据库名称
             dataIndex: 'name',
             render: (name, record) => {
+              const databaseStyle = getDataSourceStyleByConnectType(record?.dataSource?.type);
               if (!record.existed) {
                 return (
-                  <HelpDoc
-                    leftText
-                    isTip={false}
-                    title={formatMessage({
-                      id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
-                      defaultMessage: '当前数据库不存在',
-                    })} /*当前数据库不存在*/
-                  >
-                    {name}
-                  </HelpDoc>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Icon
+                      component={databaseStyle?.dbIcon?.component}
+                      style={{
+                        color: databaseStyle?.icon?.color,
+                        fontSize: 16,
+                        marginRight: 4,
+                      }}
+                    />
+                    <HelpDoc
+                      leftText
+                      isTip={false}
+                      title={formatMessage({
+                        id: 'odc.Datasource.Info.TheCurrentDatabaseDoesNot',
+                        defaultMessage: '当前数据库不存在',
+                      })} /*当前数据库不存在*/
+                    >
+                      {name}
+                    </HelpDoc>
+                  </div>
                 );
               }
-              return name;
+              return (
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <Icon
+                    component={databaseStyle?.dbIcon?.component}
+                    style={{
+                      color: databaseStyle?.icon?.color,
+                      fontSize: 16,
+                      marginRight: 4,
+                    }}
+                  />
+                  {name}
+                </div>
+              );
             },
           },
           {

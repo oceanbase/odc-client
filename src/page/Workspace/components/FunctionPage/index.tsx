@@ -40,10 +40,10 @@ import { openFunctionEditPageByFuncName } from '@/store/helper/page';
 import { FunctionPage as FunctionPageModel } from '@/store/helper/page/pages';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
-import { parseDataType } from '@/util/dataType';
+import { isConnectionModeBeMySQLType } from '@/util/database/connection';
+import { parseDataType } from '@/util/database/dataType';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import EditableTable from '../EditableTable';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
@@ -386,6 +386,7 @@ class FunctionPage extends Component<
                         <SQLCodePreviewer
                           readOnly
                           defaultValue={(func && func.ddl) || ''}
+                          value={(func && func.ddl) || ''}
                           language={
                             getDataSourceModeConfig(session?.connection?.type)?.sql?.language
                           }

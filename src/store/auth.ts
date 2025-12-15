@@ -57,10 +57,7 @@ export class AuthStore {
           });
         }
         const item = newPermissions.get(resourceType as IManagerResourceType);
-        const isAllSelectFunction = odc?.createdByMeRolesSupport?.()
-          ? resourceId === ALL_SELECTED_VALUE()
-          : isNull(resourceId);
-        if (isAllSelectFunction) {
+        if (resourceId === ALL_SELECTED_VALUE()) {
           item.all = item.all.concat((actions as actionTypes[]) || []);
         } else {
           const rid = resourceId?.toString();

@@ -36,7 +36,7 @@ function getConfig(
 ): string {
   const { metadata, properties } = rule;
   const { propertyMetadatas } = metadata;
-  const keys = Object.keys(properties) || [];
+  const keys = properties ? Object.keys(properties) || [] : [];
   let content = '';
   if (keys?.[0] === SqlInterceptorKey) {
     return integrationsIdMap?.[properties?.[keys?.[0]]] || '-';
@@ -127,7 +127,9 @@ export const getColumns = ({
         >
           <TooltipContent content={record?.metadata?.name} maxWdith={180} />
           <Tooltip title={record?.metadata?.description}>
-            <QuestionCircleOutlined style={{ marginLeft: '8px' }} />
+            <QuestionCircleOutlined
+              style={{ marginLeft: '8px', color: 'var(--text-color-hint)' }}
+            />
           </Tooltip>
         </div>
       ),

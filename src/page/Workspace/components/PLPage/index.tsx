@@ -55,12 +55,16 @@ import { UserStore } from '@/store/login';
 import { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import { SQLStore } from '@/store/sql';
-import editorUtils from '@/util/editor';
-import { IPLPageActionData, IPLPageCreatedEventData, ODCEventType } from '@/util/events/type';
+import editorUtils from '@/util/ui/editor';
+import {
+  IPLPageActionData,
+  IPLPageCreatedEventData,
+  ODCEventType,
+} from '@/util/communication/events/type';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import { getPLEntryName } from '@/util/parser';
-import { checkPLNameChanged } from '@/util/pl';
+import { checkPLNameChanged } from '@/util/database/dataType/pl';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Checkbox, message, Modal, Typography } from 'antd';
 import EventBus from 'eventbusjs';
@@ -897,7 +901,6 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     const { pageStore, params, onChangeSaved, pageKey, page } = this.props;
     const plSchema = this.getFormatPLSchema();
     const { plName, plType, packageName } = plSchema;
-
     const newPLEntryName = await getPLEntryName(params.scriptText);
     if (!this.isPackageProgram()) {
       /** 暂时还检测不了程序包内的函数等 */
@@ -945,7 +948,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
         newPageState,
       );
 
-      this.editor?.setValue(newPageState.scriptText);
+      this.editor?.setValue(newPageState.scriptText || '');
       this.setState({
         initialSQL: newPageState.scriptText,
       });
@@ -1041,10 +1044,10 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     }
 
     return {
-      scriptText: ddl,
+      scriptText: ddl || params.scriptText,
       plSchema: {
         ...params.plSchema,
-        ddl,
+        ddl: ddl || params.scriptText,
         params: newParams || plSchema.params,
       },
     };
@@ -1100,11 +1103,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
     if (file) {
       await userStore.scriptStore.getScriptList();
       // 更新页面标题 & url
-      const plPage = new AnonymousPage(
-        params?.cid,
-        (params as AnonymousPage['pageParams'])?.databaseFrom,
-        params?.scriptText,
-      );
+      const plPage = new AnonymousPage(params?.cid, params?.scriptText);
       pageStore.updatePage(
         pageKey,
         {
@@ -1330,12 +1329,7 @@ export class PLPage extends Component<IProps, ISQLPageState> {
 }
 export default function (props: IProps) {
   return (
-    <SessionContextWrap
-      defaultDatabaseId={props.params?.cid}
-      defaultMode={
-        props?.params?.plPageType === PLPageType?.anonymous ? props.params?.databaseFrom : undefined
-      }
-    >
+    <SessionContextWrap defaultDatabaseId={props.params?.cid}>
       {({ session }) => {
         return <PLPage sessionId={session?.sessionId} {...props} />;
       }}

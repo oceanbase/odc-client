@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { IManagerUser } from '@/d.ts';
+import { actionTypes, IManagerResourceType, IRoles, type IManagerUser } from '@/d.ts';
 
 export default {
   login: {
@@ -39,8 +39,25 @@ export default {
       create: true,
       resetPwd: true,
       delete: true,
-      isAdmin: (user: IManagerUser) => {
-        return user?.builtIn && user?.accountName === 'admin';
+      canEdit: (user: Pick<IManagerUser, 'resourceManagementPermissions'>, resourceId?: string) => {
+        const permissions = user?.resourceManagementPermissions?.filter(
+          (item) =>
+            item.resourceType === IManagerResourceType.user &&
+            item.actions.includes(actionTypes.update),
+        );
+        if (!permissions || permissions.length === 0) {
+          return false;
+        }
+        return permissions.some((item) => {
+          if (item?.resourceId === '*' || item?.resourceId === resourceId) {
+            return true;
+          }
+        });
+      },
+      isODCOrganizationConfig: (user: Pick<IManagerUser, 'systemOperationPermissions'>) => {
+        return user?.systemOperationPermissions?.some(
+          (item) => item?.resourceType === IManagerResourceType.odc_organization_config,
+        );
       },
       tabInVisible: (setting) => {
         return false;
@@ -61,11 +78,21 @@ export default {
   connection: {
     sys: true,
   },
+  canDownloadNewVersion: true,
   task: {
     sys: true,
+    isSupportTaksImport: false,
+    isSupportTaksExport: false,
+    isSupportTaksTerminate: false,
   },
   systemConfig: {
     default: null,
+  },
+  spaceConfig: {
+    showSecurity: true,
+  },
+  workspaceConfig: {
+    batchDownloadScripts: true,
   },
   spm: {
     enable: true,

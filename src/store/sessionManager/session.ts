@@ -38,9 +38,9 @@ import { getBuiltinSnippets } from '@/common/network/snippet';
 import { ISnippet } from '../snippet';
 import { DBDefaultStoreType } from '@/d.ts/table';
 import { isString } from 'lodash';
-import { OBCompare, ODC_PROFILE_SUPPORT_VERSION } from '@/util/versionUtils';
+import { OBCompare, ODC_PROFILE_SUPPORT_VERSION } from '@/util/business/versionUtils';
 import { ConnectionMode } from '@/d.ts';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 
 const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';
@@ -52,6 +52,11 @@ class SessionStore {
   public charsets: string[] = [];
   @observable
   public collations: string[] = [];
+  @observable
+  public supports: {
+    support: boolean;
+    supportType: string;
+  }[];
   @observable
   public dataTypes: IDataType[] = [];
 
@@ -74,6 +79,14 @@ class SessionStore {
     };
   } = {};
 
+  @observable.shallow
+  public allTableAndMaterializedViews: {
+    [dbName: string]: {
+      tables: string[];
+      mvs: string[];
+    };
+  } = {};
+
   /**
    * 这个里面包含系统视图，后续还有可能包含其余的对象
    */
@@ -81,6 +94,7 @@ class SessionStore {
   public allIdentities: {
     [dbName: string]: {
       external_table: string[];
+      materialized_view: string[];
       tables: string[];
       views: string[];
     };
@@ -89,6 +103,7 @@ class SessionStore {
   @observable
   public params: {
     autoCommit: boolean;
+    maxQueryLimit: number;
     delimiter: string;
     queryLimit: number;
     delimiterLoading: boolean;
@@ -104,6 +119,7 @@ class SessionStore {
   } = {
     autoCommit: true,
     delimiter: DEFAULT_DELIMITER,
+    maxQueryLimit: Number.MAX_SAFE_INTEGER,
     delimiterLoading: false,
     queryLimit: DEFAULT_QUERY_LIMIT,
     obVersion: '',
@@ -132,7 +148,7 @@ class SessionStore {
 
   private lastTableAndViewLoadTime: number = 0;
 
-  private lastIdentitiesLoadTime: number = 0;
+  private lastIdentitiesLoadTime: Map<string, number> = new Map();
 
   constructor(connection: IDatasource, database: IDatabase) {
     this.connection = connection;
@@ -145,9 +161,13 @@ class SessionStore {
     this.odcDatabase = database || this.odcDatabase;
   }
 
-  static async createInstance(datasource: IDatasource, database: IDatabase) {
+  static async createInstance(
+    datasource: IDatasource,
+    database: IDatabase,
+    recordDbAccessHistory?: boolean,
+  ) {
     const session = new SessionStore(datasource, database);
-    if (await session.init()) {
+    if (await session.init(recordDbAccessHistory)) {
       return session;
     }
     return null;
@@ -167,7 +187,7 @@ class SessionStore {
    *
    * 数据库创建：需要初始化 DB 与事务信息。
    */
-  async init(): Promise<boolean> {
+  async init(recordDbAccessHistory: boolean): Promise<boolean> {
     try {
       if (!this.odcDatabase) {
         /**
@@ -186,7 +206,7 @@ class SessionStore {
         /**
          * 数据库模式
          */
-        const data = await newSessionByDataBase(this.odcDatabase?.id, true);
+        const data = await newSessionByDataBase(this.odcDatabase?.id, true, recordDbAccessHistory);
         if (!data) {
           return false;
         }
@@ -194,6 +214,7 @@ class SessionStore {
         this.dataTypes = data.dataTypeUnits;
         this.charsets = data.charsets;
         this.collations = data.collations;
+        this.supports = data.supports;
         await this.initSupportFeature(data.supports);
         this.isAlive = true;
         return await this.initSessionBaseInfo();
@@ -320,6 +341,7 @@ class SessionStore {
         this.supportFeature.enablePLDebug = allConfig['support_pl_debug'];
       },
       support_external_table: 'enableExternalTable',
+      support_materialized_view: 'enableMaterializedView',
     };
     const allConfig = {};
     data?.forEach((item) => {
@@ -382,10 +404,47 @@ class SessionStore {
   }
 
   @action
+  public async queryTablesAndMaterializedViews(name: string = '', force: boolean = false) {
+    const res = await request.get(
+      `/api/v2/connect/sessions/${this.sessionId}/listMaterializedViewBases`,
+      {
+        params: {
+          name,
+        },
+      },
+    );
+    const tables = {};
+    const mvs = {};
+    const { tables: srcTables = [], mvs: srcMvs = [] } = res?.data;
+    return runInAction(() => {
+      srcTables.forEach((item) => {
+        tables[item.databaseName] = item.tables;
+        const dbObj = this.allTableAndMaterializedViews[item.databaseName] || {
+          tables: [],
+          mvs: [],
+        };
+        dbObj.tables = item.tables;
+        this.allTableAndMaterializedViews[item.databaseName] = { ...dbObj };
+      });
+      srcMvs.forEach((item) => {
+        mvs[item.databaseName] = item.mvs;
+        const dbObj = this.allTableAndMaterializedViews[item.databaseName] || {
+          tables: [],
+          mvs: [],
+        };
+        dbObj.mvs = item.mvs;
+        this.allTableAndMaterializedViews[item.databaseName] = { ...dbObj };
+      });
+      return this.allTableAndMaterializedViews;
+    });
+  }
+
+  @action
   public async initSessionStatus(init: boolean = false, isLogicDbSessionInit: boolean = false) {
     try {
       const data = await getSessionStatus(this.sessionId);
       this.params.autoCommit = data?.settings?.autocommit;
+      this.params.maxQueryLimit = data?.settings?.maxQueryLimit;
       this.params.delimiter = data?.settings?.delimiter || DEFAULT_DELIMITER;
       this.params.queryLimit = data?.settings?.queryLimit;
       this.params.obVersion = data?.settings?.obVersion;
@@ -476,23 +535,33 @@ class SessionStore {
   }
 
   @action
-  public async queryIdentities() {
+  public async queryIdentities(identityNameLike?: string) {
     const now = Date.now();
-    if (now - this.lastIdentitiesLoadTime < 15000) {
+    if (now - this.lastIdentitiesLoadTime.get(identityNameLike || 'default') < 15000) {
       return;
     }
-    this.lastIdentitiesLoadTime = now;
-    const supportType = this.supportFeature.enableExternalTable
-      ? ['TABLE', 'VIEW', 'EXTERNAL_TABLE']
-      : ['TABLE', 'VIEW'];
-    const data = await queryIdentities(supportType, this.sessionId, this.database?.dbName);
+    this.lastIdentitiesLoadTime.set(identityNameLike || 'default', now);
+    let supportType = ['TABLE', 'VIEW'];
+    this.supportFeature.enableExternalTable && supportType.push('EXTERNAL_TABLE');
+    this.supportFeature.enableMaterializedView && supportType.push('MATERIALIZED_VIEW');
+    const data = await queryIdentities(
+      supportType,
+      this.sessionId,
+      this.database?.dbName,
+      identityNameLike,
+    );
     if (!data) {
       this.lastTableAndViewLoadTime = 0;
     }
     runInAction(() => {
       data?.forEach((item) => {
         const { schemaName, identities } = item;
-        this.allIdentities[schemaName] = { tables: [], views: [], external_table: [] };
+        this.allIdentities[schemaName] = {
+          tables: [],
+          views: [],
+          external_table: [],
+          materialized_view: [],
+        };
         identities.forEach((identity) => {
           const { type, name } = identity;
 
@@ -507,6 +576,10 @@ class SessionStore {
             }
             case 'EXTERNAL_TABLE': {
               this.allIdentities[schemaName].external_table.push(name);
+              return;
+            }
+            case 'MATERIALIZED_VIEW': {
+              this.allIdentities[schemaName].materialized_view.push(name);
               return;
             }
           }

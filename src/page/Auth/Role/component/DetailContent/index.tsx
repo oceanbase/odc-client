@@ -23,7 +23,7 @@ import { CommonUserResource } from '@/component/Manage/UserResource';
 import type { IManagerRole } from '@/d.ts';
 import { IManagerDetailTabs, IManagerResourceType, IManagerRolePermissionType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Descriptions, Divider, message, Space, Tooltip } from 'antd';
 import React, { useContext, useState } from 'react';
@@ -61,11 +61,11 @@ const getColumns = (roles: IManagerRole[]) => {
       render: (name, record) => (
         <Tooltip
           placement="right"
-          color="var(--background-normal-color)"
           overlayClassName={styles.userName}
+          color="var(--background-secondry-color)"
           title={
-            <Space direction="vertical">
-              <span>
+            <Space direction="vertical" className={styles.description}>
+              <span className={styles.label}>
                 {
                   formatMessage(
                     {
@@ -73,14 +73,14 @@ const getColumns = (roles: IManagerRole[]) => {
                       defaultMessage: '姓名：{name}',
                     },
                     {
-                      name,
+                      name: <span className={styles.value}>{name}</span>,
                     },
                   )
 
                   /* 姓名：{name} */
                 }
               </span>
-              <span>
+              <span className={styles.label}>
                 {
                   formatMessage(
                     {
@@ -88,7 +88,7 @@ const getColumns = (roles: IManagerRole[]) => {
                       defaultMessage: '账号：{recordAccountName}',
                     },
                     {
-                      recordAccountName: record.accountName,
+                      recordAccountName: <span className={styles.value}>{record.accountName}</span>,
                     },
                   )
 
@@ -405,7 +405,7 @@ const UserDetail: React.FC<{
       [IManagerResourceType.role]: roles,
       [IManagerResourceType.user]: users,
     };
-    const info = resourceMap[type]?.find((item) => item.id === resourceId);
+    const info = resourceMap[type]?.find((item) => item.id?.toString?.() === resourceId);
     return getResourceLabel(info, resourceId);
   };
 

@@ -1,0 +1,28 @@
+.databaseSelectEmptyhWrapper {
+  background-color: transparent;
+  padding: 0;
+  :global {
+    .ant-divider {
+      margin: 0;
+    }
+  }
+  .empty {
+    display: flex;
+    margin: 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .description {
+    font-size: 12px;
+    line-height: 20px;
+    .subDescription {
+      width: 256px;
+      color: #00000073;
+      .action {
+        color: #1890ff;
+        cursor: pointer;
+      }
+    }
+  }
+}

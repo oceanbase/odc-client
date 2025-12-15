@@ -19,7 +19,7 @@ import { IResultSet, ISqlExecuteResultStatus } from '@/d.ts';
 import DDLResultSet from '@/page/Workspace/components/DDLResultSet';
 import SQLResultLog from '@/page/Workspace/components/SQLResultSet/SQLResultLog';
 import SessionStore from '@/store/sessionManager/session';
-import { IEditor } from '@/util/editor';
+import { IEditor } from '@/util/ui/editor';
 import { formatMessage } from '@/util/intl';
 import { Tabs, Tooltip } from 'antd';
 import classnames from 'classnames';
@@ -82,7 +82,10 @@ interface ICommonIDEProps {
    */
   bordered?: boolean;
   session?: SessionStore;
-
+  /**
+   * 是否显示运行结果
+   */
+  showLog?: boolean;
   /**
    * 创建后监听事件
    */
@@ -186,6 +189,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                   onValueChange={this.onSQLChange}
                   onEditorCreated={this.onEditorCreated}
                   placeholder={placeholder}
+                  actionGroupKey={toolbarGroupKey}
                   {...editorProps}
                 />
               </div>
@@ -193,16 +197,19 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                 <Tabs
                   className={styles.tabs}
                   animated={false}
-                  items={[
-                    {
-                      key: ITabType.LOG as string,
-                      label: formatMessage({
-                        id: 'odc.component.CommonIDE.Result',
-                        defaultMessage: '运行结果',
-                      }),
-                      children: log,
-                    },
-                  ]
+                  items={(this.props.showLog
+                    ? [
+                        {
+                          key: ITabType.LOG as string,
+                          label: formatMessage({
+                            id: 'odc.component.CommonIDE.Result',
+                            defaultMessage: '运行结果',
+                          }),
+                          children: log,
+                        },
+                      ]
+                    : []
+                  )
                     .concat(
                       resultSets?.map((set, i) => {
                         return {
@@ -254,6 +261,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                 onValueChange={this.onSQLChange}
                 onEditorCreated={this.onEditorCreated}
                 placeholder={placeholder}
+                actionGroupKey={toolbarGroupKey}
                 {...editorProps}
               />
             </div>

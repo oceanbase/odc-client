@@ -21,7 +21,7 @@ import MonacoEditor from '@/component/MonacoEditor';
 import { ISensitiveRule, SensitiveRuleType } from '@/d.ts/sensitiveRule';
 import { DetectRuleTypeMap } from '@/page/Project/Sensitive/interface';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { Button, Descriptions, Divider, Drawer } from 'antd';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import styles from './index.less';
@@ -284,7 +284,7 @@ const ViewSensitiveRuleDrawer = ({
           </Button>
         </div>
       }
-      className={styles.drawer}
+      rootClassName={styles.drawer}
     >
       <Descriptions column={1}>
         <Descriptions.Item

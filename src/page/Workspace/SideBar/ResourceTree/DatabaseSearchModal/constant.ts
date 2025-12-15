@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { formatMessage } from '@/util/intl';
 import { DbObjectType, ConnectType, SynonymType } from '@/d.ts';
 import {
@@ -11,6 +27,8 @@ import {
   openSynonymViewPage,
   openViewViewPage,
   openExternalTableTableViewPage,
+  openMaterializedViewViewPage,
+  openExternalResourceViewPage,
 } from '@/store/helper/page';
 import { PropsTab, TopTab } from '@/page/Workspace/components/TablePage';
 import { TopTab as PackageTopTab } from '@/page/Workspace/components/PackagePage';
@@ -24,6 +42,8 @@ const mysqlObjectType = [
   DbObjectType.function,
   DbObjectType.view,
   DbObjectType.procedure,
+  DbObjectType.materialized_view,
+  DbObjectType.external_resource,
 ];
 
 const pgObjectType = [
@@ -47,6 +67,9 @@ const oracleObjectType = [
   DbObjectType.type,
   DbObjectType.sequence,
   DbObjectType.synonym,
+  DbObjectType.public_synonym,
+  DbObjectType.materialized_view,
+  DbObjectType.external_resource,
 ];
 
 export const objectTypeConfig = {
@@ -58,11 +81,6 @@ export const objectTypeConfig = {
   [ConnectType.ORACLE]: oracleObjectType,
   SEARCH_OBJECT_FROM_ALL_DATABASE: oracleObjectType,
 };
-
-export enum SearchTypeMap {
-  DATABASE = 'DATABASE',
-  OBJECT = 'OBJECT',
-}
 
 export const SEARCH_OBJECT_FROM_ALL_DATABASE = 'SEARCH_OBJECT_FROM_ALL_DATABASE';
 
@@ -126,21 +144,21 @@ export const DbObjectTypeMap = {
     openPage: (object) => openViewViewPage,
     getOpenTab: (object, databaseId) => {
       const databaseName = object?.dbObject?.database?.name || object?.database?.name;
-      return [object?.name, TopTab.PROPS, PropsTab.INFO, databaseId, databaseName];
+      return [object?.name, TopTab.PROPS, PropsTab.DDL, databaseId, databaseName];
     },
   },
   [DbObjectType.function]: {
     label: DbObjectTypeTextMap(DbObjectType.function),
     openPage: (object) => openFunctionViewPage,
     getOpenTab: (object, databaseId) => {
-      return [object?.name, TopTab.PROPS, PropsTab.INFO, databaseId];
+      return [object?.name, TopTab.PROPS, PropsTab.DDL, databaseId];
     },
   },
   [DbObjectType.procedure]: {
     label: DbObjectTypeTextMap(DbObjectType.procedure),
     openPage: (object) => openProcedureViewPage,
     getOpenTab: (object, databaseId) => {
-      return [object?.name, TopTab.PROPS, PropsTab.INFO, databaseId];
+      return [object?.name, TopTab.PROPS, PropsTab.DDL, databaseId];
     },
   },
   [DbObjectType.package]: {
@@ -181,4 +199,78 @@ export const DbObjectTypeMap = {
       return [object?.name, SynonymType.COMMON, databaseId, databaseName];
     },
   },
+  [DbObjectType.public_synonym]: {
+    label: DbObjectTypeTextMap(DbObjectType.public_synonym),
+    openPage: (object) => openSynonymViewPage,
+    getOpenTab: (object, databaseId) => {
+      const databaseName = object?.dbObject?.database?.name || object?.database?.name;
+      return [object?.name, SynonymType.PUBLIC, databaseId, databaseName];
+    },
+  },
+  [DbObjectType.materialized_view]: {
+    label: DbObjectTypeTextMap(DbObjectType.materialized_view),
+    openPage: (object) => openMaterializedViewViewPage,
+    getOpenTab: (object, databaseId) => {
+      const databaseName = object?.dbObject?.database?.name || object?.database?.name;
+      return [object?.name, TopTab.PROPS, PropsTab.DDL, databaseId, databaseName];
+    },
+  },
+  [DbObjectType.external_resource]: {
+    label: formatMessage({
+      id: 'src.page.Workspace.SideBar.ResourceTree.DatabaseSearchModal.1E1D4898',
+      defaultMessage: '外部资源',
+    }),
+    openPage: (object) => openExternalResourceViewPage,
+    getOpenTab: (object, databaseId) => {
+      return [object?.name, 'INFO', databaseId];
+    },
+  },
 };
+
+export enum SearchStatus {
+  /** 搜索数据库 */
+  forDatabase = 'forDatabase',
+  /**搜索数据源 */
+  forDataSource = 'forDataSource',
+  /** 搜索项目 */
+  forProject = 'forProject',
+
+  /** 数据库下搜索对象 */
+  databaseforObject = 'databaseforObject',
+  /** 项目下搜索对象 */
+  projectforObject = 'projectforObject',
+  /** 数据源下搜索对象 */
+  dataSourceforObject = 'dataSourceforObject',
+
+  /** 数据源&&数据库 下搜索 */
+  dataSourceWithDatabaseforObject = 'dataSourceWithDatabaseforObject',
+  /** 项目&&数据库 下搜索 */
+  projectWithDatabaseforObject = 'projectWithDatabaseforObject',
+}
+
+export const SearchOptionTypeTextMap = {
+  [SearchStatus.forDatabase]: formatMessage({
+    id: 'odc.src.d.ts.Database',
+    defaultMessage: '数据库',
+  }),
+  [SearchStatus.forProject]: formatMessage({
+    id: 'odc.SpaceContainer.Sider.Project',
+    defaultMessage: '项目',
+  }) /*项目*/,
+  [SearchStatus.forDataSource]: formatMessage({
+    id: 'odc.component.RecordPopover.column.DataSource',
+    defaultMessage: '数据源',
+  }),
+};
+
+/** 个人空间支持的搜索类型 */
+export const privateSpaceSupportSearchOptionList = [
+  SearchStatus.forDatabase,
+  SearchStatus.forDataSource,
+];
+
+export const publicSpaceSupportSearchOptionList = [
+  SearchStatus.forDatabase,
+  SearchStatus.forProject,
+  SearchStatus.forDataSource,
+];

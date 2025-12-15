@@ -16,6 +16,9 @@
 
 import React from 'react';
 import { setLocale } from '@umijs/max';
+import utc from 'dayjs/plugin/utc';
+import duration from 'dayjs/plugin/duration';
+import dayjs from 'dayjs';
 import { initMetaStore } from './common/metaStore';
 import DndHTML5Provider from './component/DndHTML5Provider';
 import registerPlugins from './plugins/register';
@@ -24,7 +27,11 @@ import logger from './util/logger';
 import { getRoute } from './util/tracert/userRoutes';
 import { initIntl } from './util/intl';
 import { initSentry } from './util/sentry';
+import { ConfigProvider } from 'antd';
+import { theme } from './layout/antdTheme';
 import { initDatasource } from './common/datasource';
+dayjs.extend(utc);
+dayjs.extend(duration);
 if (isClient()) {
   import('@sentry/electron').then((_Sentry) => {
     _Sentry.init({
@@ -60,6 +67,9 @@ export const qiankun = {
 };
 
 export async function render(oldRender: () => void) {
+  ConfigProvider.config({
+    theme: theme,
+  });
   registerPlugins();
   await initIntl();
   await initMetaStore();

@@ -427,6 +427,16 @@ export default {
       })}
     </p>
   ),
+
+  CreateMaterializedViewSelectStartWith: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.DE21871C',
+        defaultMessage: '刷新开始时间必须大于创建物化视图时的时间',
+      })}
+    </p>
+  ),
+
   expirePeriod: (
     <p>
       {
@@ -620,7 +630,14 @@ export default {
     </p>
   ),
 
-  dataArchiveVariablesDoc: <p>{dataArchiveVariablesDoc}</p>,
+  dataArchiveVariablesDoc: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.F0D45A43',
+        defaultMessage: '定义变量、设置时间偏移量并在上文的目标表及过滤条件中引用',
+      })}
+    </p>
+  ),
   dataClearVariablesDoc: <p>{dataClearVariablesDoc}</p>,
   schemaChangeSwapTable: (
     <p>
@@ -646,12 +663,10 @@ export default {
 
   schemaChangeSwapTableRetryTimes: (
     <p>
-      {
-        formatMessage({
-          id: 'odc.component.helpDoc.doc.AfterTheTableLockTime',
-          defaultMessage: '超过锁表时间后，未切换完成可自动重试',
-        }) /*超过锁表时间后，未切换完成可自动重试*/
-      }
+      {formatMessage({
+        id: 'src.component.helpDoc.7F2FDC2E',
+        defaultMessage: '若锁定失败，可自动重试次数',
+      })}
     </p>
   ),
 
@@ -666,6 +681,31 @@ export default {
     </p>
   ),
 
+  TimingforCleanAfterArchive: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.6D63E347',
+        defaultMessage: '待数据全部完成归档后再开始进行数据清理',
+      })}
+    </p>
+  ),
+  TimingforCleanAfterCleanUp: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.8EDA4D85',
+        defaultMessage: '按分片归档，分片归档完成后即时进行清理',
+      })}
+    </p>
+  ),
+  ExecutionTimeoutSchedulingStrategy: (
+    <p>
+      {formatMessage({
+        id: 'src.component.helpDoc.86172CDC',
+        defaultMessage: '任务超时之后下一轮调度对于超时任务的处理逻辑',
+      })}
+    </p>
+  ),
+
   TaskLmitData: (
     <p>
       {
@@ -674,17 +714,6 @@ export default {
           defaultMessage: '每秒操作数据总大小限制',
         }) /* 每秒操作数据总大小限制 */
       }
-    </p>
-  ),
-
-  AlterDdlTaskLockUsersTip: (
-    <p>
-      {formatMessage({
-        id: 'src.component.helpDoc.AEEC5916' /*关于注意事项第3条，由您指定将要锁定的账号，是为了保障表名切换期间数据一致性的同时尽可能降低对业务的影响。请您确保指定账号的准确性，若您未指定任何账号，ODC
-      将不会进行任何账号锁定及kill session 操作，切换期间数据的一致性将需要由您来保障*/,
-        defaultMessage:
-          '关于注意事项第 3 条，由您指定将要锁定的账号，是为了保障表名切换期间数据一致性的同时尽可能降低对业务的影响。请您确保指定账号的准确性，若您未指定任何账号，ODC 将不会进行任何账号锁定及 Kill Session 操作，切换期间数据的一致性将需要由您来保障。',
-      })}
     </p>
   ),
 

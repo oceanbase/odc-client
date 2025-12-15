@@ -27,6 +27,7 @@ interface IProps<T> extends EditorProps<T> {
   options: (string | { text: string; value: string })[];
   multiple: boolean;
   loading?: boolean;
+  customRenderOptions?: (item) => JSX.Element;
 }
 
 export function SelectEditor<T>({
@@ -37,6 +38,7 @@ export function SelectEditor<T>({
   options,
   multiple,
   loading,
+  customRenderOptions,
 }: IProps<T>) {
   const [open, setOpen] = useState(false);
   const { key } = column;
@@ -45,13 +47,6 @@ export function SelectEditor<T>({
     realValue = realValue?.split(',');
   }
   const editorRef = useRef<any>(null);
-  useEffect(() => {
-    if (editorRef.current) {
-      setTimeout(() => {
-        editorRef.current?.focus();
-      }, 100);
-    }
-  }, [editorRef]);
   const innerOnChange = useCallback(
     (value: string | string[]) => {
       console.log('onchange event');
@@ -68,6 +63,7 @@ export function SelectEditor<T>({
       <Select
         ref={editorRef}
         open={open}
+        autoFocus
         showSearch
         loading={loading}
         onFocus={() => {
@@ -76,9 +72,9 @@ export function SelectEditor<T>({
           }, 150);
         }}
         mode={multiple ? 'multiple' : undefined}
-        bordered={false}
+        variant="borderless"
         listHeight={170}
-        style={{ width: Math.max(width, 180) }}
+        style={{ width: Math.max(width, 180), height: 23 }}
         value={realValue}
         onChange={innerOnChange}
         optionFilterProp="children"
@@ -94,6 +90,9 @@ export function SelectEditor<T>({
         }}
       >
         {options?.map((value) => {
+          if (customRenderOptions) {
+            return customRenderOptions(value);
+          }
           if (typeof value === 'string') {
             return (
               <Option key={value} value={value}>
@@ -111,8 +110,19 @@ export function SelectEditor<T>({
     </AntdEditorWrap>
   );
 }
-export function WrapSelectEditor(options, multiple: boolean = true) {
+export function WrapSelectEditor(
+  options,
+  multiple: boolean = true,
+  customRenderOptions = undefined,
+) {
   return (p) => {
-    return <SelectEditor {...p} options={options} multiple={multiple} />;
+    return (
+      <SelectEditor
+        {...p}
+        options={options}
+        multiple={multiple}
+        customRenderOptions={customRenderOptions}
+      />
+    );
   };
 }

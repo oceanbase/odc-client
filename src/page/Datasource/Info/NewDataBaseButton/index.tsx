@@ -52,7 +52,7 @@ export default function NewDataBaseButton({
       ownerIds?: number[];
     }
   >();
-  const { run, loading } = useRequest(createDataBase, {
+  const { run, loading: createDatabaseLoading } = useRequest(createDataBase, {
     manual: true,
   });
   const haveCharset = ![ConnectionMode.OB_ORACLE, ConnectionMode.ORACLE].includes(mode);
@@ -160,7 +160,21 @@ export default function NewDataBaseButton({
         })}
         /*新建数据库*/ onOk={submit}
         onCancel={close}
-        destroyOnClose
+        footer={[
+          <Button onClick={close}>
+            {formatMessage({
+              id: 'src.page.Datasource.Info.NewDataBaseButton.F20F3628',
+              defaultMessage: '取消',
+            })}
+          </Button>,
+          <Button type="primary" onClick={submit} loading={createDatabaseLoading}>
+            {formatMessage({
+              id: 'src.page.Datasource.Info.NewDataBaseButton.D09B358D',
+              defaultMessage: '确定',
+            })}
+          </Button>,
+        ]}
+        destroyOnHidden
       >
         <Form
           form={form}
@@ -183,6 +197,23 @@ export default function NewDataBaseButton({
               id: 'odc.Info.NewDataBaseButton.DatabaseName',
               defaultMessage: '数据库名称',
             })} /*数据库名称*/
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (!value || value.trim() === '') {
+                    return Promise.reject(
+                      new Error(
+                        formatMessage({
+                          id: 'src.page.Datasource.Info.NewDataBaseButton.2306C6C0',
+                          defaultMessage: '请输入数据库名称',
+                        }),
+                      ),
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
           >
             <CaseInput
               caseSensitive={sqlConfig?.caseSensitivity}

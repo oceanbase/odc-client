@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { removeTableQuote } from '@/util/sql';
+import { removeTableQuote } from '@/util/data/sql';
 import { getQuoteTableName } from '@/util/utils';
 import { Input, InputProps } from 'antd';
 import { InputRef, TextAreaProps } from 'antd/lib/input';
@@ -77,6 +77,7 @@ interface WrapProps {
   value?: string;
   caseSensitive?: boolean;
   escapes?: string;
+  valueFilter?: (value: string) => string;
 }
 
 export function CaseInput(props: InputProps & WrapProps) {
@@ -139,7 +140,7 @@ const CaseTextArea = forwardRef<TextAreaRef, ICaseTextAreaProps>(function CaseTe
   props: ICaseTextAreaProps,
   ref,
 ) {
-  const { value, caseSensitive, escapes, onChange, ...rest } = props;
+  const { value, caseSensitive, escapes, onChange, valueFilter, ...rest } = props;
   const [innerValue, setInnerValue] = useState<string>();
   const [onChangeValue, setOnChangeValue] = useState<any>();
   useEffect(() => {
@@ -180,8 +181,98 @@ const CaseTextArea = forwardRef<TextAreaRef, ICaseTextAreaProps>(function CaseTe
       onChange={(e) => {
         const start = e.target.selectionStart,
           end = e.target.selectionEnd;
+
         const { displayValue, onChangeValue } = handleChange(e);
         setInnerValue(displayValue);
+
+        if (typeof onChangeValue === 'string') {
+          setOnChangeValue(onChangeValue);
+        } else {
+          setOnChangeValue(onChangeValue?.target?.value);
+        }
+
+        if (e.target.value !== displayValue) {
+          Promise.resolve().then(() => {
+            inputRef?.current?.resizableTextArea?.textArea?.setSelectionRange(start, end);
+          });
+        }
+
+        if (typeof onChangeValue !== 'string') {
+          onChange?.(onChangeValue as any);
+        }
+      }}
+      onBlur={(e) => {
+        // 在失去焦点时应用valueFilter
+        if (valueFilter) {
+          const filteredValue = valueFilter(e.target.value);
+          if (filteredValue !== e.target.value) {
+            const filteredEvent = {
+              ...e,
+              target: {
+                ...e.target,
+                value: filteredValue,
+              },
+            };
+            onChange?.(filteredEvent);
+          }
+        }
+        rest.onBlur?.(e);
+      }}
+    />
+  );
+});
+
+interface CaseEditableTextProps {
+  placeholder?: string;
+  onChange: (values: any) => void;
+  caseSensitive?: boolean;
+  escapes?: string;
+}
+const CaseEditableText: React.FC<CaseEditableTextProps> = React.memo((props) => {
+  const { placeholder, onChange, caseSensitive, escapes } = props;
+  const [editable, setEditable] = useState(false);
+  const [value, setValue] = useState('');
+  const [onChangeValue, setOnChangeValue] = useState<any>();
+  const inputRef = useRef<InputRef>();
+
+  useEffect(() => {
+    if (onChangeValue !== value) {
+      if (value?.toUpperCase() !== value && value && !caseSensitive) {
+        setValue(`${escapes}${value}${escapes}`);
+        setOnChangeValue(value);
+      } else {
+        setValue(value);
+        setOnChangeValue(value);
+      }
+    }
+  }, [value]);
+
+  const changeToEditable = () => {
+    setEditable(true);
+  };
+
+  const handleChange = useMemo(
+    () => onChangeCaseWrap({ caseSensitive, escapes }),
+    [caseSensitive, escapes],
+  );
+
+  if (!editable) {
+    return <a onClick={changeToEditable}>&lt;{value || placeholder}&gt;</a>;
+  }
+
+  return (
+    <Input
+      autoFocus={true}
+      size="small"
+      style={{ minWidth: '50px' }}
+      placeholder={placeholder}
+      onBlur={() => setEditable(false)}
+      onPressEnter={(e) => setEditable(false)}
+      onChange={(e) => {
+        const start = e.target.selectionStart,
+          end = e.target.selectionEnd;
+        const { displayValue, onChangeValue } = handleChange(e);
+        setValue(displayValue);
         if (typeof onChangeValue === 'string') {
           setOnChangeValue(onChangeValue);
         } else {
@@ -189,15 +280,16 @@ const CaseTextArea = forwardRef<TextAreaRef, ICaseTextAreaProps>(function CaseTe
         }
         if (e.target.value !== displayValue) {
           Promise.resolve().then(() => {
-            inputRef?.current?.resizableTextArea?.textArea?.setSelectionRange(start, end);
+            inputRef.current?.setSelectionRange(start, end);
           });
         }
         if (typeof onChangeValue !== 'string') {
-          onChange?.(onChangeValue as any);
+          onChange?.(onChangeValue?.target?.value);
         }
       }}
+      value={value}
     />
   );
 });
 
-export { onChangeCaseWrap, CaseTextArea };
+export { onChangeCaseWrap, CaseTextArea, CaseEditableText };

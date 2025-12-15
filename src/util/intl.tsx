@@ -19,6 +19,7 @@
 import { setLocale } from '@umijs/max';
 import odc from '@/plugins/odc';
 import { IntlShape, createIntl } from 'react-intl';
+import { ObDocsUrlMap } from '@/constant';
 export const defaultLocale = 'en-us';
 
 let intl;
@@ -38,7 +39,7 @@ function getLocale() {
   return lang || browserLang || 'en-US';
 }
 
-function getEnvLocale() {
+export function getEnvLocale() {
   if (odc.appConfig.locale.getLocale) {
     return odc.appConfig.locale.getLocale();
   }
@@ -57,6 +58,11 @@ export function getLocalImg(fileName) {
   return window.publicPath + `img/${local}/${fileName}`;
 }
 
+export function getImg(fileName) {
+  //@ts-ignore
+  return window.publicPath + `img/${fileName}`;
+}
+
 export function getLocalDocs(hash?: string) {
   let local: string = getEnvLocale();
   local = local.toLowerCase();
@@ -65,6 +71,25 @@ export function getLocalDocs(hash?: string) {
     local = defaultLocale;
   }
   return window.publicPath + 'help-doc/' + local + '/index.html' + (hash ? `#/${hash}` : '');
+}
+
+export function getServerLocalKey() {
+  let local: string = getEnvLocale();
+  local = local.toLowerCase();
+  if (local === 'zh-cn') {
+    return 'zh_Hans';
+  }
+  return 'en_US';
+}
+
+export function getOBDocsUrl(key?: string) {
+  let local: string = getEnvLocale();
+  local = local.toLowerCase();
+  const existLocal = ['en-us', 'zh-cn'];
+  if (!existLocal.includes(local)) {
+    local = defaultLocale;
+  }
+  return ObDocsUrlMap[local][key];
 }
 
 let isInitialized = false;

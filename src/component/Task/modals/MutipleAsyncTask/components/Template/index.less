@@ -1,0 +1,153 @@
+// #region ------------------------- CreateTemplate -------------------------
+.createTemplate {
+  margin-bottom: 16px;
+
+  .tip {
+    margin-bottom: 22px;
+    color: var(--text-color-hint);
+  }
+}
+
+// #endregion
+
+// #region ------------------------- EditTemplate -------------------------
+
+.header {
+  display: flex;
+  justify-content: space-between;
+
+  .tip {
+    color: var(--text-color-hint);
+  }
+}
+
+// orderedDatabaseIds
+.orderedDatabaseIds {
+  padding: 18px 16px;
+  background-color: var(--background-tertraiy-color);
+
+  .title {
+    color: var(--text-color-primary);
+    font-weight: 500;
+  }
+
+  :global {
+    .ant-form-item {
+      margin-bottom: 0px;
+      padding-top: 4px;
+      padding-bottom: 4px;
+    }
+
+    .ant-timeline-item {
+      margin-bottom: 0px;
+      padding-bottom: 0 !important;
+      line-height: 1;
+    }
+
+    .ant-timeline-item-last {
+      .ant-timeline-item-content {
+        height: 20px;
+        line-height: 20px;
+      }
+    }
+
+    .ant-timeline-item-content {
+      min-height: auto;
+      margin-bottom: 0px;
+    }
+  }
+}
+
+// #endregion
+
+// #region ------------------------- SelectTemplate -------------------------
+
+.selectTemplatePopover {
+  :global {
+    .ant-popover-inner {
+      padding: 0px;
+    }
+    .ant-popover-inner-content {
+      margin-top: -4px;
+      padding: 0px;
+    }
+  }
+
+  padding: 0px;
+}
+
+.template {
+  width: 280px;
+
+  .options {
+    max-height: 140px;
+    overflow: auto;
+
+    .templateItem {
+      display: flex;
+      align-items: center;
+      width: 280px;
+      height: 28px;
+      padding: 0px 8px;
+      cursor: pointer;
+      user-select: none;
+
+      &:hover {
+        background-color: var(--hover-color);
+      }
+    }
+
+    .templateItemDisabled {
+      color: var(--mask-color);
+      background: var(--hover-color);
+
+      &:hover {
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .blockLinkBtn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+}
+
+.linkBtn {
+  margin: 0px;
+  padding: 0px;
+}
+
+// #endregion
+
+// #region ------------------------- Common -------------------------
+
+.timelineItem {
+  :global {
+    .ant-timeline-item-head {
+      background-color: var(--text-color-placeholder);
+      border-color: transparent;
+    }
+
+    .ant-timeline-item-head-blue {
+      background-color: var(--text-color-placeholder);
+      border-color: transparent !important;
+    }
+
+    .ant-timeline-item-head {
+      background-color: var(--text-color-placeholder);
+      border-color: transparent !important;
+    }
+  }
+}
+.disabled {
+  color: var(--text-color-hint);
+
+  &:hover {
+    color: var(--text-color-hint) !important;
+    cursor: not-allowed;
+  }
+}
+
+// #endregion

@@ -18,16 +18,16 @@ import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { ConnectTypeText } from '@/constant/label';
 import { IConnection } from '@/d.ts';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import { IDatabase } from '@/d.ts/database';
 import { ClusterStore } from '@/store/cluster';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import Icon from '@ant-design/icons';
-import { Space, Tooltip } from 'antd';
+import { Space, Tooltip, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
-import React from 'react';
+import React, { useMemo } from 'react';
 import RiskLevelLabel from '../RiskLevelLabel';
 import styles from './index.less';
 
@@ -35,9 +35,10 @@ const ConnectionPopover: React.FC<{
   connection: Partial<IConnection>;
   database?: IDatabase;
   showType?: boolean;
+  showRemark?: boolean;
   clusterStore?: ClusterStore;
 }> = (props) => {
-  const { connection, clusterStore, showType = true, database } = props;
+  const { connection, clusterStore, showType = true, showRemark = false, database } = props;
   const isLogicDb = isLogicalDatabase(database);
   const isFileSyetem = isConnectTypeBeFileSystemGroup(connection?.type);
   if (!connection && !isLogicDb) {
@@ -46,23 +47,69 @@ const ConnectionPopover: React.FC<{
 
   const DBIcon = getDataSourceStyleByConnectType(connection?.type || database?.connectType)?.icon;
 
+  const databaseRemarkDescription = useMemo(() => {
+    return (
+      <div className={styles.describe}>
+        <span className={styles.label}>
+          {formatMessage({
+            id: 'src.component.ConnectionPopover.7A11191E',
+            defaultMessage: '备注：',
+          })}
+        </span>
+        <div className={styles.content}>{database?.remark ?? '-'}</div>
+      </div>
+    );
+  }, [database]);
+
+  const dataSourceDescription = useMemo(() => {
+    return (
+      <div className={styles.describe}>
+        <span className={styles.label}>
+          {formatMessage({
+            id: 'src.component.ConnectionPopover.2A18AD55',
+            defaultMessage: '数据源：',
+          })}
+        </span>
+        <div className={styles.content}>
+          {connection?.name || database?.dataSource?.name || '-'}
+        </div>
+      </div>
+    );
+  }, [connection, database]);
+
+  const projectDescription = useMemo(() => {
+    return (
+      <div className={styles.describe}>
+        <span className={styles.label}>
+          {formatMessage({
+            id: 'src.component.ConnectionPopover.16ED170C',
+            defaultMessage: '项目：',
+          })}
+        </span>
+        <div className={styles.content}>
+          {database?.project?.name || connection?.projectName || '-'}
+        </div>
+      </div>
+    );
+  }, [database, connection]);
+
   if (isFileSyetem) {
     return (
       <div
         onClick={(e) => {
           e.stopPropagation();
         }}
-        style={{ lineHeight: '20px' }}
+        style={{ lineHeight: '20px', maxWidth: '280px' }}
       >
         <Space direction="vertical">
-          <Tooltip title={connection.name}>
+          <Tooltip title={connection?.name}>
             <div
               style={{
                 marginBottom: 4,
                 fontFamily: 'PingFangSC-Semibold',
                 color: 'var(--text-color-primary)',
                 fontWeight: 'bold',
-                maxWidth: '240px',
+                width: '280px',
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
@@ -70,34 +117,51 @@ const ConnectionPopover: React.FC<{
             >
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <RiskLevelLabel
-                  content={connection?.environmentName}
-                  color={connection?.environmentStyle?.toLowerCase()}
+                  content={connection?.environmentName || database?.environment?.name}
+                  color={
+                    connection?.environmentStyle?.toLowerCase() ||
+                    database?.environment?.style?.toLowerCase()
+                  }
                 />
                 <Icon
                   component={DBIcon?.component}
                   style={{ fontSize: 22, marginRight: 4, color: DBIcon?.color }}
-                />{' '}
-                {connection.name}
+                />
+                <div className={styles.content}>{connection?.name}</div>
               </div>
             </div>
           </Tooltip>
           {renderConnectionMode()}
-          <div>
+          <div className={styles.label}>
             {formatMessage(
               {
                 id: 'src.component.ConnectionPopover.986CE021',
                 defaultMessage: '文件URL：{LogicalExpression0}',
               },
-              { LogicalExpression0: connection.host ?? '-' },
+              {
+                LogicalExpression0: connection?.host ? (
+                  <span className={styles.content} style={{ color: 'black' }}>
+                    {connection?.host}
+                  </span>
+                ) : (
+                  '-'
+                ),
+              },
             )}
           </div>
-          <div>
+          <div className={styles.label}>
             {formatMessage(
               {
                 id: 'src.component.ConnectionPopover.4A02B634',
                 defaultMessage: '地域：{LogicalExpression0}',
               },
-              { LogicalExpression0: connection.region ?? '-' },
+              {
+                LogicalExpression0: connection?.region ? (
+                  <span className={styles.content}>{connection?.region}</span>
+                ) : (
+                  '-'
+                ),
+              },
             )}
           </div>
         </Space>
@@ -111,7 +175,7 @@ const ConnectionPopover: React.FC<{
         onClick={(e) => {
           e.stopPropagation();
         }}
-        style={{ lineHeight: '20px' }}
+        style={{ lineHeight: '20px', maxWidth: '280px' }}
       >
         <Space direction="vertical">
           <Tooltip>
@@ -121,7 +185,7 @@ const ConnectionPopover: React.FC<{
                 fontFamily: 'PingFangSC-Semibold',
                 color: 'var(--text-color-primary)',
                 fontWeight: 'bold',
-                maxWidth: '240px',
+                width: '280px',
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
@@ -134,7 +198,9 @@ const ConnectionPopover: React.FC<{
                 />
 
                 <DataBaseStatusIcon item={database} />
-                <div className={styles.ellipsis} title={database?.name}>{`${database?.name}`}</div>
+                <div className={styles.ellipsis} title={database?.name}>
+                  {`${database?.name}`}
+                </div>
               </div>
             </div>
           </Tooltip>
@@ -171,22 +237,27 @@ const ConnectionPopover: React.FC<{
               { ConnectTypeTextDatabaseConnectType: ConnectTypeText(database?.connectType) },
             )}
           </div>
+          {showRemark && databaseRemarkDescription}
         </Space>
       </div>
     );
   }
 
   let clusterAndTenant = (
-    <div>
-      {
-        formatMessage({
-          id: 'odc.components.Header.ConnectionPopover.ClusterTenant',
-          defaultMessage: '集群/租户：',
-        })
+    <div className={styles.describe}>
+      <span className={styles.label}>
+        {
+          formatMessage({
+            id: 'odc.components.Header.ConnectionPopover.ClusterTenant',
+            defaultMessage: '集群/租户：',
+          })
 
-        /*集群/租户：*/
-      }
-      {connection?.clusterName || '- '}/{connection?.tenantName || ' -'}
+          /*集群/租户：*/
+        }
+      </span>
+      <span className={styles.content}>
+        {connection?.clusterName || '- '}/{connection?.tenantName || ' -'}
+      </span>
     </div>
   );
 
@@ -194,31 +265,36 @@ const ConnectionPopover: React.FC<{
     const isTenantInstance = !!clusterStore.tenantListMap?.[connection?.tenantName];
     if (isTenantInstance) {
       clusterAndTenant = (
-        <div>
-          {
-            formatMessage({
-              id: 'odc.component.ConnectionPopover.InstanceId',
-              defaultMessage: '实例 ID:',
-            })
+        <div className={styles.describe}>
+          <span className={styles.label}>
+            {
+              formatMessage({
+                id: 'odc.component.ConnectionPopover.InstanceId',
+                defaultMessage: '实例 ID:',
+              })
 
-            /*实例 ID:*/
-          }
-
-          {connection?.tenantName}
+              /*实例 ID:*/
+            }
+          </span>
+          <span className={styles.content}>{connection?.tenantName}</span>
         </div>
       );
     } else {
       clusterAndTenant = (
-        <div>
-          {
-            formatMessage({
-              id: 'odc.component.ConnectionPopover.InstanceIdTenantId',
-              defaultMessage: '实例ID/租户ID:',
-            })
+        <div className={styles.describe}>
+          <span className={styles.label}>
+            {
+              formatMessage({
+                id: 'odc.component.ConnectionPopover.InstanceIdTenantId',
+                defaultMessage: '实例ID/租户ID:',
+              })
 
-            /*实例ID/租户ID:*/
-          }
-          {connection?.clusterName}/{connection.tenantName}
+              /*实例ID/租户ID:*/
+            }
+          </span>
+          <span className={styles.content}>
+            {connection?.clusterName}/{connection?.tenantName}
+          </span>
         </div>
       );
     }
@@ -228,18 +304,22 @@ const ConnectionPopover: React.FC<{
     const { type } = connection;
     return (
       <div>
-        {
-          formatMessage(
-            {
-              id: 'odc.component.ConnectionPopover.TypeConnecttypetexttype',
-              defaultMessage: '类型：{ConnectTypeTextType}',
-            },
+        <span className={styles.label}>
+          {
+            formatMessage(
+              {
+                id: 'odc.component.ConnectionPopover.TypeConnecttypetexttype',
+                defaultMessage: '类型：{ConnectTypeTextType}',
+              },
 
-            { ConnectTypeTextType: ConnectTypeText(type) },
-          )
+              {
+                ConnectTypeTextType: <Typography.Text>{ConnectTypeText(type)}</Typography.Text>,
+              },
+            )
 
-          /*类型：{ConnectTypeTextType}*/
-        }
+            /*类型：{ConnectTypeTextType}*/
+          }
+        </span>
       </div>
     );
   }
@@ -251,53 +331,64 @@ const ConnectionPopover: React.FC<{
       }}
       style={{
         lineHeight: '20px',
-        // padding: 12,
+        maxWidth: '280px',
+        fontWeight: 'normal',
       }}
     >
       <Space direction="vertical">
-        <Tooltip title={connection.name}>
-          <div
-            style={{
-              marginBottom: 4,
-              fontFamily: 'PingFangSC-Semibold',
-              color: 'var(--text-color-primary)',
-              fontWeight: 'bold',
-              maxWidth: '240px',
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <RiskLevelLabel
-                content={connection?.environmentName}
-                color={connection?.environmentStyle?.toLowerCase()}
-              />
-              <Icon
-                component={DBIcon?.component}
-                style={{ fontSize: 22, marginRight: 4, color: DBIcon?.color }}
-              />{' '}
-              {connection.name}
-            </div>
+        <div
+          style={{
+            marginBottom: 4,
+            fontFamily: 'PingFangSC-Semibold',
+            color: 'var(--text-color-primary)',
+            fontWeight: 'bold',
+            width: 'max-content',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            maxWidth: '280px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <RiskLevelLabel
+              content={connection?.environmentName || database?.environment?.name}
+              color={
+                connection?.environmentStyle?.toLowerCase() ||
+                database?.environment?.style?.toLowerCase()
+              }
+            />
+
+            <DataBaseStatusIcon item={database} />
+            <Tooltip title={database?.name}>
+              <span style={{ marginLeft: '6px', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                {database?.name}
+              </span>
+            </Tooltip>
           </div>
-        </Tooltip>
+        </div>
+        {dataSourceDescription}
+        {projectDescription}
         {renderConnectionMode()}
         {haveOCP() ? null : (
-          <div>
-            {
-              formatMessage({
-                id: 'odc.components.Header.ConnectionPopover.HostnamePort',
-                defaultMessage: '主机名/端口：',
-              })
+          <div className={styles.describe}>
+            <span className={styles.label}>
+              {
+                formatMessage({
+                  id: 'odc.components.Header.ConnectionPopover.HostnamePort',
+                  defaultMessage: '主机名/端口：',
+                })
 
-              /*主机名/端口：*/
-            }
-            {connection.host}:{connection.port}
+                /*主机名/端口：*/
+              }
+            </span>
+            <span className={styles.content}>
+              {connection?.host}:{connection?.port}
+            </span>
           </div>
         )}
 
         {clusterAndTenant}
-        <div>
+        <div className={styles.label}>
           {
             formatMessage(
               {
@@ -305,12 +396,15 @@ const ConnectionPopover: React.FC<{
                 defaultMessage: '数据库用户名：{connectionDbUser}',
               },
 
-              { connectionDbUser: connection.username ?? '-' },
+              {
+                connectionDbUser: <Typography.Text>{connection?.username ?? '-'}</Typography.Text>,
+              },
             )
 
             /*数据库用户名：{connectionDbUser}*/
           }
         </div>
+        {showRemark && databaseRemarkDescription}
       </Space>
     </div>
   );

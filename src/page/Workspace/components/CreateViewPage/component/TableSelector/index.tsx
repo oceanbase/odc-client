@@ -17,15 +17,13 @@
 import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
 import { Button, Empty, Spin, Transfer, Tree } from 'antd';
-import update from 'immutability-helper';
 import { uniqueId } from 'lodash';
 import { parse } from 'query-string';
 import styles from './index.less';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import TableItem from './Item';
 import { ICON_DATABASE, ICON_TABLE, ICON_VIEW } from '../ObjectName';
 import SortableContainer, { DraggableItem } from '@/component/SortableContainer';
-import type { UniqueIdentifier } from '@dnd-kit/core';
 
 const { TreeNode, DirectoryTree } = Tree;
 
@@ -46,7 +44,7 @@ interface IState {
 
 const TreeSelector: React.FC<IProps> = React.memo((props) => {
   const selectedKeys = [];
-  const [state, setState] = useState({
+  const [state, setState] = useState<IState>({
     targetKeys: [],
     treeData: [],
     expandedKeys: [],
@@ -55,7 +53,6 @@ const TreeSelector: React.FC<IProps> = React.memo((props) => {
     keywords: '',
     loading: true,
   });
-  const [currentMoveingKey, setCurrentMoveingKey] = useState<UniqueIdentifier>();
   useEffect(() => {
     loadTreeData(true);
   }, []);
@@ -101,6 +98,7 @@ const TreeSelector: React.FC<IProps> = React.memo((props) => {
   const handleTreeNodeSelect = (item, selectedKeys, onItemSelect) => {
     const { eventKey } = item.node.props;
     const isChecked = selectedKeys.indexOf(eventKey) !== -1;
+    console.log(!isChecked, eventKey);
     onItemSelect(eventKey, !isChecked);
   };
 
@@ -278,12 +276,30 @@ const TreeSelector: React.FC<IProps> = React.memo((props) => {
       </div>
     );
   };
-
+  /**
+   * treeData 打平成 { key, value }
+   */
+  const dataSource = useMemo(() => {
+    const { treeData } = state;
+    const result = [];
+    function flatten(data) {
+      data.forEach((item) => {
+        const { children, title, key, type } = item;
+        result.push({ key, value: title });
+        if (children) {
+          flatten(children);
+        }
+      });
+    }
+    flatten(treeData);
+    return result;
+  }, [state.treeData]);
   return (
     <div>
       <Transfer
         showSearch={!state.loading}
         targetKeys={state.targetKeys}
+        dataSource={dataSource}
         showSelectAll
         className={styles['tree-transfer']}
         locale={{
@@ -294,12 +310,16 @@ const TreeSelector: React.FC<IProps> = React.memo((props) => {
         }}
         onChange={handleTransfer}
         onSearch={handleTreeSearch}
+        filterOption={() => true}
         oneWay
       >
         {({ direction, onItemSelect, selectedKeys }) => {
           if (direction === 'left') {
             selectedKeys = selectedKeys;
-            return renderSourcePanel(onItemSelect, selectedKeys);
+            return renderSourcePanel((key: any, check: boolean) => {
+              console.log(key, check);
+              onItemSelect(key, check);
+            }, selectedKeys);
           }
 
           if (direction === 'right') {

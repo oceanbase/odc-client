@@ -19,7 +19,7 @@ import { AuditEventActionMap, AuditEventMetaMap, IUserMap } from '@/constant/rec
 import type { IAudit } from '@/d.ts';
 import { AuditEventResult } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 import { Descriptions, Space } from 'antd';
 import React from 'react';

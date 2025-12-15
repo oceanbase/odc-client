@@ -15,13 +15,19 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { CrontabDateType, CrontabMode, IRuleTip } from './interface';
-import { getAllFields, getAllHourValue } from './utils';
+import { CronInputName, CrontabDateType, CrontabMode, IRuleTip } from './interface';
+import { getAllHourValue } from './utils';
 
 const hour = getAllHourValue();
 
-export const fields = getAllFields();
-
+export const fields = [
+  CronInputName.second,
+  CronInputName.minute,
+  CronInputName.hour,
+  CronInputName.dayOfMonth,
+  CronInputName.month,
+  CronInputName.dayOfWeek,
+];
 export const initCronString = '0 0 0 * * ?'; // 默认每天 0 时
 
 export const cronErrorMessage = formatMessage({

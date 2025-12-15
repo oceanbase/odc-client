@@ -25,7 +25,6 @@ interface IProps extends React.PropsWithChildren<any> {
   defaultDatabaseId: number;
   defaultDatasourceId?: number;
   datasourceMode?: boolean;
-  defaultMode?: 'project' | 'datasource';
   useMaster?: boolean;
   warnIfNotFound?: boolean;
 }
@@ -34,7 +33,6 @@ export default function SessionContextWrap({
   defaultDatabaseId,
   defaultDatasourceId,
   datasourceMode,
-  defaultMode = 'datasource',
   children,
   useMaster,
   warnIfNotFound = true,
@@ -42,20 +40,21 @@ export default function SessionContextWrap({
   const [session, _setSession] = useState<SessionStore>(null);
   const [databaseId, setDatabaseId] = useState(defaultDatabaseId);
   const [datasourceId, setDatasourceId] = useState(defaultDatasourceId);
-  const [from, setFrom] = useState<'project' | 'datasource'>(defaultMode);
 
-  async function selectSession(
-    databaseId: number,
-    datasourceId: number,
-    from?: 'project' | 'datasource',
-  ) {
+  async function selectSession(databaseId: number, datasourceId: number) {
     if (session) {
       sessionManager.destorySession(session.sessionId);
     }
     if (!databaseId && !datasourceId) {
       return;
     }
-    const newSession = await sessionManager.createSession(datasourceId, databaseId, useMaster);
+
+    const newSession = await sessionManager.createSession(
+      datasourceId,
+      databaseId,
+      useMaster,
+      true,
+    );
     if (newSession === 'NotFound') {
       setDatabaseId(null);
       setDatasourceId(null);
@@ -65,9 +64,6 @@ export default function SessionContextWrap({
       return;
     }
     if (newSession) {
-      if (from) {
-        setFrom(from);
-      }
       setDatasourceId(datasourceId);
       setDatabaseId(databaseId);
       _setSession(newSession);
@@ -75,7 +71,7 @@ export default function SessionContextWrap({
   }
 
   useEffect(() => {
-    selectSession(defaultDatabaseId, defaultDatasourceId, defaultMode);
+    selectSession(defaultDatabaseId, defaultDatasourceId);
   }, []);
 
   useUnmount(() => {
@@ -92,8 +88,6 @@ export default function SessionContextWrap({
         databaseId,
         datasourceMode,
         datasourceId,
-        from,
-        setFrom,
       }}
     >
       {typeof children === 'function'

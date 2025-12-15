@@ -63,7 +63,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
           return;
         }
         visited.add(table.info?.tableName);
-        const tableKey = `${database.id}-${dbSession?.database?.tableVersion}-${dbName}-table-${table?.info?.tableName}`;
+        const tableKey = `${database.id}-${dbName}-table-${table?.info?.tableName}`;
         let columnRoot: TreeDataNode;
         if (table.columns) {
           columnRoot = {
@@ -391,7 +391,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
           type: ResourceNodeType.Table,
           data: table,
           dbObjectType: DbObjectType.table,
-          doubleClick(session, node, databaseFrom) {
+          doubleClick(session, node) {
             openTableViewPage(
               table.info.tableName,
               TopTab.PROPS,

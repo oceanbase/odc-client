@@ -29,7 +29,7 @@ import { Button, Drawer, Input, message, Modal, Space, Spin } from 'antd';
 import copy from 'copy-to-clipboard';
 import { useEffect, useMemo, useRef } from 'react';
 import DatasourceForm, { IFormRef } from './Form';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 
 interface IProps {
   visible: boolean;

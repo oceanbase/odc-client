@@ -34,6 +34,13 @@
     .ant-table-thead {
       .ant-table-cell {
         border-top: 1px solid var(--odc-border-color);
+        .anticon {
+          color: var(--icon-color-normal);
+        }
+        .active .anticon,
+        .anticon.active {
+          color: var(--icon-color-focus);
+        }
       }
     }
   }
@@ -41,7 +48,8 @@
 
 .suffix:global(.ant-tag) {
   padding: 0 11px;
-  line-height: 27px;
+  line-height: 26px;
+  font-size: 12px;
 }
 
 .noMarginBottom {

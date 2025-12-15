@@ -32,13 +32,19 @@ import modal from '@/store/modal';
 import pageStore from '@/store/page';
 import { ReactComponent as BatchCompileSvg } from '@/svgr/batch-compile-all.svg';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
-import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
+import { downloadPLDDL } from '@/util/database/sqlExport';
+import {
+  PlusOutlined,
+  QuestionCircleFilled,
+  ReloadOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { hasChangePermission, hasExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
+import { openGlobalSearch } from '../../const';
 
 export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.PackageRoot]: [
@@ -85,6 +91,20 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       },
     },
     {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
+      },
+    },
+    {
       key: 'REFRESH',
       text: [
         formatMessage({ id: 'odc.ResourceTree.actions.Refresh', defaultMessage: '刷新' }), //刷新
@@ -117,6 +137,20 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           session?.database?.dbName,
         );
         openCreatePackageBodyPage(sql, session?.odcDatabase?.id, session?.database?.dbName);
+      },
+    },
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
       },
     },
     {
@@ -322,10 +356,10 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       disabled: (session) => {
         return !hasChangePermission(session);
       },
-      run(session, node, databaseFrom) {
+      run(session, node) {
         packageMenusConfig[ResourceNodeType.Package]
           .find((item) => item.key === 'DELETE')
-          ?.run?.(session, node, databaseFrom);
+          ?.run?.(session, node);
       },
     },
     {

@@ -35,14 +35,21 @@ export default function Reload({
     setLoading(false);
   }
   if (loading) {
-    return <LoadingOutlined style={{ fontSize: size, cursor: 'pointer' }} />;
+    return (
+      <LoadingOutlined
+        style={{ fontSize: size, cursor: 'pointer', color: 'var(--icon-color-normal)' }}
+      />
+    );
   }
   return (
     <Tooltip
       placement="bottom"
       title={formatMessage({ id: 'src.component.Button.Reload.CC20653B', defaultMessage: '刷新' })}
     >
-      <ReloadOutlined onClick={_onClick} style={{ fontSize: size, cursor: 'pointer', ...style }} />
+      <ReloadOutlined
+        onClick={_onClick}
+        style={{ fontSize: size, cursor: 'pointer', color: 'var(--icon-color-normal)', ...style }}
+      />
     </Tooltip>
   );
 }

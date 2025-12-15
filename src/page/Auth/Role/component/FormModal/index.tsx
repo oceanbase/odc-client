@@ -400,16 +400,23 @@ const FormModal: React.FC<IProps> = (props) => {
           ]);
           throw new Error(null);
         }
-        tracert.click('a3112.b64007.c330919.d367468');
-        if (isEdit) {
-          handleEdit({
-            ...formData,
-            bindUserIds: users?.add,
-            unbindUserIds: users?.delete,
-            id: editId,
+        // 检查是否存在权限包含关系
+        const hasDuplicatePermissions = checkForDuplicatePermissions(
+          formData.resourceManagementPermissions,
+        );
+
+        if (hasDuplicatePermissions) {
+          Modal.confirm({
+            content: formatMessage({
+              id: 'src.page.Auth.Role.component.FormModal.3D1B7861',
+              defaultMessage: '当前授予的权限存在包含关系，仅保留权限范围大的记录。',
+            }),
+            onOk: () => {
+              submitRoleData(formData);
+            },
           });
         } else {
-          handleCreate(formData);
+          submitRoleData(formData);
         }
       })
       .catch((error) => {
@@ -490,6 +497,52 @@ const FormModal: React.FC<IProps> = (props) => {
   const handlePermissionTypeChange = (key: string) => {
     setPermissionActiveKey(key);
   };
+
+  const checkForDuplicatePermissions = (permissions) => {
+    if (!permissions || !permissions.length) {
+      return false;
+    }
+
+    return permissions.some((item, index) => {
+      // 跳过纯create操作的权限
+      if (isCreateOnlyPermission(item)) {
+        return false;
+      }
+      return permissions.some((otherItem, otherIndex) => {
+        if (index === otherIndex) {
+          return false;
+        }
+        if (isCreateOnlyPermission(otherItem)) {
+          return false;
+        }
+        // actions数量不同（表明权限范围不同）
+        return (
+          item.resourceType === otherItem.resourceType &&
+          item.resourceId === otherItem.resourceId &&
+          item?.actions?.length !== otherItem?.actions?.length
+        );
+      });
+    });
+  };
+
+  const isCreateOnlyPermission = (permission) => {
+    return permission?.actions?.length === 1 && permission?.actions?.[0] === 'create';
+  };
+
+  const submitRoleData = (formData) => {
+    tracert.click('a3112.b64007.c330919.d367468');
+    if (isEdit) {
+      handleEdit({
+        ...formData,
+        bindUserIds: users?.add,
+        unbindUserIds: users?.delete,
+        id: editId,
+      });
+    } else {
+      handleCreate(formData);
+    }
+  };
+
   return (
     <Drawer
       width={720}
@@ -504,7 +557,7 @@ const FormModal: React.FC<IProps> = (props) => {
               defaultMessage: '新建角色',
             }) // 新建角色
       }
-      className={styles.userModal}
+      rootClassName={styles.userModal}
       footer={
         <Space>
           <Button onClick={handleCancel}>
@@ -551,7 +604,6 @@ const FormModal: React.FC<IProps> = (props) => {
           </Radio.Button>
         </Radio.Group>
       )}
-
       <FormContent
         initialValue={data}
         isEdit={isEdit}
@@ -564,7 +616,6 @@ const FormModal: React.FC<IProps> = (props) => {
         handleStatusChange={handleStatusChange}
         handlePermissionTypeChange={handlePermissionTypeChange}
       />
-
       {isEdit && (
         <RoleResource
           editId={editId}

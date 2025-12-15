@@ -19,6 +19,7 @@ import { TableForeignConstraintOnDeleteType } from '@/d.ts/table';
 import { haveOCP } from '@/util/env';
 import { IDataSourceModeConfig } from '../interface';
 import OracleColumnExtra from '../oceanbase/OracleColumnExtra';
+import { ScheduleType } from '@/d.ts/schedule';
 
 const oracleTableConfig = {
   constraintEnableConfigurable: true,
@@ -48,6 +49,18 @@ const functionConfig: IDataSourceModeConfig['schema']['func'] = {
   params: ['paramName', 'paramMode', 'dataType', 'defaultValue'],
 };
 
+const scheduleConfig: IDataSourceModeConfig['features']['scheduleConfig'] = {
+  allowTargetConnectTypeByDataArchive: [
+    ConnectType.COS,
+    ConnectType.OBS,
+    ConnectType.S3A,
+    ConnectType.OSS,
+    ConnectType.OB_ORACLE,
+    ConnectType.CLOUD_OB_ORACLE,
+    ConnectType.ORACLE,
+  ],
+};
+
 const items: Record<ConnectType.ORACLE, IDataSourceModeConfig> = {
   [ConnectType.ORACLE]: {
     priority: 2,
@@ -64,22 +77,22 @@ const items: Record<ConnectType.ORACLE, IDataSourceModeConfig> = {
       disableURLParse: true,
     },
     features: {
+      scheduleConfig,
       task: [
         TaskType.IMPORT,
         TaskType.EXPORT,
         TaskType.EXPORT_RESULT_SET,
-        TaskType.SQL_PLAN,
         TaskType.ASYNC,
-        TaskType.DATA_DELETE,
-        TaskType.DATA_ARCHIVE,
         TaskType.MULTIPLE_ASYNC,
       ],
+      schedule: [ScheduleType.SQL_PLAN, ScheduleType.DATA_ARCHIVE, ScheduleType.DATA_DELETE],
       obclient: false,
       recycleBin: false,
       sqlExplain: false,
       sessionManage: true,
       sessionParams: true,
-      resourceTree: true,
+      groupResourceTree: true,
+      sqlconsole: true,
       disableTriggerSwitch: true,
       compile: false,
       plEdit: true,

@@ -204,7 +204,7 @@ const FormSensitiveColumnDrawer = ({
         onClose={hanldeClose}
         destroyOnClose={true}
         footer={<DrawerFooter />}
-        className={styles.drawer}
+        rootClassName={styles.drawer}
       >
         <ScanForm
           formRef={formRef}
@@ -215,7 +215,6 @@ const FormSensitiveColumnDrawer = ({
           setFormData={setFormData}
         />
       </Drawer>
-
       <Drawer
         open={manageSensitiveRuleDrawerOpen}
         title={

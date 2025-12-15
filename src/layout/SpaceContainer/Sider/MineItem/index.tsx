@@ -28,7 +28,7 @@ import DropMenu from '../DropMenu';
 
 import { ModalStore } from '@/store/modal';
 import tracert from '@/util/tracert';
-import { ItemType } from 'antd/es/menu/hooks/useItems';
+import { ItemType } from 'antd/es/menu/interface';
 import styles from './index.less';
 import Locale from './Locale';
 import odc from '@/plugins/odc';

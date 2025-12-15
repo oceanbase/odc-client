@@ -197,6 +197,7 @@ export enum TableIndexScope {
 }
 
 export interface ITableRangePartition {
+  columns: { columnName: string }[];
   columnName: string;
   expression: string;
   partType: IPartitionType.RANGE;
@@ -211,12 +212,14 @@ export interface ITableRangePartition {
     key?: string;
     /* 二级分区才会有 */
     parentName?: string;
+    valueForColumnDisplay?: string;
   }[];
   subPartitions?: TablePartition;
   subpartitionTemplated?: boolean;
 }
 
 export interface ITableListPartition {
+  columns: { columnName: string }[];
   columnName: string;
   expression: string;
   partType: IPartitionType.LIST;
@@ -227,6 +230,7 @@ export interface ITableListPartition {
     ordinalPosition?: number;
     key?: string;
     parentName?: string;
+    valueForColumnDisplay?: string;
   }[];
   subPartitions?: TablePartition;
   subpartitionTemplated?: boolean;
@@ -271,6 +275,7 @@ export interface ITableRangeColumnsPartition {
     ordinalPosition?: number;
     key?: string;
     parentName?: string;
+    valueForColumnDisplay?: string;
   }[];
   subPartitions?: TablePartition;
   subpartitionTemplated?: boolean;
@@ -286,6 +291,7 @@ export interface ITableListColumnsPartition {
     ordinalPosition?: number;
     key?: string;
     parentName?: string;
+    valueForColumnDisplay?: string;
   }[];
   subPartitions?: TablePartition;
   subpartitionTemplated?: boolean;

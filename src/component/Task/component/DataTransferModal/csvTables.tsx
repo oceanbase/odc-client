@@ -18,7 +18,7 @@ import { CsvColumnMapping } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { isNil } from 'lodash';
 import React from 'react';
-import DisplayTable from '../../../DisplayTable';
+import DisplayTable from '@/component/DisplayTable';
 
 interface ICsvTableProps {
   data: CsvColumnMapping[];

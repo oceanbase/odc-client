@@ -22,7 +22,7 @@ import snippetStore, {
   SNIPPET_TYPES,
 } from '@/store/snippet';
 import { formatMessage } from '@/util/intl';
-import { getSnippetText, getWrapedSnippetBody } from '@/util/snippet';
+import { getSnippetText, getWrapedSnippetBody } from '@/util/business/snippet';
 import { CopyOutlined, EllipsisOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Card, Dropdown, message, Popover, Typography } from 'antd';
 import { CopyToClipboard } from 'react-copy-to-clipboard';

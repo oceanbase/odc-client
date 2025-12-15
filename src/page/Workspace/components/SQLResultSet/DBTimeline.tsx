@@ -16,10 +16,10 @@
 
 import { ISqlExecuteResult } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { formatTimeTemplate } from '@/util/utils';
+import { formatTimeTemplate } from '@/util/data/dateTime';
 import { Timeline, Typography } from 'antd';
 import BigNumber from 'bignumber.js';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import styles from './index.less';
 
 interface IProps {
@@ -112,7 +112,7 @@ export default function DBTimeline({ row }: IProps) {
           <Timeline.Item color={hasInitColumnInfoWarning ? 'var(--icon-orange-color)' : 'blue'}>
             <Typography.Text strong>
               <Typography.Text type="secondary">
-                [{moment(stage?.startTimeMillis).format('HH:mm:ss')}]
+                [{dayjs(stage?.startTimeMillis).format('HH:mm:ss')}]
               </Typography.Text>
               {item.title}
               <Typography.Text type="secondary">({formatTimeTemplate(time)})</Typography.Text>
@@ -121,7 +121,7 @@ export default function DBTimeline({ row }: IProps) {
                 return (
                   <div>
                     <Typography.Text type="secondary">
-                      [{moment(stage?.startTimeMillis).format('HH:mm:ss')}]{stage?.stageName}(
+                      [{dayjs(stage?.startTimeMillis).format('HH:mm:ss')}]{stage?.stageName}(
                       {formatTimeTemplate(time)})
                     </Typography.Text>
                   </div>

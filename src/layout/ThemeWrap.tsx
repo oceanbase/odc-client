@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { SettingStore } from '@/store/setting';
+import { EThemeConfigKey, SettingStore } from '@/store/setting';
+import { ConfigProvider, theme as AntdTheme } from 'antd/es';
 import { Outlet } from '@umijs/max';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
@@ -42,6 +43,13 @@ const ThemeWrap: React.FC<IProps> = function ({ children, settingStore }) {
       `;
       document.head.appendChild(disableDurationStyle);
       document.body.classList.add(className);
+      if (theme.key === EThemeConfigKey.ODC_DARK) {
+        ConfigProvider.config({
+          theme: {
+            algorithm: AntdTheme.darkAlgorithm,
+          },
+        });
+      }
       setTimeout(() => {
         setMaskMode(null);
         document.head.removeChild(disableDurationStyle);
@@ -49,10 +57,22 @@ const ThemeWrap: React.FC<IProps> = function ({ children, settingStore }) {
     }
     return () => {
       document.body.classList.remove(className);
+      ConfigProvider.config({
+        theme: {
+          algorithm: AntdTheme.defaultAlgorithm,
+        },
+      });
     };
   }, [settingStore.theme, setMaskMode]);
   return (
-    <>
+    <ConfigProvider
+      theme={{
+        algorithm:
+          settingStore.theme?.key === EThemeConfigKey.ODC_DARK
+            ? AntdTheme.darkAlgorithm
+            : AntdTheme.defaultAlgorithm,
+      }}
+    >
       {maskMode && (
         <div
           style={{
@@ -68,7 +88,7 @@ const ThemeWrap: React.FC<IProps> = function ({ children, settingStore }) {
         />
       )}
       <Outlet />
-    </>
+    </ConfigProvider>
   );
 };
 

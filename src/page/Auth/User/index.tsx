@@ -36,7 +36,8 @@ import { IManagerDetailTabs, IManagerResourceType } from '@/d.ts';
 import odc from '@/plugins/odc';
 import type { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import { encrypt, getFormatDateTime } from '@/util/utils';
+import { encrypt } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Button, Empty, message, Popover, Space, Tooltip, Typography } from 'antd';
 import type { UploadFile } from 'antd/lib/upload/interface';
@@ -46,7 +47,31 @@ import React from 'react';
 import { ResourceContext } from '../context';
 import DetailContent from './component/DetailContent';
 import FormModal from './component/FormModal';
+import AccessKeyManageModal from './component/AccessKeyManageModal';
 import styles from './index.less';
+import login from '@/store/login';
+import InputSelect from '@/component/InputSelect';
+
+enum UserSearchType {
+  all = 'all',
+  name = 'name',
+  accountName = 'accountName',
+}
+
+const UserSearchTypeTextMap = {
+  [UserSearchType.all]: formatMessage({
+    id: 'src.page.Auth.User.D4FAC19B',
+    defaultMessage: '全部',
+  }),
+  [UserSearchType.name]: formatMessage({
+    id: 'odc.components.UserPage.Name',
+    defaultMessage: '姓名',
+  }),
+  [UserSearchType.accountName]: formatMessage({
+    id: 'odc.components.UserPage.Account',
+    defaultMessage: '账号',
+  }),
+};
 
 interface IProps {
   userStore?: UserStore;
@@ -59,6 +84,10 @@ interface IState {
   user: IManagerUser;
   formModalVisible: boolean;
   detailModalVisible: boolean;
+  accessKeyModalVisible: boolean;
+  selectedUserId: number;
+  searchType: UserSearchType;
+  searchValue: string;
 }
 
 interface IManagerBatchUser extends IManagerUser {
@@ -96,6 +125,10 @@ class UserPage extends React.PureComponent<IProps, IState> {
     user: null,
     formModalVisible: false,
     detailModalVisible: false,
+    accessKeyModalVisible: false,
+    selectedUserId: null,
+    searchValue: undefined,
+    searchType: undefined,
   };
 
   private getPageColumns = (roles: any[]) => {
@@ -122,7 +155,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
         title: formatMessage({ id: 'odc.components.UserPage.Role', defaultMessage: '角色' }), // 角色
         dataIndex: 'roles',
         ellipsis: true,
-        width: 200,
+        width: 220,
         key: 'roles',
         filters: [{ name: <EmptyLabel />, id: 0 }].concat(roles ?? []).map(({ name, id }) => {
           return {
@@ -130,6 +163,14 @@ class UserPage extends React.PureComponent<IProps, IState> {
             value: id,
           };
         }),
+        onFilter: (value, record) => {
+          // 如果过滤值为0，表示选择"空"选项，匹配没有角色的用户
+          if (value === 0) {
+            return !record?.roles?.length;
+          }
+          // 检查用户是否包含选中的角色
+          return record?.roles?.some((role) => role.id === value);
+        },
         render: (roles) => {
           return <RoleList roles={roles} isShowIcon />;
         },
@@ -180,7 +221,12 @@ class UserPage extends React.PureComponent<IProps, IState> {
         ],
 
         render: (enabled, record) => {
-          const disabledOp = this.isAdminOrMe(record);
+          const canAcessUpdate = () =>
+            canAcess({
+              resourceIdentifier: IManagerResourceType.user,
+              action: actionTypes.update,
+            }).accessible;
+          const disabledOp = this.isMe(record) || !canAcessUpdate();
           return (
             <StatusSwitch
               disabled={disabledOp}
@@ -198,11 +244,11 @@ class UserPage extends React.PureComponent<IProps, IState> {
 
       {
         title: formatMessage({ id: 'odc.components.UserPage.Operation', defaultMessage: '操作' }), // 操作
-        width: 132,
+        width: 212,
         key: 'action',
         fixed: 'right' as FixedType,
         render: (value, record) => {
-          const disabledOp = this.isAdminOrMe(record);
+          const disabledOp = this.isMe(record);
           return (
             <Action.Group>
               <Action.Link
@@ -237,6 +283,25 @@ class UserPage extends React.PureComponent<IProps, IState> {
                       })
                       /* 编辑 */
                     }
+                  </Action.Link>
+                </Action.Group>
+              </Acess>
+              <Acess
+                {...createPermission(IManagerResourceType.user, actionTypes.update, record.id)}
+                key="accessKey"
+              >
+                <Action.Group>
+                  <Action.Link
+                    key="accessKey"
+                    disabled={disabledOp}
+                    onClick={async () => {
+                      this.openAccessKeyModal(record.id);
+                    }}
+                  >
+                    {formatMessage({
+                      id: 'src.page.Auth.User.C98D9F83',
+                      defaultMessage: '管理 AccessKey',
+                    })}
                   </Action.Link>
                 </Action.Group>
               </Acess>
@@ -301,6 +366,20 @@ class UserPage extends React.PureComponent<IProps, IState> {
     });
   };
 
+  private openAccessKeyModal = (userId: number) => {
+    this.setState({
+      accessKeyModalVisible: true,
+      selectedUserId: userId,
+    });
+  };
+
+  private handleCloseAccessKeyModal = () => {
+    this.setState({
+      accessKeyModalVisible: false,
+      selectedUserId: null,
+    });
+  };
+
   loadRoles = async () => {
     const roles = await getRoleList();
     this.setState({
@@ -309,13 +388,17 @@ class UserPage extends React.PureComponent<IProps, IState> {
   };
 
   private loadData = async (args: ITableLoadOptions = {}) => {
-    const { searchValue = '', filters, sorter, pagination, pageSize } = args ?? {};
+    const { filters, sorter, pagination, pageSize } = args ?? {};
     const { roleIds, enabled } = filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
     const data: Record<string, any> = {
-      name: searchValue,
-      accountName: searchValue,
+      name: [UserSearchType.name, UserSearchType.all].includes(this.state.searchType)
+        ? this.state.searchValue
+        : undefined,
+      accountName: [UserSearchType.accountName, UserSearchType.all].includes(this.state.searchType)
+        ? this.state.searchValue
+        : undefined,
       roleId: roleIds,
       enabled,
       page: current,
@@ -346,15 +429,11 @@ class UserPage extends React.PureComponent<IProps, IState> {
     this.tableRef.current.reload();
   };
 
-  private isAdminOrMe = (user: IManagerUser) => {
+  private isMe = (user: IManagerUser) => {
     const {
       userStore: { user: me },
     } = this.props;
-    const isAdmin = odc.appConfig.manage.user.isAdmin
-      ? odc.appConfig.manage.user.isAdmin(user)
-      : user?.builtIn && user?.accountName === 'admin';
-    const isMeUser = user?.id === me?.id;
-    return isAdmin || isMeUser;
+    return user?.id === me?.id;
   };
 
   private handleCreate = () => {
@@ -396,14 +475,45 @@ class UserPage extends React.PureComponent<IProps, IState> {
     });
   };
 
+  private handleSearch = ({
+    searchValue,
+    searchType,
+  }: {
+    searchValue: string;
+    searchType: UserSearchType;
+  }) => {
+    this.setState(
+      {
+        searchValue,
+        searchType,
+      },
+      () => {
+        this.loadData();
+      },
+    );
+  };
+
   componentDidMount() {
     this.loadRoles();
   }
 
   render() {
-    const { formModalVisible, detailModalVisible, editId, detailId, users, roles, user } =
-      this.state;
-    const disabledOp = this.isAdminOrMe(user);
+    const {
+      formModalVisible,
+      detailModalVisible,
+      accessKeyModalVisible,
+      editId,
+      detailId,
+      selectedUserId,
+      users,
+      roles,
+      user,
+    } = this.state;
+    const disabledOp = this.isMe(user);
+    const selectTypeOptions = Object.keys(UserSearchType).map((item) => ({
+      value: item,
+      label: UserSearchTypeTextMap[item],
+    }));
     const canAcessCreate = canAcess({
       resourceIdentifier: IManagerResourceType.user,
       action: actionTypes.create,
@@ -420,11 +530,31 @@ class UserPage extends React.PureComponent<IProps, IState> {
           enableResize
           titleContent={null}
           filterContent={{
-            searchPlaceholder: formatMessage({
-              id: 'odc.components.UserPage.EnterAUserOrAccount',
-              defaultMessage: '请输入用户/账号搜索',
-            }),
-            /* 请输入用户/账号搜索 */
+            enabledSearch: false,
+            filters: [
+              {
+                render: (params) => {
+                  return (
+                    <InputSelect
+                      searchValue={this.state.searchValue}
+                      searchType={this.state.searchType}
+                      selectTypeOptions={selectTypeOptions}
+                      onSelect={({ searchValue, searchType }) => {
+                        this.setState(
+                          {
+                            searchValue,
+                            searchType: searchType as UserSearchType,
+                          },
+                          () => {
+                            this.loadData(params);
+                          },
+                        );
+                      }}
+                    />
+                  );
+                },
+              },
+            ],
           }}
           operationContent={
             canAcessCreate
@@ -653,6 +783,12 @@ class UserPage extends React.PureComponent<IProps, IState> {
               handleCloseAndReload={this.handleCloseAndReload}
             />
           )}
+        />
+
+        <AccessKeyManageModal
+          visible={accessKeyModalVisible}
+          userId={selectedUserId}
+          onClose={this.handleCloseAccessKeyModal}
         />
       </>
     );
