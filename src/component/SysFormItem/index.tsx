@@ -20,7 +20,7 @@ import { EnableOverwriteSysConfig } from '@/constant';
 import { IConnection } from '@/d.ts';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import { useUpdate } from 'ahooks';
 import { Checkbox, Col, Form, Input, message, Row, Space, Tooltip, Typography } from 'antd';
 import { FormInstance } from 'antd/es/form';

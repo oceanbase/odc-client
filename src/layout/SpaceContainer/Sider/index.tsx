@@ -21,6 +21,8 @@ import odc from '@/plugins/odc';
 import { TaskStore } from '@/store/task';
 import { ReactComponent as LinkOutlined } from '@/svgr/icon_connection.svg';
 import { ReactComponent as TaskSvg } from '@/svgr/icon_task.svg';
+import { ReactComponent as NewOpenSvg } from '@/svgr/newopen.svg';
+import { ReactComponent as ScheduleSvg } from '@/svgr/icon_schedule.svg';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
@@ -29,8 +31,10 @@ import Icon, {
   BulbOutlined,
   CaretLeftOutlined,
   CaretRightOutlined,
+  CodeOutlined,
   ControlOutlined,
   ForkOutlined,
+  HomeOutlined,
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
@@ -47,6 +51,8 @@ import MenuItem from './MenuItem';
 import MineItem from './MineItem';
 import SettingItem from './SettingItem';
 import SpaceSelect from './SpaceSelect';
+import { gotoSQLWorkspace } from '@/util/route';
+import setting from '@/store/setting';
 
 interface IProps {
   taskStore?: TaskStore;
@@ -58,8 +64,10 @@ const Sider: React.FC<IProps> = function (props) {
   const location = useLocation();
   const selected = location?.pathname?.split('/')[1];
   const mentItemGap = collapsed ? 12 : 12;
-  const _count = taskStore.pendingApprovalInstanceIds?.length ?? 0;
-  const count = !isClient() ? _count : 0;
+  const _pendingApprovalInstanceIdsCount = taskStore.pendingApprovalInstanceIds?.length ?? 0;
+  const pendingApprovalInstanceIdsCount = !isClient() ? _pendingApprovalInstanceIdsCount : 0;
+  const _pendingApprovalScheduleIdsCount = taskStore.pendingApprovalScheduleIds?.length ?? 0;
+  const pendingApprovalScheduleIdsCount = !isClient() ? _pendingApprovalScheduleIdsCount : 0;
 
   function setCollapsed(v: boolean) {
     tracert.click(v ? 'a3112.b46782.c330851.d367368' : 'a3112.b46782.c330851.d367367');
@@ -92,12 +100,21 @@ const Sider: React.FC<IProps> = function (props) {
           </>
         )}
 
-        <Space
-          size={mentItemGap}
-          direction="vertical"
-          className={styles.menu1}
-          style={{ width: '100%' }}
-        >
+        <Space size={mentItemGap} direction="vertical" style={{ width: '100%' }}>
+          {setting.enableWorkbench ? (
+            <Link to={`/${IPageType.Console}`}>
+              <MenuItem
+                key={IPageType.Console}
+                selected={selected === IPageType.Console}
+                icon={HomeOutlined}
+                collapsed={collapsed}
+                label={formatMessage({
+                  id: 'src.layout.SpaceContainer.Sider.DC8F533F',
+                  defaultMessage: '工作台',
+                })}
+              />
+            </Link>
+          ) : null}
           <Link to={`/${IPageType.Project}`}>
             <MenuItem
               key={IPageType.Project}
@@ -116,7 +133,7 @@ const Sider: React.FC<IProps> = function (props) {
               selected={selected === IPageType.Task}
               icon={TaskSvg}
               collapsed={collapsed}
-              showDot={!!count}
+              showDot={!!pendingApprovalInstanceIdsCount}
               label={
                 collapsed ? (
                   formatMessage({
@@ -124,14 +141,50 @@ const Sider: React.FC<IProps> = function (props) {
                     defaultMessage: '工单',
                   }) /*工单*/
                 ) : (
-                  <Badge showZero={false} count={count} overflowCount={100} offset={[-8, 5]}>
-                    <div style={{ width: '100px' }}>
+                  <Badge
+                    showZero={false}
+                    count={pendingApprovalInstanceIdsCount}
+                    overflowCount={100}
+                    offset={[-8, 5]}
+                  >
+                    <div style={{ width: '100px' }} className={styles.ticket}>
                       {
                         formatMessage({
                           id: 'odc.SpaceContainer.Sider.Ticket',
                           defaultMessage: '工单',
                         }) /*工单*/
                       }
+                    </div>
+                  </Badge>
+                )
+              }
+            />
+          </Link>
+          <Link to={`/${IPageType.Schedule}`}>
+            <MenuItem
+              key={IPageType.Schedule}
+              selected={selected === IPageType.Schedule}
+              icon={ScheduleSvg}
+              collapsed={collapsed}
+              showDot={!!pendingApprovalScheduleIdsCount}
+              label={
+                collapsed ? (
+                  formatMessage({
+                    id: 'src.layout.SpaceContainer.Sider.1E2E8F19',
+                    defaultMessage: '作业',
+                  })
+                ) : (
+                  <Badge
+                    showZero={false}
+                    count={pendingApprovalScheduleIdsCount}
+                    overflowCount={100}
+                    offset={[-8, 5]}
+                  >
+                    <div style={{ width: '100px' }} className={styles.ticket}>
+                      {formatMessage({
+                        id: 'src.layout.SpaceContainer.Sider.A72CECD2',
+                        defaultMessage: '作业',
+                      })}
                     </div>
                   </Badge>
                 )
@@ -194,9 +247,7 @@ const Sider: React.FC<IProps> = function (props) {
           </Link>
           {odc.appConfig?.manage?.integration?.enable ? (
             <Acess {...createPermission(IManagerResourceType.integration, actionTypes.read)}>
-              <Link
-                to={`/${IPageType.ExternalIntegration}/${IPageType.ExternalIntegration_Approval}`}
-              >
+              <Link to={`/${IPageType.ExternalIntegration}/${IPageType.Large_Model}`}>
                 <MenuItem
                   key={IPageType.ExternalIntegration}
                   selected={selected === IPageType.ExternalIntegration}
@@ -211,6 +262,25 @@ const Sider: React.FC<IProps> = function (props) {
             </Acess>
           ) : null}
         </Space>
+        <Divider style={{ margin: '6px 0' }} />
+        <MenuItem
+          onClick={() => {
+            gotoSQLWorkspace();
+          }}
+          key={'newsqlconsole'}
+          selected={false}
+          icon={CodeOutlined}
+          collapsed={collapsed}
+          label={
+            <span>
+              {formatMessage({ id: 'src.page.Project.8635398D', defaultMessage: 'SQL 控制台' })}
+              <Icon
+                style={{ marginLeft: 8, color: 'var(--text-color-hint)' }}
+                component={NewOpenSvg}
+              />
+            </span>
+          }
+        />
       </div>
       <Space size={mentItemGap} direction="vertical" className={styles.bottom}>
         <SettingItem collapsed={collapsed} />

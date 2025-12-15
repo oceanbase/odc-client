@@ -1,0 +1,77 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { formatMessage } from '@/util/intl';
+import setting, { getCurrentOrganizationId } from '@/store/setting';
+import { getSystemConfig } from '@/common/network/other';
+
+export const validForQueryQueryNumber = (value) => {
+  const sessionQueryLimit = sessionStorage.getItem(`maxQueryLimit-${getCurrentOrganizationId()}`);
+  const queryLimit = setting.spaceConfigurations?.['odc.sqlexecute.default.maxQueryLimit'];
+  if (!value) {
+    return Promise.reject(
+      formatMessage({
+        id: 'src.component.ODCSetting.B7CA4CA1',
+        defaultMessage: '请输入查询条数默认值',
+      }),
+    );
+  }
+  if (sessionQueryLimit) {
+    if (value > Number(sessionQueryLimit)) {
+      return Promise.reject(
+        formatMessage(
+          { id: 'src.component.ODCSetting.5127321B', defaultMessage: '不超过{sessionQueryLimit}' },
+          { sessionQueryLimit },
+        ),
+      );
+    } else {
+      return Promise.resolve();
+    }
+  }
+  if (value > Number(queryLimit)) {
+    return Promise.reject(
+      formatMessage(
+        { id: 'src.component.ODCSetting.A8E22CC2', defaultMessage: '不超过{queryLimit}' },
+        { queryLimit },
+      ),
+    );
+  }
+  return Promise.resolve();
+};
+
+export const validForQueryLimit = async (value) => {
+  const res = await getSystemConfig();
+  const maxResultsetRows =
+    parseInt(res?.['odc.session.sql-execute.max-result-set-rows']) || Number.MAX_SAFE_INTEGER;
+
+  if (value > maxResultsetRows) {
+    return Promise.reject(
+      formatMessage(
+        { id: 'src.component.ODCSetting.9651E837', defaultMessage: '不超过{maxResultsetRows}' },
+        { maxResultsetRows },
+      ),
+    );
+  }
+  if (!value) {
+    return Promise.reject(
+      formatMessage({
+        id: 'src.component.ODCSetting.DD41DED4',
+        defaultMessage: '请输入查询条数上限',
+      }),
+    );
+  }
+  return Promise.resolve();
+};

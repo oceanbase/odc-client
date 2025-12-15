@@ -21,7 +21,7 @@ import { DbObjectType, DragInsertType } from '@/d.ts/index';
 import type { ModalStore } from '@/store/modal';
 import sessionManager from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
-import { SettingStore } from '@/store/setting';
+import setting, { SettingStore } from '@/store/setting';
 import { formatMessage } from '@/util/intl';
 import { getQuoteTableName } from '@/util/utils';
 import { Button, Checkbox, message, Modal, Radio, Space } from 'antd';
@@ -29,6 +29,7 @@ import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import copy from 'copy-to-clipboard';
 import { inject, observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
+import { getMaterializedView } from '@/common/network/materializedView/index';
 
 export const CLOSE_INSERT_PROMPT_KEY = 'CLOSE_INSERT_PROMPT';
 
@@ -78,8 +79,8 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
           <Button
             type="link"
             size="small"
-            onClick={() => {
-              modalStore.changeOdcSettingVisible(true);
+            onClick={async () => {
+              await modalStore.changeOdcSettingVisible(true);
             }}
           >
             {
@@ -164,11 +165,19 @@ const TemplateInsertModal: React.FC<IProps> = function (props) {
           }}
         >
           <Space direction="vertical">
-            <Radio value={DragInsertType.NAME}>{DragInsertTypeText[DragInsertType.NAME]}</Radio>
-            <Radio value={DragInsertType.SELECT}>{DragInsertTypeText[DragInsertType.SELECT]}</Radio>
-            <Radio value={DragInsertType.INSERT}>{DragInsertTypeText[DragInsertType.INSERT]}</Radio>
-            <Radio value={DragInsertType.UPDATE}>{DragInsertTypeText[DragInsertType.UPDATE]}</Radio>
-            <Radio value={DragInsertType.DELETE}>{DragInsertTypeText[DragInsertType.DELETE]}</Radio>
+            <Radio value={DragInsertType.NAME}>{DragInsertTypeText()[DragInsertType.NAME]}</Radio>
+            <Radio value={DragInsertType.SELECT}>
+              {DragInsertTypeText()[DragInsertType.SELECT]}
+            </Radio>
+            <Radio value={DragInsertType.INSERT}>
+              {DragInsertTypeText()[DragInsertType.INSERT]}
+            </Radio>
+            <Radio value={DragInsertType.UPDATE}>
+              {DragInsertTypeText()[DragInsertType.UPDATE]}
+            </Radio>
+            <Radio value={DragInsertType.DELETE}>
+              {DragInsertTypeText()[DragInsertType.DELETE]}
+            </Radio>
           </Space>
         </Radio.Group>
       </Space>
@@ -201,6 +210,21 @@ async function getColumns(
         (await getView(name, sessionId, dbName))?.columns
           ?.map((column) => {
             return getQuoteTableName(column.columnName, dbSession?.connection?.dialectType);
+          })
+          .join(', ') || ''
+      );
+    }
+    case DbObjectType.materialized_view: {
+      return (
+        (
+          await getMaterializedView({
+            materializedViewName: name,
+            sessionId,
+            dbName,
+          })
+        )?.columns
+          ?.map((column) => {
+            return getQuoteTableName(column.name, dbSession?.connection?.dialectType);
           })
           .join(', ') || ''
       );

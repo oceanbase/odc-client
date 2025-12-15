@@ -24,6 +24,7 @@ import React, { useEffect, useState } from 'react';
 import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
 import EditPropertyComponentMap from './EditPropertyComponent';
 import styles from './index.less';
+import setting from '@/store/setting';
 interface EditRuleDrawerProps {
   editRuleDrawerVisible: boolean;
   ruleType: RuleType;
@@ -97,8 +98,9 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         level,
         enabled,
       };
+      setting.getSpaceConfig();
       propertyMetadatas.forEach((pm, index) => {
-        newInitData[`activeKey${index}`] = properties[pm.name];
+        newInitData[`activeKey${index}`] = properties?.[pm.name];
         if (pm?.name === SqlInterceptorKey) {
           options.unshift({
             label: formatMessage({
@@ -133,7 +135,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         }) //编辑
       }
       width={480}
-      className={styles.modal}
+      rootClassName={styles.modal}
       onClose={onClose}
       destroyOnClose={true}
       footer={
@@ -202,7 +204,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         initialValues={{
           level: 0,
           appliedDialectTypes: [],
-          activeKey: rule?.properties[rule?.metadata?.name],
+          activeKey: rule?.properties?.[rule?.metadata?.name],
         }}
       >
         <Form.Item
@@ -223,20 +225,20 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
               const sdt2 = rule?.metadata?.supportedDialectTypes[2 * index + 1];
               const inRange = 2 * index + 1 < rule?.metadata?.supportedDialectTypes?.length; // inRange 为false，已经超出数组长度，不渲染多余的空checkbox
               return (
-                <Row>
-                  <Col span={12}>
+                <div style={{ display: 'flex', width: '100%' }}>
+                  <div style={{ flex: 1 }}>
                     <Checkbox value={sdt1} key={2 * index}>
                       {sdt1}
                     </Checkbox>
-                  </Col>
+                  </div>
                   {inRange && (
-                    <Col span={12}>
+                    <div style={{ flex: 1 }}>
                       <Checkbox value={sdt2} key={2 * index + 1}>
                         {sdt2}
                       </Checkbox>
-                    </Col>
+                    </div>
                   )}
-                </Row>
+                </div>
               );
             })}
           </Checkbox.Group>
@@ -281,7 +283,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
                     defaultMessage: '允许执行',
                   })} /*允许执行*/
                 >
-                  {RiskLevelTextMap[RiskLevelEnum.DEFAULT]}
+                  {RiskLevelTextMap()[RiskLevelEnum.DEFAULT]}
                 </HelpDoc>
               </Radio>
               <Radio value={RiskLevelEnum.SUGGEST}>
@@ -292,7 +294,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
                     defaultMessage: '执行之前需要审批',
                   })} /*执行之前需要审批*/
                 >
-                  {RiskLevelTextMap[RiskLevelEnum.SUGGEST]}
+                  {RiskLevelTextMap()[RiskLevelEnum.SUGGEST]}
                 </HelpDoc>
               </Radio>
               <Radio value={RiskLevelEnum.MUST}>
@@ -303,7 +305,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
                     defaultMessage: '禁止执行，无法发起审批',
                   })} /*禁止执行，无法发起审批*/
                 >
-                  {RiskLevelTextMap[RiskLevelEnum.MUST]}
+                  {RiskLevelTextMap()[RiskLevelEnum.MUST]}
                 </HelpDoc>
               </Radio>
             </Radio.Group>

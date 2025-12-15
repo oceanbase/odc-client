@@ -912,6 +912,15 @@ export const SAMLPartForm: React.FC<{
 }) => {
   const metadataUriValue = Form.useWatch(['ssoParameter', 'metadataUri'], formConfig);
   const providerEntityIdValue = Form.useWatch(['ssoParameter', 'providerEntityId'], formConfig);
+
+  const getProviderEntityId = () => {
+    if (isEdit) {
+      return !!providerEntityIdValue;
+    } else {
+      return !metadataUriValue;
+    }
+  };
+
   return (
     <>
       <Typography.Title level={5}>
@@ -1036,22 +1045,11 @@ export const SAMLPartForm: React.FC<{
           })}
           rules={[
             {
-              required: isEdit ? providerEntityIdValue : showExtraConfigForSAML ? true : false,
+              required: getProviderEntityId(),
             },
           ]}
         >
-          <TextArea
-            autoSize={{
-              minRows: 2,
-              maxRows: 3,
-            }}
-            disabled
-            placeholder={formatMessage({
-              id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.SSOForm.AA5602CF',
-              defaultMessage:
-                '系统自动生成，{baseUrl}/saml2/service-provider-metadata/{registrationId}',
-            })}
-          />
+          <Input style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item
           name={['ssoParameter', 'singlesignon']}

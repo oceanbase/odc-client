@@ -16,6 +16,7 @@
 
 import { getProjectWithErrorCatch } from '@/common/network/project';
 import login from '@/store/login';
+import setting from '@/store/setting';
 import logger from '@/util/logger';
 import { safeParseJson } from '@/util/utils';
 import { history } from '@umijs/max';
@@ -49,13 +50,14 @@ export function setDefaultProject(projectId: number) {
   window.localStorage.setItem(key, projectId?.toString());
 }
 
-export async function toDefaultProjectPage() {
-  const projectId = getDefaultProject();
-  if (!projectId) {
-    history.push('/project');
+export function getDefaultProjectPage() {
+  if (setting.enableWorkbench) {
+    return '/console';
   } else {
-    const project = await getProjectWithErrorCatch(projectId);
-    const isProjectAvailable = project && !project?.archived;
-    isProjectAvailable ? history.push(`/project/${projectId}/database`) : history.push('/project');
+    return '/project';
   }
+}
+
+export async function toDefaultProjectPage() {
+  history.push(getDefaultProjectPage());
 }

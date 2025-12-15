@@ -20,13 +20,33 @@ const jarUrl = `odc-build/${pkg.version}/jar/odc-slim.jar`;
 const pluginUrl = `odc-build/${pkg.version}/plugins`;
 const startersUrl = `odc-build/${pkg.version}/starters`;
 const modulesUrl = `odc-build/${pkg.version}/modules`;
-const { oss } = require('./util');
+const { oss, download } = require('./util');
 const isSkipJar = process.env.ODC_BUILD_SKIP_JAR;
+
+const baseUrl = "https://odc-front.oss-cn-beijing.aliyuncs.com/";
 
 exports.run = async function () {
   if (isSkipJar) {
     return true;
   }
+  const [isSuccess1, isSuccess2] = await Promise.all([
+    download(
+    baseUrl + `library/h2/h2-v1.jar`,
+    'libraries/script',
+    'h2-v1.jar',
+  ),
+  download(
+    baseUrl + `library/h2/h2-v2.jar`,
+    'libraries/script',
+    'h2-v2.jar',
+  )
+  ])
+  if (!isSuccess1 || !isSuccess2) {
+    process.exit(1);
+  }
+  console.log('h2-v1.jar and h2-v2.jar download success')
+
+
   const plugins = await oss.getOSSFolderFiles(pluginUrl)
   console.log(plugins)
   for (let plugin of plugins) {

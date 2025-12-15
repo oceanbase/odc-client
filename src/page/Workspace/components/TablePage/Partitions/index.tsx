@@ -15,7 +15,7 @@
  */
 
 import Toolbar from '@/component/Toolbar';
-import { IPartitionType } from '@/d.ts';
+import { ConnectionMode, IPartitionType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { DataGridRef } from '@oceanbase-odc/ob-react-data-grid';
@@ -158,6 +158,23 @@ const TablePartitions: React.FC<IProps> = function ({}) {
       : null,
   ]?.filter(Boolean);
 
+  const getSingleListPartitionKeyValue = (item) => item?.map((item) => item?.value);
+  const getMultiListPartitionKeyValue = (columns, item) =>
+    item.map((value) => {
+      return columns.reduce((prev, current, index) => {
+        prev[current.columnName] = item.value;
+        return prev;
+      }, {});
+    });
+  const getSingleRangePartitionKeyValue = (item) => {
+    return item.value;
+  };
+  const getMultiRangePartitionKeyValue = (columns, item) =>
+    columns.reduce((prev, current) => {
+      prev[current.columnName] = item.value;
+      return prev;
+    }, {});
+
   async function handleAddColumn() {
     const values = await addPartitionRef.current?.addNewPartitions();
     if (values) {
@@ -168,7 +185,21 @@ const TablePartitions: React.FC<IProps> = function ({}) {
           (newPartitions as ITableListPartition).partitions = (
             newPartitions as ITableListPartition
           ).partitions.concat(
-            values.partitions?.map((part) => Object.assign({ key: generateUniqKey() }, part)),
+            values.partitions?.map((part) => {
+              return Object.assign(
+                { key: generateUniqKey() },
+                {
+                  ...part,
+                  valueForColumnDisplay:
+                    session.odcDatabase?.dataSource?.dialectType === ConnectionMode.OB_ORACLE
+                      ? getMultiListPartitionKeyValue(
+                          (partitions as ITableListPartition)?.columns,
+                          part,
+                        )
+                      : getSingleListPartitionKeyValue(part),
+                },
+              );
+            }),
           );
           setEditPartitions(newPartitions);
           return;
@@ -177,7 +208,21 @@ const TablePartitions: React.FC<IProps> = function ({}) {
           (newPartitions as ITableRangePartition).partitions = (
             newPartitions as ITableRangePartition
           ).partitions.concat(
-            values.partitions?.map((part) => Object.assign({ key: generateUniqKey() }, part)),
+            values.partitions?.map((part) => {
+              return Object.assign(
+                { key: generateUniqKey() },
+                {
+                  ...part,
+                  valueForColumnDisplay:
+                    session.odcDatabase?.dataSource?.dialectType === ConnectionMode.OB_ORACLE
+                      ? getMultiRangePartitionKeyValue(
+                          (partitions as ITableRangePartition)?.columns,
+                          part,
+                        )
+                      : getSingleRangePartitionKeyValue(part),
+                },
+              );
+            }),
           );
           setEditPartitions(newPartitions);
           return;

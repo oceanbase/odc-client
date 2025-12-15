@@ -16,7 +16,7 @@
 
 import { haveOCP } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { checkNumberRange, validTrimEmptyWithWarn } from '@/util/valid';
+import { checkNumberRange, validTrimEmptyWithWarn } from '@/util/ui/validRule';
 import { Col, Form, Input, Row, Select, Space } from 'antd';
 import { isNil } from 'lodash';
 import React, { useContext } from 'react';
@@ -209,7 +209,7 @@ const AddressItems: React.FC<IProps> = function (props) {
                         <div style={{ width: '30%' }}>
                           <Select
                             value={type}
-                            style={{ width: '100%' }}
+                            style={{ width: '100%', height: 28 }}
                             size="small"
                             options={[
                               {

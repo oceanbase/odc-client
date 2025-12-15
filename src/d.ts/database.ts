@@ -103,6 +103,7 @@ export interface IDatabase {
   type: DBType;
   connectType?: ConnectType;
   alias?: string;
+  remark?: string;
 }
 
 /**
@@ -132,4 +133,28 @@ export enum PreviewLogicalTableTopologiesErrorEnum {
   LogicalTableExpressionNotPositiveStep = 'LogicalTableExpressionNotPositiveStep',
   LogicalTableExpressionRangeStartGreaterThanEnd = 'LogicalTableExpressionRangeStartGreaterThanEnd',
   LogicalTableExpressionNotValidIntegerRange = 'LogicalTableExpressionNotValidIntegerRange',
+}
+
+export enum DatabaseGroup {
+  /** 不分组 */
+  none = 'NONE',
+  /** 项目 */
+  project = 'PROJECT',
+  /** 按类型 */
+  connectType = 'CONNECTTYPE',
+  /** 按环境 */
+  environment = 'ENVIRONMENT',
+  /** 按数据源 */
+  dataSource = 'DATASOURCE',
+  /** 按集群 */
+  cluster = 'CLUSTER',
+  /** 按租户 */
+  tenant = 'Tenant',
+}
+
+export enum DatabaseSearchType {
+  SCHEMA_NAME = 'SCHEMA_NAME',
+  DATASOURCE_NAME = 'DATASOURCE_NAME',
+  CLUSTER_NAME = 'CLUSTER_NAME',
+  TENANT_NAME = 'TENANT_NAME',
 }

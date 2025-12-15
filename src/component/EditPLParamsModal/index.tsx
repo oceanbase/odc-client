@@ -20,7 +20,7 @@ import { useEffect, useState } from 'react';
 import { ConnectionMode, IFormatPLSchema, IPLParam } from '@/d.ts';
 import { Form, FormInstance, FormProps, message, Modal, Table } from 'antd';
 
-import { getPLDebugExecuteSql } from '@/util/sql';
+import { getPLDebugExecuteSql } from '@/util/data/sql';
 import CommonIDE from '../CommonIDE';
 import styles from './index.less';
 import ValueInput, { ValueList } from './ValueInput';

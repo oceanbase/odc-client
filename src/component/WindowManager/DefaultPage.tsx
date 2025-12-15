@@ -59,7 +59,7 @@ export default function DefaultPage() {
       </Typography.Title>
       <div
         onClick={() => {
-          openNewSQLPage(null, 'datasource');
+          openNewSQLPage(null);
           tracert.click('a3112.b41896.c330987.d367617');
         }}
         className={styles.item}
@@ -79,7 +79,7 @@ export default function DefaultPage() {
       <div
         onClick={() => {
           tracert.click('a3112.b41896.c330987.d367618');
-          openNewDefaultPLPage(null, null, null, 'datasource');
+          openNewDefaultPLPage(null, null, null);
         }}
         className={styles.item}
       >
@@ -117,11 +117,15 @@ export default function DefaultPage() {
       <div
         onClick={() => {
           tracert.click('a3112.b41896.c330987.d367620');
-          setting.setTheme(
+          const value =
             setting.theme?.key === EThemeConfigKey.ODC_WHITE
               ? EThemeConfigKey.ODC_DARK
-              : EThemeConfigKey.ODC_WHITE,
-          );
+              : EThemeConfigKey.ODC_WHITE;
+          setting.setTheme(value);
+          setting.updateOneUserConfig({
+            key: 'odc.appearance.scheme',
+            value,
+          });
         }}
         className={styles.item}
       >

@@ -26,7 +26,7 @@ export default function Delete({
   return (
     <DeleteOutlined
       onClick={onClick}
-      style={{ fontSize: size, cursor: 'pointer', color: 'var(--icon-color-disable)' }}
+      style={{ fontSize: size, cursor: 'pointer', color: 'var(--icon-color-normal)' }}
     />
   );
 }

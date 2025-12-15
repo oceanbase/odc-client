@@ -43,6 +43,7 @@ import { ReactComponent as OBSSvg } from '@/svgr/OBS.svg';
 import { ReactComponent as DBOBSSvg } from '@/svgr/obs_file.svg';
 import { ReactComponent as S3Svg } from '@/svgr/S3.svg';
 import { ReactComponent as DBS3Svg } from '@/svgr/S3_file.svg';
+import odc from '@/plugins/odc';
 
 export const _types: Map<
   IDataSourceType,
@@ -158,6 +159,9 @@ function register(
 ) {
   const connectTypes: ConnectType[] = Object.entries(items)
     .map(([key, value]) => {
+      if (odc.datasourceSupport && !odc.datasourceSupport?.(key as ConnectType, value)) {
+        return null;
+      }
       if (value?.disable) {
         return null;
       }
@@ -186,16 +190,18 @@ function register(
   _types.set(dataSourceType, obj);
 }
 
-register(IDataSourceType.OceanBase, obOracle);
-register(IDataSourceType.OceanBase, obMySQL);
-register(IDataSourceType.MySQL, MySQL);
-register(IDataSourceType.Doris, Doris);
-register(IDataSourceType.Oracle, oracle);
-register(IDataSourceType.PG, PG);
-register(IDataSourceType.ALIYUNOSS, FileSystem.ALIYUN);
-register(IDataSourceType.AWSS3, FileSystem.AWSS3);
-register(IDataSourceType.HUAWEI, FileSystem.HUAWEI);
-register(IDataSourceType.QCLOUD, FileSystem.QCLOUD);
+function initDatasource() {
+  register(IDataSourceType.OceanBase, obOracle);
+  register(IDataSourceType.OceanBase, obMySQL);
+  register(IDataSourceType.MySQL, MySQL);
+  register(IDataSourceType.Doris, Doris);
+  register(IDataSourceType.Oracle, oracle);
+  register(IDataSourceType.PG, PG);
+  register(IDataSourceType.ALIYUNOSS, FileSystem.ALIYUN);
+  register(IDataSourceType.AWSS3, FileSystem.AWSS3);
+  register(IDataSourceType.HUAWEI, FileSystem.HUAWEI);
+  register(IDataSourceType.QCLOUD, FileSystem.QCLOUD);
+}
 
 function getAllConnectTypes(ds?: IDataSourceType): ConnectType[] {
   if (!ds) {
@@ -213,7 +219,6 @@ function getBooleanOptionsType(): string[] {
 }
 
 function getIsDBAvailableInDataSourceTypes(): string[] {
-  console.log(getBooleanOptionsType());
   return getBooleanOptionsType();
 }
 
@@ -265,7 +270,17 @@ function getDefaultConnectType(ds: IDataSourceType) {
   return _types.get(ds)?.defaultConnectType;
 }
 
+function isFileSystemSupport() {
+  for (const [dsType, dsConfig] of _types) {
+    if (Object.values(dsConfig.config)?.some((item) => item?.isFileSystem)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export {
+  initDatasource,
   getAllConnectTypes,
   getDataSourceModeConfig,
   getDataSourceModeConfigByConnectionMode,
@@ -277,4 +292,5 @@ export {
   getAllDBTypes,
   getIsDBAvailableInDataSourceTypes,
   getIsDBBelongsToProjectsInDataSourceTypes,
+  isFileSystemSupport,
 };

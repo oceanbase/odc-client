@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import moment from 'moment';
+import dayjs from 'dayjs';
 import React from 'react';
 
 function getTimeDurationText(begin: number, end: number) {
-  const dr = moment.duration(end - begin, 'ms');
+  const dr = dayjs.duration(end - begin, 'ms');
   let seconds = dr.get('seconds');
   const min = dr.get('minutes');
   const hours = dr.get('hours');

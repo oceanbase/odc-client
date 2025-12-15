@@ -17,6 +17,7 @@
 import { formatMessage } from '@/util/intl';
 import React, { useContext, useEffect } from 'react';
 import SessionContext from '../context';
+import { DatabaseGroup } from '@/d.ts/database';
 
 import ConnectionPopover from '@/component/ConnectionPopover';
 import Icon, { AimOutlined, DownOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -35,19 +36,21 @@ import login from '@/store/login';
 import tracert from '@/util/tracert';
 import classNames from 'classnames';
 import SessionDropdown from './SessionDropdown';
+import { getShouldExpandedKeysByPage } from '@/page/Workspace/SideBar/ResourceTree/const';
+import { inject, observer } from 'mobx-react';
+import type { PageStore } from '@/store/page';
 
-export default function SessionSelect({
-  readonly,
-  feature,
-  supportLocation,
-  isIncludeLogicalDb = true,
-}: {
+interface IProps {
   readonly?: boolean;
   dialectTypes?: ConnectionMode[];
   feature?: keyof IDataSourceModeConfig['features'];
   supportLocation?: boolean;
   isIncludeLogicalDb?: boolean;
-}) {
+  pageStore?: PageStore;
+}
+
+const SessionSelect: React.FC<IProps> = (props) => {
+  const { readonly, feature, supportLocation, isIncludeLogicalDb = true, pageStore } = props;
   const context = useContext(SessionContext);
   const resourceTreeContext = useContext(ResourceTreeContext);
   const activityContext = useContext(ActivityBarContext);
@@ -57,10 +60,23 @@ export default function SessionSelect({
 
   function focusDataBase(e: React.MouseEvent) {
     const datasourceId = context?.session?.odcDatabase?.dataSource?.id || context?.datasourceId;
-    const databaseId = context?.session?.odcDatabase?.id;
     activityContext.setActiveKey(ActivityBarItemType.Database);
+    const obj = getShouldExpandedKeysByPage({
+      page: pageStore.activePage,
+      db: context?.session?.odcDatabase,
+      groupMode: resourceTreeContext.groupMode,
+      datasourceId,
+      databaseList: resourceTreeContext.databaseList,
+      setGroupMode: (group: DatabaseGroup) => {
+        resourceTreeContext.setGroupMode(group);
+      },
+    });
     resourceTreeContext.setSelectDatasourceId(datasourceId);
-    resourceTreeContext.setCurrentDatabaseId(databaseId);
+    resourceTreeContext.setShouldExpandedKeys(obj?.shouldExpandedKeys || []);
+    resourceTreeContext.setCurrentObject({
+      value: obj?.currentKey,
+      type: obj?.currentResourceNodeType,
+    });
     e.stopPropagation();
     e.preventDefault();
   }
@@ -86,7 +102,13 @@ export default function SessionSelect({
       <Popover
         overlayClassName={styles.pop}
         placement="bottomLeft"
-        content={<ConnectionPopover connection={context?.session?.connection} />}
+        content={
+          <ConnectionPopover
+            connection={context?.session?.connection}
+            database={context?.session?.odcDatabase}
+            showRemark
+          />
+        }
       >
         {fromDataSource ? (
           <Space style={{ lineHeight: '22px' }} className={styles.link} size={4}>
@@ -95,7 +117,9 @@ export default function SessionSelect({
               style={{ fontSize: 16, verticalAlign: 'middle', color: dsStyle?.icon?.color }}
             />
 
-            <span style={{ lineHeight: 1 }}>{context?.session?.connection?.name}</span>
+            <span style={{ lineHeight: 1, color: 'var(--text-color-primary)' }}>
+              {context?.session?.connection?.name}
+            </span>
             <DownOutlined />
           </Space>
         ) : (
@@ -122,7 +146,7 @@ export default function SessionSelect({
       >
         {login.isPrivateSpace() ? null : (
           <span className={styles.describeItem}>
-            <span>
+            <span className={styles.label}>
               {formatMessage({
                 id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.38EA55F4' /*项目：*/,
                 defaultMessage: '项目：',
@@ -141,7 +165,7 @@ export default function SessionSelect({
         )}
         {context?.session?.odcDatabase?.dataSource?.name && (
           <span className={styles.describeItem}>
-            <span>
+            <span className={styles.label}>
               {formatMessage({
                 id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.CD007EC1' /*数据源：*/,
                 defaultMessage: '数据源：',
@@ -176,7 +200,10 @@ export default function SessionSelect({
     return (
       <div className={styles.content}>
         {renderEnv()}
-        <SessionDropdown filters={{ feature, isIncludeLogicalDb }}>
+        <SessionDropdown
+          filters={{ feature, isIncludeLogicalDb }}
+          groupMode={resourceTreeContext.groupMode}
+        >
           <div>{databaseItem}</div>
         </SessionDropdown>
         <div>{aimItem}</div>
@@ -195,7 +222,7 @@ export default function SessionSelect({
           }}
           className={styles.line}
         >
-          <SessionDropdown>
+          <SessionDropdown groupMode={resourceTreeContext.groupMode}>
             <a>
               {
                 formatMessage({
@@ -227,4 +254,6 @@ export default function SessionSelect({
       )}
     </>
   );
-}
+};
+
+export default inject('pageStore')(observer(SessionSelect));

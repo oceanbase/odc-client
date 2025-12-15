@@ -59,7 +59,7 @@ export function ExternalTableTreeData(dbSession: SessionStore, database: IDataba
           return;
         }
         visited.add(table.info?.tableName);
-        const tableKey = `${database.id}-${dbSession?.database?.tableVersion}-${dbName}-externalTable-${table?.info?.tableName}`;
+        const tableKey = `${database.id}-${dbName}-externalTable-${table?.info?.tableName}`;
         let columnRoot: TreeDataNode;
 
         if (table.columns) {
@@ -107,7 +107,7 @@ export function ExternalTableTreeData(dbSession: SessionStore, database: IDataba
           type: ResourceNodeType.ExternalTable,
           data: table,
           dbObjectType: DbObjectType.table,
-          doubleClick(session, node, databaseFrom) {
+          doubleClick(session, node) {
             openExternalTableTableViewPage(
               table.info.tableName,
               TopTab.PROPS,

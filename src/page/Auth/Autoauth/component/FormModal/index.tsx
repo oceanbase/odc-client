@@ -27,7 +27,7 @@ import { projectRoleTextMap } from '@/page/Project/User';
 import odc from '@/plugins/odc';
 import { formatMessage, getLocalDocs } from '@/util/intl';
 import tracert from '@/util/tracert';
-import { validTrimEmptyWithWarn } from '@/util/valid';
+import { validTrimEmptyWithWarn } from '@/util/ui/validRule';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import type { RadioChangeEvent } from 'antd';
 import {
@@ -361,7 +361,7 @@ const FormModal: React.FC<IProps> = (props) => {
                 defaultMessage: '新建规则',
               }) //新建规则
         }
-        className={styles.autoAuth}
+        rootClassName={styles.autoAuth}
         footer={
           <Space>
             <Button onClick={handleCancel}>
@@ -570,7 +570,6 @@ const FormModal: React.FC<IProps> = (props) => {
                           defaultMessage: '授予角色',
                         }) /*授予角色*/
                       }
-
                       <Tooltip
                         title={formatMessage({
                           id: 'odc.components.FormAutoAuthModal.GrantRoleRelatedConnectionAccess',

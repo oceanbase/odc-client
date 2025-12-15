@@ -25,9 +25,9 @@ import {
   openPackageBodyPage,
   openPackageViewPage,
 } from '@/store/helper/page';
-import { triggerActionAfterPLPageCreated } from '@/util/events';
+import { triggerActionAfterPLPageCreated } from '@/util/communication/events';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import { QuestionCircleFilled } from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { ResourceNodeType } from '../../type';

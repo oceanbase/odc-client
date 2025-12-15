@@ -55,3 +55,50 @@ export interface IStructrueComparisonDetail {
   sourceObjectDdl: string;
   targetObjectDdl: string;
 }
+
+export enum TaskGroup {
+  Other = 'Other',
+  /** 数据导出 */
+  DataExport = 'DataExport',
+  /** 数据变更 */
+  DataChanges = 'DataChanges',
+  /** 权限申请 */
+  AccessRequest = 'AccessRequest',
+}
+
+export enum TaskActionsEnum {
+  /** 执行 */
+  EXECUTE = 'EXECUTE',
+  /** 通过 */
+  PASS = 'PASS',
+  /** 拒绝 */
+  REJECT = 'REJECT',
+  /** 重试 */
+  AGAIN = 'AGAIN',
+  /** 下载 */
+  DOWNLOAD_SQL = 'DOWNLOAD_SQL',
+
+  // 以下在列表页会放到下拉菜单里
+  /** 查看 */
+  VIEW = 'VIEW',
+  /** 克隆 */
+  CLONE = 'CLONE',
+  /** 分享 */
+  SHARE = 'SHARE',
+  /** 回滚 */
+  ROLLBACK = 'ROLLBACK',
+  /** 终止 */
+  STOP = 'STOP',
+
+  // 以下详情页才会展示
+  /** 下载 */
+  DOWNLOAD = 'DOWNLOAD',
+  /** 发起结构同步 */
+  STRUCTURE_COMPARISON = 'STRUCTURE_COMPARISON',
+  /** 打开文件夹 */
+  OPEN_LOCAL_FOLDER = 'OPEN_LOCAL_FOLDER',
+  /** 下载查询结果 */
+  DOWNLOAD_VIEW_RESULT = 'DOWNLOAD_VIEW_RESULT',
+  /** 查询结果 */
+  VIEW_RESULT = 'VIEW_RESULT',
+}

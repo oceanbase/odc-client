@@ -15,12 +15,16 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 import DisplayTable from '@/component/DisplayTable';
-import { intervalPrecisionOptions } from '@/component/Task/component/PartitionPolicyFormTable/configModal';
 import { IPartitionKeyConfig, PARTITION_KEY_INVOKER } from '@/d.ts';
-import { getFormatDateTime } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { Descriptions, Tooltip } from 'antd';
 import React from 'react';
 import styles from './index.less';
+import {
+  INCREAMENT_FIELD_TYPE,
+  increamentFieldTypeLabelMap,
+  intervalPrecisionOptions,
+} from '../PartitionPolicyFormTable/const';
 
 const getFromCurrentTimeLabel = (fromCurrentTime: boolean, baseTimestampMillis: number) => {
   const labels = [
@@ -67,6 +71,12 @@ const columns = [
       const interval = record?.partitionKeyInvokerParameters?.generateParameter?.interval;
       const intervalPrecision =
         record?.partitionKeyInvokerParameters?.generateParameter?.intervalPrecision;
+      const numberInterval =
+        record?.partitionKeyInvokerParameters?.generateParameter?.numberInterval;
+      const incrementFieldType =
+        record?.partitionKeyInvokerParameters?.generateParameter?.fieldType;
+      const incrementFieldTimeFormat =
+        record?.partitionKeyInvokerParameters?.generateParameter?.timeFormat;
       return (
         <Descriptions className={styles.rules} column={1} size="small">
           <Descriptions.Item
@@ -87,10 +97,20 @@ const columns = [
                   defaultMessage: '顺序递增',
                 })}
           </Descriptions.Item>
-          {[
-            PARTITION_KEY_INVOKER.TIME_INCREASING_GENERATOR,
-            PARTITION_KEY_INVOKER.HISTORICAL_PARTITION_PLAN_CREATE_GENERATOR,
-          ].includes(record?.partitionKeyInvoker) ? (
+          {!!incrementFieldType ? (
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyTable.D136FFC8',
+                defaultMessage: '含义',
+              })}
+            >
+              {increamentFieldTypeLabelMap[incrementFieldType]}
+              {incrementFieldTimeFormat ? `(${incrementFieldTimeFormat})` : null}
+            </Descriptions.Item>
+          ) : null}
+          {(!!record?.partitionKeyInvokerParameters?.generateParameter?.baseTimestampMillis ||
+            !!record?.partitionKeyInvokerParameters?.generateParameter?.fromCurrentTime) &&
+          incrementFieldType !== INCREAMENT_FIELD_TYPE.NUMBER ? (
             <Descriptions.Item
               label={
                 formatMessage({
@@ -104,7 +124,8 @@ const columns = [
                 record?.partitionKeyInvokerParameters?.generateParameter?.baseTimestampMillis,
               )}
             </Descriptions.Item>
-          ) : (
+          ) : null}
+          {!!record?.partitionKeyInvokerParameters?.generateParameter?.generateExpr ? (
             <Descriptions.Item
               label={
                 formatMessage({
@@ -119,8 +140,7 @@ const columns = [
                 {record?.partitionKeyInvokerParameters?.generateParameter?.generateExpr}
               </Tooltip>
             </Descriptions.Item>
-          )}
-
+          ) : null}
           {!!intervalGenerateExpr && (
             <Descriptions.Item
               label={
@@ -133,7 +153,16 @@ const columns = [
               {intervalGenerateExpr}
             </Descriptions.Item>
           )}
-
+          {!!numberInterval && (
+            <Descriptions.Item
+              label={formatMessage({
+                id: 'src.component.Task.component.PartitionPolicyTable.8AA131EB',
+                defaultMessage: '间隔(数值)',
+              })}
+            >
+              {numberInterval}
+            </Descriptions.Item>
+          )}
           {!!interval && (
             <Descriptions.Item
               label={

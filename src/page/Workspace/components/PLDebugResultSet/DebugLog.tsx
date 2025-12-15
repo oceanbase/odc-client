@@ -20,7 +20,7 @@ import { Debug } from '@/store/debug';
 import { formatMessage } from '@/util/intl';
 import { CloseCircleOutlined, ExclamationCircleFilled, InfoCircleFilled } from '@ant-design/icons';
 import { Empty } from 'antd';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import React from 'react';
 
 interface IProps {
@@ -53,7 +53,7 @@ const DebugLog: React.FC<IProps> = (props) => {
         defaultMessage: '时间',
       }),
       render(value) {
-        return moment(value - 0).format('YYYY-MM-DD HH:mm:ss');
+        return dayjs(value - 0).format('YYYY-MM-DD HH:mm:ss');
       },
     },
     {

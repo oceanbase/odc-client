@@ -18,15 +18,16 @@ import { formatMessage } from '@/util/intl';
 import { addTablePermissions } from '@/common/network/project';
 import {
   expireTimeOptions,
-  getExpireTime,
   permissionOptions,
-} from '@/component/Task/ApplyTablePermission/CreateModal';
+} from '@/component/Task/modals/ApplyTablePermission/CreateModal';
+import { getExpireTime } from '@/component/Task/helper';
+
 import TableSelecter from '@/component/Task/component/TableSelecter';
 import { groupTableIdsByDataBase } from '@/component/Task/component/TableSelecter/util';
 import { Button, Checkbox, DatePicker, Drawer, Form, Modal, Select, Space, message } from 'antd';
 import React, { useState } from 'react';
 import styles from './index.less';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const CheckboxGroup = Checkbox.Group;
 
@@ -75,7 +76,7 @@ const CreateModal: React.FC<IProps> = (props) => {
   };
 
   const disabledDate = (current) => {
-    return current && current < moment().subtract(1, 'days').endOf('day');
+    return current && current < dayjs().subtract(1, 'days').endOf('day');
   };
 
   const handleSubmit = () => {
@@ -106,6 +107,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         }
       })
       .catch((errorInfo) => {
+        form.scrollToField(errorInfo?.errorFields?.[0]?.name);
         console.error(JSON.stringify(errorInfo));
       });
   };
@@ -125,7 +127,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       </Button>
       <Drawer
         destroyOnClose
-        className={styles.createModal}
+        rootClassName={styles.createModal}
         width={816}
         title={formatMessage({
           id: 'src.page.Project.User.ManageModal.Table.CreateAuth.680C9CFF',

@@ -18,18 +18,21 @@ import { DbObjectType, INlsObject, ITable, ITableColumn, LobExt, RSModifyDataTyp
 import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import sessionManager from '@/store/sessionManager';
 import setting from '@/store/setting';
-import { getNlsValueKey } from '@/util/column';
+import { getNlsValueKey } from '@/util/database/column';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import request from '@/util/request';
-import { downloadFile, encodeObjName, getBlobValueKey } from '@/util/utils';
+import { getBlobValueKey } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
+import { encodeObjName } from '@/util/data/string';
 import { message } from 'antd';
 import { Base64 } from 'js-base64';
 import { isNil, toInteger } from 'lodash';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { generateDatabaseSid, generateTableSid } from '../pathUtil';
 import { convertServerTableToTable, convertTableToServerTable } from './helper';
 import { getLogicalTableDetail } from '@/common/network/logicalDatabase';
+import odc from '@/plugins/odc';
 export async function getTableColumnList(
   tableName: string,
   databaseName?: string,
@@ -119,11 +122,17 @@ export async function queryTableOrViewData(
   return res?.data;
 }
 
-export async function queryIdentities(types: string[], sessionId: string, dbName: string) {
+export async function queryIdentities(
+  types: string[],
+  sessionId: string,
+  dbName: string,
+  identityNameLike?: string,
+) {
   const sid = generateDatabaseSid(dbName, sessionId);
   const res = await request.get(`/api/v2/connect/sessions/${sid}/metadata/identities`, {
     params: {
       type: types?.join(','),
+      identityNameLike,
     },
   });
 
@@ -291,7 +300,7 @@ function wrapDataDML(
     if (isNil(nlsObject?.timestamp)) {
       return null;
     }
-    let time = moment(nlsObject.timestamp);
+    let time = dayjs(nlsObject.timestamp);
     let nano = (time.millisecond() * 1000000 + (toInteger(nlsObject?.nano) || 0))
       .toString()
       ?.padStart(9, '0');
@@ -382,7 +391,7 @@ export async function getDataObjectDownloadUrl(
     return donwloadUrl;
   } else {
     return (
-      window.ODCApiHost +
+      odc.appConfig.network?.baseUrl?.() +
       `/api/v2/datasource/sessions/${generateDatabaseSid(
         dbName,
         sessionId,

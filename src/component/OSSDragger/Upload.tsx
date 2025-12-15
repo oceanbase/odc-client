@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import setting from '@/store/setting';
-import { uploadFileToOSS } from '@/util/aliyun';
+import { uploadFileToOSS } from '@/common/network/aliyun';
 import { Upload } from 'antd';
 import { DraggerProps } from 'antd/lib/upload';
 import React from 'react';

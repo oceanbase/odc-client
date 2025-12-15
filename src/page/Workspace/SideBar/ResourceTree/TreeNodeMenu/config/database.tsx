@@ -16,21 +16,25 @@
 
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { syncObject } from '@/common/network/database';
-import { IManagerResourceType, TaskPageType, TaskType } from '@/d.ts';
+import { actionTypes, IManagerResourceType, TaskPageType, TaskType } from '@/d.ts';
 import { DatabasePermissionType, DBObjectSyncStatus, IDatabase } from '@/d.ts/database';
 import { openNewDefaultPLPage, openNewSQLPage, openOBClientPage } from '@/store/helper/page';
 import { default as login, default as userStore } from '@/store/login';
 import modal from '@/store/modal';
+import scheduleStore from '@/store/schedule';
 import setting from '@/store/setting';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
-import { getLocalFormatDateTime } from '@/util/utils';
-import { LoadingOutlined } from '@ant-design/icons';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
+import { LoadingOutlined, SearchOutlined } from '@ant-design/icons';
 import { message, Tooltip, Typography } from 'antd';
 import { ResourceNodeType } from '../../type';
 import { IMenuItemConfig } from '../type';
+import { ScheduleType } from '@/d.ts/schedule';
+import { SchedulePageMode } from '@/component/Schedule/interface';
+import { openGlobalSearch } from '../../const';
 
 const { Text } = Typography;
 
@@ -43,16 +47,16 @@ const isPrivateSpace = userStore?.isPrivateSpace();
  * @param menuNode 当前菜单名称
  */
 export const menuAccessWrap = (
-  needPermissionTypeList: DatabasePermissionType[],
-  permissionList: DatabasePermissionType[],
+  needPermissionTypeList: DatabasePermissionType[] = [],
+  permissionList: DatabasePermissionType[] = [],
   menuNode: React.ReactNode,
 ) => {
   /* 不需要权限控制 */
-  if (!needPermissionTypeList?.length) {
+  if (!needPermissionTypeList?.length || isPrivateSpace) {
     return menuNode;
   }
   /* 需要的每一个权限点都存在于当前拥有的权限中 */
-  if (needPermissionTypeList.every((element) => permissionList.includes(element))) {
+  if (needPermissionTypeList.every((element) => permissionList?.includes(element))) {
     return menuNode;
   }
   return (
@@ -81,10 +85,10 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         }), //打开 SQL 窗口
       ],
       ellipsis: true,
-      run(session, node, databaseFrom) {
+      run(session, node) {
         const database: IDatabase = node.data;
         tracert.click('a3112.b41896.c330992.d367627');
-        openNewSQLPage(node.cid, databaseFrom);
+        openNewSQLPage(node.cid);
       },
       isHide: (_, node) => {
         return isLogicalDatabase(node?.data);
@@ -106,9 +110,24 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
         );
       },
       ellipsis: true,
-      run(session, node, databaseFrom) {
+      run(session, node) {
         const database: IDatabase = node.data;
-        openNewDefaultPLPage(null, node.cid, database?.name, databaseFrom);
+        openNewDefaultPLPage(null, node.cid, database?.name);
+      },
+    },
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
       },
     },
     {
@@ -163,7 +182,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
             const config = getDataSourceModeConfig(node?.data?.dataSource?.type);
             return !setting.enableDBExport || !config?.features?.task?.includes(TaskType.EXPORT);
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeExportModal(true, {
               databaseId: database?.id,
@@ -188,7 +207,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !config?.features?.task?.includes(TaskType.EXPORT_RESULT_SET)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeCreateResultSetExportTaskModal(true, {
               databaseId: database?.id,
@@ -227,7 +246,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !config?.features?.task?.includes(TaskType.IMPORT)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeImportModal(true, {
               databaseId: database?.id,
@@ -253,7 +272,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !config?.features?.task?.includes(TaskType.DATAMOCK)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeDataMockerModal(true, {
               databaseId: database?.id,
@@ -279,7 +298,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !config?.features?.task?.includes(TaskType.ASYNC)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeCreateAsyncTaskModal(true, {
               databaseId: database?.id,
@@ -294,6 +313,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '多库变更',
             }),
           ],
+
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
@@ -320,12 +340,13 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '逻辑库变更',
             }),
           ],
+
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
           isHide(_, node) {
             return !setting.enableLogicaldatabase || !isLogicalDatabase(node.data);
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             modal.changeLogicialDatabaseModal(true, {
               projectId: node?.data?.odcDatabase?.project?.id,
               databaseId: node?.data?.id,
@@ -351,7 +372,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !config?.features?.task?.includes(TaskType.ONLINE_SCHEMA_CHANGE)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeCreateDDLAlterTaskModal(true, {
               databaseId: database?.id,
@@ -378,7 +399,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
 
           needAccessTypeList: [DatabasePermissionType.CHANGE],
           ellipsis: true,
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeShadowSyncVisible(true, {
               databaseId: database?.id,
@@ -404,7 +425,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !config?.features?.task?.includes(TaskType.STRUCTURE_COMPARISON)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
             modal.changeStructureComparisonModal(true, {
               databaseId: database?.id,
@@ -417,18 +438,14 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       key: 'TASK_CYCLE_MENU',
       text: [
         formatMessage({
-          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.36AA3D8E',
-          defaultMessage: '定时任务',
-        }) /*'定时任务'*/,
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.config.2F70937A',
+          defaultMessage: '作业调度',
+        }),
       ],
 
       ellipsis: true,
       hasDivider(node) {
-        return (
-          setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'true' &&
-          !isLogicalDatabase(node?.data) &&
-          (isClient() || isPrivateSpace)
-        );
+        return !isLogicalDatabase(node?.data) && (isClient() || isPrivateSpace);
       },
       isHide(_, node) {
         return isClient() || isLogicalDatabase(node?.data);
@@ -451,12 +468,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !setting.enableSQLPlan ||
               isClient() ||
               isLogicalDatabase(node?.data) ||
-              !config?.features?.task?.includes(TaskType.SQL_PLAN)
+              !config?.features?.schedule?.includes(ScheduleType.SQL_PLAN)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
-            modal.changeCreateSQLPlanTaskModal(true, {
+            scheduleStore.setSQLPlanData(true, SchedulePageMode.MULTI_PAGE, {
               databaseId: database?.id,
             });
           },
@@ -478,12 +495,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !setting.enablePartitionPlan ||
               isClient() ||
               isLogicalDatabase(node.data) ||
-              !config?.features?.task?.includes(TaskType.PARTITION_PLAN)
+              !config?.features?.schedule?.includes(ScheduleType.PARTITION_PLAN)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
-            modal.changePartitionModal(true, {
+            scheduleStore.setPartitionPlanData(true, SchedulePageMode.MULTI_PAGE, {
               databaseId: database?.id,
             });
           },
@@ -505,12 +522,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !setting.enableDataArchive ||
               isClient() ||
               isLogicalDatabase(node.data) ||
-              !config?.features?.task?.includes(TaskType.DATA_ARCHIVE)
+              !config?.features?.schedule?.includes(ScheduleType.DATA_ARCHIVE)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
-            modal.changeDataArchiveModal(true, {
+            scheduleStore.setDataArchiveData(true, SchedulePageMode.MULTI_PAGE, {
               databaseId: database?.id,
             });
           },
@@ -532,12 +549,12 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               !setting.enableDataClear ||
               isClient() ||
               isLogicalDatabase(node.data) ||
-              !config?.features?.task?.includes(TaskType.DATA_DELETE)
+              !config?.features?.schedule?.includes(ScheduleType.DATA_DELETE)
             );
           },
-          run(session, node, databaseFrom) {
+          run(session, node) {
             const database: IDatabase = node.data;
-            modal.changeDataClearModal(true, {
+            scheduleStore.setDataClearData(true, SchedulePageMode.MULTI_PAGE, {
               databaseId: database?.id,
             });
           },
@@ -552,9 +569,9 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
           defaultMessage: '权限申请',
         }),
       ],
+
       ellipsis: true,
-      hasDivider:
-        setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'true',
+      hasDivider: true,
       isHide(_, node) {
         return isClient() || isPrivateSpace || isLogicalDatabase(node.data);
       },
@@ -567,6 +584,7 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
               defaultMessage: '申请库权限',
             }),
           ],
+
           ellipsis: true,
           run(session, node) {
             const database: IDatabase = node.data;
@@ -622,12 +640,9 @@ export const databaseMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConf
       },
       ellipsis: true,
       isHide(_, node) {
-        return (
-          setting.configurations['odc.database.default.enableGlobalObjectSearch'] === 'false' ||
-          isLogicalDatabase(node.data)
-        );
+        return isLogicalDatabase(node.data);
       },
-      run(session, node, databaseFrom, pollingDatabase) {
+      run(session, node, pollingDatabase) {
         const database: IDatabase = node.data;
         message.loading({
           content: formatMessage({

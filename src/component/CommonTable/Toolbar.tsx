@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -15,7 +16,7 @@
  */
 
 import { SyncOutlined } from '@ant-design/icons';
-import { Cascader, Space } from 'antd';
+import { Cascader, Space, Tag } from 'antd';
 import classNames from 'classnames';
 import React from 'react';
 import { FilterContent, OperationContent, TitleContent } from './component';
@@ -27,6 +28,8 @@ import type {
   ITableLoadOptions,
   ITitleContent,
 } from './interface';
+import useURLParams from '@/util/hooks/useUrlParams';
+import FilterIcon from '../Button/FIlterIcon';
 
 interface IProps {
   loading: boolean;
@@ -60,13 +63,31 @@ export const Toolbar: React.FC<IProps> = (props) => {
     onTabChange,
     onOperationClick,
   } = props;
+  const { getParam, deleteParam } = useURLParams();
+  const urlTriggerValue = getParam('filtered');
+
   return (
     <Space className={classNames(styles.toolBar, 'odc-commontable-toolbar')}>
       {operationContent?.isNeedOccupyElement && <div></div>}
       {operationContent && <OperationContent {...operationContent} onClick={onOperationClick} />}
       {titleContent && <TitleContent {...titleContent} onTabChange={onTabChange} />}
-      <Space split={isSplit ? '|' : null} size={16}>
+      <Space split={isSplit ? '|' : null} size={8} style={{ lineHeight: 1 }}>
         {cascaderContent && <Cascader {...cascaderContent} multiple maxTagCount="responsive" />}
+        {urlTriggerValue && (
+          <Tag
+            closable
+            onClose={() => {
+              if (urlTriggerValue) {
+                deleteParam('filtered');
+              }
+            }}
+          >
+            {formatMessage({
+              id: 'src.component.CommonTable.2363A9C8',
+              defaultMessage: '仅展示周期执行任务',
+            })}
+          </Tag>
+        )}
         {filterContent && (
           <FilterContent
             {...filterContent}
@@ -76,13 +97,14 @@ export const Toolbar: React.FC<IProps> = (props) => {
           />
         )}
         {enabledReload && (
-          <SyncOutlined
-            className={styles.cursor}
+          <FilterIcon
+            border
             onClick={() => {
               onReload();
             }}
-            spin={loading}
-          />
+          >
+            <SyncOutlined className={styles.cursor} spin={loading} />
+          </FilterIcon>
         )}
       </Space>
     </Space>

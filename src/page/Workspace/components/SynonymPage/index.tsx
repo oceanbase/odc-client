@@ -27,11 +27,11 @@ import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import { AlignLeftOutlined, CloudDownloadOutlined } from '@ant-design/icons';
 import { Layout, message } from 'antd';
 import { inject, observer } from 'mobx-react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Component } from 'react';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
@@ -217,7 +217,7 @@ class SynonymPage extends Component<
                           }
                         </span>
                         <span className={`${preTextForm}-content`}>
-                          {moment(synonym.created).format('YYYY-MM-DD HH:mm:ss')}
+                          {dayjs(synonym.created).format('YYYY-MM-DD HH:mm:ss')}
                         </span>
                       </div>
                       <div className={`${preTextForm}-line`}>
@@ -232,7 +232,7 @@ class SynonymPage extends Component<
                           }
                         </span>
                         <span className={`${preTextForm}-content`}>
-                          {moment(synonym.lastDdlTime).format('YYYY-MM-DD HH:mm:ss')}
+                          {dayjs(synonym.lastDdlTime).format('YYYY-MM-DD HH:mm:ss')}
                         </span>
                       </div>
                     </ToolPageTextFromWrapper>

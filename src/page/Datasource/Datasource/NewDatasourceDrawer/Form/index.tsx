@@ -23,7 +23,7 @@ import {
 import { testConnection } from '@/common/network/connection';
 import { listEnvironments } from '@/common/network/env';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import { ConnectTypeText } from '@/constant/label';
 import { AccountType, ConnectType, IConnectionTestErrorType, DatasourceGroup } from '@/d.ts';
 import { IDatasource, IDataSourceType } from '@/d.ts/datasource';
@@ -116,47 +116,56 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
       return;
     }
     if (!res?.data?.active) {
-      switch (res?.data?.errorCode) {
-        case IConnectionTestErrorType.CONNECT_TYPE_NOT_MATCH:
-        case IConnectionTestErrorType.ILLEGAL_CONNECT_TYPE: {
-          // const a = form.getFieldInstance
-          form.setFields([
-            {
-              errors: [res?.data?.errorMessage],
-              name: ['host'],
-            },
-          ]);
-          break;
-        }
-        case IConnectionTestErrorType.UNKNOWN_HOST:
-        case IConnectionTestErrorType.HOST_UNREACHABLE: {
-          // const a = form.getFieldInstance
-          form.setFields([
-            {
-              errors: [res?.data?.errorMessage],
-              name: ['host'],
-            },
-          ]);
-          break;
-        }
-        case IConnectionTestErrorType.UNKNOWN_PORT: {
-          // const a = form.getFieldInstance
-          form.setFields([
-            {
-              errors: [res?.data?.errorMessage],
-              name: ['port'],
-            },
-          ]);
-          break;
-        }
-        case IConnectionTestErrorType.OB_WEAK_READ_CONSISTENCY_REQUIRED: {
-          setTestResult({
-            errorCode: IConnectionTestErrorType.OB_WEAK_READ_CONSISTENCY_REQUIRED,
-            errorMessage: res?.data?.errorMessage,
-            active: false,
-            type: null,
-          });
-          break;
+      if (haveOCP()) {
+        setTestResult({
+          errorCode: IConnectionTestErrorType.OB_WEAK_READ_CONSISTENCY_REQUIRED,
+          errorMessage: res?.data?.errorMessage,
+          active: false,
+          type: null,
+        });
+      } else {
+        switch (res?.data?.errorCode) {
+          case IConnectionTestErrorType.CONNECT_TYPE_NOT_MATCH:
+          case IConnectionTestErrorType.ILLEGAL_CONNECT_TYPE: {
+            // const a = form.getFieldInstance
+            form.setFields([
+              {
+                errors: [res?.data?.errorMessage],
+                name: ['host'],
+              },
+            ]);
+            break;
+          }
+          case IConnectionTestErrorType.UNKNOWN_HOST:
+          case IConnectionTestErrorType.HOST_UNREACHABLE: {
+            // const a = form.getFieldInstance
+            form.setFields([
+              {
+                errors: [res?.data?.errorMessage],
+                name: ['host'],
+              },
+            ]);
+            break;
+          }
+          case IConnectionTestErrorType.UNKNOWN_PORT: {
+            // const a = form.getFieldInstance
+            form.setFields([
+              {
+                errors: [res?.data?.errorMessage],
+                name: ['port'],
+              },
+            ]);
+            break;
+          }
+          case IConnectionTestErrorType.OB_WEAK_READ_CONSISTENCY_REQUIRED: {
+            setTestResult({
+              errorCode: IConnectionTestErrorType.OB_WEAK_READ_CONSISTENCY_REQUIRED,
+              errorMessage: res?.data?.errorMessage,
+              active: false,
+              type: null,
+            });
+            break;
+          }
         }
       }
     }
@@ -269,7 +278,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
                   }}
                 />
 
-                {ConnectTypeText[type] || ''}
+                {ConnectTypeText(type) || ''}
               </Space>
             </Typography.Paragraph>
           </Typography>
@@ -305,7 +314,7 @@ export default forwardRef<IFormRef, IProps>(function DatasourceForm(
             {connectTypeList?.map((item) => {
               return (
                 <Option key={item} value={item}>
-                  {ConnectTypeText[item]}
+                  {ConnectTypeText(item)}
                 </Option>
               );
             })}

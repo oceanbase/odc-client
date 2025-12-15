@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Icon from '@ant-design/icons';
+import Icon, { FileFilled } from '@ant-design/icons';
 
 import { PageType } from '@/d.ts';
 import CreateTablePage from '@/page/Workspace/components/CreateTable';
@@ -27,6 +27,8 @@ import SQLPage from '@/page/Workspace/components/SQLPage';
 import TablePage from '@/page/Workspace/components/TablePage';
 
 import ViewPage from '@/page/Workspace/components/ViewPage';
+import MaterializedViewPage from '@/page/Workspace/components/MaterializedViewPage';
+import ExternalResourcePage from '@/page/Workspace/components/ExternalResourcePage';
 import withConfirmModal from './factory';
 // @ts-ignore
 import { ReactComponent as ConsoleSQLSvg } from '@/svgr/Console-SQL.svg';
@@ -68,9 +70,12 @@ import SQLConfirmPage from '@/page/Workspace/components/SQLConfirmPage';
 import SQLResultSetViewPage from '@/page/Workspace/components/SQLResultSetViewPage';
 import SynonymPage from '@/page/Workspace/components/SynonymPage';
 import TaskManaerPage from '@/page/Workspace/components/TaskPage';
+import ScheduleManaerPage from '@/page/Workspace/components/SchedulePage';
 import TriggerPage from '@/page/Workspace/components/TriggerPage';
 import TutorialPage from '@/page/Workspace/components/TutorialPage';
 import TypePage from '@/page/Workspace/components/TypePage';
+import CreateMaterializedViewPage from '@/page/Workspace/components/CreateMaterializedView';
+import CreateSchedule from '@/page/Workspace/components/CreateSchedule';
 
 /** 页面类型 */
 export const pageMap = {
@@ -136,6 +141,20 @@ export const pageMap = {
     color: '#1890FF',
   },
 
+  // 作业管理
+  [PageType.SCHEDULES]: {
+    component: withConfirmModal(ScheduleManaerPage),
+    icon: <TaskSvg />,
+    color: '#1890FF',
+  },
+
+  // 新建作业
+  [PageType.CREATE_SCHEDULES]: {
+    component: withConfirmModal(CreateSchedule),
+    icon: <TaskSvg />,
+    color: '#1890FF',
+  },
+
   // 视图创建页
   [PageType.CREATE_VIEW]: {
     component: withConfirmModal(CreateViewPage),
@@ -148,6 +167,27 @@ export const pageMap = {
     component: withConfirmModal(ViewPage),
     icon: <Icon component={ViewSvg} />,
     color: 'var(--icon-color-1)',
+  },
+
+  // 物化视图创建页
+  [PageType.CREATE_MATERIALIZED_VIEW]: {
+    component: withConfirmModal(CreateMaterializedViewPage),
+    icon: <Icon component={ViewSvg} />,
+    color: 'var(--icon-color-5)',
+  },
+
+  /** 物化视图详情页 */
+  [PageType.MATERIALIZED_VIEW]: {
+    component: withConfirmModal(MaterializedViewPage),
+    icon: <Icon component={ViewSvg} />,
+    color: 'var(--icon-color-5)',
+  },
+
+  /** 外部资源详情页 */
+  [PageType.EXTERNAL_RESOURCE]: {
+    component: withConfirmModal(ExternalResourcePage),
+    icon: <FileFilled />,
+    color: 'var(--text-color-hint)',
   },
 
   // 函数创建页

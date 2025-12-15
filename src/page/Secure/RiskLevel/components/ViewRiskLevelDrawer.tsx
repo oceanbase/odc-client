@@ -18,7 +18,7 @@ import { detailRiskLevel } from '@/common/network/riskLevel';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { IRiskLevel } from '@/d.ts/riskLevel';
 import { formatMessage } from '@/util/intl';
-import { transformSecond } from '@/util/utils';
+import { transformSecond } from '@/util/data/dateTime';
 import { Descriptions, Drawer, Timeline } from 'antd';
 import { useEffect, useState } from 'react';
 import styles from './index.less';
@@ -50,7 +50,7 @@ const ViewRiskLevelDrawer: React.FC<{
           defaultMessage: '查看风险等级',
         }) //查看风险等级
       }
-      className={styles.riskLevelDrawer}
+      rootClassName={styles.riskLevelDrawer}
     >
       <Descriptions column={1}>
         <Descriptions.Item

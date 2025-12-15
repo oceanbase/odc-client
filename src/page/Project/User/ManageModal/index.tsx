@@ -80,7 +80,7 @@ const ManageModal: React.FC<IProps> = (props) => {
         defaultMessage: '管理权限',
       })}
       destroyOnClose
-      className={styles.detailDrawer}
+      rootClassName={styles.detailDrawer}
       footer={null}
       onClose={() => {
         onClose();

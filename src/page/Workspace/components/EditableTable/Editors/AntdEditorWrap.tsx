@@ -19,7 +19,10 @@ import { Popover } from 'antd';
 export default function AntdEditorWrap(props) {
   return (
     <Popover
-      overlayClassName="rdg-antd-editor"
+      arrow={false}
+      classNames={{
+        root: 'rdg-antd-editor',
+      }}
       placement={'bottomLeft'}
       open={true}
       content={props.children}
