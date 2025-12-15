@@ -20,20 +20,30 @@ export enum ActivityBarItemType {
   Script = 'script',
   Task = 'Task',
   Manager = 'manager',
+  Page = 'project',
+  Schedule = 'Schedule',
 }
 export const ActivityBarItemTypeText = {
   [ActivityBarItemType.Database]: formatMessage({
     id: 'odc.Workspace.ActivityBar.type.Database',
+    defaultMessage: '数据库',
   }),
   //数据库
   [ActivityBarItemType.Task]: formatMessage({
     id: 'odc.src.page.Workspace.ActivityBar.WorkOrder',
+    defaultMessage: '工单',
   }), //'工单'
+  [ActivityBarItemType.Schedule]: formatMessage({
+    id: 'src.page.Workspace.ActivityBar.9637E3E9',
+    defaultMessage: '作业',
+  }),
   [ActivityBarItemType.Script]: formatMessage({
     id: 'odc.Workspace.ActivityBar.type.Script',
+    defaultMessage: '脚本',
   }),
   //脚本
   [ActivityBarItemType.Manager]: formatMessage({
     id: 'odc.Workspace.ActivityBar.type.OMManagement',
+    defaultMessage: '运维管理',
   }), //运维管理
 };

@@ -15,11 +15,14 @@
  */
 
 import { formatMessage } from '@/util/intl';
-export const RiskLevelMap = {
-  0: formatMessage({ id: 'odc.page.Secure.interface.DefaultRisk' }), //默认风险
-  1: formatMessage({ id: 'odc.page.Secure.interface.LowRisk' }), //低风险
-  2: formatMessage({ id: 'odc.page.Secure.interface.MediumRisk' }), //中风险
-  3: formatMessage({ id: 'odc.page.Secure.interface.HighRisk' }), //高风险
+export const RiskLevelMap = (level: number) => {
+  const textMap = {
+    0: formatMessage({ id: 'odc.page.Secure.interface.DefaultRisk', defaultMessage: '默认风险' }), //默认风险
+    1: formatMessage({ id: 'odc.page.Secure.interface.LowRisk', defaultMessage: '低风险' }), //低风险
+    2: formatMessage({ id: 'odc.page.Secure.interface.MediumRisk', defaultMessage: '中风险' }), //中风险
+    3: formatMessage({ id: 'odc.page.Secure.interface.HighRisk', defaultMessage: '高风险' }), //高风险
+  };
+  return textMap?.[level];
 };
 
 export enum RiskLevelEnum {
@@ -34,8 +37,19 @@ export const levelMap = {
   [RiskLevelEnum.MUST]: 'must',
 };
 
-export const RiskLevelTextMap = {
-  [RiskLevelEnum.DEFAULT]: formatMessage({ id: 'odc.page.Secure.interface.NoNeedToImprove' }), //无需改进
-  [RiskLevelEnum.SUGGEST]: formatMessage({ id: 'odc.page.Secure.interface.ApprovalRequired' }), //需要审批
-  [RiskLevelEnum.MUST]: formatMessage({ id: 'odc.page.Secure.interface.MustBeImproved' }), //必须改进
-};
+export function RiskLevelTextMap() {
+  return {
+    [RiskLevelEnum.DEFAULT]: formatMessage({
+      id: 'odc.page.Secure.interface.NoNeedToImprove',
+      defaultMessage: '无需改进',
+    }), //无需改进
+    [RiskLevelEnum.SUGGEST]: formatMessage({
+      id: 'odc.page.Secure.interface.ApprovalRequired',
+      defaultMessage: '需要审批',
+    }), //需要审批
+    [RiskLevelEnum.MUST]: formatMessage({
+      id: 'odc.page.Secure.interface.MustBeImproved',
+      defaultMessage: '必须改进',
+    }), //必须改进
+  };
+}

@@ -17,25 +17,29 @@
 import { VariableExpression } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Select, Space } from 'antd';
+import { Button, Form, Input, Select, Space, Typography } from 'antd';
 import React, { useState } from 'react';
+import styles from './index.less';
 
 export const operationOptions = [
   {
     label: formatMessage({
       id: 'odc.components.FormAutoAuthModal.conditionSelect.Include',
+      defaultMessage: '包含',
     }), //包含
     value: 'contains',
   },
   {
     label: formatMessage({
       id: 'odc.components.FormAutoAuthModal.conditionSelect.Match',
+      defaultMessage: '匹配',
     }), //匹配
     value: 'matches',
   },
   {
     label: formatMessage({
       id: 'odc.components.FormAutoAuthModal.conditionSelect.Equal',
+      defaultMessage: '等于',
     }), //等于
     value: 'equals',
   },
@@ -107,6 +111,7 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                       required: isRequired,
                       message: formatMessage({
                         id: 'odc.components.FormAutoAuthModal.conditionSelect.PleaseSelect',
+                        defaultMessage: '请选择',
                       }), //请选择
                     },
                   ]}
@@ -122,6 +127,7 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                       required: isRequired,
                       message: formatMessage({
                         id: 'odc.components.FormAutoAuthModal.conditionSelect.PleaseEnter',
+                        defaultMessage: '请输入',
                       }), //请输入
                     },
                   ]}
@@ -132,6 +138,7 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                     <Input
                       placeholder={formatMessage({
                         id: 'odc.components.FormAutoAuthModal.conditionSelect.EnterAnIndexKeySuch',
+                        defaultMessage: '请输入索引键，如 dept[0].deptname',
                       })} /*请输入索引键，如 dept[0].deptname*/
                     />
                   )}
@@ -145,6 +152,7 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                       required: isRequired,
                       message: formatMessage({
                         id: 'odc.components.FormAutoAuthModal.conditionSelect.PleaseSelect',
+                        defaultMessage: '请选择',
                       }), //请选择
                     },
                   ]}
@@ -160,6 +168,7 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                       required: isRequired,
                       message: formatMessage({
                         id: 'odc.components.FormAutoAuthModal.conditionSelect.PleaseEnter',
+                        defaultMessage: '请输入',
                       }), //请输入
                     },
                   ]}
@@ -167,10 +176,12 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                   <Input
                     placeholder={formatMessage({
                       id: 'odc.components.FormAutoAuthModal.conditionSelect.EnterAValue',
+                      defaultMessage: '请输入值',
                     })} /*请输入值*/
                   />
                 </Form.Item>
                 <DeleteOutlined
+                  style={{ color: 'var(--text-color-hint)' }}
                   onClick={() => {
                     remove(name);
                   }}
@@ -180,6 +191,7 @@ const ConditionSelect: React.FC<IProps> = (props) => {
 
             <Form.Item style={{ marginBottom: 0, width: '630px' }}>
               <Button
+                className={styles.conditionSelectAdd}
                 type="dashed"
                 onClick={() =>
                   add({
@@ -190,13 +202,20 @@ const ConditionSelect: React.FC<IProps> = (props) => {
                   })
                 }
                 block
-                icon={<PlusOutlined />}
+                icon={<PlusOutlined className={styles.icon} />}
               >
                 {
                   formatMessage({
                     id: 'odc.components.FormAutoAuthModal.conditionSelect.Add',
+                    defaultMessage: '添加',
                   }) /*添加*/
                 }
+                <Typography.Text style={{ marginLeft: 8 }} type="secondary">
+                  {formatMessage({
+                    id: 'src.page.Auth.Autoauth.component.FormModal.CD9C93B9',
+                    defaultMessage: '多个匹配条件需同时满足',
+                  })}
+                </Typography.Text>
               </Button>
             </Form.Item>
           </>

@@ -14,89 +14,113 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { IDatabase, DBType, DatabaseGroup } from '@/d.ts/database';
+import { DataBaseTreeData } from '../Nodes/database';
+import { TreeDataNode } from '../type';
 import ResourceTree from '..';
+import login from '@/store/login';
 import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
-import { useRequest } from 'ahooks';
-import { listDatabases } from '@/common/network/database';
-import TreeTitle from './Title';
 import datasourceStatus from '@/store/datasourceStatus';
-import { IDatabase } from '@/d.ts/database';
+import useGroupData from './useGroupData';
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { isPhysicalDatabase } from '@/util/database/database';
+import { getGroupKey, getSecondGroupKey } from '../const';
 
-interface IProps {
-  openSelectPanel?: () => void;
-}
-
-const DatabaseTree: React.FC<IProps> = function ({ openSelectPanel }) {
+const DatabaseTree = function () {
   const {
-    selectDatasourceId,
-    selectProjectId,
-    projectList,
-    datasourceList,
     databaseList,
     reloadDatabaseList,
-    setCurrentDatabaseId,
     pollingDatabase,
+    groupMode,
+    reloadDatasourceList,
+    datasourceList,
   } = useContext(ResourceTreeContext);
-  const [databases, setDatabases] = useState<IDatabase[]>([]);
-  const selectProject = projectList?.find((p) => p.id == selectProjectId);
-  const selectDatasource = datasourceList?.find((d) => d.id == selectDatasourceId);
-
-  async function reloadDatabase() {
+  const { DatabaseGroupMap } = useGroupData({
+    databaseList,
+    // 个人空间展示全量的数据源,不会根据配置来
+    datasourceList: login.isPrivateSpace() ? datasourceList : [],
+    filter: (db: IDatabase) => {
+      const config = getDataSourceModeConfig(db?.dataSource?.type);
+      if (!config?.features?.groupResourceTree && isPhysicalDatabase(db)) {
+        return false;
+      }
+      return db.existed;
+    },
+  });
+  const [defaultExpandedKeys, setDefaultExpandedKeys] = useState<React.Key[]>([]);
+  async function reload() {
     await reloadDatabaseList();
+    await reloadDatasourceList();
   }
 
   useEffect(() => {
-    if (selectDatasourceId || selectProjectId) {
-      reloadDatabase();
-    }
-  }, [selectDatasourceId, selectProjectId]);
-
-  useEffect(() => {
-    if (databaseList.length) {
-      setDatabases(databaseList?.filter((item) => !!item?.authorizedPermissionTypes?.length));
+    if (databaseList?.length) {
       const ids: Set<number> = new Set();
       databaseList.forEach((d) => {
-        ids.add(d.dataSource?.id);
+        if (d.type !== DBType.LOGICAL && !!d.dataSource?.id) {
+          ids.add(d.dataSource?.id);
+        }
       });
       datasourceStatus.asyncUpdateStatus(Array.from(ids));
+    } else {
     }
   }, [databaseList]);
 
-  function onTitleClick() {
-    openSelectPanel();
-    setCurrentDatabaseId(null);
-  }
+  /**
+   * 全部数据库节点数据，做缓存处理
+   */
+  const allDatabaseDataNodeMap = useMemo(() => {
+    const DatabaseNodeMap = new Map<number, TreeDataNode>();
+    const databases = DatabaseGroupMap[DatabaseGroup.none];
+    databases?.forEach((db) => {
+      DatabaseNodeMap.set(db.id, DataBaseTreeData(undefined, db, db.id, true));
+    });
+    return DatabaseNodeMap;
+  }, [databaseList]);
 
-  function ProjectRender() {
-    return (
-      <ResourceTree
-        stateId={'project-' + selectProjectId}
-        reloadDatabase={() => reloadDatabase()}
-        databaseFrom={'project'}
-        title={<TreeTitle project={selectProject} />}
-        databases={databases}
-        onTitleClick={onTitleClick}
-        enableFilter
-        showTip
-        pollingDatabase={pollingDatabase}
-      />
-    );
-  }
-  function DatasourceRender() {
-    return (
-      <ResourceTree
-        stateId={'datasource-' + selectDatasourceId}
-        reloadDatabase={() => reloadDatabase()}
-        databaseFrom={'datasource'}
-        title={<TreeTitle datasource={selectDatasource} />}
-        databases={databases}
-        onTitleClick={onTitleClick}
-        pollingDatabase={pollingDatabase}
-      />
-    );
-  }
-  return selectDatasourceId ? DatasourceRender() : ProjectRender();
+  useEffect(() => {
+    initDefaultExpandedKeys();
+  }, [databaseList]);
+
+  const initDefaultExpandedKeys = () => {
+    const defaultExpandedKeys = [];
+    [
+      DatabaseGroup.project,
+      DatabaseGroup.dataSource,
+      DatabaseGroup.tenant,
+      DatabaseGroup.cluster,
+      DatabaseGroup.environment,
+      DatabaseGroup.connectType,
+    ].forEach((item) => {
+      const group = DatabaseGroupMap?.[item]?.entries()?.next()?.value?.[1];
+      defaultExpandedKeys.push(getGroupKey(group?.mapId, item));
+      if (
+        [
+          DatabaseGroup.cluster,
+          DatabaseGroup.environment,
+          DatabaseGroup.connectType,
+          DatabaseGroup.tenant,
+        ].includes(item)
+      ) {
+        const secondGroup = group?.secondGroup?.entries()?.next()?.value?.[1];
+        defaultExpandedKeys.push(getSecondGroupKey(group?.mapId, secondGroup?.mapId, item));
+      }
+    });
+    setDefaultExpandedKeys(defaultExpandedKeys);
+  };
+
+  return (
+    <ResourceTree
+      stateId={'resourceTree'}
+      reload={() => reload()}
+      databases={[...(DatabaseGroupMap[groupMode]?.values() || [])]}
+      allDatabasesMap={DatabaseGroupMap[DatabaseGroup.none]}
+      pollingDatabase={pollingDatabase}
+      defaultExpandedKeys={defaultExpandedKeys}
+      DatabaseDataNodeMap={allDatabaseDataNodeMap}
+    />
+  );
 };
 
 export default DatabaseTree;

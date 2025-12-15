@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
 import {
   EChannelType,
   ELanguage,
@@ -22,56 +21,81 @@ import {
   ETimeUnit,
   IPolicy,
 } from '@/d.ts/projectNotification';
+import { formatMessage } from '@/util/intl';
 
 export const TimeUnitMap = {
-  [ETimeUnit.MINUTES]: formatMessage({ id: 'src.page.Project.Notification.components.AEB0CAF2' }), //'每分钟'
-  [ETimeUnit.HOURS]: formatMessage({ id: 'src.page.Project.Notification.components.AF2822D3' }), //'每小时'
-  [ETimeUnit.DAYS]: formatMessage({ id: 'src.page.Project.Notification.components.A8432D68' }), //'每天'
+  [ETimeUnit.MINUTES]: formatMessage({
+    id: 'src.page.Project.Notification.components.AEB0CAF2',
+    defaultMessage: '每分钟',
+  }), //'每分钟'
+  [ETimeUnit.HOURS]: formatMessage({
+    id: 'src.page.Project.Notification.components.AF2822D3',
+    defaultMessage: '每小时',
+  }), //'每小时'
+  [ETimeUnit.DAYS]: formatMessage({
+    id: 'src.page.Project.Notification.components.A8432D68',
+    defaultMessage: '每天',
+  }), //'每天'
 };
 export const EChannelTypeMap = {
   [EChannelType.DING_TALK]: formatMessage({
     id: 'src.page.Project.Notification.components.02532812',
+    defaultMessage: '钉钉',
   }), //'钉钉'
   [EChannelType.FEI_SHU]: formatMessage({
     id: 'src.page.Project.Notification.components.F80DF1C7',
+    defaultMessage: '飞书',
   }), //'飞书'
-  [EChannelType.WE_COM]: formatMessage({ id: 'src.page.Project.Notification.components.A41C487F' }), //'企业微信'
+  [EChannelType.WE_COM]: formatMessage({
+    id: 'src.page.Project.Notification.components.A41C487F',
+    defaultMessage: '企业微信',
+  }), //'企业微信'
   [EChannelType.WEBHOOK]: formatMessage({
     id: 'src.page.Project.Notification.components.CDD8F083',
+    defaultMessage: '自定义',
   }), //'自定义'
 };
 
 export const WebhookPlaceholderMap = {
   [EChannelType.DING_TALK]: formatMessage({
     id: 'src.page.Project.Notification.components.D6700838',
+    defaultMessage: '请输入钉钉群机器人 Webhook 地址',
   }), //'请输入钉钉群机器人 Webhook 地址'
   [EChannelType.FEI_SHU]: formatMessage({
     id: 'src.page.Project.Notification.components.0EB64694',
+    defaultMessage: '请输入飞书群机器人 Webhook 地址',
   }), //'请输入飞书群机器人 Webhook 地址'
-  [EChannelType.WE_COM]: formatMessage({ id: 'src.page.Project.Notification.components.83F1E770' }), //'请输入企业微信群机器人 Webhook 地址'
+  [EChannelType.WE_COM]: formatMessage({
+    id: 'src.page.Project.Notification.components.83F1E770',
+    defaultMessage: '请输入企业微信群机器人 Webhook 地址',
+  }), //'请输入企业微信群机器人 Webhook 地址'
   [EChannelType.WEBHOOK]: formatMessage({
     id: 'src.page.Project.Notification.components.F33A3513',
+    defaultMessage: '请输入 Webhook 地址',
   }), //'请输入 Webhook 地址'
 };
 export const ELanguageMap = {
-  [ELanguage.ZH_CN]: formatMessage({ id: 'src.page.Project.Notification.components.B1D41451' }), //'简体中文'
-  [ELanguage.ZH_TW]: formatMessage({ id: 'src.page.Project.Notification.components.739AD573' }), //'繁体中文'
-  [ELanguage.EN_US]: formatMessage({ id: 'src.page.Project.Notification.components.21BD64D9' }), //'英文'
+  [ELanguage.ZH_CN]: formatMessage({
+    id: 'src.page.Project.Notification.components.B1D41451',
+    defaultMessage: '简体中文',
+  }), //'简体中文'
+  [ELanguage.ZH_TW]: formatMessage({
+    id: 'src.page.Project.Notification.components.739AD573',
+    defaultMessage: '繁體中文',
+  }), //'繁体中文'
+  [ELanguage.EN_US]: formatMessage({
+    id: 'src.page.Project.Notification.components.21BD64D9',
+    defaultMessage: '英文',
+  }), //'英文'
 };
 
 // @oic-line-ignore
-const EContentTemplateMap_ZH_CN = formatMessage({
-  id: 'src.page.Project.Notification.components.67D83818',
-  defaultMessage:
-    '### ODC ${taskType}-${taskStatus}\\n- 任务ID: ${taskId}\\n- 项目: ${projectName}\\n- 数据库: ${databaseName}\\n- 发起人: ${creatorName}\\n- 触发时间: ${triggerTime}',
-});
+const EContentTemplateMap_ZH_CN =
+  '### ODC ${taskType}-${taskStatus}\n- 任务ID: ${taskId}\n- 项目: ${projectName}\n- 数据库: ${databaseName}\n- 发起人: ${creatorName}\n- 触发时间: ${triggerTime}';
 
 // @oic-line-ignore
-const EContentTemplateMap_ZH_TW = formatMessage({
-  id: 'src.page.Project.Notification.components.3FDD6FF3',
-  defaultMessage:
-    '### ODC ${taskType}-${taskStatus}\\n- 任務ID: ${taskId}\\n- 項目: ${projectName}\\n- 數據庫: ${databaseName}\\n- 發起人: ${creatorName}\\n- 觸發時間: ${triggerTime}',
-});
+const EContentTemplateMap_ZH_TW =
+  '### ODC ${taskType}-${taskStatus}\n- 任務ID: ${taskId}\n- 項目: ${projectName}\n- 數據庫: ${databaseName}\n- 發起人: ${creatorName}\n- 觸發時間: ${triggerTime}';
 
 const EContentTemplateMap_EN_US =
   '### ODC ${taskType}-${taskStatus}\n- task ID: ${taskId}\n- project: ${projectName}\n- database: ${databaseName}\n- creator: ${creatorName}\n- trigger time: ${triggerTime}';
@@ -84,18 +108,23 @@ export const EContentTemplateMap = {
 export const EMessageStatusMap = {
   [EMessageStatus.CREATED]: formatMessage({
     id: 'src.page.Project.Notification.components.22049CA8',
+    defaultMessage: '待发送',
   }), //'待发送'
   [EMessageStatus.SENDING]: formatMessage({
     id: 'src.page.Project.Notification.components.590F2E70',
+    defaultMessage: '发送中',
   }), //'发送中'
   [EMessageStatus.SENT_SUCCESSFULLY]: formatMessage({
     id: 'src.page.Project.Notification.components.7C3C69DA',
+    defaultMessage: '发送成功',
   }), //'发送成功'
   [EMessageStatus.SENT_FAILED]: formatMessage({
     id: 'src.page.Project.Notification.components.4D27FA10',
+    defaultMessage: '发送失败',
   }), //'发送失败'
   [EMessageStatus.THROWN]: formatMessage({
     id: 'src.page.Project.Notification.components.C2F2FE55',
+    defaultMessage: '忽略',
   }), //'忽略'
 };
 export enum EPolicyFormMode {

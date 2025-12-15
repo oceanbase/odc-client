@@ -61,13 +61,53 @@ export class PageStore {
     this._saveDisposers = [];
     this._saveDisposers.push(await autoSave(this, 'pages', 'pages', []));
     this._saveDisposers.push(await autoSave(this, 'activePageKey', 'activePageKey', null));
+    this.checkPages();
   }
+
   /** 切换打开的page，更新一下URL */
   @action
   public async setActivePageKeyAndPushUrl(activePageKey: string | null) {
     await this.updateActiveKey(() => {
       return activePageKey;
     });
+  }
+
+  /** 转换旧版本的页面 */
+  @action
+  private checkPages() {
+    const transformPages = this.pages
+      ?.map((item: IPage) => {
+        if (!PageType.hasOwnProperty(item?.type)) {
+          return undefined;
+        }
+        // 若存在定时任务的页面，则转换为作业页面（440升级441后，替换旧的定时任务页面为作业）
+        if (item?.type === PageType.TASKS) {
+          switch (item?.params?.type) {
+            case 'DATA_ARCHIVE':
+            case 'DATA_DELETE':
+            case 'SQL_PLAN':
+            case 'PARTITION_PLAN':
+              return {
+                ...item,
+                type: PageType.SCHEDULES,
+              };
+            default: {
+              return item;
+            }
+          }
+        }
+        return item;
+      })
+      ?.filter(Boolean);
+    this.pages = transformPages;
+    // 如果activePageKey为不存在的页面，则设置为第一个页面或者null
+    if (!this.pages?.some((item: IPage) => item?.key === this.activePageKey)) {
+      if (this.pages?.length) {
+        this.activePageKey = this.pages[0]?.key;
+      } else {
+        this.activePageKey = null;
+      }
+    }
   }
 
   @action
@@ -86,6 +126,7 @@ export class PageStore {
               (pageType == PageType.PL ? 'PL' : 'SQL') +
                 formatMessage({
                   id: 'odc.src.store.page.TheNumberOfWindowsCannot',
+                  defaultMessage: '窗口不能超过 32 个',
                 }),
             );
             return;
@@ -211,7 +252,7 @@ export class PageStore {
       return pages.filter(
         (p) =>
           p.params.isDocked ||
-          [PageType.SQL, PageType.OB_CLIENT, PageType.TASKS].includes(p.type) ||
+          [PageType.SQL, PageType.OB_CLIENT, PageType.TASKS, PageType.SCHEDULES].includes(p.type) ||
           (p.type == PageType.PL && !p.params?.plName),
       );
     });

@@ -23,20 +23,29 @@ import { openSynonymViewPage } from '@/store/helper/page';
 import modal from '@/store/modal';
 import page from '@/store/page';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
-import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
+import { downloadPLDDL } from '@/util/database/sqlExport';
+import {
+  PlusOutlined,
+  QuestionCircleFilled,
+  ReloadOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
 import { message, Modal } from 'antd';
-import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
+import { hasChangePermission, hasExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
+import { openGlobalSearch } from '../../const';
 function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
   return [
     {
       key: ResourceTreeNodeMenuKeys.BROWSER_SCHEMA,
       ellipsis: true,
       text: [
-        formatMessage({ id: 'odc.TreeNodeMenu.config.synonym.ViewSynonyms' }), //查看同义词
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.synonym.ViewSynonyms',
+          defaultMessage: '查看同义词',
+        }), //查看同义词
       ],
       run(session, node) {
         const synonym: Partial<ISynonym> = node.data;
@@ -48,13 +57,27 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
         );
       },
     },
-
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
+      },
+    },
     {
       key: ResourceTreeNodeMenuKeys.DELETE_SYNONYM,
       ellipsis: true,
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.sequence.Delete',
+          defaultMessage: '删除',
         }),
       ],
 
@@ -69,13 +92,15 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
           title: formatMessage(
             {
               id: 'odc.components.ResourceTree.SynonymTree.AreYouSureYouWant',
+              defaultMessage: '是否确定删除同义词{synonymName}？',
             },
             { synonymName: synonym?.synonymName },
           ), // `确定要删除同义词${synonymName}吗？`
-          okText: formatMessage({ id: 'app.button.ok' }),
+          okText: formatMessage({ id: 'app.button.ok', defaultMessage: '确定' }),
 
           cancelText: formatMessage({
             id: 'app.button.cancel',
+            defaultMessage: '取消',
           }),
 
           centered: true,
@@ -99,6 +124,7 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
             message.success(
               formatMessage({
                 id: 'odc.components.ResourceTree.SynonymTree.SynonymDeletedSuccessfully',
+                defaultMessage: '删除同义词成功',
               }),
               // 删除同义词成功
             );
@@ -118,7 +144,7 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
 
     {
       key: ResourceTreeNodeMenuKeys.EXPORT_TABLE,
-      text: formatMessage({ id: 'odc.TreeNodeMenu.config.synonym.Export' }), //导出
+      text: formatMessage({ id: 'odc.TreeNodeMenu.config.synonym.Export', defaultMessage: '导出' }), //导出
       ellipsis: true,
       disabled: (session) => {
         return !hasExportPermission(session);
@@ -138,7 +164,10 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
     },
     {
       key: ResourceTreeNodeMenuKeys.DOWNLOAD,
-      text: formatMessage({ id: 'odc.TreeNodeMenu.config.synonym.Download' }), //下载
+      text: formatMessage({
+        id: 'odc.TreeNodeMenu.config.synonym.Download',
+        defaultMessage: '下载',
+      }), //下载
       ellipsis: true,
       hasDivider: true,
       async run(session, node) {
@@ -161,8 +190,10 @@ function getMenu(synonymType: SynonymType): IMenuItemConfig[] {
       text: [
         formatMessage({
           id: 'odc.TreeNodeMenu.config.sequence.Refresh',
+          defaultMessage: '刷新',
         }),
       ],
+
       async run(session, node) {
         synonymType === SynonymType.COMMON
           ? await session.database?.getSynonymList()
@@ -176,7 +207,10 @@ export const synonymMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
     {
       key: ResourceTreeNodeMenuKeys.CREATE_SYNONYM,
       text: [
-        formatMessage({ id: 'odc.TreeNodeMenu.config.synonym.CreateSynonym' }), //新建同义词
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.synonym.CreateSynonym',
+          defaultMessage: '新建同义词',
+        }), //新建同义词
       ],
       icon: PlusOutlined,
       actionType: actionTypes.create,
@@ -189,9 +223,23 @@ export const synonymMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       },
     },
     {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
+      },
+    },
+    {
       key: 'REFRESH',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
+        formatMessage({ id: 'odc.ResourceTree.actions.Refresh', defaultMessage: '刷新' }), //刷新
       ],
       icon: ReloadOutlined,
       actionType: actionTypes.read,
@@ -200,11 +248,15 @@ export const synonymMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       },
     },
   ],
+
   [ResourceNodeType.PublicSynonymRoot]: [
     {
       key: ResourceTreeNodeMenuKeys.CREATE_SYNONYM,
       text: [
-        formatMessage({ id: 'odc.TreeNodeMenu.config.synonym.CreateSynonym' }), //新建同义词
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.synonym.CreateSynonym',
+          defaultMessage: '新建同义词',
+        }), //新建同义词
       ],
       icon: PlusOutlined,
       actionType: actionTypes.create,
@@ -217,9 +269,23 @@ export const synonymMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       },
     },
     {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
+      },
+    },
+    {
       key: 'REFRESH',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
+        formatMessage({ id: 'odc.ResourceTree.actions.Refresh', defaultMessage: '刷新' }), //刷新
       ],
       icon: ReloadOutlined,
       actionType: actionTypes.read,
@@ -228,6 +294,7 @@ export const synonymMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       },
     },
   ],
+
   [ResourceNodeType.Synonym]: getMenu(SynonymType.COMMON),
   [ResourceNodeType.PublicSynonym]: getMenu(SynonymType.PUBLIC),
 };

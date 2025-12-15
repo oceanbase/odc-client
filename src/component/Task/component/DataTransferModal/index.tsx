@@ -16,16 +16,23 @@
 
 import { downloadTaskFlow } from '@/common/network/task';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import { getTaskExecStrategyMap } from '@/component/Task';
 import { FILE_DATA_TYPE, IMPORT_TYPE, TaskExecStrategy } from '@/d.ts';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
-import { Alert, Col, Divider, Row, Space, Tooltip } from 'antd';
+import { CRLFToSeparatorString } from '@/util/data/string';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
+import { Alert, Col, Divider, Row, Space, Tooltip, Tag } from 'antd';
 import React from 'react';
 import CsvTable from './csvTables';
 import styles from './index.less';
 import ObjTable from './ObjTables';
+import { getImportTypeLabel } from '@/component/Task/modals/ImportTask/CreateModal/ImportForm/helper';
+import { getTaskExecStrategyMap } from '@/component/Task/const';
+import EllipsisText from '@/component/EllipsisText';
+import { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
+import DatabaseLabel from '@/component/Task/component/DatabaseLabel';
+import login from '@/store/login';
+
 const SimpleTextItem: React.FC<{
   label: string;
   content: React.ReactNode;
@@ -44,12 +51,13 @@ const SimpleTextItem: React.FC<{
         style={{
           flexGrow: 0,
           flexShrink: 0,
-          color: 'var(--text-color-primary)',
+          color: 'var(--text-color-hint)',
         }}
       >
         {formatMessage(
           {
             id: 'odc.component.TaskDetailDrawer.TaskInfo.Label',
+            defaultMessage: '{label}：',
           },
           {
             label,
@@ -58,9 +66,10 @@ const SimpleTextItem: React.FC<{
       </div>
       <div
         style={{
-          flexGrow: 1,
           wordBreak: 'break-all',
-          color: 'var(--text-color-secondary)',
+          color: 'var(--text-color-primary)',
+          overflow: 'hidden',
+          width: 'max-content',
         }}
       >
         {content}
@@ -80,12 +89,14 @@ class TaskContent extends React.Component<any, any> {
       _r.push(
         formatMessage({
           id: 'odc.component.TaskDetailDrawer.TaskInfo.Data',
+          defaultMessage: '数据',
         }),
       );
     transferDDL &&
       _r.push(
         formatMessage({
           id: 'odc.component.TaskDetailDrawer.TaskInfo.Structure',
+          defaultMessage: '结构',
         }),
       );
     return _r.join('+');
@@ -107,9 +118,11 @@ class TaskContent extends React.Component<any, any> {
         taskConfig?.withDropDDL
           ? formatMessage({
               id: 'odc.component.TaskDetailDrawer.TaskInfo.AddAndDeleteTableStatements',
+              defaultMessage: '添加删除表语句',
             })
           : formatMessage({
               id: 'odc.component.TaskDetailDrawer.TaskInfo.DoNotAddOrDelete',
+              defaultMessage: '不添加删除表语句',
             }),
       );
       onlyTransferDDL &&
@@ -117,9 +130,11 @@ class TaskContent extends React.Component<any, any> {
           taskConfig?.mergeSchemaFiles
             ? formatMessage({
                 id: 'odc.component.DataTransferModal.MergeTheExportResultsInto',
+                defaultMessage: '导出结果合并为一个SQL文件',
               }) //导出结果合并为一个SQL文件
             : formatMessage({
                 id: 'odc.component.DataTransferModal.TheExportResultsAreNot',
+                defaultMessage: '导出结果不合并为一个SQL文件',
               }), //导出结果不合并为一个SQL文件
         );
     }
@@ -129,34 +144,40 @@ class TaskContent extends React.Component<any, any> {
         csvDisplayData.push(
           formatMessage({
             id: 'odc.component.TaskDetailDrawer.TaskInfo.ContainsColumnHeaders',
+            defaultMessage: '包含列头',
           }),
         );
       taskConfig?.csvConfig?.blankToNull &&
         csvDisplayData.push(
           formatMessage({
             id: 'odc.component.TaskDetailDrawer.TaskInfo.ConvertAnEmptyStringTo',
+            defaultMessage: '空字符串转为空值',
           }),
         );
       !taskConfig?.csvConfig?.skipHeader &&
         csvDisplayData.push(
           formatMessage({
             id: 'workspace.window.import.form.hasColumnTitle',
+            defaultMessage: '包含列头',
           }),
         );
       csvDisplayData.push(
-        `${formatMessage({
+        formatMessage({
           id: 'odc.component.TaskDetailDrawer.TaskInfo.FieldSeparator',
-        })}${taskConfig?.csvConfig?.columnSeparator}`,
+          defaultMessage: '字段分隔符:',
+        }) + taskConfig?.csvConfig?.columnSeparator,
       );
       csvDisplayData.push(
-        `${formatMessage({
+        formatMessage({
           id: 'odc.component.TaskDetailDrawer.TaskInfo.TextIdentifier',
-        })}${taskConfig?.csvConfig?.columnDelimiter}`,
+          defaultMessage: '文本识别符:',
+        }) + taskConfig?.csvConfig?.columnDelimiter,
       );
       csvDisplayData.push(
-        `${formatMessage({
+        formatMessage({
           id: 'odc.component.TaskDetailDrawer.TaskInfo.LineBreakSymbol',
-        })}${taskConfig?.csvConfig?.lineSeparator}`,
+          defaultMessage: '换行符号：',
+        }) + CRLFToSeparatorString(taskConfig?.csvConfig?.lineSeparator),
       );
     }
     const fileFormatView = (
@@ -164,6 +185,7 @@ class TaskContent extends React.Component<any, any> {
         label={
           formatMessage({
             id: 'odc.component.TaskDetailDrawer.TaskInfo.DataFormat',
+            defaultMessage: '数据格式',
           })
 
           // 数据格式
@@ -173,6 +195,7 @@ class TaskContent extends React.Component<any, any> {
             ? taskConfig?.dataTransferFormat +
               formatMessage({
                 id: 'odc.component.TaskDetailDrawer.TaskInfo.Format',
+                defaultMessage: '格式',
               })
             : ''
         }
@@ -183,6 +206,7 @@ class TaskContent extends React.Component<any, any> {
       <SimpleTextItem
         label={formatMessage({
           id: 'odc.component.TaskDetailDrawer.TaskInfo.FileEncoding',
+          defaultMessage: '文件编码',
         })}
         content={taskConfig?.encoding}
       />
@@ -193,6 +217,7 @@ class TaskContent extends React.Component<any, any> {
         label={
           formatMessage({
             id: 'odc.component.TaskDetailDrawer.TaskInfo.SysTenantAccountConfiguration',
+            defaultMessage: 'sys 租户账号配置',
           })
 
           // sys 租户账号配置
@@ -200,6 +225,7 @@ class TaskContent extends React.Component<any, any> {
         content={
           formatMessage({
             id: 'odc.component.TaskDetailDrawer.TaskInfo.UseTheSysTenantAccount',
+            defaultMessage: '使用 sys 租户账号提升导出速度',
           })
 
           // 使用 sys 租户账号提升导出速度
@@ -212,12 +238,14 @@ class TaskContent extends React.Component<any, any> {
         exportData.push(
           formatMessage({
             id: 'odc.component.TaskDetailDrawer.TaskInfo.UseGlobalSnapshots',
+            defaultMessage: '使用全局快照',
           }),
         );
       taskConfig?.batchCommitNum &&
         exportData.push(
           formatMessage({
             id: 'odc.component.TaskDetailDrawer.TaskInfo.BatchSubmissionQuantity',
+            defaultMessage: '批量提交数量',
           }) + taskConfig?.batchCommitNum,
         );
       return (
@@ -227,6 +255,7 @@ class TaskContent extends React.Component<any, any> {
               <SimpleTextItem
                 label={formatMessage({
                   id: 'odc.component.TaskDetailDrawer.TaskInfo.ExportContent',
+                  defaultMessage: '导出内容',
                 })}
                 content={this.getImportContent(task)}
               />
@@ -240,12 +269,14 @@ class TaskContent extends React.Component<any, any> {
                 label={
                   formatMessage({
                     id: 'odc.component.DataTransferModal.MaximumSizeOfASingle',
+                    defaultMessage: '单个文件上限（MB）',
                   }) //单个文件上限(MB)
                 }
                 content={
                   taskConfig?.exportFileMaxSize === -1
                     ? formatMessage({
                         id: 'odc.component.DataTransferModal.Unlimited',
+                        defaultMessage: '无限制',
                       }) //无限制
                     : taskConfig?.exportFileMaxSize
                 }
@@ -257,6 +288,7 @@ class TaskContent extends React.Component<any, any> {
               <SimpleTextItem
                 label={formatMessage({
                   id: 'odc.component.TaskDetailDrawer.TaskInfo.ExportDataSettings',
+                  defaultMessage: '导出数据设置',
                 })}
                 content={exportData.join(' | ')}
               />
@@ -267,6 +299,7 @@ class TaskContent extends React.Component<any, any> {
               <SimpleTextItem
                 label={formatMessage({
                   id: 'odc.component.TaskDetailDrawer.TaskInfo.ExportStructureSettings',
+                  defaultMessage: '导出结构设置',
                 })}
                 content={exportStructureSettingsData.join(' | ')}
               />
@@ -278,6 +311,7 @@ class TaskContent extends React.Component<any, any> {
               <SimpleTextItem
                 label={formatMessage({
                   id: 'odc.component.TaskDetailDrawer.TaskInfo.CsvSettings',
+                  defaultMessage: 'CSV 设置',
                 })}
                 content={csvDisplayData.join(' | ')}
               />
@@ -292,18 +326,21 @@ class TaskContent extends React.Component<any, any> {
       importData.push(
         formatMessage({
           id: 'odc.component.TaskDetailDrawer.TaskInfo.BatchSubmissionQuantity',
+          defaultMessage: '批量提交数量',
         }) + taskConfig?.batchCommitNum,
       );
     taskConfig?.skippedDataType?.length &&
       importData.push(
         formatMessage({
           id: 'odc.component.TaskDetailDrawer.TaskInfo.DataTypeSkipped',
+          defaultMessage: '不导入的数据类型',
         }) + taskConfig?.skippedDataType?.join('、'),
       );
     taskConfig?.truncateTableBeforeImport &&
       importData.push(
         formatMessage({
           id: 'odc.component.TaskDetailDrawer.TaskInfo.ClearDataBeforeImport',
+          defaultMessage: '导入前清空数据',
         }),
       );
     const isExpired =
@@ -315,15 +352,17 @@ class TaskContent extends React.Component<any, any> {
             label={
               formatMessage({
                 id: 'odc.component.TaskDetailDrawer.TaskInfo.ImportFileFormat',
+                defaultMessage: '导入文件格式',
               })
 
               // 导入文件格式
             }
             content={
               taskConfig?.fileType
-                ? taskConfig?.fileType +
+                ? getImportTypeLabel(taskConfig?.fileType) +
                   formatMessage({
                     id: 'odc.component.TaskDetailDrawer.TaskInfo.Format',
+                    defaultMessage: '格式',
                   })
                 : ''
             }
@@ -333,6 +372,7 @@ class TaskContent extends React.Component<any, any> {
           <SimpleTextItem
             label={formatMessage({
               id: 'odc.ImportDrawer.ImportForm.ImportFiles',
+              defaultMessage: '导入文件',
             })}
             content={
               isClient() ? (
@@ -346,6 +386,7 @@ class TaskContent extends React.Component<any, any> {
                           isExpired
                             ? formatMessage({
                                 id: 'src.component.Task.component.DataTransferModal.029883D6',
+                                defaultMessage: '文件下载链接已超时，请重新发起工单。',
                               })
                             : null
                         }
@@ -379,6 +420,7 @@ class TaskContent extends React.Component<any, any> {
               <SimpleTextItem
                 label={formatMessage({
                   id: 'odc.component.TaskDetailDrawer.TaskInfo.ImportContent',
+                  defaultMessage: '导入内容',
                 })}
                 content={this.getImportContent(task)}
               />
@@ -394,14 +436,17 @@ class TaskContent extends React.Component<any, any> {
                 <SimpleTextItem
                   label={formatMessage({
                     id: 'odc.component.TaskDetailDrawer.TaskInfo.WhenTheStructureAlreadyExists',
+                    defaultMessage: '结构已存在时',
                   })}
                   content={
                     taskConfig?.replaceSchemaWhenExists
                       ? formatMessage({
                           id: 'odc.component.TaskDetailDrawer.TaskInfo.Replacement',
+                          defaultMessage: '替换',
                         })
                       : formatMessage({
                           id: 'odc.component.TaskDetailDrawer.TaskInfo.Skip',
+                          defaultMessage: '跳过',
                         })
                   }
                 />
@@ -413,6 +458,7 @@ class TaskContent extends React.Component<any, any> {
                 <SimpleTextItem
                   label={formatMessage({
                     id: 'odc.component.TaskDetailDrawer.TaskInfo.ImportDataSettings',
+                    defaultMessage: '导入数据设置',
                   })}
                   content={importData.join(' | ')}
                 />
@@ -426,6 +472,7 @@ class TaskContent extends React.Component<any, any> {
             label={
               formatMessage({
                 id: 'odc.component.TaskDetailDrawer.TaskInfo.TaskErrorHandling',
+                defaultMessage: '任务出错处理',
               })
 
               // 任务出错处理
@@ -434,10 +481,12 @@ class TaskContent extends React.Component<any, any> {
               taskConfig?.stopWhenError
                 ? formatMessage({
                     id: 'odc.component.TaskDetailDrawer.TaskInfo.StopATask',
+                    defaultMessage: '停止任务',
                   })
                 : // 停止任务
                   formatMessage({
                     id: 'odc.component.TaskDetailDrawer.TaskInfo.Skip',
+                    defaultMessage: '跳过',
                   })
 
               // 跳过
@@ -451,6 +500,7 @@ class TaskContent extends React.Component<any, any> {
             <SimpleTextItem
               label={formatMessage({
                 id: 'odc.component.TaskDetailDrawer.TaskInfo.CsvSettings',
+                defaultMessage: 'CSV 设置',
               })}
               content={csvDisplayData.join(' | ')}
             />
@@ -477,6 +527,7 @@ class TaskContent extends React.Component<any, any> {
             showIcon
             message={formatMessage({
               id: 'odc.component.DataTransferModal.DataDesensitizationMayResultIn',
+              defaultMessage: '数据脱敏可能会导致导出执行时间延长，以及导出结果的数据膨胀',
             })}
             /*数据脱敏可能会导致导出执行时间延长，以及导出结果的数据膨胀*/ style={{
               marginBottom: 18,
@@ -486,44 +537,24 @@ class TaskContent extends React.Component<any, any> {
 
         <Row>
           <Col span={12}>
-            <SimpleTextItem
-              label={formatMessage({
-                id: 'odc.component.DataTransferModal.TaskNo',
-              })}
-              /*任务编号*/ content={task?.id}
-            />
+            <SimpleTextItem label={'ID'} /*任务编号*/ content={task?.id} />
           </Col>
           <Col span={12}>
             <SimpleTextItem
               label={formatMessage({
-                id: 'odc.component.DataTransferModal.Database',
-              })}
-              /*所属数据库*/ content={task?.database?.name || '-'}
-            />
-          </Col>
-          <Col span={12}>
-            <SimpleTextItem
-              label={
-                formatMessage({
-                  id: 'odc.src.component.Task.component.DataTransferModal.DataSource',
-                }) /* 所属数据源 */
-              }
-              content={task?.database?.dataSource?.name || '-'}
-            />
-          </Col>
-          <Col span={12}>
-            <SimpleTextItem
-              label={formatMessage({
-                id: 'odc.component.TaskDetailDrawer.TaskInfo.TaskType',
+                id: 'src.component.Task.component.DataTransferModal.474FFC64',
+                defaultMessage: '类型',
               })}
               content={
                 {
                   IMPORT: formatMessage({
                     id: 'odc.component.DataTransferModal.Import',
+                    defaultMessage: '导入',
                   }),
                   //导入
                   EXPORT: formatMessage({
                     id: 'odc.component.DataTransferModal.Export',
+                    defaultMessage: '导出',
                   }),
 
                   //导出
@@ -532,23 +563,52 @@ class TaskContent extends React.Component<any, any> {
             />
           </Col>
           <Col span={12}>
-            {hasFlow && (
-              <SimpleTextItem
-                label={formatMessage({
-                  id: 'odc.component.DataTransferModal.RiskLevel',
-                })}
-                /*风险等级*/ content={
-                  <RiskLevelLabel level={riskLevel?.level} color={riskLevel?.style} />
-                }
-              />
-            )}
+            <SimpleTextItem
+              label={formatMessage({
+                id: 'src.component.Task.component.DataTransferModal.60B4CB8C',
+                defaultMessage: '数据库',
+              })}
+              content={<EllipsisText content={<DatabaseLabel database={task?.database} />} />}
+            />
           </Col>
           <Col span={12}>
             <SimpleTextItem
               label={formatMessage({
-                id: 'odc.component.DataTransferModal.ExecutionMethod',
+                id: 'src.component.Task.component.DataTransferModal.6213AE54',
+                defaultMessage: '数据源',
               })}
-              /*执行方式*/ content={taskExecStrategyMap[task?.executionStrategy]}
+              content={<EllipsisText content={task?.database?.dataSource?.name} />}
+            />
+          </Col>
+          {!login.isPrivateSpace() && (
+            <Col span={12}>
+              <SimpleTextItem
+                label={formatMessage({
+                  id: 'src.component.Task.component.DataTransferModal.C18618E1',
+                  defaultMessage: '项目',
+                })}
+                content={<EllipsisText content={task?.project?.name} />}
+              />
+            </Col>
+          )}
+          <Col span={12}>
+            {hasFlow && (
+              <SimpleTextItem
+                label={formatMessage({
+                  id: 'odc.component.DataTransferModal.RiskLevel',
+                  defaultMessage: '风险等级',
+                })}
+                content={<ODCRiskLevelLabel iconMode levelMap level={riskLevel?.level} />}
+              />
+            )}
+          </Col>
+          <Col span={24}>
+            <SimpleTextItem
+              label={formatMessage({
+                id: 'odc.component.DataTransferModal.Description',
+                defaultMessage: '描述',
+              })}
+              /*描述*/ content={task?.description || '-'}
             />
           </Col>
           {task?.executionStrategy === TaskExecStrategy.TIMER && (
@@ -556,6 +616,7 @@ class TaskContent extends React.Component<any, any> {
               <SimpleTextItem
                 label={formatMessage({
                   id: 'odc.component.DataTransferModal.ExecutionTime',
+                  defaultMessage: '执行时间',
                 })}
                 /*执行时间*/ content={getLocalFormatDateTime(task?.executionTime)}
               />
@@ -572,7 +633,7 @@ class TaskContent extends React.Component<any, any> {
         <>
           <Divider
             style={{
-              marginTop: 4,
+              marginTop: 16,
             }}
           />
 
@@ -581,9 +642,11 @@ class TaskContent extends React.Component<any, any> {
               {isImport
                 ? formatMessage({
                     id: 'odc.component.TaskDetailDrawer.TaskInfo.ImportObjects',
+                    defaultMessage: '导入对象',
                   })
                 : formatMessage({
                     id: 'odc.component.TaskDetailDrawer.TaskInfo.ExportObjects',
+                    defaultMessage: '导出对象',
                   })}
             </div>
             <ObjTable
@@ -598,20 +661,28 @@ class TaskContent extends React.Component<any, any> {
         </>
         {haveCsvMapping && <CsvTable data={taskConfig?.csvColumnMappings} />}
         <Row>
-          <Col span={24}>
+          <Col span={12}>
             <SimpleTextItem
               label={formatMessage({
-                id: 'odc.component.DataTransferModal.Description',
+                id: 'odc.component.DataTransferModal.ExecutionMethod',
+                defaultMessage: '执行方式',
               })}
-              /*描述*/ content={task?.description || '-'}
+              /*执行方式*/ content={taskExecStrategyMap[task?.executionStrategy]}
             />
           </Col>
         </Row>
+        <Divider
+          style={{
+            marginTop: 16,
+          }}
+        />
+
         <Row className={styles.spaceBlock}>
           <Col span={12}>
             <SimpleTextItem
               label={formatMessage({
                 id: 'odc.component.DataTransferModal.Created',
+                defaultMessage: '创建人',
               })}
               /*创建人*/ content={task?.creator?.name || '-'}
             />
@@ -620,6 +691,7 @@ class TaskContent extends React.Component<any, any> {
             <SimpleTextItem
               label={formatMessage({
                 id: 'odc.component.TaskDetailDrawer.TaskInfo.CreationTime',
+                defaultMessage: '创建时间',
               })}
               content={getLocalFormatDateTime(task?.createTime)}
             />

@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { ConnectionMode, IDataType } from '@/d.ts';
+import { getDataSourceModeConfig } from '@/common/datasource';
+import { IDataType } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
-import { dataTypesIns } from '@/util/dataType';
+import { dataTypesIns } from '@/util/database/dataType';
 import { formatMessage } from '@/util/intl';
 import { Column } from '@oceanbase-odc/ob-react-data-grid';
 import { isNil } from 'lodash';
 import { useContext, useMemo } from 'react';
+import { CaseTextEditor } from '../../EditableTable/Editors/CaseTextEditor';
 import { InputNumberEditor } from '../../EditableTable/Editors/NumberEditor';
 import { SelectEditor } from '../../EditableTable/Editors/SelectEditor';
 import { TextEditor } from '../../EditableTable/Editors/TextEditor';
@@ -29,8 +31,7 @@ import { TableColumn } from '../interface';
 import WrapCheckboxFormatetr from '../RdgFomatter/CheckboxFormatter';
 import WrapDisableFormatter from '../RdgFomatter/DisableFormatter';
 import { getTypeByColumnName } from './helper';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { CaseTextEditor } from '../../EditableTable/Editors/CaseTextEditor';
+import { valueFilter } from '@/util/data/string';
 
 interface IColumnParams {
   session?: SessionStore;
@@ -56,6 +57,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
           {...props}
           onRowChange={(row: TableColumn) => {
             const type = row.type;
+            // const dataType = dataTypesIns.getDataType('OB_MYSQL', type);
             const dataType = dataTypesIns.getDataType(session.connection.dialectType, type);
             onRowChange(
               {
@@ -77,6 +79,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
       return (
         <CaseTextEditor
           {...rest}
+          valueFilter={valueFilter}
           caseSensitive={sqlConfig?.caseSensitivity}
           escapes={sqlConfig?.escapeChar}
           onRowChange={(newRow: TableColumn, submit) => {
@@ -178,7 +181,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
     return [
       {
         key: 'name',
-        name: formatMessage({ id: 'odc.CreateTable.Columns.columns.Name' }), //名称
+        name: formatMessage({ id: 'odc.CreateTable.Columns.columns.Name', defaultMessage: '名称' }), //名称
         resizable: true,
         editable: true,
         editor: ColumnNameEditor,
@@ -186,7 +189,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
 
       {
         key: 'type',
-        name: formatMessage({ id: 'odc.CreateTable.Columns.columns.Type' }), //类型
+        name: formatMessage({ id: 'odc.CreateTable.Columns.columns.Type', defaultMessage: '类型' }), //类型
         resizable: true,
         editable: (row) => !pageContext?.editMode || isNil(row.ordinalPosition),
         editor: DataTypeSelect,
@@ -195,7 +198,10 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
 
       {
         key: 'width',
-        name: formatMessage({ id: 'odc.CreateTable.Columns.columns.Length' }), //长度
+        name: formatMessage({
+          id: 'odc.CreateTable.Columns.columns.Length',
+          defaultMessage: '长度',
+        }), //长度
         resizable: true,
         filterable: false,
         editor: TextEditor,
@@ -208,6 +214,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
         key: 'scale',
         name: formatMessage({
           id: 'odc.CreateTable.Columns.columns.DecimalPoint',
+          defaultMessage: '小数点',
         }), //小数点
         resizable: true,
         filterable: false,
@@ -221,6 +228,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
         key: 'notNull',
         name: formatMessage({
           id: 'workspace.window.createTable.column.allowNull',
+          defaultMessage: '非空',
         }),
 
         resizable: true,
@@ -234,6 +242,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
         key: 'autoIncrement',
         name: formatMessage({
           id: 'workspace.window.createTable.column.increment',
+          defaultMessage: '自增',
         }),
 
         resizable: true,
@@ -247,6 +256,7 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
         key: 'generated',
         name: formatMessage({
           id: 'odc.CreateTable.Columns.columns.VirtualColumn',
+          defaultMessage: '虚拟列',
         }), //虚拟列
         resizable: true,
         filterable: false,
@@ -257,7 +267,10 @@ export function useColumns({ session }: IColumnParams, originColumns: TableColum
 
       {
         key: 'comment',
-        name: formatMessage({ id: 'odc.CreateTable.Columns.columns.Comment' }), //注释
+        name: formatMessage({
+          id: 'odc.CreateTable.Columns.columns.Comment',
+          defaultMessage: '注释',
+        }), //注释
         filterable: false,
         resizable: true,
         editor: TextEditor,

@@ -15,7 +15,7 @@
  */
 
 import { ConnectType } from '@/d.ts';
-import { ClusterStore } from '@/store/cluster';
+import { ClusterStore, ClusterTypeList } from '@/store/cluster';
 import { formatMessage } from '@/util/intl';
 import { Cascader, Form, Input, Space, Typography } from 'antd';
 import { inject, observer } from 'mobx-react';
@@ -69,7 +69,7 @@ const InstanceSelect: React.FC<IProps> = function ({ clusterStore, disabled }) {
       .forEach((cluster) => {
         const tenants = tenantListMap[cluster.instanceId];
 
-        if (cluster.type !== 'CLUSTER') {
+        if (!ClusterTypeList.includes(cluster.type)) {
           const tenantMode = tenantListMap[cluster?.instanceId]?.find(
             (t) => t.tenantId === cluster?.instanceId,
           )?.tenantMode;
@@ -122,7 +122,7 @@ const InstanceSelect: React.FC<IProps> = function ({ clusterStore, disabled }) {
           let modeText = '';
           if (clusterName) {
             modeText =
-              formatMessage({ id: 'odc.cloud.InstanceSelect.Mode' }) + //`模式：`
+              formatMessage({ id: 'odc.cloud.InstanceSelect.Mode', defaultMessage: '模式：' }) + //`模式：`
               (mode === ConnectType.OB_MYSQL ? 'MySQL' : 'Oracle');
           }
           return (
@@ -143,8 +143,9 @@ const InstanceSelect: React.FC<IProps> = function ({ clusterStore, disabled }) {
                   innerValue = [cluster, tenant].filter(Boolean);
                 }
                 function onChange({ tenantId, cluster }) {
-                  const tenantMode = tenantListMap[cluster]?.find((t) => t.tenantId === tenantId)
-                    ?.tenantMode;
+                  const tenantMode = tenantListMap[cluster]?.find(
+                    (t) => t.tenantId === tenantId,
+                  )?.tenantMode;
                   form?.setFieldsValue({
                     clusterName: cluster,
                     tenantName: tenantId,
@@ -206,6 +207,7 @@ const InstanceSelect: React.FC<IProps> = function ({ clusterStore, disabled }) {
                         {
                           formatMessage({
                             id: 'odc.cloud.InstanceSelect.SelectAConnectionInstance',
+                            defaultMessage: '请选择连接实例',
                           }) /*请选择连接实例*/
                         }
                       </Typography.Text>

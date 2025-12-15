@@ -1,0 +1,207 @@
+.asyncTask {
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+  }
+  :global {
+    .ant-drawer-body {
+      padding: 16px 0px 16px 16px;
+    }
+  }
+  .hide {
+    display: none;
+  }
+
+  .tip {
+    color: var(--text-color-secondary);
+    font-size: 12;
+    line-height: 20px;
+  }
+
+  .desc {
+    margin-top: 4;
+    color: var(--text-color-hint);
+    font-size: 12;
+    line-height: 20px;
+  }
+
+  .hour {
+    margin-left: 8px;
+  }
+
+  .sqlContent {
+    :global {
+      .ant-form-item-row,
+      .ant-form-item-control-input,
+      .ant-form-item-control-input-content {
+        height: 100%;
+      }
+
+      .ant-form-item-control-input-content {
+        border: 1px solid var(--odc-border-color);
+      }
+    }
+  }
+
+  :global {
+    .ant-drawer-footer {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+}
+
+.linkBtn {
+  margin: 0px;
+  padding: 0px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+
+  .tip {
+    color: var(--text-color-hint);
+  }
+}
+
+// orderedDatabaseIds
+.orderedDatabaseIds {
+  padding: 18px 16px;
+  background-color: var(--neutral-grey1-color);
+
+  .title {
+    color: var(--text-color-primary);
+    font-weight: 500;
+  }
+
+  :global {
+    .ant-form-item {
+      margin-bottom: 0px;
+      padding-top: 4px;
+      padding-bottom: 4px;
+    }
+
+    .ant-timeline-item {
+      margin-bottom: 0px;
+      padding-bottom: 0 !important;
+      line-height: 1;
+    }
+
+    .ant-timeline-item-last {
+      .ant-timeline-item-content {
+        height: 20px;
+        line-height: 20px;
+      }
+    }
+
+    .ant-timeline-item-content {
+      min-height: auto;
+      margin-bottom: 0px;
+    }
+  }
+}
+
+.dragIcon {
+  cursor: pointer;
+}
+.dragIem {
+  padding-right: 6px;
+  padding-left: 8px;
+  &:hover {
+    background-color: var(--hover-color);
+  }
+}
+.timelineItem {
+  :global {
+    .ant-timeline-item-head {
+      background-color: rgba(0, 0, 0, 0.15);
+      border-color: transparent;
+    }
+
+    .ant-timeline-item-head-blue {
+      background-color: rgba(0, 0, 0, 0.15);
+      border-color: transparent !important;
+    }
+
+    .ant-timeline-item-head {
+      background-color: rgba(0, 0, 0, 0.15);
+      border-color: transparent !important;
+    }
+  }
+}
+
+.selectOptions {
+  padding: 0px;
+
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08),
+    0 9px 28px 8px rgba(0, 0, 0, 0.05);
+
+  :global {
+    .ant-popover-inner {
+      padding: 0px;
+    }
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 390px;
+    height: 28px;
+    padding: 0px 8px;
+
+    &:hover {
+      background-color: var(--hover-color);
+      cursor: pointer;
+    }
+  }
+
+  .optionDisabled {
+    background-color: var(--hover-color);
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: var(--hover-color);
+      cursor: not-allowed;
+    }
+  }
+}
+
+.columnForm {
+  border: 1px solid transparent;
+}
+.columnFormDisabled {
+  background-color: transparent !important;
+  border: 1px solid transparent !important;
+}
+
+.multipleMenu {
+  position: fixed;
+  top: 64px;
+  right: 0px;
+  z-index: 1;
+  width: 120px;
+  padding: 12px 8px;
+  :global {
+    .ant-menu.ant-menu-vertical {
+      border-right: none;
+      border-left: 1px solid var(--odc-border-color);
+      .ant-menu-item {
+        height: 28px;
+        line-height: 28px;
+      }
+    }
+    .ant-tabs-tab {
+      height: 28px;
+      padding: 0;
+      line-height: 28px;
+    }
+  }
+}
+.content {
+  position: relative;
+  display: flex;
+  max-height: 100%;
+  overflow-y: scroll;
+}

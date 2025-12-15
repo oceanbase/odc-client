@@ -24,29 +24,38 @@ import { generateUpdateTableDDL } from '@/common/network/table';
 import HelpDoc from '@/component/helpDoc';
 import ObjectInfoView from '@/component/ObjectInfoView';
 import Toolbar from '@/component/Toolbar';
+import { columnGroupsText } from '@/constant/label';
 import CreateTableBaseInfoForm from '@/page/Workspace/components/CreateTable/BaseInfo';
 import { TablePage } from '@/store/helper/page/pages';
 import page from '@/store/page';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import type { FormInstance } from 'antd/es/form';
 import { cloneDeep } from 'lodash';
 import TableContext from '../../CreateTable/TableContext';
 import TablePageContext from '../context';
-import { ColumnStoreType } from '@/d.ts/table';
-import { columnGroupsText } from '@/constant/label';
+import { DBType } from '@/d.ts/database';
+import LogicTableBaseInfo from './LogicTableBaseInfo';
+import {
+  PropsTab as TablePropsTab,
+  TopTab as TableTopTab,
+} from '@/page/Workspace/components/TablePage';
 
 interface IProps {
   pageKey?: string;
+  dbType?: DBType;
+  isExternalTable?: boolean;
 }
 
-const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
+const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey, dbType, isExternalTable }) => {
   const tableContext = useContext(TablePageContext);
   const session = tableContext.session;
   const table = tableContext?.table;
   const [isEditing, setIsEditing] = useState(false);
   const formRef = useRef<FormInstance<any>>();
 
-  return (
+  return dbType === DBType.LOGICAL ? (
+    <LogicTableBaseInfo table={table} />
+  ) : (
     <div>
       {isEditing ? (
         <div
@@ -63,6 +72,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
             {
               formatMessage({
                 id: 'odc.components.ShowTableBaseInfoForm.Editing',
+                defaultMessage: '编辑',
               })
               /* 编辑 */
             }
@@ -72,6 +82,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
               {
                 formatMessage({
                   id: 'odc.components.ShowTableBaseInfoForm.Cancel',
+                  defaultMessage: '取消',
                 })
                 /* 取消 */
               }
@@ -103,7 +114,13 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                         await session.database.getTableList();
                         const params = page.pages.find((p) => p.key === pageKey)
                           ?.params as TablePage['pageParams'];
-                        const tablePage = new TablePage(params?.databaseId, newTableName);
+                        const tablePage = new TablePage(
+                          params?.databaseId,
+                          newTableName,
+                          TableTopTab.PROPS,
+                          TablePropsTab.INFO,
+                          params?.tableId,
+                        );
                         await page.updatePage(
                           pageKey,
                           {
@@ -132,6 +149,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
               {
                 formatMessage({
                   id: 'odc.components.ShowTableBaseInfoForm.Determine',
+                  defaultMessage: '确定',
                 })
                 /* 确定 */
               }
@@ -140,18 +158,23 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
         </div>
       ) : (
         <Toolbar>
-          <Toolbar.Button
-            icon={<EditOutlined />}
-            text={formatMessage({
-              id: 'odc.components.ShowTableBaseInfoForm.Editing',
-            })}
-            /* 编辑 */ onClick={() => setIsEditing(true)}
-          />
+          {/* 外表不支持编辑 */}
+          {isExternalTable ? null : (
+            <Toolbar.Button
+              icon={<EditOutlined />}
+              text={formatMessage({
+                id: 'odc.components.ShowTableBaseInfoForm.Editing',
+                defaultMessage: '编辑',
+              })}
+              /* 编辑 */ onClick={() => setIsEditing(true)}
+            />
+          )}
 
           <Toolbar.Button
             icon={<SyncOutlined />}
             text={formatMessage({
               id: 'odc.components.ShowTableBaseInfoForm.Refresh',
+              defaultMessage: '刷新',
             })}
             /* 刷新 */ onClick={tableContext.onRefresh}
           />
@@ -175,22 +198,40 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
             {
               label: formatMessage({
                 id: 'workspace.window.createTable.baseInfo.tableName',
+                defaultMessage: '表名称',
               }),
 
-              content: table?.info.tableName,
+              content: table?.info?.tableName,
+            },
+            {
+              label: formatMessage({
+                id: 'src.page.Workspace.components.TablePage.ShowTableBaseInfoForm.52095769',
+                defaultMessage: '表类型',
+              }),
+              content: isExternalTable
+                ? formatMessage({
+                    id: 'src.page.Workspace.components.TablePage.ShowTableBaseInfoForm.3C463D88',
+                    defaultMessage: '外表',
+                  })
+                : formatMessage({
+                    id: 'src.page.Workspace.components.TablePage.ShowTableBaseInfoForm.B7A406C8',
+                    defaultMessage: '表',
+                  }),
             },
 
             {
               label: formatMessage({
                 id: 'workspace.window.createTable.baseInfo.character',
+                defaultMessage: '默认字符集',
               }),
 
-              content: table?.info.character || 'utf8mb4',
+              content: table?.info?.character || 'utf8mb4',
             },
 
             {
               label: formatMessage({
                 id: 'workspace.window.createTable.baseInfo.collation',
+                defaultMessage: '默认排序规则',
               }),
 
               content: table?.info?.collation || 'utf8mb4',
@@ -199,40 +240,47 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
             {
               label: formatMessage({
                 id: 'workspace.window.createTable.baseInfo.comment',
+                defaultMessage: '描述',
               }),
 
               content:
                 table?.info?.comment ||
                 formatMessage({
                   id: 'odc.components.ShowTableBaseInfoForm.Empty',
+                  defaultMessage: '空',
                 }),
               // 空
             },
             {
               label: formatMessage({
                 id: 'odc.TablePage.ShowTableBaseInfoForm.Owner',
+                defaultMessage: '所有者',
               }), //所有者
               content:
                 table?.info?.owner ||
                 formatMessage({
                   id: 'odc.components.ShowTableBaseInfoForm.Empty',
+                  defaultMessage: '空',
                 }),
               // 空
             },
             {
               label: formatMessage({
                 id: 'odc.TablePage.ShowTableBaseInfoForm.LastModifiedDate',
+                defaultMessage: '最近修改日期',
               }), //最近修改日期
               content:
                 getLocalFormatDateTime(table?.info?.updateTime) ||
                 formatMessage({
                   id: 'odc.components.ShowTableBaseInfoForm.Empty',
+                  defaultMessage: '空',
                 }),
               // 空
             },
             {
               label: formatMessage({
                 id: 'odc.TablePage.ShowTableBaseInfoForm.RowDataVolume',
+                defaultMessage: '行数据量',
               }), //行数据量 //行数据量
               content: (
                 <HelpDoc
@@ -245,6 +293,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                   {table?.info?.rowCount ||
                     formatMessage({
                       id: 'odc.components.ShowTableBaseInfoForm.Empty',
+                      defaultMessage: '空',
                     })}
                 </HelpDoc>
               ),
@@ -254,6 +303,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
             {
               label: formatMessage({
                 id: 'odc.TablePage.ShowTableBaseInfoForm.Size',
+                defaultMessage: '大小',
               }), //大小 //大小
               content: (
                 <HelpDoc
@@ -266,6 +316,7 @@ const ShowTableBaseInfoForm: React.FC<IProps> = ({ pageKey }) => {
                   {table?.info?.tableSize ||
                     formatMessage({
                       id: 'odc.components.ShowTableBaseInfoForm.Empty',
+                      defaultMessage: '空',
                     })}
                 </HelpDoc>
               ),

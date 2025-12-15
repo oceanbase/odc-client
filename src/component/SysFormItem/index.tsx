@@ -20,7 +20,7 @@ import { EnableOverwriteSysConfig } from '@/constant';
 import { IConnection } from '@/d.ts';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import { useUpdate } from 'ahooks';
 import { Checkbox, Col, Form, Input, message, Row, Space, Tooltip, Typography } from 'antd';
 import { FormInstance } from 'antd/es/form';
@@ -96,6 +96,7 @@ const SysFormItem: React.FC<IProps> = function (props) {
           errors: [
             formatMessage({
               id: 'odc.src.component.SysFormItem.PleaseSelectTheDatabase',
+              defaultMessage: '请选择数据库',
             }), //'请选择数据库'
           ],
         },
@@ -130,6 +131,7 @@ const SysFormItem: React.FC<IProps> = function (props) {
       message.success(
         formatMessage({
           id: 'odc.component.SysFormItem.ConnectionSucceeded',
+          defaultMessage: '连接成功',
         }), // 连接成功
       );
     }
@@ -142,9 +144,11 @@ const SysFormItem: React.FC<IProps> = function (props) {
     <FormItemPanel
       label={formatMessage({
         id: 'odc.component.SysFormItem.SysTenantAccountSettings',
+        defaultMessage: 'sys 租户账号设置',
       })}
       /* sys 租户账号设置 */ expandText={formatMessage({
         id: 'odc.component.SysFormItem.Configuration',
+        defaultMessage: '配置',
       })}
       /* 配置 */ keepExpand
       overview={
@@ -162,6 +166,7 @@ const SysFormItem: React.FC<IProps> = function (props) {
                   enforce
                     ? formatMessage({
                         id: 'odc.component.SysFormItem.ToExportObjectsOtherThan',
+                        defaultMessage: '导出表/视图之外的对象需要开启配置',
                       })
                     : null
                 }
@@ -169,6 +174,7 @@ const SysFormItem: React.FC<IProps> = function (props) {
                 {
                   formatMessage({
                     id: 'odc.component.SysFormItem.UseTheSysTenantAccount',
+                    defaultMessage: '使用 sys 租户账号提升任务速度',
                   }) /* 使用 Sys 租户账号提升导出速度 */
                 }
               </Tooltip>
@@ -200,6 +206,7 @@ const SysFormItem: React.FC<IProps> = function (props) {
                     validateStatus={status}
                     label={formatMessage({
                       id: 'odc.component.SysFormItem.Account',
+                      defaultMessage: '账号',
                     })}
                     /* 账号 */ name="sysUser"
                     rules={[
@@ -207,6 +214,7 @@ const SysFormItem: React.FC<IProps> = function (props) {
                         required: !!useSys,
                         message: formatMessage({
                           id: 'odc.component.SysFormItem.EnterASysAccount',
+                          defaultMessage: '请输入 sys 账号',
                         }), // 请输入 Sys 账号
                       },
                     ]}
@@ -215,6 +223,7 @@ const SysFormItem: React.FC<IProps> = function (props) {
                       onChange={resetStatus}
                       placeholder={formatMessage({
                         id: 'odc.component.SysFormItem.EnterTheSysAccount',
+                        defaultMessage: '请填写 sys 账号',
                       })} /* 请填写 Sys 账号 */
                     />
                   </Form.Item>
@@ -227,6 +236,7 @@ const SysFormItem: React.FC<IProps> = function (props) {
                       validateStatus={status}
                       label={formatMessage({
                         id: 'odc.component.SysFormItem.Password',
+                        defaultMessage: '密码',
                       })}
                       /* 密码 */ name="sysUserPassword"
                       initialValue={''}
@@ -237,6 +247,7 @@ const SysFormItem: React.FC<IProps> = function (props) {
                         visibilityToggle={false}
                         placeholder={formatMessage({
                           id: 'odc.component.SysFormItem.EnterTheSysPassword',
+                          defaultMessage: '请填写 sys 密码',
                         })} /* 请填写 Sys 密码 */
                       />
                     </Form.Item>
@@ -244,6 +255,7 @@ const SysFormItem: React.FC<IProps> = function (props) {
                     <Form.Item
                       label={formatMessage({
                         id: 'odc.component.SysFormItem.Password',
+                        defaultMessage: '密码',
                       })}
                       /* 密码 */ hasFeedback
                       validateStatus={status}
@@ -251,6 +263,7 @@ const SysFormItem: React.FC<IProps> = function (props) {
                       <Input disabled value="******" />
                     </Form.Item>
                   )}
+
                   {!pwdEdit ? (
                     <Form.Item
                       name="sid"
@@ -268,6 +281,7 @@ const SysFormItem: React.FC<IProps> = function (props) {
                       {
                         formatMessage({
                           id: 'odc.component.SysFormItem.TestConnection',
+                          defaultMessage: '测试连接',
                         }) /* 测试连接 */
                       }
                     </a>
@@ -296,9 +310,11 @@ const SysFormItem: React.FC<IProps> = function (props) {
                         {!pwdEdit
                           ? formatMessage({
                               id: 'odc.component.SysFormItem.ChangePassword',
+                              defaultMessage: '修改密码',
                             }) /* 修改密码 */
                           : formatMessage({
                               id: 'odc.AddConnectionDrawer.AddConnectionForm.CancelModification',
+                              defaultMessage: '取消修改',
                             })}
                       </a>
                     ) : null}
@@ -315,6 +331,7 @@ const SysFormItem: React.FC<IProps> = function (props) {
                             {
                               formatMessage({
                                 id: 'odc.component.SysFormItem.SaveTheAccountInformationTo',
+                                defaultMessage: '保存此账号信息至连接属性中',
                               }) /* 保存此账号信息至连接属性中 */
                             }
                           </Checkbox>

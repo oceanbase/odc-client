@@ -20,13 +20,13 @@ import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/
 import { CommonTableMode } from '@/component/CommonTable/interface';
 import CommonDetailModal from '@/component/Manage/DetailModal';
 import { TimeOptions } from '@/component/TimeSelect';
+import { getEventFilterAndOptions } from '@/constant/record';
 import { IAudit, IAuditEvent, IResponseData } from '@/d.ts';
 import { RecordContent } from '@/page/Secure/components/RecordPage/component';
-import { getEventFilterAndOptions } from '@/constant/record';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { Button, DatePicker } from 'antd';
-import type { Moment } from 'moment';
+import type { Dayjs } from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { getPageColumns } from './column';
 
@@ -35,11 +35,11 @@ const { RangePicker } = DatePicker;
 export const RecordTable: React.FC<{
   tableRef: React.RefObject<ITableInstance>;
   executeTime: string | number;
-  executeDate: [Moment, Moment];
+  executeDate: [Dayjs, Dayjs];
   records: IResponseData<IAudit>;
   loadData: (args: ITableLoadOptions) => Promise<void>;
   handleTableChange: (args: ITableLoadOptions) => void;
-  handleExecuteDateChange: (args: [Moment, Moment]) => void;
+  handleExecuteDateChange: (args: [Dayjs, Dayjs]) => void;
 }> = (props) => {
   const {
     records,
@@ -81,10 +81,12 @@ export const RecordTable: React.FC<{
           description: isClient()
             ? formatMessage({
                 id: 'odc.component.RecordPopover.components.NoteTheOperationRecordContains',
+                defaultMessage: '提示：操作记录包含 ODC 上的历史操作',
               })
             : //提示: 操作记录包含 ODC 上的历史操作
               formatMessage({
                 id: 'odc.component.RecordPopover.components.NoteTheOperationRecordsInclude',
+                defaultMessage: '提示：操作记录包含对 OceanBase 数据库及 ODC 上的历史操作',
               }),
 
           //提示: 操作记录包含对数据库的操作及产品操作
@@ -96,6 +98,7 @@ export const RecordTable: React.FC<{
               name: 'executeTime',
               title: formatMessage({
                 id: 'odc.component.RecordPopover.components.ExecutionTime.1',
+                defaultMessage: '执行时间：',
               }),
 
               //执行时间：
@@ -145,6 +148,7 @@ export const RecordTable: React.FC<{
         visible={detailVisible}
         title={formatMessage({
           id: 'odc.component.RecordPopover.components.RecordDetails',
+          defaultMessage: '记录详情',
         })}
         /*记录详情*/
         detailId={detailId}
@@ -153,6 +157,7 @@ export const RecordTable: React.FC<{
             {
               formatMessage({
                 id: 'odc.component.RecordPopover.components.Close',
+                defaultMessage: '关闭',
               })
 
               /*关闭*/

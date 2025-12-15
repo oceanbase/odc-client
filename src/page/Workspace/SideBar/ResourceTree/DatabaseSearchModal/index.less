@@ -1,12 +1,15 @@
 .databaseSearchModal {
   :global {
     .ant-modal-content {
+      padding: 0px;
       box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08),
         0 9px 28px 8px rgba(0, 0, 0, 0.05);
       border-radius: 6px;
       .ant-modal-header {
         padding: 8px 12px;
-        border-radius: 8px 8px;
+        border-radius: 8px 8px 0 0;
+        margin-bottom: 0px;
+        border-bottom: 1px solid var(--neutral-grey3-color);
         .ant-modal-title {
           font-size: 12px;
           line-height: 20px;
@@ -16,15 +19,44 @@
         padding: 0;
       }
     }
+    .ant-tabs-nav-wrap {
+      padding-left: 12px;
+    }
   }
-  .listTitle {
+  .syncMetadata {
+    margin: 0 4px;
+  }
+  .asyncingContent {
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .asycLoading {
+    height: 40px;
+    width: 40px;
+    font-size: 40px;
+    cursor: pointer;
+    color: var(--brand-blue6-color);
+  }
+  .asyncText {
+    margin-top: 6px;
     color: var(--text-color-secondary);
-    height: 18px;
-    font-weight: 400;
-    font-size: 20px;
-    line-height: 18px;
-    transform: scale(0.5);
-    transform-origin: left;
+    font-size: 12px;
+  }
+  .center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .searchInfo {
+    color: var(--text-color-secondary);
+    font-size: 12px;
+    line-height: 20px;
+    padding: 4px 12px;
   }
   .title {
     color: rgba(0, 0, 0, 0.65);
@@ -40,6 +72,8 @@
         color: var(--code-normal-color);
         flex-shrink: 0;
         padding-top: 4px;
+        display: flex;
+        align-items: center;
         &:hover {
           color: var(--brand-blue6-color);
           cursor: pointer;
@@ -47,10 +81,12 @@
       }
       .selectTitle {
         padding-left: 4px;
-        max-width: 280px;
+        max-width: 120px;
         text-overflow: ellipsis;
         text-wrap: nowrap;
         overflow: hidden;
+        display: inline-block;
+        vertical-align: top;
       }
       .selectIcon {
         font-size: 8px;
@@ -67,6 +103,7 @@
             border: none;
             height: 20px;
             padding: 0;
+            background-color: transparent;
             &:active,
             &:focus {
               box-shadow: none;
@@ -82,8 +119,20 @@
   .content {
     padding: 4px 0;
     max-height: 344px;
+    min-height: 300px;
     font-size: 12px;
     overflow: auto;
+    .positioninContent {
+      border-bottom: 1px solid var(--neutral-grey3-color);
+      padding-bottom: 4px;
+    }
+    .positioninContentText {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      text-wrap: nowrap;
+      width: 100%;
+    }
     .databaseItem,
     .databaseItemActive {
       display: flex;
@@ -93,18 +142,50 @@
       cursor: pointer;
       justify-content: space-between;
       width: 100%;
+
       &:hover {
         background-color: var(--hover-color);
       }
+      .nameContent {
+        display: flex;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 450px;
+        align-items: center;
+        .nameInfo {
+          margin-left: 6px;
+          max-width: 250px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+      }
+      .itemButton {
+        display: none;
+      }
+      &:hover .itemButton {
+        display: inline-block;
+      }
+
       .subInfo {
         color: var(--icon-color-disable);
         text-overflow: ellipsis;
         overflow: hidden;
+        flex: 1;
         text-wrap: nowrap;
+        margin-left: 6px;
+        display: flex;
+        align-items: center;
+        .dataSouceName {
+          flex: 1;
+          margin-left: 4px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
     }
     .databaseItemActive {
-      background-color: var(--odc-color1-bgcolor);
+      background-color: var(--hover-color);
     }
   }
   .modalTabs {
@@ -112,19 +193,23 @@
       .ant-tabs-tab {
         margin: 0 6px;
       }
+      .ant-tabs-nav-more {
+        padding: 10px 7px;
+      }
     }
     .objectlistBox {
-      max-height: 366px;
+      max-height: 66px;
       overflow: auto;
       min-height: 302px;
       margin-top: 6px;
       .objectTypeBox {
         .objectTypeTitle {
           font-weight: 500;
-          padding: 6px 12px;
+          padding: 0px 12px 8px 12px;
+          line-height: 20px;
         }
         .objectTypeItem {
-          padding: 6px 12px;
+          padding: 4px 12px;
           display: flex;
           justify-content: space-between;
           flex-wrap: nowrap;
@@ -133,9 +218,16 @@
             background-color: var(--hover-color);
             cursor: pointer;
           }
+          .itemButton {
+            display: none !important;
+          }
+          &:hover .itemButton {
+            display: inline-block !important;
+          }
         }
         .objectTypeItemMore {
-          padding: 6px 12px;
+          padding: 0px 12px;
+          height: 20px;
         }
       }
       .objectItem {
@@ -145,6 +237,12 @@
         &:hover {
           background-color: var(--hover-color);
           cursor: pointer;
+        }
+        .itemButton {
+          display: none !important;
+        }
+        &:hover .itemButton {
+          display: inline-block !important;
         }
       }
     }
@@ -162,7 +260,7 @@
           }
         }
         .ant-empty-description {
-          color: var(--neutral-black45-color);
+          color: var(--text-color-hint);
         }
       }
     }
@@ -184,6 +282,8 @@
       .ant-modal-header {
         padding: 8px 12px;
         border-radius: 8px 8px 0 0;
+        margin-bottom: 0px;
+        border-bottom: 1px solid var(--neutral-grey3-color);
       }
     }
   }

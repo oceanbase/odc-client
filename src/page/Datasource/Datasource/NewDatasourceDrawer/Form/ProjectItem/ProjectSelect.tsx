@@ -22,8 +22,8 @@ export default function ProjectSelect({ value, onChange, options, ...rest }: Sel
     .concat([
       {
         label: formatMessage({
-          id:
-            'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.NonBindingProject',
+          id: 'odc.src.page.Datasource.Datasource.NewDatasourceDrawer.Form.ProjectItem.NonBindingProject',
+          defaultMessage: '不绑定项目',
         }), //'不绑定项目'
         value: -999,
       },

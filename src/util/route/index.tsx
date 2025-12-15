@@ -22,17 +22,22 @@ export function gotoSQLWorkspace(
   databaseId?: number,
   currentPage?: boolean,
   tabKey: string = '',
+  isLogicalDatabase: boolean = false,
+  isCreateTable: boolean = false,
 ) {
   const url =
     location.origin +
     location.pathname +
     (tabKey
-      ? `#/sqlworkspace/${tabKey}/${datasourceId}`
+      ? `#/sqlworkspace/${tabKey}/${datasourceId}?databaseId=${databaseId}`
       : `#/sqlworkspace?projectId=${projectId || ''}&datasourceId=${
           datasourceId || ''
-        }&databaseId=${databaseId || ''}`);
+        }&databaseId=${
+          databaseId || ''
+        }&isLogicalDatabase=${isLogicalDatabase}&isCreateTable=${isCreateTable}`);
 
   const name = 'sqlworkspace' + '%' + login.organizationId + tabKey;
+
   if (currentPage) {
     location.href = url;
     window.name = name;

@@ -24,6 +24,7 @@ import React, { useEffect, useState } from 'react';
 import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
 import EditPropertyComponentMap from './EditPropertyComponent';
 import styles from './index.less';
+import setting from '@/store/setting';
 interface EditRuleDrawerProps {
   editRuleDrawerVisible: boolean;
   ruleType: RuleType;
@@ -97,12 +98,14 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         level,
         enabled,
       };
+      setting.getSpaceConfig();
       propertyMetadatas.forEach((pm, index) => {
-        newInitData[`activeKey${index}`] = properties[pm.name];
+        newInitData[`activeKey${index}`] = properties?.[pm.name];
         if (pm?.name === SqlInterceptorKey) {
           options.unshift({
             label: formatMessage({
               id: 'odc.src.page.Secure.Env.components.Null',
+              defaultMessage: '空',
             }), //'空'
             value: -1,
           });
@@ -128,10 +131,11 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
       title={
         formatMessage({
           id: 'odc.Env.components.EditRuleDrawer.Edit',
+          defaultMessage: '编辑',
         }) //编辑
       }
       width={480}
-      className={styles.modal}
+      rootClassName={styles.modal}
       onClose={onClose}
       destroyOnClose={true}
       footer={
@@ -146,6 +150,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
             {
               formatMessage({
                 id: 'odc.Env.components.EditRuleDrawer.Cancel',
+                defaultMessage: '取消',
               }) /*取消*/
             }
           </Button>
@@ -153,6 +158,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
             {
               formatMessage({
                 id: 'odc.Env.components.EditRuleDrawer.Submit',
+                defaultMessage: '提交',
               }) /*提交*/
             }
           </Button>
@@ -164,6 +170,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
           label={
             formatMessage({
               id: 'odc.Env.components.EditRuleDrawer.RuleName',
+              defaultMessage: '规则名称',
             }) //规则名称
           }
         >
@@ -173,6 +180,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
           label={
             formatMessage({
               id: 'odc.Env.components.EditRuleDrawer.RuleDescription',
+              defaultMessage: '规则描述',
             }) //规则描述
           }
         >
@@ -182,6 +190,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
           label={
             formatMessage({
               id: 'odc.Env.components.EditRuleDrawer.RuleType',
+              defaultMessage: '规则类型',
             }) //规则类型
           }
         >
@@ -195,7 +204,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
         initialValues={{
           level: 0,
           appliedDialectTypes: [],
-          activeKey: rule?.properties[rule?.metadata?.name],
+          activeKey: rule?.properties?.[rule?.metadata?.name],
         }}
       >
         <Form.Item
@@ -203,6 +212,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
           label={
             formatMessage({
               id: 'odc.Env.components.EditRuleDrawer.SupportsDataSources',
+              defaultMessage: '支持数据源',
             }) //支持数据源
           }
           name={'appliedDialectTypes'}
@@ -215,20 +225,20 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
               const sdt2 = rule?.metadata?.supportedDialectTypes[2 * index + 1];
               const inRange = 2 * index + 1 < rule?.metadata?.supportedDialectTypes?.length; // inRange 为false，已经超出数组长度，不渲染多余的空checkbox
               return (
-                <Row>
-                  <Col span={12}>
+                <div style={{ display: 'flex', width: '100%' }}>
+                  <div style={{ flex: 1 }}>
                     <Checkbox value={sdt1} key={2 * index}>
                       {sdt1}
                     </Checkbox>
-                  </Col>
+                  </div>
                   {inRange && (
-                    <Col span={12}>
+                    <div style={{ flex: 1 }}>
                       <Checkbox value={sdt2} key={2 * index + 1}>
                         {sdt2}
                       </Checkbox>
-                    </Col>
+                    </div>
                   )}
-                </Row>
+                </div>
               );
             })}
           </Checkbox.Group>
@@ -250,6 +260,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
             label={
               formatMessage({
                 id: 'odc.Env.components.EditRuleDrawer.ImprovementLevel',
+                defaultMessage: '改进等级',
               }) //改进等级
             }
             name={'level'}
@@ -258,6 +269,7 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
                 required: true,
                 message: formatMessage({
                   id: 'odc.Env.components.EditRuleDrawer.SelectAnImprovementLevel',
+                  defaultMessage: '请选择改进等级',
                 }), //请选择改进等级
               },
             ]}
@@ -268,9 +280,10 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
                   leftText
                   title={formatMessage({
                     id: 'odc.Env.components.EditRuleDrawer.AllowExecution',
+                    defaultMessage: '允许执行',
                   })} /*允许执行*/
                 >
-                  {RiskLevelTextMap[RiskLevelEnum.DEFAULT]}
+                  {RiskLevelTextMap()[RiskLevelEnum.DEFAULT]}
                 </HelpDoc>
               </Radio>
               <Radio value={RiskLevelEnum.SUGGEST}>
@@ -278,9 +291,10 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
                   leftText
                   title={formatMessage({
                     id: 'odc.Env.components.EditRuleDrawer.ApprovalRequiredBeforeExecution',
+                    defaultMessage: '执行之前需要审批',
                   })} /*执行之前需要审批*/
                 >
-                  {RiskLevelTextMap[RiskLevelEnum.SUGGEST]}
+                  {RiskLevelTextMap()[RiskLevelEnum.SUGGEST]}
                 </HelpDoc>
               </Radio>
               <Radio value={RiskLevelEnum.MUST}>
@@ -288,9 +302,10 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
                   leftText
                   title={formatMessage({
                     id: 'odc.Env.components.EditRuleDrawer.ExecutionIsProhibitedAndApproval',
+                    defaultMessage: '禁止执行，无法发起审批',
                   })} /*禁止执行，无法发起审批*/
                 >
-                  {RiskLevelTextMap[RiskLevelEnum.MUST]}
+                  {RiskLevelTextMap()[RiskLevelEnum.MUST]}
                 </HelpDoc>
               </Radio>
             </Radio.Group>
@@ -299,7 +314,12 @@ const EditRuleDrawer: React.FC<EditRuleDrawerProps> = ({
 
         <Form.Item
           name="enabled"
-          label={formatMessage({ id: 'src.page.Secure.Env.components.074ED6D7' }) /*"是否启用"*/}
+          label={
+            formatMessage({
+              id: 'src.page.Secure.Env.components.074ED6D7',
+              defaultMessage: '是否启用',
+            }) /*"是否启用"*/
+          }
           required
           valuePropName="checked"
         >

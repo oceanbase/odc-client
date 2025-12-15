@@ -49,4 +49,25 @@ export enum IDataSourceType {
   MySQL = 'mysql',
   Doris = 'doris',
   Oracle = 'oracle',
+  PG = 'postgresql',
+  ALIYUNOSS = 'ALIYUNOSS',
+  QCLOUD = 'QCLOUD',
+  HUAWEI = 'HUAWEI',
+  AWSS3 = 'AWSS3',
+}
+
+export enum IForbiddenSQLConsoleDataSourceType {
+  OSS = 'OSS',
+  COS = 'COS',
+  AWS = 'AWS',
+  OBS = 'OBS',
+}
+
+export enum ConnectionMode {
+  MYSQL = 'MYSQL',
+  DORIS = 'DORIS',
+  ORACLE = 'ORACLE',
+  OB_MYSQL = 'OB_MYSQL',
+  OB_ORACLE = 'OB_ORACLE',
+  ALL = 'ALL',
 }

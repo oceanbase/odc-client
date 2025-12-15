@@ -1,0 +1,38 @@
+.recentlyTable {
+  margin-top: 16px;
+  overflow: auto;
+  cursor: default;
+  .action {
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text-color-link);
+    line-height: 20px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  .disabledAction {
+    font-size: 12px;
+    line-height: 20px;
+    filter: grayscale(1);
+    color: #00000040;
+  }
+  .logicIcon {
+    margin-left: -4px;
+    margin-top: 4px;
+  }
+
+  .activeStatus {
+    width: 16px;
+    height: 16px;
+  }
+  .ant-table-row:nth-child(n) {
+    height: 40px;
+    max-height: 40px;
+  }
+  :global {
+    .ant-table-thead .ant-table-cell {
+      background-color: var(--table-header-background-color);
+    }
+  }
+}

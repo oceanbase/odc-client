@@ -25,8 +25,8 @@ import {
   TraceSpan,
 } from '@/d.ts';
 import setting from '@/store/setting';
-import { uploadFileToOSS } from '@/util/aliyun';
-import notification from '@/util/notification';
+import { uploadFileToOSS } from '@/common/network/aliyun';
+import notification from '@/util/ui/notification';
 import request from '@/util/request';
 import { generateDatabaseSid, generateSessionSid } from '../pathUtil';
 import _executeSQL from './executeSQL';
@@ -48,7 +48,7 @@ export async function uploadTableObject(file: File, sessionId: string) {
   const form = new FormData();
   form.append('file', file);
   const res = await request.post(url, {
-    body: form,
+    data: form,
   });
   return res?.data;
 }
@@ -92,6 +92,7 @@ export async function getSQLExplain(sql: string, sessionId, dbName): Promise<ISQ
         outline: data.outline,
         originalText: data?.originalText,
         showFormatInfo: data?.showFormatInfo,
+        graph: data?.graph,
       };
     }
     return {
@@ -99,9 +100,38 @@ export async function getSQLExplain(sql: string, sessionId, dbName): Promise<ISQ
       outline: data.outline,
       originalText: data?.originalText,
       showFormatInfo: data?.showFormatInfo,
+      graph: data?.graph,
     };
   }
   return null;
+}
+
+export async function getSQLExecuteProfile(
+  tag: string,
+  sessionId,
+  dbName,
+): Promise<ISQLExplain | null> {
+  const sid = generateDatabaseSid(dbName, sessionId);
+  const result = await request.post(`/api/v1/diagnose/getQueryProfile/${sid}`, {
+    data: {
+      tag,
+    },
+    params: {
+      ignoreError: false,
+    },
+  });
+  const { data } = result;
+  if (data) {
+    if (data?.expTree) {
+      return {
+        tree: [formatSQLExplainTree(JSON.parse(data.expTree))],
+        outline: data.outline,
+        originalText: data?.originalText,
+        showFormatInfo: data?.showFormatInfo,
+        graph: data?.graph,
+      };
+    }
+  }
 }
 
 function formatSQLExplainTree(data: any): ISQLExplainTreeNode {
@@ -326,7 +356,7 @@ export async function runSQLLint(
   sessionId: string,
   delimiter: string,
   scriptContent: string,
-): Promise<ISQLLintReuslt[]> {
+): Promise<{ checkResults: ISQLLintReuslt[]; affectedRows: number }> {
   const res = await request.post(
     `/api/v2/datasource/sessions/${generateSessionSid(sessionId)}/sqlCheck`,
     {
@@ -336,7 +366,7 @@ export async function runSQLLint(
       },
     },
   );
-  return res?.data?.contents;
+  return res?.data;
 }
 export async function runMultipleSQLLint(
   data: {

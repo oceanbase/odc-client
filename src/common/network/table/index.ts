@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-import { INlsObject, ITable, ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
-import { ITableModel, TableColumn } from '@/page/Workspace/components/CreateTable/interface';
+import { DbObjectType, INlsObject, ITable, ITableColumn, LobExt, RSModifyDataType } from '@/d.ts';
+import { ITableModel } from '@/page/Workspace/components/CreateTable/interface';
 import sessionManager from '@/store/sessionManager';
 import setting from '@/store/setting';
-import { getNlsValueKey } from '@/util/column';
+import { getNlsValueKey } from '@/util/database/column';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import request from '@/util/request';
-import { downloadFile, encodeObjName, getBlobValueKey } from '@/util/utils';
+import { getBlobValueKey } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
+import { encodeObjName } from '@/util/data/string';
 import { message } from 'antd';
 import { Base64 } from 'js-base64';
 import { isNil, toInteger } from 'lodash';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { generateDatabaseSid, generateTableSid } from '../pathUtil';
 import { convertServerTableToTable, convertTableToServerTable } from './helper';
-
+import { getLogicalTableDetail } from '@/common/network/logicalDatabase';
+import odc from '@/plugins/odc';
 export async function getTableColumnList(
   tableName: string,
   databaseName?: string,
@@ -64,14 +67,39 @@ export async function getTableInfo(
   tableName: string,
   databaseName: string,
   sessionId: string,
+  isExternalTable?: boolean,
 ): Promise<Partial<ITableModel>> {
+  const params: { type?: string } = {};
+  if (isExternalTable) {
+    params.type = 'EXTERNAL_TABLE';
+  }
+
   const res = await request.get(
     `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
       databaseName,
     )}/tables/${encodeObjName(Base64.encode(tableName))}`,
+    { params },
   );
+  const session = sessionManager.sessionMap.get(sessionId);
+  return convertServerTableToTable(res?.data, null, session?.connection?.dialectType);
+}
 
-  return convertServerTableToTable(res?.data);
+export async function getLogicTableInfo(
+  databaseId: number,
+  tableId: number,
+): Promise<Partial<ITableModel>> {
+  const res = await getLogicalTableDetail(databaseId, tableId);
+  return {
+    ...res,
+    ...convertServerTableToTable(
+      { ...res?.basePhysicalTable, name: res?.name },
+      {
+        isLogicalTable: true,
+        tableId,
+        databaseId,
+      },
+    ),
+  };
 }
 
 export async function queryTableOrViewData(
@@ -94,11 +122,17 @@ export async function queryTableOrViewData(
   return res?.data;
 }
 
-export async function queryIdentities(types: string[], sessionId: string, dbName: string) {
+export async function queryIdentities(
+  types: string[],
+  sessionId: string,
+  dbName: string,
+  identityNameLike?: string,
+) {
   const sid = generateDatabaseSid(dbName, sessionId);
   const res = await request.get(`/api/v2/connect/sessions/${sid}/metadata/identities`, {
     params: {
       type: types?.join(','),
+      identityNameLike,
     },
   });
 
@@ -144,10 +178,32 @@ export async function generateUpdateTableDDL(
 
   if (!res?.data?.sql) {
     notification.error({
-      track: formatMessage({ id: 'odc.network.table.CurrentlyNoSqlCanBe' }), //当前无 SQL 可提交
+      track: formatMessage({
+        id: 'odc.network.table.CurrentlyNoSqlCanBe',
+        defaultMessage: '当前无 SQL 可提交',
+      }), //当前无 SQL 可提交
     });
   }
   return res?.data || { sql: '', tip: '' };
+}
+
+/** 同步外表文件 */
+export async function syncExternalTableFiles(
+  sessionId: string,
+  databaseName: string,
+  externalTableName: string,
+): Promise<boolean> {
+  const res = await request.post(
+    `/api/v2/connect/sessions/${sessionId}/databases/${encodeObjName(
+      databaseName,
+    )}/externalTables/${encodeObjName(Base64.encode(externalTableName))}/syncExternalTableFiles`,
+    {
+      params: {
+        ignoreError: true,
+      },
+    },
+  );
+  return res?.data;
 }
 
 export async function getTableListByDatabaseName(
@@ -157,6 +213,20 @@ export async function getTableListByDatabaseName(
   const sid = generateDatabaseSid(databaseName, sessionId);
   const ret = await request.get(`/api/v1/table/list/${sid}`);
   return ret?.data || [];
+}
+
+/**
+ * 不依赖session直接从元数据获取库下面的表列表
+ * @param databaseId 数据库ID
+ * @returns 数据库的表列表
+ */
+export async function getTableListWithoutSession(
+  databaseId: number,
+  type?: string,
+): Promise<ITable[]> {
+  const params: { type?: string; databaseId: number } = { databaseId: databaseId, type };
+  const ret = await request.get(`/api/v2/databaseSchema/tables`, { params });
+  return ret?.data?.contents || [];
 }
 
 export async function batchGetDataModifySQL(
@@ -230,7 +300,7 @@ function wrapDataDML(
     if (isNil(nlsObject?.timestamp)) {
       return null;
     }
-    let time = moment(nlsObject.timestamp);
+    let time = dayjs(nlsObject.timestamp);
     let nano = (time.millisecond() * 1000000 + (toInteger(nlsObject?.nano) || 0))
       .toString()
       ?.padStart(9, '0');
@@ -321,7 +391,7 @@ export async function getDataObjectDownloadUrl(
     return donwloadUrl;
   } else {
     return (
-      window.ODCApiHost +
+      odc.appConfig.network?.baseUrl?.() +
       `/api/v2/datasource/sessions/${generateDatabaseSid(
         dbName,
         sessionId,

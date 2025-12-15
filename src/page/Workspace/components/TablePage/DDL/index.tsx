@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
 import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
-import { ConnectionMode } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import { AlignLeftOutlined, CloudDownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import { observer } from 'mobx-react';
 import React, { useContext, useRef, useState } from 'react';
 import TablePageContext from '../context';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 const ToolbarButton = Toolbar.Button;
 
@@ -51,19 +50,23 @@ const TableDDL: React.FC<IProps> = function ({}) {
             formated
               ? formatMessage({
                   id: 'odc.components.TablePage.Unformat',
+                  defaultMessage: '取消格式化',
                 }) // 取消格式化
               : formatMessage({
                   id: 'odc.components.TablePage.Formatting',
+                  defaultMessage: '格式化',
                 }) // 格式化
           }
           icon={<AlignLeftOutlined />}
           onClick={handleFormat}
           status={formated ? IConStatus.ACTIVE : IConStatus.INIT}
         />
+
         <ToolbarButton
           text={
             formatMessage({
               id: 'odc.components.ViewPage.Download',
+              defaultMessage: '下载',
             }) //下载
           }
           icon={<CloudDownloadOutlined />}
@@ -76,10 +79,12 @@ const TableDDL: React.FC<IProps> = function ({}) {
             );
           }}
         />
+
         <Toolbar.Button
           icon={<SyncOutlined />}
           text={formatMessage({
             id: 'odc.components.ShowTableBaseInfoForm.Refresh',
+            defaultMessage: '刷新',
           })}
           /* 刷新 */ onClick={onRefresh}
         />

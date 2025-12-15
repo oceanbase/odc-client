@@ -16,6 +16,7 @@
 
 import { formatMessage } from '@/util/intl';
 import { message, Modal } from 'antd';
+import { debounce } from 'lodash';
 
 import {
   BugOutlined,
@@ -25,13 +26,14 @@ import {
   SaveOutlined,
 } from '@ant-design/icons';
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import plType, { PLType } from '@/constant/plType';
 import { PLPage } from '@/page/Workspace/components/PLPage';
 import { DebugStatus } from '@/store/debug/type';
 import sqlStore from '@/store/sql';
 import { ToolBarActions } from '..';
-import { getDataSourceModeConfig } from '@/common/datasource';
+import { ConnectType } from '@/d.ts';
 
 const { confirm } = Modal;
 
@@ -48,26 +50,50 @@ const plActions: ToolBarActions = {
     isShowText: true,
     name: formatMessage({
       id: 'odc.EditorToolBar.actions.pl.ConfirmModification',
+      defaultMessage: '确认修改',
     }),
     icon: CheckOutlined,
-    statusFunc: getStatus,
-    async action(ctx: any) {
-      await ctx.savePL();
+    statusFunc: (ctx: PLPage, hasChangeEditorValue) => {
+      /* 未更改, 不可修改 */
+      if (!hasChangeEditorValue) return IConStatus.DISABLE;
+      return getStatus(ctx);
     },
+    action: debounce(async (ctx: any, databaseType?: ConnectType, editorValue?: String) => {
+      switch (databaseType) {
+        case ConnectType.MYSQL:
+        case ConnectType.OB_MYSQL:
+        case ConnectType.CLOUD_OB_MYSQL:
+          return await ctx.savePL(null, true, editorValue);
+        default:
+          return await ctx.savePL();
+      }
+    }, 300),
   },
 
   PL_TRIGGER_TYPE_SAVE: {
     name: formatMessage({
       id: 'odc.EditorToolBar.actions.pl.ConfirmModification',
+      defaultMessage: '确认修改',
     }),
     type: 'BUTTON_PRIMARY',
-    async action(ctx: any) {
-      await ctx.savePL();
+    statusFunc: (ctx: PLPage) => {
+      const { pageStore, pageKey } = ctx.props;
+      const page = pageStore?.getPageByKey(pageKey);
+      if (page?.startSaving) {
+        return IConStatus.RUNNING;
+      }
+      return IConStatus.INIT;
     },
+    action: debounce(async (ctx: any) => {
+      ctx.savePL();
+    }, 300),
   },
 
   PL_SCRIPT_SAVE: {
-    name: formatMessage({ id: 'odc.component.SaveSQLModal.SaveScript' }),
+    name: formatMessage({
+      id: 'odc.component.SaveSQLModal.SaveScript',
+      defaultMessage: '保存脚本',
+    }),
     icon: SaveOutlined,
     statusFunc: (ctx) => {
       const { pageKey } = ctx.props;
@@ -82,7 +108,7 @@ const plActions: ToolBarActions = {
   },
 
   PL_COMPILE: {
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.pl.Compile' }),
+    name: formatMessage({ id: 'odc.EditorToolBar.actions.pl.Compile', defaultMessage: '编译' }),
     icon: 'PL_COMPILE',
     statusFunc: (ctx) => {
       if (sqlStore.runningPageKey.has(ctx.props.pageKey) && sqlStore.isCompiling) {
@@ -133,6 +159,7 @@ const plActions: ToolBarActions = {
         message.warning(
           formatMessage({
             id: 'odc.EditorToolBar.actions.pl.ThereAreUnsavedContentsPlease',
+            defaultMessage: '存在未保存的内容，请先确认修改',
           }),
         );
         return;
@@ -186,7 +213,7 @@ const plActions: ToolBarActions = {
   },
 
   PL_EXEC: {
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.pl.RunF' }),
+    name: formatMessage({ id: 'odc.EditorToolBar.actions.pl.RunF', defaultMessage: '运行 F8' }),
     icon: 'SQL_RUN',
     statusFunc: (ctx: PLPage) => {
       const { sqlStore } = ctx.props;
@@ -214,6 +241,7 @@ const plActions: ToolBarActions = {
         message.warning(
           formatMessage({
             id: 'odc.EditorToolBar.actions.pl.ThereAreUnsavedContentsPlease',
+            defaultMessage: '存在未保存的内容，请先确认修改',
           }),
         );
         return;
@@ -233,6 +261,7 @@ const plActions: ToolBarActions = {
           message.warning(
             formatMessage({
               id: 'odc.EditorToolBar.actions.pl.TheWindowContentDoesNot',
+              defaultMessage: '窗口内容不符合匿名块语法定义',
             }),
           );
           return;
@@ -244,7 +273,7 @@ const plActions: ToolBarActions = {
   },
 
   PL_DEBUG: {
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.pl.Debugging' }),
+    name: formatMessage({ id: 'odc.EditorToolBar.actions.pl.Debugging', defaultMessage: '调试' }),
     icon: BugOutlined,
     statusFunc: (ctx: PLPage) => {
       const { pageKey, debugStore } = ctx.props;
@@ -268,6 +297,7 @@ const plActions: ToolBarActions = {
         message.warning(
           formatMessage({
             id: 'odc.EditorToolBar.actions.pl.ThereAreUnsavedContentsPlease',
+            defaultMessage: '存在未保存的内容，请先确认修改',
           }),
         );
         return;
@@ -287,6 +317,7 @@ const plActions: ToolBarActions = {
           message.warning(
             formatMessage({
               id: 'odc.EditorToolBar.actions.pl.TheWindowContentDoesNot',
+              defaultMessage: '窗口内容不符合匿名块语法定义',
             }),
           );
           return;
@@ -300,6 +331,7 @@ const plActions: ToolBarActions = {
   PL_DEBUG_AUTO: {
     name: formatMessage({
       id: 'odc.EditorToolBar.actions.pl.BatchExecution',
+      defaultMessage: '批量执行',
     }),
     icon: 'PL_AUTO_RUN',
     statusFunc: (ctx: PLPage) => {
@@ -317,7 +349,9 @@ const plActions: ToolBarActions = {
   },
 
   PL_DEBUG_STEP_IN: {
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.pl.Jump' }) + ' Ctrl/Cmd + I',
+    name:
+      formatMessage({ id: 'odc.EditorToolBar.actions.pl.Jump', defaultMessage: '跳入' }) +
+      ' Ctrl/Cmd + I',
     icon: 'PL_STEP_IN',
     statusFunc: (ctx: PLPage) => {
       const debug = ctx.getDebug();
@@ -334,7 +368,9 @@ const plActions: ToolBarActions = {
   },
 
   PL_DEBUG_STEP_OUT: {
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.pl.JumpOut' }) + ' Ctrl/Cmd + O',
+    name:
+      formatMessage({ id: 'odc.EditorToolBar.actions.pl.JumpOut', defaultMessage: '跳出' }) +
+      ' Ctrl/Cmd + O',
     icon: 'PL_STEP_OUT',
     statusFunc: (ctx: PLPage) => {
       const debug = ctx.getDebug();
@@ -354,6 +390,7 @@ const plActions: ToolBarActions = {
     name:
       formatMessage({
         id: 'odc.EditorToolBar.actions.pl.SingleStepExecution',
+        defaultMessage: '单步执行',
       }) + ' Ctrl/Cmd + P',
     icon: 'PL_STEP_SKIP',
     statusFunc: (ctx: PLPage) => {
@@ -373,6 +410,7 @@ const plActions: ToolBarActions = {
   PL_DEBUG_END: {
     name: formatMessage({
       id: 'odc.EditorToolBar.actions.pl.TerminateDebugging',
+      defaultMessage: '终止调试',
     }),
     icon: 'SQL_STOP',
     statusFunc: (ctx: PLPage) => {
@@ -391,7 +429,7 @@ const plActions: ToolBarActions = {
 
   PL_DEBUG_RETRY: {
     isShowText: true,
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.pl.ReDebug' }),
+    name: formatMessage({ id: 'odc.EditorToolBar.actions.pl.ReDebug', defaultMessage: '重新调试' }),
     statusFunc: (ctx: PLPage) => {
       const debug = ctx.getDebug();
       if (debug.status === DebugStatus.RECOVER) {
@@ -409,6 +447,7 @@ const plActions: ToolBarActions = {
       confirm({
         title: formatMessage({
           id: 'odc.EditorToolBar.actions.pl.AreYouSureToRe',
+          defaultMessage: '是否确定重新调试？',
         }),
         async onOk() {
           await ctx.checkAndFillPLINParams('DEBUG');
@@ -419,7 +458,10 @@ const plActions: ToolBarActions = {
 
   PL_DEBUG_EXIT: {
     isShowText: true,
-    name: formatMessage({ id: 'odc.EditorToolBar.actions.pl.ExitDebugging' }),
+    name: formatMessage({
+      id: 'odc.EditorToolBar.actions.pl.ExitDebugging',
+      defaultMessage: '退出调试',
+    }),
     icon: LogoutOutlined,
 
     // confirmConfig: {

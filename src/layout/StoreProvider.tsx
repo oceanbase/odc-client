@@ -28,7 +28,10 @@ import settingStore from '@/store/setting';
 import snippetStore from '@/store/snippet';
 import sqlStore from '@/store/sql';
 import taskStore from '@/store/task';
+import scheduleStore from '@/store/schedule';
 import datasourceStatus from '@/store/datasourceStatus';
+import guideCacheStore from '@/store/guideCache';
+import lruLocalStorageCacheStore from '@/store/LRULocalCacheStore';
 
 export default function (props) {
   return (
@@ -40,12 +43,15 @@ export default function (props) {
       commonStore={commonStore}
       modalStore={modalStore}
       taskStore={taskStore}
+      scheduleStore={scheduleStore}
       snippetStore={snippetStore}
       authStore={authStore}
       debugStore={debugStore}
       clusterStore={clusterStore}
       sessionManagerStore={sessionManagerStore}
       dataSourceStatusStore={datasourceStatus}
+      guideCacheStore={guideCacheStore}
+      lruLocalStorageCacheStore={lruLocalStorageCacheStore}
     >
       {props.children}
     </Provider>

@@ -33,18 +33,18 @@ const getPageColumns = (params: { label: string; openViewPage: (title: string) =
     },
 
     {
-      title: formatMessage({ id: 'odc.components.PLTable.Status' }), //状态
+      title: formatMessage({ id: 'odc.components.PLTable.Status', defaultMessage: '状态' }), //状态
       width: 64,
       key: 'status',
       dataIndex: 'status',
       filters: [
         {
           value: 'VALID',
-          text: formatMessage({ id: 'odc.components.PLTable.Effective' }), //有效
+          text: formatMessage({ id: 'odc.components.PLTable.Effective', defaultMessage: '有效' }), //有效
         },
         {
           value: 'INVALID',
-          text: formatMessage({ id: 'odc.components.PLTable.Invalid' }), //无效
+          text: formatMessage({ id: 'odc.components.PLTable.Invalid', defaultMessage: '无效' }), //无效
         },
       ],
 
@@ -55,14 +55,14 @@ const getPageColumns = (params: { label: string; openViewPage: (title: string) =
     },
 
     {
-      title: formatMessage({ id: 'odc.components.PLTable.ObjectName' }), //对象名称
+      title: formatMessage({ id: 'odc.components.PLTable.ObjectName', defaultMessage: '对象名称' }), //对象名称
       ellipsis: true,
       key: 'name',
       dataIndex: 'name',
     },
 
     {
-      title: formatMessage({ id: 'odc.components.PLTable.ObjectType' }), //对象类型
+      title: formatMessage({ id: 'odc.components.PLTable.ObjectType', defaultMessage: '对象类型' }), //对象类型
       width: 120,
       key: 'type',
       dataIndex: 'type',
@@ -70,7 +70,7 @@ const getPageColumns = (params: { label: string; openViewPage: (title: string) =
     },
 
     {
-      title: formatMessage({ id: 'odc.components.PLTable.Operation' }), //操作
+      title: formatMessage({ id: 'odc.components.PLTable.Operation', defaultMessage: '操作' }), //操作
       width: 120,
       key: 'action',
       dataIndex: 'action',
@@ -81,7 +81,7 @@ const getPageColumns = (params: { label: string; openViewPage: (title: string) =
               openViewPage(record.name);
             }}
           >
-            {formatMessage({ id: 'odc.components.PLTable.View' }) /*查看*/}
+            {formatMessage({ id: 'odc.components.PLTable.View', defaultMessage: '查看' }) /*查看*/}
           </Action.Link>
         );
       },

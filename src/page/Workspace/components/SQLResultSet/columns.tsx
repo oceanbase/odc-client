@@ -14,15 +14,15 @@ import { formatMessage } from '@/util/intl';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RiskLevelEnum, RiskLevelTextMap, levelMap } from '@/page/Secure/interface';
-import utils, { IEditor } from '@/util/editor';
-import { Button, Popover, Space, Tooltip } from 'antd';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
-import Icon from '@ant-design/icons';
-import { ReactComponent as errorSvg } from '@/svgr/error.svg';
+import { levelMap, RiskLevelEnum, RiskLevelTextMap } from '@/page/Secure/interface';
 import { ReactComponent as alertSvg } from '@/svgr/alert.svg';
+import { ReactComponent as errorSvg } from '@/svgr/error.svg';
 import { ReactComponent as safetySvg } from '@/svgr/safety.svg';
+import utils, { IEditor } from '@/util/ui/editor';
+import Icon from '@ant-design/icons';
+import { Button, Popover, Space, Tooltip } from 'antd';
 import styles from './index.less';
 const getColumns = (
   showLocate: boolean,
@@ -34,6 +34,7 @@ const getColumns = (
     {
       title: formatMessage({
         id: 'odc.src.page.Workspace.components.SQLResultSet.SerialNumber',
+        defaultMessage: '序号',
       }),
       //'序号'
       dataIndex: 'row',
@@ -43,6 +44,7 @@ const getColumns = (
     {
       title: formatMessage({
         id: 'odc.src.page.Workspace.components.SQLResultSet.SQLStatement',
+        defaultMessage: 'SQL 语句',
       }),
       //'SQL 语句'
       dataIndex: 'sql',
@@ -50,11 +52,16 @@ const getColumns = (
       ellipsis: {
         showTitle: false,
       },
-      render: (text) => <Tooltip title={text}>{text}</Tooltip>,
+      render: (text) => (
+        <Tooltip placement="left" title={text}>
+          {text}
+        </Tooltip>
+      ),
     },
     {
       title: formatMessage({
         id: 'odc.src.page.Workspace.components.SQLResultSet.AgainstTheRules',
+        defaultMessage: '检查结果',
       }),
       //'违反规则'
       dataIndex: 'rules',
@@ -114,6 +121,8 @@ const getColumns = (
                                   sqlChanged
                                     ? formatMessage({
                                         id: 'odc.src.page.Workspace.components.SQLResultSet.SQLContentHasBeenModified',
+                                        defaultMessage:
+                                          'SQL 内容已修改，已无法定位原问题行，请重新执行 SQL 语句或发起预检查',
                                       }) //'SQL内容已修改，已无法定位原问题行，请重新执行SQL语句或发起预检查'
                                     : ''
                                 }
@@ -180,6 +189,7 @@ export const getMultipleAsyncColumns = (
     {
       title: formatMessage({
         id: 'odc.src.page.Workspace.components.SQLResultSet.SQLStatement',
+        defaultMessage: 'SQL 语句',
       }),
       //'SQL 语句'
       dataIndex: 'sql',
@@ -321,6 +331,8 @@ export const getMultipleAsyncColumns = (
                                   sqlChanged
                                     ? formatMessage({
                                         id: 'odc.src.page.Workspace.components.SQLResultSet.SQLContentHasBeenModified',
+                                        defaultMessage:
+                                          'SQL 内容已修改，已无法定位原问题行，请重新执行 SQL 语句或发起预检查',
                                       }) //'SQL内容已修改，已无法定位原问题行，请重新执行SQL语句或发起预检查'
                                     : ''
                                 }
@@ -412,7 +424,7 @@ export const LintLabel: React.FC<{
       <div>
         <LintResultIcon level={'' + level} />
       </div>
-      {level !== -1 && needLevelMap && <div>{RiskLevelTextMap?.[level]}</div>}
+      {level !== -1 && needLevelMap && <div>{RiskLevelTextMap()[level]}</div>}
       {extra}
     </Space>
   );

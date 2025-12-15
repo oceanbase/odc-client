@@ -46,6 +46,7 @@ const ThemeBtn: React.FC<IProps> = function ({ settingStore }) {
               key: EThemeConfigKey.ODC_WHITE,
               label: formatMessage({
                 id: 'odc.component.ThemeBtn.DefaultTheme',
+                defaultMessage: '默认主题',
               }),
             },
             {
@@ -55,13 +56,16 @@ const ThemeBtn: React.FC<IProps> = function ({ settingStore }) {
               key: EThemeConfigKey.ODC_DARK,
               label: formatMessage({
                 id: 'odc.component.ThemeBtn.DarkTheme',
+                defaultMessage: '暗黑主题',
               }),
             },
           ]}
         />
       }
     >
-      <div>{formatMessage({ id: 'odc.Sider.MineItem.Theme.Theme' }) /*主题*/}</div>
+      <div>
+        {formatMessage({ id: 'odc.Sider.MineItem.Theme.Theme', defaultMessage: '主题' }) /*主题*/}
+      </div>
     </DropMenu>
   );
 };

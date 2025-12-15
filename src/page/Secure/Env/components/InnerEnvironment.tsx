@@ -15,17 +15,17 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
+import { setEnabled } from '@/common/network/env';
 import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { IManagerIntegration } from '@/d.ts';
+import { IEnvironment } from '@/d.ts/environment';
 import { RuleType } from '@/d.ts/rule';
-import { Tabs, message } from 'antd';
+import { message, Tabs } from 'antd';
+import { useState } from 'react';
 import { RiskLevelEnum, RiskLevelTextMap } from '../../interface';
 import EnvironmentInfo from './EnvironmentInfo';
 import EnvironmentTable from './EnvironmentTable';
 import styles from './index.less';
-import { IEnvironment } from '@/d.ts/environment';
-import { IManagerIntegration } from '@/d.ts';
-import { setEnabled } from '@/common/network/env';
-import { useState } from 'react';
 
 export const RenderLevel: React.FC<{
   level: number | string;
@@ -33,11 +33,11 @@ export const RenderLevel: React.FC<{
   iconMode?: boolean;
 }> = ({ iconMode, level, extra }) => {
   const levelMap = {
-    [RiskLevelEnum.DEFAULT]: RiskLevelTextMap[RiskLevelEnum.DEFAULT],
+    [RiskLevelEnum.DEFAULT]: RiskLevelTextMap()[RiskLevelEnum.DEFAULT],
     //无需改进
-    [RiskLevelEnum.SUGGEST]: RiskLevelTextMap[RiskLevelEnum.SUGGEST],
+    [RiskLevelEnum.SUGGEST]: RiskLevelTextMap()[RiskLevelEnum.SUGGEST],
     //建议改进
-    [RiskLevelEnum.MUST]: RiskLevelTextMap[RiskLevelEnum.MUST], //必须改进
+    [RiskLevelEnum.MUST]: RiskLevelTextMap()[RiskLevelEnum.MUST], //必须改进
   };
 
   const colorMap = {
@@ -89,16 +89,28 @@ const InnerEnvironment: React.FC<InnerEnvironmentProps> = ({
     if (successful) {
       message.success(
         currentEnvironment.enabled
-          ? formatMessage({ id: 'src.page.Secure.Env.components.E525BC4C' })
-          : formatMessage({ id: 'src.page.Secure.Env.components.213BB360' }),
+          ? formatMessage({
+              id: 'src.page.Secure.Env.components.E525BC4C',
+              defaultMessage: '禁用成功',
+            })
+          : formatMessage({
+              id: 'src.page.Secure.Env.components.213BB360',
+              defaultMessage: '启用成功',
+            }),
       );
       await initEnvironment(currentEnvironment?.id);
       return;
     }
     message.error(
       currentEnvironment.enabled
-        ? formatMessage({ id: 'src.page.Secure.Env.components.F65C4578' })
-        : formatMessage({ id: 'src.page.Secure.Env.components.DF240284' }),
+        ? formatMessage({
+            id: 'src.page.Secure.Env.components.F65C4578',
+            defaultMessage: '禁用失败',
+          })
+        : formatMessage({
+            id: 'src.page.Secure.Env.components.DF240284',
+            defaultMessage: '启用失败',
+          }),
     );
   };
   return (
@@ -122,12 +134,14 @@ const InnerEnvironment: React.FC<InnerEnvironmentProps> = ({
             key: RuleType.SQL_CHECK,
             label: formatMessage({
               id: 'odc.src.page.Secure.Env.components.SQLCheckSpecification',
+              defaultMessage: 'SQL 检查规范',
             }),
           },
           {
             key: RuleType.SQL_CONSOLE,
             label: formatMessage({
               id: 'odc.src.page.Secure.Env.components.SQLWindowSpecification',
+              defaultMessage: 'SQL 窗口规范',
             }),
           },
         ]}

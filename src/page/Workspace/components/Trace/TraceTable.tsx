@@ -17,7 +17,7 @@
 import DisplayTable from '@/component/DisplayTable';
 import { TraceSpanNode } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { formatTimeTemplatMicroSeconds } from '@/util/utils';
+import { formatTimeTemplatMicroSeconds } from '@/util/data/dateTime';
 import { CopyOutlined } from '@ant-design/icons';
 import { message, Popover, Tooltip } from 'antd';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -67,25 +67,25 @@ const TraceTable: React.FC<{
             <div
               className={styles.timeStepItem}
               style={{
-                left: `${142 * 1}px`,
+                left: `25%`,
               }}
             ></div>
             <div
               className={styles.timeStepItem}
               style={{
-                left: `${143 * 2}px`,
+                left: `calc(50% - 1px)`,
               }}
             ></div>
             <div
               className={styles.timeStepItem}
               style={{
-                left: `${143 * 3 + 1}px`,
+                left: `calc(75% - 2px)`,
               }}
             ></div>
             <div
               className={styles.timeStepItem}
               style={{
-                left: `${143 * 4 + 3}px`,
+                left: `100%`,
               }}
             ></div>
             <div
@@ -112,6 +112,7 @@ const TraceTable: React.FC<{
                         {
                           title: formatMessage({
                             id: 'odc.src.page.Workspace.components.Trace.Node.2',
+                            defaultMessage: '节点',
                           }), //'节点'
                           render: () => (
                             <div className={styles.nodeTitle}>
@@ -142,6 +143,7 @@ const TraceTable: React.FC<{
                                   message.success(
                                     formatMessage({
                                       id: 'odc.src.page.Workspace.components.Trace.Replication.2',
+                                      defaultMessage: '复制成功',
                                     }), //'复制成功'
                                   );
                                 }}
@@ -154,23 +156,27 @@ const TraceTable: React.FC<{
                         {
                           title: formatMessage({
                             id: 'odc.src.page.Workspace.components.Trace.StartingTime.3',
+                            defaultMessage: '开始时间',
                           }), //'开始时间'
                           render: () => node?.originStartTimestamp,
                         },
                         {
                           title: formatMessage({
                             id: 'odc.src.page.Workspace.components.Trace.EndTime.1',
+                            defaultMessage: '结束时间',
                           }), //'结束时间'
                           render: () => node?.originEndTimestamp,
                         },
                         {
                           title: formatMessage({
                             id: 'odc.src.page.Workspace.components.Trace.TimeConsuming.2',
+                            defaultMessage: '耗时',
                           }), //'耗时'
                           render: () => formatTimeTemplatMicroSeconds(node?.elapseMicroSeconds),
                         },
                       ]}
                     />
+
                     {node?.tags && node?.tags?.length && (
                       <>
                         <div

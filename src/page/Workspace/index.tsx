@@ -21,7 +21,12 @@ import WindowManager from '@/component/WindowManager';
 import WorkspaceSideTip from '@/component/WorkspaceSideTip';
 import type { IPage } from '@/d.ts';
 import odc from '@/plugins/odc';
-import { movePagePostion, openNewSQLPage } from '@/store/helper/page';
+import {
+  movePagePostion,
+  openNewSQLPage,
+  openCreateTablePage,
+  openSQLResultSetViewPage,
+} from '@/store/helper/page';
 import type { UserStore } from '@/store/login';
 import type { ModalStore } from '@/store/modal';
 import type { PageStore } from '@/store/page';
@@ -34,15 +39,19 @@ import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
 import { history, useLocation, useParams, useSearchParams } from '@umijs/max';
 import { message, Modal } from 'antd';
-import { toInteger } from 'lodash';
+import { isString, toInteger } from 'lodash';
+import { isGroupNode } from '@/page/Workspace/SideBar/ResourceTree/const';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useState } from 'react';
-import ActivityBar from './ActivityBar/ index';
-import ResourceTreeContext, { ResourceTreeTab } from './context/ResourceTreeContext';
+import ActivityBar from './ActivityBar';
+import ResourceTreeContext from './context/ResourceTreeContext';
 import WorkspaceStore from './context/WorkspaceStore';
 import GlobalModals from './GlobalModals';
 import WorkBenchLayout from './Layout';
 import SideBar from './SideBar';
+import { isLogicalDatabase } from '@/util/database/database';
+import { ResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/type';
+import { getAsyncResultSet } from '@/common/network/task';
 
 let _closeMsg = '';
 export function changeCloseMsg(t: any) {
@@ -70,18 +79,37 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   const [isReady, setIsReady] = useState<boolean>(false);
   const { tabKey } = useParams<{ tabKey: string }>();
 
-  function resolveParams() {
+  async function resolveParams() {
     const projectId = toInteger(params.get('projectId'));
     const databaseId = toInteger(params.get('databaseId'));
     const datasourceId = toInteger(params.get('datasourceId'));
+    const isLogicalDatabase = params.get('isLogicalDatabase') === 'true';
+    const isCreateTable = params.get('isCreateTable') === 'true';
+    const isResultSets = params.get('resultSets') === 'true';
+    const taskId = params.get('taskId');
+    const sqlContent = JSON.parse(params.get('sqlContent') || '{}');
+
+    databaseId &&
+      resourceTreeContext?.setCurrentObject({
+        value: databaseId,
+        type: ResourceNodeType.Database,
+      });
     if (projectId) {
-      resourceTreeContext?.setSelectTabKey(ResourceTreeTab.project);
       resourceTreeContext?.setSelectProjectId(projectId);
-      databaseId && openNewSQLPage(databaseId, 'project');
+      if (!isLogicalDatabase) {
+        databaseId && openNewSQLPage(databaseId);
+      }
+      if (isCreateTable) {
+        openCreateTablePage(databaseId);
+      }
     } else if (datasourceId) {
-      resourceTreeContext?.setSelectTabKey(ResourceTreeTab.datasource);
       resourceTreeContext?.setSelectDatasourceId(datasourceId);
-      databaseId && openNewSQLPage(databaseId, 'datasource');
+      databaseId && openNewSQLPage(databaseId);
+    } else if (isResultSets && taskId) {
+      const resultSets = await getAsyncResultSet(Number(taskId));
+      if (resultSets) {
+        await openSQLResultSetViewPage(Number(taskId), resultSets, sqlContent);
+      }
     } else {
       return;
     }
@@ -100,8 +128,20 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   };
 
   const handleOpenPage = async () => {
-    const db = resourceTreeContext.currentDatabaseId;
-    openNewSQLPage(db);
+    const { value, type } = resourceTreeContext.currentObject || {};
+    let dbId;
+    if (!isGroupNode(type)) {
+      if (type === ResourceNodeType.Database) {
+        dbId = value;
+      }
+      if (isString(value)) {
+        dbId = Number(value.split('-')?.[0]);
+      }
+    }
+    const isLogicalDb = isLogicalDatabase(
+      resourceTreeContext?.databaseList?.find((_db) => _db?.id === dbId),
+    );
+    openNewSQLPage(isLogicalDb ? null : dbId);
   };
 
   const openPageAfterTargetPage = async (targetPage: IPage) => {
@@ -130,9 +170,13 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
 
     if (runningPageKey.has(targetPageKey)) {
       Modal.confirm({
-        title: formatMessage({ id: 'odc.page.Workspace.ConfirmCloseWindow' }), // 确认关闭窗口？
+        title: formatMessage({
+          id: 'odc.page.Workspace.ConfirmCloseWindow',
+          defaultMessage: '是否确认关闭窗口？',
+        }), // 确认关闭窗口？
         content: formatMessage({
           id: 'odc.page.Workspace.WhenTheOperationIsRunning',
+          defaultMessage: '操作执行中，关闭窗口将终止窗口操作，是否确认关闭？',
         }),
 
         // 操作执行中，关闭窗口将终止窗口操作，确认关闭吗？
@@ -161,6 +205,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
         formatMessage(
           {
             id: 'odc.page.Workspace.DockedpagetitleIsBeingDebuggedAnd',
+            defaultMessage: '{dockedPageTitle}正在调试，无法关闭',
           },
 
           { dockedPageTitle: dockedPage.title },
@@ -174,14 +219,17 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
       Modal.confirm({
         title: formatMessage({
           id: 'odc.page.Workspace.TheTaskIsNotSaved',
+          defaultMessage: '任务未保存',
         }),
 
         content: formatMessage({
           id: 'odc.page.Workspace.UnsavedContentWillDisappearAfter',
+          defaultMessage: '关闭之后未保存内容将会消失',
         }),
 
         okText: formatMessage({
           id: 'odc.page.Workspace.Closed',
+          defaultMessage: '关闭',
         }),
 
         okType: 'danger',
@@ -223,7 +271,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   };
 
   const onCopySQLPage = (page: IPage) => {
-    openNewSQLPage(page?.params?.cid, page?.params?.databaseFrom);
+    openNewSQLPage(page?.params?.cid);
   };
   useEffect(() => {
     // clear expired tab data
@@ -292,8 +340,6 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
   }, []);
 
   useEffect(() => {
-    if (settingStore.configurations['odc.database.default.enableGlobalObjectSearch'] === 'false')
-      return;
     const handleKeyDown = (event) => {
       if ((event.ctrlKey || event.metaKey) && ['J', 'j'].includes(event.key)) {
         modalStore.changeDatabaseSearchModalVisible(!modalStore.databaseSearchModalVisible);
@@ -307,8 +353,7 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [settingStore.configurations['odc.database.default.enableGlobalObjectSearch']]);
-
+  }, []);
   return (
     <>
       <WorkBenchLayout
@@ -333,12 +378,14 @@ const Workspace: React.FC<WorkspaceProps> = (props: WorkspaceProps) => {
           ) : null
         }
       />
+
       {isReady && (
         <>
           {!!serverSystemInfo?.tutorialEnabled && <WorkspaceSideTip />}
           <GlobalModals />
         </>
       )}
+
       <WrapWorkSpaceExecuteSQLModal modalStore={modalStore} />
     </>
   );
@@ -387,6 +434,7 @@ const WorkSpaceExecuteSQLModal: React.FC<{
     onSave,
     status = null,
     lintResultSet = null,
+    unauthorizedDBResources,
   } = workSpaceExecuteSQLModalProps;
   return (
     <ExecuteSQLModal
@@ -394,6 +442,7 @@ const WorkSpaceExecuteSQLModal: React.FC<{
       sessionStore={sessionManager?.sessionMap?.get(sessionId)}
       readonly={true}
       lintResultSet={lintResultSet}
+      unauthorizedDBResources={unauthorizedDBResources}
       status={status}
       sql={sql}
       onSave={onSave}

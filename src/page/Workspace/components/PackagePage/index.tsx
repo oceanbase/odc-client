@@ -16,7 +16,6 @@
 
 import Toolbar from '@/component/Toolbar';
 import type { IPackage } from '@/d.ts';
-import { ConnectionMode } from '@/d.ts';
 import type { PageStore } from '@/store/page';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
@@ -30,9 +29,8 @@ import {
 import { Layout, Radio, Tabs } from 'antd';
 import type { RadioChangeEvent } from 'antd/lib/radio';
 import { inject, observer } from 'mobx-react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Component } from 'react';
-import { FormattedMessage } from '@umijs/max';
 
 // @ts-ignore
 
@@ -44,7 +42,7 @@ import { PLType } from '@/constant/plType';
 import { openPackageBodyPage, openPackageHeadPage, updatePage } from '@/store/helper/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import { throttle } from 'lodash';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
@@ -280,12 +278,18 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
           <Radio.Group onChange={this.handleTopTabChanged} value={topTab} className={styles.topbar}>
             {pkg.packageHead ? (
               <Radio.Button value={TopTab.HEAD}>
-                {formatMessage({ id: 'workspace.window.table.toptab.package.head' })}
+                {formatMessage({
+                  id: 'workspace.window.table.toptab.package.head',
+                  defaultMessage: '包头',
+                })}
               </Radio.Button>
             ) : null}
             {pkg.packageBody ? (
               <Radio.Button value={TopTab.BODY}>
-                {formatMessage({ id: 'workspace.window.table.toptab.package.body' })}
+                {formatMessage({
+                  id: 'workspace.window.table.toptab.package.body',
+                  defaultMessage: '包体',
+                })}
               </Radio.Button>
             ) : null}
           </Radio.Group>
@@ -310,6 +314,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                             key: PropsTab.PACKAGE_HEAD_INFO,
                             label: formatMessage({
                               id: 'workspace.window.table.propstab.info',
+                              defaultMessage: '基本信息',
                             }),
                             children: (
                               <Content>
@@ -317,6 +322,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                   {formatMessage(
                                     {
                                       id: 'odc.components.PackagePage.PackageNamePkgpackagename',
+                                      defaultMessage: '程序包名称：{pkgPackageName}',
                                     },
 
                                     { pkgPackageName: pkg.packageName },
@@ -325,6 +331,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                 <p>
                                   {formatMessage({
                                     id: 'odc.components.PackagePage.Created',
+                                    defaultMessage: '创建人：',
                                   })}
 
                                   {pkg.packageHead.basicInfo.definer}
@@ -332,17 +339,19 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                 <p>
                                   {formatMessage({
                                     id: 'odc.components.PackagePage.Created.2',
+                                    defaultMessage: '创建时间：',
                                   })}
 
-                                  {moment(pkg.packageHead.basicInfo.createTime).format(
+                                  {dayjs(pkg.packageHead.basicInfo.createTime).format(
                                     'YYYY-MM-DD HH:mm',
                                   )}
                                 </p>
                                 <p>
                                   {formatMessage({
                                     id: 'odc.components.PackagePage.LastModifiedTime',
+                                    defaultMessage: '最近修改时间：',
                                   })}
-                                  {moment(pkg.packageHead.basicInfo.modifyTime).format(
+                                  {dayjs(pkg.packageHead.basicInfo.modifyTime).format(
                                     'YYYY-MM-DD HH:mm',
                                   )}{' '}
                                 </p>
@@ -358,6 +367,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                   <ToolbarButton
                                     text={formatMessage({
                                       id: 'workspace.window.session.button.edit',
+                                      defaultMessage: '编辑',
                                     })}
                                     icon={<EditOutlined />}
                                     onClick={this.handleEditPackage.bind(
@@ -366,10 +376,12 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                       PropsTab.PACKAGE_HEAD_CODE,
                                     )}
                                   />
+
                                   <ToolbarButton
                                     text={
                                       formatMessage({
                                         id: 'odc.components.PackagePage.Download',
+                                        defaultMessage: '下载',
                                       }) //下载
                                     }
                                     icon={<CloudDownloadOutlined />}
@@ -386,6 +398,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                   <ToolbarButton
                                     text={formatMessage({
                                       id: 'workspace.window.sql.button.search',
+                                      defaultMessage: '查找',
                                     })}
                                     icon={<FileSearchOutlined />}
                                     onClick={this.showSearchWidget.bind(this)}
@@ -396,10 +409,12 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                       headerFormated
                                         ? formatMessage({
                                             id: 'odc.components.PackagePage.Unformat',
+                                            defaultMessage: '取消格式化',
                                           })
                                         : // 取消格式化
                                           formatMessage({
                                             id: 'odc.components.PackagePage.Formatting',
+                                            defaultMessage: '格式化',
                                           })
 
                                       // 格式化
@@ -419,6 +434,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                     text={
                                       formatMessage({
                                         id: 'odc.components.PackagePage.Refresh',
+                                        defaultMessage: '刷新',
                                       })
                                       // 刷新
                                     }
@@ -465,6 +481,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                             key: PropsTab.PACKAGE_BODY_INFO,
                             label: formatMessage({
                               id: 'workspace.window.table.propstab.info',
+                              defaultMessage: '基本信息',
                             }),
                             children: (
                               <Content>
@@ -472,6 +489,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                   {formatMessage(
                                     {
                                       id: 'odc.components.PackagePage.PackageNamePkgpackagename',
+                                      defaultMessage: '程序包名称：{pkgPackageName}',
                                     },
 
                                     { pkgPackageName: pkg.packageName },
@@ -480,6 +498,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                 <p>
                                   {formatMessage({
                                     id: 'odc.components.PackagePage.Created',
+                                    defaultMessage: '创建人：',
                                   })}
 
                                   {pkg.packageBody.basicInfo.definer}
@@ -487,17 +506,19 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                 <p>
                                   {formatMessage({
                                     id: 'odc.components.PackagePage.Created.2',
+                                    defaultMessage: '创建时间：',
                                   })}
 
-                                  {moment(pkg.packageBody.basicInfo.createTime).format(
+                                  {dayjs(pkg.packageBody.basicInfo.createTime).format(
                                     'YYYY-MM-DD HH:mm',
                                   )}
                                 </p>
                                 <p>
                                   {formatMessage({
                                     id: 'odc.components.PackagePage.LastModifiedTime',
+                                    defaultMessage: '最近修改时间：',
                                   })}
-                                  {moment(pkg.packageBody.basicInfo.modifyTime).format(
+                                  {dayjs(pkg.packageBody.basicInfo.modifyTime).format(
                                     'YYYY-MM-DD HH:mm',
                                   )}{' '}
                                 </p>
@@ -513,6 +534,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                   <ToolbarButton
                                     text={formatMessage({
                                       id: 'workspace.window.session.button.edit',
+                                      defaultMessage: '编辑',
                                     })}
                                     icon={<EditOutlined />}
                                     onClick={this.handleEditPackage.bind(
@@ -521,10 +543,12 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                       PropsTab.PACKAGE_BODY_CODE,
                                     )}
                                   />
+
                                   <ToolbarButton
                                     text={
                                       formatMessage({
                                         id: 'odc.components.PackagePage.Download',
+                                        defaultMessage: '下载',
                                       }) //下载
                                     }
                                     icon={<CloudDownloadOutlined />}
@@ -541,6 +565,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                   <ToolbarButton
                                     text={formatMessage({
                                       id: 'workspace.window.sql.button.search',
+                                      defaultMessage: '查找',
                                     })}
                                     icon={<FileSearchOutlined />}
                                     onClick={this.showSearchWidget.bind(this)}
@@ -551,10 +576,12 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                       bodyFormated
                                         ? formatMessage({
                                             id: 'odc.components.PackagePage.Unformat',
+                                            defaultMessage: '取消格式化',
                                           })
                                         : // 取消格式化
                                           formatMessage({
                                             id: 'odc.components.PackagePage.Formatting',
+                                            defaultMessage: '格式化',
                                           })
 
                                       // 格式化
@@ -574,6 +601,7 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
                                     text={
                                       formatMessage({
                                         id: 'odc.components.PackagePage.Refresh',
+                                        defaultMessage: '刷新',
                                       })
                                       // 刷新
                                     }
@@ -613,12 +641,17 @@ class PackagePage extends Component<IProps, IFunctionPageState> {
   }
 }
 
-export default WrapSessionPage(function (props) {
-  return (
-    <SessionContext.Consumer>
-      {({ session }) => {
-        return <PackagePage {...props} session={session} />;
-      }}
-    </SessionContext.Consumer>
-  );
-}, true);
+export default WrapSessionPage(
+  function (props) {
+    return (
+      <SessionContext.Consumer>
+        {({ session }) => {
+          return <PackagePage {...props} session={session} />;
+        }}
+      </SessionContext.Consumer>
+    );
+  },
+  true,
+  false,
+  true,
+);

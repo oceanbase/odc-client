@@ -43,15 +43,22 @@ export default function ({ collapsed }) {
           marginLeft: 10,
           fontSize: 14,
           fontFamily: 'DIN-Bold, Alibaba-puhui-title, PingFangSC-Medium, Microsoft YaHei',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          height: 40,
         }}
       >
-        OceanBase
-        <br />
-        {
-          formatMessage({
-            id: 'odc.Index.Sider.Logo.DeveloperCenter',
-          }) /*开发者中心*/
-        }
+        <span>OceanBase</span>
+
+        <span>
+          {
+            formatMessage({
+              id: 'odc.Index.Sider.Logo.DeveloperCenter',
+              defaultMessage: '开发者中心',
+            }) /*开发者中心*/
+          }
+        </span>
       </div>
     </div>
   );

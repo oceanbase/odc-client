@@ -21,6 +21,7 @@ import {
   testExsitConnection,
   updateConnectionFromConnection,
 } from '@/common/network/connection';
+import { listDatabases } from '@/common/network/database';
 import { listEnvironments } from '@/common/network/env';
 import { decrypt } from '@/common/network/other';
 import ShowConnectPassword from '@/component/ConnectPassowrd';
@@ -30,9 +31,8 @@ import { SpaceType } from '@/d.ts/_index';
 import login from '@/store/login';
 import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
-import { message } from 'antd';
-import { listDatabases } from '@/common/network/database';
 import { getSentry } from '@/util/sentry';
+import { message } from 'antd';
 export interface INewCloudConnection {
   action: 'newCloudConnection';
   data: IRemoteNewCloudConnectionData | string;
@@ -70,7 +70,7 @@ function resolveRemoteData(inputData: IRemoteNewCloudConnectionData): Partial<ID
   return data;
 }
 async function getDefaultSchema(dsId: number, userName: string) {
-  const res = await listDatabases(null, dsId, 1, 999);
+  const res = await listDatabases({ dataSourceId: dsId, page: 1, size: 999 });
   const databases = res?.contents;
   const informationSchema = databases.find((d) => d.name === 'information_schema');
   const sameName = databases.find((d) => d.name?.toLowerCase() === userName?.toLowerCase());
@@ -99,6 +99,7 @@ export const action = async (config: INewCloudConnection) => {
       message.error(
         formatMessage({
           id: 'odc.page.Gateway.customConnect.EncryptOrDataParameterError',
+          defaultMessage: 'encrypt 或 data 参数错误',
         }), //encrypt 或 data 参数错误
       );
       return;
@@ -110,6 +111,7 @@ export const action = async (config: INewCloudConnection) => {
       message.error(
         formatMessage({
           id: 'odc.page.Gateway.customConnect.DecryptionFailed',
+          defaultMessage: '解密失败！',
         }), //解密失败！
       );
       return;
@@ -120,6 +122,7 @@ export const action = async (config: INewCloudConnection) => {
     } catch (e) {
       const msg = formatMessage({
         id: 'odc.page.Gateway.customConnect.JsonParsingFailedCheckWhether',
+        defaultMessage: 'JSON 解析失败，请确认参数是否正确',
       }); //JSON 解析失败，请确认参数是否正确
       console.error(msg);
       message.error(msg, 0);
@@ -132,7 +135,10 @@ export const action = async (config: INewCloudConnection) => {
   }
   const personalOrganization = login.organizations?.find((item) => item.type === SpaceType.PRIVATE);
   if (!personalOrganization) {
-    return formatMessage({ id: 'odc.page.Gateway.newCloudConnection.PersonalSpaceDoesNotExist' }); //个人空间不存在！
+    return formatMessage({
+      id: 'odc.page.Gateway.newCloudConnection.PersonalSpaceDoesNotExist',
+      defaultMessage: '个人空间不存在！',
+    }); //个人空间不存在！
   }
   const isSuccess = await login.switchCurrentOrganization(personalOrganization?.id);
   if (!isSuccess) {
@@ -148,7 +154,9 @@ export const action = async (config: INewCloudConnection) => {
     return 'Get Conneciton List Failed';
   }
   let targetConnection = connectionList?.contents?.find(
-    (c) => c.tenantName === params.tenantName && c.username === params.username,
+    (c) =>
+      c.tenantName === params.tenantName &&
+      c.username?.toLowerCase() === params.username?.toLowerCase(),
   );
   let isExist = true;
   if (!targetConnection) {

@@ -17,19 +17,19 @@
 import { testClientRegistration } from '@/common/network/manager';
 import { getPrefix } from '@/component/Login';
 import { ISSOConfig } from '@/d.ts';
+import { ELDAPMode } from '@/page/ExternalIntegration/SSO/NewSSODrawerButton/SSOForm';
+import { toDefaultProjectPage } from '@/service/projectHistory';
 import { UserStore } from '@/store/login';
-import channel, { ChannelMap } from '@/util/broadcastChannel';
+import channel, { ChannelMap } from '@/util/communication/broadcastChannel';
 import { formatMessage, getLocalImg } from '@/util/intl';
+import logger from '@/util/logger';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { history } from '@umijs/max';
 import { Alert, Button, Divider, Form, Input, message } from 'antd';
 import useForm, { FormInstance } from 'antd/lib/form/hooks/useForm';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
-import { toDefaultProjectPage } from '@/service/projectHistory';
-import logger from '@/util/logger';
-import { history } from '@umijs/max';
-import { ELDAPMode } from '@/page/ExternalIntegration/SSO/NewSSODrawerButton/SSOForm';
 
 const LDAP: React.FC<{
   userStore: UserStore;
@@ -104,7 +104,7 @@ export const LDAPLogin: React.FC<{
       });
       console.log(result);
       if (result?.successful) {
-        message.success(formatMessage({ id: 'login.login.success' }));
+        message.success(formatMessage({ id: 'login.login.success', defaultMessage: '登录成功' }));
         setErrorMessage(null);
         await userStore.getOrganizations();
         const isSuccess = await userStore.switchCurrentOrganization();
@@ -253,10 +253,16 @@ const LDAPLoginContent: React.FC<{
       >
         {ssoLoginName
           ? formatMessage(
-              { id: 'src.page.Login.components.LDAPModal.7201A252' },
-              { ssoLoginName: ssoLoginName },
+              {
+                id: 'src.page.Login.components.LDAPModal.7201A252',
+                defaultMessage: '{ssoLoginName} 登录',
+              },
+              { ssoLoginName },
             )
-          : formatMessage({ id: 'src.page.Login.components.LDAPModal.95DA8BD0' /*LDAP 登录*/ })}
+          : formatMessage({
+              id: 'src.page.Login.components.LDAPModal.95DA8BD0' /*LDAP 登录*/,
+              defaultMessage: 'LDAP 登录',
+            })}
       </div>
       <div>
         <Form
@@ -271,13 +277,19 @@ const LDAPLoginContent: React.FC<{
             rules={[
               {
                 required: true,
-                message: formatMessage({ id: 'src.page.Login.components.LDAPModal.A50C8198' }), //'账号不能为空'
+                message: formatMessage({
+                  id: 'src.page.Login.components.LDAPModal.A50C8198',
+                  defaultMessage: '账号不能为空',
+                }), //'账号不能为空'
               },
             ]}
           >
             <Input
               prefix={<UserOutlined />}
-              placeholder={formatMessage({ id: 'src.page.Login.components.LDAPModal.B5335F6F' })}
+              placeholder={formatMessage({
+                id: 'src.page.Login.components.LDAPModal.B5335F6F',
+                defaultMessage: '请输入 LDAP 账号',
+              })}
               onFocus={() => {
                 setFocusInput('username');
               }}
@@ -294,7 +306,10 @@ const LDAPLoginContent: React.FC<{
             rules={[
               {
                 required: true,
-                message: formatMessage({ id: 'src.page.Login.components.LDAPModal.AA5AB5DA' }), //'LDAP 密码不能为空'
+                message: formatMessage({
+                  id: 'src.page.Login.components.LDAPModal.AA5AB5DA',
+                  defaultMessage: 'LDAP 密码不能为空',
+                }), //'LDAP 密码不能为空'
               },
             ]}
           >
@@ -302,7 +317,10 @@ const LDAPLoginContent: React.FC<{
               visibilityToggle={false}
               autoComplete="current-password"
               prefix={<LockOutlined />}
-              placeholder={formatMessage({ id: 'src.page.Login.components.LDAPModal.9C1F7A9B' })}
+              placeholder={formatMessage({
+                id: 'src.page.Login.components.LDAPModal.9C1F7A9B',
+                defaultMessage: '请输入 LDAP 密码',
+              })}
               onFocus={() => {
                 setFocusInput('password');
               }}
@@ -324,6 +342,7 @@ const LDAPLoginContent: React.FC<{
             {
               formatMessage({
                 id: 'src.page.Login.components.LDAPModal.B82B6C2B' /*登录*/,
+                defaultMessage: '登录',
               }) /* 登录 */
             }
           </Button>
@@ -332,6 +351,7 @@ const LDAPLoginContent: React.FC<{
               {
                 formatMessage({
                   id: 'src.page.Login.components.LDAPModal.F8E8B25F' /*返回上一步*/,
+                  defaultMessage: '返回上一步',
                 }) /* 返回上一步 */
               }
             </Button>

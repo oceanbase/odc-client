@@ -15,7 +15,8 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { getPrefixCls, downloadFile } from '@/util/utils';
+import { getPrefixCls } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
 import {
   CopyOutlined,
   DownloadOutlined,
@@ -47,7 +48,10 @@ const Log: React.FC<LogProps> = ({
   loading = false,
   searchTrigger = 'click',
   style = {},
-  emptyDescription = formatMessage({ id: 'odc.component.Log.NoDataAvailable' }), //暂无数据
+  emptyDescription = formatMessage({
+    id: 'odc.component.Log.NoDataAvailable',
+    defaultMessage: '暂无数据',
+  }), //暂无数据
   onReload,
   defaultPosition = 'start',
   ignoreCase = false,
@@ -84,7 +88,7 @@ const Log: React.FC<LogProps> = ({
     {
       key: 'find',
       icon: <FileSearchOutlined />,
-      text: formatMessage({ id: 'odc.component.Log.Find' }), //查找
+      text: formatMessage({ id: 'odc.component.Log.Find', defaultMessage: '查找' }), //查找
       onClick: () => {
         setSearchInputVisible(!searchInputVisible);
       },
@@ -93,7 +97,7 @@ const Log: React.FC<LogProps> = ({
     {
       key: 'download',
       icon: <DownloadOutlined />,
-      text: formatMessage({ id: 'odc.component.Log.Download' }), //下载
+      text: formatMessage({ id: 'odc.component.Log.Download', defaultMessage: '下载' }), //下载
       visible: enableDownload,
       onClick: () => {
         if (logData.data.length) {
@@ -112,17 +116,25 @@ const Log: React.FC<LogProps> = ({
             if (logData.data.length) {
               if (result) {
                 message.success(
-                  formatMessage({ id: 'odc.component.Log.CopiedSuccessfully' }), //复制成功
+                  formatMessage({
+                    id: 'odc.component.Log.CopiedSuccessfully',
+                    defaultMessage: '复制成功',
+                  }), //复制成功
                 );
               } else {
                 message.error(
-                  formatMessage({ id: 'odc.component.Log.ReplicationFailed' }), //复制失败
+                  formatMessage({
+                    id: 'odc.component.Log.ReplicationFailed',
+                    defaultMessage: '复制失败',
+                  }), //复制失败
                 );
               }
             }
           }}
         >
-          <span>{formatMessage({ id: 'odc.component.Log.Copy' }) /*复制*/}</span>
+          <span>
+            {formatMessage({ id: 'odc.component.Log.Copy', defaultMessage: '复制' }) /*复制*/}
+          </span>
         </CopyToClipboard>
       ),
 
@@ -134,7 +146,7 @@ const Log: React.FC<LogProps> = ({
     actionList.push({
       key: 'refresh',
       icon: <RedoOutlined />,
-      text: formatMessage({ id: 'odc.component.Log.Refresh' }), //刷新
+      text: formatMessage({ id: 'odc.component.Log.Refresh', defaultMessage: '刷新' }), //刷新
       onClick: onReload,
     });
   }
@@ -237,7 +249,7 @@ const Log: React.FC<LogProps> = ({
     if (!lineWrapNode) {
       index = copyData.current.scrollDirection === 'up' ? 0 : logData.data.length;
     } else {
-      index = Number(lineWrapNode.firstChild.innerText);
+      index = Number((lineWrapNode.firstChild as HTMLElement)?.innerText);
     }
     return index;
   };
@@ -323,8 +335,8 @@ const Log: React.FC<LogProps> = ({
                 onClick={item.onClick}
                 key={item.key}
               >
-                <Typography.Text className={`${prefixCls}-toolbar-text`}>
-                  {item.icon}
+                <Typography.Text className={`${prefixCls}-toolbar-icon`}>
+                  <span className={`${prefixCls}-toolbar-icon-target`}>{item.icon}</span>
                 </Typography.Text>
                 <Typography.Text className={`${prefixCls}-toolbar-text`}>
                   {item.text}

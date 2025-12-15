@@ -16,11 +16,11 @@
 
 import DragWrapper from '@/component/Dragable/component/DragWrapper';
 import snippet from '@/store/snippet';
-import { DatabasePermissionType } from '@/d.ts/database';
+import { DatabasePermissionType, DatabaseGroup } from '@/d.ts/database';
 import SessionStore from '@/store/sessionManager/session';
 import Icon, { InfoCircleFilled, MoreOutlined } from '@ant-design/icons';
-import { Badge, Dropdown, Tooltip } from 'antd';
-import { ItemType } from 'antd/es/menu/hooks/useItems';
+import { Badge, Dropdown, Tooltip, Popover } from 'antd';
+import ConnectionPopover from '@/component/ConnectionPopover';
 import treeStyles from '../index.less';
 import { ResourceNodeType, TreeDataNode } from '../type';
 import MenuConfig from './config';
@@ -28,7 +28,14 @@ import styles from './index.less';
 import { IMenuItemConfig, IProps } from './type';
 import { EnvColorMap } from '@/constant';
 import classNames from 'classnames';
-import { ReactNode } from 'react';
+import { ReactNode, useContext, useMemo, useState } from 'react';
+import { menuAccessWrap } from './config/database';
+import IconLoadingWrapper from './IconLoadingWrapper';
+import { ItemType } from 'antd/es/menu/interface';
+
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import { openGlobalSearch } from '@/page/Workspace/SideBar/ResourceTree/const';
+import login from '@/store/login';
 
 export const hasExportPermission = (dbSession: SessionStore) => {
   return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
@@ -36,16 +43,41 @@ export const hasExportPermission = (dbSession: SessionStore) => {
 export const hasChangePermission = (dbSession: SessionStore) => {
   return dbSession?.odcDatabase?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
 };
+export const hasTableExportPermission = (dbSession: SessionStore, node: TreeDataNode) => {
+  return node?.data?.info?.authorizedPermissionTypes?.includes(DatabasePermissionType.EXPORT);
+};
+
+export const hasTableChangePermission = (dbSession: SessionStore, node: TreeDataNode) => {
+  return node?.data?.info?.authorizedPermissionTypes?.includes(DatabasePermissionType.CHANGE);
+};
 
 const TreeNodeMenu = (props: IProps) => {
-  const { type = '', dbSession, databaseFrom, node, showTip, pollingDatabase } = props;
+  const { type = '', dbSession, node, pollingDatabase } = props;
+  const treeContext = useContext(ResourceTreeContext);
+  const { setCurrentObject, groupMode } = treeContext || {};
+  const [hover, setHover] = useState(false);
+
+  const showTip = useMemo(() => {
+    // 外部资源节点不展示 tip
+    const isExternalResourceNode = [
+      ResourceNodeType.ExternalResourceRoot,
+      ResourceNodeType.ExternalResource,
+    ].includes(type as ResourceNodeType);
+
+    return ![DatabaseGroup.dataSource].includes(groupMode) && !isExternalResourceNode;
+  }, [groupMode, type]);
+
   // menuKey 用来定制menu
   const menuKey = node?.menuKey;
+
   const menuItems: IMenuItemConfig[] = MenuConfig[menuKey || type];
   /**
    * 非database的情况下，必须存在session
    */
-  const isSessionValid = type === ResourceNodeType.Database || dbSession;
+  const isSessionValid =
+    [ResourceNodeType.Database, ResourceNodeType.GroupNodeProject].includes(
+      type as ResourceNodeType,
+    ) || dbSession;
 
   /**
    * 只有dbobjecttype的情况下才可以拖动，因为编辑器需要type才能做出对应的响应
@@ -53,26 +85,42 @@ const TreeNodeMenu = (props: IProps) => {
    */
   const titleNode = (
     <span
+      onMouseEnter={() => {
+        setHover(true);
+      }}
+      onMouseLeave={() => {
+        setHover(false);
+      }}
       onDoubleClick={(e) => {
         e.stopPropagation();
         if (!dbSession && type !== ResourceNodeType.Database) {
           return;
         }
-        node.doubleClick?.(dbSession, node, databaseFrom);
+        node.doubleClick?.(dbSession, node);
       }}
-      className={classNames('ant-tree-title', styles.fullWidthTitle)}
+      className={classNames('ant-tree-title', styles.fullWidthTitle, {
+        [styles.p12]: !login?.isPrivateSpace() && hover,
+        [styles.p24]: login?.isPrivateSpace() && hover,
+      })}
+      onClick={() => {
+        setCurrentObject?.({
+          value: node.key,
+          type: node.type,
+        });
+      }}
     >
       {node.title}
       {node.warning ? (
         <Tooltip placement="right" title={node.warning}>
-          <InfoCircleFilled style={{ color: 'var(--icon-color-3)', paddingLeft: 5 }} />
+          <InfoCircleFilled style={{ color: 'var(--icon-color-normal)', paddingLeft: 5 }} />
         </Tooltip>
       ) : null}
       {node.tip && showTip ? (
-        <span style={{ color: 'var(--text-color-placeholder)', paddingLeft: 5 }}>{node.tip}</span>
+        <span style={{ color: 'var(--text-color-hint)', paddingLeft: 5 }}>{node.tip}</span>
       ) : null}
     </span>
   );
+
   const nodeChild = node.dbObjectType ? (
     <DragWrapper
       key={node.key + '-drag'}
@@ -95,6 +143,7 @@ const TreeNodeMenu = (props: IProps) => {
   ) : (
     titleNode
   );
+
   if (!isSessionValid || !menuItems?.length) {
     return nodeChild;
   }
@@ -104,7 +153,7 @@ const TreeNodeMenu = (props: IProps) => {
       return;
     }
     const { run } = item;
-    run?.(dbSession, node, databaseFrom, pollingDatabase);
+    run?.(dbSession, node, pollingDatabase);
   }
 
   let clickMap = {};
@@ -136,7 +185,11 @@ const TreeNodeMenu = (props: IProps) => {
               return {
                 key: child.key,
                 className: styles.ellipsis,
-                label: child.text,
+                label: menuAccessWrap(
+                  child?.needAccessTypeList,
+                  node?.data?.authorizedPermissionTypes,
+                  child.text as ReactNode,
+                ),
               };
             })
             ?.filter(Boolean),
@@ -152,7 +205,7 @@ const TreeNodeMenu = (props: IProps) => {
         };
       }
       menuItems.push(menuItem);
-      if (item.hasDivider) {
+      if (typeof item.hasDivider === 'function' ? item.hasDivider(node) : item.hasDivider) {
         menuItems.push({
           type: 'divider',
         });
@@ -169,7 +222,6 @@ const TreeNodeMenu = (props: IProps) => {
     });
 
     let ellipsisItemsProp: ItemType[] = getMenuItems(ellipsisItems);
-
     return (
       <div className={treeStyles.menuActions}>
         {menuItems
@@ -187,7 +239,11 @@ const TreeNodeMenu = (props: IProps) => {
                   }}
                   className={styles.actionItem}
                 >
-                  <Icon component={item.icon || InfoCircleFilled} />
+                  {item?.key === 'REFRESH' ? (
+                    <IconLoadingWrapper icon={item.icon || InfoCircleFilled} />
+                  ) : (
+                    <Icon component={item.icon || InfoCircleFilled} />
+                  )}
                 </div>
               </Tooltip>
             );
@@ -205,6 +261,8 @@ const TreeNodeMenu = (props: IProps) => {
                 onMenuClick(clickMap[info.key]);
               },
             }}
+            overlayClassName={treeStyles.dropdownMenu}
+            destroyOnHidden
             trigger={['hover']}
           >
             <div className={styles.actionItem}>
@@ -228,21 +286,39 @@ const TreeNodeMenu = (props: IProps) => {
 
   return (
     <>
-      <Dropdown
-        menu={{
-          style: {
-            width: '160px',
-          },
-          items: allItemsProp,
-          onClick: (info) => {
-            info?.domEvent?.stopPropagation();
-            onMenuClick(clickMap[info.key]);
-          },
-        }}
-        trigger={['contextMenu']}
+      <Popover
+        showArrow={false}
+        placement="right"
+        align={{ offset: [30, 0] }}
+        destroyOnHidden
+        content={
+          node.type === ResourceNodeType.Database ? (
+            <ConnectionPopover
+              database={node?.data}
+              connection={node?.data?.dataSource}
+              showRemark
+            />
+          ) : undefined
+        }
       >
-        {nodeChild}
-      </Dropdown>
+        <Dropdown
+          menu={{
+            style: {
+              minWidth: '160px',
+            },
+            items: allItemsProp,
+            onClick: (info) => {
+              info?.domEvent?.stopPropagation();
+              onMenuClick(clickMap[info.key]);
+            },
+          }}
+          trigger={['contextMenu']}
+          overlayClassName={treeStyles.dropdownMenu}
+          destroyOnHidden
+        >
+          {nodeChild}
+        </Dropdown>
+      </Popover>
       {actionsRender()}
       {envRender()}
     </>

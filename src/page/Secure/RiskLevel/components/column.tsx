@@ -19,7 +19,7 @@ import Action from '@/component/Action';
 import TooltipContent from '@/component/TooltipContent';
 import { actionTypes, IManagerResourceType, ITaskFlowNode } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { transformOBConfigTimeStringToText, transformSecond } from '@/util/utils';
+import { transformOBConfigTimeStringToText, transformSecond } from '@/util/data/dateTime';
 
 interface ApprovalProcessProps {
   nodes: ITaskFlowNode[];
@@ -32,15 +32,15 @@ const ApprovalProcess = ({ nodes }: ApprovalProcessProps) => {
       if (node.autoApproval) {
         label = formatMessage({
           id: 'odc.Secure.RiskLevel.AutomaticApproval',
+          defaultMessage: '自动审批',
         }); //自动审批
       } else if (externalApprovalName) {
         label = formatMessage(
           {
             id: 'odc.Secure.RiskLevel.ExternalApprovalExternalapprovalname',
+            defaultMessage: '外部审批({externalApprovalName})',
           },
-          {
-            externalApprovalName: externalApprovalName,
-          },
+          { externalApprovalName },
         ); //`外部审批(${externalApprovalName})`
       } else {
         label = node?.resourceRoleName || '-';
@@ -54,6 +54,7 @@ export function getColumns({ openFormModal, handleDelete }) {
     {
       title: formatMessage({
         id: 'odc.src.page.Secure.RiskLevel.components.ProcessName',
+        defaultMessage: '流程名称',
       }), //'流程名称'
       width: 120,
       dataIndex: 'name',
@@ -64,6 +65,7 @@ export function getColumns({ openFormModal, handleDelete }) {
     {
       title: formatMessage({
         id: 'odc.src.page.Secure.RiskLevel.components.ApprovalProcess',
+        defaultMessage: '审批流程',
       }), //'审批流程'
       width: 150,
       dataIndex: 'nodes',
@@ -80,6 +82,7 @@ export function getColumns({ openFormModal, handleDelete }) {
     {
       title: formatMessage({
         id: 'odc.src.page.Secure.RiskLevel.components.ValidApprovalPeriod',
+        defaultMessage: '审批有效期',
       }), //'审批有效期'
       width: 80,
       dataIndex: 'approvalExpirationIntervalSeconds',
@@ -90,6 +93,7 @@ export function getColumns({ openFormModal, handleDelete }) {
     {
       title: formatMessage({
         id: 'odc.src.page.Secure.RiskLevel.components.ExecutionWaitingValidityPeriod',
+        defaultMessage: '执行等待有效期',
       }), //'执行等待有效期'
       width: 96,
       dataIndex: 'waitExecutionExpirationIntervalSeconds',
@@ -100,6 +104,7 @@ export function getColumns({ openFormModal, handleDelete }) {
     {
       title: formatMessage({
         id: 'odc.src.page.Secure.RiskLevel.components.PeriodicPeriod',
+        defaultMessage: '执行有效期',
       }), //'执行有效期'
       width: 80,
       dataIndex: 'executionExpirationIntervalSeconds',
@@ -110,6 +115,7 @@ export function getColumns({ openFormModal, handleDelete }) {
     {
       title: formatMessage({
         id: 'odc.src.page.Secure.RiskLevel.components.UsageAmount',
+        defaultMessage: '使用数量',
       }), //'使用数量'
       width: 72,
       dataIndex: 'referencedCount',
@@ -119,6 +125,7 @@ export function getColumns({ openFormModal, handleDelete }) {
     {
       title: formatMessage({
         id: 'odc.src.page.Secure.RiskLevel.components.Operate',
+        defaultMessage: '操作',
       }), //'操作'
       width: 90,
       key: 'action',
@@ -135,6 +142,7 @@ export function getColumns({ openFormModal, handleDelete }) {
               {
                 formatMessage({
                   id: 'odc.Secure.Approval.Edit',
+                  defaultMessage: '编辑',
                 }) /*编辑*/
               }
             </Action.Link>
@@ -149,6 +157,7 @@ export function getColumns({ openFormModal, handleDelete }) {
               {
                 formatMessage({
                   id: 'odc.Secure.Approval.Delete',
+                  defaultMessage: '删除',
                 }) /*删除*/
               }
             </Action.Link>

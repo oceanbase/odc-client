@@ -1,8 +1,12 @@
 .tableWrapper {
+  display: flex;
+  flex-direction: column;
   height: 100%;
+
   .alertInfo {
     margin-bottom: 16px;
   }
+
   &.showAlertInfo {
     :global {
       .ant-spin-nested-loading {
@@ -10,6 +14,7 @@
       }
     }
   }
+
   &.showToolbar {
     &.showAlertInfo {
       :global {
@@ -18,6 +23,7 @@
         }
       }
     }
+
     &.infoVisible {
       :global {
         .ant-spin-nested-loading {
@@ -25,12 +31,14 @@
         }
       }
     }
+
     :global {
       .ant-spin-nested-loading {
         height: calc(100% - 45px);
       }
     }
   }
+
   &.infoVisible {
     :global {
       .ant-spin-nested-loading {
@@ -38,6 +46,7 @@
       }
     }
   }
+
   &.infoVisible.showToolbar,
   &.showToolbar,
   &.infoVisible {
@@ -51,13 +60,16 @@
       }
     }
   }
+
   :global {
     .ant-space-item-split {
       color: #d9d9d9;
     }
+
     .ant-spin-container {
       height: 100%;
     }
+
     .ant-table-pagination {
       &.ant-pagination {
         position: absolute;
@@ -66,10 +78,21 @@
         margin: 0;
         padding-top: 16px;
       }
+
       .ant-pagination-total-text {
         position: absolute;
         left: 0;
       }
+    }
+  }
+}
+.toolBar {
+  :global {
+    .ant-select-arrow {
+      color: var(--icon-color-normal);
+    }
+    .anticon {
+      color: var(--icon-color-normal);
     }
   }
 }
@@ -78,12 +101,18 @@
   align-items: center;
   justify-content: space-between;
   padding-bottom: 8px;
+
   .titleContent {
     font-size: 16px;
+    .title {
+      color: var(--text-color-hint);
+    }
+
     .desc {
       color: var(--text-color-hint);
       font-size: 12px;
     }
+
     .cursor {
       font-size: 12px;
       cursor: pointer;
@@ -93,27 +122,47 @@
 
 .bigTable {
   :global {
+    .ant-checkbox .ant-checkbox-inner {
+      border: 1px solid var(--odc-border-color);
+    }
+    .ant-pagination-next[aria-disabled='false'] {
+      .anticon {
+        color: var(--icon-color-normal);
+      }
+    }
     .ant-table-thead {
       .ant-table-cell {
         box-sizing: border-box;
         height: 24px;
         padding: 0 16px;
         line-height: 24px;
-        background-color: var(--navigationv2-background-color);
+        background-color: var(--table-header-background-color);
+
+        .anticon {
+          color: var(--icon-color-normal);
+        }
+        .active .anticon,
+        .anticon.active {
+          color: var(--icon-color-focus);
+        }
+
         &::before {
           display: none;
         }
+
         &.ant-table-cell-fix-left {
           &,
           .ant-table-filter-trigger {
             padding-right: 10px;
           }
         }
+
         .ant-table-column-sorters {
           padding: 0;
         }
       }
     }
+
     .ant-table-tbody {
       .ant-table-cell {
         padding: 10px 16px;
@@ -122,6 +171,7 @@
     }
   }
 }
+
 .smallCommonTable {
   .toolBar {
     .titleContent {
@@ -129,13 +179,34 @@
     }
   }
 }
+
 .smallTable {
   :global {
     .ant-table {
       font-size: 12px;
     }
+    .ant-pagination-next[aria-disabled='false'] {
+      .anticon {
+        color: var(--icon-color-normal);
+      }
+    }
+    .ant-checkbox .ant-checkbox-inner {
+      border: 1px solid var(--odc-border-color);
+    }
+    .ant-table-thead .ant-table-cell {
+      .anticon {
+        color: var(--icon-color-normal);
+      }
+
+      .active .anticon,
+      .anticon.active {
+        color: var(--icon-color-focus);
+      }
+    }
+
     .ant-table-thead > tr > th {
       white-space: nowrap;
+
       .ant-table-column-sorters {
         padding: 0;
       }
@@ -146,10 +217,12 @@
       height: 24px;
       padding: 0 8px;
     }
+
     .ant-table-tbody > tr.ant-table-expanded-row > td {
       height: 100%;
       padding: 0 8px;
     }
+
     .ant-table-column-title {
       color: var(--text-color-primary);
     }
@@ -167,6 +240,7 @@
 
   .odd {
     background: var(--background-tertraiy-color);
+
     :global {
       .ant-table-cell-fix-left,
       .ant-table-cell-fix-right {
@@ -178,6 +252,7 @@
 
 .filterContent {
   color: var(--text-color-primary);
+
   :global {
     .ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
       padding-left: 0;
@@ -187,6 +262,7 @@
 
 .infoWrap {
   margin-bottom: 12px;
+
   .btn {
     color: #1890ff;
     font-size: 12px;
@@ -217,14 +293,81 @@
     .ant-spin-nested-loading > .ant-spin-container {
       padding-bottom: 40px;
     }
+    .ant-table-filter-trigger {
+      margin: 0;
+    }
+
+    .ant-empty-description {
+      color: var(--text-color-hint);
+      font-size: 12px;
+      line-height: 22px;
+      text-align: center;
+      opacity: 0.65;
+    }
+    .ant-empty-normal {
+      padding-top: 149px;
+    }
+
+    .ant-table-expanded-row-fixed {
+      height: 700px;
+      padding-bottom: 40px;
+      touch-action: none;
+    }
   }
+
   &:not(.scrollAble) {
     :global {
       .ant-table-body {
+        height: 100%;
+
         &::-webkit-scrollbar {
           // display: none;
         }
       }
+    }
+  }
+
+  .tableWrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .customTable {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    .ant-table-placeholder {
+      display: flex;
+      flex-grow: 1;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .customEmpty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+}
+.editbaleCellValueWarp {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.editbaleCellValueWarp:hover {
+  padding: 1px 6px;
+  border: 1px solid var(--odc-border-color);
+  border-radius: 2px;
+}
+
+.deafaultOperation {
+  :global {
+    .anticon {
+      color: var(--icon-color-normal);
     }
   }
 }

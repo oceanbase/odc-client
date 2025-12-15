@@ -18,9 +18,8 @@ import { FilterOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Input, Popover } from 'antd';
 import { Component } from 'react';
 // @ts-ignore
-import { CheckboxValueType } from 'antd/lib/checkbox/Group';
-import styles from './index.less';
 import { formatMessage } from '@/util/intl';
+import styles from './index.less';
 
 export default class DDLResultSetFilter extends Component<
   {
@@ -76,7 +75,7 @@ export default class DDLResultSetFilter extends Component<
     });
   };
 
-  public handleCheckboxChange = (selectedValues: CheckboxValueType[]) => {
+  public handleCheckboxChange = (selectedValues: any[]) => {
     this.setState({
       selectedValues: selectedValues as string[],
     });
@@ -126,33 +125,36 @@ export default class DDLResultSetFilter extends Component<
               size="small"
               placeholder={formatMessage({
                 id: 'workspace.window.table.datatab.placeholder',
+                defaultMessage: '请输入',
               })}
               onChange={(e) => {
                 this.handleSearch(e.target.value);
               }}
               onSearch={this.handleSearch}
             />
+
             <Checkbox.Group
               className={styles.columns}
               options={filteredColumns}
               value={selectedValues}
               onChange={this.handleCheckboxChange}
             />
+
             <div className={styles.footer}>
               <span>
                 <span className={styles.select} onClick={this.handleSelectAll}>
-                  {formatMessage({ id: 'app.button.selectAll' })}
+                  {formatMessage({ id: 'app.button.selectAll', defaultMessage: '全选' })}
                 </span>
                 <span className={styles.deselect} onClick={this.handleDeselectAll}>
-                  {formatMessage({ id: 'app.button.deselectAll' })}
+                  {formatMessage({ id: 'app.button.deselectAll', defaultMessage: '取消全选' })}
                 </span>
               </span>
               <span>
                 <Button size="small" style={{ marginRight: 8 }} onClick={this.handleCancel}>
-                  {formatMessage({ id: 'app.button.cancel' })}
+                  {formatMessage({ id: 'app.button.cancel', defaultMessage: '取消' })}
                 </Button>
                 <Button size="small" type="primary" onClick={this.handleSubmit}>
-                  {formatMessage({ id: 'app.button.ok' })}
+                  {formatMessage({ id: 'app.button.ok', defaultMessage: '确定' })}
                 </Button>
               </span>
             </div>

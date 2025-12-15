@@ -1,0 +1,31 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 50px;
+  border-bottom: 1px solid var(--odc-border-color);
+}
+
+.filterTooltip {
+  :global {
+    .ant-tooltip-inner {
+      background-color: #364563 !important;
+      border-radius: 8px !important;
+    }
+
+    .ant-tooltip-arrow::before {
+      background-color: #364563 !important;
+    }
+  }
+}
+.groupIconContainer {
+  padding: 3px;
+}
+.filterIconContainer {
+  height: 13px;
+  width: 13px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

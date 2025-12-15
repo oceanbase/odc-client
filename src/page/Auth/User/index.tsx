@@ -36,7 +36,8 @@ import { IManagerDetailTabs, IManagerResourceType } from '@/d.ts';
 import odc from '@/plugins/odc';
 import type { UserStore } from '@/store/login';
 import { formatMessage } from '@/util/intl';
-import { encrypt, getFormatDateTime } from '@/util/utils';
+import { encrypt } from '@/util/utils';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Button, Empty, message, Popover, Space, Tooltip, Typography } from 'antd';
 import type { UploadFile } from 'antd/lib/upload/interface';
@@ -46,7 +47,31 @@ import React from 'react';
 import { ResourceContext } from '../context';
 import DetailContent from './component/DetailContent';
 import FormModal from './component/FormModal';
+import AccessKeyManageModal from './component/AccessKeyManageModal';
 import styles from './index.less';
+import login from '@/store/login';
+import InputSelect from '@/component/InputSelect';
+
+enum UserSearchType {
+  all = 'all',
+  name = 'name',
+  accountName = 'accountName',
+}
+
+const UserSearchTypeTextMap = {
+  [UserSearchType.all]: formatMessage({
+    id: 'src.page.Auth.User.D4FAC19B',
+    defaultMessage: '全部',
+  }),
+  [UserSearchType.name]: formatMessage({
+    id: 'odc.components.UserPage.Name',
+    defaultMessage: '姓名',
+  }),
+  [UserSearchType.accountName]: formatMessage({
+    id: 'odc.components.UserPage.Account',
+    defaultMessage: '账号',
+  }),
+};
 
 interface IProps {
   userStore?: UserStore;
@@ -59,6 +84,10 @@ interface IState {
   user: IManagerUser;
   formModalVisible: boolean;
   detailModalVisible: boolean;
+  accessKeyModalVisible: boolean;
+  selectedUserId: number;
+  searchType: UserSearchType;
+  searchValue: string;
 }
 
 interface IManagerBatchUser extends IManagerUser {
@@ -96,12 +125,16 @@ class UserPage extends React.PureComponent<IProps, IState> {
     user: null,
     formModalVisible: false,
     detailModalVisible: false,
+    accessKeyModalVisible: false,
+    selectedUserId: null,
+    searchValue: undefined,
+    searchType: undefined,
   };
 
   private getPageColumns = (roles: any[]) => {
     return [
       {
-        title: formatMessage({ id: 'odc.components.UserPage.Name' }), // 姓名
+        title: formatMessage({ id: 'odc.components.UserPage.Name', defaultMessage: '姓名' }), // 姓名
         dataIndex: 'name',
         width: 200,
         ellipsis: true,
@@ -111,7 +144,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: formatMessage({ id: 'odc.components.UserPage.Account' }), // 账号
+        title: formatMessage({ id: 'odc.components.UserPage.Account', defaultMessage: '账号' }), // 账号
         width: 200,
         ellipsis: true,
         dataIndex: 'accountName',
@@ -119,25 +152,35 @@ class UserPage extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: formatMessage({ id: 'odc.components.UserPage.Role' }), // 角色
-        dataIndex: 'roleIds',
+        title: formatMessage({ id: 'odc.components.UserPage.Role', defaultMessage: '角色' }), // 角色
+        dataIndex: 'roles',
         ellipsis: true,
-        width: 200,
-        key: 'roleIds',
+        width: 220,
+        key: 'roles',
         filters: [{ name: <EmptyLabel />, id: 0 }].concat(roles ?? []).map(({ name, id }) => {
           return {
             text: name,
             value: id,
           };
         }),
-        render: (roleIds) => {
-          const relatedRoles = useRoleListByIds(roles, roleIds);
-          return <RoleList roles={relatedRoles} isShowIcon />;
+        onFilter: (value, record) => {
+          // 如果过滤值为0，表示选择"空"选项，匹配没有角色的用户
+          if (value === 0) {
+            return !record?.roles?.length;
+          }
+          // 检查用户是否包含选中的角色
+          return record?.roles?.some((role) => role.id === value);
+        },
+        render: (roles) => {
+          return <RoleList roles={roles} isShowIcon />;
         },
       },
 
       {
-        title: formatMessage({ id: 'odc.components.UserPage.UpdateTime' }), // 更新时间
+        title: formatMessage({
+          id: 'odc.components.UserPage.UpdateTime',
+          defaultMessage: '更新时间',
+        }), // 更新时间
         width: 160,
         ellipsis: true,
         key: 'updateTime',
@@ -147,7 +190,10 @@ class UserPage extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: formatMessage({ id: 'odc.components.UserPage.LogonTime' }), // 登录时间
+        title: formatMessage({
+          id: 'odc.components.UserPage.LogonTime',
+          defaultMessage: '登录时间',
+        }), // 登录时间
         width: 160,
         ellipsis: true,
         key: 'lastLoginTime',
@@ -157,25 +203,30 @@ class UserPage extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: formatMessage({ id: 'odc.Auth.User.EnableStatus' }), //启用状态
+        title: formatMessage({ id: 'odc.Auth.User.EnableStatus', defaultMessage: '启用状态' }), //启用状态
         width: 80,
         ellipsis: true,
         key: 'enabled',
         dataIndex: 'enabled',
         filters: [
           {
-            text: formatMessage({ id: 'odc.components.UserPage.Enable' }), // 启用
+            text: formatMessage({ id: 'odc.components.UserPage.Enable', defaultMessage: '启用' }), // 启用
             value: true,
           },
 
           {
-            text: formatMessage({ id: 'odc.components.UserPage.Disable' }), // 停用
+            text: formatMessage({ id: 'odc.components.UserPage.Disable', defaultMessage: '停用' }), // 停用
             value: false,
           },
         ],
 
         render: (enabled, record) => {
-          const disabledOp = this.isAdminOrMe(record);
+          const canAcessUpdate = () =>
+            canAcess({
+              resourceIdentifier: IManagerResourceType.user,
+              action: actionTypes.update,
+            }).accessible;
+          const disabledOp = this.isMe(record) || !canAcessUpdate();
           return (
             <StatusSwitch
               disabled={disabledOp}
@@ -192,12 +243,12 @@ class UserPage extends React.PureComponent<IProps, IState> {
       },
 
       {
-        title: formatMessage({ id: 'odc.components.UserPage.Operation' }), // 操作
-        width: 132,
+        title: formatMessage({ id: 'odc.components.UserPage.Operation', defaultMessage: '操作' }), // 操作
+        width: 212,
         key: 'action',
         fixed: 'right' as FixedType,
         render: (value, record) => {
-          const disabledOp = this.isAdminOrMe(record);
+          const disabledOp = this.isMe(record);
           return (
             <Action.Group>
               <Action.Link
@@ -209,6 +260,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
                 {
                   formatMessage({
                     id: 'odc.components.UserPage.See',
+                    defaultMessage: '查看',
                   }) /* 查看 */
                 }
               </Action.Link>
@@ -227,9 +279,29 @@ class UserPage extends React.PureComponent<IProps, IState> {
                     {
                       formatMessage({
                         id: 'odc.components.UserPage.Editing',
+                        defaultMessage: '编辑',
                       })
                       /* 编辑 */
                     }
+                  </Action.Link>
+                </Action.Group>
+              </Acess>
+              <Acess
+                {...createPermission(IManagerResourceType.user, actionTypes.update, record.id)}
+                key="accessKey"
+              >
+                <Action.Group>
+                  <Action.Link
+                    key="accessKey"
+                    disabled={disabledOp}
+                    onClick={async () => {
+                      this.openAccessKeyModal(record.id);
+                    }}
+                  >
+                    {formatMessage({
+                      id: 'src.page.Auth.User.C98D9F83',
+                      defaultMessage: '管理 AccessKey',
+                    })}
                   </Action.Link>
                 </Action.Group>
               </Acess>
@@ -272,15 +344,18 @@ class UserPage extends React.PureComponent<IProps, IState> {
     if (res) {
       message.success(
         enabled
-          ? formatMessage({ id: 'odc.components.UserPage.Enabled' }) // 启用成功
-          : formatMessage({ id: 'odc.components.UserPage.Disabled' }), // 停用成功
+          ? formatMessage({ id: 'odc.components.UserPage.Enabled', defaultMessage: '启用成功' }) // 启用成功
+          : formatMessage({ id: 'odc.components.UserPage.Disabled', defaultMessage: '停用成功' }), // 停用成功
       );
       this.reloadData();
     } else {
       message.error(
         enabled
-          ? formatMessage({ id: 'odc.components.UserPage.FailedToEnable' }) // 启用失败
-          : formatMessage({ id: 'odc.components.UserPage.Disabled.1' }), // 停用失败
+          ? formatMessage({
+              id: 'odc.components.UserPage.FailedToEnable',
+              defaultMessage: '启用失败',
+            }) // 启用失败
+          : formatMessage({ id: 'odc.components.UserPage.Disabled.1', defaultMessage: '停用失败' }), // 停用失败
       );
     }
   };
@@ -288,6 +363,20 @@ class UserPage extends React.PureComponent<IProps, IState> {
   private handleCloseDetailModal = () => {
     this.setState({
       detailModalVisible: false,
+    });
+  };
+
+  private openAccessKeyModal = (userId: number) => {
+    this.setState({
+      accessKeyModalVisible: true,
+      selectedUserId: userId,
+    });
+  };
+
+  private handleCloseAccessKeyModal = () => {
+    this.setState({
+      accessKeyModalVisible: false,
+      selectedUserId: null,
     });
   };
 
@@ -299,13 +388,17 @@ class UserPage extends React.PureComponent<IProps, IState> {
   };
 
   private loadData = async (args: ITableLoadOptions = {}) => {
-    const { searchValue = '', filters, sorter, pagination, pageSize } = args ?? {};
+    const { filters, sorter, pagination, pageSize } = args ?? {};
     const { roleIds, enabled } = filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
     const data: Record<string, any> = {
-      name: searchValue,
-      accountName: searchValue,
+      name: [UserSearchType.name, UserSearchType.all].includes(this.state.searchType)
+        ? this.state.searchValue
+        : undefined,
+      accountName: [UserSearchType.accountName, UserSearchType.all].includes(this.state.searchType)
+        ? this.state.searchValue
+        : undefined,
       roleId: roleIds,
       enabled,
       page: current,
@@ -336,15 +429,11 @@ class UserPage extends React.PureComponent<IProps, IState> {
     this.tableRef.current.reload();
   };
 
-  private isAdminOrMe = (user: IManagerUser) => {
+  private isMe = (user: IManagerUser) => {
     const {
       userStore: { user: me },
     } = this.props;
-    const isAdmin = odc.appConfig.manage.user.isAdmin
-      ? odc.appConfig.manage.user.isAdmin(user)
-      : user?.builtIn && user?.accountName === 'admin';
-    const isMeUser = user?.id === me?.id;
-    return isAdmin || isMeUser;
+    return user?.id === me?.id;
   };
 
   private handleCreate = () => {
@@ -360,7 +449,10 @@ class UserPage extends React.PureComponent<IProps, IState> {
     const res = await batchImportUser(formData);
     if (res) {
       message.success(
-        formatMessage({ id: 'odc.components.UserPage.BatchImportSucceeded' }), //批量导入成功
+        formatMessage({
+          id: 'odc.components.UserPage.BatchImportSucceeded',
+          defaultMessage: '批量导入成功',
+        }), //批量导入成功
       );
       this.batchImportRef.current.closeModal();
       this.reloadData();
@@ -383,6 +475,24 @@ class UserPage extends React.PureComponent<IProps, IState> {
     });
   };
 
+  private handleSearch = ({
+    searchValue,
+    searchType,
+  }: {
+    searchValue: string;
+    searchType: UserSearchType;
+  }) => {
+    this.setState(
+      {
+        searchValue,
+        searchType,
+      },
+      () => {
+        this.loadData();
+      },
+    );
+  };
+
   componentDidMount() {
     this.loadRoles();
   }
@@ -391,13 +501,19 @@ class UserPage extends React.PureComponent<IProps, IState> {
     const {
       formModalVisible,
       detailModalVisible,
+      accessKeyModalVisible,
       editId,
       detailId,
+      selectedUserId,
       users,
       roles,
       user,
     } = this.state;
-    const disabledOp = this.isAdminOrMe(user);
+    const disabledOp = this.isMe(user);
+    const selectTypeOptions = Object.keys(UserSearchType).map((item) => ({
+      value: item,
+      label: UserSearchTypeTextMap[item],
+    }));
     const canAcessCreate = canAcess({
       resourceIdentifier: IManagerResourceType.user,
       action: actionTypes.create,
@@ -414,10 +530,31 @@ class UserPage extends React.PureComponent<IProps, IState> {
           enableResize
           titleContent={null}
           filterContent={{
-            searchPlaceholder: formatMessage({
-              id: 'odc.components.UserPage.EnterAUserOrAccount',
-            }),
-            /* 请输入用户/账号搜索 */
+            enabledSearch: false,
+            filters: [
+              {
+                render: (params) => {
+                  return (
+                    <InputSelect
+                      searchValue={this.state.searchValue}
+                      searchType={this.state.searchType}
+                      selectTypeOptions={selectTypeOptions}
+                      onSelect={({ searchValue, searchType }) => {
+                        this.setState(
+                          {
+                            searchValue,
+                            searchType: searchType as UserSearchType,
+                          },
+                          () => {
+                            this.loadData(params);
+                          },
+                        );
+                      }}
+                    />
+                  );
+                },
+              },
+            ],
           }}
           operationContent={
             canAcessCreate
@@ -429,6 +566,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
                         <span>
                           {formatMessage({
                             id: 'odc.components.UserPage.CreateUser',
+                            defaultMessage: '新建用户',
                           })}
                         </span>
                       ),
@@ -446,14 +584,17 @@ class UserPage extends React.PureComponent<IProps, IState> {
                           action="/api/v2/iam/users/previewBatchImport"
                           description={formatMessage({
                             id: 'odc.components.UserPage.TheFileMustContainInformation',
+                            defaultMessage:
+                              '文件需包含用户账号、姓名、密码等信息，建议使用用户配置模版',
                           })} /*文件需包含用户账号、姓名、密码等信息，建议使用用户配置模版*/
-                          templateName="user_template.xlsx"
+                          templatePath="/api/v2/iam/users/template"
                           previewContent={(data: IManagerBatchUser[]) => {
                             if (!data?.length) {
                               return (
                                 <Empty
                                   description={formatMessage({
                                     id: 'odc.components.UserPage.NoValidUserInformationIs',
+                                    defaultMessage: '暂无有效用户信息',
                                   })} /*暂无有效用户信息*/
                                 />
                               );
@@ -485,6 +626,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
                                                   formatMessage(
                                                     {
                                                       id: 'odc.components.UserPage.NameItemname',
+                                                      defaultMessage: '姓名：{itemName}',
                                                     },
                                                     { itemName: item.name },
                                                   ) /*姓名：{itemName}*/
@@ -494,8 +636,8 @@ class UserPage extends React.PureComponent<IProps, IState> {
                                                 {
                                                   formatMessage(
                                                     {
-                                                      id:
-                                                        'odc.components.UserPage.AccountItemaccountname',
+                                                      id: 'odc.components.UserPage.AccountItemaccountname',
+                                                      defaultMessage: '账号：{itemAccountName}',
                                                     },
                                                     { itemAccountName: item.accountName },
                                                   ) /*账号：{itemAccountName}*/
@@ -505,6 +647,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
                                                 {
                                                   formatMessage({
                                                     id: 'odc.components.UserPage.Role.1',
+                                                    defaultMessage: '角色：',
                                                   }) /*角色：*/
                                                 }
 
@@ -558,12 +701,19 @@ class UserPage extends React.PureComponent<IProps, IState> {
             });
             this.loadData();
           }}
+          onCancel={() => {
+            this.setState({
+              formModalVisible: false,
+              editId: null,
+            });
+          }}
         />
 
         <CommonDetailModal
           visible={detailModalVisible}
           title={formatMessage({
             id: 'odc.components.UserPage.UserInformation',
+            defaultMessage: '用户信息',
           })}
           /* 用户信息 */
           detailId={detailId}
@@ -572,6 +722,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
               key: IManagerDetailTabs.DETAIL,
               title: formatMessage({
                 id: 'odc.components.UserPage.UserDetails',
+                defaultMessage: '用户详情',
               }),
               // 用户详情
             },
@@ -579,6 +730,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
               key: IManagerDetailTabs.RESOURCE,
               title: formatMessage({
                 id: 'odc.components.UserPage.RelatedResources',
+                defaultMessage: '相关资源',
               }),
               // 相关资源
             },
@@ -596,6 +748,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
                   {
                     formatMessage({
                       id: 'odc.components.UserPage.Editing',
+                      defaultMessage: '编辑',
                     })
                     /* 编辑 */
                   }
@@ -606,6 +759,7 @@ class UserPage extends React.PureComponent<IProps, IState> {
                 {
                   formatMessage({
                     id: 'odc.components.UserPage.Closed',
+                    defaultMessage: '关闭',
                   })
                   /* 关闭 */
                 }
@@ -613,7 +767,13 @@ class UserPage extends React.PureComponent<IProps, IState> {
             </Space>
           }
           onClose={this.handleCloseDetailModal}
-          getDetail={getUserDetail}
+          getDetail={async (id: number) => {
+            const user = await getUserDetail(id);
+            return {
+              ...user,
+              roles: users?.contents?.find((i) => i?.id === id)?.roles,
+            };
+          }}
           renderContent={(key, data) => (
             <DetailContent
               activeKey={key}
@@ -623,6 +783,12 @@ class UserPage extends React.PureComponent<IProps, IState> {
               handleCloseAndReload={this.handleCloseAndReload}
             />
           )}
+        />
+
+        <AccessKeyManageModal
+          visible={accessKeyModalVisible}
+          userId={selectedUserId}
+          onClose={this.handleCloseAccessKeyModal}
         />
       </>
     );

@@ -16,34 +16,47 @@
 
 import { formatMessage } from '@/util/intl';
 import { DatePicker, Select, Space } from 'antd';
-import type { Moment } from 'moment';
+import type { Dayjs } from 'dayjs';
 import React, { useState } from 'react';
 
 const { RangePicker } = DatePicker;
 
+export const TIME_OPTION_ALL_TASK = 'ALL';
+
 export const TimeOptions = [
   {
-    label: formatMessage({ id: 'odc.component.TimeSelect.LastDays' }), //最近 7 天
+    label: formatMessage({ id: 'odc.component.TimeSelect.LastDays', defaultMessage: '最近 7 天' }), //最近 7 天
     value: 7,
   },
 
   {
-    label: formatMessage({ id: 'odc.component.TimeSelect.LastDays.1' }), //最近 15 天
+    label: formatMessage({
+      id: 'odc.component.TimeSelect.LastDays.1',
+      defaultMessage: '最近 15 天',
+    }), //最近 15 天
     value: 15,
   },
 
   {
-    label: formatMessage({ id: 'odc.component.TimeSelect.LastDays.2' }), //最近 30 天
+    label: formatMessage({
+      id: 'odc.component.TimeSelect.LastDays.2',
+      defaultMessage: '最近 30 天',
+    }), //最近 30 天
     value: 30,
   },
-
   {
-    label: formatMessage({ id: 'odc.component.TimeSelect.LastSixMonths' }), //最近半年
+    label: formatMessage({
+      id: 'odc.component.TimeSelect.LastSixMonths',
+      defaultMessage: '最近半年',
+    }), //最近半年
     value: 183,
   },
-
   {
-    label: formatMessage({ id: 'odc.component.TimeSelect.Custom' }), //自定义
+    label: formatMessage({ id: 'src.component.TimeSelect.9E6CA23B', defaultMessage: '全部' }),
+    value: TIME_OPTION_ALL_TASK,
+  },
+  {
+    label: formatMessage({ id: 'odc.component.TimeSelect.Custom', defaultMessage: '自定义' }), //自定义
     value: 'custom',
   },
 ];
@@ -52,7 +65,7 @@ export const TimeSelect: React.FC<{
   handleChangeFilter: (args: Record<string, any>) => void;
 }> = (props) => {
   const [timeValue, setTimeValue] = useState('');
-  const [dateValue, setDateValue] = useState<[Moment, Moment]>(null);
+  const [dateValue, setDateValue] = useState<[Dayjs, Dayjs]>(null);
 
   const handleTimeChange = (value) => {
     setTimeValue(value);
@@ -63,7 +76,7 @@ export const TimeSelect: React.FC<{
     }
   };
 
-  const handleRangeChange = (value: [Moment, Moment]) => {
+  const handleRangeChange = (value: [Dayjs, Dayjs]) => {
     setDateValue(value);
     props.handleChangeFilter({
       execTime: value?.map((item) => item.format('YYYY-MM-DD HH:mm:ss')).join(','),
@@ -76,6 +89,7 @@ export const TimeSelect: React.FC<{
         {
           formatMessage({
             id: 'odc.component.TimeSelect.ExecutionTime',
+            defaultMessage: '执行时间：',
           }) /*执行时间：*/
         }
       </span>

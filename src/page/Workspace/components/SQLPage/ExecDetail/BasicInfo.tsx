@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { getLocalFormatDateTime } from '@/util/utils';
+import { ISQLExecuteDetail } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { Card, Descriptions, Tooltip as AntdTooltip } from 'antd';
 import classNames from 'classnames';
 import styles from './index.less';
-import { ISQLExecuteDetail } from '@/d.ts';
 const BasicInfo: React.FC<{ sqlExecuteDetailToShow: ISQLExecuteDetail }> = ({
   sqlExecuteDetailToShow,
 }) => {
@@ -34,12 +34,14 @@ const BasicInfo: React.FC<{ sqlExecuteDetailToShow: ISQLExecuteDetail }> = ({
       <Descriptions
         title={formatMessage({
           id: 'workspace.window.sql.explain.tab.detail.card.base.title',
+          defaultMessage: '基本信息',
         })}
         column={1}
       >
         <Descriptions.Item
           label={formatMessage({
             id: 'workspace.window.sql.explain.tab.detail.card.base.sqlID',
+            defaultMessage: 'SQL ID',
           })}
         >
           {sqlExecuteDetailToShow?.sqlId}
@@ -47,6 +49,7 @@ const BasicInfo: React.FC<{ sqlExecuteDetailToShow: ISQLExecuteDetail }> = ({
         <Descriptions.Item
           label={formatMessage({
             id: 'workspace.window.sql.explain.tab.detail.card.base.sql',
+            defaultMessage: 'SQL',
           })}
         >
           <AntdTooltip title={sqlExecuteDetailToShow?.sql ?? ''}>
@@ -65,6 +68,7 @@ const BasicInfo: React.FC<{ sqlExecuteDetailToShow: ISQLExecuteDetail }> = ({
         <Descriptions.Item
           label={formatMessage({
             id: 'workspace.window.sql.explain.tab.detail.card.base.traceID',
+            defaultMessage: 'Trace ID',
           })}
         >
           {sqlExecuteDetailToShow?.traceId}
@@ -72,6 +76,7 @@ const BasicInfo: React.FC<{ sqlExecuteDetailToShow: ISQLExecuteDetail }> = ({
         <Descriptions.Item
           label={formatMessage({
             id: 'workspace.window.sql.explain.tab.detail.card.base.reqTime',
+            defaultMessage: '请求到达时间',
           })}
         >
           {getLocalFormatDateTime(sqlExecuteDetailToShow?.reqTime)}
@@ -79,6 +84,7 @@ const BasicInfo: React.FC<{ sqlExecuteDetailToShow: ISQLExecuteDetail }> = ({
         <Descriptions.Item
           label={formatMessage({
             id: 'workspace.window.sql.explain.tab.detail.card.base.planType',
+            defaultMessage: '计划类型',
           })}
         >
           {sqlExecuteDetailToShow?.planType}
@@ -86,14 +92,17 @@ const BasicInfo: React.FC<{ sqlExecuteDetailToShow: ISQLExecuteDetail }> = ({
         <Descriptions.Item
           label={formatMessage({
             id: 'workspace.window.sql.explain.tab.detail.card.base.hitPlanCache',
+            defaultMessage: '是否命中缓存',
           })}
         >
           {sqlExecuteDetailToShow?.hitPlanCache
             ? formatMessage({
                 id: 'odc.components.SQLPage.Is',
+                defaultMessage: '是',
               })
             : formatMessage({
                 id: 'odc.components.SQLPage.No',
+                defaultMessage: '否',
               })}
         </Descriptions.Item>
       </Descriptions>

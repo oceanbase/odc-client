@@ -24,9 +24,9 @@ import { FunctionTreeNodeData } from './function';
 import { ReactComponent as TypeSvg } from '@/svgr/menuType.svg';
 
 import { IDatabase } from '@/d.ts/database';
+import { openTypeViewPage } from '@/store/helper/page';
 import { ReactComponent as ParameterSvg } from '@/svgr/Parameter.svg';
 import { ProcedureTreeNodeData } from './procedure';
-import { openTypeViewPage } from '@/store/helper/page';
 
 const THEME = 'var(--icon-color-4)';
 
@@ -34,7 +34,7 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
   const dbName = database.name;
   const types = dbSession?.database?.types;
   const treeData: TreeDataNode = {
-    title: formatMessage({ id: 'odc.ResourceTree.Nodes.type.Type' }), //类型
+    title: formatMessage({ id: 'odc.ResourceTree.Nodes.type.Type', defaultMessage: '类型' }), //类型
     key: `${database.id}-${dbName}-type`,
     type: ResourceNodeType.TypeRoot,
     data: database,
@@ -43,7 +43,7 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
   };
   if (types) {
     treeData.children = types.map((type) => {
-      const pkgKey = `${database.id}-${dbSession?.database?.typeVersion}-${dbName}-type-${type.typeName}`;
+      const pkgKey = `${database.id}-${dbName}-type-${type.typeName}`;
 
       const { typeDetail } = type;
       const functions = typeDetail?.functions;
@@ -54,7 +54,10 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
 
       if (variables?.length) {
         variablesRoot = {
-          title: formatMessage({ id: 'odc.ResourceTree.Nodes.type.Variable' }), //变量
+          title: formatMessage({
+            id: 'odc.ResourceTree.Nodes.type.Variable',
+            defaultMessage: '变量',
+          }), //变量
           key: `${pkgKey}-variable`,
           type: ResourceNodeType.TypeVariableRoot,
           icon: (
@@ -77,7 +80,10 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
       }
       if (functions?.length || procedures?.length) {
         programRoot = {
-          title: formatMessage({ id: 'odc.ResourceTree.Nodes.type.Subprogram' }), //子程序
+          title: formatMessage({
+            id: 'odc.ResourceTree.Nodes.type.Subprogram',
+            defaultMessage: '子程序',
+          }), //子程序
           key: `${pkgKey}-program`,
           type: ResourceNodeType.TypeProgramRoot,
           icon: (
@@ -131,7 +137,8 @@ export function TypeTreeData(dbSession: SessionStore, database: IDatabase): Tree
             }}
           />
         ),
-        doubleClick(session, node, databaseFrom) {
+
+        doubleClick(session, node) {
           openTypeViewPage(type.typeName, undefined, session?.database?.databaseId);
         },
         sessionId: dbSession?.sessionId,

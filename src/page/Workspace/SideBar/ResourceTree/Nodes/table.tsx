@@ -40,7 +40,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
   const dbName = database.name;
   const tables = dbSession?.database?.tables;
   const treeData: TreeDataNode = {
-    title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Table' }), //表
+    title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Table', defaultMessage: '表' }), //表
     key: `${database?.id}-${dbName}-table`,
     type: ResourceNodeType.TableRoot,
     data: database,
@@ -55,17 +55,22 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
     let visited = new Set();
 
     treeData.children = tables
+      // 无权限的表过滤掉， 就像无权限的库一样
+      // .filter((table) => table?.info?.authorizedPermissionTypes?.length > 0)??
       .map((table) => {
         if (visited.has(table.info?.tableName)) {
           logger.error('table name is duplicated', table.info?.tableName);
           return;
         }
         visited.add(table.info?.tableName);
-        const tableKey = `${database.id}-${dbSession?.database?.tableVersion}-${dbName}-table-${table.info.tableName}`;
+        const tableKey = `${database.id}-${dbName}-table-${table?.info?.tableName}`;
         let columnRoot: TreeDataNode;
         if (table.columns) {
           columnRoot = {
-            title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Column' }), //列
+            title: formatMessage({
+              id: 'odc.ResourceTree.Nodes.table.Column',
+              defaultMessage: '列',
+            }), //列
             type: ResourceNodeType.TableColumnRoot,
             key: `${tableKey}-column`,
             sessionId: dbSession?.sessionId,
@@ -77,7 +82,6 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                 }}
               />
             ),
-
             children: table.columns?.map((c) => {
               return {
                 title: c.name,
@@ -101,7 +105,10 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
         let indexRoot: TreeDataNode;
         if (table.indexes?.length) {
           indexRoot = {
-            title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Index' }), //索引
+            title: formatMessage({
+              id: 'odc.ResourceTree.Nodes.table.Index',
+              defaultMessage: '索引',
+            }), //索引
             type: ResourceNodeType.TableIndexRoot,
             key: `${tableKey}-index`,
             data: table,
@@ -137,7 +144,10 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
         }
 
         let partitionRoot: TreeDataNode = {
-          title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Partition' }), //分区
+          title: formatMessage({
+            id: 'odc.ResourceTree.Nodes.table.Partition',
+            defaultMessage: '分区',
+          }), //分区
           type: ResourceNodeType.TablePartitionRoot,
           key: `${tableKey}-partition`,
           data: table,
@@ -150,16 +160,41 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
             />
           ),
         };
+
+        const subpartitionsDataHelper = (key, partitions, name) => {
+          if (!partitions) return [];
+          return partitions
+            ?.filter((_s) => _s?.parentName === name)
+            ?.map((s) => {
+              return {
+                title: s.name,
+                key: `${key}-${s.name}`,
+                isLeaf: true,
+                sessionId: dbSession?.sessionId,
+                icon: (
+                  <Icon
+                    component={PartitionSvg}
+                    style={{
+                      color: '#3FA3FF',
+                    }}
+                  />
+                ),
+                type: ResourceNodeType.TablePartition,
+              };
+            });
+        };
+
         /**
          * 处理分区
          */
         switch (table.partitions?.partType) {
           case IPartitionType.HASH: {
-            partitionRoot.children = [
-              {
+            partitionRoot.children = table.partitions.partitions.map((p) => {
+              const key = `${tableKey}-partition-hash-${p.name}`;
+              return {
                 title: 'HASH',
-                key: `${tableKey}-partition-hash`,
-                isLeaf: true,
+                key: key,
+                isLeaf: !table.subpartitions,
                 // @ts-ignore
                 sessionId: dbSession?.sessionId,
                 icon: (
@@ -170,19 +205,19 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                     }}
                   />
                 ),
-
                 type: ResourceNodeType.TablePartition,
-              },
-            ];
-
+                children: subpartitionsDataHelper(key, table.subpartitions?.partitions, p.name),
+              };
+            });
             break;
           }
           case IPartitionType.KEY: {
-            partitionRoot.children = [
-              {
+            partitionRoot.children = table.partitions.partitions.map((p) => {
+              const key = `${tableKey}-partition-key-${p.name}`;
+              return {
                 title: 'KEY',
-                key: `${tableKey}-partition-key`,
-                isLeaf: true,
+                key: key,
+                isLeaf: !table.subpartitions,
                 // @ts-ignore
                 sessionId: dbSession?.sessionId,
                 icon: (
@@ -193,19 +228,19 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                     }}
                   />
                 ),
-
                 type: ResourceNodeType.TablePartition,
-              },
-            ];
-
+                children: subpartitionsDataHelper(key, table.subpartitions?.partitions, p.name),
+              };
+            });
             break;
           }
           case IPartitionType.LIST: {
             partitionRoot.children = table.partitions.partitions.map((p) => {
+              const key = `${tableKey}-partition-list-${p.name}`;
               return {
                 title: p.name,
-                key: `${tableKey}-partition-list-${p.name}`,
-                isLeaf: true,
+                key: key,
+                isLeaf: !table.subpartitions,
                 sessionId: dbSession?.sessionId,
                 icon: (
                   <Icon
@@ -217,16 +252,18 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                 ),
 
                 type: ResourceNodeType.TablePartition,
+                children: subpartitionsDataHelper(key, table.subpartitions?.partitions, p.name),
               };
             });
             break;
           }
           case IPartitionType.LIST_COLUMNS: {
             partitionRoot.children = table.partitions.partitions.map((p) => {
+              const key = `${tableKey}-partition-list-${p.name}`;
               return {
                 title: p.name,
-                key: `${tableKey}-partition-listColumns-${p.name}`,
-                isLeaf: true,
+                key: key,
+                isLeaf: !table.subpartitions,
                 sessionId: dbSession?.sessionId,
                 icon: (
                   <Icon
@@ -238,16 +275,18 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                 ),
 
                 type: ResourceNodeType.TablePartition,
+                children: subpartitionsDataHelper(key, table.subpartitions?.partitions, p.name),
               };
             });
             break;
           }
           case IPartitionType.RANGE: {
             partitionRoot.children = table.partitions.partitions.map((p) => {
+              const key = `${tableKey}-partition-list-${p.name}`;
               return {
                 title: p.name,
-                key: `${tableKey}-partition-range-${p.name}`,
-                isLeaf: true,
+                key: key,
+                isLeaf: !table.subpartitions,
                 sessionId: dbSession?.sessionId,
                 icon: (
                   <Icon
@@ -259,16 +298,18 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                 ),
 
                 type: ResourceNodeType.TablePartition,
+                children: subpartitionsDataHelper(key, table.subpartitions?.partitions, p.name),
               };
             });
             break;
           }
           case IPartitionType.RANGE_COLUMNS: {
             partitionRoot.children = table.partitions.partitions.map((p) => {
+              const key = `${tableKey}-partition-list-${p.name}`;
               return {
                 title: p.name,
-                key: `${tableKey}-partition-rangeColumns-${p.name}`,
-                isLeaf: true,
+                key: key,
+                isLeaf: !table.subpartitions,
                 sessionId: dbSession?.sessionId,
                 icon: (
                   <Icon
@@ -280,6 +321,7 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
                 ),
 
                 type: ResourceNodeType.TablePartition,
+                children: subpartitionsDataHelper(key, table.subpartitions?.partitions, p.name),
               };
             });
             break;
@@ -305,7 +347,10 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
 
         if (constraint.length) {
           constraintRoot = {
-            title: formatMessage({ id: 'odc.ResourceTree.Nodes.table.Constraints' }), //约束
+            title: formatMessage({
+              id: 'odc.ResourceTree.Nodes.table.Constraints',
+              defaultMessage: '约束',
+            }), //约束
             type: ResourceNodeType.TableConstraintRoot,
             key: `${tableKey}-constraint`,
             data: table,
@@ -341,17 +386,18 @@ export function TableTreeData(dbSession: SessionStore, database: IDatabase): Tre
         }
 
         return {
-          title: table.info.tableName,
+          title: table?.info?.tableName,
           key: tableKey,
           type: ResourceNodeType.Table,
           data: table,
           dbObjectType: DbObjectType.table,
-          doubleClick(session, node, databaseFrom) {
+          doubleClick(session, node) {
             openTableViewPage(
               table.info.tableName,
               TopTab.PROPS,
               PropsTab.DDL,
               session?.odcDatabase?.id,
+              node?.data?.info?.tableId,
             );
           },
           icon: (

@@ -2,13 +2,13 @@
   display: flex;
   align-items: center;
   height: 40px;
-  border-bottom: 1px solid var(--odc-border-color);
+  border-bottom: 1px solid var(--table-border-color);
   cursor: pointer;
   &.itemDisable {
     cursor: unset;
   }
   &:not(.itemDisable):hover {
-    background-color: var(--hover-color);
+    background-color: #fafafa;
   }
   .block {
     overflow: hidden;
@@ -36,5 +36,11 @@
     color: var(--text-color-secondary);
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  .action {
+    flex-basis: 50px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    justify-content: right;
   }
 }

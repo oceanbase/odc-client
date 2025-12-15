@@ -23,28 +23,37 @@ import {
   openTriggerViewPage,
 } from '@/store/helper/page';
 import { formatMessage } from '@/util/intl';
-import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
+import { hasChangePermission, hasExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { dropObject } from '@/common/network/database';
 import { getTriggerByName, setTriggerStatus } from '@/common/network/trigger';
 import { PLType } from '@/constant/plType';
 import modal from '@/store/modal';
 import pageStore from '@/store/page';
 import { ReactComponent as BatchCompileSvg } from '@/svgr/batch-compile-all.svg';
-import { downloadPLDDL } from '@/util/sqlExport';
-import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
+import { downloadPLDDL } from '@/util/database/sqlExport';
+import {
+  PlusOutlined,
+  QuestionCircleFilled,
+  ReloadOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
 import { message, Modal } from 'antd';
 import { isSupportExport, isSupportPLEdit } from './helper';
-import { getDataSourceModeConfig } from '@/common/datasource';
+import { openGlobalSearch } from '../../const';
 
 export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.TriggerRoot]: [
     {
       key: 'BATCH_COMPILE',
       text: [
-        formatMessage({ id: 'odc.TreeNodeMenu.config.trigger.BatchCompilation' }), //批量编译
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.trigger.BatchCompilation',
+          defaultMessage: '批量编译',
+        }), //批量编译
       ],
       icon: BatchCompileSvg,
       actionType: actionTypes.create,
@@ -55,7 +64,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         openBatchCompilePLPage(
           PageType.BATCH_COMPILE_TRIGGER,
           DbObjectType.trigger,
-          formatMessage({ id: 'odc.components.ResourceTree.Trigger' }),
+          formatMessage({ id: 'odc.components.ResourceTree.Trigger', defaultMessage: '触发器' }),
           session?.odcDatabase?.id,
           session?.database?.dbName,
         );
@@ -63,7 +72,12 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
     },
     {
       key: 'CREATE_TRIGGER',
-      text: [formatMessage({ id: 'odc.ResourceTree.actions.CreateATrigger' })],
+      text: [
+        formatMessage({
+          id: 'odc.ResourceTree.actions.CreateATrigger',
+          defaultMessage: '新建触发器',
+        }),
+      ],
       actionType: actionTypes.create,
       icon: PlusOutlined,
       run(session, node) {
@@ -71,9 +85,23 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       },
     },
     {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
+      },
+    },
+    {
       key: 'REFRESH',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
+        formatMessage({ id: 'odc.ResourceTree.actions.Refresh', defaultMessage: '刷新' }), //刷新
       ],
       icon: ReloadOutlined,
       actionType: actionTypes.read,
@@ -86,7 +114,12 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
   [ResourceNodeType.Trigger]: [
     {
       key: 'OVERVIEW_TRIGGER',
-      text: [formatMessage({ id: 'odc.ResourceTree.actions.ViewTriggers' })],
+      text: [
+        formatMessage({
+          id: 'odc.ResourceTree.actions.ViewTriggers',
+          defaultMessage: '查看触发器',
+        }),
+      ],
       ellipsis: true,
       run(session, node) {
         const trigger: ITrigger = node.data;
@@ -100,11 +133,24 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         );
       },
     },
-
+    {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
+      },
+    },
     {
       key: 'EDIT_TRIGGER',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Editing' }), //编辑
+        formatMessage({ id: 'odc.ResourceTree.actions.Editing', defaultMessage: '编辑' }), //编辑
       ],
       actionType: actionTypes.update,
       ellipsis: true,
@@ -125,7 +171,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       key: 'COMPILE_TRIGGER',
       ellipsis: true,
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Compile' }), //编译
+        formatMessage({ id: 'odc.ResourceTree.actions.Compile', defaultMessage: '编译' }), //编译
       ],
       isHide(session, node) {
         return !getDataSourceModeConfig(session?.connection?.type)?.features?.compile;
@@ -141,7 +187,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       key: 'ENABLE_TRIGGER',
       ellipsis: true,
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Enable' }), //启用
+        formatMessage({ id: 'odc.ResourceTree.actions.Enable', defaultMessage: '启用' }), //启用
       ],
       isHide(session, node) {
         return getDataSourceModeConfig(session?.connection?.type)?.features?.disableTriggerSwitch;
@@ -170,7 +216,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       key: 'DISABLE_TRIGGER',
       ellipsis: true,
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Disable' }), //禁用
+        formatMessage({ id: 'odc.ResourceTree.actions.Disable', defaultMessage: '禁用' }), //禁用
       ],
       disabled(session, node) {
         const trigger: ITrigger = node.data;
@@ -204,7 +250,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       key: 'EXPORT',
       ellipsis: true,
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Export' }), //导出
+        formatMessage({ id: 'odc.ResourceTree.actions.Export', defaultMessage: '导出' }), //导出
       ],
       disabled: (session) => {
         return !hasExportPermission(session);
@@ -225,7 +271,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       key: 'DOWNLOAD',
       ellipsis: true,
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Download' }), //下载
+        formatMessage({ id: 'odc.ResourceTree.actions.Download', defaultMessage: '下载' }), //下载
       ],
       hasDivider: true,
       async run(session, node) {
@@ -246,7 +292,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       key: 'DELETE_TRIGGER',
       ellipsis: true,
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Delete' }), //删除
+        formatMessage({ id: 'odc.ResourceTree.actions.Delete', defaultMessage: '删除' }), //删除
       ],
       actionType: actionTypes.delete,
       disabled: (session) => {
@@ -258,13 +304,15 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           title: formatMessage(
             {
               id: 'odc.components.ResourceTree.TriggerTree.AreYouSureYouWant',
+              defaultMessage: '是否确定删除触发器{title}？',
             },
             { title: trigger?.triggerName },
           ), // `确定要删除触发器${title}吗？`
-          okText: formatMessage({ id: 'app.button.ok' }),
+          okText: formatMessage({ id: 'app.button.ok', defaultMessage: '确定' }),
 
           cancelText: formatMessage({
             id: 'app.button.cancel',
+            defaultMessage: '取消',
           }),
 
           centered: true,
@@ -283,6 +331,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
             message.success(
               formatMessage({
                 id: 'odc.components.ResourceTree.TriggerTree.DeletedSuccessfully',
+                defaultMessage: '删除成功',
               }),
               // 删除成功
             );
@@ -304,7 +353,7 @@ export const triggerMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       key: 'REFRESH_TRIGGER',
       ellipsis: true,
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
+        formatMessage({ id: 'odc.ResourceTree.actions.Refresh', defaultMessage: '刷新' }), //刷新
       ],
       actionType: actionTypes.create,
       async run(session, node) {

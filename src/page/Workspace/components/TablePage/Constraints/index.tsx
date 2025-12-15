@@ -124,6 +124,7 @@ const TableConstraints: React.FC<IProps> = function ({}) {
               {
                 formatMessage({
                   id: 'odc.TablePage.Constraints.PrimaryKeyConstraintsCannotBe',
+                  defaultMessage: '主键约束不可修改；已存在的约束无法修改，仅支持新增/删除',
                 }) /*主键约束不可修改；已存在的约束无法修改，仅支持新增/删除*/
               }
             </span>
@@ -136,6 +137,7 @@ const TableConstraints: React.FC<IProps> = function ({}) {
               {
                 formatMessage({
                   id: 'odc.TablePage.Constraints.PrimaryKeyConstraint',
+                  defaultMessage: '主键约束',
                 }) /*主键约束*/
               }
             </div>
@@ -156,6 +158,7 @@ const TableConstraints: React.FC<IProps> = function ({}) {
               {
                 formatMessage({
                   id: 'odc.TablePage.Constraints.UniqueConstraint',
+                  defaultMessage: '唯一约束',
                 }) /*唯一约束*/
               }
             </div>
@@ -173,6 +176,7 @@ const TableConstraints: React.FC<IProps> = function ({}) {
               {
                 formatMessage({
                   id: 'odc.TablePage.Constraints.ForeignKeyConstraint',
+                  defaultMessage: '外键约束',
                 }) /*外键约束*/
               }
             </div>
@@ -191,6 +195,7 @@ const TableConstraints: React.FC<IProps> = function ({}) {
                 {
                   formatMessage({
                     id: 'odc.TablePage.Constraints.CheckConstraints',
+                    defaultMessage: '检查约束',
                   }) /*检查约束*/
                 }
               </div>

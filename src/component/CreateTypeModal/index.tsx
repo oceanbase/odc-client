@@ -74,7 +74,10 @@ function CreateTypeModal(props: IProps) {
     <Modal
       width={480}
       destroyOnClose
-      title={formatMessage({ id: 'odc.component.CreateTypeModal.NewType' })}
+      title={formatMessage({
+        id: 'odc.component.CreateTypeModal.NewType',
+        defaultMessage: '新建类型',
+      })}
       /* 新建类型 */
       open={modalStore.createTypeModalVisible}
       onCancel={handleCancel}
@@ -86,6 +89,7 @@ function CreateTypeModal(props: IProps) {
             {
               formatMessage({
                 id: 'odc.component.CreateTypeModal.Cancel',
+                defaultMessage: '取消',
               })
               /* 取消 */
             }
@@ -94,6 +98,7 @@ function CreateTypeModal(props: IProps) {
             {
               formatMessage({
                 id: 'odc.component.CreateTypeModal.NextConfirmTheSqlStatement',
+                defaultMessage: '下一步：确认 SQL',
               })
               /* 下一步: 确认SQL */
             }
@@ -106,12 +111,14 @@ function CreateTypeModal(props: IProps) {
           name="typeName"
           label={formatMessage({
             id: 'odc.component.CreateTypeModal.Type.1',
+            defaultMessage: '类型名称',
           })} /* 类型名称 */
           rules={[
             {
               required: true,
               message: formatMessage({
                 id: 'odc.component.CreateTypeModal.EnterATypeName',
+                defaultMessage: '请输入类型名称',
               }),
               // 请输入类型名称
             },
@@ -119,6 +126,7 @@ function CreateTypeModal(props: IProps) {
               max: 128,
               message: formatMessage({
                 id: 'odc.component.CreateTypeModal.TheLengthCannotExceedCharacters',
+                defaultMessage: '长度不超过 128 个字符',
               }),
 
               // 长度不超过 128 个字符
@@ -128,18 +136,23 @@ function CreateTypeModal(props: IProps) {
           <Input
             placeholder={formatMessage({
               id: 'odc.component.CreateTypeModal.EnterATypeName',
+              defaultMessage: '请输入类型名称',
             })}
           />
         </Form.Item>
         <Form.Item
           name="typeCode"
-          label={formatMessage({ id: 'odc.component.CreateTypeModal.Type' })}
+          label={formatMessage({
+            id: 'odc.component.CreateTypeModal.Type',
+            defaultMessage: '类型',
+          })}
           /* 类型 */
           rules={[
             {
               required: true,
               message: formatMessage({
                 id: 'odc.component.CreateTypeModal.TheTypeMustBeSpecified',
+                defaultMessage: '类型不能为空',
               }),
 
               // 类型不能为空
@@ -151,6 +164,7 @@ function CreateTypeModal(props: IProps) {
           <Select
             placeholder={formatMessage({
               id: 'odc.component.CreateTypeModal.EnterAType',
+              defaultMessage: '请输入类型',
             })}
 
             /* 请输入类型 */
@@ -159,6 +173,7 @@ function CreateTypeModal(props: IProps) {
               {
                 formatMessage({
                   id: 'odc.component.CreateTypeModal.ObjectType',
+                  defaultMessage: '对象类型',
                 })
                 /* 对象类型 */
               }
@@ -167,6 +182,7 @@ function CreateTypeModal(props: IProps) {
               {
                 formatMessage({
                   id: 'odc.component.CreateTypeModal.ArrayType',
+                  defaultMessage: '数组类型',
                 })
                 /* 数组类型 */
               }
@@ -175,6 +191,7 @@ function CreateTypeModal(props: IProps) {
               {
                 formatMessage({
                   id: 'odc.component.CreateTypeModal.TableType',
+                  defaultMessage: '表类型',
                 })
                 /* 表类型 */
               }

@@ -41,6 +41,7 @@ export function useColumns(
       key: 'name',
       name: formatMessage({
         id: 'odc.CreateTable.Columns.columns.Name',
+        defaultMessage: '名称',
       }), //名称
       resizable: true,
       editable: true,
@@ -49,7 +50,10 @@ export function useColumns(
 
     {
       key: 'columns',
-      name: formatMessage({ id: 'odc.TableConstraint.Primary.columns.Column' }), //列
+      name: formatMessage({
+        id: 'odc.TableConstraint.Primary.columns.Column',
+        defaultMessage: '列',
+      }), //列
       resizable: true,
       editable: true,
       filterable: false,

@@ -96,16 +96,12 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
   }
 
   private async loadDatabases() {
-    const res = await listDatabases(
-      null,
-      this.props.session?.connection?.id,
-      1,
-      9999,
-      null,
-      null,
-      null,
-      true,
-    );
+    const res = await listDatabases({
+      dataSourceId: this.props.session?.connection?.id,
+      page: 1,
+      size: 9999,
+      existed: true,
+    });
     this.setState({
       databases: res?.contents || [],
     });
@@ -216,6 +212,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
     const nameValue = this.formRef.current.getFieldValue('synonymName');
     const nameRepeatMessage = formatMessage({
       id: 'odc.component.CreateSynonymModal.TheSynonymNameAlreadyExists',
+      defaultMessage: '同义词名称已存在',
     });
     if (nameValue && nameValue.length < 128) {
       const errors = this.getSynonymNameRepeaStatus(type, nameValue) ? [nameRepeatMessage] : [];
@@ -241,6 +238,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
         width={480}
         title={formatMessage({
           id: 'odc.component.CreateSynonymModal.CreateSynonym',
+          defaultMessage: '新建同义词',
         })}
         open={modalStore.createSynonymModalVisible}
         onCancel={this.close}
@@ -252,6 +250,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
               {
                 formatMessage({
                   id: 'odc.component.CreateSynonymModal.Cancel',
+                  defaultMessage: '取消',
                 })
                 /* 取消 */
               }
@@ -260,6 +259,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
               {
                 formatMessage({
                   id: 'odc.component.CreateSynonymModal.NextConfirmTheSqlStatement',
+                  defaultMessage: '下一步：确认 SQL',
                 })
 
                 /* 下一步：确认SQL */
@@ -274,6 +274,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
             name="synonymName"
             label={formatMessage({
               id: 'odc.component.CreateSynonymModal.Synonym',
+              defaultMessage: '同义词名称',
             })}
             /* 同义词名称 */
             rules={[
@@ -281,6 +282,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
                 required: true,
                 message: formatMessage({
                   id: 'odc.component.CreateSynonymModal.EnterASynonymName',
+                  defaultMessage: '请输入同义词名称',
                 }),
                 // 请输入同义词名称
               },
@@ -288,6 +290,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
                 max: 128,
                 message: formatMessage({
                   id: 'odc.component.CreateSynonymModal.TheLengthCannotExceedCharacters',
+                  defaultMessage: '长度不超过 128 个字符',
                 }),
 
                 // 长度不超过 128 个字符
@@ -295,6 +298,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
               {
                 message: formatMessage({
                   id: 'odc.component.CreateSynonymModal.TheSynonymNameAlreadyExists',
+                  defaultMessage: '同义词名称已存在',
                 }), // 同义词名称已存在
                 validator: this.checkSynonymNameRepeat,
               },
@@ -303,6 +307,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
             <Input
               placeholder={formatMessage({
                 id: 'odc.component.CreateSynonymModal.EnterASynonymName',
+                defaultMessage: '请输入同义词名称',
               })}
 
               /* 请输入同义词名称 */
@@ -313,6 +318,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
             name="tableOwner"
             label={formatMessage({
               id: 'odc.component.CreateSynonymModal.ObjectOwner',
+              defaultMessage: '对象所有者',
             })}
             /* 对象所有者 */
             rules={[
@@ -320,6 +326,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
                 required: true,
                 message: formatMessage({
                   id: 'odc.component.CreateSynonymModal.EnterAnObjectOwner',
+                  defaultMessage: '请输入对象所有者',
                 }),
 
                 // 请输入对象所有者
@@ -330,6 +337,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
             <Select
               placeholder={formatMessage({
                 id: 'odc.component.CreateSynonymModal.EnterAnObjectOwner',
+                defaultMessage: '请输入对象所有者',
               })}
               onChange={this.handleChangeTableOwner}
               showSearch
@@ -350,6 +358,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
             name="objectType"
             label={formatMessage({
               id: 'odc.component.CreateSynonymModal.ObjectType',
+              defaultMessage: '对象类型',
             })}
             /* 对象类型 */
             rules={[
@@ -357,6 +366,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
                 required: true,
                 message: formatMessage({
                   id: 'odc.component.CreateSynonymModal.SelectAnObjectType',
+                  defaultMessage: '请选择对象类型',
                 }),
                 // 请选择对象类型
               },
@@ -366,6 +376,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
             <Select
               placeholder={formatMessage({
                 id: 'odc.component.CreateSynonymModal.SelectAnObjectType',
+                defaultMessage: '请选择对象类型',
               })}
               /* 请选择对象类型 */ onChange={this.handleChangeObjectType}
             >
@@ -382,6 +393,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
             name="tableName"
             label={formatMessage({
               id: 'odc.component.CreateSynonymModal.ObjectName',
+              defaultMessage: '对象名称',
             })}
             /* 对象名称 */
             rules={[
@@ -389,6 +401,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
                 required: true,
                 message: formatMessage({
                   id: 'odc.component.CreateSynonymModal.TheObjectNameMustBe',
+                  defaultMessage: '对象名称不能为空',
                 }),
 
                 // 对象名称不能为空
@@ -398,6 +411,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
             <Select
               placeholder={formatMessage({
                 id: 'odc.component.CreateSynonymModal.EnterAnObjectName',
+                defaultMessage: '请选择对象',
               })}
               showSearch
               filterOption={this.handleSearch}
@@ -419,6 +433,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
             name="synonymType"
             label={formatMessage({
               id: 'odc.component.CreateSynonymModal.SynonymType',
+              defaultMessage: '同义词类型',
             })}
             /* 同义词类型 */
             initialValue={SynonymType.COMMON}
@@ -427,6 +442,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
                 required: true,
                 message: formatMessage({
                   id: 'odc.component.CreateSynonymModal.EnterASynonymType',
+                  defaultMessage: '请输入同义词类型',
                 }),
 
                 // 请输入同义词类型
@@ -438,6 +454,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
                 {
                   formatMessage({
                     id: 'odc.component.CreateSynonymModal.CommonSynonym',
+                    defaultMessage: '普通同义词',
                   })
 
                   /* 普通同义词 */
@@ -447,6 +464,7 @@ class CreateSynonymModal extends Component<IProps & { session: SessionStore }, I
                 {
                   formatMessage({
                     id: 'odc.component.CreateSynonymModal.CommonSynonyms',
+                    defaultMessage: '公用同义词',
                   })
 
                   /* 公用同义词 */
@@ -465,10 +483,7 @@ export default inject(
 )(
   observer(function (props: IProps) {
     return (
-      <SessionContextWrap
-        defaultDatabaseId={props?.modalStore?.createSynonymModalData?.databaseId}
-        defaultMode="datasource"
-      >
+      <SessionContextWrap defaultDatabaseId={props?.modalStore?.createSynonymModalData?.databaseId}>
         {({ session }) => {
           return <CreateSynonymModal {...props} session={session} />;
         }}

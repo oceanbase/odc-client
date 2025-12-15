@@ -20,6 +20,7 @@ import {
   TableConstraintDefer,
   TableForeignConstraintOnDeleteType,
   TableForeignConstraintOnUpdateType,
+  TablePermissionType,
 } from '@/d.ts/table';
 
 export enum TableTabType {
@@ -35,10 +36,12 @@ export interface ITableModel {
   columns: TableColumn[];
   indexes: TableIndex[];
   partitions: Partial<TablePartition>;
+  subpartitions?: TablePartition;
   primaryConstraints: TablePrimaryConstraint[];
   uniqueConstraints: TableUniqueConstraint[];
   foreignConstraints: TableForeignConstraint[];
   checkConstraints: TableCheckConstraint[];
+  authorizedPermissionTypes?: TablePermissionType[];
 }
 export interface TableInfo {
   tableName: string;
@@ -51,7 +54,11 @@ export interface TableInfo {
   owner?: string;
   rowCount?: number;
   tableSize?: string;
+  authorizedPermissionTypes?: TablePermissionType[];
   columnGroups: ColumnStoreType[];
+  isLogicalTable?: boolean;
+  tableId?: number;
+  databaseId?: number;
 }
 
 export interface TableColumn {
@@ -190,6 +197,7 @@ export enum TableIndexScope {
 }
 
 export interface ITableRangePartition {
+  columns: { columnName: string }[];
   columnName: string;
   expression: string;
   partType: IPartitionType.RANGE;
@@ -202,10 +210,16 @@ export interface ITableRangePartition {
     isNew?: boolean;
     ordinalPosition?: number;
     key?: string;
+    /* 二级分区才会有 */
+    parentName?: string;
+    valueForColumnDisplay?: string;
   }[];
+  subPartitions?: TablePartition;
+  subpartitionTemplated?: boolean;
 }
 
 export interface ITableListPartition {
+  columns: { columnName: string }[];
   columnName: string;
   expression: string;
   partType: IPartitionType.LIST;
@@ -215,7 +229,11 @@ export interface ITableListPartition {
     isNew?: boolean;
     ordinalPosition?: number;
     key?: string;
+    parentName?: string;
+    valueForColumnDisplay?: string;
   }[];
+  subPartitions?: TablePartition;
+  subpartitionTemplated?: boolean;
 }
 
 export interface ITableHashPartition {
@@ -223,12 +241,28 @@ export interface ITableHashPartition {
   expression: string;
   partType: IPartitionType.HASH;
   partNumber: number;
+  partitions?: {
+    name: string;
+    ordinalPosition?: number;
+    key?: string;
+    parentName?: string;
+  }[];
+  subPartitions?: TablePartition;
+  subpartitionTemplated?: boolean;
 }
 
 export interface ITableKeyPartition {
   columns: { columnName: string }[];
   partType: IPartitionType.KEY;
   partNumber: number;
+  partitions?: {
+    name: string;
+    ordinalPosition?: number;
+    key?: string;
+    parentName?: string;
+  }[];
+  subPartitions?: TablePartition;
+  subpartitionTemplated?: boolean;
 }
 
 export interface ITableRangeColumnsPartition {
@@ -240,7 +274,11 @@ export interface ITableRangeColumnsPartition {
     isNew?: boolean;
     ordinalPosition?: number;
     key?: string;
+    parentName?: string;
+    valueForColumnDisplay?: string;
   }[];
+  subPartitions?: TablePartition;
+  subpartitionTemplated?: boolean;
 }
 
 export interface ITableListColumnsPartition {
@@ -252,7 +290,11 @@ export interface ITableListColumnsPartition {
     isNew?: boolean;
     ordinalPosition?: number;
     key?: string;
+    parentName?: string;
+    valueForColumnDisplay?: string;
   }[];
+  subPartitions?: TablePartition;
+  subpartitionTemplated?: boolean;
 }
 export type TablePartition =
   | ITableHashPartition

@@ -17,59 +17,86 @@
 import { listProjects } from '@/common/network/project';
 import { Acess, createPermission } from '@/component/Acess';
 import FilterIcon from '@/component/Button/FIlterIcon';
-import Reload from '@/component/Button/Reload';
-import Search from '@/component/Input/Search';
+import ProjectEmpty from '@/component/Empty/ProjectEmpty';
 import PageContainer, { TitleType } from '@/component/PageContainer';
+import ApplyPermissionButton from '@/component/Task/modals/ApplyPermission/CreateButton';
 import { actionTypes, IManagerResourceType } from '@/d.ts';
-import { IProject } from '@/d.ts/project';
+import { IProject, ProjectTabType } from '@/d.ts/project';
 import { IPageType } from '@/d.ts/_index';
+import { setDefaultProject } from '@/service/projectHistory';
 import { formatMessage } from '@/util/intl';
 import { useNavigate } from '@umijs/max';
-import { Empty, List, Space, Spin, Typography } from 'antd';
+import { List, Space, Spin, Typography, Button, message } from 'antd';
 import VirtualList from 'rc-virtual-list';
 import { useEffect, useRef, useState } from 'react';
 import CreateProjectDrawer from './CreateProject/Drawer';
 import styles from './index.less';
 import ListItem from './ListItem';
-import { setDefaultProject } from '@/service/projectHistory';
-import ApplyPermissionButton from '@/component/Task/ApplyPermission/CreateButton';
-const { Title, Text } = Typography;
-const titleOptions: {
+import { UserStore } from '@/store/login';
+import MoreBtn from './MoreBtn';
+import DeleteProjectModal from '@/page/Project/components/DeleteProjectModal.tsx';
+import type { SelectProject } from '@/page/Project/components/DeleteProjectModal.tsx';
+import { useSearchParams } from '@umijs/max';
+import { getSessionStorageKey } from '../helper';
+import { observer, inject } from 'mobx-react';
+import InputSelect from '@/component/InputSelect';
+import { SyncOutlined } from '@ant-design/icons';
+import ListHeader from './ListHeader';
+
+enum ProjectSearchType {
+  projectName = 'projectName',
+}
+
+export const titleOptions: {
   label: string;
-  value: 'all' | 'deleted';
+  value: ProjectTabType;
 }[] = [
   {
     label: formatMessage({
       id: 'odc.Project.Project.AllProjects',
+      defaultMessage: '全部项目',
     }),
-    //全部项目
-    value: 'all',
+    value: ProjectTabType.ALL,
   },
   {
     label: formatMessage({
       id: 'odc.Project.Project.ArchiveProject',
+      defaultMessage: '归档项目',
     }),
-    //归档项目
-    value: 'deleted',
+    value: ProjectTabType.ARCHIVED,
   },
 ];
-const Project = () => {
+interface IProps {
+  userStore: UserStore;
+}
+
+const Project: React.FC<IProps> = (props) => {
+  const { userStore } = props;
   const domRef = useRef<HTMLDivElement>();
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedRows, setSelectedRows] = useState<Map<number, boolean>>(
     new Map<number, boolean>(),
   );
+  const sessionStorageKey = getSessionStorageKey(userStore);
+  const [searchType, setSearchType] = useState<ProjectSearchType>(
+    sessionStorage.getItem(sessionStorageKey) ? ProjectSearchType.projectName : undefined,
+  );
+  const [searchParams, setSearchParams] = useSearchParams();
   const [dataSource, setDataSource] = useState<IProject[]>([]);
   const [projectSearchName, setProjectSearchName] = useState(null);
-  const [projectType, setProjectType] = useState<'all' | 'deleted'>('all');
+  const [projectType, setProjectType] = useState<ProjectTabType>(ProjectTabType.ALL);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const isProjectDeleted = projectType === 'deleted';
+  const projectTypeIsArchived = projectType === ProjectTabType.ARCHIVED;
+
+  const [openDeleteProjectModal, setOpenDeleteProjectModal] = useState(false);
+  const [selectProjectList, setSelectProjectList] = useState<SelectProject[]>([]);
+
   const appendData = async (currentPage, dataSource, projectType, projectSearchName) => {
     setLoading(true);
     try {
-      const isProjectDeleted = projectType === 'deleted';
-      const res = await listProjects(projectSearchName, currentPage + 1, 40, isProjectDeleted);
+      const projectTypeIsArchived = projectType === ProjectTabType.ARCHIVED;
+      const res = await listProjects(projectSearchName, currentPage + 1, 40, projectTypeIsArchived);
       if (res) {
         setCurrentPage(currentPage + 1);
         /**
@@ -85,19 +112,44 @@ const Project = () => {
       setLoading(false);
     }
   };
+
   function reload(newProjectType?: string, projectSearchName?: string) {
     setCurrentPage(0);
     setDataSource([]);
     appendData(0, [], newProjectType || projectType, projectSearchName);
   }
+
   useEffect(() => {
-    appendData(currentPage, dataSource, projectType, projectSearchName);
+    // sessionStorage存在搜索值时，刷新页面请求时需带上搜索值
+    const sessionStorageValue = sessionStorage.getItem(sessionStorageKey);
+    const params = resolveParams();
+    appendData(
+      currentPage,
+      dataSource,
+      params.projectType || projectType,
+      sessionStorageValue || projectSearchName,
+    );
   }, []);
   const onScroll = (e: React.UIEvent<HTMLElement, UIEvent>) => {
     if (e.currentTarget.scrollHeight - e.currentTarget.scrollTop === domRef.current?.clientHeight) {
       appendData(currentPage, dataSource, projectType, projectSearchName);
     }
   };
+
+  function resolveParams() {
+    const archived = searchParams.get('archived');
+    const obj = {
+      projectType: ProjectTabType.ALL,
+    };
+    if (archived && archived === 'true') {
+      setProjectType(ProjectTabType.ARCHIVED);
+      obj.projectType = ProjectTabType.ARCHIVED;
+      searchParams.delete('archived');
+      setSearchParams(searchParams);
+    }
+    return obj;
+  }
+
   return (
     <PageContainer
       titleProps={{
@@ -106,57 +158,92 @@ const Project = () => {
         showDivider: true,
         defaultValue: projectType,
       }}
-      onTabChange={(v: 'all' | 'deleted') => {
+      onTabChange={(v: ProjectTabType) => {
         setProjectType(v);
-        reload(v);
+        // 切换项目时，带上搜索值/固化值
+        const searchValues = projectSearchName || sessionStorage.getItem(sessionStorageKey);
+        reload(v, searchValues);
       }}
+      tabActiveKey={projectType}
     >
       <List
         className={styles.content}
         header={
           <div className={styles.header}>
             <Space size={12}>
-              <Acess
-                fallback={<span></span>}
-                {...createPermission(IManagerResourceType.project, actionTypes.create)}
-              >
-                <CreateProjectDrawer disabled={isProjectDeleted} onCreate={() => reload()} />
-              </Acess>
-              {!!dataSource?.length && (
+              {!projectTypeIsArchived && (
+                <Acess
+                  fallback={<span></span>}
+                  {...createPermission(IManagerResourceType.project, actionTypes.create)}
+                >
+                  <CreateProjectDrawer disabled={projectTypeIsArchived} onCreate={() => reload()} />
+                </Acess>
+              )}
+              {!projectTypeIsArchived && (
                 <ApplyPermissionButton
-                  disabled={isProjectDeleted}
+                  disabled={projectTypeIsArchived}
                   label={
                     formatMessage({
                       id: 'odc.src.page.Project.Project.JoinTheProject',
+                      defaultMessage: '加入项目',
                     }) /* 加入项目 */
                   }
                 />
               )}
+              {projectTypeIsArchived && (
+                <Button
+                  onClick={() => {
+                    if (!selectProjectList.length) {
+                      message.info(
+                        formatMessage({
+                          id: 'src.page.Project.Project.5CDFAB27',
+                          defaultMessage: '请先选择项目',
+                        }),
+                      );
+                      return;
+                    }
+                    setOpenDeleteProjectModal(true);
+                  }}
+                >
+                  {formatMessage({
+                    id: 'src.page.Project.Project.FB11C8F8',
+                    defaultMessage: '删除项目',
+                  })}
+                </Button>
+              )}
             </Space>
-            <Space size={12}>
-              <Search
-                onSearch={(v) => {
-                  setProjectSearchName(v);
-                  reload(null, v);
-                }}
-                searchTypes={[
+            <Space size={12} style={{ lineHeight: 1 }}>
+              <InputSelect
+                searchValue={sessionStorage.getItem(sessionStorageKey) || projectSearchName}
+                searchType={searchType}
+                selectTypeOptions={[
                   {
                     label: formatMessage({
                       id: 'odc.Project.Project.ProjectName',
+                      defaultMessage: '项目名称',
                     }),
-                    //项目名称
-                    value: 'projectName',
+                    value: ProjectSearchType?.projectName,
                   },
                 ]}
+                onSelect={({ searchValue, searchType }) => {
+                  if (searchValue) {
+                    sessionStorage.setItem(sessionStorageKey, searchValue);
+                  } else {
+                    sessionStorage.removeItem(sessionStorageKey);
+                  }
+                  setProjectSearchName(searchValue);
+                  setSearchType(searchType as ProjectSearchType);
+                  reload(null, searchValue);
+                }}
               />
-
-              <FilterIcon onClick={() => reload()}>
-                <Reload />
+              <FilterIcon onClick={() => reload()} border>
+                <SyncOutlined spin={loading} />
               </FilterIcon>
             </Space>
           </div>
         }
       >
+        <ListHeader projectTypeIsArchived={projectTypeIsArchived} />
         <div
           ref={domRef}
           style={{
@@ -174,54 +261,85 @@ const Project = () => {
               {(item) => (
                 <ListItem
                   onClick={(p) => {
-                    if (isProjectDeleted) {
-                      return;
-                    }
                     setDefaultProject(p.id);
                     navigate(`/project/${p.id}/${IPageType.Project_Database}`);
                   }}
+                  selectProjectList={selectProjectList}
+                  onSelectChange={(isSelected, values) => {
+                    if (isSelected) {
+                      setSelectProjectList([...selectProjectList, values]);
+                    } else {
+                      setSelectProjectList(
+                        selectProjectList.filter((item) => item.id !== values.id),
+                      );
+                    }
+                  }}
                   data={item}
+                  action={
+                    projectTypeIsArchived ? (
+                      <Space
+                        size={14}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
+                        <MoreBtn project={item} reload={reload} />
+                      </Space>
+                    ) : null
+                  }
                 />
               )}
             </VirtualList>
           ) : (
             <Spin spinning={loading} wrapperClassName={styles.spin}>
               <Space direction="vertical" align="center">
-                <Empty
-                  description={
-                    <Space direction="vertical" size={0}>
-                      <Title level={4}>
-                        {
-                          formatMessage({
-                            id: 'odc.src.page.Project.Project.NoNewProject',
-                          }) /* 暂无新项目 */
-                        }
-                      </Title>
-                      <Text type="secondary">
-                        {
-                          formatMessage({
-                            id: 'odc.src.page.Project.Project.ItIsCurrentlyUnavailableFor',
-                          }) /* 当前暂无可使用项目，可以通过申请获得项目权限 */
-                        }
-                      </Text>
-                    </Space>
-                  }
-                >
-                  <ApplyPermissionButton
-                    label={
-                      formatMessage({
-                        id: 'odc.src.page.Project.Project.ApplicationProjectPermissions',
-                      }) /* 申请项目权限 */
-                    }
-                    type="primary"
+                {!loading && (
+                  <ProjectEmpty
+                    type={projectType}
+                    renderActionButton={() => {
+                      return (
+                        <div className={styles.projectActions}>
+                          <Acess
+                            fallback={
+                              <ApplyPermissionButton
+                                disabled={projectTypeIsArchived}
+                                type="primary"
+                                label={
+                                  formatMessage({
+                                    id: 'odc.src.page.Project.Project.JoinTheProject',
+                                    defaultMessage: '加入项目',
+                                  }) /* 加入项目 */
+                                }
+                              />
+                            }
+                            {...createPermission(IManagerResourceType.project, actionTypes.create)}
+                          >
+                            <CreateProjectDrawer
+                              disabled={projectTypeIsArchived}
+                              onCreate={() => reload()}
+                            />
+                          </Acess>
+                        </div>
+                      );
+                    }}
                   />
-                </Empty>
+                )}
               </Space>
             </Spin>
           )}
         </div>
       </List>
+      <DeleteProjectModal
+        open={openDeleteProjectModal}
+        setOpen={setOpenDeleteProjectModal}
+        projectList={selectProjectList}
+        verifyValue={'delete'}
+        afterDelete={() => {
+          reload();
+          setSelectProjectList([]);
+        }}
+      />
     </PageContainer>
   );
 };
-export default Project;
+export default inject('userStore')(observer(Project));

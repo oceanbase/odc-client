@@ -18,7 +18,7 @@ import { ISnippet } from '@/store/snippet';
 import { Popover } from 'antd';
 
 import { formatMessage } from '@/util/intl';
-import { getSnippetText } from '@/util/snippet';
+import { getSnippetText } from '@/util/business/snippet';
 import styles from './info.less';
 
 const SnippetInfoToolTip: React.FC<{
@@ -36,20 +36,24 @@ const SnippetInfoToolTip: React.FC<{
       content={
         <div>
           <dl>
-            <dt>
+            <dt className={styles['snippet-value']}>
               {
                 formatMessage({
                   id: 'odc.component.SnippetCard.Syntax',
+                  defaultMessage: '代码',
                 }) /*代码片段*/
               }
             </dt>
             <dd>
-              <pre style={{ maxHeight: 300 }}>{getSnippetText(snippet.body)}</pre>
+              <pre className={styles['snippet-value']} style={{ maxHeight: 300 }}>
+                {getSnippetText(snippet.body)}
+              </pre>
             </dd>
             <dt>
               {
                 formatMessage({
                   id: 'odc.component.SnippetCard.Description',
+                  defaultMessage: '描述',
                 }) /*描述*/
               }
             </dt>

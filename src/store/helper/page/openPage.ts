@@ -21,8 +21,8 @@ import {
   getScript,
   getTypemByName,
 } from '@/common/network';
+import { SchedulePageType, ScheduleType } from '@/d.ts/schedule';
 import {
-  ConnectionMode,
   DbObjectType,
   IFunction,
   IProcedure,
@@ -31,7 +31,6 @@ import {
   ITriggerFormData,
   PageType,
   SynonymType,
-  TaskPageScope,
   TaskPageType,
   TriggerPropsTab,
   TriggerState,
@@ -56,15 +55,24 @@ import {
   PropsTab as ViewPropsTab,
   TopTab as ViewTopTab,
 } from '@/page/Workspace/components/ViewPage';
+import {
+  PropsTab as MaterializedViewPropsTab,
+  TopTab as MaterializedViewTopTab,
+} from '@/page/Workspace/components/MaterializedViewPage';
 import { formatMessage } from '@/util/intl';
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getTriggerByName } from '@/common/network/trigger';
 import { PLType } from '@/constant/plType';
+import modalStore from '@/store/modal';
+import sessionManager from '@/store/sessionManager';
 import taskStore from '@/store/task';
+import scheduleStore from '@/store/schedule';
 import { message } from 'antd';
 import page from '../../page';
 import {
   BatchCompilePage,
+  ExternalResourcePage,
   FunctionPage,
   OBClientPage,
   PackageViewPage,
@@ -77,18 +85,25 @@ import {
   SQLResultSetPage,
   SynonymPage,
   TablePage,
+  SchedulePage,
   TaskPage,
   TriggerPage,
   TutorialPage,
   TypePage,
   ViewPage,
+  MaterializedViewPage,
 } from './pages';
-import { CreateTablePage, CreateTriggerPage, CreateViewPage, SQLConfirmPage } from './pages/create';
+import {
+  CreateMaterializedViewPage,
+  CreateTablePage,
+  CreateSchedulePage,
+  CreateTriggerPage,
+  CreateViewPage,
+  SQLConfirmPage,
+} from './pages/create';
 import { AnonymousPage, PackageBodyPage, PackageHeadPage, PLEditPage } from './pages/pl';
 import { findPageByScriptIdAndType } from './util';
-import sessionManager from '@/store/sessionManager';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import modalStore from '@/store/modal';
+import login from '@/store/login';
 
 export function openPackageHeadPage(packageName: string, sql: string, databaseId: number) {
   page.openPage(new PackageHeadPage(databaseId, packageName, sql));
@@ -124,8 +139,8 @@ export function openPackageViewPage(
   const pkgPage = new PackageViewPage(databaseId, packageName, topTab, propsTab);
   page.openPage(pkgPage);
 }
-export async function openNewSQLPage(cid: number, databaseFrom?: 'datasource' | 'project') {
-  const sqlPage = new SQLPage(cid, null, false, databaseFrom);
+export async function openNewSQLPage(cid: number) {
+  const sqlPage = new SQLPage(cid, null, false);
   page.openPage(sqlPage);
 }
 /** 根据scriptID打开sql或者pl的page */
@@ -160,15 +175,19 @@ export async function openNewDefaultPLPage(
   value?: { sql: string; params: any },
   cid?: number,
   dbName?: string,
-  databaseFrom?: 'project' | 'datasource',
 ) {
-  let plPage = new AnonymousPage(cid, databaseFrom, value?.sql);
+  let plPage = new AnonymousPage(cid, value?.sql);
   page.openPage(plPage);
 }
 
-export function openTasksPage(taskType?: TaskPageType, taskPageScope?: TaskPageScope) {
-  taskStore.changeTaskManageVisible(true, taskType, taskPageScope);
+export function openTasksPage(taskType?: TaskPageType) {
+  taskStore.changeTaskManageVisible(true, taskType);
   page.openPage(new TaskPage(taskType));
+}
+
+export async function openSchedulesPage(scheduleType?: SchedulePageType) {
+  scheduleStore.changeScheduleManageVisible(true, scheduleType);
+  await page.openPage(new SchedulePage(scheduleType));
 }
 
 /** 会话管理 */
@@ -189,7 +208,7 @@ export async function openSessionManagePage(datasourceId?: number) {
 
 export async function openSessionParamsPage(datasourceId?: number) {
   if (!datasourceId) {
-    modalStore.changeSelectDatabaseVisible(true, null, (datasourceId) =>
+    modalStore.changeSelectDatabaseVisible(true, 'sessionParams', (datasourceId) =>
       page.openPage(new SessionParamsPage(datasourceId)),
     );
   }
@@ -223,8 +242,20 @@ export function openTableViewPage(
   topTab: TableTopTab = TableTopTab.PROPS,
   propsTab: TablePropsTab = TablePropsTab.INFO,
   databaseId: number,
+  tableId: number,
 ) {
-  page.openPage(new TablePage(databaseId, tableName, topTab, propsTab));
+  page.openPage(new TablePage(databaseId, tableName, topTab, propsTab, tableId));
+}
+
+/** 外表Table详情页面 */
+export function openExternalTableTableViewPage(
+  tableName: string,
+  topTab: TableTopTab = TableTopTab.PROPS,
+  propsTab: TablePropsTab = TablePropsTab.INFO,
+  databaseId: number,
+  tableId: number,
+) {
+  page.openPage(new TablePage(databaseId, tableName, topTab, propsTab, tableId, true));
 }
 
 /**
@@ -232,6 +263,16 @@ export function openTableViewPage(
  */
 export function openCreateViewPage(dbId: number) {
   page.openPage(new CreateViewPage(dbId));
+}
+
+/** 创建物化视图页面 */
+export function openCreateMaterializedViewPage(dbId: number) {
+  page.openPage(new CreateMaterializedViewPage(dbId));
+}
+
+/** 创建作业页面 */
+export function openCreateSchedulePage(scheduleType: ScheduleType, isEdit: boolean = false) {
+  page.openPage(new CreateSchedulePage(scheduleType, isEdit));
 }
 
 /**
@@ -247,6 +288,18 @@ export function openViewViewPage(
 ) {
   page.openPage(new ViewPage(dbId, viewName, topTab, propsTab));
 }
+
+/** 物化视图页面 */
+export function openMaterializedViewViewPage(
+  materializedViewName: string,
+  topTab: MaterializedViewTopTab = MaterializedViewTopTab.PROPS,
+  propsTab: MaterializedViewPropsTab = MaterializedViewPropsTab.INFO,
+  dbId: number,
+  dbName: string,
+) {
+  page.openPage(new MaterializedViewPage(dbId, materializedViewName, topTab, propsTab, dbName));
+}
+
 /** 创建函数页面 */
 
 export function openCreateFunctionPage(sql: string, databaseId: number, dbName: string) {
@@ -256,6 +309,7 @@ export function openCreateFunctionPage(sql: string, databaseId: number, dbName: 
       databaseId,
       formatMessage({
         id: 'workspace.window.createFunction.modal.title',
+        defaultMessage: '新建函数',
       }),
       sql,
     ),
@@ -294,6 +348,7 @@ export function openCreateProcedurePage(sql: string, databaseId: number, dbName:
       databaseId,
       formatMessage({
         id: 'workspace.window.createProcedure.modal.title',
+        defaultMessage: '新建存储过程',
       }),
       sql,
     ),
@@ -319,6 +374,7 @@ export function openCreatePackagePage(sql: string, databaseId: number, dbName: s
       databaseId,
       formatMessage({
         id: 'workspace.window.createPackage.modal.title',
+        defaultMessage: '新建程序包',
       }),
       sql,
     ),
@@ -333,6 +389,7 @@ export function openCreatePackageBodyPage(sql: string, databaseId: number, dbNam
       databaseId,
       formatMessage({
         id: 'workspace.window.createPackageBody.modal.title',
+        defaultMessage: '新建程序包体',
       }),
       sql,
       true,
@@ -348,6 +405,7 @@ export function openCreateSequencePage(sql: string, databaseId: number, dbName: 
       databaseId,
       formatMessage({
         id: 'workspace.window.createSequence.modal.title',
+        defaultMessage: '新建序列',
       }),
       sql,
     ),
@@ -438,6 +496,7 @@ export async function openOBClientPage(cid: number, dbId: number) {
       formatMessage(
         {
           id: 'odc.helper.page.openPage.YouCannotOpenMoreThan',
+          defaultMessage: '不能打开超过 {MAXCLIENTPAGE} 个命令行窗口',
         },
 
         { MAXCLIENTPAGE: MAX_CLIENT_PAGE },
@@ -471,7 +530,10 @@ export async function openCreateTriggerSQLPage(
     new SQLConfirmPage(
       PageType.CREATE_TRIGGER_SQL,
       databaseId,
-      formatMessage({ id: 'odc.helper.page.openPage.CreateATrigger' }),
+      formatMessage({
+        id: 'odc.helper.page.openPage.CreateATrigger',
+        defaultMessage: '新建触发器',
+      }),
       sql,
       false,
       preData,
@@ -516,7 +578,7 @@ export function openCreateSynonymPage(
     new SQLConfirmPage(
       PageType.CREATE_SYNONYM,
       databaseId,
-      formatMessage({ id: 'odc.helper.page.openPage.CreateSynonym' }),
+      formatMessage({ id: 'odc.helper.page.openPage.CreateSynonym', defaultMessage: '新建同义词' }),
       sql,
       false,
       null,
@@ -541,7 +603,7 @@ export function openCreateTypePage(sql: string, databaseId: number, dbName: stri
     new SQLConfirmPage(
       PageType.CREATE_TYPE,
       databaseId,
-      formatMessage({ id: 'odc.helper.page.openPage.NewType' }),
+      formatMessage({ id: 'odc.helper.page.openPage.NewType', defaultMessage: '新建类型' }),
       sql,
     ),
   );
@@ -555,6 +617,25 @@ export function openTypeViewPage(
   dbName?: string,
 ) {
   page.openPage(new TypePage(databaseId, typeName, propsTab));
+}
+
+/** 外部资源详情页面 */
+export function openExternalResourceViewPage(
+  resourceName: string,
+  propsTab: string = 'INFO',
+  databaseId: number,
+  dbName?: string,
+) {
+  page.openPage(new ExternalResourcePage(databaseId, resourceName, propsTab));
+}
+
+/** 外部资源内容页面 */
+export function openExternalResourceContentPage(
+  resourceName: string,
+  databaseId: number,
+  dbName?: string,
+) {
+  page.openPage(new ExternalResourcePage(databaseId, resourceName, 'CONTENT'));
 }
 /** 编辑类型页面 */
 
@@ -571,8 +652,8 @@ export async function openTypeEditPageByName(
   page.openPage(new PLEditPage(PLType.TYPE, databaseId, typeName, plSchema, false, readonly));
 }
 
-export async function openSQLResultSetViewPage(name, resultSets) {
-  await page.openPage(new SQLResultSetPage(null, resultSets, name));
+export async function openSQLResultSetViewPage(name, resultSets, sqlContent) {
+  await page.openPage(new SQLResultSetPage(null, resultSets, name, sqlContent));
 }
 
 // 批量编译PL页面

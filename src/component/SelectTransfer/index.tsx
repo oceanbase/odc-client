@@ -103,7 +103,10 @@ export default function SelectTransfer(props: IProps) {
           enableSelectAll
           checked={isSelectAll}
           indeterminate={indeterminate}
-          title={formatMessage({ id: 'odc.component.SelectTransfer.SelectUser' })} /*选择用户*/
+          title={formatMessage({
+            id: 'odc.component.SelectTransfer.SelectUser',
+            defaultMessage: '选择用户',
+          })} /*选择用户*/
           onSearch={(v) => {
             setSourceSearch(v);
           }}
@@ -114,8 +117,13 @@ export default function SelectTransfer(props: IProps) {
             checkable
             selectable={false}
             checkedKeys={checkedKeys}
-            onCheck={(v) => {
-              setCheckedKeys([...(checkedKeys || []), ...(v as string[])]);
+            onCheck={(v, e) => {
+              const { checked, checkedNodes, node, event, halfCheckedKeys } = e;
+              if (checked === false) {
+                setCheckedKeys([...checkedKeys.filter((i) => i !== node?.key)]);
+              } else {
+                setCheckedKeys([...(checkedKeys || []), ...(v as string[])]);
+              }
             }}
             height={274}
             treeData={sourceDisplayTreeData}
@@ -128,8 +136,9 @@ export default function SelectTransfer(props: IProps) {
             formatMessage(
               {
                 id: 'odc.component.SelectTransfer.CountItemSelected',
+                defaultMessage: '已选 {count} 项',
               },
-              { count: count },
+              { count },
             ) //`已选 ${count} 项`
           }
           onSearch={(v) => {
@@ -137,7 +146,12 @@ export default function SelectTransfer(props: IProps) {
           }}
           extra={
             <a onClick={() => setCheckedKeys([])}>
-              {formatMessage({ id: 'odc.component.SelectTransfer.Clear' }) /*清空*/}
+              {
+                formatMessage({
+                  id: 'odc.component.SelectTransfer.Clear',
+                  defaultMessage: '清空',
+                }) /*清空*/
+              }
             </a>
           }
           disabled
@@ -158,6 +172,7 @@ export default function SelectTransfer(props: IProps) {
                       whiteSpace: 'nowrap',
                       textOverflow: 'ellipsis',
                       wordBreak: 'break-all',
+                      color: 'var(--text-color-primary)',
                     }}
                     title={node.title}
                   >

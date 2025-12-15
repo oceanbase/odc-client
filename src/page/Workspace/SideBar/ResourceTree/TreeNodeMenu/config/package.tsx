@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getExportObjects, getPackageBodyCreateSQL } from '@/common/network';
 import { dropObject } from '@/common/network/database';
 import { actionTypes } from '@/component/Acess';
@@ -31,21 +32,29 @@ import modal from '@/store/modal';
 import pageStore from '@/store/page';
 import { ReactComponent as BatchCompileSvg } from '@/svgr/batch-compile-all.svg';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
-import { PlusOutlined, QuestionCircleFilled, ReloadOutlined } from '@ant-design/icons';
+import { downloadPLDDL } from '@/util/database/sqlExport';
+import {
+  PlusOutlined,
+  QuestionCircleFilled,
+  ReloadOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
 import { message, Modal } from 'antd';
-import { hasExportPermission, hasChangePermission } from '../index';
 import { ResourceNodeType } from '../../type';
+import { hasChangePermission, hasExportPermission } from '../index';
 import { IMenuItemConfig } from '../type';
 import { isSupportExport } from './helper';
-import { getDataSourceModeConfig } from '@/common/datasource';
+import { openGlobalSearch } from '../../const';
 
 export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfig[]>> = {
   [ResourceNodeType.PackageRoot]: [
     {
       key: 'BATCH_COMPILE',
       text: [
-        formatMessage({ id: 'odc.TreeNodeMenu.config.package.BatchCompilation' }), //批量编译
+        formatMessage({
+          id: 'odc.TreeNodeMenu.config.package.BatchCompilation',
+          defaultMessage: '批量编译',
+        }), //批量编译
       ],
       actionType: actionTypes.create,
       icon: BatchCompileSvg,
@@ -56,7 +65,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
         openBatchCompilePLPage(
           PageType.BATCH_COMPILE_PACKAGE,
           DbObjectType.package,
-          formatMessage({ id: 'odc.components.ResourceTree.Bag' }),
+          formatMessage({ id: 'odc.components.ResourceTree.Bag', defaultMessage: '包' }),
           session?.odcDatabase?.id,
           session?.database?.dbName,
         );
@@ -67,6 +76,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.CreateAPackage',
+          defaultMessage: '新建程序包',
         }),
       ],
 
@@ -81,9 +91,23 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       },
     },
     {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
+      },
+    },
+    {
       key: 'REFRESH',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
+        formatMessage({ id: 'odc.ResourceTree.actions.Refresh', defaultMessage: '刷新' }), //刷新
       ],
       icon: ReloadOutlined,
       actionType: actionTypes.read,
@@ -99,6 +123,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.CreateAPackage.1',
+          defaultMessage: '新建包体',
         }),
       ],
 
@@ -115,10 +140,25 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       },
     },
     {
+      key: 'GLOBAL_SEARCH',
+      text: [
+        formatMessage({
+          id: 'src.page.Workspace.SideBar.ResourceTree.TreeNodeMenu.B034F159',
+          defaultMessage: '全局搜索',
+        }),
+      ],
+      icon: SearchOutlined,
+      actionType: actionTypes.read,
+      run(session, node) {
+        openGlobalSearch(node);
+      },
+    },
+    {
       key: 'EDIT_HEAD_BODY',
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.EditThePackageHeader',
+          defaultMessage: '编辑包头包体',
         }),
       ],
 
@@ -140,7 +180,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
     {
       key: 'EXPORT',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Export' }), //导出
+        formatMessage({ id: 'odc.ResourceTree.actions.Export', defaultMessage: '导出' }), //导出
       ],
       ellipsis: true,
       hasDivider: true,
@@ -173,6 +213,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.Delete',
+          defaultMessage: '删除',
         }),
       ],
 
@@ -187,6 +228,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
           title: formatMessage(
             {
               id: 'workspace.window.createPackage.modal.delete',
+              defaultMessage: '是否确定删除程序包 {name} ？',
             },
 
             {
@@ -196,10 +238,12 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
 
           okText: formatMessage({
             id: 'app.button.ok',
+            defaultMessage: '确定',
           }),
 
           cancelText: formatMessage({
             id: 'app.button.cancel',
+            defaultMessage: '取消',
           }),
 
           centered: true,
@@ -212,6 +256,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
             message.success(
               formatMessage({
                 id: 'workspace.window.createPackage.modal.delete.success',
+                defaultMessage: '删除程序包成功',
               }),
             );
 
@@ -232,7 +277,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
     {
       key: 'REFRESH',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
+        formatMessage({ id: 'odc.ResourceTree.actions.Refresh', defaultMessage: '刷新' }), //刷新
       ],
       ellipsis: true,
       actionType: actionTypes.create,
@@ -249,6 +294,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.See',
+          defaultMessage: '查看',
         }),
       ],
 
@@ -263,6 +309,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.Editing',
+          defaultMessage: '编辑',
         }),
       ],
 
@@ -280,7 +327,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
     {
       key: 'DOWNLOAD',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Download' }), //下载
+        formatMessage({ id: 'odc.ResourceTree.actions.Download', defaultMessage: '下载' }), //下载
       ],
       ellipsis: true,
       hasDivider: true,
@@ -300,6 +347,7 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       text: [
         formatMessage({
           id: 'odc.ResourceTree.config.treeNodesActions.Delete',
+          defaultMessage: '删除',
         }),
       ],
 
@@ -308,16 +356,16 @@ export const packageMenusConfig: Partial<Record<ResourceNodeType, IMenuItemConfi
       disabled: (session) => {
         return !hasChangePermission(session);
       },
-      run(session, node, databaseFrom) {
+      run(session, node) {
         packageMenusConfig[ResourceNodeType.Package]
           .find((item) => item.key === 'DELETE')
-          ?.run?.(session, node, databaseFrom);
+          ?.run?.(session, node);
       },
     },
     {
       key: 'REFRESH',
       text: [
-        formatMessage({ id: 'odc.ResourceTree.actions.Refresh' }), //刷新
+        formatMessage({ id: 'odc.ResourceTree.actions.Refresh', defaultMessage: '刷新' }), //刷新
       ],
       ellipsis: true,
       actionType: actionTypes.create,

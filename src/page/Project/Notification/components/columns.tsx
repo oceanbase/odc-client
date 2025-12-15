@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import { Space, Switch } from 'antd';
+import SearchFilter from '@/component/SearchFilter';
 import {
   EChannelType,
   EMessageStatus,
   IChannel,
   IMessage,
   IPolicy,
+  IPolicyColumnsKeys,
+  IChannelColumnsKeys,
 } from '@/d.ts/projectNotification';
-import { ColumnType } from 'antd/lib/table';
-import { TPolicyForm, EPolicyFormMode, EChannelTypeMap, EMessageStatusMap } from './interface';
-import SearchFilter from '@/component/SearchFilter';
+import { formatMessage } from '@/util/intl';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { SearchOutlined } from '@ant-design/icons';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { Space, Switch } from 'antd';
+import { ColumnType } from 'antd/es/table';
+import { EChannelTypeMap, EMessageStatusMap, EPolicyFormMode, TPolicyForm } from './interface';
 import { MessageStatus } from './MessageStatus';
 
 // #region ------------------------- notification message -------------------------
@@ -44,7 +46,10 @@ export const getMessageColumns: GetMessageColumns = function ({
 }) {
   return [
     {
-      title: formatMessage({ id: 'src.page.Project.Notification.components.3380A1F2' }), //'工单事件'
+      title: formatMessage({
+        id: 'src.page.Project.Notification.components.3380A1F2',
+        defaultMessage: '工单事件',
+      }), //'工单事件'
       dataIndex: 'title',
       key: 'title',
       width: 260,
@@ -57,6 +62,7 @@ export const getMessageColumns: GetMessageColumns = function ({
             placeholder={
               formatMessage({
                 id: 'src.page.Project.Notification.components.0F9F4DF9',
+                defaultMessage: '通道名称',
               }) /*"通道名称"*/
             }
           />
@@ -71,7 +77,10 @@ export const getMessageColumns: GetMessageColumns = function ({
       ),
     },
     {
-      title: formatMessage({ id: 'src.page.Project.Notification.components.BED6CE2B' }), //'消息通道'
+      title: formatMessage({
+        id: 'src.page.Project.Notification.components.BED6CE2B',
+        defaultMessage: '消息通道',
+      }), //'消息通道'
       dataIndex: 'channel',
       key: 'channel',
       width: 207,
@@ -79,7 +88,10 @@ export const getMessageColumns: GetMessageColumns = function ({
       render: (channel) => channel?.name || '-',
     },
     {
-      title: formatMessage({ id: 'src.page.Project.Notification.components.94C9B938' }), //'生效时间'
+      title: formatMessage({
+        id: 'src.page.Project.Notification.components.94C9B938',
+        defaultMessage: '生效时间',
+      }), //'生效时间'
       dataIndex: 'createTime',
       key: 'createTime',
       sorter: (a, b) => a?.createTime - b?.createTime,
@@ -87,7 +99,10 @@ export const getMessageColumns: GetMessageColumns = function ({
       render: (createTime) => (createTime ? getLocalFormatDateTime(createTime) : '-'),
     },
     {
-      title: formatMessage({ id: 'src.page.Project.Notification.components.3F4AA52D' }), //'最后推送时间'
+      title: formatMessage({
+        id: 'src.page.Project.Notification.components.3F4AA52D',
+        defaultMessage: '最后推送时间',
+      }), //'最后推送时间'
       dataIndex: 'lastSentTime',
       key: 'lastSentTime',
       sorter: (a, b) => a?.lastSentTime - b?.lastSentTime,
@@ -95,7 +110,10 @@ export const getMessageColumns: GetMessageColumns = function ({
       render: (lastSentTime) => (lastSentTime ? getLocalFormatDateTime(lastSentTime) : '-'),
     },
     {
-      title: formatMessage({ id: 'src.page.Project.Notification.components.C17F635B' }), //'推送状态'
+      title: formatMessage({
+        id: 'src.page.Project.Notification.components.C17F635B',
+        defaultMessage: '推送状态',
+      }), //'推送状态'
       dataIndex: 'status',
       width: 158,
       key: 'status',
@@ -127,7 +145,10 @@ export const getMessageColumns: GetMessageColumns = function ({
       },
     },
     {
-      title: formatMessage({ id: 'src.page.Project.Notification.components.550A0B74' }), //'操作'
+      title: formatMessage({
+        id: 'src.page.Project.Notification.components.550A0B74',
+        defaultMessage: '操作',
+      }), //'操作'
       width: 104,
       key: 'action',
       render: (_, message) => {
@@ -136,6 +157,7 @@ export const getMessageColumns: GetMessageColumns = function ({
             {
               formatMessage({
                 id: 'src.page.Project.Notification.components.445FB17E' /*查看*/,
+                defaultMessage: '查看',
               }) /* 查看 */
             }
           </a>
@@ -152,21 +174,27 @@ type GetPolicyColumns = ({
   handleUpdatePolicies,
   handleSwitchPoliciesStatus,
   hanleOpenChannelDetailDrawer,
+  hideColumns,
 }: {
   projectId: number;
   handleUpdatePolicies: (formType: TPolicyForm) => void;
   handleSwitchPoliciesStatus: (formType: TPolicyForm, enabled?: boolean) => Promise<void>;
   hanleOpenChannelDetailDrawer;
+  hideColumns?: IPolicyColumnsKeys[];
 }) => ColumnType<IPolicy>[];
 export const getPolicyColumns: GetPolicyColumns = function ({
   projectId,
   handleUpdatePolicies,
   handleSwitchPoliciesStatus,
   hanleOpenChannelDetailDrawer,
+  hideColumns = [],
 }) {
-  return [
+  const columns = [
     {
-      title: formatMessage({ id: 'src.page.Project.Notification.components.3F3F37F5' }), //'事件'
+      title: formatMessage({
+        id: 'src.page.Project.Notification.components.3F3F37F5',
+        defaultMessage: '事件',
+      }), //'事件'
       dataIndex: 'eventName',
       filters: [],
       width: 354,
@@ -177,7 +205,10 @@ export const getPolicyColumns: GetPolicyColumns = function ({
             {...props}
             selectedKeys={null}
             placeholder={
-              formatMessage({ id: 'src.page.Project.Notification.components.6C61DE34' }) /*"事件"*/
+              formatMessage({
+                id: 'src.page.Project.Notification.components.6C61DE34',
+                defaultMessage: '事件',
+              }) /*"事件"*/
             }
           />
         );
@@ -192,7 +223,10 @@ export const getPolicyColumns: GetPolicyColumns = function ({
       ),
     },
     {
-      title: formatMessage({ id: 'src.page.Project.Notification.components.C21BB343' }), //'启用状态'
+      title: formatMessage({
+        id: 'src.page.Project.Notification.components.C21BB343',
+        defaultMessage: '启用状态',
+      }), //'启用状态'
       dataIndex: 'enabled',
       width: 122,
       key: 'enabled',
@@ -210,7 +244,10 @@ export const getPolicyColumns: GetPolicyColumns = function ({
       ),
     },
     {
-      title: formatMessage({ id: 'src.page.Project.Notification.components.A7341EE0' }), //'推送通道'
+      title: formatMessage({
+        id: 'src.page.Project.Notification.components.A7341EE0',
+        defaultMessage: '推送通道',
+      }), //'推送通道'
       dataIndex: 'channels',
       width: 480,
       key: 'channels',
@@ -222,6 +259,7 @@ export const getPolicyColumns: GetPolicyColumns = function ({
             placeholder={
               formatMessage({
                 id: 'src.page.Project.Notification.components.5002EFB0',
+                defaultMessage: '推送通道',
               }) /*"推送通道"*/
             }
           />
@@ -274,7 +312,10 @@ export const getPolicyColumns: GetPolicyColumns = function ({
       },
     },
     {
-      title: formatMessage({ id: 'src.page.Project.Notification.components.30DE4191' }), //'操作'
+      title: formatMessage({
+        id: 'src.page.Project.Notification.components.30DE4191',
+        defaultMessage: '操作',
+      }), //'操作'
       key: 'action',
       width: 140,
       render: (_, proxy) => {
@@ -290,6 +331,7 @@ export const getPolicyColumns: GetPolicyColumns = function ({
             {
               formatMessage({
                 id: 'src.page.Project.Notification.components.7555452E' /*添加通道*/,
+                defaultMessage: '添加通道',
               }) /* 添加通道 */
             }
           </a>
@@ -297,6 +339,7 @@ export const getPolicyColumns: GetPolicyColumns = function ({
       },
     },
   ];
+  return columns.filter((item) => !hideColumns.includes(item.key as IPolicyColumnsKeys));
 };
 // #endregion
 
@@ -305,19 +348,25 @@ type GetChannelColumn = ({
   handleDelete,
   handleChannelEdit,
   hanleOpenChannelDetailDrawer,
+  hideColumns,
 }: {
   handleDelete: (channelId: number) => void;
   handleChannelEdit: (channelId: number) => void;
   hanleOpenChannelDetailDrawer: (channel: Omit<IChannel<EChannelType>, 'channelConfig'>) => void;
+  hideColumns?: IChannelColumnsKeys[];
 }) => ColumnType<IChannel<EChannelType>>[];
 export const getChannelColumns: GetChannelColumn = function ({
   handleDelete,
   handleChannelEdit,
   hanleOpenChannelDetailDrawer,
+  hideColumns = [],
 }) {
-  return [
+  const columns: ColumnType<IChannel<EChannelType>>[] = [
     {
-      title: formatMessage({ id: 'src.page.Project.Notification.components.76BA6F01' }), //'通道名称'
+      title: formatMessage({
+        id: 'src.page.Project.Notification.components.76BA6F01',
+        defaultMessage: '通道名称',
+      }), //'通道名称'
       dataIndex: 'name',
       key: 'name',
       filterDropdown: (props) => {
@@ -328,6 +377,7 @@ export const getChannelColumns: GetChannelColumn = function ({
             placeholder={
               formatMessage({
                 id: 'src.page.Project.Notification.components.5CDC10CB',
+                defaultMessage: '通道名称',
               }) /*"通道名称"*/
             }
           />
@@ -343,7 +393,10 @@ export const getChannelColumns: GetChannelColumn = function ({
       ),
     },
     {
-      title: formatMessage({ id: 'src.page.Project.Notification.components.2E263203' }), //'通道类型'
+      title: formatMessage({
+        id: 'src.page.Project.Notification.components.2E263203',
+        defaultMessage: '通道类型',
+      }), //'通道类型'
       dataIndex: 'type',
       key: 'type',
       filters: [
@@ -368,12 +421,18 @@ export const getChannelColumns: GetChannelColumn = function ({
       render: (type) => EChannelTypeMap[type as EChannelType],
     },
     {
-      title: formatMessage({ id: 'src.page.Project.Notification.components.9E340A54' }), //'创建人'
+      title: formatMessage({
+        id: 'src.page.Project.Notification.components.9E340A54',
+        defaultMessage: '创建人',
+      }), //'创建人'
       dataIndex: 'creatorName',
       key: 'creatorName',
     },
     {
-      title: formatMessage({ id: 'src.page.Project.Notification.components.F8D12615' }), //'创建时间'
+      title: formatMessage({
+        id: 'src.page.Project.Notification.components.F8D12615',
+        defaultMessage: '创建时间',
+      }), //'创建时间'
       dataIndex: 'createTime',
       key: 'createTime',
       sorter: (a, b) => a?.createTime - b?.createTime,
@@ -381,7 +440,10 @@ export const getChannelColumns: GetChannelColumn = function ({
       render: (createTime) => (createTime ? getLocalFormatDateTime(createTime) : '-'),
     },
     {
-      title: formatMessage({ id: 'src.page.Project.Notification.components.89B6BD2A' }), //'操作'
+      title: formatMessage({
+        id: 'src.page.Project.Notification.components.89B6BD2A',
+        defaultMessage: '操作',
+      }), //'操作'
       key: 'action',
       render: (channel: IChannel<EChannelType>) => {
         return (
@@ -390,6 +452,7 @@ export const getChannelColumns: GetChannelColumn = function ({
               {
                 formatMessage({
                   id: 'src.page.Project.Notification.components.2D408702' /*查看*/,
+                  defaultMessage: '查看',
                 }) /* 查看 */
               }
             </a>
@@ -397,6 +460,7 @@ export const getChannelColumns: GetChannelColumn = function ({
               {
                 formatMessage({
                   id: 'src.page.Project.Notification.components.1C77B416' /*编辑*/,
+                  defaultMessage: '编辑',
                 }) /* 编辑 */
               }
             </a>
@@ -404,6 +468,7 @@ export const getChannelColumns: GetChannelColumn = function ({
               {
                 formatMessage({
                   id: 'src.page.Project.Notification.components.B65E55FA' /*删除*/,
+                  defaultMessage: '删除',
                 }) /* 删除 */
               }
             </a>
@@ -412,5 +477,6 @@ export const getChannelColumns: GetChannelColumn = function ({
       },
     },
   ];
+  return columns.filter((item) => !hideColumns.includes(item.key as IChannelColumnsKeys));
 };
 // #endregion

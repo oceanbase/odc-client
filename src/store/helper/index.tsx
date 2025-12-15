@@ -15,7 +15,7 @@
  */
 
 import { ConnectionMode, INlsObject, IResultSet, ISqlExecuteResultStatus } from '@/d.ts';
-import { getNlsValueKey, isNlsColumn } from '@/util/column';
+import { getNlsValueKey, isNlsColumn } from '@/util/database/column';
 import { generateUniqKey } from '@/util/utils';
 
 export function generateResultSetColumns(
@@ -84,7 +84,7 @@ export function generateResultSetColumns(
             { _rowIndex: i },
           );
         }),
-        uniqKey: oldKey || generateUniqKey('resultset'),
+        uniqKey: oldKey || r.sqlId || generateUniqKey('resultset'),
         initialSql: r.executeSql,
       };
     })

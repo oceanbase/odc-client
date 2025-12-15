@@ -27,19 +27,19 @@ import {
   IMPORT_TYPE,
   TaskType,
 } from '@/d.ts';
+import odc from '@/plugins/odc';
 import request from '@/util/request';
 import { encrypt } from '@/util/utils';
+import { stringSeparatorToCRLF } from '@/util/data/string';
 import { isNil } from 'lodash';
 
 export async function getExportObjects(
   databaseId: number,
   type?: DbObjectType,
   cid?: number,
-): Promise<
-  {
-    [key in DbObjectType]: string[];
-  }
-> {
+): Promise<{
+  [key in DbObjectType]: string[];
+}> {
   const result = await request.get(`/api/v2/dataTransfer/getExportObjects`, {
     params: {
       connectionId: cid,
@@ -90,7 +90,7 @@ export async function createBatchExportTask(formData: ExportFormData) {
             blankToNull: formData.blankToNull,
             columnSeparator: formData.columnSeparator,
             columnDelimiter: formData.columnDelimiter,
-            lineSeparator: formData.lineSeparator,
+            lineSeparator: stringSeparatorToCRLF(formData.lineSeparator),
             encoding: formData.encoding,
           }
         : null,
@@ -183,7 +183,7 @@ export async function createBatchImportTask(
         blankToNull: formData.blankToNull,
         columnSeparator: formData.columnSeparator,
         columnDelimiter: formData.columnDelimiter,
-        lineSeparator: formData.lineSeparator,
+        lineSeparator: stringSeparatorToCRLF(formData.lineSeparator),
         fileName: serverParams.importFileName?.[0],
         encoding: serverParams.encoding,
       },
@@ -208,7 +208,7 @@ export async function createBatchImportTask(
 }
 
 export function getImportUploadUrl() {
-  return window.ODCApiHost + `/api/v2/dataTransfer/upload`;
+  return odc.appConfig.network?.baseUrl?.() + `/api/v2/dataTransfer/upload`;
 }
 
 export async function getCsvFileInfo(params: {
@@ -223,6 +223,7 @@ export async function getCsvFileInfo(params: {
   const ret = await request.post(`/api/v2/dataTransfer/getCsvFileInfo`, {
     data: {
       ...params,
+      lineSeparator: stringSeparatorToCRLF(params.lineSeparator),
     },
   });
   return ret?.data;
@@ -266,9 +267,9 @@ export async function getTaskInfoAndLog(
   return res?.data;
 }
 
-export async function getImportFileMeta(filePath) {
+export async function getImportFileMeta(filePath: string, fileType: IMPORT_TYPE) {
   const res = await request.get(`/api/v2/dataTransfer/getMetaInfo`, {
-    params: { fileName: filePath },
+    params: { fileName: filePath, fileType: fileType },
   });
   return res?.data;
 }

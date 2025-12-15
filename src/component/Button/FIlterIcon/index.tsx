@@ -23,6 +23,7 @@ interface IProps {
   isActive?: boolean;
   className?: string;
   style?: React.CSSProperties;
+  border?: boolean;
 }
 
 const FilterIcon: React.FC<IProps> = function ({
@@ -30,11 +31,16 @@ const FilterIcon: React.FC<IProps> = function ({
   className,
   isActive,
   onClick,
+  border = false,
   ...rest
 }) {
   return (
     <div
-      className={classNames(styles.icon, { [styles.iconActive]: isActive }, className)}
+      className={classNames(
+        styles.icon,
+        { [styles.iconActive]: isActive, [styles.border]: border },
+        className,
+      )}
       onClick={onClick}
       {...rest}
     >

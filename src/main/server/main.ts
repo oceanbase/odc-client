@@ -29,7 +29,7 @@ import {
   getSetting,
 } from '../utils';
 import log from '../utils/log';
-import { writeFileSync } from 'fs';
+import { runH2Migration } from '../utils/h2';
 
 class MainServer {
   static _mainServer: MainServer = null;
@@ -46,79 +46,72 @@ class MainServer {
     }
     return MainServer._mainServer;
   }
+
   /**
-   * 获取后端jar地址
+   * 统一获取各种路径
    */
-  private getJarPath() {
-    // @see https://github.com/electron-userland/electron-builder/issues/3863
+  private getPaths() {
+    const isDev = process.env.NODE_ENV === 'development';
+    const basePath = isDev ? process.cwd() : process.resourcesPath || '';
+
+    // 获取JAR路径
     let odcJarPath: string;
-    // tslint:disable-next-line:prefer-conditional-expression
     if (process.env.ODC_SERVER_JAR_PATH) {
       odcJarPath = process.env.ODC_SERVER_JAR_PATH;
-    } else if (process.env.NODE_ENV === 'development') {
-      odcJarPath = path.join(process.cwd(), 'libraries', 'java', 'odc.jar');
     } else {
-      // @see https://electronjs.org/docs/all#processresourcespath
-      log.info('resourcesPath: ', process.resourcesPath);
-      odcJarPath = path.join(process.resourcesPath || '', 'libraries', 'java', 'odc.jar');
+      odcJarPath = path.join(basePath, 'libraries', 'java', 'odc.jar');
     }
     this.jarPath = odcJarPath;
-    return odcJarPath;
-  }
 
-  private getPluginsPath() {
+    // 获取插件路径
     let pluginPath: string;
-    // tslint:disable-next-line:prefer-conditional-expression
     if (process.env.ODC_SERVER_PLUGINS_PATH) {
       pluginPath = process.env.ODC_SERVER_PLUGINS_PATH;
-    } else if (process.env.NODE_ENV === 'development') {
-      pluginPath = path.join(process.cwd(), 'libraries', 'java', 'plugins');
     } else {
-      // @see https://electronjs.org/docs/all#processresourcespath
-      log.info('resourcesPath: ', process.resourcesPath);
-      pluginPath = path.join(process.resourcesPath || '', 'libraries', 'java', 'plugins');
+      pluginPath = path.join(basePath, 'libraries', 'java', 'plugins');
     }
     this.pluginPath = pluginPath;
-    return pluginPath;
-  }
 
-  private getStartersPath() {
-    let _path: string;
-    // tslint:disable-next-line:prefer-conditional-expression
+    // 获取启动器路径
+    let starterPath: string;
     if (process.env.ODC_SERVER_STARTERS_PATH) {
-      _path = process.env.ODC_SERVER_STARTERS_PATH;
-    } else if (process.env.NODE_ENV === 'development') {
-      _path = path.join(process.cwd(), 'libraries', 'java', 'starters');
+      starterPath = process.env.ODC_SERVER_STARTERS_PATH;
     } else {
-      // @see https://electronjs.org/docs/all#processresourcespath
-      log.info('resourcesPath: ', process.resourcesPath);
-      _path = path.join(process.resourcesPath || '', 'libraries', 'java', 'starters');
+      starterPath = path.join(basePath, 'libraries', 'java', 'starters');
     }
-    this.starterPath = _path;
-    return _path;
-  }
+    this.starterPath = starterPath;
 
-  private getOBClientPath() {
-    let obPath;
-    let base;
-    if (process.env.NODE_ENV === 'development') {
-      base = process.cwd();
-    } else {
-      base = process.resourcesPath;
-    }
+    // 获取OBClient路径
+    let obClientPath: string;
     switch (process.platform) {
       case 'linux':
       case 'darwin': {
-        obPath = path.join(base, 'libraries', 'obclient/bin/obclient');
+        obClientPath = path.join(basePath, 'libraries', 'obclient/bin/obclient');
         break;
       }
       default: {
-        obPath = path.join(base, 'libraries', 'obclient', 'obclient.exe');
+        obClientPath = path.join(basePath, 'libraries', 'obclient', 'obclient.exe');
         break;
       }
     }
-    log.info('obPath: ', obPath);
-    return obPath;
+
+    // 获取其他库路径
+    const othersPath = path.join(basePath, 'libraries', 'others');
+
+    log.info('resourcesPath: ', process.resourcesPath);
+    log.info('obPath: ', obClientPath);
+    log.info('others Path: ', othersPath);
+    log.info('jarPath: ', odcJarPath);
+    log.info('pluginPath: ', pluginPath);
+    log.info('starterPath: ', starterPath);
+
+    return {
+      jarPath: odcJarPath,
+      pluginPath,
+      starterPath,
+      obClientPath,
+      othersPath,
+    };
   }
 
   /**
@@ -137,10 +130,10 @@ class MainServer {
   /**
    * 确认服务是否可用
    */
-  private async checkServerIsReady() {
+  private async checkServerIsReady(logError: boolean = false) {
     try {
       await new Promise((resolve, reject) => {
-        const res = get(`http://localhost:${this.port}/api/v1/info`, (resp) => {
+        const res = get(`http://127.0.0.1:${this.port}/api/v1/info`, (resp) => {
           log.info('check server api status: ', resp.statusCode);
           let data = '';
           // A chunk of data has been recieved.
@@ -159,6 +152,7 @@ class MainServer {
           });
         }).on('error', (err) => {
           log.info('check server with resp err');
+          logError && log.info(err);
           reject(err);
         });
         res.setTimeout(2000);
@@ -179,7 +173,7 @@ class MainServer {
     const getStatus = async (fn, reject) => {
       count++;
       log.info(`fetch server status count(${count})`);
-      const isReady = await this.checkServerIsReady();
+      const isReady = await this.checkServerIsReady(count > 70);
       if (isReady) {
         log.info(`Server startup time:`, (Date.now() - now) / 1000);
         fn(true);
@@ -212,9 +206,10 @@ class MainServer {
       return;
     }
     await this.getAvailablePort();
-    this.getJarPath();
-    this.getPluginsPath();
-    this.getStartersPath();
+
+    // 统一获取所有路径
+    const paths = this.getPaths();
+
     const dbPath = getJavaDBPath();
     if (!dbPath) {
       log.error('元数据库路径获取失败！');
@@ -254,17 +249,24 @@ class MainServer {
       CLASSPATH: process.env.CLASSPATH,
       PATH: process.env.PATH,
       JAVA_HOME: process.env.JAVA_HOME,
-      ODC_PLUGIN_DIR: this.pluginPath,
-      ODC_STARTER_DIR: this.starterPath,
+      ODC_PLUGIN_DIR: paths.pluginPath,
+      ODC_STARTER_DIR: paths.starterPath,
       'server.port': `${this.port}`,
       // obClient 文件上传目录
       'obclient.work.dir': path.join(app.getPath('userData'), 'data'),
       // 任务文件上传参数，后续任务会统一到这个目录下
       'file.storage.dir': path.join(app.getPath('userData'), 'data'),
-      'obclient.file.path': this.getOBClientPath(),
+      'obclient.file.path': paths.obClientPath,
+      'libraries.others.file.path': paths.othersPath,
     };
     if (JAVA_HOME) {
       env['JAVA_HOME'] = JAVA_HOME;
+    }
+    const h2MigrationSuccess = await runH2Migration();
+    if (!h2MigrationSuccess) {
+      log.error('H2 migration failed');
+      app.quit();
+      return;
     }
     // https://stackoverflow.com/questions/10232192/exec-display-stdout-live
     try {
@@ -275,7 +277,10 @@ class MainServer {
         jvmOptions = setting['client.jvm.params'].split('\n');
         const odcProperties = setting['client.start.params'];
         if (odcProperties) {
-          odcOptions = odcProperties.split('\n').map((item) => '--' + item);
+          odcOptions = odcProperties
+            .split('\n')
+            .filter((item) => Boolean(item.trim()))
+            .map((item) => '--' + item);
           log.info('odc system propeties ', odcOptions, setting['client.start.params']);
         }
       }
@@ -287,6 +292,12 @@ class MainServer {
           `-Dfile.encoding=UTF-8`,
           `-Duser.language=en-US`,
           ...jvmOptions,
+          '--add-opens',
+          'java.base/jdk.internal.loader=ALL-UNNAMED',
+          '--add-opens',
+          'java.base/java.net=ALL-UNNAMED',
+          '--add-opens',
+          'java.base/java.lang=ALL-UNNAMED',
           '-jar',
           this.jarPath,
           ...odcOptions,

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import RiskLevelLabel, { ODCRiskLevelLabel } from '@/component/RiskLevelLabel';
-import { formatMessage } from '@/util/intl';
-import { Button, Descriptions, Dropdown, Space, Tooltip } from 'antd';
-import styles from './index.less';
-import { MenuClickEventHandler, MenuInfo } from 'rc-menu/lib/interface';
-import { IEnvironment } from '@/d.ts/environment';
-import Icon, { EllipsisOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { Acess, canAcess, createPermission } from '@/component/Acess';
-import { IManagerResourceType, actionTypes } from '@/d.ts';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
+import { actionTypes, IManagerResourceType } from '@/d.ts';
+import { IEnvironment } from '@/d.ts/environment';
+import { formatMessage } from '@/util/intl';
+import Icon, { EllipsisOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { Button, Descriptions, Dropdown, Space, Tooltip } from 'antd';
+import { MenuClickEventHandler, MenuInfo } from 'rc-menu/lib/interface';
+import styles from './index.less';
 
 const EnvironmentInfo: React.FC<{
   loading: boolean;
@@ -56,11 +56,17 @@ const EnvironmentInfo: React.FC<{
 
   const items = [
     {
-      label: formatMessage({ id: 'src.page.Secure.Env.components.FF5B44FE' }), //'编辑环境'
+      label: formatMessage({
+        id: 'src.page.Secure.Env.components.FF5B44FE',
+        defaultMessage: '编辑环境',
+      }), //'编辑环境'
       key: actionTypes.update,
     },
     {
-      label: formatMessage({ id: 'src.page.Secure.Env.components.75B57B74' }), //'删除环境'
+      label: formatMessage({
+        id: 'src.page.Secure.Env.components.75B57B74',
+        defaultMessage: '删除环境',
+      }), //'删除环境'
       key: actionTypes.delete,
     },
   ]
@@ -74,12 +80,22 @@ const EnvironmentInfo: React.FC<{
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Space className={styles.tag}>
           <div className={styles.tagLabel}>
-            {formatMessage({ id: 'odc.Env.components.InnerEnvironment.LabelStyle' }) /*标签样式:*/}
+            {
+              formatMessage({
+                id: 'odc.Env.components.InnerEnvironment.LabelStyle',
+                defaultMessage: '标签样式:',
+              }) /*标签样式:*/
+            }
           </div>
           <Space size={0}>
             <RiskLevelLabel content={name} color={style} />
             {!enabled && (
-              <Tooltip title={formatMessage({ id: 'src.page.Secure.Env.components.60756A4B' })}>
+              <Tooltip
+                title={formatMessage({
+                  id: 'src.page.Secure.Env.components.60756A4B',
+                  defaultMessage: '环境已被禁用',
+                })}
+              >
                 <ExclamationCircleFilled
                   style={{
                     color: 'var(--function-gold6-color)',
@@ -102,8 +118,14 @@ const EnvironmentInfo: React.FC<{
               disabled={loading}
             >
               {enabled
-                ? formatMessage({ id: 'src.page.Secure.Env.components.A4A3A31E' })
-                : formatMessage({ id: 'src.page.Secure.Env.components.63058F33' })}
+                ? formatMessage({
+                    id: 'src.page.Secure.Env.components.A4A3A31E',
+                    defaultMessage: '禁用',
+                  })
+                : formatMessage({
+                    id: 'src.page.Secure.Env.components.63058F33',
+                    defaultMessage: '启用',
+                  })}
             </Button>
           </Acess>
           {builtIn || !hasPremissions ? null : (
@@ -124,7 +146,10 @@ const EnvironmentInfo: React.FC<{
         <Descriptions.Item
           contentStyle={{ whiteSpace: 'pre' }}
           label={
-            formatMessage({ id: 'odc.Env.components.InnerEnvironment.Description' }) //描述
+            formatMessage({
+              id: 'odc.Env.components.InnerEnvironment.Description',
+              defaultMessage: '描述',
+            }) //描述
           }
         >
           {description || '-'}

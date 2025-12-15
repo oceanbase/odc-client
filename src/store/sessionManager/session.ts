@@ -37,6 +37,10 @@ import setting from '../setting';
 import { getBuiltinSnippets } from '@/common/network/snippet';
 import { ISnippet } from '../snippet';
 import { DBDefaultStoreType } from '@/d.ts/table';
+import { isString } from 'lodash';
+import { OBCompare, ODC_PROFILE_SUPPORT_VERSION } from '@/util/business/versionUtils';
+import { ConnectionMode } from '@/d.ts';
+import { isLogicalDatabase } from '@/util/database/database';
 
 const DEFAULT_QUERY_LIMIT = 1000;
 const DEFAULT_DELIMITER = ';';
@@ -48,6 +52,11 @@ class SessionStore {
   public charsets: string[] = [];
   @observable
   public collations: string[] = [];
+  @observable
+  public supports: {
+    support: boolean;
+    supportType: string;
+  }[];
   @observable
   public dataTypes: IDataType[] = [];
 
@@ -70,12 +79,22 @@ class SessionStore {
     };
   } = {};
 
+  @observable.shallow
+  public allTableAndMaterializedViews: {
+    [dbName: string]: {
+      tables: string[];
+      mvs: string[];
+    };
+  } = {};
+
   /**
    * 这个里面包含系统视图，后续还有可能包含其余的对象
    */
   @observable.shallow
   public allIdentities: {
     [dbName: string]: {
+      external_table: string[];
+      materialized_view: string[];
       tables: string[];
       views: string[];
     };
@@ -84,6 +103,7 @@ class SessionStore {
   @observable
   public params: {
     autoCommit: boolean;
+    maxQueryLimit: number;
     delimiter: string;
     queryLimit: number;
     delimiterLoading: boolean;
@@ -92,9 +112,14 @@ class SessionStore {
     fullLinkTraceEnabled: boolean;
     continueExecutionOnError: boolean;
     defaultTableStoreFormat: DBDefaultStoreType;
+    /**
+     * 用于控制sql窗口的kill
+     */
+    killCurrentQuerySupported: boolean;
   } = {
     autoCommit: true,
     delimiter: DEFAULT_DELIMITER,
+    maxQueryLimit: Number.MAX_SAFE_INTEGER,
     delimiterLoading: false,
     queryLimit: DEFAULT_QUERY_LIMIT,
     obVersion: '',
@@ -102,6 +127,7 @@ class SessionStore {
     fullLinkTraceEnabled: true,
     continueExecutionOnError: true,
     defaultTableStoreFormat: DBDefaultStoreType.ROW,
+    killCurrentQuerySupported: false,
   };
 
   /**
@@ -122,7 +148,7 @@ class SessionStore {
 
   private lastTableAndViewLoadTime: number = 0;
 
-  private lastIdentitiesLoadTime: number = 0;
+  private lastIdentitiesLoadTime: Map<string, number> = new Map();
 
   constructor(connection: IDatasource, database: IDatabase) {
     this.connection = connection;
@@ -135,9 +161,13 @@ class SessionStore {
     this.odcDatabase = database || this.odcDatabase;
   }
 
-  static async createInstance(datasource: IDatasource, database: IDatabase) {
+  static async createInstance(
+    datasource: IDatasource,
+    database: IDatabase,
+    recordDbAccessHistory?: boolean,
+  ) {
     const session = new SessionStore(datasource, database);
-    if (await session.init()) {
+    if (await session.init(recordDbAccessHistory)) {
       return session;
     }
     return null;
@@ -157,7 +187,7 @@ class SessionStore {
    *
    * 数据库创建：需要初始化 DB 与事务信息。
    */
-  async init(): Promise<boolean> {
+  async init(recordDbAccessHistory: boolean): Promise<boolean> {
     try {
       if (!this.odcDatabase) {
         /**
@@ -169,14 +199,14 @@ class SessionStore {
         }
         this.sessionId = data.sessionId;
         this.dataTypes = data.dataTypeUnits;
-        this.initSupportFeature(data.supports);
+        await this.initSupportFeature(data.supports);
         this.isAlive = true;
         return true;
       } else {
         /**
          * 数据库模式
          */
-        const data = await newSessionByDataBase(this.odcDatabase?.id, true);
+        const data = await newSessionByDataBase(this.odcDatabase?.id, true, recordDbAccessHistory);
         if (!data) {
           return false;
         }
@@ -184,7 +214,8 @@ class SessionStore {
         this.dataTypes = data.dataTypeUnits;
         this.charsets = data.charsets;
         this.collations = data.collations;
-        this.initSupportFeature(data.supports);
+        this.supports = data.supports;
+        await this.initSupportFeature(data.supports);
         this.isAlive = true;
         return await this.initSessionBaseInfo();
       }
@@ -215,7 +246,7 @@ class SessionStore {
       if (!this.database) {
         return;
       }
-      await this.initSessionStatus(true);
+      await this.initSessionStatus(true, isLogicalDatabase(this?.odcDatabase));
       if (!this.transState) {
         return false;
       }
@@ -239,6 +270,7 @@ class SessionStore {
       this.sessionId,
       dbName,
       this.odcDatabase?.id,
+      this.odcDatabase?.type,
     );
     if (!this.database) {
       return false;
@@ -251,6 +283,7 @@ class SessionStore {
     if (!data) {
       throw new Error('getSupportFeature error');
     }
+    await this.initSessionStatus(true);
     const keyValueMap = {
       support_show_foreign_key: 'enableShowForeignKey',
       support_partition_modify: 'enableCreatePartition',
@@ -271,7 +304,10 @@ class SessionStore {
       support_synonym: 'enableSynonym',
       support_recycle_bin: 'enableRecycleBin',
       support_shadowtable: 'enableShadowSync',
-      support_partition_plan: 'enablePartitionPlan',
+      support_partition_plan: (allConfig) => {
+        this.supportFeature.enablePartitionPlan =
+          settingStore.enablePartitionPlan && allConfig['support_partition_plan'];
+      },
       support_column_group: 'enableColumnStore',
       support_async: (allConfig) => {
         this.supportFeature.enableAsync =
@@ -304,6 +340,8 @@ class SessionStore {
       support_pl_debug: (allConfig) => {
         this.supportFeature.enablePLDebug = allConfig['support_pl_debug'];
       },
+      support_external_table: 'enableExternalTable',
+      support_materialized_view: 'enableMaterializedView',
     };
     const allConfig = {};
     data?.forEach((item) => {
@@ -317,6 +355,13 @@ class SessionStore {
       } else if (typeof value === 'string') {
         this.supportFeature[value] = support;
       }
+      const obVersion = this?.params?.obVersion;
+      this.supportFeature.enableProfile =
+        [ConnectionMode.OB_MYSQL, ConnectionMode.OB_ORACLE].includes(
+          this.connection?.dialectType,
+        ) &&
+        isString(obVersion) &&
+        OBCompare(obVersion, ODC_PROFILE_SUPPORT_VERSION, '>=');
     });
   }
 
@@ -359,15 +404,52 @@ class SessionStore {
   }
 
   @action
-  public async initSessionStatus(init: boolean = false) {
+  public async queryTablesAndMaterializedViews(name: string = '', force: boolean = false) {
+    const res = await request.get(
+      `/api/v2/connect/sessions/${this.sessionId}/listMaterializedViewBases`,
+      {
+        params: {
+          name,
+        },
+      },
+    );
+    const tables = {};
+    const mvs = {};
+    const { tables: srcTables = [], mvs: srcMvs = [] } = res?.data;
+    return runInAction(() => {
+      srcTables.forEach((item) => {
+        tables[item.databaseName] = item.tables;
+        const dbObj = this.allTableAndMaterializedViews[item.databaseName] || {
+          tables: [],
+          mvs: [],
+        };
+        dbObj.tables = item.tables;
+        this.allTableAndMaterializedViews[item.databaseName] = { ...dbObj };
+      });
+      srcMvs.forEach((item) => {
+        mvs[item.databaseName] = item.mvs;
+        const dbObj = this.allTableAndMaterializedViews[item.databaseName] || {
+          tables: [],
+          mvs: [],
+        };
+        dbObj.mvs = item.mvs;
+        this.allTableAndMaterializedViews[item.databaseName] = { ...dbObj };
+      });
+      return this.allTableAndMaterializedViews;
+    });
+  }
+
+  @action
+  public async initSessionStatus(init: boolean = false, isLogicDbSessionInit: boolean = false) {
     try {
       const data = await getSessionStatus(this.sessionId);
-
       this.params.autoCommit = data?.settings?.autocommit;
+      this.params.maxQueryLimit = data?.settings?.maxQueryLimit;
       this.params.delimiter = data?.settings?.delimiter || DEFAULT_DELIMITER;
       this.params.queryLimit = data?.settings?.queryLimit;
       this.params.obVersion = data?.settings?.obVersion;
       this.params.defaultTableStoreFormat = data?.session?.defaultTableStoreFormat;
+      this.params.killCurrentQuerySupported = data?.session?.killCurrentQuerySupported;
       if (init) {
         this.params.tableColumnInfoVisible =
           setting.configurations['odc.sqlexecute.default.fetchColumnInfo'] === 'true';
@@ -378,6 +460,20 @@ class SessionStore {
       }
       if (data?.session) {
         this.transState = data?.session;
+      }
+      if (isLogicDbSessionInit) {
+        /* TODO */
+        this.transState = {
+          sid: null,
+          sessionId: null,
+          state: null,
+          transState: null,
+          transId: null,
+          sqlId: null,
+          activeQueries: null,
+          defaultTableStoreFormat: null,
+          killCurrentQuerySupported: false,
+        };
       }
     } catch (e) {
       console.error(e);
@@ -416,6 +512,7 @@ class SessionStore {
   @action
   public async destory(force: boolean = false) {
     this.isAlive = false;
+    console.log(generateSessionSid(this.sessionId));
     await request.delete(`/api/v2/datasource/sessions`, {
       data: { sessionIds: [generateSessionSid(this.sessionId)], delay: force ? null : 60 },
     });
@@ -438,22 +535,36 @@ class SessionStore {
   }
 
   @action
-  public async queryIdentities() {
+  public async queryIdentities(identityNameLike?: string) {
     const now = Date.now();
-    if (now - this.lastIdentitiesLoadTime < 15000) {
+    if (now - this.lastIdentitiesLoadTime.get(identityNameLike || 'default') < 15000) {
       return;
     }
-    this.lastIdentitiesLoadTime = now;
-    const data = await queryIdentities(['TABLE', 'VIEW'], this.sessionId, this.database?.dbName);
+    this.lastIdentitiesLoadTime.set(identityNameLike || 'default', now);
+    let supportType = ['TABLE', 'VIEW'];
+    this.supportFeature.enableExternalTable && supportType.push('EXTERNAL_TABLE');
+    this.supportFeature.enableMaterializedView && supportType.push('MATERIALIZED_VIEW');
+    const data = await queryIdentities(
+      supportType,
+      this.sessionId,
+      this.database?.dbName,
+      identityNameLike,
+    );
     if (!data) {
       this.lastTableAndViewLoadTime = 0;
     }
     runInAction(() => {
       data?.forEach((item) => {
         const { schemaName, identities } = item;
-        this.allIdentities[schemaName] = { tables: [], views: [] };
+        this.allIdentities[schemaName] = {
+          tables: [],
+          views: [],
+          external_table: [],
+          materialized_view: [],
+        };
         identities.forEach((identity) => {
           const { type, name } = identity;
+
           switch (type) {
             case 'TABLE': {
               this.allIdentities[schemaName].tables.push(name);
@@ -461,6 +572,14 @@ class SessionStore {
             }
             case 'VIEW': {
               this.allIdentities[schemaName].views.push(name);
+              return;
+            }
+            case 'EXTERNAL_TABLE': {
+              this.allIdentities[schemaName].external_table.push(name);
+              return;
+            }
+            case 'MATERIALIZED_VIEW': {
+              this.allIdentities[schemaName].materialized_view.push(name);
               return;
             }
           }

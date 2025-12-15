@@ -38,11 +38,12 @@ import WorkSpacePageLoading from '@/component/Loading/WorkSpacePageLoading';
 import { ISQLLintReuslt } from '@/component/SQLLintResult/type';
 import { EStatus } from '@/d.ts';
 import { CreateTablePage } from '@/store/helper/page/pages/create';
-import modal from '@/store/modal';
+import modal, { ModalStore } from '@/store/modal';
 import page from '@/store/page';
 import sessionManager, { SessionManagerStore } from '@/store/sessionManager';
+import { isLogicalDatabase } from '@/util/database/database';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import { useRequest } from 'ahooks';
 import { inject, observer } from 'mobx-react';
 import SessionContext from '../SessionContextWrap/context';
@@ -52,12 +53,13 @@ import styles from './index.less';
 import Partition from './Partition';
 import TableConstraint from './TableConstraint';
 import TableIndex from './TableIndex';
-import { ColumnStoreType } from '@/d.ts/table';
 
 interface IProps {
   pageKey: string;
   sessionManagerStore?: SessionManagerStore;
+  modalStore?: ModalStore;
   params: CreateTablePage['pageParams'];
+  isExternalTable?: boolean;
 }
 
 const defaultInfo: TableInfo = {
@@ -70,7 +72,13 @@ const defaultInfo: TableInfo = {
 
 const defaultPartitions: TablePartition = null;
 
-const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManagerStore }) {
+const CreateTable: React.FC<IProps> = function ({
+  pageKey,
+  params,
+  sessionManagerStore,
+  modalStore,
+  isExternalTable,
+}) {
   const [info, setInfo] = useState<TableInfo>(defaultInfo);
   const [columns, setColumns] = useState<TableColumn[]>([defaultColumn]);
   const [partitions, setPartitions] = useState<Partial<TablePartition>>(defaultPartitions);
@@ -86,9 +94,10 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
   const { loading, run: runGenerateCreateTableDDL } = useRequest(generateCreateTableDDL, {
     manual: true,
   });
+  const [isLogicalTableValid, setIsLogicalTableValid] = useState<boolean>(true);
 
   const { session } = useContext(SessionContext);
-
+  const dbType = session?.odcDatabase?.type;
   const handleSubmit = async () => {
     const sql = await runGenerateCreateTableDDL(
       {
@@ -111,6 +120,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
   const isComplete = useMemo(() => {
     return (
       info.tableName &&
+      isLogicalTableValid &&
       // && info.character
       // && info.collation
       columns.length &&
@@ -131,6 +141,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
             {
               formatMessage({
                 id: 'odc.components.CreateTable.BasicInformationAsRequiredOptional',
+                defaultMessage: '基本信息，列为必填项，其他选填',
               })
               /*基本信息，列为必填项，其他选填*/
             }
@@ -145,6 +156,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
                 ? null
                 : formatMessage({
                     id: 'odc.components.CreateTable.PleaseFillInTheBasic',
+                    defaultMessage: '请填写基本信息和列',
                   }) //请填写基本信息和列
             }
           >
@@ -152,6 +164,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
               {
                 formatMessage({
                   id: 'odc.components.CreateTable.SubmitAndConfirmSql',
+                  defaultMessage: '提交并确认 SQL',
                 })
                 /*提交并确认 SQL*/
               }
@@ -179,6 +192,8 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
           checkConstraints,
           setCheckConstraints,
           session,
+          isLogicalTableValid,
+          setIsLogicalTableValid,
         }}
       >
         <Tabs
@@ -189,33 +204,45 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
               key: TableTabType.INFO,
               label: formatMessage({
                 id: 'odc.components.CreateTable.BasicInformation',
+                defaultMessage: '基本信息',
               }),
-              children: <BaseInfo />,
+              children: <BaseInfo dbType={dbType} />,
             },
             {
               key: TableTabType.COLUMN,
-              label: formatMessage({ id: 'odc.components.CreateTable.Column' }),
-              children: <Columns />,
+              label: formatMessage({
+                id: 'odc.components.CreateTable.Column',
+                defaultMessage: '列',
+              }),
+              children: <Columns isExternalTable={isExternalTable} />,
             },
             {
               key: TableTabType.INDEX,
-              label: formatMessage({ id: 'odc.components.CreateTable.Index' }),
+              label: formatMessage({
+                id: 'odc.components.CreateTable.Index',
+                defaultMessage: '索引',
+              }),
               children: <TableIndex />,
             },
             {
               key: TableTabType.CONSTRAINT,
               label: formatMessage({
                 id: 'odc.components.CreateTable.Constraints',
+                defaultMessage: '约束',
               }),
               children: <TableConstraint />,
             },
             {
               key: TableTabType.PARTITION,
-              label: formatMessage({ id: 'odc.components.CreateTable.Partition' }),
+              label: formatMessage({
+                id: 'odc.components.CreateTable.Partition',
+                defaultMessage: '分区',
+              }),
               children: <Partition />,
             },
           ]}
         />
+
         <ExecuteSQLModal
           sessionStore={session}
           sql={DDL}
@@ -238,12 +265,25 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
             page.close(pageKey);
           }}
           onSave={async () => {
+            if (isLogicalDatabase(session?.odcDatabase)) {
+              // 关闭弹窗, 将sql带到工单
+              modalStore.changeLogicialDatabaseModal(true, {
+                ddl: DDL,
+                projectId: session?.odcDatabase?.project?.id,
+                databaseId: session?.odcDatabase?.id,
+              });
+              setDDL('');
+              return;
+            }
             const results = await executeSQL(
               DDL,
               session?.sessionId,
               session?.odcDatabase?.name,
               false,
             );
+            if (results?.unauthorizedDBResources?.length) {
+              return { unauthorizedDBResources: results?.unauthorizedDBResources };
+            }
             if (!hasExecuted) {
               if (results?.status !== EStatus.SUBMIT) {
                 setLintResultSet(results?.lintResultSet);
@@ -300,7 +340,12 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
               page.close(pageKey);
               // 刷新左侧资源树
               await session.database.getTableList();
-              message.success(formatMessage({ id: 'portal.connection.form.save.success' }));
+              message.success(
+                formatMessage({
+                  id: 'portal.connection.form.save.success',
+                  defaultMessage: '保存成功',
+                }),
+              );
             } else {
               notification.error(result);
             }
@@ -310,4 +355,7 @@ const CreateTable: React.FC<IProps> = function ({ pageKey, params, sessionManage
     </Card>
   );
 };
-export default inject('sessionManagerStore')(observer(WrapSessionPage(CreateTable, false, true)));
+export default inject(
+  'sessionManagerStore',
+  'modalStore',
+)(observer(WrapSessionPage(CreateTable, false, true)));

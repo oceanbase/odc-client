@@ -21,128 +21,271 @@ import {
   SchemaComparingResult,
   SQLLintMode,
   SQLSessionMode,
+  DatasourceGroup,
+  RefreshMethod,
+  RefreshScheduleUnit,
 } from '@/d.ts';
+import { DBType, BooleanOptionType } from '@/d.ts/database';
 import { ColumnStoreType } from '@/d.ts/table';
 import { formatMessage } from '@/util/intl';
 
-export const DbObjectTypeTextMap = {
-  [DbObjectType.database]: formatMessage({
-    id: 'odc.src.d.ts.Database',
-  }),
+export const DbObjectTypeTextMap = (type: DbObjectType) => {
+  const textMap = {
+    [DbObjectType.database]: formatMessage({
+      id: 'odc.src.d.ts.Database',
+      defaultMessage: '数据库',
+    }),
 
-  [DbObjectType.table]: formatMessage({
-    id: 'odc.src.d.ts.Table',
-  }),
+    [DbObjectType.table]: formatMessage({
+      id: 'odc.src.d.ts.Table',
+      defaultMessage: '表',
+    }),
 
-  [DbObjectType.view]: formatMessage({
-    id: 'odc.src.d.ts.View',
-  }),
+    [DbObjectType.view]: formatMessage({
+      id: 'odc.src.d.ts.View',
+      defaultMessage: '视图',
+    }),
 
-  [DbObjectType.procedure]: formatMessage({
-    id: 'odc.src.d.ts.StoredProcedure',
-  }),
+    [DbObjectType.procedure]: formatMessage({
+      id: 'odc.src.d.ts.StoredProcedure',
+      defaultMessage: '存储过程',
+    }),
 
-  [DbObjectType.function]: formatMessage({
-    id: 'odc.src.d.ts.Function',
-  }),
+    [DbObjectType.function]: formatMessage({
+      id: 'odc.src.d.ts.Function',
+      defaultMessage: '函数',
+    }),
 
-  [DbObjectType.sequence]: formatMessage({
-    id: 'odc.src.d.ts.Sequence',
-  }),
+    [DbObjectType.sequence]: formatMessage({
+      id: 'odc.src.d.ts.Sequence',
+      defaultMessage: '序列',
+    }),
 
-  [DbObjectType.package]: formatMessage({
-    id: 'odc.src.d.ts.Package',
-  }),
+    [DbObjectType.package]: formatMessage({
+      id: 'odc.src.d.ts.Package',
+      defaultMessage: '程序包',
+    }),
 
-  [DbObjectType.package_body]: formatMessage({
-    id: 'odc.src.d.ts.PackageBody',
-  }),
+    [DbObjectType.package_body]: formatMessage({
+      id: 'odc.src.d.ts.PackageBody',
+      defaultMessage: '程序包体',
+    }),
 
-  [DbObjectType.column]: formatMessage({ id: 'src.constant.8D87AF25', defaultMessage: '列' }),
+    [DbObjectType.column]: formatMessage({ id: 'src.constant.8D87AF25', defaultMessage: '列' }),
 
-  //程序包体
-  [DbObjectType.trigger]: formatMessage({ id: 'odc.src.d.ts.Trigger' }), // 触发器
-  [DbObjectType.synonym]: formatMessage({ id: 'odc.src.d.ts.Synonyms' }), // 同义词
-  [DbObjectType.public_synonym]: formatMessage({
-    id: 'odc.src.d.ts.CommonSynonyms',
-  }),
+    //程序包体
+    [DbObjectType.trigger]: formatMessage({ id: 'odc.src.d.ts.Trigger', defaultMessage: '触发器' }), // 触发器
+    [DbObjectType.synonym]: formatMessage({
+      id: 'odc.src.d.ts.Synonyms',
+      defaultMessage: '同义词',
+    }), // 同义词
+    [DbObjectType.public_synonym]: formatMessage({
+      id: 'odc.src.d.ts.CommonSynonyms',
+      defaultMessage: '公共同义词',
+    }),
 
-  // 公共同义词
-  [DbObjectType.table_group]: formatMessage({ id: 'odc.src.d.ts.TableGroup' }), //表组
-  [DbObjectType.file]: formatMessage({ id: 'odc.src.constant.label.File' }), //文件 //文件
-  [DbObjectType.type]: formatMessage({ id: 'odc.src.constant.label.Type' }), //类型
+    // 公共同义词
+    [DbObjectType.table_group]: formatMessage({
+      id: 'odc.src.d.ts.TableGroup',
+      defaultMessage: '表组',
+    }), //表组
+    [DbObjectType.file]: formatMessage({
+      id: 'odc.src.constant.label.File',
+      defaultMessage: '文件',
+    }), //文件 //文件
+    [DbObjectType.type]: formatMessage({
+      id: 'odc.src.constant.label.Type',
+      defaultMessage: '类型',
+    }), //类型
+
+    [DbObjectType.external_table]: formatMessage({
+      id: 'src.constant.76471609',
+      defaultMessage: '外表',
+    }),
+    [DbObjectType.materialized_view]: formatMessage({
+      id: 'src.constant.21170C84',
+      defaultMessage: '物化视图',
+    }),
+  };
+  return textMap?.[type];
 };
 
-export const ConnectTypeText = {
-  [ConnectType.NONE]: formatMessage({
-    id: 'odc.components.ConnectionCardList.AllModes',
-  }),
+export const ConnectTypeText = (type: ConnectType) => {
+  const textMap = {
+    [ConnectType.NONE]: formatMessage({
+      id: 'odc.components.ConnectionCardList.AllModes',
+      defaultMessage: '全部模式',
+    }),
 
-  [ConnectType.OB_MYSQL]: 'OceanBase MySQL',
-  [ConnectType.OB_ORACLE]: 'OceanBase Oracle',
-  [ConnectType.CLOUD_OB_MYSQL]: 'OB Cloud MySQL',
-  [ConnectType.CLOUD_OB_ORACLE]: 'OB Cloud Oracle',
-  [ConnectType.ODP_SHARDING_OB_MYSQL]: 'OB Sharding MySQL',
-  [ConnectType.MYSQL]: 'MySQL',
-  [ConnectType.DORIS]: 'Doris',
-  [ConnectType.ORACLE]: 'Oracle',
+    [ConnectType.OB_MYSQL]: 'OceanBase MySQL',
+    [ConnectType.OB_ORACLE]: 'OceanBase Oracle',
+    [ConnectType.CLOUD_OB_MYSQL]: 'OB Cloud MySQL',
+    [ConnectType.CLOUD_OB_ORACLE]: 'OB Cloud Oracle',
+    [ConnectType.ODP_SHARDING_OB_MYSQL]: 'OB Sharding MySQL',
+    [ConnectType.MYSQL]: 'MySQL',
+    [ConnectType.DORIS]: 'Doris',
+    [ConnectType.ORACLE]: 'Oracle',
+    [ConnectType.PG]: 'PostgreSQL',
+    [ConnectType.OSS]: formatMessage({ id: 'src.constant.547E5EFD', defaultMessage: '阿里云 OSS' }),
+    [ConnectType.COS]: formatMessage({ id: 'src.constant.D988A13A', defaultMessage: '腾讯云 COS' }),
+    [ConnectType.OBS]: formatMessage({ id: 'src.constant.8B363F77', defaultMessage: '华为云 OBS' }),
+    [ConnectType.S3A]: 'AWS S3',
+  };
+  return textMap?.[type];
 };
 
-export const DragInsertTypeText = {
-  [DragInsertType.NAME]: formatMessage({
-    id: 'odc.component.UserConfigForm.ObjectName',
+export const GruopTypeText = {
+  [DatasourceGroup.OceanBaseDatabase]: formatMessage({
+    id: 'src.constant.C3ABF489',
+    defaultMessage: 'OceanBase 数据库',
   }),
+  [DatasourceGroup.OtherDatabase]: formatMessage({
+    id: 'src.constant.0FFFC32A',
+    defaultMessage: '其他数据库',
+  }),
+  [DatasourceGroup.FileSystem]: formatMessage({
+    id: 'src.constant.C4D73A01',
+    defaultMessage: '对象存储',
+  }),
+};
 
-  [DragInsertType.SELECT]: formatMessage({
-    id: 'odc.component.UserConfigForm.SelectStatement',
-  }),
+export const DBTypeText = {
+  [DBType.LOGICAL]: formatMessage({ id: 'src.constant.D2F0EBE8', defaultMessage: '逻辑库' }),
+  [DBType.PHYSICAL]: formatMessage({ id: 'src.constant.5363D697', defaultMessage: '物理库' }),
+};
 
-  [DragInsertType.INSERT]: formatMessage({
-    id: 'odc.component.UserConfigForm.InsertStatement',
+export const DatabaseAvailableTypeText = {
+  [BooleanOptionType.TRUE]: formatMessage({ id: 'src.constant.AA47C15A', defaultMessage: '可用' }),
+  [BooleanOptionType.FALSE]: formatMessage({
+    id: 'src.constant.64EC9D59',
+    defaultMessage: '不可用',
   }),
+};
 
-  [DragInsertType.UPDATE]: formatMessage({
-    id: 'odc.component.UserConfigForm.UpdateStatement',
+export const DatabaseBelongsToProjectTypeText = {
+  [BooleanOptionType.TRUE]: formatMessage({
+    id: 'src.constant.EF974350',
+    defaultMessage: '已分配项目',
   }),
+  [BooleanOptionType.FALSE]: formatMessage({
+    id: 'src.constant.8641DB35',
+    defaultMessage: '未分配项目',
+  }),
+};
 
-  [DragInsertType.DELETE]: formatMessage({
-    id: 'odc.component.UserConfigForm.DeleteStatement',
-  }),
+export const DragInsertTypeText = function () {
+  return {
+    [DragInsertType.NAME]: formatMessage({
+      id: 'odc.component.UserConfigForm.ObjectName',
+      defaultMessage: '对象名',
+    }),
+
+    [DragInsertType.SELECT]: formatMessage({
+      id: 'odc.component.UserConfigForm.SelectStatement',
+      defaultMessage: 'Select 语句',
+    }),
+
+    [DragInsertType.INSERT]: formatMessage({
+      id: 'odc.component.UserConfigForm.InsertStatement',
+      defaultMessage: 'Insert 语句',
+    }),
+
+    [DragInsertType.UPDATE]: formatMessage({
+      id: 'odc.component.UserConfigForm.UpdateStatement',
+      defaultMessage: 'Update 语句',
+    }),
+
+    [DragInsertType.DELETE]: formatMessage({
+      id: 'odc.component.UserConfigForm.DeleteStatement',
+      defaultMessage: 'Delete 语句',
+    }),
+  };
 };
 
 export const SQLLintModeText = {
-  [SQLLintMode.AUTO]: formatMessage({ id: 'odc.src.d.ts.Automatic' }), //自动
-  [SQLLintMode.MANUAL]: formatMessage({ id: 'odc.src.d.ts.Manual' }), //手动
+  [SQLLintMode.AUTO]: formatMessage({ id: 'odc.src.d.ts.Automatic', defaultMessage: '自动' }), //自动
+  [SQLLintMode.MANUAL]: formatMessage({ id: 'odc.src.d.ts.Manual', defaultMessage: '手动' }), //手动
 };
 
-export const SchemaComparingResultText = {
-  [SchemaComparingResult.CREATE]: formatMessage({ id: 'odc.src.d.ts.Create' }), //新建
-  [SchemaComparingResult.UPDATE]: formatMessage({ id: 'odc.src.d.ts.Modify' }), //修改
-  [SchemaComparingResult.NO_ACTION]: formatMessage({
-    id: 'odc.src.d.ts.Consistent',
-  }),
-  //一致
-  [SchemaComparingResult.WAITING]: formatMessage({
-    id: 'odc.src.d.ts.ToBeAnalyzed',
-  }),
-  //待分析
-  [SchemaComparingResult.COMPARING]: formatMessage({
-    id: 'odc.src.d.ts.Analyzing',
-  }),
-  //分析中
-  [SchemaComparingResult.SKIP]: formatMessage({ id: 'odc.src.d.ts.Skip' }), //跳过
+export const SchemaComparingResultText = function () {
+  return {
+    [SchemaComparingResult.CREATE]: formatMessage({
+      id: 'odc.src.d.ts.Create',
+      defaultMessage: '新建',
+    }), //新建
+    [SchemaComparingResult.UPDATE]: formatMessage({
+      id: 'odc.src.d.ts.Modify',
+      defaultMessage: '修改',
+    }), //修改
+    [SchemaComparingResult.NO_ACTION]: formatMessage({
+      id: 'odc.src.d.ts.Consistent',
+      defaultMessage: '一致',
+    }),
+    //一致
+    [SchemaComparingResult.WAITING]: formatMessage({
+      id: 'odc.src.d.ts.ToBeAnalyzed',
+      defaultMessage: '待分析',
+    }),
+    //待分析
+    [SchemaComparingResult.COMPARING]: formatMessage({
+      id: 'odc.src.d.ts.Analyzing',
+      defaultMessage: '分析中',
+    }),
+    //分析中
+    [SchemaComparingResult.SKIP]: formatMessage({
+      id: 'odc.src.d.ts.Skip',
+      defaultMessage: '跳过',
+    }), //跳过
+  };
 };
 
 export const SQLSessionModeText = {
   [SQLSessionMode.MultiSession]: formatMessage({
     id: 'odc.component.UserConfigForm.IndependentSession',
+    defaultMessage: '独立 Session',
   }),
 
   [SQLSessionMode.SingleSession]: formatMessage({
     id: 'odc.component.UserConfigForm.SharedSession',
+    defaultMessage: '共享 Session',
   }),
 };
 export const columnGroupsText = {
   [ColumnStoreType.COLUMN]: formatMessage({ id: 'src.constant.CE5A59D0', defaultMessage: '列存' }),
   [ColumnStoreType.ROW]: formatMessage({ id: 'src.constant.481BAC23', defaultMessage: '行存' }),
+};
+
+export const refreshMethodText = {
+  [RefreshMethod.REFRESH_FAST]: formatMessage({
+    id: 'src.constant.68274E0D',
+    defaultMessage: '快速刷新',
+  }),
+  [RefreshMethod.REFRESH_FORCE]: formatMessage({
+    id: 'src.constant.DE4B7671',
+    defaultMessage: '强制刷新',
+  }),
+  [RefreshMethod.REFRESH_COMPLETE]: formatMessage({
+    id: 'src.constant.4CF50126',
+    defaultMessage: '完全刷新',
+  }),
+  [RefreshMethod.NEVER_REFRESH]: formatMessage({
+    id: 'src.constant.27F5ED49',
+    defaultMessage: '不需要刷新',
+  }),
+};
+
+export const refreshScheduleUnitText = {
+  [RefreshScheduleUnit.SECOND]: formatMessage({
+    id: 'src.constant.C526110B',
+    defaultMessage: '秒',
+  }),
+  [RefreshScheduleUnit.MINUTE]: formatMessage({
+    id: 'src.constant.35CC7FAB',
+    defaultMessage: '分',
+  }),
+  [RefreshScheduleUnit.HOUR]: formatMessage({ id: 'src.constant.A786DCEF', defaultMessage: '时' }),
+  [RefreshScheduleUnit.DAY]: formatMessage({ id: 'src.constant.F847D32E', defaultMessage: '天' }),
+  [RefreshScheduleUnit.WEEK]: formatMessage({ id: 'src.constant.15130867', defaultMessage: '周' }),
+  [RefreshScheduleUnit.MONTH]: formatMessage({ id: 'src.constant.7959241A', defaultMessage: '月' }),
+  [RefreshScheduleUnit.YEAR]: formatMessage({ id: 'src.constant.0DFA8CD7', defaultMessage: '年' }),
 };

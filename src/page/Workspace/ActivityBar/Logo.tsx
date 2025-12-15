@@ -1,3 +1,4 @@
+import { formatMessage } from '@/util/intl';
 /*
  * Copyright 2023 OceanBase
  *
@@ -15,8 +16,54 @@
  */
 
 import { ReactComponent as ODCBlackSvg } from '@/svgr/odc_logo_color.svg';
-import Icon from '@ant-design/icons';
+import { haveOCP, isClient } from '@/util/env';
+import Icon, { HomeOutlined } from '@ant-design/icons';
+import { Tooltip } from 'antd';
+import { useState } from 'react';
+import styles from './index.less';
+import login from '@/store/login';
 
 export default function Logo() {
-  return <Icon component={ODCBlackSvg} style={{ fontSize: 18, marginBottom: 14, marginTop: 12 }} />;
+  const [isHover, setHoverSatate] = useState<boolean>(false);
+
+  const backToHome = () => {
+    if (isClient()) return;
+    if (login.isPrivateSpace()) return;
+    if (haveOCP) {
+      window.open(location.origin + location.pathname);
+      return;
+    }
+    window.open(location.origin + '/#/project');
+  };
+
+  return (
+    <span
+      onClick={backToHome}
+      className={styles.logo}
+      onMouseEnter={() => setHoverSatate(true)}
+      onMouseLeave={() => setHoverSatate(false)}
+    >
+      {isHover && !isClient() && !login.isPrivateSpace() ? (
+        <Tooltip
+          title={formatMessage({
+            id: 'src.page.Workspace.ActivityBar.F4EC445B',
+            defaultMessage: '返回首页',
+          })}
+          placement="right"
+        >
+          <Icon
+            component={HomeOutlined}
+            style={{
+              fontSize: 16,
+              padding: 6,
+              backgroundColor: 'var(--hover-color)',
+              cursor: 'pointer',
+            }}
+          />
+        </Tooltip>
+      ) : (
+        <Icon component={ODCBlackSvg} style={{ fontSize: 16, padding: 6 }} />
+      )}
+    </span>
+  );
 }

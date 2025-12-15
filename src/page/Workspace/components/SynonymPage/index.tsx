@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { getSynonym } from '@/common/network/synonym';
 import { IEditor } from '@/component/MonacoEditor';
 import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
@@ -21,23 +22,22 @@ import Toolbar from '@/component/Toolbar';
 import { IConStatus } from '@/component/Toolbar/statefulIcon';
 import { PLType } from '@/constant/plType';
 import type { ISynonym, SynonymType } from '@/d.ts';
-import { ConnectionMode, SynonymPropsTab } from '@/d.ts';
+import { SynonymPropsTab } from '@/d.ts';
 import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import { AlignLeftOutlined, CloudDownloadOutlined } from '@ant-design/icons';
-import { Layout, message, Tabs } from 'antd';
+import { Layout, message } from 'antd';
 import { inject, observer } from 'mobx-react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Component } from 'react';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ToolPageTabs from '../ToolPageTabs';
 import ToolPageTextFromWrapper from '../ToolPageTextFormWrapper';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 const { Content } = Layout;
 const ToolbarButton = Toolbar.Button;
@@ -126,7 +126,10 @@ class SynonymPage extends Component<
       });
     } else {
       message.error(
-        formatMessage({ id: 'odc.components.SynonymPage.FailedToLoadSynonyms' }), // 加载同义词失败
+        formatMessage({
+          id: 'odc.components.SynonymPage.FailedToLoadSynonyms',
+          defaultMessage: '加载同义词失败',
+        }), // 加载同义词失败
       );
     }
   };
@@ -159,6 +162,7 @@ class SynonymPage extends Component<
                   key: SynonymPropsTab.BASE_INFO,
                   label: formatMessage({
                     id: 'odc.components.SynonymPage.BasicInformation',
+                    defaultMessage: '基本信息',
                   }),
                   children: (
                     <ToolPageTextFromWrapper>
@@ -167,6 +171,7 @@ class SynonymPage extends Component<
                           {
                             formatMessage({
                               id: 'odc.components.SynonymPage.Name',
+                              defaultMessage: '名称：',
                             })
 
                             /* 名称: */
@@ -179,6 +184,7 @@ class SynonymPage extends Component<
                           {
                             formatMessage({
                               id: 'odc.components.SynonymPage.ObjectOwner',
+                              defaultMessage: '对象所有者:',
                             })
 
                             /* 对象所有者: */
@@ -191,6 +197,7 @@ class SynonymPage extends Component<
                           {
                             formatMessage({
                               id: 'odc.components.SynonymPage.ObjectName',
+                              defaultMessage: '对象名称：',
                             })
 
                             /* 对象名称: */
@@ -203,13 +210,14 @@ class SynonymPage extends Component<
                           {
                             formatMessage({
                               id: 'odc.components.SynonymPage.Created',
+                              defaultMessage: '创建时间:',
                             })
 
                             /* 创建时间: */
                           }
                         </span>
                         <span className={`${preTextForm}-content`}>
-                          {moment(synonym.created).format('YYYY-MM-DD HH:mm:ss')}
+                          {dayjs(synonym.created).format('YYYY-MM-DD HH:mm:ss')}
                         </span>
                       </div>
                       <div className={`${preTextForm}-line`}>
@@ -217,13 +225,14 @@ class SynonymPage extends Component<
                           {
                             formatMessage({
                               id: 'odc.components.SynonymPage.ModificationTime',
+                              defaultMessage: '修改时间:',
                             })
 
                             /* 修改时间: */
                           }
                         </span>
                         <span className={`${preTextForm}-content`}>
-                          {moment(synonym.lastDdlTime).format('YYYY-MM-DD HH:mm:ss')}
+                          {dayjs(synonym.lastDdlTime).format('YYYY-MM-DD HH:mm:ss')}
                         </span>
                       </div>
                     </ToolPageTextFromWrapper>
@@ -239,6 +248,7 @@ class SynonymPage extends Component<
                           text={
                             formatMessage({
                               id: 'odc.components.SynonymPage.Download',
+                              defaultMessage: '下载',
                             }) //下载
                           }
                           icon={<CloudDownloadOutlined />}
@@ -257,10 +267,12 @@ class SynonymPage extends Component<
                             formated
                               ? formatMessage({
                                   id: 'odc.components.SynonymPage.Unformat',
+                                  defaultMessage: '取消格式化',
                                 })
                               : // 取消格式化
                                 formatMessage({
                                   id: 'odc.components.SynonymPage.Formatting',
+                                  defaultMessage: '格式化',
                                 })
                             // 格式化
                           }
@@ -292,12 +304,17 @@ class SynonymPage extends Component<
     );
   }
 }
-export default WrapSessionPage(function (props) {
-  return (
-    <SessionContext.Consumer>
-      {({ session }) => {
-        return <SynonymPage {...props} session={session} />;
-      }}
-    </SessionContext.Consumer>
-  );
-}, true);
+export default WrapSessionPage(
+  function (props) {
+    return (
+      <SessionContext.Consumer>
+        {({ session }) => {
+          return <SynonymPage {...props} session={session} />;
+        }}
+      </SessionContext.Consumer>
+    );
+  },
+  true,
+  false,
+  true,
+);

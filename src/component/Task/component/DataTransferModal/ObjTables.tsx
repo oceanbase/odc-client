@@ -32,6 +32,7 @@ function getColumns(transferDDL: boolean, transferData: boolean, isImport: boole
     {
       title: formatMessage({
         id: 'odc.component.TaskDetailDrawer.ObjTables.ObjectName',
+        defaultMessage: '对象名称',
       }),
 
       dataIndex: 'objectName',
@@ -44,11 +45,13 @@ function getColumns(transferDDL: boolean, transferData: boolean, isImport: boole
     {
       title: formatMessage({
         id: 'odc.component.TaskDetailDrawer.ObjTables.ObjectType',
+        defaultMessage: '对象类型',
       }),
 
       dataIndex: 'dbObjectType',
       width: 80,
-      render: (t) => DbObjectTypeTextMap[t],
+      render: (t) => DbObjectTypeTextMap(t),
+      ellipsis: true,
     },
   ];
 
@@ -57,6 +60,7 @@ function getColumns(transferDDL: boolean, transferData: boolean, isImport: boole
       transferDDL && {
         title: formatMessage({
           id: 'odc.component.TaskDetailDrawer.ObjTables.StructureProcessingStatus',
+          defaultMessage: '结构处理状态',
         }),
 
         dataIndex: ['schemaInfo', 'status'],
@@ -64,6 +68,7 @@ function getColumns(transferDDL: boolean, transferData: boolean, isImport: boole
         render(t) {
           return <StatusItem status={t} />;
         },
+        ellipsis: true,
         filters: [
           ITransferDataObjStatus.INITIAL,
           ITransferDataObjStatus.SUCCESS,
@@ -82,15 +87,19 @@ function getColumns(transferDDL: boolean, transferData: boolean, isImport: boole
       transferData && {
         title: formatMessage({
           id: 'odc.component.TaskDetailDrawer.ObjTables.ActualProcessingQuantity',
+          defaultMessage: '实际处理数量',
         }), // 实际处理数量
         dataIndex: ['dataInfo', 'count'],
         width: 100,
+        ellipsis: true,
       },
 
       transferData && {
         title: formatMessage({
           id: 'odc.component.TaskDetailDrawer.ObjTables.DataProcessingStatus',
+          defaultMessage: '数据处理状态',
         }),
+        ellipsis: true,
 
         dataIndex: ['dataInfo', 'status'],
         width: 120,

@@ -19,7 +19,7 @@ import DisplayTable from '@/component/DisplayTable';
 import Status from '@/component/Manage/Status';
 import type { IManagerRole, IManagerUser } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { validTrimEmptyWithWarn } from '@/util/valid';
+import { validTrimEmptyWithWarn } from '@/util/ui/validRule';
 import type { RadioChangeEvent } from 'antd';
 import { Button, Form, Input, Radio, Select, Space } from 'antd';
 import type { FormInstance } from 'antd/lib/form';
@@ -37,6 +37,7 @@ const getColumns = (users: IManagerUser[], handleUserDelete: (id: number) => voi
       dataIndex: 'name',
       title: formatMessage({
         id: 'odc.components.FormRoleModal.component.Name',
+        defaultMessage: '姓名',
       }),
       // 姓名
       ellipsis: true,
@@ -54,6 +55,7 @@ const getColumns = (users: IManagerUser[], handleUserDelete: (id: number) => voi
       dataIndex: 'accountName',
       title: formatMessage({
         id: 'odc.components.FormRoleModal.component.Account',
+        defaultMessage: '账号',
       }),
       // 账号
       ellipsis: true,
@@ -63,6 +65,7 @@ const getColumns = (users: IManagerUser[], handleUserDelete: (id: number) => voi
       dataIndex: 'enabled',
       title: formatMessage({
         id: 'odc.components.FormRoleModal.component.State',
+        defaultMessage: '状态',
       }),
       // 状态
       ellipsis: true,
@@ -71,6 +74,7 @@ const getColumns = (users: IManagerUser[], handleUserDelete: (id: number) => voi
         {
           text: formatMessage({
             id: 'odc.components.FormRoleModal.component.Enable',
+            defaultMessage: '启用',
           }),
           // 启用
           value: true,
@@ -79,6 +83,7 @@ const getColumns = (users: IManagerUser[], handleUserDelete: (id: number) => voi
         {
           text: formatMessage({
             id: 'odc.components.FormRoleModal.component.Disable',
+            defaultMessage: '停用',
           }),
           // 停用
           value: false,
@@ -95,6 +100,7 @@ const getColumns = (users: IManagerUser[], handleUserDelete: (id: number) => voi
       dataIndex: 'actions',
       title: formatMessage({
         id: 'odc.components.FormRoleModal.component.Operation',
+        defaultMessage: '操作',
       }),
       // 操作
       ellipsis: true,
@@ -110,6 +116,7 @@ const getColumns = (users: IManagerUser[], handleUserDelete: (id: number) => voi
             {
               formatMessage({
                 id: 'odc.components.FormRoleModal.component.Remove',
+                defaultMessage: '移除',
               })
               /* 移除 */
             }
@@ -178,6 +185,7 @@ export const RoleResource: React.FC<{
           {
             formatMessage({
               id: 'odc.components.FormRoleModal.component.AddUser',
+              defaultMessage: '添加用户',
             })
             /* 添加用户 */
           }
@@ -187,6 +195,7 @@ export const RoleResource: React.FC<{
           mode="multiple"
           placeholder={formatMessage({
             id: 'odc.components.FormRoleModal.component.SelectAUser',
+            defaultMessage: '请选择用户',
           })}
           /* 请选择用户 */
           style={{ width: '100%' }}
@@ -265,6 +274,7 @@ export const FormContent: React.FC<{
       <Form.Item
         label={formatMessage({
           id: 'odc.components.FormRoleModal.component.RoleName',
+          defaultMessage: '角色名称',
         })}
         /* 角色名称 */
         name="name"
@@ -275,6 +285,7 @@ export const FormContent: React.FC<{
             required: true,
             message: formatMessage({
               id: 'odc.components.FormRoleModal.component.EnterARoleName',
+              defaultMessage: '请输入角色名称',
             }),
             // 请输入角色名称
           },
@@ -282,18 +293,21 @@ export const FormContent: React.FC<{
             max: 64,
             message: formatMessage({
               id: 'odc.components.FormRoleModal.component.TheRoleNameCannotExceed.1',
+              defaultMessage: '角色名称不超过 64 个字符',
             }), //角色名称不超过 64 个字符
           },
           {
             validator: validTrimEmptyWithWarn(
               formatMessage({
                 id: 'odc.components.FormRoleModal.component.TheRoleNameContainsSpaces',
+                defaultMessage: '角色名称首尾包含空格',
               }), //角色名称首尾包含空格
             ),
           },
           {
             message: formatMessage({
               id: 'odc.components.FormRoleModal.component.TheRoleNameAlreadyExists',
+              defaultMessage: '角色名称已存在',
             }), // 角色名称已存在
             validator: checkNameRepeat,
           },
@@ -304,6 +318,7 @@ export const FormContent: React.FC<{
       <Form.Item
         label={formatMessage({
           id: 'odc.components.FormRoleModal.component.RoleStatus',
+          defaultMessage: '角色状态',
         })}
         /* 角色状态 */
         name="enabled"
@@ -312,6 +327,7 @@ export const FormContent: React.FC<{
             required: true,
             message: formatMessage({
               id: 'odc.components.FormRoleModal.component.SelectAStatus',
+              defaultMessage: '请选择状态',
             }),
             // 请选择状态
           },
@@ -322,6 +338,7 @@ export const FormContent: React.FC<{
             {
               formatMessage({
                 id: 'odc.components.FormRoleModal.component.Enable',
+                defaultMessage: '启用',
               })
               /* 启用 */
             }
@@ -330,6 +347,7 @@ export const FormContent: React.FC<{
             {
               formatMessage({
                 id: 'odc.components.FormRoleModal.component.Disable',
+                defaultMessage: '停用',
               })
               /* 停用 */
             }
@@ -349,6 +367,7 @@ export const FormContent: React.FC<{
       <Form.Item
         label={formatMessage({
           id: 'odc.components.FormRoleModal.component.Note',
+          defaultMessage: '备注',
         })}
         /* 备注 */
         name="description"
@@ -357,6 +376,7 @@ export const FormContent: React.FC<{
             max: 140,
             message: formatMessage({
               id: 'odc.components.FormRoleModal.component.TheDescriptionCannotExceedCharacters',
+              defaultMessage: '备注不超过 140 个字符',
             }),
             // 备注不超过 140 个字符
           },

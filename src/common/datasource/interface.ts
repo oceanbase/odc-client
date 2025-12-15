@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { ConnectionMode, TaskType } from '@/d.ts';
+import { ConnectionMode, ConnectType, TaskType } from '@/d.ts';
 import { TableForeignConstraintOnDeleteType } from '@/d.ts/table';
 import { TableColumn } from '@/page/Workspace/components/CreateTable/interface';
+import { ScheduleType } from '@/d.ts/schedule';
 
 export type columnExtraComponent = React.FC<{
   column: TableColumn;
@@ -24,6 +25,12 @@ export type columnExtraComponent = React.FC<{
   onChange: (newColumn: TableColumn) => void;
   dialectType?: ConnectionMode;
 }>;
+
+export enum SQLConsoleResourceType {
+  DataSource = 'datasource',
+  Snippet = 'snippet',
+  Script = 'script',
+}
 
 interface ICreateTableConfig {
   /**
@@ -108,10 +115,11 @@ interface IProcedureConfig {
 }
 
 export interface IDataSourceModeConfig {
+  isFileSystem?: boolean;
   priority?: number;
   connection: {
-    address: {
-      items: ('ip' | 'port' | 'cluster' | 'tenant' | 'sid')[];
+    address?: {
+      items: ('ip' | 'port' | 'cluster' | 'tenant' | 'sid' | 'catalogName')[];
     };
     account: boolean;
     role?: boolean;
@@ -121,9 +129,16 @@ export interface IDataSourceModeConfig {
     jdbcDoc?: string;
     disableURLParse?: boolean;
     unionUser?: boolean;
+    cloudStorage?: boolean;
+    disableExtraConfig?: boolean;
   };
   features: {
+    scheduleConfig?: {
+      // 归档时支持的目标端类型
+      allowTargetConnectTypeByDataArchive?: ConnectType[];
+    };
     task: TaskType[];
+    schedule: ScheduleType[];
     allTask?: boolean;
     obclient?: boolean;
     recycleBin?: boolean;
@@ -135,18 +150,21 @@ export interface IDataSourceModeConfig {
     supportOBProxy?: boolean;
     disableTriggerSwitch?: boolean;
     plRun?: boolean;
+    sessionParams?: boolean;
+    groupResourceTree?: boolean;
+    sqlconsole: boolean;
     export: {
       fileLimit: boolean;
       snapshot: boolean;
     };
   };
-  schema: {
+  schema?: {
     table: ICreateTableConfig;
     func: IFunctionConfig;
     proc: IProcedureConfig;
     innerSchema: string[];
   };
-  sql: {
+  sql?: {
     language: string;
     escapeChar: string;
     plParamMode?: 'text' | 'list';

@@ -20,6 +20,9 @@ import { IDatabase } from '@/d.ts/database';
 import datasourceStatus from '@/store/datasourceStatus';
 import { Button } from 'antd';
 import { observer } from 'mobx-react';
+import { getDataSourceModeConfig } from '@/common/datasource';
+import styles from './index.less';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 
 export default observer(function StatusName({
   item,
@@ -31,22 +34,40 @@ export default observer(function StatusName({
   const statusMap = datasourceStatus.statusMap;
   const status = statusMap.get(item.dataSource?.id) || item.dataSource?.status;
   let content;
-  switch (status.status) {
+  if (item?.type === 'LOGICAL') {
+    return <a onClick={onClick}>{item?.name}</a>;
+  }
+  const config = getDataSourceModeConfig(item?.dataSource?.type);
+  const notSupport =
+    !config?.features?.groupResourceTree || isConnectTypeBeFileSystemGroup(item?.dataSource?.type);
+
+  const renderNotSupportDBWithTip = (name: React.ReactNode) => {
+    return <span className={styles.disable}>{name}</span>;
+  };
+
+  const nameRender = (name) => {
+    if (notSupport) {
+      return renderNotSupportDBWithTip(name);
+    }
+    return name;
+  };
+
+  switch (status?.status) {
     case IConnectionStatus.TESTING: {
       return (
         <Button type="link" loading>
-          {item?.name}
+          {nameRender(item?.name)}
         </Button>
       );
     }
     case IConnectionStatus.ACTIVE: {
-      return <a onClick={onClick}>{item?.name}</a>;
+      return <a onClick={!notSupport ? onClick : null}>{nameRender(item?.name)}</a>;
     }
     default: {
-      const errorMsg = status.errorMessage || 'datasource disconnected';
+      const errorMsg = status?.errorMessage || 'datasource disconnected';
       return (
-        <HelpDoc isTip={false} title={errorMsg}>
-          {item?.name}
+        <HelpDoc isTip={false} title={errorMsg} leftText>
+          {nameRender(item?.name)}
         </HelpDoc>
       );
     }

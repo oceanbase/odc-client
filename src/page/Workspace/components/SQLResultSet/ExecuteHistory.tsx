@@ -17,25 +17,40 @@
 import { TAB_HEADER_HEIGHT } from '@/constant';
 import { ISqlExecuteResult, ISqlExecuteResultStatus, SqlType } from '@/d.ts';
 import type { SQLStore } from '@/store/sql';
+import { ReactComponent as WaitingSvg } from '@/svgr/Waiting.svg';
 import { formatMessage } from '@/util/intl';
-import { formatTimeTemplate } from '@/util/utils';
-import { CheckCircleFilled, CloseCircleFilled, InfoCircleOutlined } from '@ant-design/icons';
+import { formatTimeTemplate } from '@/util/data/dateTime';
+import Icon, {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  InfoCircleOutlined,
+  LoadingOutlined,
+  StopFilled,
+} from '@ant-design/icons';
 import { Alert, message, Space, Table, Tooltip, Typography } from 'antd';
-import { inject, observer } from 'mobx-react';
-import moment from 'moment';
-import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
-
 import BigNumber from 'bignumber.js';
+import { inject, observer } from 'mobx-react';
+import dayjs from 'dayjs';
+import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import DBTimeline from './DBTimeline';
 import styles from './index.less';
+
+const { Link } = Typography;
 
 interface IProps {
   onShowExecuteDetail: (sql: string, tag: string) => void;
   resultHeight: number;
   sqlStore?: SQLStore;
+  onOpenExecutingDetailModal?: (
+    traceId: string,
+    sql?: string,
+    sessionId?: string,
+    traceEmptyReason?: string,
+  ) => void;
 }
 
-function getResultText(rs: ISqlExecuteResult) {
+export function getResultText(rs: ISqlExecuteResult) {
+  if (!rs.total) return '-';
   if ([SqlType.show, SqlType.select].includes(rs.sqlType)) {
     return `${rs.total} row(s) returned`;
   } else {
@@ -43,8 +58,33 @@ function getResultText(rs: ISqlExecuteResult) {
   }
 }
 
+export const getSqlExecuteResultStatusIcon = (status) => {
+  switch (status) {
+    case ISqlExecuteResultStatus.SUCCESS: {
+      return <CheckCircleFilled style={{ color: 'var(--function-green6-color)' }} />;
+    }
+    case ISqlExecuteResultStatus.FAILED: {
+      return <CloseCircleFilled style={{ color: 'var(--function-red6-color)' }} />;
+    }
+    case ISqlExecuteResultStatus.CANCELED: {
+      return <StopFilled style={{ color: 'var(--profile-icon-unready-color)' }} />;
+    }
+    case ISqlExecuteResultStatus.CREATED: {
+      return (
+        <Icon
+          component={WaitingSvg}
+          style={{ fontSize: 14, color: 'var(--profile-icon-unready-color)' }}
+        />
+      );
+    }
+    case ISqlExecuteResultStatus.RUNNING: {
+      return <LoadingOutlined style={{ color: 'var(--brand-blue6-color)' }} />;
+    }
+  }
+};
+
 const ExecuteHistory: React.FC<IProps> = function (props) {
-  const { onShowExecuteDetail, resultHeight, sqlStore } = props;
+  const { onShowExecuteDetail, resultHeight, sqlStore, onOpenExecutingDetailModal } = props;
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const tableRef = useRef<HTMLDivElement>();
   const [width, setWidth] = useState(0);
@@ -81,28 +121,27 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         dataIndex: 'status',
         title: formatMessage({
           id: 'workspace.window.sql.record.column.status',
+          defaultMessage: '状态',
         }),
 
         width: 50,
-        render: (value: ISqlExecuteResultStatus) =>
-          value === ISqlExecuteResultStatus.SUCCESS ? (
-            <CheckCircleFilled style={{ color: '#52c41a' }} />
-          ) : (
-            <CloseCircleFilled style={{ color: '#F5222D' }} />
-          ),
+        render: (value: ISqlExecuteResultStatus) => getSqlExecuteResultStatusIcon(value),
       },
 
       {
         dataIndex: 'executeTimestamp',
         title: formatMessage({
           id: 'workspace.window.sql.record.column.executeTimestamp',
+          defaultMessage: '时间',
         }),
 
         width: isSmallMode ? 80 : 100,
         render: (_, record: ISqlExecuteResult) => {
-          return moment(
-            record.timer?.stages?.find((item) => item.stageName === 'Execute')?.startTimeMillis,
-          ).format('HH:mm:ss');
+          return record.timer
+            ? dayjs(
+                record.timer?.stages?.find((item) => item.stageName === 'Execute')?.startTimeMillis,
+              ).format('HH:mm:ss')
+            : '-';
         },
       },
 
@@ -110,6 +149,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         dataIndex: 'executeSql',
         title: formatMessage({
           id: 'workspace.window.sql.record.column.executeSql',
+          defaultMessage: 'SQL 语句',
         }),
 
         width: isSmallMode ? 150 : 300,
@@ -124,11 +164,11 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
                   overflowY: 'auto',
                 }}
               >
-                {value}
+                {value || '-'}
               </div>
             }
           >
-            {value}
+            {value || '-'}
           </Tooltip>
         ),
       },
@@ -137,6 +177,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         dataIndex: 'track',
         title: formatMessage({
           id: 'workspace.window.sql.record.column.track',
+          defaultMessage: '结果',
         }),
         ellipsis: true,
         render: (value: string, row: any) =>
@@ -152,11 +193,11 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
                     overflowY: 'auto',
                   }}
                 >
-                  {value}
+                  {value || '-'}
                 </div>
               }
             >
-              {value}
+              {value || '-'}
             </Tooltip>
           ),
       },
@@ -165,6 +206,25 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
         dataIndex: 'traceId',
         title: 'TRACE ID',
         ellipsis: true,
+        render: (value: string, row: any) => {
+          if (!value) return '-';
+          return row?.isSupportProfile ? (
+            <Link
+              onClick={() =>
+                onOpenExecutingDetailModal(
+                  value,
+                  row?.originSql,
+                  row?.sessionId,
+                  row?.traceEmptyReason,
+                )
+              }
+            >
+              {value}
+            </Link>
+          ) : (
+            value
+          );
+        },
       },
 
       {
@@ -174,6 +234,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
             DB{' '}
             {formatMessage({
               id: 'workspace.window.sql.record.column.elapsedTime',
+              defaultMessage: '耗时',
             })}
           </span>
         ),
@@ -185,27 +246,32 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
           const executeSQLStage = executeStage?.subStages?.find(
             (stage) => stage.stageName === 'DB Server Execute SQL',
           );
-
           const DBCostTime = formatTimeTemplate(
             BigNumber(executeSQLStage?.totalDurationMicroseconds).div(1000000).toNumber(),
           );
+          const showDBTimeline = ![
+            ISqlExecuteResultStatus.CANCELED,
+            ISqlExecuteResultStatus.CREATED,
+          ].includes(row?.status);
 
           return (
             <Space size={5}>
               <span>{DBCostTime}</span>
-              <Tooltip
-                overlayStyle={{ maxWidth: 370 }}
-                color="var(--background-primary-color)"
-                overlayInnerStyle={{
-                  maxHeight: 500,
-                  overflow: 'auto',
-                }}
-                placement="leftTop"
-                showArrow={false}
-                title={<DBTimeline row={row} />}
-              >
-                <InfoCircleOutlined style={{ color: 'var(--text-color-hint)' }} />
-              </Tooltip>
+              {showDBTimeline ? (
+                <Tooltip
+                  overlayStyle={{ maxWidth: 370 }}
+                  color="var(--background-primary-color)"
+                  overlayInnerStyle={{
+                    maxHeight: 500,
+                    overflow: 'auto',
+                  }}
+                  placement="leftTop"
+                  showArrow={false}
+                  title={<DBTimeline row={row} />}
+                >
+                  <InfoCircleOutlined style={{ color: 'var(--text-color-hint)' }} />
+                </Tooltip>
+              ) : null}
             </Space>
           );
         },
@@ -223,6 +289,8 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
             formatMessage(
               {
                 id: 'odc.components.SQLResultSet.ExecuteHistory.TheOdcUsageEnvironmentClock',
+                defaultMessage:
+                  'ODC 使用环境时钟和 ODC 部署环境时钟设置不一致，差异大于 {lagRecordLag} ms，会导致网络耗时统计不精准，请检查两个环境时间和 UTC 时间的差异',
               },
 
               { lagRecordLag: 100 },
@@ -239,8 +307,8 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
           message={
             formatMessage(
               {
-                id:
-                  'odc.components.SQLResultSet.ExecuteHistory.SelectedrowkeyslengthRecordsSelected',
+                id: 'odc.components.SQLResultSet.ExecuteHistory.SelectedrowkeyslengthRecordsSelected',
+                defaultMessage: '已选择 {selectedRowKeysLength} 个记录',
               },
 
               { selectedRowKeysLength: selectedRowKeys.length },
@@ -253,6 +321,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
               {
                 formatMessage({
                   id: 'odc.components.SQLResultSet.ExecuteHistory.Delete',
+                  defaultMessage: '删除',
                 })
                 /* 删除 */
               }
@@ -265,6 +334,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
             message.success(
               formatMessage({
                 id: 'odc.components.SQLResultSet.ExecuteHistory.Deleted',
+                defaultMessage: '删除成功',
               }),
               // 删除成功
             );
@@ -282,7 +352,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
             selectedRowKeys,
             selections: [
               {
-                text: formatMessage({ id: 'app.button.selectAll' }),
+                text: formatMessage({ id: 'app.button.selectAll', defaultMessage: '全选' }),
                 key: 'selectAll',
                 onSelect: () => {
                   setSelectedRowKeys(records?.map((r) => r.id));
@@ -290,7 +360,7 @@ const ExecuteHistory: React.FC<IProps> = function (props) {
               },
 
               {
-                text: formatMessage({ id: 'app.button.deselectAll' }),
+                text: formatMessage({ id: 'app.button.deselectAll', defaultMessage: '取消全选' }),
                 key: 'deselectAll',
                 onSelect: () => {
                   setSelectedRowKeys([]);

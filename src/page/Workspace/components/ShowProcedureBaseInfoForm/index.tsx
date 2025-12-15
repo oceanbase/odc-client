@@ -16,7 +16,7 @@
 
 import { IProcedure } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { PureComponent } from 'react';
 import styles from './index.less';
 
@@ -31,15 +31,29 @@ class ShowProcedureBaseInfoForm extends PureComponent<IProps> {
     return (
       <div className={styles.box}>
         {[
-          [formatMessage({ id: 'workspace.window.createProcedure.proName' }), model.proName],
-          [formatMessage({ id: 'workspace.window.createView.definer' }), model.definer],
           [
-            formatMessage({ id: 'workspace.window.database.createTime' }),
-            getLocalFormatDateTime(model.createTime),
+            formatMessage({
+              id: 'workspace.window.createProcedure.proName',
+              defaultMessage: '存储过程名称',
+            }),
+            model.proName,
+          ],
+          [
+            formatMessage({ id: 'workspace.window.createView.definer', defaultMessage: '创建人' }),
+            model.definer,
           ],
           [
             formatMessage({
+              id: 'workspace.window.database.createTime',
+              defaultMessage: '创建时间',
+            }),
+            getLocalFormatDateTime(model.createTime),
+          ],
+
+          [
+            formatMessage({
               id: 'workspace.window.createProcedure.modifyTime',
+              defaultMessage: '最近修改时间',
             }),
             getLocalFormatDateTime(model.modifyTime),
           ],

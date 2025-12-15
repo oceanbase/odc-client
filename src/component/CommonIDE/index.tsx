@@ -19,7 +19,7 @@ import { IResultSet, ISqlExecuteResultStatus } from '@/d.ts';
 import DDLResultSet from '@/page/Workspace/components/DDLResultSet';
 import SQLResultLog from '@/page/Workspace/components/SQLResultSet/SQLResultLog';
 import SessionStore from '@/store/sessionManager/session';
-import { IEditor } from '@/util/editor';
+import { IEditor } from '@/util/ui/editor';
 import { formatMessage } from '@/util/intl';
 import { Tabs, Tooltip } from 'antd';
 import classnames from 'classnames';
@@ -82,11 +82,16 @@ interface ICommonIDEProps {
    */
   bordered?: boolean;
   session?: SessionStore;
-
+  /**
+   * 是否显示运行结果
+   */
+  showLog?: boolean;
   /**
    * 创建后监听事件
    */
   onEditorAfterCreatedCallback?: (editor: IEditor) => void;
+
+  placeholder?: string;
 }
 interface ICommonIDEState {
   resultHeight: number;
@@ -149,6 +154,7 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
       resultSets,
       toolbarActions,
       session,
+      placeholder,
     } = this.props;
 
     const { resultHeight } = this.state;
@@ -182,6 +188,8 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                   defaultValue={initialSQL}
                   onValueChange={this.onSQLChange}
                   onEditorCreated={this.onEditorCreated}
+                  placeholder={placeholder}
+                  actionGroupKey={toolbarGroupKey}
                   {...editorProps}
                 />
               </div>
@@ -189,24 +197,30 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                 <Tabs
                   className={styles.tabs}
                   animated={false}
-                  items={[
-                    {
-                      key: ITabType.LOG as string,
-                      label: formatMessage({
-                        id: 'odc.component.CommonIDE.Result',
-                      }),
-                      children: log,
-                    },
-                  ]
+                  items={(this.props.showLog
+                    ? [
+                        {
+                          key: ITabType.LOG as string,
+                          label: formatMessage({
+                            id: 'odc.component.CommonIDE.Result',
+                            defaultMessage: '运行结果',
+                          }),
+                          children: log,
+                        },
+                      ]
+                    : []
+                  )
                     .concat(
                       resultSets?.map((set, i) => {
                         return {
                           key: `resultset-${set.uniqKey}`,
                           label: this.getResultSetTitle(
                             set.executeSql,
-                            `${formatMessage({
+                            formatMessage({
                               id: 'workspace.window.sql.result',
-                            })}${i + 1}`,
+                              defaultMessage: '结果',
+                            }) +
+                              (i + 1),
                           ),
                           children:
                             !!set.columns?.length &&
@@ -246,6 +260,8 @@ class CommonIDE extends React.PureComponent<ICommonIDEProps, ICommonIDEState> {
                 defaultValue={initialSQL}
                 onValueChange={this.onSQLChange}
                 onEditorCreated={this.onEditorCreated}
+                placeholder={placeholder}
+                actionGroupKey={toolbarGroupKey}
                 {...editorProps}
               />
             </div>

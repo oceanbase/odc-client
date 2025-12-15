@@ -16,8 +16,10 @@
 
 // TODO: 现在需要手动安装 react-intl，但可能与 umi 内置的版本冲突。因此后续需要等 umi 支持导出 createIntl，再从 umi 中引入，这样能避免版本冲突的问题。
 // 已给 umi 提 issue: https://github.com/umijs/plugins/issues/400
+import { setLocale } from '@umijs/max';
 import odc from '@/plugins/odc';
 import { IntlShape, createIntl } from 'react-intl';
+import { ObDocsUrlMap } from '@/constant';
 export const defaultLocale = 'en-us';
 
 let intl;
@@ -37,7 +39,7 @@ function getLocale() {
   return lang || browserLang || 'en-US';
 }
 
-function getEnvLocale() {
+export function getEnvLocale() {
   if (odc.appConfig.locale.getLocale) {
     return odc.appConfig.locale.getLocale();
   }
@@ -56,15 +58,9 @@ export function getLocalImg(fileName) {
   return window.publicPath + `img/${local}/${fileName}`;
 }
 
-export function getLocalTemplate(fileName) {
-  let local: string = getEnvLocale();
-  local = local.toLowerCase();
-  const existLocal = ['en-us', 'zh-cn', 'zh-tw'];
-  if (!existLocal.includes(local)) {
-    local = defaultLocale;
-  }
+export function getImg(fileName) {
   //@ts-ignore
-  return window.publicPath + `template/${local}/${fileName}`;
+  return window.publicPath + `img/${fileName}`;
 }
 
 export function getLocalDocs(hash?: string) {
@@ -77,8 +73,31 @@ export function getLocalDocs(hash?: string) {
   return window.publicPath + 'help-doc/' + local + '/index.html' + (hash ? `#/${hash}` : '');
 }
 
+export function getServerLocalKey() {
+  let local: string = getEnvLocale();
+  local = local.toLowerCase();
+  if (local === 'zh-cn') {
+    return 'zh_Hans';
+  }
+  return 'en_US';
+}
+
+export function getOBDocsUrl(key?: string) {
+  let local: string = getEnvLocale();
+  local = local.toLowerCase();
+  const existLocal = ['en-us', 'zh-cn'];
+  if (!existLocal.includes(local)) {
+    local = defaultLocale;
+  }
+  return ObDocsUrlMap[local][key];
+}
+
+let isInitialized = false;
+
 export async function initIntl() {
+  if (isInitialized) return;
   let locale: string = getEnvLocale();
+  setLocale(locale);
   let messages: Record<string, string> = {};
   switch (locale) {
     case 'zh-CN': {
@@ -103,9 +122,14 @@ export async function initIntl() {
     locale,
     messages,
   });
+  isInitialized = true;
   return true;
 }
 export function formatMessage(...args) {
+  if (!isInitialized) {
+    console.warn('Intl not ready, return default message');
+    return args[0]?.defaultMessage || '';
+  }
   return intl?.formatMessage(...args);
 }
 

@@ -30,7 +30,8 @@ import SearchFilter from '@/component/SearchFilter';
 import type { IAutoAuthRule, IResponseData } from '@/d.ts';
 import { IManagerResourceType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
-import { getFormatDateTime } from '@/util/utils';
+import tracert from '@/util/tracert';
+import { getFormatDateTime } from '@/util/data/dateTime';
 import { ExclamationCircleFilled, SearchOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Switch } from 'antd';
 import type { FixedType } from 'rc-table/es/interface';
@@ -39,18 +40,34 @@ import { ResourceContext } from '../context';
 import DetailContent from './component/DetailContent';
 import FormModal from './component/FormModal';
 import styles from './index.less';
-import tracert from '@/util/tracert';
+import InputSelect from '@/component/InputSelect';
+
+enum AutoAuthSearchType {
+  name = 'name',
+}
+
+const AutoAuthSearchTypeTextMap = {
+  [AutoAuthSearchType.name]: formatMessage({
+    id: 'odc.components.AutoAuthPage.RuleName',
+    defaultMessage: '规则名称',
+  }),
+};
+
 interface IProps {}
 export const actionLabelMap = {
   BindRole: formatMessage({
     id: 'odc.components.AutoAuthPage.GrantRoles',
+    defaultMessage: '授予角色',
   }),
   //授予角色
   BindProjectRole: formatMessage({
     id: 'odc.src.page.Auth.Autoauth.AwardedProjectRole',
+    defaultMessage: '授予项目角色',
   }), //'授予项目角色'
 };
 interface IState {
+  searchType: AutoAuthSearchType;
+  searchValue: string;
   maskingRules: IResponseData<IAutoAuthRule>;
   editId: number;
   detailId: number;
@@ -61,6 +78,8 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
   private tableRef = React.createRef<ITableInstance>();
   static contextType = ResourceContext;
   readonly state = {
+    searchType: undefined,
+    searchValue: undefined,
     editId: null,
     detailId: null,
     formModalVisible: false,
@@ -72,6 +91,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
       {
         title: formatMessage({
           id: 'odc.components.AutoAuthPage.RuleName',
+          defaultMessage: '规则名称',
         }),
         //规则名称
         dataIndex: 'name',
@@ -82,6 +102,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
       {
         title: formatMessage({
           id: 'odc.components.AutoAuthPage.Founder',
+          defaultMessage: '创建人',
         }),
         //创建人
         width: 200,
@@ -95,6 +116,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
               {...props}
               placeholder={formatMessage({
                 id: 'odc.components.RecordPage.EnterTheExecutor',
+                defaultMessage: '请输入执行人',
               })}
 
               /*请输入执行人*/
@@ -109,11 +131,13 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
             }}
           />
         ),
+
         filters: [],
       },
       {
         title: formatMessage({
           id: 'odc.components.AutoAuthPage.CreationTime',
+          defaultMessage: '创建时间',
         }),
         //创建时间
         width: 160,
@@ -126,6 +150,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
       {
         title: formatMessage({
           id: 'odc.Auth.Autoauth.EnableStatus',
+          defaultMessage: '启用状态',
         }),
         //启用状态
         width: 100,
@@ -136,6 +161,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
           {
             text: formatMessage({
               id: 'odc.components.AutoAuthPage.Enable',
+              defaultMessage: '启用',
             }),
             //启用
             value: true,
@@ -143,11 +169,13 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
           {
             text: formatMessage({
               id: 'odc.components.AutoAuthPage.Disable',
+              defaultMessage: '停用',
             }),
             //停用
             value: false,
           },
         ],
+
         render: (enabled, record) => (
           <Switch
             size="small"
@@ -161,6 +189,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
       {
         title: formatMessage({
           id: 'odc.components.AutoAuthPage.Operation',
+          defaultMessage: '操作',
         }),
         //操作
         width: 132,
@@ -176,6 +205,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
               {
                 formatMessage({
                   id: 'odc.components.AutoAuthPage.View',
+                  defaultMessage: '查看',
                 }) /*查看*/
               }
             </Action.Link>
@@ -190,6 +220,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
                   {
                     formatMessage({
                       id: 'odc.components.AutoAuthPage.Edit',
+                      defaultMessage: '编辑',
                     }) /*编辑*/
                   }
                 </Action.Link>
@@ -204,6 +235,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
                   {
                     formatMessage({
                       id: 'odc.components.AutoAuthPage.Delete',
+                      defaultMessage: '删除',
                     }) /*删除*/
                   }
                 </Action.Link>
@@ -231,14 +263,17 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
       Modal.confirm({
         title: formatMessage({
           id: 'odc.components.AutoAuthPage.AreYouSureYouWant',
+          defaultMessage: '确定要停用自动授权规则吗？',
         }),
         //确定要停用自动授权规则吗？
         cancelText: formatMessage({
           id: 'odc.components.AutoAuthPage.Cancel',
+          defaultMessage: '取消',
         }),
         //取消
         okText: formatMessage({
           id: 'odc.components.AutoAuthPage.Ok',
+          defaultMessage: '确定',
         }),
         //确定
         centered: true,
@@ -263,6 +298,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
     Modal.confirm({
       title: formatMessage({
         id: 'odc.components.AutoAuthPage.AreYouSureYouWant.1',
+        defaultMessage: '确认要删除自动授权规则吗？',
       }),
       //确认要删除自动授权规则吗？
       icon: (
@@ -272,12 +308,15 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
           }}
         />
       ),
+
       cancelText: formatMessage({
         id: 'odc.components.AutoAuthPage.Cancel',
+        defaultMessage: '取消',
       }),
       //取消
       okText: formatMessage({
         id: 'odc.components.AutoAuthPage.Ok',
+        defaultMessage: '确定',
       }),
       //确定
       centered: true,
@@ -292,6 +331,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
       message.success(
         formatMessage({
           id: 'odc.components.AutoAuthPage.DeletedSuccessfully',
+          defaultMessage: '删除成功',
         }), //删除成功
       );
 
@@ -314,9 +354,11 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
         enabled
           ? formatMessage({
               id: 'odc.components.AutoAuthPage.Enabled',
+              defaultMessage: '启用成功',
             }) //启用成功
           : formatMessage({
               id: 'odc.components.AutoAuthPage.DisabledSuccessfully',
+              defaultMessage: '停用成功',
             }), //停用成功
       );
 
@@ -326,21 +368,25 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
         enabled
           ? formatMessage({
               id: 'odc.components.AutoAuthPage.FailedToEnable',
+              defaultMessage: '启用失败',
             }) //启用失败
           : formatMessage({
               id: 'odc.components.AutoAuthPage.DisableFailed',
+              defaultMessage: '停用失败',
             }), //停用失败
       );
     }
   };
 
-  private loadData = async (args: ITableLoadOptions) => {
-    const { searchValue = '', filters, sorter, pagination, pageSize } = args ?? {};
+  private loadData = async (args: ITableLoadOptions = {}) => {
+    const { filters, sorter, pagination, pageSize } = args ?? {};
     const { enabled, creatorName } = filters ?? {};
     const { column, order } = sorter ?? {};
     const { current = 1 } = pagination ?? {};
     const data = {
-      name: searchValue,
+      name: [AutoAuthSearchType.name].includes(this.state.searchType)
+        ? this.state.searchValue
+        : undefined,
       enabled: enabled,
       creatorName: creatorName,
       sort: column?.dataIndex,
@@ -366,6 +412,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
     this.openFormModal();
     tracert.click('a3112.b64007.c330920.d367470');
   };
+
   componentDidMount() {
     this.context.loadConnections();
     this.context.loadRoles();
@@ -379,15 +426,41 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
       resourceIdentifier: IManagerResourceType.auto_auth,
       action: actionTypes.create,
     }).accessible;
+    const selectTypeOptions = Object.keys(AutoAuthSearchType).map((item) => ({
+      value: item,
+      label: AutoAuthSearchTypeTextMap[item],
+    }));
     return (
       <>
         <CommonTable
           ref={this.tableRef}
           titleContent={null}
           filterContent={{
-            searchPlaceholder: formatMessage({
-              id: 'odc.components.AutoAuthPage.EnterARuleName',
-            }), //请输入规则名称
+            enabledSearch: false,
+            filters: [
+              {
+                render: (params) => {
+                  return (
+                    <InputSelect
+                      searchValue={this.state.searchValue}
+                      searchType={this.state.searchType}
+                      selectTypeOptions={selectTypeOptions}
+                      onSelect={({ searchValue, searchType }) => {
+                        this.setState(
+                          {
+                            searchValue,
+                            searchType: searchType as AutoAuthSearchType,
+                          },
+                          () => {
+                            this.loadData(params);
+                          },
+                        );
+                      }}
+                    />
+                  );
+                },
+              },
+            ],
           }}
           operationContent={
             canAcessCreate
@@ -397,6 +470,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
                       type: IOperationOptionType.button,
                       content: formatMessage({
                         id: 'odc.components.AutoAuthPage.CreateARule',
+                        defaultMessage: '新建规则',
                       }),
                       //新建规则
                       isPrimary: true,
@@ -425,6 +499,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
           className={styles.detail}
           title={formatMessage({
             id: 'odc.components.AutoAuthPage.RuleInformation',
+            defaultMessage: '规则信息',
           })}
           /*规则信息*/ detailId={detailId}
           tabs={[]}
@@ -433,6 +508,7 @@ class AutoAuthPage extends React.PureComponent<IProps, IState> {
               {
                 formatMessage({
                   id: 'odc.components.AutoAuthPage.Close',
+                  defaultMessage: '关闭',
                 }) /*关闭*/
               }
             </Button>

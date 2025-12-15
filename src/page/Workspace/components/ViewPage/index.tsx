@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { queryTableOrViewData, tableModify } from '@/common/network/table';
 import { getView } from '@/common/network/view';
 import { IEditor } from '@/component/MonacoEditor';
@@ -28,8 +29,9 @@ import type { PageStore } from '@/store/page';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
-import notification from '@/util/notification';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { formatMessage } from '@/util/intl';
+import notification from '@/util/ui/notification';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import { generateUniqKey } from '@/util/utils';
 import { AlignLeftOutlined, CloudDownloadOutlined } from '@ant-design/icons';
 import { Layout, message, Radio, Spin, Tabs } from 'antd';
@@ -41,8 +43,6 @@ import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
 import ShowViewBaseInfoForm from '../ShowViewBaseInfoForm';
 import ColumnTab from '../TablePage/ColumnTab';
 import styles from './index.less';
-import { getDataSourceModeConfig } from '@/common/datasource';
-import { formatMessage } from '@/util/intl';
 
 const { Content } = Layout;
 const ToolbarButton = Toolbar.Button;
@@ -254,7 +254,9 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
         }
         await this.reloadView(updatedViewName);
 
-        message.success(formatMessage({ id: 'portal.connection.form.save.success' }));
+        message.success(
+          formatMessage({ id: 'portal.connection.form.save.success', defaultMessage: '保存成功' }),
+        );
       }
     } catch (e) {
       //
@@ -270,7 +272,9 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
     if (view) {
       this.setState({ view });
     } else {
-      message.error(formatMessage({ id: 'workspace.window.view.load.error' }));
+      message.error(
+        formatMessage({ id: 'workspace.window.view.load.error', defaultMessage: '加载视图失败' }),
+      );
     }
   };
 
@@ -383,10 +387,16 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
               className={styles.topbar}
             >
               <Radio.Button value={TopTab.PROPS}>
-                {formatMessage({ id: 'workspace.window.table.toptab.props' })}
+                {formatMessage({
+                  id: 'workspace.window.table.toptab.props',
+                  defaultMessage: '属性',
+                })}
               </Radio.Button>
               <Radio.Button value={TopTab.DATA}>
-                {formatMessage({ id: 'workspace.window.table.toptab.data' })}
+                {formatMessage({
+                  id: 'workspace.window.table.toptab.data',
+                  defaultMessage: '数据',
+                })}
               </Radio.Button>
             </Radio.Group>
 
@@ -410,12 +420,14 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
                           key: PropsTab.INFO,
                           label: formatMessage({
                             id: 'workspace.window.table.propstab.info',
+                            defaultMessage: '基本信息',
                           }),
                           children: <ShowViewBaseInfoForm model={view} />,
                         },
                         {
                           label: formatMessage({
                             id: 'workspace.window.table.propstab.column',
+                            defaultMessage: '列',
                           }),
                           key: PropsTab.COLUMN,
                           children: (
@@ -441,6 +453,7 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
                                   text={
                                     formatMessage({
                                       id: 'odc.components.ViewPage.Download',
+                                      defaultMessage: '下载',
                                     }) //下载
                                   }
                                   icon={<CloudDownloadOutlined />}
@@ -459,10 +472,12 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
                                     formated
                                       ? formatMessage({
                                           id: 'odc.components.ViewPage.Unformat',
+                                          defaultMessage: '取消格式化',
                                         })
                                       : // 取消格式化
                                         formatMessage({
                                           id: 'odc.components.ViewPage.Formatting',
+                                          defaultMessage: '格式化',
                                         })
                                     // 格式化
                                   }
@@ -504,7 +519,6 @@ class ViewPage extends Component<IProps & { session: SessionStore }, IViewPageSt
                     <Spin spinning={dataLoading || !resultSet}>
                       {resultSet && (
                         <DDLResultSet
-                          showExplain={false}
                           session={session}
                           autoCommit={session?.params?.autoCommit}
                           showPagination={true}
@@ -553,6 +567,7 @@ export default WrapSessionPage(
       </SessionContext.Consumer>
     );
   },
+  true,
   true,
   true,
 );

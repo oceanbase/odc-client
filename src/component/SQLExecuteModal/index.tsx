@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfig } from '@/common/datasource';
 import { executeSQL } from '@/common/network/sql';
-import { ConnectionMode, ISqlExecuteResultStatus } from '@/d.ts';
+import { ISqlExecuteResultStatus } from '@/d.ts';
 import SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
-import notification from '@/util/notification';
+import notification from '@/util/ui/notification';
 import { message, Modal } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import CommonIDE from '../CommonIDE';
-import { getDataSourceModeConfig } from '@/common/datasource';
 
 function SQLExecuteModal(props: {
   isPL?: boolean;
@@ -52,6 +52,7 @@ function SQLExecuteModal(props: {
         message.success(
           formatMessage({
             id: 'odc.component.SQLExecuteModal.ExecutionSucceeded',
+            defaultMessage: '执行成功',
           }), // 执行成功
         );
       } else {
@@ -66,6 +67,7 @@ function SQLExecuteModal(props: {
     <Modal
       title={formatMessage({
         id: 'odc.component.SQLExecuteModal.SqlConfirmation',
+        defaultMessage: 'SQL 确认',
       })} /* SQL 确认 */
       width={600}
       bodyStyle={{

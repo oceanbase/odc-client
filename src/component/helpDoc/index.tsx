@@ -35,7 +35,7 @@ const HelpDoc: React.FC<IDocProps> = function (props) {
   const doc = title ? title : Doc[propDoc];
   const iconStyle = {
     margin: '0px 4px',
-    color: 'var(--text-color-hint)',
+    color: 'var(--icon-color-normal)',
   };
   return (
     <span>

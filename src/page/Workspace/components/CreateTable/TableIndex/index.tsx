@@ -16,6 +16,8 @@
 
 import { generateUpdateTableDDL } from '@/common/network/table';
 import Toolbar from '@/component/Toolbar';
+import { ColumnStoreType, DBDefaultStoreType } from '@/d.ts/table';
+import type SessionStore from '@/store/sessionManager/session';
 import { formatMessage } from '@/util/intl';
 import { generateUniqKey } from '@/util/utils';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
@@ -35,13 +37,11 @@ import {
 import TableCardLayout from '../TableCardLayout';
 import TableContext from '../TableContext';
 import { useColumns } from './columns';
-import type SessionStore from '@/store/sessionManager/session';
-import { ColumnStoreType, DBDefaultStoreType } from '@/d.ts/table';
 
 const defaultIndex: ITableIndex = {
   name: null,
   method: TableIndexMehod.BTREE,
-  scope: TableIndexScope.GLOBAL,
+  scope: TableIndexScope.LOCAL,
   columns: [],
   visible: true,
   type: TableIndexType.NORMAL,
@@ -77,7 +77,7 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
   const gridColumns: any[] = useColumns(tableContext.columns, session);
   const gridRef = useRef<DataGridRef>();
   const rows = useMemo(() => {
-    return tableContext.indexes.map((index, idx) => {
+    return tableContext?.indexes?.map((index, idx) => {
       return {
         ...index,
         key: `${index.name || ''}@@${idx}`,
@@ -135,7 +135,7 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
         >
           <Toolbar>
             <Toolbar.Button
-              text={formatMessage({ id: 'workspace.header.create' })}
+              text={formatMessage({ id: 'workspace.header.create', defaultMessage: '新建' })}
               icon={PlusOutlined}
               onClick={() => {
                 const row = {
@@ -149,7 +149,7 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
 
             <Toolbar.Button
               text={
-                formatMessage({ id: 'odc.CreateTable.TableIndex.Delete' }) //删除
+                formatMessage({ id: 'odc.CreateTable.TableIndex.Delete', defaultMessage: '删除' }) //删除
               }
               icon={DeleteOutlined}
               onClick={() => {
@@ -162,6 +162,7 @@ const TableIndex: React.FC<IProps> = function ({ modified }) {
                 icon={<SyncOutlined />}
                 text={formatMessage({
                   id: 'odc.components.ShowTableBaseInfoForm.Refresh',
+                  defaultMessage: '刷新',
                 })}
                 /* 刷新 */ onClick={pageContext.onRefresh}
               />

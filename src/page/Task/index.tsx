@@ -17,17 +17,18 @@
 import PageContainer, { TitleType } from '@/component/PageContainer';
 import TaskManage from '@/component/Task';
 import { formatMessage } from '@/util/intl';
+import { TaskPageMode } from '@/component/Task/interface';
 
 const Task = () => {
   return (
     <PageContainer
       titleProps={{
         type: TitleType.TEXT,
-        title: formatMessage({ id: 'odc.page.Task.Ticket' }), //工单
+        title: formatMessage({ id: 'odc.page.Task.Ticket', defaultMessage: '工单' }), //工单
         showDivider: true,
       }}
     >
-      <TaskManage />
+      <TaskManage mode={TaskPageMode.COMMON} />
     </PageContainer>
   );
 };

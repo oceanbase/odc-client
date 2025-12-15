@@ -14,38 +14,65 @@
  * limitations under the License.
  */
 
-import { ConnectionMode, TaskType } from '@/d.ts';
-import { formatMessage } from '@/util/intl';
-import { Form } from 'antd';
-import React from 'react';
+import { TaskType } from '@/d.ts';
 import SessionSelect from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SelectItem';
 import { ISessionDropdownFiltersProps } from '@/page/Workspace/components/SessionContextWrap/SessionSelect/SessionDropdown';
+import { formatMessage } from '@/util/intl';
+import { IDatabase } from '@/d.ts/database';
+import { Form } from 'antd';
+import React from 'react';
+import { ScheduleType } from '@/d.ts/schedule';
+import { Rule } from 'antd/lib/form';
+
 interface IProps {
-  type: TaskType;
+  type?: TaskType;
+  scheduleType?: ScheduleType;
   label?: string;
   disabled?: boolean;
   name?: string | string[];
   projectId?: number;
+  dataSourceId?: number;
   filters?: ISessionDropdownFiltersProps;
   extra?: string;
-  width?: string;
+  width?: number;
   placeholder?: string;
-  onChange?: (v: number) => void;
+  isLogicalDatabase?: boolean;
+  onChange?: (v: number, database?: IDatabase) => void;
+  showProject?: boolean;
+  validateStatus?: 'warning' | 'error' | 'success' | 'validating' | undefined;
+  help?: string;
+  style?: React.CSSProperties;
+  popoverWidth?: number;
+  manageLinkVisible?: boolean;
+  onInit?: (database?: IDatabase) => void;
+  rules?: Rule[];
 }
 const DatabaseSelect: React.FC<IProps> = (props) => {
   const {
     type,
     label = formatMessage({
       id: 'odc.component.DatabaseSelect.Database',
+      defaultMessage: '数据库',
     }),
     //数据库
     name = 'databaseId',
+    scheduleType,
     projectId,
+    dataSourceId,
     filters = null,
     width,
     placeholder,
     disabled = false,
+    isLogicalDatabase = false,
     onChange,
+    showProject = true,
+    validateStatus,
+    help,
+    style,
+    popoverWidth,
+    manageLinkVisible = false,
+    onInit,
+    rules,
   } = props;
 
   return (
@@ -53,23 +80,36 @@ const DatabaseSelect: React.FC<IProps> = (props) => {
       label={label}
       name={name}
       required
-      rules={[
-        {
-          required: true,
-          message: formatMessage({
-            id: 'odc.component.DatabaseSelect.SelectADatabase',
-          }), //请选择数据库
-        },
-      ]}
+      validateStatus={validateStatus}
+      help={help}
+      style={style}
+      rules={
+        rules || [
+          {
+            required: true,
+            message: formatMessage({
+              id: 'odc.component.DatabaseSelect.SelectADatabase',
+              defaultMessage: '请选择数据库',
+            }), //请选择数据库
+          },
+        ]
+      }
     >
       <SessionSelect
+        onInit={onInit}
         disabled={disabled}
+        dataSourceId={dataSourceId}
         projectId={projectId}
         filters={filters}
         taskType={type}
+        scheduleType={scheduleType}
         width={width}
         onChange={onChange}
+        isLogicalDatabase={isLogicalDatabase}
         placeholder={placeholder}
+        showProject={showProject}
+        popoverWidth={popoverWidth}
+        manageLinkVisible={manageLinkVisible}
       />
     </Form.Item>
   );

@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import { PureComponent, ReactNode, useContext, useState } from 'react';
-import { CloseOutlined, DownOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons';
 import { IPage, PageType } from '@/d.ts';
-import { Badge, Dropdown, Menu, MenuProps, Space, Tabs, Tooltip } from 'antd';
-import { MenuInfo } from 'rc-menu/lib/interface';
+import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
 import { movePagePostion, openNewDefaultPLPage } from '@/store/helper/page';
 import { SQLStore } from '@/store/sql';
+import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
+import { CloseOutlined, DownOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons';
+import { Badge, Dropdown, MenuProps, Space, Tooltip } from 'antd';
 import { inject, observer } from 'mobx-react';
+import { MenuInfo } from 'rc-menu/lib/interface';
+import { ReactNode, useContext, useState } from 'react';
 import { pageMap } from './config';
 import DefaultPage from './DefaultPage';
 import DraggableTabs from './DraggableTabs';
 import { getPageTitleText } from './helper';
 import styles from './index.less';
-import tracert from '@/util/tracert';
-import ResourceTreeContext from '@/page/Workspace/context/ResourceTreeContext';
+import { isGroupNode } from '@/page/Workspace/SideBar/ResourceTree/const';
+import { isLogicalDatabase } from '@/util/database/database';
+import { isString } from 'lodash';
+import { ResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/type';
 
 interface IProps {
   pages: IPage[];
@@ -127,7 +131,7 @@ const WindowManager: React.FC<IProps> = function (props) {
   };
 
   function getPageTitle(page: IPage): ReactNode {
-    const iconColor = page?.params?.isDisabled ? '#bfbfbf' : pageMap[page.type].color;
+    const iconColor = page?.params?.isDisabled ? '#bfbfbf' : pageMap[page.type]?.color;
     const isDocked = page.params.isDocked;
     const pageTitle = getPageTitleText(page);
     const isPageProcessing = props.sqlStore.runningPageKey.has(page.key);
@@ -149,18 +153,21 @@ const WindowManager: React.FC<IProps> = function (props) {
               key: 'closePage',
               label: formatMessage({
                 id: 'odc.component.WindowManager.CloseThisWindow',
+                defaultMessage: '关闭该窗口',
               }),
             },
             {
               key: 'closeOtherPage',
               label: formatMessage({
                 id: 'odc.component.WindowManager.CloseOtherWindows',
+                defaultMessage: '关闭其它窗口',
               }),
             },
             !isDocked && {
               key: 'closeAllPage',
               label: formatMessage({
                 id: 'odc.component.WindowManager.CloseAllWindows',
+                defaultMessage: '关闭所有窗口',
               }),
             },
             {
@@ -170,12 +177,14 @@ const WindowManager: React.FC<IProps> = function (props) {
               key: 'copyPage',
               label: formatMessage({
                 id: 'odc.src.component.WindowManager.CopyTheSQLWindow',
+                defaultMessage: '复制 SQL 窗口',
               }),
             },
             {
               key: 'openNewPage',
               label: formatMessage({
                 id: 'odc.component.WindowManager.OpenANewSqlWindow',
+                defaultMessage: '打开新的 SQL 窗口',
               }),
             },
           ].filter(Boolean) as MenuProps['items'],
@@ -183,7 +192,10 @@ const WindowManager: React.FC<IProps> = function (props) {
       >
         <Tooltip
           placement="bottom"
-          overlayClassName={styles.tabTooltip}
+          classNames={{
+            root: styles.tabTooltip,
+          }}
+          arrow={false}
           title={
             <div>
               <div>{pageTitle}</div>
@@ -193,6 +205,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                     status={'default'}
                     text={formatMessage({
                       id: 'odc.component.WindowManager.NotSaved',
+                      defaultMessage: '未保存',
                     })} /*未保存*/
                   />
                 </div>
@@ -203,6 +216,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                     status={'processing'}
                     text={formatMessage({
                       id: 'odc.component.WindowManager.Running',
+                      defaultMessage: '运行中',
                     })} /*运行中*/
                   />
                 </div>
@@ -220,7 +234,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                 fontSize: 14,
               }}
             >
-              {pageMap[page.type].icon}
+              {pageMap[page.type]?.icon}
             </span>
             <span className={styles.title}>{pageTitle}</span>
             <span className={styles.extraStatusBox}>
@@ -279,12 +293,12 @@ const WindowManager: React.FC<IProps> = function (props) {
               className={styles.icon}
               style={{
                 display: 'flex',
-                color: `${pageMap[page.type].color}`,
+                color: `${pageMap[page.type]?.color}`,
                 lineHeight: 1,
                 fontSize: 14,
               }}
             >
-              {pageMap[page.type].icon}
+              {pageMap[page.type]?.icon}
             </span>
             {getPageTitleText(page)}
           </Space>
@@ -314,7 +328,7 @@ const WindowManager: React.FC<IProps> = function (props) {
               alignItems: 'center',
             }}
           >
-            <PlusOutlined />
+            <PlusOutlined style={{ color: 'var(--icon-color-normal)' }} />
             <Dropdown
               trigger={['click']}
               menu={{
@@ -322,6 +336,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                   {
                     label: formatMessage({
                       id: 'odc.src.component.WindowManager.NewSQLWindow',
+                      defaultMessage: '新建 SQL 窗口',
                     }), //'新建 SQL 窗口'
                     key: 'newSQL',
                     onClick: (e) => {
@@ -332,11 +347,25 @@ const WindowManager: React.FC<IProps> = function (props) {
                   {
                     label: formatMessage({
                       id: 'odc.src.component.WindowManager.CreateAnonymousBlockWindow',
+                      defaultMessage: '新建匿名块窗口',
                     }), //'新建匿名块窗口'
                     key: 'newPL',
                     onClick(e) {
                       e.domEvent.stopPropagation();
-                      openNewDefaultPLPage(undefined, treeContext?.currentDatabaseId);
+                      const { value, type } = treeContext.currentObject || {};
+                      let dbId;
+                      if (!isGroupNode(type)) {
+                        if (type === ResourceNodeType.Database) {
+                          dbId = value;
+                        }
+                        if (isString(value)) {
+                          dbId = Number(value.split('-')?.[0]);
+                        }
+                      }
+                      const isLogicalDb = isLogicalDatabase(
+                        treeContext?.databaseList?.find((_db) => _db?.id === dbId),
+                      );
+                      openNewDefaultPLPage(undefined, isLogicalDb ? null : dbId);
                     },
                   },
                 ],
@@ -349,7 +378,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                   e.stopPropagation();
                 }}
               >
-                <DownOutlined />
+                <DownOutlined style={{ color: 'var(--icon-color-normal)' }} />
               </div>
             </Dropdown>
           </div>
@@ -366,8 +395,8 @@ const WindowManager: React.FC<IProps> = function (props) {
         }
         items={pages
           .map((page) => {
-            const Page = pageMap[page.type].component;
-            const pageParams = Object.assign({}, pageMap[page.type].params || {}, page.params);
+            const Page = pageMap[page.type]?.component;
+            const pageParams = Object.assign({}, pageMap[page.type]?.params || {}, page.params);
             if (!Page) {
               return null;
             }
@@ -396,6 +425,7 @@ const WindowManager: React.FC<IProps> = function (props) {
           })
           .filter(Boolean)}
       />
+
       {(!activeKey || !pages?.length) && <DefaultPage />}
     </>
   );

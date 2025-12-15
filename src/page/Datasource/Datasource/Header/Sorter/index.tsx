@@ -16,10 +16,10 @@
 
 import { formatMessage } from '@/util/intl';
 import { SortAscendingOutlined } from '@ant-design/icons';
-import { Dropdown, Menu } from 'antd';
+import { Dropdown } from 'antd';
 import React, { useContext } from 'react';
 import ParamContext, { SortType } from '../../ParamContext';
-import FilterIcon from '../FIlterIcon';
+import FilterIcon from '@/component/Button/FIlterIcon';
 
 interface IProps {}
 
@@ -42,30 +42,34 @@ const Sorter: React.FC<IProps> = function () {
             key: SortType.CREATE_TIME,
             label: formatMessage({
               id: 'odc.Header.Sorter.SortByCreationTime',
+              defaultMessage: '按创建时间排序',
             }) /*按创建时间排序*/,
           },
           {
             key: SortType.UPDATE_TIME,
             label: formatMessage({
               id: 'odc.Header.Sorter.SortByUpdateTime',
+              defaultMessage: '按更新时间排序',
             }) /*按更新时间排序*/,
           },
           {
             key: SortType.NAME_AZ,
             label: formatMessage({
               id: 'odc.Header.Sorter.SortByDataSourceName',
+              defaultMessage: '按数据源名(A-Z)排序',
             }) /*按数据源名(A-Z)排序*/,
           },
           {
             key: SortType.NAME_ZA,
             label: formatMessage({
               id: 'odc.Header.Sorter.SortByDataSourceName.1',
+              defaultMessage: '按数据源名(Z-A)排序',
             }) /*按数据源名(Z-A)排序*/,
           },
         ],
       }}
     >
-      <FilterIcon isActive={!!context?.sortType}>
+      <FilterIcon isActive={!!context?.sortType} border>
         <SortAscendingOutlined />
       </FilterIcon>
     </Dropdown>

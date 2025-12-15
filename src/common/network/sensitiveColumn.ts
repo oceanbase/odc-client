@@ -18,6 +18,7 @@ import { IDataType, IResponseData } from '@/d.ts';
 import { ISensitiveColumn } from '@/d.ts/sensitiveColumn';
 import { IServerTableColumn } from '@/d.ts/table';
 import request from '@/util/request';
+import { DatabaseColumn } from '@/page/Project/Sensitive/components/SensitiveColumn/components/interface';
 
 export async function startScanning(
   projectId: number,
@@ -76,17 +77,7 @@ export async function listColumns(
   projectId: number,
   database: number[],
 ): Promise<{
-  contents: {
-    dataTypeUnits: IDataType[];
-    databaseId: number;
-    databaseName: string;
-    table2Columns: {
-      [key in string]: IServerTableColumn[];
-    };
-    view2Columns: {
-      [key in string]: IServerTableColumn[];
-    };
-  }[];
+  contents: DatabaseColumn[];
 }> {
   const result = await request.get(
     `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/listColumns`,
@@ -119,7 +110,9 @@ export interface IScannResult {
 
 export async function getScanningResults(projectId: number, taskId: string): Promise<IScannResult> {
   const ret = await request.get(
-    `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/getScanningResults?taskId=${taskId}`,
+    `/api/v2/collaboration/projects/${projectId}/sensitiveColumns/getScanningResults?taskId=${encodeURIComponent(
+      taskId,
+    )}`,
   );
   return ret?.data;
 }

@@ -16,11 +16,20 @@
 
 import { formatMessage } from '@/util/intl';
 import Icon, { CaretDownOutlined } from '@ant-design/icons';
-import { Button, Divider, Dropdown, MenuProps, message, Popconfirm, Popover, Tooltip } from 'antd';
+import {
+  Badge,
+  Button,
+  Divider,
+  Dropdown,
+  MenuProps,
+  message,
+  Popconfirm,
+  Popover,
+  Tooltip,
+} from 'antd';
 import { PopconfirmProps } from 'antd/lib/popconfirm';
 import classNames from 'classnames'; // @ts-ignore
 import { ComponentType } from 'react';
-
 import styles from './index.less';
 import statefulIcon, { IConStatus } from './statefulIcon';
 
@@ -38,6 +47,9 @@ function TButton({
   isMenuIcon,
   isShowText = false,
   confirmConfig,
+  tip = null,
+  tipStyle = { width: 296 },
+  renderToParentElement = false,
   ...rest
 }: {
   [key: string]: any;
@@ -46,9 +58,7 @@ function TButton({
   type?: string;
   /**
    * 是否为下拉菜单主icon
-   */
-
-  isMenuIcon?: boolean;
+   */ isMenuIcon?: boolean;
 }) {
   const isInit = status === IConStatus.INIT;
   const isRunning = status === IConStatus.RUNNING;
@@ -90,7 +100,10 @@ function TButton({
       onClick={() => {
         if (isRunning) {
           message.success(
-            formatMessage({ id: 'odc.component.Toolbar.DoNotClickAgainWhile' }), //执行中请勿重复点击
+            formatMessage({
+              id: 'odc.component.Toolbar.DoNotClickAgainWhile',
+              defaultMessage: '执行中请勿重复点击',
+            }), //执行中请勿重复点击
           );
         } else if (disabled || confirmConfig) {
           return;
@@ -110,6 +123,7 @@ function TButton({
           {text}
         </Button>
       );
+
       break;
     case 'BUTTON_PRIMARY':
       content = (
@@ -119,10 +133,12 @@ function TButton({
           type="primary"
           disabled={disabled}
           onClick={!disabled ? onClick : null}
+          loading={isRunning}
         >
           {text}
         </Button>
       );
+
       break;
     default:
       content = (
@@ -134,13 +150,42 @@ function TButton({
           {icon} {isShowText && <span className={styles.buttonText}>{text}</span>}
         </span>
       );
+
       break;
   }
+
+  if (tip) {
+    return (
+      <Tooltip
+        placement={'topLeft'}
+        title={tip}
+        overlayInnerStyle={tipStyle}
+        color="var(--background-primary-color)"
+      >
+        <Badge dot={true} color="blue" style={{ top: 12, right: 6 }}>
+          {content}
+        </Badge>
+      </Tooltip>
+    );
+  }
+
   if (confirmConfig && !disabled && !isRunning) {
     content = (
       <Popconfirm disabled={disabled} {...confirmConfig}>
         {content}
       </Popconfirm>
+    );
+  }
+
+  if (renderToParentElement) {
+    return (
+      <Tooltip
+        getPopupContainer={(triggerNode) => triggerNode.parentElement}
+        placement="left"
+        title={text}
+      >
+        {content}
+      </Tooltip>
     );
   }
 

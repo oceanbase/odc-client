@@ -2,7 +2,7 @@ import getVersion from './version';
 import defineConfig from './defineConfig';
 import theme from './theme';
 import routes from './routes';
-import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin' 
+import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin'
 import path from 'path';
 
 const version = getVersion();
@@ -41,7 +41,7 @@ const config = {
   devtool: enableSourceMap ? "cheap-module-source-map" : (process.env.NODE_ENV === 'development' ? 'cheap-module-source-map' : false),
 
   antd: {
-    import: true,
+    import: false
   },
 
   theme: theme,
@@ -69,7 +69,7 @@ const config = {
   title: false,
   favicons: [publicPath + 'img/favicon.png'],
   // ctoken: false,
-
+  clickToComponent: {},
   externals: {
     electron: 'commonjs electron',
   },
@@ -106,11 +106,5 @@ config.headScripts = [
   `window.currentEnv=window.currentEnv || '${process.env.CURRENT_ENV || ''}'`,
   `window.publicPath=window.publicPath || '${publicPath}'`,
 ];
-if (process.env.CURRENT_ENV === 'obcloud') {
-  config.headScripts.push(
-    `window.ODCApiHost='${config.proxy['/api/'].target}'`,
-  );
-} else {
-  config.headScripts.push(`window.ODCApiHost= window.ODCApiHost || ''`);
-}
+config.headScripts.push(`window.ODCApiHost= window.ODCApiHost || ''`);
 export default config;

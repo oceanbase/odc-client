@@ -102,16 +102,12 @@ class CreateTriggerPage extends Component<IProps & { session: SessionStore }, IS
     this.loadDatabases();
   } // 获取 step对应的状态
   private async loadDatabases() {
-    const res = await listDatabases(
-      null,
-      this.props?.session?.connection?.id,
-      1,
-      9999,
-      null,
-      null,
-      null,
-      true,
-    );
+    const res = await listDatabases({
+      dataSourceId: this.props?.session?.connection?.id,
+      page: 1,
+      size: 9999,
+      existed: true,
+    });
     this.setState({
       databases: res?.contents || [],
     });
@@ -343,6 +339,7 @@ class CreateTriggerPage extends Component<IProps & { session: SessionStore }, IS
                   status={baseInfoStatus}
                   text={formatMessage({
                     id: 'odc.components.CreateTriggerPage.StepBasicInformation',
+                    defaultMessage: '第一步：基本信息',
                   })}
                   /*第一步：基本信息*/
                 />
@@ -368,6 +365,7 @@ class CreateTriggerPage extends Component<IProps & { session: SessionStore }, IS
                   status={advancedStatus}
                   text={formatMessage({
                     id: 'odc.components.CreateTriggerPage.StepAdvancedSettings',
+                    defaultMessage: '第二步：高级设置',
                   })}
                   /*第二步：高级设置*/
                 />
@@ -394,6 +392,7 @@ class CreateTriggerPage extends Component<IProps & { session: SessionStore }, IS
             {
               formatMessage({
                 id: 'odc.components.CreateTriggerPage.NextConfirmTheSqlStatement',
+                defaultMessage: '下一步：确认 SQL',
               }) /*下一步：确认SQL*/
             }
           </Button>

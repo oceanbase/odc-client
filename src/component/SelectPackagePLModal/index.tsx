@@ -68,6 +68,7 @@ class SelectPackagePLModal extends Component<IProps> {
         destroyOnClose
         title={formatMessage({
           id: 'odc.component.SelectPackagePLModal.SelectPlObject',
+          defaultMessage: '选择 PL 对象',
         })}
         open={visible}
         onOk={this.save}
@@ -78,12 +79,14 @@ class SelectPackagePLModal extends Component<IProps> {
             name="plKey"
             label={formatMessage({
               id: 'odc.component.SelectPackagePLModal.PlObject',
+              defaultMessage: 'PL 对象',
             })}
             rules={[
               {
                 required: true,
                 message: formatMessage({
                   id: 'workspace.window.createPackage.packageName.required',
+                  defaultMessage: '程序包不能为空',
                 }),
               },
             ]}

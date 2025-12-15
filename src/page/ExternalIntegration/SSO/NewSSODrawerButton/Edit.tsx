@@ -15,14 +15,14 @@
  */
 
 import { getIntegrationDetail, updateIntegration } from '@/common/network/manager';
-import { EncryptionAlgorithm, ISSOConfig, ISSOType } from '@/d.ts';
+import { EncryptionAlgorithm, ISSOConfig, ISSOType, ISSO_SAML_CONFIG, SAMLType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
+import tracert from '@/util/tracert';
 import { safeParseJson } from '@/util/utils';
 import { useRequest, useUpdate } from 'ahooks';
 import { Button, Drawer, message, Space, Spin } from 'antd';
 import { useEffect, useMemo, useRef } from 'react';
 import SSOForm, { IFormRef } from './SSOForm';
-import tracert from '@/util/tracert';
 
 interface IProps {
   visible: boolean;
@@ -63,6 +63,14 @@ export default function EditSSODrawer({ visible, id, close, onSave }: IProps) {
     const form = formRef?.current?.form;
     const value = await form.validateFields();
     const clone = { ...value };
+    if (configJson.type === ISSOType.SAML) {
+      for (let key in SAMLType) {
+        (clone.ssoParameter as ISSO_SAML_CONFIG)[key] = form.getFieldValue([
+          'ssoParameter',
+          key as any,
+        ]);
+      }
+    }
     clone.ssoParameter.registrationId = configJson?.ssoParameter?.registrationId;
     clone.mappingRule.extraInfo = clone.mappingRule.extraInfo
       ?.map((info) => {
@@ -87,7 +95,10 @@ export default function EditSSODrawer({ visible, id, close, onSave }: IProps) {
     });
     if (isSuccess) {
       message.success(
-        formatMessage({ id: 'odc.SSO.NewSSODrawerButton.Edit.ModifiedSuccessfully' }), //修改成功
+        formatMessage({
+          id: 'odc.SSO.NewSSODrawerButton.Edit.ModifiedSuccessfully',
+          defaultMessage: '修改成功',
+        }), //修改成功
       );
       onSave();
       close();
@@ -104,17 +115,26 @@ export default function EditSSODrawer({ visible, id, close, onSave }: IProps) {
     <Drawer
       width={520}
       open={visible}
-      title={formatMessage({ id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.3FA0382E' })}
+      title={formatMessage({
+        id: 'src.page.ExternalIntegration.SSO.NewSSODrawerButton.3FA0382E',
+        defaultMessage: '编辑登录集成配置',
+      })}
       onClose={close}
       footer={
         <Space style={{ float: 'right' }}>
           <Button onClick={() => close()}>
-            {formatMessage({ id: 'odc.SSO.NewSSODrawerButton.Edit.Cancel' }) /*取消*/}
+            {
+              formatMessage({
+                id: 'odc.SSO.NewSSODrawerButton.Edit.Cancel',
+                defaultMessage: '取消',
+              }) /*取消*/
+            }
           </Button>
           <Button onClick={() => save()} type="primary">
             {
               formatMessage({
                 id: 'odc.SSO.NewSSODrawerButton.Edit.ConfirmModification',
+                defaultMessage: '确认修改',
               }) /*确认修改*/
             }
           </Button>

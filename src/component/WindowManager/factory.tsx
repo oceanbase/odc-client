@@ -19,8 +19,8 @@ import { QuestionCircleFilled } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
 import { Component, ReactNode } from 'react';
 
-import styles from './index.less';
 import { formatMessage } from '@/util/intl';
+import styles from './index.less';
 
 export default function withConfirmModal(WrappedComponent: any) {
   return class extends Component<
@@ -68,7 +68,7 @@ export default function withConfirmModal(WrappedComponent: any) {
     public readonly state = {
       unsavedModalTitle: '',
       unsavedModalContent: '',
-      unsavedModalSaveButtonText: formatMessage({ id: 'app.button.save' }),
+      unsavedModalSaveButtonText: formatMessage({ id: 'app.button.save', defaultMessage: '保存' }),
       disableUnsavedModalCloseUnsaveButton: false,
       closeImmediately: false,
     };
@@ -126,6 +126,7 @@ export default function withConfirmModal(WrappedComponent: any) {
             onSetCloseImmediately={(t: boolean) => this.setState({ closeImmediately: t })}
             closeSelf={closeSelf}
           />
+
           {showUnsavedModal && (
             <Modal
               className={styles.modal}
@@ -136,11 +137,12 @@ export default function withConfirmModal(WrappedComponent: any) {
               footer={[
                 !disableUnsavedModalCloseUnsaveButton && (
                   <Button key="close" onClick={() => onCloseUnsavedModal(pageKey)}>
-                    {formatMessage({ id: 'app.button.dontsave' })}
+                    {formatMessage({ id: 'app.button.dontsave', defaultMessage: '不保存' })}
                   </Button>
                 ),
+
                 <Button key="back" onClick={onCancelUnsavedModal}>
-                  {formatMessage({ id: 'app.button.cancel' })}
+                  {formatMessage({ id: 'app.button.cancel', defaultMessage: '取消' })}
                 </Button>,
                 <Button
                   key="submit"
@@ -152,7 +154,7 @@ export default function withConfirmModal(WrappedComponent: any) {
               ]}
             >
               <div className="ant-modal-confirm-body">
-                <QuestionCircleFilled style={{ color: 'rgb(250, 173, 20)' }} />
+                <QuestionCircleFilled style={{ color: 'rgb(250, 173, 20)', paddingRight: '4px' }} />
                 <span className="ant-modal-confirm-title">{unsavedModalTitle}</span>
                 <div className="ant-modal-confirm-content">{unsavedModalContent}</div>
               </div>

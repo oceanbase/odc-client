@@ -16,7 +16,7 @@
 
 import Action from '@/component/Action';
 import { formatMessage } from '@/util/intl';
-import { downloadFile } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
 
 interface IProps {
   url: string;
@@ -34,6 +34,7 @@ export const DownloadFileAction: React.FC<IProps> = (props) => {
       {
         formatMessage({
           id: 'odc.component.DownloadFileAction.DownloadBackupRollbackSolution',
+          defaultMessage: '下载备份回滚方案',
         }) /*下载备份回滚方案*/
       }
     </Action.Link>

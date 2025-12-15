@@ -1,0 +1,100 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { ConnectionMode } from '@/d.ts';
+import { formatMessage } from '@/util/intl';
+import { Column } from '@oceanbase-odc/ob-react-data-grid';
+import { useMemo } from 'react';
+import { WrapSelectEditor } from '../../../EditableTable/Editors/SelectEditor';
+import { Select, Tooltip } from 'antd';
+import { TablePrimaryConstraint } from '@/page/Workspace/components/CreateTable/interface';
+import {
+  useDeferColumn,
+  useEnableColumn,
+} from '@/page/Workspace/components/CreateTable/TableConstraint/baseColumn';
+const Option = Select.Option;
+
+export function useColumns(
+  columns: any[],
+  mode: ConnectionMode,
+): Column<TablePrimaryConstraint, TablePrimaryConstraint>[] {
+  const enableColumn = useEnableColumn(mode);
+  const deferColumn = useDeferColumn(mode);
+
+  const customRenderOptions = (item) => {
+    return (
+      <Option
+        key={item.aliasName ? item.aliasName?.trim() : item.columnName}
+        value={item.aliasName ? item.aliasName?.trim() : item.columnName}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <span>{item.columnName}</span>
+          <Tooltip title={item.aliasName}>
+            <span
+              style={{
+                color: 'var(--text-color-placeholder)',
+                marginLeft: '6px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {item.aliasName}
+            </span>
+          </Tooltip>
+        </div>
+      </Option>
+    );
+  };
+
+  const ColumnsMultipleSelect = useMemo(() => {
+    return WrapSelectEditor(columns, true, customRenderOptions);
+  }, [columns]);
+
+  return [
+    {
+      key: 'name',
+      name: formatMessage({
+        id: 'src.page.Workspace.components.CreateMaterializedView.Constraint.Primary.BD5072E1',
+        defaultMessage: '主键约束名称',
+      }),
+      resizable: true,
+      editable: false,
+    },
+    {
+      key: 'columns',
+      name: formatMessage({
+        id: 'odc.TableConstraint.Primary.columns.Column',
+        defaultMessage: '列',
+      }), //列
+      resizable: true,
+      editable: true,
+      filterable: false,
+      editor: ColumnsMultipleSelect,
+      formatter: ({ row }) => {
+        return <span>{row.columns?.join?.(',')}</span>;
+      },
+    },
+
+    enableColumn,
+    deferColumn,
+  ].filter(Boolean);
+}

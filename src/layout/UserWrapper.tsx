@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import PageLoading from '@/component/PageLoading';
 import login, { UserStore } from '@/store/login';
 import { SettingStore } from '@/store/setting';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { Outlet, useLocation } from '@umijs/max';
+import { history, Outlet, useLocation } from '@umijs/max';
 import { message } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useContext, useEffect, useState } from 'react';
-import { history } from '@umijs/max';
 import { PageLoadingContext } from './PageLoadingWrapper';
+import { getDefaultProjectPage, toDefaultProjectPage } from '@/service/projectHistory';
+import OrganizationSelectModal from '@/component/OrganizationSelectModal';
+import odc from '@/plugins/odc';
 interface IProps {
   userStore: UserStore;
   settingStore: SettingStore;
@@ -37,10 +38,12 @@ enum STATUS_TYPE {
 }
 const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingStore }) {
   const [status, setStatus] = useState<STATUS_TYPE>(STATUS_TYPE.INIT);
+  const [defaultOrganizationHanlde, setDefaultOrganizationHanlde] =
+    useState<(id: number) => void>(null);
   const location = useLocation();
   const pageContext = useContext(PageLoadingContext);
-  async function checkLoginStatus() {
-    setStatus(STATUS_TYPE.LOADING);
+
+  function checkAutoLogin() {
     const query: {
       [key: string]: any;
     } = new URLSearchParams(location.search);
@@ -54,41 +57,76 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
         pathname: '/login',
         search: location.search,
       });
+      return false;
+    }
+    return true;
+  }
+  async function organizationErrorResolve() {
+    if (isClient()) {
+      /**
+       * 客户端，但是获取用户失败，这个时候其实是系统错误
+       */
+      message.error(
+        formatMessage({
+          id: 'odc.src.layout.UserWrapper.GetcurrentuserInitializationInformationFailed',
+          defaultMessage: '[getCurrentUser]初始化信息失败',
+        }), //[getCurrentUser]初始化信息失败
+      );
+
+      setStatus(STATUS_TYPE.ERROR);
+      return;
+    }
+    await login.gotoLoginPage();
+    setStatus(STATUS_TYPE.DONE);
+  }
+  async function userFrozenErrorResolve() {
+    history.replace('/exception/403');
+  }
+  async function checkAndInit() {
+    setStatus(STATUS_TYPE.LOADING);
+    const isPassed = checkAutoLogin();
+    if (!isPassed) {
       return;
     }
     await userStore.getOrganizations();
-    const isSuccess = await userStore.switchCurrentOrganization();
+    let getDefaultOrganization;
+    if (!odc.appConfig.login.setFirstOraganizationToDefault) {
+      getDefaultOrganization = async function () {
+        return new Promise((resolve) => {
+          setDefaultOrganizationHanlde(() => {
+            return (id: number) => {
+              resolve(id);
+              setDefaultOrganizationHanlde(null);
+            };
+          });
+        });
+      };
+    }
+    const isSuccess = await userStore.switchCurrentOrganization(null, getDefaultOrganization);
     const isLoginPage = location.pathname.indexOf('login') > -1;
     if (!userStore.organizations?.length || !isSuccess) {
-      if (isClient()) {
-        /**
-         * 客户端，但是获取用户失败，这个时候其实是系统错误
-         */
-        message.error(
-          formatMessage({
-            id: 'odc.src.layout.UserWrapper.GetcurrentuserInitializationInformationFailed',
-          }), //[getCurrentUser]初始化信息失败
-        );
-
-        setStatus(STATUS_TYPE.ERROR);
-        return;
-      }
-      await login.gotoLoginPage();
+      organizationErrorResolve();
+      return;
     } else if (userStore?.user?.enabled === false) {
       /**
        * 冻结用户
        */
-      history.replace('/exception/403');
-    } else if (isLoginPage) {
+      userFrozenErrorResolve();
+      return;
+    } else if (
+      isLoginPage ||
+      location.pathname === getDefaultProjectPage() ||
+      location.pathname === '/'
+    ) {
       /**
        * 处于login页面并且已经登录，需要跳到对应的页面上
        */
-      history.replace('/project');
+      await toDefaultProjectPage();
     }
     setStatus(STATUS_TYPE.DONE);
   }
   useEffect(() => {
-    checkLoginStatus();
+    checkAndInit();
   }, []);
   useEffect(() => {
     switch (status) {
@@ -100,6 +138,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
         pageContext?.setTask({
           tip: formatMessage({
             id: 'odc.src.layout.GetUserInformation',
+            defaultMessage: '正在获取用户信息',
           }), //'正在获取用户信息'
           showError: false,
         });
@@ -116,6 +155,7 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
         pageContext?.setTask({
           tip: formatMessage({
             id: 'odc.src.layout.UserStatusIsBeingChecked',
+            defaultMessage: '正在检查用户状态',
           }), //'正在检查用户状态'
           showError: false,
         });
@@ -132,7 +172,16 @@ const UserWrapper: React.FC<IProps> = function ({ children, userStore, settingSt
       );
     }
     default: {
-      return <></>;
+      return (
+        <>
+          <OrganizationSelectModal
+            open={!!defaultOrganizationHanlde}
+            onOk={async (id: number) => {
+              defaultOrganizationHanlde?.(id);
+            }}
+          />
+        </>
+      );
     }
   }
 };

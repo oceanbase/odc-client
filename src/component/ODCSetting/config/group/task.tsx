@@ -1,0 +1,213 @@
+import { formatMessage } from '@/util/intl';
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { IODCSetting, ODCSettingGroup } from '../../config';
+import RadioItem from '../../Item/RadioItem';
+import TextAreaItem from '../../Item/TextItem';
+import InputIntegerItem from '../../Item/InputIntegerItem';
+import SelectItem from '../../Item/SelectItem';
+import { getExecutionStrategyConfig, getDatabaseChangeResultSetsConfig } from '../common';
+import { getTaskExecStrategyTextMap } from '@/component/Task/const';
+import { TaskExecStrategy } from '@/d.ts';
+
+const taskGroup: ODCSettingGroup = {
+  label: formatMessage({
+    id: 'src.component.ODCSetting.config.group.5AF13B23',
+    defaultMessage: '工单任务',
+  }),
+  key: 'groupTask',
+};
+
+const taskSetting: IODCSetting[] = [
+  // {
+  //   label: '工单任务执行方式',
+  //   key: 'way',
+  //   group: taskGroup,
+  //   storeType: 'server',
+  //   render: (value, onChange) => {
+  //     return (
+  //       <SelectItem
+  //         options={[
+  //           {
+  //             label: getTaskExecStrategyTextMap[TaskExecStrategy.START_NOW],
+  //             value: TaskExecStrategy.START_NOW,
+  //           },
+  //           {
+  //             label: getTaskExecStrategyTextMap[TaskExecStrategy.MANUAL],
+  //             value: TaskExecStrategy.MANUAL,
+  //           },
+  //           {
+  //             label: getTaskExecStrategyTextMap[TaskExecStrategy.START_AT],
+  //             value: TaskExecStrategy.START_AT,
+  //           },
+  //         ]}
+  //         config={{ width: 480, mode: 'tags', showDefault: true }}
+  //         value={value}
+  //         onChange={onChange}
+  //       />
+  //     );
+  //   },
+  // },
+  // {
+  //   label: '定时任务执行方式',
+  //   key: 'time',
+  //   group: taskGroup,
+  //   storeType: 'server',
+  //   render: (value, onChange) => {
+  //     return (
+  //       <SelectItem
+  //         options={[
+  //           {
+  //             label: getTaskExecStrategyTextMap[TaskExecStrategy.TIMER],
+  //             value: TaskExecStrategy.TIMER,
+  //           },
+  //           {
+  //             label: getTaskExecStrategyTextMap[TaskExecStrategy.START_NOW],
+  //             value: TaskExecStrategy.START_NOW,
+  //           },
+  //           {
+  //             label: getTaskExecStrategyTextMap[TaskExecStrategy.MANUAL],
+  //             value: TaskExecStrategy.MANUAL,
+  //           },
+  //           {
+  //             label: getTaskExecStrategyTextMap[TaskExecStrategy.START_AT],
+  //             value: TaskExecStrategy.START_AT,
+  //           },
+  //         ]}
+  //         config={{ width: 480, mode: 'tags', showDefault: true }}
+  //         value={value}
+  //         onChange={onChange}
+  //       />
+  //     );
+  //   },
+  // },
+  {
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.group.81FAF01E',
+      defaultMessage: '导入工单允许结构替换',
+    }),
+    key: 'odc.task.default.importTaskStructureReplacementEnabled',
+    locationKey: 'importTaskStructureReplacementEnabled',
+    group: taskGroup,
+    storeType: 'server',
+    render: (value, onChange) => {
+      return (
+        <RadioItem
+          options={[
+            {
+              label: formatMessage({
+                id: 'src.component.ODCSetting.config.group.B9594124',
+                defaultMessage: '是',
+              }),
+              value: 'true',
+            },
+            {
+              label: formatMessage({
+                id: 'src.component.ODCSetting.config.group.B89D1A86',
+                defaultMessage: '否',
+              }),
+              value: 'false',
+            },
+          ]}
+          value={value}
+          onChange={onChange}
+        />
+      );
+    },
+  },
+  {
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.group.B3BD15DD',
+      defaultMessage: '数据库变更默认生成备份回滚方案',
+    }),
+    key: 'odc.task.default.rollbackPlanEnabled',
+    locationKey: 'rollbackPlanEnabled',
+    group: taskGroup,
+    storeType: 'server',
+    render: (value, onChange) => {
+      return (
+        <RadioItem
+          options={[
+            {
+              label: formatMessage({
+                id: 'src.component.ODCSetting.config.group.75980064',
+                defaultMessage: '是',
+              }),
+              value: 'true',
+            },
+            {
+              label: formatMessage({
+                id: 'src.component.ODCSetting.config.group.228F4926',
+                defaultMessage: '否',
+              }),
+              value: 'false',
+            },
+          ]}
+          value={value}
+          onChange={onChange}
+        />
+      );
+    },
+  },
+  ...getDatabaseChangeResultSetsConfig(taskGroup),
+  ...getExecutionStrategyConfig(taskGroup),
+  {
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.group.0D37A072',
+      defaultMessage: '作业任务最小调度间隔',
+    }),
+    key: 'odc.schedule.minSchedulingIntervalMinutes',
+    group: taskGroup,
+    storeType: 'server',
+    render: (value, onChange) => {
+      return (
+        <InputIntegerItem
+          value={value}
+          onChange={onChange}
+          min="1"
+          unit={formatMessage({
+            id: 'src.component.ODCSetting.config.group.104E2D2F',
+            defaultMessage: '分钟',
+          })}
+        />
+      );
+    },
+  },
+  {
+    label: formatMessage({
+      id: 'src.component.ODCSetting.config.group.0ACF68C5',
+      defaultMessage: '任务描述提示文案',
+    }),
+    key: 'odc.task.default.taskDescriptionPrompt',
+    locationKey: 'taskDescriptionPrompt',
+    group: taskGroup,
+    storeType: 'server',
+    render: (value, onChange) => {
+      return (
+        <TextAreaItem
+          value={value}
+          onChange={onChange}
+          config={{
+            showCount: true,
+            maxLength: 200,
+          }}
+        />
+      );
+    },
+  },
+];
+
+export default taskSetting;

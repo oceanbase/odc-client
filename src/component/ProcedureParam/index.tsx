@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 import type { IPLParam } from '@/d.ts';
 import { ConnectionMode, DbObjectType, ParamMode } from '@/d.ts';
 import type { RowType } from '@/page/Workspace/components/EditableTable';
@@ -23,7 +24,7 @@ import { InputNumberEditor } from '@/page/Workspace/components/EditableTable/Edi
 import { WrapSelectEditor } from '@/page/Workspace/components/EditableTable/Editors/SelectEditor';
 import { TextEditor } from '@/page/Workspace/components/EditableTable/Editors/TextEditor';
 import SessionStore from '@/store/sessionManager/session';
-import { mergeDataType } from '@/util/dataType';
+import { mergeDataType } from '@/util/database/dataType';
 import { formatMessage } from '@/util/intl';
 import { generateUniqKey } from '@/util/utils';
 import {
@@ -44,8 +45,6 @@ import React, {
   useState,
 } from 'react';
 import Toolbar from '../Toolbar';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
-import { getDataSourceModeConfigByConnectionMode } from '@/common/datasource';
 
 interface IProps {
   session: SessionStore;
@@ -99,20 +98,20 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
     return [
       config?.params?.includes('paramName') && {
         key: 'paramName',
-        name: formatMessage({ id: 'odc.component.ProcedureParam.Name' }), // 名称
+        name: formatMessage({ id: 'odc.component.ProcedureParam.Name', defaultMessage: '名称' }), // 名称
         editor: TextEditor,
       },
 
       config?.params?.includes('paramMode') && {
         key: 'paramMode',
-        name: formatMessage({ id: 'odc.component.ProcedureParam.Mode' }), // 模式
+        name: formatMessage({ id: 'odc.component.ProcedureParam.Mode', defaultMessage: '模式' }), // 模式
         width: 60,
         editor: WrapSelectEditor([ParamMode.IN, ParamMode.OUT, ParamMode.INOUT], false),
       },
 
       config?.params?.includes('dataType') && {
         key: 'dataType',
-        name: formatMessage({ id: 'odc.component.ProcedureParam.Type' }), // 类型
+        name: formatMessage({ id: 'odc.component.ProcedureParam.Type', defaultMessage: '类型' }), // 类型
         width: 100,
         editor: WrapAutoCompleteEditor(
           session?.dataTypes.map((d) => d.databaseType.replace('()', '')),
@@ -120,7 +119,7 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
       },
       config?.params?.includes('dataLength') && {
         key: 'dataLength',
-        name: formatMessage({ id: 'odc.component.ProcedureParam.Length' }), // 长度
+        name: formatMessage({ id: 'odc.component.ProcedureParam.Length', defaultMessage: '长度' }), // 长度
         width: 60,
         editor: InputNumberEditor,
       },
@@ -128,6 +127,7 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
         key: 'defaultValue',
         name: formatMessage({
           id: 'odc.component.ProcedureParam.DefaultValue',
+          defaultMessage: '默认值',
         }), // 默认值
         width: 150,
         editor: TextEditor,
@@ -204,13 +204,16 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
             icon={<PlusOutlined />}
             text={formatMessage({
               id: 'odc.component.ProcedureParam.AddParameters',
+              defaultMessage: '添加参数',
             })}
             /* 添加参数 */ onClick={addParam}
           />
+
           <Toolbar.Button
             icon={<DeleteOutlined />}
             text={formatMessage({
               id: 'odc.component.ProcedureParam.DeleteParameters',
+              defaultMessage: '删除参数',
             })} /* 删除参数 */
             onClick={deleteParam}
             disabled={
@@ -223,6 +226,7 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
             icon={<ArrowUpOutlined />}
             text={formatMessage({
               id: 'odc.component.ProcedureParam.MoveUp',
+              defaultMessage: '向上移动',
             })} /* 向上移动 */
             onClick={moveUpParam}
             disabled={gridRef.current?.selectedRows.size !== 1}
@@ -232,6 +236,7 @@ const FunctionOrProcedureParams: React.FC<IProps> = (props) => {
             icon={<ArrowDownOutlined />}
             text={formatMessage({
               id: 'odc.component.ProcedureParam.MoveDown',
+              defaultMessage: '向下移动',
             })} /* 向下移动 */
             onClick={moveDownParam}
             disabled={gridRef.current?.selectedRows.size !== 1}

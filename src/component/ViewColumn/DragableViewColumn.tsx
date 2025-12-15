@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import { IPLParam } from '@/d.ts';
+import { ReactComponent as DragSvg } from '@/svgr/drag.svg';
+import { formatMessage } from '@/util/intl';
 import Icon, { CloseCircleFilled } from '@ant-design/icons';
 import { Col, Input, Row } from 'antd';
-import React from 'react';
-import { IPLParam } from '@/d.ts';
 import classNames from 'classnames';
+import React from 'react';
 import { IViewParam } from '.';
 import Dragable, { IDragable } from '../Dragable';
 import styles from './index.less';
-import { ReactComponent as DragSvg } from '@/svgr/drag.svg';
-import { formatMessage } from '@/util/intl';
 
 export interface IDragableViewParamProps extends IDragable {
   rule: Partial<IViewParam>;
@@ -60,7 +60,8 @@ const DragableViewColumn = ({ props }: { props: IDragableViewParamProps }) => {
           <span style={{ marginRight: 8 }}>
             <Icon component={DragSvg} className={styles.dragHandler} />
           </span>
-          {formatMessage({ id: 'workspace.window.createView.columnName' })}：
+          {formatMessage({ id: 'workspace.window.createView.columnName', defaultMessage: '名称' })}
+          ：
           <Input
             value={rule.paramName}
             style={{ flex: 1 }}

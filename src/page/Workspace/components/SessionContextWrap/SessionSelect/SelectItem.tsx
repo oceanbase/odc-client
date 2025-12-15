@@ -14,66 +14,113 @@
  * limitations under the License.
  */
 
-import { formatMessage } from '@/util/intl';
-import React, { useEffect } from 'react';
-import SessionDropdown, { ISessionDropdownFiltersProps } from './SessionDropdown';
-import SessionContext from '../context';
-import { Divider, Select, Space } from 'antd';
-import { useRequest } from 'ahooks';
-import { getDatabase } from '@/common/network/database';
-import { getConnectionDetail } from '@/common/network/connection';
-import Icon from '@ant-design/icons';
-import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
+import { getConnectionDetail } from '@/common/network/connection';
+import { getDatabase } from '@/common/network/database';
+import { logicalDatabaseDetail } from '@/common/network/logicalDatabase';
+import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { TaskType } from '@/d.ts';
 import login from '@/store/login';
+import { formatMessage } from '@/util/intl';
+import Icon, { ArrowDownOutlined, LoadingOutlined } from '@ant-design/icons';
+import { useRequest } from 'ahooks';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Divider, Flex, Select, Space } from 'antd';
+import SessionContext from '../context';
 import { DEFALT_WIDTH } from './const';
+import { IDatabase } from '@/d.ts/database';
+import styles from './index.less';
+import SessionDropdown, { ISessionDropdownFiltersProps } from './SessionDropdown';
+import { ScheduleType } from '@/d.ts/schedule';
+import { isNumber } from 'lodash';
 
 interface IProps {
   value?: number;
   taskType?: TaskType;
+  scheduleType?: ScheduleType;
   width?: number | string;
   projectId?: number;
+  dataSourceId?: number;
   filters?: ISessionDropdownFiltersProps;
   placeholder?: string;
   disabled?: boolean;
-  onChange?: (value: number) => void;
+  isLogicalDatabase?: boolean;
   datasourceMode?: boolean;
+  projectMode?: boolean;
+  onChange?: (value: number, database?: IDatabase) => void;
+  showProject?: boolean;
+  popoverWidth?: number;
+  manageLinkVisible?: boolean;
+  onInit?: (database?: IDatabase) => void;
 }
 
 const SelectItem: React.FC<IProps> = ({
   value,
   taskType,
+  scheduleType,
   projectId,
+  dataSourceId,
   filters = null,
   width,
   placeholder = formatMessage({
     id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.66A17FFD',
+    defaultMessage: '请选择',
   }),
   disabled = false,
   onChange,
+  isLogicalDatabase = false,
   datasourceMode = false,
+  projectMode = isLogicalDatabase,
+  showProject = true,
+  popoverWidth,
+  manageLinkVisible = false,
+  onInit,
 }) => {
   const { data: database, run: runDatabase } = useRequest(getDatabase, {
     manual: true,
   });
-
+  const databaseInfoContainerRef = useRef<HTMLDivElement>(null);
   const { data: dataSource, run: runDataSource } = useRequest(getConnectionDetail, {
     manual: true,
   });
 
+  const { data: logicalDatabase, run: runLogicalDatabase } = useRequest(logicalDatabaseDetail, {
+    manual: true,
+  });
+
+  const initDatabase = async () => {
+    if (datasourceMode) {
+      runDataSource(value);
+    } else {
+      if (isLogicalDatabase) {
+        runLogicalDatabase(value);
+      } else {
+        const res = await runDatabase(value);
+        onInit?.(res?.data);
+      }
+    }
+  };
+
   useEffect(() => {
     if (value) {
-      if (datasourceMode) {
-        runDataSource(value);
-      } else {
-        runDatabase(value);
-      }
+      initDatabase();
     }
   }, [value]);
 
   const dbIcon = getDataSourceStyleByConnectType(database?.data?.dataSource?.type)?.dbIcon;
   const dataSourceIcon = getDataSourceStyleByConnectType(dataSource?.type)?.icon;
+
+  const [isDatabaseInfoContainerSingleLine, setIsDatabaseInfoContainerSingleLine] = useState(false);
+
+  useEffect(() => {
+    if (
+      databaseInfoContainerRef?.current &&
+      database?.data &&
+      isNumber(databaseInfoContainerRef?.current?.offsetHeight)
+    ) {
+      setIsDatabaseInfoContainerSingleLine(databaseInfoContainerRef?.current?.offsetHeight < 22);
+    }
+  }, [databaseInfoContainerRef?.current, database?.data]);
 
   const getPlaceholder = () => {
     if (!value) return placeholder;
@@ -87,9 +134,45 @@ const SelectItem: React.FC<IProps> = ({
           {dataSource?.name}
         </Space>
       );
-    } else if (!datasourceMode && database?.data) {
+    }
+    if (projectMode) {
+      if (!logicalDatabase?.data) {
+        return <LoadingOutlined />;
+      }
+      const dbIcon = getDataSourceStyleByConnectType(
+        logicalDatabase?.data?.dialectType as any,
+      )?.dbIcon;
       return (
-        <Space size={1} style={{ color: 'var(--text-color-primary)', width: '100%' }}>
+        <div
+          style={{
+            color: 'var(--text-color-primary)',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+          }}
+        >
+          <>
+            <RiskLevelLabel
+              content={logicalDatabase?.data?.environment?.name}
+              color={logicalDatabase?.data?.environment?.style}
+            />
+            <Icon
+              component={dbIcon?.component}
+              style={{ fontSize: 16, marginRight: 4, verticalAlign: 'textBottom' }}
+            />
+            <span className={styles.ellipsis} title={logicalDatabase?.data?.name}>
+              {logicalDatabase?.data?.name}
+            </span>
+          </>
+        </div>
+      );
+    }
+    if (!datasourceMode && database?.data) {
+      return (
+        <Flex
+          gap={1}
+          style={{ color: 'var(--text-color-primary)', width: '100%', overflow: 'hidden' }}
+        >
           <>
             <RiskLevelLabel
               content={database?.data?.environment?.name}
@@ -101,8 +184,17 @@ const SelectItem: React.FC<IProps> = ({
               style={{ fontSize: 16, marginRight: 4, verticalAlign: 'textBottom' }}
             />
           </>
-          {database?.data?.name}
-        </Space>
+
+          <div
+            style={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+            title={database?.data?.name}
+          >
+            {database?.data?.name}
+          </div>
+        </Flex>
       );
     }
     return placeholder;
@@ -112,49 +204,59 @@ const SelectItem: React.FC<IProps> = ({
       value={{
         session: null,
         databaseId: value,
-        from: 'datasource',
-        datasourceMode: datasourceMode,
-        selectSession(databaseId: number, datasourceId: number, from: 'project' | 'datasource') {
-          onChange(datasourceMode ? datasourceId : databaseId);
+        datasourceMode,
+        projectMode,
+        isLogicalDatabase,
+        selectSession(databaseId: number, datasourceId: number, database?: IDatabase) {
+          onChange(datasourceMode ? datasourceId : databaseId, database);
         },
       }}
     >
       <Space style={{ width: '100%' }} direction="vertical">
         <SessionDropdown
           projectId={projectId}
+          dataSourceId={dataSourceId}
           filters={filters}
-          width={width || DEFALT_WIDTH}
+          width={popoverWidth || width || DEFALT_WIDTH}
           taskType={taskType}
+          scheduleType={scheduleType}
+          disabled={disabled}
+          manageLinkVisible={manageLinkVisible}
         >
           <Select
             disabled={disabled}
             placeholder={getPlaceholder()}
             style={{ width: width || DEFALT_WIDTH }}
             open={false}
+            className={styles.select}
           />
         </SessionDropdown>
         {value && database?.data ? (
-          <Space
-            size={2}
-            split={<Divider type="vertical" />}
-            style={{ color: 'var(--text-color-hint)' }}
+          <div
+            ref={databaseInfoContainerRef}
+            className={styles.databaseInfo}
+            style={{
+              width: width || DEFALT_WIDTH,
+            }}
           >
-            {login.isPrivateSpace() ? null : (
-              <span>
+            {login.isPrivateSpace() || !showProject ? null : (
+              <div className={styles.item}>
                 {formatMessage({
                   id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.5AC43B24' /*项目：*/,
+                  defaultMessage: '项目：',
                 })}
                 {database?.data?.project?.name}
-              </span>
+              </div>
             )}
-
-            <span>
+            {isDatabaseInfoContainerSingleLine && <Divider type="vertical" />}
+            <div className={styles.item}>
               {formatMessage({
                 id: 'src.page.Workspace.components.SessionContextWrap.SessionSelect.7780C356' /*数据源：*/,
+                defaultMessage: '数据源：',
               })}
               {database?.data?.dataSource?.name}
-            </span>
-          </Space>
+            </div>
+          </div>
         ) : null}
       </Space>
     </SessionContext.Provider>

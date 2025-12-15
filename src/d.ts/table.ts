@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { DatabasePermissionType } from '@/d.ts/database';
+
 export interface IServerTable {
   name: string;
   columnGroups: IColumnStoreServerType[];
@@ -31,6 +33,8 @@ export interface IServerTable {
       verticalColumnNames: string[];
     }>;
     partitionDefinitions?: Partial<IServerTablePartitionDefinition>[];
+    subpartition?: Partial<IServerTable['partition']>;
+    subpartitionTemplated?: boolean;
   };
   DDL: string;
   createTime: number;
@@ -159,6 +163,7 @@ export interface IServerTablePartitionDefinition {
   maxRows: number;
   minRows: number;
   ordinalPosition: number;
+  parentPartitionDefinition?: IServerTablePartitionDefinition;
 }
 
 /**
@@ -199,6 +204,32 @@ export enum TableForeignConstraintOnUpdateType {
   RESTRICT = 'RESTRICT',
 }
 
+/**
+ * 表操作的相关权限: 目前与库权限保持一致
+ */
+export enum TablePermissionType {
+  QUERY = 'QUERY',
+  CHANGE = 'CHANGE',
+  EXPORT = 'EXPORT',
+}
+
+export enum UnauthorizedPermissionTypeInSQLExecute {
+  ODC_TABLE = 'ODC_TABLE',
+  ODC_DATABASE = 'ODC_DATABASE',
+}
+
+export interface IUnauthorizedDBResources {
+  unauthorizedPermissionTypes: (DatabasePermissionType & TablePermissionType)[];
+  dataSourceId: number;
+  projectId: number;
+  projectName: string;
+  databaseId: number;
+  databaseName: string;
+  tableName: string;
+  tableId: number;
+  applicable: boolean;
+  type: UnauthorizedPermissionTypeInSQLExecute;
+}
 export interface IColumnStoreServerType {
   allColumns?: boolean;
   eachColumn?: boolean;

@@ -15,42 +15,131 @@ import { formatMessage } from '@/util/intl';
  * limitations under the License.
  */
 
-import { Modal } from 'antd';
 import { SQLCodePreviewer } from '@/component/SQLCodePreviewer';
+import { Modal, Form, Input, Alert } from 'antd';
+import { useEffect, useState } from 'react';
+import { IDatabase } from '@/d.ts/database';
+import { getDefaultName } from '../CreateTaskConfirmModal/helper';
 
 function SQLPreviewModal(props: {
   sql?: string;
   visible?: boolean;
   onClose: () => void;
-  onOk: () => void;
+  onOk: (Name?: string) => void;
+  database?: IDatabase;
+  isEdit: boolean;
+  initName?: string;
+  hideSqlPreview?: boolean;
+  tips?: string;
+  modelHeight?: number;
 }) {
-  const { sql, visible, onClose, onOk } = props;
+  const {
+    sql,
+    visible,
+    onClose,
+    onOk,
+    database,
+    isEdit = false,
+    initName,
+    hideSqlPreview = false,
+    tips,
+    modelHeight = 400,
+  } = props;
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    setConfirmLoading(false);
+    if (initName) {
+      form.setFieldValue('Name', initName);
+    } else if (visible && database) {
+      form.setFieldValue('Name', getDefaultName(database));
+    }
+  }, [visible]);
+
+  const handleOk = async (name: string) => {
+    onOk(name);
+  };
 
   return (
     <Modal
       title={
         <span style={{ fontWeight: 400 }}>
           {formatMessage({
-            id: 'src.component.Task.component.SQLPreviewModal.9967DB7D' /*归档 SQL 预览（变量以当前时间代入，具体执行按实际配置替换），点击"确认"按钮继续提交申请*/,
+            id: 'src.component.Task.component.SQLPreviewModal.F69B0894',
+            defaultMessage: '预览 SQL',
           })}
         </span>
       }
       width={760}
       bodyStyle={{
-        height: 400,
+        height: modelHeight,
       }}
       open={visible}
       onCancel={onClose}
-      onOk={onOk}
+      onOk={async () => {
+        setConfirmLoading(true);
+        await form
+          .validateFields()
+          .then((value) => {
+            handleOk(value?.Name);
+          })
+          .catch(() => {
+            setConfirmLoading(false);
+            return false;
+          });
+      }}
+      confirmLoading={confirmLoading}
     >
       <div
         style={{
+          display: 'flex',
+          flexDirection: 'column',
           height: '100%',
-          position: 'relative',
-          border: '1px solid var(--odc-border-color)',
         }}
       >
-        <SQLCodePreviewer readOnly language="sql" value={sql} />
+        <Alert message={tips} type="info" showIcon style={{ marginBottom: '16px' }} />
+        {!hideSqlPreview && (
+          <div
+            style={{
+              flex: 1,
+              position: 'relative',
+              border: '1px solid var(--odc-border-color)',
+              marginBottom: '16px',
+            }}
+          >
+            <SQLCodePreviewer readOnly language="sql" value={sql} />
+          </div>
+        )}
+
+        <Form form={form} layout="vertical">
+          <Form.Item
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (!value || value.trim() === '') {
+                    return Promise.reject(
+                      new Error(
+                        formatMessage({
+                          id: 'src.component.Task.component.SQLPreviewModal.6CB54C6C',
+                          defaultMessage: '请输入作业名称',
+                        }),
+                      ),
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+            name={'Name'}
+            label={formatMessage({
+              id: 'src.component.Task.component.SQLPreviewModal.7694B197',
+              defaultMessage: '作业名称',
+            })}
+          >
+            <Input maxLength={200} showCount />
+          </Form.Item>
+        </Form>
       </div>
     </Modal>
   );
