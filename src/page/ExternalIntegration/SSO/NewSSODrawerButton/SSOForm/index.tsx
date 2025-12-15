@@ -28,7 +28,7 @@ import {
   SAMLType,
 } from '@/d.ts';
 import { UserStore } from '@/store/login';
-import channel, { ChannelMap } from '@/util/broadcastChannel';
+import channel, { ChannelMap } from '@/util/communication/broadcastChannel';
 import { formatMessage } from '@/util/intl';
 import logger from '@/util/logger';
 import { encrypt } from '@/util/utils';
@@ -52,6 +52,8 @@ import { inject, observer } from 'mobx-react';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { LDAPPartForm, OAUTH2PartForm, OIDCPartForm, SAMLPartForm } from './PartForm';
 import SAMLModalConfirm from './SAMLModalConfirm';
+import odc from '@/plugins/odc';
+import styles from './index.less';
 
 export const requiredRule = {
   required: true,
@@ -124,27 +126,6 @@ export default inject('userStore')(
         },
         [form, registrationId, testInfo],
       );
-
-      useEffect(() => {
-        if (showExtraConfigForSAML && form.getFieldValue('name')) {
-          const name = form.getFieldValue('name');
-          const md5Hex = md5(`${name || ''}`);
-          const id = `${userStore?.organizationId}-${md5Hex}`;
-          form.setFieldsValue({
-            ssoParameter: {
-              providerEntityId: `${
-                window.ODCApiHost || location.origin
-              }/saml2/service-provider-metadata/${id}`,
-            },
-          });
-        } else {
-          form.setFieldsValue({
-            ssoParameter: {
-              providerEntityId: undefined,
-            },
-          });
-        }
-      }, [showExtraConfigForSAML]);
 
       async function fetchTestInfo(testId: string) {
         const data = await getTestUserInfo(testId);
@@ -226,6 +207,9 @@ export default inject('userStore')(
               testAcsEntityId: `${
                 window.ODCApiHost || location.origin
               }/saml2/service-provider-metadata/${userStore?.organizationId}-test`,
+              testAcsLocation: `${
+                odc.appConfig.network?.baseUrl?.() || location.origin
+              }/login/saml2/sso/${userStore?.organizationId}-test`,
             },
           });
         }
@@ -273,6 +257,7 @@ export default inject('userStore')(
           ['ssoParameter', 'singlesignon', 'url'],
           ['ssoParameter', 'singlesignon', 'binding'],
           ['ssoParameter', 'singlesignon', 'signRequest'],
+          ['ssoParameter', 'providerEntityId'],
         ]);
         if (!value) {
           return;
@@ -304,6 +289,10 @@ export default inject('userStore')(
           (clone.ssoParameter as ISSO_SAML_CONFIG).acsEntityId = form.getFieldValue([
             'ssoParameter',
             'testAcsEntityId',
+          ]);
+          (clone.ssoParameter as ISSO_SAML_CONFIG).acsLocation = form.getFieldValue([
+            'ssoParameter',
+            'testAcsLocation',
           ]);
           params.odcBackUrl =
             location.origin + '/' + '#/gateway/eyJhY3Rpb24iOiJ0ZXN0TG9naW4iLCJkYXRhIjp7fX0=';
@@ -425,29 +414,31 @@ export default inject('userStore')(
       function updateRegistrationId(name) {
         var md5Hex = md5(`${name || ''}`);
         const id = `${userStore?.organizationId}-${md5Hex}`;
+        const testId = `${userStore?.organizationId}-test`;
         setRegistrationId(id);
         switch (form.getFieldValue('type')) {
           case ISSOType.SAML:
             form.setFieldsValue({
               ssoParameter: {
-                acsLocation: `${window.ODCApiHost || location.origin}/login/saml2/sso/${id}`,
+                acsLocation: `${
+                  odc.appConfig.network?.baseUrl?.() || location.origin
+                }/login/saml2/sso/${id}`,
+                testAcsLocation: `${
+                  odc.appConfig.network?.baseUrl?.() || location.origin
+                }/login/saml2/sso/${testId}`,
                 acsEntityId: `${
-                  window.ODCApiHost || location.origin
+                  odc.appConfig.network?.baseUrl?.() || location.origin
                 }/saml2/service-provider-metadata/${id}`,
-              },
-            });
-            form.setFieldsValue({
-              ssoParameter: {
                 testAcsEntityId: `${
                   window.ODCApiHost || location.origin
-                }/saml2/service-provider-metadata/${userStore?.organizationId}-test`,
+                }/saml2/service-provider-metadata/${testId}`,
               },
             });
             if (showExtraConfigForSAML) {
               form.setFieldsValue({
                 ssoParameter: {
                   providerEntityId: `${
-                    window.ODCApiHost || location.origin
+                    odc.appConfig.network?.baseUrl?.() || location.origin
                   }/saml2/service-provider-metadata/${id}`,
                 },
               });
@@ -455,7 +446,9 @@ export default inject('userStore')(
           default:
             form.setFieldsValue({
               ssoParameter: {
-                redirectUrl: `${window.ODCApiHost || location.origin}/login/oauth2/code/${id}`,
+                redirectUrl: `${
+                  odc.appConfig.network?.baseUrl?.() || location.origin
+                }/login/oauth2/code/${id}`,
               },
             });
         }
@@ -487,9 +480,9 @@ export default inject('userStore')(
           return <OIDCPartForm isEdit={isEdit} />;
         }
       };
-      const redirectUrl = `${window.ODCApiHost || location.origin}/login/oauth2/code/${
-        userStore?.organizationId
-      }-test`;
+      const redirectUrl = `${
+        odc.appConfig.network?.baseUrl?.() || location.origin
+      }/login/oauth2/code/${userStore?.organizationId}-test`;
 
       const updateSAMLCheckBoxConfig = async (type: SAMLType, checked: boolean, value?: string) => {
         if (checked) {
@@ -859,7 +852,7 @@ export default inject('userStore')(
                   >
                     {fields?.map((field, index) => {
                       return (
-                        <Space key={field.key}>
+                        <div key={field.key} style={{ display: 'flex' }}>
                           <Form.Item
                             {...field}
                             key="attributeName"
@@ -883,6 +876,7 @@ export default inject('userStore')(
                             <Input
                               style={{
                                 width: 200,
+                                marginLeft: '8px',
                               }}
                               placeholder={formatMessage({
                                 id: 'odc.NewSSODrawerButton.SSOForm.EnterACustomFieldMapping',
@@ -893,28 +887,19 @@ export default inject('userStore')(
                           <Icon
                             style={{
                               cursor: 'pointer',
-                              paddingBottom: 10,
+                              height: '100%',
+                              marginLeft: '8px',
+                              marginTop: '8px',
+                              color: 'var(--text-color-hint)',
                             }}
                             component={DeleteOutlined}
                             onClick={() => operation.remove(index)}
                           />
-                        </Space>
+                        </div>
                       );
                     })}
-                    <Button
-                      style={{
-                        width: '100%',
-                      }}
-                      onClick={() => operation.add()}
-                      type="dashed"
-                    >
-                      <Icon
-                        style={{
-                          verticalAlign: 'text-bottom',
-                        }}
-                        component={PlusOutlined}
-                      />
-
+                    <Button className={styles.add} onClick={() => operation.add()} type="dashed">
+                      <Icon className={styles.icon} component={PlusOutlined} />
                       {
                         formatMessage({
                           id: 'odc.NewSSODrawerButton.SSOForm.Add',

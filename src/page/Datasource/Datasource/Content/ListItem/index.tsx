@@ -20,7 +20,7 @@ import classNames from 'classnames';
 import React from 'react';
 import styles from './index.less';
 import { ConnectType } from '@/d.ts';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import { ReactComponent as ClusterSvg } from '@/svgr/graphic_cluster.svg';
 import { ReactComponent as HostSvg } from '@/svgr/graphic_server.svg';
 import { ReactComponent as TenantSvg } from '@/svgr/graphic_tenant.svg';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { dataTypesIns } from '@/util/dataType';
+import { dataTypesIns } from '@/util/database/dataType';
 import { columnExtraComponent } from '../interface';
 import Character from '@/page/Workspace/components/CreateTable/Columns/ColumnExtraInfo/Character';
 import DataSync from '@/page/Workspace/components/CreateTable/Columns/ColumnExtraInfo/DateSync';

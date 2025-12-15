@@ -26,6 +26,7 @@ export enum CommonTableMode {
 export interface ITableInstance {
   reload: (args?: ITableLoadOptions) => void;
   resetSelectedRows: () => void;
+  setSelectedRowKeys: (keys: React.Key[]) => void;
 }
 export interface ITitleContent {
   tabs?: {
@@ -84,6 +85,7 @@ export interface IOperationOption {
   disabled?: boolean;
   menu?: MenuProps;
   onClick?: (args?: ITableLoadOptions) => void;
+  trigger?: ('contextMenu' | 'click' | 'hover')[];
 }
 export interface IOperationContent {
   options: IOperationOption[];
@@ -91,6 +93,7 @@ export interface IOperationContent {
   isNeedOccupyElement?: boolean;
 }
 export interface IRowSelecter<T> extends TableRowSelection<T> {
+  selectAllText?: string;
   options: {
     okText: string;
     onOk: (keys: React.Key[]) => void;

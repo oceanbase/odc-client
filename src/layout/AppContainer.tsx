@@ -27,7 +27,7 @@ import { UserStore } from '@/store/login';
 import { PageStore } from '@/store/page';
 import { SettingStore } from '@/store/setting';
 import { SQLStore } from '@/store/sql';
-import { haveLockPwd, initClientService, isLock } from '@/util/client';
+import { haveLockPwd, initClientService, isLock } from '@/util/business/client';
 import { isClient } from '@/util/env';
 import { Helmet, history, Outlet, useAppData, useLocation, useRouteData } from '@umijs/max';
 import classNames from 'classnames';
@@ -37,6 +37,8 @@ import { ContainerQuery } from 'react-container-query';
 import Context from './MenuContext';
 import { PageLoadingContext } from './PageLoadingWrapper';
 import StoreProvider from './StoreProvider';
+import { ConfigProvider } from 'antd';
+import { theme } from './antdTheme';
 
 // // TODO：支持英文版
 // setLocale('zh-CN');
@@ -215,11 +217,13 @@ const App = inject(
 export default (props: any) => (
   // <Media query="(max-width: 599px)">
   <ErrorBoundary>
-    <StoreProvider>
-      <AuthStoreContext.Provider value={authStore}>
-        <App {...props} />
-      </AuthStoreContext.Provider>
-    </StoreProvider>
+    <ConfigProvider theme={theme}>
+      <StoreProvider>
+        <AuthStoreContext.Provider value={authStore}>
+          <App {...props} />
+        </AuthStoreContext.Provider>
+      </StoreProvider>
+    </ConfigProvider>
   </ErrorBoundary>
 );
 

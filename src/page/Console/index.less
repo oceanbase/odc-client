@@ -1,0 +1,376 @@
+.consoleCardTitle {
+  cursor: default;
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+.consoleBackgroud {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(180deg, #1890ff 0%, #1890ff00 100%);
+  background-size: 100% 320px;
+  background-repeat: no-repeat;
+  opacity: 0.06;
+}
+.consoleWrapper {
+  :global {
+    .ant-card-body {
+      padding: 20px;
+    }
+  }
+  cursor: default;
+  overflow-y: scroll;
+  padding: 16px 24px 24px 18px;
+  .articleTitleTypograpy {
+    display: flex;
+    align-items: center;
+    height: 20px;
+    width: fit-content;
+    font-size: 12px;
+    color: #000000;
+    line-height: 20px;
+    opacity: 0.65;
+  }
+
+  .header {
+    height: 74px;
+    gap: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 16px;
+    .title {
+      font-size: 20px;
+      line-height: 28px;
+      color: var(--text-color-primary);
+      font-weight: 600;
+      opacity: 0.85;
+    }
+    .subTitle {
+      font-size: 14px;
+      color: var(--text-color-hint);
+      line-height: 22px;
+    }
+  }
+  .filterContainer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .content {
+    .topAreaFilter {
+      opacity: 0.9;
+      background-color: #fff;
+    }
+    .top {
+      .schedules,
+      .schedulesVertical {
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          height: 28px;
+          .filter {
+            height: 28px;
+            min-width: 103px;
+            margin-left: 8px;
+            :global {
+              .anticon {
+                color: var(--icon-color-normal);
+              }
+            }
+          }
+        }
+        .card {
+          height: fit-content;
+          margin-bottom: 16px;
+          .icon {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 5px;
+          }
+          .taskLegendIcon {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+          }
+          .legend {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+            @media screen and (max-width: 1480px) {
+              padding-bottom: 0;
+              margin-top: 16px;
+            }
+
+            height: 20px;
+            .label {
+              color: var(--text-color-secondary);
+              cursor: default;
+            }
+          }
+        }
+        @media screen and (max-width: 1280px) {
+          .divider {
+            display: none;
+          }
+          .card {
+            height: fit-content;
+          }
+        }
+        .jobsCounter {
+          background: #f8fafe;
+          border-radius: 2px;
+          width: 100%;
+          height: 80px;
+          margin: 0 0 24px 0;
+
+          .counterGrid {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 100%;
+            padding: 0 20px;
+          }
+        }
+
+        .chartsContainer,
+        .chartsContainerVertical {
+          display: flex;
+          margin-top: 20px;
+          gap: 24px;
+          width: 100%;
+          min-height: 252px;
+
+          .barChartSection {
+            flex: 1;
+            min-width: 0;
+
+            margin-top: 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          .divider {
+            height: 300px;
+          }
+
+          .pieChartSection {
+            min-width: 0;
+            display: flex;
+            margin-top: 22px;
+            flex-direction: column;
+            align-items: center;
+            .legend {
+              margin-top: 16px;
+            }
+
+            .scheduleItems {
+              display: flex;
+              gap: 71px;
+            }
+          }
+
+          .pieChartSectionFull {
+            width: 100%;
+            min-width: 0;
+
+            .scheduleItemsHorizontal {
+              display: flex;
+              justify-content: space-around;
+              align-items: center;
+              width: 100%;
+            }
+          }
+        }
+
+        // 响应式布局
+        @media (max-width: 1280px) {
+          .chartsContainer {
+            flex-direction: column;
+            gap: 16px;
+
+            .pieChartSection {
+              .scheduleItems {
+                justify-content: space-between;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .bottom {
+      height: auto;
+
+      .recently {
+        padding-right: 8px;
+        .card {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+        :global {
+          .ant-card-body {
+            min-height: 521px;
+          }
+        }
+      }
+
+      .docWrapper,
+      .docWrapperVertical {
+        padding-left: 8px;
+
+        .aboutUs,
+        .aboutUsLargeVersion,
+        .aboutUsMiniVersion {
+          height: 174px;
+          :global {
+            .ant-card-body {
+              padding: 16px;
+            }
+          }
+        }
+        .aboutUs {
+          .aboutUsContent {
+            flex-direction: row;
+            flex-wrap: wrap;
+          }
+        }
+        .aboutUsMiniVersion {
+          height: 92px;
+          width: 100%;
+          .aboutUsHelpDocItem {
+            display: inline-flex;
+            width: 128px;
+          }
+        }
+        .aboutUsLargeVersion {
+          height: 521px;
+          .aboutUsHelpDocItem {
+            display: flex;
+          }
+          .aboutUsContent {
+            flex-direction: column;
+            gap: 78px;
+            .docsWrapper {
+              width: 100%;
+            }
+          }
+        }
+
+        .practice,
+        .practiceLargeVerion {
+          height: 332px;
+
+          margin-bottom: 16px;
+          :global {
+            .ant-card-body {
+              padding: 16px;
+            }
+          }
+          &:nth-child(2) {
+            margin-top: 16px;
+          }
+          .consoleCardTitle {
+            display: flex;
+            .showMore {
+              cursor: pointer;
+              font-weight: 400;
+              display: inline-flex;
+              margin-left: auto;
+              font-size: 12px;
+              color: var(--text-color-secondary);
+              line-height: 20px;
+              text-align: right;
+            }
+          }
+        }
+        .practiceLargeVerion {
+          height: 521px;
+        }
+
+        .aboutUsHelpDocItem {
+          display: inline-flex;
+          width: 128px;
+          height: 20px;
+          margin-top: 20px;
+          &:nth-child(1) {
+            margin-top: 16px;
+          }
+          .docs {
+            cursor: pointer;
+            font-size: 12px;
+            line-height: 20px;
+            white-space: nowrap;
+            color: var(--text-color-secondary);
+            &:hover {
+              opacity: 1;
+              color: var(--text-color-link);
+            }
+          }
+        }
+        .aboutUsContent {
+          display: flex;
+          justify-content: space-between;
+        }
+        .article {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          color: var(--text-color-secondary);
+          margin-top: 14px;
+          font-size: 12px;
+          line-height: 20px;
+          &:hover {
+            opacity: 1;
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--text-color-link);
+            line-height: 20px;
+          }
+          &:nth-child(2) {
+            margin-top: 16px;
+          }
+        }
+      }
+      .docWrapperVertical {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 100%;
+        gap: 16px;
+        .aboutUs {
+          flex: 1;
+          height: 206px;
+          .aboutUsContent {
+            justify-content: flex-start;
+            align-items: center;
+            .labelWithIcon {
+              width: 50%;
+            }
+            .docsWrapper {
+              width: 50%;
+            }
+          }
+        }
+        .practice {
+          flex: 1;
+          height: 206px;
+          margin-bottom: 0;
+          overflow-y: hidden;
+          &:nth-child(2) {
+            margin-top: 0px;
+          }
+        }
+        .article {
+          margin-top: 8px;
+        }
+      }
+    }
+  }
+}

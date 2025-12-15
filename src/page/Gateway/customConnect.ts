@@ -23,7 +23,7 @@ import { AccountType, IRemoteCustomConnectionData } from '@/d.ts';
 import { IDatasource } from '@/d.ts/datasource';
 import { SpaceType } from '@/d.ts/_index';
 import login from '@/store/login';
-import { resolveUnionDbUser } from '@/util/connection';
+import { resolveUnionDbUser } from '@/util/database/connection';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
 import { gotoSQLWorkspace } from '@/util/route';
@@ -31,13 +31,16 @@ import { generateUniqKey } from '@/util/utils';
 import { history } from '@umijs/max';
 import { message } from 'antd';
 import { Base64 } from 'js-base64';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 async function getDefaultSchema(dsId: number, userName: string) {
-  const res = await listDatabases(null, dsId, 1, 999);
+  const res = await listDatabases({ dataSourceId: dsId, page: 1, size: 999 });
   const databases = res?.contents;
+  // mysql 模式的默认数据库是 information_schema
   const informationSchema = databases?.find((d) => d.name === 'information_schema');
+  // oracle 模式的的默认数据库是和用户名相同的 schema
   const sameName = databases?.find((d) => d.name?.toLowerCase() === userName?.toLowerCase());
+  // 如果都没有，则取第一个
   return informationSchema?.id || sameName?.id || databases?.[0]?.id;
 }
 
@@ -50,7 +53,7 @@ async function newConnection(params: Partial<IDatasource>): Promise<IDatasource 
        * 在这边创建的时候去加上租户id，这样可以让用户老的连接也能继续用，并且可以检查老的连接是否存在租户id的变更。
        * 新的名字一律加上id
        */
-      name: params.name + '_' + params.tenantName,
+      name: params.name,
       environmentId: envs?.[0]?.id,
     },
     true,
@@ -81,9 +84,7 @@ function resolveRemoteData(data: IRemoteCustomConnectionData) {
     data.properties = data.interceptData;
   }
 
-  const sessionName = `${data.username}@${data.tenantName}#${data.clusterName}-${data.host}:${
-    data.port
-  }_${moment().format('MMDDHHmmss')}-${generateUniqKey()}`;
+  const sessionName = `${data.username}@${data.tenantName}#${data.clusterName}-${Date.now()}`;
   data.name = sessionName;
   return data;
 }
@@ -207,6 +208,8 @@ export const action = async (config: ICustomConnectAction) => {
       await getDefaultSchema(createResult?.id, createResult?.username),
       true,
       generateUniqKey(),
+      false,
+      false,
     );
   } else {
     return 'create connection failed';

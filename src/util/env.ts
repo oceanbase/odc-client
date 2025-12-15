@@ -58,3 +58,11 @@ export function checkHasAskPermission(): boolean {
   }
   return false;
 }
+
+export function isWin64() {
+  return navigator.userAgent.toLowerCase().indexOf('win64') > -1;
+}
+
+export function isLinux() {
+  return navigator.userAgent.toLowerCase().indexOf('linux') > -1;
+}

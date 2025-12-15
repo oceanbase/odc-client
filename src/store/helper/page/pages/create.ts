@@ -18,7 +18,8 @@ import { ITriggerFormData, PageType, SynonymType } from '@/d.ts';
 import { formatMessage } from '@/util/intl';
 import { generateUniqKey } from '@/util/utils';
 import { Page } from './base';
-
+import { ScheduleType } from '@/d.ts/schedule';
+import { SchedulePageTextMap } from '@/constant/schedule';
 export class CreateTablePage extends Page {
   public pageParams: {
     databaseId: number;
@@ -56,6 +57,57 @@ export class CreateViewPage extends Page {
     this.pageType = PageType.CREATE_VIEW;
     this.pageParams = {
       databaseId,
+    };
+  }
+}
+
+export class CreateMaterializedViewPage extends Page {
+  public pageParams: {
+    databaseId: number;
+  };
+
+  constructor(databaseId: number) {
+    super();
+    this.pageKey = `createMaterializedViewPage-${generateUniqKey()}`;
+    this.pageTitle = formatMessage({
+      id: 'src.store.helper.page.pages.1690882C',
+      defaultMessage: '新建物化视图',
+    });
+    this.pageType = PageType.CREATE_MATERIALIZED_VIEW;
+    this.pageParams = {
+      databaseId,
+    };
+  }
+}
+
+export class CreateSchedulePage extends Page {
+  public pageParams: {
+    scheduleType: ScheduleType;
+    isEdit: boolean;
+  };
+
+  constructor(scheduleType: ScheduleType, isEdit: boolean = false) {
+    super();
+    this.pageKey = `createSchedulePage-${generateUniqKey()}`;
+    this.pageTitle = isEdit
+      ? formatMessage(
+          {
+            id: 'src.component.Schedule.5E23B919',
+            defaultMessage: '编辑{SchedulePageTextMapType}',
+          },
+          { SchedulePageTextMapType: SchedulePageTextMap[scheduleType] },
+        )
+      : formatMessage(
+          {
+            id: 'src.store.helper.page.pages.5680C3BC',
+            defaultMessage: '新建{SchedulePageTextMapScheduleType}',
+          },
+          { SchedulePageTextMapScheduleType: SchedulePageTextMap[scheduleType] },
+        );
+    this.pageType = PageType.CREATE_SCHEDULES;
+    this.pageParams = {
+      scheduleType,
+      isEdit,
     };
   }
 }

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useState } from 'react';
 import { Modal, Form, Select, Row, Col, Tooltip, message } from 'antd';
 import Icon from '@ant-design/icons';
@@ -9,7 +25,7 @@ import RiskLevelLabel from '@/component/RiskLevelLabel';
 import { DatabaseOwnerSelect } from '../DatabaseOwnerSelect';
 import { updateDataBase, listDatabases } from '@/common/network/database';
 import { ConnectType, IConnection } from '@/d.ts';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 interface AddObjectStorageProps {
   open: boolean;
   projectId: number;
@@ -94,167 +110,171 @@ const AddObjectStorage: React.FC<AddObjectStorageProps> = (props) => {
   };
 
   return (
-    <>
-      <Modal
-        title={formatMessage({
-          id: 'src.page.Project.Database.components.AddObjectStorage.F4E4F8B8',
-          defaultMessage: '添加对象存储',
-        })}
-        open={open}
-        onOk={handlesubmit}
-        onCancel={handleCancel}
-        destroyOnClose
+    <Modal
+      title={formatMessage({
+        id: 'src.page.Project.Database.components.AddObjectStorage.F4E4F8B8',
+        defaultMessage: '添加对象存储',
+      })}
+      open={open}
+      onOk={handlesubmit}
+      onCancel={handleCancel}
+      destroyOnClose
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        requiredMark={'optional'}
+        onValuesChange={(changedValues) => {
+          if (changedValues.hasOwnProperty('dataSourceId')) {
+            fetchDataSource(changedValues?.dataSourceId);
+            fetchDatabases({
+              dataSourceId: changedValues?.dataSourceId,
+              page: 1,
+              size: 99999,
+              containsUnassigned: true,
+              existed: true,
+            });
+          }
+        }}
       >
-        <Form
-          form={form}
-          layout="vertical"
-          requiredMark={'optional'}
-          onValuesChange={(changedValues) => {
-            if (changedValues.hasOwnProperty('dataSourceId')) {
-              fetchDataSource(changedValues?.dataSourceId);
-              fetchDatabases(null, changedValues?.dataSourceId, 1, 10, null, null, true, true);
-            }
-          }}
-        >
-          <Row>
-            <Col span={18}>
-              <Form.Item
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-                name={'dataSourceId'}
-                label={formatMessage({
-                  id: 'odc.Database.AddDataBaseButton.DataSource',
-                  defaultMessage: '数据源',
-                })} /*所属数据源*/
-              >
-                <Select
-                  showSearch
-                  optionFilterProp="title"
-                  loading={dataSourceListLoading || dataSourceLoading}
-                  style={{
-                    width: 'calc(100% - 10px)',
-                  }}
-                  placeholder={formatMessage({
-                    id: 'odc.Database.AddDataBaseButton.PleaseSelect',
-                    defaultMessage: '请选择',
-                  })}
-                  /*请选择*/ onChange={() =>
-                    form.setFieldsValue({
-                      databaseIds: [],
-                    })
-                  }
-                >
-                  {fileSystemDataSourceList?.map((item) => {
-                    const icon = getDataSourceStyleByConnectType(item.type);
-                    const isDisabled = !!item?.projectId && projectId !== item?.projectId;
-                    return (
-                      <Select.Option title={item.name} key={item.id} disabled={isDisabled}>
-                        <Tooltip
-                          title={
-                            isDisabled
-                              ? formatMessage(
-                                  {
-                                    id: 'odc.src.page.Project.Database.AddDataBaseButton.ThisDataSourceHasBeen',
-                                    defaultMessage: '该数据源已绑定项目：{itemProjectName}',
-                                  },
-                                  {
-                                    itemProjectName: item?.projectName,
-                                  },
-                                ) //`该数据源已绑定项目：${item?.projectName}`
-                              : null
-                          }
-                        >
-                          <Icon
-                            component={icon?.icon?.component}
-                            style={{
-                              color: icon?.icon?.color,
-                              fontSize: 16,
-                              marginRight: 4,
-                            }}
-                          />
-
-                          {item.name}
-                        </Tooltip>
-                      </Select.Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item
-                requiredMark={false}
-                label={formatMessage({
-                  id: 'odc.Database.AddDataBaseButton.Environment',
-                  defaultMessage: '环境',
-                })} /*环境*/
-              >
-                <RiskLevelLabel
-                  color={dataSource?.environmentStyle}
-                  content={dataSource?.environmentName || '-'}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Form.Item
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-            name={'databaseIds'}
-            label={formatMessage({
-              id: 'odc.Database.AddDataBaseButton.Database',
-              defaultMessage: '数据库',
-            })} /*数据库*/
-          >
-            <Select
-              mode="multiple"
-              placeholder={formatMessage({
-                id: 'odc.Database.AddDataBaseButton.SelectAnUnassignedDatabase',
-                defaultMessage: '请选择未分配项目的数据库',
-              })}
-              /*请选择未分配项目的数据库*/ style={{
-                width: '100%',
-              }}
-              loading={databasesListLoading}
-              optionFilterProp="children"
+        <Row>
+          <Col span={18}>
+            <Form.Item
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+              name={'dataSourceId'}
+              label={formatMessage({
+                id: 'odc.Database.AddDataBaseButton.DataSource',
+                defaultMessage: '数据源',
+              })} /*所属数据源*/
             >
-              {databases?.contents?.map((p) => {
-                if (!!p.project?.id) {
+              <Select
+                showSearch
+                optionFilterProp="title"
+                loading={dataSourceListLoading || dataSourceLoading}
+                style={{
+                  width: 'calc(100% - 10px)',
+                }}
+                placeholder={formatMessage({
+                  id: 'odc.Database.AddDataBaseButton.PleaseSelect',
+                  defaultMessage: '请选择',
+                })}
+                /*请选择*/ onChange={() =>
+                  form.setFieldsValue({
+                    databaseIds: [],
+                  })
+                }
+              >
+                {fileSystemDataSourceList?.map((item) => {
+                  const icon = getDataSourceStyleByConnectType(item.type);
+                  const isDisabled = !!item?.projectId && projectId !== item?.projectId;
                   return (
-                    <Select.Option disabled={true} key={p.id}>
-                      {p.name}
-                      {
-                        formatMessage({
-                          id: 'odc.Database.AddDataBaseButton.BoundProject',
-                          defaultMessage: '- 已绑定项目：',
-                        }) /*- 已绑定项目：*/
-                      }
+                    <Select.Option title={item.name} key={item.id} disabled={isDisabled}>
+                      <Tooltip
+                        title={
+                          isDisabled
+                            ? formatMessage(
+                                {
+                                  id: 'odc.src.page.Project.Database.AddDataBaseButton.ThisDataSourceHasBeen',
+                                  defaultMessage: '该数据源已绑定项目：{itemProjectName}',
+                                },
+                                {
+                                  itemProjectName: item?.projectName,
+                                },
+                              ) //`该数据源已绑定项目：${item?.projectName}`
+                            : null
+                        }
+                      >
+                        <Icon
+                          component={icon?.icon?.component}
+                          style={{
+                            color: icon?.icon?.color,
+                            fontSize: 16,
+                            marginRight: 4,
+                          }}
+                        />
 
-                      {p.project?.name}
+                        {item.name}
+                      </Tooltip>
                     </Select.Option>
                   );
-                }
-                return <Select.Option key={p.id}>{p.name}</Select.Option>;
-              })}
-            </Select>
-          </Form.Item>
-          <DatabaseOwnerSelect
-            hasDefaultSet={false}
-            ownerIds={form.getFieldValue('ownerIds')}
-            setFormOwnerIds={(value) => {
-              form.setFieldsValue({
-                ownerIds: value,
-              });
+                })}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+              required={false}
+              label={formatMessage({
+                id: 'odc.Database.AddDataBaseButton.Environment',
+                defaultMessage: '环境',
+              })} /*环境*/
+            >
+              <RiskLevelLabel
+                color={dataSource?.environmentStyle}
+                content={dataSource?.environmentName || '-'}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Form.Item
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+          name={'databaseIds'}
+          label={formatMessage({
+            id: 'odc.Database.AddDataBaseButton.Database',
+            defaultMessage: '数据库',
+          })} /*数据库*/
+        >
+          <Select
+            mode="multiple"
+            placeholder={formatMessage({
+              id: 'odc.Database.AddDataBaseButton.SelectAnUnassignedDatabase',
+              defaultMessage: '请选择未分配项目的数据库',
+            })}
+            /*请选择未分配项目的数据库*/ style={{
+              width: '100%',
             }}
-          />
-        </Form>
-      </Modal>
-    </>
+            loading={databasesListLoading}
+            optionFilterProp="children"
+          >
+            {databases?.contents?.map((p) => {
+              if (!!p.project?.id) {
+                return (
+                  <Select.Option disabled={true} key={p.id}>
+                    {p.name}
+                    {
+                      formatMessage({
+                        id: 'odc.Database.AddDataBaseButton.BoundProject',
+                        defaultMessage: '- 已绑定项目：',
+                      }) /*- 已绑定项目：*/
+                    }
+
+                    {p.project?.name}
+                  </Select.Option>
+                );
+              }
+              return <Select.Option key={p.id}>{p.name}</Select.Option>;
+            })}
+          </Select>
+        </Form.Item>
+        <DatabaseOwnerSelect
+          hasDefaultSet={false}
+          ownerIds={form.getFieldValue('ownerIds')}
+          setFormOwnerIds={(value) => {
+            form.setFieldsValue({
+              ownerIds: value,
+            });
+          }}
+        />
+      </Form>
+    </Modal>
   );
 };
 

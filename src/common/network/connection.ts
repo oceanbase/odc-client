@@ -35,6 +35,7 @@ import { decrypt, encrypt } from '@/util/utils';
 import { getDataSourceModeConfig } from '../datasource';
 import { generateSessionSid } from './pathUtil';
 import { executeSQL } from './sql';
+import login from '@/store/login';
 
 function generateConnectionParams(formData: Partial<IConnectionFormData>, isHiden?: boolean) {
   // 创建必须带上 userId
@@ -280,6 +281,7 @@ export async function changeDelimiter(v, sessionId: string, dbName: string): Pro
 export async function newSessionByDataBase(
   databaseId: number,
   holdErrorTip?: boolean,
+  recordDbAccessHistory?: boolean,
 ): Promise<{
   sessionId: string;
   dataTypeUnits: IDataType[];
@@ -293,6 +295,7 @@ export async function newSessionByDataBase(
   const { data } = await request.post(`/api/v2/datasource/databases/${databaseId}/sessions`, {
     params: {
       holdErrorTip,
+      recordDbAccessHistory: login.isPrivateSpace() ? undefined : recordDbAccessHistory,
     },
   });
   return data;
@@ -323,6 +326,7 @@ export async function getSessionStatus(sessionId?: string): Promise<{
     delimiter: string;
     queryLimit: number;
     obVersion: string;
+    maxQueryLimit: number;
   };
   session: ISessionStatus;
   killCurrentQuerySupported: boolean;
@@ -376,8 +380,15 @@ export async function getClusterAndTenantList(visibleScope: IConnectionType): Pr
   return results?.data;
 }
 
-export async function deleteConnection(cid: string): Promise<boolean> {
-  const res = await request.delete(`/api/v2/datasource/datasources/${cid}`);
+export async function deleteConnection(
+  cid: string,
+  ignoreError: boolean = false,
+): Promise<boolean> {
+  const res = await request.delete(`/api/v2/datasource/datasources/${cid}`, {
+    params: {
+      ignoreError,
+    },
+  });
   return res?.data;
 }
 

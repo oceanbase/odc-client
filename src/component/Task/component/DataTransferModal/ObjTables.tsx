@@ -50,7 +50,7 @@ function getColumns(transferDDL: boolean, transferData: boolean, isImport: boole
 
       dataIndex: 'dbObjectType',
       width: 80,
-      render: (t) => DbObjectTypeTextMap[t],
+      render: (t) => DbObjectTypeTextMap(t),
       ellipsis: true,
     },
   ];

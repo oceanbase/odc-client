@@ -18,7 +18,7 @@ import { PLType } from '@/constant/plType';
 import { IFunction, IProcedure, ITrigger, IType, PageType } from '@/d.ts';
 import page from '@/store/page';
 import { formatMessage } from '@/util/intl';
-import { getPLScriptTemplate } from '@/util/sql';
+import { getPLScriptTemplate } from '@/util/data/sql';
 import { generateUniqKey } from '@/util/utils';
 import { Page } from './base';
 
@@ -113,7 +113,6 @@ export class AnonymousPage extends PLPage {
     plSchema: {
       params: any[];
     };
-    databaseFrom: 'datasource' | 'project';
     pageIndex: number;
   };
   static getTitleByParams(params: AnonymousPage['pageParams']) {
@@ -136,7 +135,7 @@ export class AnonymousPage extends PLPage {
       }
     }
   }
-  constructor(databaseId: number, databaseFrom: 'project' | 'datasource', sql: string) {
+  constructor(databaseId: number, sql: string) {
     super(PLType.ANONYMOUSBLOCK, databaseId);
     const pageIndex = this.findCurrentNum();
     this.pageKey = `pl-new-${generateUniqKey()}`;
@@ -150,7 +149,6 @@ export class AnonymousPage extends PLPage {
       plSchema: {
         params: [],
       },
-      databaseFrom,
       pageIndex,
     };
   }

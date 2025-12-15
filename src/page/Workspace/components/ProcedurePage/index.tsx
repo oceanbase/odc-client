@@ -41,10 +41,10 @@ import { openProcedureEditPageByProName, updatePage } from '@/store/helper/page'
 import { ProcedurePage as ProcedurePageModel } from '@/store/helper/page/pages';
 import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
-import { isConnectionModeBeMySQLType } from '@/util/connection';
-import { parseDataType } from '@/util/dataType';
+import { isConnectionModeBeMySQLType } from '@/util/database/connection';
+import { parseDataType } from '@/util/database/dataType';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import EditableTable from '../EditableTable';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';

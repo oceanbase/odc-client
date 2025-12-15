@@ -20,18 +20,18 @@ import { Button, Checkbox, Empty, Spin, Transfer, Tree } from 'antd';
 import update from 'immutability-helper';
 import { parse } from 'query-string';
 import styles from './index.less';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { fieldIconMap } from '@/constant';
 import { ColumnShowType } from '@/d.ts';
 import { isEqual, uniqueId } from 'lodash';
 import { ICON_DATABASE, ICON_TABLE, ICON_VIEW } from '../ObjectName';
-const { TreeNode, DirectoryTree } = Tree;
 import Icon, { PlusOutlined } from '@ant-design/icons';
 import { convertDataTypeToDataShowType } from '@/util/utils';
 import ColumnItem from './Item';
 import { getTableColumnList } from '@/common/network/table';
 import { getView } from '@/common/network/view';
 import SortableContainer, { DraggableItem } from '@/component/SortableContainer';
+const { TreeNode, DirectoryTree } = Tree;
 
 interface IProps {
   session: SessionStore;
@@ -64,7 +64,7 @@ const TreeSelector: React.FC<IProps> = React.memo((props) => {
   });
   useEffect(() => {
     loadTreeData(props.viewUnits);
-  }, []);
+  }, [props.viewUnits]);
 
   const handleSelectAll = (e, onItemSelectAll) => {
     const { checked } = e.target;
@@ -399,14 +399,34 @@ const TreeSelector: React.FC<IProps> = React.memo((props) => {
     }
     return r;
   };
+  /**
+   * treeData 打平成 { key, value }
+   */
+  const dataSource = useMemo(() => {
+    const { treeData } = state;
+    const result = [];
+    function flatten(data) {
+      data.forEach((item) => {
+        const { children, title, key, type } = item;
+        result.push({ key, value: title });
+        if (children) {
+          flatten(children);
+        }
+      });
+    }
+    flatten(treeData);
+    return result;
+  }, [state.treeData]);
 
   return (
     <div>
       <Transfer
+        dataSource={dataSource}
         targetKeys={state.targetKeys}
         showSearch={!state.loading}
         showSelectAll
         className={styles['tree-transfer']}
+        filterOption={() => true}
         titles={[
           null,
           <>

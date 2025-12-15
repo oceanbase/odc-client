@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import channel, { ChannelMap } from '@/util/broadcastChannel';
+import channel, { ChannelMap } from '@/util/communication/broadcastChannel';
 export interface ISSOLogin {
   action: 'testLogin';
 }

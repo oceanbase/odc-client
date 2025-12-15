@@ -31,8 +31,8 @@ import { SessionManagerStore } from '@/store/sessionManager';
 import SessionStore from '@/store/sessionManager/session';
 import type { SQLStore } from '@/store/sql';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { downloadPLDDL } from '@/util/database/sqlExport';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import {
   AlignLeftOutlined,
   CloudDownloadOutlined,

@@ -18,9 +18,9 @@ import { formatMessage } from '@/util/intl';
 import { addDatabasePermissions } from '@/common/network/project';
 import {
   expireTimeOptions,
-  getExpireTime,
   permissionOptions,
-} from '@/component/Task/ApplyDatabasePermission/CreateModal';
+} from '@/component/Task/modals/ApplyDatabasePermission/CreateModal';
+import { getExpireTime } from '@/component/Task/helper';
 import DatabaseSelecter from '@/component/Task/component/DatabaseSelecter';
 import { Button, Checkbox, DatePicker, Drawer, Form, message, Modal, Select, Space } from 'antd';
 import React, { useState } from 'react';
@@ -94,6 +94,7 @@ const CreateModal: React.FC<IProps> = (props) => {
         }
       })
       .catch((errorInfo) => {
+        form.scrollToField(errorInfo?.errorFields?.[0]?.name);
         console.error(JSON.stringify(errorInfo));
       });
   };
@@ -119,7 +120,7 @@ const CreateModal: React.FC<IProps> = (props) => {
       </Button>
       <Drawer
         destroyOnClose
-        className={styles.createModal}
+        rootClassName={styles.createModal}
         width={816}
         title={
           formatMessage({

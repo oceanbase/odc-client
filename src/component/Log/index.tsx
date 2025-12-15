@@ -15,7 +15,8 @@
  */
 
 import { formatMessage } from '@/util/intl';
-import { downloadFile, getPrefixCls } from '@/util/utils';
+import { getPrefixCls } from '@/util/utils';
+import { downloadFile } from '@/util/data/file';
 import {
   CopyOutlined,
   DownloadOutlined,
@@ -248,7 +249,7 @@ const Log: React.FC<LogProps> = ({
     if (!lineWrapNode) {
       index = copyData.current.scrollDirection === 'up' ? 0 : logData.data.length;
     } else {
-      index = Number(lineWrapNode.firstChild.innerText);
+      index = Number((lineWrapNode.firstChild as HTMLElement)?.innerText);
     }
     return index;
   };
@@ -334,8 +335,8 @@ const Log: React.FC<LogProps> = ({
                 onClick={item.onClick}
                 key={item.key}
               >
-                <Typography.Text className={`${prefixCls}-toolbar-text`}>
-                  {item.icon}
+                <Typography.Text className={`${prefixCls}-toolbar-icon`}>
+                  <span className={`${prefixCls}-toolbar-icon-target`}>{item.icon}</span>
                 </Typography.Text>
                 <Typography.Text className={`${prefixCls}-toolbar-text`}>
                   {item.text}

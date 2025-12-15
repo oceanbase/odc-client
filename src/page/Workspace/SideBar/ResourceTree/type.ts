@@ -83,6 +83,27 @@ export enum ResourceNodeType {
   PackageHeadProcedure,
   PackageBodyFunction,
   PackageBodyProcedure,
+  GroupNodeProject,
+  GroupNodeDataSource,
+  GroupNodeConnectType,
+  GroupNodeEnviponment,
+  GroupNodeCluster,
+  GroupNodeTenant,
+  SecondGroupNodeDataSource,
+  /** 物化视图 */
+  MaterializedViewRoot,
+  MaterializedView,
+  MaterializedViewColumnRoot,
+  MaterializedViewColumn,
+  MaterializedViewIndexRoot,
+  MaterializedViewIndex,
+  MaterializedViewPartitionRoot,
+  MaterializedViewPartition,
+  MaterializedViewConstraintRoot,
+  MaterializedViewConstraint,
+  /** 外部资源 */
+  ExternalResourceRoot,
+  ExternalResource,
 }
 
 interface ExtraData {
@@ -98,11 +119,8 @@ interface ExtraData {
   warning?: string;
   tip?: string;
   env?: IEnvironment;
-  doubleClick?: (
-    session: SessionStore,
-    node: TreeDataNode,
-    databaseFrom: 'datasource' | 'project',
-  ) => void;
+  onClick?: (node: TreeDataNode) => void;
+  doubleClick?: (session: SessionStore, node: TreeDataNode) => void;
 }
 
 export type TreeDataNode = DataNode & ExtraData;

@@ -36,6 +36,7 @@ import statefulIcon, { IConStatus } from './statefulIcon';
 const noop = () => {
   // TODO
 };
+
 function TButton({
   text,
   onClick = noop,
@@ -48,6 +49,7 @@ function TButton({
   confirmConfig,
   tip = null,
   tipStyle = { width: 296 },
+  renderToParentElement = false,
   ...rest
 }: {
   [key: string]: any;
@@ -131,6 +133,7 @@ function TButton({
           type="primary"
           disabled={disabled}
           onClick={!disabled ? onClick : null}
+          loading={isRunning}
         >
           {text}
         </Button>
@@ -171,6 +174,18 @@ function TButton({
       <Popconfirm disabled={disabled} {...confirmConfig}>
         {content}
       </Popconfirm>
+    );
+  }
+
+  if (renderToParentElement) {
+    return (
+      <Tooltip
+        getPopupContainer={(triggerNode) => triggerNode.parentElement}
+        placement="left"
+        title={text}
+      >
+        {content}
+      </Tooltip>
     );
   }
 

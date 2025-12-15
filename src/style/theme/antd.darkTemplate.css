@@ -8343,7 +8343,7 @@ _:-ms-fullscreen .ant-picker-range-wrapper .ant-picker-year-panel .ant-picker-ce
   white-space: nowrap;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid #434343;
-  border-radius: 2px;
+  border-radius: 4px;
   opacity: 1;
   transition: all 0.3s;
 }

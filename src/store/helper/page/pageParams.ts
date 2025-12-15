@@ -35,7 +35,6 @@ export interface IPLPageParams extends Partial<IScriptMeta> {
   typeName?: string;
   cid: number;
   dbName: string;
-  databaseFrom: 'datasource' | 'project';
 }
 
 export type ISQLPageParams = SQLPage['pageParams'];

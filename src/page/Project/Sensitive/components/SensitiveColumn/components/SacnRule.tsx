@@ -16,7 +16,6 @@
 
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { getConnectionList } from '@/common/network/connection';
-import { listDatabases } from '@/common/network/database';
 import { listSensitiveRules } from '@/common/network/sensitiveRule';
 import ConnectionPopover from '@/component/ConnectionPopover';
 import { IConnection, IResponseData } from '@/d.ts';
@@ -28,16 +27,16 @@ import { Button, Divider, Form, Popover, Select } from 'antd';
 import { useWatch } from 'antd/es/form/Form';
 import { useContext, useEffect, useState } from 'react';
 import SensitiveContext from '../../../SensitiveContext';
+import MultipleDatabaseSelect from '@/component/Task/component/MultipleDatabaseSelect/index';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 
 const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const context = useContext(ProjectContext);
   const sensitiveContext = useContext(SensitiveContext);
   const [dataSourceId, setDataSourceId] = useState<number>(-1);
-  const [databaseId, setDatabaseId] = useState<number>(0);
   const databaseIds = useWatch('databaseIds', formRef);
   const [selectOpen, setSelectOpen] = useState<boolean>(false);
   const [dataSourceOptions, setDataSourceOptions] = useState<SelectItemProps[]>([]);
-  const [databaseIdsOptions, setDatabaseIdsOptions] = useState<SelectItemProps[]>([]);
   const [sensitiveOptions, setSensitiveOptions] = useState<SelectItemProps[]>([]);
   const [rawData, setRawData] = useState<IResponseData<IConnection>>();
   const initDataSources = async () => {
@@ -45,43 +44,16 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
       projectId: sensitiveContext.projectId,
     });
     setRawData(rawData);
-    const resData = rawData?.contents?.map((content) => ({
-      label: content.name,
-      value: content.id,
-      type: content.type,
-    }));
-    setDataSourceOptions(resData);
-  };
-  const initDatabases = async (
-    projectId: number = context.projectId,
-    id: number = dataSourceId,
-  ) => {
-    const rawData = await listDatabases(projectId, id, null, null, null, null, null, true);
-    const resData =
-      rawData?.contents?.map((content) => ({
+    const resData = rawData?.contents
+      ?.filter((item) => !isConnectTypeBeFileSystemGroup(item.type))
+      ?.map((content) => ({
         label: content.name,
         value: content.id,
-      })) || [];
-    setDatabaseIdsOptions(
-      resData?.length > 0
-        ? [
-            {
-              label: formatMessage({
-                id: 'odc.SensitiveColumn.components.SacnRule.All',
-                defaultMessage: '全部',
-              }),
-              //全部
-              value: -1,
-            },
-            ...resData,
-          ]
-        : [],
-    );
-    formRef.setFieldsValue({
-      databaseIds: [],
-      sensitiveRuleIds: [],
-    });
+        type: content.type,
+      }));
+    setDataSourceOptions(resData);
   };
+
   const initDetectRules = async (projectId: number = context.projectId) => {
     const rawData = await listSensitiveRules(projectId, {
       enabled: [true],
@@ -109,24 +81,14 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   const handleDataSourceIdChange = async (v: number) => {
     setDataSourceId(v);
     reset();
-    setDatabaseId(0);
   };
-  const handleDatabaseIdsSelect = async (value: number) => {
-    if (value === -1) {
-      await formRef.setFieldsValue({
-        databaseIds: [-1],
-      });
-    } else {
-      const databaseIds = (await formRef.getFieldValue('databaseIds')) || [];
-      if (databaseIds.includes(-1)) {
-        await formRef.setFieldsValue({
-          databaseIds: databaseIds.filter((v) => v != -1),
-        });
-      }
-    }
+  const handleSelect = async (Ids) => {
+    await formRef.setFieldsValue({
+      databaseIds: Ids,
+    });
     reset();
-    setDatabaseId(value);
   };
+
   const handleSensitiveRuleIdsSelect = async (value: number) => {
     if (value === -1) {
       await formRef.setFieldsValue({
@@ -148,9 +110,13 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
   }, []);
   useEffect(() => {
     if (dataSourceId !== -1) {
-      initDatabases(context.projectId, dataSourceId);
+      formRef.setFieldsValue({
+        databaseIds: [],
+        sensitiveRuleIds: [],
+      });
     }
   }, [dataSourceId]);
+
   return (
     <div
       style={{
@@ -192,7 +158,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
         >
           {dataSourceOptions.map((option, index) => {
             const icon = getDataSourceStyleByConnectType(option.type);
-            const connection = rawData?.contents?.[index];
+            const connection = rawData?.contents?.find((item) => item.id === option.value);
             return (
               <Select.Option key={index} value={option.value}>
                 <Popover
@@ -215,42 +181,20 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
           })}
         </Select>
       </Form.Item>
-      <Form.Item
+      <MultipleDatabaseSelect
+        name="databaseIds"
         label={
           formatMessage({
             id: 'odc.SensitiveColumn.components.SacnRule.Database',
             defaultMessage: '数据库',
           }) //数据库
         }
-        name="databaseIds"
-        rules={[
-          {
-            required: true,
-            message: formatMessage({
-              id: 'odc.SensitiveColumn.components.SacnRule.SelectADatabase',
-              defaultMessage: '请选择数据库',
-            }), //请选择数据库
-          },
-        ]}
-      >
-        <Select
-          mode="multiple"
-          options={databaseIdsOptions}
-          // onChange={handleDatabaseIdsChange}
-          onSelect={handleDatabaseIdsSelect}
-          placeholder={
-            formatMessage({
-              id: 'odc.SensitiveColumn.components.SacnRule.PleaseSelect',
-              defaultMessage: '请选择',
-            }) //请选择
-          }
-          maxTagCount="responsive"
-          disabled={databaseIdsOptions?.length === 1 || dataSourceId === -1}
-          style={{
-            width: '262px',
-          }}
-        />
-      </Form.Item>
+        dataSourceId={dataSourceId === -1 ? undefined : dataSourceId}
+        projectId={context.projectId}
+        onSelect={handleSelect}
+        disabled={dataSourceId === -1}
+        isAdaptiveWidth
+      />
       <Form.Item
         label={
           formatMessage({
@@ -280,11 +224,7 @@ const ScanRule = ({ formRef, reset, setManageSensitiveRuleDrawerOpen }) => {
           options={sensitiveOptions}
           onSelect={handleSensitiveRuleIdsSelect}
           disabled={
-            dataSourceId === -1 ||
-            databaseIdsOptions?.length === 1 ||
-            databaseIds?.length === 0 ||
-            databaseId === 0 ||
-            sensitiveOptions?.length === 1
+            dataSourceId === -1 || databaseIds?.length === 0 || sensitiveOptions?.length === 1
           }
           maxTagCount="responsive"
           placeholder={

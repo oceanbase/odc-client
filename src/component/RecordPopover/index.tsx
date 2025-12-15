@@ -18,11 +18,11 @@ import { getAuditList } from '@/common/network/manager';
 import type { ITableInstance, ITableLoadOptions } from '@/component/CommonTable/interface';
 import { AuditEventMetaMap } from '@/constant/record';
 import { formatMessage } from '@/util/intl';
-import { getPreTime } from '@/util/utils';
+import { getPreTime } from '@/util/data/dateTime';
 import { SyncOutlined } from '@ant-design/icons';
 import { Drawer, Space } from 'antd';
-import type { Moment } from 'moment';
-import moment from 'moment';
+import type { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { RecordTable } from './components';
 
@@ -37,9 +37,9 @@ const RecordPopover = forwardRef<any, any>((props, ref) => {
   const [executeTime, setExecuteTime] = useState(() => {
     return JSON.parse(localStorage?.getItem('audit:executeTime')) ?? 7;
   });
-  const [executeDate, setExecuteDate] = useState<[Moment, Moment]>(() => {
-    const [start, end] = JSON.parse(localStorage?.getItem('audit:executeDate')) ?? [, moment()];
-    return [start ? moment(start) : undefined, end ? moment(end) : moment()];
+  const [executeDate, setExecuteDate] = useState<[Dayjs, Dayjs]>(() => {
+    const [start, end] = JSON.parse(localStorage?.getItem('audit:executeDate')) ?? [, dayjs()];
+    return [start ? dayjs(start) : undefined, end ? dayjs(end) : dayjs()];
   });
 
   const handleCloseDrawer = () => {
@@ -105,7 +105,7 @@ const RecordPopover = forwardRef<any, any>((props, ref) => {
     setExecuteTime(_executeTime);
   };
 
-  const handleExecuteDateChange = (value: [Moment, Moment]) => {
+  const handleExecuteDateChange = (value: [Dayjs, Dayjs]) => {
     setExecuteDate(value);
     localStorage.setItem('audit:executeDate', JSON.stringify(value));
   };
@@ -139,11 +139,12 @@ const RecordPopover = forwardRef<any, any>((props, ref) => {
               }) /*操作记录*/
             }
           </span>
-          <SyncOutlined onClick={handleReload} />
+          <SyncOutlined onClick={handleReload} style={{ color: 'var(--text-color-hint)' }} />
         </Space>
       }
       open={visible}
       onClose={handleCloseDrawer}
+      destroyOnHidden
     >
       <RecordTable
         tableRef={tableRef}

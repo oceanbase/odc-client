@@ -18,7 +18,7 @@
   width: 160px;
   height: 100%;
   padding: 14px 8px;
-  background-color: var(--navigationv2-background-color);
+  background-color: var(--tab-background-color);
   border-right: 1px solid var(--divider-color);
   &.siderCollapsed {
     width: 40px;
@@ -37,7 +37,7 @@
   width: 12px;
   height: 36px;
   color: var(--text-color-hint);
-  background-color: var(--navigationv2-background-color);
+  background-color: var(--tab-background-color);
   border: 1px solid var(--odc-border-color);
   border-radius: 8px;
   cursor: pointer;
@@ -47,4 +47,11 @@
   &:hover {
     background-color: var(--background-normal-color);
   }
+}
+
+// 兼容样式 受到了Badge内置样式ant-badge的样式影响
+.ticket {
+  font-family: Chinese Quote, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, PingFang SC,
+    Hiragino Sans GB, Microsoft YaHei, RareWord, Helvetica Neue, Helvetica, Arial, sans-serif,
+    monospace;
 }

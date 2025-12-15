@@ -15,11 +15,14 @@
  */
 
 import {
-  SubTaskType,
   SyncTableStructureEnum,
   TaskErrorStrategy,
+  TaskExecStrategy,
   TaskPartitionStrategy,
+  TaskStatus,
+  TaskType,
 } from '@/d.ts';
+import { TaskActionsEnum } from '@/d.ts/task';
 import { formatMessage } from '@/util/intl';
 
 export const ErrorStrategyMap = {
@@ -79,27 +82,152 @@ export const SyncTableStructureOptions = [
   },
 ];
 
-export const SubTaskTypeMap = {
-  [SubTaskType.MIGRATE]: {
-    label: formatMessage({ id: 'src.d.ts.CA81991C', defaultMessage: '归档' }),
-  },
-  [SubTaskType.CHECK]: {
-    label: formatMessage({ id: 'src.d.ts.8977156C', defaultMessage: '数据检查' }),
-  },
-  [SubTaskType.DELETE]: {
-    label: formatMessage({ id: 'src.d.ts.237F5711', defaultMessage: '数据清理' }),
-  },
-  [SubTaskType.QUICK_DELETE]: {
-    label: formatMessage({ id: 'src.d.ts.CD43F08A', defaultMessage: '数据清理' }),
-  },
-  [SubTaskType.DEIRECT_DELETE]: {
-    label: formatMessage({ id: 'src.d.ts.910D42B5', defaultMessage: '数据清理' }),
-  },
-  [SubTaskType.ROLLBACK]: {
-    label: formatMessage({ id: 'src.d.ts.DF449BBC', defaultMessage: '回滚' }),
-  },
-};
-
 export const OscMinRowLimit = 1;
 export const OscMaxRowLimit = 10000;
 export const OscMaxDataSizeLimit = 1000;
+
+export const getTaskExecStrategyMap = (type: TaskType) => {
+  switch (type) {
+    // case TaskType.STRUCTURE_COMPARISON:
+    // case TaskType.MULTIPLE_ASYNC: {
+    //   return {
+    //     [TaskExecStrategy.AUTO]: formatMessage({
+    //       id: 'src.component.Task.9B79BD20',
+    //       defaultMessage: '自动执行',
+    //     }), //'自动执行'
+    //     [TaskExecStrategy.MANUAL]: formatMessage({
+    //       id: 'src.component.Task.0B2B1D60',
+    //       defaultMessage: '手动执行',
+    //     }), //'手动执行'
+    //     [TaskExecStrategy.TIMER]: formatMessage({
+    //       id: 'odc.components.TaskManagePage.ScheduledExecution',
+    //       defaultMessage: '定时执行',
+    //     }), //定时执行
+    //   };
+    // }
+    default:
+      return {
+        [TaskExecStrategy.AUTO]: formatMessage({
+          id: 'odc.components.TaskManagePage.ExecuteNow',
+          defaultMessage: '立即执行',
+        }),
+        //立即执行
+        [TaskExecStrategy.MANUAL]: formatMessage({
+          id: 'odc.components.TaskManagePage.ManualExecution',
+          defaultMessage: '手动执行',
+        }),
+        //手动执行
+        [TaskExecStrategy.TIMER]: formatMessage({
+          id: 'odc.components.TaskManagePage.ScheduledExecution',
+          defaultMessage: '定时执行',
+        }), //定时执行
+      };
+  }
+};
+export const getTaskExecStrategyTextMap = {
+  [TaskExecStrategy.TIMER]: formatMessage({
+    id: 'odc.src.component.Task.CycleExecution',
+    defaultMessage: '周期执行',
+  }), //'周期执行'
+  [TaskExecStrategy.CRON]: formatMessage({
+    id: 'odc.src.component.Task.CycleExecution.1',
+    defaultMessage: '周期执行',
+  }), //'周期执行'
+  [TaskExecStrategy.DAY]: formatMessage({
+    id: 'odc.src.component.Task.CycleExecution.2',
+    defaultMessage: '周期执行',
+  }), //'周期执行'
+  [TaskExecStrategy.MONTH]: formatMessage({
+    id: 'odc.src.component.Task.CycleExecution.3',
+    defaultMessage: '周期执行',
+  }), //'周期执行'
+  [TaskExecStrategy.WEEK]: formatMessage({
+    id: 'odc.src.component.Task.CycleExecution.4',
+    defaultMessage: '周期执行',
+  }), //'周期执行'
+  [TaskExecStrategy.START_NOW]: formatMessage({
+    id: 'odc.src.component.Task.ExecuteImmediately',
+    defaultMessage: '立即执行',
+  }), //'立即执行'
+  [TaskExecStrategy.START_AT]: formatMessage({
+    id: 'odc.src.component.Task.TimedExecution',
+    defaultMessage: '定时执行',
+  }), //'定时执行'
+  [TaskExecStrategy.AUTO]: formatMessage({
+    id: 'src.component.Task.9B79BD20',
+    defaultMessage: '自动执行',
+  }), //'自动执行'
+  [TaskExecStrategy.MANUAL]: formatMessage({
+    id: 'src.component.Task.0B2B1D60',
+    defaultMessage: '手动执行',
+  }), //'手动执行'
+};
+
+const _commonActions = [TaskActionsEnum.SHARE, TaskActionsEnum.VIEW, TaskActionsEnum.CLONE];
+
+const _AsyncTaskActions = [TaskActionsEnum.DOWNLOAD_VIEW_RESULT, TaskActionsEnum.VIEW_RESULT];
+
+export const TaskStatus2Actions: Partial<Record<TaskStatus, TaskActionsEnum[]>> = {
+  [TaskStatus.REJECTED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.PRE_CHECK_EXECUTING]: [..._commonActions, TaskActionsEnum.STOP, ..._AsyncTaskActions],
+  [TaskStatus.WAIT_FOR_SCHEDULE_EXECUTION]: [
+    ..._commonActions,
+    TaskActionsEnum.STOP,
+    ..._AsyncTaskActions,
+  ],
+  [TaskStatus.APPROVAL_EXPIRED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.WAIT_FOR_EXECUTION_EXPIRED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.EXECUTION_EXPIRED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.CREATED]: [..._commonActions, TaskActionsEnum.STOP, ..._AsyncTaskActions],
+  [TaskStatus.EXECUTION_FAILED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.ROLLBACK_FAILED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.ROLLBACKING]: [..._commonActions, TaskActionsEnum.STOP, ..._AsyncTaskActions],
+  [TaskStatus.ROLLBACK_SUCCEEDED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.CANCELLED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.PRE_CHECK_FAILED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.COMPLETED]: [..._commonActions, ..._AsyncTaskActions],
+  [TaskStatus.EXECUTING]: [
+    ..._commonActions,
+    ..._AsyncTaskActions,
+    TaskActionsEnum.DOWNLOAD_SQL,
+    TaskActionsEnum.STRUCTURE_COMPARISON,
+    TaskActionsEnum.STOP,
+  ],
+  [TaskStatus.EXECUTION_SUCCEEDED]: [
+    ..._commonActions,
+    ..._AsyncTaskActions,
+    TaskActionsEnum.OPEN_LOCAL_FOLDER,
+    TaskActionsEnum.DOWNLOAD,
+    TaskActionsEnum.ROLLBACK,
+    TaskActionsEnum.DOWNLOAD_SQL,
+    TaskActionsEnum.STRUCTURE_COMPARISON,
+  ],
+  [TaskStatus.EXECUTION_SUCCEEDED_WITH_ERRORS]: [
+    ..._commonActions,
+    ..._AsyncTaskActions,
+    TaskActionsEnum.OPEN_LOCAL_FOLDER,
+    TaskActionsEnum.DOWNLOAD,
+    TaskActionsEnum.ROLLBACK,
+    TaskActionsEnum.DOWNLOAD_SQL,
+    TaskActionsEnum.STRUCTURE_COMPARISON,
+  ],
+  [TaskStatus.APPROVING]: [
+    ..._commonActions,
+    ..._AsyncTaskActions,
+    TaskActionsEnum.PASS,
+    TaskActionsEnum.REJECT,
+    TaskActionsEnum.STOP,
+  ],
+  [TaskStatus.WAIT_FOR_EXECUTION]: [
+    ..._commonActions,
+    ..._AsyncTaskActions,
+    TaskActionsEnum.EXECUTE,
+    TaskActionsEnum.STOP,
+  ],
+  [TaskStatus.EXECUTION_ABNORMAL]: [
+    ..._commonActions,
+    ..._AsyncTaskActions,
+    TaskActionsEnum.STOP,
+    TaskActionsEnum.AGAIN,
+  ],
+};

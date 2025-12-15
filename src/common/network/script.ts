@@ -16,11 +16,11 @@
 
 import { IScript, IScriptMeta } from '@/d.ts';
 import setting from '@/store/setting';
-import { uploadFileToOSS } from '@/util/aliyun';
+import { uploadFileToOSS } from '@/common/network/aliyun';
 import { formatMessage } from '@/util/intl';
 import request from '@/util/request';
-import { downloadFile } from '@/util/utils';
-import { message } from 'antd';
+import { downloadFile } from '@/util/data/file';
+import { message, Modal } from 'antd';
 import { isArray } from 'lodash';
 
 type ObjectId = string | number;
@@ -95,6 +95,29 @@ export async function downloadScript(scriptIds: ScriptId | ScriptId[]): Promise<
       }, i * 400);
     });
   }
+}
+
+export async function batchDownloadScript(scriptIds: ScriptId[]): Promise<void> {
+  const MAX_DOWNLOAD_COUNT = 200;
+  if (scriptIds.length > MAX_DOWNLOAD_COUNT) {
+    Modal.error({
+      title: formatMessage({ id: 'src.common.network.7B0A4820', defaultMessage: '批量下载失败' }),
+      content: formatMessage(
+        {
+          id: 'src.common.network.F390612A',
+          defaultMessage: '最多支持批量下载{MAX_DOWNLOAD_COUNT}个脚本，建议先取消选择部分脚本',
+        },
+        { MAX_DOWNLOAD_COUNT },
+      ),
+    });
+    return;
+  }
+  await request.post(`/api/v2/script/scripts/batchDownload`, {
+    data: scriptIds,
+    params: {
+      download: true,
+    },
+  });
 }
 
 /**

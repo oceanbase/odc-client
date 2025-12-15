@@ -30,7 +30,10 @@ import DefaultPage from './DefaultPage';
 import DraggableTabs from './DraggableTabs';
 import { getPageTitleText } from './helper';
 import styles from './index.less';
-import { isLogicalDatabase } from '@/util/database';
+import { isGroupNode } from '@/page/Workspace/SideBar/ResourceTree/const';
+import { isLogicalDatabase } from '@/util/database/database';
+import { isString } from 'lodash';
+import { ResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/type';
 
 interface IProps {
   pages: IPage[];
@@ -128,7 +131,7 @@ const WindowManager: React.FC<IProps> = function (props) {
   };
 
   function getPageTitle(page: IPage): ReactNode {
-    const iconColor = page?.params?.isDisabled ? '#bfbfbf' : pageMap[page.type].color;
+    const iconColor = page?.params?.isDisabled ? '#bfbfbf' : pageMap[page.type]?.color;
     const isDocked = page.params.isDocked;
     const pageTitle = getPageTitleText(page);
     const isPageProcessing = props.sqlStore.runningPageKey.has(page.key);
@@ -189,7 +192,10 @@ const WindowManager: React.FC<IProps> = function (props) {
       >
         <Tooltip
           placement="bottom"
-          overlayClassName={styles.tabTooltip}
+          classNames={{
+            root: styles.tabTooltip,
+          }}
+          arrow={false}
           title={
             <div>
               <div>{pageTitle}</div>
@@ -228,7 +234,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                 fontSize: 14,
               }}
             >
-              {pageMap[page.type].icon}
+              {pageMap[page.type]?.icon}
             </span>
             <span className={styles.title}>{pageTitle}</span>
             <span className={styles.extraStatusBox}>
@@ -287,12 +293,12 @@ const WindowManager: React.FC<IProps> = function (props) {
               className={styles.icon}
               style={{
                 display: 'flex',
-                color: `${pageMap[page.type].color}`,
+                color: `${pageMap[page.type]?.color}`,
                 lineHeight: 1,
                 fontSize: 14,
               }}
             >
-              {pageMap[page.type].icon}
+              {pageMap[page.type]?.icon}
             </span>
             {getPageTitleText(page)}
           </Space>
@@ -322,7 +328,7 @@ const WindowManager: React.FC<IProps> = function (props) {
               alignItems: 'center',
             }}
           >
-            <PlusOutlined />
+            <PlusOutlined style={{ color: 'var(--icon-color-normal)' }} />
             <Dropdown
               trigger={['click']}
               menu={{
@@ -346,14 +352,20 @@ const WindowManager: React.FC<IProps> = function (props) {
                     key: 'newPL',
                     onClick(e) {
                       e.domEvent.stopPropagation();
-                      const db = treeContext.currentDatabaseId;
+                      const { value, type } = treeContext.currentObject || {};
+                      let dbId;
+                      if (!isGroupNode(type)) {
+                        if (type === ResourceNodeType.Database) {
+                          dbId = value;
+                        }
+                        if (isString(value)) {
+                          dbId = Number(value.split('-')?.[0]);
+                        }
+                      }
                       const isLogicalDb = isLogicalDatabase(
-                        treeContext?.databaseList?.find((_db) => _db?.id === db),
+                        treeContext?.databaseList?.find((_db) => _db?.id === dbId),
                       );
-                      openNewDefaultPLPage(
-                        undefined,
-                        isLogicalDb ? null : treeContext?.currentDatabaseId,
-                      );
+                      openNewDefaultPLPage(undefined, isLogicalDb ? null : dbId);
                     },
                   },
                 ],
@@ -366,7 +378,7 @@ const WindowManager: React.FC<IProps> = function (props) {
                   e.stopPropagation();
                 }}
               >
-                <DownOutlined />
+                <DownOutlined style={{ color: 'var(--icon-color-normal)' }} />
               </div>
             </Dropdown>
           </div>
@@ -383,8 +395,8 @@ const WindowManager: React.FC<IProps> = function (props) {
         }
         items={pages
           .map((page) => {
-            const Page = pageMap[page.type].component;
-            const pageParams = Object.assign({}, pageMap[page.type].params || {}, page.params);
+            const Page = pageMap[page.type]?.component;
+            const pageParams = Object.assign({}, pageMap[page.type]?.params || {}, page.params);
             if (!Page) {
               return null;
             }

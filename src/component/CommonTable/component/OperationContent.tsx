@@ -15,18 +15,38 @@
  */
 
 import { Button, Dropdown, Space, Tooltip } from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from '../index.less';
 import type { IOperationContent, IOperationOption, ITableLoadOptions } from '../interface';
 import { IOperationOptionType } from '../interface';
+import useUrlAction, { URL_ACTION } from '@/util/hooks/useUrlAction';
 
 interface IOperationItemProps {
   option: IOperationOption;
   onClick: (fn: (args?: ITableLoadOptions) => void) => void;
 }
 const OperationItem: React.FC<IOperationItemProps> = ({ option, onClick }) => {
-  const { type, content, icon = null, isPrimary, menu, disabled = false } = option;
+  const {
+    type,
+    content,
+    icon = null,
+    isPrimary,
+    menu,
+    disabled = false,
+    trigger = ['click'],
+  } = option;
   let operation = null;
+  const { runAction } = useUrlAction();
+
+  useEffect(() => {
+    runAction({
+      actionType: URL_ACTION.newDataMock,
+      callback: () => {
+        onClick(option?.onClick);
+      },
+    });
+  }, []);
+
   switch (type) {
     case IOperationOptionType.icon:
       operation = (
@@ -42,7 +62,7 @@ const OperationItem: React.FC<IOperationItemProps> = ({ option, onClick }) => {
       break;
     case IOperationOptionType.dropdown:
       operation = (
-        <Dropdown trigger={['click']} disabled={disabled} menu={menu} placement="bottomRight">
+        <Dropdown trigger={trigger} disabled={disabled} menu={menu} placement="bottomRight">
           {content}
         </Dropdown>
       );
@@ -50,6 +70,7 @@ const OperationItem: React.FC<IOperationItemProps> = ({ option, onClick }) => {
     default:
       operation = (
         <Button
+          className={styles.deafaultOperation}
           type={isPrimary ? 'primary' : 'default'}
           disabled={disabled}
           icon={icon}

@@ -22,7 +22,7 @@ import { Tooltip } from 'antd';
 import { getDataSourceStyleByConnectType } from '@/common/datasource';
 import { IDatabase } from '@/d.ts/database';
 import datasourceStatus from '@/store/datasourceStatus';
-import { isLogicalDatabase } from '@/util/database';
+import { isLogicalDatabase } from '@/util/database/database';
 import { observer } from 'mobx-react';
 import LogicIcon from '../logicIcon';
 
@@ -33,7 +33,7 @@ export default observer(function DataBaseStatusIcon({
   item: IDatabase;
   showStatusTooltip?: boolean;
 }) {
-  const datasource = item.dataSource;
+  const datasource = item?.dataSource;
   const statusInfo = datasourceStatus.statusMap.get(datasource?.id) || datasource?.status;
   let status = isLogicalDatabase(item) ? IConnectionStatus.ACTIVE : statusInfo?.status;
   const icon = getDataSourceStyleByConnectType(datasource?.type || item?.connectType)?.dbIcon;

@@ -20,10 +20,12 @@ import { PLType } from '@/constant/plType';
 import { PLPage } from '@/page/Workspace/components/PLPage';
 import { PLPageType } from '@/store/helper/page/pages/pl';
 import { formatMessage } from '@/util/intl';
-import { downloadPLDDL } from '@/util/sqlExport';
+import { downloadPLDDL } from '@/util/database/sqlExport';
 import { CloudDownloadOutlined } from '@ant-design/icons';
 import { Modal } from 'antd'; // @ts-ignore
 import { ToolBarActions } from '..';
+import AIState from '@/component/AIState';
+import AICompletionState from '@/component/AICompletionState';
 
 const { confirm } = Modal;
 const scriptActions: ToolBarActions = {
@@ -150,6 +152,12 @@ const scriptActions: ToolBarActions = {
         downloadPLDDL(params?.plSchema?.plName, params?.plSchema?.plType, text, dbName);
       }
     },
+  },
+  AI: {
+    Component: AIState,
+  },
+  AIComplete: {
+    Component: AICompletionState,
   },
 };
 

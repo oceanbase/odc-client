@@ -1,0 +1,34 @@
+.scheduleExecuteRecord {
+  :global {
+    .ant-table-tbody > tr.ant-table-row-selected > td {
+      background: var(--background-primary-color);
+    }
+
+    .ant-table-row,
+    .ant-table-thead {
+      background: var(--background-primary-color);
+
+      .ant-table-cell:first-child {
+        border-left: 1px solid var(--odc-border-color);
+      }
+
+      .ant-table-cell {
+        border-right: 1px solid var(--odc-border-color);
+        border-bottom: 1px solid var(--odc-border-color);
+      }
+    }
+
+    .ant-table-thead {
+      .ant-table-cell {
+        border-top: 1px solid var(--odc-border-color);
+        .anticon {
+          color: var(--icon-color-normal);
+        }
+        .active .anticon,
+        .anticon.active {
+          color: var(--icon-color-focus);
+        }
+      }
+    }
+  }
+}

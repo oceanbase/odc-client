@@ -60,7 +60,7 @@ const ForeignConstraint: React.FC<IProps> = function ({ modified }) {
     manual: true,
   });
   useEffect(() => {
-    run(null, tableContext?.session?.connection?.id, 1, 999, null, null, null, true);
+    run({ dataSourceId: tableContext?.session?.connection?.id, page: 1, size: 999, existed: true });
   }, [tableContext?.session]);
   const gridColumns: any[] = useColumns(
     tableContext.columns,

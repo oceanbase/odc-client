@@ -18,14 +18,10 @@ import { IDatabase } from '@/d.ts/database';
 import { IDatasource } from '@/d.ts/datasource';
 import { IProject } from '@/d.ts/project';
 import React from 'react';
+import { DatabaseGroup } from '@/d.ts/database';
+import { ResourceNodeType } from '@/page/Workspace/SideBar/ResourceTree/type';
 
-export enum ResourceTreeTab {
-  datasource = 'datasource',
-  project = 'project',
-}
 interface IResourceTreeContext {
-  selectTabKey: ResourceTreeTab;
-  setSelectTabKey?: (v: ResourceTreeTab) => void;
   selectProjectId: number;
   setSelectProjectId?: (v: number) => void;
   selectDatasourceId: number;
@@ -34,15 +30,23 @@ interface IResourceTreeContext {
   reloadDatasourceList?: () => void;
   projectList: IProject[];
   reloadProjectList?: () => void;
-  currentDatabaseId?: number;
-  setCurrentDatabaseId?: (v: number) => void;
+  currentObject?: { value: React.Key; type: ResourceNodeType };
+  setCurrentObject?: React.Dispatch<
+    React.SetStateAction<{
+      value: React.Key;
+      type: ResourceNodeType;
+    }>
+  >;
+  shouldExpandedKeys?: React.Key[];
+  setShouldExpandedKeys?: React.Dispatch<React.SetStateAction<React.Key[]>>;
   databaseList: IDatabase[];
-  reloadDatabaseList?: () => void;
+  reloadDatabaseList?: () => Promise<IDatabase[]>;
   pollingDatabase?: () => void;
+  groupMode?: DatabaseGroup;
+  setGroupMode?: React.Dispatch<React.SetStateAction<DatabaseGroup>>;
 }
 
 const ResourceTreeContext = React.createContext<IResourceTreeContext>({
-  selectTabKey: ResourceTreeTab.datasource,
   selectProjectId: null,
   selectDatasourceId: null,
   datasourceList: [],

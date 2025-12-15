@@ -1,0 +1,62 @@
+.container {
+  padding-bottom: 16px;
+  background-color: var(--neutral-grey2-color);
+  padding: 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.tables {
+  display: grid;
+  grid-template-columns: 100px 1fr 50%;
+  align-items: center;
+  padding: 0;
+  border-top: 0px;
+  &.delete {
+    grid-template-columns: 100px 1fr 50% 22px;
+  }
+  &.header {
+    background-color: var(--neutral-grey2-color);
+    font-weight: 500;
+    padding: 0;
+    margin-bottom: 0;
+  }
+
+  .ant-form-item {
+    margin-bottom: 0;
+  }
+  .column {
+    padding: 3px;
+    display: inline-flex;
+    gap: 4px;
+  }
+  :global {
+    .ant-form-item {
+      margin-bottom: 0;
+      height: 100%;
+      display: grid;
+      padding: 0;
+      place-items: center;
+      .ant-form-item-row {
+        padding: 8px 0px;
+        width: 100%;
+      }
+    }
+  }
+}
+
+.deleteBtn {
+  padding: 0;
+  text-align: center;
+  width: 40px;
+}
+
+.tableName {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  padding: 4px 0;
+}
+
+.ant-btn-dashed {
+  color: var(--neutral-grey9-color);
+}

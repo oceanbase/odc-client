@@ -20,7 +20,7 @@ import ExportCard from '@/component/ExportCard';
 import DataBaseStatusIcon from '@/component/StatusIcon/DatabaseIcon';
 import { EnvColorMap } from '@/constant';
 import { DBType } from '@/d.ts/database';
-import { isConnectTypeBeFileSystemGroup } from '@/util/connection';
+import { isConnectTypeBeFileSystemGroup } from '@/util/database/connection';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Badge, Checkbox, Empty, Popconfirm, Space, Spin, Tooltip, Tree, Typography } from 'antd';
 import { DataNode, TreeProps } from 'antd/lib/tree';
@@ -28,6 +28,7 @@ import classnames from 'classnames';
 import datasourceStatus from '@/store/datasourceStatus';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
+import { ApplyDatabaseAuthEmpty } from '@/component/Empty/ApplyDatabaseAuthEmpty';
 
 const { Text } = Typography;
 
@@ -64,13 +65,16 @@ const DatabaseSelecter: React.FC<IProps> = function ({
   const loadExportObjects = async () => {
     setIsLoading(true);
     try {
-      const res = await listDatabases(projectId, null, null, null, null, null, null, true, null);
+      const res = await listDatabases({
+        projectId,
+        existed: true,
+      });
       if (res?.contents) {
         setDatabaseList(databaseFilter ? databaseFilter(res?.contents) : res?.contents);
         datasourceStatus.asyncUpdateStatus([
           ...new Set(
             res?.contents
-              ?.filter((item) => item.type !== 'LOGICAL')
+              ?.filter((item) => item.type !== 'LOGICAL' && !!item.dataSource?.id)
               ?.map((item) => item?.dataSource?.id),
           ),
         ]);
@@ -191,7 +195,12 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                 >
                   {item?.name}
                 </Text>
-                <Text type="secondary" ellipsis style={{ maxWidth: 80 }}>
+                <Text
+                  type="secondary"
+                  ellipsis
+                  style={{ maxWidth: 80 }}
+                  title={item?.dataSource?.name}
+                >
                   {item?.dataSource?.name}
                 </Text>
               </div>
@@ -296,15 +305,28 @@ const DatabaseSelecter: React.FC<IProps> = function ({
               }
               onSearch={handleSearch}
             >
-              <Tree
-                showIcon
-                checkable
-                height={300}
-                className={styles.allTree}
-                treeData={allTreeData}
-                checkedKeys={checkedKeys}
-                onCheck={handleChosenDataBase}
-              />
+              {allTreeData?.length > 0 ? (
+                <Tree
+                  showIcon
+                  checkable
+                  height={300}
+                  className={styles.allTree}
+                  treeData={allTreeData}
+                  checkedKeys={checkedKeys}
+                  onCheck={handleChosenDataBase}
+                />
+              ) : (
+                <ApplyDatabaseAuthEmpty
+                  description={
+                    projectId
+                      ? undefined
+                      : formatMessage({
+                          id: 'src.component.Task.component.DatabaseSelecter.581BBA20',
+                          defaultMessage: '暂无数据',
+                        })
+                  }
+                />
+              )}
             </ExportCard>
           </Spin>
         </div>
@@ -376,7 +398,12 @@ const DatabaseSelecter: React.FC<IProps> = function ({
                 }}
               />
             ) : (
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              <ApplyDatabaseAuthEmpty
+                description={formatMessage({
+                  id: 'src.component.Task.component.DatabaseSelecter.A8E97972',
+                  defaultMessage: '暂无数据',
+                })}
+              />
             )}
           </ExportCard>
         </div>

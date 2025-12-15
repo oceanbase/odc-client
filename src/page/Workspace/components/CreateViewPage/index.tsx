@@ -23,7 +23,7 @@ import { ConnectionMode, ICreateView, ICreateViewColumn, ICreateViewViewUnit } f
 import { CreateViewPage as CreateViewPageModel } from '@/store/helper/page/pages/create';
 import { formatMessage } from '@/util/intl';
 import SessionStore from '@/store/sessionManager/session';
-import { Button, Collapse, Layout, message, Tabs } from 'antd';
+import { Button, Collapse, Layout, message, Space, Tabs, Typography } from 'antd';
 import styles from './index.less';
 import { CheckOutlined, CloseCircleFilled, CloseOutlined, EditOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
@@ -35,11 +35,13 @@ import { omit } from 'lodash';
 import ScriptPage from '@/component/ScriptPage';
 import { getDataSourceModeConfig } from '@/common/datasource';
 import { IEditor } from '@/component/MonacoEditor';
-import { getRealTableName } from '@/util/sql';
+import { getRealTableName } from '@/util/data/sql';
 import { openViewViewPage } from '@/store/helper/page';
 import { PropsTab, TopTab } from '../ViewPage';
 import SessionContext from '../SessionContextWrap/context';
 import WrapSessionPage from '../SessionContextWrap/SessionPageWrap';
+import DBPermissionTableContent from '../DBPermissionTableContent';
+import { IUnauthorizedDBResources } from '@/d.ts/table';
 
 const { Content } = Layout;
 const { Panel } = Collapse;
@@ -71,6 +73,7 @@ interface IProps {
   params: CreateViewPageModel['pageParams'];
   session?: SessionStore;
 }
+const { Text } = Typography;
 const CreateViewPage: React.FC<IProps> = inject(
   'sqlStore',
   'sessionManagerStore',
@@ -92,6 +95,10 @@ const CreateViewPage: React.FC<IProps> = inject(
 
     const [editor, setEditor] = useState<IEditor>();
     const [sql, setSql] = useState<string>();
+    const [createCheckResults, setCreateCheckResults] = useState<{
+      unauthorizedDBResources: IUnauthorizedDBResources[];
+      unauthorizedSql?: string;
+    }>();
 
     const handleCreateView = async () => {
       const { sqlStore, pageKey, pageStore, params, sessionManagerStore, session } = props;
@@ -106,9 +113,15 @@ const CreateViewPage: React.FC<IProps> = inject(
         session?.sessionId,
         session?.odcDatabase?.name,
       );
+      setCreateCheckResults(results);
       if (results?.invalid || !results?.executeResult?.length) {
         return;
       }
+
+      if (results?.unauthorizedDBResources && !results?.unauthorizedDBResources?.length) {
+        return;
+      }
+
       const { dbObjectName: viewName, track } = results.executeResult[0];
       if (!track) {
         message.success(
@@ -364,8 +377,8 @@ const CreateViewPage: React.FC<IProps> = inject(
             className={styles.collapse}
             accordion
             activeKey={activeStepKey}
-            onChange={(stepkey: EnumStep) => {
-              const step = steps.find((step) => step.key === stepkey);
+            onChange={(stepkeys: EnumStep[]) => {
+              const step = steps.find((step) => stepkeys.includes(step.key));
               handleStepChanged(step);
             }}
           >
@@ -460,9 +473,66 @@ const CreateViewPage: React.FC<IProps> = inject(
       const result = records.length ? records[0] : null;
       const errStack = result?.track;
       const executeSql = result?.executeSql;
-      if (!errStack) {
+
+      const { unauthorizedDBResources, unauthorizedSql } = createCheckResults || {};
+
+      if (!errStack && !unauthorizedDBResources) {
         return null;
       }
+      const renderErrStack = () => {
+        return (
+          <div className={styles.result}>
+            <CloseCircleFilled style={{ color: '#F5222D', marginRight: 8 }} />
+            {formatMessage({
+              id: 'workspace.window.sql.result.failure',
+              defaultMessage: '执行以下 SQL 失败',
+            })}
+            <div key="2" className={styles.executedSQL}>
+              {executeSql}
+            </div>
+            <div className={styles.failReason}>
+              {formatMessage({
+                id: 'workspace.window.sql.result.failureReason',
+                defaultMessage: '失败原因：',
+              })}
+            </div>
+            <div className={styles.track}>{errStack}</div>
+          </div>
+        );
+      };
+
+      const renderDbPermissionTable = () => {
+        return (
+          <div className={styles.result}>
+            <CloseCircleFilled style={{ color: '#F5222D', marginRight: 8 }} />
+            {formatMessage({
+              id: 'workspace.window.sql.result.failure',
+              defaultMessage: '执行以下 SQL 失败',
+            })}
+            <div key="1" className={styles.executedSQL}>
+              {unauthorizedSql}
+            </div>
+
+            <Space direction="vertical">
+              <div className={styles.failReason}>
+                {formatMessage({
+                  id: 'workspace.window.sql.result.failureReason',
+                  defaultMessage: '失败原因：',
+                })}
+              </div>
+              <Text type="secondary">
+                {formatMessage({
+                  id: 'src.page.Workspace.components.SQLResultSet.DDB9284D',
+                  defaultMessage: '缺少以下数据库表对应权限，请先申请权限',
+                })}
+              </Text>
+            </Space>
+            <div className={styles.track}>
+              <DBPermissionTableContent showAction dataSource={unauthorizedDBResources} />
+            </div>
+          </div>
+        );
+      };
       return (
         <Tabs
           style={{ width: '100%' }}
@@ -477,23 +547,7 @@ const CreateViewPage: React.FC<IProps> = inject(
                 id: 'odc.components.CreateViewPage.Result',
                 defaultMessage: '运行结果',
               }),
-              children: (
-                <div className={styles.result}>
-                  <CloseCircleFilled style={{ color: '#F5222D', marginRight: 8 }} />
-                  {formatMessage({
-                    id: 'workspace.window.sql.result.failure',
-                    defaultMessage: '执行以下 SQL 失败',
-                  })}
-                  <div className={styles.executedSQL}>{executeSql}</div>
-                  <div className={styles.failReason}>
-                    {formatMessage({
-                      id: 'workspace.window.sql.result.failureReason',
-                      defaultMessage: '失败原因：',
-                    })}
-                  </div>
-                  <div className={styles.track}>{errStack}</div>
-                </div>
-              ),
+              children: unauthorizedDBResources ? renderDbPermissionTable() : renderErrStack(),
             },
           ]}
         />

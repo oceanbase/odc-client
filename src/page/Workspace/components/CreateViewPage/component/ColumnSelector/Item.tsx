@@ -16,29 +16,42 @@
 import React, { useEffect, useState } from 'react';
 import { formatMessage } from '@/util/intl';
 import Icon, { DeleteOutlined } from '@ant-design/icons';
-import { Col, Row, Space } from 'antd';
+import { Col, Row, Space, Tooltip } from 'antd';
 import classNames from 'classnames';
 import { parse } from 'query-string';
-import { PureComponent } from 'react';
-// @ts-ignore
 import { ReactComponent as DragSvg } from '@/svgr/DragItem.svg';
 import EditableText from '../EditableText';
+import { CaseEditableText } from '@/component/Input/Case';
 import ObjectName, { EnumObjectType } from '../ObjectName';
-// @ts-ignore
 import styles from './index.less';
+import { InfoCircleOutlined } from '@ant-design/icons';
 
 export interface IProps {
   dataKey: string;
   handleDelete: (key: string) => void;
   handleChange: (idx: any) => void;
+  useCaseInput?: boolean;
+  caseSensitive?: boolean;
+  escapes?: string;
+  isWarning?: boolean;
+  warnTip?: string[];
 }
 
 const Item: React.FC<IProps> = React.memo((props) => {
-  const { dataKey, handleDelete, handleChange } = props;
+  const {
+    dataKey,
+    handleDelete,
+    handleChange,
+    useCaseInput = false,
+    caseSensitive,
+    escapes,
+    isWarning = false,
+    warnTip = [],
+  } = props;
   const isCustomer = dataKey.includes('odc.customer.column');
   const params = parse(dataKey);
   const { v, c, t, d, aliasName } = params;
-  const handleChangeAliasName = (value) => {
+  const handleChangeAliasName = (value: string) => {
     handleChange({ dataKey, aliasName: value });
   };
 
@@ -47,10 +60,19 @@ const Item: React.FC<IProps> = React.memo((props) => {
   };
   return (
     <div className="dragable-item">
-      <Row className={classNames(styles.column, styles.dragable)}>
+      <Row
+        className={classNames(styles.column, styles.dragable, {
+          [styles.warningColumnItem]: isWarning,
+        })}
+      >
         <Col className={styles['dragable-item']} span={24}>
           <Space>
             <Icon component={DragSvg} className={styles.dragHandler} />
+            {isWarning && (
+              <Tooltip title={warnTip.join('，')}>
+                <InfoCircleOutlined style={{ color: 'red' }} />
+              </Tooltip>
+            )}
             {!isCustomer ? (
               c
             ) : (
@@ -84,13 +106,25 @@ const Item: React.FC<IProps> = React.memo((props) => {
                 )
               </span>
             ) : null}
-            <EditableText
-              onChange={handleChangeAliasName}
-              placeholder={formatMessage({
-                id: 'odc.component.ColumnSelector.Item.Alias',
-                defaultMessage: '别名',
-              })} /* 别名 */
-            />
+            {useCaseInput ? (
+              <CaseEditableText
+                caseSensitive={caseSensitive}
+                escapes={escapes}
+                onChange={handleChangeAliasName}
+                placeholder={formatMessage({
+                  id: 'odc.component.ColumnSelector.Item.Alias',
+                  defaultMessage: '别名',
+                })} /* 别名 */
+              />
+            ) : (
+              <EditableText
+                onChange={handleChangeAliasName}
+                placeholder={formatMessage({
+                  id: 'odc.component.ColumnSelector.Item.Alias',
+                  defaultMessage: '别名',
+                })} /* 别名 */
+              />
+            )}
           </Space>
           <DeleteOutlined className={styles.close} onClick={() => handleDelete(dataKey)} />
         </Col>

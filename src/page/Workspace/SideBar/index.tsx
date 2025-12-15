@@ -24,6 +24,7 @@ import Manager from './Manager';
 import ResourceTree from './ResourceTree/Container';
 import Script from './Script';
 import Task from './Task';
+import Schedule from './Schedule';
 
 interface IProps {}
 
@@ -32,6 +33,7 @@ const items = {
   [ActivityBarItemType.Script]: Script,
   [ActivityBarItemType.Task]: Task,
   [ActivityBarItemType.Manager]: Manager,
+  [ActivityBarItemType.Schedule]: Schedule,
 };
 
 const SideBar: React.FC<IProps> = function () {

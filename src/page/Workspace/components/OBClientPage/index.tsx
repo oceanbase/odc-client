@@ -29,6 +29,7 @@ import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import { AttachAddon } from './attach';
 import styles from './index.less';
+import odc from '@/plugins/odc';
 
 const { Text } = Typography;
 
@@ -141,7 +142,7 @@ class OBClient extends React.PureComponent<IOBClientProps, IOBClientState> {
 
     let url = new URL(
       `/api/v1/webSocket/obclient/${generateSessionSid(session?.sessionId)}`,
-      window.ODCApiHost || window.location.href,
+      odc.appConfig.network?.baseUrl?.() || window.location.href,
     );
     url.protocol = url.protocol.replace('http', 'ws');
     console.log(url);

@@ -21,7 +21,7 @@ import { AuditEventResult } from '@/d.ts';
 import { Status } from '@/page/Secure/components/RecordPage/component';
 import { isClient } from '@/util/env';
 import { formatMessage } from '@/util/intl';
-import { getLocalFormatDateTime } from '@/util/utils';
+import { getLocalFormatDateTime } from '@/util/data/dateTime';
 import { FilterFilled, SearchOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/lib/tree';
 

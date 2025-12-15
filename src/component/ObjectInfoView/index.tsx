@@ -24,12 +24,13 @@ interface IProps {
     content: React.ReactNode;
     span?: number;
   }[];
+  className?: string;
 }
 
 const ObjectInfoView: React.FC<IProps> = function (props) {
-  const { data } = props;
+  const { data, className } = props;
   return (
-    <div className={styles.textFrom}>
+    <div className={`${styles.textFrom} ${className || ''}`}>
       <Row gutter={16}>
         {data?.map(({ label, content, span = 24 }) => {
           return (

@@ -53,7 +53,6 @@
     .bigTable,
     .smallTable {
       height: 100%;
-
       :global {
         .ant-spin-nested-loading {
           height: 100%;
@@ -87,7 +86,16 @@
     }
   }
 }
-
+.toolBar {
+  :global {
+    .ant-select-arrow {
+      color: var(--icon-color-normal);
+    }
+    .anticon {
+      color: var(--icon-color-normal);
+    }
+  }
+}
 .toolBar:global(.ant-space) {
   display: flex;
   align-items: center;
@@ -96,6 +104,9 @@
 
   .titleContent {
     font-size: 16px;
+    .title {
+      color: var(--text-color-hint);
+    }
 
     .desc {
       color: var(--text-color-hint);
@@ -111,13 +122,29 @@
 
 .bigTable {
   :global {
+    .ant-checkbox .ant-checkbox-inner {
+      border: 1px solid var(--odc-border-color);
+    }
+    .ant-pagination-next[aria-disabled='false'] {
+      .anticon {
+        color: var(--icon-color-normal);
+      }
+    }
     .ant-table-thead {
       .ant-table-cell {
         box-sizing: border-box;
         height: 24px;
         padding: 0 16px;
         line-height: 24px;
-        background-color: var(--navigationv2-background-color);
+        background-color: var(--table-header-background-color);
+
+        .anticon {
+          color: var(--icon-color-normal);
+        }
+        .active .anticon,
+        .anticon.active {
+          color: var(--icon-color-focus);
+        }
 
         &::before {
           display: none;
@@ -157,6 +184,24 @@
   :global {
     .ant-table {
       font-size: 12px;
+    }
+    .ant-pagination-next[aria-disabled='false'] {
+      .anticon {
+        color: var(--icon-color-normal);
+      }
+    }
+    .ant-checkbox .ant-checkbox-inner {
+      border: 1px solid var(--odc-border-color);
+    }
+    .ant-table-thead .ant-table-cell {
+      .anticon {
+        color: var(--icon-color-normal);
+      }
+
+      .active .anticon,
+      .anticon.active {
+        color: var(--icon-color-focus);
+      }
     }
 
     .ant-table-thead > tr > th {
@@ -253,7 +298,7 @@
     }
 
     .ant-empty-description {
-      color: var(--text-color-secondary);
+      color: var(--text-color-hint);
       font-size: 12px;
       line-height: 22px;
       text-align: center;
@@ -307,5 +352,22 @@
     justify-content: center;
     width: 100%;
     height: 100%;
+  }
+}
+.editbaleCellValueWarp {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.editbaleCellValueWarp:hover {
+  padding: 1px 6px;
+  border: 1px solid var(--odc-border-color);
+  border-radius: 2px;
+}
+
+.deafaultOperation {
+  :global {
+    .anticon {
+      color: var(--icon-color-normal);
+    }
   }
 }

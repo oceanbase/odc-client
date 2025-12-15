@@ -25,7 +25,7 @@ import { EncryptionAlgorithm, IManagerIntegration, IntegrationType } from '@/d.t
 import { formatMessage } from '@/util/intl';
 import tracert from '@/util/tracert';
 import { decrypt, encrypt } from '@/util/utils';
-import { validTrimEmptyWithWarn } from '@/util/valid';
+import { validTrimEmptyWithWarn } from '@/util/ui/validRule';
 import {
   Button,
   Checkbox,
@@ -232,7 +232,7 @@ const FormSqlInterceptorModal: React.FC<IProps> = (props) => {
             : formatMessage({ id: 'odc.component.FormModal.Create', defaultMessage: '新建' })) + //新建
           `${title}`
         }
-        className={styles.interceptor}
+        rootClassName={styles.interceptor}
         footer={
           <Space>
             <Button onClick={handleCancel}>
